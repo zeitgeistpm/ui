@@ -1,0 +1,314 @@
+@tailwind base;
+
+/* Write your own custom base styles here */
+
+/* Start purging... */
+@tailwind components;
+/* Stop purging. */
+
+body {
+  @apply bg-gray-50;
+}
+
+html {
+  font-size: 16px;
+
+}
+
+/* tailwind sm breakpoint */
+@media only screen and (max-width: 640px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+/* tailwind md breakpoint */
+@media only screen and (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+/* Write your own custom component styles here */
+.btn-blue {
+  @apply px-4 py-2 font-bold text-white bg-blue-500 rounded;
+}
+
+/* Start purging... */
+@tailwind utilities;
+
+.center {
+  @apply flex;
+  @apply justify-center;
+  @apply items-center;
+}
+/* Stop purging. */
+
+/* Your own custom utilities */
+
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400&display=swap");
+@import "./kusama-derby.css";
+
+.rounded-3px {
+  border-radius: 3px;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  @apply cursor-pointer;
+}
+
+.checkbox-label {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-left: 0.625rem;
+  @apply cursor-pointer;
+  @apply select-none;
+}
+
+.max-button {
+  background-color: #c4c4c4;
+  border-radius: 3px;
+  font-size: 0.5rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  width: 32px;
+  line-height: 9px;
+  margin-left: 0.6rem;
+  outline: none;
+  @apply text-center;
+  @apply cursor-pointer;
+  @apply select-none;
+}
+
+.max-button:focus {
+  outline: none;
+}
+
+.button {
+  @apply text-base;
+  @apply bg-ztg-blue;
+  @apply h-11;
+  @apply font-medium;
+  color: #fff;
+  width: 244px;
+  border-radius: 3px;
+}
+
+#marketLayoutContent > * {
+  @apply w-full;
+}
+
+.e-c-base {
+  fill: none;
+  stroke: #000;
+  stroke-width: 4px;
+}
+
+.e-c-progress {
+  fill: none;
+  stroke: #3a82f6;
+  stroke-width: 4px;
+  transition: stroke-dashoffset 0.7s;
+}
+
+.e-c-pointer {
+  fill: #fff;
+  stroke: #3a82f6;
+  stroke-width: 2px;
+  transition: transform 0.7s;
+}
+
+.status-color-all {
+  @apply bg-black;
+  @apply text-white;
+}
+
+.status-color-proposed {
+  @apply bg-purple-400;
+}
+
+.status-color-active {
+  @apply bg-green-400;
+}
+
+.status-color-ended {
+  @apply bg-red-500;
+}
+
+.status-color-reported {
+  @apply bg-blue-400;
+}
+
+.status-color-disputed {
+  @apply bg-red-400;
+}
+
+.status-color-resolved {
+  @apply bg-gray-500;
+}
+
+.card .card-head {
+  padding: 1.25rem 1.125rem;
+  @apply h-34;
+  @apply md:h-auto;
+}
+
+.card .card-status {
+  font-size: 0.625rem;
+  line-height: 1.5;
+  @apply text-white;
+}
+
+.card .card-title {
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.card .card-foot > div {
+  font-size: 0.625rem;
+}
+
+@screen md {
+  .card .card-status {
+    min-width: 100px;
+  }
+  .card .card-title {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+}
+
+@media only screen and (min-width: 530px) {
+  .hide-above-530 {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 530px) {
+  .hide-below-530 {
+    display: none;
+  }
+}
+
+/* NEW */
+@import "./drawer.css";
+@import "./card.css";
+@import "./date-picker.css";
+
+body {
+  --topbar-height: 76px;
+  @apply font-lato;
+}
+
+.topbar {
+  height: var(--topbar-height);
+}
+
+.main-container {
+  height: calc(100vh - var(--topbar-height));
+}
+
+.carousel__slide--visible {
+  overflow: hidden;
+}
+
+.carousel__dot--selected {
+  background-color: white;
+}
+
+.carousel__dot:not(.carousel__dot--selected) {
+  opacity: 60%;
+}
+
+table {
+  border-spacing: 0 15px;
+}
+
+td:first-child {
+  padding-left: 15px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+td:last-child {
+  padding-right: 15px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+/* Scroll */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-white;
+  @apply dark:bg-sky-1000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d9e3ee;
+  border-radius: 8px;
+  background-clip: padding-box;
+}
+
+.dark > * ::-webkit-scrollbar-thumb {
+  background: #1d2533;
+}
+
+.header {
+  @apply font-kanit;
+  @apply font-bold;
+  @apply text-ztg-20-150;
+}
+
+.sub-header {
+  @apply font-kanit;
+  @apply font-medium;
+  @apply text-ztg-20-150;
+}
+
+/* Skeleton */
+.dark > * .MuiSkeleton-root {
+  height: 1.2em;
+  display: block;
+  background-color: #141a24 !important;
+}
+
+.dark > * .MuiSkeleton-wave::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #1d2533,
+    transparent
+  ) !important;
+}
+
+* .MuiSkeleton-root {
+  height: 1.2em;
+  display: block;
+  background-color: #f4f7fa !important;
+}
+
+* .MuiSkeleton-wave::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #d9e3ee,
+    transparent
+  ) !important;
+}
+
+.auth-page {
+  background-image: url(/nft/circles-background.png),
+    url(/nft/ellipse-background.png);
+}
+
+.ztg-transition {
+  @apply transition duration-200 ease-in-out;
+}

@@ -1,0 +1,13 @@
+{
+  "slug": "IRYES",
+  "Marketquestion": "Will the us inflation rate reach 10% in one year",
+  "Multiple_outcomes_input0": "YES",
+  "Multipleoutcometicker0": "ABC",
+  "Multiple_outcomes_input1": "NO",
+  "Multipleoutcometicker1": "XYZ",
+  "RangeofOutcomeMinimum": "1",
+  "RangeofOutcomeMaximum": "2",
+  "RangeofOutcomeTicker": "ABC",
+  "MarketDescription": "Market is about to predict Will the US inflation rate reach 10% in one year",
+  "OracleInput": "dDym8Qjm3KJZ2coPj1yy9aZsvndMdNwgbXEdiLquTbQDUu4nd"
+}

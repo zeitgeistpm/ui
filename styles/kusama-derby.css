@@ -1,0 +1,42 @@
+
+.list-kusama-rectangle {
+  list-style-image: url('/icons/rectangle-2.svg');
+}
+.list-kusama-donut {
+  list-style-image: url('/icons/donut.svg');
+}
+
+ul#howList li {
+  margin-left: -25px;
+}
+
+#slotsBox h3 {
+  mix-blend-mode: exclusion;
+}
+#slotsBox p {
+  @apply transition-colors;
+  @apply duration-500;
+
+  /* mix-blend-mode: exclusion; */
+}
+
+#slotsBox p > span
+{
+  mix-blend-mode: exclusion;
+}
+
+#slotBox1:hover p {
+  @apply text-green-1;
+}
+
+#slotBox2:hover p {
+  @apply text-orange-1;
+}
+
+#slotBox3:hover p {
+  @apply text-purple-1;
+}
+
+.leader-indicator {
+  background: radial-gradient(99.83% 99.83% at 50% 0%, #FF8001 0%, #FFD100 100%);
+}

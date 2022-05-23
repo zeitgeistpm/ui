@@ -1,0 +1,26 @@
+
+div[class^="card-exp-col"] {
+  @apply flex-shrink-0 mr-ztg-16;
+}
+div[class^="card-exp-col"]:last-child {
+  @apply mr-ztg-0;
+}
+
+.card-exp-col-1 {
+  @apply flex-ztg-basis-80;
+}
+.card-exp-col-2 {
+  @apply flex-ztg-basis-54 text-right;
+}
+.card-exp-col-3 {
+  @apply flex-ztg-basis-85 text-right;
+}
+.card-exp-col-4 {
+  @apply flex-ztg-basis-115 text-right;
+}
+.card-exp-col-5 {
+  @apply flex-ztg-basis-66;
+}
+.card-exp-col-6 {
+  @apply flex-ztg-basis-100;
+}

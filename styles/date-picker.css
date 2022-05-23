@@ -1,0 +1,18 @@
+.dark > * .rdtPicker {
+  background-color: black;
+}
+
+.rdtPicker {
+  @apply text-sky-600;
+}
+
+.dark > * .rdtPicker > * td:hover {
+  @apply bg-sky-900 !important;
+}
+.dark > * .rdtPicker > * th:hover {
+  @apply bg-sky-900 !important;
+}
+.dark > * .rdtPicker > * span:hover {
+  @apply bg-sky-900 !important;
+  border: 0;
+}

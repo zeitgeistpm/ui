@@ -1,0 +1,13 @@
+.drawer.left .arrow-container {
+  @apply right-0;
+  transform: translateX(50%);
+}
+
+.drawer.right .arrow-container {
+  @apply left-0;
+  @apply transform -translate-x-1/2;
+}
+
+.drawer.right.closed .arrow-container {
+  transform: translateX(calc(-100% - 4px));
+}

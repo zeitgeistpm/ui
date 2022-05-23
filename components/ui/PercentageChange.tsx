@@ -1,0 +1,40 @@
+const PercentageChange = ({ change }: { change: number }) => {
+  return (
+    <div className="flex items-center">
+      {change > 0 ? (
+        <svg
+          width="10"
+          height="8"
+          viewBox="0 0 10 8"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M5 0L9.33013 7.5H0.669873L5 0Z" fill="#70C703" />
+        </svg>
+      ) : (
+        <></>
+      )}
+
+      {change < 0 ? (
+        <svg
+          width="10"
+          height="8"
+          viewBox="0 0 10 8"
+          fill="none"
+          transform="rotate(180)"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M5 0L9.33013 7.5H0.669873L5 0Z" fill="#FF0054" />
+        </svg>
+      ) : (
+        <></>
+      )}
+
+      <span className="font-mono text-ztg-14-150 text-center ml-ztg-4 dark:text-white">
+        {change}%
+      </span>
+    </div>
+  );
+};
+
+export default PercentageChange;
