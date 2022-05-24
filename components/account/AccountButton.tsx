@@ -59,13 +59,19 @@ const AccountButton = observer(() => {
               accountModals.openAccontSelect();
             }}
           >
-            <div className="font-bold mr-ztg-16 center w-ztg-176 " data-test="accountBalance">
+            <div className="font-bold mr-ztg-16 center w-ztg-176 ">
               {`${formatNumberLocalized(activeBalance?.toNumber())} ${
                 store.config.tokenSymbol
               }`}
             </div>
             <div className="center bg-sky-500 dark:bg-black rounded-full h-full w-ztg-164 flex-grow text-white pl-ztg-6 pr-ztg-10">
-              <Avatar address={activeAccount.address} />
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                <Avatar zoomed address={activeAccount.address} />
+              </div>
               <div className="mr-auto text-black dark:text-white ml-ztg-10">
                 {shortenAddress(activeAccount.address, 6, 4)}
               </div>

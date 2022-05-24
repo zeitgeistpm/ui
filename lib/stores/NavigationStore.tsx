@@ -54,6 +54,11 @@ export default class NavigationStore {
           href: "/settings",
           pageName: "settings",
         },
+        {
+          label: "Zeitgeist Identity",
+          href: "/avatar",
+          pageName: "avatar",
+        },
       ],
     },
     create: {
