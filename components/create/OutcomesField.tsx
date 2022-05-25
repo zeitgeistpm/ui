@@ -448,19 +448,16 @@ const OutcomesField: FC<OutcomesFieldProps> = observer(
 
     return (
       <FormContext.Provider value={form}>
-        {process.env.NEXT_PUBLIC_SHOW_SCALAR_MARKETS === "true" ? (
-          <LabeledToggle
-            side={type === "multiple" ? "left" : "right"}
-            onChange={(side) => {
-              initOutcomesForType(side === "left" ? "multiple" : "range");
-            }}
-            leftLabel="Multiple outcomes"
-            rightLabel="Range of outcomes"
-            className="mb-ztg-20"
-          />
-        ) : (
-          <></>
-        )}
+        <LabeledToggle
+          side={type === "multiple" ? "left" : "right"}
+          onChange={(side) => {
+            initOutcomesForType(side === "left" ? "multiple" : "range");
+          }}
+          leftLabel="Multiple outcomes"
+          rightLabel="Range of outcomes"
+          className="mb-ztg-20"
+        />
+
         <div className="flex flex-col">
           {type === "multiple" && value && (
             <MultipleOutcomesField
