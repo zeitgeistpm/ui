@@ -34,7 +34,7 @@ const EndTypeSwitch: FC<EndTypeSwitchProps> = ({ selected, onChange }) => {
             data-test={`${type}Button`}
           >
             <div className="center w-full">
-              <span className="text-ztg-14-150">
+              <span className="text-ztg-14-150" data-test="marketEndTypeSwitch">
                 {type === "timestamp" ? "End Date" : "Endblock"}
               </span>
             </div>

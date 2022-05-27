@@ -103,7 +103,7 @@ const rdtpInput = (
         readOnly
       />
       <div
-        className="w-ztg-40 h-ztg-40 border-l-1 border-sky-600 bg-sky-200 dark:bg-black flex-shrink-0 rounded-r-ztg-5 center cursor-pointer"
+        className="w-ztg-40 h-ztg-40 border-l-1 border-sky-600 bg-sky-200 dark:bg-black flex-shrink-0 rounded-r-ztg-5 center cursor-pointer" data-test="calendarIcon"
         onClick={openCalendar}
       >
         <Calendar size={16} className="text-sky-600" />
@@ -346,6 +346,7 @@ export const AmountInput: FC<AmountInputProps> = observer(
 export interface TextAreaProps {
   value: string;
   name: string;
+  dataTest?: string;
   placeholder?: string;
   onChange?: (value: string) => void;
   ref?: React.Ref<HTMLTextAreaElement>;
@@ -363,6 +364,7 @@ export const TextArea: FC<TextAreaProps> = observer(
         name,
         className = "",
         placeholder = "",
+        dataTest="",
       },
       ref
     ) => {
@@ -379,6 +381,7 @@ export const TextArea: FC<TextAreaProps> = observer(
           value={value}
           ref={ref}
           name={name}
+          data-test={dataTest}
         ></textarea>
       );
     }

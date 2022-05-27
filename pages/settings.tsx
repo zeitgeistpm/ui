@@ -16,19 +16,22 @@ import { useNotificationStore } from "lib/stores/NotificationStore";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { AlertTriangle } from "react-feather";
 
-const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean }> = ({
+const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean; dataSet?: string }> = ({
   onClick = () => {},
   disabled = false,
   children,
+  dataSet
 }) => {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
+      data-test={dataSet}
       className="flex flex-row p-ztg-8 w-ztg-266 h-ztg-37 bg-ztg-blue rounded-ztg-100 cursor-pointer disabled:cursor-default disabled:opacity-20 focus:outline-none"
     >
       <div className="text-ztg-14-150 font-medium text-white flex flex-grow justify-center items-center">
         {children ?? "Submit"}
+        
       </div>
     </button>
   );
@@ -44,7 +47,6 @@ const IdentitySettings = observer(() => {
   const [discordHandle, setDiscordHandle] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
   const [transactionPending, setTransactionPending] = useState(false);
-
   useEffect(() => {
     if (!identity) return;
     setDisplayName(identity.displayName ?? "");
@@ -137,7 +139,7 @@ const IdentitySettings = observer(() => {
 
   return (
     <>
-      <div className="text-ztg-16-150  mb-ztg-20">Display Name</div>
+      <div className="text-ztg-16-150  mb-ztg-20" data-test="displayNameLabel">Display Name</div>
       <Input
         data-test="display-name"
         type="text"
@@ -147,7 +149,7 @@ const IdentitySettings = observer(() => {
       />
       <div className="flex flex-row mb-ztg-20">
         <div className="w-full mr-ztg-27">
-          <div className="text-ztg-16-150 mb-ztg-20">Discord</div>
+          <div className="text-ztg-16-150 mb-ztg-20" data-test="discordLabel">Discord</div>
           <Input
             data-test="discord"
             type="text"
@@ -157,7 +159,7 @@ const IdentitySettings = observer(() => {
           />
         </div>
         <div className="w-full ">
-          <div className="text-ztg-16-150 mb-ztg-20">Twitter</div>
+          <div className="text-ztg-16-150 mb-ztg-20" data-test="twitterLabel">Twitter</div>
           <Input
             data-test="twitter"
             type="text"
@@ -176,7 +178,7 @@ const IdentitySettings = observer(() => {
         </div>
       </div>
       <div className="flex mb-ztg-20">
-        <SubmitButton onClick={handleSubmit} disabled={submitDisabled}>
+        <SubmitButton onClick={handleSubmit} disabled={submitDisabled} dataSet="setIdentityButton">
           Set Identity
         </SubmitButton>
         <button
@@ -338,7 +340,7 @@ const Settings: NextPage = observer(() => {
 
   return (
     <>
-      <h2 className="text-ztg-20-150 font-bold font-kanit mb-ztg-23">
+      <h2 className="text-ztg-20-150 font-bold font-kanit mb-ztg-23" data-test="accountSettingsHeader">
         Account Settings
       </h2>
       <div className="p-ztg-30 rounded-ztg-10 mb-ztg-32 font-lato font-bold bg-sky-100 dark:bg-sky-700">

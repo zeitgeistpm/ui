@@ -519,12 +519,12 @@ const CreatePage: NextPage = observer(() => {
         .toFixed(4);
     }
   };
-
   return (
     <form data-test="createMarketForm">
       <InfoBoxes />
-      <h2 className="header mb-ztg-23">Create Market</h2>
-      <MarketFormCard header="1. Market name">
+      <h2 className="header mb-ztg-23" data-test="createMarketHeader">Create Market</h2>
+      <div data-set='mypm'>
+      <MarketFormCard dataSet="marketNameLabel" header="1. Market name">
         <MarketSlugField
           slug={formData.slug}
           base64Image={formData.marketImage}
@@ -532,9 +532,12 @@ const CreatePage: NextPage = observer(() => {
           onImageChange={changeMarketImage}
           textMaxLength={30}
           form={form}
+          data-test="marketNameHeader"
         />
       </MarketFormCard>
-      <MarketFormCard header="2. Market name / Question *">
+      </div>
+      
+      <MarketFormCard dataSet="marketQuestionLabel" header="2. Market name / Question *">
         <Input
           ref={questionInputRef}
           type="text"
@@ -546,10 +549,11 @@ const CreatePage: NextPage = observer(() => {
           className="mb-ztg-20"
           onChange={(e) => changeQuestion(e.target.value)}
           autoComplete="off"
+          data-test="marketQuestionInput"
         />
         <TagChoices onTagsChange={changeTags} />
       </MarketFormCard>
-      <MarketFormCard header="3. Market ends *">
+      <MarketFormCard dataSet="marketEndLabel" header="3. Market ends *">
         <EndField
           endType={formData.end.type}
           value={isNaN(formData.end.value) ? "" : formData.end.value.toString()}
@@ -560,7 +564,7 @@ const CreatePage: NextPage = observer(() => {
           blockNumberFieldName="end"
         />
       </MarketFormCard>
-      <MarketFormCard header="4. Outcomes *">
+      <MarketFormCard dataSet="OutcomesLabel" header="4. Outcomes *">
         <OutcomesField
           type={formData.outcomes.type}
           value={formData.outcomes.value}
@@ -569,7 +573,7 @@ const CreatePage: NextPage = observer(() => {
           form={form}
         />
       </MarketFormCard>
-      <MarketFormCard header="5. Oracle *">
+      <MarketFormCard dataSet="oracleInputLabel" header="5. Oracle *" data-test="oracleHeader">
         <Input
           form={form}
           type="text"
@@ -579,6 +583,7 @@ const CreatePage: NextPage = observer(() => {
           ref={oracleInputRef}
           className="mb-ztg-20"
           name="oracle"
+          data-test="oracleInput"
         />
         <div className="flex h-ztg-22 items-center text-sky-600 font-lato">
           <div className="w-ztg-20 h-ztg-20">
@@ -591,8 +596,9 @@ const CreatePage: NextPage = observer(() => {
           </div>
         </div>
       </MarketFormCard>
-      <MarketFormCard header="6. Market Description">
+      <MarketFormCard dataSet="marketDescriptionLabel" header="6. Market Description">
         <TextArea
+          dataTest="marketDescriptionInput"
           placeholder="Additional information you want to provide about the market, such as resolution source, special cases, or other details."
           value={formData.description}
           name="description"
@@ -602,6 +608,7 @@ const CreatePage: NextPage = observer(() => {
         />
         <div className="flex items-center">
           <LabeledToggle
+            dataSet="permissionlessSwitchButton"
             leftLabel="Permissionless"
             rightLabel="Advised"
             side={!formData.advised ? "left" : "right"}
@@ -665,7 +672,7 @@ const CreatePage: NextPage = observer(() => {
             Create Market
           </TransactionButton>
           <div className="w-full flex items-center text-ztg-12-150 font-bold ml-ztg-8 text-sky-600">
-            <div className="mr-ztg-15">
+            <div className="mr-ztg-15" data-test="totalCost">
               Total Cost:
               <span className="font-mono">
                 {" "}

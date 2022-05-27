@@ -8,5 +8,6 @@
   "RangeofOutcomeMinimum": "1",
   "RangeofOutcomeMaximum": "2",
   "RangeofOutcomeTicker": "ABC",
-  "MarketDescription": "Market is about to predict Will the US inflation rate reach 10% in one year"
+  "MarketDescription": "Market is about to predict Will the US inflation rate reach 10% in one year",
+  "OracleInput": "dDyD4uY7Nk1Wr3sMDqzgh2cot2nVpBo9wDtSNjkXhrsw5ErNn"
 }
