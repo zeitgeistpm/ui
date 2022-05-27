@@ -74,12 +74,12 @@ const MarketTable = observer(
       })();
     }, [marketStore, marketStore.pool]);
 
-    const tableData: TableData[] = marketStore.marketOutcomes
-      .filter((o) => o.metadata !== "ztg")
-      .map((outcome, index) => {
-        const ticker = outcome.metadata["ticker"];
-        const color = outcome.metadata["color"] || "#ffffff";
-        const name = outcome.metadata["name"];
+    const tableData: TableData[] = marketStore.outcomeAssetIds.map(
+      (assetId, index) => {
+        const metadata = marketStore.outcomesMetadata[index];
+        const ticker = metadata["ticker"];
+        const color = metadata["color"] || "#ffffff";
+        const name = metadata["name"];
         return {
           id: index,
           token: {
@@ -98,14 +98,15 @@ const MarketTable = observer(
             : 0,
           buttons: (
             <AssetActionButtons
-              assetId={outcome.asset}
+              assetId={assetId}
               marketId={marketStore.id}
               assetColor={color}
               assetTicker={ticker}
             />
           ),
         };
-      });
+      }
+    );
 
     const columns: TableColumn[] = [
       {
