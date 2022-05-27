@@ -324,6 +324,8 @@ export default class Wallets {
         source: "ui-keyring",
       };
 
+      (window as any).ACTIVE_ACCOUNT_ADDRESS = acc.pair.address;
+
       this.setActiveAccount(activeAccount);
       this.setConnected(true);
     } else {
