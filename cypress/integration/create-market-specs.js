@@ -10,6 +10,12 @@ describe("Create market page", () => {
       '"http://localhost:4350/graphql"'
     );
     cy.visit("http://localhost:3000/create");
+    cy.window().its("ACTIVE_ACCOUNT_ADDRESS").should("not.be.undefined");
+    cy.window().then((win) => {
+      const accountAddress = win.ACTIVE_ACCOUNT_ADDRESS;
+
+      cy.wrap(accountAddress).as("accountAddress");
+    });
   });
   it("Verify create market form is loaded", () => {
     createForm.elements.createMarketForm().should("be.visible");
@@ -114,7 +120,9 @@ describe("Create market page", () => {
         .multipleOutcomesTicker1()
         .should("be.visible")
         .type(CreateMarket.Multipleoutcometicker1);
-      createForm.elements.oracleInput().type(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) => {
+        createForm.elements.oracleInput().type(oracleInput);
+      });
       createForm.elements.createMarketButton().should("be.visible");
     });
   });
@@ -156,7 +164,7 @@ describe("Create market page", () => {
   //     createForm.elements.oracleLabel()
   //     .should('be.visible')
   //     createForm.elements.oracleInput()
-  //     .type(CreateMarket.OracleInput)
+  //     .type(cy.get(oracleInput))
   //     createForm.elements.marketDescriptionLabel()
   //     .should('be.visible')
   //     createForm.elements.marketDescriptionTextbox()
@@ -197,7 +205,10 @@ describe("Create market page", () => {
         .multipleOutcomesTicker1()
         .type(CreateMarket.Multipleoutcometicker1);
       createForm.elements.oracleLabel().should("be.visible");
-      createForm.elements.oracleInput().type(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) =>
+        createForm.elements.oracleInput().type(oracleInput)
+      );
+
       createForm.elements.marketDescriptionLabel().should("be.visible");
       createForm.elements
         .marketDescriptionTextbox()
@@ -237,7 +248,9 @@ describe("Create market page", () => {
         .scrollIntoView()
         .should("be.visible")
         .click();
-      marketPage.elements.AddressDetails().contains(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) =>
+        marketPage.elements.AddressDetails().contains(oracleInput)
+      );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements
         .InspectButton()
@@ -245,14 +258,16 @@ describe("Create market page", () => {
         .scrollIntoView()
         .should("be.visible")
         .click();
-      marketPage.elements.AddressDetails().contains(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) =>
+        marketPage.elements.AddressDetails().contains(oracleInput)
+      );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
     it("Verify user is able to create market with multiple outcomes-permissionless-without LiquidityPool", () => {
       createForm.elements.slugField().type(CreateMarket.slug);
       createForm.elements.questionField().type(CreateMarket.Marketquestion);
-      createForm.elements.tagChoices().should("be.visible"),
-        createForm.elements.tagNorthAmerica().click();
+      createForm.elements.tagChoices().should("be.visible");
+      createForm.elements.tagNorthAmerica().click();
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
       createForm.elements.calendericon().should("be.visible").click();
@@ -278,7 +293,9 @@ describe("Create market page", () => {
         .multipleOutcomesTicker1()
         .type(CreateMarket.Multipleoutcometicker1);
       createForm.elements.oracleLabel().should("be.visible");
-      createForm.elements.oracleInput().type(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) =>
+        createForm.elements.oracleInput().type(oracleInput)
+      );
       createForm.elements.marketDescriptionLabel().should("be.visible");
       createForm.elements
         .marketDescriptionTextbox()
@@ -317,10 +334,14 @@ describe("Create market page", () => {
       marketPage.elements.LiquidityButton().should("be.visible");
       //.click()
       marketPage.elements.InspectButton().eq(0).should("be.visible").click();
-      marketPage.elements.AddressDetails().contains(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) =>
+        marketPage.elements.AddressDetails().contains(oracleInput)
+      );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements.InspectButton().eq(1).should("be.visible").click();
-      marketPage.elements.AddressDetails().contains(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) =>
+        marketPage.elements.AddressDetails().contains(oracleInput)
+      );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
     it("Verify user is able to create market with multiple outcomes- advised market", () => {
@@ -351,7 +372,9 @@ describe("Create market page", () => {
         .multipleOutcomesTicker1()
         .type(CreateMarket.Multipleoutcometicker1);
       createForm.elements.oracleLabel().should("be.visible");
-      createForm.elements.oracleInput().type(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) => {
+        createForm.elements.oracleInput().type(oracleInput);
+      });
       createForm.elements.marketDescriptionLabel().should("be.visible");
       createForm.elements
         .marketDescriptionTextbox()
@@ -383,10 +406,14 @@ describe("Create market page", () => {
         .eq(1)
         .contains(CreateMarket.Multiple_outcomes_input1);
       marketPage.elements.InspectButton().eq(0).should("be.visible").click();
-      marketPage.elements.AddressDetails().contains(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) =>
+        marketPage.elements.AddressDetails().contains(oracleInput)
+      );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements.InspectButton().eq(1).should("be.visible").click();
-      marketPage.elements.AddressDetails().contains(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) =>
+        marketPage.elements.AddressDetails().contains(oracleInput)
+      );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
     it("Verify user is able to create market with range of outcomes-permissionless-with LiquidityPool", () => {
@@ -416,7 +443,9 @@ describe("Create market page", () => {
         .rangeOfOutcomeTicker()
         .type(CreateMarket.RangeofOutcomeTicker);
       createForm.elements.oracleLabel().should("be.visible");
-      createForm.elements.oracleInput().type(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) => {
+        createForm.elements.oracleInput().type(oracleInput);
+      });
       createForm.elements.marketDescriptionLabel().should("be.visible");
       createForm.elements
         .marketDescriptionTextbox()
@@ -450,7 +479,9 @@ describe("Create market page", () => {
         .scrollIntoView()
         .should("be.visible")
         .click();
-      marketPage.elements.AddressDetails().contains(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) =>
+        marketPage.elements.AddressDetails().contains(oracleInput)
+      );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements
         .InspectButton()
@@ -458,7 +489,9 @@ describe("Create market page", () => {
         .scrollIntoView()
         .should("be.visible")
         .click();
-      marketPage.elements.AddressDetails().contains(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) =>
+        marketPage.elements.AddressDetails().contains(oracleInput)
+      );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
     it("Verify user is able to create market with range of outcomes-permissionless-without LiquidityPool", () => {
@@ -486,7 +519,9 @@ describe("Create market page", () => {
         .rangeOfOutcomeTicker()
         .type(CreateMarket.RangeofOutcomeTicker);
       createForm.elements.oracleLabel().should("be.visible");
-      createForm.elements.oracleInput().type(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) => {
+        createForm.elements.oracleInput().type(oracleInput);
+      });
       createForm.elements.marketDescriptionLabel().should("be.visible");
       createForm.elements
         .marketDescriptionTextbox()
@@ -516,10 +551,14 @@ describe("Create market page", () => {
       marketPage.elements.LiquidityButton().should("be.visible");
       //.click()
       marketPage.elements.InspectButton().eq(0).should("be.visible").click();
-      marketPage.elements.AddressDetails().contains(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) =>
+        marketPage.elements.AddressDetails().contains(oracleInput)
+      );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements.InspectButton().eq(1).should("be.visible").click();
-      marketPage.elements.AddressDetails().contains(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) =>
+        marketPage.elements.AddressDetails().contains(oracleInput)
+      );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
     it("Verify user is able to create market with range of outcomes advised market", () => {
@@ -549,7 +588,9 @@ describe("Create market page", () => {
         .rangeOfOutcomeTicker()
         .type(CreateMarket.RangeofOutcomeTicker);
       createForm.elements.oracleLabel().should("be.visible");
-      createForm.elements.oracleInput().type(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) => {
+        createForm.elements.oracleInput().type(oracleInput);
+      });
       createForm.elements.marketDescriptionLabel().should("be.visible");
       createForm.elements
         .marketDescriptionTextbox()
@@ -575,10 +616,14 @@ describe("Create market page", () => {
         .contains(CreateMarket.Multipleoutcometicker0 + "-S");
       marketPage.elements.OutcomeText().eq(1).contains("Short");
       marketPage.elements.InspectButton().eq(0).should("be.visible").click();
-      marketPage.elements.AddressDetails().contains(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) =>
+        marketPage.elements.AddressDetails().contains(oracleInput)
+      );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements.InspectButton().eq(1).should("be.visible").click();
-      marketPage.elements.AddressDetails().contains(CreateMarket.OracleInput);
+      cy.get("@accountAddress").then((oracleInput) =>
+        marketPage.elements.AddressDetails().contains(oracleInput)
+      );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
   });
