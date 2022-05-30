@@ -24,6 +24,7 @@ import { ZTG } from "../constants";
 import { JSONObject, MarketOutcome, MarketStatus, ztgAsset } from "../types";
 import Store from "./Store";
 import { calcSpotPrice } from "lib/math";
+import { AssetIdFromString } from "@zeitgeistpm/sdk/dist/util";
 
 class MarketStore {
   // is market data loaded
@@ -389,6 +390,12 @@ class MarketStore {
         ztg,
       ];
     }
+  }
+
+  get outcomeAssetIds(): AssetId[] {
+    return this.market.outcomeAssets.map((asset) =>
+      AssetIdFromString(JSON.stringify(asset))
+    );
   }
 
   getMarketOutcome(assetId: AssetId | string): MarketOutcome {

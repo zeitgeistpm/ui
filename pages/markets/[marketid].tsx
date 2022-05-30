@@ -168,11 +168,13 @@ const MarketDetails = observer(() => {
       const dateOneWeekAgo = new Date(
         new Date().getTime() - DAY_SECONDS * 28 * 1000
       ).toISOString();
-      for (const [index, outcome] of Array.from(outcomes.entries())) {
-        const ticker = outcome.metadata["ticker"];
-        const color = outcome.metadata["color"] || "#ffffff";
-        const outcomeName = outcome.metadata["name"];
-        const assetId = outcome.asset;
+
+      for (const [index, assetId] of Array.from(
+        market.outcomeAssetIds.entries()
+      )) {
+        const ticker = market.outcomesMetadata[index]["ticker"];
+        const color = market.outcomesMetadata[index]["color"] || "#ffffff";
+        const outcomeName = market.outcomesMetadata[index]["name"];
         const currentPrice = pool.assets[index].price;
 
         let priceHistory: {
@@ -496,8 +498,10 @@ const MarketDetails = observer(() => {
             <div className="w-ztg-20 h-ztg-20">
               <AlertTriangle size={20} />
             </div>
-            <div className="text-ztg-12-120 ml-ztg-10 "
-            data-test="liquidityPoolMessage">
+            <div
+              className="text-ztg-12-120 ml-ztg-10 "
+              data-test="liquidityPoolMessage"
+            >
               This market doesn't have a liquidity pool and therefore cannot be
               traded
             </div>
