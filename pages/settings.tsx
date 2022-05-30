@@ -11,7 +11,7 @@ import { useUserStore } from "lib/stores/UserStore";
 import { EndpointOption, isCustomEndpointOption } from "lib/types";
 import { endpoints, gqlEndpoints } from "lib/constants";
 import { getEndpointOption, getGqlEndpointOption } from "lib/util";
-import { extrinsicCallback } from "lib/util/tx";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { AlertTriangle } from "react-feather";
@@ -54,16 +54,16 @@ const IdentitySettings = observer(() => {
 
   const handleSubmit = async () => {
     setTransactionPending(true);
-    const { signer } = wallets.getActiveSigner() as ExtSigner;
-    store.sdk.api.tx.identity
-      .setIdentity({
-        additional: [[{ Raw: "discord" }, { Raw: discordHandle }]],
-        display: { Raw: displayName },
-        twitter: { Raw: twitterHandle },
-      })
-      .signAndSend(
-        wallets.activeAccount.address,
-        { signer: signer },
+    const signer = wallets.getActiveSigner() as ExtSigner;
+    const tx = store.sdk.api.tx.identity.setIdentity({
+      additional: [[{ Raw: "discord" }, { Raw: discordHandle }]],
+      display: { Raw: displayName },
+      twitter: { Raw: twitterHandle },
+    });
+    try {
+      await signAndSend(
+        tx,
+        signer,
         extrinsicCallback({
           notificationStore,
           successCallback: async () => {
@@ -81,15 +81,18 @@ const IdentitySettings = observer(() => {
             );
           },
         })
-      )
-      .catch(() => setTransactionPending(false));
+      );
+    } catch (err) {
+      setTransactionPending(false);
+    }
   };
 
   const handleClear = async () => {
-    const { signer } = store.wallets.getActiveSigner() as ExtSigner;
-    store.sdk.api.tx.identity.clearIdentity().signAndSend(
-      wallets.activeAccount.address,
-      { signer: signer },
+    const signer = store.wallets.getActiveSigner() as ExtSigner;
+    const tx = store.sdk.api.tx.identity.clearIdentity();
+    signAndSend(
+      tx,
+      signer,
       extrinsicCallback({
         notificationStore,
         successCallback: async () => {

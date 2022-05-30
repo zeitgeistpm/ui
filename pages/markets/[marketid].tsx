@@ -496,8 +496,10 @@ const MarketDetails = observer(() => {
             <div className="w-ztg-20 h-ztg-20">
               <AlertTriangle size={20} />
             </div>
-            <div className="text-ztg-12-120 ml-ztg-10 "
-            data-test="liquidityPoolMessage">
+            <div
+              className="text-ztg-12-120 ml-ztg-10 "
+              data-test="liquidityPoolMessage"
+            >
               This market doesn't have a liquidity pool and therefore cannot be
               traded
             </div>

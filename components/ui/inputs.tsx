@@ -225,7 +225,7 @@ export const AmountInput: FC<AmountInputProps> = observer(
         form,
         isFocused = false,
         onFocusChange = () => {},
-        showErrorMessage = true
+        showErrorMessage = true,
       },
       ref
     ) => {
