@@ -12,8 +12,8 @@ const NotificationCard: FC<{
   lifetime: number;
   content: string;
   type: NotificationType;
-  dataSet?: string
-}> = observer(({ close, timer, lifetime, content, type, dataSet }) => {
+  dataTest?: string
+}> = observer(({ close, timer, lifetime, content, type, dataTest }) => {
   const userStore = useUserStore();
 
   const getColor = (type: NotificationType) => {
@@ -92,7 +92,7 @@ const NotificationCard: FC<{
         </div>
       </span>
       <span className="w-full">
-        <div className="text-black dark:text-white font-kanit font-bold text-ztg-16-150 flex items-center w-full" data-test={dataSet}>
+        <div className="text-black dark:text-white font-kanit font-bold text-ztg-16-150 flex items-center w-full" data-test={dataTest}>
           <span>{getMessage(type)}</span>
           <X
             className="text-sky-600 ml-auto cursor-pointer"
@@ -125,7 +125,7 @@ const NotificationCenter = observer(() => {
           <AnimatePresence>
             {notificationStore.notifications.map((n, idx) => (
               <NotificationCard
-              dataSet="notificationMessage"
+              dataTest="notificationMessage"
                 key={idx}
                 {...n}
                 close={() => {

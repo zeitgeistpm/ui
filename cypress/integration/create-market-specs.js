@@ -42,8 +42,7 @@ describe("Create market page", () => {
   });
   it("Verify switch button is working for multiple outcomes and range of outcomes", () => {
     createForm.elements
-      .outcomesSwitch()
-      .eq(1)
+      .outcomesSwitch().eq(0)
       .scrollIntoView()
       .should("be.visible")
       .click();
@@ -53,14 +52,12 @@ describe("Create market page", () => {
   });
   it("Verify when the switch button is clicked again, then categorical market inputs are visible", () => {
     createForm.elements
-      .outcomesSwitch()
-      .eq(1)
+      .outcomesSwitch().eq(0)
       // .scrollIntoView()
       // .should("be.visible")
       .click();
     createForm.elements
-      .outcomesSwitch()
-      .eq(1)
+      .outcomesSwitch().eq(0)
       // .scrollIntoView()
       // .should("be.visible")
       .click();
@@ -71,8 +68,7 @@ describe("Create market page", () => {
   });
   it("Verify switch button is working for permission-less and Advised", () => {
     createForm.elements
-      .permissionlessSwitch()
-      .eq(0)
+      .permissionlessSwitch().eq(1)
       // .scrollIntoView()
       // .should("be.visible")
       .click();
@@ -80,14 +76,12 @@ describe("Create market page", () => {
   });
   it("Verify switch button is working when clicked again for permission-less and advised", () => {
     createForm.elements
-      .permissionlessSwitch()
-      .eq(0)
+      .permissionlessSwitch().eq(1)
       // .scrollIntoView()
       // .should("be.visible")
       .click();
     createForm.elements
-      .permissionlessSwitch()
-      .eq(1)
+      .permissionlessSwitch().eq(1)
       // .scrollIntoView()
       // .should("be.visible")
       .click();
@@ -201,7 +195,7 @@ describe("Create market page", () => {
         // .scrollIntoView()
         // .should("be.visible")
         .click();
-      // createForm.elements.outcomesSwitch()
+      // createForm.elements.outcomesSwitch().eq(0)
       // .click()
       createForm.elements
         .multipleOutcomesInput0()
@@ -228,7 +222,7 @@ describe("Create market page", () => {
       createForm.elements
         .marketDescriptionTextbox()
         .type(CreateMarket.MarketDescription);
-      // createForm.elements.permissionlessSwitch()
+      // createForm.elements.permissionlessSwitch().eq(1)
       // .click()
       // createForm.elements.permissionlessLabel()
       // .should('be.visible')
@@ -293,7 +287,7 @@ describe("Create market page", () => {
         .scrollIntoView()
         .should("be.visible")
         .click();
-      // createForm.elements.outcomesSwitch()
+      // createForm.elements.outcomesSwitch().eq(0)
       // .click()
       createForm.elements
         .multipleOutcomesInput0()
@@ -319,7 +313,7 @@ describe("Create market page", () => {
       createForm.elements
         .marketDescriptionTextbox()
         .type(CreateMarket.MarketDescription);
-      // createForm.elements.permissionlessSwitch()
+      // createForm.elements.permissionlessSwitch().eq(1)
       // .click()
       // createForm.elements.permissionlessLabel()
       // .should('be.visible')
@@ -402,7 +396,7 @@ describe("Create market page", () => {
       createForm.elements
         .marketDescriptionTextbox()
         .type(CreateMarket.MarketDescription);
-      createForm.elements.permissionlessSwitch().eq(0).click();
+      createForm.elements.permissionlessSwitch().eq(1).click();
       createForm.elements.advisedLabel().should("be.visible");
       createForm.elements
         .createMarketButton()
@@ -450,8 +444,7 @@ describe("Create market page", () => {
       // createForm.elements.currentDate().next().should("be.visible").click();
       createForm.elements.outcomesLabel().click({ force: true });
       createForm.elements
-        .outcomesSwitch()
-        .eq(1)
+        .outcomesSwitch().eq(0)
         .scrollIntoView()
         .should("be.visible")
         .click();
@@ -474,7 +467,7 @@ describe("Create market page", () => {
       createForm.elements
         .marketDescriptionTextbox()
         .type(CreateMarket.MarketDescription);
-      // createForm.elements.permissionlessSwitch()
+      // createForm.elements.permissionlessSwitch().eq(1)
       // .click()
       // createForm.elements.permissionlessLabel()
       // .should('be.visible')
@@ -529,8 +522,7 @@ describe("Create market page", () => {
       // createForm.elements.currentDate().next().should("be.visible").click();
       createForm.elements.outcomesLabel().click({ force: true });
       createForm.elements
-        .outcomesSwitch()
-        .eq(1)
+        .outcomesSwitch().eq(0)
         .scrollIntoView()
         .should("be.visible")
         .click();
@@ -551,7 +543,7 @@ describe("Create market page", () => {
       createForm.elements
         .marketDescriptionTextbox()
         .type(CreateMarket.MarketDescription);
-      createForm.elements.permissionlessSwitch();
+      createForm.elements.permissionlessSwitch().eq(1);
       createForm.elements.permissionlessLabel().should("be.visible");
       // createForm.elements.liquiditypooloff().eq(1)
       // .click()
@@ -597,8 +589,7 @@ describe("Create market page", () => {
       // createForm.elements.currentDate().next().should("be.visible").click();
       createForm.elements.outcomesLabel().click({ force: true });
       createForm.elements
-        .outcomesSwitch()
-        .eq(1)
+        .outcomesSwitch().eq(0)
         .scrollIntoView()
         .should("be.visible")
         .click();
@@ -621,7 +612,7 @@ describe("Create market page", () => {
       createForm.elements
         .marketDescriptionTextbox()
         .type(CreateMarket.MarketDescription);
-      createForm.elements.permissionlessSwitch().eq(0).click();
+      createForm.elements.permissionlessSwitch().eq(1).click();
       createForm.elements.advisedLabel().should("be.visible");
       createForm.elements
         .createMarketButton()

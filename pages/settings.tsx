@@ -16,17 +16,15 @@ import { useNotificationStore } from "lib/stores/NotificationStore";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { AlertTriangle } from "react-feather";
 
-const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean; dataSet?: string }> = ({
+const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean;}> = ({
   onClick = () => {},
-  disabled = false,
+  disabled = false, 
   children,
-  dataSet
 }) => {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      data-test={dataSet}
       className="flex flex-row p-ztg-8 w-ztg-266 h-ztg-37 bg-ztg-blue rounded-ztg-100 cursor-pointer disabled:cursor-default disabled:opacity-20 focus:outline-none"
     >
       <div className="text-ztg-14-150 font-medium text-white flex flex-grow justify-center items-center">
@@ -177,8 +175,8 @@ const IdentitySettings = observer(() => {
           your identity.
         </div>
       </div>
-      <div className="flex mb-ztg-20">
-        <SubmitButton onClick={handleSubmit} disabled={submitDisabled} dataSet="setIdentityButton">
+      <div className="flex mb-ztg-20"data-test="createMarketButton">
+        <SubmitButton onClick={handleSubmit} disabled={submitDisabled}>
           Set Identity
         </SubmitButton>
         <button

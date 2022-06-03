@@ -523,21 +523,17 @@ const CreatePage: NextPage = observer(() => {
     <form data-test="createMarketForm">
       <InfoBoxes />
       <h2 className="header mb-ztg-23" data-test="createMarketHeader">Create Market</h2>
-      <div data-set='mypm'>
-      <MarketFormCard dataSet="marketNameLabel" header="1. Market name">
-        <MarketSlugField
+      <MarketFormCard header="1. Market name">
+        <MarketSlugField 
           slug={formData.slug}
           base64Image={formData.marketImage}
           onSlugChange={changeSlug}
           onImageChange={changeMarketImage}
           textMaxLength={30}
           form={form}
-          data-test="marketNameHeader"
         />
       </MarketFormCard>
-      </div>
-      
-      <MarketFormCard dataSet="marketQuestionLabel" header="2. Market name / Question *">
+      <MarketFormCard  header="2. Market name / Question *">
         <Input
           ref={questionInputRef}
           type="text"
@@ -553,7 +549,7 @@ const CreatePage: NextPage = observer(() => {
         />
         <TagChoices onTagsChange={changeTags} />
       </MarketFormCard>
-      <MarketFormCard dataSet="marketEndLabel" header="3. Market ends *">
+      <MarketFormCard header="3. Market ends *">
         <EndField
           endType={formData.end.type}
           value={isNaN(formData.end.value) ? "" : formData.end.value.toString()}
@@ -564,7 +560,7 @@ const CreatePage: NextPage = observer(() => {
           blockNumberFieldName="end"
         />
       </MarketFormCard>
-      <MarketFormCard dataSet="OutcomesLabel" header="4. Outcomes *">
+      <MarketFormCard header="4. Outcomes *">
         <OutcomesField
           type={formData.outcomes.type}
           value={formData.outcomes.value}
@@ -573,7 +569,7 @@ const CreatePage: NextPage = observer(() => {
           form={form}
         />
       </MarketFormCard>
-      <MarketFormCard dataSet="oracleInputLabel" header="5. Oracle *" data-test="oracleHeader">
+      <MarketFormCard header="5. Oracle *" >
         <Input
           form={form}
           type="text"
@@ -596,7 +592,7 @@ const CreatePage: NextPage = observer(() => {
           </div>
         </div>
       </MarketFormCard>
-      <MarketFormCard dataSet="marketDescriptionLabel" header="6. Market Description">
+      <MarketFormCard header="6. Market Description">
         <TextArea
           dataTest="marketDescriptionInput"
           placeholder="Additional information you want to provide about the market, such as resolution source, special cases, or other details."
@@ -608,7 +604,6 @@ const CreatePage: NextPage = observer(() => {
         />
         <div className="flex items-center">
           <LabeledToggle
-            dataSet="permissionlessSwitchButton"
             leftLabel="Permissionless"
             rightLabel="Advised"
             side={!formData.advised ? "left" : "right"}
@@ -659,7 +654,7 @@ const CreatePage: NextPage = observer(() => {
         <div className="flex justify-center mb-ztg-10 mt-ztg-12 w-full h-ztg-40">
           <TransactionButton
             className="w-ztg-266 ml-ztg-8 center flex-shrink-0"
-            dataTestId="createMarketSubmitButton"
+            dataTest="createMarketSubmitButton"
             onClick={(e) => {
               e.preventDefault();
               form.onSubmit(e);

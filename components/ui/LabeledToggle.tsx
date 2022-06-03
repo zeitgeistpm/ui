@@ -8,7 +8,6 @@ const LabeledToggle: FC<{
   rightLabel: string;
   className?: string;
   disabled?: boolean;
-  dataSet?: string
 }> = ({
   side,
   onChange,
@@ -16,7 +15,6 @@ const LabeledToggle: FC<{
   leftLabel,
   className = "",
   disabled = false,
-  dataSet
 }) => {
   const toggleSide = () => {
     if (disabled) {
@@ -29,7 +27,7 @@ const LabeledToggle: FC<{
   const activeClass = "text-black dark:text-white";
 
   return (
-    <div data-test={dataSet} className={classes}>
+    <div className={classes}>
       <div
         className={`text-ztg-14-150 mr-ztg-10 font-lato ${
           !disabled && side === "left" ? activeClass : ""
@@ -44,7 +42,7 @@ const LabeledToggle: FC<{
           flex px-ztg-5 bg-white dark:bg-black ${
             disabled ? "cursor-default" : "cursor-pointer"
           }`}
-          data-test={dataSet}
+          data-test="switchButton"
         onClick={() => {
           toggleSide();
         }}
