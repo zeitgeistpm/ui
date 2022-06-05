@@ -1,22 +1,37 @@
 import React, { FC } from "react";
 import axios from "axios";
+import MobxReactForm from "mobx-react-form";
 import { ChevronRight } from "react-feather";
-import * as EmailValidator from "email-validator";
 import { observer } from "mobx-react";
 import Link from "next/link";
 
 import { useNotificationStore } from "lib/stores/NotificationStore";
+import { defaultOptions, defaultPlugins } from "lib/form";
+
+const newsletterSubForm = new MobxReactForm(
+  {
+    fields: {
+      email: {
+        value: "",
+        rules: "required|email"
+      }
+    }
+  },
+  {
+    plugins: defaultPlugins,
+    options: defaultOptions
+  }
+);
 
 const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
   const notificationStore = useNotificationStore();
+  const formField = newsletterSubForm.$("email");
 
-  const onSubmit = async ({ email }) => {
-    if (!EmailValidator.validate(email)) {
-      return;
-    }
+  const invalid = formField.showError && !formField.isValid;
 
+  const subscribe = async (email: string) => {
     try {
-      await axios.post("https://server.zeitgeist.market/email", { email });
+      await axios.post("https://emails.zeitgeist.pm/app-subscribe", { email });
 
       notificationStore.pushNotification(
         "Email sent successfully! We'll be in touch soon.",
@@ -33,17 +48,29 @@ const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
   return (
     <form
       className="w-ztg-240 h-ztg-100 flex flex-col justify-between flex-shrink flex-grow-0"
-      // onSubmit={handleSubmit(onSubmit)}
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (invalid) {
+          return;
+        }
+        subscribe(formField.value);
+      }}
     >
       <h3 className="text-ztg-16-150 font-bold h-ztg-38 mb-ztg-5">{title}</h3>
       <div className="flex items-center justify-between h-ztg-40 mb-auto w-full">
         <input
-          name="email"
-          className={`h-full rounded-ztg-100 text-sky-600 p-2 text-ztg-12-120 bg-sky-200 dark:bg-black focus:outline-none flex-grow max-w-ztg-184`}
+          value={newsletterSubForm.$("email").value}
+          onChange={newsletterSubForm.$("email").onChange}
+          className={`h-full rounded-ztg-100 text-sky-600 p-2 text-ztg-12-120 bg-sky-200 dark:bg-black focus:outline-none flex-grow max-w-ztg-184 border-1 ${
+            invalid ? "border-vermilion" : "border-black"
+          }`}
         />
         <button
           type="submit"
-          className="h-full w-ztg-40 flex-shrink-0 rounded-full center bg-sky-600 text-white dark:bg-sky-600 dark:text-black"
+          className={
+            "h-full w-ztg-40 flex-shrink-0 rounded-full center bg-sky-600 text-white dark:bg-sky-600 dark:text-black " +
+            (invalid ? "cursor-default" : "cursor-pointer")
+          }
         >
           <ChevronRight size={20} />
         </button>
@@ -92,16 +119,16 @@ const Footer = observer(() => {
           links={[
             {
               text: "General",
-              href: "https://polkadot.js.org/apps/?rpc=wss://bsr.zeitgeist.pm",
+              href: "https://polkadot.js.org/apps/?rpc=wss://bsr.zeitgeist.pm"
             },
-            { text: "Website", href: "https://zeitgeist.pm" },
+            { text: "Website", href: "https://zeitgeist.pm" }
           ]}
         />
         <FooterMenu
           title="Technology"
           links={[
             { text: "Documentation", href: "https://docs.zeitgeist.pm" },
-            { text: "Github", href: "https://github.com/zeitgeistpm" },
+            { text: "Github", href: "https://github.com/zeitgeistpm" }
           ]}
         />
         <FooterMenu
@@ -109,7 +136,7 @@ const Footer = observer(() => {
           links={[
             { text: "Discord", href: "https://discord.gg/xv8HuA4s8v" },
             { text: "Telegram", href: "https://t.me/zeitgeist_official" },
-            { text: "Twitter", href: "https://twitter.com/ZeitgeistPM" },
+            { text: "Twitter", href: "https://twitter.com/ZeitgeistPM" }
           ]}
           className="mb-ztg-10"
         />
