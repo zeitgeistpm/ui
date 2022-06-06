@@ -67,6 +67,7 @@ const MarketSlugField: FC<MarketSlugProps> = ({
         </div>
       </div>
       <Input
+        data-test="slugFieldInput"
         form={form}
         type="text"
         ref={marketSlug}

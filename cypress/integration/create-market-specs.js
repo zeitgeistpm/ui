@@ -9,6 +9,7 @@ describe("Create market page", () => {
       "gql-endpoint-1",
       '"http://localhost:4350/graphql"'
     );
+    window.localStorage.setItem("walletId", '"polkadot-js"');
     cy.visit("http://localhost:3000/create");
     cy.window().its("ACTIVE_ACCOUNT_ADDRESS").should("not.be.undefined");
     cy.window().then((win) => {
@@ -41,7 +42,7 @@ describe("Create market page", () => {
   });
   it("Verify switch button is working for multiple outcomes and range of outcomes", () => {
     createForm.elements
-      .outcomesSwitch()
+      .outcomesSwitch().eq(0)
       .scrollIntoView()
       .should("be.visible")
       .click();
@@ -51,38 +52,38 @@ describe("Create market page", () => {
   });
   it("Verify when the switch button is clicked again, then categorical market inputs are visible", () => {
     createForm.elements
-      .outcomesSwitch()
-      .scrollIntoView()
-      .should("be.visible")
+      .outcomesSwitch().eq(0)
+      // .scrollIntoView()
+      // .should("be.visible")
       .click();
     createForm.elements
-      .outcomesSwitch()
-      .scrollIntoView()
-      .should("be.visible")
+      .outcomesSwitch().eq(0)
+      // .scrollIntoView()
+      // .should("be.visible")
       .click();
-    createForm.elements.multipleOutcomesInput0().should("be.visible");
-    createForm.elements.multipleOutcomesTicker0().should("be.visible");
-    createForm.elements.multipleOutcomesInput1().should("be.visible");
-    createForm.elements.multipleOutcomesTicker1().should("be.visible");
+    createForm.elements.multipleOutcomesInput0().eq(0).should("be.visible");
+    createForm.elements.multipleOutcomesTicker0().eq(0).should("be.visible");
+    createForm.elements.multipleOutcomesInput1().eq(1).should("be.visible");
+    createForm.elements.multipleOutcomesTicker1().eq(1).should("be.visible");
   });
   it("Verify switch button is working for permission-less and Advised", () => {
     createForm.elements
-      .permissionlessSwitch()
-      .scrollIntoView()
-      .should("be.visible")
+      .permissionlessSwitch().eq(1)
+      // .scrollIntoView()
+      // .should("be.visible")
       .click();
     createForm.elements.totalCost().should("be.visible");
   });
   it("Verify switch button is working when clicked again for permission-less and advised", () => {
     createForm.elements
-      .permissionlessSwitch()
-      .scrollIntoView()
-      .should("be.visible")
+      .permissionlessSwitch().eq(1)
+      // .scrollIntoView()
+      // .should("be.visible")
       .click();
     createForm.elements
-      .permissionlessSwitch()
-      .scrollIntoView()
-      .should("be.visible")
+      .permissionlessSwitch().eq(1)
+      // .scrollIntoView()
+      // .should("be.visible")
       .click();
   });
   context("When user does not enters required fields", () => {
@@ -106,18 +107,22 @@ describe("Create market page", () => {
         .type(CreateMarket.MarketDescription);
       createForm.elements
         .multipleOutcomesInput0()
+        .eq(0)
         .should("be.visible")
         .type(CreateMarket.Multiple_outcomes_input0);
       createForm.elements
         .multipleOutcomesTicker0()
+        .eq(0)
         .should("be.visible")
         .type(CreateMarket.Multipleoutcometicker0);
       createForm.elements
         .multipleOutcomesInput1()
+        .eq(1)
         .should("be.visible")
         .type(CreateMarket.Multiple_outcomes_input1);
       createForm.elements
         .multipleOutcomesTicker1()
+        .eq(1)
         .should("be.visible")
         .type(CreateMarket.Multipleoutcometicker1);
       cy.get("@accountAddress").then((oracleInput) => {
@@ -153,13 +158,13 @@ describe("Create market page", () => {
   //     .scrollIntoView()
   //     .should('be.visible')
   //     .click()
-  //     createForm.elements.multipleOutcomesInput0()
+  //     createForm.elements.multipleOutcomesInput0().eq(0)
   //     .type(CreateMarket.Multiple_outcomes_input0)
-  //     createForm.elements.multipleOutcomesTicker0()
+  //     createForm.elements.multipleOutcomesTicker0().eq(0)
   //     .type(CreateMarket.Multipleoutcometicker0)
-  //     createForm.elements.multipleOutcomesInput1()
+  //     createForm.elements .multipleOutcomesInput1().eq(1)
   //     .type(CreateMarket.Multiple_outcomes_input1)
-  //     createForm.elements.multipleOutcomesTicker1()
+  //     createForm.elements.multipleOutcomesTicker1().eq(1)
   //     .type(CreateMarket.Multipleoutcometicker1)
   //     createForm.elements.oracleLabel()
   //     .should('be.visible')
@@ -179,30 +184,34 @@ describe("Create market page", () => {
       createForm.elements.slugField().type(CreateMarket.slug);
       createForm.elements.questionField().type(CreateMarket.Marketquestion);
       createForm.elements.tagChoices().should("be.visible"),
-        createForm.elements.tagNorthAmerica().click();
+        createForm.elements.tagNorthAmerica().eq(1).click();
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
       createForm.elements.calendericon().should("be.visible").click();
-      // createForm.elements.currentDate().next().should("be.visible").click();
+      createForm.elements.currentDate().next().should("be.visible").click();
       createForm.elements.outcomesLabel().click({ force: true });
       createForm.elements
         .multipleOutcomes()
-        .scrollIntoView()
-        .should("be.visible")
+        // .scrollIntoView()
+        // .should("be.visible")
         .click();
-      // createForm.elements.outcomesSwitch()
+      // createForm.elements.outcomesSwitch().eq(0)
       // .click()
       createForm.elements
         .multipleOutcomesInput0()
+        .eq(0)
         .type(CreateMarket.Multiple_outcomes_input0);
       createForm.elements
         .multipleOutcomesTicker0()
+        .eq(0)
         .type(CreateMarket.Multipleoutcometicker0);
       createForm.elements
         .multipleOutcomesInput1()
+        .eq(1)
         .type(CreateMarket.Multiple_outcomes_input1);
       createForm.elements
         .multipleOutcomesTicker1()
+        .eq(1)
         .type(CreateMarket.Multipleoutcometicker1);
       createForm.elements.oracleLabel().should("be.visible");
       cy.get("@accountAddress").then((oracleInput) =>
@@ -213,19 +222,19 @@ describe("Create market page", () => {
       createForm.elements
         .marketDescriptionTextbox()
         .type(CreateMarket.MarketDescription);
-      // createForm.elements.permissionlessSwitch()
+      // createForm.elements.permissionlessSwitch().eq(1)
       // .click()
       // createForm.elements.permissionlessLabel()
       // .should('be.visible')
       // .and('have.css','color','rgb(0,0,0,var(--tw-text-opacity))')
-      createForm.elements.liquiditypoolon().click();
+      createForm.elements.liquiditypoolon().eq(0).click();
       createForm.elements
         .createMarketButton()
         .should("be.visible")
         .and("not.be.disabled")
         .click();
-      createForm.elements.infoMessage().should("be.visible");
-      createForm.elements.successMessage().should("be.visible");
+      createForm.elements.notificationMessage().should("contain", "Info!");
+      createForm.elements.notificationMessage().should("contain", "Success!");
       marketPage.elements
         .TokenText()
         .eq(0)
@@ -266,8 +275,8 @@ describe("Create market page", () => {
     it("Verify user is able to create market with multiple outcomes-permissionless-without LiquidityPool", () => {
       createForm.elements.slugField().type(CreateMarket.slug);
       createForm.elements.questionField().type(CreateMarket.Marketquestion);
-      createForm.elements.tagChoices().should("be.visible");
-      createForm.elements.tagNorthAmerica().click();
+      createForm.elements.tagChoices().should("be.visible"),
+        createForm.elements.tagNorthAmerica().eq(1).click();
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
       createForm.elements.calendericon().should("be.visible").click();
@@ -278,19 +287,23 @@ describe("Create market page", () => {
         .scrollIntoView()
         .should("be.visible")
         .click();
-      // createForm.elements.outcomesSwitch()
+      // createForm.elements.outcomesSwitch().eq(0)
       // .click()
       createForm.elements
         .multipleOutcomesInput0()
+        .eq(0)
         .type(CreateMarket.Multiple_outcomes_input0);
       createForm.elements
         .multipleOutcomesTicker0()
+        .eq(0)
         .type(CreateMarket.Multipleoutcometicker0);
       createForm.elements
         .multipleOutcomesInput1()
+        .eq(1)
         .type(CreateMarket.Multiple_outcomes_input1);
       createForm.elements
         .multipleOutcomesTicker1()
+        .eq(1)
         .type(CreateMarket.Multipleoutcometicker1);
       createForm.elements.oracleLabel().should("be.visible");
       cy.get("@accountAddress").then((oracleInput) =>
@@ -300,7 +313,7 @@ describe("Create market page", () => {
       createForm.elements
         .marketDescriptionTextbox()
         .type(CreateMarket.MarketDescription);
-      // createForm.elements.permissionlessSwitch()
+      // createForm.elements.permissionlessSwitch().eq(1)
       // .click()
       // createForm.elements.permissionlessLabel()
       // .should('be.visible')
@@ -312,8 +325,8 @@ describe("Create market page", () => {
         .should("be.visible")
         .and("not.be.disabled")
         .click();
-      createForm.elements.infoMessage().should("be.visible");
-      createForm.elements.successMessage().should("be.visible");
+      createForm.elements.notificationMessage().should("be.visible");
+      createForm.elements.notificationMessage().should("be.visible");
       marketPage.elements.LiquidityPoolMessage().should("be.visible");
       marketPage.elements
         .TokenText()
@@ -348,7 +361,7 @@ describe("Create market page", () => {
       createForm.elements.slugField().type(CreateMarket.slug);
       createForm.elements.questionField().type(CreateMarket.Marketquestion);
       createForm.elements.tagChoices().should("be.visible"),
-        createForm.elements.tagNorthAmerica().click();
+        createForm.elements.tagNorthAmerica().eq(1).click();
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
       createForm.elements.calendericon().should("be.visible").click();
@@ -361,15 +374,19 @@ describe("Create market page", () => {
         .click();
       createForm.elements
         .multipleOutcomesInput0()
+        .eq(0)
         .type(CreateMarket.Multiple_outcomes_input0);
       createForm.elements
         .multipleOutcomesTicker0()
+        .eq(0)
         .type(CreateMarket.Multipleoutcometicker0);
       createForm.elements
         .multipleOutcomesInput1()
+        .eq(1)
         .type(CreateMarket.Multiple_outcomes_input1);
       createForm.elements
         .multipleOutcomesTicker1()
+        .eq(1)
         .type(CreateMarket.Multipleoutcometicker1);
       createForm.elements.oracleLabel().should("be.visible");
       cy.get("@accountAddress").then((oracleInput) => {
@@ -379,15 +396,15 @@ describe("Create market page", () => {
       createForm.elements
         .marketDescriptionTextbox()
         .type(CreateMarket.MarketDescription);
-      createForm.elements.permissionlessSwitch().click();
+      createForm.elements.permissionlessSwitch().eq(1).click();
       createForm.elements.advisedLabel().should("be.visible");
       createForm.elements
         .createMarketButton()
         .should("be.visible")
         .and("not.be.disabled")
         .click();
-      createForm.elements.infoMessage().should("be.visible");
-      createForm.elements.successMessage().should("be.visible");
+      createForm.elements.notificationMessage().should("be.visible");
+      createForm.elements.notificationMessage().should("be.visible");
       marketPage.elements.LiquidityPoolMessage().should("be.visible");
       marketPage.elements
         .TokenText()
@@ -420,14 +437,14 @@ describe("Create market page", () => {
       createForm.elements.slugField().type(CreateMarket.slug);
       createForm.elements.questionField().type(CreateMarket.Marketquestion);
       createForm.elements.tagChoices().should("be.visible"),
-        createForm.elements.tagNorthAmerica().click();
+        createForm.elements.tagNorthAmerica().eq(1).click();
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
       createForm.elements.calendericon().should("be.visible").click();
       // createForm.elements.currentDate().next().should("be.visible").click();
       createForm.elements.outcomesLabel().click({ force: true });
       createForm.elements
-        .outcomesSwitch()
+        .outcomesSwitch().eq(0)
         .scrollIntoView()
         .should("be.visible")
         .click();
@@ -450,19 +467,19 @@ describe("Create market page", () => {
       createForm.elements
         .marketDescriptionTextbox()
         .type(CreateMarket.MarketDescription);
-      // createForm.elements.permissionlessSwitch()
+      // createForm.elements.permissionlessSwitch().eq(1)
       // .click()
       // createForm.elements.permissionlessLabel()
       // .should('be.visible')
       // .and('have.css','color','rgb(0,0,0,var(--tw-text-opacity))')
-      createForm.elements.liquiditypoolon().click();
+      createForm.elements.liquiditypoolon().eq(0).click();
       createForm.elements
         .createMarketButton()
         .should("be.visible")
         .and("not.be.disabled")
         .click();
-      createForm.elements.infoMessage().should("be.visible");
-      createForm.elements.successMessage().should("be.visible");
+      createForm.elements.notificationMessage().should("be.visible");
+      createForm.elements.notificationMessage().should("be.visible");
       marketPage.elements
         .TokenText()
         .eq(0)
@@ -498,14 +515,14 @@ describe("Create market page", () => {
       createForm.elements.slugField().type(CreateMarket.slug);
       createForm.elements.questionField().type(CreateMarket.Marketquestion);
       createForm.elements.tagChoices().should("be.visible"),
-        createForm.elements.tagNorthAmerica().click();
+        createForm.elements.tagNorthAmerica().eq(1).click();
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
       createForm.elements.calendericon().should("be.visible").click();
       // createForm.elements.currentDate().next().should("be.visible").click();
       createForm.elements.outcomesLabel().click({ force: true });
       createForm.elements
-        .outcomesSwitch()
+        .outcomesSwitch().eq(0)
         .scrollIntoView()
         .should("be.visible")
         .click();
@@ -526,17 +543,17 @@ describe("Create market page", () => {
       createForm.elements
         .marketDescriptionTextbox()
         .type(CreateMarket.MarketDescription);
-      createForm.elements.permissionlessSwitch();
+      createForm.elements.permissionlessSwitch().eq(1);
       createForm.elements.permissionlessLabel().should("be.visible");
-      // createForm.elements.liquiditypooloff()
+      // createForm.elements.liquiditypooloff().eq(1)
       // .click()
       createForm.elements
         .createMarketButton()
         .should("be.visible")
         .and("not.be.disabled")
         .click();
-      createForm.elements.infoMessage().should("be.visible");
-      createForm.elements.successMessage().should("be.visible");
+      createForm.elements.notificationMessage().should("be.visible");
+      createForm.elements.notificationMessage().should("be.visible");
       marketPage.elements.LiquidityPoolMessage().should("be.visible");
       marketPage.elements
         .TokenText()
@@ -565,14 +582,14 @@ describe("Create market page", () => {
       createForm.elements.slugField().type(CreateMarket.slug);
       createForm.elements.questionField().type(CreateMarket.Marketquestion);
       createForm.elements.tagChoices().should("be.visible"),
-        createForm.elements.tagNorthAmerica().click();
+        createForm.elements.tagNorthAmerica().eq(1).click();
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
       createForm.elements.calendericon().should("be.visible").click();
       // createForm.elements.currentDate().next().should("be.visible").click();
       createForm.elements.outcomesLabel().click({ force: true });
       createForm.elements
-        .outcomesSwitch()
+        .outcomesSwitch().eq(0)
         .scrollIntoView()
         .should("be.visible")
         .click();
@@ -595,15 +612,15 @@ describe("Create market page", () => {
       createForm.elements
         .marketDescriptionTextbox()
         .type(CreateMarket.MarketDescription);
-      createForm.elements.permissionlessSwitch().click();
+      createForm.elements.permissionlessSwitch().eq(1).click();
       createForm.elements.advisedLabel().should("be.visible");
       createForm.elements
         .createMarketButton()
         .should("be.visible")
         .and("not.be.disabled")
         .click();
-      createForm.elements.infoMessage().should("be.visible");
-      createForm.elements.successMessage().should("be.visible");
+      createForm.elements.notificationMessage().should("be.visible");
+      createForm.elements.notificationMessage().should("be.visible");
       marketPage.elements.LiquidityPoolMessage().should("be.visible");
       marketPage.elements
         .TokenText()
