@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 import { NextPage } from "next";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, MouseEventHandler, useEffect, useState } from "react";
 import { when } from "mobx";
 
 import { Input } from "components/ui/inputs";
@@ -16,11 +16,10 @@ import { useNotificationStore } from "lib/stores/NotificationStore";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { AlertTriangle } from "react-feather";
 
-const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean }> = ({
-  onClick = () => {},
-  disabled = false,
-  children,
-}) => {
+const SubmitButton: FC<{
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  disabled?: boolean;
+}> = ({ onClick = () => {}, disabled = false, children }) => {
   return (
     <button
       onClick={onClick}
@@ -306,7 +305,7 @@ const Settings: NextPage = observer(() => {
     setCustomGqlEndpoint(value);
   };
 
-  const submitEndpoints = async () => {
+  const submitEndpoints: MouseEventHandler<HTMLButtonElement> = async (e) => {
     const newEndpoint = isCustomEndpoint
       ? customEndpoint
       : endpointSelection.value;
