@@ -44,6 +44,7 @@
     "framer-motion": "4.1.17",
     "graphql-request": "^3.6.1",
     "lodash.merge": "^4.6.2",
+    "micro-base": "^0.10.2",
     "mobx": "^6.3.12",
     "mobx-react": "^7.2.1",
     "mobx-react-form": "^3.2.0",
