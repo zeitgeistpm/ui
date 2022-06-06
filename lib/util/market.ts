@@ -1,5 +1,4 @@
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
-import { DAY_SECONDS } from "lib/constants";
 import { FilterOptions, MarketStatus } from "lib/types";
 interface BondPrices {
   advisedCost: number;
@@ -8,7 +7,7 @@ interface BondPrices {
 
 export const calculateMarketCost = (
   prices: BondPrices,
-  advised?: boolean,
+  advised: boolean,
   poolAmounts?: number[]
 ): number => {
   let cost = 0;
@@ -84,7 +83,8 @@ export const getPrice24HrAgo = (
     timestamp: string;
   }[]
 ): number => {
-  const oneDayAgoTimestamp = new Date().getTime() - DAY_SECONDS * 1000;
+  const daySeconds = 86400;
+  const oneDayAgoTimestamp = new Date().getTime() - daySeconds * 1000;
 
   for (let i = 1; i < prices.length; i++) {
     const previousTime = new Date(prices[i - 1].timestamp).getTime();

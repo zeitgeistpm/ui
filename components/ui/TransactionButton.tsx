@@ -8,7 +8,7 @@ interface TransactionButtonProps {
   onClick: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   disabled?: boolean;
   className?: string;
-  dataTestId?: string;
+  dataTest?: string;
 }
 
 const TransactionButton: FC<TransactionButtonProps> = observer(
@@ -16,7 +16,7 @@ const TransactionButton: FC<TransactionButtonProps> = observer(
     onClick,
     disabled = false,
     className = "",
-    dataTestId = "",
+    dataTest = "",
     children,
   }) => {
     const store = useStore();
@@ -48,7 +48,7 @@ const TransactionButton: FC<TransactionButtonProps> = observer(
         rounded-full w-full font-kanit font-bold text-ztg-16-150 h-ztg-40 ${className}`}
         onClick={(e) => click(e)}
         disabled={isDisabled()}
-        data-test={dataTestId}
+        data-test={dataTest}
       >
         {connected ? children : "Connect Wallet"}
       </button>

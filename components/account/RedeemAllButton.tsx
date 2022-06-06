@@ -3,7 +3,7 @@ import Decimal from "decimal.js";
 import MarketStore from "lib/stores/MarketStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
-import { extrinsicCallback } from "lib/util/tx";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 
@@ -48,8 +48,8 @@ const RedeemAllButton = observer(
       })();
     }, [marketStores]);
 
-    const handleClick = async () => {
-      const { signer } = wallets.getActiveSigner() as ExtSigner;
+    const handleClick = () => {
+      const signer = wallets.getActiveSigner() as ExtSigner;
 
       const transactions = [];
 
@@ -63,9 +63,10 @@ const RedeemAllButton = observer(
         }
       });
 
-      await store.sdk.api.tx.utility.batchAll(transactions).signAndSend(
-        wallets.activeAccount.address,
-        { signer },
+      const tx = store.sdk.api.tx.utility.batchAll(transactions);
+      signAndSend(
+        tx,
+        signer,
         extrinsicCallback({
           notificationStore,
           successCallback: () => {

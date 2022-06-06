@@ -10,7 +10,7 @@ import { useModalStore } from "lib/stores/ModalStore";
 import { useStore } from "lib/stores/Store";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { calcInGivenOut } from "lib/math";
-import { extrinsicCallback } from "lib/util/tx";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { ztgAsset } from "lib/types";
 import { defaultOptions, defaultPlugins } from "lib/form";
 import { DEFAULT_SLIPPAGE_PERCENTAGE, ZTG } from "lib/constants";
@@ -286,12 +286,11 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
     };
 
     const processTransaction = async () => {
-      const { signer } = wallets.getActiveSigner() as ExtSigner;
-      const address = wallets.activeAccount.address;
+      const signer = wallets.getActiveSigner() as ExtSigner;
       const amount = exchangeStore.amount.toFixed(4);
-      const unsub = await tx$.value.signAndSend(
-        address,
-        { signer: signer },
+      await signAndSend(
+        tx$.value,
+        signer,
         extrinsicCallback({
           notificationStore,
           successCallback: async () => {
@@ -304,15 +303,12 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
             await exchangeStore.updateOutcomeBalance();
             exchangeStore.setAmount();
             recreateForm();
-
-            unsub();
           },
           failCallback: ({ index, error }) => {
             notificationStore.pushNotification(
               store.getTransactionError(index, error),
               { type: "Error" }
             );
-            unsub();
           },
         })
       );

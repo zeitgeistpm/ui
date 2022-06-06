@@ -224,8 +224,10 @@ const Cell = ({
                 className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2"
                 style={{ background: value.color }}
               ></div>
-              <div className="font-bold text-ztg-16-150 uppercase"
-              data-test="tokenText">
+              <div
+                className="font-bold text-ztg-16-150 uppercase"
+                data-test="tokenText"
+              >
                 {value.label}
               </div>
             </div>

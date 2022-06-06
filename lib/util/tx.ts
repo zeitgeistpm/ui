@@ -1,5 +1,8 @@
 import { ISubmittableResult, IEventRecord } from "@polkadot/types/types";
+import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import { SubmittableExtrinsic, ApiTypes } from "@polkadot/api/types";
 import NotificationStore from "lib/stores/NotificationStore";
+import { isExtSigner, unsubOrWarns } from "@zeitgeistpm/sdk/dist/util";
 
 type GenericCallback = (...args: any[]) => void;
 
@@ -78,4 +81,49 @@ export const extrinsicCallback = ({
           });
     }
   };
+};
+
+export const signAndSend = (
+  tx: SubmittableExtrinsic<ApiTypes>,
+  signer: KeyringPairOrExtSigner,
+  cb?: GenericCallback
+) => {
+  const _callback = (
+    result: ISubmittableResult,
+    _resolve: (value: boolean | PromiseLike<boolean>) => void,
+    _reject: (value: boolean | PromiseLike<boolean>) => void,
+    _unsub: any
+  ) => {
+    const { events, status } = result;
+
+    if (status.isInBlock) {
+      events.forEach(({ phase, event: { data, method, section } }) => {
+        console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
+
+        if (method == "ExtrinsicSuccess") {
+          unsubOrWarns(_unsub);
+          _reject(true);
+        }
+        if (method == "ExtrinsicFailed") {
+          unsubOrWarns(_unsub);
+          _reject(false);
+        }
+      });
+    }
+  };
+  return new Promise(async (resolve, reject) => {
+    if (isExtSigner(signer)) {
+      const unsub = await tx.signAndSend(
+        signer.address,
+        { signer: signer.signer },
+        (result) => {
+          cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
+        }
+      );
+    } else {
+      const unsub = await tx.signAndSend(signer, (result) => {
+        cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
+      });
+    }
+  });
 };

@@ -519,13 +519,12 @@ const CreatePage: NextPage = observer(() => {
         .toFixed(4);
     }
   };
-
   return (
     <form data-test="createMarketForm">
       <InfoBoxes />
-      <h2 className="header mb-ztg-23">Create Market</h2>
+      <h2 className="header mb-ztg-23" data-test="createMarketHeader">Create Market</h2>
       <MarketFormCard header="1. Market name">
-        <MarketSlugField
+        <MarketSlugField 
           slug={formData.slug}
           base64Image={formData.marketImage}
           onSlugChange={changeSlug}
@@ -534,7 +533,7 @@ const CreatePage: NextPage = observer(() => {
           form={form}
         />
       </MarketFormCard>
-      <MarketFormCard header="2. Market name / Question *">
+      <MarketFormCard  header="2. Market name / Question *">
         <Input
           ref={questionInputRef}
           type="text"
@@ -546,6 +545,7 @@ const CreatePage: NextPage = observer(() => {
           className="mb-ztg-20"
           onChange={(e) => changeQuestion(e.target.value)}
           autoComplete="off"
+          data-test="marketQuestionInput"
         />
         <TagChoices onTagsChange={changeTags} />
       </MarketFormCard>
@@ -569,7 +569,7 @@ const CreatePage: NextPage = observer(() => {
           form={form}
         />
       </MarketFormCard>
-      <MarketFormCard header="5. Oracle *">
+      <MarketFormCard header="5. Oracle *" >
         <Input
           form={form}
           type="text"
@@ -579,6 +579,7 @@ const CreatePage: NextPage = observer(() => {
           ref={oracleInputRef}
           className="mb-ztg-20"
           name="oracle"
+          data-test="oracleInput"
         />
         <div className="flex h-ztg-22 items-center text-sky-600 font-lato">
           <div className="w-ztg-20 h-ztg-20">
@@ -593,6 +594,7 @@ const CreatePage: NextPage = observer(() => {
       </MarketFormCard>
       <MarketFormCard header="6. Market Description">
         <TextArea
+          dataTest="marketDescriptionInput"
           placeholder="Additional information you want to provide about the market, such as resolution source, special cases, or other details."
           value={formData.description}
           name="description"
@@ -652,7 +654,7 @@ const CreatePage: NextPage = observer(() => {
         <div className="flex justify-center mb-ztg-10 mt-ztg-12 w-full h-ztg-40">
           <TransactionButton
             className="w-ztg-266 ml-ztg-8 center flex-shrink-0"
-            dataTestId="createMarketSubmitButton"
+            dataTest="createMarketSubmitButton"
             onClick={(e) => {
               e.preventDefault();
               form.onSubmit(e);
@@ -665,7 +667,7 @@ const CreatePage: NextPage = observer(() => {
             Create Market
           </TransactionButton>
           <div className="w-full flex items-center text-ztg-12-150 font-bold ml-ztg-8 text-sky-600">
-            <div className="mr-ztg-15">
+            <div className="mr-ztg-15" data-test="totalCost">
               Total Cost:
               <span className="font-mono">
                 {" "}

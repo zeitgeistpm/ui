@@ -148,9 +148,10 @@ export const MultipleOutcomeRow: FC<{
         transition={{ type: "spring", duration: 0.5 }}
         className="flex mb-ztg-10"
       >
-        <div className="flex-ztg-basis-520 pr-ztg-16 flex-grow flex-shrink">
+        <div className="flex-ztg-basis-520 pr-ztg-16 flex-grow flex-shrink" data-test="outComeInput">
           <Input
             type="text"
+
             ref={nameRef}
             form={form}
             placeholder="Outcome"
@@ -164,7 +165,7 @@ export const MultipleOutcomeRow: FC<{
             }}
           />
         </div>
-        <div className="flex-ztg-basis-85 pr-ztg-15 flex-grow">
+        <div className="flex-ztg-basis-85 pr-ztg-15 flex-grow" data-test="outComeTicker">
           <Input
             type="text"
             ref={tickerRef}
@@ -342,6 +343,7 @@ export const RangeOutcomeField: FC<{
       <div className="flex">
         <div className="flex-ztg-basis-248 flex-grow flex-shrink pr-ztg-16">
           <Input
+            data-test="minRangeValueInput"
             name={`outcomes.${namePrefix}-short`}
             ref={shortRef}
             form={form}
@@ -356,8 +358,9 @@ export const RangeOutcomeField: FC<{
             }}
           />
         </div>
-        <div className="flex-ztg-basis-248 flex-grow flex-shrink pr-ztg-16">
+        <div className="flex-ztg-basis-248 flex-grow flex-shrink pr-ztg-16" >
           <Input
+            data-test="maxRangeValueInput"
             name={`outcomes.${namePrefix}-long`}
             ref={longRef}
             form={form}
@@ -374,6 +377,7 @@ export const RangeOutcomeField: FC<{
         </div>
         <div className="flex-ztg-basis-85 pr-ztg-15">
           <Input
+            data-test="rangeTickerInput"
             type="text"
             name={`outcomes.${namePrefix}-ticker`}
             ref={tickerRef}
