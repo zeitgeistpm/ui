@@ -175,7 +175,7 @@ const IdentitySettings = observer(() => {
           your identity.
         </div>
       </div>
-      <div className="flex mb-ztg-20"data-test="createMarketButton">
+      <div className="flex mb-ztg-20" data-test="createMarketButton">
         <SubmitButton onClick={handleSubmit} disabled={submitDisabled}>
           Set Identity
         </SubmitButton>
