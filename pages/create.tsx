@@ -74,7 +74,7 @@ const initialFields = {
   },
   oracle: {
     value: "",
-    rules: "required",
+    rules: "required|address_input",
   },
   description: {
     value: "",
