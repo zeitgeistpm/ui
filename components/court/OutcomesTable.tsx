@@ -5,7 +5,7 @@ import MarketStore from "lib/stores/MarketStore";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
-import { extrinsicCallback } from "lib/util/tx";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import React from "react";
 
@@ -49,32 +49,32 @@ const OutcomesTable = observer(
       },
     ];
 
-    const handleVoteClick = async (assetId: AssetId) => {
-      const { signer } = wallets.getActiveSigner() as ExtSigner;
+    const handleVoteClick = (assetId: AssetId) => {
+      const signer = wallets.getActiveSigner() as ExtSigner;
 
-      store.sdk.api.tx.court
+      const tx = store.sdk.api.tx.court
         //@ts-ignore
-        .vote(marketStore.id, { categorical: assetId.categoricalOutcome[1] })
-        .signAndSend(
-          wallets.activeAccount.address,
-          { signer: signer },
-          extrinsicCallback({
-            notificationStore,
-            successCallback: () => {
-              modalStore.closeModal();
-              onCaseChange(marketStore.id);
-              notificationStore.pushNotification("Successfully voted", {
-                type: "Success",
-              });
-            },
-            failCallback: ({ index, error }) => {
-              notificationStore.pushNotification(
-                store.getTransactionError(index, error),
-                { type: "Error" }
-              );
-            },
-          })
-        );
+        .vote(marketStore.id, { categorical: assetId.categoricalOutcome[1] });
+      signAndSend(
+        tx,
+        signer,
+        extrinsicCallback({
+          notificationStore,
+          successCallback: () => {
+            modalStore.closeModal();
+            onCaseChange(marketStore.id);
+            notificationStore.pushNotification("Successfully voted", {
+              type: "Success",
+            });
+          },
+          failCallback: ({ index, error }) => {
+            notificationStore.pushNotification(
+              store.getTransactionError(index, error),
+              { type: "Error" }
+            );
+          },
+        })
+      );
     };
 
     const getOutcomeVotes = (asset: AssetId) => {

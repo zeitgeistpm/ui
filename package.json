@@ -1,9 +1,9 @@
 {
   "name": "@zeitgeistpm/ui",
   "version": "0.0.1-beta",
-  "private": "true",
   "scripts": {
     "dev": "next",
+    "dev:test": "NEXT_PUBLIC_TESTING_ENV=true next",
     "build": "next build",
     "lint": "eslint ./components/** ./pages/** ./lib/** -c .eslintrc.js --ext js,jsx,ts,tsx",
     "lint-fix": "eslint ./components/** ./pages/** ./lib/** -c .eslintrc.js --fix --ext js,jsx,ts,tsx",
