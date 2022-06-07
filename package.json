@@ -3,6 +3,7 @@
   "version": "0.0.1-beta",
   "scripts": {
     "dev": "next",
+    "dev:test": "NEXT_PUBLIC_TESTING_ENV=true next",
     "build": "next build",
     "lint": "eslint ./components/** ./pages/** ./lib/** -c .eslintrc.js --ext js,jsx,ts,tsx",
     "lint-fix": "eslint ./components/** ./pages/** ./lib/** -c .eslintrc.js --fix --ext js,jsx,ts,tsx",
@@ -32,7 +33,6 @@
     "boring-avatars": "^1.6.1",
     "decimal.js": "^10.3.1",
     "dotenv": "^9.0.2",
-    "email-validator": "^2.0.4",
     "fathom-client": "^3.2.0",
     "flexsearch": "^0.7.21",
     "framer-motion": "4.1.17",

@@ -11,15 +11,16 @@ import { useUserStore } from "lib/stores/UserStore";
 import { EndpointOption, isCustomEndpointOption } from "lib/types";
 import { endpoints, gqlEndpoints } from "lib/constants";
 import { getEndpointOption, getGqlEndpointOption } from "lib/util";
-import { extrinsicCallback } from "lib/util/tx";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { AlertTriangle } from "react-feather";
 
-const SubmitButton: FC<{
-  onClick?: MouseEventHandler<HTMLButtonElement>;
-  disabled?: boolean;
-}> = ({ onClick = () => {}, disabled = false, children }) => {
+const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean }> = ({
+  onClick = () => {},
+  disabled = false,
+  children,
+}) => {
   return (
     <button
       onClick={onClick}
@@ -43,7 +44,6 @@ const IdentitySettings = observer(() => {
   const [discordHandle, setDiscordHandle] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
   const [transactionPending, setTransactionPending] = useState(false);
-
   useEffect(() => {
     if (!identity) return;
     setDisplayName(identity.displayName ?? "");
@@ -53,16 +53,16 @@ const IdentitySettings = observer(() => {
 
   const handleSubmit = async () => {
     setTransactionPending(true);
-    const { signer } = wallets.getActiveSigner() as ExtSigner;
-    store.sdk.api.tx.identity
-      .setIdentity({
-        additional: [[{ Raw: "discord" }, { Raw: discordHandle }]],
-        display: { Raw: displayName },
-        twitter: { Raw: twitterHandle },
-      })
-      .signAndSend(
-        wallets.activeAccount.address,
-        { signer: signer },
+    const signer = wallets.getActiveSigner() as ExtSigner;
+    const tx = store.sdk.api.tx.identity.setIdentity({
+      additional: [[{ Raw: "discord" }, { Raw: discordHandle }]],
+      display: { Raw: displayName },
+      twitter: { Raw: twitterHandle },
+    });
+    try {
+      await signAndSend(
+        tx,
+        signer,
         extrinsicCallback({
           notificationStore,
           successCallback: async () => {
@@ -80,15 +80,18 @@ const IdentitySettings = observer(() => {
             );
           },
         })
-      )
-      .catch(() => setTransactionPending(false));
+      );
+    } catch (err) {
+      setTransactionPending(false);
+    }
   };
 
   const handleClear = async () => {
-    const { signer } = store.wallets.getActiveSigner() as ExtSigner;
-    store.sdk.api.tx.identity.clearIdentity().signAndSend(
-      wallets.activeAccount.address,
-      { signer: signer },
+    const signer = store.wallets.getActiveSigner() as ExtSigner;
+    const tx = store.sdk.api.tx.identity.clearIdentity();
+    signAndSend(
+      tx,
+      signer,
       extrinsicCallback({
         notificationStore,
         successCallback: async () => {
@@ -136,7 +139,9 @@ const IdentitySettings = observer(() => {
 
   return (
     <>
-      <div className="text-ztg-16-150  mb-ztg-20">Display Name</div>
+      <div className="text-ztg-16-150  mb-ztg-20" data-test="displayNameLabel">
+        Display Name
+      </div>
       <Input
         data-test="display-name"
         type="text"
@@ -146,7 +151,9 @@ const IdentitySettings = observer(() => {
       />
       <div className="flex flex-row mb-ztg-20">
         <div className="w-full mr-ztg-27">
-          <div className="text-ztg-16-150 mb-ztg-20">Discord</div>
+          <div className="text-ztg-16-150 mb-ztg-20" data-test="discordLabel">
+            Discord
+          </div>
           <Input
             data-test="discord"
             type="text"
@@ -156,7 +163,9 @@ const IdentitySettings = observer(() => {
           />
         </div>
         <div className="w-full ">
-          <div className="text-ztg-16-150 mb-ztg-20">Twitter</div>
+          <div className="text-ztg-16-150 mb-ztg-20" data-test="twitterLabel">
+            Twitter
+          </div>
           <Input
             data-test="twitter"
             type="text"
@@ -174,7 +183,7 @@ const IdentitySettings = observer(() => {
           your identity.
         </div>
       </div>
-      <div className="flex mb-ztg-20">
+      <div className="flex mb-ztg-20" data-test="createMarketButton">
         <SubmitButton onClick={handleSubmit} disabled={submitDisabled}>
           Set Identity
         </SubmitButton>
@@ -305,7 +314,7 @@ const Settings: NextPage = observer(() => {
     setCustomGqlEndpoint(value);
   };
 
-  const submitEndpoints: MouseEventHandler<HTMLButtonElement> = async (e) => {
+  const submitEndpoints = async () => {
     const newEndpoint = isCustomEndpoint
       ? customEndpoint
       : endpointSelection.value;
@@ -337,7 +346,10 @@ const Settings: NextPage = observer(() => {
 
   return (
     <>
-      <h2 className="text-ztg-20-150 font-bold font-kanit mb-ztg-23">
+      <h2
+        className="text-ztg-20-150 font-bold font-kanit mb-ztg-23"
+        data-test="accountSettingsHeader"
+      >
         Account Settings
       </h2>
       <div className="p-ztg-30 rounded-ztg-10 mb-ztg-32 font-lato font-bold bg-sky-100 dark:bg-sky-700">
