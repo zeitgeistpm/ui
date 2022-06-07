@@ -254,6 +254,8 @@ const Settings: NextPage = observer(() => {
 
   const [isConnectingSdk, setIsConnectingSdk] = useState(false);
 
+  const notificationStore = useNotificationStore();
+
   const endpointHasChanged =
     (isCustomEndpoint && userStore.endpoint !== customEndpoint) ||
     (!isCustomEndpoint && userStore.endpoint !== endpointSelection?.value);
@@ -334,14 +336,32 @@ const Settings: NextPage = observer(() => {
       await when(() => store.initialized === true);
       setIsConnectingSdk(false);
       if (gqlEndpointHasChanged() && !userStore.graphQlEnabled) {
-        return setEndpointErrors(
-          "Unable to connect to this GQL endpoint. Subsquid remains disabled."
+        setDisabledSubsquid(true);
+        return notificationStore.pushNotification(
+          `Unable to connect to this GQL endpoint. Subsquid remains disabled.`,
+          {
+            autoRemove: true,
+            lifetime: 8,
+            type: "Error",
+          }
         );
       }
       setEndpointErrors(undefined);
       setPrevDisabledSubsquid(disabledSubsquid);
+      notificationStore.pushNotification(
+        `Connected to chain${!disabledSubsquid ? " and indexer" : ""}!`,
+        {
+          autoRemove: true,
+          lifetime: 4,
+          type: "Success",
+        }
+      );
     } catch (error) {
-      setEndpointErrors("Unable to connect to this endpoint");
+      notificationStore.pushNotification("Unable to connect to this endpoint", {
+        autoRemove: true,
+        lifetime: 8,
+        type: "Error",
+      });
       setEndpointSelection(getEndpointOption(userStore.endpoint));
       setIsConnectingSdk(false);
     }
@@ -415,6 +435,7 @@ const Settings: NextPage = observer(() => {
                   type="checkbox"
                   id="disableSubsquid"
                   defaultChecked={disabledSubsquid}
+                  checked={disabledSubsquid}
                   onChange={() => {
                     const disabled = !disabledSubsquid;
                     setDisabledSubsquid(disabled);
