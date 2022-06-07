@@ -12,11 +12,9 @@ export interface UserIdentity {
   twitter: string;
 }
 
-interface IdentityInfo {
-  additional: RawValue[][];
-  display: RawValue;
-  twitter: RawValue;
-}
+export type HelperNotifications = {
+  avatarKsmFeesInfo: boolean;
+};
 
 interface RawValue {
   Raw: string;
@@ -50,6 +48,7 @@ export default class UserStore {
   identity: UserIdentity;
   locationAllowed: boolean;
   walletId: string | null = null;
+  helpnotifications: HelperNotifications | null = null;
 
   constructor(private store: Store) {
     makeAutoObservable(this, {}, { autoBind: true, deep: false });
@@ -110,6 +109,13 @@ export default class UserStore {
         setToLocalStorage("walletId", wallet?.extensionName ?? null);
       }
     );
+
+    reaction(
+      () => this.helpnotifications,
+      (notifications) => {
+        setToLocalStorage("help-notifications", notifications);
+      }
+    );
   }
 
   async init() {
@@ -137,6 +143,11 @@ export default class UserStore {
           this.theme = query.matches ? "dark" : "light";
         }
       });
+
+    this.helpnotifications = getFromLocalStorage("help-notifications", {
+      avatarKsmFeesInfo: true,
+    }) as HelperNotifications;
+
     await this.checkGeofencing();
   }
 
@@ -167,6 +178,13 @@ export default class UserStore {
 
   setWalletId(walletId: string | null) {
     this.walletId = walletId;
+  }
+
+  toggleHelpNotification(key: keyof HelperNotifications, value: boolean) {
+    this.helpnotifications = {
+      ...this.helpnotifications,
+      [key]: value,
+    };
   }
 
   private getTheme(): Theme {

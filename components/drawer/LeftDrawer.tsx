@@ -10,10 +10,7 @@ import Logo from "../icons/ZeitgeistIcon";
 const LeftDrawer = observer(() => {
   const router = useRouter();
   const { leftDrawerClosed, blockNumber } = useStore();
-  const userStore = useUserStore();
   const navigationStore = useNavigationStore();
-
-  const { theme } = userStore;
 
   const handleHomeClick = () => {
     router.push("/");

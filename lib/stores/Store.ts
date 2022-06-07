@@ -346,11 +346,11 @@ export default class Store {
     }
     let assetObj: Asset;
     if (asset == null) {
-      assetObj = this.sdk.api.createType("Asset", ztgAsset);
+      assetObj = (this.sdk.api as any).createType("Asset", ztgAsset);
     } else {
       assetObj = isAsset(asset)
         ? asset
-        : this.sdk.api.createType("Asset", asset);
+        : (this.sdk.api as any).createType("Asset", asset);
     }
     if (assetObj.isZtg) {
       const { data } = (await this.sdk.api.query.system.account(
@@ -381,7 +381,7 @@ export default class Store {
 
     const assetObj: Asset = isAsset(asset)
       ? asset
-      : this.sdk.api.createType("Asset", asset);
+      : (this.sdk.api as any).createType("Asset", asset);
 
     if (asset == null || assetObj.isZtg) {
       const b = await this.sdk.api.query.system.account(account);

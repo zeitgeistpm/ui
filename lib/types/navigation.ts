@@ -9,7 +9,8 @@ export type PageName =
   | "settings"
   | "liquidity"
   | "activity"
-  | "court";
+  | "court"
+  | "avatar";
 
 export interface NavigationSingleItem {
   label: string;

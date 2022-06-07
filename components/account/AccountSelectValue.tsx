@@ -12,10 +12,8 @@ const AccountSelectValue: FC<AccountSelectValueProps> = observer(
     return (
       <div className="flex items-center justify-between h-full w-full px-ztg-8 bg-sky-100 dark:bg-black rounded-ztg-10">
         <div className="center rounded-full w-ztg-28 h-ztg-28 bg-white dark:bg-sky-1000">
-          <div className="center rounded-full w-ztg-22 h-ztg-22 bg-sky-100 dark:bg-black">
-            <div className="center rounded-full w-ztg-16 h-ztg-16 bg-sky-100 dark:bg-sky-1000">
-              <Avatar address={address} />
-            </div>
+          <div className="rounded-full w-ztg-22 h-ztg-22 bg-sky-100 dark:bg-black">
+            <Avatar zoomed address={address} />
           </div>
         </div>
         <div className="flex flex-col ml-ztg-16">

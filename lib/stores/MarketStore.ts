@@ -419,7 +419,7 @@ class MarketStore {
   }
 
   private createAssetFromAssetId(assetId: AssetId): Asset {
-    return this.store.sdk.api.createType("Asset", assetId);
+    return (this.store.sdk.api as any).createType("Asset", assetId);
   }
 
   async getSpotPrice(

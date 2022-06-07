@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 import { NextPage } from "next";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, MouseEventHandler, useEffect, useState } from "react";
 import { when } from "mobx";
 
 import { Input } from "components/ui/inputs";
@@ -16,9 +16,9 @@ import { useNotificationStore } from "lib/stores/NotificationStore";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { AlertTriangle } from "react-feather";
 
-const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean;}> = ({
+const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean }> = ({
   onClick = () => {},
-  disabled = false, 
+  disabled = false,
   children,
 }) => {
   return (
@@ -29,7 +29,6 @@ const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean;}> = ({
     >
       <div className="text-ztg-14-150 font-medium text-white flex flex-grow justify-center items-center">
         {children ?? "Submit"}
-        
       </div>
     </button>
   );
@@ -140,7 +139,9 @@ const IdentitySettings = observer(() => {
 
   return (
     <>
-      <div className="text-ztg-16-150  mb-ztg-20" data-test="displayNameLabel">Display Name</div>
+      <div className="text-ztg-16-150  mb-ztg-20" data-test="displayNameLabel">
+        Display Name
+      </div>
       <Input
         data-test="display-name"
         type="text"
@@ -150,7 +151,9 @@ const IdentitySettings = observer(() => {
       />
       <div className="flex flex-row mb-ztg-20">
         <div className="w-full mr-ztg-27">
-          <div className="text-ztg-16-150 mb-ztg-20" data-test="discordLabel">Discord</div>
+          <div className="text-ztg-16-150 mb-ztg-20" data-test="discordLabel">
+            Discord
+          </div>
           <Input
             data-test="discord"
             type="text"
@@ -160,7 +163,9 @@ const IdentitySettings = observer(() => {
           />
         </div>
         <div className="w-full ">
-          <div className="text-ztg-16-150 mb-ztg-20" data-test="twitterLabel">Twitter</div>
+          <div className="text-ztg-16-150 mb-ztg-20" data-test="twitterLabel">
+            Twitter
+          </div>
           <Input
             data-test="twitter"
             type="text"
@@ -341,7 +346,10 @@ const Settings: NextPage = observer(() => {
 
   return (
     <>
-      <h2 className="text-ztg-20-150 font-bold font-kanit mb-ztg-23" data-test="accountSettingsHeader">
+      <h2
+        className="text-ztg-20-150 font-bold font-kanit mb-ztg-23"
+        data-test="accountSettingsHeader"
+      >
         Account Settings
       </h2>
       <div className="p-ztg-30 rounded-ztg-10 mb-ztg-32 font-lato font-bold bg-sky-100 dark:bg-sky-700">
