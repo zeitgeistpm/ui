@@ -9,13 +9,19 @@ import Select from "components/ui/Select";
 
 import { useStore } from "lib/stores/Store";
 import { useUserStore } from "lib/stores/UserStore";
-import { EndpointOption, isCustomEndpointOption } from "lib/types";
+import {
+  EndpointOption,
+  isCustomEndpointOption,
+  SupportedParachain,
+  supportedParachainToString,
+} from "lib/types";
 import { endpoints, gqlEndpoints } from "lib/constants";
 import { getEndpointOption, getGqlEndpointOption } from "lib/util";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { AlertTriangle } from "react-feather";
+import { groupBy } from "lodash";
 
 const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean }> = ({
   onClick = () => {},
@@ -302,6 +308,23 @@ const Settings: NextPage = observer(() => {
   const changeEndpoint = (value: EndpointOption) => {
     setEndpointErrors(undefined);
     setEndpointSelection(value);
+    if (
+      endpointSelection.parachain !== value.parachain &&
+      !isCustomGqlEndpoint
+    ) {
+      const defaultGqlEndpoint = gqlEndpoints.find(
+        (gql) => gql.parachain === value.parachain
+      );
+      if (defaultGqlEndpoint) {
+        setGqlEndpointSelection(defaultGqlEndpoint);
+      } else {
+        setGqlEndpointSelection(
+          gqlEndpoints.find(
+            (gql) => gql.parachain === SupportedParachain.CUSTOM
+          )
+        );
+      }
+    }
   };
 
   const changeCustomEndpoint = (value: string) => {
@@ -312,6 +335,21 @@ const Settings: NextPage = observer(() => {
   const changeGqlEndpoint = (value: EndpointOption) => {
     setEndpointErrors(undefined);
     setGqlEndpointSelection(value);
+    if (
+      gqlEndpointSelection.parachain !== value.parachain &&
+      !isCustomEndpoint
+    ) {
+      const defaultEndpoint = endpoints.find(
+        (gql) => gql.parachain === value.parachain
+      );
+      if (defaultEndpoint) {
+        setEndpointSelection(defaultEndpoint);
+      } else {
+        setEndpointSelection(
+          endpoints.find((gql) => gql.parachain === SupportedParachain.CUSTOM)
+        );
+      }
+    }
   };
 
   const changeCustomGqlEndpoint = (value: string) => {
@@ -407,7 +445,14 @@ const Settings: NextPage = observer(() => {
             Endpoint
             <div className="flex flex-wrap mt-ztg-20">
               <Select
-                options={endpoints}
+                options={Object.entries(groupBy(endpoints, "parachain")).map(
+                  ([parachain, endpoints]) => ({
+                    label: supportedParachainToString(
+                      parachain as SupportedParachain
+                    ),
+                    options: endpoints,
+                  })
+                )}
                 className="w-1/3 mr-ztg-3"
                 onChange={changeEndpoint}
                 value={endpointSelection}
