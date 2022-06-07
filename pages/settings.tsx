@@ -234,6 +234,7 @@ const Settings: NextPage = observer(() => {
   const [prevDisabledSubsquid, setPrevDisabledSubsquid] =
     useState(disabledSubsquid);
 
+  console.log(userStore.endpoint, userStore.gqlEndpoint);
   const [endpointSelection, setEndpointSelection] = useState<EndpointOption>(
     () => {
       return getEndpointOption(userStore.endpoint);
