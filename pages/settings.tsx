@@ -1,7 +1,8 @@
 import { observer } from "mobx-react";
 import { NextPage } from "next";
-import { ChangeEvent, FC, MouseEventHandler, useEffect, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import { when } from "mobx";
+import Loader from "react-spinners/PulseLoader";
 
 import { Input } from "components/ui/inputs";
 import Select from "components/ui/Select";
@@ -251,6 +252,8 @@ const Settings: NextPage = observer(() => {
     return gqlEndpoints.find((opt) => opt.label === "Custom").value;
   });
 
+  const [isConnectingSdk, setIsConnectingSdk] = useState(false);
+
   const endpointHasChanged =
     (isCustomEndpoint && userStore.endpoint !== customEndpoint) ||
     (!isCustomEndpoint && userStore.endpoint !== endpointSelection?.value);
@@ -274,13 +277,13 @@ const Settings: NextPage = observer(() => {
   };
 
   const endpointSubmitDisabled = () => {
-    if (!store.initialized) {
-      return true;
-    }
-    return !(
-      endpointHasChanged ||
-      gqlEndpointHasChanged() ||
-      disabledSubsquidChanged()
+    return (
+      isConnectingSdk ||
+      !(
+        endpointHasChanged ||
+        gqlEndpointHasChanged() ||
+        disabledSubsquidChanged()
+      )
     );
   };
 
@@ -324,9 +327,12 @@ const Settings: NextPage = observer(() => {
       ? customGqlEndpoint
       : gqlEndpointSelection.value;
 
+    setIsConnectingSdk(true);
+
     try {
       await store.connectNewSDK(newEndpoint, newGqlEndpoint);
       await when(() => store.initialized === true);
+      setIsConnectingSdk(false);
       if (gqlEndpointHasChanged() && !userStore.graphQlEnabled) {
         return setEndpointErrors(
           "Unable to connect to this GQL endpoint. Subsquid remains disabled."
@@ -337,6 +343,7 @@ const Settings: NextPage = observer(() => {
     } catch (error) {
       setEndpointErrors("Unable to connect to this endpoint");
       setEndpointSelection(getEndpointOption(userStore.endpoint));
+      setIsConnectingSdk(false);
     }
   };
 
@@ -449,10 +456,18 @@ const Settings: NextPage = observer(() => {
           <div className="mb-ztg-20 text-red-600 font-light">
             {endpointErrors}
           </div>
-          <SubmitButton
-            onClick={submitEndpoints}
-            disabled={endpointSubmitDisabled()}
-          />
+
+          <div className="flex items-center">
+            <SubmitButton
+              onClick={submitEndpoints}
+              disabled={endpointSubmitDisabled()}
+            />
+            {isConnectingSdk && (
+              <div className="ml-4">
+                <Loader size={8} />
+              </div>
+            )}
+          </div>
         </div>
         <div className="text-ztg-16-150 mt-ztg-40">
           Theme

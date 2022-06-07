@@ -117,7 +117,7 @@ export default class Store {
       registerValidationRules: false,
       isTestEnv: false,
       unsubscribeNewHeads: false,
-      balanceSubscription: false
+      balanceSubscription: false,
     });
   }
 
@@ -193,7 +193,7 @@ export default class Store {
     this.unsubscribeNewHeads();
     this.exchangeStore.destroy();
 
-    runInAction(() => (this.initialized = false));
+    //runInAction(() => (this.initialized = false));
 
     await this.initSDK(endpoint, gqlEndpoint);
     await this.loadConfig();
@@ -214,7 +214,7 @@ export default class Store {
     const ipfsClientUrl = this.isTestEnv ? "http://127.0.0.1:5001" : undefined;
     const sdk = await SDK.initialize(endpoint, {
       graphQlEndpoint,
-      ipfsClientUrl
+      ipfsClientUrl,
     });
 
     if (sdk.graphQLClient == null) {
@@ -247,7 +247,7 @@ export default class Store {
   private async loadConfig() {
     const [consts, properties] = await Promise.all([
       this.sdk.api.consts,
-      this.sdk.api.rpc.system.properties()
+      this.sdk.api.rpc.system.properties(),
     ]);
 
     // minimumPeriod * 2 is fair assumption for now but need to make sure this stays up
@@ -284,13 +284,13 @@ export default class Store {
         ),
         minCategories: this.codecToNumber(
           consts.predictionMarkets.minCategories
-        )
+        ),
       },
       court: {
         caseDurationSec:
           this.codecToNumber(consts.court.courtCaseDuration) * blockTimeSec,
-        stakeWeight: this.codecToNumber(consts.court.stakeWeight) / ZTG
-      }
+        stakeWeight: this.codecToNumber(consts.court.stakeWeight) / ZTG,
+      },
     };
 
     runInAction(() => {
