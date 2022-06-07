@@ -1,4 +1,9 @@
-import { EndpointOption, JSONObject, SelectOption } from "lib/types";
+import {
+  EndpointOption,
+  JSONObject,
+  SelectOption,
+  SupportedParachain,
+} from "lib/types";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { hexToU8a, isHex } from "@polkadot/util";
 import { endpoints, gqlEndpoints } from "../constants";
@@ -198,7 +203,9 @@ export const getEndpointOption = (url?: string): EndpointOption => {
   }
   const opt = endpoints.find((e) => e.value === url);
   if (opt == null) {
-    return [...endpoints].slice(-1).pop() as EndpointOption;
+    return endpoints.find(
+      (endpoint) => endpoint.parachain == SupportedParachain.BSR
+    );
   }
   return opt;
 };
@@ -209,7 +216,9 @@ export const getGqlEndpointOption = (url?: string): EndpointOption => {
   }
   const opt = gqlEndpoints.find((e) => e.value === url);
   if (opt == null) {
-    return [...gqlEndpoints].slice(-1).pop() as EndpointOption;
+    return gqlEndpoints.find(
+      (endpoint) => endpoint.parachain == SupportedParachain.BSR
+    );
   }
   return opt;
 };
