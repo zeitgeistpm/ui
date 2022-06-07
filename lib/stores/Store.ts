@@ -193,8 +193,6 @@ export default class Store {
     this.unsubscribeNewHeads();
     this.exchangeStore.destroy();
 
-    //runInAction(() => (this.initialized = false));
-
     await this.initSDK(endpoint, gqlEndpoint);
     await this.loadConfig();
     this.initGraphQlClient();
