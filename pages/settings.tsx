@@ -499,7 +499,14 @@ const Settings: NextPage = observer(() => {
                 {!disabledSubsquid && (
                   <>
                     <Select
-                      options={gqlEndpoints}
+                      options={Object.entries(
+                        groupBy(gqlEndpoints, "parachain")
+                      ).map(([parachain, endpoints]) => ({
+                        label: supportedParachainToString(
+                          parachain as SupportedParachain
+                        ),
+                        options: endpoints,
+                      }))}
                       className="w-1/3 mr-ztg-3"
                       onChange={changeGqlEndpoint}
                       value={gqlEndpointSelection}
