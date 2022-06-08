@@ -2738,6 +2738,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@polkadot/keyring@npm:9.0.1, @polkadot/keyring@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "@polkadot/keyring@npm:9.0.1"
+  dependencies:
+    "@babel/runtime": ^7.17.9
+    "@polkadot/util": 9.0.1
+    "@polkadot/util-crypto": 9.0.1
+  peerDependencies:
+    "@polkadot/util": 9.0.1
+    "@polkadot/util-crypto": 9.0.1
+  checksum: b3ef47618a3d1b08e7239d7a556d513a695af0efd629e0f213624358b756c88047b0da0de1e01244c1697b00b0a37c8388825c48bc0cbae4a923eba7ecb8d239
+  languageName: node
+  linkType: hard
+
 "@polkadot/keyring@npm:^7.4.1":
   version: 7.9.2
   resolution: "@polkadot/keyring@npm:7.9.2"
@@ -2749,20 +2763,6 @@ __metadata:
     "@polkadot/util": 7.9.2
     "@polkadot/util-crypto": 7.9.2
   checksum: 68bcff9a29c46f5fdfb0f692c680401f5be97afb7ac85b6c43b889c712a5b5c4f548764856cf0d86ffe3fbf7e7a721665aef5cbcf91d3cbc6ee6de6413aeb381
-  languageName: node
-  linkType: hard
-
-"@polkadot/keyring@npm:^9.0.1":
-  version: 9.0.1
-  resolution: "@polkadot/keyring@npm:9.0.1"
-  dependencies:
-    "@babel/runtime": ^7.17.9
-    "@polkadot/util": 9.0.1
-    "@polkadot/util-crypto": 9.0.1
-  peerDependencies:
-    "@polkadot/util": 9.0.1
-    "@polkadot/util-crypto": 9.0.1
-  checksum: b3ef47618a3d1b08e7239d7a556d513a695af0efd629e0f213624358b756c88047b0da0de1e01244c1697b00b0a37c8388825c48bc0cbae4a923eba7ecb8d239
   languageName: node
   linkType: hard
 
@@ -4530,6 +4530,7 @@ __metadata:
     "@material-ui/core": ^4.12.3
     "@material-ui/lab": ^4.0.0-alpha.60
     "@polkadot/extension-dapp": ^0.40.4
+    "@polkadot/keyring": 9.0.1
     "@polkadot/ui-keyring": ^0.85.5
     "@tailwindcss/jit": ^0.1.18
     "@tailwindcss/line-clamp": ^0.3.1
