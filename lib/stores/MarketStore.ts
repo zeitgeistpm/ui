@@ -223,7 +223,7 @@ class MarketStore {
   get bounds(): [number, number] | null {
     if (this.market.marketType.isScalar) {
       const bounds = this.market.marketType.asScalar;
-      return [bounds[0].toNumber(), bounds[1].toNumber()];
+      return [Number(bounds[0].toString()), Number(bounds[1].toString())];
       //@ts-ignore - marketType is inconsistent
     } else if (this.market.marketType.scalar) {
       //@ts-ignore
