@@ -6,8 +6,8 @@ import {
 } from "@zeitgeistpm/avatara-react";
 import Link from "next/link";
 import { formatBalance } from "@polkadot/util";
-import { Avatar, Inventory } from "@zeitgeistpm/avatara-nft-sdk";
-import { ipfsCidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
+import { Avatar, Inventory, SdkContext } from "@zeitgeistpm/avatara-nft-sdk";
+import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 import Checkbox from "components/ui/Checkbox";
 import DiscordIcon from "components/icons/DiscordIcon";
 import TwitterIcon from "components/icons/TwitterIcon";
@@ -355,7 +355,7 @@ const Badge = (props: { item: Inventory.AcceptedInventoryItem }) => {
           <img
             className="z-ztg-2"
             src={sanitizeIpfsUrl(
-              ipfsCidToUrl("QmZHdCSRpCEfVDcqwkmo5ELrkuKXPBCtfs4fQ3RXibn1am")
+              cidToUrl("QmZHdCSRpCEfVDcqwkmo5ELrkuKXPBCtfs4fQ3RXibn1am")
             )}
           />
           <img
