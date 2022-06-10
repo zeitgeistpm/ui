@@ -18,7 +18,7 @@ export const supportedParachainToString = (chain: SupportedParachain) =>
     ? "Rcococo Testnet"
     : chain === SupportedParachain.KUSAMA
     ? "Kusama Live"
-    : "Custom RPC";
+    : "Custom";
 
 export type Theme = "light" | "dark";
 
