@@ -1,20 +1,25 @@
 import { observer } from "mobx-react";
 import { NextPage } from "next";
-import { ChangeEvent, FC, MouseEventHandler, useEffect, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import { when } from "mobx";
-
+import Loader from "react-spinners/PulseLoader";
 import { Input } from "components/ui/inputs";
 import Select from "components/ui/Select";
-
 import { useStore } from "lib/stores/Store";
 import { useUserStore } from "lib/stores/UserStore";
-import { EndpointOption, isCustomEndpointOption } from "lib/types";
+import {
+  EndpointOption,
+  isCustomEndpointOption,
+  SupportedParachain,
+  supportedParachainToString,
+} from "lib/types";
 import { endpoints, gqlEndpoints } from "lib/constants";
 import { getEndpointOption, getGqlEndpointOption } from "lib/util";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { AlertTriangle } from "react-feather";
+import { groupBy } from "lodash";
 
 const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean }> = ({
   onClick = () => {},
@@ -227,6 +232,7 @@ const Settings: NextPage = observer(() => {
   const [prevDisabledSubsquid, setPrevDisabledSubsquid] =
     useState(disabledSubsquid);
 
+  console.log(userStore.endpoint, userStore.gqlEndpoint);
   const [endpointSelection, setEndpointSelection] = useState<EndpointOption>(
     () => {
       return getEndpointOption(userStore.endpoint);
@@ -251,6 +257,10 @@ const Settings: NextPage = observer(() => {
     return gqlEndpoints.find((opt) => opt.label === "Custom").value;
   });
 
+  const [isConnectingSdk, setIsConnectingSdk] = useState(false);
+
+  const notificationStore = useNotificationStore();
+
   const endpointHasChanged =
     (isCustomEndpoint && userStore.endpoint !== customEndpoint) ||
     (!isCustomEndpoint && userStore.endpoint !== endpointSelection?.value);
@@ -274,13 +284,13 @@ const Settings: NextPage = observer(() => {
   };
 
   const endpointSubmitDisabled = () => {
-    if (!store.initialized) {
-      return true;
-    }
-    return !(
-      endpointHasChanged ||
-      gqlEndpointHasChanged() ||
-      disabledSubsquidChanged()
+    return (
+      isConnectingSdk ||
+      !(
+        endpointHasChanged ||
+        gqlEndpointHasChanged() ||
+        disabledSubsquidChanged()
+      )
     );
   };
 
@@ -297,6 +307,23 @@ const Settings: NextPage = observer(() => {
   const changeEndpoint = (value: EndpointOption) => {
     setEndpointErrors(undefined);
     setEndpointSelection(value);
+    if (
+      endpointSelection.parachain !== value.parachain &&
+      !isCustomGqlEndpoint
+    ) {
+      const defaultGqlEndpoint = gqlEndpoints.find(
+        (gql) => gql.parachain === value.parachain
+      );
+      if (defaultGqlEndpoint) {
+        setGqlEndpointSelection(defaultGqlEndpoint);
+      } else {
+        setGqlEndpointSelection(
+          gqlEndpoints.find(
+            (gql) => gql.parachain === SupportedParachain.CUSTOM
+          )
+        );
+      }
+    }
   };
 
   const changeCustomEndpoint = (value: string) => {
@@ -307,6 +334,21 @@ const Settings: NextPage = observer(() => {
   const changeGqlEndpoint = (value: EndpointOption) => {
     setEndpointErrors(undefined);
     setGqlEndpointSelection(value);
+    if (
+      gqlEndpointSelection.parachain !== value.parachain &&
+      !isCustomEndpoint
+    ) {
+      const defaultEndpoint = endpoints.find(
+        (gql) => gql.parachain === value.parachain
+      );
+      if (defaultEndpoint) {
+        setEndpointSelection(defaultEndpoint);
+      } else {
+        setEndpointSelection(
+          endpoints.find((gql) => gql.parachain === SupportedParachain.CUSTOM)
+        );
+      }
+    }
   };
 
   const changeCustomGqlEndpoint = (value: string) => {
@@ -324,19 +366,41 @@ const Settings: NextPage = observer(() => {
       ? customGqlEndpoint
       : gqlEndpointSelection.value;
 
+    setIsConnectingSdk(true);
+
     try {
       await store.connectNewSDK(newEndpoint, newGqlEndpoint);
       await when(() => store.initialized === true);
+      setIsConnectingSdk(false);
       if (gqlEndpointHasChanged() && !userStore.graphQlEnabled) {
-        return setEndpointErrors(
-          "Unable to connect to this GQL endpoint. Subsquid remains disabled."
+        setDisabledSubsquid(true);
+        return notificationStore.pushNotification(
+          `Unable to connect to this GQL endpoint. Subsquid remains disabled.`,
+          {
+            autoRemove: true,
+            lifetime: 8,
+            type: "Error",
+          }
         );
       }
       setEndpointErrors(undefined);
       setPrevDisabledSubsquid(disabledSubsquid);
+      notificationStore.pushNotification(
+        `Connected to chain${!disabledSubsquid ? " and indexer" : ""}!`,
+        {
+          autoRemove: true,
+          lifetime: 4,
+          type: "Success",
+        }
+      );
     } catch (error) {
-      setEndpointErrors("Unable to connect to this endpoint");
+      notificationStore.pushNotification("Unable to connect to this endpoint", {
+        autoRemove: true,
+        lifetime: 8,
+        type: "Error",
+      });
       setEndpointSelection(getEndpointOption(userStore.endpoint));
+      setIsConnectingSdk(false);
     }
   };
 
@@ -380,7 +444,14 @@ const Settings: NextPage = observer(() => {
             Endpoint
             <div className="flex flex-wrap mt-ztg-20">
               <Select
-                options={endpoints}
+                options={Object.entries(groupBy(endpoints, "parachain")).map(
+                  ([parachain, endpoints]) => ({
+                    label: supportedParachainToString(
+                      parachain as SupportedParachain
+                    ),
+                    options: endpoints,
+                  })
+                )}
                 className="w-1/3 mr-ztg-3"
                 onChange={changeEndpoint}
                 value={endpointSelection}
@@ -408,6 +479,7 @@ const Settings: NextPage = observer(() => {
                   type="checkbox"
                   id="disableSubsquid"
                   defaultChecked={disabledSubsquid}
+                  checked={disabledSubsquid}
                   onChange={() => {
                     const disabled = !disabledSubsquid;
                     setDisabledSubsquid(disabled);
@@ -425,7 +497,14 @@ const Settings: NextPage = observer(() => {
                 {!disabledSubsquid && (
                   <>
                     <Select
-                      options={gqlEndpoints}
+                      options={Object.entries(
+                        groupBy(gqlEndpoints, "parachain")
+                      ).map(([parachain, endpoints]) => ({
+                        label: supportedParachainToString(
+                          parachain as SupportedParachain
+                        ),
+                        options: endpoints,
+                      }))}
                       className="w-1/3 mr-ztg-3"
                       onChange={changeGqlEndpoint}
                       value={gqlEndpointSelection}
@@ -449,10 +528,18 @@ const Settings: NextPage = observer(() => {
           <div className="mb-ztg-20 text-red-600 font-light">
             {endpointErrors}
           </div>
-          <SubmitButton
-            onClick={submitEndpoints}
-            disabled={endpointSubmitDisabled()}
-          />
+
+          <div className="flex items-center">
+            <SubmitButton
+              onClick={submitEndpoints}
+              disabled={endpointSubmitDisabled()}
+            />
+            {isConnectingSdk && (
+              <div className="ml-4">
+                <Loader size={8} />
+              </div>
+            )}
+          </div>
         </div>
         <div className="text-ztg-16-150 mt-ztg-40">
           Theme

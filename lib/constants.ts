@@ -5,10 +5,8 @@ import {
   EMarketStatus,
   ESortType,
   EndpointOption,
-  FilterOptions,
-  SortOptions,
   MarketsFilterOptions,
-  MyMarketsFilterOptions,
+  SupportedParachain,
 } from "./types";
 
 export const ZTG = 10 ** 10;
@@ -38,16 +36,49 @@ export const sortOptions = Object.entries(ESortType).map((v) => {
 });
 
 export const endpoints: EndpointOption[] = [
-  { value: "wss://bsr.zeitgeist.pm", label: "Battery Station" },
-  { value: "ws://127.0.0.1:9944", label: "Custom" },
+  {
+    value: "wss://rpc-0.zeitgeist.pm/",
+    label: "ZeitgeistPM",
+    parachain: SupportedParachain.KUSAMA,
+  },
+  {
+    value: "wss://zeitgeist-rpc.dwellir.com/",
+    label: "Dwellir",
+    parachain: SupportedParachain.KUSAMA,
+  },
+  {
+    value: "wss://zeitgeist.api.onfinality.io/public-ws",
+    label: "OnFinality",
+    parachain: SupportedParachain.KUSAMA,
+  },
+  {
+    value: "wss://bsr.zeitgeist.pm",
+    label: "Battery Station",
+    parachain: SupportedParachain.BSR,
+  },
+  {
+    value: "wss://127.0.0.1:9944",
+    label: "Custom",
+    parachain: SupportedParachain.CUSTOM,
+  },
 ];
 
 export const gqlEndpoints: EndpointOption[] = [
   {
     value: "https://processor.bsr.zeitgeist.pm/graphql",
-    label: "Battery Park",
+    label: "Battery Park (Testnet)",
+    parachain: SupportedParachain.BSR,
   },
-  { value: "http://localhost:4350", label: "Custom" },
+  {
+    value: "https://processor.rpc-0.zeitgeist.pm/graphql ",
+    label: "Kusama (Live)",
+    parachain: SupportedParachain.KUSAMA,
+  },
+  {
+    value: "http://localhost:4350",
+    label: "Custom",
+    parachain: SupportedParachain.CUSTOM,
+  },
 ];
 
 export const allMarketsFiltersOff: MarketsFilterOptions = {

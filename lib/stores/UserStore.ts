@@ -1,5 +1,5 @@
 import { makeAutoObservable, reaction, runInAction } from "mobx";
-import { JSONObject, Primitive } from "lib/types";
+import { JSONObject, Primitive, SupportedParachain } from "lib/types";
 import Store, { useStore } from "./Store";
 import { endpoints, gqlEndpoints } from "lib/constants";
 import { TradeSlipItem } from "./TradeSlipStore";
@@ -129,11 +129,14 @@ export default class UserStore {
     ) as TradeSlipItem[];
     this.endpoint = getFromLocalStorage(
       "endpoint-1",
-      endpoints[0].value
+      endpoints.find((endpoint) => endpoint.parachain == SupportedParachain.BSR)
+        .value
     ) as string;
     this.gqlEndpoint = getFromLocalStorage(
       "gql-endpoint-1",
-      gqlEndpoints[0].value
+      gqlEndpoints.find(
+        (endpoint) => endpoint.parachain == SupportedParachain.BSR
+      ).value
     ) as string;
 
     window
