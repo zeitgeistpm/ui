@@ -187,9 +187,6 @@ describe("Create market page", () => {
         createForm.elements.tagNorthAmerica().eq(1).click();
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
-      createForm.elements.calendericon().should("be.visible").click();
-      createForm.elements.currentDate().next().should("be.visible").click();
-      createForm.elements.outcomesLabel().click({ force: true });
       createForm.elements
         .multipleOutcomes()
         // .scrollIntoView()
@@ -279,9 +276,6 @@ describe("Create market page", () => {
         createForm.elements.tagNorthAmerica().eq(1).click();
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
-      createForm.elements.calendericon().should("be.visible").click();
-      // createForm.elements.currentDate().next().should("be.visible").click();
-      createForm.elements.outcomesLabel().click({ force: true });
       createForm.elements
         .multipleOutcomes()
         .scrollIntoView()
@@ -364,9 +358,6 @@ describe("Create market page", () => {
         createForm.elements.tagNorthAmerica().eq(1).click();
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
-      createForm.elements.calendericon().should("be.visible").click();
-      // createForm.elements.currentDate().next().should("be.visible").click();
-      createForm.elements.outcomesLabel().click({ force: true });
       createForm.elements
         .multipleOutcomes()
         .scrollIntoView()
@@ -440,9 +431,6 @@ describe("Create market page", () => {
         createForm.elements.tagNorthAmerica().eq(1).click();
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
-      createForm.elements.calendericon().should("be.visible").click();
-      // createForm.elements.currentDate().next().should("be.visible").click();
-      createForm.elements.outcomesLabel().click({ force: true });
       createForm.elements
         .outcomesSwitch().eq(0)
         .scrollIntoView()
@@ -518,9 +506,6 @@ describe("Create market page", () => {
         createForm.elements.tagNorthAmerica().eq(1).click();
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
-      createForm.elements.calendericon().should("be.visible").click();
-      // createForm.elements.currentDate().next().should("be.visible").click();
-      createForm.elements.outcomesLabel().click({ force: true });
       createForm.elements
         .outcomesSwitch().eq(0)
         .scrollIntoView()
@@ -585,9 +570,6 @@ describe("Create market page", () => {
         createForm.elements.tagNorthAmerica().eq(1).click();
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
-      createForm.elements.calendericon().should("be.visible").click();
-      // createForm.elements.currentDate().next().should("be.visible").click();
-      createForm.elements.outcomesLabel().click({ force: true });
       createForm.elements
         .outcomesSwitch().eq(0)
         .scrollIntoView()
