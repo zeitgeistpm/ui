@@ -49,7 +49,7 @@ const TrendingMarkets = observer(() => {
       const trendingMarkets = await Promise.all(
         response.pools.map((pool) => marketsStore.getMarket(pool.marketId))
       );
-
+      console.log(trendingMarkets);
       const marketPredictions = await Promise.all(
         trendingMarkets.map((market) => market.calcPrediction())
       );
