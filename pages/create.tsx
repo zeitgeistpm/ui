@@ -7,6 +7,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { from } from "rxjs";
 import { AlertTriangle } from "react-feather";
 import {
+  CreateMarketParams,
+  CreateCpmmMarketAndDeployAssetsParams,
+} from "@zeitgeistpm/sdk/dist/types/market";
+import { ISubmittableResult } from "@polkadot/types/types";
+import {
   DecodedMarketMetadata,
   KeyringPairOrExtSigner,
   MarketDisputeMechanism,
@@ -285,79 +290,49 @@ const CreatePage: NextPage = observer(() => {
     return metadata;
   };
 
-  const getCreateMarketParameters = async (): Promise<
-    [
-      KeyringPairOrExtSigner,
-      string,
-      MarketPeriod,
-      string,
-      MarketDisputeMechanism,
-      string,
-      DecodedMarketMetadata
-    ]
-  > => {
+  const getCreateMarketParameters = async (
+    callbackOrPaymentInfo:
+      | ((result: ISubmittableResult, _unsub: () => void) => void)
+      | boolean
+  ): Promise<CreateMarketParams> => {
     const signer = store.wallets.getActiveSigner();
     const oracle = formData.oracle;
-    const marketPeriod = getMarketPeriod();
+    const period = getMarketPeriod();
     const creationType = formData.advised ? "Advised" : "Permissionless";
     const mdm = { SimpleDisputes: null };
     const scoringRule = "CPMM";
     const metadata = getMarketMetadata();
-    return [
+
+    const outcomes = formData.outcomes.value;
+    const marketType = isMultipleOutcomeEntries(outcomes)
+      ? {
+          Categorical: outcomes.length,
+        }
+      : {
+          Scalar: [outcomes.minimum, outcomes.maximum],
+        };
+
+    return {
+      marketType,
       signer,
       oracle,
-      marketPeriod,
+      period,
       creationType,
       mdm,
       scoringRule,
       metadata,
-    ];
+      callbackOrPaymentInfo,
+    };
   };
 
-  const createCategoricalMarket = async (): Promise<number> => {
-    const params = await getCreateMarketParameters();
-    return new Promise(async (resolve, reject) => {
-      await store.sdk.models.createCategoricalMarket(
-        ...params,
-        extrinsicCallback({
-          notificationStore,
-          successMethod: "MarketCreated",
-          finalizedCallback: (data: JSONObject) => {
-            const marketId = data[0];
-            notificationStore.pushNotification(
-              `Transaction successful! Market id ${marketId}`,
-              { type: "Success" }
-            );
-            resolve(Number(marketId));
-          },
-          failCallback: ({ index, error }) => {
-            notificationStore.pushNotification(
-              store.getTransactionError(index, error),
-              { type: "Error" }
-            );
-            reject();
-          },
-        })
-      );
-    });
-  };
-
-  const getCreateCpmmMarketAndAddPoolParameters = async (): Promise<
-    [
-      KeyringPairOrExtSigner,
-      string,
-      MarketPeriod,
-      MarketTypeOf,
-      MarketDisputeMechanism,
-      string[],
-      string,
-      string[],
-      DecodedMarketMetadata
-    ]
-  > => {
+  const getCreateCpmmMarketAndAddPoolParameters = async (
+    callbackOrPaymentInfo:
+      | ((result: ISubmittableResult, _unsub: () => void) => void)
+      | boolean
+  ): Promise<CreateCpmmMarketAndDeployAssetsParams> => {
     const signer = store.wallets.getActiveSigner();
     const oracle = formData.oracle;
-    const marketPeriod = getMarketPeriod();
+    const period = getMarketPeriod();
     const mdm = { SimpleDisputes: null };
     const metadata = getMarketMetadata();
 
@@ -396,26 +371,23 @@ const CreatePage: NextPage = observer(() => {
           ],
         };
 
-    return [
+    return {
       signer,
       oracle,
-      marketPeriod,
+      period,
       marketType,
       mdm,
-      [...amounts].map((a) => a.toString()),
-      baseAssetAmount.toString(),
+      amount: baseAssetAmount,
       weights,
       metadata,
-    ];
+      callbackOrPaymentInfo,
+    };
   };
 
   const createCategoricalCpmmMarketAndDeployPoolTransaction =
     async (): Promise<number> => {
-      const params = await getCreateCpmmMarketAndAddPoolParameters();
-
       return new Promise(async (resolve, reject) => {
-        await store.sdk.models.createCpmmMarketAndDeployAssets(
-          ...params,
+        const params = await getCreateCpmmMarketAndAddPoolParameters(
           extrinsicCallback({
             notificationStore,
             successMethod: "PoolCreate",
@@ -438,21 +410,21 @@ const CreatePage: NextPage = observer(() => {
             },
           })
         );
+
+        await store.sdk.models.createCpmmMarketAndDeployAssets(params);
       });
     };
 
-  const createScalarMarket = async (): Promise<number> => {
-    const params = await getCreateMarketParameters();
+  const createMarket = async () => {
+    if (!form.isValid) {
+      return;
+    }
 
-    if (isRangeOutcomeEntry(formData.outcomes.value)) {
-      const bounds = [
-        formData.outcomes.value.minimum,
-        formData.outcomes.value.maximum,
-      ];
-      return new Promise(async (resolve, reject) => {
-        await store.sdk.models.createScalarMarket(
-          ...params,
-          bounds,
+    let marketId: number;
+
+    if (!deployPool) {
+      marketId = await new Promise(async (resolve, reject) => {
+        const params = await getCreateMarketParameters(
           extrinsicCallback({
             notificationStore,
             successMethod: "MarketCreated",
@@ -473,23 +445,8 @@ const CreatePage: NextPage = observer(() => {
             },
           })
         );
+        return parseInt(await store.sdk.models.createMarket(params));
       });
-    }
-  };
-
-  const createMarket = async () => {
-    if (!form.isValid) {
-      return;
-    }
-
-    let marketId: number;
-
-    if (!deployPool) {
-      if (formData.outcomes.type === "multiple") {
-        marketId = await createCategoricalMarket();
-      } else {
-        marketId = await createScalarMarket();
-      }
     } else {
       marketId = await createCategoricalCpmmMarketAndDeployPoolTransaction();
     }
@@ -504,17 +461,16 @@ const CreatePage: NextPage = observer(() => {
 
   const getTransactionFee = async (): Promise<string> => {
     if (!deployPool) {
-      const params = await getCreateMarketParameters();
-      return new Decimal(
-        await store.sdk.models.createCategoricalMarket(...params, true)
-      )
+      const params = await getCreateMarketParameters(true);
+      return new Decimal(await store.sdk.models.createMarket(params))
         .div(ZTG)
         .toFixed(4);
     } else {
-      const params = await getCreateCpmmMarketAndAddPoolParameters();
-      return new Decimal(
-        await store.sdk.models.createCpmmMarketAndDeployAssets(...params, true)
-      )
+      const params = await getCreateCpmmMarketAndAddPoolParameters(true);
+      const fee = await store.sdk.models.createCpmmMarketAndDeployAssets(
+        params
+      );
+      return new Decimal(typeof fee == "string" ? fee : "0")
         .div(ZTG)
         .toFixed(4);
     }
@@ -522,9 +478,11 @@ const CreatePage: NextPage = observer(() => {
   return (
     <form data-test="createMarketForm">
       <InfoBoxes />
-      <h2 className="header mb-ztg-23" data-test="createMarketHeader">Create Market</h2>
+      <h2 className="header mb-ztg-23" data-test="createMarketHeader">
+        Create Market
+      </h2>
       <MarketFormCard header="1. Market name">
-        <MarketSlugField 
+        <MarketSlugField
           slug={formData.slug}
           base64Image={formData.marketImage}
           onSlugChange={changeSlug}
@@ -533,7 +491,7 @@ const CreatePage: NextPage = observer(() => {
           form={form}
         />
       </MarketFormCard>
-      <MarketFormCard  header="2. Market name / Question *">
+      <MarketFormCard header="2. Market name / Question *">
         <Input
           ref={questionInputRef}
           type="text"
@@ -569,7 +527,7 @@ const CreatePage: NextPage = observer(() => {
           form={form}
         />
       </MarketFormCard>
-      <MarketFormCard header="5. Oracle *" >
+      <MarketFormCard header="5. Oracle *">
         <Input
           form={form}
           type="text"
