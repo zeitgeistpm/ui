@@ -59,23 +59,29 @@ const PoolSettings: FC<{
   const store = useStore();
   const { wallets } = store;
 
-  const changeOutcomeRow = (rowIndex: number, amount: string) => {
-    const currentRowData = data[rowIndex];
-    const priceNum = Number(currentRowData.price);
-    const amountNum = Number(amount);
-    const updatedRow: PoolAssetRowData = {
-      ...currentRowData,
-      amount,
-      value: `${amountNum * priceNum}`,
-    };
-    onChange([
-      ...data.slice(0, rowIndex),
-      updatedRow,
-      ...data.slice(rowIndex + 1),
-    ]);
+  const changeOutcomeRow = (amount: string) => {
+    onChange(
+      data.map((row) => ({
+        ...row,
+        amount,
+      }))
+    );
+    // const currentRowData = data[rowIndex];
+    // const priceNum = Number(currentRowData.price);
+    // const amountNum = Number(amount);
+    // const updatedRow: PoolAssetRowData = {
+    //   ...currentRowData,
+    //   amount,
+    //   value: `${amountNum * priceNum}`,
+    // };
+    // onChange([
+    //   ...data.slice(0, rowIndex),
+    //   updatedRow,
+    //   ...data.slice(rowIndex + 1),
+    // ]);
   };
 
-  const tableData: TableData[] = data.map((d, index) => {
+  const tableData: TableData[] = data.map((d) => {
     return {
       token: {
         color: d.assetColor,
@@ -101,7 +107,7 @@ const PoolSettings: FC<{
         min: "100",
         max: "150",
         onChange: (amount: string) => {
-          changeOutcomeRow(index, amount);
+          changeOutcomeRow(amount);
         },
       },
     };
