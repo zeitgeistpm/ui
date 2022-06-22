@@ -34,4 +34,5 @@ yarn-error.log*
 # vercel
 .vercel
 
-.yarn/*
+.yarn/cache
+.yarn/install-state.gz
