@@ -665,11 +665,7 @@ export default class TradeSlipStore {
     const { pool } = market;
     const tradeAsset = item.assetId;
     const tradeAmount = amount.mul(ZTG);
-    const price = item.currentPrice;
-    const maxPrice = price
-      .mul(this.slippagePercentage.div(100).plus(1))
-      .mul(ZTG)
-      .toFixed(0);
+
     if (item.type === "buy") {
       const maxAssetIn = item.ztgAccountBalance.mul(ZTG);
       if (maxAssetIn.lte(0)) {
@@ -681,8 +677,7 @@ export default class TradeSlipStore {
         ztgAsset,
         item.ztgAccountBalance.mul(ZTG).toFixed(0),
         tradeAsset,
-        tradeAmount.toFixed(0),
-        maxPrice
+        tradeAmount.toFixed(0)
       );
     }
     if (item.type === "sell") {
@@ -691,8 +686,7 @@ export default class TradeSlipStore {
         tradeAsset,
         tradeAmount.toFixed(0),
         ztgAsset,
-        "0",
-        maxPrice
+        "0"
       );
     }
   }

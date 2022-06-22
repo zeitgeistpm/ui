@@ -191,8 +191,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
           ztgAsset,
           wallets.activeBalance.mul(ZTG).toFixed(0),
           exchangeStore.outcome.asset,
-          exchangeStore.amount.mul(ZTG).toFixed(0),
-          exchangeStore.spotPrice.mul(slippageDecimal).mul(ZTG).toFixed(0)
+          exchangeStore.amount.mul(ZTG).toFixed(0)
         );
       } else {
         _tx = store.sdk.api.tx.swaps.swapExactAmountIn(
@@ -200,11 +199,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
           exchangeStore.outcome.asset,
           exchangeStore.amount.mul(ZTG).toFixed(0),
           ztgAsset,
-          "0",
-          new Decimal(ZTG)
-            .div(exchangeStore.spotPrice)
-            .mul(slippageDecimal)
-            .toFixed(0)
+          "0"
         );
       }
 
