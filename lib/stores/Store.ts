@@ -4,7 +4,7 @@ import { AccountInfo } from "@polkadot/types/interfaces/system";
 import { Swap } from "@zeitgeistpm/sdk/dist/models";
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import { useContext } from "react";
-import SDK, { util } from "@zeitgeistpm/sdk";
+import SDK from "@zeitgeistpm/sdk";
 import { initIpfs } from "@zeitgeistpm/sdk/dist/util/ipfs";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 import Decimal from "decimal.js";
