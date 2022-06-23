@@ -5,6 +5,7 @@ import { Swap } from "@zeitgeistpm/sdk/dist/models";
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import { useContext } from "react";
 import SDK, { util } from "@zeitgeistpm/sdk";
+import { initIpfs } from "@zeitgeistpm/sdk/dist/util/ipfs";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 import Decimal from "decimal.js";
 import { makeAutoObservable, runInAction, when } from "mobx";
@@ -231,7 +232,7 @@ export default class Store {
   }
 
   async initIPFS() {
-    this.ipfs = util.initIpfs();
+    this.ipfs = initIpfs();
   }
 
   private async initGraphQlClient() {
