@@ -66,19 +66,6 @@ const PoolSettings: FC<{
         amount,
       }))
     );
-    // const currentRowData = data[rowIndex];
-    // const priceNum = Number(currentRowData.price);
-    // const amountNum = Number(amount);
-    // const updatedRow: PoolAssetRowData = {
-    //   ...currentRowData,
-    //   amount,
-    //   value: `${amountNum * priceNum}`,
-    // };
-    // onChange([
-    //   ...data.slice(0, rowIndex),
-    //   updatedRow,
-    //   ...data.slice(rowIndex + 1),
-    // ]);
   };
 
   const tableData: TableData[] = data.map((d) => {
