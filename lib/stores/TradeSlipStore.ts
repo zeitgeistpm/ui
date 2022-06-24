@@ -19,6 +19,7 @@ import { compareJSON } from "lib/util";
 import { TradeType, ztgAsset } from "lib/types";
 import Store from "./Store";
 import MarketStore from "./MarketStore";
+import { extractSwapWeights } from "lib/util/pool";
 
 export type TradeSlipItem = {
   type: TradeType;
@@ -494,7 +495,6 @@ export default class TradeSlipStore {
           );
         }
       }
-
       trades.push({
         id,
         type,
@@ -666,27 +666,57 @@ export default class TradeSlipStore {
     const tradeAsset = item.assetId;
     const tradeAmount = amount.mul(ZTG);
 
+    const { assetWeight, baseWeight } = extractSwapWeights(
+      pool,
+      tradeAsset,
+      "Ztg"
+    );
+
     if (item.type === "buy") {
       const maxAssetIn = item.ztgAccountBalance.mul(ZTG);
       if (maxAssetIn.lte(0)) {
         return;
       }
 
+      const maxAmountIn = calcInGivenOut(
+        item.ztgPoolBalance.mul(ZTG),
+        baseWeight,
+        item.assetPoolBalance.mul(ZTG),
+        assetWeight,
+        tradeAmount,
+        new Decimal(pool.swapFee)
+      );
+
+      const maxAmountInWithSlippage = maxAmountIn.mul(
+        new Decimal(this.slippagePercentage.div(100)).plus(1)
+      );
+
       return this.store.sdk.api.tx.swaps.swapExactAmountOut(
         pool.poolId,
         ztgAsset,
-        item.ztgAccountBalance.mul(ZTG).toFixed(0),
+        maxAmountInWithSlippage.toFixed(0),
         tradeAsset,
-        tradeAmount.toFixed(0)
+        tradeAmount.toFixed(0),
+        null
       );
     }
     if (item.type === "sell") {
+      const amountOut = calcOutGivenIn(
+        item.ztgPoolBalance.mul(ZTG),
+        baseWeight,
+        item.assetPoolBalance.mul(ZTG),
+        assetWeight,
+        tradeAmount,
+        0
+      );
+
       return this.store.sdk.api.tx.swaps.swapExactAmountIn(
         pool.poolId,
         tradeAsset,
         tradeAmount.toFixed(0),
         ztgAsset,
-        "0"
+        "0",
+        null
       );
     }
   }
