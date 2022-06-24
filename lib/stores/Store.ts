@@ -27,6 +27,7 @@ import ExchangeStore from "./ExchangeStore";
 import CourtStore from "./CourtStore";
 import Wallets from "../wallets";
 import { isValidPolkadotAddress } from "lib/util";
+import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 
 interface Config {
   tokenSymbol: string;
@@ -303,9 +304,7 @@ export default class Store {
 
   getTransactionError(groupIndex: number, error: number | string): string {
     const errorIndex =
-      typeof error === "string"
-        ? parseInt((error as any).substring(2, 4), 16)
-        : error;
+      typeof error === "string" ? extractIndexFromErrorHex(error) : error;
 
     const { errorName, documentation } = this.sdk.errorTable.getEntry(
       groupIndex,
