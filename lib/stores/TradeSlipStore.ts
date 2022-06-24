@@ -21,6 +21,7 @@ import Store from "./Store";
 import MarketStore from "./MarketStore";
 import {
   extractSwapWeights,
+  generateSwapExactAmountInTx,
   generateSwapExactAmountOutTx,
 } from "lib/util/pool";
 
@@ -696,27 +697,18 @@ export default class TradeSlipStore {
       );
     }
     if (item.type === "sell") {
-      //with a sell the user specifies amount in, constrain trade with min amount out
-      const minAmountOut = calcOutGivenIn(
+      return generateSwapExactAmountInTx(
+        this.store.sdk.api,
+        tradeAsset,
+        ztgAsset,
         item.assetPoolBalance.mul(ZTG),
         assetWeight,
         item.ztgPoolBalance.mul(ZTG),
         baseWeight,
         tradeAmount,
-        0
-      );
-
-      const minAmountOutWithSlippage = minAmountOut.mul(
-        new Decimal(1).minus(this.slippagePercentage.div(100))
-      );
-
-      return this.store.sdk.api.tx.swaps.swapExactAmountIn(
-        pool.poolId,
-        tradeAsset,
-        tradeAmount.toFixed(0),
-        ztgAsset,
-        minAmountOutWithSlippage.toFixed(0),
-        null
+        new Decimal(pool.swapFee),
+        this.slippagePercentage.div(100),
+        pool.poolId
       );
     }
   }
