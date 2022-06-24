@@ -420,10 +420,8 @@ const CreatePage: NextPage = observer(() => {
       return;
     }
 
-    let marketId: number;
-
-    if (!deployPool) {
-      marketId = await new Promise(async (resolve, reject) => {
+    const marketId = await new Promise<number>(async (resolve, reject) => {
+      if (!deployPool) {
         const params = await getCreateMarketParameters(
           extrinsicCallback({
             notificationStore,
@@ -446,10 +444,10 @@ const CreatePage: NextPage = observer(() => {
           })
         );
         return parseInt(await store.sdk.models.createMarket(params));
-      });
-    } else {
-      marketId = await createCategoricalCpmmMarketAndDeployPoolTransaction();
-    }
+      } else {
+        return createCategoricalCpmmMarketAndDeployPoolTransaction();
+      }
+    });
 
     await markets.updateMarketIds();
     await markets.getMarket(marketId);
