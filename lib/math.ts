@@ -20,11 +20,11 @@ export const calcSpotPrice = (
 };
 
 export const calcOutGivenIn = (
-  tokenBalanceIn,
-  tokenWeightIn,
-  tokenBalanceOut,
-  tokenWeightOut,
-  tokenAmountIn,
+  tokenBalanceIn, // amount of 'in' asset in the pool
+  tokenWeightIn, // weight of 'in' asset on the pool
+  tokenBalanceOut, // amount of 'out' asset in the pool
+  tokenWeightOut, // weight of 'out' asset on the pool
+  tokenAmountIn, // amount in for the swap
   swapFee
 ) => {
   const weightRatio = new Decimal(tokenWeightIn).div(

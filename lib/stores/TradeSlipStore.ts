@@ -701,13 +701,18 @@ export default class TradeSlipStore {
       );
     }
     if (item.type === "sell") {
-      const amountOut = calcOutGivenIn(
-        item.ztgPoolBalance.mul(ZTG),
-        baseWeight,
+      //with a sell the user specifies amount in, constrain trade with min amount out
+      const minAmountOut = calcOutGivenIn(
         item.assetPoolBalance.mul(ZTG),
         assetWeight,
+        item.ztgPoolBalance.mul(ZTG),
+        baseWeight,
         tradeAmount,
         0
+      );
+
+      const minAmountOutWithSlippage = minAmountOut.mul(
+        new Decimal(1).minus(this.slippagePercentage.div(100))
       );
 
       return this.store.sdk.api.tx.swaps.swapExactAmountIn(
@@ -715,7 +720,7 @@ export default class TradeSlipStore {
         tradeAsset,
         tradeAmount.toFixed(0),
         ztgAsset,
-        "0",
+        minAmountOutWithSlippage.toFixed(0),
         null
       );
     }
