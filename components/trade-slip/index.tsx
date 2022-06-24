@@ -65,7 +65,10 @@ const TradeSlip = observer(() => {
               resolve();
             },
             failCallback: ({ index, error }, batchIdx?: number) => {
-              const { errorName } = store.sdk.errorTable.getEntry(index, error);
+              const { errorName } = store.sdk.errorTable.getEntry(
+                index,
+                parseInt(error.substring(2, 4), 16)
+              );
               if (batchIdx != null) {
                 failedItemId = batchIdx;
                 const item = tradeSlipStore.tradeSlipItems[batchIdx];

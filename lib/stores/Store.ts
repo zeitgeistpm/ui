@@ -301,7 +301,12 @@ export default class Store {
     return Number(codec.toString());
   }
 
-  getTransactionError(groupIndex: number, errorIndex: number): string {
+  getTransactionError(groupIndex: number, error: number | string): string {
+    const errorIndex =
+      typeof error === "string"
+        ? parseInt((error as any).substring(2, 4), 16)
+        : error;
+
     const { errorName, documentation } = this.sdk.errorTable.getEntry(
       groupIndex,
       errorIndex
