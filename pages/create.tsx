@@ -295,7 +295,8 @@ const CreatePage: NextPage = observer(() => {
     const creationType = formData.advised ? "Advised" : "Permissionless";
 
     const mdm = {
-      Authorized: process.env.NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS,
+      Authorized: process.env
+        .NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS as unknown as number,
     };
 
     const scoringRule = "CPMM";
@@ -332,7 +333,8 @@ const CreatePage: NextPage = observer(() => {
     const oracle = formData.oracle;
     const period = getMarketPeriod();
     const mdm = {
-      Authorized: process.env.NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS,
+      Authorized: process.env
+        .NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS as unknown as number,
     };
     const metadata = getMarketMetadata();
 
