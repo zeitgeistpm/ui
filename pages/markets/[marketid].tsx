@@ -258,6 +258,9 @@ const MarketDetails = observer(() => {
   };
 
   const handleDeploySignClick = async () => {
+    // We are asuming all rows have the same ammount
+    const ammount = poolRows[0].amount;
+
     // return largest amount set for pool assets - this is amount for
     // complete set that will be needed
     const setAmountNeeded = poolRows.reduce<number>((acc, r) => {
@@ -316,6 +319,7 @@ const MarketDetails = observer(() => {
       return new Promise<void>((resolve, reject) => {
         marketStore.market.deploySwapPool(
           signer,
+          ammount,
           weightsParams,
           extrinsicCallback({
             notificationStore,

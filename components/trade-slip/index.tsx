@@ -11,6 +11,7 @@ import { extrinsicCallback } from "lib/util/tx";
 import TradeSlipItemList from "./TradeSlipItemList";
 import TransactionButton from "../ui/TransactionButton";
 import SlippageSettingInput from "../markets/SlippageInput";
+import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 
 const TradeSlip = observer(() => {
   const tradeSlipStore = useTradeSlipStore();
@@ -65,7 +66,10 @@ const TradeSlip = observer(() => {
               resolve();
             },
             failCallback: ({ index, error }, batchIdx?: number) => {
-              const { errorName } = store.sdk.errorTable.getEntry(index, error);
+              const { errorName } = store.sdk.errorTable.getEntry(
+                index,
+                extractIndexFromErrorHex(error)
+              );
               if (batchIdx != null) {
                 failedItemId = batchIdx;
                 const item = tradeSlipStore.tradeSlipItems[batchIdx];
