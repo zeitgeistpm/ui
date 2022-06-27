@@ -4,7 +4,8 @@ import { AccountInfo } from "@polkadot/types/interfaces/system";
 import { Swap } from "@zeitgeistpm/sdk/dist/models";
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import { useContext } from "react";
-import SDK, { util } from "@zeitgeistpm/sdk";
+import SDK from "@zeitgeistpm/sdk";
+import { initIpfs } from "@zeitgeistpm/sdk/dist/util/ipfs";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 import Decimal from "decimal.js";
 import { makeAutoObservable, runInAction, when } from "mobx";
@@ -26,6 +27,7 @@ import ExchangeStore from "./ExchangeStore";
 import CourtStore from "./CourtStore";
 import Wallets from "../wallets";
 import { isValidPolkadotAddress } from "lib/util";
+import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 
 interface Config {
   tokenSymbol: string;
@@ -231,7 +233,7 @@ export default class Store {
   }
 
   async initIPFS() {
-    this.ipfs = util.initIpfs();
+    this.ipfs = initIpfs();
   }
 
   private async initGraphQlClient() {
@@ -300,7 +302,10 @@ export default class Store {
     return Number(codec.toString());
   }
 
-  getTransactionError(groupIndex: number, errorIndex: number): string {
+  getTransactionError(groupIndex: number, error: number | string): string {
+    const errorIndex =
+      typeof error === "string" ? extractIndexFromErrorHex(error) : error;
+
     const { errorName, documentation } = this.sdk.errorTable.getEntry(
       groupIndex,
       errorIndex

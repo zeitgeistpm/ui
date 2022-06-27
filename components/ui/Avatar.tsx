@@ -16,14 +16,14 @@ const Avatar = observer(
     zoomed?: boolean;
     size?: number;
   }) => {
+    if (address === "") {
+      return null;
+    }
+
     const decodedAddressArray = Array.from(decodeAddress(address));
     const blue = blues[decodedAddressArray[5] % blues.length];
     const red = reds[decodedAddressArray[6] % reds.length];
     const blueFirst = decodedAddressArray[10] % 2;
-
-    if (address === "") {
-      return null;
-    }
 
     return (
       <div
