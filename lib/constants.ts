@@ -12,7 +12,7 @@ import {
 export const ZTG = 10 ** 10;
 
 export const DEFAULT_SLIPPAGE_PERCENTAGE =
-  Number(process.env.NEXT_PUBLIC_DEFAULT_SLIPPAGE_PERCENTAGE) || 50;
+  Number(process.env.NEXT_PUBLIC_DEFAULT_SLIPPAGE_PERCENTAGE) || 1;
 
 export const REPORT_ALLOWED_DURATION_MS = 24 * 3600 * 1000; // 24 hours
 

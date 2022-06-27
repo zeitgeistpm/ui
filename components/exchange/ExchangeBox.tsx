@@ -22,6 +22,10 @@ import SlippageSettingInput from "components/markets/SlippageInput";
 import TypeSwitch from "./TypeSwitch";
 import Slider from "../ui/Slider";
 import { AmountInput } from "../ui/inputs";
+import {
+  generateSwapExactAmountInTx,
+  generateSwapExactAmountOutTx,
+} from "lib/util/pool";
 
 const formFieldsDefaults = [
   {
@@ -183,25 +187,34 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
       }
 
       const { poolId } = exchangeStore;
-      let _tx;
-
-      if (type === "buy") {
-        _tx = store.sdk.api.tx.swaps.swapExactAmountOut(
-          poolId,
-          ztgAsset,
-          wallets.activeBalance.mul(ZTG).toFixed(0),
-          exchangeStore.outcome.asset,
-          exchangeStore.amount.mul(ZTG).toFixed(0)
-        );
-      } else {
-        _tx = store.sdk.api.tx.swaps.swapExactAmountIn(
-          poolId,
-          exchangeStore.outcome.asset,
-          exchangeStore.amount.mul(ZTG).toFixed(0),
-          ztgAsset,
-          "0"
-        );
-      }
+      const _tx =
+        type === "buy"
+          ? generateSwapExactAmountOutTx(
+              store.sdk.api,
+              ztgAsset,
+              exchangeStore.outcome.asset,
+              exchangeStore.ztgPoolBalance.mul(ZTG),
+              new Decimal(exchangeStore.ztgWeight),
+              exchangeStore.poolBalance.mul(ZTG),
+              new Decimal(exchangeStore.outcomeWeight),
+              exchangeStore.amount.mul(ZTG),
+              new Decimal(0),
+              new Decimal(slippagePercentage).div(100),
+              poolId
+            )
+          : generateSwapExactAmountInTx(
+              store.sdk.api,
+              exchangeStore.outcome.asset,
+              ztgAsset,
+              exchangeStore.poolBalance.mul(ZTG),
+              new Decimal(exchangeStore.outcomeWeight),
+              exchangeStore.ztgPoolBalance.mul(ZTG),
+              new Decimal(exchangeStore.ztgWeight),
+              exchangeStore.amount.mul(ZTG),
+              new Decimal(0),
+              new Decimal(slippagePercentage).div(100),
+              poolId
+            );
 
       tx$.next(_tx);
     }, [
