@@ -11,13 +11,7 @@ import {
   CreateCpmmMarketAndDeployAssetsParams,
 } from "@zeitgeistpm/sdk/dist/types/market";
 import { ISubmittableResult } from "@polkadot/types/types";
-import {
-  DecodedMarketMetadata,
-  KeyringPairOrExtSigner,
-  MarketDisputeMechanism,
-  MarketPeriod,
-  MarketTypeOf,
-} from "@zeitgeistpm/sdk/dist/types";
+import { MarketPeriod } from "@zeitgeistpm/sdk/dist/types";
 import Moment from "moment";
 
 import { defaultOptions, defaultPlugins } from "lib/form";
@@ -299,7 +293,11 @@ const CreatePage: NextPage = observer(() => {
     const oracle = formData.oracle;
     const period = getMarketPeriod();
     const creationType = formData.advised ? "Advised" : "Permissionless";
-    const mdm = { SimpleDisputes: null };
+
+    const mdm = {
+      Authorized: process.env.NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS,
+    };
+
     const scoringRule = "CPMM";
     const metadata = getMarketMetadata();
 
@@ -333,7 +331,9 @@ const CreatePage: NextPage = observer(() => {
     const signer = store.wallets.getActiveSigner();
     const oracle = formData.oracle;
     const period = getMarketPeriod();
-    const mdm = { SimpleDisputes: null };
+    const mdm = {
+      Authorized: process.env.NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS,
+    };
     const metadata = getMarketMetadata();
 
     const numOutcomes = metadata.categories.length;
