@@ -19,6 +19,11 @@ import { compareJSON } from "lib/util";
 import { TradeType, ztgAsset } from "lib/types";
 import Store from "./Store";
 import MarketStore from "./MarketStore";
+import {
+  extractSwapWeights,
+  generateSwapExactAmountInTx,
+  generateSwapExactAmountOutTx,
+} from "lib/util/pool";
 
 export type TradeSlipItem = {
   type: TradeType;
@@ -494,7 +499,6 @@ export default class TradeSlipStore {
           );
         }
       }
-
       trades.push({
         id,
         type,
@@ -665,34 +669,46 @@ export default class TradeSlipStore {
     const { pool } = market;
     const tradeAsset = item.assetId;
     const tradeAmount = amount.mul(ZTG);
-    const price = item.currentPrice;
-    const maxPrice = price
-      .mul(this.slippagePercentage.div(100).plus(1))
-      .mul(ZTG)
-      .toFixed(0);
+
+    const { assetWeight, baseWeight } = extractSwapWeights(
+      pool,
+      tradeAsset,
+      "Ztg"
+    );
+
     if (item.type === "buy") {
       const maxAssetIn = item.ztgAccountBalance.mul(ZTG);
       if (maxAssetIn.lte(0)) {
         return;
       }
 
-      return this.store.sdk.api.tx.swaps.swapExactAmountOut(
-        pool.poolId,
+      return generateSwapExactAmountOutTx(
+        this.store.sdk.api,
         ztgAsset,
-        item.ztgAccountBalance.mul(ZTG).toFixed(0),
         tradeAsset,
-        tradeAmount.toFixed(0),
-        maxPrice
+        item.ztgPoolBalance.mul(ZTG),
+        baseWeight,
+        item.assetPoolBalance.mul(ZTG),
+        assetWeight,
+        tradeAmount,
+        new Decimal(pool.swapFee),
+        this.slippagePercentage.div(100),
+        pool.poolId
       );
     }
     if (item.type === "sell") {
-      return this.store.sdk.api.tx.swaps.swapExactAmountIn(
-        pool.poolId,
+      return generateSwapExactAmountInTx(
+        this.store.sdk.api,
         tradeAsset,
-        tradeAmount.toFixed(0),
         ztgAsset,
-        "0",
-        maxPrice
+        item.assetPoolBalance.mul(ZTG),
+        assetWeight,
+        item.ztgPoolBalance.mul(ZTG),
+        baseWeight,
+        tradeAmount,
+        new Decimal(pool.swapFee),
+        this.slippagePercentage.div(100),
+        pool.poolId
       );
     }
   }
