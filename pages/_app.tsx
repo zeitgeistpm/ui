@@ -16,6 +16,7 @@ import Store from "lib/stores/Store";
 import DefaultLayout from "layouts/DefaultLayout";
 import { AnimatePresence } from "framer-motion";
 import MobileMenu from "components/menu/MobileMenu";
+import { AvatarContext } from "@zeitgeistpm/avatara-react";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -66,42 +67,55 @@ const MyApp = observer(({ Component, pageProps }) => {
 
   return (
     <StoreProvider store={store}>
-      <ModalStoreContext.Provider value={modalStore}>
-        {modalStore.modal && (
-          <ModalContainer>{modalStore.modal}</ModalContainer>
-        )}
-        <Head>
-          <title>Zeitgeist Prediction Markets</title>
-          <meta name="description" content="Zeitgeist Prediction Markets" />
-          <link
-            rel="apple-touch-icon"
-            sizes="180x180"
-            href="/apple-touch-icon.png"
-          />
-          <link
-            rel="icon"
-            type="image/png"
-            sizes="32x32"
-            href="/favicon-32x32.png"
-          />
-          <link
-            rel="icon"
-            type="image/png"
-            sizes="16x16"
-            href="/favicon-16x16.png"
-          />
-          <link rel="manifest" href="/site.webmanifest" />
-          <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
-        </Head>
-        <AnimatePresence>
-          {store.showMobileMenu && <MobileMenu />}
-        </AnimatePresence>
-        <DefaultLayout>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </DefaultLayout>
-      </ModalStoreContext.Provider>
+      <AvatarContext.Provider
+        value={{
+          api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
+          ipfs: process.env.NEXT_PUBLIC_IPFS_NODE,
+          rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
+          indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
+        }}
+      >
+        <ModalStoreContext.Provider value={modalStore}>
+          {modalStore.modal && (
+            <ModalContainer>{modalStore.modal}</ModalContainer>
+          )}
+          <Head>
+            <title>Zeitgeist Prediction Markets</title>
+            <meta name="description" content="Zeitgeist Prediction Markets" />
+            <link
+              rel="apple-touch-icon"
+              sizes="180x180"
+              href="/apple-touch-icon.png"
+            />
+            <link
+              rel="icon"
+              type="image/png"
+              sizes="32x32"
+              href="/favicon-32x32.png"
+            />
+            <link
+              rel="icon"
+              type="image/png"
+              sizes="16x16"
+              href="/favicon-16x16.png"
+            />
+            <link rel="manifest" href="/site.webmanifest" />
+            <link
+              rel="mask-icon"
+              href="/safari-pinned-tab.svg"
+              color="#5bbad5"
+            />
+          </Head>
+          <AnimatePresence>
+            {store.showMobileMenu && <MobileMenu />}
+          </AnimatePresence>
+          <DefaultLayout>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </DefaultLayout>
+        </ModalStoreContext.Provider>
+      </AvatarContext.Provider>
     </StoreProvider>
   );
 });
