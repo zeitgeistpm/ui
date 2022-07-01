@@ -68,7 +68,7 @@ const createCategoricalMarket = async (
 
   const slug = `${num}-end${endBlock}`;
   const period = {
-    block: [startBlock, endBlock],
+    block: [startBlock, endBlock]
   };
 
   const metadata = {
@@ -79,20 +79,22 @@ const createCategoricalMarket = async (
       return {
         name: `C0${idx}.${slug}`,
         ticker: `${num}.T${idx}`,
-        color: randomHexColor(),
+        color: randomHexColor()
       };
-    }),
+    })
   };
 
-  const id = await sdk.models.createCategoricalMarket(
+  const id = await sdk.models.createMarket({
     signer,
-    signer.address,
+    oracle: signer.address,
     period,
-    "Permissionless",
-    { SimpleDisputes: null },
-    "CPMM",
-    metadata
-  );
+    metadata,
+    creationType: "Permissionless",
+    marketType: { Categorical: numOutcomes },
+    mdm: { Authorized: signer.address as unknown as number },
+    scoringRule: "CPMM",
+    callbackOrPaymentInfo: false
+  });
 
   console.log(metadata);
 
@@ -108,7 +110,7 @@ const createCategoricalMarket = async (
     id = id + 1;
   }
   for (const _ of [...new Array(Number(numMarkets))]) {
-    const start = (await sdk.api.query.system.number()).toNumber();
+    const start = Number((await sdk.api.query.system.number()).toString());
     end = (end ?? start) + Number(marketLength);
     const marketId = await createCategoricalMarket(sdk, id, start, end, signer);
 
@@ -127,7 +129,7 @@ const createCategoricalMarket = async (
       weights.push(`${10 * ZTG}`);
       console.log("weights", weights);
 
-      await market.deploySwapPool(signer, weights);
+      await market.deploySwapPool(signer, "1000000000000", weights);
 
       market = await sdk.models.fetchMarketData(marketId);
 

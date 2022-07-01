@@ -3,7 +3,7 @@ import {
   JSONObject,
   SelectOption,
   SupportedParachain,
-} from "lib/types";
+} from "../types";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { hexToU8a, isHex } from "@polkadot/util";
 import { endpoints, gqlEndpoints } from "../constants";
