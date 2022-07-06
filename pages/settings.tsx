@@ -394,6 +394,7 @@ const Settings: NextPage = observer(() => {
         }
       );
     } catch (error) {
+      console.log(error);
       notificationStore.pushNotification("Unable to connect to this endpoint", {
         autoRemove: true,
         lifetime: 8,

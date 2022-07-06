@@ -52,7 +52,7 @@ export const endpoints: EndpointOption[] = [
     parachain: SupportedParachain.KUSAMA,
   },
   {
-    value: "sc://zeitgeist.pm",
+    value: "light://zeitgeist.pm",
     label: "ZeitgeistPM (Experimental Light Client)",
     parachain: SupportedParachain.KUSAMA,
   },
@@ -62,7 +62,7 @@ export const endpoints: EndpointOption[] = [
     parachain: SupportedParachain.BSR,
   },
   {
-    value: "sc://bsr",
+    value: "light://bsr",
     label: "Battery Station(Experimental Light Client)",
     parachain: SupportedParachain.BSR,
   },

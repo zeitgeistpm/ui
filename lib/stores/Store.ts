@@ -5,7 +5,6 @@ import { Swap } from "@zeitgeistpm/sdk/dist/models";
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import { useContext } from "react";
 import SDK from "@zeitgeistpm/sdk";
-import { initIpfs } from "@zeitgeistpm/sdk/dist/util/ipfs";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 import Decimal from "decimal.js";
 import { makeAutoObservable, runInAction, when } from "mobx";
@@ -194,7 +193,7 @@ export default class Store {
   async connectNewSDK(endpoint: string, gqlEndpoint: string) {
     this.unsubscribeNewHeads();
     this.exchangeStore.destroy();
-
+    console.log("connecting new sdk", endpoint);
     await this.initSDK(endpoint, gqlEndpoint);
     await this.loadConfig();
     this.initGraphQlClient();
@@ -212,9 +211,12 @@ export default class Store {
 
   async initSDK(endpoint: string, graphQlEndpoint: string) {
     const ipfsClientUrl = this.isTestEnv ? "http://127.0.0.1:5001" : undefined;
+
     const sdk = await SDK.initialize(endpoint, {
       graphQlEndpoint,
       ipfsClientUrl,
+      logEndpointInitTime: true,
+      timeout: endpoint.match("light:") ? 60 * 1000 * 99 : 15000,
     });
 
     if (sdk.graphQLClient == null) {
@@ -224,16 +226,10 @@ export default class Store {
     }
     this.userStore.setEndpoint(endpoint);
 
-    await this.initIPFS();
-
     runInAction(() => {
       this.sdk = sdk;
       this.subscribeBlock();
     });
-  }
-
-  async initIPFS() {
-    this.ipfs = initIpfs();
   }
 
   private async initGraphQlClient() {
