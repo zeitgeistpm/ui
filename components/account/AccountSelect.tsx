@@ -1,7 +1,7 @@
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
-import React, { FC, useEffect, useRef, useState } from "react";
-import Select, { components } from "react-select";
+import React, { FC, useEffect, useState } from "react";
+import Select, { components, ControlProps } from "react-select";
 
 import CopyIcon from "../ui/CopyIcon";
 import AccountSelectOption from "./AccountSelectOption";
@@ -9,7 +9,7 @@ import AccountSelectValue from "./AccountSelectValue";
 
 const Control = observer(({ children, ...rest }) => {
   return (
-    <components.Control {...rest}>
+    <components.Control {...rest as ControlProps}>
       <div className="flex items-center bg-sky-100 dark:bg-black justify-between cursor-pointer rounded-ztg-10">
         {children}
       </div>

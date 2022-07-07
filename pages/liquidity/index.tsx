@@ -10,8 +10,6 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
-import { Skeleton } from "@material-ui/lab";
-import { range } from "lodash";
 import { useUserStore } from "lib/stores/UserStore";
 
 const MarketCell = ({ text }: { text: string }) => {
