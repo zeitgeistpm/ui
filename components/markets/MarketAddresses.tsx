@@ -117,7 +117,7 @@ const AddressDetails = ({
   };
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center mb-ztg-18 ">
-      <div className="font-kanit font-bold text-ztg-18-150 w-ztg-80 mb-ztg-15 sm:mb-0">
+      <div className="font-kanit font-bold text-ztg-18-150 w-[90px] mb-ztg-15 sm:mb-0">
         {title}
       </div>
       <div className="flex">
@@ -156,19 +156,24 @@ const MarketAddresses = observer(
   ({ marketStore }: { marketStore: MarketStore }) => {
     const [oracleIdentity, setOracleIdentity] = useState<UserIdentity>();
     const [creatorIdentity, setCreatorIdentity] = useState<UserIdentity>();
+    const [authorityIdentity, setAuthorityIdentity] = useState<UserIdentity>();
     const modalStore = useModalStore();
     const { getIdentity } = useUserStore();
 
     useEffect(() => {
       if (!marketStore || !marketStore.creator || !marketStore.oracle) return;
       (async () => {
-        const [creator, oracle] = await Promise.all([
+        const identities = [
           getIdentity(marketStore.creator),
           getIdentity(marketStore.oracle),
-        ]);
+          marketStore.authority ? getIdentity(marketStore.authority) : null,
+        ];
+
+        const [creator, oracle, authority] = await Promise.all(identities);
 
         setCreatorIdentity(creator);
         setOracleIdentity(oracle);
+        setAuthorityIdentity(authority);
       })();
     }, [marketStore?.creator, marketStore?.oracle]);
 
@@ -205,6 +210,20 @@ const MarketAddresses = observer(
           }
           onInspect={() => handleInspect(marketStore?.oracle, oracleIdentity)}
         />
+        {authorityIdentity && (
+          <AddressDetails
+            title="Authority"
+            address={marketStore?.authority}
+            displayName={
+              authorityIdentity?.displayName?.length > 0
+                ? authorityIdentity.displayName
+                : null
+            }
+            onInspect={() =>
+              handleInspect(marketStore?.oracle, authorityIdentity)
+            }
+          />
+        )}
       </div>
     );
   }
