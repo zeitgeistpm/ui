@@ -8,6 +8,7 @@
     "lint": "eslint ./components/** ./pages/** ./lib/** -c .eslintrc.js --ext js,jsx,ts,tsx",
     "lint-fix": "eslint ./components/** ./pages/** ./lib/** -c .eslintrc.js --fix --ext js,jsx,ts,tsx",
     "start": "next start",
+    "dev-test": "NEXT_PUBLIC_TESTING_ENV=true next",
     "postinstall": "find node_modules -name '*.mjs' | xargs rm -f",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
