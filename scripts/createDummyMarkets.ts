@@ -64,7 +64,7 @@ const createCategoricalMarket = async (
   endBlock: number,
   signer: KeyringPairOrExtSigner
 ) => {
-  sdk = sdk || (await SDK.initialize(endpoint));
+  sdk = sdk || (await SDK.initialize(endpoint, { ipfsClientUrl: "http://localhost:5001" }));
 
   const slug = `${num}-end${endBlock}`;
   const period = {
@@ -102,7 +102,7 @@ const createCategoricalMarket = async (
 };
 
 (async () => {
-  const sdk = await SDK.initialize(endpoint);
+  const sdk = await SDK.initialize(endpoint, { ipfsClientUrl: "http://localhost:5001" });
   const signer: KeyringPairOrExtSigner = util.signerFromSeed(seed);
   let end: number | undefined;
   let id = +(await sdk.api.query.marketCommons.marketCounter());
@@ -126,7 +126,6 @@ const createCategoricalMarket = async (
         weights.push(Math.floor(baseWeight).toString());
       }
 
-      weights.push(`${10 * ZTG}`);
       console.log("weights", weights);
 
       await market.deploySwapPool(signer, "1000000000000", weights);
