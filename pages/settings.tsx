@@ -1,5 +1,4 @@
 import { observer } from "mobx-react";
-import MobxReactForm from "mobx-react-form";
 import { NextPage } from "next";
 import { ChangeEvent, FC, useEffect, useState } from "react";
 import { when } from "mobx";
@@ -15,13 +14,12 @@ import {
   supportedParachainToString
 } from "lib/types";
 import { endpoints, gqlEndpoints } from "lib/constants";
-import { getEndpointOption, getGqlEndpointOption } from "lib/util";
+import { getEndpointOption } from "lib/util";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { AlertTriangle } from "react-feather";
 import { groupBy } from "lodash";
-import { defaultOptions, defaultPlugins } from "lib/form";
 
 const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean }> = ({
   onClick = () => {},

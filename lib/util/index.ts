@@ -198,27 +198,12 @@ export const convertBlockNumberToTimestamp = (
 };
 
 export const getEndpointOption = (url?: string): EndpointOption => {
-  console.log(url)
   if (url == null) {
-    return endpoints[0];
+    return endpoints.find(e => e.parachain === SupportedParachain.BSR);
   }
   const opt = endpoints.find((e) => e.value === url);
   if (opt == null) {
     let opt = endpoints.find(
-      (endpoint) => endpoint.parachain == SupportedParachain.CUSTOM
-    );
-    opt.value = url;
-  }
-  return { ...opt };
-};
-
-export const getGqlEndpointOption = (url?: string): EndpointOption => {
-  if (url == null) {
-    return gqlEndpoints[0];
-  }
-  const opt = gqlEndpoints.find((e) => e.value === url);
-  if (opt == null) {
-    let opt = gqlEndpoints.find(
       (endpoint) => endpoint.parachain == SupportedParachain.CUSTOM
     );
     opt.value = url;
