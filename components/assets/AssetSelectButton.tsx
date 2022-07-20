@@ -18,7 +18,7 @@ const AssetSelectButton = observer(
               className="w-ztg-20 h-ztg-20 border-2 border-sky-600 rounded-full mr-ztg-8"
               style={{ background: `${selection?.color}` }}
             ></div>
-            <div className="font-kanit text-base font-bold flex items-center dark:text-white">
+            <div className="font-space text-base font-bold flex items-center dark:text-white">
               {selection?.label?.toUpperCase()}
             </div>
             <ChevronDown

@@ -13,13 +13,13 @@ const newsletterSubForm = new MobxReactForm(
     fields: {
       email: {
         value: "",
-        rules: "required|email"
-      }
-    }
+        rules: "required|email",
+      },
+    },
   },
   {
     plugins: defaultPlugins,
-    options: defaultOptions
+    options: defaultOptions,
   }
 );
 
@@ -91,7 +91,7 @@ const FooterMenu: FC<FooterMenuProps> = observer(
       <div
         className={`flex-ztg-basis-164 h-ztg-100 flex flex-col justify-between lg:mr-ztg-10
           md:mr-ztg-5 lg:flex-shrink-0 flex-shrink flex-grow ${className}
-          font-kanit`}
+          font-space`}
       >
         <h3 className="text-ztg-16-150 font-bold h-ztg-38 mb-ztg-5">{title}</h3>
         <div className="text-ztg-12-150 flex flex-col text-sky-600 font-lato mb-auto">
@@ -112,23 +112,23 @@ const FooterMenu: FC<FooterMenuProps> = observer(
 
 const Footer = observer(() => {
   return (
-    <div className="mt-auto font-kanit text-black bg-white dark:bg-sky-1000 dark:text-white border-t-1 border-border-light dark:border-border-dark px-ztg-32">
+    <div className="mt-auto font-space text-black bg-white dark:bg-sky-1000 dark:text-white border-t-1 border-border-light dark:border-border-dark px-ztg-32">
       <div className="mx-auto max-w-ztg-1100 flex flex-wrap pb-ztg-25 pt-ztg-30">
         <FooterMenu
           title="General"
           links={[
             {
               text: "General",
-              href: "https://polkadot.js.org/apps/?rpc=wss://bsr.zeitgeist.pm"
+              href: "https://polkadot.js.org/apps/?rpc=wss://bsr.zeitgeist.pm",
             },
-            { text: "Website", href: "https://zeitgeist.pm" }
+            { text: "Website", href: "https://zeitgeist.pm" },
           ]}
         />
         <FooterMenu
           title="Technology"
           links={[
             { text: "Documentation", href: "https://docs.zeitgeist.pm" },
-            { text: "Github", href: "https://github.com/zeitgeistpm" }
+            { text: "Github", href: "https://github.com/zeitgeistpm" },
           ]}
         />
         <FooterMenu
@@ -136,7 +136,7 @@ const Footer = observer(() => {
           links={[
             { text: "Discord", href: "https://discord.gg/xv8HuA4s8v" },
             { text: "Telegram", href: "https://t.me/zeitgeist_official" },
-            { text: "Twitter", href: "https://twitter.com/ZeitgeistPM" }
+            { text: "Twitter", href: "https://twitter.com/ZeitgeistPM" },
           ]}
           className="mb-ztg-10"
         />

@@ -140,7 +140,7 @@ const ReportBox = observer(
         ) : (
           <>
             <div className="flex items-center px-ztg-16">
-              <div className="font-kanit font-bold text-ztg-14-150 h-ztg-25">
+              <div className="font-space font-bold text-ztg-14-150 h-ztg-25">
                 Report outcome
               </div>
             </div>

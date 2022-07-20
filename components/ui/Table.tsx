@@ -206,7 +206,7 @@ const Cell = ({
       }
     case "address":
       return (
-        <td className={`font-kanit ${base}`} onClick={onClick} style={style}>
+        <td className={`font-space ${base}`} onClick={onClick} style={style}>
           <div className="flex items-center">
             <Avatar address={typeof value === "string" ? value : ""} />
             <div className="font-mono font-semibold text-ztg-12-150 ml-ztg-10">
@@ -218,7 +218,7 @@ const Cell = ({
     case "token":
       if (isTokenData(value)) {
         return (
-          <td className={`font-kanit ${base}`} onClick={onClick} style={style}>
+          <td className={`font-space ${base}`} onClick={onClick} style={style}>
             <div className="flex items-center">
               <div
                 className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2"

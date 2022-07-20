@@ -52,7 +52,7 @@ const DisputeButton = observer(
           <div>
             <ScalarDisputeBox marketStore={marketStore} onDispute={() => {}} />
           </div>,
-          "Dispute outcome",
+          "Dispute outcome"
         );
       } else {
         //@ts-ignore
@@ -70,7 +70,7 @@ const DisputeButton = observer(
                 `Disputed reported outcome with ${ticker}`,
                 {
                   type: "Success",
-                },
+                }
               );
               await marketStore.refetchMarketData();
             },
@@ -79,10 +79,10 @@ const DisputeButton = observer(
                 store.getTransactionError(index, error),
                 {
                   type: "Error",
-                },
+                }
               );
             },
-          }),
+          })
         );
       }
     };
@@ -91,13 +91,13 @@ const DisputeButton = observer(
         <button
           onClick={handleClick}
           disabled={disputeDisabled}
-          className="rounded-full h-ztg-20 font-kanit text-ztg-10-150 focus:outline-none px-ztg-15 py-ztg-2 ml-auto bg-dark-yellow text-white disabled:opacity-20 disabled:cursor-default"
+          className="rounded-full h-ztg-20 font-space text-ztg-10-150 focus:outline-none px-ztg-15 py-ztg-2 ml-auto bg-dark-yellow text-white disabled:opacity-20 disabled:cursor-default"
         >
           Dispute Outcome
         </button>
       </div>
     );
-  },
+  }
 );
 
 export default DisputeButton;
