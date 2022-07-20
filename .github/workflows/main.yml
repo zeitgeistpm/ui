@@ -25,5 +25,4 @@ jobs:
       # - name: Run front end
       #   run: npm start -p 3000 &
       # Add or replace test runners here
-        run: |
           node_modules/.bin/cypress run --headed cypress/integration/*.js
