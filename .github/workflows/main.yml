@@ -5,7 +5,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-      - name: clean workspace
+       name: clean workspace
         uses: AutoModality/action-clean@v1
         env:
             NEXT_PUBLIC_FATHOM_SITE_ID=FATHOM_ANALYTICS_SITE_ID
@@ -24,7 +24,7 @@ jobs:
 
             # polkadot account seed for testing
             NEXT_PUBLIC_TESTING_SEED=despair add spread coast horse cage tourist weasel swim spell buzz grief 
-      - name: Cache node modules
+       name: Cache node modules
         uses: actions/cache@v2
         id: npm-cache
         with:
@@ -34,7 +34,7 @@ jobs:
             ${{ runner.OS }}-build-${{ env.cache-name }}-
             ${{ runner.OS }}-build-
             ${{ runner.OS }}-
-      - name: Install Node Packages
+       name: Install Node Packages
         if: steps.npm-cache.node_modules.cache-hit != 'true'
         run:
           npm install --legacy-peer-deps
