@@ -346,14 +346,8 @@ const CreatePage: NextPage = observer(() => {
       return baseWeight;
     });
 
-    // total used for ztg weight
-    const totalWeight = weightsNums.reduce<number>((acc, curr) => {
-      return acc + curr;
-    }, 0);
-
     const weights = [
       ...weightsNums.map((w) => Math.floor(w).toString()),
-      totalWeight.toString(),
     ];
 
     const amounts = poolRows.slice(0, -1).map((r) => {
