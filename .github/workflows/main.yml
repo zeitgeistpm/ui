@@ -20,7 +20,7 @@ jobs:
             ${{ runner.OS }}-
       - name: Install Node Packages
         if: steps.npm-cache.node_modules.cache-hit != 'true'
-        run:
+        run: |
           npm install --legacy-peer-deps
       # - name: Run front end
       #   run: npm start -p 3000 &
