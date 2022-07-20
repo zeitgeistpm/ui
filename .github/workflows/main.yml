@@ -5,7 +5,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-       name: clean workspace
+    steps:
+      - name: clean workspace
         uses: AutoModality/action-clean@v1
         env:
             NEXT_PUBLIC_FATHOM_SITE_ID=FATHOM_ANALYTICS_SITE_ID
