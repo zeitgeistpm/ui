@@ -403,6 +403,7 @@ export default class TradeSlipStore {
       const { marketStore, assetId, type } = boxState;
       let { amount } = boxState;
       const { id: marketId } = marketStore;
+      const { pool } = marketStore;
 
       let transferAmount: Decimal;
       let ztgPoolBalance: Decimal;
@@ -472,7 +473,7 @@ export default class TradeSlipStore {
             assetPoolBalance,
             assetWeight,
             amount,
-            0
+            pool.swapFee
           );
           currentPrice = calcSpotPrice(
             ztgPoolBalance,
@@ -488,7 +489,7 @@ export default class TradeSlipStore {
             ztgPoolBalance,
             ztgWeight,
             amount,
-            0
+            pool.swapFee
           );
           currentPrice = calcSpotPrice(
             assetPoolBalance,

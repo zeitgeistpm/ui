@@ -186,7 +186,8 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
         return;
       }
 
-      const { poolId } = exchangeStore;
+      const { poolId, swapFee } = exchangeStore;
+
       const _tx =
         type === "buy"
           ? generateSwapExactAmountOutTx(
@@ -198,7 +199,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               exchangeStore.poolBalance.mul(ZTG),
               new Decimal(exchangeStore.outcomeWeight),
               exchangeStore.amount.mul(ZTG),
-              new Decimal(0),
+              swapFee,
               new Decimal(slippagePercentage).div(100),
               poolId
             )
@@ -211,7 +212,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               exchangeStore.ztgPoolBalance.mul(ZTG),
               new Decimal(exchangeStore.ztgWeight),
               exchangeStore.amount.mul(ZTG),
-              new Decimal(0),
+              swapFee,
               new Decimal(slippagePercentage).div(100),
               poolId
             );
