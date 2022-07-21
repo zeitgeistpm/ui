@@ -18,7 +18,7 @@ const processEvents = (
   for (const event of events) {
     const { data, method } = event.event;
     if (method === "ExtrinsicFailed" && failCallback) {
-      const { index, error } = data.toHuman()[0].Module;
+      const { index, error } = data.toHuman()['dispatchError'].Module;
       failCallback({ index, error });
     }
     if (method === "BatchInterrupted" && failCallback) {
