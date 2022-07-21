@@ -13,6 +13,11 @@ jobs:
         id: npm-cache
         with:
           path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-${{ env.cache-name }}-
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}
       - name: Install Node Packages
         if: steps.npm-cache.node_modules.cache-hit != 'true'
         run: |
