@@ -11,7 +11,7 @@ import {
   EndpointOption,
   isCustomEndpointOption,
   SupportedParachain,
-  supportedParachainToString
+  supportedParachainToString,
 } from "lib/types";
 import { endpoints, gqlEndpoints } from "lib/constants";
 import { getEndpointOption } from "lib/util";
@@ -24,7 +24,7 @@ import { groupBy } from "lodash";
 const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean }> = ({
   onClick = () => {},
   disabled = false,
-  children
+  children,
 }) => {
   return (
     <button
@@ -62,7 +62,7 @@ const IdentitySettings = observer(() => {
     const tx = store.sdk.api.tx.identity.setIdentity({
       additional: [[{ Raw: "discord" }, { Raw: discordHandle }]],
       display: { Raw: displayName },
-      twitter: { Raw: twitterHandle }
+      twitter: { Raw: twitterHandle },
     });
     try {
       await signAndSend(
@@ -74,7 +74,7 @@ const IdentitySettings = observer(() => {
             await loadIdentity(wallets.activeAccount.address);
             setTransactionPending(false);
             notificationStore.pushNotification("Successfully set Identity", {
-              type: "Success"
+              type: "Success",
             });
           },
           failCallback: ({ index, error }) => {
@@ -83,7 +83,7 @@ const IdentitySettings = observer(() => {
               store.getTransactionError(index, error),
               { type: "Error" }
             );
-          }
+          },
         })
       );
     } catch (err) {
@@ -102,7 +102,7 @@ const IdentitySettings = observer(() => {
         successCallback: async () => {
           await loadIdentity(wallets.activeAccount.address);
           notificationStore.pushNotification("Successfully cleared Identity", {
-            type: "Success"
+            type: "Success",
           });
         },
         failCallback: ({ index, error }) => {
@@ -110,7 +110,7 @@ const IdentitySettings = observer(() => {
             store.getTransactionError(index, error),
             { type: "Error" }
           );
-        }
+        },
       })
     );
   };
@@ -208,18 +208,18 @@ const statCardData = [
   {
     header: "Total Value",
     text: "176,780,870 ZGT",
-    bottomText: "≈ $10,000,000"
+    bottomText: "≈ $10,000,000",
   },
   {
     header: "Total Value",
     text: "176,780,870 ZGT",
-    bottomText: "≈ $10,000,000"
+    bottomText: "≈ $10,000,000",
   },
   {
     header: "Total Value",
     text: "176,780,870 ZGT",
-    bottomText: "≈ $10,000,000"
-  }
+    bottomText: "≈ $10,000,000",
+  },
 ];
 
 export const getCorrespondingGqlIndex = (
@@ -233,7 +233,7 @@ const EndpointSelect = observer(
   ({
     options,
     selectedOption,
-    onChange
+    onChange,
   }: {
     options: EndpointOption[];
     selectedOption: EndpointOption;
@@ -247,7 +247,7 @@ const EndpointSelect = observer(
         options={Object.entries(groupBy(options, "parachain")).map(
           ([parachain, endpoints]) => ({
             label: supportedParachainToString(parachain as SupportedParachain),
-            options: endpoints
+            options: endpoints,
           })
         )}
       />
@@ -272,7 +272,7 @@ const EndpointsSettings = observer(() => {
 
   const gqlEndpointOption = () => {
     return gqlEndpoints[getCorrespondingGqlIndex(endpointSelection)];
-  }
+  };
 
   const getCustomRpcEndpoint = () => {
     return endpointSelection.parachain === SupportedParachain.CUSTOM
@@ -282,19 +282,21 @@ const EndpointsSettings = observer(() => {
 
   const getCustomGqlEndpoint = () => {
     const opt = gqlEndpointOption();
-    return opt.parachain === SupportedParachain.CUSTOM
-      ? opt.value
-      : "";
+    return opt.parachain === SupportedParachain.CUSTOM ? opt.value : "";
   };
 
-  const [customRpcUrl, setCustomRpcUrl] = useState<string>(() => getCustomRpcEndpoint());
-  const [customGqlUrl, setCustomGqlUrl] = useState<string>(() => getCustomGqlEndpoint());
+  const [customRpcUrl, setCustomRpcUrl] = useState<string>(() =>
+    getCustomRpcEndpoint()
+  );
+  const [customGqlUrl, setCustomGqlUrl] = useState<string>(() =>
+    getCustomGqlEndpoint()
+  );
 
   const isCustomEndpoint = Boolean(isCustomEndpointOption(endpointSelection));
 
   const changeEndpoint = (opt: EndpointOption) => {
     setEndpointSelection(opt);
-  }
+  };
 
   const selectionChanged =
     endpointSelection.value !== userStore.endpoint ||
@@ -314,37 +316,35 @@ const EndpointsSettings = observer(() => {
       await store.connectNewSDK(rpcUrl, gqlUrl);
       await when(() => store.initialized === true);
       setIsConnectingSdk(false);
-      notificationStore.pushNotification(
-        "Connected to chain and indexer",
-        {
-          autoRemove: true,
-          lifetime: 4,
-          type: "Success"
-        }
-      );
+      notificationStore.pushNotification("Connected to chain and indexer", {
+        autoRemove: true,
+        lifetime: 4,
+        type: "Success",
+      });
       userStore.setEndpoint(rpcUrl);
       userStore.setGqlEndpoint(gqlUrl);
       const opt = getEndpointOption(rpcUrl);
       setEndpointSelection(opt);
     } catch (error) {
-      notificationStore.pushNotification("Unable to connect. Using last known configuration to reconnect.", {
-        autoRemove: true,
-        lifetime: 8,
-        type: "Error"
-      });
+      notificationStore.pushNotification(
+        "Unable to connect. Using last known configuration to reconnect.",
+        {
+          autoRemove: true,
+          lifetime: 8,
+          type: "Error",
+        }
+      );
       setTimeout(() => {
         connect(userStore.endpoint, userStore.gqlEndpoint);
-      }, 5000)
+      }, 5000);
     }
-  }
+  };
 
   const submitEndpoints = () => {
     setIsConnectingSdk(true);
 
     const rpcUrl = isCustomEndpoint ? customRpcUrl : endpointSelection.value;
-    const gqlUrl = isCustomEndpoint
-      ? customGqlUrl
-      : gqlEndpointOption().value;
+    const gqlUrl = isCustomEndpoint ? customGqlUrl : gqlEndpointOption().value;
 
     connect(rpcUrl, gqlUrl);
   };
@@ -352,7 +352,7 @@ const EndpointsSettings = observer(() => {
   useEffect(() => {
     setCustomRpcUrl(getCustomRpcEndpoint());
     setCustomGqlUrl(getCustomGqlEndpoint());
-  }, [endpointSelection])
+  }, [endpointSelection]);
 
   return (
     <div className="text-ztg-16-150">
@@ -410,7 +410,6 @@ const EndpointsSettings = observer(() => {
   );
 });
 
-
 const Settings: NextPage = observer(() => {
   const userStore = useUserStore();
 
@@ -421,7 +420,7 @@ const Settings: NextPage = observer(() => {
   return (
     <>
       <h2
-        className="text-ztg-20-150 font-bold font-kanit mb-ztg-23"
+        className="text-ztg-20-150 font-bold font-space mb-ztg-23"
         data-test="accountSettingsHeader"
       >
         Account Settings

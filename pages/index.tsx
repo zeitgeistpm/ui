@@ -50,7 +50,7 @@ const Category = ({
             />
           </span>
           <span>
-            <div className="font-kanit font-bold text-ztg-20-150">{title}</div>
+            <div className="font-space text-ztg-20-150">{title}</div>
             <div className="font-lato text-ztg-14-120 text-sky-600">
               {description}
             </div>
@@ -108,7 +108,7 @@ const PopularCategories: FC = observer(({}) => {
   return (
     <div className="flex flex-col mt-ztg-30">
       <div></div>
-      <h3 className="font-kanit font-bold text-ztg-28-120 mb-ztg-30">
+      <h3 className="font-space font-bold text-[24px] mb-ztg-30">
         Popular Topics
       </h3>
       <div className="flex flex-wrap w-full justify-between">
@@ -160,7 +160,7 @@ const FeaturedMarketContent: FC<{
             className="w-full h-ztg-136 rounded-ztg-10 mb-ztg-22"
             imageUrl={imageUrl}
           />
-          <h6 className="text-ztg-20-150 font-bold font-kanit">{title}</h6>
+          <h6 className="text-ztg-20-150 font-bold font-space">{title}</h6>
           <div className="text-ztg-12-150 font-lato text-sky-600">{text}</div>
         </a>
       </Link>
@@ -171,7 +171,7 @@ const FeaturedMarketContent: FC<{
 const FeaturedMarkets: FC = observer(() => {
   return (
     <div className="flex flex-col mt-ztg-30">
-      <h5 className="font-kanit font-bold text-ztg-28-120 mb-ztg-30">
+      <h5 className="font-space font-bold text-ztg-28-120 mb-ztg-30">
         Featured Markets
       </h5>
       <div className="flex">

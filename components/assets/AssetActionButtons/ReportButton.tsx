@@ -86,7 +86,7 @@ const ReportButton = observer(
         <button
           onClick={handleClick}
           disabled={reportDisabled}
-          className="rounded-full h-ztg-20 font-kanit text-ztg-10-150 focus:outline-none border-2 px-ztg-15 ml-auto disabled:opacity-20 disabled:cursor-default"
+          className="rounded-full h-ztg-20 font-space text-ztg-10-150 focus:outline-none border-2 px-ztg-15 ml-auto disabled:opacity-20 disabled:cursor-default"
         >
           Report Outcome
         </button>

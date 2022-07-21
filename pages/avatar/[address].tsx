@@ -194,7 +194,7 @@ const AvatarPage = observer(() => {
           </div>
 
           <div>
-            <h3 className="mb-ztg-14 font-kanit text-ztg-28-120 font-semibold">
+            <h3 className="mb-ztg-14 font-space text-ztg-[24px]">
               <span className="mr-4">{name}</span>
             </h3>
 
@@ -233,7 +233,7 @@ const AvatarPage = observer(() => {
           </div>
         </div>
       </div>
-      <h3 className="mb-ztg-40 font-kanit text-ztg-28-120 font-semibold">
+      <h3 className="mb-ztg-40 font-space text-ztg-28-120 font-semibold">
         <span className="mr-4">Achievements</span>
       </h3>
       <p className="text-gray-600 mb-ztg-38">
@@ -417,7 +417,7 @@ const InventoryModal = (props: { address: string; onClose?: () => void }) => {
               )}
             />
             <div className="w-full">
-              <h4 className="mb-ztg-8 font-kanit text-ztg-16-150 font-semibold">
+              <h4 className="mb-ztg-8 font-space text-ztg-16-150 font-semibold">
                 {item.metadata_properties.badge.value.name}
               </h4>
               <p className="text-ztg-14-110 mb-4">
@@ -522,7 +522,7 @@ const PendingItemsModal = (props: {
                 )}
               />
               <div className="w-full">
-                <h4 className="mb-ztg-12 font-kanit text-ztg-18-150 font-semibold">
+                <h4 className="mb-ztg-12 font-space text-ztg-18-150 font-semibold">
                   {item.metadata_properties.badge.value.name}
                 </h4>
                 <p className="text-ztg-14-110 mb-4">

@@ -5,7 +5,7 @@ const TypeSwitch: FC<{
   onChange: (type: "buy" | "sell") => void;
 }> = ({ type, onChange }) => {
   const base =
-    "w-ztg-53 font-kanit text-ztg-14-120 font-bold items-center cursor-pointer text-sky-600";
+    "w-ztg-53 font-space text-ztg-14-120 font-bold items-center cursor-pointer text-sky-600";
 
   const activeClass = "text-sunglow-2";
 
@@ -28,4 +28,3 @@ const TypeSwitch: FC<{
 };
 
 export default TypeSwitch;
-

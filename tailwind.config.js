@@ -56,6 +56,7 @@ module.exports = {
       ],
       kanit: ["Kanit"],
       lato: ["Lato"],
+      space: ["Space Grotesk"],
     },
     extend: {
       borderWidth: {

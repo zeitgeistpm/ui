@@ -117,7 +117,7 @@ const AddressDetails = ({
   };
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center mb-ztg-18 ">
-      <div className="font-kanit font-bold text-ztg-18-150 w-ztg-80 mb-ztg-15 sm:mb-0">
+      <div className="font-space font-bold text-ztg-18-150 w-ztg-80 mb-ztg-15 sm:mb-0">
         {title}
       </div>
       <div className="flex">

@@ -75,7 +75,7 @@ const TrendingMarkets = observer(() => {
 
   return (
     <div>
-      <h5 className="font-kanit font-bold text-ztg-28-120 my-ztg-30">
+      <h5 className="font-space font-bold text-[24px] my-ztg-30">
         Trending Markets
       </h5>
       <div className="flex flex-col sm:flex-row gap-6">

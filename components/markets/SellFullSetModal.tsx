@@ -90,7 +90,7 @@ const SellFullSetModal = observer(
                 style={{ backgroundColor: outcome.metadata["color"] }}
               ></div>
             ))}
-            <div className="font-bold font-kanit ml-ztg-20  text-ztg-16-150 text-black dark:text-white">
+            <div className="font-bold font-space ml-ztg-20  text-ztg-16-150 text-black dark:text-white">
               Full Set
             </div>
             <span className="font-mono text-ztg-12-150 font-medium ml-auto ">
@@ -102,7 +102,7 @@ const SellFullSetModal = observer(
         <div>
           <div className="flex items-center mt-ztg-24 mb-ztg-8">
             <div className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2 bg-ztg-blue"></div>
-            <div className="font-bold font-kanit  text-ztg-16-150 uppercase text-black dark:text-white">
+            <div className="font-bold font-space  text-ztg-16-150 uppercase text-black dark:text-white">
               {store.config.tokenSymbol}
             </div>
             <span className="font-mono text-ztg-12-150 font-medium ml-auto text-sky-600">

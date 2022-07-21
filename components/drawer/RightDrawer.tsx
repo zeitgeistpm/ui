@@ -25,7 +25,7 @@ const ZTGSummary = () => {
       </div>
 
       <div className="flex flex-col ml-ztg-12 mr-ztg-6">
-        <div className="font-kanit text-ztg-16-150 font-bold text-sky-1100 dark:text-white">
+        <div className="font-space text-ztg-16-150 font-bold text-sky-1100 dark:text-white">
           ZTG
         </div>
         <div className="font-lato text-ztg-12-150 text-sky-600 w-ztg-90 ">
