@@ -114,13 +114,6 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
     const [isSelectView, setIsSelectView] = useState<boolean>(false);
     const inputRef = useRef<HTMLInputElement>();
 
-    const slippageDecimal = useMemo(() => {
-      if (slippagePercentage === "") {
-        return new Decimal(0);
-      }
-      return new Decimal(slippagePercentage).div(100).add(1);
-    }, [slippagePercentage]);
-
     const store = useStore();
     const { wallets } = store;
     const modalStore = useModalStore();
@@ -358,8 +351,13 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
       );
     }
 
+    const feeCurrencySymbol =
+      type === "buy"
+        ? store.config.tokenSymbol
+        : selectedAssetOption.label.toUpperCase();
+
     return (
-      <div className="py-ztg-10 rounded-ztg-10 bg-white dark:bg-sky-1000 max-h-ztg-474">
+      <div className="py-ztg-10 rounded-ztg-10 bg-white dark:bg-sky-1000 max-h-[500px]">
         <div className="flex h-ztg-25 items-center px-ztg-16">
           <TypeSwitch type={type} onChange={(t) => setType(t)} />
           <SlippageSettingInput
@@ -451,11 +449,23 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
             </TransactionButton>
             <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
               <span>Max profit:</span>
-              <span className="font-mono">{exchangeStore?.maxProfit}</span>
+              <span className="font-mono">
+                {exchangeStore?.maxProfit} {store.config.tokenSymbol}
+              </span>
             </div>
             <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
-              <span>Exchange Fee:</span>
-              <span className="font-mono">{txFee}</span>
+              <span>Network Fee:</span>
+              <span className="font-mono">
+                {txFee} {store.config.tokenSymbol}
+              </span>
+            </div>
+            <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
+              <span>Trading Fee:</span>
+              <span className="font-mono">
+                {`${(
+                  exchangeStore?.amount?.mul(exchangeStore.swapFee ?? 0) ?? 0
+                ).toString()} ${feeCurrencySymbol}`}
+              </span>
             </div>
           </div>
         ) : (
