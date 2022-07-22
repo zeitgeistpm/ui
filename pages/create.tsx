@@ -346,9 +346,7 @@ const CreatePage: NextPage = observer(() => {
       return baseWeight;
     });
 
-    const weights = [
-      ...weightsNums.map((w) => Math.floor(w).toString()),
-    ];
+    const weights = [...weightsNums.map((w) => Math.floor(w).toString())];
 
     const amounts = poolRows.slice(0, -1).map((r) => {
       return (Number(r.amount) * ZTG).toString();
@@ -475,7 +473,7 @@ const CreatePage: NextPage = observer(() => {
       <h2 className="header mb-ztg-23" data-test="createMarketHeader">
         Create Market
       </h2>
-      <MarketFormCard header="1. Market name">
+      <MarketFormCard header="1. Market name*">
         <MarketSlugField
           slug={formData.slug}
           base64Image={formData.marketImage}
@@ -586,12 +584,6 @@ const CreatePage: NextPage = observer(() => {
                 Deploy Liquidity Pool
               </label>
             </div>
-            <p className="text-ztg-14-150 mb-ztg-15 text-sky-600 font-lato">
-              Deploying a pool will require at least two further transactions
-              after the market is created, one to buy a full set of tokens and
-              another to deploy the pool. If different amounts are specified an
-              additional transaction per token will be required.
-            </p>
           </>
         )}
         {deployPool && poolRows != null && (

@@ -103,7 +103,8 @@ const rdtpInput = (
         readOnly
       />
       <div
-        className="w-ztg-40 h-ztg-40 border-l-1 border-sky-600 bg-sky-200 dark:bg-black flex-shrink-0 rounded-r-ztg-5 center cursor-pointer" data-test="calendarIcon"
+        className="w-ztg-40 h-ztg-40 border-l-1 border-sky-600 bg-sky-200 dark:bg-black flex-shrink-0 rounded-r-ztg-5 center cursor-pointer"
+        data-test="calendarIcon"
         onClick={openCalendar}
       >
         <Calendar size={16} className="text-sky-600" />
@@ -153,6 +154,7 @@ export interface AmountInputProps {
   max?: string;
   min?: string;
   name?: string;
+  placeholder?: string;
   onChange?: (val: string) => void;
   className?: string;
   containerClass?: string;
@@ -216,6 +218,7 @@ export const AmountInput: FC<AmountInputProps> = observer(
         max,
         min,
         name,
+        placeholder,
         className = "",
         containerClass = "",
         leftComponent,
@@ -324,6 +327,7 @@ export const AmountInput: FC<AmountInputProps> = observer(
             ref={ref}
             type="text"
             autoComplete="off"
+            placeholder={placeholder}
             onChange={onChanged}
             onBlur={onBlured}
             onFocus={() => setFocused(true)}
@@ -364,7 +368,7 @@ export const TextArea: FC<TextAreaProps> = observer(
         name,
         className = "",
         placeholder = "",
-        dataTest="",
+        dataTest = "",
       },
       ref
     ) => {

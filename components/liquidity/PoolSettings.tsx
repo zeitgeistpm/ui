@@ -5,6 +5,7 @@ import { MultipleOutcomeEntry } from "lib/types/create-market";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import { ZTG_BLUE_COLOR } from "lib/constants";
 import { motion } from "framer-motion";
+import PoolFeesSelect from "./PoolFeesSelect";
 
 export interface PoolAssetRowData {
   assetColor: string;
@@ -138,6 +139,14 @@ const PoolSettings: FC<{
   return (
     <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
       <Table data={tableData} columns={columns} />
+      <div className="mt-[20px] mb-[40px]">
+        <div className="text-ztg-16-150 font-bold font-lato">Pool Fees*</div>
+        <p className="text-ztg-14-150 mb-[30px] mt-[10px] text-sky-600 font-lato">
+          High fees will allow liquidity providers to collect more value from a
+          given trade. However, high fees may also reduce market participants.
+        </p>
+        <PoolFeesSelect />
+      </div>
     </motion.div>
   );
 });
