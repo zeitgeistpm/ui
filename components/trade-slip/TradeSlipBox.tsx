@@ -186,8 +186,8 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
                   </div>
                 </div>
               </div>
-              <div className="dark:text-white">
-                {boxAmountDecimal.mul(swapFee ?? 0).toString()}{" "}
+              <div className="w-full font-lato text-ztg-10-150 text-gray-dark-3 mt-ztg-5">
+                Trading Fee: {boxAmountDecimal.mul(swapFee ?? 0).toString()}{" "}
                 {state.type === "sell"
                   ? state.assetTicker.toUpperCase()
                   : config.tokenSymbol}
