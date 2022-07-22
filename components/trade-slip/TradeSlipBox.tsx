@@ -71,6 +71,7 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
       setByPercentage,
       sliderDisabled,
       ztgTransferAmount,
+      swapFee,
     } = state;
 
     const [boxAmount, setBoxAmount] = useState(() => {
@@ -92,6 +93,11 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
     }, [state.type, state.assetId, tradeSlipStore.focusedItem]);
 
     const inputRef = useRef<HTMLInputElement>(null);
+
+    const boxAmountDecimal: Decimal =
+      boxAmount === "" || boxAmount == null
+        ? new Decimal(0)
+        : new Decimal(boxAmount);
 
     useEffect(() => {
       isFocused && inputRef?.current?.focus();
@@ -180,6 +186,13 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
                   </div>
                 </div>
               </div>
+              <div className="dark:text-white">
+                {boxAmountDecimal.mul(swapFee ?? 0).toString()}{" "}
+                {state.type === "sell"
+                  ? state.assetTicker.toUpperCase()
+                  : config.tokenSymbol}
+              </div>
+
               {sliderShown && (
                 <div className="h-ztg-43 w-full px-ztg-5 mt-ztg-20">
                   <Slider

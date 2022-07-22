@@ -83,6 +83,7 @@ type TradeInfo = {
   ztgAccountBalance: Decimal;
   currentPrice: Decimal;
   marketId: number;
+  swapFee: Decimal;
 };
 
 export class TradeSlipBoxState {
@@ -177,6 +178,10 @@ export class TradeSlipBoxState {
 
   get ztgTransferAmount(): Decimal | undefined {
     return this.trade?.transferAmount;
+  }
+
+  get swapFee(): Decimal | undefined {
+    return this.trade?.swapFee;
   }
 
   get indexInItems(): number {
@@ -404,6 +409,7 @@ export default class TradeSlipStore {
       let { amount } = boxState;
       const { id: marketId } = marketStore;
       const { pool } = marketStore;
+      const swapFee = new Decimal(pool.swapFee);
 
       let transferAmount: Decimal;
       let ztgPoolBalance: Decimal;
@@ -511,6 +517,7 @@ export default class TradeSlipStore {
         transferAmount,
         currentPrice,
         marketId,
+        swapFee,
       });
     }
     return trades;
