@@ -8,6 +8,7 @@
     "lint": "eslint ./components/** ./pages/** ./lib/** -c .eslintrc.js --ext js,jsx,ts,tsx",
     "lint-fix": "eslint ./components/** ./pages/** ./lib/** -c .eslintrc.js --fix --ext js,jsx,ts,tsx",
     "start": "next start",
+    "dev-test": "NEXT_PUBLIC_TESTING_ENV=true next",
     "postinstall": "find node_modules -name '*.mjs' | xargs rm -f",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
@@ -55,7 +56,7 @@
     "react-hotjar": "^3.0.1",
     "react-icons": "^4.3.1",
     "react-resize-detector": "^7.0.0",
-    "react-select": "^4.3.1",
+    "react-select": "^5.4",
     "react-spinners": "^0.10.6",
     "react-table": "^7.7.0",
     "recharts": "^2.1.8",
@@ -99,5 +100,6 @@
     "start-server-and-test": "^1.14.0",
     "tailwindcss": "^2.2.19",
     "typescript": "^4.5.4"
-  }
+  },
+  "packageManager": "yarn@3.2.1"
 }

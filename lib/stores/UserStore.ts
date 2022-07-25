@@ -43,8 +43,8 @@ export default class UserStore {
   storedTheme: StoredTheme | null = null;
   accountAddress: string | null = null;
   tradeSlipItems: JSONObject | null = null;
-  endpoint: string | null = null;
-  gqlEndpoint: string | null = null;
+  endpoint: string;
+  gqlEndpoint: string;
   identity: UserIdentity;
   locationAllowed: boolean;
   walletId: string | null = null;
@@ -179,6 +179,11 @@ export default class UserStore {
     this.gqlEndpoint = gqlEndpoint;
   }
 
+  resetEndpoints() {
+    this.endpoint = endpoints[0].value;
+    this.gqlEndpoint = gqlEndpoints[0].value;
+  }
+
   setWalletId(walletId: string | null) {
     this.walletId = walletId;
   }
@@ -269,6 +274,7 @@ export default class UserStore {
   get graphQlEnabled() {
     return this.gqlEndpoint != null;
   }
+
 }
 
 export const useUserStore = () => {

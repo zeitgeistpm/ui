@@ -119,7 +119,7 @@ export default class Store {
       registerValidationRules: false,
       isTestEnv: false,
       unsubscribeNewHeads: false,
-      balanceSubscription: false,
+      balanceSubscription: false
     });
   }
 
@@ -173,29 +173,35 @@ export default class Store {
   async initialize() {
     this.userStore.init();
 
-    await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
-    await this.loadConfig();
-    this.initGraphQlClient();
+    try {
+      await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
+      await this.loadConfig();
+      this.initGraphQlClient();
 
-    this.wallets.initialize();
+      this.wallets.initialize();
 
-    this.courtStore = new CourtStore(this);
+      this.courtStore = new CourtStore(this);
 
-    this.registerValidationRules();
+      this.registerValidationRules();
 
-    await this.pools.init();
-    this.initializeMarkets();
+      await this.pools.init();
+      this.initializeMarkets();
 
-    runInAction(() => {
-      this.initialized = true;
-    });
+      runInAction(() => {
+        this.initialized = true;
+      });
+    } catch {
+      this.userStore.resetEndpoints();
+      this.initialize();
+    }
   }
 
   async connectNewSDK(endpoint: string, gqlEndpoint: string) {
+    await this.initSDK(endpoint, gqlEndpoint);
+
     this.unsubscribeNewHeads();
     this.exchangeStore.destroy();
 
-    await this.initSDK(endpoint, gqlEndpoint);
     await this.loadConfig();
     this.initGraphQlClient();
 
@@ -214,14 +220,15 @@ export default class Store {
     const ipfsClientUrl = this.isTestEnv ? "http://127.0.0.1:5001" : undefined;
     const sdk = await SDK.initialize(endpoint, {
       graphQlEndpoint,
-      ipfsClientUrl,
+      ipfsClientUrl
     });
 
-    if (sdk.graphQLClient == null) {
-      this.userStore.setGqlEndpoint(null);
-    } else {
+    if (sdk.graphQLClient != null) {
       this.userStore.setGqlEndpoint(graphQlEndpoint);
+    } else {
+      throw Error("Graphql service not available " + graphQlEndpoint);
     }
+
     this.userStore.setEndpoint(endpoint);
 
     await this.initIPFS();
@@ -239,15 +246,13 @@ export default class Store {
   private async initGraphQlClient() {
     if (this.userStore.gqlEndpoint && this.userStore.gqlEndpoint.length > 0) {
       this.graphQLClient = new GraphQLClient(this.userStore.gqlEndpoint, {});
-    } else {
-      this.graphQLClient = null;
     }
   }
 
   private async loadConfig() {
     const [consts, properties] = await Promise.all([
       this.sdk.api.consts,
-      this.sdk.api.rpc.system.properties(),
+      this.sdk.api.rpc.system.properties()
     ]);
 
     // minimumPeriod * 2 is fair assumption for now but need to make sure this stays up
@@ -284,13 +289,13 @@ export default class Store {
         ),
         minCategories: this.codecToNumber(
           consts.predictionMarkets.minCategories
-        ),
+        )
       },
       court: {
         caseDurationSec:
           this.codecToNumber(consts.court.courtCaseDuration) * blockTimeSec,
-        stakeWeight: this.codecToNumber(consts.court.stakeWeight) / ZTG,
-      },
+        stakeWeight: this.codecToNumber(consts.court.stakeWeight) / ZTG
+      }
     };
 
     runInAction(() => {

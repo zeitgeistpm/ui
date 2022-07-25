@@ -57,7 +57,7 @@ export const endpoints: EndpointOption[] = [
     parachain: SupportedParachain.BSR,
   },
   {
-    value: "wss://127.0.0.1:9944",
+    value: "ws://127.0.0.1:9944",
     label: "Custom",
     parachain: SupportedParachain.CUSTOM,
   },
@@ -75,7 +75,7 @@ export const gqlEndpoints: EndpointOption[] = [
     parachain: SupportedParachain.KUSAMA,
   },
   {
-    value: "http://localhost:4350",
+    value: "http://localhost:4350/graphql",
     label: "Custom",
     parachain: SupportedParachain.CUSTOM,
   },
