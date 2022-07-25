@@ -63,7 +63,7 @@ const RedeemButton = observer(
             ztgToReceive.equals(0) ||
             wallets.activeAccount == null
           }
-          className="rounded-full h-ztg-20 font-kanit text-ztg-10-150 focus:outline-none px-ztg-15 
+          className="rounded-full h-ztg-20 font-space text-ztg-10-150 focus:outline-none px-ztg-15 
               py-ztg-2 ml-auto bg-ztg-blue text-white disabled:opacity-20 disabled:cursor-default"
         >
           Redeem Tokens

@@ -48,8 +48,9 @@ html {
 
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Kanit:wght@700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap');
 @import "./kusama-derby.css";
 
 .rounded-3px {
@@ -262,13 +263,13 @@ td:last-child {
 }
 
 .header {
-  @apply font-kanit;
+  @apply font-space;
   @apply font-bold;
   @apply text-ztg-20-150;
 }
 
 .sub-header {
-  @apply font-kanit;
+  @apply font-space;
   @apply font-medium;
   @apply text-ztg-20-150;
 }
