@@ -31,6 +31,7 @@ import NotFoundPage from "pages/404";
 import MarketAddresses from "components/markets/MarketAddresses";
 import { MultipleOutcomeEntry } from "lib/types/create-market";
 import { useUserStore } from "lib/stores/UserStore";
+import Decimal from "decimal.js";
 
 const LiquidityPill = observer(({ liquidity }: { liquidity: number }) => {
   const { config } = useStore();
@@ -574,6 +575,9 @@ const MarketDetails = observer(() => {
               data={poolRows}
               onChange={(v) => {
                 setPoolRows(v);
+              }}
+              onFeeChange={(fee: Decimal) => {
+                console.log(fee);
               }}
             />
             <div className="flex items-center">

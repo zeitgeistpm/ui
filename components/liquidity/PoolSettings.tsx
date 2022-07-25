@@ -6,6 +6,7 @@ import Table, { TableColumn, TableData } from "components/ui/Table";
 import { ZTG_BLUE_COLOR } from "lib/constants";
 import { motion } from "framer-motion";
 import PoolFeesSelect from "./PoolFeesSelect";
+import Decimal from "decimal.js";
 
 export interface PoolAssetRowData {
   assetColor: string;
@@ -56,7 +57,8 @@ export const poolRowDataFromOutcomes = (
 const PoolSettings: FC<{
   data: PoolAssetRowData[];
   onChange: (data: PoolAssetRowData[]) => void;
-}> = observer(({ data, onChange }) => {
+  onFeeChange: (data: Decimal) => void;
+}> = observer(({ data, onChange, onFeeChange }) => {
   const store = useStore();
   const { wallets } = store;
 
@@ -136,6 +138,10 @@ const PoolSettings: FC<{
     },
   ];
 
+  const handleFeeChange = (fee: Decimal) => {
+    onFeeChange(fee);
+  };
+
   return (
     <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
       <Table data={tableData} columns={columns} />
@@ -145,7 +151,7 @@ const PoolSettings: FC<{
           High fees will allow liquidity providers to collect more value from a
           given trade. However, high fees may also reduce market participants.
         </p>
-        <PoolFeesSelect />
+        <PoolFeesSelect onFeeChange={handleFeeChange} />
       </div>
     </motion.div>
   );

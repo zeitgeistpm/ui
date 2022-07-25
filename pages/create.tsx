@@ -592,6 +592,9 @@ const CreatePage: NextPage = observer(() => {
             onChange={(v) => {
               setPoolRows(v);
             }}
+            onFeeChange={(fee: Decimal) => {
+              console.log(fee.toString());
+            }}
           />
         )}
 
