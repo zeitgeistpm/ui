@@ -285,9 +285,6 @@ class MarketStore {
     if (this.market.resolvedOutcome != null) {
       return "Resolved";
     }
-    if (this.endPassed && this.market.status === "Active") {
-      return "Ended";
-    }
     return this.market.status as MarketStatus;
   }
 
@@ -326,7 +323,7 @@ class MarketStore {
     if (this.hasReport) {
       return false;
     }
-    return this.is("Ended");
+    return this.is("Closed");
   }
 
   get outcomesNames(): string[] | undefined {
