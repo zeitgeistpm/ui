@@ -27,7 +27,11 @@ const AssetActionButtons = observer(
       })();
     }, [marketId, marketsStore]);
 
-    if (marketStore?.inReportPeriod) {
+    if (
+      marketStore?.inReportPeriod ||
+      (marketStore?.status === "Disputed" &&
+        marketStore?.disputeMechanism === "authorized")
+    ) {
       return (
         <ReportButton
           marketStore={marketStore}

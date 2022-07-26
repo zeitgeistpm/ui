@@ -94,6 +94,14 @@ class MarketStore {
     }
   }
 
+  get disputeMechanism(): "authorized" | "other" {
+    if (isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
+      return "authorized";
+    } else {
+      return "other";
+    }
+  }
+
   get creator(): string {
     return this.market.creator;
   }

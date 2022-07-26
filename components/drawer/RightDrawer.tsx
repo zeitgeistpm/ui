@@ -130,7 +130,11 @@ const RightDrawer = observer(() => {
       if (now <= endDate) {
         //market hasn't ended
         return "default";
-      } else if (market.inReportPeriod) {
+      } else if (
+        market.inReportPeriod ||
+        (market.status === "Disputed" &&
+          market.disputeMechanism === "authorized")
+      ) {
         return "report";
       } else if (market.status === "Reported" || market.status === "Disputed") {
         return "dispute";
