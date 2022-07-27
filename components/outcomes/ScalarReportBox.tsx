@@ -4,7 +4,7 @@ import TransactionButton from "components/ui/TransactionButton";
 import MarketStore from "lib/stores/MarketStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
-import { extrinsicCallback } from "lib/util/tx";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useMemo, useState } from "react";
 
@@ -25,20 +25,8 @@ const ScalarReportBox = observer(
       setScalarReportValue(val);
     };
 
-    const reportDisabled = useMemo<boolean>(() => {
-      if (marketStore.inReportPeriod) {
-        return !(
-          (marketStore.inOracleReportPeriod && marketStore.isOracle) ||
-          !marketStore.inOracleReportPeriod
-        );
-      }
-      return true;
-    }, [
-      marketStore.inReportPeriod,
-      marketStore.inOracleReportPeriod,
-      wallets.activeAccount.address,
-      store.blockNumber,
-    ]);
+    const reportDisabled = !marketStore.connectedWalletCanReport;
+
     const handleSignTransaction = async () => {
       const outcomeReport: OutcomeReport = {
         scalar: Number(scalarReportValue),
@@ -46,28 +34,36 @@ const ScalarReportBox = observer(
       const signer = wallets.getActiveSigner();
       const { market } = marketStore;
 
-      await market.reportOutcome(
-        signer,
-        outcomeReport,
-        extrinsicCallback({
-          notificationStore,
-          successCallback: async () => {
-            notificationStore.pushNotification("Outcome Reported", {
-              type: "Success",
-            });
-            await marketStore.refetchMarketData();
-            onReport();
-          },
-          failCallback: ({ index, error }) => {
-            notificationStore.pushNotification(
-              store.getTransactionError(index, error),
-              {
-                type: "Error",
-              }
-            );
-          },
-        })
-      );
+      const callback = extrinsicCallback({
+        notificationStore,
+        successCallback: async () => {
+          notificationStore.pushNotification("Outcome Reported", {
+            type: "Success",
+          });
+          await marketStore.refetchMarketData();
+          onReport();
+        },
+        failCallback: ({ index, error }) => {
+          notificationStore.pushNotification(
+            store.getTransactionError(index, error),
+            {
+              type: "Error",
+            }
+          );
+        },
+      });
+
+      if (
+        marketStore.disputeMechanism === "authorized" &&
+        marketStore.status === "Disputed"
+      ) {
+        const tx = store.sdk.api.tx.authorized.authorizeMarketOutcome(
+          market.marketId,
+          outcomeReport
+        );
+        signAndSend(tx, signer, callback);
+        await market.reportOutcome(signer, outcomeReport, callback);
+      }
     };
     return (
       <>
