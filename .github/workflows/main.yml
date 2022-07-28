@@ -16,7 +16,7 @@ jobs:
       # - name: Install Node Packages
       #   if: steps.npm-cache.node_modules.cache-hit != 'true'
         run:
-          cd .. yarn install
+          yarn install
       - name: Run front end
         run:
           npm run e2e:open
