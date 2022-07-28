@@ -17,6 +17,7 @@ jobs:
           npm install --legacy-peer-deps
       - name: Run front end
         run:
-          npm run e2e:open
+          npx cypress verify
+          npx cypress run
           # Add or replace test runners here
           # node_modules/.bin/cypress run --headed cypress/integration/*.js
