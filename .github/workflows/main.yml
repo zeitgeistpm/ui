@@ -14,9 +14,9 @@ jobs:
       # - name: Install Node Packages
       #   if: steps.npm-cache.node_modules.cache-hit != 'true'
         run:
-          yarn install
+          cd .. yarn install
       - name: Run front end
         run:
-          npx cypress open
+          npm run e2e:open
           # Add or replace test runners here
           # node_modules/.bin/cypress run --headed cypress/integration/*.js
