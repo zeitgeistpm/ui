@@ -10,12 +10,12 @@ jobs:
         uses: AutoModality/action-clean@v1
       - name: Cache node modules
         uses: actions/cache@v2
-        id: npm-cache
+        # id: npm-cache
       - name: Install Node Packages
         if: steps.npm-cache.node_modules.cache-hit != 'true'
         run: |
           npm install --legacy-peer-deps
-      # - name: Run front end
-      #   run: npm start -p 3000 &
+       - name: Run front end
+        run: yarn dev
       # Add or replace test runners here
           node_modules/.bin/cypress run --headed cypress/integration/*.js
