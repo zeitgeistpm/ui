@@ -19,6 +19,6 @@ jobs:
           yarn install
       - name: Run front end
         run:
-          npm run e2e:open
+          npm run e2e:run
           # Add or replace test runners here
           # node_modules/.bin/cypress run --headed cypress/integration/*.js
