@@ -16,6 +16,7 @@ jobs:
         run:
           npm install --legacy-peer-deps
       - name: Run front end
-        run: yarn dev
-      # Add or replace test runners here
-        node_modules/.bin/cypress run --headed cypress/integration/*.js
+        run:
+          yarn dev
+          # Add or replace test runners here
+          node_modules/.bin/cypress run --headed cypress/integration/*.js
