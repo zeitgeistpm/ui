@@ -3,7 +3,7 @@ on:
   push:
     branches: [ "CI_Task_133" ]
 jobs:
-  Zeitgeist CI:
+  Zeitgeist-CI:
     runs-on: ubuntu-latest
     steps:
       - name: clean workspace
