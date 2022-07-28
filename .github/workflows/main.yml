@@ -3,7 +3,7 @@ on:
   push:
     branches: [ "CI_Task_133" ]
 jobs:
-  test:
+  Zeitgeist CI:
     runs-on: ubuntu-latest
     steps:
       - name: clean workspace
@@ -19,8 +19,8 @@ jobs:
       - name: install dependencies
         if: steps.npm-cache.node_modules.cache-hit != 'true'
         run: yarn install
-      - name: Run front end
+      - name: Run cypress specs
         run:
-          npm run e2e:run
+          npx cypress open
           # Add or replace test runners here
           # node_modules/.bin/cypress run --headed cypress/integration/*.js
