@@ -6,6 +6,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: install dependencies
       #   uses: AutoModality/action-clean@v1
       # - name: Cache node modules
