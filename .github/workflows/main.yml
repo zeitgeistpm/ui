@@ -17,8 +17,8 @@ jobs:
       - name: install dependencies
         if: steps.npm-cache.node_modules.cache-hit != 'true'
         run: yarn install
-      - name: Run cypress specs
-        run:
-          npx cypress open
+      # - name: Run cypress specs
+      #   run:
+      #     npx cypress open
           # Add or replace test runners here
           # node_modules/.bin/cypress run --headed cypress/integration/*.js
