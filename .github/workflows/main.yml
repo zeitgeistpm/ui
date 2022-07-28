@@ -6,8 +6,6 @@ jobs:
   Zeitgeist-CI:
     runs-on: ubuntu-latest
     steps:
-      - name: clean workspace
-        uses: AutoModality/action-clean@v1
       - name: Checkout
         uses: actions/checkout@v2
       - name: Cache node modules
