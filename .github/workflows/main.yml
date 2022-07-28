@@ -13,9 +13,9 @@ jobs:
         # id: npm-cache
       - name: Install Node Packages
         if: steps.npm-cache.node_modules.cache-hit != 'true'
-        run: |
+        run:
           npm install --legacy-peer-deps
-       - name: Run front end
+      - name: Run front end
         run: yarn dev
       # Add or replace test runners here
-          node_modules/.bin/cypress run --headed cypress/integration/*.js
+        node_modules/.bin/cypress run --headed cypress/integration/*.js
