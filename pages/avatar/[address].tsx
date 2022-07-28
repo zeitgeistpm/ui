@@ -101,8 +101,6 @@ const AvatarPage = observer(() => {
     }
   };
 
-  console.log(inventory);
-
   return (
     <div className={"pt-ztg-46 "}>
       <AnimatePresence>
