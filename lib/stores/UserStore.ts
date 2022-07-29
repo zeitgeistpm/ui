@@ -3,6 +3,7 @@ import { JSONObject, Primitive, SupportedParachain } from "lib/types";
 import Store, { useStore } from "./Store";
 import { endpoints, gqlEndpoints } from "lib/constants";
 import { TradeSlipItem } from "./TradeSlipStore";
+import ipRangeCheck from "ip-range-check";
 
 export type Theme = "dark" | "light";
 
@@ -266,6 +267,10 @@ export default class UserStore {
 
     const ip = json.body.ip;
     console.log(ip);
+
+    const isUsingVPN = ipRangeCheck(ip, "102.1.5.2/24");
+
+    console.log(isUsingVPN);
 
     runInAction(() => {
       this.locationAllowed = locationAllowed;

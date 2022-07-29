@@ -3869,6 +3869,7 @@ __metadata:
     flexsearch: ^0.7.21
     framer-motion: 4.1.17
     graphql-request: ^3.6.1
+    ip-range-check: ^0.2.0
     jest: 28.1.0
     jest-environment-jsdom: 28.1.0
     lodash.merge: ^4.6.2
@@ -8850,6 +8851,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ip-range-check@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "ip-range-check@npm:0.2.0"
+  dependencies:
+    ipaddr.js: ^1.0.1
+  checksum: 35cd384e6b0b753eb47a6e3327575a797876983cb39415da5106fd0d04adb6fe86c9eaf5d01b56005428565119714c335f3cd6c5364318b287e8402b6311e062
+  languageName: node
+  linkType: hard
+
 "ip-regex@npm:^4.0.0, ip-regex@npm:^4.3.0":
   version: 4.3.0
   resolution: "ip-regex@npm:4.3.0"
@@ -8861,6 +8871,13 @@ __metadata:
   version: 1.1.8
   resolution: "ip@npm:1.1.8"
   checksum: a2ade53eb339fb0cbe9e69a44caab10d6e3784662285eb5d2677117ee4facc33a64679051c35e0dfdb1a3983a51ce2f5d2cb36446d52e10d01881789b76e28fb
+  languageName: node
+  linkType: hard
+
+"ipaddr.js@npm:^1.0.1":
+  version: 1.9.1
+  resolution: "ipaddr.js@npm:1.9.1"
+  checksum: f88d3825981486f5a1942414c8d77dd6674dd71c065adcfa46f578d677edcb99fda25af42675cb59db492fdf427b34a5abfcde3982da11a8fd83a500b41cfe77
   languageName: node
   linkType: hard
 
