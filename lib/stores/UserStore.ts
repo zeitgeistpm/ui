@@ -264,6 +264,9 @@ export default class UserStore {
       this.accountAddress = null;
     }
 
+    const ip = json.body.ip;
+    console.log(ip);
+
     runInAction(() => {
       this.locationAllowed = locationAllowed;
     });
@@ -274,7 +277,6 @@ export default class UserStore {
   get graphQlEnabled() {
     return this.gqlEndpoint != null;
   }
-
 }
 
 export const useUserStore = () => {
