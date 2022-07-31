@@ -3695,15 +3695,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/avatara-nft-sdk@npm:^0.1.10, @zeitgeistpm/avatara-nft-sdk@npm:^0.1.9":
-  version: 0.1.10
-  resolution: "@zeitgeistpm/avatara-nft-sdk@npm:0.1.10"
+"@zeitgeistpm/avatara-nft-sdk@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "@zeitgeistpm/avatara-nft-sdk@npm:0.2.0"
   dependencies:
     "@polkadot/api": ^8.7.1
     "@polkadot/extension-inject": ^0.44.1
     "@polkadot/util": ^9.4.1
     "@polkadot/util-crypto": ^9.4.1
-    "@zeitgeistpm/avatara-util": ^0.1.9
+    "@zeitgeistpm/avatara-util": ^0.2.0
     "@zeitgeistpm/avatara-zeitgeist-sdk": ^0.1.10
     "@zeitgeistpm/substrate": ^0.1.10
     cids: ^1.1.9
@@ -3720,33 +3720,33 @@ __metadata:
     tsconfig: "*"
   peerDependencies:
     "@polkadot/extension-dapp": "*"
-  checksum: 209d2dde3afeb80e0e722b3c59131b027ca82e0b8e51d0f8598bcabee51fd989137131e90a0da66ccfc0295c6a9319e736e53573c00fff494a5b1a166a6b1a1a
+  checksum: e55d96c6ca1ee55af677d4a74b95d7d97ee87d0906c1794e0e8e1e52d5a190c57c85955f5780990f88666491b7727c9fac1d0beae67ab9ff0c66f5c45da7a6d3
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/avatara-react@npm:^0.1.9":
-  version: 0.1.10
-  resolution: "@zeitgeistpm/avatara-react@npm:0.1.10"
+"@zeitgeistpm/avatara-react@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "@zeitgeistpm/avatara-react@npm:0.2.0"
   dependencies:
-    "@zeitgeistpm/avatara-nft-sdk": ^0.1.10
-    "@zeitgeistpm/avatara-util": ^0.1.9
+    "@zeitgeistpm/avatara-nft-sdk": ^0.2.0
+    "@zeitgeistpm/avatara-util": ^0.2.0
     copy-to-clipboard: ^3.3.1
     jotai: ^1.6.1
     optics-ts: ^2.3.0
   peerDependencies:
     react: "*"
     react-dom: "*"
-  checksum: 3c074e7647036a0e3270ae3fd5447e7f214ad7a1db0bab32320fbcbfaea983490f0fa625404157e6e9bfb82d771dfa4a022e12966f780acfef43f285795ff759
+  checksum: 908b867b43f6b0d5c96a1c26168d339b98650ccaead7a54e5487d557561e7ec03d789b4b9ece3a781cf36906725ba28c48f289160cf5df79158dd3d85c9b62e3
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/avatara-util@npm:^0.1.9":
-  version: 0.1.9
-  resolution: "@zeitgeistpm/avatara-util@npm:0.1.9"
+"@zeitgeistpm/avatara-util@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "@zeitgeistpm/avatara-util@npm:0.2.0"
   dependencies:
     rollup-config: "*"
     tsconfig: "*"
-  checksum: 8e240179882c7902a77414e7a8436f688cc9837c82c61d37f4cce1e55d62622e29f0a6744ff30f0a434d7b225add806e6f9da7367dd655aa72bb893c2d3559ca
+  checksum: d3644741735ef503eab59133128994420e8635682f98a184ff8aae53a222e305d264fbc890a1be00708bb095dda27d6abada9159c05633bd1657db0c39d883c7
   languageName: node
   linkType: hard
 
@@ -3843,9 +3843,9 @@ __metadata:
     "@types/react": ^17.0.38
     "@types/react-color": ^3.0.6
     "@typescript-eslint/eslint-plugin": ^5.9.1
-    "@zeitgeistpm/avatara-nft-sdk": ^0.1.9
-    "@zeitgeistpm/avatara-react": ^0.1.9
-    "@zeitgeistpm/avatara-util": ^0.1.9
+    "@zeitgeistpm/avatara-nft-sdk": ^0.2.0
+    "@zeitgeistpm/avatara-react": ^0.2.0
+    "@zeitgeistpm/avatara-util": ^0.2.0
     "@zeitgeistpm/sdk": 0.6.1
     autoprefixer: 10.2.5
     axios: ^0.21.4
