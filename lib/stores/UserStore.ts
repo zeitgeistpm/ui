@@ -277,7 +277,9 @@ export default class UserStore {
       .toString()
       .split("\n")
       .forEach((vpnIP) => {
-        ipRangeCheck(ip, vpnIP);
+        if (ipRangeCheck(ip, vpnIP) === true) {
+          isUsingVPN = true;
+        }
       });
     console.timeEnd("a");
 
