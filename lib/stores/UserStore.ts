@@ -266,9 +266,20 @@ export default class UserStore {
     }
 
     const ip = json.body.ip;
-    console.log(ip);
 
-    const isUsingVPN = ipRangeCheck(ip, "102.1.5.2/24");
+    const vpnIPsResponse = await fetch("/vpn-ips.txt");
+    const vpnIPs = await vpnIPsResponse.text();
+
+    console.time("a");
+
+    let isUsingVPN = false;
+    vpnIPs
+      .toString()
+      .split("\n")
+      .forEach((vpnIP) => {
+        ipRangeCheck(ip, vpnIP);
+      });
+    console.timeEnd("a");
 
     console.log(isUsingVPN);
 
