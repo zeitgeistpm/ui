@@ -260,30 +260,22 @@ export default class UserStore {
 
     const userCountry: string = json.body.country;
     const locationAllowed = !notAllowedCountries.includes(userCountry);
-    if (!locationAllowed) {
-      localStorage.removeItem("accountAddress");
-      this.accountAddress = null;
-    }
-
+    console.time("a");
     const ip = json.body.ip;
-
     const vpnIPsResponse = await fetch("/vpn-ips.txt");
     const vpnIPs = await vpnIPsResponse.text();
-
-    console.time("a");
-
-    let isUsingVPN = false;
-    vpnIPs
+    const isUsingVPN = vpnIPs
       .toString()
       .split("\n")
-      .forEach((vpnIP) => {
-        if (ipRangeCheck(ip, vpnIP) === true) {
-          isUsingVPN = true;
-        }
-      });
+      .some((vpnIP) => ipRangeCheck(ip, vpnIP) === true);
     console.timeEnd("a");
 
     console.log(isUsingVPN);
+
+    if (!locationAllowed || isUsingVPN) {
+      localStorage.removeItem("accountAddress");
+      this.accountAddress = null;
+    }
 
     runInAction(() => {
       this.locationAllowed = locationAllowed;
