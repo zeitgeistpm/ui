@@ -13,7 +13,7 @@ const AccountButton = observer(() => {
   const { wallets } = store;
   const { connected, activeAccount, activeBalance } = wallets;
   const accountModals = useAccountModals();
-  const { locationAllowed } = useUserStore();
+  const { locationAllowed, isUsingVPN } = useUserStore();
   const [hovering, setHovering] = useState<boolean>(false);
 
   const connect = async () => {
@@ -36,16 +36,19 @@ const AccountButton = observer(() => {
             className="flex w-ztg-168 h-ztg-40 bg-sky-400 dark:bg-sky-700 text-black dark:text-white rounded-full text-ztg-14-150 
           font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-20"
             onClick={() => connect()}
-            disabled={locationAllowed !== true}
+            disabled={locationAllowed !== true || isUsingVPN}
           >
             Connect Wallet
           </button>
-          {hovering === true && locationAllowed !== true ? (
+          {(hovering === true && locationAllowed !== true) ||
+          isUsingVPN === true ? (
             <div
               className="bg-white dark:bg-sky-1100 absolute rounded-ztg-10 font-bold text-black dark:text-white 
             px-ztg-10 py-ztg-14 font-lato text-ztg-12-150 top-ztg-50 z-20 right-10"
             >
-              Your jurisdiction is not authorised to trade
+              {locationAllowed !== true
+                ? "Your jurisdiction is not authorised to trade"
+                : "Trading over a VPN is not allowed due to legal restrictions"}
             </div>
           ) : (
             <></>

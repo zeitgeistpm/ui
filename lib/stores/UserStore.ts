@@ -48,6 +48,7 @@ export default class UserStore {
   gqlEndpoint: string;
   identity: UserIdentity;
   locationAllowed: boolean;
+  isUsingVPN: boolean;
   walletId: string | null = null;
   helpnotifications: HelperNotifications | null = null;
 
@@ -152,7 +153,7 @@ export default class UserStore {
       avatarKsmFeesInfo: true,
     }) as HelperNotifications;
 
-    await this.checkGeofencing();
+    await this.checkIP();
   }
 
   toggleTheme(theme?: StoredTheme) {
@@ -250,7 +251,7 @@ export default class UserStore {
     });
   }
 
-  private async checkGeofencing() {
+  private async checkIP() {
     const response = await fetch(`/api/location`);
     const json = await response.json();
 
@@ -260,7 +261,7 @@ export default class UserStore {
 
     const userCountry: string = json.body.country;
     const locationAllowed = !notAllowedCountries.includes(userCountry);
-    console.time("a");
+
     const ip = json.body.ip;
     const vpnIPsResponse = await fetch("/vpn-ips.txt");
     const vpnIPs = await vpnIPsResponse.text();
@@ -268,9 +269,6 @@ export default class UserStore {
       .toString()
       .split("\n")
       .some((vpnIP) => ipRangeCheck(ip, vpnIP) === true);
-    console.timeEnd("a");
-
-    console.log(isUsingVPN);
 
     if (!locationAllowed || isUsingVPN) {
       localStorage.removeItem("accountAddress");
@@ -279,6 +277,7 @@ export default class UserStore {
 
     runInAction(() => {
       this.locationAllowed = locationAllowed;
+      this.isUsingVPN = isUsingVPN;
     });
 
     return json;
