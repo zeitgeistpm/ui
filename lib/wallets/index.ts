@@ -20,7 +20,7 @@ const supportedWallets = [
 
 export const encodeAddresses = (
   accounts: WalletAccount[],
-  ss58Prefix: number
+  ss58Prefix: number,
 ) => {
   return accounts.map((acc) => {
     return {
@@ -37,7 +37,7 @@ export type WalletErrorMessage = {
 
 const enableWalletLoop = async (
   wallet: Wallet,
-  failCallback: () => void
+  failCallback: () => void,
 ): Promise<void> => {
   const enableFunc = async () => {
     try {
@@ -77,7 +77,7 @@ export default class Wallets {
     wallet
       .subscribeAccounts((accounts) => {
         this.setAccounts(
-          encodeAddresses(accounts, this.store.config.ss58Prefix)
+          encodeAddresses(accounts, this.store.config.ss58Prefix),
         );
       })
       .then((unsub) => {
@@ -117,7 +117,7 @@ export default class Wallets {
 
   setErrorMessageForExtension(extensionName: string, message: string) {
     const idx = this.errorMessages.findIndex(
-      (obj) => obj.extensionName === extensionName
+      (obj) => obj.extensionName === extensionName,
     );
     const err = { extensionName, message };
     if (idx === -1) {
@@ -134,7 +134,7 @@ export default class Wallets {
 
   unsetErrorMessage(extensionName: string) {
     const idx = this.errorMessages.findIndex(
-      (obj) => obj.extensionName === extensionName
+      (obj) => obj.extensionName === extensionName,
     );
     this.errorMessages = [
       ...this.errorMessages.slice(0, idx),
@@ -182,7 +182,7 @@ export default class Wallets {
             const storedAddress = this.store.userStore.accountAddress;
             if (storedAddress) {
               defaultAccount = accounts.find(
-                (acc) => acc.address === this.store.userStore.accountAddress
+                (acc) => acc.address === this.store.userStore.accountAddress,
               );
             } else {
               defaultAccount = accounts[0];
@@ -192,7 +192,7 @@ export default class Wallets {
         } else {
           this.setActiveAccount(null);
         }
-      }
+      },
     );
   }
 
@@ -202,7 +202,7 @@ export default class Wallets {
     if (accounts.length === 0) {
       this.setErrorMessageForExtension(
         wallet.extensionName,
-        "No accounts on this wallet. Please add account in wallet extension."
+        "No accounts on this wallet. Please add account in wallet extension.",
       );
       return;
     }
@@ -214,7 +214,7 @@ export default class Wallets {
           ...acc,
           address: encodeAddress(
             decodeAddress(acc.address),
-            this.store.config.ss58Prefix
+            this.store.config.ss58Prefix,
           ),
         };
       });
@@ -254,7 +254,7 @@ export default class Wallets {
         runInAction(() => {
           this.activeBalance = new Decimal(currentFree.toString()).div(ZTG);
         });
-      }
+      },
     );
   }
 
@@ -269,7 +269,7 @@ export default class Wallets {
     yield enableWalletLoop(wallet, () => {
       this.setErrorMessageForExtension(
         wallet.extensionName,
-        "Not allowed to interact with extension. Please change permission settings and reload the page."
+        "Not allowed to interact with extension. Please change permission settings and reload the page.",
       );
     });
     return true;

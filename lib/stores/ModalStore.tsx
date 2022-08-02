@@ -28,7 +28,7 @@ class ModalStore {
     el: JSX.Element,
     heading: ReactFragment,
     action?: () => void,
-    options?: ModalOptions
+    options?: ModalOptions,
   ) {
     if (options) {
       this.setOptions(options);

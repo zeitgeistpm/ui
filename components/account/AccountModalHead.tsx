@@ -1,7 +1,7 @@
 import { useAccountModals } from "lib/hooks/account";
 import { useModalStore } from "lib/stores/ModalStore";
 import { observer } from "mobx-react";
-import React, {  } from "react";
+import React from "react";
 
 const AccountModalHead = observer(() => {
   const accountModals = useAccountModals();

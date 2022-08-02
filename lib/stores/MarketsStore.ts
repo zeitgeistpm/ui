@@ -181,7 +181,7 @@ class MarketsStore {
             pageNumber: 1,
             ordering: sorting.order as MarketsOrdering,
             orderBy,
-          }
+          },
         ));
     }
 

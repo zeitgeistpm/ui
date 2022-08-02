@@ -38,10 +38,9 @@ const AspectRatioImage: FC<AspectRatioImageProps> = observer(
             height: `${height}px`,
           } as CSSProperties
         }
-      >
-      </div>
+      ></div>
     );
-  }
+  },
 );
 
 export default AspectRatioImage;

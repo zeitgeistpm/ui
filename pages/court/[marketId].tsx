@@ -21,13 +21,13 @@ const JurorsTable = ({
 }) => {
   const getOutcomeData = (jurorAddress: string) => {
     const assetId = courtCase.votes.find(
-      (vote) => vote.address === jurorAddress
+      (vote) => vote.address === jurorAddress,
     )?.asset.Categorical;
 
     if (assetId) {
       const outcome = marketStore?.marketOutcomes.find(
         //@ts-ignore
-        (outcome) => outcome.asset.categoricalOutcome?.[1] === Number(assetId)
+        (outcome) => outcome.asset.categoricalOutcome?.[1] === Number(assetId),
       );
       if (outcome) {
         return {

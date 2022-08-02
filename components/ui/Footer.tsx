@@ -20,7 +20,7 @@ const newsletterSubForm = new MobxReactForm(
   {
     plugins: defaultPlugins,
     options: defaultOptions,
-  }
+  },
 );
 
 const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
@@ -35,12 +35,12 @@ const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
 
       notificationStore.pushNotification(
         "Email sent successfully! We'll be in touch soon.",
-        { type: "Success" }
+        { type: "Success" },
       );
     } catch {
       notificationStore.pushNotification(
         "Something went wrong, please try again.",
-        { type: "Error" }
+        { type: "Error" },
       );
     }
   };
@@ -107,7 +107,7 @@ const FooterMenu: FC<FooterMenuProps> = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 const Footer = observer(() => {

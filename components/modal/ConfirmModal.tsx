@@ -41,7 +41,7 @@ const ConfirmModal: FC<ConfirmModalProps> = observer(
         </div>
       </Modal>
     );
-  }
+  },
 );
 
 export default ConfirmModal;

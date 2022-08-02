@@ -35,7 +35,7 @@ export interface ChartData {
 const ChartToolTip = observer((props) => {
   const { config } = useStore();
   const series = props.series.find(
-    (s) => s.accessor === props.payload[0]?.name
+    (s) => s.accessor === props.payload[0]?.name,
   );
   return (
     <>
@@ -119,7 +119,7 @@ const TimeSeriesChart = observer(
         }
       },
 
-      [refAreaLeft]
+      [refAreaLeft],
     );
 
     const handleMouseEnter = () => {
@@ -182,7 +182,7 @@ const TimeSeriesChart = observer(
                       }).format(new Date(unixTime));
                     } else {
                       return new Intl.DateTimeFormat().format(
-                        new Date(unixTime)
+                        new Date(unixTime),
                       );
                     }
                   }
@@ -230,7 +230,7 @@ const TimeSeriesChart = observer(
         )}
       </div>
     );
-  }
+  },
 );
 
 export default TimeSeriesChart;

@@ -75,7 +75,7 @@ const NotificationCard: FC<{
       <span className="text-white ml-ztg-10 mr-ztg-22 flex  justify-center ">
         <div
           className={`p-ztg-5 rounded-ztg-5 w-ztg-34 h-ztg-34 mt-ztg-14 ${getColor(
-            type
+            type,
           )}`}
         >
           {(() => {

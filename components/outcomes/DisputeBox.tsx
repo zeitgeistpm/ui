@@ -76,12 +76,12 @@ const DisputeBox = observer(
 
     useEffect(() => {
       const obs = marketStore.marketChange$.pipe(
-        combineLatestWith(from(getOptions()))
+        combineLatestWith(from(getOptions())),
       );
       const sub = obs.subscribe(
         ([_, options]: [_: number, options: OutcomeOption[]]) => {
           setOptions(options);
-        }
+        },
       );
       return () => sub.unsubscribe();
     }, []);
@@ -150,10 +150,10 @@ const DisputeBox = observer(
               store.getTransactionError(index, error),
               {
                 type: "Error",
-              }
+              },
             );
           },
-        })
+        }),
       );
     };
 
@@ -236,7 +236,7 @@ const DisputeBox = observer(
         )}
       </div>
     );
-  }
+  },
 );
 
 export default DisputeBox;

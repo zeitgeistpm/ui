@@ -85,7 +85,7 @@ const ScalarPriceRange = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default ScalarPriceRange;

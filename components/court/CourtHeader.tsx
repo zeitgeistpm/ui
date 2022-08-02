@@ -91,10 +91,10 @@ const JoinModalContent = observer(() => {
         failCallback: ({ index, error }) => {
           notificationStore.pushNotification(
             store.getTransactionError(index, error),
-            { type: "Error" }
+            { type: "Error" },
           );
         },
-      })
+      }),
     );
   };
 
@@ -175,10 +175,10 @@ const ExitModalContent = observer(() => {
         failCallback: ({ index, error }) => {
           notificationStore.pushNotification(
             store.getTransactionError(index, error),
-            { type: "Error" }
+            { type: "Error" },
           );
         },
-      })
+      }),
     );
   };
 

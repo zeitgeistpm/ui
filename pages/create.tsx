@@ -108,7 +108,7 @@ const CreatePage: NextPage = observer(() => {
       {
         plugins: defaultPlugins,
         options: defaultOptions,
-      }
+      },
     );
   });
 
@@ -156,7 +156,7 @@ const CreatePage: NextPage = observer(() => {
           permissionlessCost: store.config.markets.validityBond + bondCost,
         },
         formData.advised,
-        deployPool === true ? poolRows?.map((row) => Number(row.amount)) : null
+        deployPool === true ? poolRows?.map((row) => Number(row.amount)) : null,
       ) + Number(txFee || 0);
     setMarketCost(marketCost);
   }, [store.config, formData, deployPool, poolRows]);
@@ -252,7 +252,7 @@ const CreatePage: NextPage = observer(() => {
   };
 
   const mapRangeToEntires = (
-    range: RangeOutcomeEntry
+    range: RangeOutcomeEntry,
   ): MultipleOutcomeEntry[] => {
     return [
       {
@@ -287,7 +287,7 @@ const CreatePage: NextPage = observer(() => {
   const getCreateMarketParameters = async (
     callbackOrPaymentInfo:
       | ((result: ISubmittableResult, _unsub: () => void) => void)
-      | boolean
+      | boolean,
   ): Promise<CreateMarketParams> => {
     const signer = store.wallets.getActiveSigner();
     const oracle = formData.oracle;
@@ -327,7 +327,7 @@ const CreatePage: NextPage = observer(() => {
   const getCreateCpmmMarketAndAddPoolParameters = async (
     callbackOrPaymentInfo:
       | ((result: ISubmittableResult, _unsub: () => void) => void)
-      | boolean
+      | boolean,
   ): Promise<CreateCpmmMarketAndDeployAssetsParams> => {
     const signer = store.wallets.getActiveSigner();
     const oracle = formData.oracle;
@@ -346,9 +346,7 @@ const CreatePage: NextPage = observer(() => {
       return baseWeight;
     });
 
-    const weights = [
-      ...weightsNums.map((w) => Math.floor(w).toString()),
-    ];
+    const weights = [...weightsNums.map((w) => Math.floor(w).toString())];
 
     const amounts = poolRows.slice(0, -1).map((r) => {
       return (Number(r.amount) * ZTG).toString();
@@ -393,18 +391,18 @@ const CreatePage: NextPage = observer(() => {
                 `Market successfully created with id: ${marketId}`,
                 {
                   type: "Success",
-                }
+                },
               );
               resolve(marketId);
             },
             failCallback: ({ index, error }) => {
               notificationStore.pushNotification(
                 store.getTransactionError(index, error),
-                { type: "Error" }
+                { type: "Error" },
               );
               reject();
             },
-          })
+          }),
         );
 
         await store.sdk.models.createCpmmMarketAndDeployAssets(params);
@@ -426,18 +424,18 @@ const CreatePage: NextPage = observer(() => {
               const marketId = data[0];
               notificationStore.pushNotification(
                 `Transaction successful! Market id ${marketId}`,
-                { type: "Success" }
+                { type: "Success" },
               );
               resolve(Number(marketId));
             },
             failCallback: ({ index, error }) => {
               notificationStore.pushNotification(
                 store.getTransactionError(index, error),
-                { type: "Error" }
+                { type: "Error" },
               );
               reject();
             },
-          })
+          }),
         );
         return parseInt(await store.sdk.models.createMarket(params));
       } else {
@@ -462,7 +460,7 @@ const CreatePage: NextPage = observer(() => {
     } else {
       const params = await getCreateCpmmMarketAndAddPoolParameters(true);
       const fee = await store.sdk.models.createCpmmMarketAndDeployAssets(
-        params
+        params,
       );
       return new Decimal(typeof fee == "string" ? fee : "0")
         .div(ZTG)

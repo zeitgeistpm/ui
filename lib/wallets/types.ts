@@ -22,7 +22,7 @@ export interface WalletAccount {
 }
 
 export type SubscriptionFn = (
-  accounts: WalletAccount[] | undefined
+  accounts: WalletAccount[] | undefined,
 ) => void | Promise<void>;
 
 interface WalletExtension {

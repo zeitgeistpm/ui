@@ -22,7 +22,7 @@ interface RawValue {
 
 const getFromLocalStorage = (
   key: string,
-  defaultValue: JSONObject
+  defaultValue: JSONObject,
 ): JSONObject => {
   const val = window.localStorage.getItem(key);
   if (val == null && defaultValue) {
@@ -57,7 +57,7 @@ export default class UserStore {
       (storedTheme: StoredTheme) => {
         setToLocalStorage("theme", storedTheme);
         this.theme = this.getTheme();
-      }
+      },
     );
 
     reaction(
@@ -68,21 +68,21 @@ export default class UserStore {
         } else if (theme === "light") {
           document.body.classList.remove("dark");
         }
-      }
+      },
     );
 
     reaction(
       () => this.endpoint,
       (endpoint) => {
         setToLocalStorage("endpoint-1", endpoint);
-      }
+      },
     );
 
     reaction(
       () => this.gqlEndpoint,
       (gqlEndpoint) => {
         setToLocalStorage("gql-endpoint-1", gqlEndpoint);
-      }
+      },
     );
 
     reaction(
@@ -93,28 +93,28 @@ export default class UserStore {
         }
         setToLocalStorage("accountAddress", activeAccount.address);
         this.loadIdentity(activeAccount.address);
-      }
+      },
     );
 
     reaction(
       () => this.store.tradeSlipStore.tradeSlipItems,
       (items) => {
         setToLocalStorage("tradeSlipItems", items);
-      }
+      },
     );
 
     reaction(
       () => this.store.wallets.wallet,
       (wallet) => {
         setToLocalStorage("walletId", wallet?.extensionName ?? null);
-      }
+      },
     );
 
     reaction(
       () => this.helpnotifications,
       (notifications) => {
         setToLocalStorage("help-notifications", notifications);
-      }
+      },
     );
   }
 
@@ -125,18 +125,18 @@ export default class UserStore {
     this.walletId = getFromLocalStorage("walletId", null) as string;
     this.tradeSlipItems = getFromLocalStorage(
       "tradeSlipItems",
-      []
+      [],
     ) as TradeSlipItem[];
     this.endpoint = getFromLocalStorage(
       "endpoint-1",
       endpoints.find((endpoint) => endpoint.parachain == SupportedParachain.BSR)
-        .value
+        .value,
     ) as string;
     this.gqlEndpoint = getFromLocalStorage(
       "gql-endpoint-1",
       gqlEndpoints.find(
-        (endpoint) => endpoint.parachain == SupportedParachain.BSR
-      ).value
+        (endpoint) => endpoint.parachain == SupportedParachain.BSR,
+      ).value,
     ) as string;
 
     window
@@ -207,7 +207,7 @@ export default class UserStore {
 
   async getIdentity(address: string): Promise<UserIdentity> {
     const identity = (await this.store.sdk.api.query.identity.identityOf(
-      address
+      address,
     )) as any;
 
     const indentityInfo =
@@ -254,7 +254,7 @@ export default class UserStore {
     const json = await response.json();
 
     const notAllowedCountries: string[] = JSON.parse(
-      process.env.NEXT_PUBLIC_NOT_ALLOWED_COUNTRIES ?? "[]"
+      process.env.NEXT_PUBLIC_NOT_ALLOWED_COUNTRIES ?? "[]",
     );
 
     const userCountry: string = json.body.country;
@@ -274,7 +274,6 @@ export default class UserStore {
   get graphQlEnabled() {
     return this.gqlEndpoint != null;
   }
-
 }
 
 export const useUserStore = () => {

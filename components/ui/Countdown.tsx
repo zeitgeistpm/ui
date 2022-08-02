@@ -8,7 +8,7 @@ import { FC, useEffect, useState } from "react";
  * @returns object
  */
 export const toHMS = (
-  sec: number
+  sec: number,
 ): { hours: string; minutes: string; seconds: string } => {
   if (sec < 0) {
     return;
@@ -65,7 +65,7 @@ const useTicker = () => {
   }, [tick]);
 
   return tick;
-}
+};
 
 const Countdown: FC<CountdownProps> = observer(({ seconds }) => {
   const [secsLeft, setSecsLeft] = useState<number>(seconds);
