@@ -65,7 +65,7 @@ const useTicker = () => {
   }, [tick]);
 
   return tick;
-}
+};
 
 const Countdown: FC<CountdownProps> = observer(({ seconds }) => {
   const [secsLeft, setSecsLeft] = useState<number>(seconds);

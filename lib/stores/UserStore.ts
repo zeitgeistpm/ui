@@ -274,7 +274,6 @@ export default class UserStore {
   get graphQlEnabled() {
     return this.gqlEndpoint != null;
   }
-
 }
 
 export const useUserStore = () => {

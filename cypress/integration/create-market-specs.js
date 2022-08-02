@@ -42,7 +42,8 @@ describe("Create market page", () => {
   });
   it("Verify switch button is working for multiple outcomes and range of outcomes", () => {
     createForm.elements
-      .outcomesSwitch().eq(0)
+      .outcomesSwitch()
+      .eq(0)
       .scrollIntoView()
       .should("be.visible")
       .click();
@@ -52,12 +53,14 @@ describe("Create market page", () => {
   });
   it("Verify when the switch button is clicked again, then categorical market inputs are visible", () => {
     createForm.elements
-      .outcomesSwitch().eq(0)
+      .outcomesSwitch()
+      .eq(0)
       // .scrollIntoView()
       // .should("be.visible")
       .click();
     createForm.elements
-      .outcomesSwitch().eq(0)
+      .outcomesSwitch()
+      .eq(0)
       // .scrollIntoView()
       // .should("be.visible")
       .click();
@@ -68,7 +71,8 @@ describe("Create market page", () => {
   });
   it("Verify switch button is working for permission-less and Advised", () => {
     createForm.elements
-      .permissionlessSwitch().eq(1)
+      .permissionlessSwitch()
+      .eq(1)
       // .scrollIntoView()
       // .should("be.visible")
       .click();
@@ -76,12 +80,14 @@ describe("Create market page", () => {
   });
   it("Verify switch button is working when clicked again for permission-less and advised", () => {
     createForm.elements
-      .permissionlessSwitch().eq(1)
+      .permissionlessSwitch()
+      .eq(1)
       // .scrollIntoView()
       // .should("be.visible")
       .click();
     createForm.elements
-      .permissionlessSwitch().eq(1)
+      .permissionlessSwitch()
+      .eq(1)
       // .scrollIntoView()
       // .should("be.visible")
       .click();
@@ -432,7 +438,8 @@ describe("Create market page", () => {
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
       createForm.elements
-        .outcomesSwitch().eq(0)
+        .outcomesSwitch()
+        .eq(0)
         .scrollIntoView()
         .should("be.visible")
         .click();
@@ -507,7 +514,8 @@ describe("Create market page", () => {
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
       createForm.elements
-        .outcomesSwitch().eq(0)
+        .outcomesSwitch()
+        .eq(0)
         .scrollIntoView()
         .should("be.visible")
         .click();
@@ -571,7 +579,8 @@ describe("Create market page", () => {
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
       createForm.elements
-        .outcomesSwitch().eq(0)
+        .outcomesSwitch()
+        .eq(0)
         .scrollIntoView()
         .should("be.visible")
         .click();

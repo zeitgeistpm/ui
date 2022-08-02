@@ -30,7 +30,7 @@ const WalletSelect = observer(() => {
     wallets.disconnectWallet();
 
     const walletConnect = flowResult(
-      wallets.connectWallet(selectedWallet.extensionName),
+      wallets.connectWallet(selectedWallet.extensionName)
     );
 
     walletConnect.then((errors?: WalletErrorMessage[]) => {
@@ -48,7 +48,7 @@ const WalletSelect = observer(() => {
     <div className="flex flex-col">
       {Wallets.supportedWallets.map((wallet, idx) => {
         const error = errorMessages.find(
-          (e) => e.extensionName === wallet.extensionName,
+          (e) => e.extensionName === wallet.extensionName
         );
         const hasError = error != null;
         return (

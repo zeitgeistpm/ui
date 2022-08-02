@@ -12,7 +12,7 @@ class settingsform {
     SetIdentityButton: () => cy.get('[data-test="setIdentityButton"]'),
     ClearIdentityButton: () => cy.get('[data-test="setIdentityButton"]'),
     AccountBalance: () => cy.get('[data-test="accountBalance"]'),
-    notificationMessage: () => cy.get('[data-test="notificationMessage"]')
+    notificationMessage: () => cy.get('[data-test="notificationMessage"]'),
   };
 }
 module.exports = new settingsform();

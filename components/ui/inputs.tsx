@@ -103,7 +103,8 @@ const rdtpInput = (
         readOnly
       />
       <div
-        className="w-ztg-40 h-ztg-40 border-l-1 border-sky-600 bg-sky-200 dark:bg-black flex-shrink-0 rounded-r-ztg-5 center cursor-pointer" data-test="calendarIcon"
+        className="w-ztg-40 h-ztg-40 border-l-1 border-sky-600 bg-sky-200 dark:bg-black flex-shrink-0 rounded-r-ztg-5 center cursor-pointer"
+        data-test="calendarIcon"
         onClick={openCalendar}
       >
         <Calendar size={16} className="text-sky-600" />
@@ -364,7 +365,7 @@ export const TextArea: FC<TextAreaProps> = observer(
         name,
         className = "",
         placeholder = "",
-        dataTest="",
+        dataTest = "",
       },
       ref
     ) => {

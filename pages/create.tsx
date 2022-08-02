@@ -346,9 +346,7 @@ const CreatePage: NextPage = observer(() => {
       return baseWeight;
     });
 
-    const weights = [
-      ...weightsNums.map((w) => Math.floor(w).toString()),
-    ];
+    const weights = [...weightsNums.map((w) => Math.floor(w).toString())];
 
     const amounts = poolRows.slice(0, -1).map((r) => {
       return (Number(r.amount) * ZTG).toString();

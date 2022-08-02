@@ -1,4 +1,3 @@
-
 div[class^="card-exp-col"] {
   @apply flex-shrink-0 mr-ztg-16;
 }

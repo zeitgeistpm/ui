@@ -36,13 +36,13 @@ const LabeledToggle: FC<{
       >
         {leftLabel}
       </div>
-      
+
       <div
         className={`h-ztg-17 rounded-full w-ztg-64 items-center mr-ztg-10
           flex px-ztg-5 bg-white dark:bg-black ${
             disabled ? "cursor-default" : "cursor-pointer"
           }`}
-          data-test="switchButton"
+        data-test="switchButton"
         onClick={() => {
           toggleSide();
         }}

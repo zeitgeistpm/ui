@@ -12,7 +12,6 @@ body {
 
 html {
   font-size: 16px;
-
 }
 
 /* tailwind sm breakpoint */
@@ -50,7 +49,7 @@ html {
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Kanit:wght@700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&display=swap");
 @import "./kusama-derby.css";
 
 .rounded-3px {

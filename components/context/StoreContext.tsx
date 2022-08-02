@@ -5,13 +5,14 @@ import Store from "lib/stores/Store";
 
 export const StoreContext = React.createContext<Store | null>(null);
 
-export const StoreProvider: FC<{store: Store}> = observer(({ children, store }) => {
-  useEffect(() => {
-    store.initialize();
-  }, []);
+export const StoreProvider: FC<{ store: Store }> = observer(
+  ({ children, store }) => {
+    useEffect(() => {
+      store.initialize();
+    }, []);
 
-  return (
-    <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
-  );
-});
-
+    return (
+      <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
+    );
+  }
+);

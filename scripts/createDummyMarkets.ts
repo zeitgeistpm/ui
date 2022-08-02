@@ -64,11 +64,15 @@ const createCategoricalMarket = async (
   endBlock: number,
   signer: KeyringPairOrExtSigner
 ) => {
-  sdk = sdk || (await SDK.initialize(endpoint, { ipfsClientUrl: "http://localhost:5001" }));
+  sdk =
+    sdk ||
+    (await SDK.initialize(endpoint, {
+      ipfsClientUrl: "http://localhost:5001",
+    }));
 
   const slug = `${num}-end${endBlock}`;
   const period = {
-    block: [startBlock, endBlock]
+    block: [startBlock, endBlock],
   };
 
   const metadata = {
@@ -79,9 +83,9 @@ const createCategoricalMarket = async (
       return {
         name: `C0${idx}.${slug}`,
         ticker: `${num}.T${idx}`,
-        color: randomHexColor()
+        color: randomHexColor(),
       };
-    })
+    }),
   };
 
   const id = await sdk.models.createMarket({
@@ -93,7 +97,7 @@ const createCategoricalMarket = async (
     marketType: { Categorical: numOutcomes },
     mdm: { Authorized: signer.address as unknown as number },
     scoringRule: "CPMM",
-    callbackOrPaymentInfo: false
+    callbackOrPaymentInfo: false,
   });
 
   console.log(metadata);
@@ -102,7 +106,9 @@ const createCategoricalMarket = async (
 };
 
 (async () => {
-  const sdk = await SDK.initialize(endpoint, { ipfsClientUrl: "http://localhost:5001" });
+  const sdk = await SDK.initialize(endpoint, {
+    ipfsClientUrl: "http://localhost:5001",
+  });
   const signer: KeyringPairOrExtSigner = util.signerFromSeed(seed);
   let end: number | undefined;
   let id = +(await sdk.api.query.marketCommons.marketCounter());
