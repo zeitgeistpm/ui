@@ -17,7 +17,9 @@ import Drawer from "./Drawer";
 import Tabs from "../ui/Tabs";
 import ExchangeBox from "../exchange/ExchangeBox";
 
-const ZTGSummary = () => {
+const ZTGSummary = observer(() => {
+  const { ztgInfo } = useStore();
+
   return (
     <div className="flex px-ztg-28 items-center ">
       <div className=" flex items-center justify-center rounded-ztg-10 flex-shrink-0 mb-auto mt-ztg-5">
@@ -32,13 +34,19 @@ const ZTGSummary = () => {
           Zeitgeist
         </div>
       </div>
-      <div className="bg-white dark:bg-sky-700 dark:text-white font-mono px-ztg-12 py-ztg-6 rounded-full text-ztg-12-120 text-center whitespace-nowrap mr-ztg-12">
-        = $0
-      </div>
-      <PercentageChange change={0} />
+      {ztgInfo ? (
+        <>
+          <div className="bg-white dark:bg-sky-700 dark:text-white font-mono px-ztg-12 py-ztg-6 rounded-full text-ztg-12-120 text-center whitespace-nowrap mr-ztg-12">
+            = ${ztgInfo?.price.toFixed(2) ?? 0}
+          </div>
+          <PercentageChange change={ztgInfo?.change.toFixed(0) ?? "0"} />
+        </>
+      ) : (
+        <></>
+      )}
     </div>
   );
-};
+});
 
 type DisplayMode = "default" | "liquidity" | "report" | "dispute" | "redeem";
 

@@ -51,6 +51,11 @@ interface Config {
   };
 }
 
+interface ZTGInfo {
+  price: Decimal;
+  change: Decimal;
+}
+
 export default class Store {
   userStore = new UserStore(this);
   notificationStore = new NotificationStore();
@@ -59,6 +64,7 @@ export default class Store {
   exchangeStore = new ExchangeStore(this);
   courtStore: CourtStore;
   wallets = new Wallets(this);
+  ztgInfo: ZTGInfo;
 
   markets: MarketsStore;
 
@@ -194,6 +200,12 @@ export default class Store {
       this.userStore.resetEndpoints();
       this.initialize();
     }
+
+    const priceInfo = await this.fetchZTGPrice();
+
+    runInAction(() => {
+      this.ztgInfo = priceInfo;
+    });
   }
 
   async connectNewSDK(endpoint: string, gqlEndpoint: string) {
@@ -247,6 +259,18 @@ export default class Store {
     if (this.userStore.gqlEndpoint && this.userStore.gqlEndpoint.length > 0) {
       this.graphQLClient = new GraphQLClient(this.userStore.gqlEndpoint, {});
     }
+  }
+
+  private async fetchZTGPrice(): Promise<ZTGInfo> {
+    const res = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=zeitgeist&vs_currencies=usd&include_24hr_change=true"
+    );
+    const json = await res.json();
+
+    return {
+      price: new Decimal(json.zeitgeist.usd),
+      change: new Decimal(json.zeitgeist.usd_24h_change),
+    };
   }
 
   private async loadConfig() {
