@@ -51,6 +51,11 @@ interface Config {
   };
 }
 
+interface ZTGInfo {
+  price: Decimal;
+  change: Decimal;
+}
+
 export default class Store {
   userStore = new UserStore(this);
   notificationStore = new NotificationStore();
@@ -59,6 +64,7 @@ export default class Store {
   exchangeStore = new ExchangeStore(this);
   courtStore: CourtStore;
   wallets = new Wallets(this);
+  ztgInfo: ZTGInfo;
 
   markets: MarketsStore;
 
@@ -119,7 +125,7 @@ export default class Store {
       registerValidationRules: false,
       isTestEnv: false,
       unsubscribeNewHeads: false,
-      balanceSubscription: false
+      balanceSubscription: false,
     });
   }
 
@@ -194,6 +200,12 @@ export default class Store {
       this.userStore.resetEndpoints();
       this.initialize();
     }
+
+    const priceInfo = await this.fetchZTGPrice();
+
+    runInAction(() => {
+      this.ztgInfo = priceInfo;
+    });
   }
 
   async connectNewSDK(endpoint: string, gqlEndpoint: string) {
@@ -220,7 +232,7 @@ export default class Store {
     const ipfsClientUrl = this.isTestEnv ? "http://127.0.0.1:5001" : undefined;
     const sdk = await SDK.initialize(endpoint, {
       graphQlEndpoint,
-      ipfsClientUrl
+      ipfsClientUrl,
     });
 
     if (sdk.graphQLClient != null) {
@@ -249,10 +261,22 @@ export default class Store {
     }
   }
 
+  private async fetchZTGPrice(): Promise<ZTGInfo> {
+    const res = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=zeitgeist&vs_currencies=usd&include_24hr_change=true"
+    );
+    const json = await res.json();
+
+    return {
+      price: new Decimal(json.zeitgeist.usd),
+      change: new Decimal(json.zeitgeist.usd_24h_change),
+    };
+  }
+
   private async loadConfig() {
     const [consts, properties] = await Promise.all([
       this.sdk.api.consts,
-      this.sdk.api.rpc.system.properties()
+      this.sdk.api.rpc.system.properties(),
     ]);
 
     // minimumPeriod * 2 is fair assumption for now but need to make sure this stays up
@@ -289,13 +313,13 @@ export default class Store {
         ),
         minCategories: this.codecToNumber(
           consts.predictionMarkets.minCategories
-        )
+        ),
       },
       court: {
         caseDurationSec:
           this.codecToNumber(consts.court.courtCaseDuration) * blockTimeSec,
-        stakeWeight: this.codecToNumber(consts.court.stakeWeight) / ZTG
-      }
+        stakeWeight: this.codecToNumber(consts.court.stakeWeight) / ZTG,
+      },
     };
 
     runInAction(() => {

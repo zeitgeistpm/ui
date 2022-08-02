@@ -155,7 +155,7 @@ const Cell = ({
       return (
         <td className={`${base}`} onClick={onClick} style={style}>
           <div className="flex justify-end">
-            <PercentageChange change={Number(value)} />
+            <PercentageChange change={value.toString()} />
           </div>
         </td>
       );
