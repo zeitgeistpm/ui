@@ -49,7 +49,7 @@ const WalletSelect = observer(() => {
           <div key={wallet.extensionName}>
             <div
               className={
-                "flex flex-row h-ztg-64 items-center rounded-ztg-12 bg-sky-100 dark:bg-sky-700 px-ztg-12 " +
+                "flex flex-row h-ztg-64 items-center rounded-ztg-12 bg-sky-100 dark:bg-sky-700 px-ztg-12 cursor-pointer " +
                 (idx < 2 ? "mb-ztg-12 " : "")
               }
               onClick={() => {

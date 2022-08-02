@@ -302,7 +302,7 @@ export default class Wallets {
   ): Promise<boolean> => {
     const enableFunc = async () => {
       try {
-        const res = await wallet.enable();
+        await wallet.enable();
         return true;
       } catch (err) {
         failCallback();
@@ -315,7 +315,7 @@ export default class Wallets {
     }
     if (interval) {
       return new Promise<boolean>((resolve, reject) => {
-        this.enableIntervalId = window.setInterval(async () => {
+        const id = window.setInterval(async () => {
           const enabled = await enableFunc();
           if (enabled) {
             window.clearInterval(this.enableIntervalId);
@@ -324,6 +324,9 @@ export default class Wallets {
             // reject(false);
           }
         }, 1000);
+        runInAction(() => {
+          this.enableIntervalId = id;
+        });
       });
     } else {
       return false;
