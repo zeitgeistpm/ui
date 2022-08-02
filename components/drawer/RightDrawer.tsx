@@ -74,7 +74,7 @@ const Box = observer(
             <LiquidityPoolsBox />
           ) : (
             <ExchangeBox exchangeStore={exchangeStore} />
-          )
+          ),
         );
       case "report":
         return tabIndex === 0 ? (
@@ -101,7 +101,7 @@ const Box = observer(
           withSpacing(<ExchangeBox exchangeStore={exchangeStore} />)
         );
     }
-  }
+  },
 );
 
 const RightDrawer = observer(() => {

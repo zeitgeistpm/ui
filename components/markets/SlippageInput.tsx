@@ -64,7 +64,7 @@ const SlippageSettingInput: FC<SlippageInputProps> = observer(
         )}
       </div>
     );
-  }
+  },
 );
 
 export default SlippageSettingInput;

@@ -116,7 +116,7 @@ export class BaseDotsamaWallet implements Wallet {
           };
         });
         callback(accountsWithWallet);
-      }
+      },
     );
 
     return unsubscribe;

@@ -31,7 +31,7 @@ const TradeSlipItemList = observer(() => {
     tradeSlipStore.recheckScrollbar.asObservable(),
     calcScrollbar,
     [],
-    30
+    30,
   );
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const TradeSlipItemList = observer(() => {
     const hasScrollbar = tradeSlipContainerScrollbar > 0;
     if (hasScrollbar) {
       const paddRight = parseInt(
-        window.getComputedStyle(container).paddingRight
+        window.getComputedStyle(container).paddingRight,
       );
       return { paddingRight: paddRight - tradeSlipContainerScrollbar };
     }

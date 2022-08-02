@@ -67,7 +67,7 @@ const AvatarPage = observer(() => {
       "You have pending items!",
       {
         styles: { width: "580px" },
-      }
+      },
     );
   };
 
@@ -77,7 +77,7 @@ const AvatarPage = observer(() => {
       "Inventory.",
       {
         styles: { width: "580px" },
-      }
+      },
     );
   };
 
@@ -96,7 +96,7 @@ const AvatarPage = observer(() => {
       setMintingAvatar(false);
       notificationStore.pushNotification(
         "Avatar minting error! " + error.message,
-        { type: "Error" }
+        { type: "Error" },
       );
     }
   };
@@ -353,7 +353,7 @@ const Badge = (props: { item: Inventory.AcceptedInventoryItem }) => {
           <img
             className="z-ztg-2"
             src={sanitizeIpfsUrl(
-              cidToUrl("QmZHdCSRpCEfVDcqwkmo5ELrkuKXPBCtfs4fQ3RXibn1am")
+              cidToUrl("QmZHdCSRpCEfVDcqwkmo5ELrkuKXPBCtfs4fQ3RXibn1am"),
             )}
           />
           <img
@@ -411,7 +411,7 @@ const InventoryModal = (props: { address: string; onClose?: () => void }) => {
             <img
               className="h-16 w-16 rounded-md mr-4"
               src={sanitizeIpfsUrl(
-                item.metadata_properties.badge.value.preview
+                item.metadata_properties.badge.value.preview,
               )}
             />
             <div className="w-full">
@@ -488,7 +488,7 @@ const PendingItemsModal = (props: {
   const modalStore = useModalStore();
 
   const isAcceptingAll = inventory.items.pending.every((item) =>
-    inventory.isAccepting(item)
+    inventory.isAccepting(item),
   );
 
   useEffect(() => {
@@ -516,7 +516,7 @@ const PendingItemsModal = (props: {
               <img
                 className="h-24 w-24 rounded-md mr-4"
                 src={sanitizeIpfsUrl(
-                  item.metadata_properties.badge.value.preview
+                  item.metadata_properties.badge.value.preview,
                 )}
               />
               <div className="w-full">

@@ -32,7 +32,7 @@ const AssetSelectButton = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default AssetSelectButton;

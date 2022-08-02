@@ -111,7 +111,7 @@ export default class NavigationStore {
     const currItem = this.items[group];
     if (isNavigationGroup(currItem)) {
       return currItem.subItems.some(
-        (item) => item.pageName === this.currentPage
+        (item) => item.pageName === this.currentPage,
       );
     } else {
       return false;
@@ -141,7 +141,7 @@ export default class NavigationStore {
         }
         return [...acc];
       },
-      []
+      [],
     );
 
     groups.forEach((g) => {

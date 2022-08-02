@@ -119,7 +119,7 @@ export default class Store {
       registerValidationRules: false,
       isTestEnv: false,
       unsubscribeNewHeads: false,
-      balanceSubscription: false
+      balanceSubscription: false,
     });
   }
 
@@ -132,7 +132,7 @@ export default class Store {
         }
         return +val > 0;
       },
-      "Enter amount greater than zero."
+      "Enter amount greater than zero.",
     );
 
     validatorjs.register("timestamp_gt_now", (val: number) => {
@@ -166,7 +166,7 @@ export default class Store {
       () => {
         this.initTradeSlipStore();
         this.exchangeStore.initialize();
-      }
+      },
     );
   }
 
@@ -220,7 +220,7 @@ export default class Store {
     const ipfsClientUrl = this.isTestEnv ? "http://127.0.0.1:5001" : undefined;
     const sdk = await SDK.initialize(endpoint, {
       graphQlEndpoint,
-      ipfsClientUrl
+      ipfsClientUrl,
     });
 
     if (sdk.graphQLClient != null) {
@@ -252,7 +252,7 @@ export default class Store {
   private async loadConfig() {
     const [consts, properties] = await Promise.all([
       this.sdk.api.consts,
-      this.sdk.api.rpc.system.properties()
+      this.sdk.api.rpc.system.properties(),
     ]);
 
     // minimumPeriod * 2 is fair assumption for now but need to make sure this stays up
@@ -285,17 +285,17 @@ export default class Store {
         validityBond:
           this.codecToNumber(consts.predictionMarkets.validityBond) / ZTG,
         maxCategories: this.codecToNumber(
-          consts.predictionMarkets.maxCategories
+          consts.predictionMarkets.maxCategories,
         ),
         minCategories: this.codecToNumber(
-          consts.predictionMarkets.minCategories
-        )
+          consts.predictionMarkets.minCategories,
+        ),
       },
       court: {
         caseDurationSec:
           this.codecToNumber(consts.court.courtCaseDuration) * blockTimeSec,
-        stakeWeight: this.codecToNumber(consts.court.stakeWeight) / ZTG
-      }
+        stakeWeight: this.codecToNumber(consts.court.stakeWeight) / ZTG,
+      },
     };
 
     runInAction(() => {
@@ -313,7 +313,7 @@ export default class Store {
 
     const { errorName, documentation } = this.sdk.errorTable.getEntry(
       groupIndex,
-      errorIndex
+      errorIndex,
     );
 
     return documentation.length > 0
@@ -329,7 +329,7 @@ export default class Store {
           this.blockTimestamp = blockTs;
           this.blockNumber = header.number;
         });
-      }
+      },
     );
   }
 
@@ -362,14 +362,14 @@ export default class Store {
     }
     if (assetObj.isZtg) {
       const { data } = (await this.sdk.api.query.system.account(
-        this.wallets.activeAccount.address
+        this.wallets.activeAccount.address,
       )) as AccountInfo;
       return new Decimal(data.free.toString()).div(ZTG);
     }
 
     const data = await this.sdk.api.query.tokens.accounts(
       this.wallets.activeAccount.address,
-      asset
+      asset,
     );
 
     //@ts-ignore
@@ -378,7 +378,7 @@ export default class Store {
 
   async getPoolBalance(
     pool: Swap | string,
-    asset: AssetId | Asset
+    asset: AssetId | Asset,
   ): Promise<Decimal> {
     let account;
     if (typeof pool === "string") {
@@ -399,7 +399,7 @@ export default class Store {
 
     const b = (await this.sdk.api.query.tokens.accounts(
       account,
-      assetObj
+      assetObj,
     )) as any;
 
     return new Decimal(b.free.toString()).div(ZTG);

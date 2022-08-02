@@ -4,7 +4,7 @@ declare namespace Cypress {
      * Custom command to select DOM element by data-test attribute.
      */
     getTestElement<K extends keyof HTMLElementTagNameMap>(
-      attributeVal: string
+      attributeVal: string,
     ): Chainable<JQuery<HTMLElementTagNameMap[K]>>;
   }
 }

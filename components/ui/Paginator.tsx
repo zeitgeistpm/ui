@@ -40,7 +40,7 @@ const Paginator = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default Paginator;

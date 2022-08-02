@@ -46,7 +46,7 @@ const BuySellButtons = observer(({ item }: BuySellButtonsProps) => {
 
   const addItem = async (
     item: Omit<TradeSlipItem, "type">,
-    type: "buy" | "sell"
+    type: "buy" | "sell",
   ) => {
     if (store.rightDrawerClosed) {
       store.toggleDrawer("right");
@@ -59,7 +59,7 @@ const BuySellButtons = observer(({ item }: BuySellButtonsProps) => {
   const changeItem = async (
     item: Omit<TradeSlipItem, "type">,
     type: "buy" | "sell",
-    idx: number
+    idx: number,
   ) => {
     if (store.rightDrawerClosed) {
       store.toggleDrawer("right");

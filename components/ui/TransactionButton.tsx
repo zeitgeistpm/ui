@@ -47,7 +47,7 @@ const TransactionButton: FC<TransactionButtonProps> = observer(
         {connected ? children : "Connect Wallet"}
       </button>
     );
-  }
+  },
 );
 
 export default TransactionButton;

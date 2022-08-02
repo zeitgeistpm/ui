@@ -6,7 +6,7 @@ import { calcInGivenOut, calcOutGivenIn } from "lib/math";
 export const extractSwapWeights = (
   pool: Swap,
   assetId: AssetId,
-  baseAsset: string
+  baseAsset: string,
 ) => {
   const assetString = JSON.stringify(assetId);
 
@@ -27,7 +27,7 @@ export const generateSwapExactAmountOutTx = (
   tokenAmountOut: Decimal,
   swapFee: Decimal,
   slippage: Decimal, //passed as decimal, eg 1% slippage should be 0.01
-  poolId: number
+  poolId: number,
 ) => {
   const maxAmountIn = calcInGivenOut(
     tokenBalanceIn,
@@ -35,7 +35,7 @@ export const generateSwapExactAmountOutTx = (
     tokenBalanceOut,
     tokenWeightOut,
     tokenAmountOut,
-    swapFee
+    swapFee,
   );
 
   const maxAmountInWithSlippage = maxAmountIn.mul(slippage.plus(1));
@@ -46,7 +46,7 @@ export const generateSwapExactAmountOutTx = (
     maxAmountInWithSlippage.toFixed(0),
     tokenOut,
     tokenAmountOut.toFixed(0),
-    null
+    null,
   );
 };
 
@@ -61,7 +61,7 @@ export const generateSwapExactAmountInTx = (
   tokenAmountIn: Decimal,
   swapFee: Decimal,
   slippage: Decimal, //passed as decimal, eg 1% slippage should be 0.01
-  poolId: number
+  poolId: number,
 ) => {
   const minAmountOut = calcOutGivenIn(
     tokenBalanceIn,
@@ -69,11 +69,11 @@ export const generateSwapExactAmountInTx = (
     tokenBalanceOut,
     tokenWeightOut,
     tokenAmountIn,
-    swapFee
+    swapFee,
   );
 
   const minAmountOutWithSlippage = minAmountOut.mul(
-    new Decimal(1).minus(slippage)
+    new Decimal(1).minus(slippage),
   );
 
   return api.tx.swaps.swapExactAmountIn(
@@ -82,6 +82,6 @@ export const generateSwapExactAmountInTx = (
     tokenAmountIn.toFixed(0),
     tokenOut,
     minAmountOutWithSlippage.toFixed(0),
-    null
+    null,
   );
 };

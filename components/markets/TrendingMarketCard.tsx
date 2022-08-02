@@ -70,7 +70,7 @@ const TrendingMarketCard = observer(
         </a>
       </Link>
     );
-  }
+  },
 );
 
 export default TrendingMarketCard;

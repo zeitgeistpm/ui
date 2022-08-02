@@ -53,10 +53,10 @@ const ScalarDisputeBox = observer(
               store.getTransactionError(index, error),
               {
                 type: "Error",
-              }
+              },
             );
           },
-        })
+        }),
       );
     };
     return (
@@ -101,7 +101,7 @@ const ScalarDisputeBox = observer(
         </TransactionButton>
       </>
     );
-  }
+  },
 );
 
 export default ScalarDisputeBox;

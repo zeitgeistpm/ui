@@ -28,7 +28,7 @@ class SingleNotificationObservable {
     lifetime?: number,
     type?: NotificationType,
     autoRemove?: boolean,
-    broadcast?: boolean
+    broadcast?: boolean,
   ) {
     lifetime != null && this.setLifetime(lifetime);
     type != null && (this.type = type);
@@ -99,7 +99,7 @@ export default class NotificationStore {
       lifetime?: number;
       autoRemove?: boolean;
       broadcast?: boolean;
-    }
+    },
   ) {
     const { lifetime, type, autoRemove, broadcast } = options || {};
 

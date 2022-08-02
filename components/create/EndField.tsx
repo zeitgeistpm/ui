@@ -104,7 +104,7 @@ const EndField: FC<EndFieldProps> = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default EndField;

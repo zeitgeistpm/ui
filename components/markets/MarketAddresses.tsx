@@ -179,7 +179,7 @@ const MarketAddresses = observer(
           Address Details
           <AddressModalHeader name={identity.displayName ?? ""} />
         </>,
-        { styles: { width: "70%", maxWidth: "473px" } }
+        { styles: { width: "70%", maxWidth: "473px" } },
       );
     };
 
@@ -207,7 +207,7 @@ const MarketAddresses = observer(
         />
       </div>
     );
-  }
+  },
 );
 
 export default MarketAddresses;
