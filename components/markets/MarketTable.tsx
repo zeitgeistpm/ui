@@ -28,7 +28,7 @@ const MarketTable = observer(
     useEffect(() => {
       (async () => {
         const dateOneWeekAgo = new Date(
-          new Date().getTime() - DAY_SECONDS * 7 * 1000
+          new Date().getTime() - DAY_SECONDS * 7 * 1000,
         ).toISOString();
 
         const poolId = marketStore.pool.poolId;
@@ -42,7 +42,7 @@ const MarketTable = observer(
               asset.isCategoricalOutcome
                 ? asset.asCategoricalOutcome[1].toNumber()
                 : asset.asScalarOutcome[1].toString(),
-              dateOneWeekAgo
+              dateOneWeekAgo,
             );
           });
 
@@ -105,7 +105,7 @@ const MarketTable = observer(
             />
           ),
         };
-      }
+      },
     );
 
     const columns: TableColumn[] = [
@@ -150,6 +150,6 @@ const MarketTable = observer(
         />
       </div>
     );
-  }
+  },
 );
 export default MarketTable;

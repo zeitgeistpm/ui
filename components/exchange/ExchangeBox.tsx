@@ -93,7 +93,7 @@ const ExchangeConfirmModal = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
@@ -103,7 +103,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
     const [selectedAssetOption, setSelectedAssetOption] =
       useState<OutcomeOption>();
     const [slippagePercentage, setSlippagePercentage] = useState(
-      DEFAULT_SLIPPAGE_PERCENTAGE.toString()
+      DEFAULT_SLIPPAGE_PERCENTAGE.toString(),
     );
     const [percentage, setPercentage] = useState(0);
     const [percentageDisplay, setPercentageDisplay] = useState(0);
@@ -145,8 +145,8 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
             exchangeStore.ztgPoolBalance.toString(),
             exchangeStore.ztgWeight,
             wallets.activeBalance.toString(),
-            exchangeStore.swapFee
-          ).toNumber()
+            exchangeStore.swapFee,
+          ).toNumber(),
         );
 
         return maxFromPool.gt(maxFromZtgBalance)
@@ -200,7 +200,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               exchangeStore.amount.mul(ZTG),
               new Decimal(0),
               new Decimal(slippagePercentage).div(100),
-              poolId
+              poolId,
             )
           : generateSwapExactAmountInTx(
               store.sdk.api,
@@ -213,7 +213,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               exchangeStore.amount.mul(ZTG),
               new Decimal(0),
               new Decimal(slippagePercentage).div(100),
-              poolId
+              poolId,
             );
 
       tx$.next(_tx);
@@ -235,7 +235,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
             fee = "0";
           } else {
             const paymentInfo = await tx.paymentInfo(
-              wallets.activeAccount.address
+              wallets.activeAccount.address,
             );
 
             const partialFee = paymentInfo.partialFee.toNumber() / ZTG;
@@ -288,8 +288,8 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
           {
             plugins: defaultPlugins,
             options: defaultOptions,
-          }
-        )
+          },
+        ),
       );
     };
 
@@ -304,7 +304,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
           successCallback: async () => {
             notificationStore.pushNotification(
               `Swapped ${amount} ${exchangeStore.outcome.metadata["name"]}`,
-              { type: "Success" }
+              { type: "Success" },
             );
             await exchangeStore.updateBalances();
             exchangeStore.updateSpotPrice();
@@ -315,10 +315,10 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
           failCallback: ({ index, error }) => {
             notificationStore.pushNotification(
               store.getTransactionError(index, error),
-              { type: "Error" }
+              { type: "Error" },
             );
           },
-        })
+        }),
       );
     };
 
@@ -340,7 +340,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
         () => {
           processTransaction();
         },
-        { styles: { width: "380px" } }
+        { styles: { width: "380px" } },
       );
     };
 
@@ -467,7 +467,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
         )}
       </div>
     );
-  }
+  },
 );
 
 export default ExchangeBox;

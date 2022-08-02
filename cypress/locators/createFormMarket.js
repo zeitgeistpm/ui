@@ -22,16 +22,14 @@ class createForm {
     multipleOutcomesTicker0: () => cy.get('[data-test="outComeTicker"]'),
     multipleOutcomesInput1: () => cy.get('[data-test="outComeInput"]'),
     multipleOutcomesTicker1: () => cy.get('[data-test="outComeTicker"]'),
-    rangeOfOutcomeMinInput: () =>
-      cy.get('[data-test="minRangeValueInput"]'),
-    rangeOfOutcomeMaxInput: () =>
-      cy.get('[data-test="maxRangeValueInput"]'),
-    rangeOfOutcomeTicker: () =>
-      cy.get('[data-test="rangeTickerInput"]'),
+    rangeOfOutcomeMinInput: () => cy.get('[data-test="minRangeValueInput"]'),
+    rangeOfOutcomeMaxInput: () => cy.get('[data-test="maxRangeValueInput"]'),
+    rangeOfOutcomeTicker: () => cy.get('[data-test="rangeTickerInput"]'),
     oracleLabel: () => cy.get('[data-test="5. Oracle *"]'),
     oracleInput: () => cy.get('[data-test="oracleInput"]'),
     marketDescriptionLabel: () => cy.get('[data-test="6. Market Description"]'),
-     marketDescriptionTextbox: () => cy.get('[data-test="marketDescriptionInput"]'),
+    marketDescriptionTextbox: () =>
+      cy.get('[data-test="marketDescriptionInput"]'),
     permissionlessLabel: () => cy.get('[data-test="Permissionless"]'),
     permissionlessSwitch: () => cy.get('[data-test="switchButton"]'),
     advisedLabel: () => cy.get('[data-test="Advised"]'),

@@ -9,7 +9,7 @@ import AccountSelectValue from "./AccountSelectValue";
 
 const Control = observer(({ children, ...rest }) => {
   return (
-    <components.Control {...rest as ControlProps}>
+    <components.Control {...(rest as ControlProps)}>
       <div className="flex items-center bg-sky-100 dark:bg-black justify-between cursor-pointer rounded-ztg-10">
         {children}
       </div>

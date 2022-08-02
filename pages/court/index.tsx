@@ -55,7 +55,9 @@ const Court: NextPage = observer(() => {
   const myCases: TableData[] = useMemo(() => {
     return cases
       ?.filter((c) =>
-        c.jurors.some((j) => j.address === store.wallets.activeAccount?.address)
+        c.jurors.some(
+          (j) => j.address === store.wallets.activeAccount?.address,
+        ),
       )
       .map((c) => mapCaseToTableData(c));
   }, [cases, store.wallets.activeAccount]);

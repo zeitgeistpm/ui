@@ -86,7 +86,7 @@ const MyFilters = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default MyFilters;

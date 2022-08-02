@@ -31,10 +31,10 @@ const LiquidityPoolsBox = observer(() => {
   const [poolSharesAmount, setPoolSharesAmount] = useState<string>("0");
   const [totalPoolShares, setTotalPoolShares] = useState<Decimal>();
   const [sharesToRecieve, setSharesToRecieve] = useState<Decimal>(
-    new Decimal(0)
+    new Decimal(0),
   );
   const [usersPoolShares, setUsersPoolShares] = useState<Decimal>(
-    new Decimal(0)
+    new Decimal(0),
   );
   const [pool, setPool] = useState<CPool>();
   const [showSkeleton, setShowSkeleton] = useState(true);
@@ -60,11 +60,11 @@ const LiquidityPoolsBox = observer(() => {
 
     const usersPoolShares = await store.sdk.api.query.tokens.accounts(
       wallets.activeAccount.address,
-      { poolShare: poolId }
+      { poolShare: poolId },
     );
 
     setUsersPoolShares(
-      new Decimal((usersPoolShares as any).free.toString()).div(ZTG)
+      new Decimal((usersPoolShares as any).free.toString()).div(ZTG),
     );
     setTotalPoolShares(new Decimal(Number(totalPoolShares)).div(ZTG));
 
@@ -110,7 +110,7 @@ const LiquidityPoolsBox = observer(() => {
 
     const poolSharesToExit = Decimal.mul(
       percentageChange / 100,
-      usersPoolShares
+      usersPoolShares,
     );
     const poolSharesRatio = Decimal.div(poolSharesToExit, totalPoolShares);
 
@@ -149,8 +149,8 @@ const LiquidityPoolsBox = observer(() => {
       setPoolSharesAmount(amount);
       setPercentageChange(
         Number(
-          Decimal.mul(Decimal.div(amount, usersPoolShares), 100).toFixed(1)
-        )
+          Decimal.mul(Decimal.div(amount, usersPoolShares), 100).toFixed(1),
+        ),
       );
     } else {
       setPoolSharesAmount("");
@@ -166,10 +166,10 @@ const LiquidityPoolsBox = observer(() => {
       const amountsIn = assets.map((asset) =>
         new Decimal(new Decimal(asset.amount).toFixed(2, Decimal.ROUND_UP))
           .mul(10 ** 10)
-          .toString()
+          .toString(),
       );
       const sharesOut = new Decimal(
-        new Decimal(sharesToRecieve).toFixed(2, Decimal.ROUND_DOWN)
+        new Decimal(sharesToRecieve).toFixed(2, Decimal.ROUND_DOWN),
       )
         .mul(10 ** 10)
         .toString();
@@ -181,8 +181,8 @@ const LiquidityPoolsBox = observer(() => {
         poolTransactionCallback(
           `Swapped ${assets
             .map((asset) => `${asset.amount.toFixed(2)} ${asset.name}`)
-            .join(", ")} for ${sharesToRecieve.toFixed(2)} Pool Shares`
-        )
+            .join(", ")} for ${sharesToRecieve.toFixed(2)} Pool Shares`,
+        ),
       );
     } else if (
       joinPool === false &&
@@ -191,10 +191,10 @@ const LiquidityPoolsBox = observer(() => {
       const amountsOut = assets.map((asset) =>
         new Decimal(new Decimal(asset.amount).toFixed(1, Decimal.ROUND_DOWN))
           .mul(10 ** 10)
-          .toString()
+          .toString(),
       );
       const sharesIn = new Decimal(
-        new Decimal(poolSharesAmount).toFixed(1, Decimal.ROUND_UP)
+        new Decimal(poolSharesAmount).toFixed(1, Decimal.ROUND_UP),
       )
         .mul(10 ** 10)
         .toString();
@@ -205,11 +205,11 @@ const LiquidityPoolsBox = observer(() => {
         amountsOut,
         poolTransactionCallback(
           `Swapped ${Number(poolSharesAmount).toFixed(
-            1
+            1,
           )} Pool Shares for ${assets
             .map((asset) => `${asset.amount.toFixed(1)} ${asset.name}`)
-            .join(", ")}`
-        )
+            .join(", ")}`,
+        ),
       );
     }
   };
@@ -228,7 +228,7 @@ const LiquidityPoolsBox = observer(() => {
       failCallback: ({ index, error }) => {
         notificationStore.pushNotification(
           store.getTransactionError(index, error),
-          { type: "Error" }
+          { type: "Error" },
         );
       },
     });
@@ -248,21 +248,21 @@ const LiquidityPoolsBox = observer(() => {
   const handleAmountChange = (amount: number, index: number) => {
     if (joinPool === true) {
       setSharesToRecieve(
-        totalPoolShares.mul(new Decimal(amount).div(assets[index].poolBalance))
+        totalPoolShares.mul(new Decimal(amount).div(assets[index].poolBalance)),
       );
     } else {
       const poolShares = usersPoolShares.mul(
-        new Decimal(amount).div(assets[index].poolBalance)
+        new Decimal(amount).div(assets[index].poolBalance),
       );
       setPoolSharesAmount(poolShares.toFixed(2));
       setPercentage(
-        Number(poolShares.div(usersPoolShares).mul(100).toFixed(1))
+        Number(poolShares.div(usersPoolShares).mul(100).toFixed(1)),
       );
     }
     if (multiAsset === true) {
       setAssets((prevAssets) => {
         const amountToPoolBalanceRatio = new Decimal(amount).div(
-          prevAssets[index].poolBalance
+          prevAssets[index].poolBalance,
         );
 
         return prevAssets.map((asset) => {

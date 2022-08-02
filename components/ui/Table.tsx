@@ -105,185 +105,191 @@ const isAmountInput = (cellValue: CellValue): cellValue is Amount => {
   return (cellValue as Amount).onChange !== undefined;
 };
 
-const Cell = ({
-  type,
-  value,
-  rowHeight,
-  onClick,
-}: {
-  type: ColumnType;
-  rowHeight: number;
-  value: string | number | CurrencyData;
-  onClick?: () => void;
-}) => {
-  const base = `dark:text-white px-ztg-10 h-ztg-72 ${
-    onClick ? "cursor-pointer" : ""
-  }`;
-  const style = { height: `${rowHeight}px` };
-  if (value == null) {
-    return (
-      <td
-        className={`font-lato font-bold text-ztg-12-150 text-center ${base}`}
-        onClick={onClick}
-        style={style}
-      ></td>
-    );
-  }
-  switch (type) {
-    case "text":
+const Cell = observer(
+  ({
+    type,
+    value,
+    rowHeight,
+    onClick,
+  }: {
+    type: ColumnType;
+    rowHeight: number;
+    value: string | number | CurrencyData;
+    onClick?: () => void;
+  }) => {
+    const { ztgInfo } = useStore();
+
+    const base = `dark:text-white px-ztg-10 h-ztg-72 ${
+      onClick ? "cursor-pointer" : ""
+    }`;
+    const style = { height: `${rowHeight}px` };
+    if (value == null) {
       return (
         <td
-          className={`font-lato font-bold text-ztg-14-150 text-center ${base}`}
-          data-test="outcomeText"
+          className={`font-lato font-bold text-ztg-12-150 text-center ${base}`}
           onClick={onClick}
           style={style}
-        >
-          {value}
-        </td>
+        ></td>
       );
-    case "number":
-      return (
-        <td
-          className={`font-mono font-bold text-ztg-12-150 text-right ${base}`}
-          onClick={onClick}
-          style={style}
-        >
-          {formatNumberLocalized(Number(value))}
-        </td>
-      );
-    case "change":
-      return (
-        <td className={`${base}`} onClick={onClick} style={style}>
-          <div className="flex justify-end">
-            <PercentageChange change={Number(value)} />
-          </div>
-        </td>
-      );
-    case "component":
-      return (
-        <td className={`${base}`} onClick={onClick} style={style}>
-          {value}
-        </td>
-      );
-    case "graph":
-      if (Array.isArray(value)) {
-        return (
-          <td className={`${base}`} onClick={onClick} style={style}>
-            <div className="flex justify-end items-center h-full">
-              <TableChart data={value} />
-            </div>
-          </td>
-        );
-      }
-    case "paragraph":
-      return (
-        <td
-          className={`font-lato font-bold text-ztg-12-150 text-left ${base}`}
-          onClick={onClick}
-          style={style}
-        >
-          {value}
-        </td>
-      );
-    case "currency":
-      if (isCurrencyData(value)) {
+    }
+    switch (type) {
+      case "text":
         return (
           <td
-            className={`font-mono text-right ${base} `}
+            className={`font-lato font-bold text-ztg-14-150 text-center ${base}`}
+            data-test="outcomeText"
             onClick={onClick}
             style={style}
           >
-            <div className="text-ztg-14-150 font-mediun">
-              {formatNumberLocalized(value.value)}
-            </div>
-            <div className="text-ztg-12-150 font-light text-sky-600">
-              {/* Post beta */}
-              {/* ≈ ${formatNumberLocalized(value.usdValue)} */}
-              $0
+            {value}
+          </td>
+        );
+      case "number":
+        return (
+          <td
+            className={`font-mono font-bold text-ztg-12-150 text-right ${base}`}
+            onClick={onClick}
+            style={style}
+          >
+            {formatNumberLocalized(Number(value))}
+          </td>
+        );
+      case "change":
+        return (
+          <td className={`${base}`} onClick={onClick} style={style}>
+            <div className="flex justify-end">
+              <PercentageChange change={value.toString()} />
             </div>
           </td>
         );
-      }
-    case "address":
-      return (
-        <td className={`font-space ${base}`} onClick={onClick} style={style}>
-          <div className="flex items-center">
-            <Avatar address={typeof value === "string" ? value : ""} />
-            <div className="font-mono font-semibold text-ztg-12-150 ml-ztg-10">
-              {typeof value === "string" ? value : ""}
-            </div>
-          </div>
-        </td>
-      );
-    case "token":
-      if (isTokenData(value)) {
+      case "component":
+        return (
+          <td className={`${base}`} onClick={onClick} style={style}>
+            {value}
+          </td>
+        );
+      case "graph":
+        if (Array.isArray(value)) {
+          return (
+            <td className={`${base}`} onClick={onClick} style={style}>
+              <div className="flex justify-end items-center h-full">
+                <TableChart data={value} />
+              </div>
+            </td>
+          );
+        }
+      case "paragraph":
+        return (
+          <td
+            className={`font-lato font-bold text-ztg-12-150 text-left ${base}`}
+            onClick={onClick}
+            style={style}
+          >
+            {value}
+          </td>
+        );
+      case "currency":
+        if (isCurrencyData(value)) {
+          return (
+            <td
+              className={`font-mono text-right ${base} `}
+              onClick={onClick}
+              style={style}
+            >
+              <div className="text-ztg-14-150 font-mediun">
+                {formatNumberLocalized(value.value)}
+              </div>
+              <div className="text-ztg-12-150 font-light text-sky-600">
+                ${ztgInfo?.price.mul(value.value).toFixed(2)}
+              </div>
+            </td>
+          );
+        }
+      case "address":
         return (
           <td className={`font-space ${base}`} onClick={onClick} style={style}>
             <div className="flex items-center">
-              <div
-                className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2"
-                style={{ background: value.color }}
-              ></div>
-              <div
-                className="font-bold text-ztg-16-150 uppercase"
-                data-test="tokenText"
-              >
-                {value.label}
+              <Avatar address={typeof value === "string" ? value : ""} />
+              <div className="font-mono font-semibold text-ztg-12-150 ml-ztg-10">
+                {typeof value === "string" ? value : ""}
               </div>
             </div>
           </td>
         );
-      }
-    case "market":
-      if (isMarketData(value)) {
-        return (
-          <td className={`font-lato ${base}`} onClick={onClick} style={style}>
-            <div className="flex items-center">
-              <img
-                className="rounded-ztg-5 w-ztg-40 h-ztg-40 mr-ztg-10"
-                src={value.url}
-                loading="lazy"
-              />
-              <span className="font-bold text-ztg-10-150 text-sky-600 uppercase">
-                {value.label}
-              </span>
-            </div>
-          </td>
-        );
-      }
-    case "percentage":
-      return (
-        <td
-          className={`font-mono text-ztg-14-150 text-right font-bold ${base}`}
-          onClick={onClick}
-          style={style}
-        >
-          {value}%
-        </td>
-      );
-    case "amountInput":
-      if (isAmountInput(value)) {
+      case "token":
+        if (isTokenData(value)) {
+          return (
+            <td
+              className={`font-space ${base}`}
+              onClick={onClick}
+              style={style}
+            >
+              <div className="flex items-center">
+                <div
+                  className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2"
+                  style={{ background: value.color }}
+                ></div>
+                <div
+                  className="font-bold text-ztg-16-150 uppercase"
+                  data-test="tokenText"
+                >
+                  {value.label}
+                </div>
+              </div>
+            </td>
+          );
+        }
+      case "market":
+        if (isMarketData(value)) {
+          return (
+            <td className={`font-lato ${base}`} onClick={onClick} style={style}>
+              <div className="flex items-center">
+                <img
+                  className="rounded-ztg-5 w-ztg-40 h-ztg-40 mr-ztg-10"
+                  src={value.url}
+                  loading="lazy"
+                />
+                <span className="font-bold text-ztg-10-150 text-sky-600 uppercase">
+                  {value.label}
+                </span>
+              </div>
+            </td>
+          );
+        }
+      case "percentage":
         return (
           <td
             className={`font-mono text-ztg-14-150 text-right font-bold ${base}`}
             onClick={onClick}
             style={style}
           >
-            <AmountInput
-              className="h-ztg-40 w-full rounded-ztg-5 bg-sky-200 text-right !pr-ztg-8 dark:bg-sky-800"
-              value={value.value}
-              onChange={value.onChange}
-              min={value.min}
-              max={value.max}
-            />
+            {value}%
           </td>
         );
-      }
+      case "amountInput":
+        if (isAmountInput(value)) {
+          return (
+            <td
+              className={`font-mono text-ztg-14-150 text-right font-bold ${base}`}
+              onClick={onClick}
+              style={style}
+            >
+              <AmountInput
+                className="h-ztg-40 w-full rounded-ztg-5 bg-sky-200 text-right !pr-ztg-8 dark:bg-sky-800"
+                value={value.value}
+                onChange={value.onChange}
+                min={value.min}
+                max={value.max}
+              />
+            </td>
+          );
+        }
 
-    default:
-      return <td>default</td>;
+      default:
+        return <td>default</td>;
+    }
   }
-};
+);
 
 const Table = observer(
   ({
@@ -379,7 +385,7 @@ const Table = observer(
         const { clientWidth, scrollWidth, parentElement } = tableRef.current;
         setIsOverflowing(
           scrollWidth > parentElement.scrollWidth ||
-            clientWidth > parentElement.clientWidth
+            clientWidth > parentElement.clientWidth,
         );
       } else {
         setIsOverflowing(false);
@@ -524,7 +530,7 @@ const Table = observer(
         )}
       </>
     );
-  }
+  },
 );
 
 export default Table;

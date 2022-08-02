@@ -46,7 +46,7 @@ const ReportButton = observer(
           <div>
             <ScalarReportBox marketStore={marketStore} onReport={() => {}} />
           </div>,
-          "Report outcome"
+          "Report outcome",
         );
       } else {
         //@ts-ignore
@@ -64,7 +64,7 @@ const ReportButton = observer(
                 `Reported market outcome: ${ticker}`,
                 {
                   type: "Success",
-                }
+                },
               );
               await marketStore.refetchMarketData();
             },
@@ -73,10 +73,10 @@ const ReportButton = observer(
                 store.getTransactionError(index, error),
                 {
                   type: "Error",
-                }
+                },
               );
             },
-          })
+          }),
         );
       }
     };
@@ -92,7 +92,7 @@ const ReportButton = observer(
         </button>
       </div>
     );
-  }
+  },
 );
 
 export default ReportButton;

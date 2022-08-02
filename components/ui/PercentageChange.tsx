@@ -1,7 +1,7 @@
-const PercentageChange = ({ change }: { change: number }) => {
+const PercentageChange = ({ change }: { change: string }) => {
   return (
     <div className="flex items-center">
-      {change > 0 ? (
+      {Number(change) > 0 ? (
         <svg
           width="10"
           height="8"
@@ -15,7 +15,7 @@ const PercentageChange = ({ change }: { change: number }) => {
         <></>
       )}
 
-      {change < 0 ? (
+      {Number(change) < 0 ? (
         <svg
           width="10"
           height="8"

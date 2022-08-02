@@ -17,7 +17,7 @@ export const DEFAULT_SLIPPAGE_PERCENTAGE =
 export const REPORT_ALLOWED_DURATION_MS = 24 * 3600 * 1000; // 24 hours
 
 export const BLOCK_TIME_SECONDS = Number(
-  process.env["NEXT_PUBLIC_BLOCK_TIME"] ?? 6
+  process.env["NEXT_PUBLIC_BLOCK_TIME"] ?? 6,
 );
 export const NUM_BLOCKS_IN_HOUR = 3600 / BLOCK_TIME_SECONDS;
 export const NUM_BLOCKS_IN_DAY = NUM_BLOCKS_IN_HOUR * 24;

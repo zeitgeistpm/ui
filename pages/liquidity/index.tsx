@@ -48,7 +48,7 @@ const LiquidityPools: NextPage = observer(() => {
                 typeof asset.category === "string"
                   ? "ztg"
                   : asset.category.ticker
-              }`
+              }`,
           )
           .join(" - "),
         poolBalance: {

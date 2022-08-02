@@ -5,7 +5,7 @@ describe("Market utils", () => {
     test("should correctly calculate cost of advised market", () => {
       const marketCost = calculateMarketCost(
         { advisedCost: 0.5, permissionlessCost: 1 },
-        true
+        true,
       );
 
       expect(marketCost).toEqual(0.5);
@@ -14,7 +14,7 @@ describe("Market utils", () => {
     test("should correctly calculate cost of permissionless market", () => {
       const marketCost = calculateMarketCost(
         { advisedCost: 0.5, permissionlessCost: 1 },
-        false
+        false,
       );
 
       expect(marketCost).toEqual(1);
@@ -24,7 +24,7 @@ describe("Market utils", () => {
       const marketCost = calculateMarketCost(
         { advisedCost: 0.5, permissionlessCost: 1 },
         false,
-        [100, 100, 100, 100]
+        [100, 100, 100, 100],
       );
 
       expect(marketCost).toEqual(201);
@@ -34,7 +34,7 @@ describe("Market utils", () => {
       const marketCost = calculateMarketCost(
         { advisedCost: 0.5, permissionlessCost: 1 },
         false,
-        [100, 150, 120, 130]
+        [100, 150, 120, 130],
       );
 
       expect(marketCost).toEqual(251);

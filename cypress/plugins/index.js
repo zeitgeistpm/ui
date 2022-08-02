@@ -15,4 +15,4 @@
 /**
  * @type {Cypress.PluginConfig}
  */
-module.exports = async (on, config) => { };
+module.exports = async (on, config) => {};
