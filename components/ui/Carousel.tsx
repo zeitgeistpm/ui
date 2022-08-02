@@ -1,12 +1,12 @@
 import React, { FC, useEffect, useState } from "react";
 import { CarouselProvider, Slider, Slide, Dot } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
+import GlitchImage from "./GlitchImage";
 
 export interface CarouselProps {}
 
 const Carousel: FC<CarouselProps> = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  //TODO: make more dynamic once we have more details on what to display
 
   useEffect(() => {
     const ref = setTimeout(() => {
@@ -25,7 +25,7 @@ const Carousel: FC<CarouselProps> = () => {
     >
       <Slider className="rounded-ztg-10">
         <Slide index={0} className="bg-black rounded-ztg-10">
-          <img
+          <GlitchImage
             src="/carousel/beta-welcome-2.png"
             alt="Beta welcome"
             className="h-full rounded-ztg-10"
@@ -33,7 +33,7 @@ const Carousel: FC<CarouselProps> = () => {
         </Slide>
         <Slide index={1} className="bg-black rounded-ztg-10">
           <a href={`https://shapethefuture.zeitgeist.pm`} target="_blank">
-            <img
+            <GlitchImage
               src="/carousel/shape-the-future.png"
               alt="Shape the future with Zeitgeist"
               className="h-full rounded-ztg-10"
