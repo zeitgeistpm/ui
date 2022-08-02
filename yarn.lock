@@ -3724,11 +3724,40 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/avatara-react@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "@zeitgeistpm/avatara-react@npm:0.2.0"
+"@zeitgeistpm/avatara-nft-sdk@npm:^0.2.1-alpha.0":
+  version: 0.2.1-alpha.0
+  resolution: "@zeitgeistpm/avatara-nft-sdk@npm:0.2.1-alpha.0"
   dependencies:
-    "@zeitgeistpm/avatara-nft-sdk": ^0.2.0
+    "@polkadot/api": ^8.7.1
+    "@polkadot/extension-inject": ^0.44.1
+    "@polkadot/util": ^9.4.1
+    "@polkadot/util-crypto": ^9.4.1
+    "@zeitgeistpm/avatara-util": ^0.2.0
+    "@zeitgeistpm/avatara-zeitgeist-sdk": ^0.1.10
+    "@zeitgeistpm/substrate": ^0.1.10
+    cids: ^1.1.9
+    config: "*"
+    fp-ts: ^2.11.9
+    graphql: ^16.3.0
+    graphql-request: ^4.0.0
+    io-ts: ^2.2.16
+    ipfs-http-client: ^49.0.4
+    lodash: ^4.17.21
+    nanoid: ^3.3.1
+    rmrk-tools: ^2.0.84
+    rollup-config: "*"
+    tsconfig: "*"
+  peerDependencies:
+    "@polkadot/extension-dapp": "*"
+  checksum: 5ff3a62822c94fb4bbe290d52af8f5ab3ad0aceae25947f474eb42c62e7053d9af1aca78a34f78235ed046610d9d65c83b8671fa52ceea0ad80766a9ddba0c5b
+  languageName: node
+  linkType: hard
+
+"@zeitgeistpm/avatara-react@npm:^0.2.1-alpha.0":
+  version: 0.2.1-alpha.0
+  resolution: "@zeitgeistpm/avatara-react@npm:0.2.1-alpha.0"
+  dependencies:
+    "@zeitgeistpm/avatara-nft-sdk": ^0.2.1-alpha.0
     "@zeitgeistpm/avatara-util": ^0.2.0
     copy-to-clipboard: ^3.3.1
     jotai: ^1.6.1
@@ -3736,7 +3765,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-dom: "*"
-  checksum: 908b867b43f6b0d5c96a1c26168d339b98650ccaead7a54e5487d557561e7ec03d789b4b9ece3a781cf36906725ba28c48f289160cf5df79158dd3d85c9b62e3
+  checksum: 672a56b7d1d2123aeb472b702256c57665133b8d1cf5b5354c4adc88faf2d05e4242078d2211d1ae8dd03b595e3d6ba8cc01d98698442fca205896089e382d3f
   languageName: node
   linkType: hard
 
@@ -3844,7 +3873,7 @@ __metadata:
     "@types/react-color": ^3.0.6
     "@typescript-eslint/eslint-plugin": ^5.9.1
     "@zeitgeistpm/avatara-nft-sdk": ^0.2.0
-    "@zeitgeistpm/avatara-react": ^0.2.0
+    "@zeitgeistpm/avatara-react": ^0.2.1-alpha.0
     "@zeitgeistpm/avatara-util": ^0.2.0
     "@zeitgeistpm/sdk": 0.6.1
     autoprefixer: 10.2.5
