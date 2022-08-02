@@ -20,13 +20,13 @@ const TimeFilters = observer(
       {
         label: "W",
         time: new Date(
-          new Date().getTime() - DAY_SECONDS * 1000 * 7
+          new Date().getTime() - DAY_SECONDS * 1000 * 7,
         ).toISOString(),
       },
       {
         label: "M",
         time: new Date(
-          new Date().getTime() - DAY_SECONDS * 1000 * 30
+          new Date().getTime() - DAY_SECONDS * 1000 * 30,
         ).toISOString(),
       },
     ];
@@ -62,7 +62,7 @@ const TimeFilters = observer(
         ))}
       </div>
     );
-  }
+  },
 );
 
 export default TimeFilters;

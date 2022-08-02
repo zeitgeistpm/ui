@@ -2,7 +2,7 @@ import {
   EndpointOption,
   JSONObject,
   SelectOption,
-  SupportedParachain
+  SupportedParachain,
 } from "../types";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { hexToU8a, isHex } from "@polkadot/util";
@@ -61,7 +61,7 @@ export const toRawBalance = (formattedBal: string) => {
  */
 export const getOptionLabel = (
   value: number | string,
-  options: SelectOption[]
+  options: SelectOption[],
 ) => {
   const o = options.find((o) => o.value === value);
   return o == null ? null : o.label;
@@ -83,7 +83,7 @@ export const compareJSON = (a: JSONObject, b: JSONObject): boolean => {
 export const shortenAddress = (
   address: string,
   sliceStart: number = 6,
-  sliceEnd: number = 4
+  sliceEnd: number = 4,
 ) => {
   return `${address.slice(0, sliceStart)}...${address.slice(-sliceEnd)}`;
 };
@@ -104,7 +104,7 @@ const hexChars = [
   "C",
   "D",
   "E",
-  "F"
+  "F",
 ];
 
 export const randomHexColor = (): string => {
@@ -126,7 +126,7 @@ export const toBase64 = (file: File): Promise<string> => {
 
 export const formatNumberLocalized = (
   num: number,
-  locale: string = "en-US"
+  locale: string = "en-US",
 ) => {
   return new Intl.NumberFormat(locale).format(num);
 };
@@ -135,7 +135,7 @@ export const paramsForBlocksArray = (
   startBlock: number,
   endBlock: number,
   blockResolution: number,
-  currentBlock?: number
+  currentBlock?: number,
 ) => {
   if (startBlock < 1) {
     startBlock = 1;
@@ -154,14 +154,14 @@ export const paramsForBlocksArray = (
   return {
     startBlock,
     blockResolution,
-    endBlock
+    endBlock,
   };
 };
 
 export const createBlocksArray = (
   startingBlock: number,
   resolution: number,
-  endingBlock: number
+  endingBlock: number,
 ) => {
   const count = Math.floor((endingBlock - startingBlock) / resolution);
 
@@ -188,7 +188,7 @@ export const isValidPolkadotAddress = (address: string) => {
 export const convertBlockNumberToTimestamp = (
   blockNumber: number,
   currentBlockNumber: number,
-  blockTime: number
+  blockTime: number,
 ): number => {
   const blockDiff = currentBlockNumber - blockNumber;
   const timeDiffMS = blockDiff * blockTime * 1000;
@@ -199,12 +199,12 @@ export const convertBlockNumberToTimestamp = (
 
 export const getEndpointOption = (url?: string): EndpointOption => {
   if (url == null) {
-    return endpoints.find(e => e.parachain === SupportedParachain.BSR);
+    return endpoints.find((e) => e.parachain === SupportedParachain.BSR);
   }
   const opt = endpoints.find((e) => e.value === url);
   if (opt == null) {
     let opt = endpoints.find(
-      (endpoint) => endpoint.parachain == SupportedParachain.CUSTOM
+      (endpoint) => endpoint.parachain == SupportedParachain.CUSTOM,
     );
     opt.value = url;
   }

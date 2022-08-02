@@ -39,7 +39,7 @@ const RedeemButton = observer(
               `Redeemed ${ztgToReceive.toFixed(2)}${store.config.tokenSymbol}`,
               {
                 type: "Success",
-              }
+              },
             );
             setZtgToReceive(new Decimal(0));
           },
@@ -48,10 +48,10 @@ const RedeemButton = observer(
               store.getTransactionError(index, error),
               {
                 type: "Error",
-              }
+              },
             );
           },
-        })
+        }),
       );
     };
     return (
@@ -70,7 +70,7 @@ const RedeemButton = observer(
         </button>
       </div>
     );
-  }
+  },
 );
 
 export default RedeemButton;

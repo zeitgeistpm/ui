@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export default function getIPLocation(
   request: NextApiRequest,
-  response: NextApiResponse
+  response: NextApiResponse,
 ) {
   const country = request.headers["x-vercel-ip-country"];
   const region = request.headers["x-vercel-ip-country-region"];

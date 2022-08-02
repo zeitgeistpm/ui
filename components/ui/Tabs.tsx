@@ -53,7 +53,7 @@ const Tabs: FC<HTMLProps<HTMLDivElement> & TabsProps> = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default Tabs;

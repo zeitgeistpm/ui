@@ -16,7 +16,7 @@ import { useStore } from "lib/stores/Store";
 
 const Menu: FC = observer(() => {
   const [selectedLanguage, setSelectedLanguage] = useState<LocalizationOption>(
-    localizationOptions[0]
+    localizationOptions[0],
   );
   const navigationStore = useNavigationStore();
   const store = useStore();

@@ -24,7 +24,7 @@ const AccountSelectOption: FC<AccountSelectRowProps> = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default AccountSelectOption;

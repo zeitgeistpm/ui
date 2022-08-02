@@ -46,7 +46,7 @@ const CopyIcon: FC<CopyIconProps> = observer(
         )}
       </div>
     );
-  }
+  },
 );
 
 export default CopyIcon;

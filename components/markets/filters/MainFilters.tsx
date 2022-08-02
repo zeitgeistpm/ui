@@ -167,7 +167,7 @@ const MainFilters: FC<MainFiltersProps> = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default MainFilters;

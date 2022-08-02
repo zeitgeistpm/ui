@@ -46,7 +46,7 @@ const MarketCard: FC<{ marketStore: MarketStore }> = observer(
           prices.sort((a, b) => b.price.sub(a.price).toNumber());
 
           setPrediction(
-            marketStore.getMarketOutcome(prices[0].assetId).metadata["ticker"]
+            marketStore.getMarketOutcome(prices[0].assetId).metadata["ticker"],
           );
         } else {
           const bounds = marketStore.bounds;
@@ -204,7 +204,7 @@ const MarketCard: FC<{ marketStore: MarketStore }> = observer(
         )}
       </div>
     );
-  }
+  },
 );
 
 export default MarketCard;

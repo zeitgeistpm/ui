@@ -63,7 +63,7 @@ export default class PoolsStore {
     } else {
       this.filteredPoolsList = N.mergeR(
         this.filteredPoolsList,
-        N.fromArray(pools, "poolId")
+        N.fromArray(pools, "poolId"),
       );
     }
   }
@@ -110,7 +110,7 @@ export default class PoolsStore {
   updateExistingChainPoolIndex(marketStore: MarketStore) {
     if (
       this.chainPoolIndex.findIndex(
-        (item) => item.marketId === marketStore.id
+        (item) => item.marketId === marketStore.id,
       ) !== -1
     ) {
       return;
@@ -134,7 +134,7 @@ export default class PoolsStore {
 
   private async loadPoolFromChain(poolId: number): Promise<CPool | null> {
     const marketPoolPair = this.chainPoolIndex.find(
-      (data) => data.id === poolId
+      (data) => data.id === poolId,
     );
     if (marketPoolPair == null) {
       return null;
@@ -143,7 +143,7 @@ export default class PoolsStore {
     const pool = await this.store.sdk.models.fetchPoolData(poolId);
 
     const marketStore = await this.store.markets.getMarket(
-      marketPoolPair.marketId
+      marketPoolPair.marketId,
     );
 
     if (marketStore == null) {
@@ -154,7 +154,7 @@ export default class PoolsStore {
 
     const liquidity = assets.reduce(
       (total, asset) => total + asset.amount * asset.price,
-      0
+      0,
     );
 
     return {
@@ -166,7 +166,7 @@ export default class PoolsStore {
   }
 
   private async getAssetsFromChain(
-    marketStore: MarketStore
+    marketStore: MarketStore,
   ): Promise<CAsset[]> {
     const { pool } = marketStore;
     const assets: CAsset[] = [];

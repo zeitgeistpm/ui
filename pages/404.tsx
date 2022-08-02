@@ -36,7 +36,7 @@ const NotFoundPage = observer(
         )}
       </>
     );
-  }
+  },
 );
 
 export default NotFoundPage;

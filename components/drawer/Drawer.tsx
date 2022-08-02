@@ -68,7 +68,7 @@ const Drawer: FC<DrawerProps> = observer(
         <div className="overflow-hidden h-full">{children}</div>
       </motion.div>
     );
-  }
+  },
 );
 
 export default Drawer;

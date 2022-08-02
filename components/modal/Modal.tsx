@@ -43,7 +43,7 @@ const Modal: FC<ModalProps> = observer(
         {children}
       </div>
     );
-  }
+  },
 );
 
 export default Modal;
