@@ -379,7 +379,7 @@ const Table = observer(
         const { clientWidth, scrollWidth, parentElement } = tableRef.current;
         setIsOverflowing(
           scrollWidth > parentElement.scrollWidth ||
-            clientWidth > parentElement.clientWidth
+            clientWidth > parentElement.clientWidth,
         );
       } else {
         setIsOverflowing(false);
@@ -524,7 +524,7 @@ const Table = observer(
         )}
       </>
     );
-  }
+  },
 );
 
 export default Table;

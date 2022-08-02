@@ -29,7 +29,7 @@ const MobileLink = observer(
         </a>
       </Link>
     );
-  }
+  },
 );
 
 const MobileMenu = observer(() => {

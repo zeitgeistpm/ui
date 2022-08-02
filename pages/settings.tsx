@@ -81,10 +81,10 @@ const IdentitySettings = observer(() => {
             setTransactionPending(false);
             notificationStore.pushNotification(
               store.getTransactionError(index, error),
-              { type: "Error" }
+              { type: "Error" },
             );
           },
-        })
+        }),
       );
     } catch (err) {
       setTransactionPending(false);
@@ -108,10 +108,10 @@ const IdentitySettings = observer(() => {
         failCallback: ({ index, error }) => {
           notificationStore.pushNotification(
             store.getTransactionError(index, error),
-            { type: "Error" }
+            { type: "Error" },
           );
         },
-      })
+      }),
     );
   };
 
@@ -223,7 +223,7 @@ const statCardData = [
 ];
 
 export const getCorrespondingGqlIndex = (
-  rpcEndpoint: EndpointOption
+  rpcEndpoint: EndpointOption,
 ): number => {
   const { parachain } = rpcEndpoint;
   return gqlEndpoints.findIndex((item) => item.parachain === parachain);
@@ -248,11 +248,11 @@ const EndpointSelect = observer(
           ([parachain, endpoints]) => ({
             label: supportedParachainToString(parachain as SupportedParachain),
             options: endpoints,
-          })
+          }),
         )}
       />
     );
-  }
+  },
 );
 
 type EndpointType = "rpc" | "gql";
@@ -267,7 +267,7 @@ const EndpointsSettings = observer(() => {
   const [endpointSelection, setEndpointSelection] = useState<EndpointOption>(
     () => {
       return getEndpointOption(userStore.endpoint);
-    }
+    },
   );
 
   const gqlEndpointOption = () => {
@@ -286,10 +286,10 @@ const EndpointsSettings = observer(() => {
   };
 
   const [customRpcUrl, setCustomRpcUrl] = useState<string>(() =>
-    getCustomRpcEndpoint()
+    getCustomRpcEndpoint(),
   );
   const [customGqlUrl, setCustomGqlUrl] = useState<string>(() =>
-    getCustomGqlEndpoint()
+    getCustomGqlEndpoint(),
   );
 
   const isCustomEndpoint = Boolean(isCustomEndpointOption(endpointSelection));
@@ -332,7 +332,7 @@ const EndpointsSettings = observer(() => {
           autoRemove: true,
           lifetime: 8,
           type: "Error",
-        }
+        },
       );
       setTimeout(() => {
         connect(userStore.endpoint, userStore.gqlEndpoint);

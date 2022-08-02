@@ -29,7 +29,7 @@ const MarketFormCard: FC<{ header: string }> = observer(
         {children}
       </div>
     );
-  }
+  },
 );
 
 export default MarketFormCard;

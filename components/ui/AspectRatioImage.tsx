@@ -40,7 +40,7 @@ const AspectRatioImage: FC<AspectRatioImageProps> = observer(
         }
       ></div>
     );
-  }
+  },
 );
 
 export default AspectRatioImage;

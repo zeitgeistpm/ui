@@ -16,32 +16,32 @@ program
   .option(
     "-e, --endpoint [endpoint]",
     "node rpc endpoint",
-    "ws://127.0.0.1:9944"
+    "ws://127.0.0.1:9944",
   )
   .option(
     "-l, --market-length [marketLength]",
     "market length in blocks",
-    "2000"
+    "2000",
   )
   .option(
     "-nm, --num-markets [numMarkets]",
     "number of markets to create",
-    "10"
+    "10",
   )
   .option(
     "-o, --offset [offset]",
     "markets will be `offset` blocks from apart from each other",
-    "100"
+    "100",
   )
   .option(
     "-no, --num-outcomes [numOutcomes]",
     "number of outcomes for each market, ztg excluded",
-    "2"
+    "2",
   )
   .option(
     "-p, --deploy-pool",
     "deploy default liquidity pool for each market",
-    false
+    false,
   );
 program.parse(process.argv);
 
@@ -54,7 +54,7 @@ console.log(
   numMarkets,
   offset,
   numOutcomes,
-  deployPool
+  deployPool,
 );
 
 const createCategoricalMarket = async (
@@ -62,7 +62,7 @@ const createCategoricalMarket = async (
   num: number,
   startBlock: number,
   endBlock: number,
-  signer: KeyringPairOrExtSigner
+  signer: KeyringPairOrExtSigner,
 ) => {
   sdk =
     sdk ||
@@ -142,7 +142,7 @@ const createCategoricalMarket = async (
       const poolAccount = await pool.accountId();
 
       console.log(
-        `\nDeployed pool with account address ${poolAccount.toString()}\n`
+        `\nDeployed pool with account address ${poolAccount.toString()}\n`,
       );
     }
 

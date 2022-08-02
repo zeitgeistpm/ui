@@ -110,7 +110,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     debounce(() => {
       scrollRestoration.set(scrollTop);
     }, 150),
-    [scrollTop]
+    [scrollTop],
   );
 
   useLayoutEffect(() => {

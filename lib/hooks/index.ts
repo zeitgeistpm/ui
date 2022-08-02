@@ -6,7 +6,7 @@ import { debounceTime } from "rxjs/operators";
 export const useEvent = (
   target: EventTarget,
   eventName: string,
-  debounceMs: number = 0
+  debounceMs: number = 0,
 ) => {
   const eventSub = useRef<Subscription>(null);
   const [event, setEvent] = useState<Event>();
@@ -63,7 +63,7 @@ export const useObservable = <T = any, R = T>(
   observable: Observable<T>,
   transform: (val?: T) => R,
   deps: any[] = [],
-  debounceMs: number = 0
+  debounceMs: number = 0,
 ) => {
   const [res, setRes] = useState<R | T>(null);
   useEffect(() => {

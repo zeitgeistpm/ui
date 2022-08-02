@@ -215,7 +215,7 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 const TradeSlipBox: FC<TradeSlipBoxProps> = observer((props) => {

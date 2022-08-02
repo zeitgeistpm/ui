@@ -60,7 +60,7 @@ const Select = observer(
             margin: "0 10px 0 0",
           }),
         }),
-        [userStore.theme]
+        [userStore.theme],
       );
 
       return (
@@ -77,8 +77,8 @@ const Select = observer(
           {...rest}
         />
       );
-    }
-  )
+    },
+  ),
 );
 
 export default Select;

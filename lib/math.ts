@@ -9,7 +9,7 @@ export const calcSpotPrice = (
   tokenWeightIn,
   tokenBalanceOut,
   tokenWeightOut,
-  swapFee
+  swapFee,
 ) => {
   const numer = new Decimal(tokenBalanceIn).div(new Decimal(tokenWeightIn));
   const denom = new Decimal(tokenBalanceOut).div(new Decimal(tokenWeightOut));
@@ -25,16 +25,16 @@ export const calcOutGivenIn = (
   tokenBalanceOut, // amount of 'out' asset in the pool
   tokenWeightOut, // weight of 'out' asset on the pool
   tokenAmountIn, // amount in for the swap
-  swapFee
+  swapFee,
 ) => {
   const weightRatio = new Decimal(tokenWeightIn).div(
-    new Decimal(tokenWeightOut)
+    new Decimal(tokenWeightOut),
   );
   const adjustedIn = new Decimal(tokenAmountIn).times(
-    new Decimal(1).minus(new Decimal(swapFee))
+    new Decimal(1).minus(new Decimal(swapFee)),
   );
   const y = new Decimal(tokenBalanceIn).div(
-    new Decimal(tokenBalanceIn).plus(adjustedIn)
+    new Decimal(tokenBalanceIn).plus(adjustedIn),
   );
   const foo = y.pow(weightRatio);
   const bar = new Decimal(1).minus(foo);
@@ -48,10 +48,10 @@ export const calcInGivenOut = (
   tokenBalanceOut,
   tokenWeightOut,
   tokenAmountOut,
-  swapFee
+  swapFee,
 ) => {
   const weightRatio = new Decimal(tokenWeightOut).div(
-    new Decimal(tokenWeightIn)
+    new Decimal(tokenWeightIn),
   );
   const diff = new Decimal(tokenBalanceOut).minus(tokenAmountOut);
   const y = new Decimal(tokenBalanceOut).div(diff);
@@ -68,19 +68,19 @@ export const calcPoolOutGivenSingleIn = (
   poolSupply,
   totalWeight,
   tokenAmountIn,
-  swapFee
+  swapFee,
 ) => {
   const normalizedWeight = new Decimal(tokenWeightIn).div(
-    new Decimal(totalWeight)
+    new Decimal(totalWeight),
   );
   const zaz = new Decimal(1)
     .sub(new Decimal(normalizedWeight))
     .mul(new Decimal(swapFee));
   const tokenAmountInAfterFee = new Decimal(tokenAmountIn).mul(
-    new Decimal(1).sub(zaz)
+    new Decimal(1).sub(zaz),
   );
   const newTokenBalanceIn = new Decimal(tokenBalanceIn).add(
-    tokenAmountInAfterFee
+    tokenAmountInAfterFee,
   );
   const tokenInRatio = newTokenBalanceIn.div(new Decimal(tokenBalanceIn));
   const poolRatio = tokenInRatio.pow(normalizedWeight);
@@ -95,20 +95,20 @@ export const calcSingleInGivenPoolOut = (
   poolSupply,
   totalWeight,
   poolAmountOut,
-  swapFee
+  swapFee,
 ) => {
   const normalizedWeight = new Decimal(tokenWeightIn).div(
-    new Decimal(totalWeight)
+    new Decimal(totalWeight),
   );
   const newPoolSupply = new Decimal(poolSupply).plus(
-    new Decimal(poolAmountOut)
+    new Decimal(poolAmountOut),
   );
   const poolRatio = newPoolSupply.div(new Decimal(poolSupply));
   const boo = new Decimal(1).div(normalizedWeight);
   const tokenInRatio = poolRatio.pow(boo);
   const newTokenBalanceIn = tokenInRatio.mul(new Decimal(tokenBalanceIn));
   const tokenAmountInAfterFee = newTokenBalanceIn.sub(
-    new Decimal(tokenBalanceIn)
+    new Decimal(tokenBalanceIn),
   );
   const zar = new Decimal(1).sub(normalizedWeight).mul(new Decimal(swapFee));
   const tokenAmountIn = tokenAmountInAfterFee.div(new Decimal(1).sub(zar));
@@ -121,13 +121,13 @@ export const calcSingleOutGivenPoolIn = (
   poolSupply,
   totalWeight,
   poolAmountIn,
-  swapFee
+  swapFee,
 ) => {
   const normalizedWeight = new Decimal(tokenWeightOut).div(
-    new Decimal(totalWeight)
+    new Decimal(totalWeight),
   );
   const poolAmountAfterExitFee = new Decimal(poolAmountIn).mul(
-    new Decimal(1).sub(0)
+    new Decimal(1).sub(0),
   );
   const newPoolSupply = new Decimal(poolSupply).sub(poolAmountAfterExitFee);
   const poolRatio = newPoolSupply.div(new Decimal(poolSupply));
@@ -136,7 +136,7 @@ export const calcSingleOutGivenPoolIn = (
   const newTokenBalanceOut = tokenOutRAtio.mul(new Decimal(tokenBalanceOut));
 
   const tokenAmountBeforeSwapFee = new Decimal(tokenBalanceOut).sub(
-    newTokenBalanceOut
+    newTokenBalanceOut,
   );
 
   const zaz = new Decimal(swapFee).mul(new Decimal(1).sub(normalizedWeight));

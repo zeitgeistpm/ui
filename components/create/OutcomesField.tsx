@@ -197,7 +197,7 @@ export const MultipleOutcomeRow: FC<{
         )}
       </motion.div>
     );
-  }
+  },
 );
 
 export const MultipleOutcomesField: FC<{
@@ -436,7 +436,7 @@ const OutcomesField: FC<OutcomesFieldProps> = observer(
 
     const changeMultipleOutcomeEntry = (
       idx: number,
-      v: MultipleOutcomeEntry
+      v: MultipleOutcomeEntry,
     ) => {
       if (isMultipleOutcomeEntries(value)) {
         onChange(type, [...value.slice(0, idx), v, ...value.slice(idx + 1)]);
@@ -486,7 +486,7 @@ const OutcomesField: FC<OutcomesFieldProps> = observer(
         </div>
       </FormContext.Provider>
     );
-  }
+  },
 );
 
 export default OutcomesField;

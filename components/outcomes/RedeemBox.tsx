@@ -49,10 +49,10 @@ const RedeemBox = observer(
               store.getTransactionError(index, error),
               {
                 type: "Error",
-              }
+              },
             );
           },
-        })
+        }),
       );
     };
     return (
@@ -79,7 +79,7 @@ const RedeemBox = observer(
         </TransactionButton>
       </div>
     );
-  }
+  },
 );
 
 export default RedeemBox;

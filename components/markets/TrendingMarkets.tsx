@@ -18,7 +18,7 @@ const TrendingMarkets = observer(() => {
     if (!graphQLClient) return;
     const fetchTrendingMarkets = async () => {
       const dateTwoWeeksAgo = new Date(
-        new Date().getTime() - DAY_SECONDS * 14 * 1000
+        new Date().getTime() - DAY_SECONDS * 14 * 1000,
       ).toISOString();
 
       const query = gql`
@@ -47,11 +47,11 @@ const TrendingMarkets = observer(() => {
       const trendingPools = response.pools;
 
       const trendingMarkets = await Promise.all(
-        response.pools.map((pool) => marketsStore.getMarket(pool.marketId))
+        response.pools.map((pool) => marketsStore.getMarket(pool.marketId)),
       );
 
       const marketPredictions = await Promise.all(
-        trendingMarkets.map((market) => market.calcPrediction())
+        trendingMarkets.map((market) => market.calcPrediction()),
       );
 
       const trendingMarketsInfo: TrendingMarketInfo[] = trendingMarkets.map(
@@ -65,7 +65,7 @@ const TrendingMarkets = observer(() => {
               ? (market.marketOutcomes.length - 1).toString()
               : "Long/Short",
           prediction: marketPredictions[index],
-        })
+        }),
       );
 
       setTrendingMarkets(trendingMarketsInfo);

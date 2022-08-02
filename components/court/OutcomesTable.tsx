@@ -70,10 +70,10 @@ const OutcomesTable = observer(
           failCallback: ({ index, error }) => {
             notificationStore.pushNotification(
               store.getTransactionError(index, error),
-              { type: "Error" }
+              { type: "Error" },
             );
           },
-        })
+        }),
       );
     };
 
@@ -92,7 +92,7 @@ const OutcomesTable = observer(
 
     const canVote = () => {
       return courtCase?.jurors.some(
-        (j) => j.address === wallets.activeAccount?.address
+        (j) => j.address === wallets.activeAccount?.address,
       );
     };
 
@@ -119,7 +119,7 @@ const OutcomesTable = observer(
       }));
 
     return <Table data={data} columns={columns} />;
-  }
+  },
 );
 
 export default OutcomesTable;

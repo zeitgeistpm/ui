@@ -14,5 +14,5 @@ export const StoreProvider: FC<{ store: Store }> = observer(
     return (
       <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
     );
-  }
+  },
 );

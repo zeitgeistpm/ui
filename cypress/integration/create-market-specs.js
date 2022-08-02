@@ -7,7 +7,7 @@ describe("Create market page", () => {
     window.localStorage.setItem("endpoint-1", '"ws://127.0.0.1:9944"');
     window.localStorage.setItem(
       "gql-endpoint-1",
-      '"http://localhost:4350/graphql"'
+      '"http://localhost:4350/graphql"',
     );
     window.localStorage.setItem("walletId", '"polkadot-js"');
     cy.visit("http://localhost:3000/create");
@@ -218,7 +218,7 @@ describe("Create market page", () => {
         .type(CreateMarket.Multipleoutcometicker1);
       createForm.elements.oracleLabel().should("be.visible");
       cy.get("@accountAddress").then((oracleInput) =>
-        createForm.elements.oracleInput().type(oracleInput)
+        createForm.elements.oracleInput().type(oracleInput),
       );
 
       createForm.elements.marketDescriptionLabel().should("be.visible");
@@ -261,7 +261,7 @@ describe("Create market page", () => {
         .should("be.visible")
         .click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements
@@ -271,7 +271,7 @@ describe("Create market page", () => {
         .should("be.visible")
         .click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
@@ -307,7 +307,7 @@ describe("Create market page", () => {
         .type(CreateMarket.Multipleoutcometicker1);
       createForm.elements.oracleLabel().should("be.visible");
       cy.get("@accountAddress").then((oracleInput) =>
-        createForm.elements.oracleInput().type(oracleInput)
+        createForm.elements.oracleInput().type(oracleInput),
       );
       createForm.elements.marketDescriptionLabel().should("be.visible");
       createForm.elements
@@ -348,12 +348,12 @@ describe("Create market page", () => {
       //.click()
       marketPage.elements.InspectButton().eq(0).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements.InspectButton().eq(1).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
@@ -421,12 +421,12 @@ describe("Create market page", () => {
         .contains(CreateMarket.Multiple_outcomes_input1);
       marketPage.elements.InspectButton().eq(0).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements.InspectButton().eq(1).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
@@ -492,7 +492,7 @@ describe("Create market page", () => {
         .should("be.visible")
         .click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements
@@ -502,7 +502,7 @@ describe("Create market page", () => {
         .should("be.visible")
         .click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
@@ -562,12 +562,12 @@ describe("Create market page", () => {
       //.click()
       marketPage.elements.InspectButton().eq(0).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements.InspectButton().eq(1).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
@@ -625,12 +625,12 @@ describe("Create market page", () => {
       marketPage.elements.OutcomeText().eq(1).contains("Short");
       marketPage.elements.InspectButton().eq(0).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements.InspectButton().eq(1).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });

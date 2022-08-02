@@ -22,7 +22,7 @@ const SellFullSetModal = observer(
     const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 
     const assets = marketStore.marketOutcomes.filter(
-      (outcome) => outcome.metadata !== "ztg"
+      (outcome) => outcome.metadata !== "ztg",
     );
 
     useEffect(() => {
@@ -58,7 +58,7 @@ const SellFullSetModal = observer(
           successCallback: () => {
             notificationStore.pushNotification(
               `Sold ${new Decimal(amount).toFixed(1)} full sets`,
-              { type: "Success" }
+              { type: "Success" },
             );
             modalStore.closeModal();
             marketsStore.getMarket(marketStore.id);
@@ -68,10 +68,10 @@ const SellFullSetModal = observer(
               store.getTransactionError(index, error),
               {
                 type: "Error",
-              }
+              },
             );
           },
-        })
+        }),
       );
     };
 
@@ -133,7 +133,7 @@ const SellFullSetModal = observer(
         </TransactionButton>
       </div>
     );
-  }
+  },
 );
 
 export default SellFullSetModal;

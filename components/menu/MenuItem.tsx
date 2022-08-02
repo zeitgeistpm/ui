@@ -100,5 +100,5 @@ export const MenuItem: FC<MenuItemProps> = observer(
         </a>
       </WrapComponent>
     );
-  }
+  },
 );

@@ -95,7 +95,7 @@ const PopularCategories: FC = observer(({}) => {
         getTagCount("Politics"),
         getTagCount("Governance"),
         getTagCount("Crypto"),
-      ])
+      ]),
     ).subscribe(([sports, politics, governance, crypto]) => {
       setSportsCount(sports);
       setPoliticsCount(politics);
