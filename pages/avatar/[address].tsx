@@ -45,11 +45,24 @@ const AvatarPage = observer(() => {
 
   const [mintingAvatar, setMintingAvatar] = useState(false);
   const [identity, setIdentity] = useState<UserIdentity>();
-
+  const [burnAmount, setBurnAmount] = useState<number>();
+  const [hasCrossed, setHasCrossed] = useState(false);
+  
   const inventory = useInventoryManagement(address);
 
   useEffect(() => {
     getIdentity(address).then(setIdentity);
+  }, [address, store.wallets.activeAccount?.address]);
+
+  useEffect(() => {
+    store.sdk.api.query.styx.burnAmount().then((amount) => {
+      setBurnAmount(amount.toJSON() as number);
+    })
+    if(store.wallets.activeAccount?.address) {
+      store.sdk.api.query.styx.crossings(store.wallets.activeAccount.address).then((val) => {
+        setHasCrossed(!val.isEmpty);
+      })
+    }
   }, [address, store.wallets.activeAccount?.address]);
 
   const isOwner =

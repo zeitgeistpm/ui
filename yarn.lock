@@ -3695,9 +3695,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/avatara-nft-sdk@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "@zeitgeistpm/avatara-nft-sdk@npm:0.2.1"
+"@zeitgeistpm/avatara-nft-sdk@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "@zeitgeistpm/avatara-nft-sdk@npm:0.2.2"
   dependencies:
     "@polkadot/api": ^8.7.1
     "@polkadot/extension-inject": ^0.44.1
@@ -3720,15 +3720,15 @@ __metadata:
     tsconfig: "*"
   peerDependencies:
     "@polkadot/extension-dapp": "*"
-  checksum: 34ad31d8ff3b3999c3f6311b8073f248eb28d2b827e422f9544afc4457bdc93e5d2a1d7c967ca76ac8ded463009946aeb90344309378281c580f9a234c19b4e1
+  checksum: 74e34a5ec90a2b991c74c09d82d7354195c7bfbf94f30095f53bee73318cff624ca8aeb40ed867b11af5b3a45d1bca91366bc744a05f5adc59fb53ec7f9dad66
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/avatara-react@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "@zeitgeistpm/avatara-react@npm:0.2.1"
+"@zeitgeistpm/avatara-react@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "@zeitgeistpm/avatara-react@npm:0.2.2"
   dependencies:
-    "@zeitgeistpm/avatara-nft-sdk": ^0.2.1
+    "@zeitgeistpm/avatara-nft-sdk": ^0.2.2
     "@zeitgeistpm/avatara-util": ^0.2.1
     copy-to-clipboard: ^3.3.1
     jotai: ^1.6.1
@@ -3736,7 +3736,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-dom: "*"
-  checksum: a3284d80a85139eace7d11153cb2b8db05d22df5330397aca4f56c37f9b6425c9cb437abc83351919675a5f609793407dc54c0278c36803d9cac77fc5666f0f9
+  checksum: 51f4f4f7a78117d2969c737a00cb5f8467852f073ff7b772bcd81bd1bb7614a17e66e4d2c953273c4023e114b2b8f79790bdbe70fd9d9f54cb7bfe4b048930ba
   languageName: node
   linkType: hard
 
@@ -3843,8 +3843,8 @@ __metadata:
     "@types/react": ^17.0.38
     "@types/react-color": ^3.0.6
     "@typescript-eslint/eslint-plugin": ^5.9.1
-    "@zeitgeistpm/avatara-nft-sdk": ^0.2.1
-    "@zeitgeistpm/avatara-react": ^0.2.1
+    "@zeitgeistpm/avatara-nft-sdk": ^0.2.2
+    "@zeitgeistpm/avatara-react": ^0.2.2
     "@zeitgeistpm/avatara-util": ^0.2.1
     "@zeitgeistpm/sdk": 0.6.1
     autoprefixer: 10.2.5
