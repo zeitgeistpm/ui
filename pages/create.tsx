@@ -386,7 +386,7 @@ const CreatePage: NextPage = observer(() => {
             notificationStore,
             successMethod: "PoolCreate",
             successCallback: (data) => {
-              const marketId: number = data.events[2].event.data[0];
+              const marketId: number = findMarketId(data);
               notificationStore.pushNotification(
                 `Market successfully created with id: ${marketId}`,
                 {
@@ -408,6 +408,13 @@ const CreatePage: NextPage = observer(() => {
         await store.sdk.models.createCpmmMarketAndDeployAssets(params);
       });
     };
+
+  const findMarketId = (data) => {
+    const marketCreatedEvent = data.events.find(
+      (event) => event.event.method === "MarketCreated",
+    );
+    return marketCreatedEvent.event.data[0];
+  };
 
   const createMarket = async () => {
     if (!form.isValid) {
@@ -439,7 +446,8 @@ const CreatePage: NextPage = observer(() => {
         );
         return parseInt(await store.sdk.models.createMarket(params));
       } else {
-        return createCategoricalCpmmMarketAndDeployPoolTransaction();
+        const id = await createCategoricalCpmmMarketAndDeployPoolTransaction();
+        return resolve(id);
       }
     });
 
