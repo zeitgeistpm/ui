@@ -18,8 +18,9 @@ import { useStore } from "lib/stores/Store";
 import { UserIdentity, useUserStore } from "lib/stores/UserStore";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BsGearFill } from "react-icons/bs";
+import { AiFillFire } from "react-icons/ai";
 import { IoIosNotifications, IoIosWarning } from "react-icons/io";
 import { AiFillInfoCircle } from "react-icons/ai";
 import Loader from "react-spinners/PulseLoader";
@@ -28,6 +29,10 @@ import { capitalize } from "lodash";
 import { motion, AnimatePresence } from "framer-motion";
 import { shortenAddress } from "lib/util";
 import { PendingInventoryItem } from "@zeitgeistpm/avatara-nft-sdk/dist/core/inventory";
+import { ZTG } from "lib/constants";
+import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
+import { delay } from "lib/util/delay";
 
 const AvatarPage = observer(() => {
   const router = useRouter();
@@ -47,7 +52,7 @@ const AvatarPage = observer(() => {
   const [identity, setIdentity] = useState<UserIdentity>();
   const [burnAmount, setBurnAmount] = useState<number>();
   const [hasCrossed, setHasCrossed] = useState(false);
-  
+
   const inventory = useInventoryManagement(address);
 
   useEffect(() => {
@@ -57,11 +62,13 @@ const AvatarPage = observer(() => {
   useEffect(() => {
     store.sdk.api.query.styx.burnAmount().then((amount) => {
       setBurnAmount(amount.toJSON() as number);
-    })
-    if(store.wallets.activeAccount?.address) {
-      store.sdk.api.query.styx.crossings(store.wallets.activeAccount.address).then((val) => {
-        setHasCrossed(!val.isEmpty);
-      })
+    });
+    if (store.wallets.activeAccount?.address) {
+      store.sdk.api.query.styx
+        .crossings(store.wallets.activeAccount.address)
+        .then((val) => {
+          setHasCrossed(!val.isEmpty);
+        });
     }
   }, [address, store.wallets.activeAccount?.address]);
 
@@ -96,22 +103,21 @@ const AvatarPage = observer(() => {
 
   const onClickMintAvatar = async () => {
     setMintingAvatar(true);
-    try {
-      await Avatar.claim(avatarContext, address);
-      setTimeout(() => {
-        inventory.reset();
-        setMintingAvatar(false);
-        notificationStore.pushNotification("Avatar succesfully minted!", {
-          type: "Success",
-        });
-      }, 5000);
-    } catch (error) {
-      setMintingAvatar(false);
-      notificationStore.pushNotification(
-        "Avatar minting error! " + error.message,
-        { type: "Error" },
-      );
-    }
+    modalStore.openModal(
+      <ClaimModal
+        burnAmount={burnAmount}
+        hasCrossed={hasCrossed}
+        address={address}
+        onClaimSuccess={() => inventory.reset()}
+        onClose={() => {
+          setMintingAvatar(false);
+        }}
+      />,
+      "Claim your avatar!",
+      {
+        styles: { width: "680px" },
+      },
+    );
   };
 
   return (
@@ -166,7 +172,7 @@ const AvatarPage = observer(() => {
                       <button
                         disabled={mintingAvatar}
                         className={`rounded-3xl text-black py-2 px-4 cursor-pointer ${
-                          mintingAvatar ? "bg-yellow-200" : "bg-yellow-500"
+                          mintingAvatar ? "bg-blue-500" : "bg-blue-700"
                         }  w-42 text-center`}
                         onClick={onClickMintAvatar}
                       >
@@ -383,6 +389,178 @@ const Badge = (props: { item: Inventory.AcceptedInventoryItem }) => {
         <p className="text-sm text-lg text-gray-500">
           {capitalize(item.metadata_properties?.badge.value.category)}
         </p>
+      </div>
+    </div>
+  );
+};
+
+const ClaimModal = (props: {
+  address: string;
+  burnAmount: number;
+  hasCrossed: boolean;
+  onClaimSuccess: () => void;
+  onClose?: () => void;
+}) => {
+  const store = useStore();
+  const modalStore = useModalStore();
+  const notificationStore = useNotificationStore();
+  const avatarSdk = useAvatarContext();
+
+  const [isClaiming, setIsClaiming] = useState(false);
+  const [fee, setFee] = useState<number>(null);
+
+  const tx = useMemo(
+    () => store.sdk.api.tx.styx.cross(),
+    [props.address, props.burnAmount],
+  );
+
+  const doClaim = async () => {
+    notificationStore.pushNotification("Minting Avatar.", {
+      type: "Info",
+      autoRemove: true,
+    });
+    notificationStore.removeNotification;
+    const response = await Avatar.claim(avatarSdk, props.address);
+    if (!response?.avatar) {
+      throw new Error((response as any).message);
+    }
+    notificationStore.pushNotification("Avatar successfully minted!", {
+      type: "Success",
+    });
+    props.onClaimSuccess();
+    modalStore.closeModal();
+  };
+
+  const onClickBurn = async () => {
+    setIsClaiming(true);
+    try {
+      if (props.hasCrossed) {
+        try {
+          await doClaim();
+        } catch (error) {
+          notificationStore.pushNotification(error.message, {
+            type: "Error",
+          });
+        }
+        setIsClaiming(false);
+      } else {
+        const signer = store.wallets.getActiveSigner() as ExtSigner;
+        await signAndSend(
+          tx,
+          signer,
+          extrinsicCallback({
+            notificationStore,
+            broadcastCallback: () => {
+              notificationStore.pushNotification("Burning ZTG.", {
+                type: "Info",
+                autoRemove: true,
+              });
+            },
+            successCallback: async () => {
+              try {
+                await delay(2000);
+                await doClaim();
+                setIsClaiming(false);
+                props.onClose?.();
+              } catch (error) {
+                notificationStore.pushNotification(error.message, {
+                  type: "Error",
+                });
+              }
+            },
+            retractedCallback: async () => {
+              setIsClaiming(false);
+            },
+            failCallback: ({ index, error }) => {
+              setIsClaiming(false);
+              notificationStore.pushNotification(
+                store.getTransactionError(index, error),
+                { type: "Error" },
+              );
+            },
+          }),
+        );
+      }
+    } catch (error) {
+      setIsClaiming(false);
+    }
+  };
+
+  useEffect(() => {
+    tx.paymentInfo(props.address).then((fee) =>
+      setFee(fee.partialFee.toJSON()),
+    );
+  }, [tx, props.address]);
+
+  useEffect(() => {
+    return () => {
+      props.onClose?.();
+    };
+  }, [props.onClose]);
+
+  return (
+    <div>
+      <div className="flex flex-1">
+        <div className="pr-6">
+          <p className="mb-4">
+            To claim your right to mint an avatar you have to pay the ferryman
+            due respect, burning {props.burnAmount / ZTG} ZTG.
+          </p>
+          {!props.hasCrossed ? (
+            <div className="flex items-center">
+              <div className="text-red-800 mr-4">
+                <IoIosWarning size={22} />
+              </div>
+              <div className="text-red-800 text-xs flex-1">
+                The amount will be burned(slashed) and not paid to any address.
+                Make sure you have {props.burnAmount / ZTG} + (fee {fee / ZTG})
+                ZTG in your wallet. If the burned amount + fee is the exact
+                amount in your wallet it might be reaped.
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center">
+              <div className="text-green-500 mr-4">
+                <AiFillFire size="22" />
+              </div>
+              <div className="text-green-500 text-xs flex-1">
+                You have allready burned so feel free to claim your avatar.
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="flex w-100 items-center justify-end">
+          <div>
+            <button
+              disabled={isClaiming}
+              className={`rounded-3xl text-black py-2 px-4 cursor-pointer mb-2 ${
+                isClaiming ? "bg-blue-500" : "bg-blue-700"
+              }  w-42 text-center`}
+              onClick={onClickBurn}
+            >
+              {isClaiming ? (
+                <Loader size={8} />
+              ) : (
+                <div className="flex items-center">
+                  <span className="text-md">
+                    {props.hasCrossed
+                      ? "Claim"
+                      : `Burn ${props.burnAmount / ZTG} ZTG`}
+                  </span>
+                  <div className="ml-2">
+                    <AiFillFire />
+                  </div>
+                </div>
+              )}
+            </button>
+            <div className="text-center text-xs">
+              <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
+                <span>Exchange Fee: </span>
+                <span className="font-mono">{(fee / ZTG).toFixed(4)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
