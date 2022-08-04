@@ -524,7 +524,7 @@ const ClaimModal = (props: {
                 <AiFillFire size="22" />
               </div>
               <div className="text-green-500 text-xs flex-1">
-                You have allready burned so feel free to claim your avatar.
+                You have already burned so feel free to claim your avatar.
               </div>
             </div>
           )}
