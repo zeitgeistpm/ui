@@ -3,6 +3,7 @@ import { JSONObject, Primitive, SupportedParachain } from "lib/types";
 import Store, { useStore } from "./Store";
 import { endpoints, gqlEndpoints } from "lib/constants";
 import { TradeSlipItem } from "./TradeSlipStore";
+import ipRangeCheck from "ip-range-check";
 
 export type Theme = "dark" | "light";
 
@@ -47,6 +48,7 @@ export default class UserStore {
   gqlEndpoint: string;
   identity: UserIdentity;
   locationAllowed: boolean;
+  isUsingVPN: boolean;
   walletId: string | null = null;
   helpnotifications: HelperNotifications | null = null;
 
@@ -151,7 +153,7 @@ export default class UserStore {
       avatarKsmFeesInfo: true,
     }) as HelperNotifications;
 
-    await this.checkGeofencing();
+    await this.checkIP();
   }
 
   toggleTheme(theme?: StoredTheme) {
@@ -249,7 +251,7 @@ export default class UserStore {
     });
   }
 
-  private async checkGeofencing() {
+  private async checkIP() {
     const response = await fetch(`/api/location`);
     const json = await response.json();
 
@@ -259,13 +261,23 @@ export default class UserStore {
 
     const userCountry: string = json.body.country;
     const locationAllowed = !notAllowedCountries.includes(userCountry);
-    if (!locationAllowed) {
+
+    const ip = json.body.ip;
+    const vpnIPsResponse = await fetch("/vpn-ips.txt");
+    const vpnIPs = await vpnIPsResponse.text();
+    const isUsingVPN = vpnIPs
+      .toString()
+      .split("\n")
+      .some((vpnIP) => ipRangeCheck(ip, vpnIP) === true);
+
+    if (!locationAllowed || isUsingVPN) {
       localStorage.removeItem("accountAddress");
       this.accountAddress = null;
     }
 
     runInAction(() => {
       this.locationAllowed = locationAllowed;
+      this.isUsingVPN = isUsingVPN;
     });
 
     return json;
