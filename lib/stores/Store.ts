@@ -51,6 +51,11 @@ interface Config {
   };
 }
 
+interface ZTGInfo {
+  price: Decimal;
+  change: Decimal;
+}
+
 export default class Store {
   userStore = new UserStore(this);
   notificationStore = new NotificationStore();
@@ -59,6 +64,7 @@ export default class Store {
   exchangeStore = new ExchangeStore(this);
   courtStore: CourtStore;
   wallets = new Wallets(this);
+  ztgInfo: ZTGInfo;
 
   markets: MarketsStore;
 
@@ -119,7 +125,7 @@ export default class Store {
       registerValidationRules: false,
       isTestEnv: false,
       unsubscribeNewHeads: false,
-      balanceSubscription: false
+      balanceSubscription: false,
     });
   }
 
@@ -132,7 +138,7 @@ export default class Store {
         }
         return +val > 0;
       },
-      "Enter amount greater than zero."
+      "Enter amount greater than zero.",
     );
 
     validatorjs.register("timestamp_gt_now", (val: number) => {
@@ -166,7 +172,7 @@ export default class Store {
       () => {
         this.initTradeSlipStore();
         this.exchangeStore.initialize();
-      }
+      },
     );
   }
 
@@ -177,8 +183,11 @@ export default class Store {
       await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
       await this.loadConfig();
       this.initGraphQlClient();
+      const storedWalletId = this.userStore.walletId;
 
-      this.wallets.initialize();
+      if (storedWalletId) {
+        this.wallets.initialize(storedWalletId);
+      }
 
       this.courtStore = new CourtStore(this);
 
@@ -194,6 +203,12 @@ export default class Store {
       this.userStore.resetEndpoints();
       this.initialize();
     }
+
+    const priceInfo = await this.fetchZTGPrice();
+
+    runInAction(() => {
+      this.ztgInfo = priceInfo;
+    });
   }
 
   async connectNewSDK(endpoint: string, gqlEndpoint: string) {
@@ -220,7 +235,7 @@ export default class Store {
     const ipfsClientUrl = this.isTestEnv ? "http://127.0.0.1:5001" : undefined;
     const sdk = await SDK.initialize(endpoint, {
       graphQlEndpoint,
-      ipfsClientUrl
+      ipfsClientUrl,
     });
 
     if (sdk.graphQLClient != null) {
@@ -249,10 +264,22 @@ export default class Store {
     }
   }
 
+  private async fetchZTGPrice(): Promise<ZTGInfo> {
+    const res = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=zeitgeist&vs_currencies=usd&include_24hr_change=true"
+    );
+    const json = await res.json();
+
+    return {
+      price: new Decimal(json.zeitgeist.usd),
+      change: new Decimal(json.zeitgeist.usd_24h_change),
+    };
+  }
+
   private async loadConfig() {
     const [consts, properties] = await Promise.all([
       this.sdk.api.consts,
-      this.sdk.api.rpc.system.properties()
+      this.sdk.api.rpc.system.properties(),
     ]);
 
     // minimumPeriod * 2 is fair assumption for now but need to make sure this stays up
@@ -285,17 +312,17 @@ export default class Store {
         validityBond:
           this.codecToNumber(consts.predictionMarkets.validityBond) / ZTG,
         maxCategories: this.codecToNumber(
-          consts.predictionMarkets.maxCategories
+          consts.predictionMarkets.maxCategories,
         ),
         minCategories: this.codecToNumber(
-          consts.predictionMarkets.minCategories
-        )
+          consts.predictionMarkets.minCategories,
+        ),
       },
       court: {
         caseDurationSec:
           this.codecToNumber(consts.court.courtCaseDuration) * blockTimeSec,
-        stakeWeight: this.codecToNumber(consts.court.stakeWeight) / ZTG
-      }
+        stakeWeight: this.codecToNumber(consts.court.stakeWeight) / ZTG,
+      },
     };
 
     runInAction(() => {
@@ -313,7 +340,7 @@ export default class Store {
 
     const { errorName, documentation } = this.sdk.errorTable.getEntry(
       groupIndex,
-      errorIndex
+      errorIndex,
     );
 
     return documentation.length > 0
@@ -329,7 +356,7 @@ export default class Store {
           this.blockTimestamp = blockTs;
           this.blockNumber = header.number;
         });
-      }
+      },
     );
   }
 
@@ -362,14 +389,14 @@ export default class Store {
     }
     if (assetObj.isZtg) {
       const { data } = (await this.sdk.api.query.system.account(
-        this.wallets.activeAccount.address
+        this.wallets.activeAccount.address,
       )) as AccountInfo;
       return new Decimal(data.free.toString()).div(ZTG);
     }
 
     const data = await this.sdk.api.query.tokens.accounts(
       this.wallets.activeAccount.address,
-      asset
+      asset,
     );
 
     //@ts-ignore
@@ -378,7 +405,7 @@ export default class Store {
 
   async getPoolBalance(
     pool: Swap | string,
-    asset: AssetId | Asset
+    asset: AssetId | Asset,
   ): Promise<Decimal> {
     let account;
     if (typeof pool === "string") {
@@ -399,7 +426,7 @@ export default class Store {
 
     const b = (await this.sdk.api.query.tokens.accounts(
       account,
-      assetObj
+      assetObj,
     )) as any;
 
     return new Decimal(b.free.toString()).div(ZTG);

@@ -67,7 +67,7 @@ const AvatarPage = observer(() => {
       "You have pending items!",
       {
         styles: { width: "580px" },
-      }
+      },
     );
   };
 
@@ -77,7 +77,7 @@ const AvatarPage = observer(() => {
       "Inventory.",
       {
         styles: { width: "580px" },
-      }
+      },
     );
   };
 
@@ -96,12 +96,10 @@ const AvatarPage = observer(() => {
       setMintingAvatar(false);
       notificationStore.pushNotification(
         "Avatar minting error! " + error.message,
-        { type: "Error" }
+        { type: "Error" },
       );
     }
   };
-
-  console.log(inventory);
 
   return (
     <div className={"pt-ztg-46 "}>
@@ -194,7 +192,7 @@ const AvatarPage = observer(() => {
           </div>
 
           <div>
-            <h3 className="mb-ztg-14 font-kanit text-ztg-28-120 font-semibold">
+            <h3 className="mb-ztg-14 font-space text-ztg-[24px]">
               <span className="mr-4">{name}</span>
             </h3>
 
@@ -233,7 +231,7 @@ const AvatarPage = observer(() => {
           </div>
         </div>
       </div>
-      <h3 className="mb-ztg-40 font-kanit text-ztg-28-120 font-semibold">
+      <h3 className="mb-ztg-40 font-space text-ztg-28-120 font-semibold">
         <span className="mr-4">Achievements</span>
       </h3>
       <p className="text-gray-600 mb-ztg-38">
@@ -355,7 +353,7 @@ const Badge = (props: { item: Inventory.AcceptedInventoryItem }) => {
           <img
             className="z-ztg-2"
             src={sanitizeIpfsUrl(
-              cidToUrl("QmZHdCSRpCEfVDcqwkmo5ELrkuKXPBCtfs4fQ3RXibn1am")
+              cidToUrl("QmZHdCSRpCEfVDcqwkmo5ELrkuKXPBCtfs4fQ3RXibn1am"),
             )}
           />
           <img
@@ -413,11 +411,11 @@ const InventoryModal = (props: { address: string; onClose?: () => void }) => {
             <img
               className="h-16 w-16 rounded-md mr-4"
               src={sanitizeIpfsUrl(
-                item.metadata_properties.badge.value.preview
+                item.metadata_properties.badge.value.preview,
               )}
             />
             <div className="w-full">
-              <h4 className="mb-ztg-8 font-kanit text-ztg-16-150 font-semibold">
+              <h4 className="mb-ztg-8 font-space text-ztg-16-150 font-semibold">
                 {item.metadata_properties.badge.value.name}
               </h4>
               <p className="text-ztg-14-110 mb-4">
@@ -490,7 +488,7 @@ const PendingItemsModal = (props: {
   const modalStore = useModalStore();
 
   const isAcceptingAll = inventory.items.pending.every((item) =>
-    inventory.isAccepting(item)
+    inventory.isAccepting(item),
   );
 
   useEffect(() => {
@@ -518,11 +516,11 @@ const PendingItemsModal = (props: {
               <img
                 className="h-24 w-24 rounded-md mr-4"
                 src={sanitizeIpfsUrl(
-                  item.metadata_properties.badge.value.preview
+                  item.metadata_properties.badge.value.preview,
                 )}
               />
               <div className="w-full">
-                <h4 className="mb-ztg-12 font-kanit text-ztg-18-150 font-semibold">
+                <h4 className="mb-ztg-12 font-space text-ztg-18-150 font-semibold">
                   {item.metadata_properties.badge.value.name}
                 </h4>
                 <p className="text-ztg-14-110 mb-4">

@@ -65,7 +65,7 @@ const AssetActionButtons = observer(
         />
       );
     }
-  }
+  },
 );
 
 export default AssetActionButtons;

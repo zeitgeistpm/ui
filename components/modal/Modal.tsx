@@ -22,7 +22,7 @@ const Modal: FC<ModalProps> = observer(
         <div className="flex justify-between items-center mb-ztg-16">
           <div
             className={
-              "font-bold text-ztg-16-150 font-kanit dark:text-white text-black w-full" +
+              "font-bold text-ztg-16-150 font-space dark:text-white text-black w-full" +
               (centerHeadingText ? " text-center" : "")
             }
           >
@@ -43,7 +43,7 @@ const Modal: FC<ModalProps> = observer(
         {children}
       </div>
     );
-  }
+  },
 );
 
 export default Modal;

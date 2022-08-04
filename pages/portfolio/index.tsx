@@ -17,7 +17,7 @@ const PortfolioIndex: NextPage = observer(() => {
         undefined,
         {
           shallow: true,
-        }
+        },
       );
     } else {
       setNoAddress(true);

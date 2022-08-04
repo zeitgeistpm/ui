@@ -48,7 +48,7 @@ const ScalarReportBox = observer(
             store.getTransactionError(index, error),
             {
               type: "Error",
-            }
+            },
           );
         },
       });
@@ -59,7 +59,7 @@ const ScalarReportBox = observer(
       ) {
         const tx = store.sdk.api.tx.authorized.authorizeMarketOutcome(
           market.marketId,
-          outcomeReport
+          outcomeReport,
         );
         signAndSend(tx, signer, callback);
         await market.reportOutcome(signer, outcomeReport, callback);
@@ -83,7 +83,7 @@ const ScalarReportBox = observer(
         </TransactionButton>
       </>
     );
-  }
+  },
 );
 
 export default ScalarReportBox;

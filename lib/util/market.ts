@@ -8,7 +8,7 @@ interface BondPrices {
 export const calculateMarketCost = (
   prices: BondPrices,
   advised: boolean,
-  poolAmounts?: number[]
+  poolAmounts?: number[],
 ): number => {
   let cost = 0;
 
@@ -39,12 +39,12 @@ export const calculatePoolCost = (poolAmounts?: number[]) => {
 };
 
 export const activeStatusesFromFilters = (
-  filters: FilterOptions
+  filters: FilterOptions,
 ): MarketStatus[] => {
   const statuses = Object.keys(filters).filter(
     (k) =>
       !["oracle", "creator", "hasAssets", "HasLiquidityPool"].includes(k) &&
-      filters[k] === true
+      filters[k] === true,
   );
   return statuses as MarketStatus[];
 };
@@ -67,7 +67,7 @@ export const get24HrPriceChange = (
   prices: {
     newPrice: number;
     timestamp: string;
-  }[]
+  }[],
 ): number => {
   const price24HrAgo = getPrice24HrAgo(prices);
   const currentPrice = prices[0]?.newPrice;
@@ -81,7 +81,7 @@ export const getPrice24HrAgo = (
   prices: {
     newPrice: number;
     timestamp: string;
-  }[]
+  }[],
 ): number => {
   const daySeconds = 86400;
   const oneDayAgoTimestamp = new Date().getTime() - daySeconds * 1000;

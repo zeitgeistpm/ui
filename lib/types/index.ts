@@ -135,7 +135,7 @@ export interface EndpointOption {
 }
 
 export const isCustomEndpointOption = (
-  val: EndpointOption
+  val: EndpointOption,
 ): val is EndpointOption => {
   return val.parachain == SupportedParachain.CUSTOM;
 };

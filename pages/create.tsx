@@ -111,7 +111,7 @@ const CreatePage: NextPage = observer(() => {
       {
         plugins: defaultPlugins,
         options: defaultOptions,
-      }
+      },
     );
   });
 
@@ -159,7 +159,7 @@ const CreatePage: NextPage = observer(() => {
           permissionlessCost: store.config.markets.validityBond + bondCost,
         },
         formData.advised,
-        deployPool === true ? poolRows?.map((row) => Number(row.amount)) : null
+        deployPool === true ? poolRows?.map((row) => Number(row.amount)) : null,
       ) + Number(txFee || 0);
     setMarketCost(marketCost);
   }, [store.config, formData, deployPool, poolRows]);
@@ -255,7 +255,7 @@ const CreatePage: NextPage = observer(() => {
   };
 
   const mapRangeToEntires = (
-    range: RangeOutcomeEntry
+    range: RangeOutcomeEntry,
   ): MultipleOutcomeEntry[] => {
     return [
       {
@@ -290,7 +290,7 @@ const CreatePage: NextPage = observer(() => {
   const getCreateMarketParameters = async (
     callbackOrPaymentInfo:
       | ((result: ISubmittableResult, _unsub: () => void) => void)
-      | boolean
+      | boolean,
   ): Promise<CreateMarketParams> => {
     const signer = store.wallets.getActiveSigner();
     const oracle = formData.oracle;
@@ -329,7 +329,7 @@ const CreatePage: NextPage = observer(() => {
   const getCreateCpmmMarketAndAddPoolParameters = async (
     callbackOrPaymentInfo:
       | ((result: ISubmittableResult, _unsub: () => void) => void)
-      | boolean
+      | boolean,
   ): Promise<CreateCpmmMarketAndDeployAssetsParams> => {
     const signer = store.wallets.getActiveSigner();
     const oracle = formData.oracle;
@@ -387,28 +387,35 @@ const CreatePage: NextPage = observer(() => {
             notificationStore,
             successMethod: "PoolCreate",
             successCallback: (data) => {
-              const marketId: number = data.events[2].event.data[0];
+              const marketId: number = findMarketId(data);
               notificationStore.pushNotification(
                 `Market successfully created with id: ${marketId}`,
                 {
                   type: "Success",
-                }
+                },
               );
               resolve(marketId);
             },
             failCallback: ({ index, error }) => {
               notificationStore.pushNotification(
                 store.getTransactionError(index, error),
-                { type: "Error" }
+                { type: "Error" },
               );
               reject();
             },
-          })
+          }),
         );
 
         await store.sdk.models.createCpmmMarketAndDeployAssets(params);
       });
     };
+
+  const findMarketId = (data) => {
+    const marketCreatedEvent = data.events.find(
+      (event) => event.event.method === "MarketCreated",
+    );
+    return marketCreatedEvent.event.data[0];
+  };
 
   const createMarket = async () => {
     if (!form.isValid) {
@@ -425,22 +432,23 @@ const CreatePage: NextPage = observer(() => {
               const marketId = data[0];
               notificationStore.pushNotification(
                 `Transaction successful! Market id ${marketId}`,
-                { type: "Success" }
+                { type: "Success" },
               );
               resolve(Number(marketId));
             },
             failCallback: ({ index, error }) => {
               notificationStore.pushNotification(
                 store.getTransactionError(index, error),
-                { type: "Error" }
+                { type: "Error" },
               );
               reject();
             },
-          })
+          }),
         );
         return parseInt(await store.sdk.models.createMarket(params));
       } else {
-        return createCategoricalCpmmMarketAndDeployPoolTransaction();
+        const id = await createCategoricalCpmmMarketAndDeployPoolTransaction();
+        return resolve(id);
       }
     });
 
@@ -461,7 +469,7 @@ const CreatePage: NextPage = observer(() => {
     } else {
       const params = await getCreateCpmmMarketAndAddPoolParameters(true);
       const fee = await store.sdk.models.createCpmmMarketAndDeployAssets(
-        params
+        params,
       );
       return new Decimal(typeof fee == "string" ? fee : "0")
         .div(ZTG)
@@ -580,7 +588,7 @@ const CreatePage: NextPage = observer(() => {
               />
               <label
                 htmlFor="deployPool"
-                className="text-ztg-20-150 font-bold font-kanit"
+                className="text-ztg-20-150 font-bold font-space"
               >
                 Deploy Liquidity Pool
               </label>

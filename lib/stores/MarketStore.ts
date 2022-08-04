@@ -426,7 +426,7 @@ class MarketStore {
 
   get outcomeAssetIds(): AssetId[] {
     return this.market.outcomeAssets.map((asset) =>
-      AssetIdFromString(JSON.stringify(asset))
+      AssetIdFromString(JSON.stringify(asset)),
     );
   }
 
@@ -456,14 +456,14 @@ class MarketStore {
 
   async getSpotPrice(
     inAsset: AssetId,
-    outAsset: AssetId
+    outAsset: AssetId,
   ): Promise<Decimal | null> {
     if (!this.poolExists) {
       return null;
     }
     const price = await this.pool.getSpotPrice(
       this.createAssetFromAssetId(inAsset),
-      this.createAssetFromAssetId(outAsset)
+      this.createAssetFromAssetId(outAsset),
     );
 
     return new Decimal(price.toNumber()).div(ZTG);
@@ -486,7 +486,7 @@ class MarketStore {
       100000000000,
       assetBalance,
       assetWeight,
-      0
+      0,
     ).toNumber();
 
     return new Decimal(price);
@@ -503,7 +503,7 @@ class MarketStore {
 
   async getPrizePool(): Promise<string> {
     const prizePool = await this.store.sdk.api.query.tokens.totalIssuance(
-      this.assets[0]
+      this.assets[0],
     );
     return new Decimal(prizePool.toString()).div(ZTG).toFixed(0);
   }
@@ -519,7 +519,7 @@ class MarketStore {
       }
     } else {
       const balancePromises = this.market.outcomeAssets.map((asset) =>
-        this.store.getBalance(asset)
+        this.store.getBalance(asset),
       );
 
       const [longBalance, shortBalance] = await Promise.all(balancePromises);
@@ -539,7 +539,7 @@ class MarketStore {
 
   async calcPrediction(): Promise<string> {
     const prices = await Promise.all(
-      this.marketOutcomes.map((outcome) => this.assetPriceInZTG(outcome.asset))
+      this.marketOutcomes.map((outcome) => this.assetPriceInZTG(outcome.asset)),
     );
     if (this.type === "categorical") {
       let [highestPrice, highestPriceIndex] = [new Decimal(0), 0];
@@ -706,7 +706,7 @@ class MarketStore {
           if (!data.isEmpty) {
             await this.updatePool();
           }
-        }
+        },
       );
   }
 

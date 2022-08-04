@@ -26,7 +26,7 @@ const AccountSelectValue: FC<AccountSelectValueProps> = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default AccountSelectValue;

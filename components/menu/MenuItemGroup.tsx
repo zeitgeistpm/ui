@@ -127,5 +127,5 @@ export const MenuItemGroup: FC<MenuItemGroupProps> = observer(
         </AnimatePresence>
       </div>
     );
-  }
+  },
 );

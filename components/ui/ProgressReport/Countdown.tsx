@@ -90,7 +90,7 @@ const Countdown = observer(
     } else {
       return <></>;
     }
-  }
+  },
 );
 
 export default Countdown;

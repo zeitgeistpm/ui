@@ -26,7 +26,7 @@ const NotFoundPage = observer(
           <div className="flex justify-center items-center mb-ztg-40">
             <button
               onClick={handleClick}
-              className="font-kanit font-bold text-sky-600 border border-sky-600 rounded-ztg-10 px-ztg-50 py-ztg-7"
+              className="font-space font-bold text-sky-600 border border-sky-600 rounded-ztg-10 px-ztg-50 py-ztg-7"
             >
               {backText}
             </button>
@@ -36,7 +36,7 @@ const NotFoundPage = observer(
         )}
       </>
     );
-  }
+  },
 );
 
 export default NotFoundPage;

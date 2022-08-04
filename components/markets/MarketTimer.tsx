@@ -180,9 +180,9 @@ const MarketTimer = observer(
                 convertBlockNumberToTimestamp(
                   dispute.at,
                   store.blockNumber.toNumber(),
-                  store.config.blockTimeSec
-                )
-              )
+                  store.config.blockTimeSec,
+                ),
+              ),
             );
 
             return {
@@ -193,7 +193,7 @@ const MarketTimer = observer(
                 <MarketEventSummary time={time} address={dispute.by} />
               ),
             };
-          }
+          },
         );
         return checkEventSpacing(events, 0.05);
       } else {
@@ -203,7 +203,7 @@ const MarketTimer = observer(
 
     const checkEventSpacing = (
       events: ProgressBarEvent[],
-      minPercentageGap: number
+      minPercentageGap: number,
     ) => {
       const spacedEvents: ProgressBarEvent[] = [];
 
@@ -273,9 +273,9 @@ const MarketTimer = observer(
                           convertBlockNumberToTimestamp(
                             Number(marketStore.reportedAt),
                             store.blockNumber.toNumber(),
-                            store.config.blockTimeSec
-                          )
-                        )
+                            store.config.blockTimeSec,
+                          ),
+                        ),
                       )}
                       address={marketStore.reportedBy}
                       outcome={marketStore.reportedOutcomeName}
@@ -355,7 +355,7 @@ const MarketTimer = observer(
         )}
       </>
     );
-  }
+  },
 );
 
 export default MarketTimer;

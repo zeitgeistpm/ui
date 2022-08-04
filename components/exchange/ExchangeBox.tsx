@@ -64,7 +64,7 @@ const ExchangeConfirmModal = observer(
               backgroundColor: exchangeStore.outcome.metadata["color"],
             }}
           ></span>
-          <span className="font-bold font-kanit text-ztg-16-150">
+          <span className="font-bold font-space text-ztg-16-150">
             {exchangeStore.outcome.metadata["ticker"]}
           </span>
           <span className="font-mono text-ztg-16-150 ml-auto">
@@ -93,7 +93,7 @@ const ExchangeConfirmModal = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
@@ -103,7 +103,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
     const [selectedAssetOption, setSelectedAssetOption] =
       useState<OutcomeOption>();
     const [slippagePercentage, setSlippagePercentage] = useState(
-      DEFAULT_SLIPPAGE_PERCENTAGE.toString()
+      DEFAULT_SLIPPAGE_PERCENTAGE.toString(),
     );
     const [percentage, setPercentage] = useState(0);
     const [percentageDisplay, setPercentageDisplay] = useState(0);
@@ -145,8 +145,8 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
             exchangeStore.ztgPoolBalance.toString(),
             exchangeStore.ztgWeight,
             wallets.activeBalance.toString(),
-            exchangeStore.swapFee
-          ).toNumber()
+            exchangeStore.swapFee,
+          ).toNumber(),
         );
 
         return maxFromPool.gt(maxFromZtgBalance)
@@ -200,7 +200,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               exchangeStore.amount.mul(ZTG),
               new Decimal(0),
               new Decimal(slippagePercentage).div(100),
-              poolId
+              poolId,
             )
           : generateSwapExactAmountInTx(
               store.sdk.api,
@@ -213,7 +213,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               exchangeStore.amount.mul(ZTG),
               new Decimal(0),
               new Decimal(slippagePercentage).div(100),
-              poolId
+              poolId,
             );
 
       tx$.next(_tx);
@@ -235,7 +235,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
             fee = "0";
           } else {
             const paymentInfo = await tx.paymentInfo(
-              wallets.activeAccount.address
+              wallets.activeAccount.address,
             );
 
             const partialFee = paymentInfo.partialFee.toNumber() / ZTG;
@@ -288,8 +288,8 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
           {
             plugins: defaultPlugins,
             options: defaultOptions,
-          }
-        )
+          },
+        ),
       );
     };
 
@@ -304,7 +304,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
           successCallback: async () => {
             notificationStore.pushNotification(
               `Swapped ${amount} ${exchangeStore.outcome.metadata["name"]}`,
-              { type: "Success" }
+              { type: "Success" },
             );
             await exchangeStore.updateBalances();
             exchangeStore.updateSpotPrice();
@@ -315,10 +315,10 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
           failCallback: ({ index, error }) => {
             notificationStore.pushNotification(
               store.getTransactionError(index, error),
-              { type: "Error" }
+              { type: "Error" },
             );
           },
-        })
+        }),
       );
     };
 
@@ -340,7 +340,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
         () => {
           processTransaction();
         },
-        { styles: { width: "380px" } }
+        { styles: { width: "380px" } },
       );
     };
 
@@ -411,7 +411,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               </span>
             </div>
             <div className="w-full center h-ztg-40 flex items-center mb-ztg-10">
-              <div className="font-kanit rounded-ztg-10 w-ztg-40 h-ztg-40 text-ztg-14-150 text-sky-600 center font-bold bg-sky-100 dark:bg-sky-1100">
+              <div className="font-space rounded-ztg-10 w-ztg-40 h-ztg-40 text-ztg-14-150 text-sky-600 center font-bold bg-sky-100 dark:bg-sky-1100">
                 For
               </div>
             </div>
@@ -419,7 +419,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               <div className="w-ztg-108">
                 <div className="flex h-ztg-20">
                   <div className="w-ztg-20 h-ztg-20 border-2 border-sky-600 rounded-full mr-ztg-8 bg-ztg-blue"></div>
-                  <div className="font-kanit text-base font-bold flex items-center dark:text-white">
+                  <div className="font-space text-base font-bold flex items-center dark:text-white">
                     {store.config.tokenSymbol}
                   </div>
                 </div>
@@ -467,7 +467,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
         )}
       </div>
     );
-  }
+  },
 );
 
 export default ExchangeBox;

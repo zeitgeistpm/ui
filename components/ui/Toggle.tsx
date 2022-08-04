@@ -35,7 +35,7 @@ const Toggle: FC<ToggleProps> = ({
               style={{ zIndex: 10 }}
               className={`w-ztg-30 h-ztg-30 flex-shrink-0 flex-grow-0 text-ztg-10-150 center ${
                 isActive ? activeClasses : ""
-              }`} 
+              }`}
               data-test="liquidityButton"
               key={`toggle${idx}`}
             >

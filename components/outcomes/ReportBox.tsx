@@ -32,7 +32,7 @@ const ReportBox = observer(
 
     const getOptions = async (): Promise<OutcomeOption[]> => {
       const outcomes = marketStore.marketOutcomes.filter(
-        (o) => o.metadata !== "ztg"
+        (o) => o.metadata !== "ztg",
       );
 
       let options: OutcomeOption[] = [];
@@ -58,20 +58,20 @@ const ReportBox = observer(
 
     useEffect(() => {
       const obs = marketStore.marketChange$.pipe(
-        combineLatestWith(from(getOptions()))
+        combineLatestWith(from(getOptions())),
       );
       const sub = obs.subscribe(
         ([_, options]: [_: number, options: OutcomeOption[]]) => {
           setOptions(options);
           const outcomeidx = options.findIndex(
-            (o) => o.value === selectedAssetOption?.value
+            (o) => o.value === selectedAssetOption?.value,
           );
           if (outcomeidx !== -1) {
             setSelectedAssetOption(options[outcomeidx]);
           } else {
             setSelectedAssetOption(options[0]);
           }
-        }
+        },
       );
       return () => sub.unsubscribe();
     }, [wallets.activeAccount]);
@@ -107,7 +107,7 @@ const ReportBox = observer(
             store.getTransactionError(index, error),
             {
               type: "Error",
-            }
+            },
           );
         },
       });
@@ -118,7 +118,7 @@ const ReportBox = observer(
       ) {
         const tx = store.sdk.api.tx.authorized.authorizeMarketOutcome(
           market.marketId,
-          outcomeReport
+          outcomeReport,
         );
         signAndSend(tx, signer, callback);
       } else {
@@ -136,7 +136,7 @@ const ReportBox = observer(
         ) : (
           <>
             <div className="flex items-center px-ztg-16">
-              <div className="font-kanit font-bold text-ztg-14-150 h-ztg-25">
+              <div className="font-space font-bold text-ztg-14-150 h-ztg-25">
                 Report outcome
               </div>
             </div>
@@ -185,7 +185,7 @@ const ReportBox = observer(
         )}
       </div>
     );
-  }
+  },
 );
 
 export default ReportBox;

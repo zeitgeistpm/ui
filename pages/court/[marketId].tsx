@@ -21,13 +21,13 @@ const JurorsTable = ({
 }) => {
   const getOutcomeData = (jurorAddress: string) => {
     const assetId = courtCase.votes.find(
-      (vote) => vote.address === jurorAddress
+      (vote) => vote.address === jurorAddress,
     )?.asset.Categorical;
 
     if (assetId) {
       const outcome = marketStore?.marketOutcomes.find(
         //@ts-ignore
-        (outcome) => outcome.asset.categoricalOutcome?.[1] === Number(assetId)
+        (outcome) => outcome.asset.categoricalOutcome?.[1] === Number(assetId),
       );
       if (outcome) {
         return {
@@ -119,14 +119,14 @@ const Court: NextPage = observer(() => {
     <section>
       <CourtHeader />
       <button
-        className="font-kanit text-ztg-16-150 text-sky-600"
+        className="font-space text-ztg-16-150 text-sky-600"
         onClick={handleBackClick}
       >
         Back to Cases
       </button>
 
       <h2 className="header my-ztg-23">{marketStore?.slug}</h2>
-      <p className="font-kanit text-ztg-16-150 mb-ztg-20">
+      <p className="font-space text-ztg-16-150 mb-ztg-20">
         {marketStore?.description}
       </p>
       <CaseSummary courtCase={courtCase} />
@@ -155,11 +155,11 @@ const Court: NextPage = observer(() => {
       ) : (
         <></>
       )}
-      <div className="font-kanit text-ztg-16-150 mt-ztg-20 font-bold">
+      <div className="font-space text-ztg-16-150 mt-ztg-20 font-bold">
         Outcomes
       </div>
       <OutcomesTable marketStore={marketStore} courtCase={courtCase} />
-      <div className="font-kanit text-ztg-16-150 mt-ztg-20 font-bold">
+      <div className="font-space text-ztg-16-150 mt-ztg-20 font-bold">
         Jurors
       </div>
       <JurorsTable courtCase={courtCase} marketStore={marketStore} />

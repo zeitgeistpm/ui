@@ -7,7 +7,7 @@ describe("Create market page", () => {
     window.localStorage.setItem("endpoint-1", '"ws://127.0.0.1:9944"');
     window.localStorage.setItem(
       "gql-endpoint-1",
-      '"http://localhost:4350/graphql"'
+      '"http://localhost:4350/graphql"',
     );
     window.localStorage.setItem("walletId", '"polkadot-js"');
     cy.visit("http://localhost:3000/create");
@@ -42,7 +42,8 @@ describe("Create market page", () => {
   });
   it("Verify switch button is working for multiple outcomes and range of outcomes", () => {
     createForm.elements
-      .outcomesSwitch().eq(0)
+      .outcomesSwitch()
+      .eq(0)
       .scrollIntoView()
       .should("be.visible")
       .click();
@@ -52,12 +53,14 @@ describe("Create market page", () => {
   });
   it("Verify when the switch button is clicked again, then categorical market inputs are visible", () => {
     createForm.elements
-      .outcomesSwitch().eq(0)
+      .outcomesSwitch()
+      .eq(0)
       // .scrollIntoView()
       // .should("be.visible")
       .click();
     createForm.elements
-      .outcomesSwitch().eq(0)
+      .outcomesSwitch()
+      .eq(0)
       // .scrollIntoView()
       // .should("be.visible")
       .click();
@@ -68,7 +71,8 @@ describe("Create market page", () => {
   });
   it("Verify switch button is working for permission-less and Advised", () => {
     createForm.elements
-      .permissionlessSwitch().eq(1)
+      .permissionlessSwitch()
+      .eq(1)
       // .scrollIntoView()
       // .should("be.visible")
       .click();
@@ -76,12 +80,14 @@ describe("Create market page", () => {
   });
   it("Verify switch button is working when clicked again for permission-less and advised", () => {
     createForm.elements
-      .permissionlessSwitch().eq(1)
+      .permissionlessSwitch()
+      .eq(1)
       // .scrollIntoView()
       // .should("be.visible")
       .click();
     createForm.elements
-      .permissionlessSwitch().eq(1)
+      .permissionlessSwitch()
+      .eq(1)
       // .scrollIntoView()
       // .should("be.visible")
       .click();
@@ -212,7 +218,7 @@ describe("Create market page", () => {
         .type(CreateMarket.Multipleoutcometicker1);
       createForm.elements.oracleLabel().should("be.visible");
       cy.get("@accountAddress").then((oracleInput) =>
-        createForm.elements.oracleInput().type(oracleInput)
+        createForm.elements.oracleInput().type(oracleInput),
       );
 
       createForm.elements.marketDescriptionLabel().should("be.visible");
@@ -255,7 +261,7 @@ describe("Create market page", () => {
         .should("be.visible")
         .click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements
@@ -265,7 +271,7 @@ describe("Create market page", () => {
         .should("be.visible")
         .click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
@@ -301,7 +307,7 @@ describe("Create market page", () => {
         .type(CreateMarket.Multipleoutcometicker1);
       createForm.elements.oracleLabel().should("be.visible");
       cy.get("@accountAddress").then((oracleInput) =>
-        createForm.elements.oracleInput().type(oracleInput)
+        createForm.elements.oracleInput().type(oracleInput),
       );
       createForm.elements.marketDescriptionLabel().should("be.visible");
       createForm.elements
@@ -342,12 +348,12 @@ describe("Create market page", () => {
       //.click()
       marketPage.elements.InspectButton().eq(0).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements.InspectButton().eq(1).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
@@ -415,12 +421,12 @@ describe("Create market page", () => {
         .contains(CreateMarket.Multiple_outcomes_input1);
       marketPage.elements.InspectButton().eq(0).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements.InspectButton().eq(1).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
@@ -432,7 +438,8 @@ describe("Create market page", () => {
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
       createForm.elements
-        .outcomesSwitch().eq(0)
+        .outcomesSwitch()
+        .eq(0)
         .scrollIntoView()
         .should("be.visible")
         .click();
@@ -485,7 +492,7 @@ describe("Create market page", () => {
         .should("be.visible")
         .click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements
@@ -495,7 +502,7 @@ describe("Create market page", () => {
         .should("be.visible")
         .click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
@@ -507,7 +514,8 @@ describe("Create market page", () => {
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
       createForm.elements
-        .outcomesSwitch().eq(0)
+        .outcomesSwitch()
+        .eq(0)
         .scrollIntoView()
         .should("be.visible")
         .click();
@@ -554,12 +562,12 @@ describe("Create market page", () => {
       //.click()
       marketPage.elements.InspectButton().eq(0).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements.InspectButton().eq(1).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
@@ -571,7 +579,8 @@ describe("Create market page", () => {
       createForm.elements.marketEndsLabel().should("be.visible");
       createForm.elements.marketEndsOption().should("be.visible");
       createForm.elements
-        .outcomesSwitch().eq(0)
+        .outcomesSwitch()
+        .eq(0)
         .scrollIntoView()
         .should("be.visible")
         .click();
@@ -616,12 +625,12 @@ describe("Create market page", () => {
       marketPage.elements.OutcomeText().eq(1).contains("Short");
       marketPage.elements.InspectButton().eq(0).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
       marketPage.elements.InspectButton().eq(1).should("be.visible").click();
       cy.get("@accountAddress").then((oracleInput) =>
-        marketPage.elements.AddressDetails().contains(oracleInput)
+        marketPage.elements.AddressDetails().contains(oracleInput),
       );
       marketPage.elements.CloseInspect().should("be.visible").click();
     });
