@@ -5,7 +5,7 @@ import { KeyringPair } from "@polkadot/keyring/types";
 import { makeAutoObservable, reaction, runInAction } from "mobx";
 import {
   decodeAddress,
-  encodeAddress as polkadotEncodeAddress,
+  encodeAddress,
 } from "@polkadot/util-crypto";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { PolkadotjsWallet } from "./polkadotjs-wallet";
@@ -28,7 +28,7 @@ export const encodeAddresses = (
   return accounts.map((acc) => {
     return {
       ...acc,
-      address: polkadotEncodeAddress(decodeAddress(acc.address), ss58Prefix),
+      address: encodeAddress(decodeAddress(acc.address), ss58Prefix),
     };
   });
 };
@@ -216,7 +216,7 @@ export default class Wallets {
       accs = accounts.map((acc) => {
         return {
           ...acc,
-          address: polkadotEncodeAddress(
+          address: encodeAddress(
             decodeAddress(acc.address),
             this.store.config.ss58Prefix,
           ),
