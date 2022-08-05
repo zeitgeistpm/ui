@@ -105,11 +105,8 @@ class MarketStore {
   get connectedWalletCanReport(): boolean {
     if (!this.store.wallets.activeAccount?.address) return false;
 
-    if (this.inReportPeriod) {
-      return (
-        (this.inOracleReportPeriod && this.isOracle) ||
-        (!this.inOracleReportPeriod && this.status === "Closed")
-      );
+    if (this.status === "Closed" && this.isOracle) {
+      return true;
     } else if (
       this.status === "Disputed" &&
       this.disputeMechanism === "authorized" &&

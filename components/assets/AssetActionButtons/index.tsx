@@ -28,7 +28,7 @@ const AssetActionButtons = observer(
     }, [marketId, marketsStore]);
 
     if (
-      marketStore?.inReportPeriod ||
+      marketStore?.status === "Closed" ||
       (marketStore?.status === "Disputed" &&
         marketStore?.disputeMechanism === "authorized")
     ) {
@@ -39,10 +39,7 @@ const AssetActionButtons = observer(
           ticker={assetTicker}
         />
       );
-    } else if (
-      marketStore?.status === "Reported" ||
-      marketStore?.status === "Disputed"
-    ) {
+    } else if (marketStore?.status === "Reported") {
       return (
         <DisputeButton
           marketStore={marketStore}

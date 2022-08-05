@@ -133,21 +133,18 @@ const RightDrawer = observer(() => {
     } else if (!navigationStore.checkPage("marketDetails")) {
       return "default";
     } else if (market) {
-      const endDate = market.endTimestamp;
-      const now = store.blockTimestamp;
-      if (now <= endDate) {
-        //market hasn't ended
-        return "default";
-      } else if (
-        market.inReportPeriod ||
+      if (
+        market.status === "Closed" ||
         (market.status === "Disputed" &&
           market.disputeMechanism === "authorized")
       ) {
         return "report";
-      } else if (market.status === "Reported" || market.status === "Disputed") {
+      } else if (market.status === "Reported") {
         return "dispute";
       } else if (market.status === "Resolved") {
         return "redeem";
+      } else {
+        return "default";
       }
     } else {
       return "default";
