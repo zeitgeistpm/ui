@@ -66,15 +66,17 @@ const ReportBox = observer(
           const outcomeidx = options.findIndex(
             (o) => o.value === selectedAssetOption?.value,
           );
-          if (outcomeidx !== -1) {
-            setSelectedAssetOption(options[outcomeidx]);
-          } else {
-            setSelectedAssetOption(options[0]);
+          if (selectedAssetOption == null) {
+            if (outcomeidx !== -1) {
+              setSelectedAssetOption(options[outcomeidx]);
+            } else {
+              setSelectedAssetOption(options[0]);
+            }
           }
         },
       );
       return () => sub.unsubscribe();
-    }, [wallets.activeAccount]);
+    }, [wallets.activeAccount, selectedAssetOption]);
 
     useEffect(() => {
       if (selectedAssetOption == null) {
