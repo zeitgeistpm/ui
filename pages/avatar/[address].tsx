@@ -445,6 +445,7 @@ const ClaimModal = (props: {
         setIsClaiming(false);
       } else {
         const signer = store.wallets.getActiveSigner() as ExtSigner;
+        console.log("a");
         await signAndSend(
           tx,
           signer,
@@ -480,6 +481,7 @@ const ClaimModal = (props: {
             },
           }),
         );
+        console.log("b");
       }
     } catch (error) {
       setIsClaiming(false);
@@ -499,18 +501,22 @@ const ClaimModal = (props: {
   }, [props.onClose]);
 
   return (
-    <div>
-      <div className="flex flex-1">
-        <div className="pr-6">
+    <div className="flex">
+      <div className="pr-4">
+        <img
+          className="rounded-md"
+          src="/avatar_preview.jpeg"
+          alt="Account balance"
+        />
+      </div>
+      <div className="">
+        <div className="pr-6 mb-8">
           <p className="mb-4">
             To claim your right to mint an avatar you have to pay the ferryman
             due respect, burning {props.burnAmount / ZTG} ZTG.
           </p>
           {!props.hasCrossed ? (
             <div className="flex items-center">
-              <div className="text-red-800 mr-4">
-                <IoIosWarning size={22} />
-              </div>
               <div className="text-red-800 text-xs flex-1">
                 The amount will be burned(slashed) and not paid to any address.
                 Make sure you have {props.burnAmount / ZTG} + (fee {fee / ZTG})
@@ -529,7 +535,7 @@ const ClaimModal = (props: {
             </div>
           )}
         </div>
-        <div className="flex w-100 items-center justify-end">
+        <div className="flex w-100 items-center justify-center">
           <div>
             <button
               disabled={isClaiming}
