@@ -51,6 +51,8 @@ export default class UserStore {
   isUsingVPN: boolean;
   walletId: string | null = null;
   helpnotifications: HelperNotifications | null = null;
+  endpointKey = `endpoint-${process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"}`;
+  qglEndpointKey = `endpoint-${process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"}`;
 
   constructor(private store: Store) {
     makeAutoObservable(this, {}, { autoBind: true, deep: false });
@@ -76,14 +78,14 @@ export default class UserStore {
     reaction(
       () => this.endpoint,
       (endpoint) => {
-        setToLocalStorage("endpoint-1", endpoint);
+        setToLocalStorage(this.endpointKey, endpoint);
       },
     );
 
     reaction(
       () => this.gqlEndpoint,
       (gqlEndpoint) => {
-        setToLocalStorage("gql-endpoint-1", gqlEndpoint);
+        setToLocalStorage(this.qglEndpointKey, gqlEndpoint);
       },
     );
 
@@ -122,6 +124,7 @@ export default class UserStore {
 
   async init() {
     console.log(process.env.NEXT_PUBLIC_VERCEL_ENV);
+
     this.storedTheme = getFromLocalStorage("theme", "system") as StoredTheme;
     this.theme = this.getTheme();
     this.accountAddress = getFromLocalStorage("accountAddress", "") as string;
@@ -130,17 +133,8 @@ export default class UserStore {
       "tradeSlipItems",
       [],
     ) as TradeSlipItem[];
-    this.endpoint = getFromLocalStorage(
-      "endpoint-1",
-      endpoints.find((endpoint) => endpoint.parachain == SupportedParachain.BSR)
-        .value,
-    ) as string;
-    this.gqlEndpoint = getFromLocalStorage(
-      "gql-endpoint-1",
-      gqlEndpoints.find(
-        (endpoint) => endpoint.parachain == SupportedParachain.BSR,
-      ).value,
-    ) as string;
+
+    this.setupEndpoints();
 
     window
       .matchMedia("(prefers-color-scheme: dark)")
@@ -196,6 +190,23 @@ export default class UserStore {
       ...this.helpnotifications,
       [key]: value,
     };
+  }
+
+  private setupEndpoints() {
+    // if we're on production default to dwel or onfinal if local storage is empty
+    console.log(this.endpointKey);
+    console.log(this.qglEndpointKey);
+    this.endpoint = getFromLocalStorage(
+      this.endpointKey,
+      endpoints.find((endpoint) => endpoint.parachain == SupportedParachain.BSR)
+        .value,
+    ) as string;
+    this.gqlEndpoint = getFromLocalStorage(
+      this.qglEndpointKey,
+      gqlEndpoints.find(
+        (endpoint) => endpoint.parachain == SupportedParachain.BSR,
+      ).value,
+    ) as string;
   }
 
   private getTheme(): Theme {
