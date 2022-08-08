@@ -183,8 +183,11 @@ export default class Store {
       await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
       await this.loadConfig();
       this.initGraphQlClient();
+      const storedWalletId = this.userStore.walletId;
 
-      this.wallets.initialize();
+      if (storedWalletId) {
+        this.wallets.initialize(storedWalletId);
+      }
 
       this.courtStore = new CourtStore(this);
 
