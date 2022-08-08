@@ -376,6 +376,7 @@ const CreatePage: NextPage = observer(() => {
       weights,
       metadata,
       callbackOrPaymentInfo,
+      swapFee: "0",
     };
   };
 

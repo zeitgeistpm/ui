@@ -320,6 +320,7 @@ const MarketDetails = observer(() => {
         marketStore.market.deploySwapPool(
           signer,
           ammount,
+          "0",
           weightsParams,
           extrinsicCallback({
             notificationStore,
