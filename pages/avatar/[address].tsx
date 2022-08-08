@@ -445,7 +445,6 @@ const ClaimModal = (props: {
         setIsClaiming(false);
       } else {
         const signer = store.wallets.getActiveSigner() as ExtSigner;
-        console.log("a");
         await signAndSend(
           tx,
           signer,
@@ -481,7 +480,6 @@ const ClaimModal = (props: {
             },
           }),
         );
-        console.log("b");
       }
     } catch (error) {
       setIsClaiming(false);
