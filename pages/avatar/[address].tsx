@@ -409,6 +409,9 @@ const ClaimModal = (props: {
   const [isClaiming, setIsClaiming] = useState(false);
   const [fee, setFee] = useState<number>(null);
 
+  const balance = store.wallets.activeBalance;
+  const hasEnoughBalance = balance.greaterThan((props.burnAmount + fee) / ZTG);
+
   const tx = useMemo(
     () => store.sdk.api.tx.styx.cross(),
     [props.address, props.burnAmount],
@@ -518,8 +521,7 @@ const ClaimModal = (props: {
               <div className="text-red-800 text-xs flex-1">
                 The amount will be burned(slashed) and not paid to any address.
                 Make sure you have {props.burnAmount / ZTG} + (fee {fee / ZTG})
-                ZTG in your wallet. If the burned amount + fee is the exact
-                amount in your wallet it might be reaped.
+                ZTG in your wallet.
               </div>
             </div>
           ) : (
@@ -536,9 +538,11 @@ const ClaimModal = (props: {
         <div className="flex w-100 items-center justify-center">
           <div>
             <button
-              disabled={isClaiming}
-              className={`rounded-3xl text-black py-2 px-4 cursor-pointer mb-2 ${
-                isClaiming ? "bg-blue-500" : "bg-blue-700"
+              disabled={isClaiming || !hasEnoughBalance}
+              className={`rounded-3xl text-black py-2 px-4 mb-2 ${
+                isClaiming || !hasEnoughBalance
+                  ? "bg-blue-300 text-gray-600 cursor-not-allowed"
+                  : "bg-blue-700 cursor-pointer"
               }  w-42 text-center`}
               onClick={onClickBurn}
             >
@@ -558,9 +562,16 @@ const ClaimModal = (props: {
               )}
             </button>
             <div className="text-center text-xs">
-              <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
-                <span>Exchange Fee: </span>
-                <span className="font-mono">{(fee / ZTG).toFixed(4)}</span>
+              <div className="font-lato h-ztg-18 px-ztg-8 text-ztg-12-150 font-bold text-sky-600">
+                <div className="flex px-ztg-8 justify-between">
+                  <span>Exchange Fee: </span>
+                  <span className="font-mono">{(fee / ZTG).toFixed(4)}</span>
+                </div>
+                {!hasEnoughBalance && (
+                  <div className="mt-2">
+                    <span className="text-red-600">Missing balance.</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
