@@ -121,6 +121,7 @@ export default class UserStore {
   }
 
   async init() {
+    console.log(process.env.NEXT_PUBLIC_VERCEL_ENV);
     this.storedTheme = getFromLocalStorage("theme", "system") as StoredTheme;
     this.theme = this.getTheme();
     this.accountAddress = getFromLocalStorage("accountAddress", "") as string;
