@@ -52,7 +52,9 @@ export default class UserStore {
   walletId: string | null = null;
   helpnotifications: HelperNotifications | null = null;
   endpointKey = `endpoint-${process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"}`;
-  qglEndpointKey = `endpoint-${process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"}`;
+  qglEndpointKey = `gql-endpoint-${
+    process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"
+  }`;
 
   constructor(private store: Store) {
     makeAutoObservable(this, {}, { autoBind: true, deep: false });
@@ -123,8 +125,6 @@ export default class UserStore {
   }
 
   async init() {
-    console.log(process.env.NEXT_PUBLIC_VERCEL_ENV);
-
     this.storedTheme = getFromLocalStorage("theme", "system") as StoredTheme;
     this.theme = this.getTheme();
     this.accountAddress = getFromLocalStorage("accountAddress", "") as string;
@@ -193,20 +193,40 @@ export default class UserStore {
   }
 
   private setupEndpoints() {
-    // if we're on production default to dwel or onfinal if local storage is empty
-    console.log(this.endpointKey);
-    console.log(this.qglEndpointKey);
     this.endpoint = getFromLocalStorage(
       this.endpointKey,
-      endpoints.find((endpoint) => endpoint.parachain == SupportedParachain.BSR)
-        .value,
+      this.getRPC(),
     ) as string;
+
+    const chain =
+      process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
+        ? SupportedParachain.KUSAMA
+        : SupportedParachain.BSR;
     this.gqlEndpoint = getFromLocalStorage(
       this.qglEndpointKey,
-      gqlEndpoints.find(
-        (endpoint) => endpoint.parachain == SupportedParachain.BSR,
-      ).value,
+      gqlEndpoints.find((endpoint) => endpoint.parachain == chain).value,
     ) as string;
+  }
+
+  private getRPC(): string {
+    if (process.env.NEXT_PUBLIC_VERCEL_ENV === "production") {
+      const oneOrZero = Math.round(Math.random());
+      return oneOrZero === 0
+        ? endpoints.find(
+            (endpoint) =>
+              endpoint.parachain == SupportedParachain.KUSAMA &&
+              endpoint.label === "Dwellir",
+          ).value
+        : endpoints.find(
+            (endpoint) =>
+              endpoint.parachain == SupportedParachain.KUSAMA &&
+              endpoint.label === "OnFinality",
+          ).value;
+    } else {
+      return endpoints.find(
+        (endpoint) => endpoint.parachain == SupportedParachain.BSR,
+      ).value;
+    }
   }
 
   private getTheme(): Theme {
