@@ -46,7 +46,7 @@ export const defaultQueryState: MarketListQuery = {
   filter: {
     Proposed: false,
     Active: true,
-    Ended: false,
+    Closed: false,
     Reported: false,
     Disputed: false,
     Resolved: false,
