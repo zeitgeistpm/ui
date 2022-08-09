@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React, { FC, useRef, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { FaWallet } from "react-icons/fa";
 import { useStore } from "lib/stores/Store";
 import AccountButton from "components/account/AccountButton";
@@ -15,6 +15,14 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
 
     const [isClaiming, setIsClaiming] = useState(false);
     const [claimError, setClaimError] = useState<null | string>(null);
+
+    const [avatars, setAvatars] = useState<Avatar.IndexedAvatar[]>([]);
+
+    useEffect(() => {
+      if (avataraContext) {
+        Avatar.fetchIndexedAvatars(avataraContext).then(setAvatars);
+      }
+    }, [avataraContext]);
 
     const {
       wallets: { activeAccount },
@@ -50,7 +58,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           <div className="rounded-md overflow-hidden">
             <ZeitgeistAvatar
               address={activeAccount?.address || undefined}
-              size={200}
+              size={"20rem"}
               fallback={
                 <Skeleton
                   style={{ transform: "none" }}

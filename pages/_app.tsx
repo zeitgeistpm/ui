@@ -17,7 +17,7 @@ import DefaultLayout from "layouts/DefaultLayout";
 import AppLaunchLayout from "layouts/AppLaunchLayout";
 import { AnimatePresence } from "framer-motion";
 import MobileMenu from "components/menu/MobileMenu";
-import { AvatarContext } from "@zeitgeistpm/avatara-react";
+import { AvatarContext, defaultBsr } from "@zeitgeistpm/avatara-react";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -71,14 +71,7 @@ const MyApp = observer(({ Component, pageProps }) => {
 
   return (
     <StoreProvider store={store}>
-      <AvatarContext.Provider
-        value={{
-          api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
-          ipfs: process.env.NEXT_PUBLIC_IPFS_NODE,
-          rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
-          indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
-        }}
-      >
+      <AvatarContext.Provider value={defaultBsr}>
         <ModalStoreContext.Provider value={modalStore}>
           {modalStore.modal && (
             <ModalContainer>{modalStore.modal}</ModalContainer>
