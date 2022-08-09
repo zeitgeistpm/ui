@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 // import { Bell } from "react-feather";
-import React, { useState } from "react";
+import React, { Component, FC, useState } from "react";
 
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import { useStore } from "lib/stores/Store";
@@ -8,7 +8,10 @@ import Avatar from "components/ui/Avatar";
 import { useUserStore } from "lib/stores/UserStore";
 import { useAccountModals } from "lib/hooks/account";
 
-const AccountButton = observer(() => {
+const AccountButton: FC<{
+  connectButtonClassname?: string;
+  connectButtonText?: string | JSX.Element;
+}> = observer(({ connectButtonClassname, connectButtonText }) => {
   const store = useStore();
   const { wallets } = store;
   const { connected, activeAccount, activeBalance } = wallets;
@@ -33,13 +36,16 @@ const AccountButton = observer(() => {
       {!connected ? (
         <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
           <button
-            className="flex w-ztg-168 h-ztg-40 bg-sky-400 dark:bg-sky-700 text-black dark:text-white rounded-full text-ztg-14-150 
-          font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-20"
+            className={
+              connectButtonClassname ||
+              "flex w-ztg-168 h-ztg-40 bg-sky-400 dark:bg-sky-700 text-black dark:text-white rounded-full text-ztg-14-150 font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-20"
+            }
             onClick={() => connect()}
             disabled={locationAllowed !== true || isUsingVPN}
           >
-            Connect Wallet
+            {connectButtonText || "Connect Wallet"}
           </button>
+
           {hovering === true &&
           (locationAllowed !== true || isUsingVPN === true) ? (
             <div
