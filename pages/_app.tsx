@@ -14,6 +14,7 @@ import { ModalStoreContext } from "components/context/ModalStoreContext";
 import ModalContainer from "components/modal/ModalContainer";
 import Store from "lib/stores/Store";
 import DefaultLayout from "layouts/DefaultLayout";
+import AppLaunchLayout from "layouts/AppLaunchLayout";
 import { AnimatePresence } from "framer-motion";
 import MobileMenu from "components/menu/MobileMenu";
 import { AvatarContext } from "@zeitgeistpm/avatara-react";
@@ -65,6 +66,9 @@ const MyApp = observer(({ Component, pageProps }) => {
     }
   }, []);
 
+  const launchDate = new Date("2022-08-22");
+  const launched = Date.now() > launchDate.getTime();
+
   return (
     <StoreProvider store={store}>
       <AvatarContext.Provider
@@ -106,14 +110,18 @@ const MyApp = observer(({ Component, pageProps }) => {
               color="#5bbad5"
             />
           </Head>
-          <AnimatePresence>
-            {store.showMobileMenu && <MobileMenu />}
-          </AnimatePresence>
-          <DefaultLayout>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </DefaultLayout>
+          {launched ? (
+            <DefaultLayout>
+              <AnimatePresence>
+                {store.showMobileMenu && <MobileMenu />}
+              </AnimatePresence>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </DefaultLayout>
+          ) : (
+            <AppLaunchLayout launchDate={launchDate} />
+          )}
         </ModalStoreContext.Provider>
       </AvatarContext.Provider>
     </StoreProvider>
