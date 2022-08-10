@@ -7,10 +7,19 @@ import ipRangeCheck from "ip-range-check";
 
 export type Theme = "dark" | "light";
 
+export type Judgement =
+  | "Unknown"
+  | "FeePaid"
+  | "Reasonable"
+  | "KnownGood"
+  | "OutOfDate"
+  | "LowQuality";
+
 export interface UserIdentity {
   displayName: string;
   discord: string;
   twitter: string;
+  judgement: Judgement;
 }
 
 export type HelperNotifications = {
@@ -224,6 +233,9 @@ export default class UserStore {
         }
       });
 
+      const judgements = identity.value.get("judgements")[0][1].type;
+      console.log(judgements);
+
       return {
         displayName:
           indentityInfo.get("display").isNone === false
@@ -234,12 +246,14 @@ export default class UserStore {
             ? textDecoder.decode(indentityInfo.get("twitter").value)
             : "",
         discord: discordHandle,
+        judgement: identity.value.get("judgements")[0][1].type,
       };
     } else {
       return {
         displayName: "",
         twitter: "",
         discord: "",
+        judgement: null,
       };
     }
   }
