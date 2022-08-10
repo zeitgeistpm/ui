@@ -13,7 +13,8 @@ export type Judgement =
   | "Reasonable"
   | "KnownGood"
   | "OutOfDate"
-  | "LowQuality";
+  | "LowQuality"
+  | "Erroneous";
 
 export interface UserIdentity {
   displayName: string;
