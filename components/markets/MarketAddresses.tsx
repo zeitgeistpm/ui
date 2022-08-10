@@ -152,7 +152,7 @@ const AddressDetails = ({
         </div>
         <button
           onClick={handleInspectClick}
-          className="bg-border-dark rounded-ztg-50 text-ztg-10-150 w-[60px] font-space h-[20px] "
+          className="text-white bg-border-dark rounded-ztg-50 text-ztg-10-150 w-[60px] font-space h-[20px] "
           data-test="inspectButton"
         >
           Inspect
