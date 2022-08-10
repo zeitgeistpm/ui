@@ -235,7 +235,6 @@ export default class UserStore {
       });
 
       const judgements = identity.value.get("judgements")[0];
-      console.log(judgements);
 
       const judgementType: Judgement = judgements
         ? judgements[1].type
