@@ -233,8 +233,12 @@ export default class UserStore {
         }
       });
 
-      const judgements = identity.value.get("judgements")[0][1].type;
+      const judgements = identity.value.get("judgements")[0];
       console.log(judgements);
+
+      const judgementType: Judgement = judgements
+        ? judgements[1].type
+        : "Unknown";
 
       return {
         displayName:
@@ -246,7 +250,7 @@ export default class UserStore {
             ? textDecoder.decode(indentityInfo.get("twitter").value)
             : "",
         discord: discordHandle,
-        judgement: identity.value.get("judgements")[0][1].type,
+        judgement: judgementType,
       };
     } else {
       return {
