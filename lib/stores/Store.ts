@@ -244,7 +244,8 @@ export default class Store {
     if (sdk.graphQLClient != null) {
       this.userStore.setGqlEndpoint(graphQlEndpoint);
     } else {
-      throw Error("Graphql service not available " + graphQlEndpoint);
+      //might makes sense to throw an error in the future if we have alternative indexers
+      console.error("Graphql service not available " + graphQlEndpoint);
     }
 
     this.userStore.setEndpoint(endpoint);
