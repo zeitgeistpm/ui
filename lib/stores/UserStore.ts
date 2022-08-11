@@ -1,5 +1,10 @@
 import { makeAutoObservable, reaction, runInAction } from "mobx";
-import { JSONObject, Primitive, SupportedParachain } from "lib/types";
+import {
+  EndpointOption,
+  JSONObject,
+  Primitive,
+  SupportedParachain,
+} from "lib/types";
 import Store, { useStore } from "./Store";
 import { endpoints, gqlEndpoints } from "lib/constants";
 import { TradeSlipItem } from "./TradeSlipStore";
@@ -176,9 +181,25 @@ export default class UserStore {
     this.gqlEndpoint = gqlEndpoint;
   }
 
-  resetEndpoints() {
-    this.endpoint = endpoints[0].value;
-    this.gqlEndpoint = gqlEndpoints[0].value;
+  setNextBestEndpoints(endpoint: string, gqlEndpoint: string) {
+    this.endpoint =
+      this.findAlternativeEndpoint(endpoint, endpoints) ?? endpoint;
+    this.gqlEndpoint =
+      this.findAlternativeEndpoint(gqlEndpoint, gqlEndpoints) ?? gqlEndpoint;
+  }
+
+  // attempts to find and endpoint that matches the parachain of the current endpoint
+  private findAlternativeEndpoint(endpoint: string, options: EndpointOption[]) {
+    const endpointParachain = options.find(
+      (options) => options.value == endpoint,
+    )?.parachain;
+
+    const alternativeEndpoint = options.find(
+      (option) =>
+        option.parachain === endpointParachain && option.value != endpoint,
+    );
+
+    return alternativeEndpoint?.value;
   }
 
   setWalletId(walletId: string | null) {
