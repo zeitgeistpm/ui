@@ -130,35 +130,56 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
               <img src={AvatarsGfx.src} className="w-full md:w-3/4 xl:w-3/5" />
             </div>
             <div className="flex justify-center">
-              <img src={DownCarret.src} className="w-24 md:w-28 xl:w-40" />
+              <img src={DownCarret.src} className="w-12 md:w-22 xl:w-24" />
             </div>
           </div>
 
           <div
-            className="relative mt-24 text-center flex text-xl flex-col items-center font-lato font-light"
+            className="relative mt-24 text-center flex text-xl flex-col items-center font-lato font-light leading-loose"
             style={{ zIndex: 30 }}
           >
-            <section className="w-full md:w-4/6">
-              <h2 className="mb-12 text-3xl font-bold font-space">
-                Zeitgeist App Pre-Launch NFT Foundry
-              </h2>
-              <p className="mb-8">
-                Welcome to the Zeitgeist pre-launch NFT foundry. Here you can
-                see how long until we go live with our Prediction Markets
-                application, and prepare yourself as an early adopter by minting
-                a specialized pre-launch NFT profile image and badge set!
-              </p>
-              <p className="mb-8">
-                We are rewarding Zeitgeist early supporters who hold a Zeitgeist
-                Tarot Themed NFT, as well as inviting non-Tarot NFT holders to
-                purchase pre-launch NFTs with $ZTG. We also have a special
-                surprise for the select few legends who hold a number of the
-                different types of Zeitgeist Tarot cards.
-              </p>
-              <p className="mb-8">
-                To find out more about these specialized app launch NFTs, read
-                this blog post here.
-              </p>
+            <section className="flex justify-center w-full mb-12 md:w-5/6">
+              <div className="md:w-5/6">
+                <h2 className="mb-12 text-3xl font-bold font-space">
+                  Zeitgeist App Pre-Launch NFT Foundry
+                </h2>
+                <p className="mb-8">
+                  Welcome to the Zeitgeist pre-launch NFT foundry. Here you can
+                  see how long until we go live with our Prediction Markets
+                  application, and prepare yourself as an early adopter by
+                  minting a specialized pre-launch NFT profile image and badge
+                  set!
+                </p>
+                <p className="mb-8">
+                  We are rewarding Zeitgeist early supporters who hold a
+                  Zeitgeist Tarot Themed NFT, as well as inviting non-Tarot NFT
+                  holders to purchase pre-launch NFTs with $ZTG. We also have a
+                  special surprise for the select few legends who hold a number
+                  of the different types of Zeitgeist Tarot cards.
+                </p>
+                <p className="mb-8">
+                  To find out more about these specialized app launch NFTs, read
+                  this blog post here.
+                </p>
+              </div>
+            </section>
+            <div className="flex justify-center mb-16">
+              <img src={DownCarret.src} className="w-12 md:w-22 xl:w-24" />
+            </div>
+            <section className="flex justify-center w-full text-center">
+              <div className="flex justify-center md:w-5/6">
+                <div className="bg-white p-12 bg-opacity-5 md:w-5/6">
+                  <button className="mb-12 bg-ztg-blue text-white py-2 px-24 font-space font-bold">
+                    Mint ZTG NFT
+                  </button>
+                  <p className="mb-8">
+                    By clicking this button, you will be minting a Zeitgeist NFT
+                    unique for your Zeitgeist profile image. You will be able to
+                    view and adjust this profile image from your profile section
+                    of the Zeitgeist application.
+                  </p>
+                </div>
+              </div>
             </section>
           </div>
 
