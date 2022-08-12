@@ -74,7 +74,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           style={{ zIndex: 30 }}
         />
 
-        <div className="absolute top-44 left-24" style={{ zIndex: 10 }}>
+        <div className="absolute top-52 left-44" style={{ zIndex: 10 }}>
           <img src={RocketBall.src} className="w-full" />
           <img src={GlowBall.src} className="absolute top-10 left-10 " />
           <img src={Rocket.src} className="absolute top-36 left-24 w-44" />
