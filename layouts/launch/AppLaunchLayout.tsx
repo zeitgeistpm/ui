@@ -7,7 +7,7 @@ import { useAvatarContext } from "@zeitgeistpm/avatara-react";
 import { Avatar } from "@zeitgeistpm/avatara-nft-sdk";
 import ZeitgeistLogo from "./Logo";
 
-import AvatarsGfx from "./gfx/avatars.png";
+import { AvatarsSvg } from "./gfx/avatars";
 import Ball1 from "./gfx/ball1.png";
 import Ball2 from "./gfx/ball2.png";
 import Saturn from "./gfx/saturn.png";
@@ -15,7 +15,6 @@ import DownCarret from "./gfx/down_carret.png";
 import RocketBall from "./gfx/rocket_ball.png";
 import Rocket from "./gfx/rocket.png";
 import GlowBall from "./gfx/glow_ball.png";
-
 import Footer from "./Footer";
 
 const DefaultLayout: FC<{ launchDate: Date }> = observer(
@@ -127,7 +126,8 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             style={{ zIndex: 20 }}
           >
             <div className="flex justify-center">
-              <img src={AvatarsGfx.src} className="w-full md:w-3/4 xl:w-3/5" />
+              <AvatarsSvg className="w-full md:w-3/4 xl:w-3/5" />
+              {/* <img src={AvatarsGfx.src} className="w-full md:w-3/4 xl:w-3/5" /> */}
             </div>
             <div className="flex justify-center">
               <img src={DownCarret.src} className="w-12 md:w-22 xl:w-24" />
