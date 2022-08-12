@@ -74,6 +74,12 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           style={{ zIndex: 30 }}
         />
 
+        <div className="absolute top-44 left-24" style={{ zIndex: 10 }}>
+          <img src={RocketBall.src} className="w-full" />
+          <img src={GlowBall.src} className="absolute top-10 left-10 " />
+          <img src={Rocket.src} className="absolute top-36 left-24 w-44" />
+        </div>
+
         <div className="relative mx-6 sm:mx-24 xl:mx-[408px]">
           <header className="relative py-4" style={{ zIndex: 20 }}>
             <div className="flex items-center mr-2 mb-6 text-white">
@@ -97,7 +103,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                 className="absolute w-full scale-125 xl:w-3/4 z-0"
                 style={{
                   WebkitMaskImage:
-                    "-webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)))",
+                    "-webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.8)))",
                 }}
               />
               <h1 className="absolute top-40 md:top-20 font-light text-4xl md:text-5xl xl:text-7xl text-white font-space">
@@ -108,15 +114,15 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                 <div className="flex justify-center items-center h-44 w-14 px-2">
                   <CountdownSeparator />
                 </div>
-                <CountdownNumber number={30} />
+                <CountdownNumber number={12} />
                 <div className="flex justify-center items-center h-44 w-14 px-2">
                   <CountdownSeparator />
                 </div>
-                <CountdownNumber number={40} />
+                <CountdownNumber number={33} />
                 <div className="flex justify-center items-center h-44 w-14 px-2">
                   <CountdownSeparator />
                 </div>
-                <CountdownNumber number={15} />
+                <CountdownNumber number={0o2} />
               </div>
             </div>
           </div>
