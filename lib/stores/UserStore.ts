@@ -1,5 +1,10 @@
 import { makeAutoObservable, reaction, runInAction } from "mobx";
-import { JSONObject, Primitive, SupportedParachain } from "lib/types";
+import {
+  EndpointOption,
+  JSONObject,
+  Primitive,
+  SupportedParachain,
+} from "lib/types";
 import Store, { useStore } from "./Store";
 import { endpoints, gqlEndpoints } from "lib/constants";
 import { TradeSlipItem } from "./TradeSlipStore";
@@ -51,6 +56,10 @@ export default class UserStore {
   isUsingVPN: boolean;
   walletId: string | null = null;
   helpnotifications: HelperNotifications | null = null;
+  endpointKey = `endpoint-${process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"}`;
+  qglEndpointKey = `gql-endpoint-${
+    process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"
+  }`;
 
   constructor(private store: Store) {
     makeAutoObservable(this, {}, { autoBind: true, deep: false });
@@ -76,14 +85,14 @@ export default class UserStore {
     reaction(
       () => this.endpoint,
       (endpoint) => {
-        setToLocalStorage("endpoint-1", endpoint);
+        setToLocalStorage(this.endpointKey, endpoint);
       },
     );
 
     reaction(
       () => this.gqlEndpoint,
       (gqlEndpoint) => {
-        setToLocalStorage("gql-endpoint-1", gqlEndpoint);
+        setToLocalStorage(this.qglEndpointKey, gqlEndpoint);
       },
     );
 
@@ -129,17 +138,8 @@ export default class UserStore {
       "tradeSlipItems",
       [],
     ) as TradeSlipItem[];
-    this.endpoint = getFromLocalStorage(
-      "endpoint-1",
-      endpoints.find((endpoint) => endpoint.parachain == SupportedParachain.BSR)
-        .value,
-    ) as string;
-    this.gqlEndpoint = getFromLocalStorage(
-      "gql-endpoint-1",
-      gqlEndpoints.find(
-        (endpoint) => endpoint.parachain == SupportedParachain.BSR,
-      ).value,
-    ) as string;
+
+    this.setupEndpoints();
 
     window
       .matchMedia("(prefers-color-scheme: dark)")
@@ -181,9 +181,25 @@ export default class UserStore {
     this.gqlEndpoint = gqlEndpoint;
   }
 
-  resetEndpoints() {
-    this.endpoint = endpoints[0].value;
-    this.gqlEndpoint = gqlEndpoints[0].value;
+  setNextBestEndpoints(endpoint: string, gqlEndpoint: string) {
+    this.endpoint =
+      this.findAlternativeEndpoint(endpoint, endpoints) ?? endpoint;
+    this.gqlEndpoint =
+      this.findAlternativeEndpoint(gqlEndpoint, gqlEndpoints) ?? gqlEndpoint;
+  }
+
+  // attempts to find and endpoint that matches the parachain of the current endpoint
+  private findAlternativeEndpoint(endpoint: string, options: EndpointOption[]) {
+    const endpointParachain = options.find(
+      (options) => options.value == endpoint,
+    )?.parachain;
+
+    const alternativeEndpoint = options.find(
+      (option) =>
+        option.parachain === endpointParachain && option.value != endpoint,
+    );
+
+    return alternativeEndpoint?.value;
   }
 
   setWalletId(walletId: string | null) {
@@ -195,6 +211,43 @@ export default class UserStore {
       ...this.helpnotifications,
       [key]: value,
     };
+  }
+
+  private setupEndpoints() {
+    this.endpoint = getFromLocalStorage(
+      this.endpointKey,
+      this.getRPC(),
+    ) as string;
+
+    const chain =
+      process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
+        ? SupportedParachain.KUSAMA
+        : SupportedParachain.BSR;
+    this.gqlEndpoint = getFromLocalStorage(
+      this.qglEndpointKey,
+      gqlEndpoints.find((endpoint) => endpoint.parachain == chain).value,
+    ) as string;
+  }
+
+  private getRPC(): string {
+    if (process.env.NEXT_PUBLIC_VERCEL_ENV === "production") {
+      const oneOrZero = Math.round(Math.random());
+      return oneOrZero === 0
+        ? endpoints.find(
+            (endpoint) =>
+              endpoint.parachain == SupportedParachain.KUSAMA &&
+              endpoint.label === "Dwellir",
+          ).value
+        : endpoints.find(
+            (endpoint) =>
+              endpoint.parachain == SupportedParachain.KUSAMA &&
+              endpoint.label === "OnFinality",
+          ).value;
+    } else {
+      return endpoints.find(
+        (endpoint) => endpoint.parachain == SupportedParachain.BSR,
+      ).value;
+    }
   }
 
   private getTheme(): Theme {
