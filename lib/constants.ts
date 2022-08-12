@@ -84,7 +84,7 @@ export const gqlEndpoints: EndpointOption[] = [
 export const allMarketsFiltersOff: MarketsFilterOptions = {
   Proposed: false,
   Active: false,
-  Ended: false,
+  Closed: false,
   Reported: false,
   Disputed: false,
   Resolved: false,

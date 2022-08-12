@@ -97,9 +97,7 @@ export interface OutcomeSelectOption extends SelectOption {
 export enum EMarketStatus {
   Proposed = "Proposed",
   Active = "Active",
-  // Warning: Ended is not an actual MarketStatus in the Substrate code. It's
-  // provided here as a convenience.
-  Ended = "Ended",
+  Closed = "Closed",
   Reported = "Reported",
   Disputed = "Disputed",
   Resolved = "Resolved",
