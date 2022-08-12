@@ -14,7 +14,7 @@ import { ModalStoreContext } from "components/context/ModalStoreContext";
 import ModalContainer from "components/modal/ModalContainer";
 import Store from "lib/stores/Store";
 import DefaultLayout from "layouts/DefaultLayout";
-import AppLaunchLayout from "layouts/AppLaunchLayout";
+import AppLaunchLayout from "layouts/launch/AppLaunchLayout";
 import { AnimatePresence } from "framer-motion";
 import MobileMenu from "components/menu/MobileMenu";
 import { AvatarContext, defaultBsr } from "@zeitgeistpm/avatara-react";
