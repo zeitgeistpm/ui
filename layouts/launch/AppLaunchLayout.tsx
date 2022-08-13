@@ -181,7 +181,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             className="relative mt-24 text-center flex text-xl flex-col items-center font-lato font-light leading-loose"
             style={{ zIndex: 30 }}
           >
-            <section className="flex justify-center w-full mb-12 md:w-5/6">
+            <section className="flex relative justify-center w-full mb-16 md:w-5/6">
               <img
                 src={Ball3.src}
                 className="absolute top-0 -left-12 w-8/12 md:w-6/12 xl:w-5/12"
@@ -216,10 +216,15 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                 </p>
               </div>
             </section>
+
             <div className="flex justify-center mb-16">
               <img src={DownCarret.src} className="w-12 md:w-22 xl:w-24" />
             </div>
-            <section className="flex justify-center w-full text-center">
+
+            <section
+              className="flex justify-center w-full text-center mb-16"
+              style={{ zIndex: 50 }}
+            >
               <div className="flex justify-center md:w-5/6">
                 <div className="bg-white p-12 bg-opacity-5 md:w-5/6">
                   <button className="mb-12 bg-ztg-blue text-white py-2 px-24 font-space font-bold">
@@ -232,6 +237,28 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                     of the Zeitgeist application.
                   </p>
                 </div>
+              </div>
+            </section>
+
+            <section className="flex relative justify-center w-full mb-12 md:w-5/6">
+              <div className="md:w-5/6" style={{ zIndex: 10 }}>
+                <h2 className="mb-12 text-3xl font-bold font-space">
+                  Who Are These NFTs For?
+                </h2>
+                <p className="mb-8">
+                  Zeitgeist NFTs are rewards for early adopters and supporters
+                  of the Zeitgeist journey. During our Beta campaign, we sold
+                  “Tarot themed” NFTs that provided access to our Beta
+                  application, and holders of these Tarot NFTs will now be
+                  further rewarded for their early support by earning
+                  specialized profile image NFTs and NFT badges to differentiate
+                  themselves from among the crowd.
+                </p>
+                <p className="mb-8">
+                  If you are excited to be part of this campaign but don’t own a
+                  Tarot NFT, you can purchase a specialized NFT badge for
+                  200ztg.
+                </p>
               </div>
             </section>
           </div>
