@@ -60,7 +60,7 @@ const FooterSection = ({
 }) => {
   return (
     <div className="flex flex-col">
-      <div className="font-light text-3xl">{title}</div>
+      <div className="font-light text-3xl font-space">{title}</div>
       <div className="flex flex-col mt-4">
         {items.map((item) => (
           <a
@@ -80,21 +80,21 @@ const FooterSection = ({
 
 const Footer = () => {
   return (
-    <footer className="border-t border-[#45059E] mt-16 py-8">
+    <footer className="border-t border-[#45059E] mt-16 pt-8 pb-24">
       <div className="flex w-full items-start justify-between flex-wrap">
         <div className="flex items-center mr-2 mb-6 text-opacity-70 text-white">
           <div className="opacity-70">
-            <ZeitgeistLogo height={48} width={48} />
+            <ZeitgeistLogo height={44} width={44} />
           </div>
           <div className="ml-3 font-kanit  font-bold text-2xl">Zeitgeist</div>
         </div>
-        <div className="flex flex-wrap justify-between w-full max-w-[750px] gap-4 mb-6">
+        <div className="flex flex-1 flex-wrap justify-between w-full max-w-[750px] gap-4 mb-6">
           <FooterSection title="General" items={generalItems} />
           <FooterSection title="Technology" items={techItems} />
           <FooterSection title="Community" items={communityItems} />
         </div>
-        <div className="text-ztg-grey font-lato">© 2022 Zeitgeist PM</div>
       </div>
+      <div className="text-ztg-grey font-lato">© 2022 Zeitgeist PM</div>
     </footer>
   );
 };
