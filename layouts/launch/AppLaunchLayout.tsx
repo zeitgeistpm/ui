@@ -152,7 +152,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
               >
                 <img src={Ball1.src} alt="ball" />
               </Parallax>
-              <h1 className="absolute top-40 md:top-20 font-light text-5xl xl:text-6xl text-white font-space">
+              <h1 className="absolute top-28 md:top-20 font-light text-5xl xl:text-6xl text-white font-space">
                 Zeitgeist App Launch!
               </h1>
               <div className="relative flex justify-center items-center font-bold font-space">
