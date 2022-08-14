@@ -138,13 +138,13 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             </div>
           </header>
 
-          <div className="relative z-0" style={{ zIndex: 10 }}>
+          <div className="relative z-0 h-72 md:h-96" style={{ zIndex: 10 }}>
             <div
-              className="w-full flex justify-center items-center -translate-y-20"
+              className="w-full flex justify-center items-center"
               style={{ height: "620px" }}
             >
               <Parallax
-                className="absolute w-full scale-125 xl:w-3/4 z-0"
+                className="absolute w-full xl:w-3/4 z-0"
                 style={{
                   WebkitMaskImage:
                     "-webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.8)))",
@@ -155,17 +155,17 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
               <h1 className="absolute top-40 md:top-20 font-light text-5xl xl:text-6xl text-white font-space">
                 Zeitgeist App Launch!
               </h1>
-              <div className="relative flex justify-center items-center h-full font-bold font-space">
+              <div className="relative flex justify-center items-center font-bold font-space">
                 <CountdownNumber number={duration.days()} />
-                <div className="flex justify-center items-center h-44 w-14 px-2">
+                <div className="flex justify-center items-center h-44 w-10 md:w-14 px-2">
                   <CountdownSeparator />
                 </div>
                 <CountdownNumber number={duration.hours()} />
-                <div className="flex justify-center items-center h-44 w-14 px-2">
+                <div className="flex justify-center items-center h-44 w-10 md:w-14 px-2">
                   <CountdownSeparator />
                 </div>
                 <CountdownNumber number={duration.minutes()} />
-                <div className="flex justify-center items-center h-44 w-14 px-2">
+                <div className="flex justify-center items-center h-44 w-10 md:w-14 px-2">
                   <CountdownSeparator />
                 </div>
                 <CountdownNumber number={duration.seconds()} />
@@ -173,18 +173,15 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             </div>
           </div>
 
-          <div
-            className="relative -mt-96 md:-mt-64 xl:-mt-52"
-            style={{ zIndex: 20 }}
-          >
-            <Parallax className="flex justify-center">
-              <AvatarsSvg className="w-full md:w-3/4 xl:w-3/5" />
-              {/* <img src={AvatarsGfx.src} className="w-full md:w-3/4 xl:w-3/5" /> */}
-            </Parallax>
-            <Parallax className="flex justify-center">
-              <img src={DownCarret.src} className="w-12 md:w-22 xl:w-24" />
+          <div className="relative h-80 md:h-96" style={{ zIndex: 20 }}>
+            <Parallax className="flex justify-center ">
+              <AvatarsSvg className="w-full  md:w-3/4 xl:w-3/5" />
             </Parallax>
           </div>
+
+          <Parallax className="flex justify-center">
+            <img src={DownCarret.src} className="w-12 md:w-22 xl:w-24" />
+          </Parallax>
 
           <div
             className="relative mt-24 text-center flex text-xl flex-col items-center font-lato font-light leading-loose"
