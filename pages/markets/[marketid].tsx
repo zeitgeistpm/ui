@@ -585,7 +585,7 @@ const MarketDetails = observer(() => {
               >
                 Deploy Pool
               </TransactionButton>
-              <div className="text-ztg-12-150 text-sky-600 font-bold ml-ztg-16">
+              <div className="text-ztg-12-150 text-sky-600 font-bold ml-[27px]">
                 Total Cost:
                 <span className="font-mono">
                   {" "}
