@@ -105,8 +105,8 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           style={{ zIndex: 30 }}
         />
 
-        <div className="absolute -top-16% -right-12 w-full md:w-3/5 xl:w-5/12">
-          <img src={Ball2.src} className="h-full" />
+        <div className="absolute hidden md:block -top-16% right-0 w-full md:w-3/5 xl:w-5/12 overflow-hidden">
+          <img src={Ball2.src} className="h-full transform translate-x-24" />
           <img
             src={Ball6.src}
             className="absolute bottom-20 right-72"
@@ -300,7 +300,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             style={{ zIndex: 99 }}
           >
             <AccountButton
-              connectButtonClassname="animate-pulse text-white flex w-ztg-184 h-12 bg-[#45059E] text-black rounded-full text-ztg-18-150 font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-20"
+              connectButtonClassname="animate-pulse text-white flex w-64 xl:w-ztg-184 h-12 bg-[#45059E] text-black rounded-full text-ztg-18-150 font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-20"
               connectButtonText={
                 <div className="flex items-center">
                   <FaWallet />
