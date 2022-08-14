@@ -80,7 +80,10 @@ const FooterSection = ({
 
 const Footer = () => {
   return (
-    <footer className="border-t border-[#45059E] mt-16 pt-8 pb-24">
+    <footer
+      className="relative border-t border-[#45059E] mt-16 py-8"
+      style={{ zIndex: 50 }}
+    >
       <div className="flex w-full items-start justify-between flex-wrap">
         <div className="flex items-center mr-2 mb-6 text-opacity-70 text-white">
           <div className="opacity-70">

@@ -13,6 +13,8 @@ import Ball1 from "./gfx/ball1.png";
 import Ball2 from "./gfx/ball2.png";
 import Ball3 from "./gfx/ball3.png";
 import Ball4 from "./gfx/ball4.png";
+import Ball5 from "./gfx/ball5.png";
+import Ball6 from "./gfx/ball6.png";
 import Star from "./gfx/star.png";
 import Saturn from "./gfx/saturn.png";
 import DownCarret from "./gfx/down_carret.png";
@@ -77,11 +79,6 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
     return (
       <div className="w-full min-h-screen overflow-hidden overflow-x-hidden max-w-[100vw] text-white bg-black">
         <img
-          src={Ball2.src}
-          className="absolute -top-16% -right-10% w-full md:w-3/5 xl:w-5/12"
-        />
-
-        <img
           src={Saturn.src}
           className="absolute top-10% right-10% w-1/12"
           style={{ zIndex: 30 }}
@@ -107,6 +104,15 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           width={"26"}
           style={{ zIndex: 30 }}
         />
+
+        <div className="absolute -top-16% -right-12 w-full md:w-3/5 xl:w-5/12">
+          <img src={Ball2.src} className="h-full" />
+          <img
+            src={Ball6.src}
+            className="absolute bottom-20 right-72"
+            width={82}
+          />
+        </div>
 
         <div
           className="absolute top-52 left-44 hidden xl:block w-2/5 xl:w-1/5"
@@ -192,6 +198,18 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                 className="absolute top-20% right-12 w-10/12 md:w-8/12 xl:w-6/12"
                 style={{ zIndex: 0 }}
               />
+              <img
+                src={Star.src}
+                className="absolute top-24 left-0 xl:-left-64"
+                width={"26"}
+                style={{ zIndex: 30 }}
+              />
+              <img
+                src={Star.src}
+                className="absolute bottom-0 right-0 xl:-right-64"
+                width={"16"}
+                style={{ zIndex: 30 }}
+              />
               <div className="md:w-5/6" style={{ zIndex: 10 }}>
                 <h2 className="mb-12 text-3xl font-bold font-space">
                   Zeitgeist App Pre-Launch NFT Foundry
@@ -225,7 +243,10 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
               className="flex justify-center w-full text-center mb-16"
               style={{ zIndex: 50 }}
             >
-              <div className="flex justify-center md:w-5/6">
+              <div
+                className="relative flex justify-center md:w-5/6"
+                style={{ zIndex: 10 }}
+              >
                 <div className="bg-white p-12 bg-opacity-5 md:w-5/6">
                   <button className="mb-12 bg-ztg-blue text-white py-2 px-24 font-space font-bold">
                     Mint ZTG NFT
@@ -241,6 +262,17 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             </section>
 
             <section className="flex relative justify-center w-full mb-12 md:w-5/6">
+              <img
+                src={Ball5.src}
+                className="absolute -bottom-72 -left-72 w-10/12 md:w-9/12 xl:w-12/12"
+                style={{ zIndex: 0 }}
+              />
+              <img
+                src={Star.src}
+                className="absolute top-[50%] right-0 xl:-right-64"
+                width={"28"}
+                style={{ zIndex: 30 }}
+              />
               <div className="md:w-5/6" style={{ zIndex: 10 }}>
                 <h2 className="mb-12 text-3xl font-bold font-space">
                   Who Are These NFTs For?
