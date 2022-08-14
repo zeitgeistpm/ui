@@ -26,7 +26,7 @@ const Parallax = ({
   children,
   className,
   style,
-  offset = 50,
+  offset = 28,
 }: ParallaxProps): JSX.Element => {
   const prefersReducedMotion = useReducedMotion();
   const [elementTop, setElementTop] = useState(0);
