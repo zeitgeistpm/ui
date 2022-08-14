@@ -6,6 +6,7 @@ import AccountButton from "components/account/AccountButton";
 import { useAvatarContext } from "@zeitgeistpm/avatara-react";
 import { Avatar } from "@zeitgeistpm/avatara-nft-sdk";
 import ZeitgeistLogo from "./Logo";
+import Parallax from "./Parallax";
 import moment from "moment";
 
 import { AvatarsSvg } from "./gfx/avatars";
@@ -78,49 +79,51 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
 
     return (
       <div className="w-full min-h-screen overflow-hidden overflow-x-hidden max-w-[100vw] text-white bg-black">
-        <img
-          src={Saturn.src}
+        <Parallax
           className="absolute top-10% right-10% w-1/12"
           style={{ zIndex: 30 }}
-        />
+        >
+          <img src={Saturn.src} />
+        </Parallax>
 
-        <img
-          src={Star.src}
-          className="absolute top-16% right-10%"
-          width={"22"}
-          style={{ zIndex: 30 }}
-        />
+        <Parallax className="absolute top-16% right-10%" style={{ zIndex: 30 }}>
+          <img src={Star.src} width={"22"} />
+        </Parallax>
 
-        <img
-          src={Star.src}
-          className="absolute top-24 right-64"
-          width={"12"}
-          style={{ zIndex: 30 }}
-        />
+        <Parallax className="absolute top-24 right-64" style={{ zIndex: 30 }}>
+          <img src={Star.src} width={"12"} />
+        </Parallax>
 
-        <img
-          src={Star.src}
-          className="absolute top-24 left-64"
-          width={"26"}
-          style={{ zIndex: 30 }}
-        />
+        <Parallax className="absolute top-24 left-64" style={{ zIndex: 30 }}>
+          <img src={Star.src} width={"26"} />
+        </Parallax>
 
         <div className="absolute hidden md:block -top-16% right-0 w-full md:w-3/5 xl:w-5/12 overflow-hidden">
-          <img src={Ball2.src} className="h-full transform translate-x-24" />
-          <img
-            src={Ball6.src}
-            className="absolute bottom-20 right-72"
-            width={82}
-          />
+          <Parallax>
+            <img src={Ball2.src} />
+          </Parallax>
+          <Parallax>
+            <img
+              src={Ball6.src}
+              className="absolute bottom-20 right-72"
+              width={82}
+            />
+          </Parallax>
         </div>
 
         <div
           className="absolute top-52 left-44 hidden xl:block w-2/5 xl:w-1/5"
           style={{ zIndex: 10 }}
         >
-          <img src={RocketBall.src} className="w-full" />
-          <img src={GlowBall.src} className="absolute top-10 left-10 " />
-          <img src={Rocket.src} className="absolute top-36 left-24 w-2/4" />
+          <Parallax className="w-full">
+            <img src={RocketBall.src} />
+          </Parallax>
+          <Parallax className="absolute top-10 left-10 ">
+            <img src={GlowBall.src} />
+          </Parallax>
+          <Parallax className="absolute top-36 left-24 w-2/4">
+            <img src={Rocket.src} />
+          </Parallax>
         </div>
 
         <div className="relative mx-6 sm:mx-24 xl:mx-[408px]">
@@ -140,15 +143,15 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
               className="w-full flex justify-center items-center -translate-y-20"
               style={{ height: "620px" }}
             >
-              <img
-                src={Ball1.src}
-                alt="ball"
+              <Parallax
                 className="absolute w-full scale-125 xl:w-3/4 z-0"
                 style={{
                   WebkitMaskImage:
                     "-webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.8)))",
                 }}
-              />
+              >
+                <img src={Ball1.src} alt="ball" />
+              </Parallax>
               <h1 className="absolute top-40 md:top-20 font-light text-5xl xl:text-6xl text-white font-space">
                 Zeitgeist App Launch!
               </h1>
@@ -174,13 +177,13 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             className="relative -mt-96 md:-mt-64 xl:-mt-52"
             style={{ zIndex: 20 }}
           >
-            <div className="flex justify-center">
+            <Parallax className="flex justify-center">
               <AvatarsSvg className="w-full md:w-3/4 xl:w-3/5" />
               {/* <img src={AvatarsGfx.src} className="w-full md:w-3/4 xl:w-3/5" /> */}
-            </div>
-            <div className="flex justify-center">
+            </Parallax>
+            <Parallax className="flex justify-center">
               <img src={DownCarret.src} className="w-12 md:w-22 xl:w-24" />
-            </div>
+            </Parallax>
           </div>
 
           <div
@@ -188,28 +191,18 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             style={{ zIndex: 30 }}
           >
             <section className="flex relative justify-center w-full mb-16 md:w-5/6">
-              <img
-                src={Ball3.src}
-                className="absolute top-0 -left-12 w-8/12 md:w-6/12 xl:w-5/12"
-                style={{ zIndex: 0 }}
-              />
-              <img
-                src={Ball4.src}
-                className="absolute top-20% right-12 w-10/12 md:w-8/12 xl:w-6/12"
-                style={{ zIndex: 0 }}
-              />
-              <img
-                src={Star.src}
-                className="absolute top-24 left-0 xl:-left-64"
-                width={"26"}
-                style={{ zIndex: 30 }}
-              />
-              <img
-                src={Star.src}
-                className="absolute bottom-0 right-0 xl:-right-64"
-                width={"16"}
-                style={{ zIndex: 30 }}
-              />
+              <Parallax className="absolute top-0 -left-12 w-8/12 md:w-6/12 xl:w-5/12">
+                <img src={Ball3.src} style={{ zIndex: 0 }} />
+              </Parallax>
+              <Parallax className="absolute top-20% right-12 w-10/12 md:w-8/12 xl:w-6/12">
+                <img src={Ball4.src} style={{ zIndex: 0 }} />
+              </Parallax>
+              <Parallax className="absolute top-24 left-0 xl:-left-64">
+                <img src={Star.src} width={"26"} style={{ zIndex: 30 }} />
+              </Parallax>
+              <Parallax className="absolute bottom-0 right-0 xl:-right-64">
+                <img src={Star.src} width={"16"} style={{ zIndex: 30 }} />
+              </Parallax>
               <div className="md:w-5/6" style={{ zIndex: 10 }}>
                 <h2 className="mb-12 text-3xl font-bold font-space">
                   Zeitgeist App Pre-Launch NFT Foundry
@@ -235,9 +228,9 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
               </div>
             </section>
 
-            <div className="flex justify-center mb-16">
+            <Parallax className="flex justify-center mb-16">
               <img src={DownCarret.src} className="w-12 md:w-22 xl:w-24" />
-            </div>
+            </Parallax>
 
             <section
               className="flex justify-center w-full text-center mb-16"
@@ -262,17 +255,12 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             </section>
 
             <section className="flex relative justify-center w-full mb-12 md:w-5/6">
-              <img
-                src={Ball5.src}
-                className="absolute -bottom-72 -left-72 w-10/12 md:w-9/12 xl:w-12/12"
-                style={{ zIndex: 0 }}
-              />
-              <img
-                src={Star.src}
-                className="absolute top-[50%] right-0 xl:-right-64"
-                width={"28"}
-                style={{ zIndex: 30 }}
-              />
+              <Parallax className="absolute -bottom-72 -left-72 w-10/12 md:w-9/12 xl:w-12/12">
+                <img src={Ball5.src} style={{ zIndex: 0 }} />
+              </Parallax>
+              <Parallax className="absolute top-[50%] right-0 xl:-right-64">
+                <img src={Star.src} width={"28"} style={{ zIndex: 30 }} />
+              </Parallax>
               <div className="md:w-5/6" style={{ zIndex: 10 }}>
                 <h2 className="mb-12 text-3xl font-bold font-space">
                   Who Are These NFTs For?
