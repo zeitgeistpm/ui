@@ -12,10 +12,20 @@ import ipRangeCheck from "ip-range-check";
 
 export type Theme = "dark" | "light";
 
+export type Judgement =
+  | "Unknown"
+  | "FeePaid"
+  | "Reasonable"
+  | "KnownGood"
+  | "OutOfDate"
+  | "LowQuality"
+  | "Erroneous";
+
 export interface UserIdentity {
   displayName: string;
   discord: string;
   twitter: string;
+  judgement: Judgement;
 }
 
 export type HelperNotifications = {
@@ -277,6 +287,12 @@ export default class UserStore {
         }
       });
 
+      const judgements = identity.value.get("judgements")[0];
+
+      const judgementType: Judgement = judgements
+        ? judgements[1].type
+        : "Unknown";
+
       return {
         displayName:
           indentityInfo.get("display").isNone === false
@@ -287,12 +303,14 @@ export default class UserStore {
             ? textDecoder.decode(indentityInfo.get("twitter").value)
             : "",
         discord: discordHandle,
+        judgement: judgementType,
       };
     } else {
       return {
         displayName: "",
         twitter: "",
         discord: "",
+        judgement: null,
       };
     }
   }
