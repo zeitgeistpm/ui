@@ -1,7 +1,6 @@
 import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
 import {
   AssetId,
-  CourtDisputeMechanism,
   MarketCreation,
   MarketDispute,
   MarketPeriod,
@@ -67,7 +66,7 @@ class MarketStore {
     if (this.inReportPeriod) {
       return "Waiting for report";
     }
-    if (!this.is("Closed")) {
+    if (!this.endPassed) {
       if (this.isPeriodInBlocks) {
         return `Ends at block number ${this.period["block"][1]}`;
       }
@@ -131,6 +130,13 @@ class MarketStore {
       minute: "numeric",
       hour12: false,
     });
+  }
+
+  get endPassed(): boolean {
+    if (this.isPeriodInBlocks) {
+      return this.period["block"][1] <= this.store.blockNumber;
+    }
+    return this.endTimestamp <= this.store.blockTimestamp;
   }
 
   get period(): MarketPeriod {
@@ -210,7 +216,8 @@ class MarketStore {
   }
 
   get isCourt(): boolean {
-    return (this.market.disputeMechanism as CourtDisputeMechanism).Court === null;
+    //@ts-ignore
+    return this.market.mdm.court === null;
   }
 
   get bounds(): [number, number] | null {
@@ -270,6 +277,9 @@ class MarketStore {
     if (this.market.resolvedOutcome != null) {
       return "Resolved";
     }
+    if (this.endPassed && this.market.status === "Active") {
+      return "Ended";
+    }
     return this.market.status as MarketStatus;
   }
 
@@ -308,7 +318,7 @@ class MarketStore {
     if (this.hasReport) {
       return false;
     }
-    return this.is("Closed");
+    return this.is("Ended");
   }
 
   get outcomesNames(): string[] | undefined {
@@ -574,6 +584,7 @@ class MarketStore {
       creation: computed,
       img: computed,
       endDateFormatted: computed,
+      endPassed: computed,
       reportedOutcome: computed,
       reportedOutcomeIndex: computed,
       reportedOutcomeName: computed,
