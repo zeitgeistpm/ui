@@ -63,7 +63,7 @@ const AccountButton: FC<{
       ) : (
         <div className="flex h-ztg-40">
           <div
-            className=" w-ztg-240 xl:w-ztg-360 flex pl-ztg-25 h-full font-mono text-ztg-14-150 rounded-full cursor-pointer bg-sky-200 dark:bg-sky-700 dark:text-white"
+            className="w-ztg-240 xl:w-ztg-360 flex pl-ztg-25 h-full font-mono text-ztg-14-150 rounded-full cursor-pointer bg-sky-200 dark:bg-sky-700 dark:text-white"
             onClick={() => {
               accountModals.openAccontSelect();
             }}

@@ -1,13 +1,15 @@
 import { observer } from "mobx-react";
+import moment from "moment";
 import React, { FC, useEffect, useRef, useState } from "react";
 import { FaWallet } from "react-icons/fa";
 import { useStore } from "lib/stores/Store";
+import { useAccountModals } from "lib/hooks/account";
+import { useNotificationStore } from "lib/stores/NotificationStore";
 import AccountButton from "components/account/AccountButton";
 import { useAvatarContext } from "@zeitgeistpm/avatara-react";
-import { Avatar } from "@zeitgeistpm/avatara-nft-sdk";
+import { Avatar, Tarot } from "@zeitgeistpm/avatara-nft-sdk";
 import ZeitgeistLogo from "./Logo";
 import Parallax from "./Parallax";
-import moment from "moment";
 
 import { AvatarsSvg } from "./gfx/avatars";
 import Ball1 from "./gfx/ball1.png";
@@ -23,16 +25,40 @@ import RocketBall from "./gfx/rocket_ball.png";
 import Rocket from "./gfx/rocket.png";
 import GlowBall from "./gfx/glow_ball.png";
 import Footer from "./Footer";
+import { encodeAddress } from "@polkadot/keyring";
+import { sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 
 const DefaultLayout: FC<{ launchDate: Date }> = observer(
   ({ children, launchDate }) => {
     const store = useStore();
     const avataraContext = useAvatarContext();
-    console.log(avataraContext);
+    const notificationStore = useNotificationStore();
+    const accountModals = useAccountModals();
+
+    const address = store.wallets.activeAccount?.address;
+
+    const ksmAddress: string | null =
+      avataraContext && address
+        ? encodeAddress(address, avataraContext.chainProperties.ss58Format)
+        : null;
+
     const [isClaiming, setIsClaiming] = useState(false);
     const [claimError, setClaimError] = useState<null | string>(null);
-
     const [avatars, setAvatars] = useState<Avatar.IndexedAvatar[]>([]);
+    const [tarotNftImage, setTarotNftImage] = useState(null);
+
+    const [tarotHolders, setTarotHolders] =
+      useState<Tarot.TarotHolderSnapshot>(null);
+
+    const [occultists, setOccultists] = useState<Tarot.OccultistStats>(null);
+
+    const tarotHolder = tarotHolders?.data.holders.find(
+      (holder) => holder.owner === ksmAddress,
+    );
+
+    const { connected } = store.wallets;
+
+    const isWhitelisted = Boolean(tarotHolder);
 
     const [duration, setDuration] = useState(getDuration(launchDate));
 
@@ -46,35 +72,52 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
     useEffect(() => {
       if (avataraContext) {
         Avatar.fetchIndexedAvatars(avataraContext).then(setAvatars);
+        Tarot.fetchLatestSnapshot(avataraContext).then(setTarotHolders);
+        Tarot.fetchLatestOccultists(avataraContext).then(setOccultists);
       }
     }, [avataraContext]);
 
-    const {
-      wallets: { activeAccount },
-    } = store;
-
-    const onClickClaim = async () => {
-      if (!activeAccount) {
-        return console.warn("no account");
+    useEffect(() => {
+      if (tarotHolder) {
+        fetch("https://gql-rmrk1.rmrk.link/v1/graphql", {
+          method: "POST",
+          body: JSON.stringify({
+            operationName: "fetchSingleNFT",
+            query:
+              'query fetchSingleNFT($id: String!) {\n  nfts(\n    where: {id: {_eq: $id}, _or: [{burned: {_eq: ""}, collection: {_not: {singular_blacklisted_collections: {}}}}]}\n  ) {\n    ...NFT\n    __typename\n  }\n}\n\nfragment NFT on nfts {\n  id\n  block\n  burned\n  forsale\n  collectionId\n  instance\n  metadata\n  metadata_name\n  metadata_content_type\n  metadata_image\n  metadata_animation_url\n  metadata_description\n  name\n  owner\n  sn\n  transferable\n  collection {\n    max\n    name\n    issuer\n    singular_nsfw_collections {\n      created_at\n      reason\n      __typename\n    }\n    singular_verified_collections {\n      collection_id\n      __typename\n    }\n    __typename\n  }\n  singular_curated {\n    created_at\n    __typename\n  }\n  singular_nsfw {\n    created_at\n    reason\n    __typename\n  }\n  __typename\n}\n',
+            variables: { id: tarotHolder.id },
+          }),
+        })
+          .then((res) => res.json())
+          .then((json) => {
+            const nft = json.data.nfts?.[0];
+            if (nft) {
+              setTarotNftImage(
+                sanitizeIpfsUrl(
+                  nft.metadata_image,
+                  "https://ipfs.rmrk.link/" as any,
+                ),
+              );
+            }
+          });
       }
+    }, [tarotHolder]);
 
-      setIsClaiming(true);
-      setClaimError(null);
-
-      try {
-        const response = await Avatar.claim(
-          avataraContext,
-          activeAccount.address,
-        );
-
+    const doClaim = async () => {
+      if (address && avataraContext) {
+        notificationStore.pushNotification("Minting Avatar.", {
+          type: "Info",
+          autoRemove: true,
+        });
+        notificationStore.removeNotification;
+        const response = await Avatar.claim(avataraContext, address);
         if (!response?.avatar) {
-          setClaimError((response as any).message);
+          throw new Error((response as any).message);
         }
-      } catch (error) {
-        setClaimError(error.message);
+        notificationStore.pushNotification("Avatar successfully minted!", {
+          type: "Success",
+        });
       }
-
-      setIsClaiming(false);
     };
 
     return (
@@ -160,6 +203,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
               <Parallax
                 className="absolute w-full xl:w-3/4 z-0"
                 style={{
+                  zIndex: 0,
                   WebkitMaskImage:
                     "-webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.8)))",
                 }}
@@ -193,7 +237,10 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             </Parallax>
           </div>
 
-          <Parallax className="flex justify-center">
+          <Parallax
+            className="relative flex justify-center"
+            style={{ zIndex: 50 }}
+          >
             <img src={DownCarret.src} className="w-12 md:w-22 xl:w-24" />
           </Parallax>
 
@@ -252,9 +299,60 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                 style={{ zIndex: 10 }}
               >
                 <div className="bg-white p-12 bg-opacity-5 md:w-5/6">
-                  <button className="mb-12 bg-ztg-blue text-white py-2 px-24 font-space font-bold">
-                    Mint ZTG NFT
-                  </button>
+                  <div className="flex justify-center items-center mb-12">
+                    <button
+                      disabled={!isWhitelisted}
+                      className={`relative flex justify-center items-center bg-ztg-blue text-white py-2 px-24 font-space font-bold ${
+                        !isWhitelisted ? "bg-blue-500 text-gray-700" : ""
+                      }`}
+                    >
+                      Mint ZTG NFT
+                    </button>
+                  </div>
+
+                  <div className="mb-8">
+                    <h3 className="font-bold">Minting for</h3>
+                    <div
+                      className="flex justify-center items-center cursor-pointer"
+                      onClick={() =>
+                        connected
+                          ? accountModals.openAccontSelect()
+                          : accountModals.openWalletSelect()
+                      }
+                    >
+                      <p
+                        className={`flex relative justify-center items-center bg-black py-2 px-4 text-md ${
+                          !isWhitelisted && address ? "line-through" : ""
+                        }`}
+                        style={{ fontFamily: "Consolas,monaco,monospace" }}
+                      >
+                        {address || (
+                          <span className="flex justify-center items-center">
+                            Select account <FaWallet className="ml-4" />
+                          </span>
+                        )}
+                        {address && (
+                          <div
+                            className={`w-3 h-3 ml-3 rounded-full animate-pulse ${
+                              isWhitelisted ? "bg-green-500" : "bg-red-600"
+                            }`}
+                          ></div>
+                        )}
+
+                        {isWhitelisted && tarotNftImage && (
+                          <div className="group h-full absolute -right-14 border-black border-2 hover:scale-[4] transition-all hover:border-green-400 hover:rounded-sm">
+                            <img
+                              src={tarotNftImage}
+                              className="h-full hover:rounded-sm overflow-hidden"
+                            />
+                            <div className="absolute hidden group-hover:block w-full text-center pb-[2px] text-[3px] bottom-0">
+                              Tarot holder!
+                            </div>
+                          </div>
+                        )}
+                      </p>
+                    </div>
+                  </div>
                   <p className="mb-8">
                     By clicking this button, you will be minting a Zeitgeist NFT
                     unique for your Zeitgeist profile image. You will be able to
