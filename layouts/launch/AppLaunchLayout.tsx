@@ -182,6 +182,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           <div className="flex flex-1 justify-end">
             <div className="inline-flex">
               <AccountButton
+                autoClose
                 connectButtonClassname="animate-pulse text-white flex w-64 xl:w-ztg-184 h-12 bg-[#45059E] text-black rounded-full text-ztg-18-150 font-medium justify-center items-center cursor-pointer disabled:cursor-default disabled:opacity-20"
                 connectButtonText={
                   <div className="flex items-center">
@@ -303,7 +304,9 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                     <button
                       disabled={!isWhitelisted}
                       className={`relative h-16 flex justify-center items-center bg-ztg-blue text-white py-2 px-24 font-space font-bold ${
-                        !isWhitelisted ? "bg-blue-500 text-gray-700" : ""
+                        !isWhitelisted
+                          ? "bg-blue-500 text-gray-700 cursor-not-allowed"
+                          : ""
                       }`}
                     >
                       Mint ZTG NFT

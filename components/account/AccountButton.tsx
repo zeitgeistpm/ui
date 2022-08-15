@@ -1,20 +1,24 @@
 import { observer } from "mobx-react";
 // import { Bell } from "react-feather";
-import React, { Component, FC, useState } from "react";
+import React, { Component, FC, useEffect, useState } from "react";
 
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import { useStore } from "lib/stores/Store";
 import Avatar from "components/ui/Avatar";
 import { useUserStore } from "lib/stores/UserStore";
 import { useAccountModals } from "lib/hooks/account";
+import { useModalStore } from "lib/stores/ModalStore";
+import { usePrevious } from "lib/hooks/usePrevious";
 
 const AccountButton: FC<{
   connectButtonClassname?: string;
   connectButtonText?: string | JSX.Element;
-}> = observer(({ connectButtonClassname, connectButtonText }) => {
+  autoClose?: boolean;
+}> = observer(({ connectButtonClassname, connectButtonText, autoClose }) => {
   const store = useStore();
   const { wallets } = store;
   const { connected, activeAccount, activeBalance } = wallets;
+  const modalStore = useModalStore();
   const accountModals = useAccountModals();
   const { locationAllowed, isUsingVPN } = useUserStore();
   const [hovering, setHovering] = useState<boolean>(false);
@@ -30,6 +34,14 @@ const AccountButton: FC<{
   const handleMouseLeave = () => {
     setHovering(false);
   };
+
+  const prevactiveAccount = usePrevious(activeAccount);
+
+  useEffect(() => {
+    if (autoClose && activeAccount !== prevactiveAccount) {
+      modalStore.closeModal();
+    }
+  }, [activeAccount]);
 
   return (
     <>
