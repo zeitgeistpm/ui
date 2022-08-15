@@ -36,7 +36,6 @@ const Parallax = ({
   const initial = 0;
   const final = elementTop + offset;
 
-  const mass = useMemo(() => random(3, 20), []);
   const stiffness = useMemo(() => random(310, 350), []);
   const damping = useMemo(() => random(50, 90), []);
 

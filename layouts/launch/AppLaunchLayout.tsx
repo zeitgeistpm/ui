@@ -267,7 +267,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           </div>
         </header>
 
-        <div className="relative mx-6 sm:mx-24 xl:mx-[408px]">
+        <div className="relative mx-6 sm:mx-24 xl:mx-[12%] 2xl:mx-[16%]">
           <div className="relative z-0 h-72 md:h-96" style={{ zIndex: 10 }}>
             <div
               className="w-full flex justify-center items-center"
@@ -378,12 +378,14 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                     style={{ animation: "bounceIn 1.3s normal forwards" }}
                   >
                     <div className="block xl:flex">
-                      <ZeitgeistAvatar
-                        size={220}
-                        className="h-full w-full rounded-md overflow-hidden mb-4 xl:mb-0"
-                        address={ksmAddress}
-                      />
-                      <div className="xl:pl-8 text-left max-w-xl">
+                      <div className="flex items-center justify-center mb-8 xl:mb-0">
+                        <ZeitgeistAvatar
+                          size={220}
+                          className="w-full rounded-md overflow-hidden  xl:mb-0"
+                          address={ksmAddress}
+                        />
+                      </div>
+                      <div className="xl:pl-8 max-w-xl text-center xl:text-left">
                         <h3 className="font-bold text-3xl font-space mb-2">
                           Minted!
                         </h3>
