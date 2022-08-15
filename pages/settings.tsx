@@ -49,11 +49,17 @@ const IdentitySettings = observer(() => {
   const [discordHandle, setDiscordHandle] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
   const [transactionPending, setTransactionPending] = useState(false);
+
   useEffect(() => {
-    if (!identity) return;
-    setDisplayName(identity.displayName ?? "");
-    setDiscordHandle(identity.discord ?? "");
-    setTwitterHandle(identity.twitter ?? "");
+    if (!identity) {
+      setDisplayName("");
+      setDiscordHandle("");
+      setTwitterHandle("");
+    } else {
+      setDisplayName(identity.displayName ?? "");
+      setDiscordHandle(identity.discord ?? "");
+      setTwitterHandle(identity.twitter ?? "");
+    }
   }, [identity]);
 
   const handleSubmit = async () => {
@@ -94,6 +100,7 @@ const IdentitySettings = observer(() => {
   const handleClear = async () => {
     const signer = store.wallets.getActiveSigner() as ExtSigner;
     const tx = store.sdk.api.tx.identity.clearIdentity();
+
     signAndSend(
       tx,
       signer,
@@ -140,7 +147,8 @@ const IdentitySettings = observer(() => {
     (identity?.discord === discordHandle &&
       identity.displayName === displayName &&
       identity.twitter === twitterHandle) ||
-    transactionPending;
+    transactionPending ||
+    !wallets.connected;
 
   return (
     <>
@@ -153,6 +161,7 @@ const IdentitySettings = observer(() => {
         className="w-1/2 mb-ztg-20 bg-sky-200 dark:bg-sky-1000 text-sky-600"
         onChange={(e) => handleDisplayNameChange(e.target.value)}
         value={displayName}
+        disabled={!wallets.connected}
       />
       <div className="flex flex-row mb-ztg-20">
         <div className="w-full mr-ztg-27">
@@ -165,6 +174,7 @@ const IdentitySettings = observer(() => {
             className=" bg-sky-200 dark:bg-sky-1000 text-sky-600 "
             onChange={(e) => handleDiscordChange(e.target.value)}
             value={discordHandle}
+            disabled={!wallets.connected}
           />
         </div>
         <div className="w-full ">
@@ -177,6 +187,7 @@ const IdentitySettings = observer(() => {
             className=" bg-sky-200 dark:bg-sky-1000 text-sky-600"
             onChange={(e) => handleTwitterChange(e.target.value)}
             value={twitterHandle}
+            disabled={!wallets.connected}
           />
         </div>
       </div>

@@ -224,7 +224,11 @@ export default class Store {
     this.initGraphQlClient();
 
     this.markets.unsubscribeAll();
-    this.wallets.subscribeToBalanceChanges();
+
+    if (this.wallets.connected) {
+      await this.userStore.loadIdentity(this.wallets.activeAccount.address);
+      this.wallets.subscribeToBalanceChanges();
+    }
 
     await this.pools.init();
     this.initializeMarkets();
