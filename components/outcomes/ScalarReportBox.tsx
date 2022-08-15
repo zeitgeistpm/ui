@@ -63,10 +63,10 @@ const ScalarReportBox = observer(
               store.getTransactionError(index, error),
               {
                 type: "Error",
-              }
+              },
             );
           },
-        })
+        }),
       );
     };
     return (
@@ -87,7 +87,7 @@ const ScalarReportBox = observer(
         </TransactionButton>
       </>
     );
-  }
+  },
 );
 
 export default ScalarReportBox;

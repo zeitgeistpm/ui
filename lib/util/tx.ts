@@ -13,12 +13,12 @@ const processEvents = (
     successCallback,
   }: { failCallback?: GenericCallback; successCallback?: GenericCallback },
   successMethod: string = "ExtrinsicSuccess",
-  unsub?: () => void
+  unsub?: () => void,
 ) => {
   for (const event of events) {
     const { data, method } = event.event;
     if (method === "ExtrinsicFailed" && failCallback) {
-      const { index, error } = data.toHuman()['dispatchError'].Module;
+      const { index, error } = data.toHuman()["dispatchError"].Module;
       failCallback({ index, error });
     }
     if (method === "BatchInterrupted" && failCallback) {
@@ -56,21 +56,21 @@ export const extrinsicCallback = ({
         events,
         { failCallback, successCallback: () => successCallback(result) },
         successMethod,
-        unsub
+        unsub,
       );
     } else if (status.isFinalized) {
       processEvents(
         events,
         { failCallback, successCallback: finalizedCallback },
         successMethod,
-        unsub
+        unsub,
       );
     } else if (status.isRetracted) {
       retractedCallback
         ? retractedCallback()
         : notificationStore?.pushNotification(
             "Transaction failed to finalize and has been retracted",
-            { type: "Error" }
+            { type: "Error" },
           );
       unsub();
     } else {
@@ -83,16 +83,16 @@ export const extrinsicCallback = ({
   };
 };
 
-export const signAndSend = (
+export const signAndSend = async (
   tx: SubmittableExtrinsic<ApiTypes>,
   signer: KeyringPairOrExtSigner,
-  cb?: GenericCallback
+  cb?: GenericCallback,
 ) => {
   const _callback = (
     result: ISubmittableResult,
     _resolve: (value: boolean | PromiseLike<boolean>) => void,
     _reject: (value: boolean | PromiseLike<boolean>) => void,
-    _unsub: any
+    _unsub: any,
   ) => {
     const { events, status } = result;
 
@@ -112,18 +112,22 @@ export const signAndSend = (
     }
   };
   return new Promise(async (resolve, reject) => {
-    if (isExtSigner(signer)) {
-      const unsub = await tx.signAndSend(
-        signer.address,
-        { signer: signer.signer },
-        (result) => {
+    try {
+      if (isExtSigner(signer)) {
+        const unsub = await tx.signAndSend(
+          signer.address,
+          { signer: signer.signer },
+          (result) => {
+            cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
+          },
+        );
+      } else {
+        const unsub = await tx.signAndSend(signer, (result) => {
           cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
-        }
-      );
-    } else {
-      const unsub = await tx.signAndSend(signer, (result) => {
-        cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
-      });
+        });
+      }
+    } catch (error) {
+      reject(error);
     }
   });
 };

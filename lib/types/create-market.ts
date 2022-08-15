@@ -17,7 +17,7 @@ export interface RangeOutcomeEntry {
 export type Outcomes = MultipleOutcomeEntry[] | RangeOutcomeEntry;
 
 export const isMultipleOutcomeEntries = (
-  value: Outcomes
+  value: Outcomes,
 ): value is MultipleOutcomeEntry[] => {
   if (Array.isArray(value)) {
     return true;
@@ -26,7 +26,7 @@ export const isMultipleOutcomeEntries = (
 };
 
 export const isRangeOutcomeEntry = (
-  value: Outcomes
+  value: Outcomes,
 ): value is RangeOutcomeEntry => {
   if (!Array.isArray(value)) {
     return true;

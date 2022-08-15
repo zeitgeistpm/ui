@@ -49,10 +49,10 @@ const RedeemBox = observer(
               store.getTransactionError(index, error),
               {
                 type: "Error",
-              }
+              },
             );
           },
-        })
+        }),
       );
     };
     return (
@@ -61,7 +61,7 @@ const RedeemBox = observer(
           <div className="w-full">
             <div className="flex h-ztg-20">
               <div className="w-ztg-20 h-ztg-20 border-2 border-sky-600 rounded-full mr-ztg-8 bg-ztg-blue"></div>
-              <div className="font-kanit text-base font-bold flex items-center text-black dark:text-white">
+              <div className="font-space text-base font-bold flex items-center text-black dark:text-white">
                 Assets in {store.config.tokenSymbol}
               </div>
             </div>
@@ -79,7 +79,7 @@ const RedeemBox = observer(
         </TransactionButton>
       </div>
     );
-  }
+  },
 );
 
 export default RedeemBox;

@@ -1,6 +1,6 @@
 export type Normalized<
   T extends Record<string | number | symbol, any>,
-  K extends keyof T
+  K extends keyof T,
 > = {
   ids: T[K][];
   byId: Partial<Record<T[K], T>>;
@@ -13,7 +13,7 @@ export const empty = <T, K extends keyof T>(): Normalized<T, K> => ({
 
 export const fromArray = <T extends Record<string, any>, K extends keyof T>(
   array: T[],
-  key: K
+  key: K,
 ): Normalized<T, K> => {
   const keys = array.map((item) => item[key]);
   const index = array.reduce<Normalized<T, K>["byId"]>((index, item) => {
@@ -26,12 +26,12 @@ export const fromArray = <T extends Record<string, any>, K extends keyof T>(
 };
 
 export const toArray = <T extends Record<string, any>, K extends keyof T>(
-  data: Normalized<T, K>
+  data: Normalized<T, K>,
 ): T[] => data.ids.map((id) => data.byId[id]);
 
 export const mergeR = <T extends Record<string, any>, K extends keyof T>(
   dataA: Normalized<T, K>,
-  dataB: Normalized<T, K>
+  dataB: Normalized<T, K>,
 ): Normalized<T, K> => {
   return {
     ids: [...new Set([...dataA.ids, ...dataB.ids])],
@@ -44,7 +44,7 @@ export const mergeR = <T extends Record<string, any>, K extends keyof T>(
 
 export const mergeL = <T extends Record<string, any>, K extends keyof T>(
   dataA: Normalized<T, K>,
-  dataB: Normalized<T, K>
+  dataB: Normalized<T, K>,
 ): Normalized<T, K> => {
   return {
     ids: [...new Set([...dataB.ids, ...dataA.ids])],
@@ -57,10 +57,10 @@ export const mergeL = <T extends Record<string, any>, K extends keyof T>(
 
 export const remove = <T extends Record<string, any>, K extends keyof T>(
   data: Normalized<T, K>,
-  removeId: T[K] | T[K][]
+  removeId: T[K] | T[K][],
 ): Normalized<T, K> => {
   const newIds = data.ids.filter((id) =>
-    Array.isArray(removeId) ? removeId.indexOf(id) === -1 : id !== removeId
+    Array.isArray(removeId) ? removeId.indexOf(id) === -1 : id !== removeId,
   );
   return {
     ids: newIds,

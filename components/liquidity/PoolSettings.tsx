@@ -21,7 +21,7 @@ export interface PoolAssetRowData {
 export const poolRowDataFromOutcomes = (
   outcomes: MultipleOutcomeEntry[],
   tokenSymbol: string,
-  initialAmount: string = "100"
+  initialAmount: string = "100",
 ): PoolAssetRowData[] => {
   const amountNum = +initialAmount;
 
@@ -67,7 +67,7 @@ const PoolSettings: FC<{
       data.map((row) => ({
         ...row,
         amount,
-      }))
+      })),
     );
   };
 

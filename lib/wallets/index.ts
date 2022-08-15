@@ -3,7 +3,10 @@ import Decimal from "decimal.js";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { makeAutoObservable, reaction, runInAction } from "mobx";
-import { decodeAddress, encodeAddress } from "@polkadot/util-crypto";
+import {
+  decodeAddress,
+  encodeAddress,
+} from "@polkadot/util-crypto";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { PolkadotjsWallet } from "./polkadotjs-wallet";
 import { SubWallet } from "./subwallet";
@@ -20,7 +23,7 @@ const supportedWallets = [
 
 export const encodeAddresses = (
   accounts: WalletAccount[],
-  ss58Prefix: number
+  ss58Prefix?: number,
 ) => {
   return accounts.map((acc) => {
     return {
@@ -35,77 +38,63 @@ export type WalletErrorMessage = {
   message: string;
 };
 
-const enableWalletLoop = async (
-  wallet: Wallet,
-  failCallback: () => void
-): Promise<void> => {
-  const enableFunc = async () => {
-    try {
-      await wallet.enable();
-      return true;
-    } catch (err) {
-      failCallback();
-      return false;
-    }
-  };
-  const enabled = await enableFunc();
-  if (enabled) {
-    return;
-  }
-  return new Promise((resolve) => {
-    const id = window.setInterval(async () => {
-      const enabled = await enableFunc();
-      if (enabled) {
-        window.clearInterval(id);
-        resolve();
-      }
-    }, 1000);
-  });
-};
-
 export default class Wallets {
-  wallet?: Wallet | null;
+  wallet?: Wallet = undefined;
 
-  setWallet(wallet: Wallet | null) {
+  setWallet(wallet: Wallet) {
     this.wallet = wallet;
+
     if (this.accountsChangeUnsub) {
       this.accountsChangeUnsub();
     }
-    if (wallet == null) {
-      return;
-    }
-    wallet
-      .subscribeAccounts((accounts) => {
-        this.setAccounts(
-          encodeAddresses(accounts, this.store.config.ss58Prefix)
-        );
-      })
-      .then((unsub) => {
-        runInAction(() => {
-          this.accountsChangeUnsub = unsub;
+    if (this.walletEnabled) {
+      wallet
+        .subscribeAccounts((accounts) => {
+          if (accounts?.length) {
+            this.setAccounts(
+              encodeAddresses(accounts, this.store.config?.ss58Prefix),
+            );
+          } else {
+            this.disconnectWallet();
+          }
+        })
+        .then((unsub) => {
+          runInAction(() => {
+            this.accountsChangeUnsub = unsub;
+          });
         });
-      });
+    }
   }
 
-  getWalletByExtensionName(extensionName: string): Wallet | undefined {
+  getWalletByExtensionName(extensionName?: string): Wallet | undefined {
+    if (extensionName == null) {
+      return;
+    }
     return supportedWallets.find((w) => w.extensionName === extensionName);
   }
 
-  activeAccount: WalletAccount | null = null;
+  activeAccount?: WalletAccount = undefined;
 
-  setActiveAccount(account: WalletAccount | string | null) {
+  unsetActiveAccount() {
+    this.activeBalance = new Decimal(0);
+    this.activeAccount = undefined;
+    return;
+  }
+
+  setActiveAccount(account: WalletAccount | string) {
+    let walletAcc: typeof this.activeAccount;
     if (this.balanceSubscription) {
       this.balanceSubscription();
     }
-    if (account == null) {
-      this.activeBalance = new Decimal(0);
-      this.activeAccount = null;
-      return;
-    }
     if (typeof account === "string") {
-      account = this.accounts.find((acc) => acc.address === account);
+      walletAcc = this.accounts.find((acc) => acc.address === account);
+      if (walletAcc == null) {
+        throw Error(`Cannot find a wallet for account: ${account} !`);
+      }
+      this.activeAccount = walletAcc;
+    } else {
+      this.activeAccount = account;
     }
-    this.activeAccount = account;
     this.subscribeToBalanceChanges();
   }
 
@@ -117,7 +106,7 @@ export default class Wallets {
 
   setErrorMessageForExtension(extensionName: string, message: string) {
     const idx = this.errorMessages.findIndex(
-      (obj) => obj.extensionName === extensionName
+      (obj) => obj.extensionName === extensionName,
     );
     const err = { extensionName, message };
     if (idx === -1) {
@@ -134,7 +123,7 @@ export default class Wallets {
 
   unsetErrorMessage(extensionName: string) {
     const idx = this.errorMessages.findIndex(
-      (obj) => obj.extensionName === extensionName
+      (obj) => obj.extensionName === extensionName,
     );
     this.errorMessages = [
       ...this.errorMessages.slice(0, idx),
@@ -142,10 +131,17 @@ export default class Wallets {
     ];
   }
 
+  clearErrorMessages() {
+    this.errorMessages = [];
+  }
+
   accounts: WalletAccount[] = [];
 
   setAccounts(accounts: WalletAccount[]) {
     this.accounts = accounts;
+    if (!this.activeAccount) {
+      this.activeAccount = accounts[0];
+    }
   }
 
   accountsChangeUnsub: any;
@@ -154,6 +150,11 @@ export default class Wallets {
 
   setConnected(connected: boolean) {
     this.connected = connected;
+  }
+
+  disconnectWallet() {
+    this.walletEnabled = false;
+    this.setConnected(false);
   }
 
   activeBalance = new Decimal(0);
@@ -176,23 +177,26 @@ export default class Wallets {
       () => this.accounts,
       (accounts) => {
         if (accounts.length > 0) {
-          this.unsetErrorMessage(this.wallet.extensionName);
-          if (!this.activeAccount) {
-            let defaultAccount: WalletAccount;
-            const storedAddress = this.store.userStore.accountAddress;
-            if (storedAddress) {
-              defaultAccount = accounts.find(
-                (acc) => acc.address === this.store.userStore.accountAddress
-              );
-            } else {
-              defaultAccount = accounts[0];
-            }
-            this.setActiveAccount(defaultAccount ?? accounts[0]);
+          if (this.wallet) {
+            this.unsetErrorMessage(this.wallet.extensionName);
           }
+          let acc: typeof this.activeAccount;
+          const storedAddress = this.store.userStore.accountAddress;
+          if (storedAddress) {
+            acc = accounts.find(
+              (acc) => acc.address === this.store.userStore.accountAddress,
+            );
+          } else {
+            acc = accounts[0];
+          }
+          if (acc == null) {
+            acc = accounts[0];
+          }
+          this.setActiveAccount(acc);
         } else {
-          this.setActiveAccount(null);
+          this.unsetActiveAccount();
         }
-      }
+      },
     );
   }
 
@@ -202,7 +206,7 @@ export default class Wallets {
     if (accounts.length === 0) {
       this.setErrorMessageForExtension(
         wallet.extensionName,
-        "No accounts on this wallet. Please add account in wallet extension."
+        "No accounts on this wallet. Please add account in wallet extension.",
       );
       return;
     }
@@ -214,7 +218,7 @@ export default class Wallets {
           ...acc,
           address: encodeAddress(
             decodeAddress(acc.address),
-            this.store.config.ss58Prefix
+            this.store.config.ss58Prefix,
           ),
         };
       });
@@ -254,42 +258,99 @@ export default class Wallets {
         runInAction(() => {
           this.activeBalance = new Decimal(currentFree.toString()).div(ZTG);
         });
-      }
+      },
     );
   }
 
-  disconnectWallet() {
-    this.setWallet(null);
-    this.setAccounts([]);
-    this.setConnected(false);
+  enableIntervalId?: number;
+  walletEnabled = false;
+
+  get enablingInProgress() {
+    return this.enableIntervalId != null;
   }
 
-  // try to enable wallet every 1000 ms, and stop once the wallet is enabled
-  *enableWallet(wallet: Wallet) {
-    yield enableWalletLoop(wallet, () => {
+  stopEnableLoop() {
+    if (this.enableIntervalId == null) {
+      return;
+    }
+    window.clearInterval(this.enableIntervalId);
+    this.enableIntervalId = undefined;
+  }
+
+  /**
+   * @param wallet wallet to enable
+   * @param interval true to try to connect in an endless loop cancelled by `stopEnableLoop`
+   * @returns true if enabling went succesfull, otherwise fails silently
+   */
+  *enableWallet(wallet: Wallet, interval = false) {
+    const enabled = yield this.enableWalletLoop(wallet, interval, () => {
       this.setErrorMessageForExtension(
         wallet.extensionName,
-        "Not allowed to interact with extension. Please change permission settings and reload the page."
+        "Not allowed to interact with extension. Please change permission settings.",
       );
     });
-    return true;
+    if (enabled) {
+      this.walletEnabled = true;
+    }
+    return enabled;
   }
 
-  *connectWallet(extensionName?: string) {
+  private enableWalletLoop = async (
+    wallet: Wallet,
+    interval = false,
+    failCallback: () => void,
+  ): Promise<boolean> => {
+    const enableFunc = async () => {
+      try {
+        await wallet.enable();
+        return true;
+      } catch (err) {
+        failCallback();
+        return false;
+      }
+    };
+    const enabled = await enableFunc();
+    if (enabled) {
+      return true;
+    }
+    if (interval) {
+      return new Promise<boolean>((resolve, reject) => {
+        const id = window.setInterval(async () => {
+          const enabled = await enableFunc();
+          if (enabled) {
+            window.clearInterval(this.enableIntervalId);
+            resolve(true);
+          } else {
+            // reject(false);
+          }
+        }, 1000);
+        runInAction(() => {
+          this.enableIntervalId = id;
+        });
+      });
+    } else {
+      return false;
+    }
+  };
+
+  *connectWallet(extensionName: string, pollEnable = false) {
+    this.walletEnabled = false;
     const wallet = this.getWalletByExtensionName(extensionName);
 
-    if (!wallet || wallet.installed === false) {
-      this.setWallet(null);
+    if (wallet == null || !wallet.installed) {
       return;
     }
 
-    const enabled = yield this.enableWallet(wallet);
+    this.stopEnableLoop();
+    this.clearErrorMessages();
 
-    this.setWallet(wallet);
+    const enabled = yield this.enableWallet(wallet, pollEnable);
 
-    if (!enabled) {
+    if (enabled !== true) {
       return this.errorMessages;
     }
+
+    this.setWallet(wallet);
 
     const accounts = yield this.getAccounts(wallet);
 
@@ -298,15 +359,11 @@ export default class Wallets {
     }
 
     if (accounts) {
-      this.setAccounts(accounts);
       this.setConnected(true);
     }
   }
 
-  async initialize() {
-    const { userStore } = this.store;
-    const storedWalletId = userStore.walletId;
-
+  async initialize(extensionName: string) {
     if (this.store.isTestEnv) {
       await cryptoWaitReady();
 
@@ -329,7 +386,7 @@ export default class Wallets {
       this.setActiveAccount(activeAccount);
       this.setConnected(true);
     } else {
-      this.connectWallet(storedWalletId);
+      this.connectWallet(extensionName);
     }
   }
 

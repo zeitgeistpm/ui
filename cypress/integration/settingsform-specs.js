@@ -6,7 +6,7 @@ describe("Account settings form", () => {
     window.localStorage.setItem("endpoint-1", '"ws://127.0.0.1:9944"');
     window.localStorage.setItem(
       "gql-endpoint-1",
-      '"http://localhost:4350/graphql"'
+      '"http://localhost:4350/graphql"',
     );
     window.localStorage.setItem("walletId", '"polkadot-js"');
     cy.visit("/settings");

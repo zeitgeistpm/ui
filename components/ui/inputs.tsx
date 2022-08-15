@@ -53,7 +53,7 @@ export const Input: FC<InputProps & InputHTMLAttributes<HTMLInputElement>> =
           className = "",
           ...restProps
         },
-        ref
+        ref,
       ) => {
         const { name, ...rest } = restProps;
 
@@ -80,13 +80,13 @@ export const Input: FC<InputProps & InputHTMLAttributes<HTMLInputElement>> =
             value={value}
           />
         );
-      }
-    )
+      },
+    ),
   );
 
 const rdtpInput = (
   props: InputProps & InputHTMLAttributes<HTMLInputElement>,
-  openCalendar: () => void
+  openCalendar: () => void,
 ) => {
   const { className, ...restProps } = props;
   return (
@@ -230,7 +230,7 @@ export const AmountInput: FC<AmountInputProps> = observer(
         onFocusChange = () => {},
         showErrorMessage = true,
       },
-      ref
+      ref,
     ) => {
       const store = useStore();
       const amountRegex: RegExp = regex || store.amountRegex;
@@ -343,8 +343,8 @@ export const AmountInput: FC<AmountInputProps> = observer(
           {rightComponent && rightComponent}
         </div>
       );
-    }
-  )
+    },
+  ),
 );
 
 export interface TextAreaProps {
@@ -370,7 +370,7 @@ export const TextArea: FC<TextAreaProps> = observer(
         placeholder = "",
         dataTest = "",
       },
-      ref
+      ref,
     ) => {
       const { invalid } = useFormField(form, name, value);
       const classes =
@@ -388,6 +388,6 @@ export const TextArea: FC<TextAreaProps> = observer(
           data-test={dataTest}
         ></textarea>
       );
-    }
-  )
+    },
+  ),
 );

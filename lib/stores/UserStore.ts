@@ -1,15 +1,31 @@
 import { makeAutoObservable, reaction, runInAction } from "mobx";
-import { JSONObject, Primitive, SupportedParachain } from "lib/types";
+import {
+  EndpointOption,
+  JSONObject,
+  Primitive,
+  SupportedParachain,
+} from "lib/types";
 import Store, { useStore } from "./Store";
 import { endpoints, gqlEndpoints } from "lib/constants";
 import { TradeSlipItem } from "./TradeSlipStore";
+import ipRangeCheck from "ip-range-check";
 
 export type Theme = "dark" | "light";
+
+export type Judgement =
+  | "Unknown"
+  | "FeePaid"
+  | "Reasonable"
+  | "KnownGood"
+  | "OutOfDate"
+  | "LowQuality"
+  | "Erroneous";
 
 export interface UserIdentity {
   displayName: string;
   discord: string;
   twitter: string;
+  judgement: Judgement;
 }
 
 export type HelperNotifications = {
@@ -22,7 +38,7 @@ interface RawValue {
 
 const getFromLocalStorage = (
   key: string,
-  defaultValue: JSONObject
+  defaultValue: JSONObject,
 ): JSONObject => {
   const val = window.localStorage.getItem(key);
   if (val == null && defaultValue) {
@@ -47,8 +63,13 @@ export default class UserStore {
   gqlEndpoint: string;
   identity: UserIdentity;
   locationAllowed: boolean;
+  isUsingVPN: boolean;
   walletId: string | null = null;
   helpnotifications: HelperNotifications | null = null;
+  endpointKey = `endpoint-${process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"}`;
+  qglEndpointKey = `gql-endpoint-${
+    process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"
+  }`;
 
   constructor(private store: Store) {
     makeAutoObservable(this, {}, { autoBind: true, deep: false });
@@ -57,7 +78,7 @@ export default class UserStore {
       (storedTheme: StoredTheme) => {
         setToLocalStorage("theme", storedTheme);
         this.theme = this.getTheme();
-      }
+      },
     );
 
     reaction(
@@ -68,21 +89,21 @@ export default class UserStore {
         } else if (theme === "light") {
           document.body.classList.remove("dark");
         }
-      }
+      },
     );
 
     reaction(
       () => this.endpoint,
       (endpoint) => {
-        setToLocalStorage("endpoint-1", endpoint);
-      }
+        setToLocalStorage(this.endpointKey, endpoint);
+      },
     );
 
     reaction(
       () => this.gqlEndpoint,
       (gqlEndpoint) => {
-        setToLocalStorage("gql-endpoint-1", gqlEndpoint);
-      }
+        setToLocalStorage(this.qglEndpointKey, gqlEndpoint);
+      },
     );
 
     reaction(
@@ -93,28 +114,28 @@ export default class UserStore {
         }
         setToLocalStorage("accountAddress", activeAccount.address);
         this.loadIdentity(activeAccount.address);
-      }
+      },
     );
 
     reaction(
       () => this.store.tradeSlipStore.tradeSlipItems,
       (items) => {
         setToLocalStorage("tradeSlipItems", items);
-      }
+      },
     );
 
     reaction(
       () => this.store.wallets.wallet,
       (wallet) => {
         setToLocalStorage("walletId", wallet?.extensionName ?? null);
-      }
+      },
     );
 
     reaction(
       () => this.helpnotifications,
       (notifications) => {
         setToLocalStorage("help-notifications", notifications);
-      }
+      },
     );
   }
 
@@ -125,19 +146,10 @@ export default class UserStore {
     this.walletId = getFromLocalStorage("walletId", null) as string;
     this.tradeSlipItems = getFromLocalStorage(
       "tradeSlipItems",
-      []
+      [],
     ) as TradeSlipItem[];
-    this.endpoint = getFromLocalStorage(
-      "endpoint-1",
-      endpoints.find((endpoint) => endpoint.parachain == SupportedParachain.BSR)
-        .value
-    ) as string;
-    this.gqlEndpoint = getFromLocalStorage(
-      "gql-endpoint-1",
-      gqlEndpoints.find(
-        (endpoint) => endpoint.parachain == SupportedParachain.BSR
-      ).value
-    ) as string;
+
+    this.setupEndpoints();
 
     window
       .matchMedia("(prefers-color-scheme: dark)")
@@ -151,7 +163,7 @@ export default class UserStore {
       avatarKsmFeesInfo: true,
     }) as HelperNotifications;
 
-    await this.checkGeofencing();
+    await this.checkIP();
   }
 
   toggleTheme(theme?: StoredTheme) {
@@ -179,9 +191,25 @@ export default class UserStore {
     this.gqlEndpoint = gqlEndpoint;
   }
 
-  resetEndpoints() {
-    this.endpoint = endpoints[0].value;
-    this.gqlEndpoint = gqlEndpoints[0].value;
+  setNextBestEndpoints(endpoint: string, gqlEndpoint: string) {
+    this.endpoint =
+      this.findAlternativeEndpoint(endpoint, endpoints) ?? endpoint;
+    this.gqlEndpoint =
+      this.findAlternativeEndpoint(gqlEndpoint, gqlEndpoints) ?? gqlEndpoint;
+  }
+
+  // attempts to find and endpoint that matches the parachain of the current endpoint
+  private findAlternativeEndpoint(endpoint: string, options: EndpointOption[]) {
+    const endpointParachain = options.find(
+      (options) => options.value == endpoint,
+    )?.parachain;
+
+    const alternativeEndpoint = options.find(
+      (option) =>
+        option.parachain === endpointParachain && option.value != endpoint,
+    );
+
+    return alternativeEndpoint?.value;
   }
 
   setWalletId(walletId: string | null) {
@@ -193,6 +221,43 @@ export default class UserStore {
       ...this.helpnotifications,
       [key]: value,
     };
+  }
+
+  private setupEndpoints() {
+    this.endpoint = getFromLocalStorage(
+      this.endpointKey,
+      this.getRPC(),
+    ) as string;
+
+    const chain =
+      process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
+        ? SupportedParachain.KUSAMA
+        : SupportedParachain.BSR;
+    this.gqlEndpoint = getFromLocalStorage(
+      this.qglEndpointKey,
+      gqlEndpoints.find((endpoint) => endpoint.parachain == chain).value,
+    ) as string;
+  }
+
+  private getRPC(): string {
+    if (process.env.NEXT_PUBLIC_VERCEL_ENV === "production") {
+      const oneOrZero = Math.round(Math.random());
+      return oneOrZero === 0
+        ? endpoints.find(
+            (endpoint) =>
+              endpoint.parachain == SupportedParachain.KUSAMA &&
+              endpoint.label === "Dwellir",
+          ).value
+        : endpoints.find(
+            (endpoint) =>
+              endpoint.parachain == SupportedParachain.KUSAMA &&
+              endpoint.label === "OnFinality",
+          ).value;
+    } else {
+      return endpoints.find(
+        (endpoint) => endpoint.parachain == SupportedParachain.BSR,
+      ).value;
+    }
   }
 
   private getTheme(): Theme {
@@ -207,7 +272,7 @@ export default class UserStore {
 
   async getIdentity(address: string): Promise<UserIdentity> {
     const identity = (await this.store.sdk.api.query.identity.identityOf(
-      address
+      address,
     )) as any;
 
     const indentityInfo =
@@ -222,6 +287,12 @@ export default class UserStore {
         }
       });
 
+      const judgements = identity.value.get("judgements")[0];
+
+      const judgementType: Judgement = judgements
+        ? judgements[1].type
+        : "Unknown";
+
       return {
         displayName:
           indentityInfo.get("display").isNone === false
@@ -232,12 +303,14 @@ export default class UserStore {
             ? textDecoder.decode(indentityInfo.get("twitter").value)
             : "",
         discord: discordHandle,
+        judgement: judgementType,
       };
     } else {
       return {
         displayName: "",
         twitter: "",
         discord: "",
+        judgement: null,
       };
     }
   }
@@ -249,23 +322,33 @@ export default class UserStore {
     });
   }
 
-  private async checkGeofencing() {
+  private async checkIP() {
     const response = await fetch(`/api/location`);
     const json = await response.json();
 
     const notAllowedCountries: string[] = JSON.parse(
-      process.env.NEXT_PUBLIC_NOT_ALLOWED_COUNTRIES ?? "[]"
+      process.env.NEXT_PUBLIC_NOT_ALLOWED_COUNTRIES ?? "[]",
     );
 
     const userCountry: string = json.body.country;
     const locationAllowed = !notAllowedCountries.includes(userCountry);
-    if (!locationAllowed) {
+
+    const ip = json.body.ip;
+    const vpnIPsResponse = await fetch("/vpn-ips.txt");
+    const vpnIPs = await vpnIPsResponse.text();
+    const isUsingVPN = vpnIPs
+      .toString()
+      .split("\n")
+      .some((vpnIP) => ipRangeCheck(ip, vpnIP) === true);
+
+    if (!locationAllowed || isUsingVPN) {
       localStorage.removeItem("accountAddress");
       this.accountAddress = null;
     }
 
     runInAction(() => {
       this.locationAllowed = locationAllowed;
+      this.isUsingVPN = isUsingVPN;
     });
 
     return json;
@@ -274,7 +357,6 @@ export default class UserStore {
   get graphQlEnabled() {
     return this.gqlEndpoint != null;
   }
-
 }
 
 export const useUserStore = () => {

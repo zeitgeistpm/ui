@@ -49,7 +49,7 @@ const Avatar = observer(
         />
       </div>
     );
-  }
+  },
 );
 
 export default Avatar;

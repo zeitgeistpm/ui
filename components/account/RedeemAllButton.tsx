@@ -35,13 +35,13 @@ const RedeemAllButton = observer(
               balance: await marketStore.calcWinnings(),
               marketStore: marketStore,
             };
-          })
+          }),
         );
 
         setBalances(winningBalances);
         const total = winningBalances.reduce(
           (total, balance) => total + (balance?.balance?.toNumber() ?? 0),
-          0
+          0,
         );
 
         setTotalWinnings(total);
@@ -57,8 +57,8 @@ const RedeemAllButton = observer(
         if (balance?.balance) {
           transactions.push(
             store.sdk.api.tx.predictionMarkets.redeemShares(
-              balance.marketStore.id
-            )
+              balance.marketStore.id,
+            ),
           );
         }
       });
@@ -80,10 +80,10 @@ const RedeemAllButton = observer(
           failCallback: ({ index, error }) => {
             notificationStore.pushNotification(
               store.getTransactionError(index, error),
-              { type: "Error" }
+              { type: "Error" },
             );
           },
-        })
+        }),
       );
     };
     return (
@@ -101,7 +101,7 @@ const RedeemAllButton = observer(
         )}
       </>
     );
-  }
+  },
 );
 
 export default RedeemAllButton;

@@ -110,7 +110,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     debounce(() => {
       scrollRestoration.set(scrollTop);
     }, 150),
-    [scrollTop]
+    [scrollTop],
   );
 
   useLayoutEffect(() => {
@@ -148,7 +148,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
 
   return (
     <div className={"pt-ztg-46 " + className} ref={listRef}>
-      <h3 className="mb-ztg-40 font-kanit text-ztg-28-120 font-semibold">
+      <h3 className="mb-ztg-40 font-space text-[24px] font-semibold">
         <span className="mr-4">
           {query.myMarketsOnly ? "My Markets" : "All Markets"}
         </span>
@@ -184,19 +184,17 @@ const MarketsSearchInfo = observer(({ searchText }: { searchText: string }) => {
 
   return (
     <div className="flex my-ztg-30 h-ztg-34">
-      <h6 className="font-kanit font-bold text-ztg-28-120" id="marketsHead">
+      <h6 className="font-space  text-ztg-[24px]" id="marketsHead">
         {`Search results for: "${searchText}"`}
       </h6>
-      <div className="h-full flex items-center">
-        <div className="w-ztg-24 h-ztg-24 rounded-full bg-sky-400 dark:bg-black center ml-ztg-15">
-          <X
-            size={24}
-            className="cursor-pointer text-sky-600"
-            onClick={() => {
-              router.push("/", null, { shallow: true });
-            }}
-          />
-        </div>
+      <div className="w-ztg-24 h-ztg-24 rounded-full bg-sky-400 dark:bg-black center ml-ztg-15">
+        <X
+          size={24}
+          className="cursor-pointer text-sky-600"
+          onClick={() => {
+            router.push("/", null, { shallow: true });
+          }}
+        />
       </div>
     </div>
   );

@@ -38,11 +38,11 @@ const LocalizationSelect: FC<LocalizationSelectProps> = observer(
       const base = "flex flex-col absolute z-ztg-2";
       if (store.leftDrawerClosed) {
         setSubContainerClass(
-          `${base} w-ztg-256 left-full bottom-0 w-ztg-200 left-28 bg-white dark:bg-black rounded-ztg-10 mb-ztg-10`
+          `${base} w-ztg-256 left-full bottom-0 w-ztg-200 left-28 bg-white dark:bg-black rounded-ztg-10 mb-ztg-10`,
         );
       } else {
         setSubContainerClass(
-          `${base} w-full bottom-ztg-34 mb-ztg-10 ml-ztg-50`
+          `${base} w-full bottom-ztg-34 mb-ztg-10 ml-ztg-50`,
         );
       }
     }, [store.leftDrawerClosed]);
@@ -86,7 +86,7 @@ const LocalizationSelect: FC<LocalizationSelectProps> = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default LocalizationSelect;

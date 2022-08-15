@@ -28,7 +28,7 @@ const ProgressBar = observer(
       const progressbarWidth = percentage * width;
       //display dot if progress is very small but not 0
       setProgressWidth(
-        progressbarWidth < 6 && progressbarWidth > 0 ? 6 : progressbarWidth
+        progressbarWidth < 6 && progressbarWidth > 0 ? 6 : progressbarWidth,
       );
     }, [percentage, width]);
 
@@ -69,7 +69,7 @@ const ProgressBar = observer(
         ))}
       </div>
     );
-  }
+  },
 );
 
 export default ProgressBar;

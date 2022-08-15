@@ -45,7 +45,7 @@ const Portfolio: NextPage = observer(() => {
       incrementUpdateNum();
     },
     [],
-    500
+    500,
   );
 
   useEffect(() => {
@@ -87,7 +87,7 @@ const Portfolio: NextPage = observer(() => {
 
     (async () => {
       const entries = await store.sdk.api.query.tokens.accounts.entries(
-        address
+        address,
       );
 
       const positions = entries
@@ -114,7 +114,7 @@ const Portfolio: NextPage = observer(() => {
       }
 
       const dateOneWeekAgo = new Date(
-        new Date().getTime() - DAY_SECONDS * 28 * 1000
+        new Date().getTime() - DAY_SECONDS * 28 * 1000,
       ).toISOString();
 
       const positionPromises = positions.map(async (p, index) => {
@@ -151,7 +151,7 @@ const Portfolio: NextPage = observer(() => {
                 asset.asCategoricalOutcome?.[1]
               : //@ts-ignore
                 asset.asScalarOutcome?.[1].toString(),
-            dateOneWeekAgo
+            dateOneWeekAgo,
           );
           const priceHistory = prices.map((record) => {
             return {
@@ -162,7 +162,7 @@ const Portfolio: NextPage = observer(() => {
 
           const pool = await poolStore.getPoolFromChain(Number(poolId));
           const currentPrice = pool.assets.find(
-            (asset) => asset.ticker === outcome.ticker
+            (asset) => asset.ticker === outcome.ticker,
           ).price;
 
           const marketEnd = market.endTimestamp;
@@ -199,14 +199,14 @@ const Portfolio: NextPage = observer(() => {
       });
 
       const fullPositions = (await Promise.all(positionPromises)).filter(
-        (p) => !!p
+        (p) => !!p,
       );
 
       const displayPositons: Position[] = [];
 
       fullPositions.forEach((position) => {
         const existingMarketIndex = displayPositons.findIndex(
-          (p) => p.marketId === position.market.id.toString()
+          (p) => p.marketId === position.market.id.toString(),
         );
 
         if (existingMarketIndex === -1) {
@@ -219,7 +219,7 @@ const Portfolio: NextPage = observer(() => {
           });
         } else {
           displayPositons[existingMarketIndex].tableData.push(
-            createTableRow(position)
+            createTableRow(position),
           );
         }
       });

@@ -76,12 +76,12 @@ const DisputeBox = observer(
 
     useEffect(() => {
       const obs = marketStore.marketChange$.pipe(
-        combineLatestWith(from(getOptions()))
+        combineLatestWith(from(getOptions())),
       );
       const sub = obs.subscribe(
         ([_, options]: [_: number, options: OutcomeOption[]]) => {
           setOptions(options);
-        }
+        },
       );
       return () => sub.unsubscribe();
     }, []);
@@ -150,10 +150,10 @@ const DisputeBox = observer(
               store.getTransactionError(index, error),
               {
                 type: "Error",
-              }
+              },
             );
           },
-        })
+        }),
       );
     };
 
@@ -162,7 +162,7 @@ const DisputeBox = observer(
     return (
       <div className="py-ztg-10 rounded-ztg-10 text-sky-600 bg-white dark:bg-sky-1000">
         <div className="flex items-center px-ztg-16">
-          <div className="font-kanit font-bold text-ztg-14-150 h-ztg-25">
+          <div className="font-space font-bold text-ztg-14-150 h-ztg-25">
             Dispute outcome
           </div>
         </div>
@@ -191,7 +191,7 @@ const DisputeBox = observer(
                   <div className="w-ztg-108">
                     <div className="flex h-ztg-20">
                       <div className="w-ztg-20 h-ztg-20 border-2 border-sky-600 rounded-full mr-ztg-8 bg-ztg-blue"></div>
-                      <div className="font-kanit text-base font-bold flex items-center text-black dark:text-white">
+                      <div className="font-space text-base font-bold flex items-center text-black dark:text-white">
                         {tokenSymbol}
                       </div>
                     </div>
@@ -236,7 +236,7 @@ const DisputeBox = observer(
         )}
       </div>
     );
-  }
+  },
 );
 
 export default DisputeBox;

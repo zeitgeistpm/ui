@@ -51,7 +51,7 @@ const TradeSlip = observer(() => {
                   if (sortedId < failedItemId) {
                     const itemFromSorted = sortedItems[sortedId];
                     const itemId = tradeSlipStore.findIndexWithAssetId(
-                      itemFromSorted.assetId
+                      itemFromSorted.assetId,
                     );
                     indexesToRemove.push(itemId);
                   }
@@ -68,7 +68,7 @@ const TradeSlip = observer(() => {
             failCallback: ({ index, error }, batchIdx?: number) => {
               const { errorName } = store.sdk.errorTable.getEntry(
                 index,
-                extractIndexFromErrorHex(error)
+                extractIndexFromErrorHex(error),
               );
               if (batchIdx != null) {
                 failedItemId = batchIdx;
@@ -77,20 +77,20 @@ const TradeSlip = observer(() => {
                   `Trade failed: ${errorName} - ${item.assetTicker}`,
                   {
                     type: "Error",
-                  }
+                  },
                 );
               } else {
                 notificationStore.pushNotification(
                   `Transaction failed. Error: ${errorName}`,
                   {
                     type: "Error",
-                  }
+                  },
                 );
               }
               reject();
               unsub();
             },
-          })
+          }),
         );
       } catch (err) {
         console.log("Transaction canceled", err.toString());

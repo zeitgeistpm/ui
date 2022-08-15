@@ -1,9 +1,8 @@
-
 .list-kusama-rectangle {
-  list-style-image: url('/icons/rectangle-2.svg');
+  list-style-image: url("/icons/rectangle-2.svg");
 }
 .list-kusama-donut {
-  list-style-image: url('/icons/donut.svg');
+  list-style-image: url("/icons/donut.svg");
 }
 
 ul#howList li {
@@ -20,8 +19,7 @@ ul#howList li {
   /* mix-blend-mode: exclusion; */
 }
 
-#slotsBox p > span
-{
+#slotsBox p > span {
   mix-blend-mode: exclusion;
 }
 
@@ -38,5 +36,9 @@ ul#howList li {
 }
 
 .leader-indicator {
-  background: radial-gradient(99.83% 99.83% at 50% 0%, #FF8001 0%, #FFD100 100%);
+  background: radial-gradient(
+    99.83% 99.83% at 50% 0%,
+    #ff8001 0%,
+    #ffd100 100%
+  );
 }

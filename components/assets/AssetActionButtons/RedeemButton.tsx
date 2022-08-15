@@ -39,7 +39,7 @@ const RedeemButton = observer(
               `Redeemed ${ztgToReceive.toFixed(2)}${store.config.tokenSymbol}`,
               {
                 type: "Success",
-              }
+              },
             );
             setZtgToReceive(new Decimal(0));
           },
@@ -48,10 +48,10 @@ const RedeemButton = observer(
               store.getTransactionError(index, error),
               {
                 type: "Error",
-              }
+              },
             );
           },
-        })
+        }),
       );
     };
     return (
@@ -63,14 +63,14 @@ const RedeemButton = observer(
             ztgToReceive.equals(0) ||
             wallets.activeAccount == null
           }
-          className="rounded-full h-ztg-20 font-kanit text-ztg-10-150 focus:outline-none px-ztg-15 
+          className="rounded-full h-ztg-20 font-space text-ztg-10-150 focus:outline-none px-ztg-15 
               py-ztg-2 ml-auto bg-ztg-blue text-white disabled:opacity-20 disabled:cursor-default"
         >
           Redeem Tokens
         </button>
       </div>
     );
-  }
+  },
 );
 
 export default RedeemButton;

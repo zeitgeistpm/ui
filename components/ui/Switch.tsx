@@ -58,7 +58,7 @@ const Switch = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default Switch;

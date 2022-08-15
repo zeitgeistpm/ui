@@ -70,11 +70,11 @@ export default class CourtStore {
 
   private fetchCases = async () => {
     const courtMarketsWithDisputes = Object.values(
-      this.store.markets.markets
+      this.store.markets.markets,
     ).filter((market) => market.disputes.length > 0 && market.isCourt === true);
 
     const casePromises: Promise<Case>[] = courtMarketsWithDisputes.map(
-      (market) => this.loadCase(market.id, market.slug)
+      (market) => this.loadCase(market.id, market.slug),
     );
 
     const cases = await Promise.all(casePromises);
@@ -85,12 +85,12 @@ export default class CourtStore {
 
   private loadCase = async (
     marketId: number,
-    marketName?: string
+    marketName?: string,
   ): Promise<Case> => {
     const jurorEntires =
       await this.store.sdk.api.query.court.requestedJurors.entries(marketId);
     const voteEntries = await this.store.sdk.api.query.court.votes.entries(
-      marketId
+      marketId,
     );
 
     const jurors: Juror[] = [];
@@ -119,7 +119,7 @@ export default class CourtStore {
         ? convertBlockNumberToTimestamp(
             endBlock,
             this.store.blockNumber.toNumber(),
-            this.store.config.blockTimeSec
+            this.store.config.blockTimeSec,
           )
         : null,
       jurors: jurors,
@@ -140,7 +140,7 @@ export default class CourtStore {
 
   private fetchJuror = async () => {
     const juror = await this.store.sdk.api.query.court.jurors(
-      this.store.wallets.activeAccount.address
+      this.store.wallets.activeAccount.address,
     );
 
     runInAction(async () => {
@@ -150,7 +150,7 @@ export default class CourtStore {
 
   private fetchStake = async () => {
     const reservesCodec = await this.store.sdk.api.query.balances.reserves(
-      this.store.wallets.activeAccount.address
+      this.store.wallets.activeAccount.address,
     );
 
     const reserves = reservesCodec.toHuman() as {

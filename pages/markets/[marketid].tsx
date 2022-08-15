@@ -163,15 +163,15 @@ const MarketDetails = observer(() => {
       const series: ChartSeries[] = [];
       let chartData: ChartData[] = [];
       const outcomes = market.marketOutcomes.filter(
-        (o) => o.metadata !== "ztg"
+        (o) => o.metadata !== "ztg",
       );
 
       const dateOneWeekAgo = new Date(
-        new Date().getTime() - DAY_SECONDS * 28 * 1000
+        new Date().getTime() - DAY_SECONDS * 28 * 1000,
       ).toISOString();
 
       for (const [index, assetId] of Array.from(
-        market.outcomeAssetIds.entries()
+        market.outcomeAssetIds.entries(),
       )) {
         const ticker = market.outcomesMetadata[index]["ticker"];
         const color = market.outcomesMetadata[index]["color"] || "#ffffff";
@@ -187,7 +187,7 @@ const MarketDetails = observer(() => {
             market.id,
             //@ts-ignore
             assetId.categoricalOutcome?.[1] ?? assetId.scalarOutcome?.[1],
-            dateOneWeekAgo
+            dateOneWeekAgo,
           );
 
           series.push({
@@ -253,7 +253,7 @@ const MarketDetails = observer(() => {
   const handleDeployClick = () => {
     const rows = poolRowDataFromOutcomes(
       marketStore.market.categories as MultipleOutcomeEntry[],
-      store.config.tokenSymbol
+      store.config.tokenSymbol,
     );
     setPoolRows(rows);
   };
@@ -282,7 +282,7 @@ const MarketDetails = observer(() => {
             successCallback: () => {
               notificationStore.pushNotification(
                 "Bought complete set of " + setAmountNeeded + " assets",
-                { type: "Success" }
+                { type: "Success" },
               );
               resolve();
             },
@@ -291,11 +291,11 @@ const MarketDetails = observer(() => {
                 store.getTransactionError(index, error),
                 {
                   type: "Error",
-                }
+                },
               );
               reject();
             },
-          })
+          }),
         );
       });
     };
@@ -335,11 +335,11 @@ const MarketDetails = observer(() => {
                 store.getTransactionError(index, error),
                 {
                   type: "Error",
-                }
+                },
               );
               reject();
             },
-          })
+          }),
         );
       });
     };
@@ -347,7 +347,7 @@ const MarketDetails = observer(() => {
     const addLiqudity = async (
       pool: Swap,
       assetIdx: number,
-      amount: string
+      amount: string,
     ) => {
       const asset = pool.assets[assetIdx];
       return new Promise<void>((resolve, reject) => {
@@ -363,7 +363,7 @@ const MarketDetails = observer(() => {
                 `Additional liquidity added - ${assetIdx} - ${amount}`,
                 {
                   type: "Success",
-                }
+                },
               );
               resolve();
             },
@@ -372,11 +372,11 @@ const MarketDetails = observer(() => {
                 store.getTransactionError(index, error),
                 {
                   type: "Error",
-                }
+                },
               );
               reject();
             },
-          })
+          }),
         );
       });
     };
@@ -421,7 +421,7 @@ const MarketDetails = observer(() => {
 
     const outcome = tableData?.find(
       (data) =>
-        JSON.stringify(data.assetId) === JSON.stringify(reportedOutcome.asset)
+        JSON.stringify(data.assetId) === JSON.stringify(reportedOutcome.asset),
     );
 
     return outcome ? [outcome] : undefined;
@@ -588,7 +588,7 @@ const MarketDetails = observer(() => {
               >
                 Deploy Pool
               </TransactionButton>
-              <div className="text-ztg-12-150 text-sky-600 font-bold ml-ztg-16">
+              <div className="text-ztg-12-150 text-sky-600 font-bold ml-[27px]">
                 Total Cost:
                 <span className="font-mono">
                   {" "}
@@ -601,7 +601,7 @@ const MarketDetails = observer(() => {
           <>
             {!marketStore.is("Proposed") && (
               <button
-                className="my-ztg-20 font-kanit font-bold text-ztg-16-150 text-sky-600 border-1 px-ztg-20 py-ztg-10 rounded-ztg-10 border-sky-600"
+                className="my-ztg-20 font-space font-bold text-ztg-16-150 text-sky-600 border-1 px-ztg-20 py-ztg-10 rounded-ztg-10 border-sky-600"
                 data-test="deployLiquidityButton"
                 onClick={handleDeployClick}
               >

@@ -48,7 +48,7 @@ export const tradeSlipForm = new MobxReactForm(
   {
     plugins: defaultPlugins,
     options: defaultOptions,
-  }
+  },
 );
 
 const addFormField = (name: string) => {
@@ -158,7 +158,7 @@ export class TradeSlipBoxState {
 
   get fieldName() {
     return JSON.stringify(
-      this.assetId["categoricalOutcome"] ?? this.assetId["scalarOutcome"]
+      this.assetId["categoricalOutcome"] ?? this.assetId["scalarOutcome"],
     ).replace(/[\[\]\,]/g, "_");
   }
 
@@ -200,7 +200,7 @@ export class TradeSlipBoxState {
         disposers: false,
         tradeSlipStore: false,
       },
-      { autoBind: true, deep: false }
+      { autoBind: true, deep: false },
     );
 
     addFormField(this.fieldName);
@@ -211,12 +211,12 @@ export class TradeSlipBoxState {
       () => this.init === true,
       () => {
         this.setupReactions();
-      }
+      },
     );
 
     when(
       () => this.disabled === true,
-      () => tradeSlipForm.isValid && tradeSlipForm.invalidate()
+      () => tradeSlipForm.isValid && tradeSlipForm.invalidate(),
     );
   }
 
@@ -239,17 +239,17 @@ export class TradeSlipBoxState {
           const amntString = amount?.toString();
           this.tradeSlipStore.changeItemAtIndex(
             { amount: amntString },
-            this.indexInItems
+            this.indexInItems,
           );
-        }
+        },
       ),
       reaction(
         () => this.type,
-        () => (this.amount = null)
+        () => (this.amount = null),
       ),
       reaction(
         () => this.marketStore?.pool,
-        () => this.init && this.setBalances()
+        () => this.init && this.setBalances(),
       ),
     ];
   }
@@ -310,7 +310,7 @@ export class TradeSlipBoxState {
 
   private async setBalances() {
     const assetPoolBalance = await this.marketStore.getPoolBalance(
-      this.assetId
+      this.assetId,
     );
     const ztgPoolBalance = await this.marketStore.getPoolBalance(ztgAsset);
     const assetZtgPrice = await this.marketStore.assetPriceInZTG(this.assetId);
@@ -402,7 +402,7 @@ export default class TradeSlipStore {
     for (const [id, item] of Array.from(items.entries())) {
       // assueming all boxStates are loaded market data etc.
       const boxState = records.find((s) =>
-        compareJSON(item.assetId, s.assetId)
+        compareJSON(item.assetId, s.assetId),
       );
       await boxState.loadMarketStore();
       const { marketStore, assetId, type } = boxState;
@@ -434,7 +434,7 @@ export default class TradeSlipStore {
       } else {
         const lastItem = [...trades].pop();
         const otherSameMarketTrades = trades.filter(
-          (v) => v.marketId === marketId
+          (v) => v.marketId === marketId,
         );
         const hasMoreSameMarketTrades = otherSameMarketTrades.length > 0;
 
@@ -444,28 +444,28 @@ export default class TradeSlipStore {
           const lastSameMarketItemIndex = otherSameMarketTrades.findLastIndexOf(
             (v) => {
               return v.marketId === marketId;
-            }
+            },
           );
           const lastSameMarketItem =
             otherSameMarketTrades[lastSameMarketItemIndex];
           if (lastSameMarketItem.type === "sell") {
             ztgPoolBalance = lastSameMarketItem.ztgPoolBalance.sub(
-              lastSameMarketItem.transferAmount
+              lastSameMarketItem.transferAmount,
             );
           } else {
             ztgPoolBalance = lastSameMarketItem.ztgPoolBalance.add(
-              lastSameMarketItem.transferAmount
+              lastSameMarketItem.transferAmount,
             );
           }
         }
 
         if (lastItem.type === "sell") {
           ztgAccountBalance = lastItem.ztgAccountBalance.add(
-            lastItem.transferAmount
+            lastItem.transferAmount,
           );
         } else {
           ztgAccountBalance = lastItem.ztgAccountBalance.sub(
-            lastItem.transferAmount
+            lastItem.transferAmount,
           );
         }
       }
@@ -479,14 +479,14 @@ export default class TradeSlipStore {
             assetPoolBalance,
             assetWeight,
             amount,
-            pool.swapFee
+            pool.swapFee,
           );
           currentPrice = calcSpotPrice(
             ztgPoolBalance,
             ztgWeight,
             assetPoolBalance,
             assetWeight,
-            0
+            0,
           );
         } else {
           transferAmount = calcOutGivenIn(
@@ -495,14 +495,14 @@ export default class TradeSlipStore {
             ztgPoolBalance,
             ztgWeight,
             amount,
-            pool.swapFee
+            pool.swapFee,
           );
           currentPrice = calcSpotPrice(
             assetPoolBalance,
             assetWeight,
             ztgPoolBalance,
             ztgWeight,
-            0
+            0,
           );
         }
       }
@@ -547,7 +547,7 @@ export default class TradeSlipStore {
       {
         boxStates: false,
       },
-      { deep: false, autoBind: true }
+      { deep: false, autoBind: true },
     );
 
     this.setupReactions();
@@ -558,7 +558,7 @@ export default class TradeSlipStore {
       () => this.sortedTrades,
       (trades) => {
         this.createTransactions(trades);
-      }
+      },
     );
 
     reaction(
@@ -584,7 +584,7 @@ export default class TradeSlipStore {
         }
         this.setItemsUpdating(false);
       },
-      { fireImmediately: true }
+      { fireImmediately: true },
     );
 
     reaction(
@@ -599,7 +599,7 @@ export default class TradeSlipStore {
         runInAction(() => {
           this.batchTx = this.store.sdk.api.tx.utility.batch(this.txs);
         });
-      }
+      },
     );
 
     reaction(
@@ -619,7 +619,7 @@ export default class TradeSlipStore {
         const paymentInfo = await batchTx.paymentInfo(activeAccount.address);
 
         const partialFee = new Decimal(paymentInfo.partialFee.toNumber()).div(
-          ZTG
+          ZTG,
         );
 
         runInAction(() => (this.txFee = partialFee));
@@ -637,7 +637,7 @@ export default class TradeSlipStore {
         runInAction(() => {
           this.totalCost = total;
         });
-      }
+      },
     );
   }
 
@@ -681,7 +681,7 @@ export default class TradeSlipStore {
     const { assetWeight, baseWeight } = extractSwapWeights(
       pool,
       tradeAsset,
-      "Ztg"
+      "Ztg",
     );
 
     if (item.type === "buy") {
@@ -701,7 +701,7 @@ export default class TradeSlipStore {
         tradeAmount,
         new Decimal(pool.swapFee),
         this.slippagePercentage.div(100),
-        pool.poolId
+        pool.poolId,
       );
     }
     if (item.type === "sell") {
@@ -716,7 +716,7 @@ export default class TradeSlipStore {
         tradeAmount,
         new Decimal(pool.swapFee),
         this.slippagePercentage.div(100),
-        pool.poolId
+        pool.poolId,
       );
     }
   }
