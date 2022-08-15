@@ -150,7 +150,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
       }
     };
 
-    const isConnecting = !store.initialized || !avataraContext;
+    const isConnecting = !store.sdkInitialized || !avataraContext;
 
     const disabled =
       isConnecting ||

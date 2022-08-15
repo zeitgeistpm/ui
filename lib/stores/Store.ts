@@ -71,6 +71,7 @@ export default class Store {
   pools = new PoolsStore(this);
 
   initialized = false;
+  sdkInitialized = false;
 
   config: Config;
 
@@ -181,6 +182,9 @@ export default class Store {
 
     try {
       await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
+      runInAction(() => {
+        this.sdkInitialized = true;
+      });
       await this.loadConfig();
       this.initGraphQlClient();
       const storedWalletId = this.userStore.walletId;
@@ -266,7 +270,7 @@ export default class Store {
 
   private async fetchZTGPrice(): Promise<ZTGInfo> {
     const res = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=zeitgeist&vs_currencies=usd&include_24hr_change=true"
+      "https://api.coingecko.com/api/v3/simple/price?ids=zeitgeist&vs_currencies=usd&include_24hr_change=true",
     );
     const json = await res.json();
 
