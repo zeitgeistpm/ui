@@ -26,7 +26,7 @@ import Rocket from "./gfx/rocket.png";
 import GlowBall from "./gfx/glow_ball.png";
 import Footer from "./Footer";
 import { encodeAddress } from "@polkadot/keyring";
-import { sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
+import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 
 const DefaultLayout: FC<{ launchDate: Date }> = observer(
   ({ children, launchDate }) => {
@@ -302,7 +302,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                   <div className="flex justify-center items-center mb-12">
                     <button
                       disabled={!isWhitelisted}
-                      className={`relative flex justify-center items-center bg-ztg-blue text-white py-2 px-24 font-space font-bold ${
+                      className={`relative h-16 flex justify-center items-center bg-ztg-blue text-white py-2 px-24 font-space font-bold ${
                         !isWhitelisted ? "bg-blue-500 text-gray-700" : ""
                       }`}
                     >
@@ -326,21 +326,23 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                         }`}
                         style={{ fontFamily: "Consolas,monaco,monospace" }}
                       >
-                        {address || (
+                        {!address || !connected ? (
                           <span className="flex justify-center items-center">
                             Select account <FaWallet className="ml-4" />
                           </span>
+                        ) : (
+                          address
                         )}
-                        {address && (
+                        {address && connected && (
                           <div
                             className={`w-3 h-3 ml-3 rounded-full animate-pulse ${
-                              isWhitelisted ? "bg-green-500" : "bg-red-600"
+                              isWhitelisted ? "bg-purple-600" : "bg-red-600"
                             }`}
                           ></div>
                         )}
 
-                        {isWhitelisted && tarotNftImage && (
-                          <div className="group h-full absolute -right-14 border-black border-2 hover:scale-[4] transition-all hover:border-green-400 hover:rounded-sm">
+                        {isWhitelisted && tarotNftImage && connected && (
+                          <div className="group h-full absolute -right-14 border-black border-2 hover:scale-[4] transition-all hover:border-purple-600 hover:rounded-sm">
                             <img
                               src={tarotNftImage}
                               className="h-full hover:rounded-sm overflow-hidden"
@@ -353,7 +355,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                       </p>
                     </div>
                   </div>
-                  <p className="mb-8">
+                  <p className="mb-14">
                     By clicking this button, you will be minting a Zeitgeist NFT
                     unique for your Zeitgeist profile image. You will be able to
                     view and adjust this profile image from your profile section
