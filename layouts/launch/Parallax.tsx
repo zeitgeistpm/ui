@@ -36,8 +36,9 @@ const Parallax = ({
   const initial = 0;
   const final = elementTop + offset;
 
-  const stiffness = useMemo(() => random(380, 450), []);
-  const damping = useMemo(() => random(80, 110), []);
+  const mass = useMemo(() => random(3, 20), []);
+  const stiffness = useMemo(() => random(310, 350), []);
+  const damping = useMemo(() => random(50, 90), []);
 
   const yRange = useTransform(scrollY, [initial, final], [offset, -offset]);
   const y = useSpring(yRange, { stiffness, damping });
