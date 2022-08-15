@@ -304,7 +304,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                   <div className="flex justify-center items-center mb-12">
                     <button
                       disabled={!isWhitelisted}
-                      className={`relative h-16 flex justify-center items-center bg-ztg-blue text-white py-2 px-24 font-space font-bold ${
+                      className={`relative h-18 md:h-16 flex justify-center items-center bg-ztg-blue text-white py-2 px-24 font-space font-bold ${
                         !isWhitelisted
                           ? "bg-blue-500 text-gray-700 cursor-not-allowed"
                           : ""
