@@ -27,6 +27,7 @@ import GlowBall from "./gfx/glow_ball.png";
 import Footer from "./Footer";
 import { encodeAddress } from "@polkadot/keyring";
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
+import { shortenAddress } from "lib/util";
 
 const DefaultLayout: FC<{ launchDate: Date }> = observer(
   ({ children, launchDate }) => {
@@ -334,7 +335,9 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                             Select account <FaWallet className="ml-4" />
                           </span>
                         ) : (
-                          address
+                          <span title={address}>
+                            {shortenAddress(address, 8, 8)}
+                          </span>
                         )}
                         {address && connected && (
                           <div
