@@ -28,7 +28,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
   ({ children, launchDate }) => {
     const store = useStore();
     const avataraContext = useAvatarContext();
-
+    console.log(avataraContext);
     const [isClaiming, setIsClaiming] = useState(false);
     const [claimError, setClaimError] = useState<null | string>(null);
 
@@ -126,18 +126,32 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           </Parallax>
         </div>
 
-        <div className="relative mx-6 sm:mx-24 xl:mx-[408px]">
-          <header className="relative py-4" style={{ zIndex: 20 }}>
-            <div className="flex items-center mr-2 mb-6 text-white">
-              <div className="mr-2">
-                <ZeitgeistLogo height={38} width={37} />
-              </div>
-              <div className="ml-3 font-kanit  font-bold text-2xl">
-                Zeitgeist
-              </div>
+        <header
+          className="relative flex items-center p-6 px-12"
+          style={{ zIndex: 20 }}
+        >
+          <div className="flex items-center text-white h-20">
+            <div className="mr-2">
+              <ZeitgeistLogo height={38} width={37} />
             </div>
-          </header>
+            <div className="ml-4 font-kanit font-bold text-2xl">Zeitgeist</div>
+          </div>
+          <div className="flex flex-1 justify-end">
+            <div className="inline-flex">
+              <AccountButton
+                connectButtonClassname="animate-pulse text-white flex w-64 xl:w-ztg-184 h-12 bg-[#45059E] text-black rounded-full text-ztg-18-150 font-medium justify-center items-center cursor-pointer disabled:cursor-default disabled:opacity-20"
+                connectButtonText={
+                  <div className="flex items-center">
+                    <FaWallet />
+                    <span className="ml-2">Connect Wallet</span>
+                  </div>
+                }
+              />
+            </div>
+          </div>
+        </header>
 
+        <div className="relative mx-6 sm:mx-24 xl:mx-[408px]">
           <div className="relative z-0 h-72 md:h-96" style={{ zIndex: 10 }}>
             <div
               className="w-full flex justify-center items-center"
@@ -278,21 +292,6 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                 </p>
               </div>
             </section>
-          </div>
-
-          <div
-            className="fixed top-4 right-4 md:top-4 md:right-12"
-            style={{ zIndex: 99 }}
-          >
-            <AccountButton
-              connectButtonClassname="animate-pulse text-white flex w-64 xl:w-ztg-184 h-12 bg-[#45059E] text-black rounded-full text-ztg-18-150 font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-20"
-              connectButtonText={
-                <div className="flex items-center">
-                  <FaWallet />
-                  <span className="ml-2">Connect Wallet</span>
-                </div>
-              }
-            />
           </div>
 
           <Footer />
