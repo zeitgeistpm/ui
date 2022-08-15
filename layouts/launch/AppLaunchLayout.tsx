@@ -171,7 +171,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
         </div>
 
         <header
-          className="relative flex items-center p-6 px-12"
+          className="relative flex items-center pt-4 xl:py-6 px-6 xl:px-12"
           style={{ zIndex: 20 }}
         >
           <div className="flex items-center text-white h-20">
@@ -180,7 +180,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             </div>
             <div className="ml-4 font-kanit font-bold text-2xl">Zeitgeist</div>
           </div>
-          <div className="flex flex-1 justify-end">
+          <div className="flex-1 justify-end hidden sm:flex">
             <div className="inline-flex">
               <AccountButton
                 autoClose
