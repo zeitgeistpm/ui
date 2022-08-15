@@ -150,10 +150,14 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
       }
     };
 
-    const disabled =
-      isClaiming || !avataraContext || !isWhitelisted || !walletConnected;
-
     const isConnecting = !store.initialized || !avataraContext;
+
+    const disabled =
+      isConnecting ||
+      isClaiming ||
+      !avataraContext ||
+      !isWhitelisted ||
+      !walletConnected;
 
     return (
       <div className="w-full min-h-screen overflow-hidden overflow-x-hidden max-w-[100vw] text-white bg-black">
