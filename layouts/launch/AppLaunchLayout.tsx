@@ -59,7 +59,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
       (holder) => holder.owner === ksmAddress,
     );
 
-    const { connected } = store.wallets;
+    const { connected: walletConnected } = store.wallets;
 
     const isWhitelisted = Boolean(tarotHolder);
 
@@ -151,7 +151,9 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
     };
 
     const disabled =
-      isClaiming || !avataraContext || !isWhitelisted || !connected;
+      isClaiming || !avataraContext || !isWhitelisted || !walletConnected;
+
+    const isConnecting = !store.initialized || !avataraContext;
 
     return (
       <div className="w-full min-h-screen overflow-hidden overflow-x-hidden max-w-[100vw] text-white bg-black">
@@ -214,7 +216,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           </div>
           <div className="flex-1 justify-end hidden sm:flex">
             <div className="inline-flex">
-              {!connected ? (
+              {isConnecting ? (
                 <div className="flex justify-center items-center">
                   <span style={{ fontFamily: "Consolas,monaco,monospace" }}>
                     connecting to chain
@@ -356,7 +358,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                     </button>
                   </div>
 
-                  {!connected ? (
+                  {isConnecting ? (
                     <div className="flex justify-center items-center mb-12">
                       <span style={{ fontFamily: "Consolas,monaco,monospace" }}>
                         connecting to chain
@@ -370,7 +372,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                         <div
                           className="flex justify-center items-center cursor-pointer"
                           onClick={() =>
-                            connected
+                            walletConnected
                               ? accountModals.openAccontSelect()
                               : accountModals.openWalletSelect()
                           }
@@ -381,7 +383,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                             }`}
                             style={{ fontFamily: "Consolas,monaco,monospace" }}
                           >
-                            {!address || !connected ? (
+                            {!address || !walletConnected ? (
                               <span className="flex justify-center items-center">
                                 Select account <FaWallet className="ml-4" />
                               </span>
@@ -390,7 +392,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                                 {shortenAddress(address, 8, 8)}
                               </span>
                             )}
-                            {address && connected && (
+                            {address && walletConnected && (
                               <div
                                 className={`w-3 h-3 ml-3 rounded-full animate-pulse ${
                                   isWhitelisted ? "bg-purple-600" : "bg-red-600"
@@ -398,7 +400,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                               ></div>
                             )}
 
-                            {isWhitelisted && tarotNftImage && connected && (
+                            {isWhitelisted && tarotNftImage && walletConnected && (
                               <div className="group h-full absolute -right-14 border-black border-2 hover:scale-[4] transition-all hover:border-purple-600 hover:rounded-sm">
                                 <img
                                   src={tarotNftImage}
