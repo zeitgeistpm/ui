@@ -48,7 +48,6 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
     const [indexedAvatar, setIndexedAvatar] = useState<Avatar.IndexedAvatar>();
 
     const [isClaiming, setIsClaiming] = useState(false);
-    const [claimError, setClaimError] = useState<null | string>(null);
     const [avatars, setAvatars] = useState<Avatar.IndexedAvatar[]>([]);
     const [tarotNftImage, setTarotNftImage] = useState(null);
 
@@ -134,6 +133,15 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
       store.userStore.theme = "dark";
     });
 
+    const isConnecting = !store.initialized || !avataraContext;
+
+    const disabled =
+      isConnecting ||
+      isClaiming ||
+      !avataraContext ||
+      !isWhitelisted ||
+      !walletConnected;
+
     const mintingContainer = useRef<HTMLDivElement>();
     const [mintingContainerHeight, setMintingContainer] =
       useState<number>(null);
@@ -145,7 +153,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
       onResize();
       window.addEventListener("resize", onResize);
       return () => window.removeEventListener("resize", onResize);
-    }, [mintingContainer]);
+    }, [mintingContainer, isConnecting, disabled]);
 
     const doClaim = async () => {
       if (!isClaiming && address && avataraContext) {
@@ -160,7 +168,9 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           if (!response?.avatar) {
             throw new Error((response as any).message);
           }
-          setIndexedAvatar(response.avatar);
+          Avatar.fetchIndexedAvatarForAccount(avataraContext, ksmAddress).then(
+            setIndexedAvatar,
+          );
           notificationStore.pushNotification("Avatar successfully minted!", {
             type: "Success",
           });
@@ -172,15 +182,6 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
         setIsClaiming(false);
       }
     };
-
-    const isConnecting = !store.initialized || !avataraContext;
-
-    const disabled =
-      isConnecting ||
-      isClaiming ||
-      !avataraContext ||
-      !isWhitelisted ||
-      !walletConnected;
 
     return (
       <div className="w-full min-h-screen overflow-hidden overflow-x-hidden max-w-[100vw] text-white bg-black">
@@ -405,7 +406,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                   </div>
                 ) : (
                   <div className="bg-white p-12 bg-opacity-5 md:w-5/6">
-                    <div className="flex justify-center items-center mb-12">
+                    <div className="flex justify-center items-center mb-8">
                       <button
                         onClick={doClaim}
                         disabled={disabled}
@@ -431,7 +432,6 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                     ) : (
                       <>
                         <div className="mb-8">
-                          <h3 className="font-bold">Minting for</h3>
                           <div
                             className="flex justify-center items-center cursor-pointer"
                             onClick={() =>
