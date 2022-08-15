@@ -72,6 +72,20 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
 
     useEffect(() => {
       if (avataraContext) {
+        console.group("@zeitgeistpm/avatara");
+        console.log("api", avataraContext.opts.api);
+        console.log("rpc", avataraContext.opts.rpc);
+        console.log("indexer", avataraContext.opts.indexer);
+        console.log(
+          "avatarCollectionId",
+          avataraContext.opts.avatarCollectionId,
+        );
+        console.groupEnd();
+      }
+    }, [avataraContext]);
+
+    useEffect(() => {
+      if (avataraContext) {
         Avatar.fetchIndexedAvatars(avataraContext).then(setAvatars);
         Tarot.fetchLatestSnapshot(avataraContext).then(setTarotHolders);
         Tarot.fetchLatestOccultists(avataraContext).then(setOccultists);
@@ -303,7 +317,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                 <div className="bg-white p-12 bg-opacity-5 md:w-5/6">
                   <div className="flex justify-center items-center mb-12">
                     <button
-                      disabled={!isWhitelisted}
+                      disabled={!avataraContext || !isWhitelisted || !connected}
                       className={`relative h-18 md:h-16 flex justify-center items-center bg-ztg-blue text-white py-2 px-24 font-space font-bold ${
                         !isWhitelisted
                           ? "bg-blue-500 text-gray-700 cursor-not-allowed"
