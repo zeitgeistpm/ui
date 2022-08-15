@@ -200,7 +200,10 @@ export default class Store {
         this.initialized = true;
       });
     } catch {
-      this.userStore.resetEndpoints();
+      this.userStore.setNextBestEndpoints(
+        this.userStore.endpoint,
+        this.userStore.gqlEndpoint,
+      );
       this.initialize();
     }
 
@@ -241,7 +244,8 @@ export default class Store {
     if (sdk.graphQLClient != null) {
       this.userStore.setGqlEndpoint(graphQlEndpoint);
     } else {
-      throw Error("Graphql service not available " + graphQlEndpoint);
+      //might makes sense to throw an error in the future if we have alternative indexers
+      console.error("Graphql service not available " + graphQlEndpoint);
     }
 
     this.userStore.setEndpoint(endpoint);
@@ -266,7 +270,7 @@ export default class Store {
 
   private async fetchZTGPrice(): Promise<ZTGInfo> {
     const res = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=zeitgeist&vs_currencies=usd&include_24hr_change=true"
+      "https://api.coingecko.com/api/v3/simple/price?ids=zeitgeist&vs_currencies=usd&include_24hr_change=true",
     );
     const json = await res.json();
 

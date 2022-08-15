@@ -626,7 +626,7 @@ const CreatePage: NextPage = observer(() => {
           >
             Create Market
           </TransactionButton>
-          <div className="w-full flex items-center text-ztg-12-150 font-bold ml-ztg-8 text-sky-600">
+          <div className="w-full flex items-center text-ztg-12-150 font-bold ml-[27px] text-sky-600">
             <div className="mr-ztg-15" data-test="totalCost">
               Total Cost:
               <span className="font-mono">

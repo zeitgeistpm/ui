@@ -83,7 +83,7 @@ export const extrinsicCallback = ({
   };
 };
 
-export const signAndSend = (
+export const signAndSend = async (
   tx: SubmittableExtrinsic<ApiTypes>,
   signer: KeyringPairOrExtSigner,
   cb?: GenericCallback,
@@ -112,18 +112,22 @@ export const signAndSend = (
     }
   };
   return new Promise(async (resolve, reject) => {
-    if (isExtSigner(signer)) {
-      const unsub = await tx.signAndSend(
-        signer.address,
-        { signer: signer.signer },
-        (result) => {
+    try {
+      if (isExtSigner(signer)) {
+        const unsub = await tx.signAndSend(
+          signer.address,
+          { signer: signer.signer },
+          (result) => {
+            cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
+          },
+        );
+      } else {
+        const unsub = await tx.signAndSend(signer, (result) => {
           cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
-        },
-      );
-    } else {
-      const unsub = await tx.signAndSend(signer, (result) => {
-        cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
-      });
+        });
+      }
+    } catch (error) {
+      reject(error);
     }
   });
 };

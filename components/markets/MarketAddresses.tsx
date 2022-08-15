@@ -7,7 +7,7 @@ import Avatar from "components/ui/Avatar";
 import CopyIcon from "components/ui/CopyIcon";
 import MarketStore from "lib/stores/MarketStore";
 import { useModalStore } from "lib/stores/ModalStore";
-import { UserIdentity, useUserStore } from "lib/stores/UserStore";
+import { Judgement, UserIdentity, useUserStore } from "lib/stores/UserStore";
 import { shortenAddress } from "lib/util";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
@@ -106,35 +106,53 @@ const AddressDetails = ({
   address,
   displayName,
   onInspect,
+  judgement,
 }: {
   title: string;
   address: string;
   displayName?: string;
+  judgement: Judgement;
   onInspect: () => void;
 }) => {
   const handleInspectClick = () => {
     onInspect();
   };
+
+  const getJudgementColorClass = (judgement: Judgement) => {
+    if (judgement === "KnownGood" || judgement === "Reasonable") {
+      return "text-sheen-green";
+    } else if (
+      judgement === "LowQuality" ||
+      judgement === "OutOfDate" ||
+      judgement === "Erroneous"
+    ) {
+      return "text-vermilion";
+    }
+  };
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center mb-ztg-18 ">
-      <div className="font-kanit font-bold text-ztg-18-150 w-[90px] mb-ztg-15 sm:mb-0">
+      <div className="font-space font-bold text-ztg-14-150 mr-[20px] mb-ztg-15 sm:mb-0">
         {title}
       </div>
-      <div className="flex">
-        <div
-          className="flex justify-center items-center bg-sky-500 dark:bg-black 
-        rounded-full text-white pl-ztg-6 pr-ztg-10 h-ztg-40 mr-ztg-17"
-        >
-          <div className="w-ztg-30 h-ztg-30 rounded-full bg-white mr-ztg-10 overflow-hidden">
+      <div className="flex items-center">
+        <div className="flex justify-center items-center pl-ztg-6 pr-ztg-10 h-ztg-40 mr-ztg-17 ">
+          <div className="w-ztg-30 h-ztg-30 rounded-full bg-white mr-ztg-10 overflow-hidden text-ztg-14-150 font-mono">
             <Avatar address={address} />
           </div>
-          <div className="text-black dark:text-white font-mono">
-            {displayName ?? shortenAddress(address, 4, 4)}
+          <div className="flex flex-col">
+            <div className="font-mono">
+              {displayName ?? shortenAddress(address, 4, 4)}
+            </div>
+            <div
+              className={`text-ztg-10-150 ${getJudgementColorClass(judgement)}`}
+            >
+              {judgement?.split(/(?=[A-Z])/).join(" ")}
+            </div>
           </div>
         </div>
         <button
           onClick={handleInspectClick}
-          className="border-2 border-sky-600 rounded-ztg-50 h-ztg-40 text-ztg-14-120 w-full min-w-[100px] max-w-[160px]"
+          className="text-white bg-border-dark rounded-ztg-50 text-ztg-10-150 w-[60px] font-space h-[20px] "
           data-test="inspectButton"
         >
           Inspect
@@ -198,6 +216,7 @@ const MarketAddresses = observer(
               ? creatorIdentity.displayName
               : null
           }
+          judgement={creatorIdentity?.judgement}
           onInspect={() => handleInspect(marketStore?.creator, creatorIdentity)}
         />
         <AddressDetails
@@ -208,6 +227,7 @@ const MarketAddresses = observer(
               ? oracleIdentity.displayName
               : null
           }
+          judgement={oracleIdentity?.judgement}
           onInspect={() => handleInspect(marketStore?.oracle, oracleIdentity)}
         />
         {authorityIdentity && (

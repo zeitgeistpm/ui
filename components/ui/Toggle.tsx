@@ -20,8 +20,8 @@ const Toggle: FC<ToggleProps> = ({
     className;
   const activeClasses = "text-black dark:text-white";
   const variants: Variants = {
-    left: { x: 4 },
-    right: { x: 57 },
+    left: { x: 6 },
+    right: { x: 60 },
   };
   return (
     <div className="relative">
@@ -47,7 +47,7 @@ const Toggle: FC<ToggleProps> = ({
       <motion.div
         variants={variants}
         animate={active ? "left" : "right"}
-        className="rounded-full w-ztg-34 h-ztg-34 cursor-pointer relative bottom-ztg-37 left-ztg-2 bg-white dark:bg-black"
+        className="rounded-full w-ztg-34 h-ztg-34 cursor-pointer relative bottom-ztg-37 bg-white dark:bg-black"
       ></motion.div>
     </div>
   );
