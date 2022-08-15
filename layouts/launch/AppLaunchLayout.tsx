@@ -487,6 +487,7 @@ const CountdownSeparator = () => {
 const CountdownNumber = (props: { number: number }) => {
   return (
     <div className="flex items-center justify-center text-4xl xl:text-7xl h-20 w-20 md:h-22 md:w-22 xl:h-44 xl:w-44 bg-black bg-opacity-30">
+      {props.number < 10 ? "0" : ""}
       {props.number}
     </div>
   );
