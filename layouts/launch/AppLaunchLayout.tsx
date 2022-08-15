@@ -28,7 +28,7 @@ import Footer from "./Footer";
 import { encodeAddress } from "@polkadot/keyring";
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 import { shortenAddress } from "lib/util";
-import Loader from "react-spinners/PulseLoader";
+import Loader from "react-spinners/BeatLoader";
 import NotificationCenter from "components/ui/NotificationCenter";
 
 const DefaultLayout: FC<{ launchDate: Date }> = observer(
@@ -133,6 +133,19 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
     useEffect(() => {
       store.userStore.theme = "dark";
     });
+
+    const mintingContainer = useRef<HTMLDivElement>();
+    const [mintingContainerHeight, setMintingContainer] =
+      useState<number>(null);
+
+    useLayoutEffect(() => {
+      const onResize = () => {
+        setMintingContainer(mintingContainer.current?.clientHeight);
+      };
+      onResize();
+      window.addEventListener("resize", onResize);
+      return () => window.removeEventListener("resize", onResize);
+    }, [mintingContainer]);
 
     const doClaim = async () => {
       if (!isClaiming && address && avataraContext) {
@@ -354,11 +367,15 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
               style={{ zIndex: 50 }}
             >
               <div
-                className="relative flex justify-center md:w-5/6"
-                style={{ zIndex: 10 }}
+                ref={mintingContainer}
+                className="relative flex items-center justify-center md:w-5/6"
+                style={{ zIndex: 10, height: mintingContainerHeight }}
               >
                 {indexedAvatar ? (
-                  <div className="relative block bg-white p-12 bg-opacity-5 md:w-5/6">
+                  <div
+                    className="relative block bg-white p-12 bg-opacity-5 md:w-5/6"
+                    style={{ animation: "bounceIn 1.3s normal forwards" }}
+                  >
                     <div className="block xl:flex">
                       <ZeitgeistAvatar
                         size={220}
@@ -398,7 +415,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                             : ""
                         }`}
                       >
-                        {isClaiming ? <Loader /> : "Mint ZTG NFT"}
+                        {isClaiming ? <Loader color="white" /> : "Mint ZTG NFT"}
                       </button>
                     </div>
 
