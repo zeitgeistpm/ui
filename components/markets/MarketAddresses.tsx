@@ -239,6 +239,7 @@ const MarketAddresses = observer(
                 ? authorityIdentity.displayName
                 : null
             }
+            judgement={authorityIdentity?.judgement}
             onInspect={() =>
               handleInspect(marketStore?.oracle, authorityIdentity)
             }
