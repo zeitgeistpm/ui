@@ -6,7 +6,7 @@ import { useStore } from "lib/stores/Store";
 import { useAccountModals } from "lib/hooks/account";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import AccountButton from "components/account/AccountButton";
-import { useAvatarContext } from "@zeitgeistpm/avatara-react";
+import { useAvatarContext, ZeitgeistAvatar } from "@zeitgeistpm/avatara-react";
 import { Avatar, Tarot } from "@zeitgeistpm/avatara-nft-sdk";
 import ZeitgeistLogo from "./Logo";
 import Parallax from "./Parallax";
@@ -44,6 +44,8 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
       avataraContext && address
         ? encodeAddress(address, avataraContext.chainProperties.ss58Format)
         : null;
+
+    const [indexedAvatar, setIndexedAvatar] = useState<Avatar.IndexedAvatar>();
 
     const [isClaiming, setIsClaiming] = useState(false);
     const [claimError, setClaimError] = useState<null | string>(null);
@@ -85,6 +87,14 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
         console.groupEnd();
       }
     }, [avataraContext]);
+
+    useEffect(() => {
+      if (avataraContext && ksmAddress && !isClaiming) {
+        Avatar.fetchIndexedAvatarForAccount(avataraContext, ksmAddress).then(
+          setIndexedAvatar,
+        );
+      }
+    }, [avataraContext, ksmAddress, isClaiming]);
 
     useEffect(() => {
       if (avataraContext) {
@@ -133,11 +143,11 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             autoRemove: true,
           });
           notificationStore.removeNotification;
-          throw new Error("not ready");
           const response = await Avatar.claim(avataraContext, address);
           if (!response?.avatar) {
             throw new Error((response as any).message);
           }
+          setIndexedAvatar(response.avatar);
           notificationStore.pushNotification("Avatar successfully minted!", {
             type: "Success",
           });
@@ -150,7 +160,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
       }
     };
 
-    const isConnecting = !store.sdkInitialized || !avataraContext;
+    const isConnecting = !store.initialized || !avataraContext;
 
     const disabled =
       isConnecting ||
@@ -347,87 +357,126 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                 className="relative flex justify-center md:w-5/6"
                 style={{ zIndex: 10 }}
               >
-                <div className="bg-white p-12 bg-opacity-5 md:w-5/6">
-                  <div className="flex justify-center items-center mb-12">
-                    <button
-                      onClick={doClaim}
-                      disabled={disabled}
-                      className={`relative h-18 md:h-16 flex justify-center items-center bg-ztg-blue text-white py-2 px-24 font-space font-bold ${
-                        disabled
-                          ? "bg-blue-500 text-gray-700 cursor-not-allowed"
-                          : ""
-                      }`}
-                    >
-                      {isClaiming ? <Loader /> : "Mint ZTG NFT"}
-                    </button>
-                  </div>
-
-                  {isConnecting ? (
-                    <div className="flex justify-center items-center mb-12">
-                      <span style={{ fontFamily: "Consolas,monaco,monospace" }}>
-                        connecting to chain
-                      </span>
-                      <div className="bg-ztg-blue h-4 w-4 rounded-full ml-4 animate-pulse"></div>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="mb-8">
-                        <h3 className="font-bold">Minting for</h3>
-                        <div
-                          className="flex justify-center items-center cursor-pointer"
-                          onClick={() =>
-                            walletConnected
-                              ? accountModals.openAccontSelect()
-                              : accountModals.openWalletSelect()
-                          }
-                        >
-                          <p
-                            className={`flex relative justify-center items-center bg-black py-2 px-4 text-md ${
-                              !isWhitelisted && address ? "line-through" : ""
-                            }`}
-                            style={{ fontFamily: "Consolas,monaco,monospace" }}
+                {indexedAvatar ? (
+                  <div className="relative block bg-white p-12 bg-opacity-5 md:w-5/6">
+                    <div className="block xl:flex">
+                      <ZeitgeistAvatar
+                        size={220}
+                        className="h-full w-full rounded-md overflow-hidden mb-4 xl:mb-0"
+                        address={ksmAddress}
+                      />
+                      <div className="xl:pl-8 text-left max-w-xl">
+                        <h3 className="font-bold text-3xl font-space mb-2">
+                          Minted!
+                        </h3>
+                        <p className="mb-6">
+                          Your avatar was succesfully minted and ready to earn
+                          reputation on zeitgeist once the app is live.
+                        </p>
+                        <p>
+                          <a
+                            target="_blank"
+                            href={`${process.env.NEXT_PUBLIC_SINGULAR_URL}/collectibles/${indexedAvatar.id}`}
+                            className="inline-flex relative text-singular h-12 items-center border-2 border-[#EB3089] rounded-md py-2 px-4"
                           >
-                            {!address || !walletConnected ? (
-                              <span className="flex justify-center items-center">
-                                Select account <FaWallet className="ml-4" />
-                              </span>
-                            ) : (
-                              <span title={address}>
-                                {shortenAddress(address, 8, 8)}
-                              </span>
-                            )}
-                            {address && walletConnected && (
-                              <div
-                                className={`w-3 h-3 ml-3 rounded-full animate-pulse ${
-                                  isWhitelisted ? "bg-purple-600" : "bg-red-600"
-                                }`}
-                              ></div>
-                            )}
-
-                            {isWhitelisted && tarotNftImage && walletConnected && (
-                              <div className="group h-full absolute -right-14 border-black border-2 hover:scale-[4] transition-all hover:border-purple-600 hover:rounded-sm">
-                                <img
-                                  src={tarotNftImage}
-                                  className="h-full hover:rounded-sm overflow-hidden"
-                                />
-                                <div className="absolute hidden group-hover:block w-full text-center pb-[2px] text-[3px] bottom-0">
-                                  Tarot holder!
-                                </div>
-                              </div>
-                            )}
-                          </p>
-                        </div>
+                            <span className="mr-2">View it on</span>{" "}
+                            <img src="/singular.png" className="h-85% mt-1" />
+                          </a>
+                        </p>
                       </div>
-                    </>
-                  )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-white p-12 bg-opacity-5 md:w-5/6">
+                    <div className="flex justify-center items-center mb-12">
+                      <button
+                        onClick={doClaim}
+                        disabled={disabled}
+                        className={`relative h-18 md:h-16 flex justify-center items-center bg-ztg-blue text-white py-2 px-24 font-space font-bold ${
+                          disabled
+                            ? "bg-blue-500 text-gray-700 cursor-not-allowed"
+                            : ""
+                        }`}
+                      >
+                        {isClaiming ? <Loader /> : "Mint ZTG NFT"}
+                      </button>
+                    </div>
 
-                  <p className="mb-14">
-                    By clicking this button, you will be minting a Zeitgeist NFT
-                    unique for your Zeitgeist profile image. You will be able to
-                    view and adjust this profile image from your profile section
-                    of the Zeitgeist application.
-                  </p>
-                </div>
+                    {isConnecting ? (
+                      <div className="flex justify-center items-center mb-12">
+                        <span
+                          style={{ fontFamily: "Consolas,monaco,monospace" }}
+                        >
+                          connecting to chain
+                        </span>
+                        <div className="bg-ztg-blue h-4 w-4 rounded-full ml-4 animate-pulse"></div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="mb-8">
+                          <h3 className="font-bold">Minting for</h3>
+                          <div
+                            className="flex justify-center items-center cursor-pointer"
+                            onClick={() =>
+                              walletConnected
+                                ? accountModals.openAccontSelect()
+                                : accountModals.openWalletSelect()
+                            }
+                          >
+                            <p
+                              className={`flex relative justify-center items-center bg-black py-2 px-4 text-md ${
+                                !isWhitelisted && address ? "line-through" : ""
+                              }`}
+                              style={{
+                                fontFamily: "Consolas,monaco,monospace",
+                              }}
+                            >
+                              {!address || !walletConnected ? (
+                                <span className="flex justify-center items-center">
+                                  Select account <FaWallet className="ml-4" />
+                                </span>
+                              ) : (
+                                <span title={address}>
+                                  {shortenAddress(address, 8, 8)}
+                                </span>
+                              )}
+                              {address && walletConnected && (
+                                <div
+                                  className={`w-3 h-3 ml-3 rounded-full animate-pulse ${
+                                    isWhitelisted
+                                      ? "bg-purple-600"
+                                      : "bg-red-600"
+                                  }`}
+                                ></div>
+                              )}
+
+                              {isWhitelisted &&
+                                tarotNftImage &&
+                                walletConnected && (
+                                  <div className="group h-full absolute -right-14 border-black border-2 hover:scale-[4] transition-all hover:border-purple-600 hover:rounded-sm">
+                                    <img
+                                      src={tarotNftImage}
+                                      className="h-full hover:rounded-sm overflow-hidden"
+                                    />
+                                    <div className="absolute hidden group-hover:block w-full text-center pb-[2px] text-[3px] bottom-0">
+                                      Tarot holder!
+                                    </div>
+                                  </div>
+                                )}
+                            </p>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    <p className="mb-14">
+                      By clicking this button, you will be minting a Zeitgeist
+                      NFT unique for your Zeitgeist profile image. You will be
+                      able to view and adjust this profile image from your
+                      profile section of the Zeitgeist application.
+                    </p>
+                  </div>
+                )}
               </div>
             </section>
 

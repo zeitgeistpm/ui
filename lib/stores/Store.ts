@@ -71,7 +71,6 @@ export default class Store {
   pools = new PoolsStore(this);
 
   initialized = false;
-  sdkInitialized = false;
 
   config: Config;
 
@@ -182,9 +181,6 @@ export default class Store {
 
     try {
       await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
-      runInAction(() => {
-        this.sdkInitialized = true;
-      });
       await this.loadConfig();
       this.initGraphQlClient();
       const storedWalletId = this.userStore.walletId;
