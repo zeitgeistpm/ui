@@ -200,10 +200,10 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           <Parallax className="w-full">
             <img src={RocketBall.src} />
           </Parallax>
-          <Parallax className="absolute top-10 left-10 ">
+          <Parallax className="absolute top-0 left-12 ">
             <img src={GlowBall.src} />
           </Parallax>
-          <Parallax className="absolute top-36 left-24 w-2/4">
+          <Parallax className="absolute top-24 left-24 w-2/4">
             <img src={Rocket.src} />
           </Parallax>
         </div>
