@@ -83,9 +83,6 @@ export default class Wallets {
 
   setActiveAccount(account: WalletAccount | string) {
     let walletAcc: typeof this.activeAccount;
-    if (this.balanceSubscription) {
-      this.balanceSubscription();
-    }
     if (typeof account === "string") {
       walletAcc = this.accounts.find((acc) => acc.address === account);
       if (walletAcc == null) {
@@ -155,11 +152,16 @@ export default class Wallets {
   disconnectWallet() {
     this.walletEnabled = false;
     this.setConnected(false);
+    this.unsetActiveAccount();
+    if (this.balanceSubscription) {
+      this.balanceSubscription();
+      this.balanceSubscription = undefined;
+    }
   }
 
   activeBalance = new Decimal(0);
 
-  private balanceSubscription;
+  private balanceSubscription?: () => void;
 
   get accountSelectOptions() {
     return this.accounts.map((account, id) => {
@@ -251,6 +253,10 @@ export default class Wallets {
   async subscribeToBalanceChanges() {
     const { sdk } = this.store;
     const { address } = this.activeAccount;
+
+    if (this.balanceSubscription) {
+      this.balanceSubscription();
+    }
 
     this.balanceSubscription = await sdk.api.query.system.account(
       address,
@@ -358,9 +364,7 @@ export default class Wallets {
       return this.errorMessages;
     }
 
-    if (accounts) {
-      this.setConnected(true);
-    }
+    this.setConnected(true);
   }
 
   async initialize(extensionName: string) {

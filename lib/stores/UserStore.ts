@@ -61,7 +61,7 @@ export default class UserStore {
   tradeSlipItems: JSONObject | null = null;
   endpoint: string;
   gqlEndpoint: string;
-  identity: UserIdentity;
+  identity?: UserIdentity;
   locationAllowed: boolean;
   isUsingVPN: boolean;
   walletId: string | null = null;
@@ -110,6 +110,7 @@ export default class UserStore {
       () => this.store.wallets.activeAccount,
       (activeAccount) => {
         if (activeAccount == null) {
+          this.clearIdentity();
           return;
         }
         setToLocalStorage("accountAddress", activeAccount.address);
@@ -320,6 +321,10 @@ export default class UserStore {
     runInAction(() => {
       this.identity = identity;
     });
+  }
+
+  clearIdentity() {
+    this.identity = undefined;
   }
 
   private async checkIP() {
