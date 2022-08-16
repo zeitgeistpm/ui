@@ -1,5 +1,6 @@
 import SDK, { util } from "@zeitgeistpm/sdk";
 import { Swap } from "@zeitgeistpm/sdk/dist/models";
+import { waitReady } from "@polkadot/wasm-crypto";
 import { Command, Option } from "commander";
 import { KeyringPairOrExtSigner, MarketPeriod } from "@zeitgeistpm/sdk/dist/types";
 import dotenv from "dotenv";
@@ -57,7 +58,7 @@ const createCategoricalMarket = async (
   start: number,
   end: number,
   unit: "block" | "timestamp",
-  signer: KeyringPairOrExtSigner
+  signer: KeyringPairOrExtSigner,
 ) => {
   sdk =
     sdk ||
@@ -108,6 +109,8 @@ const createCategoricalMarket = async (
 };
 
 (async () => {
+  await waitReady();
+
   const sdk = await SDK.initialize(endpoint, {
     ipfsClientUrl: "http://localhost:5001",
   });
