@@ -14,9 +14,10 @@ import { ModalStoreContext } from "components/context/ModalStoreContext";
 import ModalContainer from "components/modal/ModalContainer";
 import Store from "lib/stores/Store";
 import DefaultLayout from "layouts/DefaultLayout";
+import AppLaunchLayout from "layouts/launch/AppLaunchLayout";
 import { AnimatePresence } from "framer-motion";
 import MobileMenu from "components/menu/MobileMenu";
-import { AvatarContext } from "@zeitgeistpm/avatara-react";
+import { AvatarContext, defaultBsr } from "@zeitgeistpm/avatara-react";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -65,6 +66,9 @@ const MyApp = observer(({ Component, pageProps }) => {
     }
   }, []);
 
+  const launchDate = new Date("2022-08-22");
+  const launched = Date.now() > launchDate.getTime();
+
   return (
     <StoreProvider store={store}>
       <AvatarContext.Provider
@@ -73,6 +77,9 @@ const MyApp = observer(({ Component, pageProps }) => {
           ipfs: process.env.NEXT_PUBLIC_IPFS_NODE,
           rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
           indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
+          avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,
+          badgeCollectionId: process.env.NEXT_PUBLIC_BADGE_COLLECTION_ID,
+          avatarBaseId: process.env.NEXT_PUBLIC_AVATAR_BASE_ID,
         }}
       >
         <ModalStoreContext.Provider value={modalStore}>
@@ -106,14 +113,18 @@ const MyApp = observer(({ Component, pageProps }) => {
               color="#5bbad5"
             />
           </Head>
-          <AnimatePresence>
-            {store.showMobileMenu && <MobileMenu />}
-          </AnimatePresence>
-          <DefaultLayout>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </DefaultLayout>
+          {!process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE || launched ? (
+            <DefaultLayout>
+              <AnimatePresence>
+                {store.showMobileMenu && <MobileMenu />}
+              </AnimatePresence>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </DefaultLayout>
+          ) : (
+            <AppLaunchLayout launchDate={launchDate} />
+          )}
         </ModalStoreContext.Provider>
       </AvatarContext.Provider>
     </StoreProvider>
