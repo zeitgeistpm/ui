@@ -53,7 +53,9 @@ const AvatarPage = observer(() => {
   const [burnAmount, setBurnAmount] = useState<number>();
   const [hasCrossed, setHasCrossed] = useState(false);
 
-  const inventory = useInventoryManagement(address);
+  const inventory = useInventoryManagement(
+    (store.wallets.getActiveSigner() as ExtSigner) || address,
+  );
 
   useEffect(() => {
     getIdentity(address).then(setIdentity);
@@ -582,7 +584,10 @@ const ClaimModal = (props: {
 };
 
 const InventoryModal = (props: { address: string; onClose?: () => void }) => {
-  const inventory = useInventoryManagement(props.address);
+  const store = useStore();
+  const inventory = useInventoryManagement(
+    (store.wallets.getActiveSigner() as ExtSigner) || props.address,
+  );
   const modalStore = useModalStore();
 
   const avatarSdk = useAvatarContext();
@@ -690,7 +695,10 @@ const PendingItemsModal = (props: {
   address: string;
   onClose?: () => void;
 }) => {
-  const inventory = useInventoryManagement(props.address);
+  const store = useStore();
+  const inventory = useInventoryManagement(
+    (store.wallets.getActiveSigner() as ExtSigner) || props.address,
+  );
   const modalStore = useModalStore();
 
   const isAcceptingAll = inventory.items.pending.every((item) =>
