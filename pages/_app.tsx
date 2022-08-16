@@ -113,7 +113,7 @@ const MyApp = observer(({ Component, pageProps }) => {
               color="#5bbad5"
             />
           </Head>
-          {launched ? (
+          {!process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE || launched ? (
             <DefaultLayout>
               <AnimatePresence>
                 {store.showMobileMenu && <MobileMenu />}
