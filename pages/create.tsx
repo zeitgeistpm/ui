@@ -295,8 +295,8 @@ const CreatePage: NextPage = observer(() => {
     const creationType = formData.advised ? "Advised" : "Permissionless";
 
     const mdm = {
-      Authorized: process.env
-        .NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS as unknown as number,
+      authorized: process.env
+        .NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS,
     };
 
     const scoringRule = "CPMM";
@@ -333,8 +333,8 @@ const CreatePage: NextPage = observer(() => {
     const oracle = formData.oracle;
     const period = getMarketPeriod();
     const mdm = {
-      Authorized: process.env
-        .NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS as unknown as number,
+      authorized: process.env
+        .NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS,
     };
     const metadata = getMarketMetadata();
 
@@ -347,10 +347,6 @@ const CreatePage: NextPage = observer(() => {
     });
 
     const weights = [...weightsNums.map((w) => Math.floor(w).toString())];
-
-    const amounts = poolRows.slice(0, -1).map((r) => {
-      return (Number(r.amount) * ZTG).toString();
-    });
 
     const baseAssetAmount = (
       Number([...poolRows].pop().amount) * ZTG
@@ -374,6 +370,7 @@ const CreatePage: NextPage = observer(() => {
       amount: baseAssetAmount,
       weights,
       metadata,
+      swapFee: "0",
       callbackOrPaymentInfo,
     };
   };
