@@ -159,11 +159,6 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
       if (!isClaiming && address && avataraContext) {
         setIsClaiming(true);
         try {
-          notificationStore.pushNotification("Minting Avatar.", {
-            type: "Info",
-            autoRemove: true,
-          });
-          notificationStore.removeNotification;
           const response = await Avatar.claim(avataraContext, address);
           if (!response?.avatar) {
             throw new Error((response as any).message);
@@ -171,9 +166,6 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           Avatar.fetchIndexedAvatarForAccount(avataraContext, ksmAddress).then(
             setIndexedAvatar,
           );
-          notificationStore.pushNotification("Avatar successfully minted!", {
-            type: "Success",
-          });
         } catch (error) {
           notificationStore.pushNotification(error.message, {
             type: "Error",
@@ -432,13 +424,20 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                       <button
                         onClick={doClaim}
                         disabled={disabled}
-                        className={`relative h-18 md:h-16 flex justify-center items-center bg-ztg-blue text-white py-2 px-24 font-space font-bold ${
+                        className={`relative h-18 md:h-16 text-md flex justify-center items-center bg-ztg-blue text-white py-2 px-24 font-space font-bold ${
                           disabled
                             ? "bg-blue-500 text-gray-700 cursor-not-allowed"
                             : ""
                         }`}
                       >
-                        {isClaiming ? <Loader color="white" /> : "Mint ZTG NFT"}
+                        {isClaiming ? (
+                          <Loader color="white" />
+                        ) : (
+                          <span>
+                            Mint <span className="hidden md:inline">ZTG</span>{" "}
+                            NFT
+                          </span>
+                        )}
                       </button>
                     </div>
 
