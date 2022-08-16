@@ -3,7 +3,7 @@ import React, { FC } from "react";
 import { useStore } from "lib/stores/Store";
 import { MultipleOutcomeEntry } from "lib/types/create-market";
 import Table, { TableColumn, TableData } from "components/ui/Table";
-import { ZTG_BLUE_COLOR } from "lib/constants";
+import { ZTG, ZTG_BLUE_COLOR } from "lib/constants";
 import { motion } from "framer-motion";
 import PoolFeesSelect from "./PoolFeesSelect";
 import Decimal from "decimal.js";
@@ -139,7 +139,7 @@ const PoolSettings: FC<{
   ];
 
   const handleFeeChange = (fee: Decimal) => {
-    onFeeChange(fee);
+    onFeeChange(fee.div(100).mul(ZTG));
   };
 
   return (

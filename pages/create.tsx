@@ -114,6 +114,7 @@ const CreatePage: NextPage = observer(() => {
 
   const [deployPool, setDeployPool] = useState(false);
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[] | null>(null);
+  const [swapFee, setSwapFee] = useState<string>();
   const [txFee, setTxFee] = useState<string>();
 
   const router = useRouter();
@@ -295,8 +296,7 @@ const CreatePage: NextPage = observer(() => {
     const creationType = formData.advised ? "Advised" : "Permissionless";
 
     const mdm = {
-      Authorized: process.env
-        .NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS as unknown as number,
+      authorized: process.env.NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS,
     };
 
     const scoringRule = "CPMM";
@@ -333,8 +333,7 @@ const CreatePage: NextPage = observer(() => {
     const oracle = formData.oracle;
     const period = getMarketPeriod();
     const mdm = {
-      Authorized: process.env
-        .NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS as unknown as number,
+      authorized: process.env.NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS,
     };
     const metadata = getMarketMetadata();
 
@@ -371,6 +370,7 @@ const CreatePage: NextPage = observer(() => {
       period,
       marketType,
       mdm,
+      swapFee,
       amount: baseAssetAmount,
       weights,
       metadata,
@@ -601,7 +601,7 @@ const CreatePage: NextPage = observer(() => {
               setPoolRows(v);
             }}
             onFeeChange={(fee: Decimal) => {
-              console.log(fee.toString());
+              setSwapFee(fee.toString());
             }}
           />
         )}
