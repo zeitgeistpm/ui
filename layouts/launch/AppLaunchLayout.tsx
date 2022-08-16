@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { observer } from "mobx-react";
 import moment from "moment";
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -188,28 +189,28 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           className="absolute top-10% right-10% w-1/12"
           style={{ zIndex: 30 }}
         >
-          <img src={Saturn.src} />
+          <Image src={Saturn} />
         </Parallax>
 
         <Parallax className="absolute top-16% right-10%" style={{ zIndex: 30 }}>
-          <img src={Star.src} width={"22"} />
+          <Image src={Star} width={"22"} height={"22"} />
         </Parallax>
 
         <Parallax className="absolute top-24 right-64" style={{ zIndex: 30 }}>
-          <img src={Star.src} width={"12"} />
+          <Image src={Star} width={"12"} height={"12"} />
         </Parallax>
 
         <Parallax className="absolute top-24 left-64" style={{ zIndex: 30 }}>
-          <img src={Star.src} width={"26"} />
+          <Image src={Star} width={"26"} height={"26"} />
         </Parallax>
 
         <div className="absolute hidden md:block -top-16% right-0 w-full md:w-3/5 xl:w-5/12 overflow-hidden">
           <Parallax>
-            <img src={Ball2.src} />
+            <Image src={Ball2} />
           </Parallax>
           <Parallax>
-            <img
-              src={Ball6.src}
+            <Image
+              src={Ball6}
               className="absolute bottom-20 right-72"
               width={82}
             />
@@ -221,13 +222,13 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           style={{ zIndex: 10 }}
         >
           <Parallax className="w-full">
-            <img src={RocketBall.src} />
+            <Image src={RocketBall} />
           </Parallax>
           <Parallax className="absolute top-0 left-12 ">
-            <img src={GlowBall.src} />
+            <Image src={GlowBall} />
           </Parallax>
           <Parallax className="absolute top-24 left-24 w-2/4">
-            <img src={Rocket.src} />
+            <Image src={Rocket} />
           </Parallax>
         </div>
 
@@ -280,7 +281,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                     "-webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.8)))",
                 }}
               >
-                <img src={Ball1.src} alt="ball" />
+                <Image src={Ball1} alt="ball" />
               </Parallax>
               <h1 className="absolute top-28 md:top-20 font-light text-5xl xl:text-6xl text-white font-space">
                 Zeitgeist App Launch!
@@ -313,7 +314,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             className="relative flex justify-center"
             style={{ zIndex: 50 }}
           >
-            <img src={DownCarret.src} className="w-12 md:w-22 xl:w-24" />
+            <Image src={DownCarret} className="w-12 md:w-22 xl:w-24" />
           </Parallax>
 
           <div
@@ -322,16 +323,24 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           >
             <section className="flex relative justify-center w-full mb-16 md:w-5/6">
               <Parallax className="absolute top-0 -left-12 w-8/12 md:w-6/12 xl:w-5/12">
-                <img src={Ball3.src} style={{ zIndex: 0 }} />
+                <div style={{ zIndex: 0 }}>
+                  <Image src={Ball3} />
+                </div>
               </Parallax>
               <Parallax className="absolute top-20% right-12 w-10/12 md:w-8/12 xl:w-6/12">
-                <img src={Ball4.src} style={{ zIndex: 0 }} />
+                <div style={{ zIndex: 0 }}>
+                  <Image src={Ball4} />
+                </div>
               </Parallax>
               <Parallax className="absolute top-24 left-0 xl:-left-64">
-                <img src={Star.src} width={"26"} style={{ zIndex: 30 }} />
+                <div style={{ zIndex: 30 }}>
+                  <Image src={Star} width={"26"} height={"26"} />
+                </div>
               </Parallax>
               <Parallax className="absolute bottom-0 right-0 xl:-right-64">
-                <img src={Star.src} width={"16"} style={{ zIndex: 30 }} />
+                <div style={{ zIndex: 30 }}>
+                  <Image src={Star} width={"16"} height={"16"} />
+                </div>
               </Parallax>
               <div className="md:w-5/6" style={{ zIndex: 10 }}>
                 <h2 className="mb-12 text-3xl font-bold font-space">
@@ -359,7 +368,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             </section>
 
             <Parallax className="flex justify-center mb-16">
-              <img src={DownCarret.src} className="w-12 md:w-22 xl:w-24" />
+              <Image src={DownCarret} className="w-12 md:w-22 xl:w-24" />
             </Parallax>
 
             <section
@@ -531,10 +540,14 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
 
             <section className="flex relative justify-center w-full mb-12 md:w-5/6">
               <Parallax className="absolute -bottom-72 -left-72 w-10/12 md:w-9/12 xl:w-12/12">
-                <img src={Ball5.src} style={{ zIndex: 0 }} />
+                <div style={{ zIndex: 0 }}>
+                  <Image src={Ball5} />
+                </div>
               </Parallax>
               <Parallax className="absolute top-[50%] right-0 xl:-right-64">
-                <img src={Star.src} width={"28"} style={{ zIndex: 30 }} />
+                <div style={{ zIndex: 30 }}>
+                  <Image src={Star} width={"28"} height={"28"} />
+                </div>
               </Parallax>
               <div className="md:w-5/6" style={{ zIndex: 10 }}>
                 <h2 className="mb-12 text-3xl font-bold font-space">
