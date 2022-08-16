@@ -66,8 +66,18 @@ const MyApp = observer(({ Component, pageProps }) => {
     }
   }, []);
 
-  const launchDate = new Date("2022-08-22");
-  const launched = Date.now() > launchDate.getTime();
+  const launchDate = new Date(
+    "Tue Aug 16 2022 17:26:30 GMT+0200 (Central European Summer Time)",
+  );
+
+  const [launched, setLaunched] = useState(Date.now() > launchDate.getTime());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLaunched(Date.now() > launchDate.getTime());
+    }, 1000);
+    return () => clearInterval(timer);
+  });
 
   return (
     <StoreProvider store={store}>
