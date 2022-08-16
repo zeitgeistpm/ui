@@ -48,7 +48,7 @@ const ModalContainer: FC = observer(({ children }) => {
   }, [modalRef]);
 
   const containerClasses =
-    "p-ztg-15 z-50 rounded-ztg-10 bg-white dark:text-white dark:bg-sky-1000 focus:outline-none shadow-ztg-3 dark:shadow-ztg-4";
+    "p-ztg-15 z-50 rounded-ztg-10 bg-white dark:text-white dark:bg-sky-1000 focus:outline-none";
   return (
     <motion.div
       initial={{ opacity: 0 }}
