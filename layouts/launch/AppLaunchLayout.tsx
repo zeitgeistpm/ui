@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import moment from "moment";
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { FaWallet } from "react-icons/fa";
+import { FaHatWizard, FaWallet } from "react-icons/fa";
 import { useStore } from "lib/stores/Store";
 import { useAccountModals } from "lib/hooks/account";
 import { useNotificationStore } from "lib/stores/NotificationStore";
@@ -403,6 +403,26 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                             <img src="/singular.png" className="h-85% mt-1" />
                           </a>
                         </p>
+                        {(occultists.fullDeckOwners.includes(ksmAddress) ||
+                          occultists.threeOfNamedOwners.includes(
+                            ksmAddress,
+                          )) && (
+                          <div className="mt-8 text-center xl:text-left">
+                            <div className="flex items-center justify-center md:justify-start mb-2">
+                              <FaHatWizard className="mr-3" />
+                              <p>
+                                <span className="font-bold">
+                                  Bonus item received!
+                                </span>
+                              </p>
+                            </div>
+                            <p className="text-sm">
+                              For your loyalty a bonus item is being minted for
+                              you. Make sure to check the pending items in your
+                              avatar inventory on singular in a minute or two.
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
