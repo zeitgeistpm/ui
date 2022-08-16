@@ -13,6 +13,7 @@ import { compareJSON } from "lib/util";
 import Slider from "../ui/Slider";
 import { AmountInput } from "../ui/inputs";
 import { useStore } from "lib/stores/Store";
+import { ZTG } from "lib/constants";
 
 const ToggleSlider: FC<{ className: string }> = ({ className }) => {
   return (
@@ -187,7 +188,8 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
                 </div>
               </div>
               <div className="w-full font-lato text-ztg-10-150 text-gray-dark-3 mt-ztg-5">
-                Trading Fee: {boxAmountDecimal.mul(swapFee ?? 0).toString()}{" "}
+                Trading Fee:{" "}
+                {boxAmountDecimal.mul(swapFee?.mul(ZTG) ?? 0).toString()}{" "}
                 {state.type === "sell"
                   ? state.assetTicker.toUpperCase()
                   : config.tokenSymbol}

@@ -181,7 +181,7 @@ export class TradeSlipBoxState {
   }
 
   get swapFee(): Decimal | undefined {
-    return this.trade?.swapFee;
+    return this.trade?.swapFee.div(ZTG);
   }
 
   get indexInItems(): number {
@@ -409,7 +409,7 @@ export default class TradeSlipStore {
       let { amount } = boxState;
       const { id: marketId } = marketStore;
       const { pool } = marketStore;
-      const swapFee = new Decimal(pool.swapFee);
+      const swapFee = new Decimal(pool.swapFee).div(ZTG);
 
       let transferAmount: Decimal;
       let ztgPoolBalance: Decimal;
@@ -479,7 +479,7 @@ export default class TradeSlipStore {
             assetPoolBalance,
             assetWeight,
             amount,
-            pool.swapFee,
+            swapFee,
           );
           currentPrice = calcSpotPrice(
             ztgPoolBalance,
@@ -495,7 +495,7 @@ export default class TradeSlipStore {
             ztgPoolBalance,
             ztgWeight,
             amount,
-            pool.swapFee,
+            swapFee,
           );
           currentPrice = calcSpotPrice(
             assetPoolBalance,
@@ -699,7 +699,7 @@ export default class TradeSlipStore {
         item.assetPoolBalance.mul(ZTG),
         assetWeight,
         tradeAmount,
-        new Decimal(pool.swapFee),
+        new Decimal(pool.swapFee).div(ZTG),
         this.slippagePercentage.div(100),
         pool.poolId,
       );
@@ -714,7 +714,7 @@ export default class TradeSlipStore {
         item.ztgPoolBalance.mul(ZTG),
         baseWeight,
         tradeAmount,
-        new Decimal(pool.swapFee),
+        new Decimal(pool.swapFee).div(ZTG),
         this.slippagePercentage.div(100),
         pool.poolId,
       );
