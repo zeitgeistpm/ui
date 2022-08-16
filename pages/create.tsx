@@ -349,10 +349,6 @@ const CreatePage: NextPage = observer(() => {
 
     const weights = [...weightsNums.map((w) => Math.floor(w).toString())];
 
-    const amounts = poolRows.slice(0, -1).map((r) => {
-      return (Number(r.amount) * ZTG).toString();
-    });
-
     const baseAssetAmount = (
       Number([...poolRows].pop().amount) * ZTG
     ).toString();
@@ -375,8 +371,8 @@ const CreatePage: NextPage = observer(() => {
       amount: baseAssetAmount,
       weights,
       metadata,
-      callbackOrPaymentInfo,
       swapFee: "0",
+      callbackOrPaymentInfo,
     };
   };
 

@@ -1,6 +1,7 @@
 import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
 import {
   AssetId,
+  CourtDisputeMechanism,
   isAuthorisedDisputeMechanism,
   MarketCreation,
   MarketDispute,
@@ -67,7 +68,7 @@ class MarketStore {
     if (this.inReportPeriod) {
       return "Waiting for report";
     }
-    if (!this.endPassed) {
+    if (!this.is("Closed")) {
       if (this.isPeriodInBlocks) {
         return `Ends at block number ${this.period["block"][1]}`;
       }
@@ -164,13 +165,6 @@ class MarketStore {
     });
   }
 
-  get endPassed(): boolean {
-    if (this.isPeriodInBlocks) {
-      return this.period["block"][1] <= this.store.blockNumber;
-    }
-    return this.endTimestamp <= this.store.blockTimestamp;
-  }
-
   get period(): MarketPeriod {
     return this.market.period;
   }
@@ -248,8 +242,7 @@ class MarketStore {
   }
 
   get isCourt(): boolean {
-    //@ts-ignore
-    return this.market.disputeMechanism.court === null;
+    return (this.market.disputeMechanism as CourtDisputeMechanism).Court === null;
   }
 
   get bounds(): [number, number] | null {
@@ -614,7 +607,6 @@ class MarketStore {
       creation: computed,
       img: computed,
       endDateFormatted: computed,
-      endPassed: computed,
       reportedOutcome: computed,
       reportedOutcomeIndex: computed,
       reportedOutcomeName: computed,
