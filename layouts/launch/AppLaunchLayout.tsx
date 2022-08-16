@@ -143,12 +143,19 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
       !walletConnected;
 
     const mintingContainer = useRef<HTMLDivElement>();
-    const [mintingContainerHeight, setMintingContainer] =
+    const [mintingContainerHeight, setMintingContainerHeight] =
       useState<number>(null);
 
     useLayoutEffect(() => {
       const onResize = () => {
-        setMintingContainer(mintingContainer.current?.clientHeight);
+        if (
+          mintingContainer.current?.clientHeight >=
+          window.document.body.clientHeight
+        ) {
+          setMintingContainerHeight(null);
+        } else {
+          setMintingContainerHeight(mintingContainer.current?.clientHeight);
+        }
       };
       onResize();
       window.addEventListener("resize", onResize);
@@ -361,8 +368,8 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             >
               <div
                 ref={mintingContainer}
-                className="relative flex items-center justify-center md:w-5/6"
-                style={{ zIndex: 10, height: mintingContainerHeight }}
+                className="relative flex items-center justify-center mb-20 md:mb-18 xl:mb-0 md:w-5/6"
+                style={{ zIndex: 10, height: mintingContainerHeight || "auto" }}
               >
                 {indexedAvatar ? (
                   <div
@@ -392,7 +399,9 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                             href={`${process.env.NEXT_PUBLIC_SINGULAR_URL}/collectibles/${indexedAvatar.id}`}
                             className="inline-flex relative text-singular h-12 items-center border-2 border-[#EB3089] rounded-md py-2 px-4"
                           >
-                            <span className="mr-2">View it on</span>{" "}
+                            <span className="mr-2 hidden md:inline">
+                              View it on
+                            </span>
                             <img src="/singular.png" className="h-85% mt-1" />
                           </a>
                         </p>
