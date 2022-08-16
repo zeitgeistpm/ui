@@ -67,7 +67,7 @@ const FooterSection = ({
             href={item.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-lato text-lg text-ztg-grey hover:text-white"
+            className="font-lato text-lg text-sky-600 hover:text-white"
             key={item.title}
           >
             {item.title}
@@ -97,7 +97,7 @@ const Footer = () => {
           <FooterSection title="Community" items={communityItems} />
         </div>
       </div>
-      <div className="text-ztg-grey font-lato">© 2022 Zeitgeist PM</div>
+      <div className="text-sky-600 font-lato">© 2022 Zeitgeist PM</div>
     </footer>
   );
 };
