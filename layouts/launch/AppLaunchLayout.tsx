@@ -382,8 +382,9 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                           Minted!
                         </h3>
                         <p className="mb-6">
-                          Your avatar was succesfully minted and ready to earn
-                          reputation on zeitgeist once the app is live.
+                          Your avatar was successfully minted. You are now ready
+                          to earn equipable badges once the Zeitgeist app is
+                          live.
                         </p>
                         <p>
                           <a
@@ -409,9 +410,10 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                               </p>
                             </div>
                             <p className="text-sm">
-                              For your loyalty a bonus item is being minted for
-                              you. Make sure to check the pending items in your
-                              avatar inventory on singular in a minute or two.
+                              As a sign of appreciation for your loyalty, we’re
+                              minting a bonus item for you! Be sure to check the
+                              “pending items” in your avatar inventory on
+                              Singular in a few minutes time.
                             </p>
                           </div>
                         )}
