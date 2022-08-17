@@ -1,5 +1,6 @@
 import SDK, { util } from "@zeitgeistpm/sdk";
 import { Swap } from "@zeitgeistpm/sdk/dist/models";
+import { waitReady } from "@polkadot/wasm-crypto";
 import { Command, Option } from "commander";
 import { KeyringPairOrExtSigner, MarketPeriod } from "@zeitgeistpm/sdk/dist/types";
 import dotenv from "dotenv";
@@ -57,7 +58,7 @@ const createCategoricalMarket = async (
   start: number,
   end: number,
   unit: "block" | "timestamp",
-  signer: KeyringPairOrExtSigner
+  signer: KeyringPairOrExtSigner,
 ) => {
   sdk =
     sdk ||
@@ -97,7 +98,7 @@ const createCategoricalMarket = async (
     metadata,
     creationType: "Permissionless",
     marketType: { Categorical: numOutcomes },
-    mdm: { Authorized: signer.address as unknown as number },
+    mdm: { authorized: signer.address },
     scoringRule: "CPMM",
     callbackOrPaymentInfo: false,
   });
@@ -108,6 +109,8 @@ const createCategoricalMarket = async (
 };
 
 (async () => {
+  await waitReady();
+
   const sdk = await SDK.initialize(endpoint, {
     ipfsClientUrl: "http://localhost:5001",
   });
@@ -154,7 +157,7 @@ const createCategoricalMarket = async (
         weights.push(Math.floor(baseWeight).toString());
       }
 
-      await market.deploySwapPool(signer, "1000000000000", weights);
+      await market.deploySwapPool(signer, "0", "1000000000000", weights);
 
       market = await sdk.models.fetchMarketData(marketId);
 

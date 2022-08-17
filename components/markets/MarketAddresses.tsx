@@ -174,19 +174,24 @@ const MarketAddresses = observer(
   ({ marketStore }: { marketStore: MarketStore }) => {
     const [oracleIdentity, setOracleIdentity] = useState<UserIdentity>();
     const [creatorIdentity, setCreatorIdentity] = useState<UserIdentity>();
+    const [authorityIdentity, setAuthorityIdentity] = useState<UserIdentity>();
     const modalStore = useModalStore();
     const { getIdentity } = useUserStore();
 
     useEffect(() => {
       if (!marketStore || !marketStore.creator || !marketStore.oracle) return;
       (async () => {
-        const [creator, oracle] = await Promise.all([
+        const identities = [
           getIdentity(marketStore.creator),
           getIdentity(marketStore.oracle),
-        ]);
+          marketStore.authority ? getIdentity(marketStore.authority) : null,
+        ];
+
+        const [creator, oracle, authority] = await Promise.all(identities);
 
         setCreatorIdentity(creator);
         setOracleIdentity(oracle);
+        setAuthorityIdentity(authority);
       })();
     }, [marketStore?.creator, marketStore?.oracle]);
 
@@ -225,6 +230,21 @@ const MarketAddresses = observer(
           judgement={oracleIdentity?.judgement}
           onInspect={() => handleInspect(marketStore?.oracle, oracleIdentity)}
         />
+        {authorityIdentity && (
+          <AddressDetails
+            title="Authority"
+            address={marketStore?.authority}
+            displayName={
+              authorityIdentity?.displayName?.length > 0
+                ? authorityIdentity.displayName
+                : null
+            }
+            judgement={authorityIdentity?.judgement}
+            onInspect={() =>
+              handleInspect(marketStore?.oracle, authorityIdentity)
+            }
+          />
+        )}
       </div>
     );
   },

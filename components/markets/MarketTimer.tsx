@@ -327,7 +327,7 @@ const MarketTimer = observer(
       },
       Disputed: {
         title: "Market outcome Disputed",
-        description: "Disputes are open to all",
+        description: "Waiting for authority to report",
         remainingTime: marketStore.disputeCooldownDuration,
         totalTime: disputePeriodSec,
       },

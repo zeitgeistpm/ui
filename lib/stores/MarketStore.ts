@@ -2,6 +2,7 @@ import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
 import {
   AssetId,
   CourtDisputeMechanism,
+  isAuthorisedDisputeMechanism,
   MarketCreation,
   MarketDispute,
   MarketPeriod,
@@ -85,6 +86,37 @@ class MarketStore {
 
   get oracleReportPeriodPassed(): boolean {
     return this.inReportPeriod && !this.inOracleReportPeriod;
+  }
+
+  //authorised wallet address
+  get authority(): string {
+    if (isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
+      return this.market.disputeMechanism.authorized;
+    }
+  }
+
+  get disputeMechanism(): "authorized" | "other" {
+    if (isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
+      return "authorized";
+    } else {
+      return "other";
+    }
+  }
+
+  get connectedWalletCanReport(): boolean {
+    if (!this.store.wallets.activeAccount?.address) return false;
+
+    if (this.status === "Closed" && this.isOracle) {
+      return true;
+    } else if (
+      this.status === "Disputed" &&
+      this.disputeMechanism === "authorized" &&
+      this.authority === this.store.wallets.activeAccount?.address
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   get creator(): string {
@@ -563,6 +595,7 @@ class MarketStore {
       assets: computed,
       tags: computed,
       oracle: computed,
+      authority: computed,
       isOracle: computed,
       isCourt: computed,
       oracleReportPeriodPassed: computed,
@@ -621,7 +654,6 @@ class MarketStore {
 
   async refetchMarketData() {
     const data = await this.store.sdk.models.fetchMarketData(this.id);
-
     if (data.marketType.isCategorical === false) {
       throw new Error("Found non-categorical market.");
     }
