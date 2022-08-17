@@ -738,7 +738,7 @@ const PendingItemsModal = (props: {
 
   return (
     <div>
-      <div className="mb-ztg-24">
+      <div className="mb-ztg-24 max-h-[520px] overflow-scroll">
         {inventory.loading ? (
           <div className="my-20 flex items-center justify-center">
             <Loader color="rgba(210,210,210, 0.3)" size={12} />
