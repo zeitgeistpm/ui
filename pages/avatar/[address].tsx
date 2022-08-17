@@ -50,7 +50,6 @@ const AvatarPage = observer(() => {
   const { getIdentity, toggleHelpNotification, helpnotifications } =
     useUserStore();
 
-  const notificationStore = useNotificationStore();
   const modalStore = useModalStore();
 
   const [loading, setLoading] = useState(true);
