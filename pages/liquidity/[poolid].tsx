@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChevronLeft, Info } from "react-feather";
 import FullSetButtons from "components/markets/FullSetButtons";
 import InfoBoxes from "components/ui/InfoBoxes";
@@ -9,18 +9,10 @@ import Table, { TableColumn, TableData } from "components/ui/Table";
 import MarketStore from "lib/stores/MarketStore";
 import { usePoolsStore, CPool } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ReferenceArea,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import NotFoundPage from "pages/404";
 import Pill from "components/ui/Pill";
+import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
 
 interface Share {
   token: string;
@@ -214,8 +206,8 @@ const PoolDetails: NextPage = observer(() => {
         <PoolDetail
           className="mx-ztg-20"
           header="Fees"
-          middle={`${pool?.pool.swapFee} ${store.config.tokenSymbol}`}
-          bottom="$0"
+          middle={`${new Decimal(pool?.pool.swapFee ?? 0).div(ZTG).mul(100)} %`}
+          bottom=""
         />
 
         <PoolDetail header="APR" middle="" bottom="" showInfo={true} />
