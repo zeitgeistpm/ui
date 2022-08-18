@@ -11,6 +11,8 @@ import MarketsList from "components/markets/MarketsList";
 import AspectRatioImage from "components/ui/AspectRatioImage";
 import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
 import TrendingMarkets from "components/markets/TrendingMarkets";
+import GlitchImage from "components/ui/GlitchImage";
+import Image from "next/image";
 
 const Category = ({
   title,
@@ -207,7 +209,19 @@ const FeaturedMarkets: FC = observer(() => {
 const IndexPage: NextPage = observer(() => {
   return (
     <div data-test="indexPage">
-      <Carousel />
+      <GlitchImage
+        glitchImageSrc="/carousel/banner.png"
+        className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
+      >
+        <Image
+          src="/carousel/banner.png"
+          alt="Zeitgeist app banner"
+          layout="responsive"
+          width={1036}
+          height={374}
+          quality={100}
+        />
+      </GlitchImage>
       <TrendingMarkets />
       <PopularCategories />
       <MarketsList />
