@@ -136,6 +136,7 @@ const createCategoricalMarket = async (
     }
     off = off + Number(offset);
     end = start + len;
+
     const marketId = await createCategoricalMarket(
       sdk,
       id,

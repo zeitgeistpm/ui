@@ -6,7 +6,7 @@ import {
   Subscription,
 } from "rxjs";
 import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
-import { computed, makeObservable, observable, runInAction, when } from "mobx";
+import { makeAutoObservable, runInAction, when } from "mobx";
 import MarketStore from "./MarketStore";
 import Store, { useStore } from "./Store";
 import { MarketsOrderBy, MarketsOrdering } from "@zeitgeistpm/sdk/dist/types";
@@ -39,12 +39,7 @@ class MarketsStore {
 
   constructor(public store: Store) {
     this.sdk = this.store.sdk;
-    makeObservable(this, {
-      marketIds: observable.ref,
-      markets: observable.ref,
-      pools: observable.ref,
-      loaded: computed,
-    });
+    makeAutoObservable(this, {}, { deep: false });
   }
 
   private clearMarkets() {
@@ -201,10 +196,7 @@ class MarketsStore {
         };
       }, {});
 
-      this.order = markets
-        .map((market) => market.id)
-        .sort()
-        .reverse();
+      this.order = markets.map((market) => market.id);
 
       this.count = count;
     });
