@@ -52,6 +52,7 @@ const GlitchImage: FC<{ className?: string; glitchImageSrc: string }> = ({
         animate={{ opacity: isGlitching ? 1 : 0 }}
       >
         {children}
+        <div style={{ ...bg, ...img }} />
         <div
           style={{ ...bg, ...img, ...anim, animationName: "glitch-anim-1" }}
         />

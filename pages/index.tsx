@@ -6,7 +6,6 @@ import { from } from "rxjs";
 import { Skeleton } from "@material-ui/lab";
 
 import { useStore } from "lib/stores/Store";
-import Carousel from "components/ui/Carousel";
 import MarketsList from "components/markets/MarketsList";
 import AspectRatioImage from "components/ui/AspectRatioImage";
 import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
@@ -42,14 +41,8 @@ const Category = ({
         />
       ) : (
         <>
-          <span>
-            <img
-              className="mr-ztg-18"
-              src={imgURL}
-              alt="logo"
-              width={56}
-              height={56}
-            />
+          <span className="mr-ztg-18">
+            <Image src={imgURL} alt={title} width={56} height={56} />
           </span>
           <span>
             <div className="font-space text-ztg-20-150">{title}</div>
