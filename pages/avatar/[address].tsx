@@ -6,7 +6,12 @@ import {
 } from "@zeitgeistpm/avatara-react";
 import Link from "next/link";
 import { formatBalance } from "@polkadot/util";
-import { Avatar, Inventory, SdkContext } from "@zeitgeistpm/avatara-nft-sdk";
+import {
+  Avatar,
+  Inventory,
+  SdkContext,
+  Tarot,
+} from "@zeitgeistpm/avatara-nft-sdk";
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 import Checkbox from "components/ui/Checkbox";
 import DiscordIcon from "components/icons/DiscordIcon";
@@ -45,36 +50,48 @@ const AvatarPage = observer(() => {
   const { getIdentity, toggleHelpNotification, helpnotifications } =
     useUserStore();
 
-  const notificationStore = useNotificationStore();
   const modalStore = useModalStore();
 
+  const [loading, setLoading] = useState(true);
   const [mintingAvatar, setMintingAvatar] = useState(false);
   const [identity, setIdentity] = useState<UserIdentity>();
   const [burnAmount, setBurnAmount] = useState<number>();
   const [hasCrossed, setHasCrossed] = useState(false);
 
-  const inventory = useInventoryManagement(address);
-
-  useEffect(() => {
-    getIdentity(address).then(setIdentity);
-  }, [address, store.wallets.activeAccount?.address]);
-
-  useEffect(() => {
-    store.sdk.api.query.styx.burnAmount().then((amount) => {
-      setBurnAmount(amount.toJSON() as number);
-    });
-    if (store.wallets.activeAccount?.address) {
-      store.sdk.api.query.styx
-        .crossings(store.wallets.activeAccount.address)
-        .then((val) => {
-          setHasCrossed(!val.isEmpty);
-        });
-    }
-  }, [address, store.wallets.activeAccount?.address]);
+  const [tarotStats, setTarotStats] =
+    useState<Tarot.TarotStatsForAddress>(null);
 
   const isOwner =
     store.wallets.activeAccount?.address === address ||
     store.wallets.activeAccount?.address === zeitAddress;
+
+  const inventory = useInventoryManagement(
+    isOwner
+      ? (store.wallets.getActiveSigner() as ExtSigner) || address
+      : address,
+  );
+
+  const loadData = async () => {
+    const [burnAmount, identity, tarotStats] = await Promise.all([
+      store.sdk.api.query.styx.burnAmount(),
+      getIdentity(address),
+      Tarot.fetchStatsForAddress(avatarContext, address),
+    ]);
+    setBurnAmount(burnAmount.toJSON() as number);
+    setIdentity(identity);
+    setTarotStats(tarotStats);
+    if (store.wallets.activeAccount?.address) {
+      const crossing = await store.sdk.api.query.styx.crossings(
+        store.wallets.activeAccount.address,
+      );
+      setHasCrossed(!crossing.isEmpty);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [address, store.wallets.activeAccount?.address]);
 
   const name = identity?.displayName || shortenAddress(address);
 
@@ -106,7 +123,8 @@ const AvatarPage = observer(() => {
     modalStore.openModal(
       <ClaimModal
         burnAmount={burnAmount}
-        hasCrossed={hasCrossed}
+        isTarotHolder={tarotStats?.nfts.length > 0}
+        hasCrossed={hasCrossed || tarotStats?.nfts.length > 0}
         address={address}
         onClaimSuccess={() => inventory.reset()}
         onClose={() => {
@@ -170,9 +188,11 @@ const AvatarPage = observer(() => {
                   isOwner ? (
                     <div className="flex w-full z-ztg-14 h-full items-center justify-center">
                       <button
-                        disabled={mintingAvatar}
+                        disabled={loading || mintingAvatar}
                         className={`rounded-3xl text-black py-2 px-4 cursor-pointer ${
-                          mintingAvatar ? "bg-blue-500" : "bg-blue-700"
+                          loading || mintingAvatar
+                            ? "bg-blue-500"
+                            : "bg-blue-700"
                         }  w-42 text-center`}
                         onClick={onClickMintAvatar}
                       >
@@ -397,6 +417,7 @@ const Badge = (props: { item: Inventory.AcceptedInventoryItem }) => {
 const ClaimModal = (props: {
   address: string;
   burnAmount: number;
+  isTarotHolder: boolean;
   hasCrossed: boolean;
   onClaimSuccess: () => void;
   onClose?: () => void;
@@ -490,12 +511,6 @@ const ClaimModal = (props: {
   };
 
   useEffect(() => {
-    tx.paymentInfo(props.address).then((fee) =>
-      setFee(fee.partialFee.toJSON()),
-    );
-  }, [tx, props.address]);
-
-  useEffect(() => {
     return () => {
       props.onClose?.();
     };
@@ -510,11 +525,13 @@ const ClaimModal = (props: {
           alt="Account balance"
         />
       </div>
-      <div className="">
+      <div className="flex">
         <div className="pr-6 mb-8">
           <p className="mb-4">
-            To claim your right to mint an avatar you have to pay the ferryman
-            due respect, burning {props.burnAmount / ZTG} ZTG.
+            {props.isTarotHolder
+              ? "Claim your avatar to be able to earn badges on the zeitgeist platform. It will be minted to the address you are logged in with."
+              : `To claim your right to mint an avatar you have to pay the ferryman
+              due respect, burning ${props.burnAmount / ZTG} ZTG.`}
           </p>
           {!props.hasCrossed ? (
             <div className="flex items-center">
@@ -530,50 +547,56 @@ const ClaimModal = (props: {
                 <AiFillFire size="22" />
               </div>
               <div className="text-green-500 text-xs flex-1">
-                You have already burned so feel free to claim your avatar.
+                {props.isTarotHolder
+                  ? "Holding tarot cards gives free claim."
+                  : "You have already burned so feel free to claim your avatar."}
               </div>
             </div>
           )}
         </div>
-        <div className="flex w-100 items-center justify-center">
+        <div className="flex w-100 items-center justify-center h-full">
           <div>
-            <button
-              disabled={isClaiming || !hasEnoughBalance}
-              className={`rounded-3xl text-black py-2 px-4 mb-2 ${
-                isClaiming || !hasEnoughBalance
-                  ? "bg-blue-300 text-gray-600 cursor-not-allowed"
-                  : "bg-blue-700 cursor-pointer"
-              }  w-42 text-center`}
-              onClick={onClickBurn}
-            >
-              {isClaiming ? (
-                <Loader size={8} />
-              ) : (
-                <div className="flex items-center">
-                  <span className="text-md">
-                    {props.hasCrossed
-                      ? "Claim"
-                      : `Burn ${props.burnAmount / ZTG} ZTG`}
-                  </span>
-                  <div className="ml-2">
-                    <AiFillFire />
-                  </div>
-                </div>
-              )}
-            </button>
-            <div className="text-center text-xs">
-              <div className="font-lato h-ztg-18 px-ztg-8 text-ztg-12-150 font-bold text-sky-600">
-                <div className="flex px-ztg-8 justify-between">
-                  <span>Exchange Fee: </span>
-                  <span className="font-mono">{(fee / ZTG).toFixed(4)}</span>
-                </div>
-                {!hasEnoughBalance && (
-                  <div className="mt-2">
-                    <span className="text-red-600">Missing balance.</span>
+            <div className="flex justify-center">
+              <button
+                disabled={isClaiming || !hasEnoughBalance}
+                className={`rounded-3xl text-black py-3 px-5 mb-2 text-white ${
+                  isClaiming || !hasEnoughBalance
+                    ? "bg-blue-300 text-gray-600 cursor-not-allowed"
+                    : "bg-blue-700 cursor-pointer"
+                }  w-42 text-center`}
+                onClick={onClickBurn}
+              >
+                {isClaiming ? (
+                  <Loader size={8} />
+                ) : (
+                  <div className="flex items-center">
+                    <span className="text-md">
+                      {props.hasCrossed
+                        ? "Claim"
+                        : `Burn ${props.burnAmount / ZTG} ZTG`}
+                    </span>
+                    <div className="ml-2">
+                      <AiFillFire />
+                    </div>
                   </div>
                 )}
-              </div>
+              </button>
             </div>
+            {!props.isTarotHolder && (
+              <div className="text-center text-xs">
+                <div className="font-lato h-ztg-18 px-ztg-8 text-ztg-12-150 font-bold text-sky-600">
+                  <div className="flex px-ztg-8 justify-between">
+                    <span>Exchange Fee: </span>
+                    <span className="font-mono">{(fee / ZTG).toFixed(4)}</span>
+                  </div>
+                  {!hasEnoughBalance && (
+                    <div className="mt-2">
+                      <span className="text-red-600">Missing balance.</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -582,7 +605,10 @@ const ClaimModal = (props: {
 };
 
 const InventoryModal = (props: { address: string; onClose?: () => void }) => {
-  const inventory = useInventoryManagement(props.address);
+  const store = useStore();
+  const inventory = useInventoryManagement(
+    (store.wallets.getActiveSigner() as ExtSigner) || props.address,
+  );
   const modalStore = useModalStore();
 
   const avatarSdk = useAvatarContext();
@@ -690,7 +716,10 @@ const PendingItemsModal = (props: {
   address: string;
   onClose?: () => void;
 }) => {
-  const inventory = useInventoryManagement(props.address);
+  const store = useStore();
+  const inventory = useInventoryManagement(
+    (store.wallets.getActiveSigner() as ExtSigner) || props.address,
+  );
   const modalStore = useModalStore();
 
   const isAcceptingAll = inventory.items.pending.every((item) =>
@@ -711,7 +740,7 @@ const PendingItemsModal = (props: {
 
   return (
     <div>
-      <div className="mb-ztg-24">
+      <div className="mb-ztg-24 max-h-[520px] overflow-scroll">
         {inventory.loading ? (
           <div className="my-20 flex items-center justify-center">
             <Loader color="rgba(210,210,210, 0.3)" size={12} />

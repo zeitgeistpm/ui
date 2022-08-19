@@ -49,6 +49,7 @@ const Checkbox = observer(({ value, onChange, disabled }: CheckboxProps) => {
 
   return (
     <MaterialCheckBox
+      checked={value}
       value={value}
       disabled={disabled}
       onChange={onChange}

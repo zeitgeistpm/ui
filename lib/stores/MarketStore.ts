@@ -1,6 +1,8 @@
 import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
 import {
   AssetId,
+  CourtDisputeMechanism,
+  isAuthorisedDisputeMechanism,
   MarketCreation,
   MarketDispute,
   MarketPeriod,
@@ -66,7 +68,7 @@ class MarketStore {
     if (this.inReportPeriod) {
       return "Waiting for report";
     }
-    if (!this.endPassed) {
+    if (!this.is("Closed")) {
       if (this.isPeriodInBlocks) {
         return `Ends at block number ${this.period["block"][1]}`;
       }
@@ -84,6 +86,37 @@ class MarketStore {
 
   get oracleReportPeriodPassed(): boolean {
     return this.inReportPeriod && !this.inOracleReportPeriod;
+  }
+
+  //authorised wallet address
+  get authority(): string {
+    if (isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
+      return this.market.disputeMechanism.authorized;
+    }
+  }
+
+  get disputeMechanism(): "authorized" | "other" {
+    if (isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
+      return "authorized";
+    } else {
+      return "other";
+    }
+  }
+
+  get connectedWalletCanReport(): boolean {
+    if (!this.store.wallets.activeAccount?.address) return false;
+
+    if (this.status === "Closed" && this.isOracle) {
+      return true;
+    } else if (
+      this.status === "Disputed" &&
+      this.disputeMechanism === "authorized" &&
+      this.authority === this.store.wallets.activeAccount?.address
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   get creator(): string {
@@ -130,13 +163,6 @@ class MarketStore {
       minute: "numeric",
       hour12: false,
     });
-  }
-
-  get endPassed(): boolean {
-    if (this.isPeriodInBlocks) {
-      return this.period["block"][1] <= this.store.blockNumber;
-    }
-    return this.endTimestamp <= this.store.blockTimestamp;
   }
 
   get period(): MarketPeriod {
@@ -216,8 +242,7 @@ class MarketStore {
   }
 
   get isCourt(): boolean {
-    //@ts-ignore
-    return this.market.mdm.court === null;
+    return (this.market.disputeMechanism as CourtDisputeMechanism).Court === null;
   }
 
   get bounds(): [number, number] | null {
@@ -277,9 +302,6 @@ class MarketStore {
     if (this.market.resolvedOutcome != null) {
       return "Resolved";
     }
-    if (this.endPassed && this.market.status === "Active") {
-      return "Ended";
-    }
     return this.market.status as MarketStatus;
   }
 
@@ -318,7 +340,7 @@ class MarketStore {
     if (this.hasReport) {
       return false;
     }
-    return this.is("Ended");
+    return this.is("Closed");
   }
 
   get outcomesNames(): string[] | undefined {
@@ -573,6 +595,7 @@ class MarketStore {
       assets: computed,
       tags: computed,
       oracle: computed,
+      authority: computed,
       isOracle: computed,
       isCourt: computed,
       oracleReportPeriodPassed: computed,
@@ -584,7 +607,6 @@ class MarketStore {
       creation: computed,
       img: computed,
       endDateFormatted: computed,
-      endPassed: computed,
       reportedOutcome: computed,
       reportedOutcomeIndex: computed,
       reportedOutcomeName: computed,
@@ -632,7 +654,6 @@ class MarketStore {
 
   async refetchMarketData() {
     const data = await this.store.sdk.models.fetchMarketData(this.id);
-
     if (data.marketType.isCategorical === false) {
       throw new Error("Found non-categorical market.");
     }

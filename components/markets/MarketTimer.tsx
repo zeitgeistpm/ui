@@ -70,7 +70,7 @@ const MarketTimer = observer(
     const getMarketStage = (marketStore: MarketStore): MarketStage => {
       if (marketStore.status === "Active") {
         return "Trading";
-      } else if (marketStore.status === "Ended") {
+      } else if (marketStore.status === "Closed") {
         // if oracle doesn't report within 1 day reports are open to all
         if (
           (new Date().getTime() - marketStore.endTimestamp) / 1000 >
@@ -96,7 +96,7 @@ const MarketTimer = observer(
     const getMarketStageIndex = (marketStore: MarketStore): number => {
       if (marketStore.status === "Active") {
         return 0;
-      } else if (marketStore.status === "Ended") {
+      } else if (marketStore.status === "Closed") {
         return 1;
       } else if (
         marketStore.status === "Reported" ||
@@ -119,7 +119,7 @@ const MarketTimer = observer(
     ]);
 
     const getReportPercentage = () => {
-      if (marketStore.status === "Ended") {
+      if (marketStore.status === "Closed") {
         return 1 - marketStore.oracleReportDuration / reportingPeriodSec;
       } else if (marketStore.hasReport) {
         return 1;
@@ -137,7 +137,7 @@ const MarketTimer = observer(
     };
 
     const getDisputePercentage = () => {
-      if (marketStore.status === "Active" || marketStore.status === "Ended") {
+      if (marketStore.status === "Active" || marketStore.status === "Closed") {
         return 0;
       } else if (marketStore.status === "Resolved") {
         return 1;
@@ -327,7 +327,7 @@ const MarketTimer = observer(
       },
       Disputed: {
         title: "Market outcome Disputed",
-        description: "Disputes are open to all",
+        description: "Waiting for authority to report",
         remainingTime: marketStore.disputeCooldownDuration,
         totalTime: disputePeriodSec,
       },

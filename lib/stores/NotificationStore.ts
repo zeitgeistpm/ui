@@ -116,6 +116,8 @@ export default class NotificationStore {
     this.notifications = [...this.notifications, newNotification];
 
     newNotification.initialize(content, lifetime, type, autoRemove, broadcast);
+
+    return newNotification;
   }
 
   removeNotification(notification: SingleNotificationObservable) {

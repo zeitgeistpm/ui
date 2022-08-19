@@ -11,7 +11,10 @@ import {
   CreateCpmmMarketAndDeployAssetsParams,
 } from "@zeitgeistpm/sdk/dist/types/market";
 import { ISubmittableResult } from "@polkadot/types/types";
-import { MarketPeriod } from "@zeitgeistpm/sdk/dist/types";
+import {
+  MarketDisputeMechanism,
+  MarketPeriod,
+} from "@zeitgeistpm/sdk/dist/types";
 import Moment from "moment";
 
 import { defaultOptions, defaultPlugins } from "lib/form";
@@ -295,7 +298,7 @@ const CreatePage: NextPage = observer(() => {
     const period = getMarketPeriod();
     const creationType = formData.advised ? "Advised" : "Permissionless";
 
-    const mdm = {
+    const mdm: MarketDisputeMechanism = {
       authorized: process.env.NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS,
     };
 
@@ -332,7 +335,7 @@ const CreatePage: NextPage = observer(() => {
     const signer = store.wallets.getActiveSigner();
     const oracle = formData.oracle;
     const period = getMarketPeriod();
-    const mdm = {
+    const mdm: MarketDisputeMechanism = {
       authorized: process.env.NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS,
     };
     const metadata = getMarketMetadata();
@@ -346,10 +349,6 @@ const CreatePage: NextPage = observer(() => {
     });
 
     const weights = [...weightsNums.map((w) => Math.floor(w).toString())];
-
-    const amounts = poolRows.slice(0, -1).map((r) => {
-      return (Number(r.amount) * ZTG).toString();
-    });
 
     const baseAssetAmount = (
       Number([...poolRows].pop().amount) * ZTG
