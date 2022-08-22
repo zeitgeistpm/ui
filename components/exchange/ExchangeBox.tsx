@@ -138,7 +138,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
             exchangeStore.ztgPoolBalance.toString(),
             exchangeStore.ztgWeight,
             wallets.activeBalance.toString(),
-            exchangeStore.swapFee,
+            exchangeStore.swapFee.div(ZTG),
           ).toNumber(),
         );
 
@@ -192,7 +192,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               exchangeStore.poolBalance.mul(ZTG),
               new Decimal(exchangeStore.outcomeWeight),
               exchangeStore.amount.mul(ZTG),
-              swapFee,
+              swapFee.div(ZTG),
               new Decimal(slippagePercentage).div(100),
               poolId,
             )
@@ -205,7 +205,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               exchangeStore.ztgPoolBalance.mul(ZTG),
               new Decimal(exchangeStore.ztgWeight),
               exchangeStore.amount.mul(ZTG),
-              swapFee,
+              swapFee.div(ZTG),
               new Decimal(slippagePercentage).div(100),
               poolId,
             );
@@ -463,7 +463,9 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               <span>Trading Fee:</span>
               <span className="font-mono">
                 {`${(
-                  exchangeStore?.amount?.mul(exchangeStore.swapFee ?? 0) ?? 0
+                  exchangeStore?.amount?.mul(
+                    exchangeStore.swapFee?.div(ZTG) ?? 0,
+                  ) ?? 0
                 ).toString()} ${feeCurrencySymbol}`}
               </span>
             </div>
