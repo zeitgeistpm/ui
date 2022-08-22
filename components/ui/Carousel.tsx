@@ -26,14 +26,14 @@ const Carousel: FC<CarouselProps> = () => {
       <Slider className="rounded-ztg-10">
         <Slide index={0} className="bg-black rounded-ztg-10">
           <GlitchImage
-            glitchImageSrc="/carousel/beta-welcome-2.png"
+            src="/carousel/beta-welcome-2.png"
             className="h-full rounded-ztg-10"
           />
         </Slide>
         <Slide index={1} className="bg-black rounded-ztg-10">
           <a href={`https://shapethefuture.zeitgeist.pm`} target="_blank">
             <GlitchImage
-              glitchImageSrc="/carousel/shape-the-future.png"
+              src="/carousel/shape-the-future.png"
               className="h-full rounded-ztg-10"
             />
           </a>

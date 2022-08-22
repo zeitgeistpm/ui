@@ -203,7 +203,7 @@ const IndexPage: NextPage = observer(() => {
   return (
     <div data-test="indexPage">
       <GlitchImage
-        glitchImageSrc="/carousel/banner.png"
+        src="/carousel/banner.png"
         className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
       >
         <Image

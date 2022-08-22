@@ -1,15 +1,15 @@
 import React, { FC, useState } from "react";
 import { motion } from "framer-motion";
 
-const GlitchImage: FC<{ className?: string; glitchImageSrc: string }> = ({
+const GlitchImage: FC<{ className?: string; src: string }> = ({
   className,
-  glitchImageSrc,
+  src,
   children,
 }) => {
   const [isGlitching, setIsGlitching] = useState(false);
 
   const bg: React.CSSProperties = {
-    backgroundImage: `url(${glitchImageSrc})`,
+    backgroundImage: `url(${src})`,
     backgroundSize: "cover",
   };
 
