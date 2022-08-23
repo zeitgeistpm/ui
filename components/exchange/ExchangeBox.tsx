@@ -181,6 +181,11 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
 
       const { poolId, swapFee } = exchangeStore;
 
+      if (tradeTooLarge()) {
+        tx$.next(null);
+        return;
+      }
+
       const _tx =
         type === "buy"
           ? generateSwapExactAmountOutTx(
@@ -234,7 +239,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
 
             const partialFee = paymentInfo.partialFee.toNumber() / ZTG;
 
-            fee = partialFee.toString();
+            fee = partialFee.toFixed(4);
           }
 
           setTxFee(fee);
@@ -356,6 +361,19 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
         ? store.config.tokenSymbol
         : selectedAssetOption.label.toUpperCase();
 
+    const tradeTooLarge = () => {
+      return (
+        (type === "buy" &&
+          exchangeStore.amount.greaterThanOrEqualTo(
+            exchangeStore.poolBalance,
+          )) ||
+        (type === "sell" &&
+          exchangeStore.amount.greaterThanOrEqualTo(
+            exchangeStore.ztgPoolBalance,
+          ))
+      );
+    };
+
     return (
       <div className="py-ztg-10 rounded-ztg-10 bg-white dark:bg-sky-1000 max-h-[500px]">
         <div className="flex h-ztg-25 items-center px-ztg-16">
@@ -439,7 +457,9 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
             <TransactionButton
               className="mb-ztg-10 shadow-ztg-2"
               disabled={
-                !exchangeForm?.isValid || !exchangeStore.spotPrice?.gt(0)
+                !exchangeForm?.isValid ||
+                !exchangeStore.spotPrice?.gt(0) ||
+                tradeTooLarge()
               }
               onClick={() => {
                 openTransactionModal();
