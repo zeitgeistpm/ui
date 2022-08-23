@@ -5,7 +5,6 @@ import { Swap } from "@zeitgeistpm/sdk/dist/models";
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import { useContext } from "react";
 import SDK from "@zeitgeistpm/sdk";
-import { initIpfs } from "@zeitgeistpm/sdk/dist/util/ipfs";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 import Decimal from "decimal.js";
 import { makeAutoObservable, runInAction, when } from "mobx";
@@ -254,16 +253,10 @@ export default class Store {
 
     this.userStore.setEndpoint(endpoint);
 
-    await this.initIPFS();
-
     runInAction(() => {
       this.sdk = sdk;
       this.subscribeBlock();
     });
-  }
-
-  async initIPFS() {
-    this.ipfs = initIpfs();
   }
 
   private async initGraphQlClient() {
