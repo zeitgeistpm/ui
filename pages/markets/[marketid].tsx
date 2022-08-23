@@ -31,6 +31,7 @@ import MarketAddresses from "components/markets/MarketAddresses";
 import { MultipleOutcomeEntry } from "lib/types/create-market";
 import { useUserStore } from "lib/stores/UserStore";
 import Decimal from "decimal.js";
+import { calcTotalAssetPrice } from "lib/util/pool";
 
 const LiquidityPill = observer(({ liquidity }: { liquidity: number }) => {
   const { config } = useStore();
@@ -162,13 +163,12 @@ const MarketDetails = observer(() => {
 
       const series: ChartSeries[] = [];
       let chartData: ChartData[] = [];
-      const outcomes = market.marketOutcomes.filter(
-        (o) => o.metadata !== "ztg",
-      );
 
       const dateOneWeekAgo = new Date(
         new Date().getTime() - DAY_SECONDS * 28 * 1000,
       ).toISOString();
+
+      const totalAssetPrice = calcTotalAssetPrice(pool);
 
       for (const [index, assetId] of Array.from(
         market.outcomeAssetIds.entries(),
@@ -221,7 +221,7 @@ const MarketDetails = observer(() => {
               value: currentPrice,
               usdValue: 0,
             },
-            pre: Math.round(currentPrice * 100),
+            pre: Math.round((currentPrice / totalAssetPrice) * 100),
             change: priceChange,
             buttons: (
               <AssetActionButtons
@@ -259,7 +259,7 @@ const MarketDetails = observer(() => {
   };
 
   const handleDeploySignClick = async () => {
-    // We are asuming all rows have the same ammount
+    // We are assuming all rows have the same amount
     const amount = poolRows[0].amount;
 
     const baseWeight = (1 / (poolRows.length - 1)) * 10 * ZTG;
