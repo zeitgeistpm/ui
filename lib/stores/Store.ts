@@ -189,8 +189,6 @@ export default class Store {
         this.wallets.initialize(storedWalletId);
       }
 
-      this.courtStore = new CourtStore(this);
-
       this.registerValidationRules();
 
       await this.pools.init();
