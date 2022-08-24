@@ -99,6 +99,7 @@ class MarketsStore {
 
       await marketStore.initializeMarketData(marketData);
       marketStore.startPolling();
+      marketStore.subscribeToChainData();
       this.subscribeToMarketChanges(marketStore);
       return marketStore;
     } else {
@@ -108,15 +109,6 @@ class MarketsStore {
       }
       return market;
     }
-  }
-
-  private unsubscribeMarket(marketId: number) {
-    if (!this.subscriptions.hasOwnProperty(marketId)) {
-      return;
-    }
-    const subs = this.subscriptions[marketId];
-    subs.forEach((s) => s.unsubscribe());
-    this.subscriptions[marketId] = undefined;
   }
 
   private updateMarkets(market: MarketStore) {
@@ -180,28 +172,27 @@ class MarketsStore {
         ));
     }
 
-    const markets: MarketStore[] = [];
+    let markets: MarketStore[] = [];
 
+    let order = [];
     for (const data of marketsData) {
-      const marketStore = new MarketStore(this.store, data.marketId);
-      marketStore.initializeMarketData(data);
-      markets.push(marketStore);
+      const id = data.marketId;
+      markets = [...markets, await this.getMarket(id)];
+      order = [...order, id];
     }
 
-    runInAction(() => {
-      this.markets = markets.reduce((markets, market) => {
-        return {
-          ...markets,
-          [market.id]: market,
-        };
-      }, {});
-
-      this.order = markets.map((market) => market.id);
-
-      this.count = count;
-    });
+    this.setCount(count);
+    this.setOrder(order);
 
     return { markets, count };
+  }
+
+  setCount(count: number) {
+    this.count = count;
+  }
+
+  setOrder(order: number[]) {
+    this.order = order;
   }
 }
 

@@ -172,9 +172,12 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       </div>
       <div className="mb-ztg-38">
         {markets?.length > 0 &&
-          markets.map((market) => (
-            <Card marketStore={market} key={market.id} />
-          ))}
+          markets.map((market) => {
+            if (market == null) {
+              return;
+            }
+            return <Card marketStore={market} key={`market-${market.id}`} />;
+          })}
 
         {loadingNextPage && (
           <MarketSkeletons pageSize={query.pagination.pageSize} />
