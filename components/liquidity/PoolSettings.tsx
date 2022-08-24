@@ -92,8 +92,7 @@ const PoolSettings: FC<{
       },
       amount: {
         value: d.amount,
-        min: "100",
-        max: "150",
+        min: store.config?.swaps.minLiquidity,
         onChange: (amount: string) => {
           changeOutcomeRow(amount);
         },
