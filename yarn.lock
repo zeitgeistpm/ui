@@ -3769,9 +3769,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk@npm:^0.7.3":
-  version: 0.7.3
-  resolution: "@zeitgeistpm/sdk@npm:0.7.3"
+"@zeitgeistpm/sdk@npm:^0.7.4":
+  version: 0.7.4
+  resolution: "@zeitgeistpm/sdk@npm:0.7.4"
   dependencies:
     "@polkadot/api": ^8.7.1
     "@polkadot/keyring": ^9.4.1
@@ -3786,7 +3786,7 @@ __metadata:
     ipfs-http-client: ^49.0.4
     it-all: ^1.0.4
     uint8arrays: ^2.1.4
-  checksum: 01170818d5d0bba4b281fdc05a658c76bba4dab86076d5847524b6c0cd73d726efffb45bd7a6ae0395b8282f35f5436e0eb674d5df7bc6cf41c0259dfb1756b9
+  checksum: 858395fa8a57ad3fff5d203698e52eff356807c555e479083c5df7b4be7b3cb7d4aa4d39fdd7b7b923ec6c1ca8e290325936e1c93d89ce9e225d35915c2df07b
   languageName: node
   linkType: hard
 
@@ -3848,7 +3848,7 @@ __metadata:
     "@zeitgeistpm/avatara-nft-sdk": ^0.3.1-alpha.0
     "@zeitgeistpm/avatara-react": ^0.3.1-alpha.0
     "@zeitgeistpm/avatara-util": ^0.3.0-alpha.0
-    "@zeitgeistpm/sdk": ^0.7.3
+    "@zeitgeistpm/sdk": ^0.7.4
     autoprefixer: 10.2.5
     axios: ^0.21.4
     babel-eslint: ^10.1.0
