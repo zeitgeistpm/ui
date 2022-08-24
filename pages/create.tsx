@@ -466,7 +466,7 @@ const CreatePage: NextPage = observer(() => {
       return new Decimal(await store.sdk.models.createMarket(params))
         .div(ZTG)
         .toFixed(4);
-    } else {
+    } else if (poolRows) {
       const params = await getCreateCpmmMarketAndAddPoolParameters(true);
       const fee = await store.sdk.models.createCpmmMarketAndDeployAssets(
         params,
