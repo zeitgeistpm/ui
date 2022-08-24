@@ -241,7 +241,7 @@ const MarketAddresses = observer(
             }
             judgement={authorityIdentity?.judgement}
             onInspect={() =>
-              handleInspect(marketStore?.oracle, authorityIdentity)
+              handleInspect(marketStore?.authority, authorityIdentity)
             }
           />
         )}
