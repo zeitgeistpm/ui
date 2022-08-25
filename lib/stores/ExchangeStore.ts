@@ -11,6 +11,7 @@ import {
 import { calcOutGivenIn, calcSpotPrice } from "../math";
 import { JSONObject, ztgAsset } from "../types";
 import Store, { useStore } from "./Store";
+import { ZTG } from "lib/constants";
 
 export type OutcomeOption = {
   label: string;
@@ -232,7 +233,7 @@ export default class ExchangeStore {
       this.ztgPoolBalance.toString(),
       this.ztgWeight,
       this.amount?.toString() || "0",
-      this.swapFee,
+      this.swapFee.div(ZTG),
     );
   }
 
@@ -300,7 +301,7 @@ export default class ExchangeStore {
       this.ztgWeight,
       this.poolBalance,
       this.outcomeWeight,
-      this.swapFee,
+      this.swapFee.div(ZTG),
     );
     runInAction(() => {
       this.spotPrice = price;

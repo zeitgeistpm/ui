@@ -6,11 +6,12 @@ import { from } from "rxjs";
 import { Skeleton } from "@material-ui/lab";
 
 import { useStore } from "lib/stores/Store";
-import Carousel from "components/ui/Carousel";
 import MarketsList from "components/markets/MarketsList";
 import AspectRatioImage from "components/ui/AspectRatioImage";
 import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
 import TrendingMarkets from "components/markets/TrendingMarkets";
+import GlitchImage from "components/ui/GlitchImage";
+import Image from "next/image";
 
 const Category = ({
   title,
@@ -40,14 +41,8 @@ const Category = ({
         />
       ) : (
         <>
-          <span>
-            <img
-              className="mr-ztg-18"
-              src={imgURL}
-              alt="logo"
-              width={56}
-              height={56}
-            />
+          <span className="mr-ztg-18">
+            <Image src={imgURL} alt={title} width={56} height={56} />
           </span>
           <span>
             <div className="font-space text-ztg-20-150">{title}</div>
@@ -207,7 +202,19 @@ const FeaturedMarkets: FC = observer(() => {
 const IndexPage: NextPage = observer(() => {
   return (
     <div data-test="indexPage">
-      <Carousel />
+      <GlitchImage
+        src="/carousel/banner.png"
+        className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
+      >
+        <Image
+          src="/carousel/banner.png"
+          alt="Zeitgeist app banner"
+          layout="responsive"
+          width={1036}
+          height={374}
+          quality={100}
+        />
+      </GlitchImage>
       <TrendingMarkets />
       <PopularCategories />
       <MarketsList />

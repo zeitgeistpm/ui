@@ -61,8 +61,14 @@ const AvatarPage = observer(() => {
   const [tarotStats, setTarotStats] =
     useState<Tarot.TarotStatsForAddress>(null);
 
+  const isOwner =
+    store.wallets.activeAccount?.address === address ||
+    store.wallets.activeAccount?.address === zeitAddress;
+
   const inventory = useInventoryManagement(
-    (store.wallets.getActiveSigner() as ExtSigner) || address,
+    isOwner
+      ? (store.wallets.getActiveSigner() as ExtSigner) || address
+      : address,
   );
 
   const loadData = async () => {
@@ -86,10 +92,6 @@ const AvatarPage = observer(() => {
   useEffect(() => {
     loadData();
   }, [address, store.wallets.activeAccount?.address]);
-
-  const isOwner =
-    store.wallets.activeAccount?.address === address ||
-    store.wallets.activeAccount?.address === zeitAddress;
 
   const name = identity?.displayName || shortenAddress(address);
 

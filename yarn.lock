@@ -3695,9 +3695,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/avatara-nft-sdk@npm:^0.3.0-alpha.0":
-  version: 0.3.0-alpha.0
-  resolution: "@zeitgeistpm/avatara-nft-sdk@npm:0.3.0-alpha.0"
+"@zeitgeistpm/avatara-nft-sdk@npm:^0.3.1-alpha.0":
+  version: 0.3.1-alpha.0
+  resolution: "@zeitgeistpm/avatara-nft-sdk@npm:0.3.1-alpha.0"
   dependencies:
     "@polkadot/api": ^8.7.1
     "@polkadot/extension-inject": ^0.44.1
@@ -3720,15 +3720,15 @@ __metadata:
     tsconfig: "*"
   peerDependencies:
     "@polkadot/extension-dapp": "*"
-  checksum: cf7796ef18a90ed358999cd6c6478e4baa04daa9ffbcd7418860c2cb43ead1e4628ab1582642922f34569e7a29605e4fd945990286f9a9e99c396c9f3f4b02e2
+  checksum: 91baf70a971597f189680b1f56d07a2c9ad72b946a938a2ebfb2219df64f0c521adc7f9049bddb3c48a95036cb5d5231373ea2924299c8a35d80388d62e38084
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/avatara-react@npm:^0.3.0-alpha.0":
-  version: 0.3.0-alpha.0
-  resolution: "@zeitgeistpm/avatara-react@npm:0.3.0-alpha.0"
+"@zeitgeistpm/avatara-react@npm:^0.3.1-alpha.0":
+  version: 0.3.1-alpha.0
+  resolution: "@zeitgeistpm/avatara-react@npm:0.3.1-alpha.0"
   dependencies:
-    "@zeitgeistpm/avatara-nft-sdk": ^0.3.0-alpha.0
+    "@zeitgeistpm/avatara-nft-sdk": ^0.3.1-alpha.0
     "@zeitgeistpm/avatara-util": ^0.3.0-alpha.0
     copy-to-clipboard: ^3.3.1
     jotai: ^1.6.1
@@ -3736,7 +3736,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-dom: "*"
-  checksum: 4dd72c86ab617af4cea899135cb6d11ee3a206032fadb7c2a6b0f9ec441d679d4e637e02efffa00247c44c92f05424299d616d263f61299ab348c8e79d803e58
+  checksum: 20576eadb2dc7989213f46ef589252b264a443572cdbf097e178885119ff19c85cd4468de64f05a93fd6d7e371093744c235c73b7d80597f3a5e837d41ac434a
   languageName: node
   linkType: hard
 
@@ -3769,16 +3769,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk@npm:0.6.6":
-  version: 0.6.6
-  resolution: "@zeitgeistpm/sdk@npm:0.6.6"
+"@zeitgeistpm/sdk@npm:^0.7.4":
+  version: 0.7.4
+  resolution: "@zeitgeistpm/sdk@npm:0.7.4"
   dependencies:
     "@polkadot/api": ^8.7.1
     "@polkadot/keyring": ^9.4.1
     "@polkadot/util": ^9.4.1
     "@polkadot/util-crypto": ^9.4.1
-    "@zeitgeistpm/type-defs": ^0.6.5
-    "@zeitgeistpm/types": ^0.6.5
+    "@zeitgeistpm/type-defs": ^0.7.0
+    "@zeitgeistpm/types": ^0.7.0
     commander: ^7.2.0
     decimal.js: ^10.3.1
     graphql: 15.x
@@ -3786,7 +3786,7 @@ __metadata:
     ipfs-http-client: ^49.0.4
     it-all: ^1.0.4
     uint8arrays: ^2.1.4
-  checksum: f9aecbe4ae0e98aafec34cca9e886129b09f1d4a7f90677dae2a78aa1a521adf6c2b602d9118d3b82ec210668104297ed98f1125ed26ebbf0e3ba6c52903bcff
+  checksum: 858395fa8a57ad3fff5d203698e52eff356807c555e479083c5df7b4be7b3cb7d4aa4d39fdd7b7b923ec6c1ca8e290325936e1c93d89ce9e225d35915c2df07b
   languageName: node
   linkType: hard
 
@@ -3806,21 +3806,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/type-defs@npm:^0.6.5":
-  version: 0.6.5
-  resolution: "@zeitgeistpm/type-defs@npm:0.6.5"
-  checksum: 7670c14f7d1dd9a701192927717148f58f80016373770d34e4f23a12c447bf773efefdb785d88cd96ca8cd8cf1bb5fcca29319151109de1e1189f74f699345aa
+"@zeitgeistpm/type-defs@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@zeitgeistpm/type-defs@npm:0.7.0"
+  checksum: 90fed428d9eb72bf5ad2475b7101401d250781a93f89bc9896109181e6153615a299398a0572140036fb802cd822fccc5b20cab3bcd19bd1cb8d6e0fffdfeedb
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/types@npm:^0.6.5":
-  version: 0.6.5
-  resolution: "@zeitgeistpm/types@npm:0.6.5"
+"@zeitgeistpm/types@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "@zeitgeistpm/types@npm:0.7.0"
   dependencies:
     "@polkadot/types": 8.7.1
-    "@zeitgeistpm/type-defs": ^0.6.5
+    "@zeitgeistpm/type-defs": ^0.7.0
     axios: ^0.21.1
-  checksum: dbae6dfe0565f14448e7e6d3e83983b3333baa30a6da8e8071295a804c594385ea4fe27e4bd2be832e6c66fb3f37aba01c66bf1084807c2626f75783bda4fc30
+  checksum: 9d33737ee301c8b3fe7775f3988d4efc205823317ca78d1612f44c6031aaad14146e85f877a2a5f323bd85e9d4f961e59d26eef45d1a0d4aa4387b0b50bac90b
   languageName: node
   linkType: hard
 
@@ -3845,10 +3845,10 @@ __metadata:
     "@types/react": ^17.0.38
     "@types/react-color": ^3.0.6
     "@typescript-eslint/eslint-plugin": ^5.9.1
-    "@zeitgeistpm/avatara-nft-sdk": ^0.3.0-alpha.0
-    "@zeitgeistpm/avatara-react": ^0.3.0-alpha.0
+    "@zeitgeistpm/avatara-nft-sdk": ^0.3.1-alpha.0
+    "@zeitgeistpm/avatara-react": ^0.3.1-alpha.0
     "@zeitgeistpm/avatara-util": ^0.3.0-alpha.0
-    "@zeitgeistpm/sdk": 0.6.6
+    "@zeitgeistpm/sdk": ^0.7.4
     autoprefixer: 10.2.5
     axios: ^0.21.4
     babel-eslint: ^10.1.0

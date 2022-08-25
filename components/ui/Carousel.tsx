@@ -27,7 +27,6 @@ const Carousel: FC<CarouselProps> = () => {
         <Slide index={0} className="bg-black rounded-ztg-10">
           <GlitchImage
             src="/carousel/beta-welcome-2.png"
-            alt="Beta welcome"
             className="h-full rounded-ztg-10"
           />
         </Slide>
@@ -35,34 +34,10 @@ const Carousel: FC<CarouselProps> = () => {
           <a href={`https://shapethefuture.zeitgeist.pm`} target="_blank">
             <GlitchImage
               src="/carousel/shape-the-future.png"
-              alt="Shape the future with Zeitgeist"
               className="h-full rounded-ztg-10"
             />
           </a>
         </Slide>
-        {/* <Slide index={1} className="bg-red-500 rounded-ztg-10">
-          <div className="flex flex-col">
-            <div>Test</div>
-            <div>Displaying</div>
-            <div>Components</div>
-            <Switch
-              leftLabel="Buy"
-              rightLabel="Sell"
-              initialSelection="right"
-              onLeftSideClick={() => {}}
-              onRightSideClick={() => {}}
-            />
-          </div>
-        </Slide>
-        <Slide index={2} className="bg-black rounded-ztg-10">
-          <div className="rounded-ztg-10">
-            <img
-              src="https://via.placeholder.com/240x127"
-              alt="logo"
-              className="w-full rounded-ztg-10"
-            />
-          </div>
-        </Slide> */}
       </Slider>
       <div className="w-2/3 relative bottom-3 ml-16%">
         <div className="flex flex-row item-center justify-center">

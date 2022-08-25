@@ -1,9 +1,10 @@
 import React, { FC, useState } from "react";
 import { motion } from "framer-motion";
 
-const GlitchImage: FC<{ className?: string; alt?: string; src: string }> = ({
+const GlitchImage: FC<{ className?: string; src: string }> = ({
   className,
   src,
+  children,
 }) => {
   const [isGlitching, setIsGlitching] = useState(false);
 
@@ -50,6 +51,7 @@ const GlitchImage: FC<{ className?: string; alt?: string; src: string }> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: isGlitching ? 1 : 0 }}
       >
+        {children}
         <div style={{ ...bg, ...img }} />
         <div
           style={{ ...bg, ...img, ...anim, animationName: "glitch-anim-1" }}
