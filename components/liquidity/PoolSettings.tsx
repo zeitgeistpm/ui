@@ -3,8 +3,10 @@ import React, { FC } from "react";
 import { useStore } from "lib/stores/Store";
 import { MultipleOutcomeEntry } from "lib/types/create-market";
 import Table, { TableColumn, TableData } from "components/ui/Table";
-import { ZTG_BLUE_COLOR } from "lib/constants";
+import { ZTG, ZTG_BLUE_COLOR } from "lib/constants";
 import { motion } from "framer-motion";
+import PoolFeesSelect from "./PoolFeesSelect";
+import Decimal from "decimal.js";
 
 export interface PoolAssetRowData {
   assetColor: string;
@@ -55,7 +57,8 @@ export const poolRowDataFromOutcomes = (
 const PoolSettings: FC<{
   data: PoolAssetRowData[];
   onChange: (data: PoolAssetRowData[]) => void;
-}> = observer(({ data, onChange }) => {
+  onFeeChange: (data: Decimal) => void;
+}> = observer(({ data, onChange, onFeeChange }) => {
   const store = useStore();
   const { wallets } = store;
 
@@ -135,9 +138,21 @@ const PoolSettings: FC<{
     },
   ];
 
+  const handleFeeChange = (fee: Decimal) => {
+    onFeeChange(fee.div(100).mul(ZTG));
+  };
+
   return (
     <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
       <Table data={tableData} columns={columns} />
+      <div className="mt-[20px] mb-[40px]">
+        <div className="text-ztg-16-150 font-bold font-lato">Pool Fees*</div>
+        <p className="text-ztg-14-150 mb-[30px] mt-[10px] text-sky-600 font-lato">
+          High fees will allow liquidity providers to collect more value from a
+          given trade. However, high fees may also reduce market participants.
+        </p>
+        <PoolFeesSelect onFeeChange={handleFeeChange} />
+      </div>
     </motion.div>
   );
 });

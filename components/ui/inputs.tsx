@@ -154,6 +154,7 @@ export interface AmountInputProps {
   max?: string;
   min?: string;
   name?: string;
+  placeholder?: string;
   onChange?: (val: string) => void;
   className?: string;
   containerClass?: string;
@@ -217,6 +218,7 @@ export const AmountInput: FC<AmountInputProps> = observer(
         max,
         min,
         name,
+        placeholder,
         className = "",
         containerClass = "",
         leftComponent,
@@ -325,6 +327,7 @@ export const AmountInput: FC<AmountInputProps> = observer(
             ref={ref}
             type="text"
             autoComplete="off"
+            placeholder={placeholder}
             onChange={onChanged}
             onBlur={onBlured}
             onFocus={() => setFocused(true)}

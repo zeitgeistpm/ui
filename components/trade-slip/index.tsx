@@ -147,7 +147,7 @@ const TradeSlip = observer(() => {
             />
           </div>
           <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
-            <div className="font-bold">Exchange fee:</div>
+            <div className="font-bold">Network fee:</div>
             <div className="font-normal">
               {txFee.toFixed(4)} {store.config?.tokenSymbol}
             </div>
