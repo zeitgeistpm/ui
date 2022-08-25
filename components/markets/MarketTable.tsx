@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { get24HrPriceChange } from "lib/util/market";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useUserStore } from "lib/stores/UserStore";
+import { calcTotalAssetPrice } from "lib/util/pool";
 
 const MarketTable = observer(
   ({ marketStore }: { marketStore: MarketStore }) => {
@@ -74,6 +75,8 @@ const MarketTable = observer(
       })();
     }, [marketStore, marketStore.pool]);
 
+    const totalAssetPrice = calcTotalAssetPrice(pool);
+
     const tableData: TableData[] = marketStore.outcomeAssetIds.map(
       (assetId, index) => {
         const metadata = marketStore.outcomesMetadata[index];
@@ -92,7 +95,11 @@ const MarketTable = observer(
             value: pool?.assets[index].price,
             usdValue: 0,
           },
-          pre: Math.round((pool?.assets[index].price ?? 0) * 100),
+          pre: pool
+            ? Math.round(
+                ((pool?.assets[index].price ?? 0) / totalAssetPrice) * 100,
+              )
+            : "",
           change24hr: priceHistories?.[index]
             ? get24HrPriceChange(priceHistories[index])
             : 0,

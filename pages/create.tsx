@@ -117,6 +117,7 @@ const CreatePage: NextPage = observer(() => {
 
   const [deployPool, setDeployPool] = useState(false);
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[] | null>(null);
+  const [swapFee, setSwapFee] = useState<string>();
   const [txFee, setTxFee] = useState<string>();
 
   const router = useRouter();
@@ -368,10 +369,10 @@ const CreatePage: NextPage = observer(() => {
       period,
       marketType,
       disputeMechanism: mdm,
+      swapFee,
       amount: baseAssetAmount,
       weights,
       metadata,
-      swapFee: "0",
       callbackOrPaymentInfo,
     };
   };
@@ -491,7 +492,7 @@ const CreatePage: NextPage = observer(() => {
       <h2 className="header mb-ztg-23" data-test="createMarketHeader">
         Create Market
       </h2>
-      <MarketFormCard header="1. Market name">
+      <MarketFormCard header="1. Market name*">
         <MarketSlugField
           slug={formData.slug}
           base64Image={formData.marketImage}
@@ -602,12 +603,6 @@ const CreatePage: NextPage = observer(() => {
                 Deploy Liquidity Pool
               </label>
             </div>
-            <p className="text-ztg-14-150 mb-ztg-15 text-sky-600 font-lato">
-              Deploying a pool will require at least two further transactions
-              after the market is created, one to buy a full set of tokens and
-              another to deploy the pool. If different amounts are specified an
-              additional transaction per token will be required.
-            </p>
           </>
         )}
         {deployPool && poolRows != null && (
@@ -615,6 +610,9 @@ const CreatePage: NextPage = observer(() => {
             data={poolRows}
             onChange={(v) => {
               setPoolRows(v);
+            }}
+            onFeeChange={(fee: Decimal) => {
+              setSwapFee(fee.toString());
             }}
           />
         )}

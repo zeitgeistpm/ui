@@ -114,13 +114,6 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
     const [isSelectView, setIsSelectView] = useState<boolean>(false);
     const inputRef = useRef<HTMLInputElement>();
 
-    const slippageDecimal = useMemo(() => {
-      if (slippagePercentage === "") {
-        return new Decimal(0);
-      }
-      return new Decimal(slippagePercentage).div(100).add(1);
-    }, [slippagePercentage]);
-
     const store = useStore();
     const { wallets } = store;
     const modalStore = useModalStore();
@@ -145,7 +138,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
             exchangeStore.ztgPoolBalance.toString(),
             exchangeStore.ztgWeight,
             wallets.activeBalance.toString(),
-            exchangeStore.swapFee,
+            exchangeStore.swapFee.div(ZTG),
           ).toNumber(),
         );
 
@@ -186,7 +179,13 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
         return;
       }
 
-      const { poolId } = exchangeStore;
+      const { poolId, swapFee } = exchangeStore;
+
+      if (tradeTooLarge()) {
+        tx$.next(null);
+        return;
+      }
+
       const _tx =
         type === "buy"
           ? generateSwapExactAmountOutTx(
@@ -198,7 +197,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               exchangeStore.poolBalance.mul(ZTG),
               new Decimal(exchangeStore.outcomeWeight),
               exchangeStore.amount.mul(ZTG),
-              new Decimal(0),
+              swapFee.div(ZTG),
               new Decimal(slippagePercentage).div(100),
               poolId,
             )
@@ -211,7 +210,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               exchangeStore.ztgPoolBalance.mul(ZTG),
               new Decimal(exchangeStore.ztgWeight),
               exchangeStore.amount.mul(ZTG),
-              new Decimal(0),
+              swapFee.div(ZTG),
               new Decimal(slippagePercentage).div(100),
               poolId,
             );
@@ -240,7 +239,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
 
             const partialFee = paymentInfo.partialFee.toNumber() / ZTG;
 
-            fee = partialFee.toString();
+            fee = partialFee.toFixed(4);
           }
 
           setTxFee(fee);
@@ -357,8 +356,26 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
       );
     }
 
+    const feeCurrencySymbol =
+      type === "buy"
+        ? store.config.tokenSymbol
+        : selectedAssetOption.label.toUpperCase();
+
+    const tradeTooLarge = () => {
+      return (
+        (type === "buy" &&
+          exchangeStore.amount.greaterThanOrEqualTo(
+            exchangeStore.poolBalance,
+          )) ||
+        (type === "sell" &&
+          exchangeStore.amount.greaterThanOrEqualTo(
+            exchangeStore.ztgPoolBalance,
+          ))
+      );
+    };
+
     return (
-      <div className="py-ztg-10 rounded-ztg-10 bg-white dark:bg-sky-1000 max-h-ztg-474">
+      <div className="py-ztg-10 rounded-ztg-10 bg-white dark:bg-sky-1000 max-h-[500px]">
         <div className="flex h-ztg-25 items-center px-ztg-16">
           <TypeSwitch type={type} onChange={(t) => setType(t)} />
           <SlippageSettingInput
@@ -440,7 +457,9 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
             <TransactionButton
               className="mb-ztg-10 shadow-ztg-2"
               disabled={
-                !exchangeForm?.isValid || !exchangeStore.spotPrice?.gt(0)
+                !exchangeForm?.isValid ||
+                !exchangeStore.spotPrice?.gt(0) ||
+                tradeTooLarge()
               }
               onClick={() => {
                 openTransactionModal();
@@ -450,11 +469,25 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
             </TransactionButton>
             <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
               <span>Max profit:</span>
-              <span className="font-mono">{exchangeStore?.maxProfit}</span>
+              <span className="font-mono">
+                {exchangeStore?.maxProfit} {store.config.tokenSymbol}
+              </span>
             </div>
             <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
-              <span>Exchange Fee:</span>
-              <span className="font-mono">{txFee}</span>
+              <span>Network Fee:</span>
+              <span className="font-mono">
+                {txFee} {store.config.tokenSymbol}
+              </span>
+            </div>
+            <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
+              <span>Trading Fee:</span>
+              <span className="font-mono">
+                {`${(
+                  exchangeStore?.amount?.mul(
+                    exchangeStore.swapFee?.div(ZTG) ?? 0,
+                  ) ?? 0
+                ).toString()} ${feeCurrencySymbol}`}
+              </span>
             </div>
           </div>
         ) : (

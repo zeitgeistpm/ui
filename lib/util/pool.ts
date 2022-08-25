@@ -2,6 +2,7 @@ import { Swap } from "@zeitgeistpm/sdk/dist/models";
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import Decimal from "decimal.js";
 import { calcInGivenOut, calcOutGivenIn } from "lib/math";
+import { CPool } from "lib/stores/PoolsStore";
 
 export const extractSwapWeights = (
   pool: Swap,
@@ -14,6 +15,12 @@ export const extractSwapWeights = (
   const baseWeight = new Decimal(pool.weights.value.toJSON()[baseAsset]);
 
   return { assetWeight, baseWeight };
+};
+
+export const calcTotalAssetPrice = (pool: CPool) => {
+  return pool?.assets
+    .map((asset) => (asset.id != null ? asset.price : 0))
+    .reduce((prev, acc) => acc + prev, 0);
 };
 
 export const generateSwapExactAmountOutTx = (
