@@ -67,6 +67,7 @@ const PoolSettings: FC<{
       data.map((row) => ({
         ...row,
         amount,
+        value: (+amount * +row.price).toFixed(0),
       })),
     );
   };
@@ -94,8 +95,7 @@ const PoolSettings: FC<{
       },
       amount: {
         value: d.amount,
-        min: "100",
-        max: "150",
+        min: store.config?.swaps.minLiquidity.toString(),
         onChange: (amount: string) => {
           changeOutcomeRow(amount);
         },
