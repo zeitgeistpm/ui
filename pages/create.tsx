@@ -619,10 +619,10 @@ const CreatePage: NextPage = observer(() => {
 
         <div className="flex justify-center mb-ztg-10 mt-ztg-12 w-full h-ztg-40">
           <TransactionButton
+            preventDefault
             className="w-ztg-266 ml-ztg-8 center flex-shrink-0"
             dataTest="createMarketSubmitButton"
             onClick={(e) => {
-              e.preventDefault();
               form.onSubmit(e);
               createMarket();
             }}
