@@ -26,16 +26,7 @@ export const calculateMarketCost = (
 };
 
 export const calculatePoolCost = (poolAmounts?: number[]) => {
-  let maxAmount = 0;
-
-  poolAmounts.forEach((amount) => {
-    if (amount > maxAmount) {
-      maxAmount = amount;
-    }
-  });
-
-  //cost of full sets + ZTG needed for the pool
-  return maxAmount + 100;
+  return poolAmounts[0] * 2;
 };
 
 export const activeStatusesFromFilters = (

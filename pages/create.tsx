@@ -49,6 +49,8 @@ import PoolSettings, {
 } from "components/liquidity/PoolSettings";
 import TransactionButton from "components/ui/TransactionButton";
 import MarketFormCard from "components/create/MarketFormCard";
+import { useModalStore } from "lib/stores/ModalStore";
+import MarketCostModal from "components/markets/MarketCostModal";
 
 interface CreateMarketFormData {
   slug: string;
@@ -93,6 +95,7 @@ const initialFields = {
 const CreatePage: NextPage = observer(() => {
   const store = useStore();
   const notificationStore = useNotificationStore();
+  const modalStore = useModalStore();
   const markets = useMarketsStore();
   const [formData, setFormData] = useState<CreateMarketFormData>({
     slug: "",
@@ -129,7 +132,7 @@ const CreatePage: NextPage = observer(() => {
   const [marketCost, setMarketCost] = useState<number>();
 
   useEffect(() => {
-    if (!form.isValid || poolRows == null) {
+    if (!form.isValid) {
       return;
     }
     const sub = from(getTransactionFee()).subscribe(setTxFee);
@@ -476,7 +479,7 @@ const CreatePage: NextPage = observer(() => {
       return new Decimal(await store.sdk.models.createMarket(params))
         .div(ZTG)
         .toFixed(4);
-    } else {
+    } else if (poolRows) {
       const params = await getCreateCpmmMarketAndAddPoolParameters(true);
       const fee = await store.sdk.models.createCpmmMarketAndDeployAssets(
         params,
@@ -485,6 +488,28 @@ const CreatePage: NextPage = observer(() => {
         .div(ZTG)
         .toFixed(4);
     }
+  };
+
+  const showCostModal = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    const liquidity =
+      deployPool === true && poolRows
+        ? poolRows
+            .map((row) => new Decimal(row.value))
+            .reduce((prev, curr) => prev.add(curr), new Decimal(0))
+        : new Decimal(0);
+
+    modalStore.openModal(
+      <MarketCostModal
+        liquidity={liquidity.toFixed(0)}
+        permissionless={!formData.advised}
+        networkFee={txFee}
+      />,
+      <div className="ml-[15px] mt-[15px]">Cost Breakdown</div>,
+      {
+        styles: { width: "70%", maxWidth: "622px" },
+      },
+    );
   };
   return (
     <form data-test="createMarketForm">
@@ -640,11 +665,12 @@ const CreatePage: NextPage = observer(() => {
                 {marketCost} {store.config?.tokenSymbol}
               </span>
             </div>
-            {txFee && (
-              <div className="mr-ztg-15">
-                Transaction Fee: <span className="font-mono">{txFee}</span>
-              </div>
-            )}
+            <button
+              className="text-ztg-blue underline font-bold"
+              onClick={showCostModal}
+            >
+              View Cost Breakdown
+            </button>
           </div>
         </div>
       </div>

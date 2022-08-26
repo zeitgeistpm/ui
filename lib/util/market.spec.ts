@@ -30,14 +30,14 @@ describe("Market utils", () => {
       expect(marketCost).toEqual(201);
     });
 
-    test("should correctly calculate cost of market with differing pools", () => {
+    test("should correctly calculate cost of market with pools larger than 100", () => {
       const marketCost = calculateMarketCost(
         { advisedCost: 0.5, permissionlessCost: 1 },
         false,
-        [100, 150, 120, 130],
+        [120, 120, 120, 120],
       );
 
-      expect(marketCost).toEqual(251);
+      expect(marketCost).toEqual(241);
     });
   });
 });
