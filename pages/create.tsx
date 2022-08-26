@@ -320,7 +320,7 @@ const CreatePage: NextPage = observer(() => {
       oracle,
       period,
       creationType,
-      mdm,
+      disputeMechanism: mdm,
       scoringRule,
       metadata,
       callbackOrPaymentInfo,
@@ -368,7 +368,7 @@ const CreatePage: NextPage = observer(() => {
       oracle,
       period,
       marketType,
-      mdm,
+      disputeMechanism: mdm,
       swapFee,
       amount: baseAssetAmount,
       weights,
@@ -420,42 +420,54 @@ const CreatePage: NextPage = observer(() => {
       return;
     }
 
-    const marketId = await new Promise<number>(async (resolve, reject) => {
-      if (!deployPool) {
-        const params = await getCreateMarketParameters(
-          extrinsicCallback({
-            notificationStore,
-            successMethod: "MarketCreated",
-            finalizedCallback: (data: JSONObject) => {
-              const marketId = data[0];
-              notificationStore.pushNotification(
-                `Transaction successful! Market id ${marketId}`,
-                { type: "Success" },
-              );
-              resolve(Number(marketId));
-            },
-            failCallback: ({ index, error }) => {
-              notificationStore.pushNotification(
-                store.getTransactionError(index, error),
-                { type: "Error" },
-              );
-              reject();
-            },
-          }),
-        );
-        return parseInt(await store.sdk.models.createMarket(params));
-      } else {
-        const id = await createCategoricalCpmmMarketAndDeployPoolTransaction();
-        return resolve(id);
-      }
-    });
+    try {
+      const marketId = await new Promise<number>(async (resolve, reject) => {
+        try {
+          if (!deployPool) {
+            const params = await getCreateMarketParameters(
+              extrinsicCallback({
+                notificationStore,
+                successMethod: "MarketCreated",
+                finalizedCallback: (data: JSONObject) => {
+                  const marketId = data[0];
+                  notificationStore.pushNotification(
+                    `Transaction successful! Market id ${marketId}`,
+                    { type: "Success" },
+                  );
+                  resolve(Number(marketId));
+                },
+                failCallback: ({ index, error }) => {
+                  notificationStore.pushNotification(
+                    store.getTransactionError(index, error),
+                    { type: "Error" },
+                  );
+                  reject();
+                },
+              }),
+            );
+            return parseInt(await store.sdk.models.createMarket(params));
+          } else {
+            const id =
+              await createCategoricalCpmmMarketAndDeployPoolTransaction();
+            return resolve(id);
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
 
-    await markets.updateMarketIds();
-    await markets.getMarket(marketId);
-    router.push(`/markets/${marketId}`, undefined, {
-      shallow: true,
-      scroll: true,
-    });
+      await markets.updateMarketIds();
+      await markets.getMarket(marketId);
+      router.push(`/markets/${marketId}`, undefined, {
+        shallow: true,
+        scroll: true,
+      });
+    } catch (error) {
+      notificationStore.pushNotification(`Creating market failed: ${error}`, {
+        type: "Error",
+        autoRemove: true,
+      });
+    }
   };
 
   const getTransactionFee = async (): Promise<string> => {
