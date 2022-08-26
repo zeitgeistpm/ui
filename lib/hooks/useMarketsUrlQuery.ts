@@ -20,7 +20,13 @@ export const useMarketsUrlQuery = (): MarketListQuery & {
   const router = useRouter();
   const rawQuery = router.query;
 
-  const query = useMemo(() => parse(rawQuery), [rawQuery]);
+  const query = useMemo(() => {
+    try {
+      return parse(rawQuery);
+    } catch (error) {
+      return defaultQueryState;
+    }
+  }, [rawQuery]);
 
   const updateQuery = useCallback<MarketListQueryUpdater>(
     (update) => {
