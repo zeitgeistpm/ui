@@ -48,6 +48,9 @@ interface Config {
     caseDurationSec: number;
     stakeWeight: number; // increase in juror stake per juror
   };
+  swaps: {
+    minLiquidity: number;
+  };
 }
 
 interface ZTGInfo {
@@ -321,6 +324,9 @@ export default class Store {
         caseDurationSec:
           this.codecToNumber(consts.court.courtCaseDuration) * blockTimeSec,
         stakeWeight: this.codecToNumber(consts.court.stakeWeight) / ZTG,
+      },
+      swaps: {
+        minLiquidity: this.codecToNumber(consts.swaps.minLiquidity) / ZTG,
       },
     };
 
