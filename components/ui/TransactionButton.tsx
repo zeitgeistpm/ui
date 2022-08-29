@@ -5,6 +5,7 @@ import { useUserStore } from "lib/stores/UserStore";
 import { useAccountModals } from "lib/hooks/account";
 
 interface TransactionButtonProps {
+  preventDefault?: boolean;
   onClick: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   disabled?: boolean;
   className?: string;
@@ -12,7 +13,14 @@ interface TransactionButtonProps {
 }
 
 const TransactionButton: FC<TransactionButtonProps> = observer(
-  ({ onClick, disabled = false, className = "", dataTest = "", children }) => {
+  ({
+    onClick,
+    disabled = false,
+    className = "",
+    dataTest = "",
+    children,
+    preventDefault,
+  }) => {
     const store = useStore();
     const { wallets } = store;
     const { connected } = wallets;
@@ -20,6 +28,9 @@ const TransactionButton: FC<TransactionButtonProps> = observer(
     const { locationAllowed } = useUserStore();
 
     const click = (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      if (preventDefault) {
+        event.preventDefault();
+      }
       if (!connected) {
         accountModals.openWalletSelect();
       } else {
