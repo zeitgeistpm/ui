@@ -51,6 +51,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
     const [isClaiming, setIsClaiming] = useState(false);
     const [avatars, setAvatars] = useState<Avatar.IndexedAvatar[]>([]);
     const [tarotNftImage, setTarotNftImage] = useState(null);
+    const [avatarUpdatedAt, setAvatarUpdatedAt] = useState(0);
 
     const [tarotHolders, setTarotHolders] =
       useState<Tarot.TarotHolderSnapshot>(null);
@@ -174,6 +175,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           Avatar.fetchIndexedAvatarForAccount(avataraContext, ksmAddress).then(
             setIndexedAvatar,
           );
+          setAvatarUpdatedAt(Date.now());
         } catch (error) {
           notificationStore.pushNotification(error.message, {
             type: "Error",
@@ -254,6 +256,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
               ) : (
                 <AccountButton
                   autoClose
+                  avatarDeps={[avatarUpdatedAt]}
                   connectButtonClassname="animate-pulse text-white flex w-64 xl:w-ztg-184 h-12 bg-[#45059E] text-black rounded-full text-ztg-18-150 font-medium justify-center items-center cursor-pointer disabled:cursor-default disabled:opacity-20"
                   connectButtonText={
                     <div className="flex items-center">
