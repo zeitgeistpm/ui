@@ -15,7 +15,7 @@ const TrendingMarkets = observer(() => {
     useState<TrendingMarketInfo[]>();
 
   useEffect(() => {
-    if (!graphQLClient) return;
+    if (!graphQLClient || !marketsStore) return;
     const fetchTrendingMarkets = async () => {
       const dateTwoWeeksAgo = new Date(
         new Date().getTime() - DAY_SECONDS * 14 * 1000,
@@ -71,7 +71,7 @@ const TrendingMarkets = observer(() => {
       setTrendingMarkets(trendingMarketsInfo);
     };
     fetchTrendingMarkets();
-  }, [graphQLClient]);
+  }, [graphQLClient, marketsStore]);
 
   return (
     <div>

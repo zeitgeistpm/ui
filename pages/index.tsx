@@ -10,8 +10,8 @@ import MarketsList from "components/markets/MarketsList";
 import AspectRatioImage from "components/ui/AspectRatioImage";
 import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
 import TrendingMarkets from "components/markets/TrendingMarkets";
-import GlitchImage from "components/ui/GlitchImage";
 import Image from "next/image";
+import GlitchImage from "components/ui/GlitchImage";
 
 const Category = ({
   title,
@@ -199,7 +199,9 @@ const FeaturedMarkets: FC = observer(() => {
   );
 });
 
-const IndexPage: NextPage = observer(() => {
+const IndexPage: NextPage = observer(({}) => {
+  const store = useStore();
+
   return (
     <div data-test="indexPage">
       <GlitchImage
@@ -217,7 +219,14 @@ const IndexPage: NextPage = observer(() => {
       </GlitchImage>
       <TrendingMarkets />
       <PopularCategories />
-      <MarketsList />
+      {store.initialized ? (
+        <MarketsList />
+      ) : (
+        <Skeleton
+          height={300}
+          className="w-full !rounded-ztg-10 !transform-none !mt-[100px]"
+        />
+      )}
     </div>
   );
 });
