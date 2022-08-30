@@ -163,7 +163,7 @@ const IndexPage: NextPage<{
       ) : (
         <Skeleton
           height={300}
-          className="w-full !rounded-ztg-10 !transform-none !mt-[100px]"
+          className="w-full !rounded-ztg-10 !transform-none !mt-[50px]"
         />
       )}
     </div>
