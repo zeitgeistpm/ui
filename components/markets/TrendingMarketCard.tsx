@@ -9,6 +9,7 @@ export interface TrendingMarketInfo {
   img: string;
   outcomes: string;
   prediction: string;
+  baseAsset: string;
 }
 
 const TrendingMarketCard = observer(
@@ -19,6 +20,7 @@ const TrendingMarketCard = observer(
     img,
     outcomes,
     prediction,
+    baseAsset,
   }: TrendingMarketInfo) => {
     const { config } = useStore();
 
@@ -62,7 +64,7 @@ const TrendingMarketCard = observer(
                   Volume
                 </div>
                 <div>
-                  {volume} {config.tokenSymbol}
+                  {volume} {baseAsset.toUpperCase()}
                 </div>
               </div>
             </div>

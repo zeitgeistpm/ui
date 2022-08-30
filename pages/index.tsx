@@ -12,6 +12,9 @@ import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
 import TrendingMarkets from "components/markets/TrendingMarkets";
 import Image from "next/image";
 import GlitchImage from "components/ui/GlitchImage";
+import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
+import { GraphQLClient } from "graphql-request";
+import getTrendingMarkets from "lib/gql/trending-markets";
 
 const Category = ({
   title,
@@ -199,36 +202,57 @@ const FeaturedMarkets: FC = observer(() => {
   );
 });
 
-const IndexPage: NextPage = observer(({}) => {
-  const store = useStore();
-
-  return (
-    <div data-test="indexPage">
-      <GlitchImage
-        src="/carousel/banner.png"
-        className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
-      >
-        <Image
-          src="/carousel/banner.png"
-          alt="Zeitgeist app banner"
-          layout="responsive"
-          width={1036}
-          height={374}
-          quality={100}
-        />
-      </GlitchImage>
-      <TrendingMarkets />
-      <PopularCategories />
-      {store.initialized ? (
-        <MarketsList />
-      ) : (
-        <Skeleton
-          height={300}
-          className="w-full !rounded-ztg-10 !transform-none !mt-[100px]"
-        />
-      )}
-    </div>
+export async function getStaticProps() {
+  const client = new GraphQLClient(
+    "https://processor.bsr.zeitgeist.pm/graphql",
   );
-});
+  const trendingMarkets = await getTrendingMarkets(client);
+
+  if (!trendingMarkets || trendingMarkets.length === 0) {
+    //prevent rerender if server isn't returning markets
+    throw new Error("Unable to fetch trending markets");
+  }
+
+  return {
+    props: {
+      trendingMarkets: trendingMarkets,
+    },
+    revalidate: 10 * 60 * 10, //10min
+  };
+}
+
+const IndexPage: NextPage<{ trendingMarkets: TrendingMarketInfo[] }> = observer(
+  ({ trendingMarkets }) => {
+    const store = useStore();
+
+    return (
+      <div data-test="indexPage">
+        <GlitchImage
+          src="/carousel/banner.png"
+          className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
+        >
+          <Image
+            src="/carousel/banner.png"
+            alt="Zeitgeist app banner"
+            layout="responsive"
+            width={1036}
+            height={374}
+            quality={100}
+          />
+        </GlitchImage>
+        <TrendingMarkets markets={trendingMarkets} />
+        <PopularCategories />
+        {store.initialized ? (
+          <MarketsList />
+        ) : (
+          <Skeleton
+            height={300}
+            className="w-full !rounded-ztg-10 !transform-none !mt-[100px]"
+          />
+        )}
+      </div>
+    );
+  },
+);
 
 export default IndexPage;
