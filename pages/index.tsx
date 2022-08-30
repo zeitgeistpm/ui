@@ -15,6 +15,7 @@ import GlitchImage from "components/ui/GlitchImage";
 import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
 import { GraphQLClient } from "graphql-request";
 import getTrendingMarkets from "lib/gql/trending-markets";
+import { getPopularCategories, TagCounts } from "lib/gql/popular-categories";
 
 const Category = ({
   title,
@@ -64,84 +65,56 @@ const Category = ({
   );
 };
 
-const PopularCategories: FC = observer(({}) => {
-  const query = useMarketsUrlQuery();
-  const { sdk, initialized } = useStore();
+const PopularCategories: FC<{ tagCounts: TagCounts }> = observer(
+  ({ tagCounts }) => {
+    const query = useMarketsUrlQuery();
 
-  const getTagCount = async (tag: string): Promise<number> => {
-    return sdk.models.queryMarketsCount({ tags: [tag] });
-  };
+    const navigateToTag = (tag: string) => {
+      query.updateQuery({
+        tag,
+      });
+    };
 
-  const [sportsCount, setSportsCount] = useState<number>();
-  const [politicsCount, setPoliticsCount] = useState<number>();
-  const [governanceCount, setGovernanceCount] = useState<number>();
-  const [cryptoCount, setCryptoCount] = useState<number>();
-
-  const navigateToTag = (tag: string) => {
-    query.updateQuery({
-      tag,
-    });
-  };
-
-  useEffect(() => {
-    if (!initialized) {
-      return;
-    }
-    const sub = from(
-      Promise.all([
-        getTagCount("Sports"),
-        getTagCount("Politics"),
-        getTagCount("Governance"),
-        getTagCount("Crypto"),
-      ]),
-    ).subscribe(([sports, politics, governance, crypto]) => {
-      setSportsCount(sports);
-      setPoliticsCount(politics);
-      setGovernanceCount(governance);
-      setCryptoCount(crypto);
-    });
-    return () => sub.unsubscribe();
-  }, [initialized]);
-
-  return (
-    <div className="flex flex-col mt-ztg-30">
-      <div></div>
-      <h3 className="font-space font-bold text-[24px] mb-ztg-30">
-        Popular Topics
-      </h3>
-      <div className="flex flex-wrap w-full justify-between">
-        <Category
-          title="Sports"
-          description=""
-          imgURL="/topics/sports.png"
-          count={sportsCount}
-          onClick={() => navigateToTag("Sports")}
-        />
-        <Category
-          title="Politics"
-          description=""
-          imgURL="/topics/politics.png"
-          count={politicsCount}
-          onClick={() => navigateToTag("Politics")}
-        />
-        <Category
-          title="Governance"
-          description=""
-          imgURL="/topics/governance.png"
-          count={governanceCount}
-          onClick={() => navigateToTag("Governance")}
-        />
-        <Category
-          title="Crypto"
-          description=""
-          imgURL="/topics/crypto.png"
-          count={cryptoCount}
-          onClick={() => navigateToTag("Crypto")}
-        />
+    return (
+      <div className="flex flex-col mt-ztg-30">
+        <div></div>
+        <h3 className="font-space font-bold text-[24px] mb-ztg-30">
+          Popular Topics
+        </h3>
+        <div className="flex flex-wrap w-full justify-between">
+          <Category
+            title="Sports"
+            description=""
+            imgURL="/topics/sports.png"
+            count={tagCounts.sports}
+            onClick={() => navigateToTag("Sports")}
+          />
+          <Category
+            title="Politics"
+            description=""
+            imgURL="/topics/politics.png"
+            count={tagCounts.politics}
+            onClick={() => navigateToTag("Politics")}
+          />
+          <Category
+            title="Governance"
+            description=""
+            imgURL="/topics/governance.png"
+            count={tagCounts.governance}
+            onClick={() => navigateToTag("Governance")}
+          />
+          <Category
+            title="Crypto"
+            description=""
+            imgURL="/topics/crypto.png"
+            count={tagCounts.crypto}
+            onClick={() => navigateToTag("Crypto")}
+          />
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  },
+);
 
 const FeaturedMarketContent: FC<{
   marketId: number;
@@ -213,46 +186,49 @@ export async function getStaticProps() {
     throw new Error("Unable to fetch trending markets");
   }
 
+  const categories = await getPopularCategories(client);
   return {
     props: {
       trendingMarkets: trendingMarkets,
+      tagCounts: categories,
     },
     revalidate: 10 * 60 * 10, //10min
   };
 }
 
-const IndexPage: NextPage<{ trendingMarkets: TrendingMarketInfo[] }> = observer(
-  ({ trendingMarkets }) => {
-    const store = useStore();
+const IndexPage: NextPage<{
+  trendingMarkets: TrendingMarketInfo[];
+  tagCounts: TagCounts;
+}> = observer(({ trendingMarkets, tagCounts }) => {
+  const store = useStore();
 
-    return (
-      <div data-test="indexPage">
-        <GlitchImage
+  return (
+    <div data-test="indexPage">
+      <GlitchImage
+        src="/carousel/banner.png"
+        className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
+      >
+        <Image
           src="/carousel/banner.png"
-          className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
-        >
-          <Image
-            src="/carousel/banner.png"
-            alt="Zeitgeist app banner"
-            layout="responsive"
-            width={1036}
-            height={374}
-            quality={100}
-          />
-        </GlitchImage>
-        <TrendingMarkets markets={trendingMarkets} />
-        <PopularCategories />
-        {store.initialized ? (
-          <MarketsList />
-        ) : (
-          <Skeleton
-            height={300}
-            className="w-full !rounded-ztg-10 !transform-none !mt-[100px]"
-          />
-        )}
-      </div>
-    );
-  },
-);
+          alt="Zeitgeist app banner"
+          layout="responsive"
+          width={1036}
+          height={374}
+          quality={100}
+        />
+      </GlitchImage>
+      <TrendingMarkets markets={trendingMarkets} />
+      <PopularCategories tagCounts={tagCounts} />
+      {store.initialized ? (
+        <MarketsList />
+      ) : (
+        <Skeleton
+          height={300}
+          className="w-full !rounded-ztg-10 !transform-none !mt-[100px]"
+        />
+      )}
+    </div>
+  );
+});
 
 export default IndexPage;
