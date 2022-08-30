@@ -192,12 +192,14 @@ const MarketCard: FC<{ marketStore: MarketStore }> = observer(
             className="h-auto px-ztg-20 pb-ztg-5 pt-ztg-4 dark:bg-black bg-sky-100"
           >
             {marketStore.type === "scalar" && (
-              <ScalarPriceRange
-                lowerBound={marketStore.bounds[0]}
-                upperBound={marketStore.bounds[1]}
-                shortPrice={shortPice}
-                longPrice={longPrice}
-              />
+              <div className="mt-ztg-20 mb-ztg-30 mx-ztg-20">
+                <ScalarPriceRange
+                  lowerBound={marketStore.bounds[0]}
+                  upperBound={marketStore.bounds[1]}
+                  shortPrice={shortPice}
+                  longPrice={longPrice}
+                />
+              </div>
             )}
             <MarketTable marketStore={marketStore} />
           </motion.div>

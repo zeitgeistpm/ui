@@ -32,6 +32,8 @@ import { MultipleOutcomeEntry } from "lib/types/create-market";
 import { useUserStore } from "lib/stores/UserStore";
 import Decimal from "decimal.js";
 import { calcTotalAssetPrice } from "lib/util/pool";
+import ScalarPriceRange from "components/markets/ScalarPriceRange";
+import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 
 const LiquidityPill = observer(({ liquidity }: { liquidity: number }) => {
   const { config } = useStore();
@@ -89,6 +91,8 @@ const MarketDetails = observer(() => {
   const [tableData, setTableData] = useState<TableData[]>();
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[]>();
   const [swapFee, setSwapFee] = useState<string>();
+  const [scalarPrices, setScalarPrices] =
+    useState<{ short: number; long: number }>();
   const [prizePool, setPrizePool] = useState<string>();
   const [marketLoaded, setMarketLoaded] = useState(false);
   const [poolAlreadyDeployed, setPoolAlreadyDeployed] = useState(false);
@@ -153,6 +157,24 @@ const MarketDetails = observer(() => {
     if (market.poolExists) {
       const prizePool = await market.getPrizePool();
       setPrizePool(prizePool);
+
+      Promise.all(
+        marketStore.marketOutcomes
+          .filter((o) => o.metadata !== "ztg")
+          .map(async (outcome) => {
+            return {
+              assetId: outcome.asset,
+              price: await marketStore.assetPriceInZTG(outcome.asset),
+            };
+          }),
+      ).then((prices) => {
+        setScalarPrices({
+          short: prices[1].price.toNumber(),
+          long: prices[0].price.toNumber(),
+        });
+        const lPrice = prices[0].price;
+        const sPrice = prices[1].price;
+      });
 
       const { poolId } = market.pool;
 
@@ -466,6 +488,17 @@ const MarketDetails = observer(() => {
           <></>
         )}
       </div>
+
+      {marketStore.type === "scalar" && scalarPrices && (
+        <div className="mt-ztg-20 mb-ztg-30">
+          <ScalarPriceRange
+            lowerBound={marketStore.bounds[0]}
+            upperBound={marketStore.bounds[1]}
+            shortPrice={scalarPrices.short}
+            longPrice={scalarPrices.long}
+          />
+        </div>
+      )}
 
       <Table columns={columns} data={tableData} />
       <div className="sub-header mt-ztg-40 mb-ztg-15">About Market</div>

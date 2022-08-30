@@ -34,7 +34,7 @@ const ScalarPriceRange = observer(
     const showShortAndLongPrices = Math.abs(1 - shortPrice - longPrice) > 0.03;
 
     return (
-      <div ref={ref} className="mt-ztg-20 mb-ztg-30 mx-ztg-20">
+      <div ref={ref}>
         <div className="relative top-ztg-6 ">
           <div className="flex justify-between font-mono">
             <div className="flex flex-col justify-start">
