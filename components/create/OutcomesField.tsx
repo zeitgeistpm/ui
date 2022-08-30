@@ -38,6 +38,8 @@ const outcomeSettings = {
   outcomeNameMaxLength: 98,
 };
 
+const oneWeekInMs = 1000 * 60 * 60 * 24 * 7;
+
 export const createInitialMultipleOutcomeEntries =
   (): MultipleOutcomeEntry[] => {
     return [
@@ -373,7 +375,7 @@ export const RangeOutcomeField: FC<{
       ...outcome,
       type,
       minimum: type === "number" ? NaN : Date.now(),
-      maximum: type === "number" ? NaN : Date.now() + 1000 * 60 * 60 * 24 * 7,
+      maximum: type === "number" ? NaN : Date.now() + oneWeekInMs,
     });
   };
 
@@ -564,7 +566,7 @@ const OutcomesField: FC<OutcomesFieldProps> = observer(
           ticker: "",
           type: "date",
           minimum: Date.now(),
-          maximum: Date.now() + 60 * 1000 * 60 * 24 * 7,
+          maximum: Date.now() + oneWeekInMs,
         });
       }
     }, [value]);
