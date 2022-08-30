@@ -12,6 +12,7 @@ import {
 } from "@zeitgeistpm/sdk/dist/types/market";
 import { ISubmittableResult } from "@polkadot/types/types";
 import {
+  DecodedMarketMetadata,
   MarketDisputeMechanism,
   MarketPeriod,
 } from "@zeitgeistpm/sdk/dist/types";
@@ -280,14 +281,18 @@ const CreatePage: NextPage = observer(() => {
       ? mapRangeToEntires(formData.outcomes.value)
       : formData.outcomes.value;
 
-    const metadata = {
+    const metadata: DecodedMarketMetadata = {
       slug: formData.slug,
       question: formData.question,
       description: formData.description,
       tags: formData.tags,
       img: formData.marketImage,
       categories: entries,
+      scalarType: isRangeOutcomeEntry(formData.outcomes.value)
+        ? formData.outcomes.value.type
+        : undefined,
     };
+    console.log({ metadata });
     return metadata;
   };
 
