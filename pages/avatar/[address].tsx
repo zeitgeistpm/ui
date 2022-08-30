@@ -72,26 +72,34 @@ const AvatarPage = observer(() => {
   );
 
   const loadData = async () => {
-    const [burnAmount, identity, tarotStats] = await Promise.all([
-      store.sdk.api.query.styx.burnAmount(),
-      getIdentity(address),
-      Tarot.fetchStatsForAddress(avatarContext, address),
-    ]);
-    setBurnAmount(burnAmount.toJSON() as number);
-    setIdentity(identity);
-    setTarotStats(tarotStats);
-    if (store.wallets.activeAccount?.address) {
-      const crossing = await store.sdk.api.query.styx.crossings(
-        store.wallets.activeAccount.address,
-      );
-      setHasCrossed(!crossing.isEmpty);
+    try {
+      const [burnAmount, identity, tarotStats] = await Promise.all([
+        store.sdk.api.query.styx.burnAmount(),
+        getIdentity(address),
+        Tarot.fetchStatsForAddress(avatarContext, address),
+      ]);
+      setBurnAmount(burnAmount.toJSON() as number);
+      setIdentity(identity);
+      setTarotStats(tarotStats);
+      if (store.wallets.activeAccount?.address) {
+        const crossing = await store.sdk.api.query.styx.crossings(
+          store.wallets.activeAccount.address,
+        );
+        setHasCrossed(!crossing.isEmpty);
+      }
+    } catch (error) {
+      await delay(1000);
+      await loadData();
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
-    loadData();
-  }, [address, store.wallets.activeAccount?.address]);
+    if (avatarContext) {
+      loadData();
+    }
+  }, [avatarContext, address, store.wallets.activeAccount?.address]);
 
   const name = identity?.displayName || shortenAddress(address);
 
