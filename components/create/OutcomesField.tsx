@@ -372,6 +372,8 @@ export const RangeOutcomeField: FC<{
     onOutcomeChange({
       ...outcome,
       type,
+      minimum: type === "number" ? 0 : Date.now(),
+      maximum: type === "number" ? 10 : Date.now() + 1000 * 60 * 60 * 24 * 7,
     });
   };
 
@@ -436,6 +438,7 @@ export const RangeOutcomeField: FC<{
             />
           ) : (
             <DateTimeInput
+              className="w-full"
               onChange={(timestamp) => {
                 changeMaximum(timestamp.toString());
               }}
