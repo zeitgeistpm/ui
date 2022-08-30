@@ -11,10 +11,12 @@ const Avatar = observer(
     address,
     zoomed = false,
     size = 30,
+    deps,
   }: {
     address: string;
     zoomed?: boolean;
     size?: number;
+    deps?: any[];
   }) => {
     if (address === "") {
       return null;
@@ -38,6 +40,7 @@ const Avatar = observer(
           zoomed={zoomed}
           address={address}
           size={size}
+          deps={deps}
           fallback={
             <BoringAvatar
               size={size}
