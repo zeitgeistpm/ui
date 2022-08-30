@@ -372,8 +372,8 @@ export const RangeOutcomeField: FC<{
     onOutcomeChange({
       ...outcome,
       type,
-      minimum: type === "number" ? 0 : Date.now(),
-      maximum: type === "number" ? 10 : Date.now() + 1000 * 60 * 60 * 24 * 7,
+      minimum: type === "number" ? NaN : Date.now(),
+      maximum: type === "number" ? NaN : Date.now() + 1000 * 60 * 60 * 24 * 7,
     });
   };
 
