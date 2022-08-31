@@ -293,7 +293,7 @@ const EndpointsSettings = observer(() => {
 
   const getCustomGqlEndpoint = () => {
     const opt = gqlEndpointOption();
-    return opt.parachain === SupportedParachain.CUSTOM ? opt.value : "";
+    return opt?.parachain === SupportedParachain.CUSTOM ? opt.value : "";
   };
 
   const [customRpcUrl, setCustomRpcUrl] = useState<string>(() =>
