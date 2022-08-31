@@ -412,10 +412,11 @@ export const RangeOutcomeField: FC<{
             />
           ) : (
             <DateTimeInput
+              data-test="minRangeValueInput"
+              name={`outcomes.${namePrefix}-short`}
               onChange={(timestamp) => {
                 changeMinimum(timestamp.toString());
               }}
-              name={"Start Date"}
               form={form}
               timestamp={outcome.minimum}
             />
@@ -444,7 +445,8 @@ export const RangeOutcomeField: FC<{
               onChange={(timestamp) => {
                 changeMaximum(timestamp.toString());
               }}
-              name={"End Date"}
+              data-test="maxRangeValueInput"
+              name={`outcomes.${namePrefix}-long`}
               form={form}
               timestamp={outcome.maximum}
             />
