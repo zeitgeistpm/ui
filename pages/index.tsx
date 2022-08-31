@@ -16,9 +16,8 @@ import getTrendingMarkets from "lib/gql/trending-markets";
 import { getPopularCategories, TagCounts } from "lib/gql/popular-categories";
 
 export async function getStaticProps() {
-  const client = new GraphQLClient(
-    "https://processor.bsr.zeitgeist.pm/graphql",
-  );
+  const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
+  const client = new GraphQLClient(url);
   const trendingMarkets = await getTrendingMarkets(client);
 
   if (!trendingMarkets || trendingMarkets.length === 0) {

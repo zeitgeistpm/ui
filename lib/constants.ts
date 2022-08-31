@@ -70,7 +70,7 @@ export const gqlEndpoints: EndpointOption[] = [
     parachain: SupportedParachain.BSR,
   },
   {
-    value: "https://processor.rpc-0.zeitgeist.pm/graphql ",
+    value: "https://processor.rpc-0.zeitgeist.pm/graphql",
     label: "Kusama (Live)",
     parachain: SupportedParachain.KUSAMA,
   },
