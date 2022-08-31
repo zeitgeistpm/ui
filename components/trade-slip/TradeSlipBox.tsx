@@ -153,7 +153,10 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
                 </div>
               </div>
               <div className="h-ztg-15 w-full mb-ztg-10 font-lato text-ztg-10-150 flex items-center text-gray-dark-3">
-                Balance: {state.assetBalance?.toFixed(4)}
+                Balance:
+                <div className="text-black dark:text-white ml-1">
+                  {state.assetBalance?.toFixed(4)}
+                </div>
               </div>
               <div className="flex w-full h-ztg-34 mb-ztg-10">
                 <div className="h-full w-ztg-164">
@@ -179,7 +182,7 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
                   ) : (
                     <div>To Spend:</div>
                   )}
-                  <div className="font-bold">
+                  <div className="font-bold text-black dark:text-white">
                     {ztgTransferAmount?.isNaN()
                       ? "---"
                       : ztgTransferAmount?.toFixed(4, Decimal.ROUND_DOWN)}{" "}
@@ -187,12 +190,14 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
                   </div>
                 </div>
               </div>
-              <div className="w-full font-lato text-ztg-10-150 text-gray-dark-3 mt-ztg-5">
-                Trading Fee:{" "}
-                {boxAmountDecimal.mul(swapFee?.mul(ZTG) ?? 0).toString()}{" "}
-                {state.type === "sell"
-                  ? state.assetTicker.toUpperCase()
-                  : config.tokenSymbol}
+              <div className="flex w-full font-lato text-ztg-10-150 text-gray-dark-3 mt-ztg-5">
+                Trading Fee:
+                <div className="text-black dark:text-white ml-1">
+                  {boxAmountDecimal.mul(swapFee?.mul(ZTG) ?? 0).toString()}{" "}
+                  {state.type === "sell"
+                    ? state.assetTicker.toUpperCase()
+                    : config.tokenSymbol}
+                </div>
               </div>
 
               {sliderShown && (

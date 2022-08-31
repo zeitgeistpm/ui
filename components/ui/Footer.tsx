@@ -62,7 +62,7 @@ const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
           value={newsletterSubForm.$("email").value}
           onChange={newsletterSubForm.$("email").onChange}
           className={`h-full rounded-ztg-100 text-sky-600 p-2 text-ztg-12-120 bg-sky-200 dark:bg-black focus:outline-none flex-grow max-w-ztg-184 border-1 ${
-            invalid ? "border-vermilion" : "border-black"
+            invalid ? "border-vermilion" : "border-none"
           }`}
         />
         <button
