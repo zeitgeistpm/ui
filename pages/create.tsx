@@ -292,7 +292,7 @@ const CreatePage: NextPage = observer(() => {
         ? formData.outcomes.value.type
         : undefined,
     };
-    console.log({ metadata });
+
     return metadata;
   };
 
@@ -516,6 +516,7 @@ const CreatePage: NextPage = observer(() => {
       },
     );
   };
+
   return (
     <form data-test="createMarketForm">
       <InfoBoxes />

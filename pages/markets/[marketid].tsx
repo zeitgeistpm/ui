@@ -175,7 +175,7 @@ const MarketDetails = observer(() => {
           ),
         ]).then(([market, prices]) => {
           setScalarPrices({
-            type: market.scalarType,
+            type: market?.scalarType,
             short: prices[1].price.toNumber(),
             long: prices[0].price.toNumber(),
           });
