@@ -1,9 +1,12 @@
 import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import { motion } from "framer-motion";
+import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
+import moment from "moment";
 
 interface ScalarPriceRangeProps {
+  type?: ScalarRangeType;
   lowerBound: number;
   upperBound: number;
   shortPrice: number; //between 0 and 1
@@ -12,6 +15,7 @@ interface ScalarPriceRangeProps {
 
 const ScalarPriceRange = observer(
   ({
+    type,
     lowerBound,
     upperBound,
     shortPrice,
@@ -32,17 +36,44 @@ const ScalarPriceRange = observer(
     }, [shortPrice, longPrice, width]);
 
     const showShortAndLongPrices = Math.abs(1 - shortPrice - longPrice) > 0.03;
+    const inferedType: ScalarRangeType = type ?? "number";
+
+    const dateFormat = "d/MM/D/YY, h:mm a";
+
+    const lower = useMemo(
+      () =>
+        inferedType === "number"
+          ? lowerBound
+          : moment(lowerBound).format(dateFormat),
+      [lowerBound],
+    );
+    const upper = useMemo(
+      () =>
+        inferedType === "number"
+          ? upperBound
+          : moment(upperBound).format(dateFormat),
+      [upperBound],
+    );
+
+    const position = useMemo(() => {
+      const pos =
+        (upperBound - lowerBound) * ((1 - shortPrice + longPrice) / 2) +
+        lowerBound;
+      return inferedType === "number"
+        ? pos.toFixed(0)
+        : moment(pos).format(dateFormat);
+    }, [upperBound, lowerBound, shortPrice, longPrice]);
 
     return (
       <div ref={ref}>
         <div className="relative top-ztg-6 ">
           <div className="flex justify-between font-mono">
             <div className="flex flex-col justify-start">
-              <div className="mb-ztg-8">{lowerBound}</div>
+              <div className="mb-ztg-8">{lower}</div>
               <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full"></div>
             </div>
             <div className="flex flex-col justify-end items-end">
-              <div className="mb-ztg-8">{upperBound}</div>
+              <div className="mb-ztg-8">{upper}</div>
               <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full"></div>
             </div>
           </div>
@@ -61,13 +92,7 @@ const ScalarPriceRange = observer(
             }}
           >
             <div className="flex flex-col items-center font-mono">
-              <div className="mb-ztg-8">
-                {(
-                  (upperBound - lowerBound) *
-                    ((1 - shortPrice + longPrice) / 2) +
-                  lowerBound
-                ).toFixed(0)}
-              </div>
+              <div className="mb-ztg-8">{position}</div>
               <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full"></div>
             </div>
           </div>
