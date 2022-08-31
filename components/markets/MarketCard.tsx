@@ -14,6 +14,9 @@ import MarketTable from "./MarketTable";
 import { motion, Variants } from "framer-motion";
 import ScalarPriceRange from "./ScalarPriceRange";
 import Decimal from "decimal.js";
+import { useStore } from "lib/stores/Store";
+import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
+import moment from "moment";
 
 export interface MarketCardProps {
   marketStore: MarketStore;
@@ -21,12 +24,14 @@ export interface MarketCardProps {
 
 const MarketCard: FC<{ marketStore: MarketStore }> = observer(
   ({ marketStore }) => {
+    const store = useStore();
     const [expanded, setExpanded] = useState(false);
     const [prediction, setPrediction] = useState<string | null>(null);
     const { poolExists, status } = marketStore;
     const [innerStatus, setInnerStatus] = useState<string>(status);
     const [longPrice, setLongPrice] = useState<number>();
     const [shortPice, setShortPrice] = useState<number>();
+    const [scalarType, setScalarType] = useState<ScalarRangeType>();
 
     useEffect(() => {
       if (!poolExists) {
@@ -66,6 +71,13 @@ const MarketCard: FC<{ marketStore: MarketStore }> = observer(
           setPrediction(averagePricePrediction.toFixed(0));
           setLongPrice(lPrice.toNumber());
           setShortPrice(sPrice.toNumber());
+
+          if (marketStore.type === "scalar") {
+            const indexedData = await store.sdk.models.queryMarket(
+              Number(marketStore.market.marketId),
+            );
+            setScalarType(indexedData.scalarType);
+          }
         }
       })();
     }, [marketStore, poolExists, marketStore.pool]);
@@ -156,7 +168,9 @@ const MarketCard: FC<{ marketStore: MarketStore }> = observer(
               <div className="flex flex-row">
                 <div className="text-ztg-16-120 font-bold text-black dark:text-white mt-ztg-4">
                   {/* todo */}
-                  {prediction ?? "--"}
+                  {scalarType === "date"
+                    ? moment(parseInt(prediction)).format("d/MM/D/YY, hh:mm")
+                    : prediction ?? "--"}
                 </div>
               </div>
             </div>
@@ -194,6 +208,7 @@ const MarketCard: FC<{ marketStore: MarketStore }> = observer(
             {marketStore.type === "scalar" && (
               <div className="mt-ztg-20 mb-ztg-30 mx-ztg-20">
                 <ScalarPriceRange
+                  type={scalarType}
                   lowerBound={marketStore.bounds[0]}
                   upperBound={marketStore.bounds[1]}
                   shortPrice={shortPice}
