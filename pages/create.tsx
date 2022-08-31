@@ -511,6 +511,7 @@ const CreatePage: NextPage = observer(() => {
       },
     );
   };
+
   return (
     <form data-test="createMarketForm">
       <InfoBoxes />

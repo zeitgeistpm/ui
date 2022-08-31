@@ -13,7 +13,6 @@ import { observer } from "mobx-react";
 import { Minus, Plus, ArrowDownCircle, ArrowUpCircle } from "react-feather";
 import { Color, HuePicker as ColorPicker } from "react-color";
 
-import LabeledToggle from "components/ui/LabeledToggle";
 import { Input } from "components/ui/inputs";
 import { randomHexColor } from "lib/util";
 import { useEvent } from "lib/hooks";
@@ -196,7 +195,7 @@ export const MultipleOutcomeRow: FC<{
             className="w-full"
             value={outcomeName}
             maxLength={outcomeSettings.outcomeNameMaxLength}
-            name={`outcomes.${name}-name`}
+            name={`outcomes.${nameFieldName}`}
             autoComplete="off"
             onChange={(e) => {
               onNameChange(e.target.value);
@@ -215,7 +214,7 @@ export const MultipleOutcomeRow: FC<{
             maxLength={outcomeSettings.tickerMaxLength}
             placeholder="ABC"
             className="w-full"
-            name={`outcomes.${name}-ticker`}
+            name={`outcomes.${tickerFieldName}`}
             autoComplete="off"
             onChange={(e) => {
               onTickerChange(e.target.value);
@@ -280,7 +279,7 @@ export const MultipleOutcomesField: FC<{
               outcomeName={entry.name}
               color={entry.color}
               ticker={entry.ticker}
-              key={`multipleOutcomes${idx}`}
+              key={`multipleOutcomes-${idx}`}
               onRemove={() => removeOutcome(idx)}
               onNameChange={(v) => changeName(idx, v)}
               onTickerChange={(v) => changeTicker(idx, v)}
@@ -333,6 +332,7 @@ export const RangeOutcomeField: FC<{
 
   useEffect(() => {
     createFields();
+
     return () => removeFields();
   }, []);
 
@@ -514,6 +514,17 @@ const OutcomesField: FC<OutcomesFieldProps> = observer(
     useEffect(() => {
       initOutcomesForType(type);
     }, []);
+
+    /// need this because the form wouldn't revalidate when outcome type changes
+    const [prevType, setPrevType] = useState(type);
+    useEffect(() => {
+      if (type === prevType) {
+        return;
+      }
+      form.$("outcomes").set("value", {});
+      form.validate();
+      setPrevType(type);
+    }, [type])
 
     const changeMultipleOutcomeEntry = (
       idx: number,
