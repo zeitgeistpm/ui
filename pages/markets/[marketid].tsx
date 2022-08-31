@@ -5,6 +5,7 @@ import { extrinsicCallback } from "lib/util/tx";
 import { calculatePoolCost, get24HrPriceChange } from "lib/util/market";
 import { DAY_SECONDS, ZTG } from "lib/constants";
 import { useStore } from "lib/stores/Store";
+import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import MarketStore from "lib/stores/MarketStore";
 import { useNavigationStore } from "lib/stores/NavigationStore";
@@ -92,7 +93,7 @@ const MarketDetails = observer(() => {
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[]>();
   const [swapFee, setSwapFee] = useState<string>();
   const [scalarPrices, setScalarPrices] =
-    useState<{ short: number; long: number }>();
+    useState<{ short: number; long: number; type: ScalarRangeType }>();
   const [prizePool, setPrizePool] = useState<string>();
   const [marketLoaded, setMarketLoaded] = useState(false);
   const [poolAlreadyDeployed, setPoolAlreadyDeployed] = useState(false);
@@ -158,23 +159,28 @@ const MarketDetails = observer(() => {
       const prizePool = await market.getPrizePool();
       setPrizePool(prizePool);
 
-      Promise.all(
-        marketStore.marketOutcomes
-          .filter((o) => o.metadata !== "ztg")
-          .map(async (outcome) => {
-            return {
-              assetId: outcome.asset,
-              price: await marketStore.assetPriceInZTG(outcome.asset),
-            };
-          }),
-      ).then((prices) => {
-        setScalarPrices({
-          short: prices[1].price.toNumber(),
-          long: prices[0].price.toNumber(),
+      if (market.type === "scalar") {
+        console.log("loda");
+        Promise.all([
+          store.sdk.models.queryMarket(Number(marketid)),
+          Promise.all(
+            marketStore.marketOutcomes
+              .filter((o) => o.metadata !== "ztg")
+              .map(async (outcome) => {
+                return {
+                  assetId: outcome.asset,
+                  price: await marketStore.assetPriceInZTG(outcome.asset),
+                };
+              }),
+          ),
+        ]).then(([market, prices]) => {
+          setScalarPrices({
+            type: market.scalarType,
+            short: prices[1].price.toNumber(),
+            long: prices[0].price.toNumber(),
+          });
         });
-        const lPrice = prices[0].price;
-        const sPrice = prices[1].price;
-      });
+      }
 
       const { poolId } = market.pool;
 
@@ -332,6 +338,7 @@ const MarketDetails = observer(() => {
 
   const getReportedOutcome = () => {
     let outcomeId: number;
+
     if (marketStore.is("Disputed") && marketStore.lastDispute) {
       // @ts-ignore
       outcomeId = marketStore.lastDispute.outcome.categorical;
@@ -492,6 +499,7 @@ const MarketDetails = observer(() => {
       {marketStore.type === "scalar" && scalarPrices && (
         <div className="mt-ztg-20 mb-ztg-30">
           <ScalarPriceRange
+            type={scalarPrices.type}
             lowerBound={marketStore.bounds[0]}
             upperBound={marketStore.bounds[1]}
             shortPrice={scalarPrices.short}
