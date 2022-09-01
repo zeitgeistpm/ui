@@ -12,9 +12,11 @@ import NotificationCenter from "components/ui/NotificationCenter";
 import RightDrawer from "components/drawer/RightDrawer";
 import LeftDrawer from "components/drawer/LeftDrawer";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
+import { useRouter } from "next/router";
 
 const DefaultLayout: FC = observer(({ children }) => {
   const store = useStore();
+  const router = useRouter();
 
   const { width, height, ref: mainRef } = useResizeDetector();
 
@@ -54,7 +56,7 @@ const DefaultLayout: FC = observer(({ children }) => {
                 height={height}
                 width={width}
               >
-                {store.initialized ? (
+                {store.initialized || router.pathname === "/" ? (
                   children
                 ) : (
                   <Skeleton

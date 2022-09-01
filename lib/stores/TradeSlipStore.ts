@@ -555,8 +555,11 @@ export default class TradeSlipStore {
 
   private setupReactions() {
     reaction(
-      () => this.sortedTrades,
-      (trades) => {
+      () => ({
+        trades: this.sortedTrades,
+        slippagePercentage: this.slippagePercentage,
+      }),
+      ({ trades }) => {
         this.createTransactions(trades);
       },
     );
@@ -566,7 +569,9 @@ export default class TradeSlipStore {
         items: this.tradeSlipItems,
         acc: this.store.wallets.activeAccount,
       }),
-      async ({ items, acc }, prev) => {
+      async (current, prev) => {
+        const items = current?.items;
+        const acc = current?.acc;
         if (acc == null) {
           return;
         }
