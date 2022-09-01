@@ -1,17 +1,39 @@
-import Link from "next/link";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
-import React, { FC, useEffect, useState } from "react";
-import { from } from "rxjs";
+import React, { FC } from "react";
+
 import { Skeleton } from "@material-ui/lab";
 
 import { useStore } from "lib/stores/Store";
 import MarketsList from "components/markets/MarketsList";
-import AspectRatioImage from "components/ui/AspectRatioImage";
 import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
 import TrendingMarkets from "components/markets/TrendingMarkets";
-import GlitchImage from "components/ui/GlitchImage";
 import Image from "next/image";
+import GlitchImage from "components/ui/GlitchImage";
+import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
+import { GraphQLClient } from "graphql-request";
+import getTrendingMarkets from "lib/gql/trending-markets";
+import { getPopularCategories, TagCounts } from "lib/gql/popular-categories";
+
+export async function getStaticProps() {
+  const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
+  const client = new GraphQLClient(url);
+  const trendingMarkets = await getTrendingMarkets(client);
+
+  if (!trendingMarkets || trendingMarkets.length === 0) {
+    //prevent rerender if server isn't returning markets
+    throw new Error("Unable to fetch trending markets");
+  }
+
+  const categories = await getPopularCategories(client);
+  return {
+    props: {
+      trendingMarkets: trendingMarkets,
+      tagCounts: categories,
+    },
+    revalidate: 10 * 60, //10min
+  };
+}
 
 const Category = ({
   title,
@@ -61,145 +83,63 @@ const Category = ({
   );
 };
 
-const PopularCategories: FC = observer(({}) => {
-  const query = useMarketsUrlQuery();
-  const { sdk, initialized } = useStore();
+const PopularCategories: FC<{ tagCounts: TagCounts }> = observer(
+  ({ tagCounts }) => {
+    const query = useMarketsUrlQuery();
 
-  const getTagCount = async (tag: string): Promise<number> => {
-    return sdk.models.queryMarketsCount({ tags: [tag] });
-  };
+    const navigateToTag = (tag: string) => {
+      query.updateQuery({
+        tag,
+      });
+    };
 
-  const [sportsCount, setSportsCount] = useState<number>();
-  const [politicsCount, setPoliticsCount] = useState<number>();
-  const [governanceCount, setGovernanceCount] = useState<number>();
-  const [cryptoCount, setCryptoCount] = useState<number>();
-
-  const navigateToTag = (tag: string) => {
-    query.updateQuery({
-      tag,
-    });
-  };
-
-  useEffect(() => {
-    if (!initialized) {
-      return;
-    }
-    const sub = from(
-      Promise.all([
-        getTagCount("Sports"),
-        getTagCount("Politics"),
-        getTagCount("Governance"),
-        getTagCount("Crypto"),
-      ]),
-    ).subscribe(([sports, politics, governance, crypto]) => {
-      setSportsCount(sports);
-      setPoliticsCount(politics);
-      setGovernanceCount(governance);
-      setCryptoCount(crypto);
-    });
-    return () => sub.unsubscribe();
-  }, [initialized]);
-
-  return (
-    <div className="flex flex-col mt-ztg-30">
-      <div></div>
-      <h3 className="font-space font-bold text-[24px] mb-ztg-30">
-        Popular Topics
-      </h3>
-      <div className="flex flex-wrap w-full justify-between">
-        <Category
-          title="Sports"
-          description=""
-          imgURL="/topics/sports.png"
-          count={sportsCount}
-          onClick={() => navigateToTag("Sports")}
-        />
-        <Category
-          title="Politics"
-          description=""
-          imgURL="/topics/politics.png"
-          count={politicsCount}
-          onClick={() => navigateToTag("Politics")}
-        />
-        <Category
-          title="Governance"
-          description=""
-          imgURL="/topics/governance.png"
-          count={governanceCount}
-          onClick={() => navigateToTag("Governance")}
-        />
-        <Category
-          title="Crypto"
-          description=""
-          imgURL="/topics/crypto.png"
-          count={cryptoCount}
-          onClick={() => navigateToTag("Crypto")}
-        />
-      </div>
-    </div>
-  );
-});
-
-const FeaturedMarketContent: FC<{
-  marketId: number;
-  imageUrl: string;
-  title: string;
-  text: string;
-}> = observer(({ marketId, imageUrl, title, text }) => {
-  return (
-    <div className="ztg-transition hover:bg-grey-100 hover:scale-105 ">
-      <Link href={`/markets/${marketId}`}>
-        <a>
-          <AspectRatioImage
-            ratio={400 / 225}
-            className="w-full h-ztg-136 rounded-ztg-10 mb-ztg-22"
-            imageUrl={imageUrl}
+    return (
+      <div className="flex flex-col mt-ztg-30">
+        <div></div>
+        <h3 className="font-space font-bold text-[24px] mb-ztg-30">
+          Popular Topics
+        </h3>
+        <div className="flex flex-wrap w-full justify-between">
+          <Category
+            title="Sports"
+            description=""
+            imgURL="/topics/sports.png"
+            count={tagCounts.sports}
+            onClick={() => navigateToTag("Sports")}
           />
-          <h6 className="text-ztg-20-150 font-bold font-space">{title}</h6>
-          <div className="text-ztg-12-150 font-lato text-sky-600">{text}</div>
-        </a>
-      </Link>
-    </div>
-  );
-});
-
-const FeaturedMarkets: FC = observer(() => {
-  return (
-    <div className="flex flex-col mt-ztg-30">
-      <h5 className="font-space font-bold text-ztg-28-120 mb-ztg-30">
-        Featured Markets
-      </h5>
-      <div className="flex">
-        <div className="cursor-pointer flex flex-col flex-ztg-basis-240 flex-grow flex-shrink mr-ztg-10 min-w-0">
-          <FeaturedMarketContent
-            marketId={22}
-            imageUrl="/featured/Kanaria_NFT.png"
-            title="Kanaria NFT Price Floor"
-            text="Crypto"
+          <Category
+            title="Politics"
+            description=""
+            imgURL="/topics/politics.png"
+            count={tagCounts.politics}
+            onClick={() => navigateToTag("Politics")}
           />
-        </div>
-        <div className="cursor-pointer flex flex-col flex-ztg-basis-240 flex-grow flex-shrink ml-ztg-10 mr-ztg-10 min-w-0">
-          <FeaturedMarketContent
-            marketId={21}
-            imageUrl="/featured/Polkadot.png"
-            title="Parachain Auction Announcement Date"
-            text="Crypto"
+          <Category
+            title="Governance"
+            description=""
+            imgURL="/topics/governance.png"
+            count={tagCounts.governance}
+            onClick={() => navigateToTag("Governance")}
           />
-        </div>
-        <div className="cursor-pointer flex flex-col flex-ztg-basis-240 flex-grow flex-shrink ml-ztg-10 min-w-0">
-          <FeaturedMarketContent
-            marketId={23}
-            imageUrl="/featured/Kusama.png"
-            title="3rd round of Kusama Parachain Auction"
-            text="Crypto"
+          <Category
+            title="Crypto"
+            description=""
+            imgURL="/topics/crypto.png"
+            count={tagCounts.crypto}
+            onClick={() => navigateToTag("Crypto")}
           />
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  },
+);
 
-const IndexPage: NextPage = observer(() => {
+const IndexPage: NextPage<{
+  trendingMarkets: TrendingMarketInfo[];
+  tagCounts: TagCounts;
+}> = observer(({ trendingMarkets, tagCounts }) => {
+  const store = useStore();
+
   return (
     <div data-test="indexPage">
       <GlitchImage
@@ -215,9 +155,16 @@ const IndexPage: NextPage = observer(() => {
           quality={100}
         />
       </GlitchImage>
-      <TrendingMarkets />
-      <PopularCategories />
-      <MarketsList />
+      <TrendingMarkets markets={trendingMarkets} />
+      <PopularCategories tagCounts={tagCounts} />
+      {store.initialized ? (
+        <MarketsList />
+      ) : (
+        <Skeleton
+          height={300}
+          className="w-full !rounded-ztg-10 !transform-none !mt-[50px]"
+        />
+      )}
     </div>
   );
 });
