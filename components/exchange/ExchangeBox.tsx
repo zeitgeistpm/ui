@@ -219,6 +219,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
     }, [
       exchangeStore?.amount,
       type,
+      slippagePercentage,
       exchangeStore?.outcome,
       exchangeStore?.spotPrice,
       exchangeStore?.hasOutcomeOptions,

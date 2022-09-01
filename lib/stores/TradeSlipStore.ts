@@ -555,8 +555,11 @@ export default class TradeSlipStore {
 
   private setupReactions() {
     reaction(
-      () => this.sortedTrades,
-      (trades) => {
+      () => ({
+        trades: this.sortedTrades,
+        slippagePercentage: this.slippagePercentage,
+      }),
+      ({ trades }) => {
         this.createTransactions(trades);
       },
     );
