@@ -141,10 +141,10 @@ class MarketsStore {
 
     if (myMarketsOnly) {
       const filterBy = {
-        oracle: filter.oracle ? activeAccount.address : "",
-        creator: filter.creator ? activeAccount.address : "",
+        oracle: filter.oracle ? activeAccount?.address : undefined,
+        creator: filter.creator ? activeAccount?.address : undefined,
         liquidityOnly: false,
-        assetOwner: filter.hasAssets ? activeAccount.address : undefined,
+        assetOwner: filter.hasAssets ? activeAccount?.address : undefined,
       };
       ({ result: marketsData, count } =
         await this.store.sdk.models.filterMarkets(filterBy, {
