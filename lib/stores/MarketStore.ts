@@ -90,13 +90,19 @@ class MarketStore {
 
   //authorised wallet address
   get authority(): string {
-    if (isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
+    if (
+      this.market.disputeMechanism &&
+      isAuthorisedDisputeMechanism(this.market.disputeMechanism)
+    ) {
       return this.market.disputeMechanism.authorized;
     }
   }
 
   get disputeMechanism(): "authorized" | "other" {
-    if (isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
+    if (
+      this.market.disputeMechanism &&
+      isAuthorisedDisputeMechanism(this.market.disputeMechanism)
+    ) {
       return "authorized";
     } else {
       return "other";
@@ -242,7 +248,9 @@ class MarketStore {
   }
 
   get isCourt(): boolean {
-    return (this.market.disputeMechanism as CourtDisputeMechanism).Court === null;
+    return (
+      (this.market.disputeMechanism as CourtDisputeMechanism).Court === null
+    );
   }
 
   get bounds(): [number, number] | null {
