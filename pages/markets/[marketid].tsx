@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react";
 import { extrinsicCallback } from "lib/util/tx";
 import { calculatePoolCost, get24HrPriceChange } from "lib/util/market";
@@ -32,6 +32,8 @@ import { MultipleOutcomeEntry } from "lib/types/create-market";
 import { useUserStore } from "lib/stores/UserStore";
 import Decimal from "decimal.js";
 import { calcTotalAssetPrice } from "lib/util/pool";
+import { MarketOutcome } from "lib/types";
+import { async } from "rxjs";
 
 const LiquidityPill = observer(({ liquidity }: { liquidity: number }) => {
   const { config } = useStore();
@@ -144,6 +146,24 @@ const MarketDetails = observer(() => {
     }
     getPageData();
   }, [marketStore]);
+
+  useEffect(() => {
+    console.log(marketStore?.id);
+    if (
+      marketStore?.id == null ||
+      marketStore?.status === "Active" ||
+      marketStore?.status === "Proposed"
+    ) {
+      return;
+    }
+    const fetchAuthorizedReport = async (marketId: number) => {
+      const report =
+        await store.sdk.api.query.authorized.authorizedOutcomeReports(marketId);
+      console.log(report);
+    };
+
+    fetchAuthorizedReport(marketStore.id);
+  }, [store.sdk.api, marketStore.id]);
 
   const getPageData = async () => {
     let tblData: TableData[] = [];
