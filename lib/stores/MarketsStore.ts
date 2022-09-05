@@ -140,11 +140,23 @@ class MarketsStore {
     let count: number;
 
     if (myMarketsOnly) {
+      const filtersOff =
+        filter.creator === false &&
+        filter.oracle === false &&
+        filter.hasAssets === false;
+
+      const oracle =
+        filtersOff || filter.oracle ? activeAccount?.address : undefined;
+      const creator =
+        filtersOff || filter.creator ? activeAccount?.address : undefined;
+      const assetOwner =
+        filtersOff || filter.hasAssets ? activeAccount?.address : undefined;
+
       const filterBy = {
-        oracle: filter.oracle ? activeAccount?.address : undefined,
-        creator: filter.creator ? activeAccount?.address : undefined,
+        oracle,
+        creator,
+        assetOwner,
         liquidityOnly: false,
-        assetOwner: filter.hasAssets ? activeAccount?.address : undefined,
       };
       ({ result: marketsData, count } =
         await this.store.sdk.models.filterMarkets(filterBy, {
