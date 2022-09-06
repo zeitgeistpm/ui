@@ -66,9 +66,7 @@ const MyApp = observer(({ Component, pageProps }) => {
     }
   }, []);
 
-  const launchDate = new Date(
-    "Tue Aug 29 2022 17:26:30 GMT+0200 (Central European Summer Time)",
-  );
+  const launchDate = new Date(1663081200000);
 
   const [launched, setLaunched] = useState(Date.now() > launchDate.getTime());
 
