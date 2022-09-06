@@ -104,6 +104,7 @@ class MarketStore {
   }
 
   get connectedWalletCanReport(): boolean {
+    if (this.inOpenReportPeriod === true) return true;
     if (!this.store.wallets.activeAccount?.address) return false;
 
     if (this.status === "Closed" && this.isOracle) {
@@ -131,6 +132,14 @@ class MarketStore {
     const marketEnd = moment(this.endTimestamp);
     const periodEnd = marketEnd.clone().add(1, "day");
     return now.isBetween(marketEnd, periodEnd);
+  }
+
+  get inOpenReportPeriod(): boolean {
+    return (
+      this.status === "Closed" &&
+      (new Date().getTime() - this.endTimestamp) / 1000 >
+        this.store.config.markets.reportingPeriodSec
+    );
   }
 
   get inReportPeriod(): boolean {
@@ -242,7 +251,9 @@ class MarketStore {
   }
 
   get isCourt(): boolean {
-    return (this.market.disputeMechanism as CourtDisputeMechanism).Court === null;
+    return (
+      (this.market.disputeMechanism as CourtDisputeMechanism).Court === null
+    );
   }
 
   get bounds(): [number, number] | null {
