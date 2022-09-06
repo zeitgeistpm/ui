@@ -27,7 +27,6 @@ import { JSONObject, MarketOutcome, MarketStatus } from "../types";
 import Store from "./Store";
 import { calcSpotPrice } from "lib/math";
 import { AssetIdFromString } from "@zeitgeistpm/sdk/dist/util";
-import { toHMS } from "components/ui/Countdown";
 
 class MarketStore {
   // is market data loaded

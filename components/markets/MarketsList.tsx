@@ -83,6 +83,7 @@ const MarketsFilters = observer(
 
 const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const store = useStore();
+  const { wallets } = store;
   const [initialLoad, setInitialLoad] = useState(true);
 
   const query = useMarketsUrlQuery();
@@ -143,7 +144,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       setPageLoaded(true);
       setInitialLoad(false);
     });
-  }, [debouncedQueryChange]);
+  }, [debouncedQueryChange, wallets.activeAccount]);
 
   useEffect(() => {
     if (query.pagination.page > prevPage) {
