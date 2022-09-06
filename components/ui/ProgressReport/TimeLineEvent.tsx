@@ -81,7 +81,7 @@ const TimeLineEvent = observer(
         )}
       </>
     );
-  }
+  },
 );
 
 export default TimeLineEvent;

@@ -30,7 +30,7 @@ export const useContentWidth = () => useContext(ContentDimensionsContext).width;
 
 export const useContentScrollTop = (): [
   number,
-  (scrollTop: number) => void
+  (scrollTop: number) => void,
 ] => [
   useContext(ContentDimensionsContext).scrollTop,
   useContext(ContentDimensionsContext).scrollTo,

@@ -4,17 +4,18 @@ import { AccountInfo } from "@polkadot/types/interfaces/system";
 import { Swap } from "@zeitgeistpm/sdk/dist/models";
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import { useContext } from "react";
-import SDK, { util } from "@zeitgeistpm/sdk";
+import SDK from "@zeitgeistpm/sdk";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 import Decimal from "decimal.js";
 import { makeAutoObservable, runInAction, when } from "mobx";
 import type { Codec } from "@polkadot/types-codec/types";
 import validatorjs from "validatorjs";
 import { GraphQLClient } from "graphql-request";
-
 import { StoreContext } from "components/context/StoreContext";
 import { ZTG } from "lib/constants";
+import { isValidPolkadotAddress } from "lib/util";
 
+import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 import { isAsset, ztgAsset } from "../types";
 import UserStore from "./UserStore";
 import MarketsStore from "./MarketsStore";
@@ -46,6 +47,14 @@ interface Config {
     caseDurationSec: number;
     stakeWeight: number; // increase in juror stake per juror
   };
+  swaps: {
+    minLiquidity: number;
+  };
+}
+
+interface ZTGInfo {
+  price: Decimal;
+  change: Decimal;
 }
 
 export default class Store {
@@ -56,6 +65,7 @@ export default class Store {
   exchangeStore = new ExchangeStore(this);
   courtStore: CourtStore;
   wallets = new Wallets(this);
+  ztgInfo: ZTGInfo;
 
   markets: MarketsStore;
 
@@ -129,7 +139,7 @@ export default class Store {
         }
         return +val > 0;
       },
-      "Enter amount greater than zero."
+      "Enter amount greater than zero.",
     );
 
     validatorjs.register("timestamp_gt_now", (val: number) => {
@@ -146,6 +156,10 @@ export default class Store {
     validatorjs.register("range_outcome", (val: number | string) => {
       return +val > 0 && +val < 1;
     });
+
+    validatorjs.register("address_input", (val: string) => {
+      return isValidPolkadotAddress(val);
+    });
   }
 
   private initializeMarkets() {
@@ -159,43 +173,61 @@ export default class Store {
       () => {
         this.initTradeSlipStore();
         this.exchangeStore.initialize();
-      }
+      },
     );
   }
 
   async initialize() {
     this.userStore.init();
 
-    await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
-    await this.loadConfig();
-    this.initGraphQlClient();
+    try {
+      await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
+      await this.loadConfig();
+      this.initGraphQlClient();
+      const storedWalletId = this.userStore.walletId;
 
-    this.wallets.initialize();
+      if (storedWalletId) {
+        this.wallets.initialize(storedWalletId);
+      }
 
-    this.courtStore = new CourtStore(this);
+      this.registerValidationRules();
 
-    this.registerValidationRules();
+      await this.pools.init();
+      this.initializeMarkets();
 
-    await this.pools.init();
-    this.initializeMarkets();
+      runInAction(() => {
+        this.initialized = true;
+      });
+    } catch {
+      this.userStore.setNextBestEndpoints(
+        this.userStore.endpoint,
+        this.userStore.gqlEndpoint,
+      );
+      this.initialize();
+    }
+
+    const priceInfo = await this.fetchZTGPrice();
 
     runInAction(() => {
-      this.initialized = true;
+      this.ztgInfo = priceInfo;
     });
   }
 
   async connectNewSDK(endpoint: string, gqlEndpoint: string) {
+    await this.initSDK(endpoint, gqlEndpoint);
+
     this.unsubscribeNewHeads();
     this.exchangeStore.destroy();
 
-    runInAction(() => (this.initialized = false));
-
-    await this.initSDK(endpoint, gqlEndpoint);
     await this.loadConfig();
     this.initGraphQlClient();
 
     this.markets.unsubscribeAll();
-    this.wallets.subscribeToBalanceChanges();
+
+    if (this.wallets.connected) {
+      await this.userStore.loadIdentity(this.wallets.activeAccount.address);
+      this.wallets.subscribeToBalanceChanges();
+    }
 
     await this.pools.init();
     this.initializeMarkets();
@@ -206,20 +238,23 @@ export default class Store {
   }
 
   async initSDK(endpoint: string, graphQlEndpoint: string) {
-    const ipfsClientUrl = this.isTestEnv ? "http://127.0.0.1:5001" : undefined;
+    const isLocalEndpoint =
+      endpoint.includes("localhost") || endpoint.includes("127.0.0.1");
+    const ipfsClientUrl =
+      this.isTestEnv || isLocalEndpoint ? "http://127.0.0.1:5001" : undefined;
     const sdk = await SDK.initialize(endpoint, {
       graphQlEndpoint,
       ipfsClientUrl,
     });
 
-    if (sdk.graphQLClient == null) {
-      this.userStore.setGqlEndpoint(null);
-    } else {
+    if (sdk.graphQLClient != null) {
       this.userStore.setGqlEndpoint(graphQlEndpoint);
+    } else {
+      //might makes sense to throw an error in the future if we have alternative indexers
+      console.error("Graphql service not available " + graphQlEndpoint);
     }
-    this.userStore.setEndpoint(endpoint);
 
-    await this.initIPFS();
+    this.userStore.setEndpoint(endpoint);
 
     runInAction(() => {
       this.sdk = sdk;
@@ -227,16 +262,22 @@ export default class Store {
     });
   }
 
-  async initIPFS() {
-    this.ipfs = util.initIpfs();
-  }
-
   private async initGraphQlClient() {
     if (this.userStore.gqlEndpoint && this.userStore.gqlEndpoint.length > 0) {
       this.graphQLClient = new GraphQLClient(this.userStore.gqlEndpoint, {});
-    } else {
-      this.graphQLClient = null;
     }
+  }
+
+  private async fetchZTGPrice(): Promise<ZTGInfo> {
+    const res = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=zeitgeist&vs_currencies=usd&include_24hr_change=true",
+    );
+    const json = await res.json();
+
+    return {
+      price: new Decimal(json.zeitgeist.usd),
+      change: new Decimal(json.zeitgeist.usd_24h_change),
+    };
   }
 
   private async loadConfig() {
@@ -275,16 +316,19 @@ export default class Store {
         validityBond:
           this.codecToNumber(consts.predictionMarkets.validityBond) / ZTG,
         maxCategories: this.codecToNumber(
-          consts.predictionMarkets.maxCategories
+          consts.predictionMarkets.maxCategories,
         ),
         minCategories: this.codecToNumber(
-          consts.predictionMarkets.minCategories
+          consts.predictionMarkets.minCategories,
         ),
       },
       court: {
         caseDurationSec:
           this.codecToNumber(consts.court.courtCaseDuration) * blockTimeSec,
         stakeWeight: this.codecToNumber(consts.court.stakeWeight) / ZTG,
+      },
+      swaps: {
+        minLiquidity: this.codecToNumber(consts.swaps.minLiquidity) / ZTG,
       },
     };
 
@@ -297,10 +341,13 @@ export default class Store {
     return Number(codec.toString());
   }
 
-  getTransactionError(groupIndex: number, errorIndex: number): string {
+  getTransactionError(groupIndex: number, error: number | string): string {
+    const errorIndex =
+      typeof error === "string" ? extractIndexFromErrorHex(error) : error;
+
     const { errorName, documentation } = this.sdk.errorTable.getEntry(
       groupIndex,
-      errorIndex
+      errorIndex,
     );
 
     return documentation.length > 0
@@ -316,7 +363,7 @@ export default class Store {
           this.blockTimestamp = blockTs;
           this.blockNumber = header.number;
         });
-      }
+      },
     );
   }
 
@@ -341,22 +388,22 @@ export default class Store {
     }
     let assetObj: Asset;
     if (asset == null) {
-      assetObj = this.sdk.api.createType("Asset", ztgAsset);
+      assetObj = (this.sdk.api as any).createType("Asset", ztgAsset);
     } else {
       assetObj = isAsset(asset)
         ? asset
-        : this.sdk.api.createType("Asset", asset);
+        : (this.sdk.api as any).createType("Asset", asset);
     }
     if (assetObj.isZtg) {
       const { data } = (await this.sdk.api.query.system.account(
-        this.wallets.activeAccount.address
+        this.wallets.activeAccount.address,
       )) as AccountInfo;
       return new Decimal(data.free.toString()).div(ZTG);
     }
 
     const data = await this.sdk.api.query.tokens.accounts(
       this.wallets.activeAccount.address,
-      asset
+      asset,
     );
 
     //@ts-ignore
@@ -365,7 +412,7 @@ export default class Store {
 
   async getPoolBalance(
     pool: Swap | string,
-    asset: AssetId | Asset
+    asset: AssetId | Asset,
   ): Promise<Decimal> {
     let account;
     if (typeof pool === "string") {
@@ -376,7 +423,7 @@ export default class Store {
 
     const assetObj: Asset = isAsset(asset)
       ? asset
-      : this.sdk.api.createType("Asset", asset);
+      : (this.sdk.api as any).createType("Asset", asset);
 
     if (asset == null || assetObj.isZtg) {
       const b = await this.sdk.api.query.system.account(account);
@@ -386,7 +433,7 @@ export default class Store {
 
     const b = (await this.sdk.api.query.tokens.accounts(
       account,
-      assetObj
+      assetObj,
     )) as any;
 
     return new Decimal(b.free.toString()).div(ZTG);

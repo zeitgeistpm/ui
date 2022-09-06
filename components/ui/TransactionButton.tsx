@@ -5,10 +5,11 @@ import { useUserStore } from "lib/stores/UserStore";
 import { useAccountModals } from "lib/hooks/account";
 
 interface TransactionButtonProps {
+  preventDefault?: boolean;
   onClick: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   disabled?: boolean;
   className?: string;
-  dataTestId?: string;
+  dataTest?: string;
 }
 
 const TransactionButton: FC<TransactionButtonProps> = observer(
@@ -16,8 +17,9 @@ const TransactionButton: FC<TransactionButtonProps> = observer(
     onClick,
     disabled = false,
     className = "",
-    dataTestId = "",
+    dataTest = "",
     children,
+    preventDefault,
   }) => {
     const store = useStore();
     const { wallets } = store;
@@ -26,6 +28,9 @@ const TransactionButton: FC<TransactionButtonProps> = observer(
     const { locationAllowed } = useUserStore();
 
     const click = (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      if (preventDefault) {
+        event.preventDefault();
+      }
       if (!connected) {
         accountModals.openWalletSelect();
       } else {
@@ -45,15 +50,15 @@ const TransactionButton: FC<TransactionButtonProps> = observer(
     return (
       <button
         className={`ztg-transition bg-ztg-blue text-white focus:outline-none disabled:opacity-20 disabled:cursor-default 
-        rounded-full w-full font-kanit font-bold text-ztg-16-150 h-ztg-40 ${className}`}
+        rounded-full w-full font-space font-bold text-ztg-16-150 h-ztg-40 ${className}`}
         onClick={(e) => click(e)}
         disabled={isDisabled()}
-        data-test={dataTestId}
+        data-test={dataTest}
       >
         {connected ? children : "Connect Wallet"}
       </button>
     );
-  }
+  },
 );
 
 export default TransactionButton;

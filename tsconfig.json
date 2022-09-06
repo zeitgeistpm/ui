@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -31,9 +27,5 @@
     "**/*.jsx",
     "**/*.js"
   ],
-  "exclude": [
-    "node_modules",
-    "cypress",
-    "scripts"
-  ]
+  "exclude": ["node_modules", "cypress", "scripts"]
 }

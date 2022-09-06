@@ -1,4 +1,9 @@
-import { EndpointOption, JSONObject, SelectOption } from "lib/types";
+import {
+  EndpointOption,
+  JSONObject,
+  SelectOption,
+  SupportedParachain,
+} from "../types";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { hexToU8a, isHex } from "@polkadot/util";
 import { endpoints, gqlEndpoints } from "../constants";
@@ -56,7 +61,7 @@ export const toRawBalance = (formattedBal: string) => {
  */
 export const getOptionLabel = (
   value: number | string,
-  options: SelectOption[]
+  options: SelectOption[],
 ) => {
   const o = options.find((o) => o.value === value);
   return o == null ? null : o.label;
@@ -78,7 +83,7 @@ export const compareJSON = (a: JSONObject, b: JSONObject): boolean => {
 export const shortenAddress = (
   address: string,
   sliceStart: number = 6,
-  sliceEnd: number = 4
+  sliceEnd: number = 4,
 ) => {
   return `${address.slice(0, sliceStart)}...${address.slice(-sliceEnd)}`;
 };
@@ -121,7 +126,7 @@ export const toBase64 = (file: File): Promise<string> => {
 
 export const formatNumberLocalized = (
   num: number,
-  locale: string = "en-US"
+  locale: string = "en-US",
 ) => {
   return new Intl.NumberFormat(locale).format(num);
 };
@@ -130,7 +135,7 @@ export const paramsForBlocksArray = (
   startBlock: number,
   endBlock: number,
   blockResolution: number,
-  currentBlock?: number
+  currentBlock?: number,
 ) => {
   if (startBlock < 1) {
     startBlock = 1;
@@ -156,7 +161,7 @@ export const paramsForBlocksArray = (
 export const createBlocksArray = (
   startingBlock: number,
   resolution: number,
-  endingBlock: number
+  endingBlock: number,
 ) => {
   const count = Math.floor((endingBlock - startingBlock) / resolution);
 
@@ -183,7 +188,7 @@ export const isValidPolkadotAddress = (address: string) => {
 export const convertBlockNumberToTimestamp = (
   blockNumber: number,
   currentBlockNumber: number,
-  blockTime: number
+  blockTime: number,
 ): number => {
   const blockDiff = currentBlockNumber - blockNumber;
   const timeDiffMS = blockDiff * blockTime * 1000;
@@ -194,24 +199,16 @@ export const convertBlockNumberToTimestamp = (
 
 export const getEndpointOption = (url?: string): EndpointOption => {
   if (url == null) {
-    return endpoints[0];
+    return endpoints.find((e) => e.parachain === SupportedParachain.BSR);
   }
   const opt = endpoints.find((e) => e.value === url);
   if (opt == null) {
-    return [...endpoints].slice(-1).pop() as EndpointOption;
+    let opt = endpoints.find(
+      (endpoint) => endpoint.parachain == SupportedParachain.CUSTOM,
+    );
+    opt.value = url;
   }
-  return opt;
-};
-
-export const getGqlEndpointOption = (url?: string): EndpointOption => {
-  if (url == null) {
-    return gqlEndpoints[0];
-  }
-  const opt = gqlEndpoints.find((e) => e.value === url);
-  if (opt == null) {
-    return [...gqlEndpoints].slice(-1).pop() as EndpointOption;
-  }
-  return opt;
+  return { ...opt };
 };
 
 Array.prototype.findLastIndexOf = function <T>(fn: (element: T) => boolean) {

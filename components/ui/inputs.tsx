@@ -53,7 +53,7 @@ export const Input: FC<InputProps & InputHTMLAttributes<HTMLInputElement>> =
           className = "",
           ...restProps
         },
-        ref
+        ref,
       ) => {
         const { name, ...rest } = restProps;
 
@@ -80,13 +80,13 @@ export const Input: FC<InputProps & InputHTMLAttributes<HTMLInputElement>> =
             value={value}
           />
         );
-      }
-    )
+      },
+    ),
   );
 
 const rdtpInput = (
   props: InputProps & InputHTMLAttributes<HTMLInputElement>,
-  openCalendar: () => void
+  openCalendar: () => void,
 ) => {
   const { className, ...restProps } = props;
   return (
@@ -104,6 +104,7 @@ const rdtpInput = (
       />
       <div
         className="w-ztg-40 h-ztg-40 border-l-1 border-sky-600 bg-sky-200 dark:bg-black flex-shrink-0 rounded-r-ztg-5 center cursor-pointer"
+        data-test="calendarIcon"
         onClick={openCalendar}
       >
         <Calendar size={16} className="text-sky-600" />
@@ -153,6 +154,7 @@ export interface AmountInputProps {
   max?: string;
   min?: string;
   name?: string;
+  placeholder?: string;
   onChange?: (val: string) => void;
   className?: string;
   containerClass?: string;
@@ -216,6 +218,7 @@ export const AmountInput: FC<AmountInputProps> = observer(
         max,
         min,
         name,
+        placeholder,
         className = "",
         containerClass = "",
         leftComponent,
@@ -225,9 +228,9 @@ export const AmountInput: FC<AmountInputProps> = observer(
         form,
         isFocused = false,
         onFocusChange = () => {},
-        showErrorMessage = true
+        showErrorMessage = true,
       },
-      ref
+      ref,
     ) => {
       const store = useStore();
       const amountRegex: RegExp = regex || store.amountRegex;
@@ -324,6 +327,7 @@ export const AmountInput: FC<AmountInputProps> = observer(
             ref={ref}
             type="text"
             autoComplete="off"
+            placeholder={placeholder}
             onChange={onChanged}
             onBlur={onBlured}
             onFocus={() => setFocused(true)}
@@ -339,13 +343,14 @@ export const AmountInput: FC<AmountInputProps> = observer(
           {rightComponent && rightComponent}
         </div>
       );
-    }
-  )
+    },
+  ),
 );
 
 export interface TextAreaProps {
   value: string;
   name: string;
+  dataTest?: string;
   placeholder?: string;
   onChange?: (value: string) => void;
   ref?: React.Ref<HTMLTextAreaElement>;
@@ -363,8 +368,9 @@ export const TextArea: FC<TextAreaProps> = observer(
         name,
         className = "",
         placeholder = "",
+        dataTest = "",
       },
-      ref
+      ref,
     ) => {
       const { invalid } = useFormField(form, name, value);
       const classes =
@@ -379,8 +385,9 @@ export const TextArea: FC<TextAreaProps> = observer(
           value={value}
           ref={ref}
           name={name}
+          data-test={dataTest}
         ></textarea>
       );
-    }
-  )
+    },
+  ),
 );

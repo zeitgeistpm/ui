@@ -1,5 +1,4 @@
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
-import { DAY_SECONDS } from "lib/constants";
 import { FilterOptions, MarketStatus } from "lib/types";
 interface BondPrices {
   advisedCost: number;
@@ -8,8 +7,8 @@ interface BondPrices {
 
 export const calculateMarketCost = (
   prices: BondPrices,
-  advised?: boolean,
-  poolAmounts?: number[]
+  advised: boolean,
+  poolAmounts?: number[],
 ): number => {
   let cost = 0;
 
@@ -27,25 +26,16 @@ export const calculateMarketCost = (
 };
 
 export const calculatePoolCost = (poolAmounts?: number[]) => {
-  let maxAmount = 0;
-
-  poolAmounts.forEach((amount) => {
-    if (amount > maxAmount) {
-      maxAmount = amount;
-    }
-  });
-
-  //cost of full sets + ZTG needed for the pool
-  return maxAmount + 100;
+  return poolAmounts[0] * 2;
 };
 
 export const activeStatusesFromFilters = (
-  filters: FilterOptions
+  filters: FilterOptions,
 ): MarketStatus[] => {
   const statuses = Object.keys(filters).filter(
     (k) =>
       !["oracle", "creator", "hasAssets", "HasLiquidityPool"].includes(k) &&
-      filters[k] === true
+      filters[k] === true,
   );
   return statuses as MarketStatus[];
 };
@@ -68,7 +58,7 @@ export const get24HrPriceChange = (
   prices: {
     newPrice: number;
     timestamp: string;
-  }[]
+  }[],
 ): number => {
   const price24HrAgo = getPrice24HrAgo(prices);
   const currentPrice = prices[0]?.newPrice;
@@ -82,9 +72,10 @@ export const getPrice24HrAgo = (
   prices: {
     newPrice: number;
     timestamp: string;
-  }[]
+  }[],
 ): number => {
-  const oneDayAgoTimestamp = new Date().getTime() - DAY_SECONDS * 1000;
+  const daySeconds = 86400;
+  const oneDayAgoTimestamp = new Date().getTime() - daySeconds * 1000;
 
   for (let i = 1; i < prices.length; i++) {
     const previousTime = new Date(prices[i - 1].timestamp).getTime();

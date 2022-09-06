@@ -6,7 +6,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { OutcomeOption } from "lib/stores/ExchangeStore";
 import { useStore } from "lib/stores/Store";
 import { useNotificationStore } from "lib/stores/NotificationStore";
-import { extrinsicCallback } from "lib/util/tx";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import MarketStore from "lib/stores/MarketStore";
 
 import TransactionButton from "components/ui/TransactionButton";
@@ -32,7 +32,7 @@ const ReportBox = observer(
 
     const getOptions = async (): Promise<OutcomeOption[]> => {
       const outcomes = marketStore.marketOutcomes.filter(
-        (o) => o.metadata !== "ztg"
+        (o) => o.metadata !== "ztg",
       );
 
       let options: OutcomeOption[] = [];
@@ -54,40 +54,29 @@ const ReportBox = observer(
 
     const notificationStore = useNotificationStore();
 
-    const reportDisabled = useMemo<boolean>(() => {
-      if (marketStore.inReportPeriod) {
-        return !(
-          (marketStore.inOracleReportPeriod && marketStore.isOracle) ||
-          !marketStore.inOracleReportPeriod
-        );
-      }
-      return true;
-    }, [
-      marketStore.inReportPeriod,
-      marketStore.inOracleReportPeriod,
-      wallets.activeAccount.address,
-      store.blockNumber,
-    ]);
+    const reportDisabled = !marketStore.connectedWalletCanReport;
 
     useEffect(() => {
       const obs = marketStore.marketChange$.pipe(
-        combineLatestWith(from(getOptions()))
+        combineLatestWith(from(getOptions())),
       );
       const sub = obs.subscribe(
         ([_, options]: [_: number, options: OutcomeOption[]]) => {
           setOptions(options);
           const outcomeidx = options.findIndex(
-            (o) => o.value === selectedAssetOption?.value
+            (o) => o.value === selectedAssetOption?.value,
           );
-          if (outcomeidx !== -1) {
-            setSelectedAssetOption(options[outcomeidx]);
-          } else {
-            setSelectedAssetOption(options[0]);
+          if (selectedAssetOption == null) {
+            if (outcomeidx !== -1) {
+              setSelectedAssetOption(options[outcomeidx]);
+            } else {
+              setSelectedAssetOption(options[0]);
+            }
           }
-        }
+        },
       );
       return () => sub.unsubscribe();
-    }, [wallets.activeAccount]);
+    }, [wallets.activeAccount, selectedAssetOption]);
 
     useEffect(() => {
       if (selectedAssetOption == null) {
@@ -106,28 +95,37 @@ const ReportBox = observer(
       const signer = store.wallets.getActiveSigner();
       const { market } = marketStore;
 
-      await market.reportOutcome(
-        signer,
-        outcomeReport,
-        extrinsicCallback({
-          notificationStore,
-          successCallback: async () => {
-            notificationStore.pushNotification("Outcome Reported", {
-              type: "Success",
-            });
-            await marketStore.refetchMarketData();
-            onReport();
-          },
-          failCallback: ({ index, error }) => {
-            notificationStore.pushNotification(
-              store.getTransactionError(index, error),
-              {
-                type: "Error",
-              }
-            );
-          },
-        })
-      );
+      const callback = extrinsicCallback({
+        notificationStore,
+        successCallback: async () => {
+          notificationStore.pushNotification("Outcome Reported", {
+            type: "Success",
+          });
+          await marketStore.refetchMarketData();
+          onReport();
+        },
+        failCallback: ({ index, error }) => {
+          notificationStore.pushNotification(
+            store.getTransactionError(index, error),
+            {
+              type: "Error",
+            },
+          );
+        },
+      });
+
+      if (
+        marketStore.disputeMechanism === "authorized" &&
+        marketStore.status === "Disputed"
+      ) {
+        const tx = store.sdk.api.tx.authorized.authorizeMarketOutcome(
+          market.marketId,
+          outcomeReport,
+        );
+        signAndSend(tx, signer, callback);
+      } else {
+        await market.reportOutcome(signer, outcomeReport, callback);
+      }
     };
 
     return (
@@ -140,7 +138,7 @@ const ReportBox = observer(
         ) : (
           <>
             <div className="flex items-center px-ztg-16">
-              <div className="font-kanit font-bold text-ztg-14-150 h-ztg-25">
+              <div className="font-space font-bold text-ztg-14-150 h-ztg-25">
                 Report outcome
               </div>
             </div>
@@ -189,7 +187,7 @@ const ReportBox = observer(
         )}
       </div>
     );
-  }
+  },
 );
 
 export default ReportBox;

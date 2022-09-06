@@ -11,6 +11,7 @@ import { extrinsicCallback } from "lib/util/tx";
 import TradeSlipItemList from "./TradeSlipItemList";
 import TransactionButton from "../ui/TransactionButton";
 import SlippageSettingInput from "../markets/SlippageInput";
+import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 
 const TradeSlip = observer(() => {
   const tradeSlipStore = useTradeSlipStore();
@@ -50,7 +51,7 @@ const TradeSlip = observer(() => {
                   if (sortedId < failedItemId) {
                     const itemFromSorted = sortedItems[sortedId];
                     const itemId = tradeSlipStore.findIndexWithAssetId(
-                      itemFromSorted.assetId
+                      itemFromSorted.assetId,
                     );
                     indexesToRemove.push(itemId);
                   }
@@ -65,7 +66,10 @@ const TradeSlip = observer(() => {
               resolve();
             },
             failCallback: ({ index, error }, batchIdx?: number) => {
-              const { errorName } = store.sdk.errorTable.getEntry(index, error);
+              const { errorName } = store.sdk.errorTable.getEntry(
+                index,
+                extractIndexFromErrorHex(error),
+              );
               if (batchIdx != null) {
                 failedItemId = batchIdx;
                 const item = tradeSlipStore.tradeSlipItems[batchIdx];
@@ -73,20 +77,20 @@ const TradeSlip = observer(() => {
                   `Trade failed: ${errorName} - ${item.assetTicker}`,
                   {
                     type: "Error",
-                  }
+                  },
                 );
               } else {
                 notificationStore.pushNotification(
                   `Transaction failed. Error: ${errorName}`,
                   {
                     type: "Error",
-                  }
+                  },
                 );
               }
               reject();
               unsub();
             },
-          })
+          }),
         );
       } catch (err) {
         console.log("Transaction canceled", err.toString());
@@ -135,7 +139,7 @@ const TradeSlip = observer(() => {
             Sign Transactions
           </TransactionButton>
           <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
-            <div className="font-bold">SlippageTollerance:</div>
+            <div className="font-bold">Slippage Tolerance:</div>
             <SlippageSettingInput
               value={tradeSlipStore.slippagePercentage?.toFixed(1)}
               onChange={(val) => tradeSlipStore.setSlippagePercentage(val)}
@@ -143,7 +147,7 @@ const TradeSlip = observer(() => {
             />
           </div>
           <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
-            <div className="font-bold">Exchange fee:</div>
+            <div className="font-bold">Network fee:</div>
             <div className="font-normal">
               {txFee.toFixed(4)} {store.config?.tokenSymbol}
             </div>

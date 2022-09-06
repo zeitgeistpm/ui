@@ -112,7 +112,7 @@ const Slider = observer(
         classes={classes}
       />
     );
-  }
+  },
 );
 
 export default Slider;

@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChevronLeft, Info } from "react-feather";
 import FullSetButtons from "components/markets/FullSetButtons";
 import InfoBoxes from "components/ui/InfoBoxes";
@@ -9,19 +9,10 @@ import Table, { TableColumn, TableData } from "components/ui/Table";
 import MarketStore from "lib/stores/MarketStore";
 import { usePoolsStore, CPool } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ReferenceArea,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import { bitcoindata } from "temp/bitcoin-data";
 import NotFoundPage from "pages/404";
 import Pill from "components/ui/Pill";
+import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
 
 interface Share {
   token: string;
@@ -33,119 +24,6 @@ interface Share {
   yourBalanceUSD: number;
   assetValueUSD: number;
 }
-
-const PoolChart = observer(() => {
-  const [refAreaLeft, setRefAreaLeft] = useState("");
-  const [refAreaRight, setRefAreaRight] = useState("");
-  const [leftX, setLeftX] = useState("dataMin");
-  const [rightX, setRightX] = useState("dataMax");
-
-  const zoom = () => {
-    let left = refAreaLeft;
-    let right = refAreaRight;
-
-    if (left === right || right === "") {
-      setRefAreaLeft("");
-      setRefAreaRight("");
-      return;
-    }
-
-    if (left > right) {
-      [left, right] = [right, left];
-    }
-
-    setLeftX(left);
-    setRightX(right);
-    setRefAreaLeft("");
-    setRefAreaRight("");
-  };
-
-  //TODO: dragging doesn't feel smooth, maybe this could be improved
-  const handleMouseMove = useCallback(
-    (e) => {
-      if (refAreaLeft) {
-        setRefAreaRight(e.activeLabel);
-      }
-    },
-
-    [refAreaLeft]
-  );
-
-  //TODO: make these dynamic based on zoom level
-  const ticks = [
-    new Date("2015-01-01").getTime(),
-    new Date("2016-01-01").getTime(),
-    new Date("2017-01-01").getTime(),
-    new Date("2018-01-01").getTime(),
-    new Date("2019-01-01").getTime(),
-    new Date("2020-01-01").getTime(),
-    new Date("2021-01-01").getTime(),
-  ];
-
-  return (
-    <div
-      style={{ width: "100%", height: 300 }}
-      onMouseMove={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      }}
-      onDoubleClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setLeftX("dataMin");
-        setRightX("dataMax");
-      }}
-    >
-      <ResponsiveContainer>
-        <LineChart
-          width={500}
-          height={300}
-          data={bitcoindata.map((d) => {
-            return { t: d.t * 1000, v: d.v };
-          })}
-          onMouseDown={(e) => {
-            setRefAreaLeft(e.activeLabel);
-          }}
-          onMouseMove={handleMouseMove}
-          onMouseUp={zoom}
-        >
-          <CartesianGrid strokeDasharray="0" vertical={false} />
-          <XAxis
-            allowDataOverflow
-            dataKey="t"
-            domain={[leftX, rightX]}
-            ticks={ticks}
-            tick={{ fontFamily: "Roboto", fontSize: "10px" }}
-            type="number"
-            tickFormatter={(unixTime) =>
-              new Intl.DateTimeFormat().format(new Date(unixTime))
-            }
-          />
-          <YAxis
-            scale="log"
-            domain={["auto", "auto"]}
-            tick={{ fontFamily: "Roboto", fontSize: "10px" }}
-            tickFormatter={(val) => "$" + val}
-          />
-
-          <Tooltip
-            animationEasing={"linear"}
-            animationDuration={0}
-            formatter={(value, name, props) => {
-              return ["$" + Math.round(value)];
-            }}
-            labelFormatter={(unixTime) =>
-              new Intl.DateTimeFormat().format(new Date(unixTime))
-            }
-          />
-          <Line type="monotone" dataKey="v" stroke="#8884d8" dot={false} />
-
-          <ReferenceArea x1={refAreaLeft} x2={refAreaRight} />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-  );
-});
 
 const PoolDetail = ({
   header,
@@ -328,8 +206,8 @@ const PoolDetails: NextPage = observer(() => {
         <PoolDetail
           className="mx-ztg-20"
           header="Fees"
-          middle={`${pool?.pool.swapFee} ${store.config.tokenSymbol}`}
-          bottom="$0"
+          middle={`${new Decimal(pool?.pool.swapFee ?? 0).div(ZTG).mul(100)} %`}
+          bottom=""
         />
 
         <PoolDetail header="APR" middle="" bottom="" showInfo={true} />
@@ -337,7 +215,7 @@ const PoolDetails: NextPage = observer(() => {
       {/* <PoolChart /> */}
       {/* <PoolSummary /> */}
       <div className="flex my-ztg-23 items-center">
-        <h3 className="font-kanit font-semibold text-ztg-20-150">
+        <h3 className="font-space font-semibold text-ztg-20-150">
           Assets in Pool
         </h3>
         {marketStore && <FullSetButtons marketStore={marketStore} />}

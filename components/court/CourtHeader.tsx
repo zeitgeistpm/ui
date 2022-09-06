@@ -4,7 +4,7 @@ import { useCourtStore } from "lib/stores/CourtStore";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
-import { extrinsicCallback } from "lib/util/tx";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import { HelpCircle } from "react-feather";
@@ -71,12 +71,13 @@ const JoinModalContent = observer(() => {
   const modalStore = useModalStore();
   const { onJurorChange, jurors } = useCourtStore();
 
-  const handleJoinCourt = async () => {
-    const { signer } = wallets.getActiveSigner() as ExtSigner;
+  const handleJoinCourt = () => {
+    const signer = wallets.getActiveSigner() as ExtSigner;
 
-    store.sdk.api.tx.court.joinCourt().signAndSend(
-      wallets.activeAccount.address,
-      { signer: signer },
+    const tx = store.sdk.api.tx.court.joinCourt();
+    signAndSend(
+      tx,
+      signer,
       extrinsicCallback({
         notificationStore,
         successCallback: () => {
@@ -90,10 +91,10 @@ const JoinModalContent = observer(() => {
         failCallback: ({ index, error }) => {
           notificationStore.pushNotification(
             store.getTransactionError(index, error),
-            { type: "Error" }
+            { type: "Error" },
           );
         },
-      })
+      }),
     );
   };
 
@@ -154,12 +155,13 @@ const ExitModalContent = observer(() => {
   const modalStore = useModalStore();
   const { onJurorChange } = useCourtStore();
 
-  const handleExitCourt = async () => {
-    const { signer } = wallets.getActiveSigner() as ExtSigner;
+  const handleExitCourt = () => {
+    const signer = wallets.getActiveSigner() as ExtSigner;
 
-    store.sdk.api.tx.court.exitCourt().signAndSend(
-      wallets.activeAccount.address,
-      { signer: signer },
+    const tx = store.sdk.api.tx.court.exitCourt();
+    signAndSend(
+      tx,
+      signer,
       extrinsicCallback({
         notificationStore,
         successCallback: () => {
@@ -173,10 +175,10 @@ const ExitModalContent = observer(() => {
         failCallback: ({ index, error }) => {
           notificationStore.pushNotification(
             store.getTransactionError(index, error),
-            { type: "Error" }
+            { type: "Error" },
           );
         },
-      })
+      }),
     );
   };
 

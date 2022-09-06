@@ -1,6 +1,6 @@
 export type EndType = "timestamp" | "block";
 
-export type OutcomeType = "multiple" | "range";
+export type OutcomeType = "yesno" | "multiple" | "range";
 
 export interface MultipleOutcomeEntry {
   name: string;
@@ -14,10 +14,18 @@ export interface RangeOutcomeEntry {
   ticker: string;
 }
 
-export type Outcomes = MultipleOutcomeEntry[] | RangeOutcomeEntry;
+export type YesNoOutcome = [
+  { name: "yes"; ticker: "YES"; color: "#0E992D" },
+  { name: "no"; ticker: "NO"; color: "#00A3FF" },
+];
+
+export type Outcomes =
+  | YesNoOutcome
+  | MultipleOutcomeEntry[]
+  | RangeOutcomeEntry;
 
 export const isMultipleOutcomeEntries = (
-  value: Outcomes
+  value: Outcomes,
 ): value is MultipleOutcomeEntry[] => {
   if (Array.isArray(value)) {
     return true;
@@ -26,7 +34,7 @@ export const isMultipleOutcomeEntries = (
 };
 
 export const isRangeOutcomeEntry = (
-  value: Outcomes
+  value: Outcomes,
 ): value is RangeOutcomeEntry => {
   if (!Array.isArray(value)) {
     return true;

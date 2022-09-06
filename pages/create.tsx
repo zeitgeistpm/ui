@@ -7,11 +7,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { from } from "rxjs";
 import { AlertTriangle } from "react-feather";
 import {
-  DecodedMarketMetadata,
-  KeyringPairOrExtSigner,
+  CreateMarketParams,
+  CreateCpmmMarketAndDeployAssetsParams,
+} from "@zeitgeistpm/sdk/dist/types/market";
+import { ISubmittableResult } from "@polkadot/types/types";
+import {
   MarketDisputeMechanism,
   MarketPeriod,
-  MarketTypeOf,
 } from "@zeitgeistpm/sdk/dist/types";
 import Moment from "moment";
 
@@ -47,6 +49,8 @@ import PoolSettings, {
 } from "components/liquidity/PoolSettings";
 import TransactionButton from "components/ui/TransactionButton";
 import MarketFormCard from "components/create/MarketFormCard";
+import { useModalStore } from "lib/stores/ModalStore";
+import MarketCostModal from "components/markets/MarketCostModal";
 
 interface CreateMarketFormData {
   slug: string;
@@ -74,7 +78,7 @@ const initialFields = {
   },
   oracle: {
     value: "",
-    rules: "required",
+    rules: "required|address_input",
   },
   description: {
     value: "",
@@ -91,6 +95,7 @@ const initialFields = {
 const CreatePage: NextPage = observer(() => {
   const store = useStore();
   const notificationStore = useNotificationStore();
+  const modalStore = useModalStore();
   const markets = useMarketsStore();
   const [formData, setFormData] = useState<CreateMarketFormData>({
     slug: "",
@@ -109,12 +114,13 @@ const CreatePage: NextPage = observer(() => {
       {
         plugins: defaultPlugins,
         options: defaultOptions,
-      }
+      },
     );
   });
 
   const [deployPool, setDeployPool] = useState(false);
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[] | null>(null);
+  const [swapFee, setSwapFee] = useState<string>();
   const [txFee, setTxFee] = useState<string>();
 
   const router = useRouter();
@@ -126,7 +132,7 @@ const CreatePage: NextPage = observer(() => {
   const [marketCost, setMarketCost] = useState<number>();
 
   useEffect(() => {
-    if (!form.isValid || poolRows == null) {
+    if (!form.isValid) {
       return;
     }
     const sub = from(getTransactionFee()).subscribe(setTxFee);
@@ -157,7 +163,7 @@ const CreatePage: NextPage = observer(() => {
           permissionlessCost: store.config.markets.validityBond + bondCost,
         },
         formData.advised,
-        deployPool === true ? poolRows?.map((row) => Number(row.amount)) : null
+        deployPool === true ? poolRows?.map((row) => Number(row.amount)) : null,
       ) + Number(txFee || 0);
     setMarketCost(marketCost);
   }, [store.config, formData, deployPool, poolRows]);
@@ -253,7 +259,7 @@ const CreatePage: NextPage = observer(() => {
   };
 
   const mapRangeToEntires = (
-    range: RangeOutcomeEntry
+    range: RangeOutcomeEntry,
   ): MultipleOutcomeEntry[] => {
     return [
       {
@@ -285,80 +291,56 @@ const CreatePage: NextPage = observer(() => {
     return metadata;
   };
 
-  const getCreateMarketParameters = async (): Promise<
-    [
-      KeyringPairOrExtSigner,
-      string,
-      MarketPeriod,
-      string,
-      MarketDisputeMechanism,
-      string,
-      DecodedMarketMetadata
-    ]
-  > => {
+  const getCreateMarketParameters = async (
+    callbackOrPaymentInfo:
+      | ((result: ISubmittableResult, _unsub: () => void) => void)
+      | boolean,
+  ): Promise<CreateMarketParams> => {
     const signer = store.wallets.getActiveSigner();
     const oracle = formData.oracle;
-    const marketPeriod = getMarketPeriod();
+    const period = getMarketPeriod();
     const creationType = formData.advised ? "Advised" : "Permissionless";
-    const mdm = { SimpleDisputes: null };
+
+    const mdm: MarketDisputeMechanism = {
+      authorized: process.env.NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS,
+    };
+
     const scoringRule = "CPMM";
     const metadata = getMarketMetadata();
-    return [
+
+    const outcomes = formData.outcomes.value;
+    const marketType = isMultipleOutcomeEntries(outcomes)
+      ? {
+          Categorical: outcomes.length,
+        }
+      : {
+          Scalar: [outcomes.minimum, outcomes.maximum],
+        };
+
+    return {
+      marketType,
       signer,
       oracle,
-      marketPeriod,
+      period,
       creationType,
-      mdm,
+      disputeMechanism: mdm,
       scoringRule,
       metadata,
-    ];
+      callbackOrPaymentInfo,
+    };
   };
 
-  const createCategoricalMarket = async (): Promise<number> => {
-    const params = await getCreateMarketParameters();
-    return new Promise(async (resolve, reject) => {
-      await store.sdk.models.createCategoricalMarket(
-        ...params,
-        extrinsicCallback({
-          notificationStore,
-          successMethod: "MarketCreated",
-          finalizedCallback: (data: JSONObject) => {
-            const marketId = data[0];
-            notificationStore.pushNotification(
-              `Transaction successful! Market id ${marketId}`,
-              { type: "Success" }
-            );
-            resolve(Number(marketId));
-          },
-          failCallback: ({ index, error }) => {
-            notificationStore.pushNotification(
-              store.getTransactionError(index, error),
-              { type: "Error" }
-            );
-            reject();
-          },
-        })
-      );
-    });
-  };
-
-  const getCreateCpmmMarketAndAddPoolParameters = async (): Promise<
-    [
-      KeyringPairOrExtSigner,
-      string,
-      MarketPeriod,
-      MarketTypeOf,
-      MarketDisputeMechanism,
-      string[],
-      string,
-      string[],
-      DecodedMarketMetadata
-    ]
-  > => {
+  const getCreateCpmmMarketAndAddPoolParameters = async (
+    callbackOrPaymentInfo:
+      | ((result: ISubmittableResult, _unsub: () => void) => void)
+      | boolean,
+  ): Promise<CreateCpmmMarketAndDeployAssetsParams> => {
     const signer = store.wallets.getActiveSigner();
     const oracle = formData.oracle;
-    const marketPeriod = getMarketPeriod();
-    const mdm = { SimpleDisputes: null };
+    const period = getMarketPeriod();
+    const mdm: MarketDisputeMechanism = {
+      authorized: process.env.NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS,
+    };
     const metadata = getMarketMetadata();
 
     const numOutcomes = metadata.categories.length;
@@ -369,19 +351,7 @@ const CreatePage: NextPage = observer(() => {
       return baseWeight;
     });
 
-    // total used for ztg weight
-    const totalWeight = weightsNums.reduce<number>((acc, curr) => {
-      return acc + curr;
-    }, 0);
-
-    const weights = [
-      ...weightsNums.map((w) => Math.floor(w).toString()),
-      totalWeight.toString(),
-    ];
-
-    const amounts = poolRows.slice(0, -1).map((r) => {
-      return (Number(r.amount) * ZTG).toString();
-    });
+    const weights = [...weightsNums.map((w) => Math.floor(w).toString())];
 
     const baseAssetAmount = (
       Number([...poolRows].pop().amount) * ZTG
@@ -396,85 +366,56 @@ const CreatePage: NextPage = observer(() => {
           ],
         };
 
-    return [
+    return {
       signer,
       oracle,
-      marketPeriod,
+      period,
       marketType,
-      mdm,
-      [...amounts].map((a) => a.toString()),
-      baseAssetAmount.toString(),
+      disputeMechanism: mdm,
+      swapFee,
+      amount: baseAssetAmount,
       weights,
       metadata,
-    ];
+      callbackOrPaymentInfo,
+    };
   };
 
   const createCategoricalCpmmMarketAndDeployPoolTransaction =
     async (): Promise<number> => {
-      const params = await getCreateCpmmMarketAndAddPoolParameters();
-
       return new Promise(async (resolve, reject) => {
-        await store.sdk.models.createCpmmMarketAndDeployAssets(
-          ...params,
+        const params = await getCreateCpmmMarketAndAddPoolParameters(
           extrinsicCallback({
             notificationStore,
             successMethod: "PoolCreate",
             successCallback: (data) => {
-              const marketId: number = data.events[2].event.data[0];
+              const marketId: number = findMarketId(data);
               notificationStore.pushNotification(
                 `Market successfully created with id: ${marketId}`,
                 {
                   type: "Success",
-                }
+                },
               );
               resolve(marketId);
             },
             failCallback: ({ index, error }) => {
               notificationStore.pushNotification(
                 store.getTransactionError(index, error),
-                { type: "Error" }
+                { type: "Error" },
               );
               reject();
             },
-          })
+          }),
         );
+
+        await store.sdk.models.createCpmmMarketAndDeployAssets(params);
       });
     };
 
-  const createScalarMarket = async (): Promise<number> => {
-    const params = await getCreateMarketParameters();
-
-    if (isRangeOutcomeEntry(formData.outcomes.value)) {
-      const bounds = [
-        formData.outcomes.value.minimum,
-        formData.outcomes.value.maximum,
-      ];
-      return new Promise(async (resolve, reject) => {
-        await store.sdk.models.createScalarMarket(
-          ...params,
-          bounds,
-          extrinsicCallback({
-            notificationStore,
-            successMethod: "MarketCreated",
-            finalizedCallback: (data: JSONObject) => {
-              const marketId = data[0];
-              notificationStore.pushNotification(
-                `Transaction successful! Market id ${marketId}`,
-                { type: "Success" }
-              );
-              resolve(Number(marketId));
-            },
-            failCallback: ({ index, error }) => {
-              notificationStore.pushNotification(
-                store.getTransactionError(index, error),
-                { type: "Error" }
-              );
-              reject();
-            },
-          })
-        );
-      });
-    }
+  const findMarketId = (data) => {
+    const marketCreatedEvent = data.events.find(
+      (event) => event.event.method === "MarketCreated",
+    );
+    return marketCreatedEvent.event.data[0];
   };
 
   const createMarket = async () => {
@@ -482,49 +423,102 @@ const CreatePage: NextPage = observer(() => {
       return;
     }
 
-    let marketId: number;
+    try {
+      const marketId = await new Promise<number>(async (resolve, reject) => {
+        try {
+          if (!deployPool) {
+            const params = await getCreateMarketParameters(
+              extrinsicCallback({
+                notificationStore,
+                successMethod: "MarketCreated",
+                finalizedCallback: (data: JSONObject) => {
+                  const marketId = data[0];
+                  notificationStore.pushNotification(
+                    `Transaction successful! Market id ${marketId}`,
+                    { type: "Success" },
+                  );
+                  resolve(Number(marketId));
+                },
+                failCallback: ({ index, error }) => {
+                  notificationStore.pushNotification(
+                    store.getTransactionError(index, error),
+                    { type: "Error" },
+                  );
+                  reject();
+                },
+              }),
+            );
+            return parseInt(await store.sdk.models.createMarket(params));
+          } else {
+            const id =
+              await createCategoricalCpmmMarketAndDeployPoolTransaction();
+            return resolve(id);
+          }
+        } catch (error) {
+          reject(error);
+        }
+      });
 
-    if (!deployPool) {
-      if (formData.outcomes.type === "multiple") {
-        marketId = await createCategoricalMarket();
-      } else {
-        marketId = await createScalarMarket();
-      }
-    } else {
-      marketId = await createCategoricalCpmmMarketAndDeployPoolTransaction();
+      await markets.updateMarketIds();
+      await markets.getMarket(marketId);
+      router.push(`/markets/${marketId}`, undefined, {
+        shallow: true,
+        scroll: true,
+      });
+    } catch (error) {
+      notificationStore.pushNotification(`Creating market failed: ${error}`, {
+        type: "Error",
+        autoRemove: true,
+      });
     }
-
-    await markets.updateMarketIds();
-    await markets.getMarket(marketId);
-    router.push(`/markets/${marketId}`, undefined, {
-      shallow: true,
-      scroll: true,
-    });
   };
 
   const getTransactionFee = async (): Promise<string> => {
     if (!deployPool) {
-      const params = await getCreateMarketParameters();
-      return new Decimal(
-        await store.sdk.models.createCategoricalMarket(...params, true)
-      )
+      const params = await getCreateMarketParameters(true);
+      return new Decimal(await store.sdk.models.createMarket(params))
         .div(ZTG)
         .toFixed(4);
-    } else {
-      const params = await getCreateCpmmMarketAndAddPoolParameters();
-      return new Decimal(
-        await store.sdk.models.createCpmmMarketAndDeployAssets(...params, true)
-      )
+    } else if (poolRows) {
+      const params = await getCreateCpmmMarketAndAddPoolParameters(true);
+      const fee = await store.sdk.models.createCpmmMarketAndDeployAssets(
+        params,
+      );
+      return new Decimal(typeof fee == "string" ? fee : "0")
         .div(ZTG)
         .toFixed(4);
     }
+  };
+
+  const showCostModal = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    const liquidity =
+      deployPool === true && poolRows
+        ? poolRows
+            .map((row) => new Decimal(row.value))
+            .reduce((prev, curr) => prev.add(curr), new Decimal(0))
+        : new Decimal(0);
+
+    modalStore.openModal(
+      <MarketCostModal
+        liquidity={liquidity.toFixed(0)}
+        permissionless={!formData.advised}
+        networkFee={txFee}
+      />,
+      <div className="ml-[15px] mt-[15px]">Cost Breakdown</div>,
+      {
+        styles: { width: "70%", maxWidth: "622px" },
+      },
+    );
   };
 
   return (
     <form data-test="createMarketForm">
       <InfoBoxes />
-      <h2 className="header mb-ztg-23">Create Market</h2>
-      <MarketFormCard header="1. Market name">
+      <h2 className="header mb-ztg-23" data-test="createMarketHeader">
+        Create Market
+      </h2>
+      <MarketFormCard header="1. Market name*">
         <MarketSlugField
           slug={formData.slug}
           base64Image={formData.marketImage}
@@ -546,6 +540,7 @@ const CreatePage: NextPage = observer(() => {
           className="mb-ztg-20"
           onChange={(e) => changeQuestion(e.target.value)}
           autoComplete="off"
+          data-test="marketQuestionInput"
         />
         <TagChoices onTagsChange={changeTags} />
       </MarketFormCard>
@@ -579,6 +574,7 @@ const CreatePage: NextPage = observer(() => {
           ref={oracleInputRef}
           className="mb-ztg-20"
           name="oracle"
+          data-test="oracleInput"
         />
         <div className="flex h-ztg-22 items-center text-sky-600 font-lato">
           <div className="w-ztg-20 h-ztg-20">
@@ -593,6 +589,7 @@ const CreatePage: NextPage = observer(() => {
       </MarketFormCard>
       <MarketFormCard header="6. Market Description">
         <TextArea
+          dataTest="marketDescriptionInput"
           placeholder="Additional information you want to provide about the market, such as resolution source, special cases, or other details."
           value={formData.description}
           name="description"
@@ -627,17 +624,11 @@ const CreatePage: NextPage = observer(() => {
               />
               <label
                 htmlFor="deployPool"
-                className="text-ztg-20-150 font-bold font-kanit"
+                className="text-ztg-20-150 font-bold font-space"
               >
                 Deploy Liquidity Pool
               </label>
             </div>
-            <p className="text-ztg-14-150 mb-ztg-15 text-sky-600 font-lato">
-              Deploying a pool will require at least two further transactions
-              after the market is created, one to buy a full set of tokens and
-              another to deploy the pool. If different amounts are specified an
-              additional transaction per token will be required.
-            </p>
           </>
         )}
         {deployPool && poolRows != null && (
@@ -646,15 +637,18 @@ const CreatePage: NextPage = observer(() => {
             onChange={(v) => {
               setPoolRows(v);
             }}
+            onFeeChange={(fee: Decimal) => {
+              setSwapFee(fee.toString());
+            }}
           />
         )}
 
         <div className="flex justify-center mb-ztg-10 mt-ztg-12 w-full h-ztg-40">
           <TransactionButton
+            preventDefault
             className="w-ztg-266 ml-ztg-8 center flex-shrink-0"
-            dataTestId="createMarketSubmitButton"
+            dataTest="createMarketSubmitButton"
             onClick={(e) => {
-              e.preventDefault();
               form.onSubmit(e);
               createMarket();
             }}
@@ -664,19 +658,20 @@ const CreatePage: NextPage = observer(() => {
           >
             Create Market
           </TransactionButton>
-          <div className="w-full flex items-center text-ztg-12-150 font-bold ml-ztg-8 text-sky-600">
-            <div className="mr-ztg-15">
+          <div className="w-full flex items-center text-ztg-12-150 font-bold ml-[27px] text-sky-600">
+            <div className="mr-ztg-15" data-test="totalCost">
               Total Cost:
               <span className="font-mono">
                 {" "}
                 {marketCost} {store.config?.tokenSymbol}
               </span>
             </div>
-            {txFee && (
-              <div className="mr-ztg-15">
-                Transaction Fee: <span className="font-mono">{txFee}</span>
-              </div>
-            )}
+            <button
+              className="text-ztg-blue underline font-bold"
+              onClick={showCostModal}
+            >
+              View Cost Breakdown
+            </button>
           </div>
         </div>
       </div>

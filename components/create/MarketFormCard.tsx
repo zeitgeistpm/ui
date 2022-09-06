@@ -7,22 +7,29 @@ const SectionTitle: FC<{ text: string; className?: string }> = ({
   text,
   className = "",
 }) => {
-  const classes = "text-ztg-16-150 font-bold mb-ztg-20 font-lato " + className;
+  const classes = "text-ztg-16-150 font-bold mb-ztg-20 font-lato" + className;
   return <div className={classes}>{text}</div>;
 };
 
-const MarketFormCard: FC<{ header: string }> = observer(({ children, header }) => {
-  const store = useStore();
+const MarketFormCard: FC<{ header: string }> = observer(
+  ({ children, header }) => {
+    const store = useStore();
 
-  if (!store.initialized) {
-    return <Skeleton className="!transform-none !h-ztg-99 w-full !mb-ztg-23" />
-  }
-  return (
-    <div className="p-ztg-20 rounded-ztg-10 mb-ztg-23 bg-sky-100 dark:bg-sky-700">
-      <SectionTitle text={header} />
-      {children}
-    </div>
-  );
-});
+    if (!store.initialized) {
+      return (
+        <Skeleton className="!transform-none !h-ztg-99 w-full !mb-ztg-23" />
+      );
+    }
+    return (
+      <div
+        data-test={header}
+        className="p-ztg-20 rounded-ztg-10 mb-ztg-23 bg-sky-100 dark:bg-sky-700"
+      >
+        <SectionTitle text={header} />
+        {children}
+      </div>
+    );
+  },
+);
 
 export default MarketFormCard;

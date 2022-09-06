@@ -1,6 +1,8 @@
 import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
 import {
   AssetId,
+  CourtDisputeMechanism,
+  isAuthorisedDisputeMechanism,
   MarketCreation,
   MarketDispute,
   MarketPeriod,
@@ -21,9 +23,10 @@ import {
 import { MarketStoreContext } from "components/context/MarketStoreContext";
 
 import { ZTG } from "../constants";
-import { JSONObject, MarketOutcome, MarketStatus, ztgAsset } from "../types";
+import { JSONObject, MarketOutcome, MarketStatus } from "../types";
 import Store from "./Store";
 import { calcSpotPrice } from "lib/math";
+import { AssetIdFromString } from "@zeitgeistpm/sdk/dist/util";
 
 class MarketStore {
   // is market data loaded
@@ -65,7 +68,7 @@ class MarketStore {
     if (this.inReportPeriod) {
       return "Waiting for report";
     }
-    if (!this.endPassed) {
+    if (!this.is("Closed")) {
       if (this.isPeriodInBlocks) {
         return `Ends at block number ${this.period["block"][1]}`;
       }
@@ -83,6 +86,37 @@ class MarketStore {
 
   get oracleReportPeriodPassed(): boolean {
     return this.inReportPeriod && !this.inOracleReportPeriod;
+  }
+
+  //authorised wallet address
+  get authority(): string {
+    if (isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
+      return this.market.disputeMechanism.authorized;
+    }
+  }
+
+  get disputeMechanism(): "authorized" | "other" {
+    if (isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
+      return "authorized";
+    } else {
+      return "other";
+    }
+  }
+
+  get connectedWalletCanReport(): boolean {
+    if (!this.store.wallets.activeAccount?.address) return false;
+
+    if (this.status === "Closed" && this.isOracle) {
+      return true;
+    } else if (
+      this.status === "Disputed" &&
+      this.disputeMechanism === "authorized" &&
+      this.authority === this.store.wallets.activeAccount?.address
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   get creator(): string {
@@ -129,13 +163,6 @@ class MarketStore {
       minute: "numeric",
       hour12: false,
     });
-  }
-
-  get endPassed(): boolean {
-    if (this.isPeriodInBlocks) {
-      return this.period["block"][1] <= this.store.blockNumber;
-    }
-    return this.endTimestamp <= this.store.blockTimestamp;
   }
 
   get period(): MarketPeriod {
@@ -215,14 +242,15 @@ class MarketStore {
   }
 
   get isCourt(): boolean {
-    //@ts-ignore
-    return this.market.mdm.court === null;
+    return (
+      (this.market.disputeMechanism as CourtDisputeMechanism).Court === null
+    );
   }
 
   get bounds(): [number, number] | null {
     if (this.market.marketType.isScalar) {
       const bounds = this.market.marketType.asScalar;
-      return [bounds[0].toNumber(), bounds[1].toNumber()];
+      return [Number(bounds[0].toString()), Number(bounds[1].toString())];
       //@ts-ignore - marketType is inconsistent
     } else if (this.market.marketType.scalar) {
       //@ts-ignore
@@ -276,9 +304,6 @@ class MarketStore {
     if (this.market.resolvedOutcome != null) {
       return "Resolved";
     }
-    if (this.endPassed && this.market.status === "Active") {
-      return "Ended";
-    }
     return this.market.status as MarketStatus;
   }
 
@@ -317,7 +342,7 @@ class MarketStore {
     if (this.hasReport) {
       return false;
     }
-    return this.is("Ended");
+    return this.is("Closed");
   }
 
   get outcomesNames(): string[] | undefined {
@@ -391,6 +416,12 @@ class MarketStore {
     }
   }
 
+  get outcomeAssetIds(): AssetId[] {
+    return this.market.outcomeAssets.map((asset) =>
+      AssetIdFromString(JSON.stringify(asset)),
+    );
+  }
+
   getMarketOutcome(assetId: AssetId | string): MarketOutcome {
     if (typeof assetId !== "string") {
       assetId = JSON.stringify(assetId);
@@ -412,19 +443,19 @@ class MarketStore {
   }
 
   private createAssetFromAssetId(assetId: AssetId): Asset {
-    return this.store.sdk.api.createType("Asset", assetId);
+    return (this.store.sdk.api as any).createType("Asset", assetId);
   }
 
   async getSpotPrice(
     inAsset: AssetId,
-    outAsset: AssetId
+    outAsset: AssetId,
   ): Promise<Decimal | null> {
     if (!this.poolExists) {
       return null;
     }
     const price = await this.pool.getSpotPrice(
       this.createAssetFromAssetId(inAsset),
-      this.createAssetFromAssetId(outAsset)
+      this.createAssetFromAssetId(outAsset),
     );
 
     return new Decimal(price.toNumber()).div(ZTG);
@@ -447,7 +478,7 @@ class MarketStore {
       100000000000,
       assetBalance,
       assetWeight,
-      0
+      0,
     ).toNumber();
 
     return new Decimal(price);
@@ -464,7 +495,7 @@ class MarketStore {
 
   async getPrizePool(): Promise<string> {
     const prizePool = await this.store.sdk.api.query.tokens.totalIssuance(
-      this.assets[0]
+      this.assets[0],
     );
     return new Decimal(prizePool.toString()).div(ZTG).toFixed(0);
   }
@@ -480,7 +511,7 @@ class MarketStore {
       }
     } else {
       const balancePromises = this.market.outcomeAssets.map((asset) =>
-        this.store.getBalance(asset)
+        this.store.getBalance(asset),
       );
 
       const [longBalance, shortBalance] = await Promise.all(balancePromises);
@@ -500,7 +531,7 @@ class MarketStore {
 
   async calcPrediction(): Promise<string> {
     const prices = await Promise.all(
-      this.marketOutcomes.map((outcome) => this.assetPriceInZTG(outcome.asset))
+      this.marketOutcomes.map((outcome) => this.assetPriceInZTG(outcome.asset)),
     );
     if (this.type === "categorical") {
       let [highestPrice, highestPriceIndex] = [new Decimal(0), 0];
@@ -566,6 +597,7 @@ class MarketStore {
       assets: computed,
       tags: computed,
       oracle: computed,
+      authority: computed,
       isOracle: computed,
       isCourt: computed,
       oracleReportPeriodPassed: computed,
@@ -577,7 +609,6 @@ class MarketStore {
       creation: computed,
       img: computed,
       endDateFormatted: computed,
-      endPassed: computed,
       reportedOutcome: computed,
       reportedOutcomeIndex: computed,
       reportedOutcomeName: computed,
@@ -626,28 +657,43 @@ class MarketStore {
   async refetchMarketData() {
     const data = await this.store.sdk.models.fetchMarketData(this.id);
 
-    if (data.marketType.isCategorical === false) {
-      throw new Error("Found non-categorical market.");
-    }
-
     this.initializeMarketData(data);
     this.nextChange();
   }
 
-  private pollSub: Subscription;
+  private pollSub?: Subscription;
   readonly pollInterval =
     Number(process.env.NEXT_PUBLIC_MARKET_POLL_INTERVAL_MS) ?? 12000;
 
   startPolling = () => {
+    if (this.pollSub != null) {
+      return;
+    }
     const obs = interval(this.pollInterval);
     this.pollSub = obs.subscribe(() => {
       this.refetchMarketData();
     });
   };
 
+  private changeDataUnsub?;
+
+  async subscribeToChainData() {
+    if (this.changeDataUnsub) {
+      return;
+    }
+    const { sdk } = this.store;
+    this.changeDataUnsub = await sdk.models.subscribeMarketChanges(this.id, (market) => {
+      this.initializeMarketData(market);
+      this.nextChange();
+    })
+  }
+
   unsubscribe() {
     if (this.poolChangeUnsub != null) {
       this.poolChangeUnsub();
+    }
+    if (this.changeDataUnsub != null) {
+      this.changeDataUnsub();
     }
     this.pollSub?.unsubscribe();
   }
@@ -667,7 +713,7 @@ class MarketStore {
           if (!data.isEmpty) {
             await this.updatePool();
           }
-        }
+        },
       );
   }
 

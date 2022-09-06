@@ -15,7 +15,7 @@ const FullSetButtons = observer(
       modalStore.openModal(
         <BuyFullSetModal marketStore={marketStore} />,
         "Buy Full Set",
-        modalOptions
+        modalOptions,
       );
     };
 
@@ -23,7 +23,7 @@ const FullSetButtons = observer(
       modalStore.openModal(
         <SellFullSetModal marketStore={marketStore} />,
         "Sell Full Set",
-        modalOptions
+        modalOptions,
       );
     };
 
@@ -49,7 +49,7 @@ const FullSetButtons = observer(
         )}
       </div>
     );
-  }
+  },
 );
 
 export default FullSetButtons;

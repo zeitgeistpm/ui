@@ -13,6 +13,7 @@ import { compareJSON } from "lib/util";
 import Slider from "../ui/Slider";
 import { AmountInput } from "../ui/inputs";
 import { useStore } from "lib/stores/Store";
+import { ZTG } from "lib/constants";
 
 const ToggleSlider: FC<{ className: string }> = ({ className }) => {
   return (
@@ -71,6 +72,7 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
       setByPercentage,
       sliderDisabled,
       ztgTransferAmount,
+      swapFee,
     } = state;
 
     const [boxAmount, setBoxAmount] = useState(() => {
@@ -93,6 +95,11 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
 
     const inputRef = useRef<HTMLInputElement>(null);
 
+    const boxAmountDecimal: Decimal =
+      boxAmount === "" || boxAmount == null
+        ? new Decimal(0)
+        : new Decimal(boxAmount);
+
     useEffect(() => {
       isFocused && inputRef?.current?.focus();
     }, [isFocused]);
@@ -109,7 +116,7 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
         <div className="px-ztg-16 h-ztg-30 flex items-center rounded-t-ztg-10 bg-sky-300 dark:bg-sky-700">
           <div
             className={
-              "w-ztg-33 text-ztg-14-150 uppercase font-kanit font-bold " +
+              "w-ztg-33 text-ztg-14-150 uppercase font-space font-bold " +
               `${state.type === "buy" ? "text-sunglow-2" : "text-red-crayola"}`
             }
           >
@@ -138,7 +145,7 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
                   className="w-ztg-20 h-ztg-20 rounded-full border-2 border-sky-600 flex-shrink-0"
                   style={{ background: `${state.assetColor}` }}
                 ></div>
-                <div className="uppercase font-kanit font-bold text-ztg-14-150 ml-ztg-8 mr-ztg-10 text-black dark:text-white">
+                <div className="uppercase font-space font-bold text-ztg-14-150 ml-ztg-8 mr-ztg-10 text-black dark:text-white">
                   {state.assetTicker}
                 </div>
                 <div className="font-lato font-bold text-ztg-12-150 ml-auto text-black dark:text-white">
@@ -180,6 +187,14 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
                   </div>
                 </div>
               </div>
+              <div className="w-full font-lato text-ztg-10-150 text-gray-dark-3 mt-ztg-5">
+                Trading Fee:{" "}
+                {boxAmountDecimal.mul(swapFee?.mul(ZTG) ?? 0).toString()}{" "}
+                {state.type === "sell"
+                  ? state.assetTicker.toUpperCase()
+                  : config.tokenSymbol}
+              </div>
+
               {sliderShown && (
                 <div className="h-ztg-43 w-full px-ztg-5 mt-ztg-20">
                   <Slider
@@ -215,7 +230,7 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
         </div>
       </div>
     );
-  }
+  },
 );
 
 const TradeSlipBox: FC<TradeSlipBoxProps> = observer((props) => {

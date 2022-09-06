@@ -13,7 +13,6 @@ import { observer } from "mobx-react";
 import { Minus, Plus, ArrowDownCircle, ArrowUpCircle } from "react-feather";
 import { Color, HuePicker as ColorPicker } from "react-color";
 
-import LabeledToggle from "components/ui/LabeledToggle";
 import { Input } from "components/ui/inputs";
 import { randomHexColor } from "lib/util";
 import { useEvent } from "lib/hooks";
@@ -24,6 +23,7 @@ import {
   Outcomes,
   OutcomeType,
   RangeOutcomeEntry,
+  YesNoOutcome,
 } from "lib/types/create-market";
 import { useStore } from "lib/stores/Store";
 import { AnimatePresence, motion } from "framer-motion";
@@ -43,6 +43,13 @@ export const createInitialMultipleOutcomeEntries =
       { name: "", ticker: "", color: randomHexColor() },
     ];
   };
+
+export const createYesNoOutcomeEntries = (): YesNoOutcome => {
+  return [
+    { name: "yes", ticker: "YES", color: "#0E992D" },
+    { name: "no", ticker: "NO", color: "#00A3FF" },
+  ];
+};
 
 export const addMultipleOutcomeEntry = (entries: MultipleOutcomeEntry[]) => {
   return [...entries, { name: "", ticker: "", color: randomHexColor() }];
@@ -92,6 +99,34 @@ export const OutcomeColor: FC<{
     </div>
   );
 });
+
+export const YesNoOutcomesField: FC<{ entries: YesNoOutcome }> = ({
+  entries,
+}) => {
+  return (
+    <div className="text-ztg-10-150 font-bold mb-ztg-8 text-sky-600 uppercase font-lato">
+      <div className="flex-ztg-basis-520 flex-grow flex-shrink mb-2">
+        OUTCOMES/TICKER
+      </div>
+      <div className="flex">
+        <div className="flex items-center mr-4">
+          <div
+            className="w-ztg-40 mr-2 h-ztg-40 flex-shrink-0 rounded-full center"
+            style={{ background: entries[0].color }}
+          ></div>
+          <div className="text-base">{entries[0].ticker}</div>
+        </div>
+        <div className="flex items-center">
+          <div
+            className="w-ztg-40 mr-2 h-ztg-40 flex-shrink-0 rounded-full center ml-ztg-13"
+            style={{ background: entries[1].color }}
+          ></div>
+          <div className="text-base">{entries[1].ticker}</div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const MultipleOutcomeRow: FC<{
   outcomeName: string;
@@ -148,7 +183,10 @@ export const MultipleOutcomeRow: FC<{
         transition={{ type: "spring", duration: 0.5 }}
         className="flex mb-ztg-10"
       >
-        <div className="flex-ztg-basis-520 pr-ztg-16 flex-grow flex-shrink">
+        <div
+          className="flex-ztg-basis-520 pr-ztg-16 flex-grow flex-shrink"
+          data-test="outComeInput"
+        >
           <Input
             type="text"
             ref={nameRef}
@@ -157,14 +195,17 @@ export const MultipleOutcomeRow: FC<{
             className="w-full"
             value={outcomeName}
             maxLength={outcomeSettings.outcomeNameMaxLength}
-            name={`outcomes.${name}-name`}
+            name={`outcomes.${nameFieldName}`}
             autoComplete="off"
             onChange={(e) => {
               onNameChange(e.target.value);
             }}
           />
         </div>
-        <div className="flex-ztg-basis-85 pr-ztg-15 flex-grow">
+        <div
+          className="flex-ztg-basis-85 pr-ztg-15 flex-grow"
+          data-test="outComeTicker"
+        >
           <Input
             type="text"
             ref={tickerRef}
@@ -173,7 +214,7 @@ export const MultipleOutcomeRow: FC<{
             maxLength={outcomeSettings.tickerMaxLength}
             placeholder="ABC"
             className="w-full"
-            name={`outcomes.${name}-ticker`}
+            name={`outcomes.${tickerFieldName}`}
             autoComplete="off"
             onChange={(e) => {
               onTickerChange(e.target.value);
@@ -191,7 +232,7 @@ export const MultipleOutcomeRow: FC<{
         )}
       </motion.div>
     );
-  }
+  },
 );
 
 export const MultipleOutcomesField: FC<{
@@ -238,7 +279,7 @@ export const MultipleOutcomesField: FC<{
               outcomeName={entry.name}
               color={entry.color}
               ticker={entry.ticker}
-              key={`multipleOutcomes${idx}`}
+              key={`multipleOutcomes-${idx}`}
               onRemove={() => removeOutcome(idx)}
               onNameChange={(v) => changeName(idx, v)}
               onTickerChange={(v) => changeTicker(idx, v)}
@@ -291,6 +332,7 @@ export const RangeOutcomeField: FC<{
 
   useEffect(() => {
     createFields();
+
     return () => removeFields();
   }, []);
 
@@ -342,6 +384,7 @@ export const RangeOutcomeField: FC<{
       <div className="flex">
         <div className="flex-ztg-basis-248 flex-grow flex-shrink pr-ztg-16">
           <Input
+            data-test="minRangeValueInput"
             name={`outcomes.${namePrefix}-short`}
             ref={shortRef}
             form={form}
@@ -358,6 +401,7 @@ export const RangeOutcomeField: FC<{
         </div>
         <div className="flex-ztg-basis-248 flex-grow flex-shrink pr-ztg-16">
           <Input
+            data-test="maxRangeValueInput"
             name={`outcomes.${namePrefix}-long`}
             ref={longRef}
             form={form}
@@ -374,6 +418,7 @@ export const RangeOutcomeField: FC<{
         </div>
         <div className="flex-ztg-basis-85 pr-ztg-15">
           <Input
+            data-test="rangeTickerInput"
             type="text"
             name={`outcomes.${namePrefix}-ticker`}
             ref={tickerRef}
@@ -403,6 +448,49 @@ export const RangeOutcomeField: FC<{
   );
 });
 
+const OutcomeTypeSelection: FC<{
+  value: OutcomeType;
+  onChange: (type: OutcomeType) => void;
+}> = ({ onChange, value }) => {
+  return (
+    <div className="flex text-white mb-4">
+      <div
+        className={`cursor-pointer border-1 ${
+          value === "yesno"
+            ? "border-gray-600 dark:border-white"
+            : "border-sky-200 dark:border-sky-800"
+        } py-2 px-4 mr-3 rounded-3xl ztg-transition
+        bg-sky-200 dark:bg-sky-800 text-sky-600`}
+        onClick={() => onChange("yesno")}
+      >
+        Yes/No
+      </div>
+      <div
+        className={`cursor-pointer border-1 ${
+          value === "multiple"
+            ? "border-gray-600 dark:border-white"
+            : "border-sky-200 dark:border-sky-800"
+        } py-2 px-4 mr-3 rounded-3xl ztg-transition
+        bg-sky-200 dark:bg-sky-800 text-sky-600`}
+        onClick={() => onChange("multiple")}
+      >
+        Options
+      </div>
+      <div
+        className={`cursor-pointer border-1 ${
+          value === "range"
+            ? "border-gray-600 dark:border-white"
+            : "border-sky-200 dark:border-sky-800"
+        } py-2 px-4 mr-3 rounded-3xl ztg-transition
+        bg-sky-200 dark:bg-sky-800 text-sky-600`}
+        onClick={() => onChange("range")}
+      >
+        Range
+      </div>
+    </div>
+  );
+};
+
 export interface OutcomesFieldProps {
   type: OutcomeType;
   value?: Outcomes;
@@ -416,6 +504,8 @@ const OutcomesField: FC<OutcomesFieldProps> = observer(
     const initOutcomesForType = (t: OutcomeType) => {
       if (t === "multiple") {
         onChange(t, createInitialMultipleOutcomeEntries());
+      } else if (t === "yesno") {
+        onChange(t, createYesNoOutcomeEntries());
       } else {
         onChange(t, createInitialRangeOutcomeEntry());
       }
@@ -425,9 +515,20 @@ const OutcomesField: FC<OutcomesFieldProps> = observer(
       initOutcomesForType(type);
     }, []);
 
+    /// need this because the form wouldn't revalidate when outcome type changes
+    const [prevType, setPrevType] = useState(type);
+    useEffect(() => {
+      if (type === prevType) {
+        return;
+      }
+      form.$("outcomes").set("value", {});
+      form.validate();
+      setPrevType(type);
+    }, [type])
+
     const changeMultipleOutcomeEntry = (
       idx: number,
-      v: MultipleOutcomeEntry
+      v: MultipleOutcomeEntry,
     ) => {
       if (isMultipleOutcomeEntries(value)) {
         onChange(type, [...value.slice(0, idx), v, ...value.slice(idx + 1)]);
@@ -448,20 +549,14 @@ const OutcomesField: FC<OutcomesFieldProps> = observer(
 
     return (
       <FormContext.Provider value={form}>
-        {process.env.NEXT_PUBLIC_SHOW_SCALAR_MARKETS === "true" ? (
-          <LabeledToggle
-            side={type === "multiple" ? "left" : "right"}
-            onChange={(side) => {
-              initOutcomesForType(side === "left" ? "multiple" : "range");
-            }}
-            leftLabel="Multiple outcomes"
-            rightLabel="Range of outcomes"
-            className="mb-ztg-20"
-          />
-        ) : (
-          <></>
-        )}
+        <div>
+          <OutcomeTypeSelection value={type} onChange={initOutcomesForType} />
+        </div>
+
         <div className="flex flex-col">
+          {type === "yesno" && value && (
+            <YesNoOutcomesField entries={value as YesNoOutcome} />
+          )}
           {type === "multiple" && value && (
             <MultipleOutcomesField
               entries={isMultipleOutcomeEntries(value) && value}
@@ -480,7 +575,7 @@ const OutcomesField: FC<OutcomesFieldProps> = observer(
         </div>
       </FormContext.Provider>
     );
-  }
+  },
 );
 
 export default OutcomesField;

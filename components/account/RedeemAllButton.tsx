@@ -3,7 +3,7 @@ import Decimal from "decimal.js";
 import MarketStore from "lib/stores/MarketStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
-import { extrinsicCallback } from "lib/util/tx";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 
@@ -35,21 +35,21 @@ const RedeemAllButton = observer(
               balance: await marketStore.calcWinnings(),
               marketStore: marketStore,
             };
-          })
+          }),
         );
 
         setBalances(winningBalances);
         const total = winningBalances.reduce(
           (total, balance) => total + (balance?.balance?.toNumber() ?? 0),
-          0
+          0,
         );
 
         setTotalWinnings(total);
       })();
     }, [marketStores]);
 
-    const handleClick = async () => {
-      const { signer } = wallets.getActiveSigner() as ExtSigner;
+    const handleClick = () => {
+      const signer = wallets.getActiveSigner() as ExtSigner;
 
       const transactions = [];
 
@@ -57,15 +57,16 @@ const RedeemAllButton = observer(
         if (balance?.balance) {
           transactions.push(
             store.sdk.api.tx.predictionMarkets.redeemShares(
-              balance.marketStore.id
-            )
+              balance.marketStore.id,
+            ),
           );
         }
       });
 
-      await store.sdk.api.tx.utility.batchAll(transactions).signAndSend(
-        wallets.activeAccount.address,
-        { signer },
+      const tx = store.sdk.api.tx.utility.batchAll(transactions);
+      signAndSend(
+        tx,
+        signer,
         extrinsicCallback({
           notificationStore,
           successCallback: () => {
@@ -79,10 +80,10 @@ const RedeemAllButton = observer(
           failCallback: ({ index, error }) => {
             notificationStore.pushNotification(
               store.getTransactionError(index, error),
-              { type: "Error" }
+              { type: "Error" },
             );
           },
-        })
+        }),
       );
     };
     return (
@@ -100,7 +101,7 @@ const RedeemAllButton = observer(
         )}
       </>
     );
-  }
+  },
 );
 
 export default RedeemAllButton;

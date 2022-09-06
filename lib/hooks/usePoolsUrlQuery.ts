@@ -11,7 +11,7 @@ import { merge, last } from "lodash";
 import { DeepPartial } from "lib/types/DeepPartial";
 
 export type PoolsListQueryUpdater = (
-  update: DeepPartial<PoolsListQuery>
+  update: DeepPartial<PoolsListQuery>,
 ) => void;
 
 export const usePoolsListQuery = (): PoolsListQuery & {
@@ -29,7 +29,7 @@ export const usePoolsListQuery = (): PoolsListQuery & {
         query: toString(newQuery),
       });
     },
-    [rawQuery]
+    [rawQuery],
   );
 
   return {
@@ -50,7 +50,7 @@ const paginationKeys = Object.keys(defaultQueryState.pagination);
 const toString = (query: PoolsListQuery) => {
   return [...Object.entries(query.pagination)]
     .map(([key, value]) =>
-      typeof value !== "undefined" ? `${key}=${value}` : null
+      typeof value !== "undefined" ? `${key}=${value}` : null,
     )
     .filter((queryString) => queryString !== null)
     .join("&");

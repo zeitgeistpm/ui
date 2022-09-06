@@ -6,7 +6,7 @@ import {
   Subscription,
 } from "rxjs";
 import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
-import { computed, makeObservable, observable, runInAction, when } from "mobx";
+import { makeAutoObservable, runInAction, when } from "mobx";
 import MarketStore from "./MarketStore";
 import Store, { useStore } from "./Store";
 import { MarketsOrderBy, MarketsOrdering } from "@zeitgeistpm/sdk/dist/types";
@@ -39,12 +39,7 @@ class MarketsStore {
 
   constructor(public store: Store) {
     this.sdk = this.store.sdk;
-    makeObservable(this, {
-      marketIds: observable.ref,
-      markets: observable.ref,
-      pools: observable.ref,
-      loaded: computed,
-    });
+    makeAutoObservable(this, {}, { deep: false });
   }
 
   private clearMarkets() {
@@ -104,6 +99,7 @@ class MarketsStore {
 
       await marketStore.initializeMarketData(marketData);
       marketStore.startPolling();
+      marketStore.subscribeToChainData();
       this.subscribeToMarketChanges(marketStore);
       return marketStore;
     } else {
@@ -113,15 +109,6 @@ class MarketsStore {
       }
       return market;
     }
-  }
-
-  private unsubscribeMarket(marketId: number) {
-    if (!this.subscriptions.hasOwnProperty(marketId)) {
-      return;
-    }
-    const subs = this.subscriptions[marketId];
-    subs.forEach((s) => s.unsubscribe());
-    this.subscriptions[marketId] = undefined;
   }
 
   private updateMarkets(market: MarketStore) {
@@ -153,11 +140,23 @@ class MarketsStore {
     let count: number;
 
     if (myMarketsOnly) {
+      const filtersOff =
+        filter.creator === false &&
+        filter.oracle === false &&
+        filter.hasAssets === false;
+
+      const oracle =
+        filtersOff || filter.oracle ? activeAccount?.address : undefined;
+      const creator =
+        filtersOff || filter.creator ? activeAccount?.address : undefined;
+      const assetOwner =
+        filtersOff || filter.hasAssets ? activeAccount?.address : undefined;
+
       const filterBy = {
-        oracle: filter.oracle ? activeAccount.address : "",
-        creator: filter.creator ? activeAccount.address : "",
+        oracle,
+        creator,
+        assetOwner,
         liquidityOnly: false,
-        assetOwner: filter.hasAssets ? activeAccount.address : undefined,
       };
       ({ result: marketsData, count } =
         await this.store.sdk.models.filterMarkets(filterBy, {
@@ -181,35 +180,31 @@ class MarketsStore {
             pageNumber: 1,
             ordering: sorting.order as MarketsOrdering,
             orderBy,
-          }
+          },
         ));
     }
 
-    const markets: MarketStore[] = [];
+    let markets: MarketStore[] = [];
 
+    let order = [];
     for (const data of marketsData) {
-      const marketStore = new MarketStore(this.store, data.marketId);
-      marketStore.initializeMarketData(data);
-      markets.push(marketStore);
+      const id = data.marketId;
+      markets = [...markets, await this.getMarket(id)];
+      order = [...order, id];
     }
 
-    runInAction(() => {
-      this.markets = markets.reduce((markets, market) => {
-        return {
-          ...markets,
-          [market.id]: market,
-        };
-      }, {});
-
-      this.order = markets
-        .map((market) => market.id)
-        .sort()
-        .reverse();
-
-      this.count = count;
-    });
+    this.setCount(count);
+    this.setOrder(order);
 
     return { markets, count };
+  }
+
+  setCount(count: number) {
+    this.count = count;
+  }
+
+  setOrder(order: number[]) {
+    this.order = order;
   }
 }
 

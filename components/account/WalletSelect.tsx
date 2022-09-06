@@ -4,45 +4,39 @@ import Wallets, { WalletErrorMessage } from "lib/wallets";
 import { Wallet } from "lib/wallets/types";
 import { flowResult } from "mobx";
 import { observer } from "mobx-react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Download } from "react-feather";
 
 const WalletSelect = observer(() => {
   const store = useStore();
   const { wallets } = store;
-  const { errorMessages } = wallets;
+  const { errorMessages, enablingInProgress } = wallets;
   const accountModals = useAccountModals();
-  const [selectedWallet, setSelectedWallet] = useState<Wallet | undefined>();
 
-  const onWalletClick = (wallet: Wallet, hasError: boolean) => {
+  const selectWallet = async (wallet: Wallet) => {
+    wallets.stopEnableLoop();
     if (!wallet.installed) {
       window.open(wallet.installUrl);
-    } else if (!hasError) {
-      setSelectedWallet(wallet);
+    } else {
+      try {
+        await flowResult(
+          wallets.connectWallet(wallet.extensionName, true),
+        );
+
+        if (!wallets.faultyConnection) {
+          accountModals.openAccontSelect();
+        }
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
   useEffect(() => {
-    if (!selectedWallet) {
-      return;
-    }
-
-    wallets.disconnectWallet();
-
-    const walletConnect = flowResult(
-      wallets.connectWallet(selectedWallet.extensionName),
-    );
-
-    walletConnect.then((errors?: WalletErrorMessage[]) => {
-      if (errors == null) {
-        accountModals.openAccontSelect();
-      } else {
-        setSelectedWallet(undefined);
-      }
-    });
-
-    return () => walletConnect.cancel();
-  }, [selectedWallet]);
+    return () => {
+      wallets.stopEnableLoop();
+    };
+  }, [enablingInProgress]);
 
   return (
     <div className="flex flex-col">
@@ -55,12 +49,11 @@ const WalletSelect = observer(() => {
           <div key={wallet.extensionName}>
             <div
               className={
-                "flex flex-row h-ztg-64 items-center rounded-ztg-12 bg-sky-100 dark:bg-sky-700 px-ztg-12 " +
-                (idx < 2 ? "mb-ztg-12 " : "") +
-                (!hasError ? "cursor-pointer" : "")
+                "flex flex-row h-ztg-64 items-center rounded-ztg-12 bg-sky-100 dark:bg-sky-700 px-ztg-12 cursor-pointer " +
+                (idx < 2 ? "mb-ztg-12 " : "")
               }
               onClick={() => {
-                onWalletClick(wallet, hasError);
+                selectWallet(wallet);
               }}
             >
               <img

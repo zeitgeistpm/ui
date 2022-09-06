@@ -11,6 +11,7 @@ import {
 import { calcOutGivenIn, calcSpotPrice } from "../math";
 import { JSONObject, ztgAsset } from "../types";
 import Store, { useStore } from "./Store";
+import { ZTG } from "lib/constants";
 
 export type OutcomeOption = {
   label: string;
@@ -84,7 +85,7 @@ export default class ExchangeStore {
   }
 
   getActiveOutcomeByAssetId(
-    assetId: AssetId | string
+    assetId: AssetId | string,
   ): MarketOutcome | undefined {
     const assetIdStr =
       typeof assetId === "string" ? assetId : JSON.stringify(assetId);
@@ -137,7 +138,7 @@ export default class ExchangeStore {
         async () => {
           await this.updateBalances();
           await this.updateSpotPrice();
-        }
+        },
       );
     } catch (e) {}
 
@@ -190,7 +191,7 @@ export default class ExchangeStore {
   async updateOutcomeBalance() {
     const outcomeOptions = [...this.outcomeOptions];
     const outcomeIndex = outcomeOptions.findIndex(
-      (o) => o.value === this.outcomeOption.value
+      (o) => o.value === this.outcomeOption.value,
     );
     const balance = await this.store.getBalance(this.outcome.asset);
 
@@ -232,7 +233,7 @@ export default class ExchangeStore {
       this.ztgPoolBalance.toString(),
       this.ztgWeight,
       this.amount?.toString() || "0",
-      this.swapFee
+      this.swapFee.div(ZTG),
     );
   }
 
@@ -271,7 +272,7 @@ export default class ExchangeStore {
     const market = await this.store.markets.getMarket(this.marketId);
     const balance = await this.store.getPoolBalance(
       market.pool,
-      this.outcome.asset
+      this.outcome.asset,
     );
 
     const ztgBalance = await this.store.getPoolBalance(market.pool, ztgAsset);
@@ -300,7 +301,7 @@ export default class ExchangeStore {
       this.ztgWeight,
       this.poolBalance,
       this.outcomeWeight,
-      this.swapFee
+      this.swapFee.div(ZTG),
     );
     runInAction(() => {
       this.spotPrice = price;

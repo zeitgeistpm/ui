@@ -45,13 +45,13 @@ const AssetPage: NextPage = observer(() => {
 
   const marketId = Number(router.query.marketId);
   const assetId: AssetId = JSON.parse(
-    router.query.assetId as string
+    router.query.assetId as string,
   ) as AssetId;
 
   const getAssetAmountForAddress = async (address: string) => {
     const assetData = await store.sdk.api.query.tokens.accounts(
       address,
-      assetId
+      assetId,
     );
     const assetDataJson = assetData.toJSON();
     //@ts-ignore
@@ -65,13 +65,13 @@ const AssetPage: NextPage = observer(() => {
       paramsForBlocksArray(
         store.blockNumber.toNumber() - 219000,
         store.blockNumber.toNumber(),
-        2000 // ~every 200 mins
+        2000, // ~every 200 mins
       );
 
     const blocks = createBlocksArray(
       startingBlockNumber,
       blockResolution,
-      store.blockNumber.toNumber()
+      store.blockNumber.toNumber(),
     );
 
     const startingTime =
@@ -81,7 +81,7 @@ const AssetPage: NextPage = observer(() => {
     (async () => {
       if (store.wallets.activeAccount?.address) {
         const amount = await getAssetAmountForAddress(
-          store.wallets.activeAccount.address
+          store.wallets.activeAccount.address,
         );
         setAssetAmount(amount);
       }
@@ -95,12 +95,12 @@ const AssetPage: NextPage = observer(() => {
       const poolId = market.pool.poolId;
       if (poolId) {
         const dateOneWeekAgo = new Date(
-          new Date().getTime() - DAY_SECONDS * 28 * 1000
+          new Date().getTime() - DAY_SECONDS * 28 * 1000,
         ).toISOString();
         const priceHistory = await store.sdk.models.getAssetPriceHistory(
           marketId,
           asset,
-          dateOneWeekAgo
+          dateOneWeekAgo,
         );
 
         const chartData = priceHistory.map((history) => {
@@ -118,10 +118,10 @@ const AssetPage: NextPage = observer(() => {
         const percentageChange = 0;
 
         setChange24hrs(
-          `${percentageChange > 0 ? "+" : ""}${percentageChange}%`
+          `${percentageChange > 0 ? "+" : ""}${percentageChange}%`,
         );
         const totalSupply = await store.sdk.api.query.tokens.totalIssuance(
-          assetId
+          assetId,
         );
 
         setTotalValue(Math.round(Number(totalSupply) / 10000000000));
@@ -132,11 +132,11 @@ const AssetPage: NextPage = observer(() => {
   const calculate24hrChange = (
     blockTime: number,
     blockResolution: number,
-    priceHistory: { v: number; t: number }[]
+    priceHistory: { v: number; t: number }[],
   ) => {
     const timePerBlock = blockTime * blockResolution;
     const blockArrayDistance24hrsAgo = Math.round(
-      (24 * 60 * 60) / timePerBlock
+      (24 * 60 * 60) / timePerBlock,
     );
     const currentPrice = priceHistory[priceHistory.length - 1].v;
     let Hr24AgoId = priceHistory.length - 1 - blockArrayDistance24hrsAgo;
@@ -167,7 +167,7 @@ const AssetPage: NextPage = observer(() => {
           <div className="text-ztg-10-150 font-lato uppercase font-bold text-sky-600 mb-ztg-4">
             Asset
           </div>
-          <div className="flex items-center justify-center h-ztg-38 bg-sky-300 text-black dark:bg-sky-700 dark:text-white  px-ztg-10 font-kanit text-ztg-22-120 font-bold rounded-ztg-5">
+          <div className="flex items-center justify-center h-ztg-38 bg-sky-300 text-black dark:bg-sky-700 dark:text-white  px-ztg-10 font-space text-ztg-22-120 font-bold rounded-ztg-5">
             <div
               className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2"
               style={{ background: assetColor }}

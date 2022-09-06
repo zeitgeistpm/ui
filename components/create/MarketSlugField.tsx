@@ -33,7 +33,7 @@ const MarketSlugField: FC<MarketSlugProps> = ({
       window.alert(
         `Image size greater than ${
           imageMaxSize / 1000
-        } kilobytes is not allowed`
+        } kilobytes is not allowed`,
       );
       return;
     }
@@ -67,6 +67,7 @@ const MarketSlugField: FC<MarketSlugProps> = ({
         </div>
       </div>
       <Input
+        data-test="slugFieldInput"
         form={form}
         type="text"
         ref={marketSlug}

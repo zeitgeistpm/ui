@@ -29,54 +29,61 @@ const scrollRestoration = makeAutoObservable({
   },
 });
 
-const MarketsFilters = observer(() => {
-  const query = useMarketsUrlQuery();
+const MarketsFilters = observer(
+  ({ onFilterClick }: { onFilterClick: () => void }) => {
+    const query = useMarketsUrlQuery();
 
-  const userStore = useUserStore();
+    const userStore = useUserStore();
 
-  if (userStore.graphQlEnabled === false) {
-    return null;
-  }
+    if (userStore.graphQlEnabled === false) {
+      return null;
+    }
 
-  return (
-    <>
-      {query.searchText && <MarketsSearchInfo searchText={query.searchText} />}
+    return (
+      <>
+        {query.searchText && (
+          <MarketsSearchInfo searchText={query.searchText} />
+        )}
 
-      {query.tag && <MarketsSearchInfo searchText={query.tag} />}
+        {query.tag && <MarketsSearchInfo searchText={query.tag} />}
 
-      {!query.myMarketsOnly && (
-        <MainFilters
-          filters={query.filter}
-          sortOptions={query.sorting}
-          onFiltersChange={(filter) => {
-            query.updateQuery({ filter, pagination: { page: 1 } });
-          }}
-          onSortOptionChange={(sorting) => {
-            query.updateQuery({ sorting });
-          }}
-        />
-      )}
+        {!query.myMarketsOnly && (
+          <MainFilters
+            filters={query.filter}
+            sortOptions={query.sorting}
+            onFiltersChange={(filter) => {
+              onFilterClick();
+              query.updateQuery({ filter, pagination: { page: 1 } });
+            }}
+            onSortOptionChange={(sorting) => {
+              query.updateQuery({ sorting });
+            }}
+          />
+        )}
 
-      {query.myMarketsOnly && (
-        <MyFilters
-          filters={query.filter}
-          onFiltersChange={(filter) => {
-            query.updateQuery({
-              filter,
-              pagination: { page: 1 },
-            });
-          }}
-          onSortOptionChange={(sorting) => {
-            query.updateQuery({ sorting });
-          }}
-        />
-      )}
-    </>
-  );
-});
+        {query.myMarketsOnly && (
+          <MyFilters
+            filters={query.filter}
+            onFiltersChange={(filter) => {
+              onFilterClick();
+              query.updateQuery({
+                filter,
+                pagination: { page: 1 },
+              });
+            }}
+            onSortOptionChange={(sorting) => {
+              query.updateQuery({ sorting });
+            }}
+          />
+        )}
+      </>
+    );
+  },
+);
 
 const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const store = useStore();
+  const { wallets } = store;
   const [initialLoad, setInitialLoad] = useState(true);
 
   const query = useMarketsUrlQuery();
@@ -110,7 +117,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     debounce(() => {
       scrollRestoration.set(scrollTop);
     }, 150),
-    [scrollTop]
+    [scrollTop],
   );
 
   useLayoutEffect(() => {
@@ -120,6 +127,9 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   }, [initialLoad, scrollRestoration.scrollTop]);
 
   useEffect(() => {
+    if (pageLoaded !== true) {
+      return;
+    }
     if (hasNext && hasScrolledToEnd) {
       query.updateQuery({
         pagination: { page: query.pagination.page + 1 },
@@ -134,7 +144,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       setPageLoaded(true);
       setInitialLoad(false);
     });
-  }, [debouncedQueryChange]);
+  }, [debouncedQueryChange, wallets.activeAccount]);
 
   useEffect(() => {
     if (query.pagination.page > prevPage) {
@@ -148,20 +158,27 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
 
   return (
     <div className={"pt-ztg-46 " + className} ref={listRef}>
-      <h3 className="mb-ztg-40 font-kanit text-ztg-28-120 font-semibold">
+      <h3 className="mb-ztg-40 font-space text-[24px] font-semibold">
         <span className="mr-4">
           {query.myMarketsOnly ? "My Markets" : "All Markets"}
         </span>
         {loadingNextPage || (!pageLoaded && <Loader size={8} />)}
       </h3>
       <div id="marketsList">
-        <MarketsFilters />
+        <MarketsFilters
+          onFilterClick={() => {
+            setPageLoaded(false);
+          }}
+        />
       </div>
       <div className="mb-ztg-38">
         {markets?.length > 0 &&
-          markets.map((market) => (
-            <Card marketStore={market} key={market.id} />
-          ))}
+          markets.map((market) => {
+            if (market == null) {
+              return;
+            }
+            return <Card marketStore={market} key={`market-${market.id}`} />;
+          })}
 
         {loadingNextPage && (
           <MarketSkeletons pageSize={query.pagination.pageSize} />
@@ -184,19 +201,17 @@ const MarketsSearchInfo = observer(({ searchText }: { searchText: string }) => {
 
   return (
     <div className="flex my-ztg-30 h-ztg-34">
-      <h6 className="font-kanit font-bold text-ztg-28-120" id="marketsHead">
+      <h6 className="font-space  text-ztg-[24px]" id="marketsHead">
         {`Search results for: "${searchText}"`}
       </h6>
-      <div className="h-full flex items-center">
-        <div className="w-ztg-24 h-ztg-24 rounded-full bg-sky-400 dark:bg-black center ml-ztg-15">
-          <X
-            size={24}
-            className="cursor-pointer text-sky-600"
-            onClick={() => {
-              router.push("/", null, { shallow: true });
-            }}
-          />
-        </div>
+      <div className="w-ztg-24 h-ztg-24 rounded-full bg-sky-400 dark:bg-black center ml-ztg-15">
+        <X
+          size={24}
+          className="cursor-pointer text-sky-600"
+          onClick={() => {
+            router.push("/", null, { shallow: true });
+          }}
+        />
       </div>
     </div>
   );

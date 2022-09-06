@@ -1,55 +1,43 @@
 class createForm {
   elements = {
     createMarketForm: () => cy.get('[data-test="createMarketForm"]'),
-    createMarketHeader: () => cy.contains("h2", "Create Market"),
-    marketNameLabel: () => cy.contains("div", "1. Market name"),
-    slugField: () => cy.xpath('//input[@name="slug"]'),
-    questionLabel: () => cy.contains("div", "2. Market name / Question *"),
-    questionField: () => cy.xpath('//input[@name="question"]'),
+    createMarketHeader: () => cy.get('[data-test="createMarketHeader"]'),
+    marketNameLabel: () => cy.get('[data-test="1. Market name"]'),
+    slugField: () => cy.get('[data-test="slugFieldInput"]'),
+    questionLabel: () => cy.get('[data-test="2. Market name / Question *"]'),
+    questionField: () => cy.get('[data-test="marketQuestionInput"]'),
     tagChoices: () => cy.get('[data-test="tagChoices"]'),
-    tagNorthAmerica: () => cy.contains("div", "North America"),
-    marketEndsLabel: () => cy.contains("div", "3. Market ends *"),
+    tagNorthAmerica: () => cy.get('[data-test="tag"]'),
+    marketEndsLabel: () => cy.get('[data-test="3. Market ends *"]'),
     marketEndsOption: () => cy.get('[data-test="marketEndField"]'),
-    Enddate: () => cy.xpath('//span[normalize-space()="End Date"]'),
-    Endblock: () => cy.get('[data-test="blockButton"]'),
-    calendericon: () =>
-      cy.xpath(
-        '//div[@class="w-ztg-40 h-ztg-40 border-l-1 border-sky-600 bg-sky-200 dark:bg-black flex-shrink-0 rounded-r-ztg-5 center cursor-pointer"]//*[name()="svg"]'
-      ),
+    Enddate: () => cy.get('[data-test="marketEndTypeSwitch"]'),
+    Endblock: () => cy.get('[data-test="marketEndTypeSwitch"]'),
+    calendericon: () => cy.get('[data-test="calendarIcon"]'),
     currentDate: () => cy.get(".rdtToday"),
-    outcomesLabel: () => cy.contains("div", "4. Outcomes *"),
-    multipleOutcomes: () => cy.contains("div", "Multiple outcomes"),
-    outcomesSwitch: () =>
-      cy.contains("div", "Multiple outcomes").siblings().eq(0),
-    rangeOfOutcomes: () => cy.contains("div", "Range of outcomes"),
-    multipleOutcomesInput0: () =>
-      cy.xpath('//input[@name="outcomes.multiple-0-name"]'),
-    multipleOutcomesTicker0: () =>
-      cy.xpath('//input[@name="outcomes.multiple-0-ticker"]'),
-    multipleOutcomesInput1: () =>
-      cy.xpath('//input[@name="outcomes.multiple-1-name"]'),
-    multipleOutcomesTicker1: () =>
-      cy.xpath('//input[@name="outcomes.multiple-1-ticker"]'),
-    rangeOfOutcomeMinInput: () =>
-      cy.xpath('//input[@name="outcomes.range-short"]'),
-    rangeOfOutcomeMaxInput: () =>
-      cy.xpath('//input[@name="outcomes.range-long"]'),
-    rangeOfOutcomeTicker: () =>
-      cy.xpath('//input[@name="outcomes.range-ticker"]'),
-    oracleLabel: () => cy.contains("div", "5. Oracle *"),
-    oracleInput: () => cy.xpath('//input[@name="oracle"]'),
-    marketDescriptionLabel: () => cy.contains("div", "6. Market Description"),
-    marketDescriptionTextbox: () => cy.xpath('//textarea[@name="description"]'),
-    permissionlessLabel: () => cy.contains("div", "Permissionless"),
-    permissionlessSwitch: () =>
-      cy.contains("div", "Permissionless").siblings().eq(0),
-    advisedLabel: () => cy.contains("div", "Advised"),
-    liquiditypoolon: () => cy.xpath('//div[normalize-space()="on"]'),
-    liquiditypooloff: () => cy.xpath('//div[normalize-space()="off"]'),
+    outcomesLabel: () => cy.get('[data-test="4. Outcomes *"]'),
+    multipleOutcomes: () => cy.get('[data-test="Multiple outcomes"]'),
+    outcomesSwitch: () => cy.get('[data-test="switchButton"]'),
+    rangeOfOutcomes: () => cy.get('[data-test="Range of outcomes"]'),
+    multipleOutcomesInput0: () => cy.get('[data-test="outComeInput"]'),
+    multipleOutcomesTicker0: () => cy.get('[data-test="outComeTicker"]'),
+    multipleOutcomesInput1: () => cy.get('[data-test="outComeInput"]'),
+    multipleOutcomesTicker1: () => cy.get('[data-test="outComeTicker"]'),
+    rangeOfOutcomeMinInput: () => cy.get('[data-test="minRangeValueInput"]'),
+    rangeOfOutcomeMaxInput: () => cy.get('[data-test="maxRangeValueInput"]'),
+    rangeOfOutcomeTicker: () => cy.get('[data-test="rangeTickerInput"]'),
+    oracleLabel: () => cy.get('[data-test="5. Oracle *"]'),
+    oracleInput: () => cy.get('[data-test="oracleInput"]'),
+    marketDescriptionLabel: () => cy.get('[data-test="6. Market Description"]'),
+    marketDescriptionTextbox: () =>
+      cy.get('[data-test="marketDescriptionInput"]'),
+    permissionlessLabel: () => cy.get('[data-test="Permissionless"]'),
+    permissionlessSwitch: () => cy.get('[data-test="switchButton"]'),
+    advisedLabel: () => cy.get('[data-test="Advised"]'),
+    liquiditypoolon: () => cy.get('[data-test="liquidityButton"]'),
+    liquiditypooloff: () => cy.get('[data-test="liquidityButton"]'),
     createMarketButton: () => cy.get("[data-test=createMarketSubmitButton]"),
-    totalCost: () => cy.contains("span", "0.75"),
-    successMessage: () => cy.contains("span", "Success!"),
-    infoMessage: () => cy.contains("span", "Info!"),
+    totalCost: () => cy.get('[data-test="totalCost"]'),
+    notificationMessage: () => cy.get('[data-test="notificationMessage"]'),
   };
 }
 module.exports = new createForm();

@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { get24HrPriceChange } from "lib/util/market";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useUserStore } from "lib/stores/UserStore";
+import { calcTotalAssetPrice } from "lib/util/pool";
 
 const MarketTable = observer(
   ({ marketStore }: { marketStore: MarketStore }) => {
@@ -28,7 +29,7 @@ const MarketTable = observer(
     useEffect(() => {
       (async () => {
         const dateOneWeekAgo = new Date(
-          new Date().getTime() - DAY_SECONDS * 7 * 1000
+          new Date().getTime() - DAY_SECONDS * 7 * 1000,
         ).toISOString();
 
         const poolId = marketStore.pool.poolId;
@@ -42,7 +43,7 @@ const MarketTable = observer(
               asset.isCategoricalOutcome
                 ? asset.asCategoricalOutcome[1].toNumber()
                 : asset.asScalarOutcome[1].toString(),
-              dateOneWeekAgo
+              dateOneWeekAgo,
             );
           });
 
@@ -74,12 +75,15 @@ const MarketTable = observer(
       })();
     }, [marketStore, marketStore.pool]);
 
-    const tableData: TableData[] = marketStore.marketOutcomes
-      .filter((o) => o.metadata !== "ztg")
-      .map((outcome, index) => {
-        const ticker = outcome.metadata["ticker"];
-        const color = outcome.metadata["color"] || "#ffffff";
-        const name = outcome.metadata["name"];
+    const totalAssetPrice = calcTotalAssetPrice(pool);
+
+    const tableData: TableData[] = marketStore.outcomeAssetIds.map(
+      (assetId, index) => {
+        const metadata = marketStore.outcomesMetadata[index];
+        const ticker = metadata["ticker"];
+        const color = metadata["color"] || "#ffffff";
+        const name = metadata["name"];
+
         return {
           id: index,
           token: {
@@ -89,16 +93,16 @@ const MarketTable = observer(
           outcome: name,
           history: prices?.[index],
           marketPrice: {
-            value: pool?.assets[index].price,
+            value: pool?.assets?.[index]?.price ?? 0,
             usdValue: 0,
           },
-          pre: Math.round((pool?.assets[index].price ?? 0) * 100),
+          pre: Math.round((pool?.assets?.[index]?.price ?? 0) * 100),
           change24hr: priceHistories?.[index]
             ? get24HrPriceChange(priceHistories[index])
             : 0,
           buttons: (
             <AssetActionButtons
-              assetId={outcome.asset}
+              assetId={assetId}
               marketId={marketStore.id}
               assetColor={color}
               assetTicker={ticker}
@@ -149,6 +153,6 @@ const MarketTable = observer(
         />
       </div>
     );
-  }
+  },
 );
 export default MarketTable;

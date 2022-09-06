@@ -38,17 +38,20 @@ const useStyles = makeStyles<Theme, { theme: string }>({
 
 interface CheckboxProps {
   value: boolean;
+  disabled?: boolean;
   onChange: (value: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const Checkbox = observer(({ value, onChange }: CheckboxProps) => {
+const Checkbox = observer(({ value, onChange, disabled }: CheckboxProps) => {
   const userStore = useUserStore();
 
   const classes = useStyles({ theme: userStore.theme });
 
   return (
     <MaterialCheckBox
+      checked={value}
       value={value}
+      disabled={disabled}
       onChange={onChange}
       disableRipple={true}
       disableFocusRipple={true}

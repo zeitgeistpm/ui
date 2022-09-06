@@ -17,7 +17,9 @@ import Drawer from "./Drawer";
 import Tabs from "../ui/Tabs";
 import ExchangeBox from "../exchange/ExchangeBox";
 
-const ZTGSummary = () => {
+const ZTGSummary = observer(() => {
+  const { ztgInfo } = useStore();
+
   return (
     <div className="flex px-ztg-28 items-center ">
       <div className=" flex items-center justify-center rounded-ztg-10 flex-shrink-0 mb-auto mt-ztg-5">
@@ -25,20 +27,26 @@ const ZTGSummary = () => {
       </div>
 
       <div className="flex flex-col ml-ztg-12 mr-ztg-6">
-        <div className="font-kanit text-ztg-16-150 font-bold text-sky-1100 dark:text-white">
+        <div className="font-space text-ztg-16-150 font-bold text-sky-1100 dark:text-white">
           ZTG
         </div>
         <div className="font-lato text-ztg-12-150 text-sky-600 w-ztg-90 ">
           Zeitgeist
         </div>
       </div>
-      <div className="bg-white dark:bg-sky-700 dark:text-white font-mono px-ztg-12 py-ztg-6 rounded-full text-ztg-12-120 text-center whitespace-nowrap mr-ztg-12">
-        = $0
-      </div>
-      <PercentageChange change={0} />
+      {ztgInfo ? (
+        <>
+          <div className="bg-white dark:bg-sky-700 dark:text-white font-mono px-ztg-12 py-ztg-6 rounded-full text-ztg-12-120 text-center whitespace-nowrap mr-ztg-12">
+            = ${ztgInfo?.price.toFixed(2) ?? 0}
+          </div>
+          <PercentageChange change={ztgInfo?.change.toFixed(0) ?? "0"} />
+        </>
+      ) : (
+        <></>
+      )}
     </div>
   );
-};
+});
 
 type DisplayMode = "default" | "liquidity" | "report" | "dispute" | "redeem";
 
@@ -74,7 +82,7 @@ const Box = observer(
             <LiquidityPoolsBox />
           ) : (
             <ExchangeBox exchangeStore={exchangeStore} />
-          )
+          ),
         );
       case "report":
         return tabIndex === 0 ? (
@@ -101,7 +109,7 @@ const Box = observer(
           withSpacing(<ExchangeBox exchangeStore={exchangeStore} />)
         );
     }
-  }
+  },
 );
 
 const RightDrawer = observer(() => {
@@ -125,17 +133,18 @@ const RightDrawer = observer(() => {
     } else if (!navigationStore.checkPage("marketDetails")) {
       return "default";
     } else if (market) {
-      const endDate = market.endTimestamp;
-      const now = store.blockTimestamp;
-      if (now <= endDate) {
-        //market hasn't ended
-        return "default";
-      } else if (market.inReportPeriod) {
+      if (
+        market.status === "Closed" ||
+        (market.status === "Disputed" &&
+          market.disputeMechanism === "authorized")
+      ) {
         return "report";
-      } else if (market.status === "Reported" || market.status === "Disputed") {
+      } else if (market.status === "Reported") {
         return "dispute";
       } else if (market.status === "Resolved") {
         return "redeem";
+      } else {
+        return "default";
       }
     } else {
       return "default";

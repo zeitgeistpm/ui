@@ -29,7 +29,12 @@ export const TagButton: FC<TagButtonProps> = ({
       }}
       data-test="tagButton"
     >
-      <div className="px-ztg-15 text-center font-lato font-bold">{label}</div>
+      <div
+        className="px-ztg-15 text-center font-lato font-bold"
+        data-test="tag"
+      >
+        {label}
+      </div>
       <div
         className={`w-ztg-20 h-ztg-20 center rounded-full ml-auto ${iconBgClass}`}
       >

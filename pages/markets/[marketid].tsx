@@ -1,4 +1,3 @@
-import { Swap } from "@zeitgeistpm/sdk/dist/models";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
@@ -31,6 +30,8 @@ import NotFoundPage from "pages/404";
 import MarketAddresses from "components/markets/MarketAddresses";
 import { MultipleOutcomeEntry } from "lib/types/create-market";
 import { useUserStore } from "lib/stores/UserStore";
+import Decimal from "decimal.js";
+import { calcTotalAssetPrice } from "lib/util/pool";
 
 const LiquidityPill = observer(({ liquidity }: { liquidity: number }) => {
   const { config } = useStore();
@@ -87,6 +88,7 @@ const MarketDetails = observer(() => {
   const [marketStore, setMarketStore] = useState<MarketStore>();
   const [tableData, setTableData] = useState<TableData[]>();
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[]>();
+  const [swapFee, setSwapFee] = useState<string>();
   const [prizePool, setPrizePool] = useState<string>();
   const [marketLoaded, setMarketLoaded] = useState(false);
   const [poolAlreadyDeployed, setPoolAlreadyDeployed] = useState(false);
@@ -161,18 +163,19 @@ const MarketDetails = observer(() => {
 
       const series: ChartSeries[] = [];
       let chartData: ChartData[] = [];
-      const outcomes = market.marketOutcomes.filter(
-        (o) => o.metadata !== "ztg"
-      );
 
       const dateOneWeekAgo = new Date(
-        new Date().getTime() - DAY_SECONDS * 28 * 1000
+        new Date().getTime() - DAY_SECONDS * 28 * 1000,
       ).toISOString();
-      for (const [index, outcome] of Array.from(outcomes.entries())) {
-        const ticker = outcome.metadata["ticker"];
-        const color = outcome.metadata["color"] || "#ffffff";
-        const outcomeName = outcome.metadata["name"];
-        const assetId = outcome.asset;
+
+      const totalAssetPrice = calcTotalAssetPrice(pool);
+
+      for (const [index, assetId] of Array.from(
+        market.outcomeAssetIds.entries(),
+      )) {
+        const ticker = market.outcomesMetadata[index]["ticker"];
+        const color = market.outcomesMetadata[index]["color"] || "#ffffff";
+        const outcomeName = market.outcomesMetadata[index]["name"];
         const currentPrice = pool.assets[index].price;
 
         let priceHistory: {
@@ -184,7 +187,7 @@ const MarketDetails = observer(() => {
             market.id,
             //@ts-ignore
             assetId.categoricalOutcome?.[1] ?? assetId.scalarOutcome?.[1],
-            dateOneWeekAgo
+            dateOneWeekAgo,
           );
 
           series.push({
@@ -218,7 +221,7 @@ const MarketDetails = observer(() => {
               value: currentPrice,
               usdValue: 0,
             },
-            pre: Math.round(currentPrice * 100),
+            pre: Math.round((currentPrice / totalAssetPrice) * 100),
             change: priceChange,
             buttons: (
               <AssetActionButtons
@@ -250,70 +253,30 @@ const MarketDetails = observer(() => {
   const handleDeployClick = () => {
     const rows = poolRowDataFromOutcomes(
       marketStore.market.categories as MultipleOutcomeEntry[],
-      store.config.tokenSymbol
+      store.config.tokenSymbol,
     );
     setPoolRows(rows);
   };
 
   const handleDeploySignClick = async () => {
-    // return largest amount set for pool assets - this is amount for
-    // complete set that will be needed
-    const setAmountNeeded = poolRows.reduce<number>((acc, r) => {
-      const amount = +r.amount;
-      if (amount > acc) {
-        return amount;
-      }
-      return acc;
-    }, 100);
+    // We are assuming all rows have the same amount
+    const amount = poolRows[0].amount;
 
-    const buySetTx = () => {
-      return new Promise<void>((resolve, reject) => {
-        marketStore.market.buyCompleteSet(
-          signer,
-          setAmountNeeded * ZTG,
-          extrinsicCallback({
-            notificationStore,
-            successCallback: () => {
-              notificationStore.pushNotification(
-                "Bought complete set of " + setAmountNeeded + " assets",
-                { type: "Success" }
-              );
-              resolve();
-            },
-            failCallback: ({ index, error }) => {
-              notificationStore.pushNotification(
-                store.getTransactionError(index, error),
-                {
-                  type: "Error",
-                }
-              );
-              reject();
-            },
-          })
-        );
-      });
-    };
     const baseWeight = (1 / (poolRows.length - 1)) * 10 * ZTG;
 
     const weightsNums = poolRows.slice(0, -1).map((_) => {
       return baseWeight;
     });
 
-    // total used for ztg weight
-    const totalWeight = weightsNums.reduce<number>((acc, curr) => {
-      return acc + curr;
-    }, 0);
-
-    const weightsParams = [
-      ...weightsNums.map((w) => Math.floor(w).toString()),
-      totalWeight.toString(),
-    ];
+    const weightsParams = [...weightsNums.map((w) => Math.floor(w).toString())];
     const signer = store.wallets.getActiveSigner();
 
     const deployPoolTx = () => {
       return new Promise<void>((resolve, reject) => {
-        marketStore.market.deploySwapPool(
+        marketStore.market.deploySwapPoolAndAdditionalLiquidity(
           signer,
+          swapFee,
+          new Decimal(amount).mul(ZTG).toFixed(0),
           weightsParams,
           extrinsicCallback({
             notificationStore,
@@ -328,72 +291,21 @@ const MarketDetails = observer(() => {
                 store.getTransactionError(index, error),
                 {
                   type: "Error",
-                }
+                },
               );
               reject();
             },
-          })
+          }),
         );
       });
     };
-
-    const addLiqudity = async (
-      pool: Swap,
-      assetIdx: number,
-      amount: string
-    ) => {
-      const asset = pool.assets[assetIdx];
-      return new Promise<void>((resolve, reject) => {
-        pool.poolJoinWithExactAssetAmount(
-          signer,
-          asset,
-          amount,
-          "0",
-          extrinsicCallback({
-            notificationStore,
-            successCallback: () => {
-              notificationStore.pushNotification(
-                `Additional liquidity added - ${assetIdx} - ${amount}`,
-                {
-                  type: "Success",
-                }
-              );
-              resolve();
-            },
-            failCallback: ({ index, error }) => {
-              notificationStore.pushNotification(
-                store.getTransactionError(index, error),
-                {
-                  type: "Error",
-                }
-              );
-              reject();
-            },
-          })
-        );
-      });
-    };
-
-    const additionalLiquidity = poolRows.map((r) => {
-      return +r.amount - 100;
-    });
 
     try {
-      await buySetTx();
       await deployPoolTx();
-
-      const pool = await marketStore.market.getPool();
-
-      for (let i = 0, len = additionalLiquidity.length; i < len; i++) {
-        if (additionalLiquidity[i] !== 0) {
-          await addLiqudity(pool, i, `${additionalLiquidity[i] * ZTG}`);
-        }
-      }
+      getPageData();
     } catch {
       console.log("Unable to deploy liquidity pool.");
     }
-
-    getPageData();
   };
 
   const getReportedOutcome = () => {
@@ -414,7 +326,7 @@ const MarketDetails = observer(() => {
 
     const outcome = tableData?.find(
       (data) =>
-        JSON.stringify(data.assetId) === JSON.stringify(reportedOutcome.asset)
+        JSON.stringify(data.assetId) === JSON.stringify(reportedOutcome.asset),
     );
 
     return outcome ? [outcome] : undefined;
@@ -496,8 +408,10 @@ const MarketDetails = observer(() => {
             <div className="w-ztg-20 h-ztg-20">
               <AlertTriangle size={20} />
             </div>
-            <div className="text-ztg-12-120 ml-ztg-10 "
-            data-test="liquidityPoolMessage">
+            <div
+              className="text-ztg-12-120 ml-ztg-10 "
+              data-test="liquidityPoolMessage"
+            >
               This market doesn't have a liquidity pool and therefore cannot be
               traded
             </div>
@@ -567,6 +481,9 @@ const MarketDetails = observer(() => {
               onChange={(v) => {
                 setPoolRows(v);
               }}
+              onFeeChange={(fee: Decimal) => {
+                setSwapFee(fee.toString());
+              }}
             />
             <div className="flex items-center">
               <TransactionButton
@@ -576,7 +493,7 @@ const MarketDetails = observer(() => {
               >
                 Deploy Pool
               </TransactionButton>
-              <div className="text-ztg-12-150 text-sky-600 font-bold ml-ztg-16">
+              <div className="text-ztg-12-150 text-sky-600 font-bold ml-[27px]">
                 Total Cost:
                 <span className="font-mono">
                   {" "}
@@ -589,7 +506,7 @@ const MarketDetails = observer(() => {
           <>
             {!marketStore.is("Proposed") && (
               <button
-                className="my-ztg-20 font-kanit font-bold text-ztg-16-150 text-sky-600 border-1 px-ztg-20 py-ztg-10 rounded-ztg-10 border-sky-600"
+                className="my-ztg-20 font-space font-bold text-ztg-16-150 text-sky-600 border-1 px-ztg-20 py-ztg-10 rounded-ztg-10 border-sky-600"
                 data-test="deployLiquidityButton"
                 onClick={handleDeployClick}
               >

@@ -1,5 +1,4 @@
 import { DAY_SECONDS } from "lib/constants";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 
@@ -14,19 +13,19 @@ const TimeFilters = observer(
 
     const filters: TimeFilter[] = [
       {
-        label: "D",
+        label: "Day",
         time: new Date(new Date().getTime() - DAY_SECONDS * 1000).toISOString(),
       },
       {
-        label: "W",
+        label: "Week",
         time: new Date(
-          new Date().getTime() - DAY_SECONDS * 1000 * 7
+          new Date().getTime() - DAY_SECONDS * 1000 * 7,
         ).toISOString(),
       },
       {
-        label: "M",
+        label: "Month",
         time: new Date(
-          new Date().getTime() - DAY_SECONDS * 1000 * 30
+          new Date().getTime() - DAY_SECONDS * 1000 * 30,
         ).toISOString(),
       },
     ];
@@ -42,11 +41,11 @@ const TimeFilters = observer(
       }
     };
     return (
-      <div className=" ">
+      <div className="flex gap-x-2 mb-1">
         {filters.map((filter, index) => (
           <span
             key={index}
-            className={`text-sky-600  font-bold text-ztg-14-120 ${
+            className={`text-sky-600 font-space text-ztg-10-150 rounded-ztg-100 ${
               selectedFilterIndex === index
                 ? "bg-sky-300 dark:bg-black"
                 : "bg-sky-100 dark:bg-sky-800"
@@ -62,7 +61,7 @@ const TimeFilters = observer(
         ))}
       </div>
     );
-  }
+  },
 );
 
 export default TimeFilters;

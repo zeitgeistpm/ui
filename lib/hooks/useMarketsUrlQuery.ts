@@ -11,7 +11,7 @@ import { merge, last } from "lodash";
 import { DeepPartial } from "lib/types/DeepPartial";
 
 export type MarketListQueryUpdater = (
-  update: DeepPartial<MarketListQuery>
+  update: DeepPartial<MarketListQuery>,
 ) => void;
 
 export const useMarketsUrlQuery = (): MarketListQuery & {
@@ -20,7 +20,13 @@ export const useMarketsUrlQuery = (): MarketListQuery & {
   const router = useRouter();
   const rawQuery = router.query;
 
-  const query = useMemo(() => parse(rawQuery), [rawQuery]);
+  const query = useMemo(() => {
+    try {
+      return parse(rawQuery);
+    } catch (error) {
+      return defaultQueryState;
+    }
+  }, [rawQuery]);
 
   const updateQuery = useCallback<MarketListQueryUpdater>(
     (update) => {
@@ -29,7 +35,7 @@ export const useMarketsUrlQuery = (): MarketListQuery & {
         query: toString(newQuery),
       });
     },
-    [rawQuery]
+    [rawQuery],
   );
 
   return {
@@ -46,7 +52,7 @@ export const defaultQueryState: MarketListQuery = {
   filter: {
     Proposed: false,
     Active: true,
-    Ended: false,
+    Closed: false,
     Reported: false,
     Disputed: false,
     Resolved: false,
@@ -75,7 +81,7 @@ const toString = (query: MarketListQuery) => {
     ["searchText", query.searchText],
   ]
     .map(([key, value]) =>
-      typeof value !== "undefined" ? `${key}=${value}` : null
+      typeof value !== "undefined" ? `${key}=${value}` : null,
     )
     .filter((queryString) => queryString !== null)
     .join("&");

@@ -27,7 +27,11 @@ const AssetActionButtons = observer(
       })();
     }, [marketId, marketsStore]);
 
-    if (marketStore?.inReportPeriod) {
+    if (
+      marketStore?.status === "Closed" ||
+      (marketStore?.status === "Disputed" &&
+        marketStore?.disputeMechanism === "authorized")
+    ) {
       return (
         <ReportButton
           marketStore={marketStore}
@@ -35,10 +39,7 @@ const AssetActionButtons = observer(
           ticker={assetTicker}
         />
       );
-    } else if (
-      marketStore?.status === "Reported" ||
-      marketStore?.status === "Disputed"
-    ) {
+    } else if (marketStore?.status === "Reported") {
       return (
         <DisputeButton
           marketStore={marketStore}
@@ -61,7 +62,7 @@ const AssetActionButtons = observer(
         />
       );
     }
-  }
+  },
 );
 
 export default AssetActionButtons;
