@@ -242,7 +242,9 @@ class MarketStore {
   }
 
   get isCourt(): boolean {
-    return (this.market.disputeMechanism as CourtDisputeMechanism).Court === null;
+    return (
+      (this.market.disputeMechanism as CourtDisputeMechanism).Court === null
+    );
   }
 
   get bounds(): [number, number] | null {
@@ -654,28 +656,44 @@ class MarketStore {
 
   async refetchMarketData() {
     const data = await this.store.sdk.models.fetchMarketData(this.id);
-    if (data.marketType.isCategorical === false) {
-      throw new Error("Found non-categorical market.");
-    }
 
     this.initializeMarketData(data);
     this.nextChange();
   }
 
-  private pollSub: Subscription;
+  private pollSub?: Subscription;
   readonly pollInterval =
     Number(process.env.NEXT_PUBLIC_MARKET_POLL_INTERVAL_MS) ?? 12000;
 
   startPolling = () => {
+    if (this.pollSub != null) {
+      return;
+    }
     const obs = interval(this.pollInterval);
     this.pollSub = obs.subscribe(() => {
       this.refetchMarketData();
     });
   };
 
+  private changeDataUnsub?;
+
+  async subscribeToChainData() {
+    if (this.changeDataUnsub) {
+      return;
+    }
+    const { sdk } = this.store;
+    this.changeDataUnsub = await sdk.models.subscribeMarketChanges(this.id, (market) => {
+      this.initializeMarketData(market);
+      this.nextChange();
+    })
+  }
+
   unsubscribe() {
     if (this.poolChangeUnsub != null) {
       this.poolChangeUnsub();
+    }
+    if (this.changeDataUnsub != null) {
+      this.changeDataUnsub();
     }
     this.pollSub?.unsubscribe();
   }

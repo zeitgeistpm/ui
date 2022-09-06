@@ -83,6 +83,7 @@ const MarketTable = observer(
         const ticker = metadata["ticker"];
         const color = metadata["color"] || "#ffffff";
         const name = metadata["name"];
+
         return {
           id: index,
           token: {
@@ -92,14 +93,10 @@ const MarketTable = observer(
           outcome: name,
           history: prices?.[index],
           marketPrice: {
-            value: pool?.assets[index].price,
+            value: pool?.assets?.[index]?.price ?? 0,
             usdValue: 0,
           },
-          pre: pool
-            ? Math.round(
-                ((pool?.assets[index].price ?? 0) / totalAssetPrice) * 100,
-              )
-            : "",
+          pre: Math.round((pool?.assets?.[index]?.price ?? 0) * 100),
           change24hr: priceHistories?.[index]
             ? get24HrPriceChange(priceHistories[index])
             : 0,
@@ -112,8 +109,7 @@ const MarketTable = observer(
             />
           ),
         };
-      },
-    );
+      });
 
     const columns: TableColumn[] = [
       {
