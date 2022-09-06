@@ -62,6 +62,7 @@ const ScalarReportBox = observer(
           outcomeReport,
         );
         signAndSend(tx, signer, callback);
+      } else {
         await market.reportOutcome(signer, outcomeReport, callback);
       }
     };
