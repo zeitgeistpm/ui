@@ -98,7 +98,7 @@ const createCategoricalMarket = async (
     metadata,
     creationType: "Permissionless",
     marketType: { Categorical: numOutcomes },
-    mdm: { authorized: signer.address },
+    disputeMechanism: { authorized: signer.address },
     scoringRule: "CPMM",
     callbackOrPaymentInfo: false,
   });
@@ -136,6 +136,7 @@ const createCategoricalMarket = async (
     }
     off = off + Number(offset);
     end = start + len;
+
     const marketId = await createCategoricalMarket(
       sdk,
       id,

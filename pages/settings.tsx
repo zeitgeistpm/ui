@@ -467,7 +467,7 @@ const Settings: NextPage = observer(() => {
               onClick={handleResetTheme}
               disabled={userStore.storedTheme === "system"}
             >
-              Reset to system theme
+              Sync with computer
             </SubmitButton>
           </div>
         </div>

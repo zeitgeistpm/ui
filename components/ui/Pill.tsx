@@ -7,7 +7,7 @@ const Pill: FC<{ title: string; value: string }> = ({
 }) => {
   return (
     <div
-      className="flex w-full justify-center bg-sky-100 dark:bg-border-dark rounded-ztg-100 
+      className="flex w-full justify-center bg-sky-200 dark:bg-border-dark rounded-ztg-100 
       text-ztg-12-150 py-ztg-5 mr-ztg-15 mb-ztg-10 min-w-[90px] max-w-[170px]"
     >
       <span className="font-bold mr-ztg-3">{title}: </span>

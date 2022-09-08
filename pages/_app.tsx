@@ -66,9 +66,7 @@ const MyApp = observer(({ Component, pageProps }) => {
     }
   }, []);
 
-  const launchDate = new Date(
-    "Tue Aug 29 2022 17:26:30 GMT+0200 (Central European Summer Time)",
-  );
+  const launchDate = new Date(1663081200000);
 
   const [launched, setLaunched] = useState(Date.now() > launchDate.getTime());
 
@@ -84,7 +82,7 @@ const MyApp = observer(({ Component, pageProps }) => {
       <AvatarContext.Provider
         value={{
           api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
-          ipfs: process.env.NEXT_PUBLIC_IPFS_NODE,
+          ipfs: { node: { url: process.env.NEXT_PUBLIC_IPFS_NODE } },
           rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
           indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
           avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,

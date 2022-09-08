@@ -11,10 +11,11 @@ import { makeAutoObservable, runInAction, when } from "mobx";
 import type { Codec } from "@polkadot/types-codec/types";
 import validatorjs from "validatorjs";
 import { GraphQLClient } from "graphql-request";
-
 import { StoreContext } from "components/context/StoreContext";
 import { ZTG } from "lib/constants";
+import { isValidPolkadotAddress } from "lib/util";
 
+import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 import { isAsset, ztgAsset } from "../types";
 import UserStore from "./UserStore";
 import MarketsStore from "./MarketsStore";
@@ -25,8 +26,6 @@ import PoolsStore from "./PoolsStore";
 import ExchangeStore from "./ExchangeStore";
 import CourtStore from "./CourtStore";
 import Wallets from "../wallets";
-import { isValidPolkadotAddress } from "lib/util";
-import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 
 interface Config {
   tokenSymbol: string;
@@ -239,7 +238,10 @@ export default class Store {
   }
 
   async initSDK(endpoint: string, graphQlEndpoint: string) {
-    const ipfsClientUrl = this.isTestEnv ? "http://127.0.0.1:5001" : undefined;
+    const isLocalEndpoint =
+      endpoint.includes("localhost") || endpoint.includes("127.0.0.1");
+    const ipfsClientUrl =
+      this.isTestEnv || isLocalEndpoint ? "http://127.0.0.1:5001" : undefined;
     const sdk = await SDK.initialize(endpoint, {
       graphQlEndpoint,
       ipfsClientUrl,
