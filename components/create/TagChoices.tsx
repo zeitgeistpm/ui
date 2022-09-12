@@ -60,6 +60,8 @@ export const defaultTags = [
   "Space",
   "Cricket",
   "E-sports",
+  "News",
+  "Dotsama",
 ];
 
 const TagChoices: FC<{ onTagsChange: (tags: string[]) => void }> = ({
