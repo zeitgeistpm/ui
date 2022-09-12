@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { extrinsicCallback } from "lib/util/tx";
 import { calculatePoolCost, get24HrPriceChange } from "lib/util/market";
@@ -438,7 +438,8 @@ const MarketDetails = observer(() => {
           </div>
         )
       )}
-      {marketStore?.is("Reported") || marketStore?.is("Disputed") ? (
+
+      {marketStore?.is("Reported") && (
         <>
           <div className="sub-header mt-ztg-40">Reported Outcome</div>
           {marketStore.type === "categorical" ? (
@@ -453,8 +454,22 @@ const MarketDetails = observer(() => {
             </div>
           )}
         </>
-      ) : (
-        <></>
+      )}
+      {marketStore?.is("Disputed") && (
+        <>
+          <div className="sub-header mt-ztg-40">Disputed Outcome</div>
+          {marketStore.type === "categorical" ? (
+            <Table columns={columns} data={getReportedOutcome()} />
+          ) : (
+            <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
+              {
+                //@ts-ignore
+                marketStore.lastDispute?.outcome.scalar ??
+                  marketStore.reportedScalarOutcome
+              }
+            </div>
+          )}
+        </>
       )}
       {marketStore?.is("Resolved") ? (
         <>
