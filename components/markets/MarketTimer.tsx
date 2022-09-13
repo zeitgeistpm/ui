@@ -72,10 +72,7 @@ const MarketTimer = observer(
         return "Trading";
       } else if (marketStore.status === "Closed") {
         // if oracle doesn't report within 1 day reports are open to all
-        if (
-          (new Date().getTime() - marketStore.endTimestamp) / 1000 >
-          reportingPeriodSec
-        ) {
+        if (marketStore.inOpenReportPeriod === true) {
           return "OpenReportWaiting";
         } else {
           return "OracleReportWaiting";

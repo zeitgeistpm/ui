@@ -339,6 +339,7 @@ export default class UserStore {
     const locationAllowed = !notAllowedCountries.includes(userCountry);
 
     const ip = json.body.ip;
+    // from: https://raw.githubusercontent.com/X4BNet/lists_vpn/main/ipv4.txt
     const vpnIPsResponse = await fetch("/vpn-ips.txt");
     const vpnIPs = await vpnIPsResponse.text();
     const isUsingVPN = vpnIPs
