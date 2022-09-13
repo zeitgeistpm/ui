@@ -72,7 +72,6 @@ export const extrinsicCallback = ({
             "Transaction failed to finalize and has been retracted",
             { type: "Error" },
           );
-      unsub();
     } else {
       broadcastCallback
         ? broadcastCallback()
