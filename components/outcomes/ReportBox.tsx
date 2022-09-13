@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import { Skeleton } from "@material-ui/lab";
 import { combineLatestWith, from } from "rxjs";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 
 import { OutcomeOption } from "lib/stores/ExchangeStore";
 import { useStore } from "lib/stores/Store";
@@ -29,6 +29,8 @@ const ReportBox = observer(
     const [selectedAssetOption, setSelectedAssetOption] =
       useState<OutcomeOption>();
     const [options, setOptions] = useState<OutcomeOption[]>();
+
+    const { isAuthorityProxy } = marketStore;
 
     const getOptions = async (): Promise<OutcomeOption[]> => {
       const outcomes = marketStore.marketOutcomes.filter(
@@ -122,7 +124,16 @@ const ReportBox = observer(
           market.marketId,
           outcomeReport,
         );
-        signAndSend(tx, signer, callback);
+        if (isAuthorityProxy) {
+          const proxyTx = store.sdk.api.tx.proxy.proxy(
+            marketStore.authority,
+            "Any",
+            tx,
+          );
+          signAndSend(proxyTx, signer, callback);
+        } else {
+          signAndSend(tx, signer, callback);
+        }
       } else {
         await market.reportOutcome(signer, outcomeReport, callback);
       }

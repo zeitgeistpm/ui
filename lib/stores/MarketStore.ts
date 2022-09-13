@@ -89,10 +89,36 @@ class MarketStore {
   }
 
   //authorised wallet address
-  get authority(): string {
+  get authority(): string | undefined {
     if (isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
       return this.market.disputeMechanism.authorized;
     }
+  }
+
+  authorityProxies?: string[];
+
+  get isAuthorityProxy(): boolean {
+    if (this.authorityProxies == null) {
+      return false;
+    }
+    return this.authorityProxies.includes(
+      this.store.wallets.activeAccount?.address,
+    );
+  }
+
+  async getAuthorityProxies(): Promise<string[] | undefined> {
+    if (!isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
+      return;
+    }
+
+    const { sdk } = this.store;
+
+    const res = (await sdk.api.query.proxy.proxies(this.authority)).toJSON();
+
+    const proxies = res[0].map((item) => item.delegate);
+
+    this.authorityProxies = proxies;
+    return proxies;
   }
 
   get disputeMechanism(): "authorized" | "other" {
@@ -107,12 +133,14 @@ class MarketStore {
     if (this.inOpenReportPeriod === true) return true;
     if (!this.store.wallets.activeAccount?.address) return false;
 
+    const activeAddress = this.store.wallets.activeAccount?.address;
     if (this.status === "Closed" && this.isOracle) {
       return true;
     } else if (
       this.status === "Disputed" &&
       this.disputeMechanism === "authorized" &&
-      this.authority === this.store.wallets.activeAccount?.address
+      (this.authority === activeAddress ||
+        this.authorityProxies?.includes(activeAddress))
     ) {
       return true;
     } else {
@@ -599,7 +627,9 @@ class MarketStore {
       market: observable.ref,
       disputes: observable.ref,
       pool: observable.ref,
+      authorityProxies: observable.ref,
       poolAccount: observable,
+      isAuthorityProxy: computed,
       poolExists: computed,
       slug: computed,
       description: computed,
@@ -612,6 +642,7 @@ class MarketStore {
       oracleReportPeriodPassed: computed,
       inOracleReportPeriod: computed,
       inReportPeriod: computed,
+      connectedWalletCanReport: computed,
       hasReport: computed,
       status: computed,
       creator: computed,
@@ -691,10 +722,13 @@ class MarketStore {
       return;
     }
     const { sdk } = this.store;
-    this.changeDataUnsub = await sdk.models.subscribeMarketChanges(this.id, (market) => {
-      this.initializeMarketData(market);
-      this.nextChange();
-    })
+    this.changeDataUnsub = await sdk.models.subscribeMarketChanges(
+      this.id,
+      (market) => {
+        this.initializeMarketData(market);
+        this.nextChange();
+      },
+    );
   }
 
   unsubscribe() {
