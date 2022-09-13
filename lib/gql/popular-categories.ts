@@ -21,7 +21,7 @@ export const getPopularCategories = async (
   const [sports, politics, governance, crypto] = await Promise.all([
     getTagCount(client, "Sports"),
     getTagCount(client, "Politics"),
-    getTagCount(client, "Goverance"),
+    getTagCount(client, "Governance"),
     getTagCount(client, "Crypto"),
   ]);
 
