@@ -46,22 +46,23 @@ export const TagButton: FC<TagButtonProps> = ({
 
 export const defaultTags = [
   "Politics",
+  "Governance",
   "North America",
   "China",
-  "Elections",
-  "Democracy",
-  "Sports",
-  "COVID-19",
-  "Remote",
+  "India",
   "Crypto",
-  "Governance",
+  "Dotsama",
+  "Zeitgeist",
   "Technology",
   "Science",
+  "Pandemics",
   "Space",
-  "Cricket",
-  "E-sports",
   "News",
-  "Dotsama",
+  "Sports",
+  "E-sports",
+  "Football",
+  "MMA",
+  "Cricket",
 ];
 
 const TagChoices: FC<{ onTagsChange: (tags: string[]) => void }> = ({
