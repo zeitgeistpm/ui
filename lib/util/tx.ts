@@ -69,8 +69,8 @@ export const extrinsicCallback = ({
       retractedCallback
         ? retractedCallback()
         : notificationStore?.pushNotification(
-            "Transaction failed to finalize and has been retracted",
-            { type: "Error" },
+            "This transaction was temporarily retracted. It will take a little longer to complete",
+            { type: "Info" },
           );
     } else {
       broadcastCallback
