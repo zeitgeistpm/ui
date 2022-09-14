@@ -17,7 +17,7 @@ import DefaultLayout from "layouts/DefaultLayout";
 import AppLaunchLayout from "layouts/launch/AppLaunchLayout";
 import { AnimatePresence } from "framer-motion";
 import MobileMenu from "components/menu/MobileMenu";
-import { AvatarContext, defaultBsr } from "@zeitgeistpm/avatara-react";
+import { AvatarContext } from "@zeitgeistpm/avatara-react";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
