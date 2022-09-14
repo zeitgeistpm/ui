@@ -6,12 +6,7 @@ import {
 } from "@zeitgeistpm/avatara-react";
 import Link from "next/link";
 import { formatBalance } from "@polkadot/util";
-import {
-  Avatar,
-  Inventory,
-  SdkContext,
-  Tarot,
-} from "@zeitgeistpm/avatara-nft-sdk";
+import { Avatar, Badge, Tarot } from "@zeitgeistpm/avatara-nft-sdk";
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 import Checkbox from "components/ui/Checkbox";
 import DiscordIcon from "components/icons/DiscordIcon";
@@ -58,6 +53,8 @@ const AvatarPage = observer(() => {
   const [burnAmount, setBurnAmount] = useState<number>();
   const [hasCrossed, setHasCrossed] = useState(false);
 
+  const [earnedBadges, setEarnedBadges] = useState<Badge.IndexedBadge[]>([]);
+
   const [tarotStats, setTarotStats] =
     useState<Tarot.TarotStatsForAddress>(null);
 
@@ -77,6 +74,11 @@ const AvatarPage = observer(() => {
       getIdentity(address),
       Tarot.fetchStatsForAddress(avatarContext, address),
     ]);
+    if (avatarContext) {
+      Avatar.fetchEarnedBadgesForAddress(avatarContext, address).then(
+        setEarnedBadges,
+      );
+    }
     setBurnAmount(burnAmount.toJSON() as number);
     setIdentity(identity);
     setTarotStats(tarotStats);
@@ -91,7 +93,7 @@ const AvatarPage = observer(() => {
 
   useEffect(() => {
     loadData();
-  }, [address, store.wallets.activeAccount?.address]);
+  }, [avatarContext, address, store.wallets.activeAccount?.address]);
 
   const name = identity?.displayName || shortenAddress(address);
 
@@ -275,13 +277,12 @@ const AvatarPage = observer(() => {
       </h3>
       <p className="text-gray-600 mb-ztg-38">
         All badges earned for this account.{" "}
-        <Link href={"/badges"}>
-          <span className="text-singular cursor-pointer">
-            See all available badges.
-          </span>
-        </Link>
+        <i>
+          Includes all badges this user has earned even if the NFT has been
+          traded or burnt.
+        </i>
       </p>
-      {inventory.items.accepted.length === 0 ? (
+      {earnedBadges.length === 0 ? (
         <>
           <p className="text-gray-600 mb-ztg-38 italic">
             You havent earned any badges yet.
@@ -289,8 +290,8 @@ const AvatarPage = observer(() => {
         </>
       ) : (
         <div className="mb-ztg-38 grid gap-4 grid-cols-4 grid-rows-4">
-          {inventory.items.accepted.map((item) => (
-            <Badge item={item} />
+          {earnedBadges.map((item) => (
+            <BadgeItem item={item} />
           ))}
         </div>
       )}
@@ -298,7 +299,7 @@ const AvatarPage = observer(() => {
   );
 });
 
-const Badge = (props: { item: Inventory.AcceptedInventoryItem }) => {
+const BadgeItem = (props: { item: Badge.IndexedBadge }) => {
   const { item } = props;
 
   const [hoverInfo, setHoverInfo] = useState(false);
@@ -353,18 +354,22 @@ const Badge = (props: { item: Inventory.AcceptedInventoryItem }) => {
             <p className="mb-4 text-xs">
               {item.metadata_properties?.badge.value.criteria.description}
             </p>
-            <a
-              href={`${process.env.NEXT_PUBLIC_SINGULAR_URL}/collectibles/${item.id}`}
-              target="_blank"
-            >
-              <div
-                className="inline-flex items-center py-1 px-2 rounded-md border-2 cursor-pointer"
-                style={{ borderColor: "#EB3089", color: "#EB3089" }}
+            {item.burned === "" ? (
+              <a
+                href={`${process.env.NEXT_PUBLIC_SINGULAR_URL}/collectibles/${item.id}`}
+                target="_blank"
               >
-                <img src="/icons/singular.svg" className="h-6 w-6 mr-2" />
-                <div>View on Singular 2.0</div>
-              </div>
-            </a>
+                <div
+                  className="inline-flex items-center py-1 px-2 rounded-md border-2 cursor-pointer"
+                  style={{ borderColor: "#EB3089", color: "#EB3089" }}
+                >
+                  <img src="/icons/singular.svg" className="h-6 w-6 mr-2" />
+                  <div>View on Singular 2.0</div>
+                </div>
+              </a>
+            ) : (
+              ""
+            )}
             <div
               className="absolute bottom-0 left-6 w-0 h-0 border-t-8 dark:border-black"
               style={{
@@ -403,7 +408,7 @@ const Badge = (props: { item: Inventory.AcceptedInventoryItem }) => {
       </div>
       <div>
         <h2 className="mb-1 text-xl font-bold">
-          {item.metadata_properties?.badge.value.shortname ||
+          {item.metadata_properties?.badge.value.levelName ||
             item.metadata_properties?.badge.value.name}
         </h2>
         <p className="text-sm text-lg text-gray-500">
