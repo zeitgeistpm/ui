@@ -17,7 +17,7 @@ import DefaultLayout from "layouts/DefaultLayout";
 import AppLaunchLayout from "layouts/launch/AppLaunchLayout";
 import { AnimatePresence } from "framer-motion";
 import MobileMenu from "components/menu/MobileMenu";
-import { AvatarContext, defaultBsr } from "@zeitgeistpm/avatara-react";
+import { AvatarContext } from "@zeitgeistpm/avatara-react";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -95,8 +95,11 @@ const MyApp = observer(({ Component, pageProps }) => {
             <ModalContainer>{modalStore.modal}</ModalContainer>
           )}
           <Head>
-            <title>Zeitgeist Prediction Markets</title>
-            <meta name="description" content="Zeitgeist Prediction Markets" />
+            <title>The Zeitgeist Prediction Markets App</title>
+            <meta
+              name="description"
+              content="The application interface for Zeitgeist Prediction Markets. Built on Polkadot, Zeitgeist is the leader in decentralized prediction markets."
+            />
             <link
               rel="apple-touch-icon"
               sizes="180x180"

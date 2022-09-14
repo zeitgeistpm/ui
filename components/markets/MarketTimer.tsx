@@ -293,7 +293,7 @@ const MarketTimer = observer(
     const marketStageCopy: MarketStageCopy = {
       Trading: {
         title: "Market is Live",
-        description: "Make predictions. Trade assets",
+        description: "Market is open for trading",
         remainingTime: marketStore.activeDurtation,
         totalTime:
           (marketStore.endTimestamp - marketStore.createdAtTimestamp) / 1000,
