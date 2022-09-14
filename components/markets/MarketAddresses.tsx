@@ -89,7 +89,7 @@ const AddressInspectContent = ({
         </a>
         <a
           className="flex"
-          href={`https://beta.zeitgeist.pm/portfolio/${address}`}
+          href={`https://app.zeitgeist.pm/portfolio/${address}`}
           target="_blank"
           rel="noreferrer"
         >
