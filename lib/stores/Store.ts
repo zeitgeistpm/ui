@@ -50,6 +50,10 @@ interface Config {
   swaps: {
     minLiquidity: number;
   };
+  identity: {
+    basicDeposit: number;
+    fieldDeposit: number;
+  };
 }
 
 interface ZTGInfo {
@@ -329,6 +333,10 @@ export default class Store {
       },
       swaps: {
         minLiquidity: this.codecToNumber(consts.swaps.minLiquidity) / ZTG,
+      },
+      identity: {
+        basicDeposit: this.codecToNumber(consts.swaps.basicDeposit) / ZTG,
+        fieldDeposit: this.codecToNumber(consts.swaps.fieldDeposit) / ZTG,
       },
     };
 
