@@ -335,8 +335,8 @@ export default class Store {
         minLiquidity: this.codecToNumber(consts.swaps.minLiquidity) / ZTG,
       },
       identity: {
-        basicDeposit: this.codecToNumber(consts.swaps.basicDeposit) / ZTG,
-        fieldDeposit: this.codecToNumber(consts.swaps.fieldDeposit) / ZTG,
+        basicDeposit: this.codecToNumber(consts.identity.basicDeposit) / ZTG,
+        fieldDeposit: this.codecToNumber(consts.identity.fieldDeposit) / ZTG,
       },
     };
 
