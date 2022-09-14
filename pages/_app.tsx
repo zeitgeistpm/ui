@@ -95,8 +95,11 @@ const MyApp = observer(({ Component, pageProps }) => {
             <ModalContainer>{modalStore.modal}</ModalContainer>
           )}
           <Head>
-            <title>Zeitgeist Prediction Markets</title>
-            <meta name="description" content="Zeitgeist Prediction Markets" />
+            <title>The Zeitgeist Prediction Markets App</title>
+            <meta
+              name="description"
+              content="The application interface for Zeitgeist Prediction Markets. Built on Polkadot, Zeitgeist is the leader in decentralized prediction markets."
+            />
             <link
               rel="apple-touch-icon"
               sizes="180x180"
