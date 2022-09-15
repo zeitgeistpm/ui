@@ -199,11 +199,11 @@ const BadgeItem = (props: { item: Badge.DiscreteBadge<any> }) => {
         </div>
       </div>
       <div>
-        <h2 className="mb-1 text-xl font-bold">
-          {item.shortname || item.name}
-        </h2>
+        <h2 className="mb-1 text-xl font-bold">{capitalize(item.levelName)}</h2>
         <p className="text-sm text-lg text-gray-500">
           {capitalize(item.category)}
+          {item.criteria.tag &&
+            `: ${item.criteria.tag === "any" ? "All" : item.criteria.tag}`}
         </p>
       </div>
     </div>
