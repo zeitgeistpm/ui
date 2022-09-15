@@ -3842,45 +3842,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/avatara-nft-sdk@npm:^0.3.2-alpha.0":
-  version: 0.3.2-alpha.0
-  resolution: "@zeitgeistpm/avatara-nft-sdk@npm:0.3.2-alpha.0"
-  dependencies:
-    "@polkadot/api": ^9.2.2
-    "@polkadot/extension-inject": ^0.44.6
-    "@polkadot/util": ^10.1.4
-    "@polkadot/util-crypto": ^10.1.4
-    "@zeitgeistpm/avatara-util": ^0.3.1
-    "@zeitgeistpm/avatara-zeitgeist-sdk": ^0.3.1
-    "@zeitgeistpm/substrate": ^0.3.1
-    cids: ^1.1.9
-    config: "*"
-    fp-ts: ^2.12.2
-    graphql: ^16.3.0
-    graphql-request: ^4.0.0
-    io-ts: ^2.2.17
-    ipfs-http-client: ^49.0.4
-    lodash: ^4.17.21
-    nanoid: ^3.3.1
-    rmrk-tools: ^2.0.90
-    rollup-config: "*"
-    tsconfig: "*"
-  peerDependencies:
-    "@polkadot/extension-dapp": 0.40.4
-  checksum: 5d0a7e778e8ce80ad68ee670f643a381542ef580b5cc714e18c33c3dd592b6ca2a40ca7d2fec0b07d5c030c6c7835041e92100eb9b0b209e67e565789991d348
-  languageName: node
-  linkType: hard
-
-"@zeitgeistpm/avatara-nft-sdk@npm:^1.0.0-alpha.0":
-  version: 1.0.0-alpha.0
-  resolution: "@zeitgeistpm/avatara-nft-sdk@npm:1.0.0-alpha.0"
+"@zeitgeistpm/avatara-nft-sdk@npm:^1.0.0-alpha.1":
+  version: 1.0.0-alpha.1
+  resolution: "@zeitgeistpm/avatara-nft-sdk@npm:1.0.0-alpha.1"
   dependencies:
     "@polkadot/api": ^9.2.2
     "@polkadot/extension-inject": ^0.44.6
     "@polkadot/util": ^10.1.4
     "@polkadot/util-crypto": ^10.1.4
     "@zeitgeistpm/avatara-util": ^1.0.0-alpha.0
-    "@zeitgeistpm/avatara-zeitgeist-sdk": ^1.0.0-alpha.0
+    "@zeitgeistpm/avatara-zeitgeist-sdk": ^1.0.0-alpha.1
     "@zeitgeistpm/substrate": ^1.0.0-alpha.0
     cids: ^1.1.9
     config: "*"
@@ -3896,35 +3867,23 @@ __metadata:
     tsconfig: "*"
   peerDependencies:
     "@polkadot/extension-dapp": 0.40.4
-  checksum: 13becd89f4d6ac544b910a230354d202c85fb899def985de320b6227c871f3c086da046f17cb4b242a30e25cbfa29588d6ea9558e888f7777ff0c51450734251
+  checksum: 2eec3845b6d3f2debf97ca7f59c7bdb418402a518e7d006ec178d199113385ac289370637c519c6c6725a976160e1cdb74aa9ddd0e2811eb412aa5ec51278b26
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/avatara-react@npm:^0.3.2-alpha.0":
-  version: 0.3.2-alpha.0
-  resolution: "@zeitgeistpm/avatara-react@npm:0.3.2-alpha.0"
+"@zeitgeistpm/avatara-react@npm:^1.0.0-alpha.1":
+  version: 1.0.0-alpha.1
+  resolution: "@zeitgeistpm/avatara-react@npm:1.0.0-alpha.1"
   dependencies:
-    "@zeitgeistpm/avatara-nft-sdk": ^0.3.2-alpha.0
-    "@zeitgeistpm/avatara-util": ^0.3.1
+    "@zeitgeistpm/avatara-nft-sdk": ^1.0.0-alpha.1
+    "@zeitgeistpm/avatara-util": ^1.0.0-alpha.0
     copy-to-clipboard: ^3.3.1
     jotai: ^1.6.1
     optics-ts: ^2.3.0
   peerDependencies:
     react: "*"
     react-dom: "*"
-  checksum: a01a5ac7dae1f8f20af01b694c686b9743dd07a3b1739925313819744977b7e02cf74e597cbfd59d469a42bba98c0284ad2431756846e66d8602976b0a37bd27
-  languageName: node
-  linkType: hard
-
-"@zeitgeistpm/avatara-util@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "@zeitgeistpm/avatara-util@npm:0.3.1"
-  dependencies:
-    io-ts: ^2.2.17
-    ms: ^2.1.3
-    rollup-config: "*"
-    tsconfig: "*"
-  checksum: f9e7f860ab4363a1b5fa52918cccc47e522fce4307c3232c428cf4c42dce836b95fd756b4e15ae0ca69bf294fb08a48579b3dceb8ccdcb41b5de537561e03476
+  checksum: c37283e1ea1bfc3a91e442eda435a75385a55c830d349f2e78002b7af91af655e08f21c41372ef1567bd349d83b139819f29a43c2228950d78dd3b6e89e52d6e
   languageName: node
   linkType: hard
 
@@ -3940,9 +3899,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/avatara-zeitgeist-sdk@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "@zeitgeistpm/avatara-zeitgeist-sdk@npm:0.3.1"
+"@zeitgeistpm/avatara-zeitgeist-sdk@npm:^1.0.0-alpha.1":
+  version: 1.0.0-alpha.1
+  resolution: "@zeitgeistpm/avatara-zeitgeist-sdk@npm:1.0.0-alpha.1"
   dependencies:
     "@apollo/client": ^3.5.10
     "@polkadot/api": ^9.2.2
@@ -3953,24 +3912,7 @@ __metadata:
     io-ts: ^2.2.17
     rollup-config: "*"
     tsconfig: "*"
-  checksum: 6aed2d828ca66173a5248317af59cf50c5b6d4c0c376921e5e3e283e5d69185581b670a714eeb616e4d9a37bfa0361b6f46d6d7e3af30978bbbf7d1622542bbb
-  languageName: node
-  linkType: hard
-
-"@zeitgeistpm/avatara-zeitgeist-sdk@npm:^1.0.0-alpha.0":
-  version: 1.0.0-alpha.0
-  resolution: "@zeitgeistpm/avatara-zeitgeist-sdk@npm:1.0.0-alpha.0"
-  dependencies:
-    "@apollo/client": ^3.5.10
-    "@polkadot/api": ^9.2.2
-    config: "*"
-    decimal.js: ^10.3.1
-    fp-ts: ^2.12.2
-    graphql: 15.8.0
-    io-ts: ^2.2.17
-    rollup-config: "*"
-    tsconfig: "*"
-  checksum: fa0ec26895086db7cc694efa79d0af58efcf4351a4cff0b6cfbf6e3b16f8e816392f31bdd3f83d3d23b8081c52c0c23d3ccb73ab346b5d699beb7e27be9a9505
+  checksum: ef585c0c2dbb6740a1695bb2fb1d515b88fa5ab2afed72a375a4791e545fce03634bd3c64d8bb804400319b2fca90fb9b2ee5b23dc90f0dbdfe4f9133e60644f
   languageName: node
   linkType: hard
 
@@ -3992,22 +3934,6 @@ __metadata:
     it-all: ^1.0.4
     uint8arrays: ^2.1.4
   checksum: 36a6bc6af32969d759f6f2723d438ffb5e53449659afc4155bad892d278616d60d22b356df266e9d0670840334dfa42e6e567b66c5ad39ddeb2d33be87491889
-  languageName: node
-  linkType: hard
-
-"@zeitgeistpm/substrate@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "@zeitgeistpm/substrate@npm:0.3.1"
-  dependencies:
-    "@polkadot/api": ^9.2.2
-    "@polkadot/extension-inject": ^0.44.6
-    "@polkadot/util": ^10.1.4
-    "@polkadot/util-crypto": ^10.1.4
-    fp-ts: ^2.12.2
-    io-ts: ^2.2.17
-    rollup-config: "*"
-    tsconfig: "*"
-  checksum: f793e97a0ae2df17feba31d6b19ea92a9f1aad037fff69fd7c52d5500804eb696359513f209d485ae048f019dfe60db85bd426f38a9cbd7288952d73c2e4561c
   languageName: node
   linkType: hard
 
@@ -4065,8 +3991,8 @@ __metadata:
     "@types/react": ^17.0.38
     "@types/react-color": ^3.0.6
     "@typescript-eslint/eslint-plugin": ^5.9.1
-    "@zeitgeistpm/avatara-nft-sdk": ^1.0.0-alpha.0
-    "@zeitgeistpm/avatara-react": ^0.3.2-alpha.0
+    "@zeitgeistpm/avatara-nft-sdk": ^1.0.0-alpha.1
+    "@zeitgeistpm/avatara-react": ^1.0.0-alpha.1
     "@zeitgeistpm/avatara-util": ^1.0.0-alpha.0
     "@zeitgeistpm/sdk": ^0.8.4
     autoprefixer: 10.2.5

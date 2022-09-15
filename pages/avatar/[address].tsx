@@ -69,19 +69,16 @@ const AvatarPage = observer(() => {
   );
 
   const loadData = async () => {
-    const [burnAmount, identity, tarotStats] = await Promise.all([
-      store.sdk.api.query.styx.burnAmount(),
-      getIdentity(address),
-      Tarot.fetchStatsForAddress(avatarContext, address),
-    ]);
+    getIdentity(address).then(setIdentity);
+    store.sdk.api.query.styx
+      .burnAmount()
+      .then((c) => setBurnAmount(c.toJSON() as number));
     if (avatarContext) {
       Avatar.fetchEarnedBadgesForAddress(avatarContext, address).then(
         setEarnedBadges,
       );
+      Tarot.fetchStatsForAddress(avatarContext, address).then(setTarotStats);
     }
-    setBurnAmount(burnAmount.toJSON() as number);
-    setIdentity(identity);
-    setTarotStats(tarotStats);
     if (store.wallets.activeAccount?.address) {
       const crossing = await store.sdk.api.query.styx.crossings(
         store.wallets.activeAccount.address,
@@ -182,7 +179,7 @@ const AvatarPage = observer(() => {
               <ZeitgeistAvatar
                 size="196px"
                 address={address}
-                deps={[mintingAvatar]}
+                deps={[mintingAvatar, address]}
                 style={{
                   zIndex: 0, // safari fix
                 }}
