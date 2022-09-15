@@ -88,6 +88,7 @@ const MyApp = observer(({ Component, pageProps }) => {
           avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,
           badgeCollectionId: process.env.NEXT_PUBLIC_BADGE_COLLECTION_ID,
           avatarBaseId: process.env.NEXT_PUBLIC_AVATAR_BASE_ID,
+          prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
         }}
       >
         <ModalStoreContext.Provider value={modalStore}>
