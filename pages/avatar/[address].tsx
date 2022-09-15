@@ -272,13 +272,18 @@ const AvatarPage = observer(() => {
       <h3 className="mb-ztg-40 font-space text-ztg-28-120 font-semibold">
         <span className="mr-4">Achievements</span>
       </h3>
-      <p className="text-gray-600 mb-ztg-38">
+      <p className="text-gray-600 mb-ztg-12">
         All badges earned for this account.{" "}
         <i>
           Includes all badges this user has earned even if the NFT has been
           traded or burnt.
         </i>
       </p>
+      <Link href={"/badges"}>
+        <div className="text-singular underline text-pink-600 cursor-pointer mb-ztg-38">
+          See all available badges.
+        </div>
+      </Link>
       {earnedBadges.length === 0 ? (
         <>
           <p className="text-gray-600 mb-ztg-38 italic">
