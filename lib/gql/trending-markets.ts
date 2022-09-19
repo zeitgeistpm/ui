@@ -108,7 +108,7 @@ const getTrendingMarkets = async (client: GraphQLClient) => {
           .map((b) => Number(b));
 
         const range = Number(bounds[1]) - Number(bounds[0]);
-
+        const significantDigits = bounds[1].toString().length;
         const longPrice = assets[0].price;
         const shortPrice = assets[1].price;
 
@@ -116,7 +116,9 @@ const getTrendingMarkets = async (client: GraphQLClient) => {
         const longPricePrediction = range * longPrice + bounds[0];
         const averagePricePrediction =
           (longPricePrediction + shortPricePrediction) / 2;
-        prediction = averagePricePrediction.toString();
+        prediction = new Decimal(averagePricePrediction)
+          .toSignificantDigits(significantDigits)
+          .toString();
       }
 
       const trendingMarket: TrendingMarketInfo = {

@@ -98,6 +98,7 @@ class MarketsStore {
       }
 
       await marketStore.initializeMarketData(marketData);
+      await marketStore.getAuthorityProxies();
       marketStore.startPolling();
       marketStore.subscribeToChainData();
       this.subscribeToMarketChanges(marketStore);

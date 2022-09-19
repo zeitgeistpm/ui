@@ -17,7 +17,7 @@ import DefaultLayout from "layouts/DefaultLayout";
 import AppLaunchLayout from "layouts/launch/AppLaunchLayout";
 import { AnimatePresence } from "framer-motion";
 import MobileMenu from "components/menu/MobileMenu";
-import { AvatarContext, defaultBsr } from "@zeitgeistpm/avatara-react";
+import { AvatarContext } from "@zeitgeistpm/avatara-react";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -88,6 +88,7 @@ const MyApp = observer(({ Component, pageProps }) => {
           avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,
           badgeCollectionId: process.env.NEXT_PUBLIC_BADGE_COLLECTION_ID,
           avatarBaseId: process.env.NEXT_PUBLIC_AVATAR_BASE_ID,
+          prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
         }}
       >
         <ModalStoreContext.Provider value={modalStore}>
@@ -95,8 +96,11 @@ const MyApp = observer(({ Component, pageProps }) => {
             <ModalContainer>{modalStore.modal}</ModalContainer>
           )}
           <Head>
-            <title>Zeitgeist Prediction Markets</title>
-            <meta name="description" content="Zeitgeist Prediction Markets" />
+            <title>The Zeitgeist Prediction Markets App</title>
+            <meta
+              name="description"
+              content="The application interface for Zeitgeist Prediction Markets. Built on Polkadot, Zeitgeist is the leader in decentralized prediction markets."
+            />
             <link
               rel="apple-touch-icon"
               sizes="180x180"
@@ -121,7 +125,9 @@ const MyApp = observer(({ Component, pageProps }) => {
               color="#5bbad5"
             />
           </Head>
-          {!process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE || launched ? (
+          {process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === "false" ||
+          process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === undefined ||
+          launched ? (
             <DefaultLayout>
               <AnimatePresence>
                 {store.showMobileMenu && <MobileMenu />}

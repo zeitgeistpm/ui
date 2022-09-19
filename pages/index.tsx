@@ -21,8 +21,10 @@ export async function getStaticProps() {
   const trendingMarkets = await getTrendingMarkets(client);
 
   if (!trendingMarkets || trendingMarkets.length === 0) {
-    //prevent rerender if server isn't returning markets
-    throw new Error("Unable to fetch trending markets");
+    // prevent rerender if server isn't returning markets
+    // commenting for now, as production currently has no trending
+    // markets and is failing to build
+    // throw new Error("Unable to fetch trending markets");
   }
 
   const categories = await getPopularCategories(client);

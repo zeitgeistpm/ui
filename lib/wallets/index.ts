@@ -3,10 +3,7 @@ import Decimal from "decimal.js";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { makeAutoObservable, reaction, runInAction } from "mobx";
-import {
-  decodeAddress,
-  encodeAddress,
-} from "@polkadot/util-crypto";
+import { decodeAddress, encodeAddress } from "@polkadot/util-crypto";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { PolkadotjsWallet } from "./polkadotjs-wallet";
 import { SubWallet } from "./subwallet";
@@ -260,9 +257,11 @@ export default class Wallets {
 
     this.balanceSubscription = await sdk.api.query.system.account(
       address,
-      ({ data: { free: currentFree } }) => {
+      ({ data: { free, miscFrozen } }) => {
         runInAction(() => {
-          this.activeBalance = new Decimal(currentFree.toString()).div(ZTG);
+          this.activeBalance = new Decimal(free.toString())
+            .minus(miscFrozen.toString())
+            .div(ZTG);
         });
       },
     );
