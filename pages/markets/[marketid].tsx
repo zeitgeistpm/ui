@@ -32,6 +32,8 @@ import { MultipleOutcomeEntry } from "lib/types/create-market";
 import { useUserStore } from "lib/stores/UserStore";
 import Decimal from "decimal.js";
 import { calcTotalAssetPrice } from "lib/util/pool";
+import { GraphQLClient } from "graphql-request";
+import { getMarketIds } from "lib/gql/markets";
 
 const LiquidityPill = observer(({ liquidity }: { liquidity: number }) => {
   const { config } = useStore();
@@ -73,6 +75,24 @@ const LiquidityPill = observer(({ liquidity }: { liquidity: number }) => {
     </div>
   );
 });
+
+export async function getStaticPaths() {
+  const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
+  const client = new GraphQLClient(url);
+  const marketIds = await getMarketIds(client);
+  console.log(marketIds);
+  const paths = marketIds.map((marketId) => ({
+    params: { marketid: marketId.toString() },
+  }));
+  console.log(paths);
+
+  return { paths, fallback: false };
+}
+
+export async function getStaticProps({ params }) {
+  console.log(params);
+  return { props: {} };
+}
 
 const MarketDetails = observer(() => {
   const router = useRouter();
