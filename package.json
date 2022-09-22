@@ -14,7 +14,10 @@
     "cy:open": "cypress open",
     "e2e:open": "NEXT_PUBLIC_TESTING_ENV=true start-test dev http://localhost:3000 cy:open",
     "e2e:run": "NEXT_PUBLIC_TESTING_ENV=true start-test dev http://localhost:3000 cy:run",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "analyze": "cross-env ANALYZE=true next build",
+    "analyze:server": "cross-env BUNDLE_ANALYZE=server next build",
+    "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build"
   },
   "resolutions": {
     "@types/react": "17.0.2",
@@ -23,6 +26,7 @@
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "@material-ui/lab": "^4.0.0-alpha.60",
+    "@next/bundle-analyzer": "^12.3.1",
     "@polkadot/extension-dapp": "^0.40.4",
     "@polkadot/keyring": "^9.4.1",
     "@polkadot/ui-keyring": "^2.4.1",
@@ -32,6 +36,7 @@
     "@zeitgeistpm/sdk": "^0.8.4",
     "axios": "^0.21.4",
     "boring-avatars": "^1.6.1",
+    "cross-env": "^7.0.3",
     "decimal.js": "^10.3.1",
     "dotenv": "^9.0.2",
     "fathom-client": "^3.2.0",
