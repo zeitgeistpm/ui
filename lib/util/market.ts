@@ -49,7 +49,7 @@ export const getAssetIds = (asset: Asset) => {
   } else if (asset.isScalarOutcome) {
     return {
       marketId: asset.asScalarOutcome[0],
-      assetId: asset.asScalarOutcome[1].isShort ? 0 : 1,
+      assetId: asset.asScalarOutcome[1].isShort ? 1 : 0,
     };
   }
 };
