@@ -123,7 +123,6 @@ const AvatarPage = observer(() => {
       <ClaimModal
         burnAmount={burnAmount}
         isTarotHolder={tarotStats?.nfts.length > 0}
-        hasCrossed={hasCrossed || tarotStats?.nfts.length > 0}
         address={address}
         onClaimSuccess={() => inventory.reset()}
         onClose={() => {
@@ -425,7 +424,6 @@ const ClaimModal = (props: {
   address: string;
   burnAmount: number;
   isTarotHolder: boolean;
-  hasCrossed: boolean;
   onClaimSuccess: () => void;
   onClose?: () => void;
 }) => {
@@ -437,6 +435,8 @@ const ClaimModal = (props: {
   const [isClaiming, setIsClaiming] = useState(false);
   const [fee, setFee] = useState<number>(null);
 
+  const [hasCrossed, setHasCrossed] = useState(false);
+
   const balance = store.wallets.activeBalance;
   const hasEnoughBalance = balance.greaterThan((props.burnAmount + fee) / ZTG);
 
@@ -444,6 +444,14 @@ const ClaimModal = (props: {
     () => store.sdk.api.tx.styx.cross(),
     [props.address, props.burnAmount],
   );
+
+  useEffect(() => {
+    store.sdk.api.query.styx
+      .crossings(store.wallets.activeAccount.address)
+      .then((crossing) => {
+        setHasCrossed(!crossing.isEmpty);
+      });
+  }, [props.address, isClaiming]);
 
   const doClaim = async () => {
     notificationStore.pushNotification("Minting Avatar.", {
@@ -465,7 +473,7 @@ const ClaimModal = (props: {
   const onClickBurn = async () => {
     setIsClaiming(true);
     try {
-      if (props.hasCrossed) {
+      if (hasCrossed) {
         try {
           await doClaim();
         } catch (error) {
@@ -540,7 +548,7 @@ const ClaimModal = (props: {
               : `To claim your right to mint an avatar you have to pay the ferryman
               due respect, burning ${props.burnAmount / ZTG} ZTG.`}
           </p>
-          {!props.hasCrossed ? (
+          {!hasCrossed ? (
             <div className="flex items-center">
               <div className="text-red-800 text-xs flex-1">
                 The amount will be burned(slashed) and not paid to any address.
@@ -578,7 +586,7 @@ const ClaimModal = (props: {
                 ) : (
                   <div className="flex items-center">
                     <span className="text-md">
-                      {props.hasCrossed
+                      {hasCrossed
                         ? "Claim"
                         : `Burn ${props.burnAmount / ZTG} ZTG`}
                     </span>
