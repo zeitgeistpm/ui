@@ -1,4 +1,8 @@
-module.exports = {
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
+
+module.exports = withBundleAnalyzer({
   experimental: {
     scrollRestoration: true,
   },
@@ -10,6 +14,14 @@ module.exports = {
       };
     }
 
+    config.externals = [
+      ...config.externals,
+      {
+        //"@substrate/connect": "SubstrateConnect",
+        "@substrate/smoldot-light": "SmoldotLightClient",
+      },
+    ];
+
     return config;
   },
-};
+});
