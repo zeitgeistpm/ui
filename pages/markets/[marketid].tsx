@@ -95,6 +95,7 @@ const MarketDetails = observer(() => {
   const [marketLoaded, setMarketLoaded] = useState(false);
   const [poolAlreadyDeployed, setPoolAlreadyDeployed] = useState(false);
   const [pool, setPool] = useState<CPool>();
+  const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
   const poolCost =
     poolRows && calculatePoolCost(poolRows.map((row) => Number(row.amount)));
@@ -159,11 +160,20 @@ const MarketDetails = observer(() => {
     const fetchAuthorizedReport = async (marketId: number) => {
       const report =
         await store.sdk.api.query.authorized.authorizedOutcomeReports(marketId);
-      console.log(report);
+      if (report.isEmpty === true) {
+        setAuthReportNumberOrId(null);
+      } else {
+        const reportJSON: any = report.toJSON();
+        if (reportJSON.scalar) {
+          setAuthReportNumberOrId(reportJSON.scalar);
+        } else {
+          setAuthReportNumberOrId(reportJSON.categorical);
+        }
+      }
     };
 
     fetchAuthorizedReport(marketStore.id);
-  }, [store.sdk.api, marketStore.id]);
+  }, [store.sdk.api, marketStore?.id]);
 
   const getPageData = async () => {
     let tblData: TableData[] = [];
@@ -438,7 +448,29 @@ const MarketDetails = observer(() => {
           </div>
         )
       )}
-
+      {marketStore?.is("Disputed") && authReportNumberOrId != null && (
+        <>
+          <div className="sub-header mt-ztg-40">Authorized Report</div>
+          {marketStore.type === "categorical" ? (
+            <Table
+              columns={columns}
+              data={
+                tableData?.find((data) => data.id === authReportNumberOrId)
+                  ? [
+                      tableData?.find(
+                        (data) => data.id === authReportNumberOrId,
+                      ),
+                    ]
+                  : []
+              }
+            />
+          ) : (
+            <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
+              {authReportNumberOrId}
+            </div>
+          )}
+        </>
+      )}
       {marketStore?.is("Reported") && (
         <>
           <div className="sub-header mt-ztg-40">Reported Outcome</div>
