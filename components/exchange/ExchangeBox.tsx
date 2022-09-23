@@ -279,6 +279,10 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
       setSelectedAssetOption(exchangeStore?.outcomeOption);
     }, [exchangeStore?.outcomeOption]);
 
+    useEffect(() => {
+      exchangeStore?.setMode(type);
+    }, [exchangeStore, type]);
+
     const recreateForm = () => {
       setExchangeForm(
         new MobxReactForm(
@@ -365,11 +369,11 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
     const tradeTooLarge = () => {
       return (
         (type === "buy" &&
-          exchangeStore.amount.greaterThanOrEqualTo(
+          exchangeStore.amount?.greaterThanOrEqualTo(
             exchangeStore.poolBalance,
           )) ||
         (type === "sell" &&
-          exchangeStore.amount.greaterThanOrEqualTo(
+          exchangeStore.amount?.greaterThanOrEqualTo(
             exchangeStore.ztgPoolBalance,
           ))
       );

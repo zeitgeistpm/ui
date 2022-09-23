@@ -116,11 +116,7 @@ const RightDrawer = observer(() => {
   const navigationStore = useNavigationStore();
   const { currentPage } = navigationStore;
   const tradeSlipStore = useTradeSlipStore();
-
-  const showSecondTab = () =>
-    navigationStore.checkPage("index") || navigationStore.checkPage("markets");
-
-  const [activeTabIndex, setActiveTabIndex] = useState(showSecondTab() ? 1 : 0);
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [market, setMarket] = useState<MarketStore | null>();
   const router = useRouter();
   const { marketid } = router.query;
@@ -176,14 +172,6 @@ const RightDrawer = observer(() => {
       }
     })();
   }, [marketid, markets]);
-
-  useEffect(() => {
-    if (showSecondTab()) {
-      setActiveTabIndex(1);
-    } else {
-      setActiveTabIndex(0);
-    }
-  }, [navigationStore.currentPage]);
 
   useEffect(() => {
     setActiveTabIndex(0);

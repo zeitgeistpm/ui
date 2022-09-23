@@ -121,7 +121,6 @@ const IdentitySettings = observer(() => {
       }),
     );
   };
-  console.log(wallets.activeAccount);
 
   const handleDisplayNameChange = (value: string) => {
     if (getBytesCount(value) <= 32) {

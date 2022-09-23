@@ -105,7 +105,7 @@ const MarketDetails = observer(() => {
       accessor: "token",
       type: "token",
     },
-    { header: "PRE", accessor: "pre", type: "percentage" },
+    { header: "Implied %", accessor: "pre", type: "percentage" },
     { header: "Total Value", accessor: "totalValue", type: "currency" },
     { header: "Outcome", accessor: "outcome", type: "text" },
     {
