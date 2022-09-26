@@ -2,10 +2,11 @@ import { Html, Head, Main, NextScript } from "next/document";
 import Script from "next/script";
 
 export default function Document() {
+  const environment = process.env.NEXT_PUBLIC_ENVIRONMENT_NAME;
   return (
     <Html className="overflow-x-hidden max-w-full">
       <Head>
-        {process.env.NEXT_PUBLIC_ENVIRONMENT_NAME === "Production" && (
+        {(environment === "Production" || environment == null) && (
           <>
             <Script id="google-analytics" strategy="afterInteractive">
               {`
