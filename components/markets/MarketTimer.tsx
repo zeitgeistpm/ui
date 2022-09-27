@@ -333,7 +333,7 @@ const MarketTimer = observer(
         totalTime: disputePeriodSec,
       },
       AuthorizedReport: {
-        title: "Market outcome reported by Authority",
+        title: "Market outcome reported",
         description: "",
         remainingTime: marketStore.disputeCooldownDuration,
         totalTime: disputePeriodSec,
