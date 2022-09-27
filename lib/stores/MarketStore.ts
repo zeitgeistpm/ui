@@ -117,7 +117,9 @@ class MarketStore {
 
     const proxies = res[0].map((item) => item.delegate);
 
-    this.authorityProxies = proxies;
+    runInAction(() => {
+      this.authorityProxies = proxies;
+    });
     return proxies;
   }
 

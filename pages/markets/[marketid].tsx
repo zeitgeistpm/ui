@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
+import { from } from "rxjs";
 import { extrinsicCallback } from "lib/util/tx";
 import { calculatePoolCost, get24HrPriceChange } from "lib/util/market";
 import { DAY_SECONDS, ZTG } from "lib/constants";
@@ -32,8 +33,6 @@ import { MultipleOutcomeEntry } from "lib/types/create-market";
 import { useUserStore } from "lib/stores/UserStore";
 import Decimal from "decimal.js";
 import { calcTotalAssetPrice } from "lib/util/pool";
-import { MarketOutcome } from "lib/types";
-import { async } from "rxjs";
 
 const LiquidityPill = observer(({ liquidity }: { liquidity: number }) => {
   const { config } = useStore();
@@ -149,7 +148,6 @@ const MarketDetails = observer(() => {
   }, [marketStore]);
 
   useEffect(() => {
-    console.log(marketStore?.id);
     if (
       marketStore?.id == null ||
       marketStore?.status === "Active" ||
@@ -165,15 +163,18 @@ const MarketDetails = observer(() => {
       } else {
         const reportJSON: any = report.toJSON();
         if (reportJSON.scalar) {
-          setAuthReportNumberOrId(reportJSON.scalar);
+          return reportJSON.scalar;
         } else {
-          setAuthReportNumberOrId(reportJSON.categorical);
+          return reportJSON.categorical;
         }
       }
     };
 
-    fetchAuthorizedReport(marketStore.id);
-  }, [store.sdk.api, marketStore?.id]);
+    const sub = from(fetchAuthorizedReport(marketStore.id)).subscribe((res) =>
+      setAuthReportNumberOrId(res),
+    );
+    return () => sub.unsubscribe();
+  }, [store.sdk.api, marketStore?.id, marketStore?.status]);
 
   const getPageData = async () => {
     let tblData: TableData[] = [];
@@ -422,7 +423,10 @@ const MarketDetails = observer(() => {
         )}
       </div>
       <div className="mb-ztg-20">
-        <MarketTimer marketStore={marketStore} />
+        <MarketTimer
+          marketStore={marketStore}
+          hasAuthReport={authReportNumberOrId != null}
+        />
       </div>
       {marketStore?.poolExists === true && graphQlEnabled === true ? (
         <div className="-ml-ztg-25">
