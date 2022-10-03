@@ -12,7 +12,11 @@ import {
   runInAction,
   when,
 } from "mobx";
-import { DEFAULT_SLIPPAGE_PERCENTAGE, ZTG } from "lib/constants";
+import {
+  DEFAULT_SLIPPAGE_PERCENTAGE,
+  ZTG,
+  MAX_IN_OUT_RATIO,
+} from "lib/constants";
 import { defaultOptions, defaultPlugins } from "lib/form";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import { compareJSON } from "lib/util";
@@ -127,16 +131,20 @@ export class TradeSlipBoxState {
     if (this.disabled || !this.init || this.trade?.currentPrice == null) {
       return;
     }
+    const poolBalance = this.assetPoolBalance;
+    const tradeablePoolBalance = poolBalance?.mul(MAX_IN_OUT_RATIO);
     if (this.type === "buy") {
-      const poolBalance = this.assetPoolBalance;
-      const balance = this.trade.ztgAccountBalance;
-      const maxAssets = balance.div(this.trade.currentPrice);
-      if (poolBalance?.lt(maxAssets)) {
-        return poolBalance.sub(0.1).toNumber();
+      const ztgBalance = this.trade.ztgAccountBalance;
+      const maxTokens = ztgBalance.div(this.trade.currentPrice);
+      if (tradeablePoolBalance?.lte(maxTokens)) {
+        return tradeablePoolBalance.toNumber();
       } else {
-        return maxAssets.toNumber();
+        return maxTokens.toNumber();
       }
     } else {
+      if (tradeablePoolBalance?.lte(this.assetBalance)) {
+        return tradeablePoolBalance.toNumber();
+      }
       return this.assetBalance?.toNumber();
     }
   }
@@ -691,7 +699,7 @@ export default class TradeSlipStore {
 
     if (item.type === "buy") {
       const maxAssetIn = item.ztgAccountBalance.mul(ZTG);
-      if (maxAssetIn.lte(0)) {
+      if (maxAssetIn.lte(0) || item.amount.gte(item.assetPoolBalance)) {
         return;
       }
 
