@@ -117,12 +117,17 @@ class MarketStore {
 
     const proxies = res[0].map((item) => item.delegate);
 
-    this.authorityProxies = proxies;
+    runInAction(() => {
+      this.authorityProxies = proxies;
+    });
     return proxies;
   }
 
   get disputeMechanism(): "authorized" | "other" {
-    if (isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
+    if (
+      this.market.disputeMechanism &&
+      isAuthorisedDisputeMechanism(this.market.disputeMechanism)
+    ) {
       return "authorized";
     } else {
       return "other";

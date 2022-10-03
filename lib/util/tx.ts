@@ -22,8 +22,8 @@ const processEvents = (
       failCallback({ index, error });
     }
     if (method === "BatchInterrupted" && failCallback) {
-      const { index, error } = data.toHuman()[1].Module;
-      failCallback({ index, error }, +data.toHuman()[0]);
+      const { index, error } = data.toHuman().error.Module;
+      failCallback({ index, error }, +data.toHuman().index);
     } else if (successCallback && method === successMethod) {
       const res = data.toHuman();
       successCallback(res);

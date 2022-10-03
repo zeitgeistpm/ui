@@ -155,6 +155,7 @@ const IndexPage: NextPage<{
           width={1036}
           height={374}
           quality={100}
+          priority
         />
       </GlitchImage>
       <TrendingMarkets markets={trendingMarkets} />

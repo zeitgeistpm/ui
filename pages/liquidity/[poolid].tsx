@@ -92,6 +92,7 @@ const PoolDetail = ({
 const PoolDetails: NextPage = observer(() => {
   const router = useRouter();
   const store = useStore();
+  const { ztgInfo } = store;
   const [tableData, setTableData] = useState<TableData[]>();
   const [pool, setPool] = useState<CPool | null>(null);
   const poolsStore = usePoolsStore();
@@ -201,7 +202,7 @@ const PoolDetails: NextPage = observer(() => {
         <PoolDetail
           header="Pool Value"
           middle={`${Math.round(pool.liquidity)} ${store.config.tokenSymbol}`}
-          bottom="$0"
+          bottom={`$${ztgInfo?.price.mul(pool.liquidity).toFixed(2)}`}
         />
         <PoolDetail
           className="mx-ztg-20"
