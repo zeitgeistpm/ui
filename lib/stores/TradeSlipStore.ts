@@ -28,7 +28,6 @@ import {
   generateSwapExactAmountInTx,
   generateSwapExactAmountOutTx,
 } from "lib/util/pool";
-import { IoMdGitMerge } from "react-icons/io";
 
 export type TradeSlipItem = {
   type: TradeType;
