@@ -109,7 +109,8 @@ const MarketTable = observer(
             />
           ),
         };
-      });
+      },
+    );
 
     const columns: TableColumn[] = [
       {
@@ -118,7 +119,7 @@ const MarketTable = observer(
         type: "token",
       },
       {
-        header: "pre",
+        header: "Implied %",
         accessor: "pre",
         type: "percentage",
       },

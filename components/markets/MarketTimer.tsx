@@ -15,6 +15,7 @@ type MarketStage =
   | "OpenReportWaiting"
   | "OpenReportCooldown"
   | "Disputed"
+  | "AuthorizedReport"
   | "Resolved";
 
 type MarketStageCopy = {
@@ -59,7 +60,7 @@ const MarketEventSummary = ({
 };
 
 const MarketTimer = observer(
-  ({ marketStore }: { marketStore: MarketStore }) => {
+  ({ marketStore, hasAuthReport }: { marketStore: MarketStore; hasAuthReport: boolean }) => {
     const store = useStore();
     const [marketStage, setMarketStage] = useState<MarketStage>();
     const [marketStageIndex, setMarketStageIndex] = useState<number>();
@@ -84,6 +85,9 @@ const MarketTimer = observer(
           return "OpenReportCooldown";
         }
       } else if (marketStore.status === "Disputed") {
+        if (hasAuthReport) {
+          return "AuthorizedReport"
+        }
         return "Disputed";
       } else if (marketStore.status === "Resolved") {
         return "Resolved";
@@ -325,6 +329,12 @@ const MarketTimer = observer(
       Disputed: {
         title: "Market outcome Disputed",
         description: "Waiting for authority to report",
+        remainingTime: marketStore.disputeCooldownDuration,
+        totalTime: disputePeriodSec,
+      },
+      AuthorizedReport: {
+        title: "Market outcome reported",
+        description: "",
         remainingTime: marketStore.disputeCooldownDuration,
         totalTime: disputePeriodSec,
       },

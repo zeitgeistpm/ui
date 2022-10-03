@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
+import { from } from "rxjs";
 import { extrinsicCallback } from "lib/util/tx";
 import { calculatePoolCost, get24HrPriceChange } from "lib/util/market";
 import { DAY_SECONDS, ZTG } from "lib/constants";
@@ -93,6 +94,7 @@ const MarketDetails = observer(() => {
   const [marketLoaded, setMarketLoaded] = useState(false);
   const [poolAlreadyDeployed, setPoolAlreadyDeployed] = useState(false);
   const [pool, setPool] = useState<CPool>();
+  const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
   const poolCost =
     poolRows && calculatePoolCost(poolRows.map((row) => Number(row.amount)));
@@ -103,7 +105,7 @@ const MarketDetails = observer(() => {
       accessor: "token",
       type: "token",
     },
-    { header: "PRE", accessor: "pre", type: "percentage" },
+    { header: "Implied %", accessor: "pre", type: "percentage" },
     { header: "Total Value", accessor: "totalValue", type: "currency" },
     { header: "Outcome", accessor: "outcome", type: "text" },
     {
@@ -144,6 +146,35 @@ const MarketDetails = observer(() => {
     }
     getPageData();
   }, [marketStore]);
+
+  useEffect(() => {
+    if (
+      marketStore?.id == null ||
+      marketStore?.status === "Active" ||
+      marketStore?.status === "Proposed"
+    ) {
+      return;
+    }
+    const fetchAuthorizedReport = async (marketId: number) => {
+      const report =
+        await store.sdk.api.query.authorized.authorizedOutcomeReports(marketId);
+      if (report.isEmpty === true) {
+        setAuthReportNumberOrId(null);
+      } else {
+        const reportJSON: any = report.toJSON();
+        if (reportJSON.scalar) {
+          return reportJSON.scalar;
+        } else {
+          return reportJSON.categorical;
+        }
+      }
+    };
+
+    const sub = from(fetchAuthorizedReport(marketStore.id)).subscribe((res) =>
+      setAuthReportNumberOrId(res),
+    );
+    return () => sub.unsubscribe();
+  }, [store.sdk.api, marketStore?.id, marketStore?.status]);
 
   const getPageData = async () => {
     let tblData: TableData[] = [];
@@ -392,7 +423,10 @@ const MarketDetails = observer(() => {
         )}
       </div>
       <div className="mb-ztg-20">
-        <MarketTimer marketStore={marketStore} />
+        <MarketTimer
+          marketStore={marketStore}
+          hasAuthReport={authReportNumberOrId != null}
+        />
       </div>
       {marketStore?.poolExists === true && graphQlEnabled === true ? (
         <div className="-ml-ztg-25">
@@ -418,7 +452,30 @@ const MarketDetails = observer(() => {
           </div>
         )
       )}
-      {marketStore?.is("Reported") || marketStore?.is("Disputed") ? (
+      {marketStore?.is("Disputed") && authReportNumberOrId != null && (
+        <>
+          <div className="sub-header mt-ztg-40">Authorized Report</div>
+          {marketStore.type === "categorical" ? (
+            <Table
+              columns={columns}
+              data={
+                tableData?.find((data) => data.id === authReportNumberOrId)
+                  ? [
+                      tableData?.find(
+                        (data) => data.id === authReportNumberOrId,
+                      ),
+                    ]
+                  : []
+              }
+            />
+          ) : (
+            <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
+              {authReportNumberOrId}
+            </div>
+          )}
+        </>
+      )}
+      {marketStore?.is("Reported") && (
         <>
           <div className="sub-header mt-ztg-40">Reported Outcome</div>
           {marketStore.type === "categorical" ? (
@@ -433,8 +490,22 @@ const MarketDetails = observer(() => {
             </div>
           )}
         </>
-      ) : (
-        <></>
+      )}
+      {marketStore?.is("Disputed") && (
+        <>
+          <div className="sub-header mt-ztg-40">Disputed Outcome</div>
+          {marketStore.type === "categorical" ? (
+            <Table columns={columns} data={getReportedOutcome()} />
+          ) : (
+            <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
+              {
+                //@ts-ignore
+                marketStore.lastDispute?.outcome.scalar ??
+                  marketStore.reportedScalarOutcome
+              }
+            </div>
+          )}
+        </>
       )}
       {marketStore?.is("Resolved") ? (
         <>
