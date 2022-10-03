@@ -54,26 +54,25 @@ export const getAssetIds = (asset: Asset) => {
   }
 };
 
-export const get24HrPriceChange = (
-  prices: {
-    newPrice: number;
-    timestamp: string;
-  }[],
-): number => {
+export interface PricePoint {
+  newPrice: number;
+  timestamp: string;
+}
+
+export const get24HrPriceChange = (prices: PricePoint[]): number => {
+  prices.sort(
+    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+  );
+
   const price24HrAgo = getPrice24HrAgo(prices);
-  const currentPrice = prices[0]?.newPrice;
+  const currentPrice = prices[prices.length - 1]?.newPrice;
 
   return price24HrAgo != null && currentPrice != null
     ? Math.round((currentPrice / price24HrAgo - 1) * 100)
     : 0;
 };
 
-export const getPrice24HrAgo = (
-  prices: {
-    newPrice: number;
-    timestamp: string;
-  }[],
-): number => {
+export const getPrice24HrAgo = (prices: PricePoint[]): number => {
   const daySeconds = 86400;
   const oneDayAgoTimestamp = new Date().getTime() - daySeconds * 1000;
 
