@@ -49,6 +49,7 @@ interface Config {
   };
   swaps: {
     minLiquidity: number;
+    exitFee: number;
   };
   identity: {
     basicDeposit: number;
@@ -333,6 +334,7 @@ export default class Store {
       },
       swaps: {
         minLiquidity: this.codecToNumber(consts.swaps.minLiquidity) / ZTG,
+        exitFee: this.codecToNumber(consts.swaps.exitFee) / ZTG,
       },
       identity: {
         basicDeposit: this.codecToNumber(consts.identity.basicDeposit) / ZTG,
