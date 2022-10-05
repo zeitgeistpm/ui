@@ -34,7 +34,7 @@ import { useUserStore } from "lib/stores/UserStore";
 import Decimal from "decimal.js";
 import { calcTotalAssetPrice } from "lib/util/pool";
 import { GraphQLClient } from "graphql-request";
-import { getMarketIds } from "lib/gql/markets";
+import { getMarket, getMarketIds } from "lib/gql/markets";
 
 const LiquidityPill = observer(({ liquidity }: { liquidity: number }) => {
   const { config } = useStore();
@@ -87,15 +87,25 @@ export async function getStaticPaths() {
   }));
   console.log(paths);
 
+  // return { paths, fallback: "blocking" };
   return { paths, fallback: false };
 }
 
 export async function getStaticProps({ params }) {
-  console.log(params);
-  return { props: {} };
+  const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
+  const client = new GraphQLClient(url);
+
+  const market = await getMarket(client, params.marketid);
+  return {
+    props: {
+      indexedMarket: market,
+    },
+    revalidate: 10 * 60, //10min
+  };
 }
 
-const MarketDetails = observer(() => {
+const MarketDetails = observer(({ indexedMarket }) => {
+  console.log(indexedMarket);
   const router = useRouter();
   const { marketid } = router.query;
   const store = useStore();
@@ -169,6 +179,7 @@ const MarketDetails = observer(() => {
 
   useEffect(() => {
     if (
+      store.sdk?.api == null ||
       marketStore?.id == null ||
       marketStore?.status === "Active" ||
       marketStore?.status === "Proposed"
@@ -194,7 +205,7 @@ const MarketDetails = observer(() => {
       setAuthReportNumberOrId(res),
     );
     return () => sub.unsubscribe();
-  }, [store.sdk.api, marketStore?.id, marketStore?.status]);
+  }, [store.sdk?.api, marketStore?.id, marketStore?.status]);
 
   const getPageData = async () => {
     let tblData: TableData[] = [];
@@ -393,6 +404,8 @@ const MarketDetails = observer(() => {
 
   return (
     <div>
+      <div>{indexedMarket.slug}</div>
+
       <div className="flex mb-ztg-33">
         <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600">
           {marketStore?.img ? (
