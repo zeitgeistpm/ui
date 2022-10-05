@@ -55,6 +55,9 @@ interface Config {
     basicDeposit: number;
     fieldDeposit: number;
   };
+  balances: {
+    existentialDeposit: number;
+  }
 }
 
 interface ZTGInfo {
@@ -339,6 +342,10 @@ export default class Store {
       identity: {
         basicDeposit: this.codecToNumber(consts.identity.basicDeposit) / ZTG,
         fieldDeposit: this.codecToNumber(consts.identity.fieldDeposit) / ZTG,
+      },
+      balances: {
+        existentialDeposit:
+          this.codecToNumber(consts.balances.existentialDeposit) / ZTG,
       },
     };
 
