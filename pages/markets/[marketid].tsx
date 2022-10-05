@@ -95,7 +95,9 @@ export async function getStaticProps({ params }) {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
 
-  const market = await getMarket(client, params.marketid);
+  const market = await getMarket(client, params.marketid).catch((e) =>
+    console.log(e),
+  );
   return {
     props: {
       indexedMarket: market,
