@@ -92,7 +92,7 @@ const LiquidityPoolsBox = observer(() => {
   };
 
   useEffect(() => {
-    if (!wallets.connected) {
+    if (!wallets.connected || poolsStore.chainPoolIndex.length === 0) {
       return;
     }
     (async () => {
@@ -102,7 +102,7 @@ const LiquidityPoolsBox = observer(() => {
         pool != null && loadPoolDetails(pool);
       }
     })();
-  }, [poolId, wallets.connected]);
+  }, [poolId, wallets.connected, poolsStore.chainPoolIndex]);
 
   useEffect(() => {
     if (assets.length > 0) {
