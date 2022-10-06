@@ -2,13 +2,13 @@ import { makeAutoObservable, reaction, runInAction } from "mobx";
 import {
   EndpointOption,
   JSONObject,
-  Primitive,
   SupportedParachain,
 } from "lib/types";
 import Store, { useStore } from "./Store";
 import { endpoints, gqlEndpoints } from "lib/constants";
 import { TradeSlipItem } from "./TradeSlipStore";
 import ipRangeCheck from "ip-range-check";
+import { getFromLocalStorage, setToLocalStorage } from "./utils/localStorage";
 
 export type Theme = "dark" | "light";
 
@@ -30,26 +30,6 @@ export interface UserIdentity {
 
 export type HelperNotifications = {
   avatarKsmFeesInfo: boolean;
-};
-
-interface RawValue {
-  Raw: string;
-}
-
-const getFromLocalStorage = (
-  key: string,
-  defaultValue: JSONObject,
-): JSONObject => {
-  const val = window.localStorage.getItem(key);
-  if (val == null && defaultValue) {
-    return defaultValue;
-  }
-  return JSON.parse(val);
-};
-
-const setToLocalStorage = (key: string, value: JSONObject | Primitive) => {
-  const val = JSON.stringify(value);
-  window.localStorage.setItem(key, val);
 };
 
 type StoredTheme = Theme | "system";

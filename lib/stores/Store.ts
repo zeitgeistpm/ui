@@ -26,6 +26,7 @@ import PoolsStore from "./PoolsStore";
 import ExchangeStore from "./ExchangeStore";
 import CourtStore from "./CourtStore";
 import Wallets from "../wallets";
+import ConnectionStore from "./ConnectionStore";
 
 interface Config {
   tokenSymbol: string;
@@ -62,6 +63,8 @@ interface ZTGInfo {
 }
 
 export default class Store {
+  // manages the external connections of the app
+  connectionStore = new ConnectionStore(this);
   userStore = new UserStore(this);
   notificationStore = new NotificationStore();
   navigationStore = new NavigationStore(this);
@@ -182,7 +185,8 @@ export default class Store {
   }
 
   async initialize() {
-    this.userStore.init();
+    this.userStore.init();  // TODO: move this to separate function; it's
+    // not in the critical path for the rest of the logic contained within.
 
     try {
       await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);

@@ -9,6 +9,7 @@ import {
   SupportedParachain,
 } from "./types";
 
+// Ten zeroes to represent a single ZTG.
 export const ZTG = 10 ** 10;
 
 export const DEFAULT_SLIPPAGE_PERCENTAGE =
@@ -62,6 +63,19 @@ export const endpoints: EndpointOption[] = [
     parachain: SupportedParachain.CUSTOM,
   },
 ];
+
+export const KNOWN_ENDPOINTS = {
+  Kusama: [
+    {
+      label: "Equipoise",
+      url: 'wss://rpc-0.zeitgeist.pm'
+    }
+  ],
+  BatteryStation: [
+
+  ],
+  LocalHost: 'ws://127.0.0.1:9944',
+}
 
 export const gqlEndpoints: EndpointOption[] = [
   {
