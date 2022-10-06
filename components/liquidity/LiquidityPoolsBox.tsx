@@ -1,6 +1,6 @@
 import { Skeleton } from "@material-ui/lab";
 import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
+import { DEFAULT_SLIPPAGE_PERCENTAGE, ZTG } from "lib/constants";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
 import React, { ChangeEvent, useEffect, useState } from "react";
@@ -12,6 +12,7 @@ import { extrinsicCallback } from "lib/util/tx";
 import LiquidityCell from "../liquidity/LiquidityCell";
 import Slider from "../ui/Slider";
 import TransactionButton from "../ui/TransactionButton";
+import SlippageSettingInput from "../markets/SlippageInput";
 
 interface Asset {
   amount?: Decimal;
@@ -36,13 +37,17 @@ const LiquidityPoolsBox = observer(() => {
   const [usersPoolShares, setUsersPoolShares] = useState<Decimal>(
     new Decimal(0),
   );
+  const [slippagePercentage, setSlippagePercentage] = useState(
+    DEFAULT_SLIPPAGE_PERCENTAGE.toString(),
+  );
+  const slippage = new Decimal(slippagePercentage).div(100);
   const [pool, setPool] = useState<CPool>();
   const [showSkeleton, setShowSkeleton] = useState(true);
   const notificationStore = useNotificationStore();
   const router = useRouter();
   const store = useStore();
 
-  const { wallets } = store;
+  const { wallets, config } = store;
 
   const poolsStore = usePoolsStore();
 
@@ -87,7 +92,7 @@ const LiquidityPoolsBox = observer(() => {
   };
 
   useEffect(() => {
-    if (!wallets.connected) {
+    if (!wallets.connected || poolsStore.chainPoolIndex.length === 0) {
       return;
     }
     (async () => {
@@ -97,7 +102,7 @@ const LiquidityPoolsBox = observer(() => {
         pool != null && loadPoolDetails(pool);
       }
     })();
-  }, [poolId, wallets.connected]);
+  }, [poolId, wallets.connected, poolsStore.chainPoolIndex]);
 
   useEffect(() => {
     if (assets.length > 0) {
@@ -163,16 +168,16 @@ const LiquidityPoolsBox = observer(() => {
     const signer = wallets.getActiveSigner();
 
     if (joinPool === true && isValidJoin(assets) === true) {
+      const slippageMul = slippage.add(1);
       const amountsIn = assets.map((asset) =>
-        new Decimal(new Decimal(asset.amount).toFixed(2, Decimal.ROUND_UP))
-          .mul(10 ** 10)
-          .toString(),
+        new Decimal(asset.amount)
+          .mul(slippageMul)
+          .mul(ZTG)
+          .toFixed(0, Decimal.ROUND_UP),
       );
-      const sharesOut = new Decimal(
-        new Decimal(sharesToRecieve).toFixed(2, Decimal.ROUND_DOWN),
-      )
-        .mul(10 ** 10)
-        .toString();
+      const sharesOut = new Decimal(sharesToRecieve)
+        .mul(ZTG)
+        .toFixed(0, Decimal.ROUND_DOWN);
 
       await pool.pool.joinPool(
         signer,
@@ -188,16 +193,20 @@ const LiquidityPoolsBox = observer(() => {
       joinPool === false &&
       new Decimal(poolSharesAmount).lessThanOrEqualTo(usersPoolShares)
     ) {
+      const slippageMul = new Decimal(1)
+        .sub(config.swaps.exitFee)
+        .sub(slippage);
+
       const amountsOut = assets.map((asset) =>
-        new Decimal(new Decimal(asset.amount).toFixed(1, Decimal.ROUND_DOWN))
-          .mul(10 ** 10)
-          .toString(),
+        new Decimal(asset.amount)
+          .mul(slippageMul)
+          .mul(ZTG)
+          .toFixed(0, Decimal.ROUND_DOWN),
       );
-      const sharesIn = new Decimal(
-        new Decimal(poolSharesAmount).toFixed(1, Decimal.ROUND_UP),
-      )
-        .mul(10 ** 10)
-        .toString();
+
+      const sharesIn = new Decimal(poolSharesAmount)
+        .mul(ZTG)
+        .toFixed(0, Decimal.ROUND_UP);
 
       await pool.pool.exitPool(
         signer,
@@ -207,7 +216,12 @@ const LiquidityPoolsBox = observer(() => {
           `Swapped ${Number(poolSharesAmount).toFixed(
             1,
           )} Pool Shares for ${assets
-            .map((asset) => `${asset.amount.toFixed(1)} ${asset.name}`)
+            .map(
+              (asset) =>
+                `${asset.amount.mul(1 - config.swaps.exitFee).toFixed(2)} ${
+                  asset.name
+                }`,
+            )
             .join(", ")}`,
         ),
       );
@@ -335,7 +349,18 @@ const LiquidityPoolsBox = observer(() => {
       }
     }
 
-    if (!poolSharesAmount) return false;
+    if (!poolSharesAmount || new Decimal(poolSharesAmount).eq(0)) return false;
+
+    // If market is active total pool shares cannot drop below existential
+    // deposit. This will prevent execution of an extrinsic that will fail
+    if (
+      totalPoolShares
+        .sub(config.balances.existentialDeposit)
+        .lte(poolSharesAmount) &&
+      pool?.market.status === "Active"
+    ) {
+      return false;
+    }
 
     if (usersPoolShares.lessThan(poolSharesAmount)) {
       return false;
@@ -359,7 +384,7 @@ const LiquidityPoolsBox = observer(() => {
 
   return (
     <div className="p-ztg-15 rounded-ztg-10 text-sky-600 bg-white dark:bg-sky-1000">
-      <div className="font-space font-bold text-ztg-14-150">
+      <div className="font-space font-bold text-ztg-14-150 flex">
         {pool?.pool?.status !== "Stale" ? (
           <span
             onClick={handleJoinPoolClick}
@@ -378,6 +403,12 @@ const LiquidityPoolsBox = observer(() => {
         >
           Exit
         </span>
+        <SlippageSettingInput
+          value={slippagePercentage}
+          label="slippage"
+          onChange={(v) => setSlippagePercentage(v)}
+          className="ml-auto font-medium font-lato"
+        />
       </div>
       {/* <Switch
         leftLabel="Join Pool"
@@ -427,8 +458,15 @@ const LiquidityPoolsBox = observer(() => {
             min="0"
           /> */}
           </label>
-          <div className="flex flex-col items-center my-4 mx-2">
+          <div className="flex flex-col items-center mt-3 mb-2 mx-2">
             <Slider onChange={handlePercentageChange} value={percentage} />
+          </div>
+          <div className="h-ztg-18 flex px-ztg-8 mb-[6px] justify-between text-ztg-12-150 font-bold">
+            <span>Exit Fee:</span>
+            <span className="font-mono">{config.swaps.exitFee * 100} %</span>
+          </div>
+          <div className="text-ztg-12-150 px-[8px] my-[8px]">
+            The amount of each withdrawn asset is reduced by this percentage.
           </div>
         </>
       ) : (
@@ -452,10 +490,6 @@ const LiquidityPoolsBox = observer(() => {
       >
         {joinPool === true ? "Add Liquidity" : "Remove Liquidity"}
       </TransactionButton>
-      {/* <div className="h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold">
-        <span>Exchange Fee:</span>
-        <span className="font-mono">2000,78687</span>
-      </div> */}
     </div>
   );
 });
