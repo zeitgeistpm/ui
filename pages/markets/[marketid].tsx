@@ -1,92 +1,55 @@
-// import { useRouter } from "next/router";
-// import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { observer } from "mobx-react";
-// import { from } from "rxjs";
-// import { extrinsicCallback } from "lib/util/tx";
-// import { calculatePoolCost, get24HrPriceChange } from "lib/util/market";
-// import { DAY_SECONDS, ZTG } from "lib/constants";
+import { from } from "rxjs";
+import { extrinsicCallback } from "lib/util/tx";
+import { calculatePoolCost, get24HrPriceChange } from "lib/util/market";
+import { DAY_SECONDS, ZTG } from "lib/constants";
 import { useStore } from "lib/stores/Store";
-// import { useNotificationStore } from "lib/stores/NotificationStore";
-// import MarketStore from "lib/stores/MarketStore";
-// import { useNavigationStore } from "lib/stores/NavigationStore";
-// import { useMarketsStore } from "lib/stores/MarketsStore";
-// import PoolSettings, {
-//   PoolAssetRowData,
-//   poolRowDataFromOutcomes,
-// } from "components/liquidity/PoolSettings";
-// import Table, { TableColumn, TableData } from "components/ui/Table";
+import { useNotificationStore } from "lib/stores/NotificationStore";
+import MarketStore from "lib/stores/MarketStore";
+import { useNavigationStore } from "lib/stores/NavigationStore";
+import { useMarketsStore } from "lib/stores/MarketsStore";
+import PoolSettings, {
+  PoolAssetRowData,
+  poolRowDataFromOutcomes,
+} from "components/liquidity/PoolSettings";
+import Table, { TableColumn, TableData } from "components/ui/Table";
 import Pill from "components/ui/Pill";
-// import TimeSeriesChart, {
-//   ChartData,
-//   ChartSeries,
-// } from "components/ui/TimeSeriesChart";
-// import FullSetButtons from "components/markets/FullSetButtons";
-// import TransactionButton from "components/ui/TransactionButton";
-// import { AlertTriangle } from "react-feather";
-// import Link from "next/link";
-// import MarketTimer from "components/markets/MarketTimer";
-// import AssetActionButtons from "components/assets/AssetActionButtons";
-// import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
-// import NotFoundPage from "pages/404";
-// import MarketAddresses from "components/markets/MarketAddresses";
-// import { MultipleOutcomeEntry } from "lib/types/create-market";
-// import { useUserStore } from "lib/stores/UserStore";
-// import Decimal from "decimal.js";
-// import { calcTotalAssetPrice } from "lib/util/pool";
+import TimeSeriesChart, {
+  ChartData,
+  ChartSeries,
+} from "components/ui/TimeSeriesChart";
+import FullSetButtons from "components/markets/FullSetButtons";
+import TransactionButton from "components/ui/TransactionButton";
+import { AlertTriangle } from "react-feather";
+import Link from "next/link";
+import MarketTimer from "components/markets/MarketTimer";
+import AssetActionButtons from "components/assets/AssetActionButtons";
+import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
+import NotFoundPage from "pages/404";
+import MarketAddresses from "components/markets/MarketAddresses";
+import { MultipleOutcomeEntry } from "lib/types/create-market";
+import { useUserStore } from "lib/stores/UserStore";
+import Decimal from "decimal.js";
+import { calcTotalAssetPrice } from "lib/util/pool";
 import { GraphQLClient } from "graphql-request";
 import { getMarket, getMarketIds } from "lib/gql/markets";
 import { NextPage } from "next";
-
-// const LiquidityPill = observer(({ liquidity }: { liquidity: number }) => {
-//   const { config } = useStore();
-//   const [hoveringInfo, setHoveringInfo] = useState<boolean>(false);
-
-//   const handleMouseEnter = () => {
-//     setHoveringInfo(true);
-//   };
-
-//   const handleMouseLeave = () => {
-//     setHoveringInfo(false);
-//   };
-//   return (
-//     <div className="relative w-full">
-//       <Pill
-//         title="Liquidity"
-//         value={`${Math.round(liquidity)} ${config.tokenSymbol}`}
-//       >
-//         {liquidity < 100 ? (
-//           <span
-//             onMouseEnter={handleMouseEnter}
-//             onMouseLeave={handleMouseLeave}
-//             className="bg-vermilion text-white rounded-ztg-5 px-ztg-5 ml-ztg-10"
-//           >
-//             LOW
-//           </span>
-//         ) : (
-//           <></>
-//         )}
-//       </Pill>
-//       {hoveringInfo === true ? (
-//         <div className="bg-sky-100 dark:bg-border-dark absolute left-ztg-100 rounded-ztg-10 text-black dark:text-white px-ztg-8 py-ztg-14 font-lato text-ztg-12-150 w-ztg-240">
-//           This market has low liquidity. Price slippage will be high for small
-//           trades and larger trades may be impossible
-//         </div>
-//       ) : (
-//         <></>
-//       )}
-//     </div>
-//   );
-// });
+import LiquidityPill from "components/markets/LiquidityPill";
 
 export async function getStaticPaths() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
   const marketIds = await getMarketIds(client);
-  console.log(marketIds);
-  const paths = marketIds.map((marketId) => ({
-    params: { marketid: marketId.toString() },
-  }));
-  console.log(paths);
+  // const paths = marketIds.map((marketId) => ({
+  //   params: { marketid: marketId.toString() },
+  // }));
+  const paths = [
+    {
+      params: { marketid: "161" },
+    },
+  ];
 
   // return { paths, fallback: "blocking" };
   return { paths, fallback: false };
@@ -95,328 +58,332 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
+  console.log("current:", params.marketid);
 
-  const market = await getMarket(client, params.marketid).catch((e) =>
-    console.log(e),
-  );
+  const market = await getMarket(client, params.marketid);
   return {
     props: {
       indexedMarket: market,
     },
-    revalidate: 10 * 60, //10min
+    // revalidate: 10 * 60, //10minx
   };
 }
 
+const Markets: NextPage<{ indexedMarket: any }> = ({ indexedMarket }) => {
+  console.log(indexedMarket);
+
+  return <div>{indexedMarket?.slug}</div>;
+};
+
 const MarketDetails: NextPage<{ indexedMarket: any }> = observer(
   ({ indexedMarket }) => {
-    console.log(indexedMarket);
-    // const router = useRouter();
-    // const { marketid } = router.query;
-    // const store = useStore();
-    // const { graphQlEnabled } = useUserStore();
-    // const notificationStore = useNotificationStore();
-    // const navigationStore = useNavigationStore();
-    // const marketsStore = useMarketsStore();
-    // const poolStore = usePoolsStore();
-    // const [chartData, setChartData] = useState<ChartData[]>([]);
-    // const [chartSeries, setChartSeries] = useState<ChartSeries[]>([]);
-    // const [marketStore, setMarketStore] = useState<MarketStore>();
-    // const [tableData, setTableData] = useState<TableData[]>();
-    // const [poolRows, setPoolRows] = useState<PoolAssetRowData[]>();
-    // const [swapFee, setSwapFee] = useState<string>();
-    // const [prizePool, setPrizePool] = useState<string>();
-    // const [marketLoaded, setMarketLoaded] = useState(false);
-    // const [poolAlreadyDeployed, setPoolAlreadyDeployed] = useState(false);
-    // const [pool, setPool] = useState<CPool>();
-    // const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
+    const router = useRouter();
+    const { marketid } = router.query;
+    const store = useStore();
+    const { graphQlEnabled } = useUserStore();
+    const notificationStore = useNotificationStore();
+    const navigationStore = useNavigationStore();
+    const marketsStore = useMarketsStore();
+    const poolStore = usePoolsStore();
+    const [chartData, setChartData] = useState<ChartData[]>([]);
+    const [chartSeries, setChartSeries] = useState<ChartSeries[]>([]);
+    const [marketStore, setMarketStore] = useState<MarketStore>();
+    const [tableData, setTableData] = useState<TableData[]>();
+    const [poolRows, setPoolRows] = useState<PoolAssetRowData[]>();
+    const [swapFee, setSwapFee] = useState<string>();
+    const [prizePool, setPrizePool] = useState<string>();
+    const [marketLoaded, setMarketLoaded] = useState(false);
+    const [poolAlreadyDeployed, setPoolAlreadyDeployed] = useState(false);
+    const [pool, setPool] = useState<CPool>();
+    const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
-    // const poolCost =
-    //   poolRows && calculatePoolCost(poolRows.map((row) => Number(row.amount)));
+    const poolCost =
+      poolRows && calculatePoolCost(poolRows.map((row) => Number(row.amount)));
 
-    // const columns: TableColumn[] = [
-    //   {
-    //     header: "Token",
-    //     accessor: "token",
-    //     type: "token",
-    //   },
-    //   { header: "Implied %", accessor: "pre", type: "percentage" },
-    //   { header: "Total Value", accessor: "totalValue", type: "currency" },
-    //   { header: "Outcome", accessor: "outcome", type: "text" },
-    //   {
-    //     header: "24Hr Change",
-    //     accessor: "change",
-    //     type: "change",
-    //     width: "120px",
-    //   },
-    //   {
-    //     header: "",
-    //     accessor: "buttons",
-    //     type: "component",
-    //     width: "140px",
-    //   },
-    // ];
+    const columns: TableColumn[] = [
+      {
+        header: "Token",
+        accessor: "token",
+        type: "token",
+      },
+      { header: "Implied %", accessor: "pre", type: "percentage" },
+      { header: "Total Value", accessor: "totalValue", type: "currency" },
+      { header: "Outcome", accessor: "outcome", type: "text" },
+      {
+        header: "24Hr Change",
+        accessor: "change",
+        type: "change",
+        width: "120px",
+      },
+      {
+        header: "",
+        accessor: "buttons",
+        type: "component",
+        width: "140px",
+      },
+    ];
 
-    // useEffect(() => {
-    //   navigationStore.setPage("marketDetails");
-    //   (async () => {
-    //     const market = await marketsStore?.getMarket(Number(marketid));
-    //     if (market != null) {
-    //       setMarketStore(market);
-    //       setMarketLoaded(true);
-    //       setPoolAlreadyDeployed(market.poolExists);
-    //     }
-    //   })();
-    // }, [marketsStore]);
+    useEffect(() => {
+      navigationStore.setPage("marketDetails");
+      (async () => {
+        const market = await marketsStore?.getMarket(Number(marketid));
+        if (market != null) {
+          setMarketStore(market);
+          setMarketLoaded(true);
+          setPoolAlreadyDeployed(market.poolExists);
+        }
+      })();
+    }, [marketsStore]);
 
-    // useEffect(() => {
-    //   if (marketLoaded && poolAlreadyDeployed) {
-    //     getPageData();
-    //   }
-    // }, [marketStore?.pool]);
+    useEffect(() => {
+      if (marketLoaded && poolAlreadyDeployed) {
+        getPageData();
+      }
+    }, [marketStore?.pool]);
 
-    // useEffect(() => {
-    //   if (marketStore == null) {
-    //     return;
-    //   }
-    //   getPageData();
-    // }, [marketStore]);
+    useEffect(() => {
+      if (marketStore == null) {
+        return;
+      }
+      getPageData();
+    }, [marketStore]);
 
-    // useEffect(() => {
-    //   if (
-    //     store.sdk?.api == null ||
-    //     marketStore?.id == null ||
-    //     marketStore?.status === "Active" ||
-    //     marketStore?.status === "Proposed"
-    //   ) {
-    //     return;
-    //   }
-    //   const fetchAuthorizedReport = async (marketId: number) => {
-    //     const report =
-    //       await store.sdk.api.query.authorized.authorizedOutcomeReports(
-    //         marketId,
-    //       );
-    //     if (report.isEmpty === true) {
-    //       setAuthReportNumberOrId(null);
-    //     } else {
-    //       const reportJSON: any = report.toJSON();
-    //       if (reportJSON.scalar) {
-    //         return reportJSON.scalar;
-    //       } else {
-    //         return reportJSON.categorical;
-    //       }
-    //     }
-    //   };
+    useEffect(() => {
+      if (
+        store.sdk?.api == null ||
+        marketStore?.id == null ||
+        marketStore?.status === "Active" ||
+        marketStore?.status === "Proposed"
+      ) {
+        return;
+      }
+      const fetchAuthorizedReport = async (marketId: number) => {
+        const report =
+          await store.sdk.api.query.authorized.authorizedOutcomeReports(
+            marketId,
+          );
+        if (report.isEmpty === true) {
+          setAuthReportNumberOrId(null);
+        } else {
+          const reportJSON: any = report.toJSON();
+          if (reportJSON.scalar) {
+            return reportJSON.scalar;
+          } else {
+            return reportJSON.categorical;
+          }
+        }
+      };
 
-    //   const sub = from(fetchAuthorizedReport(marketStore.id)).subscribe((res) =>
-    //     setAuthReportNumberOrId(res),
-    //   );
-    //   return () => sub.unsubscribe();
-    // }, [store.sdk?.api, marketStore?.id, marketStore?.status]);
+      const sub = from(fetchAuthorizedReport(marketStore.id)).subscribe((res) =>
+        setAuthReportNumberOrId(res),
+      );
+      return () => sub.unsubscribe();
+    }, [store.sdk?.api, marketStore?.id, marketStore?.status]);
 
-    // const getPageData = async () => {
-    //   let tblData: TableData[] = [];
+    const getPageData = async () => {
+      let tblData: TableData[] = [];
 
-    //   const market = marketStore;
+      const market = marketStore;
 
-    //   if (market.poolExists) {
-    //     const prizePool = await market.getPrizePool();
-    //     setPrizePool(prizePool);
+      if (market.poolExists) {
+        const prizePool = await market.getPrizePool();
+        setPrizePool(prizePool);
 
-    //     const { poolId } = market.pool;
+        const { poolId } = market.pool;
 
-    //     // poolid is incorrectly typed, it's actually a string
-    //     const pool = await poolStore.getPoolFromChain(Number(poolId));
-    //     if (!pool) return;
-    //     setPool(pool);
+        // poolid is incorrectly typed, it's actually a string
+        const pool = await poolStore.getPoolFromChain(Number(poolId));
+        if (!pool) return;
+        setPool(pool);
 
-    //     const series: ChartSeries[] = [];
-    //     let chartData: ChartData[] = [];
+        const series: ChartSeries[] = [];
+        let chartData: ChartData[] = [];
 
-    //     const dateOneWeekAgo = new Date(
-    //       new Date().getTime() - DAY_SECONDS * 28 * 1000,
-    //     ).toISOString();
+        const dateOneWeekAgo = new Date(
+          new Date().getTime() - DAY_SECONDS * 28 * 1000,
+        ).toISOString();
 
-    //     const totalAssetPrice = calcTotalAssetPrice(pool);
+        const totalAssetPrice = calcTotalAssetPrice(pool);
 
-    //     for (const [index, assetId] of Array.from(
-    //       market.outcomeAssetIds.entries(),
-    //     )) {
-    //       const ticker = market.outcomesMetadata[index]["ticker"];
-    //       const color = market.outcomesMetadata[index]["color"] || "#ffffff";
-    //       const outcomeName = market.outcomesMetadata[index]["name"];
-    //       const currentPrice = pool.assets[index].price;
+        for (const [index, assetId] of Array.from(
+          market.outcomeAssetIds.entries(),
+        )) {
+          const ticker = market.outcomesMetadata[index]["ticker"];
+          const color = market.outcomesMetadata[index]["color"] || "#ffffff";
+          const outcomeName = market.outcomesMetadata[index]["name"];
+          const currentPrice = pool.assets[index].price;
 
-    //       let priceHistory: {
-    //         newPrice: number;
-    //         timestamp: string;
-    //       }[];
-    //       if (graphQlEnabled === true) {
-    //         priceHistory = await store.sdk.models.getAssetPriceHistory(
-    //           market.id,
-    //           //@ts-ignore
-    //           assetId.categoricalOutcome?.[1] ?? assetId.scalarOutcome?.[1],
-    //           dateOneWeekAgo,
-    //         );
+          let priceHistory: {
+            newPrice: number;
+            timestamp: string;
+          }[];
+          if (graphQlEnabled === true) {
+            priceHistory = await store.sdk.models.getAssetPriceHistory(
+              market.id,
+              //@ts-ignore
+              assetId.categoricalOutcome?.[1] ?? assetId.scalarOutcome?.[1],
+              dateOneWeekAgo,
+            );
 
-    //         series.push({
-    //           accessor: "v" + index,
-    //           label: ticker,
-    //           color,
-    //         });
+            series.push({
+              accessor: "v" + index,
+              label: ticker,
+              color,
+            });
 
-    //         const mappedHistory = priceHistory.map((history) => {
-    //           return {
-    //             t: new Date(history.timestamp).getTime(),
-    //             ["v" + index]: history.newPrice,
-    //           };
-    //         });
+            const mappedHistory = priceHistory.map((history) => {
+              return {
+                t: new Date(history.timestamp).getTime(),
+                ["v" + index]: history.newPrice,
+              };
+            });
 
-    //         chartData.push(...mappedHistory);
-    //       }
+            chartData.push(...mappedHistory);
+          }
 
-    //       const priceChange = priceHistory
-    //         ? get24HrPriceChange(priceHistory)
-    //         : 0;
-    //       tblData = [
-    //         ...tblData,
-    //         {
-    //           assetId,
-    //           id: index,
-    //           token: {
-    //             color,
-    //             label: ticker,
-    //           },
-    //           outcome: outcomeName,
-    //           totalValue: {
-    //             value: currentPrice,
-    //             usdValue: 0,
-    //           },
-    //           pre: Math.round((currentPrice / totalAssetPrice) * 100),
-    //           change: priceChange,
-    //           buttons: (
-    //             <AssetActionButtons
-    //               assetId={assetId}
-    //               marketId={market.id}
-    //               assetColor={color}
-    //               assetTicker={ticker}
-    //             />
-    //           ),
-    //         },
-    //       ];
-    //     }
+          const priceChange = priceHistory
+            ? get24HrPriceChange(priceHistory)
+            : 0;
+          tblData = [
+            ...tblData,
+            {
+              assetId,
+              id: index,
+              token: {
+                color,
+                label: ticker,
+              },
+              outcome: outcomeName,
+              totalValue: {
+                value: currentPrice,
+                usdValue: 0,
+              },
+              pre: Math.round((currentPrice / totalAssetPrice) * 100),
+              change: priceChange,
+              buttons: (
+                <AssetActionButtons
+                  assetId={assetId}
+                  marketId={market.id}
+                  assetColor={color}
+                  assetTicker={ticker}
+                />
+              ),
+            },
+          ];
+        }
 
-    //     setChartSeries(series);
-    //     setChartData(chartData);
-    //     setTableData(tblData);
-    //   } else {
-    //     tblData = market.outcomesMetadata.map((outcome) => ({
-    //       token: {
-    //         color: outcome["color"] || "#ffffff",
-    //         label: outcome["ticker"],
-    //       },
-    //       outcome: outcome["name"],
-    //     }));
-    //     setTableData(tblData);
-    //   }
-    // };
+        setChartSeries(series);
+        setChartData(chartData);
+        setTableData(tblData);
+      } else {
+        tblData = market.outcomesMetadata.map((outcome) => ({
+          token: {
+            color: outcome["color"] || "#ffffff",
+            label: outcome["ticker"],
+          },
+          outcome: outcome["name"],
+        }));
+        setTableData(tblData);
+      }
+    };
 
-    // const handleDeployClick = () => {
-    //   const rows = poolRowDataFromOutcomes(
-    //     marketStore.market.categories as MultipleOutcomeEntry[],
-    //     store.config.tokenSymbol,
-    //   );
-    //   setPoolRows(rows);
-    // };
+    const handleDeployClick = () => {
+      const rows = poolRowDataFromOutcomes(
+        marketStore.market.categories as MultipleOutcomeEntry[],
+        store.config.tokenSymbol,
+      );
+      setPoolRows(rows);
+    };
 
-    // const handleDeploySignClick = async () => {
-    //   // We are assuming all rows have the same amount
-    //   const amount = poolRows[0].amount;
+    const handleDeploySignClick = async () => {
+      // We are assuming all rows have the same amount
+      const amount = poolRows[0].amount;
 
-    //   const baseWeight = (1 / (poolRows.length - 1)) * 10 * ZTG;
+      const baseWeight = (1 / (poolRows.length - 1)) * 10 * ZTG;
 
-    //   const weightsNums = poolRows.slice(0, -1).map((_) => {
-    //     return baseWeight;
-    //   });
+      const weightsNums = poolRows.slice(0, -1).map((_) => {
+        return baseWeight;
+      });
 
-    //   const weightsParams = [
-    //     ...weightsNums.map((w) => Math.floor(w).toString()),
-    //   ];
-    //   const signer = store.wallets.getActiveSigner();
+      const weightsParams = [
+        ...weightsNums.map((w) => Math.floor(w).toString()),
+      ];
+      const signer = store.wallets.getActiveSigner();
 
-    //   const deployPoolTx = () => {
-    //     return new Promise<void>((resolve, reject) => {
-    //       marketStore.market.deploySwapPoolAndAdditionalLiquidity(
-    //         signer,
-    //         swapFee,
-    //         new Decimal(amount).mul(ZTG).toFixed(0),
-    //         weightsParams,
-    //         extrinsicCallback({
-    //           notificationStore,
-    //           successCallback: () => {
-    //             notificationStore.pushNotification("Liquidity pool deployed", {
-    //               type: "Success",
-    //             });
-    //             resolve();
-    //           },
-    //           failCallback: ({ index, error }) => {
-    //             notificationStore.pushNotification(
-    //               store.getTransactionError(index, error),
-    //               {
-    //                 type: "Error",
-    //               },
-    //             );
-    //             reject();
-    //           },
-    //         }),
-    //       );
-    //     });
-    //   };
+      const deployPoolTx = () => {
+        return new Promise<void>((resolve, reject) => {
+          marketStore.market.deploySwapPoolAndAdditionalLiquidity(
+            signer,
+            swapFee,
+            new Decimal(amount).mul(ZTG).toFixed(0),
+            weightsParams,
+            extrinsicCallback({
+              notificationStore,
+              successCallback: () => {
+                notificationStore.pushNotification("Liquidity pool deployed", {
+                  type: "Success",
+                });
+                resolve();
+              },
+              failCallback: ({ index, error }) => {
+                notificationStore.pushNotification(
+                  store.getTransactionError(index, error),
+                  {
+                    type: "Error",
+                  },
+                );
+                reject();
+              },
+            }),
+          );
+        });
+      };
 
-    //   try {
-    //     await deployPoolTx();
-    //     getPageData();
-    //   } catch {
-    //     console.log("Unable to deploy liquidity pool.");
-    //   }
-    // };
+      try {
+        await deployPoolTx();
+        getPageData();
+      } catch {
+        console.log("Unable to deploy liquidity pool.");
+      }
+    };
 
-    // const getReportedOutcome = () => {
-    //   let outcomeId: number;
-    //   if (marketStore.is("Disputed") && marketStore.lastDispute) {
-    //     // @ts-ignore
-    //     outcomeId = marketStore.lastDispute.outcome.categorical;
-    //   } else {
-    //     outcomeId = marketStore.reportedOutcomeIndex;
-    //   }
-    //   const outcome = tableData?.find((data) => data.id === outcomeId);
+    const getReportedOutcome = () => {
+      let outcomeId: number;
+      if (marketStore.is("Disputed") && marketStore.lastDispute) {
+        // @ts-ignore
+        outcomeId = marketStore.lastDispute.outcome.categorical;
+      } else {
+        outcomeId = marketStore.reportedOutcomeIndex;
+      }
+      const outcome = tableData?.find((data) => data.id === outcomeId);
 
-    //   return outcome ? [outcome] : undefined;
-    // };
+      return outcome ? [outcome] : undefined;
+    };
 
-    // const getWinningCategoricalOutcome = () => {
-    //   const reportedOutcome = marketStore.resolvedCategoricalOutcome;
+    const getWinningCategoricalOutcome = () => {
+      const reportedOutcome = marketStore.resolvedCategoricalOutcome;
 
-    //   const outcome = tableData?.find(
-    //     (data) =>
-    //       JSON.stringify(data.assetId) ===
-    //       JSON.stringify(reportedOutcome.asset),
-    //   );
+      const outcome = tableData?.find(
+        (data) =>
+          JSON.stringify(data.assetId) ===
+          JSON.stringify(reportedOutcome.asset),
+      );
 
-    //   return outcome ? [outcome] : undefined;
-    // };
+      return outcome ? [outcome] : undefined;
+    };
 
-    // if (!marketLoaded) {
-    //   return null;
-    // }
+    if (!marketLoaded) {
+      return null;
+    }
 
-    // if (marketStore == null) {
-    //   return <NotFoundPage backText="Back To Markets" backLink="/" />;
-    // }
+    if (marketStore == null) {
+      return <NotFoundPage backText="Back To Markets" backLink="/" />;
+    }
 
     return (
       <div>
         <div>{indexedMarket.slug}</div>
-        {/* 
+
         <div className="flex mb-ztg-33">
           <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600">
             {marketStore?.img ? (
@@ -635,7 +602,7 @@ const MarketDetails: NextPage<{ indexedMarket: any }> = observer(
         ) : (
           <></>
         )}
-        <MarketAddresses marketStore={marketStore} /> */}
+        <MarketAddresses marketStore={marketStore} />
       </div>
     );
   },

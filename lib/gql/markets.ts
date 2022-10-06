@@ -20,6 +20,8 @@ const marketQuery = gql`
       marketId
       outcomeAssets
       slug
+      question
+      img
       marketType {
         categorical
         scalar
@@ -53,10 +55,7 @@ export const getMarkets = async (client: GraphQLClient): Promise<number[]> => {
   return response.markets.map((m) => m.marketId);
 };
 
-export const getMarket = async (
-  client: GraphQLClient,
-  marketId: string,
-): Promise<any> => {
+export const getMarket = async (client: GraphQLClient, marketId: string) => {
   const response = await client.request<{
     markets: {
       marketId: number;
