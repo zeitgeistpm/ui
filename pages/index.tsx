@@ -145,11 +145,11 @@ const IndexPage: NextPage<{
   return (
     <div data-test="indexPage">
       <GlitchImage
-        src="/carousel/banner.png"
+        src="/carousel/banner.jpg"
         className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
       >
         <Image
-          src="/carousel/banner.png"
+          src="/carousel/banner.jpg"
           alt="Zeitgeist app banner"
           layout="responsive"
           width={1036}
