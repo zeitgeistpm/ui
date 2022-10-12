@@ -26,6 +26,7 @@ import PoolsStore from "./PoolsStore";
 import ExchangeStore from "./ExchangeStore";
 import CourtStore from "./CourtStore";
 import Wallets from "../wallets";
+import { MarketsGraphQl } from "lib/gql/markets";
 
 interface Config {
   tokenSymbol: string;
@@ -75,7 +76,8 @@ export default class Store {
   wallets = new Wallets(this);
   ztgInfo: ZTGInfo;
 
-  markets: MarketsStore;
+  markets = new MarketsStore(this);
+  marketsGqlPreload?: MarketsGraphQl = undefined;
 
   pools = new PoolsStore(this);
 
@@ -171,27 +173,25 @@ export default class Store {
   }
 
   private initializeMarkets() {
-    runInAction(() => {
-      this.markets = undefined;
-      this.markets = new MarketsStore(this);
-    });
-    this.markets.updateMarketIds();
-    when(
-      () => this.markets?.loaded === true,
-      () => {
-        this.initTradeSlipStore();
-        this.exchangeStore.initialize();
-      },
-    );
+    this.initTradeSlipStore();
+    this.exchangeStore.initialize();
   }
 
   async initialize() {
+    window.performance.mark("APP_STORE_INIT_START");
     this.userStore.init();
+    this.initGraphQlClient();
 
+    if (this.graphQLClient) {
+      const gqlMarkets = new MarketsGraphQl(this.graphQLClient);
+      this.marketsGqlPreload = gqlMarkets;
+    }
+
+    this.userStore.checkIP();
     try {
       await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
-      await this.loadConfig();
-      this.initGraphQlClient();
+      window.performance.mark("APP_SDK_INITIALIZED");
+      this.loadConfig();
       const storedWalletId = this.userStore.walletId;
 
       if (storedWalletId) {
@@ -200,7 +200,7 @@ export default class Store {
 
       this.registerValidationRules();
 
-      await this.pools.init();
+      this.pools.init();
       this.initializeMarkets();
 
       runInAction(() => {
@@ -214,11 +214,7 @@ export default class Store {
       this.initialize();
     }
 
-    const priceInfo = await this.fetchZTGPrice();
-
-    runInAction(() => {
-      this.ztgInfo = priceInfo;
-    });
+    this.fetchZTGPrice();
   }
 
   async connectNewSDK(endpoint: string, gqlEndpoint: string) {
@@ -270,22 +266,24 @@ export default class Store {
     });
   }
 
-  private async initGraphQlClient() {
+  private initGraphQlClient() {
     if (this.userStore.gqlEndpoint && this.userStore.gqlEndpoint.length > 0) {
       this.graphQLClient = new GraphQLClient(this.userStore.gqlEndpoint, {});
     }
   }
 
-  private async fetchZTGPrice(): Promise<ZTGInfo> {
+  private async fetchZTGPrice(): Promise<void> {
     const res = await fetch(
       "https://api.coingecko.com/api/v3/simple/price?ids=zeitgeist&vs_currencies=usd&include_24hr_change=true",
     );
     const json = await res.json();
 
-    return {
-      price: new Decimal(json.zeitgeist.usd),
-      change: new Decimal(json.zeitgeist.usd_24h_change),
-    };
+    runInAction(() => {
+      this.ztgInfo = {
+        price: new Decimal(json.zeitgeist.usd),
+        change: new Decimal(json.zeitgeist.usd_24h_change),
+      };
+    });
   }
 
   private async loadConfig() {

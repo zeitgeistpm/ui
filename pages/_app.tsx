@@ -23,6 +23,8 @@ import { AvatarContext } from "@zeitgeistpm/avatara-react";
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
 const domain = process.env["NEXT_PUBLIC_DOMAIN"];
 const hotjarSiteId = process.env["NEXT_PUBLIC_HOTJAR_SITE_ID"];
+const environment = process.env.NEXT_PUBLIC_ENVIRONMENT_NAME;
+const isProduction = environment === "production" || environment == null;
 
 const MyApp = observer(({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
@@ -31,6 +33,9 @@ const MyApp = observer(({ Component, pageProps }) => {
   const [store] = useState(() => new Store());
 
   useEffect(() => {
+    if (!isProduction) {
+      return;
+    }
     // disable fathom analyitics if not set
     if (!fathomSiteId) {
       return;
@@ -46,25 +51,27 @@ const MyApp = observer(({ Component, pageProps }) => {
 
     router.events.on("routeChangeComplete", onRouteChangeComplete);
 
+    if (hotjarSiteId) {
+      hotjar.initialize(Number(hotjarSiteId), 6);
+    }
+
     return () =>
       router.events.off("routeChangeComplete", onRouteChangeComplete);
   }, []);
 
-  useEffect(() => {
-    hotjar.initialize(Number(hotjarSiteId), 6);
-  }, []);
-
-  useEffect(() => {
-    const clientWidth = window.innerWidth;
-    if (clientWidth < 1300) {
-      store.toggleDrawer("right");
-    } else {
-      store.navigationStore.toggleGroupOpen("markets");
-    }
-    if (clientWidth < 900) {
-      store.toggleDrawer("left");
-    }
-  }, []);
+  // useEffect(() => {
+  //   window.setTimeout(() => {
+  //     const clientWidth = window.innerWidth;
+  //     if (clientWidth < 1300) {
+  //       store.toggleDrawer("right");
+  //     } else {
+  //       store.navigationStore.toggleGroupOpen("markets");
+  //     }
+  //     if (clientWidth < 900) {
+  //       store.toggleDrawer("left");
+  //     }
+  //   }, 500);
+  // }, []);
 
   const launchDate = new Date(1663081200000);
 
@@ -97,33 +104,6 @@ const MyApp = observer(({ Component, pageProps }) => {
           )}
           <Head>
             <title>The Zeitgeist Prediction Markets App</title>
-            <meta
-              name="description"
-              content="The application interface for Zeitgeist Prediction Markets. Built on Polkadot, Zeitgeist is the leader in decentralized prediction markets."
-            />
-            <link
-              rel="apple-touch-icon"
-              sizes="180x180"
-              href="/apple-touch-icon.png"
-            />
-            <link
-              rel="icon"
-              type="image/png"
-              sizes="32x32"
-              href="/favicon-32x32.png"
-            />
-            <link
-              rel="icon"
-              type="image/png"
-              sizes="16x16"
-              href="/favicon-16x16.png"
-            />
-            <link rel="manifest" href="/site.webmanifest" />
-            <link
-              rel="mask-icon"
-              href="/safari-pinned-tab.svg"
-              color="#5bbad5"
-            />
           </Head>
           {process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === "false" ||
           process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === undefined ||

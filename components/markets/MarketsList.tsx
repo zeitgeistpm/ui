@@ -100,10 +100,10 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const paginatorRef = useRef<HTMLDivElement>();
   const listRef = useRef<HTMLDivElement>();
 
-  const count = store.markets.count;
+  const count = store.markets?.count;
   const hasNext = query.pagination.page < totalPages;
 
-  const markets = store.markets.order.map((id) => {
+  const markets = store.markets?.order.map((id) => {
     return store.markets.markets[id];
   });
 
@@ -120,7 +120,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     [scrollTop],
   );
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (initialLoad && scrollRestoration.scrollTop) {
       scrollTo(scrollRestoration.scrollTop);
     }
@@ -138,13 +138,19 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   }, [hasScrolledToEnd, hasNext]);
 
   useEffect(() => {
+    if (store.sdk == null) {
+      return;
+    }
+    console.log('debouncedQueryChange');
+    window.performance.mark("MARKET_LIST_QUERY_CHANGE");
     setPageLoaded(false);
     performQuery().then(() => {
       setLoadingNextPage(false);
       setPageLoaded(true);
+      window.performance.mark("MARKET_LIST_PAGE_LOADED");
       setInitialLoad(false);
     });
-  }, [debouncedQueryChange, wallets.activeAccount]);
+  }, [debouncedQueryChange, store.sdk]);
 
   useEffect(() => {
     if (query.pagination.page > prevPage) {
@@ -153,7 +159,9 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   }, [query.pagination.page, prevPage]);
 
   useEffect(() => {
-    setTotalPages(Math.ceil(count / query.pagination.pageSize));
+    if (count) {
+      setTotalPages(Math.ceil(count / query.pagination.pageSize));
+    }
   }, [count]);
 
   return (
