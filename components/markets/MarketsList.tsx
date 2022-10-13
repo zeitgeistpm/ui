@@ -4,7 +4,7 @@ import { X } from "react-feather";
 import { useRouter } from "next/router";
 import hashObject from "object-hash";
 import { useStore } from "lib/stores/Store";
-import Card from "./MarketCard";
+import MarketCard, { MarketCardPreload } from "./MarketCard";
 import MainFilters from "./filters/MainFilters";
 import MyFilters from "./filters/MyFilters";
 import MarketSkeletons from "./MarketSkeletons";
@@ -83,7 +83,7 @@ const MarketsFilters = observer(
 
 const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const store = useStore();
-  const { wallets } = store;
+  const { markets: marketsStore, preloadedMarkets } = store;
   const [initialLoad, setInitialLoad] = useState(true);
 
   const query = useMarketsUrlQuery();
@@ -100,15 +100,15 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const paginatorRef = useRef<HTMLDivElement>();
   const listRef = useRef<HTMLDivElement>();
 
-  const count = store.markets?.count;
+  const count = marketsStore?.count;
   const hasNext = query.pagination.page < totalPages;
 
-  const markets = store.markets?.order.map((id) => {
+  const markets = marketsStore?.order.map((id) => {
     return store.markets.markets[id];
   });
 
   const performQuery = () => {
-    return store.markets.fetchMarkets(query);
+    return marketsStore.fetchMarkets(query);
   };
 
   const hasScrolledToEnd = useIsOnScreen(paginatorRef);
@@ -180,13 +180,18 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
         />
       </div>
       <div className="mb-ztg-38">
-        {markets?.length > 0 &&
-          markets.map((market) => {
-            if (market == null) {
-              return;
-            }
-            return <Card marketStore={market} key={`market-${market.id}`} />;
-          })}
+        {markets?.length > 0
+          ? markets.map((market) => {
+              if (market == null) {
+                return;
+              }
+              return <MarketCard marketStore={market} key={`market-${market.id}`} />;
+            })
+          : preloadedMarkets?.map((market) => {
+              return (
+                <MarketCardPreload market={market} key={`market-${market.marketId}`} />
+              );
+            })}
 
         {loadingNextPage && (
           <MarketSkeletons pageSize={query.pagination.pageSize} />

@@ -1,4 +1,3 @@
-import SDK from "@zeitgeistpm/sdk";
 import {
   BehaviorSubject,
   firstValueFrom,
@@ -25,7 +24,7 @@ class MarketsStore {
 
   private clearMarkets() {
     runInAction(() => {
-      this.markets = [];
+      this.markets = {};
     });
   }
 

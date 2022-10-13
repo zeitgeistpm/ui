@@ -8,7 +8,7 @@ import {
   ScoringRule,
 } from "@zeitgeistpm/sdk/dist/types";
 import { gql, GraphQLClient } from "graphql-request";
-import { MarketListQuery } from "lib/types";
+import { MarketListQuery, MarketStatus } from "lib/types";
 import { activeStatusesFromFilters } from "lib/util/market";
 
 export const FRAGMENT_MARKET_DETAILS = gql`
@@ -17,80 +17,54 @@ export const FRAGMENT_MARKET_DETAILS = gql`
     description
     end
     creator
-    creatorFee
     creation
     oracle
     question
     slug
     tags
     status
-    scoringRule
-    resolvedOutcome
-    poolId
     scalarType
-    metadata
     marketType {
       categorical
       scalar
     }
-    period {
-      block
-      timestamp
-    }
-    report {
-      outcome {
-        categorical
-        scalar
-      }
-      at
-      by
-    }
-    disputeMechanism {
-      Authorized: authorized
-      Court: court
-      SimpleDisputes: simpleDisputes
-    }
-    categories {
-      ticker
-      name
-      color
-    }
   }
 `;
 
-export type MarketCardData = {
-  id: number;
-  poolId: number;
+export type MarketPreload = {
+  marketId: number;
+  // poolId: number;
   type: "scalar" | "categorical"
-  period: {
-    block: number[] | null;
-    timestamp: number[] | null;
-  };
+  // period: {
+  //   block: number[] | null;
+  //   timestamp: number[] | null;
+  // };
   // metadata: string;
   // scalarType: ScalarRangeType | null;
   description: string;
-  creator: string;
-  creatorFee: number;
+  // creator: string;
+  // creatorFee: number;
   creation: MarketCreation;
   slug: string;
   tags: string[] | null;
-  status: string;
-  scoringRule: ScoringRule;
+  status: MarketStatus;
+  // scoringRule: ScoringRule;
   // resolvedOutcome: number | null;
   end: BigInt;
-  oracle: string;
+  // oracle: string;
   question: string;
   // categories: { ticker: string; name: string; color: string }[];
 };
 
-export class MarketsGraphQl {
+export class MarketPreloader {
   constructor(private graphQlClient: GraphQLClient) {}
 
   private async queryMarketPage(
     filteringOptions: MarketsFilteringOptions,
     paginationOptions: Partial<MarketsPaginationOptions>,
     countOnly = false,
-  ): Promise<{ result: MarketCardData[] | null; count: number }> {
+    // ): Promise<{ result: MarketPreload[] | null; count: number }> {
+  ): Promise<MarketPreload[]> {
     const { tags, searchText, creator, oracle, assetOwner } = filteringOptions;
     const liquidityOnly = filteringOptions.liquidityOnly ?? true;
 
@@ -141,16 +115,18 @@ export class MarketsGraphQl {
       assets,
     };
 
-    const totalCountData = await this.graphQlClient.request<{
-      marketsConnection: { totalCount: number };
-    }>(totalCountQuery, variables);
-    const { totalCount: count } = totalCountData.marketsConnection;
+    // const totalCountData = await this.graphQlClient.request<{
+    //   marketsConnection: { totalCount: number };
+    // }>(totalCountQuery, variables);
+    // const { totalCount: count } = totalCountData.marketsConnection;
 
-    if (countOnly) {
-      return { count, result: null };
-    }
+    // console.log(count);
+
+    // if (countOnly) {
+    //   return { count, result: null };
+    // }
     const marketsData = await this.graphQlClient.request<{
-      markets: MarketCardData[];
+      markets: MarketPreload[];
     }>(marketsQuery, variables);
 
     // console.log("markets", JSON.stringify(marketsData, null, 2));
@@ -161,7 +137,7 @@ export class MarketsGraphQl {
       return this.constructMarketStoreFromQueryData(m);
     });
 
-    return { result, count };
+    return result;
   }
 
   /**
@@ -178,7 +154,8 @@ export class MarketsGraphQl {
       pageSize: 10,
       pageNumber: 1,
     },
-  ): Promise<{ result: MarketCardData[]; count: number }> {
+    // ): Promise<{ result: MarketPreload[]; count: number }> {
+  ): Promise<MarketPreload[]> {
     return this.queryMarketPage(filteringOptions, paginationOptions);
   }
 
@@ -283,8 +260,8 @@ export class MarketsGraphQl {
   }
 
   private constructMarketStoreFromQueryData(
-    data: MarketCardData,
-  ): MarketCardData {
+    data: MarketPreload,
+  ): MarketPreload {
     return data;
   }
 
@@ -309,7 +286,7 @@ export class MarketsGraphQl {
     return assets;
   }
 
-  async fetchMarkets(query: MarketListQuery) {
+  async fetchMarkets(query: MarketListQuery): Promise<MarketPreload[]> {
     // const { activeAccount } = this.store.wallets;
 
     const { pagination, filter, sorting, myMarketsOnly, tag, searchText } =
@@ -325,7 +302,7 @@ export class MarketsGraphQl {
       orderBy = "end";
     }
 
-    let marketsData: MarketCardData[];
+    let marketsData: MarketPreload[];
     let count: number;
 
     // if (myMarketsOnly) {
@@ -356,7 +333,7 @@ export class MarketsGraphQl {
     //     }));
     // } else {
     const statuses = activeStatusesFromFilters(filter);
-    ({ result: marketsData, count } = await this.filterMarkets(
+    marketsData = await this.filterMarkets(
       {
         statuses: statuses.length === 0 ? undefined : statuses,
         searchText,
@@ -369,10 +346,10 @@ export class MarketsGraphQl {
         ordering: sorting.order as MarketsOrdering,
         orderBy,
       },
-    ));
+    );
     // }
 
-    let markets: MarketCardData[] = [];
+    let markets: MarketPreload[] = [];
 
     let order = [];
     for (const data of marketsData) {
@@ -384,6 +361,6 @@ export class MarketsGraphQl {
     // this.setCount(count);
     // this.setOrder(order);
 
-    return { markets, count };
+    return markets;
   }
 }

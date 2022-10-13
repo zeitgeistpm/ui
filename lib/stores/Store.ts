@@ -26,7 +26,7 @@ import PoolsStore from "./PoolsStore";
 import ExchangeStore from "./ExchangeStore";
 import CourtStore from "./CourtStore";
 import Wallets from "../wallets";
-import { MarketsGraphQl } from "lib/gql/markets";
+import { MarketPreload } from "lib/gql/markets";
 
 interface Config {
   tokenSymbol: string;
@@ -77,7 +77,7 @@ export default class Store {
   ztgInfo: ZTGInfo;
 
   markets = new MarketsStore(this);
-  marketsGqlPreload?: MarketsGraphQl = undefined;
+  preloadedMarkets?: MarketPreload[] = undefined;
 
   pools = new PoolsStore(this);
 
@@ -85,7 +85,7 @@ export default class Store {
 
   config: Config;
 
-  graphQLClient: GraphQLClient | null;
+  graphQLClient?: GraphQLClient = undefined;
 
   get amountRegex(): RegExp | null {
     return new RegExp(`^[0-9]+(\\.[0-9]{0,10})?`);
@@ -182,11 +182,6 @@ export default class Store {
     this.userStore.init();
     this.initGraphQlClient();
 
-    if (this.graphQLClient) {
-      const gqlMarkets = new MarketsGraphQl(this.graphQLClient);
-      this.marketsGqlPreload = gqlMarkets;
-    }
-
     this.userStore.checkIP();
     try {
       await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
@@ -270,6 +265,10 @@ export default class Store {
     if (this.userStore.gqlEndpoint && this.userStore.gqlEndpoint.length > 0) {
       this.graphQLClient = new GraphQLClient(this.userStore.gqlEndpoint, {});
     }
+  }
+
+  setPreloadedMarkets(data: MarketPreload[]) {
+    this.preloadedMarkets = data;
   }
 
   private async fetchZTGPrice(): Promise<void> {
