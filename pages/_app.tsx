@@ -59,19 +59,17 @@ const MyApp = observer(({ Component, pageProps }) => {
       router.events.off("routeChangeComplete", onRouteChangeComplete);
   }, []);
 
-  // useEffect(() => {
-  //   window.setTimeout(() => {
-  //     const clientWidth = window.innerWidth;
-  //     if (clientWidth < 1300) {
-  //       store.toggleDrawer("right");
-  //     } else {
-  //       store.navigationStore.toggleGroupOpen("markets");
-  //     }
-  //     if (clientWidth < 900) {
-  //       store.toggleDrawer("left");
-  //     }
-  //   }, 500);
-  // }, []);
+  useEffect(() => {
+    const clientWidth = window.innerWidth;
+    if (clientWidth < 1300) {
+      store.toggleDrawer("right");
+    } else {
+      store.navigationStore.toggleGroupOpen("markets");
+    }
+    if (clientWidth < 900) {
+      store.toggleDrawer("left");
+    }
+  }, []);
 
   const launchDate = new Date(1663081200000);
 
