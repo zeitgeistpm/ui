@@ -105,9 +105,9 @@ const Market: NextPage<{
   chartData: ChartData[];
   baseAsset: string;
 }> = observer(({ indexedMarket, chartSeries, chartData, baseAsset }) => {
-  console.log(indexedMarket);
-  console.log(chartSeries);
-  console.log(chartData);
+  // console.log(indexedMarket);
+  // console.log(chartSeries);
+  // console.log(chartData);
   const navigationStore = useNavigationStore();
   const marketsStore = useMarketsStore();
   const router = useRouter();
@@ -118,9 +118,9 @@ const Market: NextPage<{
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
 
-  // if (indexedMarket == null) {
-  //   return <NotFoundPage backText="Back To Markets" backLink="/" />;
-  // }
+  if (indexedMarket == null) {
+    return <NotFoundPage backText="Back To Markets" backLink="/" />;
+  }
 
   useEffect(() => {
     navigationStore.setPage("marketDetails");
