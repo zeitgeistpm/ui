@@ -160,7 +160,7 @@ const IndexPage: NextPage<{
       </GlitchImage>
       <TrendingMarkets markets={trendingMarkets} />
       <PopularCategories tagCounts={tagCounts} />
-      {store.initialized ? (
+      {store?.initialized ? (
         <MarketsList />
       ) : (
         <Skeleton

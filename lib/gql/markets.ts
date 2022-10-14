@@ -18,16 +18,23 @@ const marketQuery = gql`
   query Market($marketId: Int) {
     markets(where: { marketId_eq: $marketId }) {
       marketId
-      outcomeAssets
-      slug
+      end
+      description
+      creator
+      oracle
+      poolId
       question
+      slug
+      status
       img
-      marketType {
-        categorical
-        scalar
-      }
+      outcomeAssets
+      poolId
       categories {
         ticker
+        color
+      }
+      disputeMechanism {
+        authorized
       }
     }
   }
@@ -62,7 +69,9 @@ export const getMarket = async (client: GraphQLClient, marketId: string) => {
       img: string;
       slug: string;
       marketType: { [key: string]: string };
-      categories: { ticker: string }[];
+      categories: { ticker: string; color: string }[];
+      outcomeAssets: string[];
+      poolId: number;
     }[];
   }>(marketQuery, {
     marketId: Number(marketId),

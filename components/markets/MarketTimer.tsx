@@ -7,6 +7,7 @@ import { useStore } from "lib/stores/Store";
 import ProgressReport from "components/ui/ProgressReport";
 import { ProgressBarEvent } from "components/ui/ProgressReport/ProgressBar";
 import { TimeLineStage } from "components/ui/ProgressReport/TimeLine";
+import dynamic from "next/dynamic";
 
 type MarketStage =
   | "Trading"
@@ -60,7 +61,13 @@ const MarketEventSummary = ({
 };
 
 const MarketTimer = observer(
-  ({ marketStore, hasAuthReport }: { marketStore: MarketStore; hasAuthReport: boolean }) => {
+  ({
+    marketStore,
+    hasAuthReport,
+  }: {
+    marketStore: MarketStore;
+    hasAuthReport: boolean;
+  }) => {
     const store = useStore();
     const [marketStage, setMarketStage] = useState<MarketStage>();
     const [marketStageIndex, setMarketStageIndex] = useState<number>();
@@ -86,7 +93,7 @@ const MarketTimer = observer(
         }
       } else if (marketStore.status === "Disputed") {
         if (hasAuthReport) {
-          return "AuthorizedReport"
+          return "AuthorizedReport";
         }
         return "Disputed";
       } else if (marketStore.status === "Resolved") {
@@ -365,4 +372,6 @@ const MarketTimer = observer(
   },
 );
 
-export default MarketTimer;
+export default dynamic(() => Promise.resolve(MarketTimer), {
+  ssr: false,
+});

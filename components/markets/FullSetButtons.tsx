@@ -3,6 +3,7 @@ import { useModalStore } from "lib/stores/ModalStore";
 import { observer } from "mobx-react";
 import BuyFullSetModal from "components/markets/BuyFullSetModal";
 import SellFullSetModal from "components/markets/SellFullSetModal";
+import dynamic from "next/dynamic";
 
 const FullSetButtons = observer(
   ({ marketStore }: { marketStore: MarketStore }) => {
@@ -52,4 +53,6 @@ const FullSetButtons = observer(
   },
 );
 
-export default FullSetButtons;
+export default dynamic(() => Promise.resolve(FullSetButtons), {
+  ssr: false,
+});
