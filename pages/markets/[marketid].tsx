@@ -63,8 +63,6 @@ export async function getStaticProps({ params }) {
       getAssetPriceHistory(client, asset, dateOneMonthAgo),
     ),
   );
-  console.log(market);
-  console.log(assetPrices);
 
   const chartSeries: ChartSeries[] = market.categories?.map(
     (category, index) => {
@@ -88,7 +86,6 @@ export async function getStaticProps({ params }) {
   const baseAsset = market.poolId
     ? await getBaseAsset(client, market.poolId)
     : null;
-  console.log("base ", baseAsset);
 
   return {
     props: {
