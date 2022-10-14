@@ -141,13 +141,10 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     if (store.sdk == null) {
       return;
     }
-    console.log('debouncedQueryChange');
-    window.performance.mark("MARKET_LIST_QUERY_CHANGE");
     setPageLoaded(false);
     performQuery().then(() => {
       setLoadingNextPage(false);
       setPageLoaded(true);
-      window.performance.mark("MARKET_LIST_PAGE_LOADED");
       setInitialLoad(false);
     });
   }, [debouncedQueryChange, store.sdk]);

@@ -178,7 +178,6 @@ export default class Store {
   }
 
   async initialize() {
-    window.performance.mark("APP_STORE_INIT_START");
     this.userStore.init();
     this.initGraphQlClient();
 

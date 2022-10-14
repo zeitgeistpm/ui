@@ -5,7 +5,6 @@ import {
   MarketsOrdering,
   MarketsPaginationOptions,
   MarketStatusText,
-  ScoringRule,
 } from "@zeitgeistpm/sdk/dist/types";
 import { gql, GraphQLClient } from "graphql-request";
 import { MarketListQuery, MarketStatus } from "lib/types";
@@ -33,27 +32,14 @@ export const FRAGMENT_MARKET_DETAILS = gql`
 
 export type MarketPreload = {
   marketId: number;
-  // poolId: number;
   type: "scalar" | "categorical"
-  // period: {
-  //   block: number[] | null;
-  //   timestamp: number[] | null;
-  // };
-  // metadata: string;
-  // scalarType: ScalarRangeType | null;
   description: string;
-  // creator: string;
-  // creatorFee: number;
   creation: MarketCreation;
   slug: string;
   tags: string[] | null;
   status: MarketStatus;
-  // scoringRule: ScoringRule;
-  // resolvedOutcome: number | null;
   end: BigInt;
-  // oracle: string;
   question: string;
-  // categories: { ticker: string; name: string; color: string }[];
 };
 
 export class MarketPreloader {
@@ -63,7 +49,6 @@ export class MarketPreloader {
     filteringOptions: MarketsFilteringOptions,
     paginationOptions: Partial<MarketsPaginationOptions>,
     countOnly = false,
-    // ): Promise<{ result: MarketPreload[] | null; count: number }> {
   ): Promise<MarketPreload[]> {
     const { tags, searchText, creator, oracle, assetOwner } = filteringOptions;
     const liquidityOnly = filteringOptions.liquidityOnly ?? true;
@@ -111,25 +96,12 @@ export class MarketPreloader {
       creator,
       oracle,
       minPoolId: liquidityOnly ? 0 : undefined,
-      // marketIds,
       assets,
     };
 
-    // const totalCountData = await this.graphQlClient.request<{
-    //   marketsConnection: { totalCount: number };
-    // }>(totalCountQuery, variables);
-    // const { totalCount: count } = totalCountData.marketsConnection;
-
-    // console.log(count);
-
-    // if (countOnly) {
-    //   return { count, result: null };
-    // }
     const marketsData = await this.graphQlClient.request<{
       markets: MarketPreload[];
     }>(marketsQuery, variables);
-
-    // console.log("markets", JSON.stringify(marketsData, null, 2));
 
     const queriedMarkets = marketsData.markets;
 
@@ -154,7 +126,6 @@ export class MarketPreloader {
       pageSize: 10,
       pageNumber: 1,
     },
-    // ): Promise<{ result: MarketPreload[]; count: number }> {
   ): Promise<MarketPreload[]> {
     return this.queryMarketPage(filteringOptions, paginationOptions);
   }
@@ -287,8 +258,6 @@ export class MarketPreloader {
   }
 
   async fetchMarkets(query: MarketListQuery): Promise<MarketPreload[]> {
-    // const { activeAccount } = this.store.wallets;
-
     const { pagination, filter, sorting, myMarketsOnly, tag, searchText } =
       query;
 
@@ -305,33 +274,6 @@ export class MarketPreloader {
     let marketsData: MarketPreload[];
     let count: number;
 
-    // if (myMarketsOnly) {
-    //   const filtersOff =
-    //     filter.creator === false &&
-    //     filter.oracle === false &&
-    //     filter.hasAssets === false;
-
-    //   const oracle =
-    //     filtersOff || filter.oracle ? activeAccount?.address : undefined;
-    //   const creator =
-    //     filtersOff || filter.creator ? activeAccount?.address : undefined;
-    //   const assetOwner =
-    //     filtersOff || filter.hasAssets ? activeAccount?.address : undefined;
-
-    //   const filterBy = {
-    //     oracle,
-    //     creator,
-    //     assetOwner,
-    //     liquidityOnly: false,
-    //   };
-    //   ({ result: marketsData, count } =
-    //     await this.store.sdk.models.filterMarkets(filterBy, {
-    //       pageSize: pagination.pageSize * pagination.page,
-    //       pageNumber: 1,
-    //       ordering: sorting.order as MarketsOrdering,
-    //       orderBy,
-    //     }));
-    // } else {
     const statuses = activeStatusesFromFilters(filter);
     marketsData = await this.filterMarkets(
       {
@@ -353,13 +295,8 @@ export class MarketPreloader {
 
     let order = [];
     for (const data of marketsData) {
-      //   const id = data.marketId;
       markets = [...markets, data];
-      //   order = [...order, id];
     }
-
-    // this.setCount(count);
-    // this.setOrder(order);
 
     return markets;
   }

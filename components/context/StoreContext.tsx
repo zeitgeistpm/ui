@@ -28,11 +28,8 @@ export const StoreProvider: FC<{ store: Store }> = observer(
 
       const preloader = new MarketPreloader(graphQLClient);
 
-      window.performance.mark("MARKETS_GQL_PRELOAD_START");
       const sub = from(preloader.fetchMarkets(query)).subscribe(res => {
         store.setPreloadedMarkets(res);
-        window.performance.mark("MARKETS_GQL_PRELOAD_END");
-        console.log('Markets preloaded', res);
       });
       return () => sub.unsubscribe();
     }, [query, marketsStore?.markets, graphQLClient]);
