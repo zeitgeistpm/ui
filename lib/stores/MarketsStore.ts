@@ -213,5 +213,5 @@ export default MarketsStore;
 
 export const useMarketsStore = () => {
   const store = useStore();
-  return store.markets;
+  return store?.markets;
 };

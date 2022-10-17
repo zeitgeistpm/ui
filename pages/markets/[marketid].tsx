@@ -1,4 +1,3 @@
-import FullSetButtons from "components/markets/FullSetButtons";
 import LiquidityPill from "components/markets/LiquidityPill";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
@@ -8,22 +7,18 @@ import TimeSeriesChart, {
   ChartData,
   ChartSeries,
 } from "components/ui/TimeSeriesChart";
-import { load } from "fathom-client";
 import { GraphQLClient } from "graphql-request";
 import { DAY_SECONDS } from "lib/constants";
 import { getMarket, getMarketIds } from "lib/gql/markets";
 import { getBaseAsset } from "lib/gql/pool";
-import { AssetPrice, getAssetPriceHistory } from "lib/gql/prices";
+import { getAssetPriceHistory } from "lib/gql/prices";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
-import { useNavigationStore } from "lib/stores/NavigationStore";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
-import { markAssetError } from "next/dist/client/route-loader";
 import Head from "next/head";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
@@ -36,21 +31,13 @@ export async function getStaticPaths() {
   const paths = marketIds.map((marketId) => ({
     params: { marketid: marketId.toString() },
   }));
-  // const paths = [
-  //   {
-  //     params: { id: "161" },
-  //   },
-  // ];
-  console.log(paths);
 
-  // return { paths, fallback: "blocking" };
-  return { paths, fallback: true };
+  return { paths, fallback: "blocking" };
 }
 
 export async function getStaticProps({ params }) {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
-  console.log("current:", params.marketid);
 
   const market = await getMarket(client, params.marketid);
 
@@ -92,7 +79,6 @@ export async function getStaticProps({ params }) {
       indexedMarket: market ?? null,
       chartSeries: chartSeries ?? null,
       chartData: chartData ?? null,
-      // baseAsset: baseAsset?.toUpperCase() ?? null,
       baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
     },
     revalidate: 10 * 60, //10mins
@@ -105,16 +91,12 @@ const Market: NextPage<{
   chartData: ChartData[];
   baseAsset: string;
 }> = observer(({ indexedMarket, chartSeries, chartData, baseAsset }) => {
-  // console.log(indexedMarket);
-  // console.log(chartSeries);
-  // console.log(chartData);
-  const navigationStore = useNavigationStore();
   const marketsStore = useMarketsStore();
   const router = useRouter();
   const [marketStore, setMarketStore] = useState<MarketStore>();
   const [prizePool, setPrizePool] = useState<string>();
   const { marketid } = router.query;
-  const { config } = useStore();
+  const store = useStore();
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
 
@@ -123,10 +105,8 @@ const Market: NextPage<{
   }
 
   useEffect(() => {
-    navigationStore.setPage("marketDetails");
     (async () => {
-      console.log("load");
-      console.log(marketsStore);
+      if (!store) return;
       const market = await marketsStore?.getMarket(Number(marketid));
       if (market != null) {
         setMarketStore(market);
@@ -140,9 +120,6 @@ const Market: NextPage<{
 
           setPool(pool);
         }
-
-        console.log(marketStore);
-        console.log(market);
       }
     })();
   }, [marketsStore, marketid]);
@@ -194,7 +171,7 @@ const Market: NextPage<{
           {prizePool ? (
             <Pill
               title="Prize Pool"
-              value={`${prizePool} ${config.tokenSymbol}`}
+              value={`${prizePool} ${store?.config.tokenSymbol}`}
             />
           ) : (
             <></>
