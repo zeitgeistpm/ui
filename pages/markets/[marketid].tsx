@@ -2,6 +2,7 @@ import LiquidityPill from "components/markets/LiquidityPill";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import MarketTimer from "components/markets/MarketTimer";
+import PoolDeployer from "components/markets/PoolDeployer";
 import Pill from "components/ui/Pill";
 import TimeSeriesChart, {
   ChartData,
@@ -46,7 +47,7 @@ export async function getStaticProps({ params }) {
   ).toISOString();
 
   const assetPrices = await Promise.all(
-    market.outcomeAssets.map((asset) =>
+    market?.outcomeAssets?.map((asset) =>
       getAssetPriceHistory(client, asset, dateOneMonthAgo),
     ),
   );
@@ -61,7 +62,7 @@ export async function getStaticProps({ params }) {
     },
   );
 
-  const chartData: ChartData[] = assetPrices.flatMap((prices, index) => {
+  const chartData: ChartData[] = assetPrices?.flatMap((prices, index) => {
     return prices.map((price) => {
       return {
         t: new Date(price.timestamp).getTime(),
@@ -104,25 +105,33 @@ const Market: NextPage<{
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
 
+  const fetchMarket = async () => {
+    const market = await marketsStore?.getMarket(Number(marketid));
+    if (market != null) {
+      setMarketStore(market);
+      const prizePool = await market.getPrizePool();
+      setPrizePool(prizePool);
+
+      if (market.poolExists) {
+        const { poolId } = market.pool;
+        const pool = await poolStore.getPoolFromChain(Number(poolId));
+
+        setPool(pool);
+      }
+    }
+  };
+
   useEffect(() => {
     (async () => {
       if (!store) return;
-      const market = await marketsStore?.getMarket(Number(marketid));
-      if (market != null) {
-        setMarketStore(market);
-        const prizePool = await market.getPrizePool();
-        setPrizePool(prizePool);
-
-        if (market.poolExists) {
-          const { poolId } = market.pool;
-
-          const pool = await poolStore.getPoolFromChain(Number(poolId));
-
-          setPool(pool);
-        }
-      }
+      fetchMarket();
     })();
   }, [marketsStore, marketid]);
+
+  const handlePoolDeployed = () => {
+    console.log("pool deployed");
+    fetchMarket();
+  };
 
   return (
     <>
@@ -201,6 +210,9 @@ const Market: NextPage<{
             />
           </div>
         ) : (
+          <></>
+        )}
+        {marketStore?.poolExists === false && (
           <div className="flex h-ztg-22 items-center font-lato bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
             <div className="w-ztg-20 h-ztg-20">
               <AlertTriangle size={20} />
@@ -219,6 +231,10 @@ const Market: NextPage<{
         <div className="font-lato text-ztg-14-180 text-sky-600">
           {indexedMarket.description}
         </div>
+        <PoolDeployer
+          marketStore={marketStore}
+          onPoolDeployed={handlePoolDeployed}
+        />
         {marketStore && <MarketAddresses marketStore={marketStore} />}
       </div>
     </>
