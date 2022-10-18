@@ -22,10 +22,6 @@ export const getAssetPriceHistory = async (
   outcomeAsset: string,
   startTime: string, //ISO string format
 ) => {
-  //   const combinedId = `[${marketId},${
-  //     typeof assetId === "string" ? `"${assetId}"` : assetId
-  //   }]`;
-
   const response = await client.request<{
     historicalAssets: AssetPrice[];
   }>(pricesQuery, {

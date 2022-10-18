@@ -79,3 +79,27 @@ export const getMarket = async (client: GraphQLClient, marketId: string) => {
 
   return response.markets[0];
 };
+
+export const checkMarketExists = async (
+  client: GraphQLClient,
+  marketId: number,
+): Promise<boolean> => {
+  const response = await client.request<{
+    markets: {
+      marketId: number;
+    }[];
+  }>(
+    gql`
+      query Market($marketId: Int) {
+        markets(where: { marketId_eq: $marketId }) {
+          marketId
+        }
+      }
+    `,
+    {
+      marketId: marketId,
+    },
+  );
+  console.log(response);
+  return response.markets.length > 0;
+};
