@@ -10,7 +10,11 @@ import TimeSeriesChart, {
 } from "components/ui/TimeSeriesChart";
 import { GraphQLClient } from "graphql-request";
 import { DAY_SECONDS } from "lib/constants";
-import { getMarket, getMarketIds } from "lib/gql/markets";
+import {
+  getMarket,
+  getMarketIds,
+  MarketPageIndexedData,
+} from "lib/gql/markets";
 import { getBaseAsset } from "lib/gql/pool";
 import { getAssetPriceHistory } from "lib/gql/prices";
 import { useMarketsStore } from "lib/stores/MarketsStore";
@@ -87,7 +91,7 @@ export async function getStaticProps({ params }) {
 }
 
 const Market: NextPage<{
-  indexedMarket: any;
+  indexedMarket: MarketPageIndexedData;
   chartSeries: ChartSeries[];
   chartData: ChartData[];
   baseAsset: string;

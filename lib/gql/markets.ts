@@ -20,8 +20,6 @@ const marketQuery = gql`
       marketId
       end
       description
-      creator
-      oracle
       poolId
       question
       slug
@@ -33,12 +31,22 @@ const marketQuery = gql`
         ticker
         color
       }
-      disputeMechanism {
-        authorized
-      }
     }
   }
 `;
+
+export interface MarketPageIndexedData {
+  marketId: number;
+  img: string;
+  slug: string;
+  question: string;
+  description: string;
+  status: string;
+  end: number;
+  categories: { ticker: string; color: string }[];
+  outcomeAssets: string[];
+  poolId: number;
+}
 
 export const getMarketIds = async (
   client: GraphQLClient,
@@ -64,15 +72,7 @@ export const getMarkets = async (client: GraphQLClient): Promise<number[]> => {
 
 export const getMarket = async (client: GraphQLClient, marketId: string) => {
   const response = await client.request<{
-    markets: {
-      marketId: number;
-      img: string;
-      slug: string;
-      marketType: { [key: string]: string };
-      categories: { ticker: string; color: string }[];
-      outcomeAssets: string[];
-      poolId: number;
-    }[];
+    markets: MarketPageIndexedData[];
   }>(marketQuery, {
     marketId: Number(marketId),
   });
