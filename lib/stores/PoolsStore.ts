@@ -58,14 +58,16 @@ export default class PoolsStore {
       offset: (query.pagination.page - 1) * query.pagination.pageSize,
       limit: query.pagination.pageSize,
     });
-    if (!pools.length) {
-      this.filteredPoolsListFullyLoaded = true;
-    } else {
-      this.filteredPoolsList = N.mergeR(
-        this.filteredPoolsList,
-        N.fromArray(pools, "poolId"),
-      );
-    }
+    runInAction(() => {
+      if (!pools.length) {
+        this.filteredPoolsListFullyLoaded = true;
+      } else {
+        this.filteredPoolsList = N.mergeR(
+          this.filteredPoolsList,
+          N.fromArray(pools, "poolId"),
+        );
+      }
+    });
   }
 
   get chainPoolscount(): number {

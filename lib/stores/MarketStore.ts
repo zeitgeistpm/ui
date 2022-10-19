@@ -562,7 +562,8 @@ class MarketStore {
       const lowerBound = this.bounds[0];
       const upperBound = this.bounds[1];
       const priceRange = upperBound - lowerBound;
-      const resolvedNumberAsPercentage = resolvedNumber / priceRange;
+      const resolvedNumberAsPercentage =
+        (resolvedNumber - lowerBound) / priceRange;
       const longTokenValue = resolvedNumberAsPercentage;
       const shortTokenValue = 1 - resolvedNumberAsPercentage;
       const longRewards = longBalance.mul(longTokenValue);

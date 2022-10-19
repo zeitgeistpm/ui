@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import resolveTailwindConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../tailwind.config";
 import {
@@ -10,6 +11,8 @@ import {
 } from "./types";
 
 export const ZTG = 10 ** 10;
+
+export const MAX_IN_OUT_RATIO = new Decimal(1).div(3).toString();
 
 export const DEFAULT_SLIPPAGE_PERCENTAGE =
   Number(process.env.NEXT_PUBLIC_DEFAULT_SLIPPAGE_PERCENTAGE) || 1;

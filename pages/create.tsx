@@ -176,6 +176,13 @@ const CreatePage: NextPage = observer(() => {
   }, [deployPool, formData.outcomes.type]);
 
   useEffect(() => {
+    if (store.wallets.activeAccount == null || formData.oracle !== "") {
+      return;
+    }
+    changeOracle(store.wallets.activeAccount.address);
+  }, [store.wallets.activeAccount]);
+
+  useEffect(() => {
     if (!store.config) {
       return;
     }

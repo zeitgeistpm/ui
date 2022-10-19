@@ -19,7 +19,6 @@ const TradeSlip = observer(() => {
   const store = useStore();
   const { wallets } = store;
   const {
-    itemsUpdating,
     batchTx,
     totalCost,
     txFee,
@@ -100,9 +99,6 @@ const TradeSlip = observer(() => {
   }, [batchTx]);
 
   const submitTransactions = async () => {
-    if (itemsUpdating === true) {
-      await when(() => !itemsUpdating);
-    }
     tradeSlipForm.submit({
       onSuccess: async () => {
         if (tradeSlipForm.isValid) {

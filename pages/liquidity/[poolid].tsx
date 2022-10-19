@@ -13,6 +13,7 @@ import NotFoundPage from "pages/404";
 import Pill from "components/ui/Pill";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import Link from "next/link";
 
 interface Share {
   token: string;
@@ -219,7 +220,16 @@ const PoolDetails: NextPage = observer(() => {
         <h3 className="font-space font-semibold text-ztg-20-150">
           Assets in Pool
         </h3>
-        {marketStore && <FullSetButtons marketStore={marketStore} />}
+        {marketStore && (
+          <>
+            <FullSetButtons marketStore={marketStore} />
+            <Link href={`/markets/${marketStore.id}`}>
+              <a className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 ">
+                Market
+              </a>
+            </Link>
+          </>
+        )}
       </div>
       <Table data={tableData} columns={columns} />
     </div>

@@ -8,7 +8,7 @@ const poolQuery = gql`
     pools(
       limit: 3
       orderBy: volume_DESC
-      where: { createdAt_gt: $dateTwoWeeksAgo }
+      where: { createdAt_gt: $dateTwoWeeksAgo, poolStatus_eq: "Active" }
     ) {
       volume
       marketId
