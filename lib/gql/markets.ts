@@ -7,8 +7,10 @@ import {
   MarketStatusText,
 } from "@zeitgeistpm/sdk/dist/types";
 import { gql, GraphQLClient } from "graphql-request";
+import MarketStore from "lib/stores/MarketStore";
 import { MarketListQuery, MarketStatus } from "lib/types";
 import { activeStatusesFromFilters } from "lib/util/market";
+
 
 export const FRAGMENT_MARKET_DETAILS = gql`
   fragment MarketDetails on Market {
@@ -23,6 +25,12 @@ export const FRAGMENT_MARKET_DETAILS = gql`
     tags
     status
     scalarType
+    poolId
+    categories {
+      name
+      ticker
+      color
+    }
     marketType {
       categorical
       scalar
@@ -31,8 +39,8 @@ export const FRAGMENT_MARKET_DETAILS = gql`
 `;
 
 export type MarketPreload = {
-  marketId: number;
-  type: "scalar" | "categorical"
+  id: number;
+  type: "scalar" | "categorical";
   description: string;
   creation: MarketCreation;
   slug: string;
@@ -40,6 +48,9 @@ export type MarketPreload = {
   status: MarketStatus;
   end: BigInt;
   question: string;
+  preloaded: true;
+  poolId?: number | null;
+  categories: { name: string; ticker: string; color: string }[];
 };
 
 export class MarketPreloader {
@@ -271,8 +282,7 @@ export class MarketPreloader {
       orderBy = "end";
     }
 
-    let marketsData: MarketPreload[];
-    let count: number;
+    let marketsData: any[];
 
     const statuses = activeStatusesFromFilters(filter);
     marketsData = await this.filterMarkets(
@@ -289,15 +299,19 @@ export class MarketPreloader {
         orderBy,
       },
     );
-    // }
 
     let markets: MarketPreload[] = [];
 
-    let order = [];
     for (const data of marketsData) {
-      markets = [...markets, data];
+      markets = [...markets, { ...data, id: data.marketId, preloaded: true }];
     }
 
     return markets;
   }
 }
+
+export const isPreloadedMarket = (data: any): data is MarketPreload => {
+  return data.preloaded === true;
+};
+
+export type MarketCardData = MarketStore | MarketPreload;

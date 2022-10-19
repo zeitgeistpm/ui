@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { FC, useState, useMemo, useEffect } from "react";
+import React, { FC, useState, useMemo, useEffect, createContext, useContext } from "react";
 import { observer } from "mobx-react";
 import {
   ExternalLink,
@@ -9,22 +9,23 @@ import {
   Clock,
 } from "react-feather";
 
-import { MarketPreload } from "lib/gql/markets";
+import { isPreloadedMarket, MarketCardData } from "lib/gql/markets";
 import { MarketStatus } from "lib/types";
 import MarketStore from "lib/stores/MarketStore";
 import MarketTable from "./MarketTable";
 import { motion, Variants } from "framer-motion";
 import ScalarPriceRange from "./ScalarPriceRange";
 import Decimal from "decimal.js";
-import { useMarketsStore } from "lib/stores/MarketsStore";
-import { from } from "rxjs";
 import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
 
-export interface MarketCardProps {
-  marketStore: MarketStore;
-}
 
-type CardData = {
+const MarketCardContext =
+  createContext<{ market: MarketCardData; preloaded: boolean }>(null);
+
+const useIsMarketPreloaded = () => useContext(MarketCardContext).preloaded;
+const useMarketCardContext = () => useContext(MarketCardContext);
+
+type CardProps = {
   status: MarketStatus;
   marketStatusString?: string;
   id: number;
@@ -38,7 +39,9 @@ type CardData = {
   type: "categorical" | "scalar";
   bounds?: [number, number];
   shortPrice?: number;
-  longPrice?: number
+  longPrice?: number;
+  expanded?: boolean;
+  onChangeExpanded?: (expanded: boolean) => void;
 }
 
 const Card = observer(
@@ -57,9 +60,11 @@ const Card = observer(
     bounds,
     shortPrice,
     longPrice,
-  }: CardData) => {
-    const [expanded, setExpanded] = useState(false);
+    expanded = false,
+    onChangeExpanded
+  }: CardProps) => {
     const tagsText = tags == null ? "" : tags.join(" / ");
+    const preloaded = useIsMarketPreloaded();
 
     const buttonVariants: Variants = {
       closed: { rotate: 180 },
@@ -154,7 +159,7 @@ const Card = observer(
                   animate={expanded ? "open" : "closed"}
                   transition={{ duration: 0.3 }}
                   className="w-ztg-30 h-ztg-30 bg-sky-600 text-white dark:text-black ml-auto rounded-full flex items-center justify-center focus:outline-none disabled:opacity-50 disabled:cursor-default"
-                  onClick={() => setExpanded(!expanded)}
+                  onClick={() => onChangeExpanded(!expanded)}
                   disabled={!poolExists}
                 >
                   <ChevronUp size={24} />
@@ -165,7 +170,6 @@ const Card = observer(
         </div>
         {expanded && poolExists && (
           <PoolExpandable
-            marketId={id}
             type={type}
             bounds={bounds}
             shortPrice={shortPrice}
@@ -178,24 +182,20 @@ const Card = observer(
 );
 
 type PoolExpandableProps = {
-  marketId: number;
   type: "scalar" | "categorical"
   bounds: [number, number];
   shortPrice: number;
   longPrice: number;
-} 
+}
 
 const PoolExpandable = observer(
-  ({ marketId, bounds, shortPrice, longPrice, type }: PoolExpandableProps) => {
-    const marketsStore = useMarketsStore();
-    const [marketStore, setMarketStore] = useState<MarketStore>();
-
-    useEffect(() => {
-      const sub = from(marketsStore.getMarket(marketId)).subscribe((s) => {
-        setMarketStore(s);
-      });
-      return () => sub.unsubscribe();
-    }, [marketId]);
+  ({
+    bounds,
+    shortPrice,
+    longPrice,
+    type,
+  }: PoolExpandableProps) => {
+    const { market } = useMarketCardContext();
 
     return (
       <motion.div
@@ -213,104 +213,126 @@ const PoolExpandable = observer(
             longPrice={longPrice}
           />
         )}
-        {marketStore && <MarketTable marketStore={marketStore} />}
+        {market && <MarketTable marketStore={market} />}
       </motion.div>
     );
   },
 );
 
-const MarketCard: FC<MarketCardProps> = observer(
-  ({ marketStore }) => {
-    const [prediction, setPrediction] = useState<string | null>(null);
-    const { poolExists, status } = marketStore;
-    const [innerStatus, setInnerStatus] = useState<string>(status);
-    const [longPrice, setLongPrice] = useState<number>();
-    const [shortPrice, setShortPrice] = useState<number>();
+export interface MarketCardProps {
+  market: MarketCardData;
+}
 
-    useEffect(() => {
-      if (!poolExists) {
-        return setPrediction(null);
+const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
+  const [prediction, setPrediction] = useState<string>();
+  const [expanded, setExpanded] = useState(false);
+
+  let poolExists: boolean;
+  const status: string = market.status;
+  if (!isPreloadedMarket(market)) {
+    poolExists = market.poolExists;
+  } else {
+    poolExists = market.poolId != null;
+  }
+
+  const [innerStatus, setInnerStatus] = useState<string>(status);
+  const [longPrice, setLongPrice] = useState<number>();
+  const [shortPrice, setShortPrice] = useState<number>();
+
+  useEffect(() => {
+    if (isPreloadedMarket(market)) {
+      return;
+    }
+    if (!poolExists) {
+      return setPrediction(null);
+    }
+    (async () => {
+      const pricePromises = market.marketOutcomes
+        .filter((o) => o.metadata !== "ztg")
+        .map(async (outcome) => {
+          return {
+            assetId: outcome.asset,
+            price: await market.assetPriceInZTG(outcome.asset),
+          };
+        });
+      const prices = await Promise.all(pricePromises);
+      if (market.type === "categorical") {
+        prices.sort((a, b) => b.price.sub(a.price).toNumber());
+
+        setPrediction(
+          market.getMarketOutcome(prices[0].assetId).metadata["ticker"],
+        );
+      } else {
+        const bounds = market.bounds;
+        const range = new Decimal(bounds[1] - bounds[0]);
+
+        const lPrice = prices[0].price;
+        const sPrice = prices[1].price;
+
+        const shortPricePrediction = range
+          .mul(new Decimal(1).minus(sPrice))
+          .add(bounds[0]);
+        const longPricePrediction = range.mul(lPrice).add(bounds[0]);
+        const averagePricePrediction = longPricePrediction
+          .plus(shortPricePrediction)
+          .div(2);
+
+        setPrediction(averagePricePrediction.toFixed(0));
+        setLongPrice(lPrice.toNumber());
+        setShortPrice(sPrice.toNumber());
       }
-      (async () => {
-        const pricePromises = marketStore.marketOutcomes
-          .filter((o) => o.metadata !== "ztg")
-          .map(async (outcome) => {
-            return {
-              assetId: outcome.asset,
-              price: await marketStore.assetPriceInZTG(outcome.asset),
-            };
-          });
-        const prices = await Promise.all(pricePromises);
-        if (marketStore.type === "categorical") {
-          prices.sort((a, b) => b.price.sub(a.price).toNumber());
+    })();
+  }, [market, poolExists, (market as MarketStore).pool]);
 
-          setPrediction(
-            marketStore.getMarketOutcome(prices[0].assetId).metadata["ticker"],
-          );
-        } else {
-          const bounds = marketStore.bounds;
-          const range = new Decimal(bounds[1] - bounds[0]);
+  useEffect(() => {
+    const statusChanged = innerStatus !== status;
+    if (statusChanged) {
+      setInnerStatus(status);
+    }
+  }, [status]);
 
-          const lPrice = prices[0].price;
-          const sPrice = prices[1].price;
-
-          const shortPricePrediction = range
-            .mul(new Decimal(1).minus(sPrice))
-            .add(bounds[0]);
-          const longPricePrediction = range.mul(lPrice).add(bounds[0]);
-          const averagePricePrediction = longPricePrediction
-            .plus(shortPricePrediction)
-            .div(2);
-
-          setPrediction(averagePricePrediction.toFixed(0));
-          setLongPrice(lPrice.toNumber());
-          setShortPrice(sPrice.toNumber());
-        }
-      })();
-    }, [marketStore, poolExists, marketStore.pool]);
-
-    useEffect(() => {
-      const statusChanged = innerStatus !== status;
-      if (statusChanged) {
-        setInnerStatus(status);
-      }
-    }, [status]);
-
-    return (
-      <Card
-        id={marketStore.id}
-        img={marketStore.img}
-        poolExists={poolExists}
-        question={marketStore.question}
-        slug={marketStore.slug}
-        status={marketStore.status}
-        type={marketStore.type}
-        marketStatusString={marketStore.marketStatusString}
-        bounds={marketStore.bounds}
-        longPrice={longPrice}
-        shortPrice={shortPrice}
-        tags={marketStore.tags}
-        creation={marketStore.creation}
-        prediction={prediction}
-      />
-    );
-  },
-);
-
-export const MarketCardPreload: FC<{ market: MarketPreload }> = observer(
-  ({ market }) => {
-    return (
-      <Card
-        id={market.marketId}
-        question={market.question}
-        slug={market.slug}
-        status={market.status}
-        type={market.type}
-        tags={market.tags}
-        creation={market.creation}
-      />
-    );
-  },
-);
+  return (
+    <MarketCardContext.Provider
+      value={{ market, preloaded: isPreloadedMarket(market) }}
+    >
+      {!isPreloadedMarket(market) ? (
+        <Card
+          id={market.id}
+          img={market.img}
+          poolExists={poolExists}
+          question={market.question}
+          slug={market.slug}
+          status={market.status}
+          type={market.type}
+          marketStatusString={market.marketStatusString}
+          bounds={market.bounds}
+          longPrice={longPrice}
+          shortPrice={shortPrice}
+          tags={market.tags}
+          creation={market.creation}
+          prediction={prediction}
+          expanded={expanded}
+          onChangeExpanded={setExpanded}
+        />
+      ) : (
+        <Card
+          id={market.id}
+          poolExists={poolExists}
+          question={market.question}
+          slug={market.slug}
+          status={market.status}
+          type={market.type}
+          longPrice={longPrice}
+          shortPrice={shortPrice}
+          tags={market.tags}
+          creation={market.creation}
+          prediction={prediction}
+          expanded={expanded}
+          onChangeExpanded={setExpanded}
+        />
+      )}
+    </MarketCardContext.Provider>
+  );
+});
 
 export default MarketCard;

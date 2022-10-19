@@ -1,10 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { observer } from "mobx-react";
 import { X } from "react-feather";
 import { useRouter } from "next/router";
 import hashObject from "object-hash";
 import { useStore } from "lib/stores/Store";
-import MarketCard, { MarketCardPreload } from "./MarketCard";
+import MarketCard from "./MarketCard";
 import MainFilters from "./filters/MainFilters";
 import MyFilters from "./filters/MyFilters";
 import MarketSkeletons from "./MarketSkeletons";
@@ -17,6 +17,7 @@ import { useContentScrollTop } from "components/context/ContentDimensionsContext
 import { debounce } from "lodash";
 import { makeAutoObservable } from "mobx";
 import { useUserStore } from "lib/stores/UserStore";
+import { MarketCardData } from "lib/gql/markets";
 
 export type MarketsListProps = {
   className?: string;
@@ -41,13 +42,13 @@ const MarketsFilters = observer(
 
     return (
       <>
-        {query.searchText && (
+        {query?.searchText && (
           <MarketsSearchInfo searchText={query.searchText} />
         )}
 
-        {query.tag && <MarketsSearchInfo searchText={query.tag} />}
+        {query?.tag && <MarketsSearchInfo searchText={query?.tag} />}
 
-        {!query.myMarketsOnly && (
+        {query?.myMarketsOnly === false && (
           <MainFilters
             filters={query.filter}
             sortOptions={query.sorting}
@@ -61,7 +62,7 @@ const MarketsFilters = observer(
           />
         )}
 
-        {query.myMarketsOnly && (
+        {query?.myMarketsOnly === true && (
           <MyFilters
             filters={query.filter}
             onFiltersChange={(filter) => {
@@ -87,7 +88,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const [initialLoad, setInitialLoad] = useState(true);
 
   const query = useMarketsUrlQuery();
-  const [debouncedQueryChange] = useDebounce(hashObject(query), 250);
+  const [debouncedQueryChange] = useDebounce(hashObject(query ?? null), 250);
 
   const [totalPages, setTotalPages] = useState<number>(0);
   const [loadingNextPage, setLoadingNextPage] = useState(false);
@@ -95,17 +96,13 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
 
   const [scrollTop, scrollTo] = useContentScrollTop();
 
-  const prevPage = usePrevious(query.pagination.page);
+  const prevPage = usePrevious(query?.pagination?.page);
 
   const paginatorRef = useRef<HTMLDivElement>();
   const listRef = useRef<HTMLDivElement>();
 
   const count = marketsStore?.count;
-  const hasNext = query.pagination.page < totalPages;
-
-  const markets = marketsStore?.order.map((id) => {
-    return store.markets.markets[id];
-  });
+  const hasNext = query?.pagination?.page < totalPages;
 
   const performQuery = () => {
     return marketsStore.fetchMarkets(query);
@@ -120,6 +117,19 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     [scrollTop],
   );
 
+  const [marketsList, setMarketsList] = useState<MarketCardData[]>();
+
+  useEffect(() => {
+    if (marketsStore?.order.length > 0) {
+      const markets = marketsStore?.order.map((id) => {
+        return store.markets.markets[id];
+      });
+      setMarketsList(markets);
+    } else {
+      setMarketsList(preloadedMarkets);
+    }
+  }, [marketsStore?.order, preloadedMarkets]);
+
   useEffect(() => {
     if (initialLoad && scrollRestoration.scrollTop) {
       scrollTo(scrollRestoration.scrollTop);
@@ -132,13 +142,13 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     }
     if (hasNext && hasScrolledToEnd) {
       query.updateQuery({
-        pagination: { page: query.pagination.page + 1 },
+        pagination: { page: query?.pagination?.page + 1 },
       });
     }
   }, [hasScrolledToEnd, hasNext]);
 
   useEffect(() => {
-    if (store.sdk == null) {
+    if (store.sdk == null || query == null) {
       return;
     }
     setPageLoaded(false);
@@ -150,10 +160,10 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   }, [debouncedQueryChange, store.sdk]);
 
   useEffect(() => {
-    if (query.pagination.page > prevPage) {
+    if (query?.pagination?.page > prevPage) {
       setLoadingNextPage(true);
     }
-  }, [query.pagination.page, prevPage]);
+  }, [query?.pagination?.page, prevPage]);
 
   useEffect(() => {
     if (count) {
@@ -165,7 +175,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     <div className={"pt-ztg-46 " + className} ref={listRef}>
       <h3 className="mb-ztg-40 font-space text-[24px] font-semibold">
         <span className="mr-4">
-          {query.myMarketsOnly ? "My Markets" : "All Markets"}
+          {query?.myMarketsOnly ? "My Markets" : "All Markets"}
         </span>
         {loadingNextPage || (!pageLoaded && <Loader size={8} />)}
       </h3>
@@ -177,18 +187,10 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
         />
       </div>
       <div className="mb-ztg-38">
-        {markets?.length > 0
-          ? markets.map((market) => {
-              if (market == null) {
-                return;
-              }
-              return <MarketCard marketStore={market} key={`market-${market.id}`} />;
-            })
-          : preloadedMarkets?.map((market) => {
-              return (
-                <MarketCardPreload market={market} key={`market-${market.marketId}`} />
-              );
-            })}
+        {query != null &&
+          marketsList?.map((market) => {
+            return <MarketCard market={market} key={`market-${market.id}`} />;
+          })}
 
         {loadingNextPage && (
           <MarketSkeletons pageSize={query.pagination.pageSize} />
@@ -200,7 +202,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
 
         <div className="my-22 w-full h-40"></div>
 
-        <div ref={paginatorRef} />
+        {/* <div ref={paginatorRef} /> */}
       </div>
     </div>
   );

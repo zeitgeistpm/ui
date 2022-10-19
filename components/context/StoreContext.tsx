@@ -1,13 +1,12 @@
 import React, { FC, useEffect } from "react";
 import { observer } from "mobx-react";
+import { isEmpty } from "lodash";
+import { from } from "rxjs";
 
 import Store from "lib/stores/Store";
 import {
-  defaultQueryState,
   useMarketsUrlQuery,
 } from "lib/hooks/useMarketsUrlQuery";
-import { isEmpty } from "lodash";
-import { from } from "rxjs";
 import { MarketPreloader } from "lib/gql/markets";
 
 export const StoreContext = React.createContext<Store | null>(null);
@@ -22,7 +21,12 @@ export const StoreProvider: FC<{ store: Store }> = observer(
     }, []);
 
     useEffect(() => {
-      if (!isEmpty(marketsStore?.markets) || graphQLClient == null) {
+      console.log(query);
+      if (
+        !isEmpty(marketsStore?.markets) ||
+        graphQLClient == null ||
+        query == null
+      ) {
         return;
       }
 

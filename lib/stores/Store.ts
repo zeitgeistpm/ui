@@ -3,8 +3,9 @@ import { BlockNumber } from "@polkadot/types/interfaces";
 import { AccountInfo } from "@polkadot/types/interfaces/system";
 import { Swap } from "@zeitgeistpm/sdk/dist/models";
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
-import { useContext } from "react";
 import SDK from "@zeitgeistpm/sdk";
+import { useContext } from "react";
+import { observable } from "mobx";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 import Decimal from "decimal.js";
 import { makeAutoObservable, runInAction, when } from "mobx";
@@ -137,6 +138,7 @@ export default class Store {
       isTestEnv: false,
       unsubscribeNewHeads: false,
       balanceSubscription: false,
+      preloadedMarkets: observable.ref,
     });
   }
 
@@ -184,7 +186,6 @@ export default class Store {
     this.userStore.checkIP();
     try {
       await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
-      window.performance.mark("APP_SDK_INITIALIZED");
       this.loadConfig();
       const storedWalletId = this.userStore.walletId;
 

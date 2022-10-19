@@ -5,6 +5,9 @@ export const useIsOnScreen = (ref: React.MutableRefObject<HTMLElement>) => {
   const observer = useRef<IntersectionObserver>();
 
   useEffect(() => {
+    if (ref.current == null) {
+      return;
+    }
     if (observer.current == null) {
       observer.current = new IntersectionObserver(([entry]) =>
         setIntersecting(entry.isIntersecting),
