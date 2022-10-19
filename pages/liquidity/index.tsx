@@ -1,6 +1,7 @@
 import InfoBoxes from "components/ui/InfoBoxes";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
+import { create } from "@zeitgeistpm/sdk-next";
 import { ZTG } from "lib/constants";
 import { usePoolsListQuery } from "lib/hooks/usePoolsUrlQuery";
 import { usePoolsStore } from "lib/stores/PoolsStore";
