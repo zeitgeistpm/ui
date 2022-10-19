@@ -140,7 +140,6 @@ const Market: NextPage<{
   }, [marketsStore, marketid]);
 
   const handlePoolDeployed = () => {
-    console.log("pool deployed");
     fetchMarket();
   };
 

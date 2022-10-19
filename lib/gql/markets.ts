@@ -100,6 +100,5 @@ export const checkMarketExists = async (
       marketId: marketId,
     },
   );
-  console.log(response);
   return response.markets.length > 0;
 };
