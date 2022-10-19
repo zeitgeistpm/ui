@@ -1,3 +1,4 @@
+import { Skeleton } from "@material-ui/lab";
 import LiquidityPill from "components/markets/LiquidityPill";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
@@ -104,6 +105,7 @@ const Market: NextPage<{
   const store = useStore();
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
+  const [hasAuthReport, setHasAuthReport] = useState<boolean>();
 
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
@@ -122,14 +124,19 @@ const Market: NextPage<{
 
         setPool(pool);
       }
+
+      const report =
+        await store.sdk.api.query.authorized.authorizedOutcomeReports(
+          market.id,
+        );
+
+      setHasAuthReport(report.isEmpty === false);
     }
   };
 
   useEffect(() => {
-    (async () => {
-      if (!store) return;
-      fetchMarket();
-    })();
+    if (!store) return;
+    fetchMarket();
   }, [marketsStore, marketid]);
 
   const handlePoolDeployed = () => {
@@ -137,10 +144,13 @@ const Market: NextPage<{
     fetchMarket();
   };
 
+  //required to fix title element warning
+  const question = indexedMarket.question;
+
   return (
     <>
       <Head>
-        <title>{indexedMarket.question} </title>
+        <title>{question}</title>
         <meta name="description" content={indexedMarket.description} />
       </Head>
       <div>
@@ -196,11 +206,15 @@ const Market: NextPage<{
           )}
         </div>
         <div className="mb-ztg-20">
-          {marketStore && (
+          {marketStore ? (
             <MarketTimer
               marketStore={marketStore}
-              // hasAuthReport={authReportNumberOrId != null}
-              hasAuthReport={true}
+              hasAuthReport={hasAuthReport}
+            />
+          ) : (
+            <Skeleton
+              className="!py-ztg-10 !rounded-ztg-10 !transform-none"
+              height={70}
             />
           )}
         </div>

@@ -216,5 +216,5 @@ export default class PoolsStore {
 
 export const usePoolsStore = () => {
   const store = useStore();
-  return store.pools;
+  return store?.pools;
 };
