@@ -64,7 +64,6 @@ export type SortOptions = {
 };
 
 export type MyMarketsFilterOptions = {
-  myMarketsOnly: boolean;
   creator: boolean;
   oracle: boolean;
   hasAssets: boolean;

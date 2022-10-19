@@ -21,9 +21,6 @@ export const useMarketsUrlQuery = (): MarketListQuery & {
   const rawQuery = router.query;
 
   const query = useMemo(() => {
-    if (isEmpty(rawQuery)) {
-      return;
-    }
     try {
       return parse(rawQuery);
     } catch (error) {
@@ -40,10 +37,6 @@ export const useMarketsUrlQuery = (): MarketListQuery & {
     },
     [rawQuery],
   );
-
-  if (query == null) {
-    return undefined;
-  }
 
   return {
     ...query,
@@ -67,7 +60,6 @@ export const defaultQueryState: MarketListQuery = {
     oracle: false,
     creator: true,
     hasAssets: false,
-    myMarketsOnly: false,
   },
   sorting: {
     order: "asc",
@@ -124,7 +116,7 @@ const parse = (rawQuery: ParsedUrlQuery): MarketListQuery => {
     : rawQuery.searchText;
 
   const myMarketsOnly: boolean | undefined = !rawQuery.myMarketsOnly
-    ? false
+    ? undefined
     : Array.isArray(rawQuery.myMarketsOnly)
     ? JSON.parse(last(rawQuery.myMarketsOnly))
     : JSON.parse(rawQuery.myMarketsOnly);

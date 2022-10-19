@@ -42,13 +42,13 @@ const MarketsFilters = observer(
 
     return (
       <>
-        {query?.searchText && (
+        {query.searchText && (
           <MarketsSearchInfo searchText={query.searchText} />
         )}
 
-        {query?.tag && <MarketsSearchInfo searchText={query?.tag} />}
+        {query.tag && <MarketsSearchInfo searchText={query.tag} />}
 
-        {query?.myMarketsOnly === false && (
+        {query.myMarketsOnly == null && (
           <MainFilters
             filters={query.filter}
             sortOptions={query.sorting}
@@ -62,7 +62,7 @@ const MarketsFilters = observer(
           />
         )}
 
-        {query?.myMarketsOnly === true && (
+        {query.myMarketsOnly === true && (
           <MyFilters
             filters={query.filter}
             onFiltersChange={(filter) => {
@@ -88,7 +88,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const [initialLoad, setInitialLoad] = useState(true);
 
   const query = useMarketsUrlQuery();
-  const [debouncedQueryChange] = useDebounce(hashObject(query ?? null), 250);
+  const [debouncedQueryChange] = useDebounce(hashObject(query), 250);
 
   const [totalPages, setTotalPages] = useState<number>(0);
   const [loadingNextPage, setLoadingNextPage] = useState(false);
@@ -120,13 +120,13 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const [marketsList, setMarketsList] = useState<MarketCardData[]>();
 
   useEffect(() => {
-    if (marketsStore?.order.length > 0) {
+    if (marketsStore?.order.length === 0 && marketsList == null) {
+      setMarketsList(preloadedMarkets);
+    } else {
       const markets = marketsStore?.order.map((id) => {
         return store.markets.markets[id];
       });
       setMarketsList(markets);
-    } else {
-      setMarketsList(preloadedMarkets);
     }
   }, [marketsStore?.order, preloadedMarkets]);
 
