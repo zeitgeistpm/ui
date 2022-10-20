@@ -56,7 +56,15 @@ const DefaultLayout: FC = observer(({ children }) => {
                 height={height}
                 width={width}
               >
-                {children}
+                {store.initialized ||
+                ["/", "/markets"].includes(router.pathname) ? (
+                  children
+                ) : (
+                  <Skeleton
+                    className="!transform-none !mt-ztg-30"
+                    style={{ height: "550px" }}
+                  />
+                )}
               </ContentDimensionsProvider>
             </div>
             <Footer />

@@ -186,7 +186,7 @@ export default class Store {
     this.userStore.checkIP();
     try {
       await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
-      this.loadConfig();
+      await this.loadConfig();
       const storedWalletId = this.userStore.walletId;
 
       if (storedWalletId) {
