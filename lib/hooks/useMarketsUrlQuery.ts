@@ -21,10 +21,10 @@ export const useMarketsUrlQuery = (): MarketListQuery & {
   const router = useRouter();
   const routerPath = router.asPath;
   const query = useMemo(() => {
-    const url = parseUri(routerPath);
-    let queryParams = {};
-    const queryParamsArr = [...Array.from(new URLSearchParams(url.query))];
     try {
+      const url = parseUri(routerPath);
+      let queryParams = {};
+      const queryParamsArr = [...Array.from(new URLSearchParams(url.query))];
       for (const pair of queryParamsArr) {
         queryParams[pair[0]] = pair[1];
       }
