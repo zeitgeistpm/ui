@@ -195,9 +195,9 @@ const IdentitySettings = observer(() => {
         <AlertTriangle size={20} className="mr-ztg-20" />
         <div className="text-ztg-14-120 font-normal">
           Setting an identity requires a deposit of up to{" "}
-          {store.config.identity.basicDeposit +
-            store.config.identity.fieldDeposit}{" "}
-          {store.config.tokenSymbol}. This deposit can be retrieved by clearing
+          {store.config && (store.config.identity.basicDeposit +
+            store.config.identity.fieldDeposit)}{" "}
+          {store.config && store.config.tokenSymbol}. This deposit can be retrieved by clearing
           your identity.
         </div>
       </div>
