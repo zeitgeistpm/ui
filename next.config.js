@@ -1,14 +1,11 @@
+// pass the modules you would like to see transpiled
 const withTM = require("next-transpile-modules")([
   "@zeitgeistpm/sdk",
-  "@zeitgeistpm/utility",
   "@zeitgeistpm/web3.storage",
-  "@zeitgeistpm/rpc",
-  "@zeitgeistpm/indexer",
+  "ipfs-http-client",
 ]); // pass the modules you would like to see transpiled
 
 module.exports = withTM({
-  reactStrictMode: true,
-  swcMinify: true,
   experimental: {
     scrollRestoration: true,
   },

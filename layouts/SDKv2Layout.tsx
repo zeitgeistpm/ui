@@ -1,9 +1,9 @@
 import { debounce } from "lodash";
 import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
-import { builder, mainnet } from "@zeitgeistpm/sdk";
+import { create$, mainnet } from "@zeitgeistpm/sdk";
 
-console.log(builder);
+console.log(create$(mainnet()));
 
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 

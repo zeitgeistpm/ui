@@ -1,23 +1,27 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ES2018",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "esnext",
     "resolveJsonModule": true,
-    "isolatedModules": true,
     "jsx": "preserve",
     "experimentalDecorators": true,
     "useDefineForClassFields": true,
     "baseUrl": "./",
     "incremental": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "moduleResolution": "node",
+    "isolatedModules": true
   },
   "include": [
     "next-env.d.ts",
@@ -27,5 +31,9 @@
     "**/*.jsx",
     "**/*.js"
   ],
-  "exclude": ["node_modules", "cypress", "scripts"]
+  "exclude": [
+    "node_modules",
+    "cypress",
+    "scripts"
+  ]
 }
