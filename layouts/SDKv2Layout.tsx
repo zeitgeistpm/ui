@@ -1,16 +1,16 @@
 import { debounce } from "lodash";
-import { observer } from "mobx-react";
 import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
-import { builder, mainnet, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { builder, mainnet } from "@zeitgeistpm/sdk";
+
+console.log(builder);
 
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
-import Footer from "components/ui/Footer";
 
-const SDKv2Layout: FC = observer(({ children }) => {
+const SDKv2Layout: FC = ({ children }) => {
   const { width, height, ref: mainRef } = useResizeDetector();
 
-  const sdk$ = useMemo(() => builder(mainnet()), []);
+  //const sdk$ = useMemo(() => builder(mainnet()), []);
 
   const contentRef = useRef<HTMLDivElement>();
   const [scrollTop, setScrollTop] = useState(0);
@@ -24,6 +24,9 @@ const SDKv2Layout: FC = observer(({ children }) => {
       contentRef.current.scrollTop = scrollTop;
     }
   };
+
+  // const sdk$ = useMemo(() => builder(mainnet()), []);
+  // console.log(sdk$);
 
   return (
     <div
@@ -48,11 +51,10 @@ const SDKv2Layout: FC = observer(({ children }) => {
               {children}
             </ContentDimensionsProvider>
           </div>
-          <Footer />
         </main>
       </div>
     </div>
   );
-});
+};
 
 export default SDKv2Layout;

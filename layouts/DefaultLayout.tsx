@@ -1,11 +1,11 @@
 import { observer } from "mobx-react";
 import { Skeleton } from "@material-ui/lab";
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import { debounce } from "lodash";
 
 import * as Fathom from "fathom-client";
-import { useStore } from "lib/stores/Store";
+import Store, { useStore } from "lib/stores/Store";
 import { TradeSlipStoreContext } from "lib/stores/TradeSlipStore";
 import TopBar from "components/top-bar";
 import Footer from "components/ui/Footer";
@@ -22,7 +22,7 @@ import { ModalStoreContext } from "components/context/ModalStoreContext";
 import ModalContainer from "components/modal/ModalContainer";
 import Head from "next/head";
 import { hotjar } from "react-hotjar";
-import { useModalStore } from "lib/stores/ModalStore";
+import ModalStore, { useModalStore } from "lib/stores/ModalStore";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -30,9 +30,9 @@ const domain = process.env["NEXT_PUBLIC_DOMAIN"];
 const hotjarSiteId = process.env["NEXT_PUBLIC_HOTJAR_SITE_ID"];
 
 const DefaultLayout: FC = observer(({ children }) => {
-  const store = useStore();
+  const store = useMemo(() => new Store(), []);
+  const modalStore = useMemo(() => new ModalStore(), []);
   const router = useRouter();
-  const modalStore = useModalStore();
 
   const { width, height, ref: mainRef } = useResizeDetector();
 
