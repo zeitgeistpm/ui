@@ -49,7 +49,12 @@ const Portfolio: NextPage = observer(() => {
   );
 
   useEffect(() => {
-    if (!address || isValidPolkadotAddress(address) === false) return;
+    if (
+      !address ||
+      isValidPolkadotAddress(address) === false ||
+      store.sdk == null
+    )
+      return;
     (async () => {
       const historicalValues =
         await store.sdk.models.getAccountHistoricalValues(address, startTime);
@@ -69,7 +74,7 @@ const Portfolio: NextPage = observer(() => {
 
       setChartData(chart);
     })();
-  }, [startTime]);
+  }, [startTime, store.sdk]);
 
   useEffect(() => {
     if (!address) {
@@ -81,7 +86,7 @@ const Portfolio: NextPage = observer(() => {
       setMessage("Invalid address");
       return;
     }
-    if (updateNum === 0) {
+    if (updateNum === 0 || store.sdk == null) {
       return;
     }
 
@@ -226,7 +231,7 @@ const Portfolio: NextPage = observer(() => {
 
       setPositions(displayPositons);
     })();
-  }, [updateNum]);
+  }, [updateNum, store.sdk]);
 
   const createTableRow = (position) => {
     return {
