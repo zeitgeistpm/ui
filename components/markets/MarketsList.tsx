@@ -10,7 +10,6 @@ import MyFilters from "./filters/MyFilters";
 import MarketSkeletons from "./MarketSkeletons";
 import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
 import { usePrevious } from "lib/hooks/usePrevious";
-import { useDebounce } from "use-debounce";
 import Loader from "react-spinners/PulseLoader";
 import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
 import { useContentScrollTop } from "components/context/ContentDimensionsContext";
@@ -88,7 +87,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const [initialLoad, setInitialLoad] = useState(true);
 
   const query = useMarketsUrlQuery();
-  const [debouncedQueryChange] = useDebounce(hashObject(query), 250);
+  const [hashedQuery, setHashedQuery] = useState<string>();
 
   const [totalPages, setTotalPages] = useState<number>(0);
   const [loadingNextPage, setLoadingNextPage] = useState(false);
@@ -116,6 +115,10 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     }, 150),
     [scrollTop],
   );
+
+  useEffect(() => {
+    setHashedQuery(hashObject(query));
+  }, [query]);
 
   const [marketsList, setMarketsList] = useState<MarketCardData[]>();
 
@@ -148,7 +151,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   }, [hasScrolledToEnd, hasNext]);
 
   useEffect(() => {
-    if (store.sdk == null || query == null) {
+    if (store.sdk == null) {
       return;
     }
     setPageLoaded(false);
@@ -157,7 +160,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       setPageLoaded(true);
       setInitialLoad(false);
     });
-  }, [debouncedQueryChange, store.sdk]);
+  }, [hashedQuery, store.sdk, store.wallets.activeAccount]);
 
   useEffect(() => {
     if (query?.pagination?.page > prevPage) {
@@ -202,7 +205,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
 
         <div className="my-22 w-full h-40"></div>
 
-        {/* <div ref={paginatorRef} /> */}
+        <div ref={paginatorRef} />
       </div>
     </div>
   );

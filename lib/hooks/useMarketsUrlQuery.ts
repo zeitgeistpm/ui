@@ -9,6 +9,7 @@ import type { ParsedUrlQuery } from "querystring";
 import { useCallback, useMemo } from "react";
 import { merge, last, isEmpty } from "lodash";
 import { DeepPartial } from "lib/types/DeepPartial";
+import { parse as parseUri } from "uri-js";
 
 export type MarketListQueryUpdater = (
   update: DeepPartial<MarketListQuery>,
@@ -18,15 +19,20 @@ export const useMarketsUrlQuery = (): MarketListQuery & {
   updateQuery: MarketListQueryUpdater;
 } => {
   const router = useRouter();
-  const rawQuery = router.query;
-
+  const routerPath = router.asPath;
   const query = useMemo(() => {
+    const url = parseUri(routerPath);
+    let queryParams = {};
+    const queryParamsArr = [...Array.from(new URLSearchParams(url.query))];
     try {
-      return parse(rawQuery);
+      for (const pair of queryParamsArr) {
+        queryParams[pair[0]] = pair[1];
+      }
+      return parse(queryParams);
     } catch (error) {
       return defaultQueryState;
     }
-  }, [rawQuery]);
+  }, [routerPath]);
 
   const updateQuery = useCallback<MarketListQueryUpdater>(
     (update) => {
@@ -35,7 +41,7 @@ export const useMarketsUrlQuery = (): MarketListQuery & {
         query: toString(newQuery),
       });
     },
-    [rawQuery],
+    [routerPath],
   );
 
   return {

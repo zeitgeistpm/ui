@@ -4068,6 +4068,7 @@ __metadata:
     tailwindcss: ^3.1.8
     toformat: ^2.0.0
     typescript: ^4.5.4
+    uri-js: ^4.4.1
     use-debounce: ^7.0.1
     validatorjs: ^3.22.1
   languageName: unknown
@@ -14686,7 +14687,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uri-js@npm:^4.2.2":
+"uri-js@npm:^4.2.2, uri-js@npm:^4.4.1":
   version: 4.4.1
   resolution: "uri-js@npm:4.4.1"
   dependencies:
