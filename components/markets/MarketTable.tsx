@@ -4,13 +4,11 @@ import AssetActionButtons from "components/assets/AssetActionButtons";
 import { get24HrPriceChange } from "lib/util/market";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useUserStore } from "lib/stores/UserStore";
-import { calcTotalAssetPrice } from "lib/util/pool";
 import { isPreloadedMarket, MarketCardData } from "lib/gql/markets";
 import { DAY_SECONDS } from "lib/constants";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
-import market from "@zeitgeistpm/sdk/dist/models/market";
 
 
 const MarketTable = observer(
@@ -129,6 +127,13 @@ const MarketTable = observer(
             label: category.ticker,
           },
           outcome: category.name,
+          buttons: (
+            <AssetActionButtons
+              marketId={marketStore.id}
+              assetColor={category.color}
+              assetTicker={category.ticker}
+            />
+          )
         }
       });
     }
