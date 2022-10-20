@@ -1,13 +1,16 @@
 import { debounce } from "lodash";
 import { observer } from "mobx-react";
-import React, { FC, useRef, useState } from "react";
+import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
+import { builder, mainnet, isRpcSdk } from "@zeitgeistpm/sdk-next";
 
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import Footer from "components/ui/Footer";
 
 const SDKv2Layout: FC = observer(({ children }) => {
   const { width, height, ref: mainRef } = useResizeDetector();
+
+  const sdk$ = useMemo(() => builder(mainnet()), []);
 
   const contentRef = useRef<HTMLDivElement>();
   const [scrollTop, setScrollTop] = useState(0);
