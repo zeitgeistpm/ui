@@ -126,7 +126,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     if (marketsStore?.order.length === 0 && marketsList == null) {
       setMarketsList(preloadedMarkets);
     } else {
-      const markets = marketsStore?.order.map((id) => {
+      const markets = marketsStore.order.map((id) => {
         return store.markets.markets[id];
       });
       setMarketsList(markets);
@@ -195,8 +195,8 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
             return <MarketCard market={market} key={`market-${market.id}`} />;
           })}
 
-        {loadingNextPage && (
-          <MarketSkeletons pageSize={query.pagination.pageSize} />
+        {(marketsList == null || loadingNextPage) && (
+          <MarketSkeletons pageSize={query?.pagination?.pageSize ?? 5} />
         )}
 
         {pageLoaded && count === 0 && (

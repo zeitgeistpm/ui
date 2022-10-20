@@ -17,6 +17,7 @@ import { motion, Variants } from "framer-motion";
 import ScalarPriceRange from "./ScalarPriceRange";
 import Decimal from "decimal.js";
 import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
+import { Skeleton } from "@material-ui/lab";
 
 
 const MarketCardContext =
@@ -139,10 +140,14 @@ const Card = observer(
                 Prediction
               </div>
               <div className="flex flex-row">
-                <div className="text-ztg-16-120 font-bold text-black dark:text-white mt-ztg-4">
-                  {/* todo */}
-                  {prediction ?? "--"}
-                </div>
+                {preloaded && (
+                  <Skeleton className="!transform-none !w-[50px] !h-[20px] !mt-ztg-4" />
+                )}
+                {!preloaded && (
+                  <div className="text-ztg-16-120 font-bold text-black dark:text-white mt-ztg-4">
+                    {prediction ?? "--"}
+                  </div>
+                )}
               </div>
             </div>
             <div className="hidden sm:flex items-center h-full text-sky-600">

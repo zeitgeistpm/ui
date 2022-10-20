@@ -129,7 +129,11 @@ const Cell = observer(
           className={`font-lato font-bold text-ztg-12-150 text-center ${base}`}
           onClick={onClick}
           style={style}
-        ></td>
+        >
+          <div className="center">
+            <Skeleton className="!transform-none !w-[25px] !h-[24px]" />
+          </div>
+        </td>
       );
     }
     switch (type) {
@@ -353,10 +357,6 @@ const Table = observer(
       }
     };
 
-    const handleIndexChange = (index: number) => {
-      onPaginate(index);
-    };
-
     const handlePlusClicked = () => {};
 
     const handleSortClick = () => {};
@@ -508,7 +508,6 @@ const Table = observer(
 
             {onPaginate ? (
               <Paginator
-                // onIndexChanged={handleIndexChange}
                 onPlusClicked={handlePlusClicked}
               />
             ) : (
