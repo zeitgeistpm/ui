@@ -27,7 +27,7 @@ import PoolsStore from "./PoolsStore";
 import ExchangeStore from "./ExchangeStore";
 import CourtStore from "./CourtStore";
 import Wallets from "../wallets";
-import { MarketPreload } from "lib/gql/markets";
+import { MarketPreload } from "lib/gql/markets-list";
 
 interface Config {
   tokenSymbol: string;

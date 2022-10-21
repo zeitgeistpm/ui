@@ -4,7 +4,7 @@ import AssetActionButtons from "components/assets/AssetActionButtons";
 import { get24HrPriceChange } from "lib/util/market";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useUserStore } from "lib/stores/UserStore";
-import { isPreloadedMarket, MarketCardData } from "lib/gql/markets";
+import { isPreloadedMarket, MarketCardData } from "lib/gql/markets-list";
 import { DAY_SECONDS } from "lib/constants";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";

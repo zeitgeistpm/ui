@@ -6,7 +6,7 @@ import hashObject from "object-hash";
 
 import Store from "lib/stores/Store";
 import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
-import { MarketPreloader } from "lib/gql/markets";
+import { MarketPreloader } from "lib/gql/markets-list";
 
 export const StoreContext = React.createContext<Store | null>(null);
 

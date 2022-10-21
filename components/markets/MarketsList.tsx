@@ -16,7 +16,7 @@ import { useContentScrollTop } from "components/context/ContentDimensionsContext
 import { debounce } from "lodash";
 import { makeAutoObservable } from "mobx";
 import { useUserStore } from "lib/stores/UserStore";
-import { MarketCardData } from "lib/gql/markets";
+import { MarketCardData } from "lib/gql/markets-list";
 
 export type MarketsListProps = {
   className?: string;

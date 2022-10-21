@@ -9,7 +9,7 @@ import {
   Clock,
 } from "react-feather";
 
-import { isPreloadedMarket, MarketCardData } from "lib/gql/markets";
+import { isPreloadedMarket, MarketCardData } from "lib/gql/markets-list";
 import { MarketStatus } from "lib/types";
 import MarketStore from "lib/stores/MarketStore";
 import MarketTable from "./MarketTable";
