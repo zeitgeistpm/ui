@@ -5,7 +5,7 @@ import { Command, Option } from "commander";
 import { KeyringPairOrExtSigner, MarketPeriod } from "@zeitgeistpm/sdk/dist/types";
 import dotenv from "dotenv";
 import { resolve } from "path";
-import { ZTG } from "../lib/constants";
+import { ZTG, DEFAULT_DEADLINES } from "../lib/constants";
 import { randomHexColor } from "../lib/util";
 
 const program = new Command();
@@ -97,6 +97,7 @@ const createCategoricalMarket = async (
     period,
     metadata,
     creationType: "Permissionless",
+    deadlines: DEFAULT_DEADLINES,
     marketType: { Categorical: numOutcomes },
     disputeMechanism: { authorized: signer.address },
     scoringRule: "CPMM",

@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "next",
     "dev:test": "NEXT_PUBLIC_TESTING_ENV=true next",
+    "dev:local": "NEXT_PUBLIC_IPFS_NODE=http://localhost:5001 NEXT_PUBLIC_SSR_INDEXER_URL=http://localhost:4350/graphql next",
     "build": "next build",
     "lint": "eslint ./components/** ./pages/** ./lib/** -c .eslintrc.js --ext js,jsx,ts,tsx",
     "lint-fix": "eslint ./components/** ./pages/** ./lib/** -c .eslintrc.js --fix --ext js,jsx,ts,tsx",
