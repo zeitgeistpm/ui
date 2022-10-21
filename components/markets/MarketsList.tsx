@@ -95,6 +95,8 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
 
   const [scrollTop, scrollTo] = useContentScrollTop();
 
+  const [isMyMarkets, setIsMyMarkets] = useState<boolean>();
+
   const prevPage = usePrevious(query?.pagination?.page);
 
   const paginatorRef = useRef<HTMLDivElement>();
@@ -118,6 +120,11 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
 
   useEffect(() => {
     setHashedQuery(hashObject(query));
+    if (query.myMarketsOnly === true) {
+      setIsMyMarkets(true);
+    } else {
+      setIsMyMarkets(false);
+    }
   }, [query]);
 
   const [marketsList, setMarketsList] = useState<MarketCardData[]>();
@@ -178,7 +185,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     <div className={"pt-ztg-46 " + className} ref={listRef}>
       <h3 className="mb-ztg-40 font-space text-[24px] font-semibold">
         <span className="mr-4">
-          {query?.myMarketsOnly ? "My Markets" : "All Markets"}
+          {isMyMarkets ? "My Markets" : "All Markets"}
         </span>
         {loadingNextPage || (!pageLoaded && <Loader size={8} />)}
       </h3>
