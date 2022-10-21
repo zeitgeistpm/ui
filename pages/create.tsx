@@ -459,7 +459,6 @@ const CreatePage: NextPage = observer(() => {
         }
       });
 
-      // await markets.updateMarketIds();
       await markets.getMarket(marketId);
       router.push(`/markets/${marketId}`, undefined, {
         shallow: true,

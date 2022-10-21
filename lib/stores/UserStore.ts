@@ -163,8 +163,6 @@ export default class UserStore {
     this.helpnotifications = getFromLocalStorage("help-notifications", {
       avatarKsmFeesInfo: true,
     }) as HelperNotifications;
-
-    // this.checkIP();
   }
 
   toggleTheme(theme?: StoredTheme) {

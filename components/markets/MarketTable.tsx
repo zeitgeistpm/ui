@@ -81,8 +81,6 @@ const MarketTable = observer(
       })();
     }, [marketStore, marketStorePool]);
 
-    // const totalAssetPrice = calcTotalAssetPrice(pool);
-
     let tableData: TableData[];
 
     if (!isPreloaded) {

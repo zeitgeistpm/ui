@@ -51,7 +51,6 @@ const BuySellButtons = observer(({ item, disabled }: BuySellButtonsProps) => {
     if (item.assetId == null) {
       return;
     }
-    console.log("setting market");
     setMarket();
   }, [item, item.assetId]);
 

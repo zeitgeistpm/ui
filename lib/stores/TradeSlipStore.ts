@@ -161,7 +161,6 @@ export class TradeSlipBoxState {
   }
 
   get canLoadMarket() {
-    // return this.store.markets?.marketIds.length > 0;
     return true;
   }
 
@@ -760,9 +759,6 @@ export default class TradeSlipStore {
 
   initialize(items: TradeSlipItem[]) {
     const filteredItems = [...items];
-    // const filteredItems = items.filter((i) => {
-    //   return this.store.markets.marketIds.includes(i.marketId);
-    // });
     this.tradeSlipItems = filteredItems;
     const boxStatesRecords: TradeSlipBoxState[] = [];
     for (const item of this.tradeSlipItems) {
