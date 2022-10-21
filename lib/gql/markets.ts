@@ -7,13 +7,6 @@ const marketIdsQuery = gql`
     }
   }
 `;
-const marketsQuery = gql`
-  query MarketIds {
-    markets {
-      marketId
-    }
-  }
-`;
 const marketQuery = gql`
   query Market($marketId: Int) {
     markets(where: { marketId_eq: $marketId }) {
