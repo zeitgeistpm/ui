@@ -60,16 +60,6 @@ export const getMarketIds = async (
   return response.markets.map((m) => m.marketId);
 };
 
-export const getMarkets = async (client: GraphQLClient): Promise<number[]> => {
-  const response = await client.request<{
-    markets: {
-      marketId: number;
-    }[];
-  }>(marketsQuery);
-
-  return response.markets.map((m) => m.marketId);
-};
-
 export const getMarket = async (client: GraphQLClient, marketId: string) => {
   const response = await client.request<{
     markets: MarketPageIndexedData[];
