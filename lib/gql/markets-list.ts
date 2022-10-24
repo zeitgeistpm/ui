@@ -268,7 +268,7 @@ export class MarketPreloader {
     return assets;
   }
 
-  async fetchMarkets(query: MarketListQuery): Promise<MarketPreload[]> {
+  async fetchMarkets(query: MarketListQuery, address?: string): Promise<MarketPreload[]> {
     const { pagination, filter, sorting, myMarketsOnly, tag, searchText } =
       query;
 
@@ -285,20 +285,45 @@ export class MarketPreloader {
     let marketsData: any[];
 
     const statuses = activeStatusesFromFilters(filter);
-    marketsData = await this.filterMarkets(
-      {
-        statuses: statuses.length === 0 ? undefined : statuses,
-        searchText,
-        liquidityOnly: filter.HasLiquidityPool,
-        tags: tag && [tag],
-      },
-      {
+
+    if (myMarketsOnly && address != null) {
+      const filtersOff =
+        filter.creator === false &&
+        filter.oracle === false &&
+        filter.hasAssets === false;
+
+      const oracle = filtersOff || filter.oracle ? address : undefined;
+      const creator = filtersOff || filter.creator ? address : undefined;
+      const assetOwner = filtersOff || filter.hasAssets ? address : undefined;
+
+      const filterBy = {
+        oracle,
+        creator,
+        assetOwner,
+        liquidityOnly: false,
+      };
+      marketsData = await this.filterMarkets(filterBy, {
         pageSize: pagination.pageSize * pagination.page,
         pageNumber: 1,
         ordering: sorting.order as MarketsOrdering,
         orderBy,
-      },
-    );
+      });
+    } else {
+      marketsData = await this.filterMarkets(
+        {
+          statuses: statuses.length === 0 ? undefined : statuses,
+          searchText,
+          liquidityOnly: filter.HasLiquidityPool,
+          tags: tag && [tag],
+        },
+        {
+          pageSize: pagination.pageSize * pagination.page,
+          pageNumber: 1,
+          ordering: sorting.order as MarketsOrdering,
+          orderBy,
+        },
+      );
+    }
 
     let markets: MarketPreload[] = [];
 

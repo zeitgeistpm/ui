@@ -12,8 +12,9 @@ export const StoreContext = React.createContext<Store | null>(null);
 
 export const StoreProvider: FC<{ store: Store }> = observer(
   ({ children, store }) => {
-    const { markets: marketsStore, graphQLClient } = store;
+    const { markets: marketsStore, graphQLClient, userStore } = store;
     const query = useMarketsUrlQuery();
+    const address = userStore.accountAddress;
 
     const [hashedQuery, setHashedQuery] = useState<string>();
 
@@ -32,7 +33,7 @@ export const StoreProvider: FC<{ store: Store }> = observer(
 
       const preloader = new MarketPreloader(graphQLClient);
 
-      const sub = from(preloader.fetchMarkets(query)).subscribe((res) => {
+      const sub = from(preloader.fetchMarkets(query, address)).subscribe((res) => {
         store.setPreloadedMarkets(res);
       });
       return () => sub.unsubscribe();

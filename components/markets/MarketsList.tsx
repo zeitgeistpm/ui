@@ -161,6 +161,9 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     if (store.sdk == null) {
       return;
     }
+    if (isMyMarkets && store.wallets.activeAccount == null) {
+      return;
+    }
     setPageLoaded(false);
     performQuery().then(() => {
       setLoadingNextPage(false);
