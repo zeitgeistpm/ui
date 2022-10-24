@@ -1,443 +1,235 @@
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { observer } from "mobx-react";
-import { from } from "rxjs";
-import { extrinsicCallback } from "lib/util/tx";
-import { calculatePoolCost, get24HrPriceChange } from "lib/util/market";
-import { DAY_SECONDS, ZTG } from "lib/constants";
-import { useStore } from "lib/stores/Store";
-import { useNotificationStore } from "lib/stores/NotificationStore";
-import MarketStore from "lib/stores/MarketStore";
-import { useNavigationStore } from "lib/stores/NavigationStore";
-import { useMarketsStore } from "lib/stores/MarketsStore";
-import PoolSettings, {
-  PoolAssetRowData,
-  poolRowDataFromOutcomes,
-} from "components/liquidity/PoolSettings";
-import Table, { TableColumn, TableData } from "components/ui/Table";
+import { Skeleton } from "@material-ui/lab";
+import LiquidityPill from "components/markets/LiquidityPill";
+import MarketAddresses from "components/markets/MarketAddresses";
+import MarketAssetDetails from "components/markets/MarketAssetDetails";
+import MarketTimer from "components/markets/MarketTimer";
+import PoolDeployer from "components/markets/PoolDeployer";
 import Pill from "components/ui/Pill";
 import TimeSeriesChart, {
   ChartData,
   ChartSeries,
 } from "components/ui/TimeSeriesChart";
-import FullSetButtons from "components/markets/FullSetButtons";
-import TransactionButton from "components/ui/TransactionButton";
-import { AlertTriangle } from "react-feather";
-import Link from "next/link";
-import MarketTimer from "components/markets/MarketTimer";
-import AssetActionButtons from "components/assets/AssetActionButtons";
+import { GraphQLClient } from "graphql-request";
+import { DAY_SECONDS } from "lib/constants";
+import {
+  getMarket,
+  getMarketIds,
+  MarketPageIndexedData,
+} from "lib/gql/markets";
+import { getBaseAsset } from "lib/gql/pool";
+import { getAssetPriceHistory } from "lib/gql/prices";
+import { useMarketsStore } from "lib/stores/MarketsStore";
+import MarketStore from "lib/stores/MarketStore";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
+import { useStore } from "lib/stores/Store";
+import { observer } from "mobx-react-lite";
+import { NextPage } from "next";
+import Head from "next/head";
+import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
-import MarketAddresses from "components/markets/MarketAddresses";
-import { MultipleOutcomeEntry } from "lib/types/create-market";
-import { useUserStore } from "lib/stores/UserStore";
-import Decimal from "decimal.js";
-import { calcTotalAssetPrice } from "lib/util/pool";
+import { useEffect, useState } from "react";
+import { AlertTriangle } from "react-feather";
 
-const LiquidityPill = observer(({ liquidity }: { liquidity: number }) => {
-  const { config } = useStore();
-  const [hoveringInfo, setHoveringInfo] = useState<boolean>(false);
+export async function getStaticPaths() {
+  const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
+  const client = new GraphQLClient(url);
+  const marketIds = await getMarketIds(client);
+  const paths = marketIds.map((marketId) => ({
+    params: { marketid: marketId.toString() },
+  }));
 
-  const handleMouseEnter = () => {
-    setHoveringInfo(true);
-  };
+  return { paths, fallback: "blocking" };
+}
 
-  const handleMouseLeave = () => {
-    setHoveringInfo(false);
-  };
-  return (
-    <div className="relative w-full">
-      <Pill
-        title="Liquidity"
-        value={`${Math.round(liquidity)} ${config.tokenSymbol}`}
-      >
-        {liquidity < 100 ? (
-          <span
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            className="bg-vermilion text-white rounded-ztg-5 px-ztg-5 ml-ztg-10"
-          >
-            LOW
-          </span>
-        ) : (
-          <></>
-        )}
-      </Pill>
-      {hoveringInfo === true ? (
-        <div className="bg-sky-100 dark:bg-border-dark absolute left-ztg-100 rounded-ztg-10 text-black dark:text-white px-ztg-8 py-ztg-14 font-lato text-ztg-12-150 w-ztg-240">
-          This market has low liquidity. Price slippage will be high for small
-          trades and larger trades may be impossible
-        </div>
-      ) : (
-        <></>
-      )}
-    </div>
+export async function getStaticProps({ params }) {
+  const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
+  const client = new GraphQLClient(url);
+
+  const market = await getMarket(client, params.marketid);
+
+  const dateOneMonthAgo = new Date(
+    new Date().getTime() - DAY_SECONDS * 31 * 1000,
+  ).toISOString();
+
+  const assetPrices = await Promise.all(
+    market?.outcomeAssets?.map((asset) =>
+      getAssetPriceHistory(client, asset, dateOneMonthAgo),
+    ),
   );
-});
 
-const MarketDetails = observer(() => {
+  const chartSeries: ChartSeries[] = market.categories?.map(
+    (category, index) => {
+      return {
+        accessor: `v${index}`,
+        label: category.ticker.toUpperCase(),
+        color: category.color,
+      };
+    },
+  );
+
+  const chartData: ChartData[] = assetPrices?.flatMap((prices, index) => {
+    return prices.map((price) => {
+      return {
+        t: new Date(price.timestamp).getTime(),
+        ["v" + index]: price.newPrice,
+      };
+    });
+  });
+
+  const baseAsset = market.poolId
+    ? await getBaseAsset(client, market.poolId)
+    : null;
+
+  return {
+    props: {
+      indexedMarket: market ?? null,
+      chartSeries: chartSeries ?? null,
+      chartData: chartData ?? null,
+      baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
+    },
+    revalidate: 10 * 60, //10mins
+  };
+}
+
+const Market: NextPage<{
+  indexedMarket: MarketPageIndexedData;
+  chartSeries: ChartSeries[];
+  chartData: ChartData[];
+  baseAsset: string;
+}> = observer(({ indexedMarket, chartSeries, chartData, baseAsset }) => {
+  const marketsStore = useMarketsStore();
   const router = useRouter();
+  const [marketStore, setMarketStore] = useState<MarketStore>();
+  const [prizePool, setPrizePool] = useState<string>();
   const { marketid } = router.query;
   const store = useStore();
-  const { graphQlEnabled } = useUserStore();
-  const notificationStore = useNotificationStore();
-  const navigationStore = useNavigationStore();
-  const marketsStore = useMarketsStore();
-  const poolStore = usePoolsStore();
-  const [chartData, setChartData] = useState<ChartData[]>([]);
-  const [chartSeries, setChartSeries] = useState<ChartSeries[]>([]);
-  const [marketStore, setMarketStore] = useState<MarketStore>();
-  const [tableData, setTableData] = useState<TableData[]>();
-  const [poolRows, setPoolRows] = useState<PoolAssetRowData[]>();
-  const [swapFee, setSwapFee] = useState<string>();
-  const [prizePool, setPrizePool] = useState<string>();
-  const [marketLoaded, setMarketLoaded] = useState(false);
-  const [poolAlreadyDeployed, setPoolAlreadyDeployed] = useState(false);
   const [pool, setPool] = useState<CPool>();
-  const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
+  const poolStore = usePoolsStore();
+  const [hasAuthReport, setHasAuthReport] = useState<boolean>();
 
-  const poolCost =
-    poolRows && calculatePoolCost(poolRows.map((row) => Number(row.amount)));
-
-  const columns: TableColumn[] = [
-    {
-      header: "Token",
-      accessor: "token",
-      type: "token",
-    },
-    { header: "Implied %", accessor: "pre", type: "percentage" },
-    { header: "Total Value", accessor: "totalValue", type: "currency" },
-    { header: "Outcome", accessor: "outcome", type: "text" },
-    {
-      header: "24Hr Change",
-      accessor: "change",
-      type: "change",
-      width: "120px",
-    },
-    {
-      header: "",
-      accessor: "buttons",
-      type: "component",
-      width: "140px",
-    },
-  ];
-
-  useEffect(() => {
-    navigationStore.setPage("marketDetails");
-    (async () => {
-      const market = await marketsStore?.getMarket(Number(marketid));
-      if (market != null) {
-        setMarketStore(market);
-        setMarketLoaded(true);
-        setPoolAlreadyDeployed(market.poolExists);
-      }
-    })();
-  }, [marketsStore]);
-
-  useEffect(() => {
-    if (marketLoaded && poolAlreadyDeployed) {
-      getPageData();
-    }
-  }, [marketStore?.pool]);
-
-  useEffect(() => {
-    if (marketStore == null) {
-      return;
-    }
-    getPageData();
-  }, [marketStore]);
-
-  useEffect(() => {
-    if (
-      marketStore?.id == null ||
-      marketStore?.status === "Active" ||
-      marketStore?.status === "Proposed"
-    ) {
-      return;
-    }
-    const fetchAuthorizedReport = async (marketId: number) => {
-      const report =
-        await store.sdk.api.query.authorized.authorizedOutcomeReports(marketId);
-      if (report.isEmpty === true) {
-        setAuthReportNumberOrId(null);
-      } else {
-        const reportJSON: any = report.toJSON();
-        if (reportJSON.scalar) {
-          return reportJSON.scalar;
-        } else {
-          return reportJSON.categorical;
-        }
-      }
-    };
-
-    const sub = from(fetchAuthorizedReport(marketStore.id)).subscribe((res) =>
-      setAuthReportNumberOrId(res),
-    );
-    return () => sub.unsubscribe();
-  }, [store.sdk.api, marketStore?.id, marketStore?.status]);
-
-  const getPageData = async () => {
-    let tblData: TableData[] = [];
-
-    const market = marketStore;
-
-    if (market.poolExists) {
-      const prizePool = await market.getPrizePool();
-      setPrizePool(prizePool);
-
-      const { poolId } = market.pool;
-
-      // poolid is incorrectly typed, it's actually a string
-      const pool = await poolStore.getPoolFromChain(Number(poolId));
-      if (!pool) return;
-      setPool(pool);
-
-      const series: ChartSeries[] = [];
-      let chartData: ChartData[] = [];
-
-      const dateOneWeekAgo = new Date(
-        new Date().getTime() - DAY_SECONDS * 28 * 1000,
-      ).toISOString();
-
-      const totalAssetPrice = calcTotalAssetPrice(pool);
-
-      for (const [index, assetId] of Array.from(
-        market.outcomeAssetIds.entries(),
-      )) {
-        const ticker = market.outcomesMetadata[index]["ticker"];
-        const color = market.outcomesMetadata[index]["color"] || "#ffffff";
-        const outcomeName = market.outcomesMetadata[index]["name"];
-        const currentPrice = pool.assets[index].price;
-
-        let priceHistory: {
-          newPrice: number;
-          timestamp: string;
-        }[];
-        if (graphQlEnabled === true) {
-          priceHistory = await store.sdk.models.getAssetPriceHistory(
-            market.id,
-            //@ts-ignore
-            assetId.categoricalOutcome?.[1] ?? assetId.scalarOutcome?.[1],
-            dateOneWeekAgo,
-          );
-
-          series.push({
-            accessor: "v" + index,
-            label: ticker,
-            color,
-          });
-
-          const mappedHistory = priceHistory.map((history) => {
-            return {
-              t: new Date(history.timestamp).getTime(),
-              ["v" + index]: history.newPrice,
-            };
-          });
-
-          chartData.push(...mappedHistory);
-        }
-
-        const priceChange = priceHistory ? get24HrPriceChange(priceHistory) : 0;
-        tblData = [
-          ...tblData,
-          {
-            assetId,
-            id: index,
-            token: {
-              color,
-              label: ticker,
-            },
-            outcome: outcomeName,
-            totalValue: {
-              value: currentPrice,
-              usdValue: 0,
-            },
-            pre: Math.round((currentPrice / totalAssetPrice) * 100),
-            change: priceChange,
-            buttons: (
-              <AssetActionButtons
-                assetId={assetId}
-                marketId={market.id}
-                assetColor={color}
-                assetTicker={ticker}
-              />
-            ),
-          },
-        ];
-      }
-
-      setChartSeries(series);
-      setChartData(chartData);
-      setTableData(tblData);
-    } else {
-      tblData = market.outcomesMetadata.map((outcome) => ({
-        token: {
-          color: outcome["color"] || "#ffffff",
-          label: outcome["ticker"],
-        },
-        outcome: outcome["name"],
-      }));
-      setTableData(tblData);
-    }
-  };
-
-  const handleDeployClick = () => {
-    const rows = poolRowDataFromOutcomes(
-      marketStore.market.categories as MultipleOutcomeEntry[],
-      store.config.tokenSymbol,
-    );
-    setPoolRows(rows);
-  };
-
-  const handleDeploySignClick = async () => {
-    // We are assuming all rows have the same amount
-    const amount = poolRows[0].amount;
-
-    const baseWeight = (1 / (poolRows.length - 1)) * 10 * ZTG;
-
-    const weightsNums = poolRows.slice(0, -1).map((_) => {
-      return baseWeight;
-    });
-
-    const weightsParams = [...weightsNums.map((w) => Math.floor(w).toString())];
-    const signer = store.wallets.getActiveSigner();
-
-    const deployPoolTx = () => {
-      return new Promise<void>((resolve, reject) => {
-        marketStore.market.deploySwapPoolAndAdditionalLiquidity(
-          signer,
-          swapFee,
-          new Decimal(amount).mul(ZTG).toFixed(0),
-          weightsParams,
-          extrinsicCallback({
-            notificationStore,
-            successCallback: () => {
-              notificationStore.pushNotification("Liquidity pool deployed", {
-                type: "Success",
-              });
-              resolve();
-            },
-            failCallback: ({ index, error }) => {
-              notificationStore.pushNotification(
-                store.getTransactionError(index, error),
-                {
-                  type: "Error",
-                },
-              );
-              reject();
-            },
-          }),
-        );
-      });
-    };
-
-    try {
-      await deployPoolTx();
-      getPageData();
-    } catch {
-      console.log("Unable to deploy liquidity pool.");
-    }
-  };
-
-  const getReportedOutcome = () => {
-    let outcomeId: number;
-    if (marketStore.is("Disputed") && marketStore.lastDispute) {
-      // @ts-ignore
-      outcomeId = marketStore.lastDispute.outcome.categorical;
-    } else {
-      outcomeId = marketStore.reportedOutcomeIndex;
-    }
-    const outcome = tableData?.find((data) => data.id === outcomeId);
-
-    return outcome ? [outcome] : undefined;
-  };
-
-  const getWinningCategoricalOutcome = () => {
-    const reportedOutcome = marketStore.resolvedCategoricalOutcome;
-
-    const outcome = tableData?.find(
-      (data) =>
-        JSON.stringify(data.assetId) === JSON.stringify(reportedOutcome.asset),
-    );
-
-    return outcome ? [outcome] : undefined;
-  };
-
-  if (!marketLoaded) {
-    return null;
-  }
-
-  if (marketStore == null) {
+  if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
 
+  const fetchMarket = async () => {
+    const market = await marketsStore?.getMarket(Number(marketid));
+    if (market != null) {
+      setMarketStore(market);
+      const prizePool = await market.getPrizePool();
+      setPrizePool(prizePool);
+
+      if (market.poolExists) {
+        const { poolId } = market.pool;
+        const pool = await poolStore.getPoolFromChain(Number(poolId));
+
+        setPool(pool);
+      }
+
+      const report =
+        await store.sdk.api.query.authorized.authorizedOutcomeReports(
+          market.id,
+        );
+
+      setHasAuthReport(report.isEmpty === false);
+    }
+  };
+
+  useEffect(() => {
+    if (!store) return;
+    fetchMarket();
+  }, [marketsStore, marketid]);
+
+  const handlePoolDeployed = () => {
+    fetchMarket();
+  };
+
+  //required to fix title element warning
+  const question = indexedMarket.question;
+
   return (
-    <div>
-      <div className="flex mb-ztg-33">
-        <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600">
-          {marketStore?.img ? (
-            <img
-              className="rounded-ztg-10"
-              src={marketStore.img}
-              alt="Market image"
-              loading="lazy"
-              width={70}
-              height={70}
+    <>
+      <Head>
+        <title>{question}</title>
+        <meta name="description" content={indexedMarket.description} />
+      </Head>
+      <div>
+        <div className="flex mb-ztg-33">
+          <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600">
+            {indexedMarket?.img ? (
+              <img
+                className="rounded-ztg-10"
+                src={indexedMarket.img}
+                alt="Market image"
+                loading="lazy"
+                width={70}
+                height={70}
+              />
+            ) : (
+              <img
+                className="rounded-ztg-10"
+                src="/icons/default-market.png"
+                alt="Market image"
+                loading="lazy"
+                width={70}
+                height={70}
+              />
+            )}
+          </div>
+          <div className="sub-header ml-ztg-20">{indexedMarket?.question}</div>
+        </div>
+        <div
+          className="grid grid-flow-row-dense gap-4 w-full "
+          style={{
+            gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+          }}
+        >
+          <Pill
+            title="Ends"
+            value={new Intl.DateTimeFormat("en-US", {
+              dateStyle: "medium",
+            }).format(indexedMarket.end)}
+          />
+          <Pill title="Status" value={indexedMarket.status} />
+          {prizePool ? (
+            <Pill
+              title="Prize Pool"
+              value={`${prizePool} ${store?.config.tokenSymbol}`}
             />
           ) : (
-            <img
-              className="rounded-ztg-10"
-              src="/icons/default-market.png"
-              alt="Market image"
-              loading="lazy"
-              width={70}
+            <></>
+          )}
+          {pool?.liquidity != null ? (
+            <LiquidityPill liquidity={pool.liquidity} />
+          ) : (
+            <></>
+          )}
+        </div>
+        <div className="mb-ztg-20">
+          {marketStore ? (
+            <MarketTimer
+              marketStore={marketStore}
+              hasAuthReport={hasAuthReport}
+            />
+          ) : (
+            <Skeleton
+              className="!py-ztg-10 !rounded-ztg-10 !transform-none"
               height={70}
             />
           )}
         </div>
-        <div className="sub-header ml-ztg-20">{marketStore?.question}</div>
-      </div>
-      <div
-        className="grid grid-flow-row-dense gap-4 w-full "
-        style={{ gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))" }}
-      >
-        <Pill
-          title="Ends"
-          value={new Intl.DateTimeFormat("en-US", {
-            dateStyle: "medium",
-          }).format(marketStore?.endTimestamp)}
-        />
-        <Pill title="Status" value={marketStore?.status} />
-        {prizePool ? (
-          <Pill
-            title="Prize Pool"
-            value={`${prizePool} ${store.config.tokenSymbol}`}
-          />
+        {chartData?.length > 0 && chartSeries ? (
+          <div className="-ml-ztg-25">
+            <TimeSeriesChart
+              data={chartData}
+              series={chartSeries}
+              yDomain={[0, 1]}
+              yUnits={baseAsset}
+            />
+          </div>
         ) : (
           <></>
         )}
-        {pool?.liquidity != null ? (
-          <LiquidityPill liquidity={pool.liquidity} />
-        ) : (
-          <></>
-        )}
-      </div>
-      <div className="mb-ztg-20">
-        <MarketTimer
-          marketStore={marketStore}
-          hasAuthReport={authReportNumberOrId != null}
-        />
-      </div>
-      {marketStore?.poolExists === true && graphQlEnabled === true ? (
-        <div className="-ml-ztg-25">
-          <TimeSeriesChart
-            data={chartData}
-            series={chartSeries}
-            yDomain={[0, 1]}
-          />
-        </div>
-      ) : (
-        marketStore?.poolExists === false && (
+        {marketStore?.poolExists === false && (
           <div className="flex h-ztg-22 items-center font-lato bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
             <div className="w-ztg-20 h-ztg-20">
               <AlertTriangle size={20} />
@@ -450,148 +242,19 @@ const MarketDetails = observer(() => {
               traded
             </div>
           </div>
-        )
-      )}
-      {marketStore?.is("Disputed") && authReportNumberOrId != null && (
-        <>
-          <div className="sub-header mt-ztg-40">Authorized Report</div>
-          {marketStore.type === "categorical" ? (
-            <Table
-              columns={columns}
-              data={
-                tableData?.find((data) => data.id === authReportNumberOrId)
-                  ? [
-                      tableData?.find(
-                        (data) => data.id === authReportNumberOrId,
-                      ),
-                    ]
-                  : []
-              }
-            />
-          ) : (
-            <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-              {authReportNumberOrId}
-            </div>
-          )}
-        </>
-      )}
-      {marketStore?.is("Reported") && (
-        <>
-          <div className="sub-header mt-ztg-40">Reported Outcome</div>
-          {marketStore.type === "categorical" ? (
-            <Table columns={columns} data={getReportedOutcome()} />
-          ) : (
-            <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-              {
-                //@ts-ignore
-                marketStore.lastDispute?.outcome.scalar ??
-                  marketStore.reportedScalarOutcome
-              }
-            </div>
-          )}
-        </>
-      )}
-      {marketStore?.is("Disputed") && (
-        <>
-          <div className="sub-header mt-ztg-40">Disputed Outcome</div>
-          {marketStore.type === "categorical" ? (
-            <Table columns={columns} data={getReportedOutcome()} />
-          ) : (
-            <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-              {
-                //@ts-ignore
-                marketStore.lastDispute?.outcome.scalar ??
-                  marketStore.reportedScalarOutcome
-              }
-            </div>
-          )}
-        </>
-      )}
-      {marketStore?.is("Resolved") ? (
-        <>
-          <div className="sub-header mt-ztg-40">Winning Outcome</div>
-          {marketStore.type === "categorical" ? (
-            <Table
-              columns={columns}
-              data={getWinningCategoricalOutcome() as TableData[]}
-            />
-          ) : (
-            <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-              {marketStore.resolvedScalarOutcome}
-            </div>
-          )}
-        </>
-      ) : (
-        <></>
-      )}
-      <div className="flex mt-ztg-40 items-center">
-        <span className="sub-header">Outcomes</span>
-        <FullSetButtons marketStore={marketStore} />
-        {marketStore.pool ? (
-          <Link href={`/liquidity/${marketStore.pool.poolId}`}>
-            <a className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 ">
-              Liquidity Pool
-            </a>
-          </Link>
-        ) : (
-          <></>
         )}
+        {<MarketAssetDetails marketStore={marketStore} />}
+        <div className="sub-header mt-ztg-40 mb-ztg-15">About Market</div>
+        <div className="font-lato text-ztg-14-180 text-sky-600">
+          {indexedMarket.description}
+        </div>
+        <PoolDeployer
+          marketStore={marketStore}
+          onPoolDeployed={handlePoolDeployed}
+        />
+        {marketStore && <MarketAddresses marketStore={marketStore} />}
       </div>
-
-      <Table columns={columns} data={tableData} />
-      <div className="sub-header mt-ztg-40 mb-ztg-15">About Market</div>
-      <div className="font-lato text-ztg-14-180 text-sky-600">
-        {marketStore?.description}
-      </div>
-      {marketStore?.poolExists === false ? (
-        poolRows ? (
-          <div className="my-ztg-20">
-            <div className="sub-header mt-ztg-40 mb-ztg-15">Deploy Pool</div>
-            <PoolSettings
-              data={poolRows}
-              onChange={(v) => {
-                setPoolRows(v);
-              }}
-              onFeeChange={(fee: Decimal) => {
-                setSwapFee(fee.toString());
-              }}
-            />
-            <div className="flex items-center">
-              <TransactionButton
-                className="w-ztg-266 ml-ztg-8"
-                onClick={handleDeploySignClick}
-                disabled={store.wallets.activeBalance.lessThan(poolCost)}
-              >
-                Deploy Pool
-              </TransactionButton>
-              <div className="text-ztg-12-150 text-sky-600 font-bold ml-[27px]">
-                Total Cost:
-                <span className="font-mono">
-                  {" "}
-                  {poolCost} {store.config.tokenSymbol}
-                </span>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <>
-            {!marketStore.is("Proposed") && (
-              <button
-                className="my-ztg-20 font-space font-bold text-ztg-16-150 text-sky-600 border-1 px-ztg-20 py-ztg-10 rounded-ztg-10 border-sky-600"
-                data-test="deployLiquidityButton"
-                onClick={handleDeployClick}
-              >
-                Deploy Liquidity Pool
-              </button>
-            )}
-          </>
-        )
-      ) : (
-        <></>
-      )}
-      <MarketAddresses marketStore={marketStore} />
-    </div>
+    </>
   );
 });
-
-export default MarketDetails;
+export default Market;
