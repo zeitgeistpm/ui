@@ -34,7 +34,7 @@ import { JSONObject } from "lib/types";
 import { toBase64 } from "lib/util";
 import { extrinsicCallback } from "lib/util/tx";
 import { calculateMarketCost } from "lib/util/market";
-import { NUM_BLOCKS_IN_DAY, ZTG } from "lib/constants";
+import { DEFAULT_DEADLINES, NUM_BLOCKS_IN_DAY, ZTG } from "lib/constants";
 import { Input, TextArea } from "components/ui/inputs";
 import OutcomesField from "components/create/OutcomesField";
 import MarketSlugField from "components/create/MarketSlugField";
@@ -150,6 +150,13 @@ const CreatePage: NextPage = observer(() => {
     formData.outcomes.value &&
       setPoolRows(poolRowDataFromOutcomes(entries, store.config.tokenSymbol));
   }, [deployPool, formData.outcomes.type]);
+
+  useEffect(() => {
+    if (store.wallets.activeAccount == null || formData.oracle !== "") {
+      return;
+    }
+    changeOracle(store.wallets.activeAccount.address);
+  }, [store.wallets.activeAccount]);
 
   useEffect(() => {
     if (!store.config) {
@@ -322,6 +329,7 @@ const CreatePage: NextPage = observer(() => {
       signer,
       oracle,
       period,
+      deadlines: DEFAULT_DEADLINES,
       creationType,
       disputeMechanism: mdm,
       scoringRule,
@@ -370,6 +378,7 @@ const CreatePage: NextPage = observer(() => {
       signer,
       oracle,
       period,
+      deadlines: DEFAULT_DEADLINES,
       marketType,
       disputeMechanism: mdm,
       swapFee,

@@ -1,3 +1,4 @@
+import { MarketDeadlines } from "@zeitgeistpm/sdk/dist/types";
 import Decimal from "decimal.js";
 import resolveTailwindConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../tailwind.config";
@@ -26,8 +27,8 @@ export const NUM_BLOCKS_IN_HOUR = 3600 / BLOCK_TIME_SECONDS;
 export const NUM_BLOCKS_IN_DAY = NUM_BLOCKS_IN_HOUR * 24;
 export const DAY_SECONDS = 86400;
 
-export const ZTG_BLUE_COLOR =
-  resolveTailwindConfig(tailwindConfig as any).theme.colors["ztg-blue"];
+export const ZTG_BLUE_COLOR = resolveTailwindConfig(tailwindConfig as any).theme
+  .colors["ztg-blue"];
 
 export const marketStatuses = Object.keys(EMarketStatus) as MarketStatus[];
 
@@ -37,6 +38,13 @@ export const sortOptions = Object.entries(ESortType).map((v) => {
     label: v[1],
   };
 });
+
+//parachain runtime values before 0.3.6
+export const DEFAULT_DEADLINES: MarketDeadlines = {
+  gracePeriod: "0",
+  oracleDuration: "28800",
+  disputeDuration: "28800",
+};
 
 export const endpoints: EndpointOption[] = [
   {

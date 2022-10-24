@@ -537,7 +537,6 @@ export default class TradeSlipStore {
     this.txInProgress = inProgress;
   }
 
-  itemsUpdating = false;
   slippagePercentage: Decimal = new Decimal(DEFAULT_SLIPPAGE_PERCENTAGE);
 
   setSlippagePercentage(val: string) {
@@ -578,12 +577,14 @@ export default class TradeSlipStore {
         acc: this.store.wallets.activeAccount,
       }),
       async (current, prev) => {
+        // all transactions need to be regenerated
+        // clear them all to prevent accidental submission
+        this.clearTransactions();
         const items = current?.items;
         const acc = current?.acc;
         if (acc == null) {
           return;
         }
-        this.setItemsUpdating(true);
         const { records } = this.boxStates;
         await when(() => records.every((r) => r.init === true));
         const sortedTrades = await this.calculateSortedTrades(items);
@@ -595,7 +596,6 @@ export default class TradeSlipStore {
             field.validate({ showErrors: true });
           });
         }
-        this.setItemsUpdating(false);
       },
       { fireImmediately: true },
     );
@@ -604,9 +604,6 @@ export default class TradeSlipStore {
       () => this.txs,
       (txs: any[]) => {
         if (txs.length === 0 || txs.some((t) => t == null)) {
-          runInAction(() => {
-            this.batchTx = null;
-          });
           return;
         }
         runInAction(() => {
@@ -666,10 +663,6 @@ export default class TradeSlipStore {
       return true;
     }
     return false;
-  }
-
-  setItemsUpdating(updating: boolean) {
-    this.itemsUpdating = updating;
   }
 
   private boxStates = new BoxStates(this.store);
@@ -746,6 +739,7 @@ export default class TradeSlipStore {
   }
 
   clearTransactions() {
+    this.batchTx = null;
     this.txs = [];
   }
 
