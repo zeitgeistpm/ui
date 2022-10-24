@@ -4,12 +4,16 @@ import { NextPage } from "next";
 
 import MarketsList from "components/markets/MarketsList";
 import InfoBoxes from "components/ui/InfoBoxes";
+import dynamic from "next/dynamic";
 
+const DynamicMarketList = dynamic(() => Promise.resolve(MarketsList), {
+  ssr: false,
+});
 const MarketsPage: NextPage = observer(() => {
   return (
     <>
       <InfoBoxes />
-      <MarketsList />
+      <DynamicMarketList />
     </>
   );
 });

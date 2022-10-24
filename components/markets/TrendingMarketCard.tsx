@@ -23,8 +23,6 @@ const TrendingMarketCard = observer(
     prediction,
     baseAsset,
   }: TrendingMarketInfo) => {
-    const { config } = useStore();
-
     return (
       <motion.div
         className="bg-sky-100 dark:bg-black rounded-ztg-10 p-ztg-15 w-full"

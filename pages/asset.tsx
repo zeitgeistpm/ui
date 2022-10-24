@@ -188,6 +188,7 @@ const AssetPage: NextPage = observer(() => {
         <TimeSeriesChart
           data={chartData}
           series={[{ accessor: "v", label: "Price" }]}
+          yUnits={store.config.tokenSymbol}
         />
       </div>
       <div className="flex flex-row mt-ztg-39 mb-ztg-69">

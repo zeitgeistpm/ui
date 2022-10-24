@@ -57,7 +57,8 @@ const DefaultLayout: FC = observer(({ children }) => {
                 width={width}
               >
                 {store.initialized ||
-                ["/", "/markets"].includes(router.pathname) ? (
+                router.pathname === "/" ||
+                router.pathname.split("/")[1] === "markets" ? (
                   children
                 ) : (
                   <Skeleton
