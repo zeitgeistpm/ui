@@ -87,6 +87,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const [initialLoad, setInitialLoad] = useState(true);
 
   const query = useMarketsUrlQuery();
+  const [queryState, setQueryState] = useState(query);
   const [hashedQuery, setHashedQuery] = useState<string>();
 
   const [totalPages, setTotalPages] = useState<number>(0);
@@ -97,7 +98,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
 
   const [isMyMarkets, setIsMyMarkets] = useState<boolean>();
 
-  const prevPage = usePrevious(query?.pagination?.page);
+  const prevPage = usePrevious(queryState?.pagination?.page);
 
   const paginatorRef = useRef<HTMLDivElement>();
   const listRef = useRef<HTMLDivElement>();
@@ -154,6 +155,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       query.updateQuery({
         pagination: { page: query?.pagination?.page + 1 },
       });
+      setQueryState(query);
     }
   }, [hasScrolledToEnd, hasNext]);
 
@@ -173,10 +175,10 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   }, [hashedQuery, store.sdk, store.wallets.activeAccount]);
 
   useEffect(() => {
-    if (query?.pagination?.page > prevPage) {
+    if (queryState?.pagination?.page > prevPage) {
       setLoadingNextPage(true);
     }
-  }, [query?.pagination?.page, prevPage]);
+  }, [queryState?.pagination?.page]);
 
   useEffect(() => {
     if (count) {
@@ -206,7 +208,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
           })}
 
         {(marketsList == null || loadingNextPage) && (
-          <MarketSkeletons pageSize={query?.pagination?.pageSize ?? 5} />
+          <MarketSkeletons pageSize={queryState?.pagination?.pageSize ?? 5} />
         )}
 
         {pageLoaded && count === 0 && (
