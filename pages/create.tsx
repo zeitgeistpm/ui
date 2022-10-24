@@ -493,7 +493,6 @@ const CreatePage: NextPage = observer(() => {
         }
       });
 
-      await markets.updateMarketIds();
       await markets.getMarket(marketId);
       setNewMarketId(marketId);
       notificationStore.pushNotification(`Indexing market`, {

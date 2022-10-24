@@ -163,8 +163,6 @@ export default class UserStore {
     this.helpnotifications = getFromLocalStorage("help-notifications", {
       avatarKsmFeesInfo: true,
     }) as HelperNotifications;
-
-    await this.checkIP();
   }
 
   toggleTheme(theme?: StoredTheme) {
@@ -327,7 +325,7 @@ export default class UserStore {
     this.identity = undefined;
   }
 
-  private async checkIP() {
+  async checkIP() {
     const response = await fetch(`/api/location`);
     const json = await response.json();
 

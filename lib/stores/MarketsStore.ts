@@ -1,4 +1,3 @@
-import SDK from "@zeitgeistpm/sdk";
 import {
   BehaviorSubject,
   firstValueFrom,
@@ -6,7 +5,7 @@ import {
   Subscription,
 } from "rxjs";
 import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
-import { makeAutoObservable, runInAction, when } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import MarketStore from "./MarketStore";
 import Store, { useStore } from "./Store";
 import { MarketsOrderBy, MarketsOrdering } from "@zeitgeistpm/sdk/dist/types";
@@ -14,38 +13,18 @@ import { MarketListQuery } from "lib/types";
 import { activeStatusesFromFilters } from "lib/util/market";
 
 class MarketsStore {
-  marketIds: number[];
   markets: Partial<Record<number, MarketStore>> = {};
   order: number[] = [];
   count: number = 0;
   pools: Swap[] = [];
 
-  async updateMarketIds(): Promise<number[]> {
-    runInAction(() => {
-      this.marketIds = undefined;
-    });
-    const ids = await this.sdk.models.getAllMarketIds();
-    runInAction(() => {
-      this.marketIds = ids;
-    });
-    return ids;
-  }
-
-  get loaded() {
-    return this.marketIds != null;
-  }
-
-  private sdk: SDK;
-
   constructor(public store: Store) {
-    this.sdk = this.store.sdk;
     makeAutoObservable(this, {}, { deep: false });
   }
 
   private clearMarkets() {
     runInAction(() => {
-      this.marketIds = undefined;
-      this.markets = [];
+      this.markets = {};
     });
   }
 
@@ -83,10 +62,6 @@ class MarketsStore {
   }
 
   async getMarket(marketId: number): Promise<MarketStore | undefined> {
-    await when(() => this.marketIds != null);
-    if (!this.marketIds.includes(marketId)) {
-      return;
-    }
     let market = Object.values(this.markets).find((m) => m.id === marketId);
 
     if (market == null) {

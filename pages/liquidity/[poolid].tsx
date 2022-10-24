@@ -15,17 +15,6 @@ import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import Link from "next/link";
 
-interface Share {
-  token: string;
-  weights: number;
-  poolBalance: number;
-  yourBalance: number;
-  assetValue: number;
-  poolBalanceUSD: number;
-  yourBalanceUSD: number;
-  assetValueUSD: number;
-}
-
 const PoolDetail = ({
   header,
   middle,
@@ -112,8 +101,11 @@ const PoolDetails: NextPage = observer(() => {
   };
 
   useEffect(() => {
+    if (store.sdk == null) {
+      return;
+    }
     setMarketData();
-  }, [poolId, marketStore?.pool]);
+  }, [poolId, marketStore?.pool, store.sdk]);
 
   useEffect(() => {
     if (pool?.pool != null) {
