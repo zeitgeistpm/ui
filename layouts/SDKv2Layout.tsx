@@ -1,7 +1,7 @@
 import { debounce } from "lodash";
 import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
-import { create$, mainnet } from "@zeitgeistpm/sdk";
+import { create$, mainnet } from "@zeitgeistpm/sdk-next";
 
 console.log(create$(mainnet()));
 
