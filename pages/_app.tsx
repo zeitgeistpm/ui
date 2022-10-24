@@ -2,10 +2,10 @@ import "react-datetime/css/react-datetime.css";
 import "styles/index.css";
 
 import { observer } from "mobx-react";
-import SDKv2Layout from "layouts/SDKv2Layout";
+import DefaultLayout from "layouts/launch/AppLaunchLayout";
 
 const MyApp = observer(({ Component, pageProps }) => {
-  const Layout = Component.Layout ? Component.Layout : SDKv2Layout;
+  const Layout = Component.Layout ? Component.Layout : DefaultLayout;
 
   return (
     <Layout>

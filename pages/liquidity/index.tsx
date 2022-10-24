@@ -1,13 +1,14 @@
-import SDKv2Layout from "layouts/SDKv2Layout";
+import { Sdkv2Context } from "components/context/Sdkv2Context";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
+import { useContext } from "react";
 
 const LiquidityPools: NextPage = observer(() => {
-  return <div>pools</div>;
-});
+  const sdk$ = useContext(Sdkv2Context);
 
-Object.assign(LiquidityPools, {
-  Layout: SDKv2Layout,
+  console.log(sdk$);
+
+  return <div>pools</div>;
 });
 
 export default LiquidityPools;

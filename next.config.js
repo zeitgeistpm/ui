@@ -1,18 +1,14 @@
 // pass the modules you would like to see transpiled
-// const withTM = require("next-transpile-modules")([
-//   "@zeitgeistpm/sdk",
-//   "@zeitgeistpm/web3.storage",
-//   "ipfs-http-client",
-// ]); // pass the modules you would like to see transpiled
+//const withTM = require("next-transpile-modules")(["ipfs-http-client"]); // pass the modules you would like to see transpiled
 
 module.exports = {
   experimental: {
     scrollRestoration: true,
+    esmExternals: true,
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
-        pako: false,
         ...config.resolve.fallback,
       };
     }
@@ -22,6 +18,7 @@ module.exports = {
       {
         //"@substrate/connect": "SubstrateConnect",
         "@substrate/smoldot-light": "SmoldotLightClient",
+        "ipfs-http-client": "ipfs-http-client/src/index.js",
       },
     ];
 

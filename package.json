@@ -9,7 +9,6 @@
     "lint-fix": "eslint ./components/** ./pages/** ./lib/** -c .eslintrc.js --fix --ext js,jsx,ts,tsx",
     "start": "next start",
     "dev-test": "NEXT_PUBLIC_TESTING_ENV=true next",
-    "postinstall": "find node_modules -name '*.mjs' | xargs rm -f",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
     "e2e:open": "NEXT_PUBLIC_TESTING_ENV=true start-test dev http://localhost:3000 cy:open",
@@ -24,6 +23,7 @@
     "@types/react-dom": "17.0.2"
   },
   "dependencies": {
+    "@babel/helper-compilation-targets": "^7.19.3",
     "@material-ui/core": "^4.12.3",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@polkadot/extension-dapp": "^0.40.4",
