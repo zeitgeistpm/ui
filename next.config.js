@@ -1,5 +1,8 @@
 // pass the modules you would like to see transpiled
-//const withTM = require("next-transpile-modules")(["ipfs-http-client"]); // pass the modules you would like to see transpiled
+// const withTM = require("next-transpile-modules")([
+//   "rmrk-tools",
+//   "@zeitgeistpm/avatara-nft-sdk",
+// ]); // pass the modules you would like to see transpiled
 
 module.exports = {
   experimental: {
@@ -17,8 +20,7 @@ module.exports = {
       ...config.externals,
       {
         //"@substrate/connect": "SubstrateConnect",
-        "@substrate/smoldot-light": "SmoldotLightClient",
-        "ipfs-http-client": "ipfs-http-client/src/index.js",
+        //"@substrate/smoldot-light": "SmoldotLightClient",
       },
     ];
 
