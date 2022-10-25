@@ -18,8 +18,6 @@ import AppLaunchLayout from "layouts/launch/AppLaunchLayout";
 import { AnimatePresence } from "framer-motion";
 import MobileMenu from "components/menu/MobileMenu";
 import { AvatarContext } from "@zeitgeistpm/avatara-react";
-import { create$, mainnet } from "@zeitgeistpm/sdk-next";
-import { Sdkv2Context } from "components/context/Sdkv2Context";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -33,7 +31,6 @@ const MyApp = observer(({ Component, pageProps }) => {
   const router = useRouter();
   const [modalStore] = useState(() => new ModalStore());
   const [store] = useState(() => new Store());
-  const sdk2$ = useMemo(() => create$(mainnet()), []);
 
   useEffect(() => {
     if (!isProduction) {
@@ -87,43 +84,41 @@ const MyApp = observer(({ Component, pageProps }) => {
 
   return (
     <StoreProvider store={store}>
-      <Sdkv2Context.Provider value={sdk2$ as any}>
-        <AvatarContext.Provider
-          value={{
-            api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
-            ipfs: { node: { url: process.env.NEXT_PUBLIC_IPFS_NODE } },
-            rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
-            indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
-            avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,
-            badgeCollectionId: process.env.NEXT_PUBLIC_BADGE_COLLECTION_ID,
-            avatarBaseId: process.env.NEXT_PUBLIC_AVATAR_BASE_ID,
-            prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
-          }}
-        >
-          <ModalStoreContext.Provider value={modalStore}>
-            {modalStore.modal && (
-              <ModalContainer>{modalStore.modal}</ModalContainer>
-            )}
-            <Head>
-              <title>The Zeitgeist Prediction Markets App</title>
-            </Head>
-            {process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === "false" ||
-            process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === undefined ||
-            launched ? (
-              <DefaultLayout>
-                <AnimatePresence>
-                  {store.showMobileMenu && <MobileMenu />}
-                </AnimatePresence>
-                <Layout>
-                  <Component {...pageProps} />
-                </Layout>
-              </DefaultLayout>
-            ) : (
-              <AppLaunchLayout launchDate={launchDate} />
-            )}
-          </ModalStoreContext.Provider>
-        </AvatarContext.Provider>
-      </Sdkv2Context.Provider>
+      <AvatarContext.Provider
+        value={{
+          api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
+          ipfs: { node: { url: process.env.NEXT_PUBLIC_IPFS_NODE } },
+          rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
+          indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
+          avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,
+          badgeCollectionId: process.env.NEXT_PUBLIC_BADGE_COLLECTION_ID,
+          avatarBaseId: process.env.NEXT_PUBLIC_AVATAR_BASE_ID,
+          prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
+        }}
+      >
+        <ModalStoreContext.Provider value={modalStore}>
+          {modalStore.modal && (
+            <ModalContainer>{modalStore.modal}</ModalContainer>
+          )}
+          <Head>
+            <title>The Zeitgeist Prediction Markets App</title>
+          </Head>
+          {process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === "false" ||
+          process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === undefined ||
+          launched ? (
+            <DefaultLayout>
+              <AnimatePresence>
+                {store.showMobileMenu && <MobileMenu />}
+              </AnimatePresence>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </DefaultLayout>
+          ) : (
+            <AppLaunchLayout launchDate={launchDate} />
+          )}
+        </ModalStoreContext.Provider>
+      </AvatarContext.Provider>
     </StoreProvider>
   );
 });

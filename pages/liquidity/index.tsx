@@ -1,16 +1,11 @@
-import { Sdkv2Context } from "components/context/Sdkv2Context";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
-import { useContext, useEffect } from "react";
 
 const LiquidityPools: NextPage = observer(() => {
-  const sdk$ = useContext(Sdkv2Context);
+  const sdk = useSdkv2();
 
-  useEffect(() => {
-    sdk$.subscribe((sdk) => {
-      console.log(sdk);
-    });
-  }, [sdk$]);
+  console.log(sdk);
 
   return <div>pools</div>;
 });
