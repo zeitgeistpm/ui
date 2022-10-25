@@ -5,10 +5,13 @@ import { get24HrPriceChange } from "lib/util/market";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useUserStore } from "lib/stores/UserStore";
 import { isPreloadedMarket, MarketCardData } from "lib/gql/markets-list";
+import { getPoolAssets } from "lib/gql/pool";
+import { getAssetPriceHistory } from "lib/gql/prices";
 import { DAY_SECONDS } from "lib/constants";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
+import { combineLatest, from } from "rxjs";
 
 
 const MarketTable = observer(
@@ -26,10 +29,41 @@ const MarketTable = observer(
     const isPreloaded = isPreloadedMarket(marketStore);
     const [pool, setPool] = useState<CPool>();
 
+    const [gqlAssets, setGqlAssets] =
+      useState<Awaited<ReturnType<typeof getPoolAssets>>>();
+
+    const [gqlPriceHistories, setGqlPriceHistories] =
+      useState<Awaited<ReturnType<typeof getAssetPriceHistory>>[]>();
+
     const marketStorePool = !isPreloaded ? marketStore.pool : undefined;
 
     useEffect(() => {
+      if (gqlAssets == null || store.graphQLClient == null) {
+        return;
+      }
+      const dateOneWeekAgo = new Date(
+        new Date().getTime() - DAY_SECONDS * 7 * 1000,
+      ).toISOString();
+      const assetIds = gqlAssets.map((asset) => asset.assetId);
+      const assetsObs = assetIds.map((asset) => {
+        return from(
+          getAssetPriceHistory(store.graphQLClient, asset, dateOneWeekAgo),
+        );
+      });
+      const sub = combineLatest(assetsObs).subscribe((res) =>
+        setGqlPriceHistories(res),
+      );
+      return () => sub.unsubscribe();
+    }, [gqlAssets, store.graphQLClient]);
+
+    useEffect(() => {
       if (isPreloaded) {
+        if (store.graphQLClient) {
+          const sub1 = from(
+            getPoolAssets(store.graphQLClient, marketStore.poolId),
+          ).subscribe((res) => setGqlAssets(res));
+          return () => sub1.unsubscribe();
+        }
         return;
       }
       const rawMarket = marketStore.market;
@@ -117,13 +151,21 @@ const MarketTable = observer(
         };
       });
     } else {
-      tableData = marketStore.categories.map(category => {
+      tableData = marketStore.categories.map((category, index) => {
         return {
           id: marketStore.id,
           token: {
             color: category.color,
             label: category.ticker,
           },
+          pre: gqlAssets && Math.round(gqlAssets[index].price * 100),
+          marketPrice: gqlAssets && {
+            value: gqlAssets[index].price,
+            usdValue: 0,
+          },
+          change24hr: gqlPriceHistories?.[index]
+            ? get24HrPriceChange(gqlPriceHistories?.[index])
+            : undefined,
           outcome: category.name,
           buttons: (
             <AssetActionButtons
@@ -131,8 +173,8 @@ const MarketTable = observer(
               assetColor={category.color}
               assetTicker={category.ticker}
             />
-          )
-        }
+          ),
+        };
       });
     }
 
@@ -161,6 +203,7 @@ const MarketTable = observer(
         header: "Graph",
         accessor: "history",
         type: "graph",
+        width: "140px"
       },
       {
         header: "",
