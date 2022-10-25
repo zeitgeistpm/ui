@@ -11,8 +11,7 @@ import MarketStore from "lib/stores/MarketStore";
 import { MarketListQuery, MarketStatus } from "lib/types";
 import { activeStatusesFromFilters } from "lib/util/market";
 
-
-export const FRAGMENT_MARKET_DETAILS = gql`
+export const marketDetailsQuery = gql`
   fragment MarketDetails on Market {
     marketId
     description
@@ -232,7 +231,7 @@ export class MarketPreloader {
           ...MarketDetails
         }
       }
-      ${FRAGMENT_MARKET_DETAILS}
+      ${marketDetailsQuery}
     `;
 
     return {
