@@ -61,9 +61,8 @@ const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
         <input
           value={newsletterSubForm.$("email").value}
           onChange={newsletterSubForm.$("email").onChange}
-          className={`h-full rounded-ztg-100 text-sky-600 p-2 text-ztg-12-120 bg-sky-200 dark:bg-black focus:outline-none flex-grow max-w-ztg-184 border-1 ${
-            invalid ? "border-vermilion" : "border-none"
-          }`}
+          className={`h-full rounded-ztg-100 text-sky-600 p-2 text-ztg-12-120 bg-sky-200 dark:bg-black focus:outline-none flex-grow max-w-ztg-184 border-1 ${invalid ? "border-vermilion" : "border-none"
+            }`}
         />
         <button
           type="submit"
@@ -98,7 +97,7 @@ const FooterMenu: FC<FooterMenuProps> = observer(
           {links.map(({ text, href }, idx) => {
             return (
               <Link href={href} key={`footerMenuLink${idx}`}>
-                <a target="_blank" rel="noopener noref">
+                <a target="_blank" rel="noopener noref" className="hover:text-white">
                   {text}
                 </a>
               </Link>
@@ -117,11 +116,8 @@ const Footer = observer(() => {
         <FooterMenu
           title="General"
           links={[
-            {
-              text: "General",
-              href: "https://polkadot.js.org/apps/?rpc=wss://bsr.zeitgeist.pm",
-            },
             { text: "Website", href: "https://zeitgeist.pm" },
+            { text: "Blog", href: "https://blog.zeitgeist.pm" },
           ]}
         />
         <FooterMenu
@@ -129,6 +125,10 @@ const Footer = observer(() => {
           links={[
             { text: "Documentation", href: "https://docs.zeitgeist.pm" },
             { text: "Github", href: "https://github.com/zeitgeistpm" },
+            {
+              text: "Polkadot-JS Apps",
+              href: "https://polkadot.js.org/apps/?rpc=wss://bsr.zeitgeist.pm",
+            },
           ]}
         />
         <FooterMenu
@@ -142,7 +142,7 @@ const Footer = observer(() => {
         />
         <FooterNewsletterSub title="Stay up to Date" />
         <div className="w-full text-ztg-10-150 text-black dark:text-white font-sans mt-ztg-5">
-          © 2021 Zeitgeist PM
+          © 2022 Equipoise Corp.
         </div>
       </div>
     </div>
