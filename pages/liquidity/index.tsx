@@ -1,4 +1,3 @@
-import { TableCell } from "@material-ui/core";
 import { useQuery } from "@tanstack/react-query";
 import { ZTG } from "@zeitgeistpm/sdk-next";
 import Table, { TableColumn, TableData } from "components/ui/Table";
@@ -85,8 +84,8 @@ const LiquidityPools: NextPage = observer(() => {
         // onRowClick={handleRowClick}
         // onLoadMore={handleLoadMoreFromChain}
         // hideLoadMore={graphQlEnabled || poolsStore.allPoolsShown}
-        // loadingMore={loadingPage}
-        // loadingNumber={graphQlEnabled ? 5 : query.pagination.pageSize}
+        loadingMore={pools.isLoading}
+        loadingNumber={10}
       />
     </div>
   );

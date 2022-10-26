@@ -288,7 +288,7 @@ const Cell = observer(
       default:
         return <td>default</td>;
     }
-  }
+  },
 );
 
 const Table = observer(
@@ -309,7 +309,11 @@ const Table = observer(
     const tableRef = useRef<HTMLTableElement>();
     const [isOverflowing, setIsOverflowing] = useState<boolean>();
     const store = useStore();
-    const windowResizeEvent = useEvent(window, "resize", 50);
+    const windowResizeEvent = useEvent(
+      typeof window !== "undefined" ? window : undefined,
+      "resize",
+      50,
+    );
 
     const getHeaderClass = (column: TableColumn) => {
       const base =
