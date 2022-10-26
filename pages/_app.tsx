@@ -101,7 +101,7 @@ const MyApp = observer(({ Component, pageProps }) => {
             <ModalContainer>{modalStore.modal}</ModalContainer>
           )}
           <Head>
-            <title>The Zeitgeist Prediction Markets App</title>
+            <title>Zeitgeist - Prediction Markets</title>
           </Head>
           {process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === "false" ||
           process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === undefined ||
