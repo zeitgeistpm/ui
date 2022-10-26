@@ -1,5 +1,11 @@
 import Link from "next/link";
-import React, { FC, useState, useMemo, useEffect, createContext, useContext } from "react";
+import React, {
+  FC,
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+} from "react";
 import { observer } from "mobx-react";
 import {
   ExternalLink,
@@ -10,62 +16,49 @@ import {
 } from "react-feather";
 
 import { isPreloadedMarket, MarketCardData } from "lib/gql/markets-list";
-import { MarketStatus } from "lib/types";
 import MarketStore from "lib/stores/MarketStore";
 import MarketTable from "./MarketTable";
 import { motion, Variants } from "framer-motion";
 import ScalarPriceRange from "./ScalarPriceRange";
 import Decimal from "decimal.js";
-import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
 import { Skeleton } from "@material-ui/lab";
 
+const MarketCardContext = createContext<{
+  market: MarketCardData;
+  poolAssetIds?: string[];
+  assetPrices?: { [key: string]: number };
+}>(null);
 
-const MarketCardContext =
-  createContext<{ market: MarketCardData; preloaded: boolean }>(null);
-
-const useIsMarketPreloaded = () => useContext(MarketCardContext).preloaded;
 const useMarketCardContext = () => useContext(MarketCardContext);
 
 type CardProps = {
-  status: MarketStatus;
-  marketStatusString?: string;
-  id: number;
-  img?: string;
-  slug: string;
-  question: string;
-  creation: MarketCreation;
   prediction?: string;
-  tags?: string[];
-  poolExists?: boolean;
-  type: "categorical" | "scalar";
-  bounds?: [number, number];
   shortPrice?: number;
   longPrice?: number;
   expanded?: boolean;
   onChangeExpanded?: (expanded: boolean) => void;
-}
+};
 
 const Card = observer(
   ({
-    id,
-    status,
-    marketStatusString,
-    tags,
-    img,
-    slug,
-    question,
-    creation,
     prediction,
-    type,
-    poolExists = false,
-    bounds,
+    expanded = false,
     shortPrice,
     longPrice,
-    expanded = false,
-    onChangeExpanded
+    onChangeExpanded,
   }: CardProps) => {
-    const tagsText = tags == null ? "" : tags.join(" / ");
-    const preloaded = useIsMarketPreloaded();
+    const cardContext = useMarketCardContext();
+
+    const { market } = cardContext;
+    const tagsText = market.tags == null ? "" : market.tags.join(" / ");
+    const preloaded = isPreloadedMarket(market);
+
+    const getImageUrlString = () => {
+      if (preloaded || (!preloaded && market.img == null)) {
+        return "url(/icons/default-market.png)";
+      }
+      return "url(${market.img})";
+    };
 
     const buttonVariants: Variants = {
       closed: { rotate: 180 },
@@ -82,9 +75,9 @@ const Card = observer(
             <div className="w-ztg-24">
               {
                 //@ts-ignore
-                creation === "Permissionless" ? (
+                market.creation === "Permissionless" ? (
                   <AlertTriangle size={12} className="text-vermilion" />
-                ) : status === "Proposed" ? (
+                ) : market.status === "Proposed" ? (
                   <Clock size={12} className="text-info-blue" />
                 ) : (
                   <Smile size={12} className="text-sheen-green" />
@@ -93,10 +86,10 @@ const Card = observer(
             </div>
             <div className="text-ztg-10-150 font-bold">{tagsText}</div>
             <div className="text-ztg-10-150 font-bold ml-auto mr-ztg-15">
-              {marketStatusString}
+              {preloaded ? "" : market.marketStatusString}
             </div>
             <div className="font-medium text-ztg-10-150 px-ztg-10 h-ztg-20 flex items-center justify-center rounded-full bg-black text-white cursor-pointer uppercase">
-              {status}
+              {market.status}
             </div>
           </div>
         </div>
@@ -105,16 +98,13 @@ const Card = observer(
           style={{ zIndex: 1 }}
         >
           <div className="flex items-center mx-ztg-16 h-full">
-            <Link href={`/markets/${id}`}>
+            <Link href={`/markets/${market.id}`}>
               <a className="flex items-center h-full">
                 <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600">
                   <div
                     className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0"
                     style={{
-                      backgroundImage:
-                        img == null
-                          ? "url(/icons/default-market.png)"
-                          : `url(${img})`,
+                      backgroundImage: getImageUrlString(),
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }}
@@ -123,10 +113,10 @@ const Card = observer(
 
                 <div className=" ml-ztg-16 mr-ztg-16 h-ztg-70 overflow-auto cursor-pointer">
                   <div className="text-ztg-12-120 font-bold uppercase text-sky-600">
-                    {slug}
+                    {market.slug}
                   </div>
                   <div className="text-ztg-14-120 text-black dark:text-white">
-                    {question}
+                    {market.question}
                   </div>
                 </div>
               </a>
@@ -153,7 +143,7 @@ const Card = observer(
             <div className="hidden sm:flex items-center h-full text-sky-600">
               {/* TODO */}
               {/* <Star size={24} className="mr-ztg-10 cursor-pointer" /> */}
-              <Link href={`/markets/${id}`}>
+              <Link href={`/markets/${market.id}`}>
                 <a>
                   <ExternalLink size={24} className="cursor-pointer" />
                 </a>
@@ -165,7 +155,7 @@ const Card = observer(
                   transition={{ duration: 0.3 }}
                   className="w-ztg-30 h-ztg-30 bg-sky-600 text-white dark:text-black ml-auto rounded-full flex items-center justify-center focus:outline-none disabled:opacity-50 disabled:cursor-default"
                   onClick={() => onChangeExpanded(!expanded)}
-                  disabled={!poolExists}
+                  disabled={!market.poolExists}
                 >
                   <ChevronUp size={24} />
                 </motion.button>
@@ -173,10 +163,10 @@ const Card = observer(
             </div>
           </div>
         </div>
-        {expanded && poolExists && (
+        {expanded && market.poolExists && (
           <PoolExpandable
-            type={type}
-            bounds={bounds}
+            type={market.type}
+            bounds={preloaded ? undefined : market.bounds}
             shortPrice={shortPrice}
             longPrice={longPrice}
           />
@@ -187,19 +177,14 @@ const Card = observer(
 );
 
 type PoolExpandableProps = {
-  type: "scalar" | "categorical"
+  type: "scalar" | "categorical";
   bounds: [number, number];
   shortPrice: number;
   longPrice: number;
-}
+};
 
 const PoolExpandable = observer(
-  ({
-    bounds,
-    shortPrice,
-    longPrice,
-    type,
-  }: PoolExpandableProps) => {
+  ({ bounds, shortPrice, longPrice, type }: PoolExpandableProps) => {
     const { market } = useMarketCardContext();
 
     return (
@@ -297,40 +282,17 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
   }, [status]);
 
   return (
-    <MarketCardContext.Provider
-      value={{ market, preloaded: isPreloadedMarket(market) }}
-    >
+    <MarketCardContext.Provider value={{ market }}>
       {!isPreloadedMarket(market) ? (
         <Card
-          id={market.id}
-          img={market.img}
-          poolExists={poolExists}
-          question={market.question}
-          slug={market.slug}
-          status={market.status}
-          type={market.type}
-          marketStatusString={market.marketStatusString}
-          bounds={market.bounds}
-          longPrice={longPrice}
-          shortPrice={shortPrice}
-          tags={market.tags}
-          creation={market.creation}
           prediction={prediction}
           expanded={expanded}
           onChangeExpanded={setExpanded}
         />
       ) : (
         <Card
-          id={market.id}
-          poolExists={poolExists}
-          question={market.question}
-          slug={market.slug}
-          status={market.status}
-          type={market.type}
           longPrice={longPrice}
           shortPrice={shortPrice}
-          tags={market.tags}
-          creation={market.creation}
           prediction={prediction}
           expanded={expanded}
           onChangeExpanded={setExpanded}

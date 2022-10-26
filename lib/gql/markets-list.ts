@@ -50,6 +50,7 @@ export type MarketPreload = {
   preloaded: true;
   poolId?: number | null;
   categories: { name: string; ticker: string; color: string }[];
+  poolExists: boolean;
 };
 
 export class MarketPreloader {
@@ -267,7 +268,10 @@ export class MarketPreloader {
     return assets;
   }
 
-  async fetchMarkets(query: MarketListQuery, address?: string): Promise<MarketPreload[]> {
+  async fetchMarkets(
+    query: MarketListQuery,
+    address?: string,
+  ): Promise<MarketPreload[]> {
     const { pagination, filter, sorting, myMarketsOnly, tag, searchText } =
       query;
 
@@ -327,7 +331,15 @@ export class MarketPreloader {
     let markets: MarketPreload[] = [];
 
     for (const data of marketsData) {
-      markets = [...markets, { ...data, id: data.marketId, preloaded: true }];
+      markets = [
+        ...markets,
+        {
+          ...data,
+          id: data.marketId,
+          preloaded: true,
+          poolExists: data.poolId != null,
+        },
+      ];
     }
 
     return markets;
