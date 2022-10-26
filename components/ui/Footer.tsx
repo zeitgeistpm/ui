@@ -143,7 +143,7 @@ const Footer = observer(() => {
           className="mb-ztg-10"
         />
         <div className="w-full text-ztg-10-150 text-black dark:text-white font-sans mt-ztg-5 mb-ztg-10">
-          Please be advised that Equipoise Corp. is registered under the laws of Panama, and Zeitgeist has not sought licensing with any other regulatory authority of any country or jurisdiction, nor has any such regulatory authority passed upon or endorsed the merits of the financial products offered by Zeitgeist.   Therefore, Zeitgeist does not accept clients from the United States and other similar jurisdictions where regulations prohibit Zeitgeist from offering its financial products (“Regulated Jurisdictions”).
+          Please be advised that Equipoise Corp. d/b/a Zeitgeist is registered under the laws of Panama, and Zeitgeist has not sought licensing with any other regulatory authority of any country or jurisdiction, nor has any such regulatory authority passed upon or endorsed the merits of the financial products offered by Zeitgeist.   Therefore, Zeitgeist does not accept clients from the United States and other similar jurisdictions where regulations prohibit Zeitgeist from offering its financial products (“Regulated Jurisdictions”).
 
           While this website may be accessed worldwide, the information provided is only intended for use by any person in any country where such use would not be contrary to local law or regulation.  Browsers from Regulated Jurisdictions are specifically prohibited from using this site.
         </div>
