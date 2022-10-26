@@ -7,6 +7,11 @@ import { useRouter } from "next/router";
 import * as Fathom from "fathom-client";
 import Head from "next/head";
 import { hotjar } from "react-hotjar";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
 
 import ModalStore from "lib/stores/ModalStore";
 import { StoreProvider } from "components/context/StoreContext";
@@ -25,6 +30,8 @@ const domain = process.env["NEXT_PUBLIC_DOMAIN"];
 const hotjarSiteId = process.env["NEXT_PUBLIC_HOTJAR_SITE_ID"];
 const environment = process.env.NEXT_PUBLIC_ENVIRONMENT_NAME;
 const isProduction = environment === "production" || environment == null;
+
+const queryClient = new QueryClient();
 
 const MyApp = observer(({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
@@ -83,43 +90,45 @@ const MyApp = observer(({ Component, pageProps }) => {
   });
 
   return (
-    <StoreProvider store={store}>
-      <AvatarContext.Provider
-        value={{
-          api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
-          ipfs: { node: { url: process.env.NEXT_PUBLIC_IPFS_NODE } },
-          rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
-          indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
-          avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,
-          badgeCollectionId: process.env.NEXT_PUBLIC_BADGE_COLLECTION_ID,
-          avatarBaseId: process.env.NEXT_PUBLIC_AVATAR_BASE_ID,
-          prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
-        }}
-      >
-        <ModalStoreContext.Provider value={modalStore}>
-          {modalStore.modal && (
-            <ModalContainer>{modalStore.modal}</ModalContainer>
-          )}
-          <Head>
-            <title>The Zeitgeist Prediction Markets App</title>
-          </Head>
-          {process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === "false" ||
-          process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === undefined ||
-          launched ? (
-            <DefaultLayout>
-              <AnimatePresence>
-                {store.showMobileMenu && <MobileMenu />}
-              </AnimatePresence>
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </DefaultLayout>
-          ) : (
-            <AppLaunchLayout launchDate={launchDate} />
-          )}
-        </ModalStoreContext.Provider>
-      </AvatarContext.Provider>
-    </StoreProvider>
+    <QueryClientProvider client={queryClient}>
+      <StoreProvider store={store}>
+        <AvatarContext.Provider
+          value={{
+            api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
+            ipfs: { node: { url: process.env.NEXT_PUBLIC_IPFS_NODE } },
+            rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
+            indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
+            avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,
+            badgeCollectionId: process.env.NEXT_PUBLIC_BADGE_COLLECTION_ID,
+            avatarBaseId: process.env.NEXT_PUBLIC_AVATAR_BASE_ID,
+            prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
+          }}
+        >
+          <ModalStoreContext.Provider value={modalStore}>
+            {modalStore.modal && (
+              <ModalContainer>{modalStore.modal}</ModalContainer>
+            )}
+            <Head>
+              <title>The Zeitgeist Prediction Markets App</title>
+            </Head>
+            {process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === "false" ||
+            process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === undefined ||
+            launched ? (
+              <DefaultLayout>
+                <AnimatePresence>
+                  {store.showMobileMenu && <MobileMenu />}
+                </AnimatePresence>
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+              </DefaultLayout>
+            ) : (
+              <AppLaunchLayout launchDate={launchDate} />
+            )}
+          </ModalStoreContext.Provider>
+        </AvatarContext.Provider>
+      </StoreProvider>
+    </QueryClientProvider>
   );
 });
 
