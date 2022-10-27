@@ -250,7 +250,6 @@ const PoolExpandable = observer(
         new Date().getTime() - DAY_SECONDS * 7 * 1000,
       ).toISOString();
 
-      console.log("histories", market.pool.poolId);
       const priceHistoryObs = rawMarket.outcomeAssets.map((asset) => {
         const assetId = asset.toString();
         return from(
