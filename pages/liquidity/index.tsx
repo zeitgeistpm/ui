@@ -39,7 +39,9 @@ const LiquidityPools: NextPage = observer(() => {
   const sdk = useSdkv2();
   const router = useRouter();
 
-  const { data: ztgInfo } = useQuery(["ztg-price-info"], () => fetchZTGInfo());
+  const { data: ztgInfo } = useQuery(["ztg-price-info"], () => fetchZTGInfo(), {
+    refetchInterval: 1000 * 10,
+  });
 
   const { data: pools, isLoading: isLoadingPools } = useQuery(
     ["pools"],
