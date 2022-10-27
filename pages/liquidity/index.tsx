@@ -121,7 +121,7 @@ const LiquidityPools: NextPage = observer(() => {
           poolBalance: index ? (
             {
               value: index?.liquidity.div(ZTG).toNumber(),
-              usdValue: 0,
+              usdValue: ztgInfo?.price.toNumber() ?? 0,
             }
           ) : (
             <span>...</span>

@@ -200,7 +200,10 @@ const Cell = observer(
                 {formatNumberLocalized(value.value)}
               </div>
               <div className="text-ztg-12-150 font-light text-sky-600">
-                ${ztgInfo?.price.mul(value.value).toFixed(2)}
+                $
+                {(
+                  (value.usdValue || ztgInfo?.price.toNumber()) * value.value
+                ).toFixed(2)}
               </div>
             </td>
           );
