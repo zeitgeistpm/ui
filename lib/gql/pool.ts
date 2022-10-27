@@ -31,10 +31,16 @@ const assetsQuery = gql`
   }
 `;
 
+export type PoolAsset = {
+  price: number;
+  assetId: string;
+  amountInPool: Decimal;
+};
+
 export const getPoolAssets = async (
   client: GraphQLClient,
   poolId: number,
-): Promise<{ price: number; assetId: string; amountInPool: Decimal }[]> => {
+): Promise<PoolAsset[]> => {
   const response = await client.request<{
     assets: {
       price: number;

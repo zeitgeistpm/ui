@@ -1,118 +1,85 @@
+import { observer } from "mobx-react";
+import { useEffect, useState } from "react";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import { ChartData } from "components/ui/TimeSeriesChart";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import { get24HrPriceChange } from "lib/util/market";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
-import { useUserStore } from "lib/stores/UserStore";
 import { isPreloadedMarket, MarketCardData } from "lib/gql/markets-list";
-import { getPoolAssets } from "lib/gql/pool";
-import { getAssetPriceHistory } from "lib/gql/prices";
+import { AssetPrice } from "lib/gql/prices";
+import { PoolAsset } from "lib/gql/pool";
 import { DAY_SECONDS } from "lib/constants";
-import { useStore } from "lib/stores/Store";
-import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
-import { combineLatest, from } from "rxjs";
-
+import { from } from "rxjs";
 
 const MarketTable = observer(
-  ({ marketStore }: { marketStore: MarketCardData }) => {
-    const store = useStore();
-    const { graphQlEnabled } = useUserStore();
+  ({
+    marketStore,
+    priceHistories,
+    assets,
+  }: {
+    marketStore: MarketCardData;
+    priceHistories?: { [key: string]: AssetPrice[] };
+    assets?: PoolAsset[];
+  }) => {
     const poolStore = usePoolsStore();
     const [prices, setPrices] = useState<ChartData[][]>();
-    const [priceHistories, setPriceHistories] = useState<
-      {
-        newPrice: number;
-        timestamp: string;
-      }[][]
-    >();
     const isPreloaded = isPreloadedMarket(marketStore);
     const [pool, setPool] = useState<CPool>();
-
-    const [gqlAssets, setGqlAssets] =
-      useState<Awaited<ReturnType<typeof getPoolAssets>>>();
-
-    const [gqlPriceHistories, setGqlPriceHistories] =
-      useState<Awaited<ReturnType<typeof getAssetPriceHistory>>[]>();
 
     const marketStorePool = !isPreloaded ? marketStore.pool : undefined;
 
     useEffect(() => {
-      if (gqlAssets == null || store.graphQLClient == null) {
+      if (priceHistories == null || assets == null) {
         return;
       }
-      const dateOneWeekAgo = new Date(
-        new Date().getTime() - DAY_SECONDS * 7 * 1000,
-      ).toISOString();
-      const assetIds = gqlAssets.map((asset) => asset.assetId);
-      const assetsObs = assetIds.map((asset) => {
-        return from(
-          getAssetPriceHistory(store.graphQLClient, asset, dateOneWeekAgo),
-        );
-      });
-      const sub = combineLatest(assetsObs).subscribe((res) =>
-        setGqlPriceHistories(res),
-      );
-      return () => sub.unsubscribe();
-    }, [gqlAssets, store.graphQLClient]);
-
-    useEffect(() => {
-      if (isPreloaded) {
-        if (store.graphQLClient) {
-          const sub1 = from(
-            getPoolAssets(store.graphQLClient, marketStore.poolId),
-          ).subscribe((res) => setGqlAssets(res));
-          return () => sub1.unsubscribe();
-        }
-        return;
-      }
-      const rawMarket = marketStore.market;
-      (async () => {
-        const dateOneWeekAgo = new Date(
-          new Date().getTime() - DAY_SECONDS * 7 * 1000,
-        ).toISOString();
-
-        const poolId = marketStore.pool.poolId;
-
-        const pool = await poolStore.getPoolFromChain(Number(poolId));
-        setPool(pool);
-        if (graphQlEnabled === true) {
-          const pricePromises = rawMarket.outcomeAssets.map(async (asset) => {
-            return store.sdk.models.getAssetPriceHistory(
-              rawMarket.marketId,
-              asset.isCategoricalOutcome
-                ? asset.asCategoricalOutcome[1].toNumber()
-                : asset.asScalarOutcome[1].toString(),
-              dateOneWeekAgo,
-            );
-          });
-
-          const priceHistories = await Promise.all(pricePromises);
-          setPriceHistories(priceHistories);
-
-          const chartPrices: ChartData[][] = priceHistories.map((p, index) => {
-            if (p.length > 1) {
-              return p.map((history) => ({
+      let chartPrices: ChartData[][] = [];
+      let index = 0;
+      for (const assetId in priceHistories) {
+        if (Object.prototype.hasOwnProperty.call(priceHistories, assetId)) {
+          const prices = priceHistories[assetId];
+          if (prices.length > 1) {
+            chartPrices = [
+              ...chartPrices,
+              prices.map((history) => ({
                 v: history.newPrice,
                 t: new Date(history.timestamp).getTime(),
-              }));
-            } else {
-              // return straight line if there is no price history in the current week
-              return [
+              })),
+            ];
+          } else {
+            const dateOneWeekAgo = new Date(
+              new Date().getTime() - DAY_SECONDS * 7 * 1000,
+            ).toISOString();
+            // return straight line if there is no price history in the current week
+            chartPrices = [
+              ...chartPrices,
+              [
                 {
-                  v: pool.assets[index].amount,
+                  v: assets[index].price,
                   t: new Date(dateOneWeekAgo).getTime(),
                 },
                 {
-                  v: pool.assets[index].amount,
+                  v: assets[index].price,
                   t: new Date().getTime(),
                 },
-              ];
-            }
-          });
-          setPrices(chartPrices);
+              ],
+            ];
+          }
+          index += 1;
         }
-      })();
+      }
+      setPrices(chartPrices);
+    }, [priceHistories, assets, marketStorePool]);
+
+    useEffect(() => {
+      if (isPreloaded) {
+        return;
+      }
+      const poolId = marketStore.pool.poolId;
+
+      const sub = from(poolStore.getPoolFromChain(Number(poolId))).subscribe(
+        (p) => setPool(p),
+      );
+      return () => sub.unsubscribe();
     }, [marketStore, marketStorePool]);
 
     let tableData: TableData[];
@@ -132,11 +99,11 @@ const MarketTable = observer(
           },
           outcome: name,
           history: prices?.[index],
-          marketPrice: {
-            value: pool?.assets?.[index]?.price ?? 0,
+          marketPrice: pool && {
+            value: pool.assets[index].price,
             usdValue: 0,
           },
-          pre: Math.round((pool?.assets?.[index]?.price ?? 0) * 100),
+          pre: pool && Math.round(pool.assets[index].price * 100),
           change24hr: priceHistories?.[index]
             ? get24HrPriceChange(priceHistories[index])
             : 0,
@@ -152,20 +119,21 @@ const MarketTable = observer(
       });
     } else {
       tableData = marketStore.categories.map((category, index) => {
+        const asset = assets?.[index];
+        const histories = priceHistories?.[asset.assetId];
         return {
           id: marketStore.id,
           token: {
             color: category.color,
             label: category.ticker,
           },
-          pre: gqlAssets && Math.round(gqlAssets[index].price * 100),
-          marketPrice: gqlAssets && {
-            value: gqlAssets[index].price,
+          history: prices?.[index],
+          pre: asset && Math.round(asset.price * 100),
+          marketPrice: assets && {
+            value: assets[index].price,
             usdValue: 0,
           },
-          change24hr: gqlPriceHistories?.[index]
-            ? get24HrPriceChange(gqlPriceHistories?.[index])
-            : undefined,
+          change24hr: histories ? get24HrPriceChange(histories) : undefined,
           outcome: category.name,
           buttons: (
             <AssetActionButtons
@@ -203,7 +171,7 @@ const MarketTable = observer(
         header: "Graph",
         accessor: "history",
         type: "graph",
-        width: "140px"
+        width: "140px",
       },
       {
         header: "",

@@ -1,10 +1,15 @@
 import Link from "next/link";
+import { motion, Variants } from "framer-motion";
+import Decimal from "decimal.js";
+import { Skeleton } from "@material-ui/lab";
+import { combineLatest, from, map, Subscription } from "rxjs";
 import React, {
   FC,
   useState,
   useEffect,
   createContext,
   useContext,
+  useRef,
 } from "react";
 import { observer } from "mobx-react";
 import {
@@ -14,19 +19,19 @@ import {
   Smile,
   Clock,
 } from "react-feather";
-
 import { isPreloadedMarket, MarketCardData } from "lib/gql/markets-list";
 import MarketStore from "lib/stores/MarketStore";
+import { getPoolAssets, PoolAsset } from "lib/gql/pool";
+import { getAssetPriceHistory, AssetPrice } from "lib/gql/prices";
+import { useStore } from "lib/stores/Store";
+
 import MarketTable from "./MarketTable";
-import { motion, Variants } from "framer-motion";
 import ScalarPriceRange from "./ScalarPriceRange";
-import Decimal from "decimal.js";
-import { Skeleton } from "@material-ui/lab";
+import { DAY_SECONDS } from "lib/constants";
 
 const MarketCardContext = createContext<{
   market: MarketCardData;
-  poolAssetIds?: string[];
-  assetPrices?: { [key: string]: number };
+  assets: PoolAsset[];
 }>(null);
 
 const useMarketCardContext = () => useContext(MarketCardContext);
@@ -185,7 +190,88 @@ type PoolExpandableProps = {
 
 const PoolExpandable = observer(
   ({ bounds, shortPrice, longPrice, type }: PoolExpandableProps) => {
-    const { market } = useMarketCardContext();
+    const { market, assets } = useMarketCardContext();
+    const store = useStore();
+
+    const [priceHistories, setPriceHistories] = useState<{
+      [key: string]: AssetPrice[];
+    }>();
+    const priceHistoriesGqlSubRef = useRef<Subscription>();
+
+    useEffect(() => {
+      if (!isPreloadedMarket(market)) {
+        return;
+      }
+      if (assets == null || store.graphQLClient == null) {
+        return;
+      }
+      if (priceHistoriesGqlSubRef.current != null) {
+        return;
+      }
+
+      const dateOneWeekAgo = new Date(
+        new Date().getTime() - DAY_SECONDS * 7 * 1000,
+      ).toISOString();
+      const assetsObs = assets.map((asset) => {
+        return from(
+          getAssetPriceHistory(
+            store.graphQLClient,
+            asset.assetId,
+            dateOneWeekAgo,
+          ),
+        ).pipe(map((val) => ({ [asset.assetId]: val })));
+      });
+      priceHistoriesGqlSubRef.current = combineLatest(assetsObs).subscribe(
+        (res) => {
+          let histories = {};
+          for (const history of res) {
+            histories = { ...histories, ...history };
+          }
+          setPriceHistories(histories);
+        },
+      );
+      return () => priceHistoriesGqlSubRef.current.unsubscribe();
+    }, [assets, store.graphQLClient]);
+
+    useEffect(() => {
+      if (isPreloadedMarket(market)) {
+        return;
+      }
+
+      if (
+        priceHistoriesGqlSubRef.current != null &&
+        priceHistoriesGqlSubRef.current.closed === false
+      ) {
+        priceHistoriesGqlSubRef.current.unsubscribe();
+      }
+
+      const rawMarket = market.market;
+      const dateOneWeekAgo = new Date(
+        new Date().getTime() - DAY_SECONDS * 7 * 1000,
+      ).toISOString();
+
+      console.log("histories", market.pool.poolId);
+      const priceHistoryObs = rawMarket.outcomeAssets.map((asset) => {
+        const assetId = asset.toString();
+        return from(
+          store.sdk.models.getAssetPriceHistory(
+            rawMarket.marketId,
+            asset.isCategoricalOutcome
+              ? asset.asCategoricalOutcome[1].toNumber()
+              : asset.asScalarOutcome[1].toString(),
+            dateOneWeekAgo,
+          ),
+        ).pipe(map((val) => ({ [assetId]: val })));
+      });
+      const sub = combineLatest(priceHistoryObs).subscribe((res) => {
+        let histories = {};
+        for (const history of res) {
+          histories = { ...histories, ...history };
+        }
+        setPriceHistories(histories);
+      });
+      return () => sub.unsubscribe();
+    }, [market, (market as MarketStore).pool]);
 
     return (
       <motion.div
@@ -203,7 +289,13 @@ const PoolExpandable = observer(
             longPrice={longPrice}
           />
         )}
-        {market && <MarketTable marketStore={market} />}
+        {market && (
+          <MarketTable
+            marketStore={market}
+            priceHistories={priceHistories}
+            assets={assets}
+          />
+        )}
       </motion.div>
     );
   },
@@ -216,18 +308,40 @@ export interface MarketCardProps {
 const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
   const [prediction, setPrediction] = useState<string>();
   const [expanded, setExpanded] = useState(false);
+  const store = useStore();
 
-  let poolExists: boolean;
+  const poolExists = market.poolExists;
   const status: string = market.status;
-  if (!isPreloadedMarket(market)) {
-    poolExists = market.poolExists;
-  } else {
-    poolExists = market.poolId != null;
-  }
 
   const [innerStatus, setInnerStatus] = useState<string>(status);
   const [longPrice, setLongPrice] = useState<number>();
   const [shortPrice, setShortPrice] = useState<number>();
+  const [assets, setAssets] = useState<PoolAsset[]>();
+
+  const getPricesFromChain = async (market: MarketStore) => {
+    const pricePromises = market.marketOutcomes
+      .filter((o) => o.metadata !== "ztg")
+      .map(async (outcome) => {
+        return {
+          assetId: outcome.asset,
+          price: await market.assetPriceInZTG(outcome.asset),
+        };
+      });
+    const prices = await Promise.all(pricePromises);
+    return prices;
+  };
+
+  useEffect(() => {
+    if (!isPreloadedMarket(market)) {
+      return;
+    }
+    if (store.graphQLClient && market.poolExists === true) {
+      const sub1 = from(
+        getPoolAssets(store.graphQLClient, market.poolId),
+      ).subscribe((res) => setAssets(res));
+      return () => sub1.unsubscribe();
+    }
+  }, [market, store.graphQLClient]);
 
   useEffect(() => {
     if (isPreloadedMarket(market)) {
@@ -237,15 +351,7 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
       return setPrediction(null);
     }
     (async () => {
-      const pricePromises = market.marketOutcomes
-        .filter((o) => o.metadata !== "ztg")
-        .map(async (outcome) => {
-          return {
-            assetId: outcome.asset,
-            price: await market.assetPriceInZTG(outcome.asset),
-          };
-        });
-      const prices = await Promise.all(pricePromises);
+      const prices = await getPricesFromChain(market);
       if (market.type === "categorical") {
         prices.sort((a, b) => b.price.sub(a.price).toNumber());
 
@@ -272,7 +378,7 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
         setShortPrice(sPrice.toNumber());
       }
     })();
-  }, [market, poolExists, (market as MarketStore).pool]);
+  }, [market, (market as MarketStore).pool]);
 
   useEffect(() => {
     const statusChanged = innerStatus !== status;
@@ -282,7 +388,7 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
   }, [status]);
 
   return (
-    <MarketCardContext.Provider value={{ market }}>
+    <MarketCardContext.Provider value={{ market, assets }}>
       {!isPreloadedMarket(market) ? (
         <Card
           prediction={prediction}
