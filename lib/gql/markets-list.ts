@@ -51,6 +51,7 @@ export type MarketPreload = {
   poolId?: number | null;
   categories: { name: string; ticker: string; color: string }[];
   poolExists: boolean;
+  bounds?: [number, number];
 };
 
 export class MarketPreloader {
@@ -331,6 +332,9 @@ export class MarketPreloader {
     let markets: MarketPreload[] = [];
 
     for (const data of marketsData) {
+      const bounds: [number, number] | undefined = data.marketType["scalar"]
+        ? data.marketType["scalar"].split(",").map((b) => Number(b))
+        : undefined;
       markets = [
         ...markets,
         {
@@ -338,6 +342,8 @@ export class MarketPreloader {
           id: data.marketId,
           preloaded: true,
           poolExists: data.poolId != null,
+          type: data.marketType["scalar"] == null ? "categorical" : "scalar",
+          bounds,
         },
       ];
     }
