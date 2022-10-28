@@ -18,13 +18,22 @@ const QuillEditor = ({
     onChange(value);
   }, [value]);
 
+  const modules = {
+    toolbar: [
+      ["bold", "italic", "underline"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["link"],
+      ["clean"],
+    ],
+  };
+
   return (
     <ReactQuill
       className={className}
-      theme="snow"
       value={value}
       onChange={setValue}
       placeholder={placeholder}
+      modules={modules}
     />
   );
 };

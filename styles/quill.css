@@ -1,0 +1,17 @@
+.dark > * .ql-toolbar .ql-stroke {
+  fill: none;
+  stroke: #fff;
+}
+
+.dark > * .ql-toolbar .ql-fill {
+  fill: #fff;
+  stroke: none;
+}
+
+.dark > * .ql-toolbar .ql-picker {
+  color: #fff;
+}
+
+.ql-editor.ql-blank::before {
+  color: #748296 !important;
+}
