@@ -19,7 +19,7 @@ const MarketTable = observer(
   }: {
     marketStore: MarketCardData;
     priceHistories?: { [key: string]: AssetPrice[] };
-    assets?: PoolAsset[];
+    assets?: { price: number; assetId: string }[];
   }) => {
     const poolStore = usePoolsStore();
     const [prices, setPrices] = useState<ChartData[][]>();

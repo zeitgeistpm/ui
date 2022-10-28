@@ -19,19 +19,20 @@ import {
   Smile,
   Clock,
 } from "react-feather";
+import { omit } from "lodash";
 import { isPreloadedMarket, MarketCardData } from "lib/gql/markets-list";
 import MarketStore from "lib/stores/MarketStore";
 import { getPoolAssets, PoolAsset } from "lib/gql/pool";
 import { getAssetPriceHistory, AssetPrice } from "lib/gql/prices";
 import { useStore } from "lib/stores/Store";
+import { DAY_SECONDS } from "lib/constants";
 
 import MarketTable from "./MarketTable";
 import ScalarPriceRange from "./ScalarPriceRange";
-import { DAY_SECONDS } from "lib/constants";
 
 const MarketCardContext = createContext<{
   market: MarketCardData;
-  assets: PoolAsset[];
+  assets: { price: number; assetId: string }[];
 }>(null);
 
 const useMarketCardContext = () => useContext(MarketCardContext);
@@ -315,7 +316,7 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
   const [innerStatus, setInnerStatus] = useState<string>(status);
   const [longPrice, setLongPrice] = useState<number>();
   const [shortPrice, setShortPrice] = useState<number>();
-  const [assets, setAssets] = useState<PoolAsset[]>();
+  const [assets, setAssets] = useState<{ price: number; assetId: string }[]>();
 
   const getPricesFromChain = async (market: MarketStore) => {
     const pricePromises = market.marketOutcomes
@@ -337,7 +338,9 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
     if (store.graphQLClient && market.poolExists === true) {
       const sub1 = from(
         getPoolAssets(store.graphQLClient, market.poolId),
-      ).subscribe((res) => setAssets(res));
+      ).subscribe((res) =>
+        setAssets(res.map((r) => omit(r, ["amountInPool"]))),
+      );
       return () => sub1.unsubscribe();
     }
   }, [market, store.graphQLClient]);
