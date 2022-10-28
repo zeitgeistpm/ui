@@ -52,7 +52,11 @@ import MarketFormCard from "components/create/MarketFormCard";
 import { useModalStore } from "lib/stores/ModalStore";
 import MarketCostModal from "components/markets/MarketCostModal";
 import { checkMarketExists } from "lib/gql/markets";
-import QuillEditor from "components/ui/QuillEditor";
+import dynamic from "next/dynamic";
+
+const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
+  ssr: false,
+});
 
 interface CreateMarketFormData {
   slug: string;
@@ -626,10 +630,13 @@ const CreatePage: NextPage = observer(() => {
         </div>
       </MarketFormCard>
       <MarketFormCard header="6. Market Description">
-        <QuillEditor
-          onChange={changeDescription}
-          placeholder="Additional information you want to provide about the market, such as resolution source, special cases, or other details."
-        />
+        <div className="h-[270px]">
+          <QuillEditor
+            onChange={changeDescription}
+            placeholder="Additional information you want to provide about the market, such as resolution source, special cases, or other details."
+            className="h-[200px]"
+          />
+        </div>
         {/* <TextArea
           dataTest="marketDescriptionInput"
           placeholder="Additional information you want to provide about the market, such as resolution source, special cases, or other details."

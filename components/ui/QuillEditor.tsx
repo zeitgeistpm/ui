@@ -6,9 +6,11 @@ import "react-quill/dist/quill.bubble.css";
 const QuillEditor = ({
   onChange,
   placeholder,
+  className,
 }: {
   onChange: (value: string) => void;
   placeholder?: string;
+  className?: string;
 }) => {
   const [value, setValue] = useState("");
 
@@ -18,6 +20,7 @@ const QuillEditor = ({
 
   return (
     <ReactQuill
+      className={className}
       theme="snow"
       value={value}
       onChange={setValue}
