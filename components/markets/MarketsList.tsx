@@ -13,10 +13,10 @@ import { usePrevious } from "lib/hooks/usePrevious";
 import Loader from "react-spinners/PulseLoader";
 import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
 import { useContentScrollTop } from "components/context/ContentDimensionsContext";
-import { debounce } from "lodash";
+import { debounce, isEmpty } from "lodash";
 import { makeAutoObservable } from "mobx";
 import { useUserStore } from "lib/stores/UserStore";
-import { MarketCardData } from "lib/gql/markets-list";
+import { isPreloadedMarket, MarketCardData } from "lib/gql/markets-list";
 
 export type MarketsListProps = {
   className?: string;
@@ -131,7 +131,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const [marketsList, setMarketsList] = useState<MarketCardData[]>();
 
   useEffect(() => {
-    if (marketsStore?.order.length === 0 && marketsList == null) {
+    if (marketsStore.initialPageLoaded !== true) {
       setMarketsList(preloadedMarkets);
     } else {
       const markets = marketsStore.order.map((id) => {
@@ -139,7 +139,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       });
       setMarketsList(markets);
     }
-  }, [marketsStore?.order, preloadedMarkets]);
+  }, [marketsStore.initialPageLoaded, marketsStore.order, preloadedMarkets]);
 
   useEffect(() => {
     if (initialLoad && scrollRestoration.scrollTop) {
@@ -148,7 +148,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   }, [initialLoad, scrollRestoration.scrollTop]);
 
   useEffect(() => {
-    if (pageLoaded !== true) {
+    if (pageLoaded !== true || marketsStore.initialPageLoaded) {
       return;
     }
     if (hasNext && hasScrolledToEnd) {
@@ -157,7 +157,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       });
       setQueryState(query);
     }
-  }, [hasScrolledToEnd, hasNext]);
+  }, [hasScrolledToEnd, marketsStore.initialPageLoaded, hasNext]);
 
   useEffect(() => {
     if (store.sdk == null) {
@@ -171,6 +171,9 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       setLoadingNextPage(false);
       setPageLoaded(true);
       setInitialLoad(false);
+      if (marketsStore.initialPageLoaded === false) {
+        marketsStore.setInitialPageLoaded();
+      }
     });
   }, [hashedQuery, store.sdk, store.wallets.activeAccount]);
 
