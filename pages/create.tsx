@@ -52,6 +52,7 @@ import MarketFormCard from "components/create/MarketFormCard";
 import { useModalStore } from "lib/stores/ModalStore";
 import MarketCostModal from "components/markets/MarketCostModal";
 import { checkMarketExists } from "lib/gql/markets";
+import QuillEditor from "components/ui/QuillEditor";
 
 interface CreateMarketFormData {
   slug: string;
@@ -268,7 +269,10 @@ const CreatePage: NextPage = observer(() => {
   };
 
   const changeDescription = (description: string) => {
+    console.log(description);
     setFormData((data) => ({ ...data, description }));
+
+    console.log(formData);
   };
 
   const changeAdvised = (advised: boolean) => {
@@ -622,7 +626,11 @@ const CreatePage: NextPage = observer(() => {
         </div>
       </MarketFormCard>
       <MarketFormCard header="6. Market Description">
-        <TextArea
+        <QuillEditor
+          onChange={changeDescription}
+          placeholder="Additional information you want to provide about the market, such as resolution source, special cases, or other details."
+        />
+        {/* <TextArea
           dataTest="marketDescriptionInput"
           placeholder="Additional information you want to provide about the market, such as resolution source, special cases, or other details."
           value={formData.description}
@@ -630,7 +638,7 @@ const CreatePage: NextPage = observer(() => {
           onChange={changeDescription}
           ref={descriptionInputRef}
           form={form}
-        />
+        /> */}
         <div className="flex items-center">
           <LabeledToggle
             leftLabel="Permissionless"
