@@ -5,7 +5,7 @@ import {
   Subscription,
 } from "rxjs";
 import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, runInAction, when } from "mobx";
 import MarketStore from "./MarketStore";
 import Store, { useStore } from "./Store";
 import { MarketsOrderBy, MarketsOrdering } from "@zeitgeistpm/sdk/dist/types";
@@ -63,6 +63,7 @@ class MarketsStore {
 
   async getMarket(marketId: number): Promise<MarketStore | undefined> {
     let market = Object.values(this.markets).find((m) => m.id === marketId);
+    await when(() => this.store.initialized === true);
 
     if (market == null) {
       const marketStore = new MarketStore(this.store, marketId);
