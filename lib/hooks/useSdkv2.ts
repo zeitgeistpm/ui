@@ -2,13 +2,7 @@ import { Context, create$, Sdk, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
 import Store, { useStore } from "lib/stores/Store";
 import { memoize } from "lodash";
 import { useEffect, useState } from "react";
-import {
-  shareReplay,
-  Subscription,
-  publishReplay,
-  connect,
-  ReplaySubject,
-} from "rxjs";
+import { Subscription } from "rxjs";
 import { usePrevious } from "./usePrevious";
 
 const init = memoize(
