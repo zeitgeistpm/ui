@@ -1,28 +1,24 @@
 import "react-datetime/css/react-datetime.css";
 import "styles/index.css";
 
-import { observer } from "mobx-react";
-import React, { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Fathom from "fathom-client";
+import { observer } from "mobx-react";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 import { hotjar } from "react-hotjar";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
 
-import ModalStore from "lib/stores/ModalStore";
-import { StoreProvider } from "components/context/StoreContext";
+import { AvatarContext } from "@zeitgeistpm/avatara-react";
 import { ModalStoreContext } from "components/context/ModalStoreContext";
+import { StoreProvider } from "components/context/StoreContext";
+import MobileMenu from "components/menu/MobileMenu";
 import ModalContainer from "components/modal/ModalContainer";
-import Store from "lib/stores/Store";
+import { AnimatePresence } from "framer-motion";
 import DefaultLayout from "layouts/DefaultLayout";
 import AppLaunchLayout from "layouts/launch/AppLaunchLayout";
-import { AnimatePresence } from "framer-motion";
-import MobileMenu from "components/menu/MobileMenu";
-import { AvatarContext } from "@zeitgeistpm/avatara-react";
+import ModalStore from "lib/stores/ModalStore";
+import Store from "lib/stores/Store";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];

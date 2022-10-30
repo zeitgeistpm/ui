@@ -1,15 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
 import { ZTG } from "@zeitgeistpm/sdk-next";
-import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
 import BigNumber from "bignumber.js";
 import Table, { TableColumn, TableData } from "components/ui/Table";
+import { usePools } from "lib/hooks/queries/usePools";
+import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
+import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { formatNumberLocalized } from "lib/util";
-import { sortBy } from "lodash";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
+import { AiOutlineRead } from "react-icons/ai";
 
 const columns: TableColumn[] = [
   {
@@ -36,39 +37,17 @@ const columns: TableColumn[] = [
 ];
 
 const LiquidityPools: NextPage = observer(() => {
-  const sdk = useSdkv2();
   const router = useRouter();
 
-  const { data: ztgInfo } = useQuery(["ztg-price-info"], () => fetchZTGInfo(), {
-    refetchInterval: 1000 * 10,
-  });
-
-  const { data: pools, isLoading: isLoadingPools } = useQuery(
-    ["pools"],
-    async () => {
-      const pools = await sdk.model.swaps.listPools({});
-      return sortBy(pools, "poolId", "desc").reverse();
-    },
-    {
-      enabled: Boolean(sdk),
-    },
-  );
-
-  const { data: assetIndex } = useQuery(
-    ["pools-asset-index"],
-    async () => {
-      return sdk.model.swaps.assetsIndex(pools);
-    },
-    {
-      enabled: Boolean(sdk) && Boolean(pools),
-    },
-  );
+  const { data: ztgInfo } = useZtgInfo();
+  const { data: pools, isLoading: isLoadingPools } = usePools();
+  const { data: saturatedIndex } = useSaturatedPoolsIndex(pools);
 
   const totalLiquidity = useMemo(() => {
-    return Object.values(assetIndex || {}).reduce((acc, { liquidity }) => {
+    return Object.values(saturatedIndex || {}).reduce((acc, { liquidity }) => {
       return acc.plus(liquidity);
     }, new BigNumber(0));
-  }, [assetIndex]);
+  }, [saturatedIndex]);
 
   const totalLiquidityValue = useMemo(() => {
     if (ztgInfo) {
@@ -78,15 +57,15 @@ const LiquidityPools: NextPage = observer(() => {
   }, [ztgInfo, totalLiquidity]);
 
   const activeMarketCount = useMemo(() => {
-    return Object.values(assetIndex || {}).reduce((count, { market }) => {
-      return count + (market.status.toLowerCase() === "active" ? 1 : 0);
-    }, 0);
-  }, [assetIndex]);
+    return Object.values(saturatedIndex || {}).filter(
+      ({ market: { status } }) => status === "Active",
+    ).length;
+  }, [saturatedIndex]);
 
   const tableData = useMemo<TableData[]>(() => {
     return (
       pools?.map((pool) => {
-        const index = assetIndex?.[pool.poolId];
+        const saturatedData = saturatedIndex?.[pool.poolId];
         return {
           poolId: pool.poolId,
           marketId: (
@@ -96,9 +75,9 @@ const LiquidityPools: NextPage = observer(() => {
                   className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0"
                   style={{
                     backgroundImage:
-                      index?.market.img == null
+                      saturatedData?.market.img == null
                         ? "url(/icons/default-market.png)"
-                        : `url(${index.market.img})`,
+                        : `url(${saturatedData.market.img})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
@@ -106,21 +85,24 @@ const LiquidityPools: NextPage = observer(() => {
               </div>
 
               <div className="text-ztg-12-120 font-bold uppercase text-sky-600">
-                {index?.market.slug.toUpperCase() || "..."}
+                {saturatedData?.market.slug?.toUpperCase() ||
+                  saturatedData?.market.marketId}
               </div>
             </div>
           ),
-          status: <div className="w-28">{index?.market.status ?? "..."}</div>,
+          status: (
+            <div className="w-28">{saturatedData?.market.status ?? "..."}</div>
+          ),
           composition: (
             <span>
-              {index?.assets
+              {saturatedData?.assets
                 .map((asset) => `${asset.percentage}% ${asset.category.ticker}`)
                 .join(" - ") || "..."}
             </span>
           ),
-          poolBalance: index ? (
+          poolBalance: saturatedData ? (
             {
-              value: index?.liquidity.div(ZTG).toNumber(),
+              value: saturatedData?.liquidity.div(ZTG).toNumber(),
               usdValue: ztgInfo?.price.toNumber() ?? 0,
             }
           ) : (
@@ -129,7 +111,7 @@ const LiquidityPools: NextPage = observer(() => {
         };
       }) ?? []
     );
-  }, [pools, assetIndex]);
+  }, [pools, saturatedIndex]);
 
   const handleRowClick = (data: TableData) => {
     router.push(`/liquidity/${data.poolId}`);
@@ -149,7 +131,8 @@ const LiquidityPools: NextPage = observer(() => {
             ≈ {formatNumberLocalized(totalLiquidityValue.toNumber())} USD
           </div>
         </div>
-        <div className="px-4 py-6 bg-sky-100 dark:bg-black rounded-ztg-10 w-1/3">
+
+        <div className="px-4 py-6 bg-sky-100 dark:bg-black rounded-ztg-10 w-1/3 mr-4">
           <h3 className="bg-gray-200 dark:bg-gray-800 rounded-3xl py-1 px-3 font-bold text-sm inline-block mb-3">
             Active Markets
           </h3>
@@ -158,6 +141,21 @@ const LiquidityPools: NextPage = observer(() => {
           </div>
           <div className="font-roboto px-1 text-sm text-gray-600">
             Currently open markets.
+          </div>
+        </div>
+
+        <div className="relative px-4 py-6 bg-ztg-blue rounded-ztg-10 w-1/3 cursor-pointer hover:scale-105 transition-all">
+          <div className="absolute top-2 right-4 text-gray-50">
+            <AiOutlineRead size={22} />
+          </div>
+          <h3 className="bg-gray-100 dark:bg-gray-800 rounded-3xl py-1 px-3 font-bold text-sm inline-block mb-3">
+            Learn & Earn
+          </h3>
+          <div className="font-bold text-gray-100 font-roboto px-1 text-xl mb-2">
+            Liquidity Pools
+          </div>
+          <div className="font-roboto px-1 text-sm text-gray-200">
+            Learn about earning ZTG by providing liquidity.
           </div>
         </div>
       </div>
@@ -170,8 +168,7 @@ const LiquidityPools: NextPage = observer(() => {
         data={tableData}
         columns={columns}
         onRowClick={handleRowClick}
-        // onLoadMore={handleLoadMoreFromChain}
-        // hideLoadMore={graphQlEnabled || poolsStore.allPoolsShown}
+        onLoadMore={() => console.log("load more")}
         loadingMore={isLoadingPools}
         loadingNumber={10}
       />

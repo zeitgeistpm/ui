@@ -13,10 +13,12 @@ import RightDrawer from "components/drawer/RightDrawer";
 import LeftDrawer from "components/drawer/LeftDrawer";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 
 const DefaultLayout: FC = observer(({ children }) => {
   const store = useStore();
   const router = useRouter();
+  const sdkv2 = useSdkv2();
 
   const { width, height, ref: mainRef } = useResizeDetector();
 
