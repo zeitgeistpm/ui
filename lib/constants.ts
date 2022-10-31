@@ -1,3 +1,4 @@
+import { MarketDeadlines } from "@zeitgeistpm/sdk/dist/types";
 import resolveTailwindConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../tailwind.config";
 import {
@@ -34,6 +35,12 @@ export const sortOptions = Object.entries(ESortType).map((v) => {
     label: v[1],
   };
 });
+
+export const DEFAULT_DEADLINES: MarketDeadlines = {
+  gracePeriod: "0",
+  oracleDuration: "28800",
+  disputeDuration: "28800",
+};
 
 export const endpoints: EndpointOption[] = [
   {

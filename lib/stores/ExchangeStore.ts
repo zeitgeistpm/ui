@@ -80,7 +80,7 @@ export default class ExchangeStore {
 
   get swapFee(): Decimal | undefined {
     if (this.outcome) {
-      return new Decimal(this.outcome.swapFee);
+      return new Decimal(this.outcome.swapFee || 0);
     }
   }
 
