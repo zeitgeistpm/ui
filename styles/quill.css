@@ -41,10 +41,11 @@
   background-color: unset;
   padding-left: 0;
 }
+
 .dark > * .ql-editor[contenteditable="false"] {
   background-color: unset;
 }
 
 .quill .ql-editor {
-  font-family: "kanit";
+  font-family: "lato";
 }
