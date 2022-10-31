@@ -56,7 +56,6 @@ module.exports = {
       kanit: ["Kanit"],
       lato: ["Lato"],
       space: ["Space Grotesk"],
-      roboto: ["Roboto Mono"],
     },
     extend: {
       borderWidth: {
