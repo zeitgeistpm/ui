@@ -105,22 +105,16 @@ const MyApp = observer(({ Component, pageProps }) => {
               <ModalContainer>{modalStore.modal}</ModalContainer>
             )}
             <Head>
-              <title>The Zeitgeist Prediction Markets App</title>
+              <title>Zeitgeist - Prediction Markets</title>
             </Head>
-            {process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === "false" ||
-            process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === undefined ||
-            launched ? (
-              <DefaultLayout>
-                <AnimatePresence>
-                  {store.showMobileMenu && <MobileMenu />}
-                </AnimatePresence>
-                <Layout>
-                  <Component {...pageProps} />
-                </Layout>
-              </DefaultLayout>
-            ) : (
-              <AppLaunchLayout launchDate={launchDate} />
-            )}
+            <DefaultLayout>
+              <AnimatePresence>
+                {store.showMobileMenu && <MobileMenu />}
+              </AnimatePresence>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </DefaultLayout>
           </ModalStoreContext.Provider>
         </AvatarContext.Provider>
       </StoreProvider>

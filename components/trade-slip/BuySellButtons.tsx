@@ -7,9 +7,10 @@ import MarketStore from "lib/stores/MarketStore";
 
 interface BuySellButtonsProps {
   item: Omit<TradeSlipItem, "type">;
+  disabled?: boolean;
 }
 
-const BuySellButtons = observer(({ item }: BuySellButtonsProps) => {
+const BuySellButtons = observer(({ item, disabled }: BuySellButtonsProps) => {
   const tradeSlipStore = useTradeSlipStore();
   const store = useStore();
   const marketsStore = useMarketsStore();
@@ -17,8 +18,11 @@ const BuySellButtons = observer(({ item }: BuySellButtonsProps) => {
   const { txInProgress } = tradeSlipStore;
 
   const buttonsDisabled = useMemo<boolean>(() => {
+    if (disabled === true) {
+      return disabled;
+    }
     return marketStore?.tradingEnabled === false || txInProgress;
-  }, [marketStore?.tradingEnabled, txInProgress]);
+  }, [marketStore?.tradingEnabled, txInProgress, disabled]);
 
   const tradeSlipItem = useMemo<TradeSlipItem | undefined>(() => {
     return tradeSlipStore.findItemWithAssetId(item.assetId);
@@ -41,8 +45,14 @@ const BuySellButtons = observer(({ item }: BuySellButtonsProps) => {
   };
 
   useEffect(() => {
-    item != null && setMarket();
-  }, [item]);
+    if (item == null) {
+      return;
+    }
+    if (item.assetId == null) {
+      return;
+    }
+    setMarket();
+  }, [item, item.assetId]);
 
   const addItem = async (
     item: Omit<TradeSlipItem, "type">,

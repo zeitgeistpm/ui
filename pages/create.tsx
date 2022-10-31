@@ -34,7 +34,7 @@ import { JSONObject } from "lib/types";
 import { toBase64 } from "lib/util";
 import { extrinsicCallback } from "lib/util/tx";
 import { calculateMarketCost } from "lib/util/market";
-import { NUM_BLOCKS_IN_DAY, ZTG } from "lib/constants";
+import { DEFAULT_DEADLINES, NUM_BLOCKS_IN_DAY, ZTG } from "lib/constants";
 import { Input, TextArea } from "components/ui/inputs";
 import OutcomesField from "components/create/OutcomesField";
 import MarketSlugField from "components/create/MarketSlugField";
@@ -51,6 +51,7 @@ import TransactionButton from "components/ui/TransactionButton";
 import MarketFormCard from "components/create/MarketFormCard";
 import { useModalStore } from "lib/stores/ModalStore";
 import MarketCostModal from "components/markets/MarketCostModal";
+import { checkMarketExists } from "lib/gql/markets";
 
 interface CreateMarketFormData {
   slug: string;
@@ -130,6 +131,29 @@ const CreatePage: NextPage = observer(() => {
   const descriptionInputRef = useRef();
 
   const [marketCost, setMarketCost] = useState<number>();
+  const [newMarketId, setNewMarketId] = useState<number>();
+
+  useEffect(() => {
+    if (store?.graphQLClient == null || newMarketId == null) return;
+    const timer = setInterval(async () => {
+      const marketIndexed = await checkMarketExists(
+        store.graphQLClient,
+        newMarketId,
+      );
+
+      if (marketIndexed === true) {
+        clearInterval(timer);
+        notificationStore.pushNotification(`Market Indexed, redirecting`, {
+          type: "Success",
+        });
+        router.push(`/markets/${newMarketId}`, undefined, {
+          shallow: true,
+          scroll: true,
+        });
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [store?.graphQLClient, newMarketId]);
 
   useEffect(() => {
     if (!form.isValid) {
@@ -329,6 +353,7 @@ const CreatePage: NextPage = observer(() => {
       signer,
       oracle,
       period,
+      deadlines: DEFAULT_DEADLINES,
       creationType,
       disputeMechanism: mdm,
       scoringRule,
@@ -377,6 +402,7 @@ const CreatePage: NextPage = observer(() => {
       signer,
       oracle,
       period,
+      deadlines: DEFAULT_DEADLINES,
       marketType,
       disputeMechanism: mdm,
       swapFee,
@@ -418,11 +444,12 @@ const CreatePage: NextPage = observer(() => {
       });
     };
 
-  const findMarketId = (data) => {
+  const findMarketId = (data): number => {
     const marketCreatedEvent = data.events.find(
       (event) => event.event.method === "MarketCreated",
     );
-    return marketCreatedEvent.event.data[0];
+
+    return marketCreatedEvent.event.data[0].toNumber();
   };
 
   const createMarket = async () => {
@@ -466,11 +493,11 @@ const CreatePage: NextPage = observer(() => {
         }
       });
 
-      await markets.updateMarketIds();
       await markets.getMarket(marketId);
-      router.push(`/markets/${marketId}`, undefined, {
-        shallow: true,
-        scroll: true,
+      setNewMarketId(marketId);
+      notificationStore.pushNotification(`Indexing market`, {
+        type: "Info",
+        autoRemove: true,
       });
     } catch (error) {
       notificationStore.pushNotification(`Creating market failed: ${error}`, {

@@ -144,30 +144,29 @@ const IndexPage: NextPage<{
 
   return (
     <div data-test="indexPage">
-      <GlitchImage
-        src="/carousel/banner.png"
-        className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
+      <a
+        href="https://blog.zeitgeist.pm/announcing-zeitgeist-launch-nfts/"
+        target="_blank"
+        rel="noreferrer"
       >
-        <Image
-          src="/carousel/banner.png"
-          alt="Zeitgeist app banner"
-          layout="responsive"
-          width={1036}
-          height={374}
-          quality={100}
-          priority
-        />
-      </GlitchImage>
+        <GlitchImage
+          src="/carousel/intro_zeitgeist_avatar.png"
+          className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
+        >
+          <Image
+            src="/carousel/intro_zeitgeist_avatar.png"
+            alt="Introducing Zeitgeist Avatar"
+            layout="responsive"
+            width={1036}
+            height={374}
+            quality={100}
+            priority
+          />
+        </GlitchImage>
+      </a>
       <TrendingMarkets markets={trendingMarkets} />
-      <PopularCategories tagCounts={tagCounts} />
-      {store.initialized ? (
-        <MarketsList />
-      ) : (
-        <Skeleton
-          height={300}
-          className="w-full !rounded-ztg-10 !transform-none !mt-[50px]"
-        />
-      )}
+      {/* <PopularCategories tagCounts={tagCounts} /> */}
+      <MarketsList />
     </div>
   );
 });

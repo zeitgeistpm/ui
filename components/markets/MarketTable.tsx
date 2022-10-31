@@ -1,18 +1,18 @@
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import { ChartData } from "components/ui/TimeSeriesChart";
 import AssetActionButtons from "components/assets/AssetActionButtons";
-import { DAY_SECONDS } from "lib/constants";
-import MarketStore from "lib/stores/MarketStore";
-import { useStore } from "lib/stores/Store";
-import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
 import { get24HrPriceChange } from "lib/util/market";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useUserStore } from "lib/stores/UserStore";
-import { calcTotalAssetPrice } from "lib/util/pool";
+import { isPreloadedMarket, MarketCardData } from "lib/gql/markets-list";
+import { DAY_SECONDS } from "lib/constants";
+import { useStore } from "lib/stores/Store";
+import { observer } from "mobx-react";
+import { useEffect, useState } from "react";
+
 
 const MarketTable = observer(
-  ({ marketStore }: { marketStore: MarketStore }) => {
+  ({ marketStore }: { marketStore: MarketCardData }) => {
     const store = useStore();
     const { graphQlEnabled } = useUserStore();
     const poolStore = usePoolsStore();
@@ -23,10 +23,16 @@ const MarketTable = observer(
         timestamp: string;
       }[][]
     >();
+    const isPreloaded = isPreloadedMarket(marketStore);
     const [pool, setPool] = useState<CPool>();
-    const market = marketStore.market;
+
+    const marketStorePool = !isPreloaded ? marketStore.pool : undefined;
 
     useEffect(() => {
+      if (isPreloaded) {
+        return;
+      }
+      const rawMarket = marketStore.market;
       (async () => {
         const dateOneWeekAgo = new Date(
           new Date().getTime() - DAY_SECONDS * 7 * 1000,
@@ -37,9 +43,9 @@ const MarketTable = observer(
         const pool = await poolStore.getPoolFromChain(Number(poolId));
         setPool(pool);
         if (graphQlEnabled === true) {
-          const pricePromises = market.outcomeAssets.map(async (asset) => {
+          const pricePromises = rawMarket.outcomeAssets.map(async (asset) => {
             return store.sdk.models.getAssetPriceHistory(
-              market.marketId,
+              rawMarket.marketId,
               asset.isCategoricalOutcome
                 ? asset.asCategoricalOutcome[1].toNumber()
                 : asset.asScalarOutcome[1].toString(),
@@ -73,12 +79,12 @@ const MarketTable = observer(
           setPrices(chartPrices);
         }
       })();
-    }, [marketStore, marketStore.pool]);
+    }, [marketStore, marketStorePool]);
 
-    const totalAssetPrice = calcTotalAssetPrice(pool);
+    let tableData: TableData[];
 
-    const tableData: TableData[] = marketStore.outcomeAssetIds.map(
-      (assetId, index) => {
+    if (!isPreloaded) {
+      tableData = marketStore.outcomeAssetIds.map((assetId, index) => {
         const metadata = marketStore.outcomesMetadata[index];
         const ticker = metadata["ticker"];
         const color = metadata["color"] || "#ffffff";
@@ -109,8 +115,26 @@ const MarketTable = observer(
             />
           ),
         };
-      },
-    );
+      });
+    } else {
+      tableData = marketStore.categories.map(category => {
+        return {
+          id: marketStore.id,
+          token: {
+            color: category.color,
+            label: category.ticker,
+          },
+          outcome: category.name,
+          buttons: (
+            <AssetActionButtons
+              marketId={marketStore.id}
+              assetColor={category.color}
+              assetTicker={category.ticker}
+            />
+          )
+        }
+      });
+    }
 
     const columns: TableColumn[] = [
       {

@@ -19,6 +19,7 @@ interface TimeSeriesChartProps {
   data: ChartData[];
   series: ChartSeries[];
   yDomain?: AxisDomain;
+  yUnits: string;
 }
 
 export interface ChartSeries {
@@ -33,7 +34,6 @@ export interface ChartData {
 }
 
 const ChartToolTip = observer((props) => {
-  const { config } = useStore();
   const series = props.series.find(
     (s) => s.accessor === props.payload[0]?.name,
   );
@@ -64,7 +64,7 @@ const ChartToolTip = observer((props) => {
                   <span style={{ color: series.color }}>{series.label}</span>
                   <span className="ml-auto">
                     {new Decimal(props.payload[0]?.value).toFixed(3) +
-                      ` ${config.tokenSymbol}`}
+                      ` ${props.yUnits}`}
                   </span>
                 </div>
               )}
@@ -79,13 +79,12 @@ const ChartToolTip = observer((props) => {
 });
 
 const TimeSeriesChart = observer(
-  ({ data, series, yDomain }: TimeSeriesChartProps) => {
+  ({ data, series, yDomain, yUnits }: TimeSeriesChartProps) => {
     const [refAreaLeft, setRefAreaLeft] = useState("");
     const [refAreaRight, setRefAreaRight] = useState("");
     const [leftX, setLeftX] = useState("dataMin");
     const [rightX, setRightX] = useState("dataMax");
     const [mouseInside, setMouseInside] = useState(false);
-    const { config } = useStore();
 
     const lessThanTwoDays =
       data?.length > 0
@@ -196,15 +195,13 @@ const TimeSeriesChart = observer(
                 }
                 stroke="#748296"
                 strokeWidth={0.7}
-                tickFormatter={(val) =>
-                  `${+val.toFixed(2)} ${config.tokenSymbol}`
-                }
+                tickFormatter={(val) => `${+val.toFixed(2)} ${yUnits}`}
               />
 
               <Tooltip
                 animationEasing={"linear"}
                 animationDuration={0}
-                content={<ChartToolTip series={series} />}
+                content={<ChartToolTip series={series} yUnits={yUnits} />}
               />
               {series.map((s, index) => (
                 <Line

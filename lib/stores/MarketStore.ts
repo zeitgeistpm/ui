@@ -536,6 +536,7 @@ class MarketStore {
   }
 
   async getPrizePool(): Promise<string> {
+    if (this.assets == null) return "0";
     const prizePool = await this.store.sdk.api.query.tokens.totalIssuance(
       this.assets[0] as any,
     );
