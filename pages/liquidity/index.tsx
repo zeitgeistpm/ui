@@ -124,10 +124,10 @@ const LiquidityPools: NextPage = observer(() => {
           <h3 className="bg-gray-200 dark:bg-gray-800 rounded-3xl py-1 px-3 font-bold text-sm inline-block mb-3">
             Total Value
           </h3>
-          <div className="font-bold font-roboto px-1 text-xl mb-2">
+          <div className="font-bold font-mono px-1 text-xl mb-2">
             {formatNumberLocalized(totalLiquidity.div(ZTG).toNumber())} ZTG
           </div>
-          <div className="font-roboto px-1 text-sm text-gray-600">
+          <div className="font-mono px-1 text-sm text-gray-600">
             ≈ {formatNumberLocalized(totalLiquidityValue.toNumber())} USD
           </div>
         </div>
@@ -136,10 +136,10 @@ const LiquidityPools: NextPage = observer(() => {
           <h3 className="bg-gray-200 dark:bg-gray-800 rounded-3xl py-1 px-3 font-bold text-sm inline-block mb-3">
             Active Markets
           </h3>
-          <div className="font-bold font-roboto px-1 text-xl mb-2">
+          <div className="font-bold font-mono px-1 text-xl mb-2">
             {activeMarketCount}
           </div>
-          <div className="font-roboto px-1 text-sm text-gray-600">
+          <div className="font-mono px-1 text-sm text-gray-600">
             Currently open markets.
           </div>
         </div>
@@ -151,10 +151,10 @@ const LiquidityPools: NextPage = observer(() => {
           <h3 className="bg-gray-100 dark:bg-gray-800 rounded-3xl py-1 px-3 font-bold text-sm inline-block mb-3">
             Learn & Earn
           </h3>
-          <div className="font-bold text-gray-100 font-roboto px-1 text-xl mb-2">
+          <div className="font-bold text-gray-100 font-mono px-1 text-xl mb-2">
             Liquidity Pools
           </div>
-          <div className="font-roboto px-1 text-sm text-gray-200">
+          <div className="font-mono px-1 text-sm text-gray-200">
             Learn about earning ZTG by providing liquidity.
           </div>
         </div>

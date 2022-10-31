@@ -5,6 +5,6 @@ export const key = () => ["ztg-price-info"];
 
 export const useZtgInfo = () => {
   return useQuery(key(), () => fetchZTGInfo(), {
-    refetchInterval: 1000 * 10,
+    refetchInterval: 1000 * 60,
   });
 };

@@ -5,22 +5,6 @@ import { useEffect, useState } from "react";
 import { Subscription } from "rxjs";
 import { usePrevious } from "./usePrevious";
 
-const init = memoize(
-  (store: Store) => {
-    return create$({
-      provider: store.userStore.endpoint,
-      indexer: store.userStore.gqlEndpoint,
-      storage: ZeitgeistIpfs(),
-    });
-  },
-  (store) => identify(store),
-);
-
-const identify = (store: Store): string | null =>
-  store.userStore.endpoint || store.userStore.gqlEndpoint
-    ? `${store.userStore.endpoint}:${store.userStore.gqlEndpoint}`
-    : null;
-
 export const useSdkv2 = (): [Sdk<Context> | null, string] => {
   const store = useStore();
   const [sub, setSub] = useState<Subscription>();
@@ -46,3 +30,19 @@ export const useSdkv2 = (): [Sdk<Context> | null, string] => {
 
   return [sdk, id];
 };
+
+const init = memoize(
+  (store: Store) => {
+    return create$({
+      provider: store.userStore.endpoint,
+      indexer: store.userStore.gqlEndpoint,
+      storage: ZeitgeistIpfs(),
+    });
+  },
+  (store) => identify(store),
+);
+
+const identify = (store: Store): string | null =>
+  store.userStore.endpoint || store.userStore.gqlEndpoint
+    ? `${store.userStore.endpoint}:${store.userStore.gqlEndpoint}`
+    : null;
