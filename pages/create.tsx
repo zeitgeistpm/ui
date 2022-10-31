@@ -273,10 +273,7 @@ const CreatePage: NextPage = observer(() => {
   };
 
   const changeDescription = (description: string) => {
-    console.log(description);
     setFormData((data) => ({ ...data, description }));
-
-    console.log(formData);
   };
 
   const changeAdvised = (advised: boolean) => {
@@ -637,15 +634,6 @@ const CreatePage: NextPage = observer(() => {
             className="h-[200px]"
           />
         </div>
-        {/* <TextArea
-          dataTest="marketDescriptionInput"
-          placeholder="Additional information you want to provide about the market, such as resolution source, special cases, or other details."
-          value={formData.description}
-          name="description"
-          onChange={changeDescription}
-          ref={descriptionInputRef}
-          form={form}
-        /> */}
         <div className="flex items-center">
           <LabeledToggle
             leftLabel="Permissionless"
