@@ -57,10 +57,10 @@ interface Config {
   };
   balances: {
     existentialDeposit: number;
-  }
+  };
 }
 
-interface ZTGInfo {
+export interface ZTGInfo {
   price: Decimal;
   change: Decimal;
 }
@@ -412,15 +412,15 @@ export default class Store {
         : (this.sdk.api as any).createType("Asset", asset);
     }
     if (assetObj.isZtg) {
-      const { data } = (await this.sdk.api.query.system.account(
+      const { data } = await this.sdk.api.query.system.account(
         this.wallets.activeAccount.address,
-      )) as AccountInfo;
+      );
       return new Decimal(data.free.toString()).div(ZTG);
     }
 
     const data = await this.sdk.api.query.tokens.accounts(
       this.wallets.activeAccount.address,
-      asset,
+      asset as any,
     );
 
     //@ts-ignore
@@ -450,7 +450,7 @@ export default class Store {
 
     const b = (await this.sdk.api.query.tokens.accounts(
       account,
-      assetObj,
+      assetObj as any,
     )) as any;
 
     return new Decimal(b.free.toString()).div(ZTG);

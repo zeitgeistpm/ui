@@ -51,7 +51,7 @@ const AssetPage: NextPage = observer(() => {
   const getAssetAmountForAddress = async (address: string) => {
     const assetData = await store.sdk.api.query.tokens.accounts(
       address,
-      assetId,
+      assetId as any,
     );
     const assetDataJson = assetData.toJSON();
     //@ts-ignore
@@ -121,7 +121,7 @@ const AssetPage: NextPage = observer(() => {
           `${percentageChange > 0 ? "+" : ""}${percentageChange}%`,
         );
         const totalSupply = await store.sdk.api.query.tokens.totalIssuance(
-          assetId,
+          assetId as any,
         );
 
         setTotalValue(Math.round(Number(totalSupply) / 10000000000));

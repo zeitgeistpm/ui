@@ -60,12 +60,12 @@ const LiquidityPoolsBox = observer(() => {
     }
 
     const totalPoolShares = await store.sdk.api.query.tokens.totalIssuance({
-      poolShare: poolId,
+      PoolShare: poolId,
     });
 
     const usersPoolShares = await store.sdk.api.query.tokens.accounts(
       wallets.activeAccount.address,
-      { poolShare: poolId },
+      { PoolShare: poolId },
     );
 
     setUsersPoolShares(
