@@ -1,15 +1,15 @@
 .dark > * .ql-toolbar .ql-stroke {
   fill: none;
-  stroke: #fff !important;
+  stroke: #fff;
 }
 
 .dark > * .ql-toolbar .ql-fill {
-  fill: #fff !important;
+  fill: #fff;
   stroke: none;
 }
 
 .dark > * .ql-toolbar .ql-picker {
-  color: #fff !important;
+  color: #fff;
 }
 
 .ql-editor.ql-blank::before {
@@ -35,4 +35,16 @@
 
 .dark > * .ql-editor {
   background-color: black;
+}
+
+.ql-editor[contenteditable="false"] {
+  background-color: unset;
+  padding-left: 0;
+}
+.dark > * .ql-editor[contenteditable="false"] {
+  background-color: unset;
+}
+
+.quill .ql-editor {
+  font-family: "kanit";
 }
