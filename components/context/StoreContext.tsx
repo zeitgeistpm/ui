@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
 import { observer } from "mobx-react";
-import { isEmpty } from "lodash";
 import { from } from "rxjs";
 import hashObject from "object-hash";
 
@@ -27,17 +26,19 @@ export const StoreProvider: FC<{ store: Store }> = observer(
     }, []);
 
     useEffect(() => {
-      if (!isEmpty(marketsStore?.markets) || graphQLClient == null) {
+      if (marketsStore.initialPageLoaded === true || graphQLClient == null) {
         return;
       }
 
       const preloader = new MarketPreloader(graphQLClient);
 
-      const sub = from(preloader.fetchMarkets(query, address)).subscribe((res) => {
-        store.setPreloadedMarkets(res);
-      });
+      const sub = from(preloader.fetchMarkets(query, address)).subscribe(
+        (res) => {
+          store.setPreloadedMarkets(res);
+        },
+      );
       return () => sub.unsubscribe();
-    }, [hashedQuery, marketsStore?.markets, graphQLClient]);
+    }, [hashedQuery, marketsStore.initialPageLoaded, graphQLClient]);
 
     return (
       <StoreContext.Provider value={store}>{children}</StoreContext.Provider>

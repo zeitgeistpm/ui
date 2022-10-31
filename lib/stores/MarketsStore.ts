@@ -18,6 +18,12 @@ class MarketsStore {
   count: number = 0;
   pools: Swap[] = [];
 
+  initialPageLoaded = false;
+
+  setInitialPageLoaded() {
+    this.initialPageLoaded = true;
+  }
+
   constructor(public store: Store) {
     makeAutoObservable(this, {}, { deep: false });
   }

@@ -11,8 +11,7 @@ import MarketStore from "lib/stores/MarketStore";
 import { MarketListQuery, MarketStatus } from "lib/types";
 import { activeStatusesFromFilters } from "lib/util/market";
 
-
-export const FRAGMENT_MARKET_DETAILS = gql`
+export const marketDetailsQuery = gql`
   fragment MarketDetails on Market {
     marketId
     description
@@ -51,6 +50,8 @@ export type MarketPreload = {
   preloaded: true;
   poolId?: number | null;
   categories: { name: string; ticker: string; color: string }[];
+  poolExists: boolean;
+  bounds?: [number, number];
 };
 
 export class MarketPreloader {
@@ -232,7 +233,7 @@ export class MarketPreloader {
           ...MarketDetails
         }
       }
-      ${FRAGMENT_MARKET_DETAILS}
+      ${marketDetailsQuery}
     `;
 
     return {
@@ -268,7 +269,10 @@ export class MarketPreloader {
     return assets;
   }
 
-  async fetchMarkets(query: MarketListQuery, address?: string): Promise<MarketPreload[]> {
+  async fetchMarkets(
+    query: MarketListQuery,
+    address?: string,
+  ): Promise<MarketPreload[]> {
     const { pagination, filter, sorting, myMarketsOnly, tag, searchText } =
       query;
 
@@ -328,7 +332,20 @@ export class MarketPreloader {
     let markets: MarketPreload[] = [];
 
     for (const data of marketsData) {
-      markets = [...markets, { ...data, id: data.marketId, preloaded: true }];
+      const bounds: [number, number] | undefined = data.marketType["scalar"]
+        ? data.marketType["scalar"].split(",").map((b) => Number(b))
+        : undefined;
+      markets = [
+        ...markets,
+        {
+          ...data,
+          id: data.marketId,
+          preloaded: true,
+          poolExists: data.poolId != null,
+          type: data.marketType["scalar"] == null ? "categorical" : "scalar",
+          bounds,
+        },
+      ];
     }
 
     return markets;
