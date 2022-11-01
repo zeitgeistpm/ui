@@ -4,7 +4,6 @@ import Decimal from "decimal.js";
 import { usePools } from "lib/hooks/queries/usePools";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { formatNumberLocalized } from "lib/util";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
@@ -144,7 +143,11 @@ const LiquidityPools: NextPage = observer(() => {
           </div>
         </div>
 
-        <div className="relative px-4 py-6 bg-ztg-blue rounded-ztg-10 w-1/3 cursor-pointer hover:scale-105 transition-all">
+        <a
+          href={"https://docs.zeitgeist.pm/docs/learn/liquidity"}
+          target="_blank"
+          className="relative px-4 py-6 bg-ztg-blue rounded-ztg-10 w-1/3 cursor-pointer hover:scale-105 transition-all"
+        >
           <div className="absolute top-2 right-4 text-gray-50">
             <AiOutlineRead size={22} />
           </div>
@@ -157,7 +160,7 @@ const LiquidityPools: NextPage = observer(() => {
           <div className="font-mono px-1 text-sm text-gray-200">
             Learn about earning ZTG by providing liquidity.
           </div>
-        </div>
+        </a>
       </div>
 
       <h2 className="mb-ztg-20 font-space text-[24px] font-semibold">
