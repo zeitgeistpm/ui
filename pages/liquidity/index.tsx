@@ -1,6 +1,6 @@
 import { ZTG } from "@zeitgeistpm/sdk-next";
-import BigNumber from "bignumber.js";
 import Table, { TableColumn, TableData } from "components/ui/Table";
+import Decimal from "decimal.js";
 import { usePools } from "lib/hooks/queries/usePools";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
@@ -46,14 +46,14 @@ const LiquidityPools: NextPage = observer(() => {
   const totalLiquidity = useMemo(() => {
     return Object.values(saturatedIndex || {}).reduce((acc, { liquidity }) => {
       return acc.plus(liquidity);
-    }, new BigNumber(0));
+    }, new Decimal(0));
   }, [saturatedIndex]);
 
   const totalLiquidityValue = useMemo(() => {
     if (ztgInfo) {
-      return totalLiquidity.div(ZTG).multipliedBy(ztgInfo.price);
+      return totalLiquidity.div(ZTG).mul(ztgInfo.price);
     }
-    return new BigNumber(0);
+    return new Decimal(0);
   }, [ztgInfo, totalLiquidity]);
 
   const activeMarketCount = useMemo(() => {
