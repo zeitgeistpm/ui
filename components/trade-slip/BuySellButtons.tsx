@@ -45,14 +45,14 @@ const BuySellButtons = observer(({ item, disabled }: BuySellButtonsProps) => {
   };
 
   useEffect(() => {
-    if (item == null) {
+    if (item == null || store.sdk == null) {
       return;
     }
     if (item.assetId == null) {
       return;
     }
     setMarket();
-  }, [item, item.assetId]);
+  }, [item, item.assetId, store.sdk]);
 
   const addItem = async (
     item: Omit<TradeSlipItem, "type">,
