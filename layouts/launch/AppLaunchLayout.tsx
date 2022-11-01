@@ -358,10 +358,9 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                 </p>
                 <p className="mb-8">
                   We are rewarding Zeitgeist early supporters who hold a
-                  Zeitgeist Tarot Themed NFT, as well as inviting non-Tarot NFT
-                  holders to purchase pre-launch NFTs with $ZTG. We also have a
-                  special surprise for the select few legends who hold a number
-                  of the different types of Zeitgeist Tarot cards.
+                  Zeitgeist Tarot Themed NFT with pre-launch NFTs. We also have
+                  a special surprise for the select few legends who hold a
+                  number of the different types of Zeitgeist Tarot cards.
                 </p>
                 <p className="mb-8">
                   To find out more about these specialized app launch NFTs, read
@@ -567,8 +566,8 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
                 </p>
                 <p className="mb-8">
                   If you are excited to be part of this campaign but don’t own a
-                  Tarot NFT, you can purchase a specialized NFT badge for
-                  200ztg.
+                  Tarot NFT, you can burn 200 ZTG for your own Zeitgeist Avatar
+                  after launch.
                 </p>
               </div>
             </section>

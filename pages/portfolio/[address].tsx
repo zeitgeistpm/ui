@@ -278,6 +278,7 @@ const Portfolio: NextPage = observer(() => {
             <TimeSeriesChart
               data={chartData}
               series={[{ accessor: "v", label: "Price" }]}
+              yUnits={store.config.tokenSymbol}
             />
           </div>
           <RedeemAllButton

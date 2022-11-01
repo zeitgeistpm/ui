@@ -12,7 +12,11 @@ import {
   runInAction,
   when,
 } from "mobx";
-import { DEFAULT_SLIPPAGE_PERCENTAGE, ZTG } from "lib/constants";
+import {
+  DEFAULT_SLIPPAGE_PERCENTAGE,
+  ZTG,
+  MAX_IN_OUT_RATIO,
+} from "lib/constants";
 import { defaultOptions, defaultPlugins } from "lib/form";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import { compareJSON } from "lib/util";
@@ -127,16 +131,20 @@ export class TradeSlipBoxState {
     if (this.disabled || !this.init || this.trade?.currentPrice == null) {
       return;
     }
+    const poolBalance = this.assetPoolBalance;
+    const tradeablePoolBalance = poolBalance?.mul(MAX_IN_OUT_RATIO);
     if (this.type === "buy") {
-      const poolBalance = this.assetPoolBalance;
-      const balance = this.trade.ztgAccountBalance;
-      const maxAssets = balance.div(this.trade.currentPrice);
-      if (poolBalance?.lt(maxAssets)) {
-        return poolBalance.sub(0.1).toNumber();
+      const ztgBalance = this.trade.ztgAccountBalance;
+      const maxTokens = ztgBalance.div(this.trade.currentPrice);
+      if (tradeablePoolBalance?.lte(maxTokens)) {
+        return tradeablePoolBalance.toNumber();
       } else {
-        return maxAssets.toNumber();
+        return maxTokens.toNumber();
       }
     } else {
+      if (tradeablePoolBalance?.lte(this.assetBalance)) {
+        return tradeablePoolBalance.toNumber();
+      }
       return this.assetBalance?.toNumber();
     }
   }
@@ -153,7 +161,7 @@ export class TradeSlipBoxState {
   }
 
   get canLoadMarket() {
-    return this.store.markets?.marketIds.length > 0;
+    return this.store.sdk != null;
   }
 
   get fieldName() {
@@ -529,7 +537,6 @@ export default class TradeSlipStore {
     this.txInProgress = inProgress;
   }
 
-  itemsUpdating = false;
   slippagePercentage: Decimal = new Decimal(DEFAULT_SLIPPAGE_PERCENTAGE);
 
   setSlippagePercentage(val: string) {
@@ -570,12 +577,14 @@ export default class TradeSlipStore {
         acc: this.store.wallets.activeAccount,
       }),
       async (current, prev) => {
+        // all transactions need to be regenerated
+        // clear them all to prevent accidental submission
+        this.clearTransactions();
         const items = current?.items;
         const acc = current?.acc;
         if (acc == null) {
           return;
         }
-        this.setItemsUpdating(true);
         const { records } = this.boxStates;
         await when(() => records.every((r) => r.init === true));
         const sortedTrades = await this.calculateSortedTrades(items);
@@ -587,7 +596,6 @@ export default class TradeSlipStore {
             field.validate({ showErrors: true });
           });
         }
-        this.setItemsUpdating(false);
       },
       { fireImmediately: true },
     );
@@ -596,9 +604,6 @@ export default class TradeSlipStore {
       () => this.txs,
       (txs: any[]) => {
         if (txs.length === 0 || txs.some((t) => t == null)) {
-          runInAction(() => {
-            this.batchTx = null;
-          });
           return;
         }
         runInAction(() => {
@@ -660,10 +665,6 @@ export default class TradeSlipStore {
     return false;
   }
 
-  setItemsUpdating(updating: boolean) {
-    this.itemsUpdating = updating;
-  }
-
   private boxStates = new BoxStates(this.store);
 
   getBoxState(idx: number) {
@@ -691,7 +692,7 @@ export default class TradeSlipStore {
 
     if (item.type === "buy") {
       const maxAssetIn = item.ztgAccountBalance.mul(ZTG);
-      if (maxAssetIn.lte(0)) {
+      if (maxAssetIn.lte(0) || item.amount.gte(item.assetPoolBalance)) {
         return;
       }
 
@@ -738,6 +739,7 @@ export default class TradeSlipStore {
   }
 
   clearTransactions() {
+    this.batchTx = null;
     this.txs = [];
   }
 
@@ -750,9 +752,7 @@ export default class TradeSlipStore {
   }
 
   initialize(items: TradeSlipItem[]) {
-    const filteredItems = items.filter((i) => {
-      return this.store.markets.marketIds.includes(i.marketId);
-    });
+    const filteredItems = [...items];
     this.tradeSlipItems = filteredItems;
     const boxStatesRecords: TradeSlipBoxState[] = [];
     for (const item of this.tradeSlipItems) {

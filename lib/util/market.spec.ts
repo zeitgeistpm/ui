@@ -1,4 +1,4 @@
-import { calculateMarketCost } from "./market";
+import { calculateMarketCost, get24HrPriceChange, PricePoint } from "./market";
 
 describe("Market utils", () => {
   describe("calculateMarketCost", () => {
@@ -38,6 +38,61 @@ describe("Market utils", () => {
       );
 
       expect(marketCost).toEqual(241);
+    });
+  });
+
+  describe("get24HrPriceChange", () => {
+    test("should work with date ascending sorted data", () => {
+      const prices: PricePoint[] = [
+        {
+          newPrice: 1000,
+          timestamp: "2022-09-28T14:26:36.291000Z",
+        },
+        {
+          newPrice: 2000,
+          timestamp: "2022-09-29T14:26:36.291000Z",
+        },
+        {
+          newPrice: 3000,
+          timestamp: "2022-09-30T14:26:36.291000Z",
+        },
+      ];
+
+      const change = get24HrPriceChange(prices);
+
+      expect(change).toEqual(50);
+    });
+    test("should work with date descending sorted data", () => {
+      const prices: PricePoint[] = [
+        {
+          newPrice: 3000,
+          timestamp: "2022-09-30T14:26:36.291000Z",
+        },
+        {
+          newPrice: 2000,
+          timestamp: "2022-09-29T14:26:36.291000Z",
+        },
+        {
+          newPrice: 1000,
+          timestamp: "2022-09-28T14:26:36.291000Z",
+        },
+      ];
+
+      const change = get24HrPriceChange(prices);
+
+      expect(change).toEqual(50);
+    });
+    test("should return 0 when there is a single data point", () => {
+      const prices: PricePoint[] = [
+        {
+          newPrice: 3000,
+          timestamp: "2022-09-30T14:26:36.291000Z",
+        },
+      ];
+
+      const change = get24HrPriceChange(prices);
+
+      expect(change).toEqual(0);
     });
   });
 });

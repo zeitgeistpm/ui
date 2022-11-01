@@ -1,88 +1,96 @@
+import { observer } from "mobx-react";
+import { useEffect, useState } from "react";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import { ChartData } from "components/ui/TimeSeriesChart";
 import AssetActionButtons from "components/assets/AssetActionButtons";
-import { DAY_SECONDS } from "lib/constants";
-import MarketStore from "lib/stores/MarketStore";
-import { useStore } from "lib/stores/Store";
-import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
 import { get24HrPriceChange } from "lib/util/market";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
-import { useUserStore } from "lib/stores/UserStore";
-import { calcTotalAssetPrice } from "lib/util/pool";
+import { isPreloadedMarket, MarketCardData } from "lib/gql/markets-list";
+import { AssetPrice } from "lib/gql/prices";
+import { PoolAsset } from "lib/gql/pool";
+import { DAY_SECONDS } from "lib/constants";
+import { from } from "rxjs";
 
 const MarketTable = observer(
-  ({ marketStore }: { marketStore: MarketStore }) => {
-    const store = useStore();
-    const { graphQlEnabled } = useUserStore();
+  ({
+    marketStore,
+    priceHistories,
+    assets,
+  }: {
+    marketStore: MarketCardData;
+    priceHistories?: { [key: string]: AssetPrice[] };
+    assets?: { price: number; assetId: string }[];
+  }) => {
     const poolStore = usePoolsStore();
     const [prices, setPrices] = useState<ChartData[][]>();
-    const [priceHistories, setPriceHistories] = useState<
-      {
-        newPrice: number;
-        timestamp: string;
-      }[][]
-    >();
+    const isPreloaded = isPreloadedMarket(marketStore);
     const [pool, setPool] = useState<CPool>();
-    const market = marketStore.market;
+
+    const marketStorePool = !isPreloaded ? marketStore.pool : undefined;
 
     useEffect(() => {
-      (async () => {
-        const dateOneWeekAgo = new Date(
-          new Date().getTime() - DAY_SECONDS * 7 * 1000,
-        ).toISOString();
-
-        const poolId = marketStore.pool.poolId;
-
-        const pool = await poolStore.getPoolFromChain(Number(poolId));
-        setPool(pool);
-        if (graphQlEnabled === true) {
-          const pricePromises = market.outcomeAssets.map(async (asset) => {
-            return store.sdk.models.getAssetPriceHistory(
-              market.marketId,
-              asset.isCategoricalOutcome
-                ? asset.asCategoricalOutcome[1].toNumber()
-                : asset.asScalarOutcome[1].toString(),
-              dateOneWeekAgo,
-            );
-          });
-
-          const priceHistories = await Promise.all(pricePromises);
-          setPriceHistories(priceHistories);
-
-          const chartPrices: ChartData[][] = priceHistories.map((p, index) => {
-            if (p.length > 1) {
-              return p.map((history) => ({
+      if (priceHistories == null || assets == null) {
+        return;
+      }
+      let chartPrices: ChartData[][] = [];
+      let index = 0;
+      for (const assetId in priceHistories) {
+        if (Object.prototype.hasOwnProperty.call(priceHistories, assetId)) {
+          const prices = priceHistories[assetId];
+          if (prices.length > 1) {
+            chartPrices = [
+              ...chartPrices,
+              prices.map((history) => ({
                 v: history.newPrice,
                 t: new Date(history.timestamp).getTime(),
-              }));
-            } else {
-              // return straight line if there is no price history in the current week
-              return [
+              })),
+            ];
+          } else {
+            const dateOneWeekAgo = new Date(
+              new Date().getTime() - DAY_SECONDS * 7 * 1000,
+            ).toISOString();
+            // return straight line if there is no price history in the current week
+            chartPrices = [
+              ...chartPrices,
+              [
                 {
-                  v: pool.assets[index].amount,
+                  v: assets[index].price,
                   t: new Date(dateOneWeekAgo).getTime(),
                 },
                 {
-                  v: pool.assets[index].amount,
+                  v: assets[index].price,
                   t: new Date().getTime(),
                 },
-              ];
-            }
-          });
-          setPrices(chartPrices);
+              ],
+            ];
+          }
+          index += 1;
         }
-      })();
-    }, [marketStore, marketStore.pool]);
+      }
+      setPrices(chartPrices);
+    }, [priceHistories, assets, marketStorePool]);
 
-    const totalAssetPrice = calcTotalAssetPrice(pool);
+    useEffect(() => {
+      if (isPreloaded) {
+        return;
+      }
+      const poolId = marketStore.pool.poolId;
 
-    const tableData: TableData[] = marketStore.outcomeAssetIds.map(
-      (assetId, index) => {
+      const sub = from(poolStore.getPoolFromChain(Number(poolId))).subscribe(
+        (p) => setPool(p),
+      );
+      return () => sub.unsubscribe();
+    }, [marketStore, marketStorePool]);
+
+    let tableData: TableData[];
+
+    if (!isPreloaded) {
+      tableData = marketStore.outcomeAssetIds.map((assetId, index) => {
         const metadata = marketStore.outcomesMetadata[index];
         const ticker = metadata["ticker"];
         const color = metadata["color"] || "#ffffff";
         const name = metadata["name"];
+
         return {
           id: index,
           token: {
@@ -91,15 +99,11 @@ const MarketTable = observer(
           },
           outcome: name,
           history: prices?.[index],
-          marketPrice: {
-            value: pool?.assets[index].price,
+          marketPrice: pool && {
+            value: pool.assets[index].price,
             usdValue: 0,
           },
-          pre: pool
-            ? Math.round(
-                ((pool?.assets[index].price ?? 0) / totalAssetPrice) * 100,
-              )
-            : "",
+          pre: pool && Math.round(pool.assets[index].price * 100),
           change24hr: priceHistories?.[index]
             ? get24HrPriceChange(priceHistories[index])
             : 0,
@@ -112,8 +116,35 @@ const MarketTable = observer(
             />
           ),
         };
-      },
-    );
+      });
+    } else {
+      tableData = marketStore.categories.map((category, index) => {
+        const asset = assets?.[index];
+        const histories = priceHistories?.[asset.assetId];
+        return {
+          id: marketStore.id,
+          token: {
+            color: category.color,
+            label: category.ticker,
+          },
+          history: prices?.[index],
+          pre: asset && Math.round(asset.price * 100),
+          marketPrice: assets && {
+            value: assets[index].price,
+            usdValue: 0,
+          },
+          change24hr: histories ? get24HrPriceChange(histories) : undefined,
+          outcome: category.name,
+          buttons: (
+            <AssetActionButtons
+              marketId={marketStore.id}
+              assetColor={category.color}
+              assetTicker={category.ticker}
+            />
+          ),
+        };
+      });
+    }
 
     const columns: TableColumn[] = [
       {
@@ -122,7 +153,7 @@ const MarketTable = observer(
         type: "token",
       },
       {
-        header: "pre",
+        header: "Implied %",
         accessor: "pre",
         type: "percentage",
       },
@@ -140,6 +171,7 @@ const MarketTable = observer(
         header: "Graph",
         accessor: "history",
         type: "graph",
+        width: "140px",
       },
       {
         header: "",

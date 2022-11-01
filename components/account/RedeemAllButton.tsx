@@ -30,12 +30,14 @@ const RedeemAllButton = observer(
       if (!marketStores) return;
       (async () => {
         const winningBalances: MarketBalance[] = await Promise.all(
-          marketStores.map(async (marketStore) => {
-            return {
-              balance: await marketStore.calcWinnings(),
-              marketStore: marketStore,
-            };
-          }),
+          marketStores
+            .filter((m) => m.status === "Resolved")
+            .map(async (marketStore) => {
+              return {
+                balance: await marketStore.calcWinnings(),
+                marketStore: marketStore,
+              };
+            }),
         );
 
         setBalances(winningBalances);

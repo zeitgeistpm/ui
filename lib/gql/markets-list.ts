@@ -5,6 +5,7 @@ import {
   MarketsOrdering,
   MarketsPaginationOptions,
   MarketStatusText,
+  ScalarRangeType,
 } from "@zeitgeistpm/sdk/dist/types";
 import { gql, GraphQLClient } from "graphql-request";
 import MarketStore from "lib/stores/MarketStore";
@@ -48,7 +49,8 @@ export type MarketPreload = {
   end: BigInt;
   question: string;
   preloaded: true;
-  poolId?: number | null;
+  poolId: number | null;
+  scalarType: ScalarRangeType | null;
   categories: { name: string; ticker: string; color: string }[];
   poolExists: boolean;
   bounds?: [number, number];

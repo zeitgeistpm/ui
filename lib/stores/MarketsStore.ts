@@ -1,4 +1,3 @@
-import SDK from "@zeitgeistpm/sdk";
 import {
   BehaviorSubject,
   firstValueFrom,
@@ -6,7 +5,7 @@ import {
   Subscription,
 } from "rxjs";
 import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
-import { computed, makeObservable, observable, runInAction, when } from "mobx";
+import { makeAutoObservable, runInAction, when } from "mobx";
 import MarketStore from "./MarketStore";
 import Store, { useStore } from "./Store";
 import { MarketsOrderBy, MarketsOrdering } from "@zeitgeistpm/sdk/dist/types";
@@ -14,43 +13,24 @@ import { MarketListQuery } from "lib/types";
 import { activeStatusesFromFilters } from "lib/util/market";
 
 class MarketsStore {
-  marketIds: number[];
   markets: Partial<Record<number, MarketStore>> = {};
   order: number[] = [];
   count: number = 0;
   pools: Swap[] = [];
 
-  async updateMarketIds(): Promise<number[]> {
-    runInAction(() => {
-      this.marketIds = undefined;
-    });
-    const ids = await this.sdk.models.getAllMarketIds();
-    runInAction(() => {
-      this.marketIds = ids;
-    });
-    return ids;
-  }
+  initialPageLoaded = false;
 
-  get loaded() {
-    return this.marketIds != null;
+  setInitialPageLoaded() {
+    this.initialPageLoaded = true;
   }
-
-  private sdk: SDK;
 
   constructor(public store: Store) {
-    this.sdk = this.store.sdk;
-    makeObservable(this, {
-      marketIds: observable.ref,
-      markets: observable.ref,
-      pools: observable.ref,
-      loaded: computed,
-    });
+    makeAutoObservable(this, {}, { deep: false });
   }
 
   private clearMarkets() {
     runInAction(() => {
-      this.marketIds = undefined;
-      this.markets = [];
+      this.markets = {};
     });
   }
 
@@ -88,11 +68,8 @@ class MarketsStore {
   }
 
   async getMarket(marketId: number): Promise<MarketStore | undefined> {
-    await when(() => this.marketIds != null);
-    if (!this.marketIds.includes(marketId)) {
-      return;
-    }
     let market = Object.values(this.markets).find((m) => m.id === marketId);
+    await when(() => this.store.initialized === true);
 
     if (market == null) {
       const marketStore = new MarketStore(this.store, marketId);
@@ -103,7 +80,9 @@ class MarketsStore {
       }
 
       await marketStore.initializeMarketData(marketData);
+      await marketStore.getAuthorityProxies();
       marketStore.startPolling();
+      marketStore.subscribeToChainData();
       this.subscribeToMarketChanges(marketStore);
       return marketStore;
     } else {
@@ -113,15 +92,6 @@ class MarketsStore {
       }
       return market;
     }
-  }
-
-  private unsubscribeMarket(marketId: number) {
-    if (!this.subscriptions.hasOwnProperty(marketId)) {
-      return;
-    }
-    const subs = this.subscriptions[marketId];
-    subs.forEach((s) => s.unsubscribe());
-    this.subscriptions[marketId] = undefined;
   }
 
   private updateMarkets(market: MarketStore) {
@@ -153,11 +123,23 @@ class MarketsStore {
     let count: number;
 
     if (myMarketsOnly) {
+      const filtersOff =
+        filter.creator === false &&
+        filter.oracle === false &&
+        filter.hasAssets === false;
+
+      const oracle =
+        filtersOff || filter.oracle ? activeAccount?.address : undefined;
+      const creator =
+        filtersOff || filter.creator ? activeAccount?.address : undefined;
+      const assetOwner =
+        filtersOff || filter.hasAssets ? activeAccount?.address : undefined;
+
       const filterBy = {
-        oracle: filter.oracle ? activeAccount.address : "",
-        creator: filter.creator ? activeAccount.address : "",
+        oracle,
+        creator,
+        assetOwner,
         liquidityOnly: false,
-        assetOwner: filter.hasAssets ? activeAccount.address : undefined,
       };
       ({ result: marketsData, count } =
         await this.store.sdk.models.filterMarkets(filterBy, {
@@ -185,31 +167,27 @@ class MarketsStore {
         ));
     }
 
-    const markets: MarketStore[] = [];
+    let markets: MarketStore[] = [];
 
+    let order = [];
     for (const data of marketsData) {
-      const marketStore = new MarketStore(this.store, data.marketId);
-      marketStore.initializeMarketData(data);
-      markets.push(marketStore);
+      const id = data.marketId;
+      markets = [...markets, await this.getMarket(id)];
+      order = [...order, id];
     }
 
-    runInAction(() => {
-      this.markets = markets.reduce((markets, market) => {
-        return {
-          ...markets,
-          [market.id]: market,
-        };
-      }, {});
-
-      this.order = markets
-        .map((market) => market.id)
-        .sort()
-        .reverse();
-
-      this.count = count;
-    });
+    this.setCount(count);
+    this.setOrder(order);
 
     return { markets, count };
+  }
+
+  setCount(count: number) {
+    this.count = count;
+  }
+
+  setOrder(order: number[]) {
+    this.order = order;
   }
 }
 
@@ -217,5 +195,5 @@ export default MarketsStore;
 
 export const useMarketsStore = () => {
   const store = useStore();
-  return store.markets;
+  return store?.markets;
 };

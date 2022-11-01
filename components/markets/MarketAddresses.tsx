@@ -10,6 +10,7 @@ import { useModalStore } from "lib/stores/ModalStore";
 import { Judgement, UserIdentity, useUserStore } from "lib/stores/UserStore";
 import { shortenAddress } from "lib/util";
 import { observer } from "mobx-react";
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
 const AddressInspectContent = ({
@@ -89,7 +90,7 @@ const AddressInspectContent = ({
         </a>
         <a
           className="flex"
-          href={`https://beta.zeitgeist.pm/portfolio/${address}`}
+          href={`https://app.zeitgeist.pm/portfolio/${address}`}
           target="_blank"
           rel="noreferrer"
         >
@@ -250,4 +251,6 @@ const MarketAddresses = observer(
   },
 );
 
-export default MarketAddresses;
+export default dynamic(() => Promise.resolve(MarketAddresses), {
+  ssr: false,
+});

@@ -22,18 +22,13 @@ const ScalarPriceRange = observer(
     longPrice,
   }: ScalarPriceRangeProps) => {
     const { width, ref } = useResizeDetector();
-    const [shortPosition, setShortPosition] = useState<number>();
-    const [longPosition, setLongPosition] = useState<number>();
-    const [averagePosition, setAveragePosition] = useState<number>();
 
-    useEffect(() => {
-      const shortPercentage = 1 - shortPrice;
-      const longPercentage = longPrice;
-      const averagePercentage = (shortPercentage + longPercentage) / 2;
-      setShortPosition(width * shortPercentage);
-      setLongPosition(width * longPercentage);
-      setAveragePosition(width * averagePercentage);
-    }, [shortPrice, longPrice, width]);
+    const shortPercentage = 1 - shortPrice;
+    const longPercentage = longPrice;
+    const averagePercentage = (shortPercentage + longPercentage) / 2;
+    const averagePosition = width * averagePercentage;
+    const shortPosition = width * shortPercentage;
+    const longPosition = width * longPercentage;
 
     const showShortAndLongPrices = Math.abs(1 - shortPrice - longPrice) > 0.03;
     const inferedType: ScalarRangeType = type ?? "number";

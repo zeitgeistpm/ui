@@ -6,12 +6,7 @@ import {
 } from "@zeitgeistpm/avatara-react";
 import Link from "next/link";
 import { formatBalance } from "@polkadot/util";
-import {
-  Avatar,
-  Inventory,
-  SdkContext,
-  Tarot,
-} from "@zeitgeistpm/avatara-nft-sdk";
+import { Avatar, Badge, Tarot } from "@zeitgeistpm/avatara-nft-sdk";
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 import Checkbox from "components/ui/Checkbox";
 import DiscordIcon from "components/icons/DiscordIcon";
@@ -57,6 +52,8 @@ const AvatarPage = observer(() => {
   const [identity, setIdentity] = useState<UserIdentity>();
   const [burnAmount, setBurnAmount] = useState<number>();
   const [hasCrossed, setHasCrossed] = useState(false);
+
+  const [earnedBadges, setEarnedBadges] = useState<Badge.IndexedBadge[]>([]);
 
   const [tarotStats, setTarotStats] =
     useState<Tarot.TarotStatsForAddress>(null);
@@ -132,7 +129,6 @@ const AvatarPage = observer(() => {
       <ClaimModal
         burnAmount={burnAmount}
         isTarotHolder={tarotStats?.nfts.length > 0}
-        hasCrossed={hasCrossed || tarotStats?.nfts.length > 0}
         address={address}
         onClaimSuccess={() => inventory.reset()}
         onClose={() => {
@@ -188,7 +184,7 @@ const AvatarPage = observer(() => {
               <ZeitgeistAvatar
                 size="196px"
                 address={address}
-                deps={[mintingAvatar]}
+                deps={[mintingAvatar, address]}
                 style={{
                   zIndex: 0, // safari fix
                 }}
@@ -281,15 +277,19 @@ const AvatarPage = observer(() => {
       <h3 className="mb-ztg-40 font-space text-ztg-28-120 font-semibold">
         <span className="mr-4">Achievements</span>
       </h3>
-      <p className="text-gray-600 mb-ztg-38">
+      <p className="text-gray-600 mb-ztg-12">
         All badges earned for this account.{" "}
-        <Link href={"/badges"}>
-          <span className="text-singular cursor-pointer">
-            See all available badges.
-          </span>
-        </Link>
+        <i>
+          Includes all badges this user has earned even if the NFT has been
+          traded or burnt.
+        </i>
       </p>
-      {inventory.items.accepted.length === 0 ? (
+      <Link href={"/badges"}>
+        <div className="text-singular underline text-pink-600 cursor-pointer mb-ztg-38">
+          See all available badges.
+        </div>
+      </Link>
+      {earnedBadges.length === 0 ? (
         <>
           <p className="text-gray-600 mb-ztg-38 italic">
             You havent earned any badges yet.
@@ -297,8 +297,8 @@ const AvatarPage = observer(() => {
         </>
       ) : (
         <div className="mb-ztg-38 grid gap-4 grid-cols-4 grid-rows-4">
-          {inventory.items.accepted.map((item) => (
-            <Badge item={item} />
+          {earnedBadges.map((item) => (
+            <BadgeItem item={item} />
           ))}
         </div>
       )}
@@ -306,7 +306,7 @@ const AvatarPage = observer(() => {
   );
 });
 
-const Badge = (props: { item: Inventory.AcceptedInventoryItem }) => {
+const BadgeItem = (props: { item: Badge.IndexedBadge }) => {
   const { item } = props;
 
   const [hoverInfo, setHoverInfo] = useState(false);
@@ -361,18 +361,22 @@ const Badge = (props: { item: Inventory.AcceptedInventoryItem }) => {
             <p className="mb-4 text-xs">
               {item.metadata_properties?.badge.value.criteria.description}
             </p>
-            <a
-              href={`${process.env.NEXT_PUBLIC_SINGULAR_URL}/collectibles/${item.id}`}
-              target="_blank"
-            >
-              <div
-                className="inline-flex items-center py-1 px-2 rounded-md border-2 cursor-pointer"
-                style={{ borderColor: "#EB3089", color: "#EB3089" }}
+            {item.burned === "" ? (
+              <a
+                href={`${process.env.NEXT_PUBLIC_SINGULAR_URL}/collectibles/${item.id}`}
+                target="_blank"
               >
-                <img src="/icons/singular.svg" className="h-6 w-6 mr-2" />
-                <div>View on Singular 2.0</div>
-              </div>
-            </a>
+                <div
+                  className="inline-flex items-center py-1 px-2 rounded-md border-2 cursor-pointer"
+                  style={{ borderColor: "#EB3089", color: "#EB3089" }}
+                >
+                  <img src="/icons/singular.svg" className="h-6 w-6 mr-2" />
+                  <div>View on Singular 2.0</div>
+                </div>
+              </a>
+            ) : (
+              ""
+            )}
             <div
               className="absolute bottom-0 left-6 w-0 h-0 border-t-8 dark:border-black"
               style={{
@@ -411,7 +415,7 @@ const Badge = (props: { item: Inventory.AcceptedInventoryItem }) => {
       </div>
       <div>
         <h2 className="mb-1 text-xl font-bold">
-          {item.metadata_properties?.badge.value.shortname ||
+          {item.metadata_properties?.badge.value.levelName ||
             item.metadata_properties?.badge.value.name}
         </h2>
         <p className="text-sm text-lg text-gray-500">
@@ -426,7 +430,6 @@ const ClaimModal = (props: {
   address: string;
   burnAmount: number;
   isTarotHolder: boolean;
-  hasCrossed: boolean;
   onClaimSuccess: () => void;
   onClose?: () => void;
 }) => {
@@ -438,6 +441,8 @@ const ClaimModal = (props: {
   const [isClaiming, setIsClaiming] = useState(false);
   const [fee, setFee] = useState<number>(null);
 
+  const [hasCrossed, setHasCrossed] = useState(false);
+
   const balance = store.wallets.activeBalance;
   const hasEnoughBalance = balance.greaterThan((props.burnAmount + fee) / ZTG);
 
@@ -445,6 +450,14 @@ const ClaimModal = (props: {
     () => store.sdk.api.tx.styx.cross(),
     [props.address, props.burnAmount],
   );
+
+  useEffect(() => {
+    store.sdk.api.query.styx
+      .crossings(store.wallets.activeAccount.address)
+      .then((crossing) => {
+        setHasCrossed(!crossing.isEmpty);
+      });
+  }, [props.address, isClaiming]);
 
   const doClaim = async () => {
     notificationStore.pushNotification("Minting Avatar.", {
@@ -466,7 +479,7 @@ const ClaimModal = (props: {
   const onClickBurn = async () => {
     setIsClaiming(true);
     try {
-      if (props.hasCrossed) {
+      if (hasCrossed) {
         try {
           await doClaim();
         } catch (error) {
@@ -541,7 +554,7 @@ const ClaimModal = (props: {
               : `To claim your right to mint an avatar you have to pay the ferryman
               due respect, burning ${props.burnAmount / ZTG} ZTG.`}
           </p>
-          {!props.hasCrossed ? (
+          {!hasCrossed ? (
             <div className="flex items-center">
               <div className="text-red-800 text-xs flex-1">
                 The amount will be burned(slashed) and not paid to any address.
@@ -579,7 +592,7 @@ const ClaimModal = (props: {
                 ) : (
                   <div className="flex items-center">
                     <span className="text-md">
-                      {props.hasCrossed
+                      {hasCrossed
                         ? "Claim"
                         : `Burn ${props.burnAmount / ZTG} ZTG`}
                     </span>

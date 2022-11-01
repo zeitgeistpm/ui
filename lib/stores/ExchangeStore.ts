@@ -8,7 +8,7 @@ import {
   runInAction,
   when,
 } from "mobx";
-import { calcOutGivenIn, calcSpotPrice } from "../math";
+import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "../math";
 import { JSONObject, ztgAsset } from "../types";
 import Store, { useStore } from "./Store";
 import { ZTG } from "lib/constants";
@@ -32,6 +32,8 @@ type MarketOutcome = {
   poolId: number;
   swapFee: string;
 };
+
+type ExchangeMode = "buy" | "sell";
 
 export default class ExchangeStore {
   constructor(private store: Store) {
@@ -80,7 +82,9 @@ export default class ExchangeStore {
 
   get swapFee(): Decimal | undefined {
     if (this.outcome) {
-      return new Decimal(this.outcome.swapFee || 0);
+      return this.outcome.swapFee !== ""
+        ? new Decimal(this.outcome.swapFee)
+        : new Decimal(0);
     }
   }
 
@@ -221,20 +225,32 @@ export default class ExchangeStore {
   ztgPoolBalance: Decimal | null = null;
 
   spotPrice: Decimal;
+  mode: "buy" | "sell";
 
   get hasPoolBalances(): boolean {
     return this.poolBalance != null && this.ztgPoolBalance != null;
   }
 
   calcZtgAmount(): Decimal {
-    return calcOutGivenIn(
-      this.poolBalance.toString(),
-      this.outcomeWeight,
-      this.ztgPoolBalance.toString(),
-      this.ztgWeight,
-      this.amount?.toString() || "0",
-      this.swapFee.div(ZTG),
-    );
+    if (this.mode === "buy") {
+      return calcInGivenOut(
+        this.ztgPoolBalance.toString(),
+        this.ztgWeight,
+        this.poolBalance.toString(),
+        this.outcomeWeight,
+        this.amount?.toString() || "0",
+        this.swapFee.div(ZTG),
+      );
+    } else {
+      return calcOutGivenIn(
+        this.poolBalance.toString(),
+        this.outcomeWeight,
+        this.ztgPoolBalance.toString(),
+        this.ztgWeight,
+        this.amount?.toString() || "0",
+        this.swapFee.div(ZTG),
+      );
+    }
   }
 
   setAmount(amount?: string) {
@@ -248,6 +264,12 @@ export default class ExchangeStore {
     } else {
       this.ztgAmount = new Decimal(0);
     }
+  }
+
+  setMode(mode: ExchangeMode) {
+    runInAction(() => {
+      this.mode = mode;
+    });
   }
 
   resetBalances() {

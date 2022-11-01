@@ -7,6 +7,7 @@ import { useStore } from "lib/stores/Store";
 import ProgressReport from "components/ui/ProgressReport";
 import { ProgressBarEvent } from "components/ui/ProgressReport/ProgressBar";
 import { TimeLineStage } from "components/ui/ProgressReport/TimeLine";
+import dynamic from "next/dynamic";
 
 type MarketStage =
   | "Trading"
@@ -15,6 +16,7 @@ type MarketStage =
   | "OpenReportWaiting"
   | "OpenReportCooldown"
   | "Disputed"
+  | "AuthorizedReport"
   | "Resolved";
 
 type MarketStageCopy = {
@@ -59,7 +61,13 @@ const MarketEventSummary = ({
 };
 
 const MarketTimer = observer(
-  ({ marketStore }: { marketStore: MarketStore }) => {
+  ({
+    marketStore,
+    hasAuthReport,
+  }: {
+    marketStore: MarketStore;
+    hasAuthReport: boolean;
+  }) => {
     const store = useStore();
     const [marketStage, setMarketStage] = useState<MarketStage>();
     const [marketStageIndex, setMarketStageIndex] = useState<number>();
@@ -72,10 +80,7 @@ const MarketTimer = observer(
         return "Trading";
       } else if (marketStore.status === "Closed") {
         // if oracle doesn't report within 1 day reports are open to all
-        if (
-          (new Date().getTime() - marketStore.endTimestamp) / 1000 >
-          reportingPeriodSec
-        ) {
+        if (marketStore.inOpenReportPeriod === true) {
           return "OpenReportWaiting";
         } else {
           return "OracleReportWaiting";
@@ -87,6 +92,9 @@ const MarketTimer = observer(
           return "OpenReportCooldown";
         }
       } else if (marketStore.status === "Disputed") {
+        if (hasAuthReport) {
+          return "AuthorizedReport";
+        }
         return "Disputed";
       } else if (marketStore.status === "Resolved") {
         return "Resolved";
@@ -296,7 +304,7 @@ const MarketTimer = observer(
     const marketStageCopy: MarketStageCopy = {
       Trading: {
         title: "Market is Live",
-        description: "Make predictions. Trade assets",
+        description: "Market is open for trading",
         remainingTime: marketStore.activeDurtation,
         totalTime:
           (marketStore.endTimestamp - marketStore.createdAtTimestamp) / 1000,
@@ -331,6 +339,12 @@ const MarketTimer = observer(
         remainingTime: marketStore.disputeCooldownDuration,
         totalTime: disputePeriodSec,
       },
+      AuthorizedReport: {
+        title: "Market outcome reported",
+        description: "",
+        remainingTime: marketStore.disputeCooldownDuration,
+        totalTime: disputePeriodSec,
+      },
       Resolved: {
         title: "Market Resolved",
         description: "Consensus has been reached on the outcome",
@@ -358,4 +372,6 @@ const MarketTimer = observer(
   },
 );
 
-export default MarketTimer;
+export default dynamic(() => Promise.resolve(MarketTimer), {
+  ssr: false,
+});

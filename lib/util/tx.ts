@@ -1,6 +1,6 @@
 import { ISubmittableResult, IEventRecord } from "@polkadot/types/types";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import { SubmittableExtrinsic, ApiTypes } from "@polkadot/api/types";
+import { SubmittableExtrinsic } from "@polkadot/api/types";
 import NotificationStore from "lib/stores/NotificationStore";
 import { isExtSigner, unsubOrWarns } from "@zeitgeistpm/sdk/dist/util";
 
@@ -22,8 +22,8 @@ const processEvents = (
       failCallback({ index, error });
     }
     if (method === "BatchInterrupted" && failCallback) {
-      const { index, error } = data.toHuman()[1].Module;
-      failCallback({ index, error }, +data.toHuman()[0]);
+      const { index, error } = data.toHuman().error.Module;
+      failCallback({ index, error }, +data.toHuman().index);
     } else if (successCallback && method === successMethod) {
       const res = data.toHuman();
       successCallback(res);
@@ -69,10 +69,9 @@ export const extrinsicCallback = ({
       retractedCallback
         ? retractedCallback()
         : notificationStore?.pushNotification(
-            "Transaction failed to finalize and has been retracted",
-            { type: "Error" },
+            "This transaction was temporarily retracted. It will take a little longer to complete",
+            { type: "Info" },
           );
-      unsub();
     } else {
       broadcastCallback
         ? broadcastCallback()
@@ -84,7 +83,7 @@ export const extrinsicCallback = ({
 };
 
 export const signAndSend = async (
-  tx: SubmittableExtrinsic<ApiTypes>,
+  tx: SubmittableExtrinsic<"promise">,
   signer: KeyringPairOrExtSigner,
   cb?: GenericCallback,
 ) => {

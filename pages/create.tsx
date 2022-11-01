@@ -12,6 +12,7 @@ import {
 } from "@zeitgeistpm/sdk/dist/types/market";
 import { ISubmittableResult } from "@polkadot/types/types";
 import {
+  DecodedMarketMetadata,
   MarketDisputeMechanism,
   MarketPeriod,
 } from "@zeitgeistpm/sdk/dist/types";
@@ -156,12 +157,18 @@ const CreatePage: NextPage = observer(() => {
   }, [store?.graphQLClient, newMarketId]);
 
   useEffect(() => {
-    if (!form.isValid) {
+    if (!form.isValid || store.wallets.activeAccount == null) {
       return;
     }
     const sub = from(getTransactionFee()).subscribe(setTxFee);
     return () => sub.unsubscribe();
-  }, [form.isValid, formData, poolRows, deployPool]);
+  }, [
+    form.isValid,
+    formData,
+    poolRows,
+    deployPool,
+    store.wallets.activeAccount,
+  ]);
 
   useEffect(() => {
     if (!formData.outcomes.value) {
@@ -311,13 +318,16 @@ const CreatePage: NextPage = observer(() => {
       ? mapRangeToEntires(formData.outcomes.value)
       : formData.outcomes.value;
 
-    const metadata = {
+    const metadata: DecodedMarketMetadata = {
       slug: formData.slug,
       question: formData.question,
       description: formData.description,
       tags: formData.tags,
       img: formData.marketImage,
       categories: entries,
+      scalarType: isRangeOutcomeEntry(formData.outcomes.value)
+        ? formData.outcomes.value.type
+        : undefined,
     };
     return metadata;
   };

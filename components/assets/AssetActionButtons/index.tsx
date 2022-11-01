@@ -10,7 +10,7 @@ import ReportButton from "./ReportButton";
 
 interface AssetActionButtonsProps {
   marketId: number;
-  assetId: AssetId;
+  assetId?: AssetId;
   assetTicker: string;
   assetColor?: string;
 }
@@ -21,6 +21,9 @@ const AssetActionButtons = observer(
     const [marketStore, setMarketStore] = useState<MarketStore>();
 
     useEffect(() => {
+      if (assetId == null) {
+        return;
+      }
       (async () => {
         const market = await marketsStore.getMarket(marketId);
         setMarketStore(market);
@@ -59,6 +62,7 @@ const AssetActionButtons = observer(
             assetTicker: assetTicker,
             assetColor: assetColor,
           }}
+          disabled={assetId == null}
         />
       );
     }

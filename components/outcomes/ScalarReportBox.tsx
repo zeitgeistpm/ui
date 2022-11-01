@@ -6,7 +6,7 @@ import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 const ScalarReportBox = observer(
   ({
@@ -26,6 +26,8 @@ const ScalarReportBox = observer(
     };
 
     const reportDisabled = !marketStore.connectedWalletCanReport;
+
+    const { isAuthorityProxy } = marketStore;
 
     const handleSignTransaction = async () => {
       const outcomeReport: OutcomeReport = {
@@ -61,7 +63,17 @@ const ScalarReportBox = observer(
           market.marketId,
           outcomeReport,
         );
-        signAndSend(tx, signer, callback);
+        if (isAuthorityProxy) {
+          const proxyTx = store.sdk.api.tx.proxy.proxy(
+            marketStore.authority,
+            "Any",
+            tx,
+          );
+          signAndSend(proxyTx, signer, callback);
+        } else {
+          signAndSend(tx, signer, callback);
+        }
+      } else {
         await market.reportOutcome(signer, outcomeReport, callback);
       }
     };

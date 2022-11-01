@@ -194,7 +194,9 @@ const IdentitySettings = observer(() => {
       <div className="flex items-center border border-sky-600 rounded-ztg-5 my-ztg-20 p-ztg-20 text-sky-600">
         <AlertTriangle size={20} className="mr-ztg-20" />
         <div className="text-ztg-14-120 font-normal">
-          Setting an identity requires a deposit of up to 11{" "}
+          Setting an identity requires a deposit of up to{" "}
+          {store.config.identity.basicDeposit +
+            store.config.identity.fieldDeposit}{" "}
           {store.config.tokenSymbol}. This deposit can be retrieved by clearing
           your identity.
         </div>
@@ -467,7 +469,7 @@ const Settings: NextPage = observer(() => {
               onClick={handleResetTheme}
               disabled={userStore.storedTheme === "system"}
             >
-              Reset to system theme
+              Sync with computer
             </SubmitButton>
           </div>
         </div>

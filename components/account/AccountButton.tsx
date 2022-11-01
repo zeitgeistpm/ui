@@ -55,7 +55,9 @@ const AccountButton: FC<{
                 "flex w-ztg-168 h-ztg-40 bg-sky-400 dark:bg-sky-700 text-black dark:text-white rounded-full text-ztg-14-150 font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-20"
               }
               onClick={() => connect()}
-              disabled={locationAllowed !== true || isUsingVPN}
+              disabled={
+                locationAllowed !== true || isUsingVPN || !store?.sdk?.api
+              }
             >
               {connectButtonText || "Connect Wallet"}
             </button>

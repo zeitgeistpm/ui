@@ -1,4 +1,5 @@
 import { MarketDeadlines } from "@zeitgeistpm/sdk/dist/types";
+import Decimal from "decimal.js";
 import resolveTailwindConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../tailwind.config";
 import {
@@ -12,6 +13,8 @@ import {
 
 export const ZTG = 10 ** 10;
 
+export const MAX_IN_OUT_RATIO = new Decimal(1).div(3).toString();
+
 export const DEFAULT_SLIPPAGE_PERCENTAGE =
   Number(process.env.NEXT_PUBLIC_DEFAULT_SLIPPAGE_PERCENTAGE) || 1;
 
@@ -24,8 +27,8 @@ export const NUM_BLOCKS_IN_HOUR = 3600 / BLOCK_TIME_SECONDS;
 export const NUM_BLOCKS_IN_DAY = NUM_BLOCKS_IN_HOUR * 24;
 export const DAY_SECONDS = 86400;
 
-export const ZTG_BLUE_COLOR =
-  resolveTailwindConfig(tailwindConfig).theme.colors["ztg-blue"];
+export const ZTG_BLUE_COLOR = resolveTailwindConfig(tailwindConfig as any).theme
+  .colors["ztg-blue"];
 
 export const marketStatuses = Object.keys(EMarketStatus) as MarketStatus[];
 

@@ -13,7 +13,11 @@ import { calcInGivenOut } from "lib/math";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { ztgAsset } from "lib/types";
 import { defaultOptions, defaultPlugins } from "lib/form";
-import { DEFAULT_SLIPPAGE_PERCENTAGE, ZTG } from "lib/constants";
+import {
+  DEFAULT_SLIPPAGE_PERCENTAGE,
+  ZTG,
+  MAX_IN_OUT_RATIO,
+} from "lib/constants";
 import ExchangeStore, { OutcomeOption } from "lib/stores/ExchangeStore";
 import AssetSelectView from "components/assets/AssetSelectView";
 import AssetSelectButton from "components/assets/AssetSelectButton";
@@ -124,8 +128,9 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
         return "0";
       }
 
+      const maxFromPool = exchangeStore.poolBalance.mul(MAX_IN_OUT_RATIO);
+
       if (type === "buy") {
-        const maxFromPool = exchangeStore.poolBalance;
 
         if (!wallets.connected) {
           return maxFromPool.toString();
@@ -148,7 +153,10 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
       }
 
       if (type === "sell") {
-        return exchangeStore.balance?.toString() ?? "0";
+        const balance = exchangeStore.balance ?? new Decimal(0);
+        return balance.lte(maxFromPool)
+          ? balance.toString()
+          : maxFromPool.toString();
       }
     }, [
       type,
@@ -279,6 +287,10 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
       setSelectedAssetOption(exchangeStore?.outcomeOption);
     }, [exchangeStore?.outcomeOption]);
 
+    useEffect(() => {
+      exchangeStore?.setMode(type);
+    }, [exchangeStore, type]);
+
     const recreateForm = () => {
       setExchangeForm(
         new MobxReactForm(
@@ -365,11 +377,11 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
     const tradeTooLarge = () => {
       return (
         (type === "buy" &&
-          exchangeStore.amount.greaterThanOrEqualTo(
+          exchangeStore.amount?.greaterThanOrEqualTo(
             exchangeStore.poolBalance,
           )) ||
         (type === "sell" &&
-          exchangeStore.amount.greaterThanOrEqualTo(
+          exchangeStore.amount?.greaterThanOrEqualTo(
             exchangeStore.ztgPoolBalance,
           ))
       );
@@ -459,8 +471,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               className="mb-ztg-10 shadow-ztg-2"
               disabled={
                 !exchangeForm?.isValid ||
-                !exchangeStore.spotPrice?.gt(0) ||
-                tradeTooLarge()
+                !exchangeStore.spotPrice?.gt(0)
               }
               onClick={() => {
                 openTransactionModal();

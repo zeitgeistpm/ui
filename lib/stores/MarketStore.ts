@@ -89,14 +89,45 @@ class MarketStore {
   }
 
   //authorised wallet address
-  get authority(): string {
+  get authority(): string | undefined {
     if (isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
       return this.market.disputeMechanism.authorized;
     }
   }
 
+  authorityProxies?: string[];
+
+  get isAuthorityProxy(): boolean {
+    if (this.authorityProxies == null) {
+      return false;
+    }
+    return this.authorityProxies.includes(
+      this.store.wallets.activeAccount?.address,
+    );
+  }
+
+  async getAuthorityProxies(): Promise<string[] | undefined> {
+    if (!isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
+      return;
+    }
+
+    const { sdk } = this.store;
+
+    const res = (await sdk.api.query.proxy.proxies(this.authority)).toJSON();
+
+    const proxies = res[0].map((item) => item.delegate);
+
+    runInAction(() => {
+      this.authorityProxies = proxies;
+    });
+    return proxies;
+  }
+
   get disputeMechanism(): "authorized" | "other" {
-    if (isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
+    if (
+      this.market.disputeMechanism &&
+      isAuthorisedDisputeMechanism(this.market.disputeMechanism)
+    ) {
       return "authorized";
     } else {
       return "other";
@@ -104,14 +135,17 @@ class MarketStore {
   }
 
   get connectedWalletCanReport(): boolean {
+    if (this.inOpenReportPeriod === true) return true;
     if (!this.store.wallets.activeAccount?.address) return false;
 
+    const activeAddress = this.store.wallets.activeAccount?.address;
     if (this.status === "Closed" && this.isOracle) {
       return true;
     } else if (
       this.status === "Disputed" &&
       this.disputeMechanism === "authorized" &&
-      this.authority === this.store.wallets.activeAccount?.address
+      (this.authority === activeAddress ||
+        this.authorityProxies?.includes(activeAddress))
     ) {
       return true;
     } else {
@@ -131,6 +165,14 @@ class MarketStore {
     const marketEnd = moment(this.endTimestamp);
     const periodEnd = marketEnd.clone().add(1, "day");
     return now.isBetween(marketEnd, periodEnd);
+  }
+
+  get inOpenReportPeriod(): boolean {
+    return (
+      this.status === "Closed" &&
+      (new Date().getTime() - this.endTimestamp) / 1000 >
+        this.store.config.markets.reportingPeriodSec
+    );
   }
 
   get inReportPeriod(): boolean {
@@ -242,7 +284,9 @@ class MarketStore {
   }
 
   get isCourt(): boolean {
-    return (this.market.disputeMechanism as CourtDisputeMechanism).Court === null;
+    return (
+      (this.market.disputeMechanism as CourtDisputeMechanism).Court === null
+    );
   }
 
   get bounds(): [number, number] | null {
@@ -492,6 +536,7 @@ class MarketStore {
   }
 
   async getPrizePool(): Promise<string> {
+    if (this.assets == null) return "0";
     const prizePool = await this.store.sdk.api.query.tokens.totalIssuance(
       this.assets[0],
     );
@@ -517,7 +562,8 @@ class MarketStore {
       const lowerBound = this.bounds[0];
       const upperBound = this.bounds[1];
       const priceRange = upperBound - lowerBound;
-      const resolvedNumberAsPercentage = resolvedNumber / priceRange;
+      const resolvedNumberAsPercentage =
+        (resolvedNumber - lowerBound) / priceRange;
       const longTokenValue = resolvedNumberAsPercentage;
       const shortTokenValue = 1 - resolvedNumberAsPercentage;
       const longRewards = longBalance.mul(longTokenValue);
@@ -588,7 +634,9 @@ class MarketStore {
       market: observable.ref,
       disputes: observable.ref,
       pool: observable.ref,
+      authorityProxies: observable.ref,
       poolAccount: observable,
+      isAuthorityProxy: computed,
       poolExists: computed,
       slug: computed,
       description: computed,
@@ -601,6 +649,7 @@ class MarketStore {
       oracleReportPeriodPassed: computed,
       inOracleReportPeriod: computed,
       inReportPeriod: computed,
+      connectedWalletCanReport: computed,
       hasReport: computed,
       status: computed,
       creator: computed,
@@ -654,28 +703,47 @@ class MarketStore {
 
   async refetchMarketData() {
     const data = await this.store.sdk.models.fetchMarketData(this.id);
-    if (data.marketType.isCategorical === false) {
-      throw new Error("Found non-categorical market.");
-    }
 
     this.initializeMarketData(data);
     this.nextChange();
   }
 
-  private pollSub: Subscription;
+  private pollSub?: Subscription;
   readonly pollInterval =
     Number(process.env.NEXT_PUBLIC_MARKET_POLL_INTERVAL_MS) ?? 12000;
 
   startPolling = () => {
+    if (this.pollSub != null) {
+      return;
+    }
     const obs = interval(this.pollInterval);
     this.pollSub = obs.subscribe(() => {
       this.refetchMarketData();
     });
   };
 
+  private changeDataUnsub?;
+
+  async subscribeToChainData() {
+    if (this.changeDataUnsub) {
+      return;
+    }
+    const { sdk } = this.store;
+    this.changeDataUnsub = await sdk.models.subscribeMarketChanges(
+      this.id,
+      (market) => {
+        this.initializeMarketData(market);
+        this.nextChange();
+      },
+    );
+  }
+
   unsubscribe() {
     if (this.poolChangeUnsub != null) {
       this.poolChangeUnsub();
+    }
+    if (this.changeDataUnsub != null) {
+      this.changeDataUnsub();
     }
     this.pollSub?.unsubscribe();
   }

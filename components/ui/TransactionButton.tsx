@@ -25,7 +25,7 @@ const TransactionButton: FC<TransactionButtonProps> = observer(
     const { wallets } = store;
     const { connected } = wallets;
     const accountModals = useAccountModals();
-    const { locationAllowed } = useUserStore();
+    const { locationAllowed, isUsingVPN } = useUserStore();
 
     const click = (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       if (preventDefault) {
@@ -39,7 +39,7 @@ const TransactionButton: FC<TransactionButtonProps> = observer(
     };
 
     const isDisabled = () => {
-      if (locationAllowed !== true) {
+      if (locationAllowed !== true || isUsingVPN || !store?.sdk?.api) {
         return true;
       } else if (!connected) {
         return false;

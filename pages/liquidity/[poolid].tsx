@@ -13,17 +13,7 @@ import NotFoundPage from "pages/404";
 import Pill from "components/ui/Pill";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-
-interface Share {
-  token: string;
-  weights: number;
-  poolBalance: number;
-  yourBalance: number;
-  assetValue: number;
-  poolBalanceUSD: number;
-  yourBalanceUSD: number;
-  assetValueUSD: number;
-}
+import Link from "next/link";
 
 const PoolDetail = ({
   header,
@@ -92,6 +82,7 @@ const PoolDetail = ({
 const PoolDetails: NextPage = observer(() => {
   const router = useRouter();
   const store = useStore();
+  const { ztgInfo } = store;
   const [tableData, setTableData] = useState<TableData[]>();
   const [pool, setPool] = useState<CPool | null>(null);
   const poolsStore = usePoolsStore();
@@ -110,8 +101,11 @@ const PoolDetails: NextPage = observer(() => {
   };
 
   useEffect(() => {
+    if (store.sdk == null) {
+      return;
+    }
     setMarketData();
-  }, [poolId, marketStore?.pool]);
+  }, [poolId, marketStore?.pool, store.sdk]);
 
   useEffect(() => {
     if (pool?.pool != null) {
@@ -201,7 +195,7 @@ const PoolDetails: NextPage = observer(() => {
         <PoolDetail
           header="Pool Value"
           middle={`${Math.round(pool.liquidity)} ${store.config.tokenSymbol}`}
-          bottom="$0"
+          bottom={`$${ztgInfo?.price.mul(pool.liquidity).toFixed(2)}`}
         />
         <PoolDetail
           className="mx-ztg-20"
@@ -218,7 +212,16 @@ const PoolDetails: NextPage = observer(() => {
         <h3 className="font-space font-semibold text-ztg-20-150">
           Assets in Pool
         </h3>
-        {marketStore && <FullSetButtons marketStore={marketStore} />}
+        {marketStore && (
+          <>
+            <FullSetButtons marketStore={marketStore} />
+            <Link href={`/markets/${marketStore.id}`}>
+              <a className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 ">
+                Market
+              </a>
+            </Link>
+          </>
+        )}
       </div>
       <Table data={tableData} columns={columns} />
     </div>
