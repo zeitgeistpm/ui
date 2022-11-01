@@ -56,13 +56,15 @@ export async function getStaticProps({ params }) {
     new Date().getTime() - DAY_SECONDS * 31 * 1000,
   ).toISOString();
 
-  const assetPrices = await Promise.all(
-    market?.outcomeAssets?.map((asset) =>
-      getAssetPriceHistory(client, asset, dateOneMonthAgo),
-    ),
-  );
+  const assetPrices = market?.outcomeAssets
+    ? await Promise.all(
+        market?.outcomeAssets?.map((asset) =>
+          getAssetPriceHistory(client, asset, dateOneMonthAgo),
+        ),
+      )
+    : undefined;
 
-  const chartSeries: ChartSeries[] = market.categories?.map(
+  const chartSeries: ChartSeries[] = market?.categories?.map(
     (category, index) => {
       return {
         accessor: `v${index}`,
@@ -81,7 +83,7 @@ export async function getStaticProps({ params }) {
     });
   });
 
-  const baseAsset = market.poolId
+  const baseAsset = market?.poolId
     ? await getBaseAsset(client, market.poolId)
     : null;
 
