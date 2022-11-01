@@ -16,7 +16,8 @@ import { useContentScrollTop } from "components/context/ContentDimensionsContext
 import { debounce, isEmpty } from "lodash";
 import { makeAutoObservable } from "mobx";
 import { useUserStore } from "lib/stores/UserStore";
-import { isPreloadedMarket, MarketCardData } from "lib/gql/markets-list";
+import { MarketCardData } from "lib/gql/markets-list";
+import MarketsStore from "lib/stores/MarketsStore";
 
 export type MarketsListProps = {
   className?: string;
@@ -148,7 +149,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   }, [initialLoad, scrollRestoration.scrollTop]);
 
   useEffect(() => {
-    if (pageLoaded !== true || marketsStore.initialPageLoaded) {
+    if (pageLoaded !== true || !marketsStore.initialPageLoaded) {
       return;
     }
     if (hasNext && hasScrolledToEnd) {
