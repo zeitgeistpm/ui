@@ -37,7 +37,7 @@
     "@zeitgeistpm/avatara-react": "^1.1.5",
     "@zeitgeistpm/avatara-util": "^1.0.0-alpha.0",
     "@zeitgeistpm/sdk": "^0.9.1",
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.2.0",
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.2.2",
     "@zeitgeistpm/utility": "^2.2.0",
     "axios": "^0.21.4",
     "boring-avatars": "^1.6.1",

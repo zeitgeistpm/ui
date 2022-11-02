@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Context, Pool } from "@zeitgeistpm/sdk-next";
+import { merge } from "lodash";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "saturated-pools-index";
@@ -12,13 +13,16 @@ export const key = (pools?: Pool<Context>[]) => [
 export const useSaturatedPoolsIndex = (pools?: Pool<Context>[]) => {
   const [sdk, id] = useSdkv2();
 
-  return useQuery(
+  const query = useQuery(
     [id, ...key(pools)],
     async () => {
       return sdk.model.swaps.saturatedPoolsIndex(pools);
     },
     {
+      keepPreviousData: true,
       enabled: Boolean(sdk) && Boolean(pools),
     },
   );
+
+  return { ...query };
 };

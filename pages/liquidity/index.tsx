@@ -4,11 +4,14 @@ import Decimal from "decimal.js";
 import { usePools } from "lib/hooks/queries/usePools";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
+import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
+import { usePoolsListQuery } from "lib/hooks/usePoolsUrlQuery";
 import { formatNumberLocalized } from "lib/util";
 import { observer } from "mobx-react";
+import { sortBy } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AiOutlineRead } from "react-icons/ai";
 
 const columns: TableColumn[] = [
@@ -38,9 +41,37 @@ const columns: TableColumn[] = [
 const LiquidityPools: NextPage = observer(() => {
   const router = useRouter();
 
+  const query = usePoolsListQuery();
+
   const { data: ztgInfo } = useZtgInfo();
-  const { data: pools, isLoading: isLoadingPools } = usePools();
+
+  const {
+    data: poolPages,
+    isLoading: isLoadingPools,
+    hasNextPage,
+  } = usePools();
+
+  const pools = poolPages?.pages?.flatMap((pools) => pools.data);
+
   const { data: saturatedIndex } = useSaturatedPoolsIndex(pools);
+
+  const [initialLoad, setInitialLoad] = useState(true);
+  const paginatorRef = useRef<HTMLDivElement>();
+  const paginatorInView = useIsOnScreen(paginatorRef);
+
+  useEffect(() => {
+    if (initialLoad && pools) {
+      setInitialLoad(false);
+    }
+  }, [pools]);
+
+  useEffect(() => {
+    if (paginatorInView && hasNextPage && !initialLoad) {
+      query.updateQuery({
+        page: (query.page ?? 0) + 1,
+      });
+    }
+  }, [initialLoad, paginatorInView]);
 
   const totalLiquidity = useMemo(() => {
     return Object.values(saturatedIndex || {}).reduce((acc, { liquidity }) => {
@@ -175,6 +206,8 @@ const LiquidityPools: NextPage = observer(() => {
         loadingMore={isLoadingPools}
         loadingNumber={10}
       />
+
+      <div ref={paginatorRef} />
     </div>
   );
 });
