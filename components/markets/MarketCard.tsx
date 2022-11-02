@@ -3,7 +3,6 @@ import { motion, Variants } from "framer-motion";
 import Decimal from "decimal.js";
 import moment from "moment";
 import { Skeleton } from "@material-ui/lab";
-import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { combineLatest, from, map, Subscription } from "rxjs";
 import React, {
   FC,
@@ -67,6 +66,20 @@ const Card = observer(
         return "url(/icons/default-market.png)";
       }
       return "url(${market.img})";
+    };
+
+    const getPredictionHumanReadable = () => {
+      if (market.poolExists === false) {
+        return "--";
+      }
+      if (market.scalarType === "date") {
+        const humanReadable = moment(Number(prediction)).format(
+          "d/MM/D/YY, hh:mm",
+        );
+        return humanReadable;
+      } else {
+        return `${prediction}`;
+      }
     };
 
     const buttonVariants: Variants = {
@@ -144,14 +157,14 @@ const Card = observer(
                     prediction == null ? (
                       <Skeleton className="!transform-none !w-[50px] !h-[20px] !mt-ztg-4" />
                     ) : (
-                      prediction
+                      getPredictionHumanReadable()
                     )
                   ) : (
                     "--"
                   ))}
                 {!preloaded && (
                   <div className="text-ztg-16-120 font-bold text-black dark:text-white mt-ztg-4">
-                    {prediction ?? "--"}
+                    {getPredictionHumanReadable()}
                   </div>
                 )}
               </div>
@@ -303,6 +316,7 @@ const PoolExpandable = observer(
             upperBound={bounds?.[1]}
             shortPrice={shortPrice}
             longPrice={longPrice}
+            scalarType={market.scalarType}
           />
         ) : (
           market.type === "scalar" && (
@@ -330,7 +344,6 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
   const [expanded, setExpanded] = useState(false);
   const store = useStore();
 
-  const [scalarType, setScalarType] = useState<ScalarRangeType | null>(null);
   const status: string = market.status;
 
   const [innerStatus, setInnerStatus] = useState<string>(status);
@@ -439,19 +452,7 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
         .plus(shortPricePrediction)
         .div(2);
 
-      // TODO: scalar type should persist after preload
-      if (preloaded) {
-        setScalarType(market.scalarType);
-        if (market.scalarType === "date") {
-          const prediction = moment(averagePricePrediction.toString()).format(
-            "d/MM/D/YY, hh:mm",
-          );
-          setPrediction(prediction);
-        }
-      } else {
-        setPrediction(averagePricePrediction.toFixed(0));
-      }
-
+      setPrediction(averagePricePrediction.toFixed(0));
       setLongPrice(lPrice);
       setShortPrice(sPrice);
     }

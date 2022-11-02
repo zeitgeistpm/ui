@@ -1,12 +1,12 @@
 import { observer } from "mobx-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import { motion } from "framer-motion";
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import moment from "moment";
 
 interface ScalarPriceRangeProps {
-  type?: ScalarRangeType;
+  scalarType: ScalarRangeType;
   lowerBound: number;
   upperBound: number;
   shortPrice: number; //between 0 and 1
@@ -15,7 +15,7 @@ interface ScalarPriceRangeProps {
 
 const ScalarPriceRange = observer(
   ({
-    type,
+    scalarType,
     lowerBound,
     upperBound,
     shortPrice,
@@ -31,7 +31,7 @@ const ScalarPriceRange = observer(
     const longPosition = width * longPercentage;
 
     const showShortAndLongPrices = Math.abs(1 - shortPrice - longPrice) > 0.03;
-    const inferedType: ScalarRangeType = type ?? "number";
+    const inferedType: ScalarRangeType = scalarType ?? "number";
 
     const dateFormat = "d/MM/D/YY, h:mm a";
 

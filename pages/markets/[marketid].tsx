@@ -31,6 +31,7 @@ import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
+import { combineLatest, from, map } from "rxjs";
 
 export async function getStaticPaths() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
@@ -114,28 +115,22 @@ const Market: NextPage<{
 
   useEffect(() => {
     if (marketStore == null) return;
-    if (indexedMarket.scalarType === "date") {
-      Promise.all([
-        store.sdk.models.queryMarket(Number(marketid)),
-        Promise.all(
-          marketStore.marketOutcomes
-            .filter((o) => o.metadata !== "ztg")
-            .map(async (outcome) => {
-              return {
-                assetId: outcome.asset,
-                price: await marketStore.assetPriceInZTG(outcome.asset),
-              };
-            }),
-        ),
-      ]).then(([market, prices]) => {
+    if (marketStore.scalarType === "date") {
+      const observables = marketStore.marketOutcomes
+        .filter((o) => o.metadata !== "ztg")
+        .map((outcome) => {
+          return from(marketStore.assetPriceInZTG(outcome.asset));
+        });
+      const sub = combineLatest(observables).subscribe((prices) => {
         setScalarPrices({
-          type: market?.scalarType,
-          short: prices[1].price.toNumber(),
-          long: prices[0].price.toNumber(),
+          type: marketStore.scalarType,
+          short: prices[1].toNumber(),
+          long: prices[0].toNumber(),
         });
       });
+      return () => sub.unsubscribe();
     }
-  }, [marketStore]);
+  }, [marketStore, marketStore?.pool]);
 
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
@@ -277,7 +272,7 @@ const Market: NextPage<{
         {marketStore?.type === "scalar" && scalarPrices && (
           <div className="mt-ztg-20 mb-ztg-30">
             <ScalarPriceRange
-              type={scalarPrices.type}
+              scalarType={scalarPrices.type}
               lowerBound={marketStore.bounds[0]}
               upperBound={marketStore.bounds[1]}
               shortPrice={scalarPrices.short}
