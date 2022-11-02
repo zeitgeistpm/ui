@@ -8,7 +8,7 @@ import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
 import { usePoolsListQuery } from "lib/hooks/usePoolsUrlQuery";
 import { formatNumberLocalized } from "lib/util";
 import { observer } from "mobx-react";
-import { sortBy } from "lodash";
+import { sortBy, uniqBy } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -51,7 +51,10 @@ const LiquidityPools: NextPage = observer(() => {
     hasNextPage,
   } = usePools();
 
-  const pools = poolPages?.pages?.flatMap((pools) => pools.data);
+  const pools = uniqBy(
+    sortBy(poolPages?.pages?.flatMap((pools) => pools.data) || [], "poolId"),
+    "poolId",
+  );
 
   const { data: saturatedIndex } = useSaturatedPoolsIndex(pools);
 

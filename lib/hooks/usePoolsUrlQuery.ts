@@ -34,7 +34,7 @@ export const usePoolsListQuery = (): PoolsListQuery & {
 };
 
 export const defaultQueryState: PoolsListQuery = {
-  page: 1,
+  page: 0,
 };
 
 const paginationKeys = Object.keys(defaultQueryState);
@@ -50,6 +50,6 @@ const toString = (query: PoolsListQuery) => {
 
 const parse = (rawQuery: ParsedUrlQuery): PoolsListQuery => {
   return {
-    page: JSON.parse((rawQuery["page"] ?? "1") as string),
+    page: JSON.parse((rawQuery["page"] ?? "0") as string),
   };
 };

@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { sortBy } from "lodash";
+import { sortBy, uniqBy } from "lodash";
 import { useEffect, useMemo, useRef } from "react";
 import { usePoolsListQuery } from "../usePoolsUrlQuery";
 import { useSdkv2 } from "../useSdkv2";
@@ -15,24 +15,22 @@ export const usePools = () => {
 
   const limit = 10;
 
-  const fetcher = async () => {
-    let params = initialLoad.current
+  const fetcher = async ({ pageParam = urlquery.page }) => {
+    const params = initialLoad.current
       ? {
           offset: 0,
-          limit: limit * urlquery.page,
+          limit: !pageParam ? limit : limit * pageParam,
         }
       : {
-          offset: urlquery.page * limit,
+          offset: pageParam * limit,
           limit: limit,
         };
 
     const pools = await sdk.model.swaps.listPools(params);
-    console.log(pools);
-    initialLoad.current = false;
 
     return {
       data: pools,
-      hasNext: pools.length >= limit,
+      next: pools.length >= limit ? pageParam + 1 : null,
     };
   };
 
@@ -40,11 +38,11 @@ export const usePools = () => {
     queryKey: [id, rootKey],
     queryFn: fetcher,
     enabled: Boolean(sdk),
-    getNextPageParam: (lastPage) => (lastPage.hasNext ? urlquery.page : null),
+    getNextPageParam: (lastPage) => lastPage.next,
   });
 
   useEffect(() => {
-    if (initialPage !== urlquery.page && query.hasNextPage) {
+    if (urlquery.page > initialPage && query.hasNextPage) {
       query.fetchNextPage();
     }
   }, [urlquery?.page, initialPage]);
