@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 import { Skeleton } from "@material-ui/lab";
-import React, { FC, useRef, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import { debounce } from "lodash";
 
@@ -26,7 +26,7 @@ const DefaultLayout: FC = observer(({ children }) => {
   const [scrollTop, setScrollTop] = useState(0);
 
   const onScrollCapture: React.UIEventHandler<HTMLDivElement> = debounce(() => {
-    setScrollTop(contentRef.current?.scrollTop);
+    //setScrollTop(contentRef.current?.scrollTop);
   }, 66);
 
   const scrollTo = (scrollTop: number) => {

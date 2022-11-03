@@ -41,40 +41,30 @@ const columns: TableColumn[] = [
 const LiquidityPools: NextPage = observer(() => {
   const router = useRouter();
 
-  const query = usePoolsListQuery();
-
   const { data: ztgInfo } = useZtgInfo();
 
   const {
     data: poolPages,
     isLoading: isLoadingPools,
     hasNextPage,
+    fetchNextPage,
   } = usePools();
 
-  const pools = uniqBy(
-    sortBy(poolPages?.pages?.flatMap((pools) => pools.data) || [], "poolId"),
-    "poolId",
-  );
+  const pools = poolPages?.pages.flatMap((pools) => pools.data) || [];
 
   const { data: saturatedIndex } = useSaturatedPoolsIndex(pools);
 
-  const [initialLoad, setInitialLoad] = useState(true);
-  const paginatorRef = useRef<HTMLDivElement>();
-  const paginatorInView = useIsOnScreen(paginatorRef);
+  // useEffect(() => {
+  //   if (initialLoad && pools) {
+  //     setInitialLoad(false);
+  //   }
+  // }, [pools]);
 
-  useEffect(() => {
-    if (initialLoad && pools) {
-      setInitialLoad(false);
-    }
-  }, [pools]);
-
-  useEffect(() => {
-    if (paginatorInView && hasNextPage && !initialLoad) {
-      query.updateQuery({
-        page: (query.page ?? 0) + 1,
-      });
-    }
-  }, [initialLoad, paginatorInView]);
+  // useEffect(() => {
+  //   if (paginatorInView && hasNextPage && !initialLoad) {
+  //     fetchNextPage();
+  //   }
+  // }, [initialLoad, paginatorInView]);
 
   const totalLiquidity = useMemo(() => {
     return Object.values(saturatedIndex || {}).reduce((acc, { liquidity }) => {
@@ -205,12 +195,12 @@ const LiquidityPools: NextPage = observer(() => {
         data={tableData}
         columns={columns}
         onRowClick={handleRowClick}
-        onLoadMore={() => console.log("load more")}
+        onLoadMore={hasNextPage ? fetchNextPage : undefined}
         loadingMore={isLoadingPools}
         loadingNumber={10}
+        hideLoadMore
+        loadMoreThreshold={70}
       />
-
-      <div ref={paginatorRef} />
     </div>
   );
 });
