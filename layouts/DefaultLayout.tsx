@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 import { Skeleton } from "@material-ui/lab";
-import React, { FC, useRef, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import { debounce } from "lodash";
 
@@ -13,6 +13,8 @@ import RightDrawer from "components/drawer/RightDrawer";
 import LeftDrawer from "components/drawer/LeftDrawer";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";
+import { usePrevious } from "lib/hooks/usePrevious";
+import { shouldScrollTop } from "lib/util/should-scroll";
 
 const DefaultLayout: FC = observer(({ children }) => {
   const store = useStore();
@@ -22,6 +24,7 @@ const DefaultLayout: FC = observer(({ children }) => {
 
   const contentRef = useRef<HTMLDivElement>();
   const [scrollTop, setScrollTop] = useState(0);
+  const prevPathname = usePrevious(router.pathname);
 
   const onScrollCapture: React.UIEventHandler<HTMLDivElement> = debounce(() => {
     setScrollTop(contentRef.current?.scrollTop);
@@ -32,6 +35,12 @@ const DefaultLayout: FC = observer(({ children }) => {
       contentRef.current.scrollTop = scrollTop;
     }
   };
+
+  useEffect(() => {
+    if (shouldScrollTop(router.pathname, prevPathname)) {
+      scrollTo(0);
+    }
+  }, [router.pathname, prevPathname, shouldScrollTop]);
 
   return (
     <div
