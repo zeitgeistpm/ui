@@ -4380,14 +4380,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/indexer@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@zeitgeistpm/indexer@npm:2.2.0"
+"@zeitgeistpm/indexer@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "@zeitgeistpm/indexer@npm:2.2.1"
   dependencies:
     graphql: ^16.6.0
     graphql-request: ^5.0.0
     graphql-tag: ^2.12.6
-  checksum: 72c7d921c4872a7f177dc4a764afe1f505d3ed5afb8cca3dad4e6dc7ba3ef27d739669fef7199df337f8dfd012a6c7b7ddb3f9b844cbad63c09775eab7ab7fe5
+  checksum: 10fcf8bf6bc509bd2ce936c476f3711199e7f712b50b80b8e1aebb5baba4808c6b377c989e75b5ca40bbcc135e1de2a41b1e134ec505d62cf65b37ff300f3872
   languageName: node
   linkType: hard
 
@@ -4405,12 +4405,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.2.2":
-  version: 2.2.2
-  resolution: "@zeitgeistpm/sdk@npm:2.2.2"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.2.3":
+  version: 2.2.3
+  resolution: "@zeitgeistpm/sdk@npm:2.2.3"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.2.0
-    "@zeitgeistpm/indexer": ^2.2.0
+    "@zeitgeistpm/indexer": ^2.2.1
     "@zeitgeistpm/rpc": ^2.2.0
     "@zeitgeistpm/utility": ^2.2.0
     "@zeitgeistpm/web3.storage": ^2.2.0
@@ -4425,7 +4425,7 @@ __metadata:
     "@polkadot/api": ^9.6.1
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: 98915ae939b3ee2f242bac97e84c4ea1a2b958d82046aad307bd345813cf5622758ebf90332106af70b5909ac1f5ae997d38ca8849943ee21330f0ad9a5cde08
+  checksum: b47f411845fca7695fe86111e94763279340e17943983c400338f050880dc959dcb49a61c26e7e3c464f84669edb50486cd452b8cc8ed3812bc3ad7371bd6a2c
   languageName: node
   linkType: hard
 
@@ -4511,7 +4511,7 @@ __metadata:
     "@zeitgeistpm/avatara-react": ^1.1.5
     "@zeitgeistpm/avatara-util": ^1.0.0-alpha.0
     "@zeitgeistpm/sdk": ^0.9.1
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.2.2"
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.2.3"
     "@zeitgeistpm/utility": ^2.2.0
     autoprefixer: 10.2.5
     axios: ^0.21.4

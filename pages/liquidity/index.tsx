@@ -1,17 +1,17 @@
-import { ZTG } from "@zeitgeistpm/sdk-next";
+import { isIndexedSdk, ZTG } from "@zeitgeistpm/sdk-next";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
+import { useMarketStatusCount } from "lib/hooks/queries/useMarketStatusCount";
 import { usePools } from "lib/hooks/queries/usePools";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
-import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
 import { usePoolsListQuery } from "lib/hooks/usePoolsUrlQuery";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { formatNumberLocalized } from "lib/util";
 import { observer } from "mobx-react";
-import { sortBy, uniqBy } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import { AiOutlineRead } from "react-icons/ai";
 
 const columns: TableColumn[] = [
@@ -40,6 +40,7 @@ const columns: TableColumn[] = [
 
 const LiquidityPools: NextPage = observer(() => {
   const router = useRouter();
+  const sdk = useSdkv2();
 
   const { data: ztgInfo } = useZtgInfo();
 
@@ -54,18 +55,6 @@ const LiquidityPools: NextPage = observer(() => {
 
   const { data: saturatedIndex } = useSaturatedPoolsIndex(pools);
 
-  // useEffect(() => {
-  //   if (initialLoad && pools) {
-  //     setInitialLoad(false);
-  //   }
-  // }, [pools]);
-
-  // useEffect(() => {
-  //   if (paginatorInView && hasNextPage && !initialLoad) {
-  //     fetchNextPage();
-  //   }
-  // }, [initialLoad, paginatorInView]);
-
   const totalLiquidity = useMemo(() => {
     return Object.values(saturatedIndex || {}).reduce((acc, { liquidity }) => {
       return acc.plus(liquidity);
@@ -79,11 +68,7 @@ const LiquidityPools: NextPage = observer(() => {
     return new Decimal(0);
   }, [ztgInfo, totalLiquidity]);
 
-  const activeMarketCount = useMemo(() => {
-    return Object.values(saturatedIndex || {}).filter(
-      ({ market: { status } }) => status === "Active",
-    ).length;
-  }, [saturatedIndex]);
+  const { data: activeMarketCount } = useMarketStatusCount("Active");
 
   const tableData = useMemo<TableData[]>(() => {
     return (
@@ -160,7 +145,7 @@ const LiquidityPools: NextPage = observer(() => {
             Active Markets
           </h3>
           <div className="font-bold font-mono px-1 text-xl mb-2">
-            {activeMarketCount}
+            {activeMarketCount ?? 0}
           </div>
           <div className="font-mono px-1 text-sm text-gray-600">
             Currently open markets.
