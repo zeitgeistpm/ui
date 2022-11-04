@@ -1,4 +1,5 @@
 import { observer } from "mobx-react";
+import Image from "next/image";
 import { MarketImageString } from "lib/types/create-market";
 import useImageUrlString from "lib/hooks/useMarketImageUrl";
 
@@ -12,16 +13,12 @@ const MarketImage = observer(
   }) => {
     const imageUrl = useImageUrlString(image);
     return (
-      <div
-        className={
-          "w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 " + className
-        }
-        style={{
-          backgroundImage: `url(${imageUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      ></div>
+      <Image
+        src={imageUrl}
+        width={70}
+        height={70}
+        className={"rounded-[10px] " + className}
+      />
     );
   },
 );
