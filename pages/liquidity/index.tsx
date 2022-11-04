@@ -40,7 +40,6 @@ const columns: TableColumn[] = [
 
 const LiquidityPools: NextPage = observer(() => {
   const router = useRouter();
-  const sdk = useSdkv2();
 
   const { data: ztgInfo } = useZtgInfo();
 
