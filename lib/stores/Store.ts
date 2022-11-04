@@ -59,7 +59,7 @@ interface Config {
   };
   balances: {
     existentialDeposit: number;
-  }
+  };
 }
 
 interface ZTGInfo {
@@ -99,8 +99,6 @@ export default class Store {
   unsubscribeNewHeads: () => void;
 
   blockTimestamp: number;
-
-  ipfs;
 
   leftDrawerClosed = false;
 

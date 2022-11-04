@@ -1,3 +1,4 @@
+import MarketImage from "components/ui/MarketImage";
 import { motion } from "framer-motion";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
@@ -34,17 +35,7 @@ const TrendingMarketCard = observer(
             <div className="flex-col">
               <div className="hidden sm:flex">
                 <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600">
-                  <div
-                    className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0"
-                    style={{
-                      backgroundImage:
-                        img == null
-                          ? "url(/icons/default-market.png)"
-                          : `url(${img})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
-                  ></div>
+                  <MarketImage image={img} />
                 </div>
                 <div className="flex flex-col ml-auto items-end">
                   <div className="text-sky-600 uppercase font-bold text-ztg-14-150">

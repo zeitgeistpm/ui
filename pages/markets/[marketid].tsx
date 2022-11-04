@@ -4,6 +4,7 @@ import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import MarketTimer from "components/markets/MarketTimer";
 import PoolDeployer from "components/markets/PoolDeployer";
+import MarketImage from "components/ui/MarketImage";
 import Pill from "components/ui/Pill";
 import TimeSeriesChart, {
   ChartData,
@@ -18,6 +19,7 @@ import {
 } from "lib/gql/markets";
 import { getBaseAsset } from "lib/gql/pool";
 import { getAssetPriceHistory } from "lib/gql/prices";
+import useMarketImageUrl from "lib/hooks/useMarketImageUrl";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
@@ -145,35 +147,22 @@ const Market: NextPage<{
 
   //required to fix title element warning
   const question = indexedMarket.question;
+  const marketImageUrl = useMarketImageUrl(indexedMarket.img);
 
   return (
     <>
       <Head>
         <title>{question}</title>
         <meta name="description" content={indexedMarket.description} />
+        <meta property="og:description" content={indexedMarket.description} />
+        {marketImageUrl && (
+          <meta property="og:image" content={marketImageUrl} />
+        )}
       </Head>
       <div>
         <div className="flex mb-ztg-33">
           <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600">
-            {indexedMarket?.img ? (
-              <img
-                className="rounded-ztg-10"
-                src={indexedMarket.img}
-                alt="Market image"
-                loading="lazy"
-                width={70}
-                height={70}
-              />
-            ) : (
-              <img
-                className="rounded-ztg-10"
-                src="/icons/default-market.png"
-                alt="Market image"
-                loading="lazy"
-                width={70}
-                height={70}
-              />
-            )}
+            <MarketImage image={indexedMarket.img} />
           </div>
           <div className="sub-header ml-ztg-20">{indexedMarket?.question}</div>
         </div>

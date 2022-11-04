@@ -30,6 +30,7 @@ import { DAY_SECONDS } from "lib/constants";
 
 import MarketTable from "./MarketTable";
 import ScalarPriceRange from "./ScalarPriceRange";
+import MarketImage from "../ui/MarketImage";
 
 const MarketCardContext = createContext<{
   market: MarketCardData;
@@ -59,13 +60,6 @@ const Card = observer(
     const { market } = cardContext;
     const tagsText = market.tags == null ? "" : market.tags.join(" / ");
     const preloaded = isPreloadedMarket(market);
-
-    const getImageUrlString = () => {
-      if (preloaded || (!preloaded && market.img == null)) {
-        return "url(/icons/default-market.png)";
-      }
-      return "url(${market.img})";
-    };
 
     const buttonVariants: Variants = {
       closed: { rotate: 180 },
@@ -108,14 +102,7 @@ const Card = observer(
             <Link href={`/markets/${market.id}`}>
               <a className="flex items-center h-full">
                 <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600">
-                  <div
-                    className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0"
-                    style={{
-                      backgroundImage: getImageUrlString(),
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
-                  ></div>
+                  <MarketImage image={preloaded ? undefined : market.img} />
                 </div>
 
                 <div className=" ml-ztg-16 mr-ztg-16 h-ztg-70 overflow-auto cursor-pointer">

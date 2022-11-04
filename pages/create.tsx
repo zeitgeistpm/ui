@@ -3,7 +3,7 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import MobxReactForm from "mobx-react-form";
 import Decimal from "decimal.js";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { from } from "rxjs";
 import { AlertTriangle } from "react-feather";
 import {
@@ -55,7 +55,6 @@ import { checkMarketExists } from "lib/gql/markets";
 
 interface CreateMarketFormData {
   slug: string;
-  marketImage?: string;
   question: string;
   end: { type: EndType; value?: number | typeof NaN };
   tags: string[];
@@ -119,6 +118,8 @@ const CreatePage: NextPage = observer(() => {
     );
   });
 
+  const ipfsClient = (store.sdk.models as any).ipfsClient;
+
   const [deployPool, setDeployPool] = useState(false);
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[] | null>(null);
   const [swapFee, setSwapFee] = useState<string>();
@@ -132,6 +133,28 @@ const CreatePage: NextPage = observer(() => {
 
   const [marketCost, setMarketCost] = useState<number>();
   const [newMarketId, setNewMarketId] = useState<number>();
+
+  const [marketImageFile, setMarketImageFile] = useState<File>();
+  const [base64MarketImage, setBase64MarketImage] = useState<string>();
+  const [marketImageCid, setMarketImageCid] = useState<string>();
+
+  useEffect(() => {
+    if (marketImageFile == null) {
+      return;
+    }
+    const sub1 = from(toBase64(marketImageFile)).subscribe((encoded) =>
+      setBase64MarketImage(encoded),
+    );
+    const sub2 = from(ipfsClient.addFile(marketImageFile, true)).subscribe(
+      (cid) => {
+        setMarketImageCid(cid.toString());
+      },
+    );
+    return () => {
+      sub1.unsubscribe();
+      sub2.unsubscribe();
+    };
+  }, [marketImageFile]);
 
   useEffect(() => {
     if (store?.graphQLClient == null || newMarketId == null) return;
@@ -161,7 +184,7 @@ const CreatePage: NextPage = observer(() => {
     }
     const sub = from(getTransactionFee()).subscribe(setTxFee);
     return () => sub.unsubscribe();
-  }, [form.isValid, formData, poolRows, deployPool]);
+  }, [form.isValid, formData, poolRows, deployPool, marketImageCid]);
 
   useEffect(() => {
     if (!formData.outcomes.value) {
@@ -278,11 +301,6 @@ const CreatePage: NextPage = observer(() => {
     setFormData((data) => ({ ...data, advised }));
   };
 
-  const changeMarketImage = async (marketImage: File) => {
-    const base64Image = await toBase64(marketImage);
-    setFormData((data) => ({ ...data, marketImage: base64Image }));
-  };
-
   const getMarketPeriod = (): MarketPeriod => {
     return formData.end.type === "block"
       ? { block: [store.blockNumber.toNumber(), formData.end.value] }
@@ -316,7 +334,7 @@ const CreatePage: NextPage = observer(() => {
       question: formData.question,
       description: formData.description,
       tags: formData.tags,
-      img: formData.marketImage,
+      img: marketImageCid,
       categories: entries,
     };
     return metadata;
@@ -422,6 +440,9 @@ const CreatePage: NextPage = observer(() => {
             successMethod: "PoolCreate",
             successCallback: (data) => {
               const marketId: number = findMarketId(data);
+              if (marketImageFile != null) {
+                ipfsClient.addFile(marketImageFile);
+              }
               notificationStore.pushNotification(
                 `Market successfully created with id: ${marketId}`,
                 {
@@ -466,6 +487,9 @@ const CreatePage: NextPage = observer(() => {
                 notificationStore,
                 successMethod: "MarketCreated",
                 finalizedCallback: (data: JSONObject) => {
+                  if (marketImageFile != null) {
+                    ipfsClient.addFile(marketImageFile);
+                  }
                   const marketId = data[0];
                   notificationStore.pushNotification(
                     `Transaction successful! Market id ${marketId}`,
@@ -555,9 +579,9 @@ const CreatePage: NextPage = observer(() => {
       <MarketFormCard header="1. Market name*">
         <MarketSlugField
           slug={formData.slug}
-          base64Image={formData.marketImage}
+          base64Image={base64MarketImage}
           onSlugChange={changeSlug}
-          onImageChange={changeMarketImage}
+          onImageChange={setMarketImageFile}
           textMaxLength={30}
           form={form}
         />
