@@ -281,7 +281,10 @@ export default class UserStore {
 
       let discordHandle: string;
       indentityInfo.get("additional").forEach((element) => {
-        if (textDecoder.decode(element[0].value)) {
+        if (
+          element[0].value?.isEmpty === false &&
+          textDecoder.decode(element[0].value)
+        ) {
           discordHandle = textDecoder.decode(element[1].value);
         }
       });
