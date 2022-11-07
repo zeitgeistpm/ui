@@ -4,7 +4,7 @@ import {
   isMarketImageBase64Encoded,
 } from "lib/types/create-market";
 
-const useImageUrlString = (image?: MarketImageString) => {
+const useMarketImageUrl = (image?: MarketImageString) => {
   const [imageUrl, setImageUrl] = useState<string>("/icons/default-market.png");
 
   useEffect(() => {
@@ -21,4 +21,4 @@ const useImageUrlString = (image?: MarketImageString) => {
   return imageUrl;
 };
 
-export default useImageUrlString;
+export default useMarketImageUrl;

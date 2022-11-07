@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import Image from "next/image";
 import { MarketImageString } from "lib/types/create-market";
-import useImageUrlString from "lib/hooks/useMarketImageUrl";
+import useMarketImageUrl from "lib/hooks/useMarketImageUrl";
 
 const MarketImage = observer(
   ({
@@ -11,7 +11,7 @@ const MarketImage = observer(
     image: MarketImageString;
     className?: string;
   }) => {
-    const imageUrl = useImageUrlString(image);
+    const imageUrl = useMarketImageUrl(image);
     return (
       <Image
         src={imageUrl}
