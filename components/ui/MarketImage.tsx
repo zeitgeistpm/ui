@@ -17,12 +17,12 @@ const MarketImage = observer(
     return (
       <div
         className={
-          "w-[70px] h-[70px] rounded-[10px] flex-shrink-0 relative overflow-hidden relative" +
+          "w-[70px] h-[70px] rounded-[10px] flex-shrink-0 relative overflow-hidden" +
           className
         }
       >
         <Image
-          alt="market image"
+          alt={alt}
           src={imageUrl}
           fill
           className="rounded-[10px]"
