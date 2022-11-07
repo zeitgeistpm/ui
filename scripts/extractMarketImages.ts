@@ -35,7 +35,7 @@ async function getAllMarketImages(): Promise<
   }
   fs.mkdirSync(imagesDir);
   for (const entry of data) {
-    if (entry.img == null) {
+    if (entry.img == null || !entry.img.startsWith("data:image")) {
       continue;
     }
     const [typeStr, b64Str] = entry.img.split(";base64,");
