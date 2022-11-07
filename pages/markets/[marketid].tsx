@@ -47,8 +47,9 @@ export async function getStaticProps({ params }) {
 
   const market = await getMarket(client, params.marketid);
 
+  // todo replace with period start on new subsquid
   const dateOneMonthAgo = new Date(
-    new Date().getTime() - DAY_SECONDS * 31 * 1000,
+    new Date().getTime() - DAY_SECONDS * 365 * 1000,
   ).toISOString();
 
   const assetPrices = await Promise.all(
