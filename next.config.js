@@ -14,6 +14,14 @@ module.exports = withBundleAnalyzer({
       };
     }
 
+    // config.externals = [
+    //   ...config.externals,
+    //   {
+    //     "@substrate/connect": "SubstrateConnect",
+    //     "@substrate/smoldot-light": "SmoldotLightClient",
+    //   },
+    // ];
+
     return config;
   },
 });
