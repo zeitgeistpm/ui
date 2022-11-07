@@ -216,9 +216,9 @@ const PoolDetails: NextPage = observer(() => {
           <>
             <FullSetButtons marketStore={marketStore} />
             <Link href={`/markets/${marketStore.id}`}>
-              <a className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 ">
+              <div className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 ">
                 Market
-              </a>
+              </div>
             </Link>
           </>
         )}

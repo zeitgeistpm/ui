@@ -191,30 +191,31 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           className="absolute top-10% right-10% w-1/12"
           style={{ zIndex: 30 }}
         >
-          <Image src={Saturn} />
+          <Image src={Saturn} alt="" />
         </Parallax>
 
         <Parallax className="absolute top-16% right-10%" style={{ zIndex: 30 }}>
-          <Image src={Star} width={"22"} height={"22"} />
+          <Image src={Star} width={"22"} height={"22"} alt="" />
         </Parallax>
 
         <Parallax className="absolute top-24 right-64" style={{ zIndex: 30 }}>
-          <Image src={Star} width={"12"} height={"12"} />
+          <Image src={Star} width={"12"} height={"12"} alt="" />
         </Parallax>
 
         <Parallax className="absolute top-24 left-64" style={{ zIndex: 30 }}>
-          <Image src={Star} width={"26"} height={"26"} />
+          <Image src={Star} width={"26"} height={"26"} alt="" />
         </Parallax>
 
         <div className="absolute hidden md:block -top-16% right-0 w-full md:w-3/5 xl:w-5/12 overflow-hidden">
           <Parallax>
-            <Image src={Ball2} />
+            <Image src={Ball2} alt="" />
           </Parallax>
           <Parallax>
             <Image
               src={Ball6}
               className="absolute bottom-20 right-72"
               width={82}
+              alt=""
             />
           </Parallax>
         </div>
@@ -224,13 +225,13 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
           style={{ zIndex: 10 }}
         >
           <Parallax className="w-full">
-            <Image src={RocketBall} />
+            <Image src={RocketBall} alt="" />
           </Parallax>
           <Parallax className="absolute top-0 left-12 ">
-            <Image src={GlowBall} />
+            <Image src={GlowBall} alt="" />
           </Parallax>
           <Parallax className="absolute top-24 left-24 w-2/4">
-            <Image src={Rocket} />
+            <Image src={Rocket} alt="" />
           </Parallax>
         </div>
 
@@ -317,7 +318,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             className="relative flex justify-center"
             style={{ zIndex: 50 }}
           >
-            <Image src={DownCarret} className="w-12 md:w-22 xl:w-24" />
+            <Image src={DownCarret} className="w-12 md:w-22 xl:w-24" alt="" />
           </Parallax>
 
           <div
@@ -327,22 +328,22 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             <section className="flex relative justify-center w-full mb-16 md:w-5/6">
               <Parallax className="absolute top-0 -left-12 w-8/12 md:w-6/12 xl:w-5/12">
                 <div style={{ zIndex: 0 }}>
-                  <Image src={Ball3} />
+                  <Image src={Ball3} alt="" />
                 </div>
               </Parallax>
               <Parallax className="absolute top-20% right-12 w-10/12 md:w-8/12 xl:w-6/12">
                 <div style={{ zIndex: 0 }}>
-                  <Image src={Ball4} />
+                  <Image src={Ball4} alt="" />
                 </div>
               </Parallax>
               <Parallax className="absolute top-24 left-0 xl:-left-64">
                 <div style={{ zIndex: 30 }}>
-                  <Image src={Star} width={"26"} height={"26"} />
+                  <Image src={Star} width={"26"} height={"26"} alt="" />
                 </div>
               </Parallax>
               <Parallax className="absolute bottom-0 right-0 xl:-right-64">
                 <div style={{ zIndex: 30 }}>
-                  <Image src={Star} width={"16"} height={"16"} />
+                  <Image src={Star} width={"16"} height={"16"} alt="" />
                 </div>
               </Parallax>
               <div className="md:w-5/6" style={{ zIndex: 10 }}>
@@ -370,7 +371,7 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             </section>
 
             <Parallax className="flex justify-center mb-16">
-              <Image src={DownCarret} className="w-12 md:w-22 xl:w-24" />
+              <Image src={DownCarret} className="w-12 md:w-22 xl:w-24" alt="" />
             </Parallax>
 
             <section
@@ -543,12 +544,12 @@ const DefaultLayout: FC<{ launchDate: Date }> = observer(
             <section className="flex relative justify-center w-full mb-12 md:w-5/6">
               <Parallax className="absolute -bottom-72 -left-72 w-10/12 md:w-9/12 xl:w-12/12">
                 <div style={{ zIndex: 0 }}>
-                  <Image src={Ball5} />
+                  <Image src={Ball5} alt="" />
                 </div>
               </Parallax>
               <Parallax className="absolute top-[50%] right-0 xl:-right-64">
                 <div style={{ zIndex: 30 }}>
-                  <Image src={Star} width={"28"} height={"28"} />
+                  <Image src={Star} width={"28"} height={"28"} alt="" />
                 </div>
               </Parallax>
               <div className="md:w-5/6" style={{ zIndex: 10 }}>

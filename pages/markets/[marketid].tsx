@@ -161,9 +161,7 @@ const Market: NextPage<{
       </Head>
       <div>
         <div className="flex mb-ztg-33">
-          <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600">
-            <MarketImage image={indexedMarket.img} />
-          </div>
+          <MarketImage image={indexedMarket.img} />
           <div className="sub-header ml-ztg-20">{indexedMarket?.question}</div>
         </div>
         <div

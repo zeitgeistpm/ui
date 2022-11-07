@@ -1,4 +1,3 @@
-import Link from "next/link";
 import ZeitgeistLogo from "./Logo";
 
 interface FooterItem {

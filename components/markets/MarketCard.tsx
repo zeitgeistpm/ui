@@ -100,10 +100,8 @@ const Card = observer(
         >
           <div className="flex items-center mx-ztg-16 h-full">
             <Link href={`/markets/${market.id}`}>
-              <a className="flex items-center h-full">
-                <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600">
-                  <MarketImage image={preloaded ? undefined : market.img} />
-                </div>
+              <div className="flex items-center h-full">
+                <MarketImage image={preloaded ? undefined : market.img} />
 
                 <div className=" ml-ztg-16 mr-ztg-16 h-ztg-70 overflow-auto cursor-pointer">
                   <div className="text-ztg-12-120 font-bold uppercase text-sky-600">
@@ -113,7 +111,7 @@ const Card = observer(
                     {market.question}
                   </div>
                 </div>
-              </a>
+              </div>
             </Link>
 
             <div
@@ -145,9 +143,7 @@ const Card = observer(
               {/* TODO */}
               {/* <Star size={24} className="mr-ztg-10 cursor-pointer" /> */}
               <Link href={`/markets/${market.id}`}>
-                <a>
-                  <ExternalLink size={24} className="cursor-pointer" />
-                </a>
+                <ExternalLink size={24} className="cursor-pointer" />
               </Link>
               <div className="w-ztg-43">
                 <motion.button
