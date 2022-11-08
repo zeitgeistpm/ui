@@ -13,7 +13,7 @@ import { GraphQLClient } from "graphql-request";
 import { DAY_SECONDS } from "lib/constants";
 import {
   getMarket,
-  getMarketIds,
+  getMarketStatusIds,
   MarketPageIndexedData,
 } from "lib/gql/markets";
 import { getBaseAsset } from "lib/gql/pool";
@@ -33,9 +33,12 @@ import { AlertTriangle } from "react-feather";
 export async function getStaticPaths() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
-  const marketIds = await getMarketIds(client);
-  const paths = marketIds.map((marketId) => ({
-    params: { marketid: marketId.toString() },
+  const marketStatusIds = await getMarketStatusIds(client);
+  //todo: also filter by end date once sdk is updated
+  const ssgMarkets = marketStatusIds.filter((m) => m.status != "Resolved");
+
+  const paths = ssgMarkets.map((market) => ({
+    params: { marketid: market.marketId.toString() },
   }));
 
   return { paths, fallback: "blocking" };

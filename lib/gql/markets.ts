@@ -1,9 +1,11 @@
 import { gql, GraphQLClient } from "graphql-request";
+import { MarketStatus } from "lib/types";
 
-const marketIdsQuery = gql`
+const marketStatusIdsQuery = gql`
   query MarketIds {
     markets {
       marketId
+      status
     }
   }
 `;
@@ -41,16 +43,15 @@ export interface MarketPageIndexedData {
   poolId: number;
 }
 
-export const getMarketIds = async (
-  client: GraphQLClient,
-): Promise<number[]> => {
+export const getMarketStatusIds = async (client: GraphQLClient) => {
   const response = await client.request<{
     markets: {
       marketId: number;
+      status: MarketStatus;
     }[];
-  }>(marketIdsQuery);
+  }>(marketStatusIdsQuery);
 
-  return response.markets.map((m) => m.marketId);
+  return response.markets;
 };
 
 export const getMarket = async (client: GraphQLClient, marketId: string) => {
