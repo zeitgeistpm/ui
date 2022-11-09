@@ -2,7 +2,7 @@ import { Skeleton } from "@material-ui/lab";
 import { TagCounts } from "lib/gql/popular-categories";
 import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
 import { observer } from "mobx-react";
-import { FC } from "react";
+import { FC, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
@@ -18,13 +18,19 @@ const Category = ({
   count: number;
   className?: string;
 }) => {
+  const [isHoving, setIsHoving] = useState(false);
+
   return (
-    <div className="flex flex-col min-w-[150px] w-full">
+    <div
+      className="flex flex-col min-w-[150px] w-full"
+      onMouseEnter={() => setIsHoving(true)}
+      onMouseLeave={() => setIsHoving(false)}
+    >
       <div
         className="bg-anti-flash-white rounded-ztg-10 flex justify-center items-center h-full cursor-pointer"
         onClick={onClick}
       >
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 1 }}>
+        <motion.div animate={isHoving ? { scale: 1.05 } : { scale: 1.0 }}>
           <Image src={imgURL} alt={title} width={100} height={100} />
         </motion.div>
       </div>
