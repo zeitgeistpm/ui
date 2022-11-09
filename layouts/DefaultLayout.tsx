@@ -14,6 +14,8 @@ import LeftDrawer from "components/drawer/LeftDrawer";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { usePrevious } from "lib/hooks/usePrevious";
+import { shouldScrollTop } from "lib/util/should-scroll";
 
 const DefaultLayout: FC = observer(({ children }) => {
   const store = useStore();
@@ -24,6 +26,7 @@ const DefaultLayout: FC = observer(({ children }) => {
 
   const contentRef = useRef<HTMLDivElement>();
   const [scrollTop, setScrollTop] = useState(0);
+  const prevPathname = usePrevious(router.pathname);
 
   const onScrollCapture: React.UIEventHandler<HTMLDivElement> = debounce(() => {
     //setScrollTop(contentRef.current?.scrollTop);
@@ -34,6 +37,16 @@ const DefaultLayout: FC = observer(({ children }) => {
       contentRef.current.scrollTop = scrollTop;
     }
   };
+
+  useEffect(() => {
+    if (
+      router.pathname &&
+      prevPathname &&
+      shouldScrollTop(router.pathname, prevPathname)
+    ) {
+      scrollTo(0);
+    }
+  }, [router.pathname, prevPathname, shouldScrollTop]);
 
   return (
     <div
