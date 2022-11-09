@@ -1,0 +1,51 @@
+.dark > * .ql-toolbar .ql-stroke {
+  fill: none;
+  stroke: #fff;
+}
+
+.dark > * .ql-toolbar .ql-fill {
+  fill: #fff;
+  stroke: none;
+}
+
+.dark > * .ql-toolbar .ql-picker {
+  color: #fff;
+}
+
+.ql-editor.ql-blank::before {
+  color: #748296 !important;
+}
+
+.ql-toolbar {
+  background-color: #d9e3ee;
+  border: 0 !important;
+}
+
+.ql-container {
+  border: 0 !important;
+}
+
+.dark > * .ql-toolbar {
+  background-color: #141a24;
+}
+
+.ql-editor {
+  background-color: white;
+}
+
+.dark > * .ql-editor {
+  background-color: black;
+}
+
+.ql-editor[contenteditable="false"] {
+  background-color: unset;
+  padding-left: 0;
+}
+
+.dark > * .ql-editor[contenteditable="false"] {
+  background-color: unset;
+}
+
+.quill .ql-editor {
+  font-family: "lato";
+}

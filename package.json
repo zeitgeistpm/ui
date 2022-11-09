@@ -59,6 +59,7 @@
     "react-feather": "^2.0.9",
     "react-hotjar": "^3.0.1",
     "react-icons": "^4.3.1",
+    "react-quill": "^2.0.0",
     "react-resize-detector": "^7.0.0",
     "react-select": "^5.4",
     "react-spinners": "^0.10.6",

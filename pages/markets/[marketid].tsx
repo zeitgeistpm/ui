@@ -24,11 +24,16 @@ import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
+
+const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
+  ssr: false,
+});
 
 export async function getStaticPaths() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
@@ -51,13 +56,15 @@ export async function getStaticProps({ params }) {
     new Date().getTime() - DAY_SECONDS * 31 * 1000,
   ).toISOString();
 
-  const assetPrices = await Promise.all(
-    market?.outcomeAssets?.map((asset) =>
-      getAssetPriceHistory(client, asset, dateOneMonthAgo),
-    ),
-  );
+  const assetPrices = market?.outcomeAssets
+    ? await Promise.all(
+        market?.outcomeAssets?.map((asset) =>
+          getAssetPriceHistory(client, asset, dateOneMonthAgo),
+        ),
+      )
+    : undefined;
 
-  const chartSeries: ChartSeries[] = market.categories?.map(
+  const chartSeries: ChartSeries[] = market?.categories?.map(
     (category, index) => {
       return {
         accessor: `v${index}`,
@@ -76,7 +83,7 @@ export async function getStaticProps({ params }) {
     });
   });
 
-  const baseAsset = market.poolId
+  const baseAsset = market?.poolId
     ? await getBaseAsset(client, market.poolId)
     : null;
 
@@ -245,9 +252,7 @@ const Market: NextPage<{
         )}
         {<MarketAssetDetails marketStore={marketStore} />}
         <div className="sub-header mt-ztg-40 mb-ztg-15">About Market</div>
-        <div className="font-lato text-ztg-14-180 text-sky-600">
-          {indexedMarket.description}
-        </div>
+        {<QuillViewer value={indexedMarket.description} />}
         <PoolDeployer
           marketStore={marketStore}
           onPoolDeployed={handlePoolDeployed}
