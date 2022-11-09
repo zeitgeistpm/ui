@@ -15,13 +15,16 @@ import { GraphQLClient } from "graphql-request";
 import getTrendingMarkets from "lib/gql/trending-markets";
 import { getPopularCategories, TagCounts } from "lib/gql/popular-categories";
 import { getPlaiceholder, IGetPlaiceholderReturn } from "plaiceholder";
+import Link from "next/link";
+
+const MAIN_IMAGE_PATH = "/carousel/intro_zeitgeist_avatar.png";
 
 export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
   const trendingMarkets = await getTrendingMarkets(client);
 
-  const img = await getPlaiceholder("/carousel/intro_zeitgeist_avatar.png");
+  const img = await getPlaiceholder(MAIN_IMAGE_PATH);
 
   if (!trendingMarkets || trendingMarkets.length === 0) {
     // prevent rerender if server isn't returning markets
@@ -154,23 +157,36 @@ const IndexPage: NextPage<{
         target="_blank"
         rel="noreferrer"
       >
-        <GlitchImage
-          src="/carousel/intro_zeitgeist_avatar.png"
+        {/* <GlitchImage
+          src={MAIN_IMAGE_PATH}
           className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
-        >
-          <Image
-            src="/carousel/intro_zeitgeist_avatar.png"
-            alt="Introducing Zeitgeist Avatar"
-            layout="responsive"
-            width={1036}
-            height={374}
-            quality={100}
-            blurDataURL={img.base64}
-            placeholder="blur"
-            priority
-          />
-        </GlitchImage>
+        > */}
+        <Image
+          src={MAIN_IMAGE_PATH}
+          alt="Introducing Zeitgeist Avatar"
+          layout="responsive"
+          width={1036}
+          height={374}
+          quality={100}
+          blurDataURL={img.base64}
+          placeholder="blur"
+          priority
+        />
+        {/* </GlitchImage> */}
       </a>
+      <div className="flex items-center w-full justify-center relative bottom-[29px]">
+        <Link href="/markets/">
+          <a
+            className="font-lato text-[20px] h-[58px] w-[323px] center border-2 rounded-ztg-100 bg-white"
+            style={{
+              boxShadow:
+                "0px 70px 28px rgba(0, 0, 0, 0.01), 0px 40px 24px rgba(0, 0, 0, 0.05), 0px 18px 18px rgba(0, 0, 0, 0.09), 0px 4px 10px rgba(0, 0, 0, 0.1), 0px 0px 0px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            Go to All Markets
+          </a>
+        </Link>
+      </div>
       <TrendingMarkets markets={trendingMarkets} />
       {/* <PopularCategories tagCounts={tagCounts} /> */}
       <MarketsList />
