@@ -138,8 +138,8 @@ const Cell = observer(
           onClick={onClick}
           style={style}
         >
-          <div className="center">
-            <Skeleton className="!transform-none !w-[25px] !h-[24px]" />
+          <div className="flex justify-end">
+            <Skeleton className="!transform-none !w-[25px] !h-[25px]" />
           </div>
         </td>
       );

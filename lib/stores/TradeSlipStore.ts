@@ -161,7 +161,7 @@ export class TradeSlipBoxState {
   }
 
   get canLoadMarket() {
-    return true;
+    return this.store.sdk != null;
   }
 
   get fieldName() {
