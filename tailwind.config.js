@@ -197,6 +197,7 @@ module.exports = {
         starfall: "#D7E2ED",
         "light-overlay": "rgba(0,0,0,0.4)",
         "dark-overlay": "rgba(5,5,5,0.7)",
+        "anti-flash-white": "#F0F2F5",
       },
       inset: {
         "42%": "42%",
