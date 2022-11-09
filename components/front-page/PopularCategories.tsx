@@ -34,7 +34,7 @@ const Category = ({
           <Image src={imgURL} alt={title} width={100} height={100} />
         </motion.div>
       </div>
-      <span className="flex mt-[10px]">
+      <span className="flex mt-[10px] items-center">
         <span className="font-lato font-bold text-ztg-16-150">{title}</span>
         <span className="ml-auto">
           <span className="flex justify-center items-center bg-anti-flash-white rounded-ztg-5 w-[41px] h-[19px]">
@@ -58,9 +58,8 @@ const PopularCategories: FC<{ tagCounts: TagCounts }> = observer(
 
     return (
       <div className="flex flex-col mt-ztg-30">
-        <div></div>
-        <h3 className="font-space font-bold text-[24px] mb-ztg-30">
-          Popular Topics
+        <h3 className="font-lato font-bold text-[28px] mb-ztg-30">
+          Popular Categories
         </h3>
         <div className="flex w-full h-[184px] gap-x-[28px] ">
           <Category
