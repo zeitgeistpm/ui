@@ -31,17 +31,24 @@ const MarketCardInfo = ({
   );
 };
 
-type MarketCategories = { ticker: string; color: string }[];
+type MarketCategory = { ticker: string; color: string };
+type MarketCategories = MarketCategory[];
 
-const MarketDetailsOverlay = ({
-  categories,
-  className = "",
-  onCloseIconClick,
-}: {
+const MarketCardOverlayCategory = ({}: {}) => {
+  return <div className="flex h-[35px]"></div>;
+};
+
+type MarketCardOverlayProps = {
   categories: MarketCategories;
   className?: string;
   onCloseIconClick?: () => void;
-}) => {
+};
+
+const MarketCardOverlay = ({
+  categories,
+  className = "",
+  onCloseIconClick,
+}: MarketCardOverlayProps) => {
   return (
     <div
       className={
@@ -49,7 +56,22 @@ const MarketDetailsOverlay = ({
         className
       }
     >
-      <X onClick={onCloseIconClick} className="cursor-pointer" />
+      <div className="flex flex-col mb-[25px]">
+        <div className="flex flex-row justify-between">
+          <div className="font-lato font-bold text-ztg-16-150">
+            {categories.length} Outcomes
+          </div>
+          <X
+            onClick={onCloseIconClick}
+            className="cursor-pointer text-sky-600"
+            size={24}
+          />
+        </div>
+        <div className="flex flex-row items-center h-[26px] text-ztg-12-150 text-sky-600">
+          Showing 1-4
+        </div>
+      </div>
+      <div className="flex flex-col h-[209px]"></div>
     </div>
   );
 };
@@ -90,7 +112,7 @@ const MarketCard = ({
       }
     >
       {showDetailsOverlay && (
-        <MarketDetailsOverlay
+        <MarketCardOverlay
           categories={categories}
           className="top-0 left-[0]"
           onCloseIconClick={() => setShowDetailsOverlay(false)}
