@@ -14,11 +14,14 @@ import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
 import { GraphQLClient } from "graphql-request";
 import getTrendingMarkets from "lib/gql/trending-markets";
 import { getPopularCategories, TagCounts } from "lib/gql/popular-categories";
+import { getPlaiceholder, IGetPlaiceholderReturn } from "plaiceholder";
 
 export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
   const trendingMarkets = await getTrendingMarkets(client);
+
+  const img = await getPlaiceholder("/carousel/intro_zeitgeist_avatar.png");
 
   if (!trendingMarkets || trendingMarkets.length === 0) {
     // prevent rerender if server isn't returning markets
@@ -32,6 +35,7 @@ export async function getStaticProps() {
     props: {
       trendingMarkets: trendingMarkets,
       tagCounts: categories,
+      img,
     },
     revalidate: 10 * 60, //10min
   };
@@ -139,7 +143,8 @@ const PopularCategories: FC<{ tagCounts: TagCounts }> = observer(
 const IndexPage: NextPage<{
   trendingMarkets: TrendingMarketInfo[];
   tagCounts: TagCounts;
-}> = observer(({ trendingMarkets, tagCounts }) => {
+  img: IGetPlaiceholderReturn;
+}> = observer(({ trendingMarkets, tagCounts, img }) => {
   const store = useStore();
 
   return (
@@ -160,6 +165,8 @@ const IndexPage: NextPage<{
             width={1036}
             height={374}
             quality={100}
+            blurDataURL={img.base64}
+            placeholder="blur"
             priority
           />
         </GlitchImage>
