@@ -124,7 +124,7 @@ const CreatePage: NextPage = observer(() => {
     );
   });
 
-  const ipfsClient = (store.sdk.models as any).ipfsClient;
+  const ipfsClient = store.sdk.models.ipfsClient;
 
   const [deployPool, setDeployPool] = useState(false);
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[] | null>(null);
@@ -135,7 +135,6 @@ const CreatePage: NextPage = observer(() => {
 
   const questionInputRef = useRef();
   const oracleInputRef = useRef();
-  const descriptionInputRef = useRef();
 
   const [marketCost, setMarketCost] = useState<number>();
   const [newMarketId, setNewMarketId] = useState<number>();
