@@ -16,7 +16,6 @@ export const marketDetailsQuery = gql`
   fragment MarketDetails on Market {
     marketId
     description
-    end
     creator
     creation
     oracle
@@ -26,6 +25,9 @@ export const marketDetailsQuery = gql`
     status
     scalarType
     poolId
+    period {
+      end
+    }
     categories {
       name
       ticker
@@ -98,7 +100,7 @@ export class MarketPreloader {
       orderingStr = ordering === "asc" ? "DESC" : "ASC";
     }
     const orderByQuery =
-      orderBy === "newest" ? `marketId_${orderingStr}` : `end_${orderingStr}`;
+      orderBy === "newest" ? `marketId_${orderingStr}` : `period_end_${orderingStr}`;
 
     const variables = {
       statuses,

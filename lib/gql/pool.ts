@@ -1,7 +1,6 @@
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 import { ZTG } from "lib/constants";
-import { JSONObject } from "lib/types";
 
 const baseAssetQuery = gql`
   query BaseAsset($poolId: Int) {

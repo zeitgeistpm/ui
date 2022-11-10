@@ -65,7 +65,7 @@ const Card = observer(
       if (preloaded || (!preloaded && market.img == null)) {
         return "url(/icons/default-market.png)";
       }
-      return "url(${market.img})";
+      return `url(${market.img})`;
     };
 
     const getPredictionHumanReadable = () => {

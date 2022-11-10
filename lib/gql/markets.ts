@@ -13,7 +13,6 @@ const marketQuery = gql`
   query Market($marketId: Int) {
     markets(where: { marketId_eq: $marketId }) {
       marketId
-      end
       description
       poolId
       question
@@ -23,6 +22,9 @@ const marketQuery = gql`
       outcomeAssets
       poolId
       scalarType
+      period {
+        end
+      }
       categories {
         ticker
         color
@@ -38,7 +40,9 @@ export interface MarketPageIndexedData {
   question: string;
   description: string;
   status: string;
-  end: number;
+  period: {
+    end: number;
+  };
   categories: { ticker: string; color: string }[];
   outcomeAssets: string[];
   poolId: number;
