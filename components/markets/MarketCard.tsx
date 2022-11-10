@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { motion, Variants } from "framer-motion";
 import Decimal from "decimal.js";
+import moment from "moment";
 import { Skeleton } from "@material-ui/lab";
 import { combineLatest, from, map, Subscription } from "rxjs";
 import React, {
@@ -60,6 +61,27 @@ const Card = observer(
     const { market } = cardContext;
     const tagsText = market.tags == null ? "" : market.tags.join(" / ");
     const preloaded = isPreloadedMarket(market);
+
+    const getImageUrlString = () => {
+      if (preloaded || (!preloaded && market.img == null)) {
+        return "url(/icons/default-market.png)";
+      }
+      return `url(${market.img})`;
+    };
+
+    const getPredictionHumanReadable = () => {
+      if (market.poolExists === false) {
+        return "--";
+      }
+      if (market.scalarType === "date") {
+        const humanReadable = moment(Number(prediction)).format(
+          "d/MM/D/YY, hh:mm",
+        );
+        return humanReadable;
+      } else {
+        return `${prediction}`;
+      }
+    };
 
     const buttonVariants: Variants = {
       closed: { rotate: 180 },
@@ -127,14 +149,14 @@ const Card = observer(
                     prediction == null ? (
                       <Skeleton className="!transform-none !w-[50px] !h-[20px] !mt-ztg-4" />
                     ) : (
-                      prediction
+                      getPredictionHumanReadable()
                     )
                   ) : (
                     "--"
                   ))}
                 {!preloaded && (
                   <div className="text-ztg-16-120 font-bold text-black dark:text-white mt-ztg-4">
-                    {prediction ?? "--"}
+                    {getPredictionHumanReadable()}
                   </div>
                 )}
               </div>
@@ -284,6 +306,7 @@ const PoolExpandable = observer(
             upperBound={bounds?.[1]}
             shortPrice={shortPrice}
             longPrice={longPrice}
+            scalarType={market.scalarType}
           />
         ) : (
           market.type === "scalar" && (
@@ -311,7 +334,6 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
   const [expanded, setExpanded] = useState(false);
   const store = useStore();
 
-  const poolExists = market.poolExists;
   const status: string = market.status;
 
   const [innerStatus, setInnerStatus] = useState<string>(status);
@@ -321,19 +343,6 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
 
   const marketStore = isPreloadedMarket(market) ? undefined : market;
   const marketStorePool = marketStore?.pool;
-
-  const getPricesFromChain = async (market: MarketStore) => {
-    const pricePromises = market.marketOutcomes
-      .filter((o) => o.metadata !== "ztg")
-      .map(async (outcome) => {
-        return {
-          assetId: outcome.asset,
-          price: await market.assetPriceInZTG(outcome.asset),
-        };
-      });
-    const prices = await Promise.all(pricePromises);
-    return prices;
-  };
 
   const getAssetsFromChain = async (
     market: MarketStore,
@@ -375,9 +384,6 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
     if (isPreloadedMarket(market)) {
       return;
     }
-    if (!poolExists) {
-      return setPrediction(null);
-    }
 
     if (
       preloadAssetsSubRef.current != null &&
@@ -395,7 +401,7 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
 
   useEffect(() => {
     if (assets == null) {
-      return;
+      return setPrediction(null);
     }
     const preloaded = isPreloadedMarket(market);
     if (market.type === "categorical") {

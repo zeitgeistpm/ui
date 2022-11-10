@@ -1,3 +1,4 @@
+import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { gql, GraphQLClient } from "graphql-request";
 
 const marketIdsQuery = gql`
@@ -7,11 +8,11 @@ const marketIdsQuery = gql`
     }
   }
 `;
+
 const marketQuery = gql`
   query Market($marketId: Int) {
     markets(where: { marketId_eq: $marketId }) {
       marketId
-      end
       description
       poolId
       question
@@ -20,6 +21,10 @@ const marketQuery = gql`
       img
       outcomeAssets
       poolId
+      scalarType
+      period {
+        end
+      }
       categories {
         ticker
         color
@@ -35,10 +40,13 @@ export interface MarketPageIndexedData {
   question: string;
   description: string;
   status: string;
-  end: number;
+  period: {
+    end: number;
+  };
   categories: { ticker: string; color: string }[];
   outcomeAssets: string[];
   poolId: number;
+  scalarType: ScalarRangeType | null;
 }
 
 export const getMarketIds = async (

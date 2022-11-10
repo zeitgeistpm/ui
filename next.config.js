@@ -3,9 +3,6 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 });
 
 module.exports = withBundleAnalyzer({
-  experimental: {
-    scrollRestoration: true,
-  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -14,13 +11,13 @@ module.exports = withBundleAnalyzer({
       };
     }
 
-    config.externals = [
-      ...config.externals,
-      {
-        //"@substrate/connect": "SubstrateConnect",
-        "@substrate/smoldot-light": "SmoldotLightClient",
-      },
-    ];
+    // config.externals = [
+    //   ...config.externals,
+    //   {
+    //     "@substrate/connect": "SubstrateConnect",
+    //     "@substrate/smoldot-light": "SmoldotLightClient",
+    //   },
+    // ];
 
     return config;
   },

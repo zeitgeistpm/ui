@@ -6,6 +6,7 @@ import {
   MarketCreation,
   MarketDispute,
   MarketPeriod,
+  ScalarRangeType,
 } from "@zeitgeistpm/sdk/dist/types";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces";
 import Decimal from "decimal.js";
@@ -409,6 +410,13 @@ class MarketStore {
 
   get assets(): Asset[] {
     return this.pool?.assets;
+  }
+
+  get scalarType(): ScalarRangeType | null {
+    if (this.type !== "scalar") {
+      return null;
+    }
+    return this.market.scalarType;
   }
 
   get tradingEnabled(): boolean | null {

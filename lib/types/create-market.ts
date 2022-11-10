@@ -12,7 +12,10 @@ export interface RangeOutcomeEntry {
   minimum: number | typeof NaN;
   maximum: number | typeof NaN;
   ticker: string;
+  type: RangeType;
 }
+
+export type RangeType = "number" | "date";
 
 export type YesNoOutcome = [
   { name: "yes"; ticker: "YES"; color: "#0E992D" },
@@ -51,4 +54,13 @@ export const isMarketImageBase64Encoded = (
   image: string,
 ): image is MarketImageBase64Encoded => {
   return image.startsWith("data:image");
+};
+
+export const isDateRangeOutcomeEntry = (
+  value: Outcomes,
+): value is RangeOutcomeEntry & { type: "date" } => {
+  if (value && !Array.isArray(value) && value.type === "date") {
+    return true;
+  }
+  return false;
 };

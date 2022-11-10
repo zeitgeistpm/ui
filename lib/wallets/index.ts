@@ -158,7 +158,7 @@ export default class Wallets {
 
   activeBalance = new Decimal(0);
 
-  private balanceSubscription?: () => void;
+  private balanceSubscription?: any;
 
   get accountSelectOptions() {
     return this.accounts.map((account, id) => {
