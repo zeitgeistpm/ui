@@ -1,3 +1,4 @@
+import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import React from "react";
 import { useState } from "react";
 
@@ -6,6 +7,8 @@ export type MarketDeadlineInputType = "grace" | "oracle" | "dispute";
 export type MarketDeadlineValue = { [key in MarketDeadlineInputType]: {} };
 
 export const MarketDeadlinesInput = () => {
+  const { data: constants } = useMarketDeadlineConstants();
+
   const [tab, setTab] = useState<MarketDeadlineInputType>("grace");
   const [value, setValue] = useState<MarketDeadlineValue>({});
 

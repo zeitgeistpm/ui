@@ -4392,6 +4392,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@zeitgeistpm/augment-api@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "@zeitgeistpm/augment-api@npm:2.2.1"
+  peerDependencies:
+    "@polkadot/api-base": "*"
+    "@polkadot/rpc-core": "*"
+    "@polkadot/types": "*"
+  checksum: 684f1dc6de17e579b34a2cd338413de114a4fb58e198fcce1ba02acc8aaec3fd9c1f98e2dc4bbb44e0e1ebba134c577d03a2cbbc89d3e1dfee315a4b34e189bf
+  languageName: node
+  linkType: hard
+
 "@zeitgeistpm/avatara-nft-sdk@npm:^1.1.5":
   version: 1.1.5
   resolution: "@zeitgeistpm/avatara-nft-sdk@npm:1.1.5"
@@ -4468,14 +4479,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/indexer@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "@zeitgeistpm/indexer@npm:2.2.1"
+"@zeitgeistpm/indexer@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "@zeitgeistpm/indexer@npm:2.2.2"
   dependencies:
     graphql: ^16.6.0
     graphql-request: ^5.0.0
     graphql-tag: ^2.12.6
-  checksum: 10fcf8bf6bc509bd2ce936c476f3711199e7f712b50b80b8e1aebb5baba4808c6b377c989e75b5ca40bbcc135e1de2a41b1e134ec505d62cf65b37ff300f3872
+  checksum: 263f45c5f8d4d77d2e04c86a84905567ca0688e35d0a8a79116a561f061c2b905ddf8048bab14d9f3605efc93028184c5c6d2c66747b9b4ea6fa844fafb26b8e
   languageName: node
   linkType: hard
 
@@ -4493,12 +4504,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.2.3":
-  version: 2.2.3
-  resolution: "@zeitgeistpm/sdk@npm:2.2.3"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.2.4":
+  version: 2.2.4
+  resolution: "@zeitgeistpm/sdk@npm:2.2.4"
   dependencies:
-    "@zeitgeistpm/augment-api": ^2.2.0
-    "@zeitgeistpm/indexer": ^2.2.1
+    "@zeitgeistpm/augment-api": ^2.2.1
+    "@zeitgeistpm/indexer": ^2.2.2
     "@zeitgeistpm/rpc": ^2.2.0
     "@zeitgeistpm/utility": ^2.2.0
     "@zeitgeistpm/web3.storage": ^2.2.0
@@ -4513,7 +4524,7 @@ __metadata:
     "@polkadot/api": ^9.6.1
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: b47f411845fca7695fe86111e94763279340e17943983c400338f050880dc959dcb49a61c26e7e3c464f84669edb50486cd452b8cc8ed3812bc3ad7371bd6a2c
+  checksum: 5f4b3ca3f3e3ff4f0086dd444686eba738d082004b82673a2efe95e26d1492052ce4eb794df366f95acd84b9701884257bf6421ac7ead4bd83c9cf827da3f39d
   languageName: node
   linkType: hard
 
@@ -4592,12 +4603,12 @@ __metadata:
     "@types/react": ^17.0.38
     "@types/react-color": ^3.0.6
     "@typescript-eslint/eslint-plugin": ^5.9.1
-    "@zeitgeistpm/augment-api": ^2.2.0
+    "@zeitgeistpm/augment-api": ^2.2.1
     "@zeitgeistpm/avatara-nft-sdk": ^1.1.5
     "@zeitgeistpm/avatara-react": ^1.1.5
     "@zeitgeistpm/avatara-util": ^1.0.0-alpha.0
     "@zeitgeistpm/sdk": ^0.9.3
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.2.3"
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.2.4"
     "@zeitgeistpm/utility": ^2.2.0
     autoprefixer: 10.2.5
     axios: ^0.21.4

@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 
@@ -8,11 +8,34 @@ export const useMarketDeadlineConstants = () => {
   const [sdk, id] = useSdkv2();
 
   return useQuery(
-    [rootKey],
-    () => async () => {
+    [rootKey, id],
+    async () => {
       if (isRpcSdk(sdk)) {
-        sdk.context.api.query.swaps;
+        return {
+          minDisputeDuration: Number(
+            sdk.context.api.consts.predictionMarkets.minDisputeDuration,
+          ),
+          minOracleDuration: Number(
+            sdk.context.api.consts.predictionMarkets.minOracleDuration,
+          ),
+          maxDisputeDuration: Number(
+            sdk.context.api.consts.predictionMarkets.maxDisputeDuration,
+          ),
+          maxOracleDuration: Number(
+            sdk.context.api.consts.predictionMarkets.maxOracleDuration,
+          ),
+          maxGracePeriod: Number(
+            sdk.context.api.consts.predictionMarkets.maxGracePeriod,
+          ),
+        };
       }
+      return {
+        minDisputeDuration: 3600,
+        minOracleDuration: 300,
+        maxDisputeDuration: 216000,
+        maxOracleDuration: 100800,
+        maxGracePeriod: 2628000,
+      };
     },
     {
       enabled: Boolean(sdk),
