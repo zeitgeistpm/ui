@@ -54,7 +54,10 @@ import { useModalStore } from "lib/stores/ModalStore";
 import MarketCostModal from "components/markets/MarketCostModal";
 import { checkMarketExists } from "lib/gql/markets";
 import dynamic from "next/dynamic";
-import { MarketDeadlinesInput } from "components/create/MarketDeadlinesInput";
+import {
+  MarketDeadlinesInput,
+  MarketDeadlinesValue,
+} from "components/create/MarketDeadlinesInput";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
@@ -73,6 +76,7 @@ interface CreateMarketFormData {
   oracle: string;
   description: string;
   advised: boolean;
+  deadlines: MarketDeadlinesValue;
 }
 
 const initialFields = {
@@ -114,6 +118,20 @@ const CreatePage: NextPage = observer(() => {
     oracle: "",
     description: "",
     advised: false,
+    deadlines: {
+      grace: {
+        label: "None",
+        value: 0,
+      },
+      oracle: {
+        label: "4 Days",
+        value: 28800,
+      },
+      dispute: {
+        label: "4 Days",
+        value: 28800,
+      },
+    },
   });
 
   const [form] = useState(() => {
@@ -294,6 +312,10 @@ const CreatePage: NextPage = observer(() => {
   const changeMarketImage = async (marketImage: File) => {
     const base64Image = await toBase64(marketImage);
     setFormData((data) => ({ ...data, marketImage: base64Image }));
+  };
+
+  const onChangeDeadlines = (deadlines: MarketDeadlinesValue) => {
+    setFormData((data) => ({ ...data, deadlines }));
   };
 
   const getMarketPeriod = (): MarketPeriod => {
@@ -627,7 +649,10 @@ const CreatePage: NextPage = observer(() => {
           data-test="oracleInput"
         />
         <div className="mb-ztg-20">
-          <MarketDeadlinesInput />
+          <MarketDeadlinesInput
+            value={formData.deadlines}
+            onChange={(deadlines) => onChangeDeadlines(deadlines)}
+          />
         </div>
         <div className="flex h-ztg-22 items-center text-sky-600 font-lato">
           <div className="w-ztg-20 h-ztg-20">
