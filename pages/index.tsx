@@ -18,6 +18,7 @@ import { getPlaiceholder, IGetPlaiceholderReturn } from "plaiceholder";
 import Link from "next/link";
 import PopularCategories from "components/front-page/PopularCategories";
 import MarketScroll from "components/markets/MarketScroll";
+import { motion } from "framer-motion";
 
 const MAIN_IMAGE_PATH = "/carousel/intro_zeitgeist_avatar.png";
 
@@ -78,17 +79,23 @@ const IndexPage: NextPage<{
         {/* </GlitchImage> */}
       </a>
       <div className="flex items-center w-full justify-center relative bottom-[29px]">
-        <Link href="/markets/">
-          <a
-            className="font-lato text-[20px] h-[58px] w-[323px] center border-2 rounded-ztg-100 bg-white"
-            style={{
-              boxShadow:
-                "0px 70px 28px rgba(0, 0, 0, 0.01), 0px 40px 24px rgba(0, 0, 0, 0.05), 0px 18px 18px rgba(0, 0, 0, 0.09), 0px 4px 10px rgba(0, 0, 0, 0.1), 0px 0px 0px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            Go to All Markets
-          </a>
-        </Link>
+        <motion.div
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Link href="/markets/">
+            <a
+              className="font-lato text-[20px] h-[58px] w-[323px] center border-2 rounded-ztg-100 bg-white"
+              style={{
+                boxShadow:
+                  "0px 70px 28px rgba(0, 0, 0, 0.01), 0px 40px 24px rgba(0, 0, 0, 0.05), 0px 18px 18px rgba(0, 0, 0, 0.09), 0px 4px 10px rgba(0, 0, 0, 0.1), 0px 0px 0px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              Go to All Markets
+            </a>
+          </Link>
+        </motion.div>
       </div>
       <TrendingMarkets markets={trendingMarkets} />
       <PopularCategories tagCounts={tagCounts} />
