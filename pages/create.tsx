@@ -12,6 +12,7 @@ import {
 } from "@zeitgeistpm/sdk/dist/types/market";
 import { ISubmittableResult } from "@polkadot/types/types";
 import {
+  DecodedMarketMetadata,
   MarketDisputeMechanism,
   MarketPeriod,
 } from "@zeitgeistpm/sdk/dist/types";
@@ -52,6 +53,11 @@ import MarketFormCard from "components/create/MarketFormCard";
 import { useModalStore } from "lib/stores/ModalStore";
 import MarketCostModal from "components/markets/MarketCostModal";
 import { checkMarketExists } from "lib/gql/markets";
+import dynamic from "next/dynamic";
+
+const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
+  ssr: false,
+});
 
 interface CreateMarketFormData {
   slug: string;
@@ -156,12 +162,18 @@ const CreatePage: NextPage = observer(() => {
   }, [store?.graphQLClient, newMarketId]);
 
   useEffect(() => {
-    if (!form.isValid) {
+    if (!form.isValid || store.wallets.activeAccount == null) {
       return;
     }
     const sub = from(getTransactionFee()).subscribe(setTxFee);
     return () => sub.unsubscribe();
-  }, [form.isValid, formData, poolRows, deployPool]);
+  }, [
+    form.isValid,
+    formData,
+    poolRows,
+    deployPool,
+    store.wallets.activeAccount,
+  ]);
 
   useEffect(() => {
     if (!formData.outcomes.value) {
@@ -311,13 +323,16 @@ const CreatePage: NextPage = observer(() => {
       ? mapRangeToEntires(formData.outcomes.value)
       : formData.outcomes.value;
 
-    const metadata = {
+    const metadata: DecodedMarketMetadata = {
       slug: formData.slug,
       question: formData.question,
       description: formData.description,
       tags: formData.tags,
       img: formData.marketImage,
       categories: entries,
+      scalarType: isRangeOutcomeEntry(formData.outcomes.value)
+        ? formData.outcomes.value.type
+        : undefined,
     };
     return metadata;
   };
@@ -622,15 +637,13 @@ const CreatePage: NextPage = observer(() => {
         </div>
       </MarketFormCard>
       <MarketFormCard header="6. Market Description">
-        <TextArea
-          dataTest="marketDescriptionInput"
-          placeholder="Additional information you want to provide about the market, such as resolution source, special cases, or other details."
-          value={formData.description}
-          name="description"
-          onChange={changeDescription}
-          ref={descriptionInputRef}
-          form={form}
-        />
+        <div className="h-[270px]">
+          <QuillEditor
+            onChange={changeDescription}
+            placeholder="Additional information you want to provide about the market, such as resolution source, special cases, or other details."
+            className="h-[200px]"
+          />
+        </div>
         <div className="flex items-center">
           <LabeledToggle
             leftLabel="Permissionless"

@@ -1,5 +1,4 @@
 {
-  "eslint.enable": false,
   "editor.formatOnSave": true,
   "prettier.configPath": ".prettierrc.js"
 }

@@ -69,27 +69,33 @@ const AvatarPage = observer(() => {
   );
 
   const loadData = async () => {
-    getIdentity(address).then(setIdentity);
-    store.sdk.api.query.styx
-      .burnAmount()
-      .then((c) => setBurnAmount(c.toJSON() as number));
-    if (avatarContext) {
-      Avatar.fetchEarnedBadgesForAddress(avatarContext, address).then(
-        setEarnedBadges,
-      );
-      Tarot.fetchStatsForAddress(avatarContext, address).then(setTarotStats);
+    try {
+      const [burnAmount, identity, tarotStats] = await Promise.all([
+        store.sdk.api.query.styx.burnAmount(),
+        getIdentity(address),
+        Tarot.fetchStatsForAddress(avatarContext, address),
+      ]);
+      setBurnAmount(burnAmount.toJSON() as number);
+      setIdentity(identity);
+      setTarotStats(tarotStats);
+      if (store.wallets.activeAccount?.address) {
+        const crossing = await store.sdk.api.query.styx.crossings(
+          store.wallets.activeAccount.address,
+        );
+        setHasCrossed(!crossing.isEmpty);
+      }
+    } catch (error) {
+      await delay(1000);
+      await loadData();
+    } finally {
+      setLoading(false);
     }
-    if (store.wallets.activeAccount?.address) {
-      const crossing = await store.sdk.api.query.styx.crossings(
-        store.wallets.activeAccount.address,
-      );
-      setHasCrossed(!crossing.isEmpty);
-    }
-    setLoading(false);
   };
 
   useEffect(() => {
-    loadData();
+    if (avatarContext) {
+      loadData();
+    }
   }, [avatarContext, address, store.wallets.activeAccount?.address]);
 
   const name = identity?.displayName || shortenAddress(address);
