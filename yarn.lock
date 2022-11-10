@@ -4592,6 +4592,7 @@ __metadata:
     "@types/react": ^17.0.38
     "@types/react-color": ^3.0.6
     "@typescript-eslint/eslint-plugin": ^5.9.1
+    "@zeitgeistpm/augment-api": ^2.2.0
     "@zeitgeistpm/avatara-nft-sdk": ^1.1.5
     "@zeitgeistpm/avatara-react": ^1.1.5
     "@zeitgeistpm/avatara-util": ^1.0.0-alpha.0

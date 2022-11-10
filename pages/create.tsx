@@ -54,6 +54,7 @@ import { useModalStore } from "lib/stores/ModalStore";
 import MarketCostModal from "components/markets/MarketCostModal";
 import { checkMarketExists } from "lib/gql/markets";
 import dynamic from "next/dynamic";
+import { MarketDeadlinesInput } from "components/create/MarketDeadlinesInput";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
@@ -625,6 +626,9 @@ const CreatePage: NextPage = observer(() => {
           name="oracle"
           data-test="oracleInput"
         />
+        <div className="mb-ztg-20">
+          <MarketDeadlinesInput />
+        </div>
         <div className="flex h-ztg-22 items-center text-sky-600 font-lato">
           <div className="w-ztg-20 h-ztg-20">
             <AlertTriangle size={20} />

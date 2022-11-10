@@ -1,8 +1,4 @@
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { sortBy, uniqBy } from "lodash";
-import { useEffect, useMemo, useRef } from "react";
-import { usePoolsListQuery } from "../usePoolsUrlQuery";
-import { usePrevious } from "../usePrevious";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "pools";

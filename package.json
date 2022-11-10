@@ -33,6 +33,7 @@
     "@polkadot/types": "^9.6.1",
     "@polkadot/ui-keyring": "^2.4.1",
     "@tanstack/react-query": "^4.13.0",
+    "@zeitgeistpm/augment-api": "^2.2.0",
     "@zeitgeistpm/avatara-nft-sdk": "^1.1.5",
     "@zeitgeistpm/avatara-react": "^1.1.5",
     "@zeitgeistpm/avatara-util": "^1.0.0-alpha.0",
