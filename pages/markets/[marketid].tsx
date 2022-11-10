@@ -194,7 +194,7 @@ const Market: NextPage<{
             title="Ends"
             value={new Intl.DateTimeFormat("en-US", {
               dateStyle: "medium",
-            }).format(indexedMarket.end)}
+            }).format(indexedMarket.period.end)}
           />
           <Pill title="Status" value={indexedMarket.status} />
           {prizePool ? (
