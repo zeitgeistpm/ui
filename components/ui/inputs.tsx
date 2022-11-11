@@ -91,9 +91,7 @@ const rdtpInput = (
   const { className, ...restProps } = props;
   return (
     <div
-      className={
-        "flex w-ztg-275 border-1 rounded-ztg-5 border-transparent " + className
-      }
+      className={"flex border-1 rounded-ztg-5 border-transparent " + className}
     >
       <Input
         {...restProps}
