@@ -43,7 +43,7 @@ export async function getStaticPaths() {
   const marketIds = await getRecentMarketIds(client);
 
   const paths = marketIds.map((market) => ({
-    params: { marketid: market.marketId.toString() },
+    params: { marketid: market.toString() },
   }));
 
   return { paths, fallback: "blocking" };

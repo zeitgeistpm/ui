@@ -2,7 +2,7 @@ import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS } from "lib/constants";
 
-const marketStatusIdsQuery = gql`
+const marketIdsQuery = gql`
   query MarketIds($end: BigInt) {
     markets(where: { period: { end_gt: $end } }) {
       marketId
@@ -52,7 +52,9 @@ export interface MarketPageIndexedData {
   scalarType: ScalarRangeType | null;
 }
 
-export const getRecentMarketIds = async (client: GraphQLClient) => {
+export const getRecentMarketIds = async (
+  client: GraphQLClient,
+): Promise<number[]> => {
   const timstampOneMonthAgo = new Date(
     new Date().getTime() - DAY_SECONDS * 31 * 1000,
   ).getTime();
@@ -61,11 +63,11 @@ export const getRecentMarketIds = async (client: GraphQLClient) => {
     markets: {
       marketId: number;
     }[];
-  }>(marketStatusIdsQuery, {
+  }>(marketIdsQuery, {
     end: timstampOneMonthAgo,
   });
 
-  return response.markets;
+  return response.markets.map((m) => m.marketId);
 };
 
 export const getMarket = async (client: GraphQLClient, marketId: string) => {
