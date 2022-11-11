@@ -1,8 +1,10 @@
+import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import { randomHexColor } from "lib/util";
+import MarketCard from "components/markets/market-card";
+import { useContentWidth } from "components/context/ContentDimensionsContext";
 import NotFoundPage from "./404";
-import MarketCard from "components/markets/new/MarketCard";
 
 const demoCategories = [
   { ticker: "Vivamus tortor ipsum", color: randomHexColor() },
@@ -54,8 +56,23 @@ const DemosPage: NextPage = observer(() => {
   if (process.env.NEXT_PUBLIC_ENVIRONMENT_NAME == null) {
     return <NotFoundPage />;
   }
+
+  const contentWidth = useContentWidth();
+
+  const [gridColsClass, setGridColsClass] = useState<string>("grid-cols-3");
+
+  useEffect(() => {
+    if (contentWidth <= 620) {
+      return setGridColsClass("grid-cols-1");
+    }
+    if (contentWidth <= 915) {
+      return setGridColsClass("grid-cols-2");
+    }
+    setGridColsClass("grid-cols-3");
+  }, [contentWidth]);
+
   return (
-    <div className="grid grid-cols-3 gap-[30px]">
+    <div className={"grid grid-cols-3 gap-[30px] " + gridColsClass}>
       <MarketCard {...demoMarketCardProps1} />
       <MarketCard {...demoMarketCardProps2} />
       <MarketCard {...demoMarketCardProps3} />
