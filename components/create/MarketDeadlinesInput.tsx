@@ -184,7 +184,11 @@ const OracleAndDisputePeriodInput = (props: {
         4 Days
       </div>
       <div className={"flex"}>
-        <div className="flex w-32 mr-4">
+        <div
+          className={`flex w-32 mr-4 border-1 ${
+            props.value.label === "Custom" && "border-gray-700 rounded-ztg-5"
+          }`}
+        >
           <input
             type="number"
             onChange={(e) => {
@@ -213,7 +217,11 @@ const OracleAndDisputePeriodInput = (props: {
             DAYS
           </div>
         </div>
-        <div className="flex w-32">
+        <div
+          className={`flex w-32 mr-4 border-1 ${
+            props.value.label === "Custom" && "border-gray-700 rounded-ztg-5"
+          }`}
+        >
           <input
             type="number"
             onChange={(e) => {
