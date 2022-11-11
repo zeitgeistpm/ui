@@ -5,6 +5,7 @@ import {
   MarketsOrdering,
   MarketsPaginationOptions,
   MarketStatusText,
+  ScalarRangeType,
 } from "@zeitgeistpm/sdk/dist/types";
 import { gql, GraphQLClient } from "graphql-request";
 import MarketStore from "lib/stores/MarketStore";
@@ -15,7 +16,6 @@ export const marketDetailsQuery = gql`
   fragment MarketDetails on Market {
     marketId
     description
-    end
     creator
     creation
     oracle
@@ -25,6 +25,9 @@ export const marketDetailsQuery = gql`
     status
     scalarType
     poolId
+    period {
+      end
+    }
     categories {
       name
       ticker
@@ -48,7 +51,8 @@ export type MarketPreload = {
   end: BigInt;
   question: string;
   preloaded: true;
-  poolId?: number | null;
+  poolId: number | null;
+  scalarType: ScalarRangeType | null;
   categories: { name: string; ticker: string; color: string }[];
   poolExists: boolean;
   bounds?: [number, number];
@@ -96,7 +100,7 @@ export class MarketPreloader {
       orderingStr = ordering === "asc" ? "DESC" : "ASC";
     }
     const orderByQuery =
-      orderBy === "newest" ? `marketId_${orderingStr}` : `end_${orderingStr}`;
+      orderBy === "newest" ? `marketId_${orderingStr}` : `period_end_${orderingStr}`;
 
     const variables = {
       statuses,
