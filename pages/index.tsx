@@ -99,7 +99,12 @@ const IndexPage: NextPage<{
       </div>
       <TrendingMarkets markets={trendingMarkets} />
       <PopularCategories tagCounts={tagCounts} />
-      <MarketScroll title="Trending Markets" markets={[{}, {}, {}, {}, {}]} />
+      <div className="my-[60px]">
+        <MarketScroll
+          title="Trending Markets"
+          markets={[{}, {}, {}, {}, {}, {}, {}]}
+        />
+      </div>
       {/* <MarketsList /> */}
     </div>
   );

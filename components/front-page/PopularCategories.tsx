@@ -22,7 +22,7 @@ const Category = ({
 
   return (
     <div
-      className="flex flex-col min-w-[150px] w-full"
+      className="flex flex-col min-w-[150px] w-full h-[184px]"
       onMouseEnter={() => setIsHoving(true)}
       onMouseLeave={() => setIsHoving(false)}
     >
@@ -61,7 +61,16 @@ const PopularCategories: FC<{ tagCounts: TagCounts }> = observer(
         <h3 className="font-lato font-bold text-[28px] mb-ztg-30">
           Popular Categories
         </h3>
-        <div className="flex w-full h-[184px] gap-x-[28px] ">
+        <div
+          className="grid w-full gap-[28px]"
+          style={{
+            gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+            // gridTemplateColumns: "repeat(4, minmax(150px, 1fr))",
+            // gridAutoColumns: "1fr",
+
+            // gridAutoRows: "auto",
+          }}
+        >
           <Category
             title="Sports"
             imgURL="/topics/sports.png"
