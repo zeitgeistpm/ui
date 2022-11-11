@@ -192,6 +192,7 @@ html {
 @import "./drawer.css";
 @import "./card.css";
 @import "./date-picker.css";
+@import "./quill.css";
 
 body {
   --topbar-height: 76px;

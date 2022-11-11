@@ -12,7 +12,10 @@ export interface RangeOutcomeEntry {
   minimum: number | typeof NaN;
   maximum: number | typeof NaN;
   ticker: string;
+  type: RangeType;
 }
+
+export type RangeType = "number" | "date";
 
 export type YesNoOutcome = [
   { name: "yes"; ticker: "YES"; color: "#0E992D" },
@@ -37,6 +40,15 @@ export const isRangeOutcomeEntry = (
   value: Outcomes,
 ): value is RangeOutcomeEntry => {
   if (!Array.isArray(value)) {
+    return true;
+  }
+  return false;
+};
+
+export const isDateRangeOutcomeEntry = (
+  value: Outcomes,
+): value is RangeOutcomeEntry & { type: "date" } => {
+  if (value && !Array.isArray(value) && value.type === "date") {
     return true;
   }
   return false;

@@ -37,7 +37,11 @@ const DefaultLayout: FC = observer(({ children }) => {
   };
 
   useEffect(() => {
-    if (shouldScrollTop(router.pathname, prevPathname)) {
+    if (
+      router.pathname &&
+      prevPathname &&
+      shouldScrollTop(router.pathname, prevPathname)
+    ) {
       scrollTo(0);
     }
   }, [router.pathname, prevPathname, shouldScrollTop]);
