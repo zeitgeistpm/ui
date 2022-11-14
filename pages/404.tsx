@@ -21,6 +21,7 @@ const NotFoundPage = observer(
           width={1920}
           layout="responsive"
           objectFit="scale-down"
+          alt="404 Page"
         />
         {backText && backLink ? (
           <div className="flex justify-center items-center mb-ztg-40">

@@ -23,7 +23,7 @@ const SubMenuItem: FC<SubMenuItemProps> = ({
 
   return (
     <Wrap>
-      <a
+      <div
         className={`cursor-pointer h-ztg-56 flex items-center py-ztg-16 ml-ztg-24 
         text-ztg-16-150 font-lato ${
           active
@@ -58,7 +58,7 @@ const SubMenuItem: FC<SubMenuItemProps> = ({
         ) : (
           <></>
         )}
-      </a>
+      </div>
     </Wrap>
   );
 };

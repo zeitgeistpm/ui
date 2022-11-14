@@ -39,7 +39,6 @@ export const sortOptions = Object.entries(ESortType).map((v) => {
   };
 });
 
-//parachain runtime values before 0.3.6
 export const DEFAULT_DEADLINES: MarketDeadlines = {
   gracePeriod: "0",
   oracleDuration: "28800",
