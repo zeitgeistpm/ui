@@ -15,6 +15,7 @@ export type MarketDeadlinesValue = {
   grace: GracePeriodValue;
   oracle: OracleAndDisputePeriodValue;
   dispute: OracleAndDisputePeriodValue;
+  isValid: boolean;
 };
 
 export type GracePeriodValue =
@@ -69,7 +70,7 @@ export const getBlocksDeltaForDuration = (
 export const MarketDeadlinesInput = (props: {
   value: MarketDeadlinesValue;
   marketEnd: CreateMarketFormData["end"];
-  onChange: (value: MarketDeadlinesValue & { isValid: boolean }) => void;
+  onChange: (value: MarketDeadlinesValue) => void;
 }) => {
   const { data: now } = useChainTimeNow();
   const { data: constants } = useMarketDeadlineConstants();
