@@ -4,6 +4,7 @@ import Decimal from "decimal.js";
 import { useMarketStatusCount } from "lib/hooks/queries/useMarketStatusCount";
 import { usePools } from "lib/hooks/queries/usePools";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
+import { useTotalLiquidity } from "lib/hooks/queries/useTotalLiquidity";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { usePoolsListQuery } from "lib/hooks/usePoolsUrlQuery";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -52,13 +53,9 @@ const LiquidityPools: NextPage = observer(() => {
 
   const pools = poolPages?.pages.flatMap((pools) => pools.data) || [];
 
-  const { data: saturatedIndex } = useSaturatedPoolsIndex(pools);
+  const { data: saturatedIndex, isFetched } = useSaturatedPoolsIndex(pools);
 
-  const totalLiquidity = useMemo(() => {
-    return Object.values(saturatedIndex || {}).reduce((acc, { liquidity }) => {
-      return acc.plus(liquidity);
-    }, new Decimal(0));
-  }, [saturatedIndex]);
+  const totalLiquidity = useTotalLiquidity({ enabled: isFetched });
 
   const totalLiquidityValue = useMemo(() => {
     if (ztgInfo) {

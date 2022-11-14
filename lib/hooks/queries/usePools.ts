@@ -6,7 +6,7 @@ export const rootKey = "pools";
 export const usePools = () => {
   const [sdk, id] = useSdkv2();
 
-  const limit = 9999999;
+  const limit = 20;
 
   const fetcher = async ({ pageParam = 0 }) => {
     const pools = await sdk.model.swaps.listPools({
