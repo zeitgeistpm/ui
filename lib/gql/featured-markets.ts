@@ -78,6 +78,22 @@ const getFeaturedMarkets = async (client: GraphQLClient) => {
 
       const pool = poolRes.pools[0];
 
+      if (!pool) {
+        const trendingMarket: TrendingMarketInfo = {
+          marketId: market.marketId,
+          name: market.slug,
+          img: market.img,
+          outcomes: market.marketType.categorical
+            ? market.marketType.categorical.toString()
+            : "Long/Short",
+          prediction: "None",
+          volume: "No Pool",
+          baseAsset: "",
+        };
+
+        return trendingMarket;
+      }
+
       const assetsRes = await client.request<{
         assets: {
           poolId: number;
