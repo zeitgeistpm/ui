@@ -4,8 +4,20 @@ import { gql, GraphQLClient } from "graphql-request";
 import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
 import { ZTG } from "lib/constants";
 
-// TODO: change this to env variable or some other configuration method.
-const marketIds = [1, 1, 1];
+const getMarketIdsFromEnvVar = () => {
+  let marketIds;
+  try {
+    let mIds = JSON.parse(process.env.NEXT_PUBLIC_FEATURED_MARKET_IDS);
+    // this line *should not* be needed, but here just in case
+    marketIds = mIds.map(id => Number(id));
+  } catch (err) {
+    marketIds = [1];
+  }
+
+  return marketIds;
+}
+
+const marketIds = getMarketIdsFromEnvVar();
 
 const marketQuery = gql`
   query Market($marketId: Int) {
