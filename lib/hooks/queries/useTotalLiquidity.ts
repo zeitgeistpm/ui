@@ -32,10 +32,10 @@ export const useTotalLiquidity = (options: { enabled: boolean }) => {
       if (
         indexed &&
         "status" in indexed.market &&
-        indexed.market.status === "Active"
+        indexed.market.status === "Active" &&
+        indexed.liquidity
       ) {
-        const liquidity = indexed?.liquidity || new Decimal(0);
-        return acc.plus(liquidity);
+        return acc.plus(indexed.liquidity);
       }
       return acc;
     }, new Decimal(0)) ?? new Decimal(0);
