@@ -8,7 +8,7 @@ import { useStore } from "lib/stores/Store";
 import MarketsList from "components/markets/MarketsList";
 import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
 import TrendingMarkets from "components/markets/TrendingMarkets";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import GlitchImage from "components/ui/GlitchImage";
 import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
 import { GraphQLClient } from "graphql-request";

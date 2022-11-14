@@ -16,7 +16,7 @@ const MobileLink = observer(
     };
     return (
       <Link href={link}>
-        <a className="flex flex-col items-center" onClick={handleClick}>
+        <div className="flex flex-col items-center" onClick={handleClick}>
           <div className="">
             <IconComponent
               size={24}
@@ -26,7 +26,7 @@ const MobileLink = observer(
             />
           </div>
           <div className="mt-ztg-10 dark:text-white">{title}</div>
-        </a>
+        </div>
       </Link>
     );
   },

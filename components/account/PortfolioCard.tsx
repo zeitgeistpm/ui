@@ -98,9 +98,7 @@ const PortfolioCard = observer(({ position }) => {
           </span>
         )}
         <Link href={`/markets/${position.marketId}`}>
-          <a>
-            <ExternalLink size={24} className="cursor-pointer text-sky-600" />
-          </a>
+          <ExternalLink size={24} className="cursor-pointer text-sky-600" />
         </Link>
       </div>
       <Table columns={columns} data={position.tableData} rowHeightPx={50} />
