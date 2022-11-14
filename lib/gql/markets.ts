@@ -23,6 +23,7 @@ const marketQuery = gql`
       poolId
       scalarType
       period {
+        start
         end
       }
       categories {
@@ -41,7 +42,8 @@ export interface MarketPageIndexedData {
   description: string;
   status: string;
   period: {
-    end: number;
+    start: string;
+    end: string;
   };
   categories: { ticker: string; color: string }[];
   outcomeAssets: string[];

@@ -55,14 +55,11 @@ export async function getStaticProps({ params }) {
 
   const market = await getMarket(client, params.marketid);
 
-  const dateOneMonthAgo = new Date(
-    new Date().getTime() - DAY_SECONDS * 31 * 1000,
-  ).toISOString();
-
+  const startDate = new Date(Number(market?.period.start)).toISOString();
   const assetPrices = market?.outcomeAssets
     ? await Promise.all(
         market?.outcomeAssets?.map((asset) =>
-          getAssetPriceHistory(client, asset, dateOneMonthAgo),
+          getAssetPriceHistory(client, asset, startDate),
         ),
       )
     : undefined;
@@ -219,7 +216,7 @@ const Market: NextPage<{
             title="Ends"
             value={new Intl.DateTimeFormat("en-US", {
               dateStyle: "medium",
-            }).format(indexedMarket.period.end)}
+            }).format(Number(indexedMarket.period.end))}
           />
           <Pill title="Status" value={indexedMarket.status} />
           {prizePool ? (

@@ -16,11 +16,8 @@ import MobileMenu from "components/menu/MobileMenu";
 import ModalContainer from "components/modal/ModalContainer";
 import { AnimatePresence } from "framer-motion";
 import DefaultLayout from "layouts/DefaultLayout";
-import AppLaunchLayout from "layouts/launch/AppLaunchLayout";
 import ModalStore from "lib/stores/ModalStore";
 import Store from "lib/stores/Store";
-
-import "@zeitgeistpm/augment-api";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -75,17 +72,6 @@ const MyApp = observer(({ Component, pageProps }) => {
       store.toggleDrawer("left");
     }
   }, []);
-
-  const launchDate = new Date(1663081200000);
-
-  const [launched, setLaunched] = useState(Date.now() > launchDate.getTime());
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setLaunched(Date.now() > launchDate.getTime());
-    }, 1000);
-    return () => clearInterval(timer);
-  });
 
   return (
     <QueryClientProvider client={queryClient}>
