@@ -21,4 +21,7 @@ module.exports = withBundleAnalyzer({
 
     return config;
   },
+  images: {
+    domains: ["ipfs-gateway.zeitgeist.pm"],
+  },
 });
