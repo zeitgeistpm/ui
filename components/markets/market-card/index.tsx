@@ -87,6 +87,7 @@ const MarketCard = ({
             width={60}
             layout="fill"
             quality={100}
+            alt={`Image depicting ${question}`}
           />
         </div>
         <div className="mr-[17px] black font-lato font-bold h-[75px] w-full">
