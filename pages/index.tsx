@@ -15,6 +15,8 @@ import { GraphQLClient } from "graphql-request";
 import getTrendingMarkets from "lib/gql/trending-markets";
 import { getPopularCategories, TagCounts } from "lib/gql/popular-categories";
 
+import MarketFilter from "components/markets/market-filter/MarketFilter";
+
 export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
@@ -164,8 +166,9 @@ const IndexPage: NextPage<{
           />
         </GlitchImage>
       </a>
-      <TrendingMarkets markets={trendingMarkets} />
+      {/* <TrendingMarkets markets={trendingMarkets} /> */}
       {/* <PopularCategories tagCounts={tagCounts} /> */}
+      <MarketFilter />
       <MarketsList />
     </div>
   );
