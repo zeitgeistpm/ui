@@ -1,4 +1,5 @@
 import { observer } from "mobx-react";
+import ReactSelect from "react-select";
 
 // import QuitIcon from "public/QuitIcon.png";
 
@@ -12,20 +13,31 @@ const MarketFilterContainer = observer(({ children }) => {
 
 const DropDownSelect = observer(() => {
   return (
-    <div></div>
+    <ReactSelect
+      placeholder="Category"
+    />
   )
 });
 
+const filterOptions = [
+  { value: "newest", label: "Newest" },
+  { value: "most-liquid", label: "Most Liquid" },
+  { value: "volume", label: "Volume" },
+]
+
 const FilterSelect = observer(() => {
   return (
-    <div></div>
+    <ReactSelect
+      options={filterOptions}
+    />
   )
 });
 
 const MarketFilterOptions = observer(() => {
   return (
     <div className="w-full flex h-12 bg-green-300 justify-between">
-
+      <DropDownSelect />
+      <FilterSelect />
     </div>
   );
 });
