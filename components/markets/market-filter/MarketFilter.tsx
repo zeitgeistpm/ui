@@ -11,17 +11,41 @@ const MarketFilterContainer = observer(({ children }) => {
   );
 });
 
+
+const Control = ({ children, ...rest }) => {
+  const { innerProps } = rest;
+  const { onMouseDown } = innerProps;
+  return (
+    <div className="flex px-ztg-16" onMouseDown={onMouseDown}>
+      {children}
+    </div>
+  );
+};
+
+const SingleValue = (props) => {
+  return <></>;
+};
+
+const IndicatorSeparator = () => {
+  return <></>;
+};
+
 const DropDownSelect = observer(() => {
   return (
     <ReactSelect
       placeholder="Category"
+      components={{
+        Control,
+        SingleValue,
+        IndicatorSeparator,
+      }}
     />
   )
 });
 
 const filterOptions = [
   { value: "newest", label: "Newest" },
-  { value: "most-liquid", label: "Most Liquid" },
+  { value: "liquidity", label: "Liquidity" },
   { value: "volume", label: "Volume" },
 ]
 
@@ -29,6 +53,9 @@ const FilterSelect = observer(() => {
   return (
     <ReactSelect
       options={filterOptions}
+      components={{
+        IndicatorSeparator,
+      }}
     />
   )
 });
