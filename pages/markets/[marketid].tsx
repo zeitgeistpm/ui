@@ -15,7 +15,7 @@ import TimeSeriesChart, {
 import { GraphQLClient } from "graphql-request";
 import {
   getMarket,
-  getMarketIds,
+  getRecentMarketIds,
   MarketPageIndexedData,
 } from "lib/gql/markets";
 import { getBaseAsset } from "lib/gql/pool";
@@ -33,7 +33,7 @@ import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
-import { combineLatest, from, map } from "rxjs";
+import { combineLatest, from } from "rxjs";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -42,9 +42,10 @@ const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
 export async function getStaticPaths() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
-  const marketIds = await getMarketIds(client);
-  const paths = marketIds.map((marketId) => ({
-    params: { marketid: marketId.toString() },
+  const marketIds = await getRecentMarketIds(client);
+
+  const paths = marketIds.map((market) => ({
+    params: { marketid: market.toString() },
   }));
 
   return { paths, fallback: "blocking" };
