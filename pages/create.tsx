@@ -55,16 +55,19 @@ import MarketCostModal from "components/markets/MarketCostModal";
 import { checkMarketExists } from "lib/gql/markets";
 import dynamic from "next/dynamic";
 import {
+  getBlocksDeltaForDuration,
   MarketDeadlinesInput,
   MarketDeadlinesValue,
 } from "components/create/MarketDeadlinesInput";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
+import { dateBlock } from "@zeitgeistpm/utility/dist/time";
+import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
 });
 
-interface CreateMarketFormData {
+export interface CreateMarketFormData {
   slug: string;
   marketImage?: string;
   question: string;
@@ -77,7 +80,7 @@ interface CreateMarketFormData {
   oracle: string;
   description: string;
   advised: boolean;
-  deadlines: MarketDeadlinesValue;
+  deadlines: MarketDeadlinesValue & { isValid: boolean };
 }
 
 const initialFields = {
@@ -118,6 +121,7 @@ const initialFields = {
 
 const CreatePage: NextPage = observer(() => {
   const store = useStore();
+  const { data: now } = useChainTimeNow();
   const notificationStore = useNotificationStore();
   const modalStore = useModalStore();
   const markets = useMarketsStore();
@@ -143,6 +147,7 @@ const CreatePage: NextPage = observer(() => {
         label: "4 Days",
         value: 28800,
       },
+      isValid: true,
     },
   });
 
@@ -195,13 +200,18 @@ const CreatePage: NextPage = observer(() => {
   }, [store?.graphQLClient, newMarketId]);
 
   useEffect(() => {
-    if (!form.isValid || store.wallets.activeAccount == null) {
+    if (
+      !form.isValid ||
+      !formData.deadlines.isValid ||
+      store.wallets.activeAccount == null
+    ) {
       return;
     }
     const sub = from(getTransactionFee()).subscribe(setTxFee);
     return () => sub.unsubscribe();
   }, [
     form.isValid,
+    formData.deadlines.isValid,
     formData,
     poolRows,
     deployPool,
@@ -374,6 +384,29 @@ const CreatePage: NextPage = observer(() => {
     return metadata;
   };
 
+  const getMarketDeadlines = () => {
+    const gracePeriod = (
+      formData.deadlines.grace.label === "Custom"
+        ? dateBlock(now, formData.deadlines.grace.value)
+        : formData.deadlines.grace.value
+    ).toString();
+    const oracleDuration = (
+      formData.deadlines.oracle.label === "Custom"
+        ? getBlocksDeltaForDuration(now, formData.deadlines.oracle.value)
+        : formData.deadlines.oracle.value
+    ).toString();
+    const disputeDuration = (
+      formData.deadlines.dispute.label === "Custom"
+        ? getBlocksDeltaForDuration(now, formData.deadlines.dispute.value)
+        : formData.deadlines.dispute.value
+    ).toString();
+    return {
+      gracePeriod,
+      oracleDuration,
+      disputeDuration,
+    };
+  };
+
   const getCreateMarketParameters = async (
     callbackOrPaymentInfo:
       | ((result: ISubmittableResult, _unsub: () => void) => void)
@@ -400,12 +433,14 @@ const CreatePage: NextPage = observer(() => {
           Scalar: [outcomes.minimum, outcomes.maximum],
         };
 
+    const deadlines = getMarketDeadlines();
+
     return {
       marketType,
       signer,
       oracle,
       period,
-      deadlines: DEFAULT_DEADLINES,
+      deadlines,
       creationType,
       disputeMechanism: mdm,
       scoringRule,
@@ -450,11 +485,13 @@ const CreatePage: NextPage = observer(() => {
           ],
         };
 
+    const deadlines = getMarketDeadlines();
+
     return {
       signer,
       oracle,
       period,
-      deadlines: DEFAULT_DEADLINES,
+      deadlines,
       marketType,
       disputeMechanism: mdm,
       swapFee,
@@ -665,6 +702,7 @@ const CreatePage: NextPage = observer(() => {
         <div className="mb-ztg-20">
           <MarketDeadlinesInput
             value={formData.deadlines}
+            marketEnd={formData.end}
             onChange={(deadlines) => onChangeDeadlines(deadlines)}
           />
         </div>
@@ -743,7 +781,9 @@ const CreatePage: NextPage = observer(() => {
               createMarket();
             }}
             disabled={
-              !form.isValid || store.wallets.activeBalance.lessThan(marketCost)
+              !form.isValid ||
+              !formData.deadlines.isValid ||
+              store.wallets.activeBalance.lessThan(marketCost)
             }
           >
             Create Market

@@ -1,7 +1,13 @@
+import {
+  blockDate,
+  ChainTime,
+  dateBlock,
+} from "@zeitgeistpm/utility/dist/time";
 import { DateTimeInput } from "components/ui/inputs";
 import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
-import { useEffect, useState } from "react";
+import { CreateMarketFormData } from "pages/create";
+import { useEffect, useMemo, useState } from "react";
 
 export type MarketDeadlineInputType = "grace" | "oracle" | "dispute";
 
@@ -46,14 +52,90 @@ export type OracleAndDisputePeriodValue =
       };
     };
 
+const HOUR = 60 * 60 * 1000;
+const DAY = HOUR * 24;
+
+export const getBlocksDeltaForDuration = (
+  now: ChainTime,
+  duration: { days: number; hours: number },
+) => {
+  const oracleDate = new Date(
+    Date.now() + duration.hours * HOUR + duration.days * DAY,
+  );
+
+  return dateBlock(now, oracleDate) - now.block;
+};
+
 export const MarketDeadlinesInput = (props: {
   value: MarketDeadlinesValue;
-  onChange: (value: MarketDeadlinesValue) => void;
+  marketEnd: CreateMarketFormData["end"];
+  onChange: (value: MarketDeadlinesValue & { isValid: boolean }) => void;
 }) => {
   const { data: now } = useChainTimeNow();
   const { data: constants } = useMarketDeadlineConstants();
 
   const [tab, setTab] = useState<MarketDeadlineInputType>("grace");
+
+  const graceIsValid = useMemo(() => {
+    const minDate =
+      props.marketEnd.type == "timestamp"
+        ? new Date(props.marketEnd.value)
+        : blockDate(now, props.marketEnd.value);
+
+    if (props.value.grace.label !== "Custom") {
+      return true;
+    }
+
+    const delta = dateBlock(now, props.value.grace.value) - now.block;
+
+    return (
+      props.value.grace.value > minDate && delta <= constants.maxGracePeriod
+    );
+  }, [now, constants, props.marketEnd, props.value.grace]);
+
+  const oracleIsValid = useMemo(() => {
+    if (props.value.oracle.label !== "Custom") {
+      return true;
+    }
+
+    const delta = getBlocksDeltaForDuration(now, props.value.oracle.value);
+
+    return (
+      delta >= constants.minOracleDuration &&
+      delta <= constants.maxOracleDuration
+    );
+  }, [now, constants, props.marketEnd, props.value.oracle]);
+
+  const disputeIsValid = useMemo(() => {
+    if (props.value.dispute.label !== "Custom") {
+      return true;
+    }
+
+    const delta = getBlocksDeltaForDuration(now, props.value.dispute.value);
+
+    return (
+      delta >= constants.minDisputeDuration &&
+      delta <= constants.maxDisputeDuration
+    );
+  }, [now, constants, props.marketEnd, props.value.dispute]);
+
+  const isValid = graceIsValid && oracleIsValid && disputeIsValid;
+
+  useEffect(() => {
+    props.onChange({ ...props.value, isValid });
+  }, [isValid]);
+
+  const onChangeGracePeriod = (grace: GracePeriodValue) => {
+    props.onChange({ ...props.value, grace, isValid });
+  };
+
+  const onChangeOraclePeriod = (oracle: OracleAndDisputePeriodValue) => {
+    props.onChange({ ...props.value, oracle, isValid });
+  };
+
+  const onChangeDisputePeriod = (dispute: OracleAndDisputePeriodValue) => {
+    props.onChange({ ...props.value, dispute, isValid });
+  };
 
   return (
     <>
@@ -63,25 +145,25 @@ export const MarketDeadlinesInput = (props: {
       >
         <div
           onClick={() => setTab("grace")}
-          className={`rounded-full h-ztg-24 px-8 flex items-center cursor-pointer font-medium ${
+          className={`rounded-full h-ztg-24 px-8 flex items-center cursor-pointer font-medium mr-2 border-1 ${
             tab === "grace" && "bg-white"
-          }`}
+          } ${!graceIsValid && "border-vermilion"}`}
         >
           Set Grace Period*
         </div>
         <div
           onClick={() => setTab("oracle")}
-          className={`rounded-full h-ztg-24 px-8 flex items-center cursor-pointer font-medium ${
+          className={`rounded-full h-ztg-24 px-8 flex items-center cursor-pointer font-medium mr-2 border-1  ${
             tab === "oracle" && "bg-white"
-          }`}
+          } ${!oracleIsValid && "border-vermilion"}`}
         >
           Set Oracle Duration
         </div>
         <div
           onClick={() => setTab("dispute")}
-          className={`rounded-full h-ztg-24 px-8 flex items-center cursor-pointer font-medium ${
+          className={`rounded-full h-ztg-24 px-8 flex items-center cursor-pointer font-medium border-1  ${
             tab === "dispute" && "bg-white"
-          }`}
+          } ${!disputeIsValid && "border-vermilion"}`}
         >
           Set Dispute Duration
         </div>
@@ -90,17 +172,20 @@ export const MarketDeadlinesInput = (props: {
         {tab === "grace" ? (
           <GracePeriodInput
             value={props.value.grace}
-            onChange={(grace) => props.onChange({ ...props.value, grace })}
+            isValid={graceIsValid}
+            onChange={onChangeGracePeriod}
           />
         ) : tab === "oracle" ? (
           <OracleAndDisputePeriodInput
             value={props.value.oracle}
-            onChange={(oracle) => props.onChange({ ...props.value, oracle })}
+            isValid={oracleIsValid}
+            onChange={onChangeOraclePeriod}
           />
         ) : (
           <OracleAndDisputePeriodInput
             value={props.value.dispute}
-            onChange={(dispute) => props.onChange({ ...props.value, dispute })}
+            isValid={disputeIsValid}
+            onChange={onChangeDisputePeriod}
           />
         )}
       </div>
@@ -110,6 +195,7 @@ export const MarketDeadlinesInput = (props: {
 
 const GracePeriodInput = (props: {
   value: GracePeriodValue;
+  isValid: boolean;
   onChange: (value: GracePeriodValue) => void;
 }) => {
   return (
@@ -146,7 +232,7 @@ const GracePeriodInput = (props: {
       <div
         className={`border-1 rounded-lg ${
           props.value.label === "Custom" && "border-gray-700"
-        }`}
+        } ${!props.isValid && "border-1 !border-vermilion"}`}
       >
         <DateTimeInput
           timestamp={
@@ -166,6 +252,7 @@ const GracePeriodInput = (props: {
 
 const OracleAndDisputePeriodInput = (props: {
   value: OracleAndDisputePeriodValue;
+  isValid: boolean;
   onChange: (value: OracleAndDisputePeriodValue) => void;
 }) => {
   return (
@@ -192,7 +279,7 @@ const OracleAndDisputePeriodInput = (props: {
         <div
           className={`flex w-32 mr-4 border-1 ${
             props.value.label === "Custom" && "border-gray-700 rounded-ztg-5"
-          }`}
+          } ${!props.isValid && "border-1 !border-vermilion"}`}
         >
           <input
             type="number"
@@ -225,7 +312,7 @@ const OracleAndDisputePeriodInput = (props: {
         <div
           className={`flex w-32 mr-4 border-1 ${
             props.value.label === "Custom" && "border-gray-700 rounded-ztg-5"
-          }`}
+          } ${!props.isValid && "border-1 !border-vermilion"}`}
         >
           <input
             type="number"
