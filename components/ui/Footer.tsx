@@ -61,8 +61,9 @@ const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
         <input
           value={newsletterSubForm.$("email").value}
           onChange={newsletterSubForm.$("email").onChange}
-          className={`h-full rounded-ztg-100 text-sky-600 p-2 text-ztg-12-120 bg-sky-200 dark:bg-black focus:outline-none flex-grow max-w-ztg-184 border-1 ${invalid ? "border-vermilion" : "border-none"
-            }`}
+          className={`h-full rounded-ztg-100 text-sky-600 p-2 text-ztg-12-120 bg-sky-200 dark:bg-black focus:outline-none flex-grow max-w-ztg-184 border-1 ${
+            invalid ? "border-vermilion" : "border-none"
+          }`}
         />
         <button
           type="submit"
@@ -96,10 +97,8 @@ const FooterMenu: FC<FooterMenuProps> = observer(
         <div className="text-ztg-12-150 flex flex-col text-sky-600 font-lato mb-auto">
           {links.map(({ text, href }, idx) => {
             return (
-              <Link href={href} key={`footerMenuLink${idx}`}>
-                <a target="_blank" rel="noopener noref" className="hover:text-white">
-                  {text}
-                </a>
+              <Link href={href} key={`footerMenuLink${idx}`} target="_blank">
+                <span className="hover:text-white">{text}</span>
               </Link>
             );
           })}
@@ -118,8 +117,14 @@ const Footer = observer(() => {
           links={[
             { text: "Website", href: "https://zeitgeist.pm" },
             { text: "Blog", href: "https://blog.zeitgeist.pm" },
-            { text: "Privacy Policy", href: "https://docs.google.com/document/d/e/2PACX-1vSzOpsuAJ3CKHNeitx4um2k-D9m7dJzJ0ZyXe0buWQXm_MWUoaNujCYwnvp4P8Ia70-59JxDraWUebT/pub" },
-            { text: "Terms of Use", href: "https://docs.google.com/document/d/e/2PACX-1vQuMdjqEVt7lPwnGimAQd9lJufSwCJ6S_kSJlL_wYLTOlJnIDcnzOaunXRVpOHIrw/pub" },
+            {
+              text: "Privacy Policy",
+              href: "https://docs.google.com/document/d/e/2PACX-1vSzOpsuAJ3CKHNeitx4um2k-D9m7dJzJ0ZyXe0buWQXm_MWUoaNujCYwnvp4P8Ia70-59JxDraWUebT/pub",
+            },
+            {
+              text: "Terms of Use",
+              href: "https://docs.google.com/document/d/e/2PACX-1vQuMdjqEVt7lPwnGimAQd9lJufSwCJ6S_kSJlL_wYLTOlJnIDcnzOaunXRVpOHIrw/pub",
+            },
           ]}
         />
         <FooterMenu
@@ -143,9 +148,18 @@ const Footer = observer(() => {
           className="mb-ztg-10"
         />
         <div className="w-full text-ztg-10-150 text-black dark:text-white font-sans mt-ztg-5 mb-ztg-10">
-          Please be advised that Equipoise Corp. d/b/a Zeitgeist is registered under the laws of Panama, and Zeitgeist has not sought licensing with any other regulatory authority of any country or jurisdiction, nor has any such regulatory authority passed upon or endorsed the merits of the financial products offered by Zeitgeist.   Therefore, Zeitgeist does not accept clients from the United States and other similar jurisdictions where regulations prohibit Zeitgeist from offering its financial products (“Regulated Jurisdictions”).
-
-          While this website may be accessed worldwide, the information provided is only intended for use by any person in any country where such use would not be contrary to local law or regulation.  Browsers from Regulated Jurisdictions are specifically prohibited from using this site.
+          Please be advised that Equipoise Corp. d/b/a Zeitgeist is registered
+          under the laws of Panama, and Zeitgeist has not sought licensing with
+          any other regulatory authority of any country or jurisdiction, nor has
+          any such regulatory authority passed upon or endorsed the merits of
+          the financial products offered by Zeitgeist. Therefore, Zeitgeist does
+          not accept clients from the United States and other similar
+          jurisdictions where regulations prohibit Zeitgeist from offering its
+          financial products (“Regulated Jurisdictions”). While this website may
+          be accessed worldwide, the information provided is only intended for
+          use by any person in any country where such use would not be contrary
+          to local law or regulation. Browsers from Regulated Jurisdictions are
+          specifically prohibited from using this site.
         </div>
         <FooterNewsletterSub title="Stay up to Date" />
         <div className="w-full text-ztg-10-150 text-black dark:text-white font-sans mt-ztg-5">
