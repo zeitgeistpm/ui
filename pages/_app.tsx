@@ -14,7 +14,6 @@ import { ModalStoreContext } from "components/context/ModalStoreContext";
 import ModalContainer from "components/modal/ModalContainer";
 import Store from "lib/stores/Store";
 import DefaultLayout from "layouts/DefaultLayout";
-import AppLaunchLayout from "layouts/launch/AppLaunchLayout";
 import { AnimatePresence } from "framer-motion";
 import MobileMenu from "components/menu/MobileMenu";
 import { AvatarContext } from "@zeitgeistpm/avatara-react";
@@ -71,17 +70,6 @@ const MyApp = observer(({ Component, pageProps }) => {
     }
   }, []);
 
-  const launchDate = new Date(1663081200000);
-
-  const [launched, setLaunched] = useState(Date.now() > launchDate.getTime());
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setLaunched(Date.now() > launchDate.getTime());
-    }, 1000);
-    return () => clearInterval(timer);
-  });
-
   return (
     <StoreProvider store={store}>
       <AvatarContext.Provider
@@ -103,20 +91,14 @@ const MyApp = observer(({ Component, pageProps }) => {
           <Head>
             <title>Zeitgeist - Prediction Markets</title>
           </Head>
-          {process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === "false" ||
-          process.env.NEXT_PUBLIC_PRE_LAUNCH_PHASE === undefined ||
-          launched ? (
-            <DefaultLayout>
-              <AnimatePresence>
-                {store.showMobileMenu && <MobileMenu />}
-              </AnimatePresence>
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </DefaultLayout>
-          ) : (
-            <AppLaunchLayout launchDate={launchDate} />
-          )}
+          <DefaultLayout>
+            <AnimatePresence>
+              {store.showMobileMenu && <MobileMenu />}
+            </AnimatePresence>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </DefaultLayout>
         </ModalStoreContext.Provider>
       </AvatarContext.Provider>
     </StoreProvider>
