@@ -121,7 +121,7 @@ const Card = observer(
         >
           <div className="flex items-center mx-ztg-16 h-full">
             <Link href={`/markets/${market.id}`}>
-              <a className="flex items-center h-full">
+              <div className="flex items-center h-full">
                 <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600">
                   <div
                     className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0"
@@ -141,7 +141,7 @@ const Card = observer(
                     {market.question}
                   </div>
                 </div>
-              </a>
+              </div>
             </Link>
 
             <div
@@ -173,9 +173,9 @@ const Card = observer(
               {/* TODO */}
               {/* <Star size={24} className="mr-ztg-10 cursor-pointer" /> */}
               <Link href={`/markets/${market.id}`}>
-                <a>
+                <span>
                   <ExternalLink size={24} className="cursor-pointer" />
-                </a>
+                </span>
               </Link>
               <div className="w-ztg-43">
                 <motion.button
