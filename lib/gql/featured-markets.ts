@@ -5,13 +5,13 @@ import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
 import { ZTG } from "lib/constants";
 
 const getMarketIdsFromEnvVar = () => {
-  let marketIds;
+  let marketIds = [];
   try {
     let mIds = JSON.parse(process.env.NEXT_PUBLIC_FEATURED_MARKET_IDS);
     // this line *should not* be needed, but here just in case
     marketIds = mIds.map(id => Number(id));
   } catch (err) {
-    marketIds = [1];
+    console.error(err);
   }
 
   return marketIds;
@@ -59,6 +59,9 @@ const assetsQuery = gql`
 `;
 
 const getFeaturedMarkets = async (client: GraphQLClient) => {
+
+  // handles if we don't have any markets set
+  if (marketIds.length === 0) return null;
 
   const featuredMarkets = await Promise.all(
     marketIds.map(async (id) => {

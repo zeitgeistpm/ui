@@ -169,7 +169,7 @@ const IndexPage: NextPage<{
           />
         </GlitchImage>
       </a>
-      <FeaturedMarkets markets={featuredMarkets} />
+      {!!featuredMarkets && <FeaturedMarkets markets={featuredMarkets} />}
       <TrendingMarkets markets={trendingMarkets} />
       {/* <PopularCategories tagCounts={tagCounts} /> */}
       <MarketsList />
