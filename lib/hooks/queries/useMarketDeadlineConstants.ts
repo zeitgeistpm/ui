@@ -4,10 +4,18 @@ import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "pools";
 
+export type MarketDeadlineConstants = {
+  minDisputeDuration: number;
+  minOracleDuration: number;
+  maxDisputeDuration: number;
+  maxOracleDuration: number;
+  maxGracePeriod: number;
+};
+
 export const useMarketDeadlineConstants = () => {
   const [sdk, id] = useSdkv2();
 
-  return useQuery(
+  return useQuery<MarketDeadlineConstants>(
     [rootKey, id],
     async () => {
       if (isRpcSdk(sdk)) {

@@ -58,6 +58,7 @@ import {
   MarketDeadlinesInput,
   MarketDeadlinesValue,
 } from "components/create/MarketDeadlinesInput";
+import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
@@ -101,6 +102,17 @@ const initialFields = {
   },
   outcomes: {
     fields: [],
+  },
+  deadlines: {
+    grace: {
+      value: 0,
+    },
+    oracle: {
+      value: 28800,
+    },
+    dispute: {
+      value: 28800,
+    },
   },
 };
 
@@ -157,6 +169,8 @@ const CreatePage: NextPage = observer(() => {
 
   const [marketCost, setMarketCost] = useState<number>();
   const [newMarketId, setNewMarketId] = useState<number>();
+
+  const { data: deadlineConstants } = useMarketDeadlineConstants();
 
   useEffect(() => {
     if (store?.graphQLClient == null || newMarketId == null) return;

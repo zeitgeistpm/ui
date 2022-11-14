@@ -1,4 +1,6 @@
 import { DateTimeInput } from "components/ui/inputs";
+import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
+import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { useEffect, useState } from "react";
 
 export type MarketDeadlineInputType = "grace" | "oracle" | "dispute";
@@ -48,6 +50,9 @@ export const MarketDeadlinesInput = (props: {
   value: MarketDeadlinesValue;
   onChange: (value: MarketDeadlinesValue) => void;
 }) => {
+  const { data: now } = useChainTimeNow();
+  const { data: constants } = useMarketDeadlineConstants();
+
   const [tab, setTab] = useState<MarketDeadlineInputType>("grace");
 
   return (
