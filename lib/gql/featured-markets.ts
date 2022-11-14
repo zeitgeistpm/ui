@@ -29,7 +29,7 @@ const marketQuery = gql`
 const poolQuery = gql`
   query Pool($poolId: Int) {
     pools(where: { poolId_eq: $poolId }) {
-      id
+      poolId
       volume
       baseAsset
     }
@@ -56,13 +56,11 @@ const getFeaturedMarkets = async (client: GraphQLClient) => {
 
       const market = marketRes.markets[0];
 
-      console.log(market);
-
+      // TODO: handle if the market doesn't have a pool attached
       const poolRes = await client.request(poolQuery, {
         poolId: market.poolId,
       });
 
-      console.log('poolRes', poolRes);
       const pool = poolRes.pools[0];
 
       const assetsRes = await client.request<{
@@ -86,7 +84,6 @@ const getFeaturedMarkets = async (client: GraphQLClient) => {
           }
         });
 
-        console.log('highestPriceIndex', highestPriceIndex);
         highestPriceIndex = 0;
         prediction = market.categories[highestPriceIndex].ticker;
       } else {
@@ -123,7 +120,6 @@ const getFeaturedMarkets = async (client: GraphQLClient) => {
     }),
   );
 
-  console.log('featuredMarkets', featuredMarkets);
   return featuredMarkets;
 }
 
