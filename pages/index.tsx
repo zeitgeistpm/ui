@@ -102,7 +102,15 @@ const IndexPage: NextPage<{
       <div className="my-[60px]">
         <MarketScroll
           title="Trending Markets"
-          markets={[{}, {}, {}, {}, {}, {}, {}]}
+          markets={[
+            { question: "a" },
+            { question: "b" },
+            { question: "c" },
+            { question: "d" },
+            { question: "e" },
+            { question: "f" },
+            { question: "g" },
+          ]}
         />
       </div>
       {/* <MarketsList /> */}
