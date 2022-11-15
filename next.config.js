@@ -14,8 +14,8 @@ module.exports = {
     config.externals = [
       ...config.externals,
       {
-        //"@substrate/connect": "SubstrateConnect",
-        //"@substrate/smoldot-light": "SmoldotLightClient",
+        "@substrate/connect": "SubstrateConnect",
+        "@substrate/smoldot-light": "SmoldotLightClient",
       },
     ];
 
