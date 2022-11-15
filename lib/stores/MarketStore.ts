@@ -1,6 +1,7 @@
 import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
 import {
   AssetId,
+  CategoryMetadata,
   CourtDisputeMechanism,
   isAuthorisedDisputeMechanism,
   MarketCreation,
@@ -392,8 +393,8 @@ class MarketStore {
     return this.outcomesMetadata?.map((meta) => meta["name"]);
   }
 
-  get outcomesMetadata(): JSONObject[] {
-    return this.market.categories;
+  get outcomesMetadata(): Required<CategoryMetadata>[] {
+    return this.market.categories as any;
   }
 
   get question(): string {

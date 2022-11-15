@@ -85,7 +85,7 @@ const MarketCard = ({
             src={img ?? "/icons/default-market.png"}
             className="rounded-full bg-white"
             width={60}
-            layout="fill"
+            height={60}
             quality={100}
             alt={`Image depicting ${question}`}
           />

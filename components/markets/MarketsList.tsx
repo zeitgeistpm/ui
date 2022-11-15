@@ -4,7 +4,7 @@ import { X } from "react-feather";
 import { useRouter } from "next/router";
 import hashObject from "object-hash";
 import { useStore } from "lib/stores/Store";
-import MarketCard from "./MarketCard";
+import MarketCard from "./market-card";
 import MainFilters from "./filters/MainFilters";
 import MyFilters from "./filters/MyFilters";
 import MarketSkeletons from "./MarketSkeletons";
@@ -16,8 +16,7 @@ import { useContentScrollTop } from "components/context/ContentDimensionsContext
 import { debounce, isEmpty } from "lodash";
 import { makeAutoObservable } from "mobx";
 import { useUserStore } from "lib/stores/UserStore";
-import { MarketCardData } from "lib/gql/markets-list";
-import MarketsStore from "lib/stores/MarketsStore";
+import { isPreloadedMarket, MarketCardData } from "lib/gql/markets-list";
 
 export type MarketsListProps = {
   className?: string;
@@ -29,58 +28,6 @@ const scrollRestoration = makeAutoObservable({
     this.scrollTop = scrollTop;
   },
 });
-
-const MarketsFilters = observer(
-  ({ onFilterClick }: { onFilterClick: () => void }) => {
-    const query = useMarketsUrlQuery();
-
-    const userStore = useUserStore();
-
-    if (userStore.graphQlEnabled === false) {
-      return null;
-    }
-
-    return (
-      <>
-        {query.searchText && (
-          <MarketsSearchInfo searchText={query.searchText} />
-        )}
-
-        {query.tag && <MarketsSearchInfo searchText={query.tag} />}
-
-        {query.myMarketsOnly == null && (
-          <MainFilters
-            filters={query.filter}
-            sortOptions={query.sorting}
-            onFiltersChange={(filter) => {
-              onFilterClick();
-              query.updateQuery({ filter, pagination: { page: 1 } });
-            }}
-            onSortOptionChange={(sorting) => {
-              query.updateQuery({ sorting });
-            }}
-          />
-        )}
-
-        {query.myMarketsOnly === true && (
-          <MyFilters
-            filters={query.filter}
-            onFiltersChange={(filter) => {
-              onFilterClick();
-              query.updateQuery({
-                filter,
-                pagination: { page: 1 },
-              });
-            }}
-            onSortOptionChange={(sorting) => {
-              query.updateQuery({ sorting });
-            }}
-          />
-        )}
-      </>
-    );
-  },
-);
 
 const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const store = useStore();
@@ -198,17 +145,29 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
         </span>
         {loadingNextPage || (!pageLoaded && <Loader size={8} />)}
       </h3>
-      <div id="marketsList">
-        <MarketsFilters
-          onFilterClick={() => {
-            setPageLoaded(false);
-          }}
-        />
-      </div>
+      {/* TODO: Filters here */}
+      <div></div>
       <div className="mb-ztg-38">
         {query != null &&
           marketsList?.map((market) => {
-            return <MarketCard market={market} key={`market-${market.id}`} />;
+            const preload = isPreloadedMarket(market);
+            const categories = preload
+              ? market.categories
+              : market.outcomesMetadata;
+            const prediction = categories[0].ticker;
+            return (
+              <MarketCard
+                marketId={market.id}
+                categories={
+                  preload ? market.categories : market.outcomesMetadata
+                }
+                question={market.question}
+                status={market.status}
+                prediction={prediction}
+                volume={100}
+                key={`market-${market.id}`}
+              />
+            );
           })}
 
         {(marketsList == null || loadingNextPage) && (
