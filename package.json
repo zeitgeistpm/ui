@@ -8,7 +8,6 @@
     "build": "next build",
     "start": "next start",
     "dev-test": "NEXT_PUBLIC_TESTING_ENV=true next",
-    "postinstall": "find node_modules -name '*.mjs' | xargs rm -f",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
     "e2e:open": "NEXT_PUBLIC_TESTING_ENV=true start-test dev http://localhost:3000 cy:open",
