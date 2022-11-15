@@ -32,7 +32,7 @@
     "@zeitgeistpm/sdk": "0.9.3",
     "axios": "^0.21.4",
     "boring-avatars": "^1.6.1",
-    "decimal.js": "10.3.1",
+    "decimal.js": "^10.3.1",
     "dotenv": "^9.0.2",
     "fathom-client": "^3.2.0",
     "flexsearch": "^0.7.21",
