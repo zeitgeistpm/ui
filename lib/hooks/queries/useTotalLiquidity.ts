@@ -1,5 +1,4 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { isIndexedData } from "@zeitgeistpm/sdk-next";
+import { useQuery } from "@tanstack/react-query";
 import Decimal from "decimal.js";
 import { useSdkv2 } from "../useSdkv2";
 
@@ -28,14 +27,13 @@ export const useTotalLiquidity = (options: { enabled: boolean }) => {
 
   const total =
     pools?.reduce((acc, pool) => {
-      const indexed = saturatedIndex?.[pool.poolId];
+      const saturatedData = saturatedIndex?.[pool.poolId];
       if (
-        indexed &&
-        "status" in indexed.market &&
-        indexed.market.status === "Active" &&
-        indexed.liquidity
+        saturatedData &&
+        saturatedData.market.status === "Active" &&
+        saturatedData.liquidity
       ) {
-        return acc.plus(indexed.liquidity);
+        return acc.plus(saturatedData.liquidity);
       }
       return acc;
     }, new Decimal(0)) ?? new Decimal(0);
