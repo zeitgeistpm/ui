@@ -147,7 +147,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       </h3>
       {/* TODO: Filters here */}
       <div></div>
-      <div className="mb-ztg-38">
+      <div className="mb-ztg-38 grid grid-cols-3 gap-[30px]">
         {query != null &&
           marketsList?.map((market) => {
             const preload = isPreloadedMarket(market);
