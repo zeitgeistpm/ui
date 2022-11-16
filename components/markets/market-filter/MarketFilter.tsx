@@ -122,7 +122,7 @@ const statusOptions = [
 
 const MarketFilterOptions = observer(({ add }) => {
   return (
-    <div className="w-full flex justify-end items-center gap-ztg-5 bg-blue-200">
+    <div className="w-full flex justify-end items-center gap-ztg-5">
       <DropDownSelect label="Category" options={categoryOptions} add={add} />
       <DropDownSelect label="Currency" options={currencyOptions} add={add} />
       <DropDownSelect label="Status" options={statusOptions} add={add} />
@@ -159,7 +159,7 @@ const SelectedItem = observer(({ label, remove }) => {
 
 const MarketFilterSelected = observer(({ activeFilters, clear, remove }) => {
   return (
-    <div className="w-full flex bg-red-200">
+    <div className="w-full flex gap-ztg-2">
       {!!activeFilters.length && <ClearAllBtn clear={clear} />}
       {activeFilters.map((af) => <SelectedItem label={af} remove={remove} />)}
     </div>
