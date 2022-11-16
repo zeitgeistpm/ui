@@ -190,7 +190,10 @@ const Market: NextPage<{
       </Head>
       <div>
         <div className="flex mb-ztg-33">
-          <MarketImage image={indexedMarket.img} />
+          <MarketImage
+            image={indexedMarket.img}
+            alt={`Image depicting ${question}`}
+          />
           <div className="sub-header ml-ztg-20">{indexedMarket?.question}</div>
         </div>
         <div

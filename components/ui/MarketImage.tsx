@@ -27,7 +27,6 @@ const MarketImage = observer(
           fill
           className="rounded-[10px]"
           style={{ objectFit: "cover", objectPosition: "50% 50%" }}
-          quality={100}
         />
       </div>
     );
