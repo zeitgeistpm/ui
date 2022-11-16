@@ -57,13 +57,17 @@ const customStyles = {
   }
 }
 
-const DropDownSelect = observer(({ label, options }) => {
+const DropDownSelect = observer(({ label, options, add }) => {
   return (
     <ReactSelect
       options={options}
       styles={customStyles}
       isMulti={false}
       isSearchable={false}
+      onChange={(val: any) => {
+        const { value, label } = val;
+        add(value);
+      }}
       components={{
         Control: ({ children, ...rest }) => (
           <Control label={label} {...rest}>
@@ -116,40 +120,48 @@ const statusOptions = [
   { value: "resolved", label: "Resolved" },
 ]
 
-const MarketFilterOptions = observer(({ add, remove }) => {
+const MarketFilterOptions = observer(({ add }) => {
   return (
     <div className="w-full flex justify-end items-center gap-ztg-5 bg-blue-200">
-      <DropDownSelect label="Category" options={categoryOptions} />
-      <DropDownSelect label="Currency" options={currencyOptions} />
-      <DropDownSelect label="Status" options={statusOptions} />
+      <DropDownSelect label="Category" options={categoryOptions} add={add} />
+      <DropDownSelect label="Currency" options={currencyOptions} add={add} />
+      <DropDownSelect label="Status" options={statusOptions} add={add} />
       <FilterSelect />
     </div>
   );
 });
 
-const ClearAllBtn = observer(() => {
+const ClearAllBtn = observer(({ clear }) => {
   return (
-    <button className="flex px-ztg-10 py-ztg-5 bg-white rounded-ztg-5 text-black text-ztg-14-150 border-gray-800 border">
+    <button
+      className="flex px-ztg-10 py-ztg-5 bg-white rounded-ztg-5 text-black text-ztg-14-150 border-gray-800 border"
+      onClick={clear}
+    >
       Clear All
     </button>
   )
 });
 
-const SelectedItem = observer(({ label }) => {
+const SelectedItem = observer(({ label, remove }) => {
   return (
     <div className="flex px-ztg-10 py-ztg-5 rounded-ztg-5 bg-gray-400 text-gray-800 font-normal text-ztg-14-150 gap-ztg-5">
       {/* <img src="public/QuitIcon.png" /> */}
-      <div className="w-ztg-8">X</div>
+      <button
+        className="w-ztg-8"
+        onClick={() => remove(label)}
+      >
+        X
+      </button>
       {label}
     </div>
   )
 });
 
-const MarketFilterSelected = observer(({ activeFilters, clear }) => {
+const MarketFilterSelected = observer(({ activeFilters, clear, remove }) => {
   return (
-    <div className="w-full flex h-ztg-32 bg-red-200">
-      <ClearAllBtn />
-      {activeFilters.map((af) => <SelectedItem label={af} />)}
+    <div className="w-full flex bg-red-200">
+      {!!activeFilters.length && <ClearAllBtn clear={clear} />}
+      {activeFilters.map((af) => <SelectedItem label={af} remove={remove} />)}
     </div>
   );
 });
@@ -160,13 +172,16 @@ const MarketFilter = observer(() => {
   // Filter controllers
   const add = (item) => {
     const currentFilters = activeFilters;
+    // checks that item doesn't already exist
+    if (currentFilters.indexOf(item) !== -1) return;
+
     const nextFilters = [...currentFilters, item];
     setActiveFilters(nextFilters);
   };
   const clear = () => setActiveFilters([]);
   const remove = (item) => {
     const currentFilters = activeFilters;
-    const idx = currentFilters.findIndex(item);
+    const idx = currentFilters.findIndex((i) => i === item);
     const nextFilters = [...currentFilters.slice(0, idx), ...currentFilters.slice(idx + 1, currentFilters.length)];
     setActiveFilters(nextFilters);
   }
@@ -175,11 +190,11 @@ const MarketFilter = observer(() => {
     <MarketFilterContainer>
       <MarketFilterOptions
         add={add}
-        remove={remove}
       />
       <MarketFilterSelected
         activeFilters={activeFilters}
         clear={clear}
+        remove={remove}
       />
     </MarketFilterContainer>
   );
