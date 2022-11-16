@@ -63,9 +63,9 @@ const AvatarPage = observer(() => {
     store.wallets.activeAccount?.address === zeitAddress;
 
   const inventory = useInventoryManagement(
-    isOwner
+    (isOwner
       ? (store.wallets.getActiveSigner() as ExtSigner) || address
-      : address,
+      : address) as any,
   );
 
   const loadData = async () => {
@@ -628,7 +628,7 @@ const ClaimModal = (props: {
 const InventoryModal = (props: { address: string; onClose?: () => void }) => {
   const store = useStore();
   const inventory = useInventoryManagement(
-    (store.wallets.getActiveSigner() as ExtSigner) || props.address,
+    ((store.wallets.getActiveSigner() as ExtSigner) || props.address) as any,
   );
   const modalStore = useModalStore();
 
@@ -739,7 +739,7 @@ const PendingItemsModal = (props: {
 }) => {
   const store = useStore();
   const inventory = useInventoryManagement(
-    (store.wallets.getActiveSigner() as ExtSigner) || props.address,
+    ((store.wallets.getActiveSigner() as ExtSigner) || props.address) as any,
   );
   const modalStore = useModalStore();
 
