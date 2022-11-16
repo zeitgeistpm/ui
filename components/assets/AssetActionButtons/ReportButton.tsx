@@ -65,7 +65,7 @@ const ReportButton = observer(
         ) {
           const tx = store.sdk.api.tx.authorized.authorizeMarketOutcome(
             market.marketId,
-            { categorical: ID },
+            { Categorical: ID },
           );
           signAndSend(tx, signer, callback);
         } else {

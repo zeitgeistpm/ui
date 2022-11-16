@@ -1,8 +1,8 @@
-const withBundleAnalyzer = require("@next/bundle-analyzer")({
-  enabled: process.env.ANALYZE === "true",
-});
-
-module.exports = withBundleAnalyzer({
+module.exports = {
+  experimental: {
+    scrollRestoration: true,
+    esmExternals: true,
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -11,17 +11,17 @@ module.exports = withBundleAnalyzer({
       };
     }
 
-    config.externals = [
-      ...config.externals,
-      {
-        "@substrate/connect": "SubstrateConnect",
-        "@substrate/smoldot-light": "SmoldotLightClient",
-      },
-    ];
+    // config.externals = [
+    //   ...config.externals,
+    //   {
+    //     "@substrate/connect": "SubstrateConnect",
+    //     "@substrate/smoldot-light": "SmoldotLightClient",
+    //   },
+    // ];
 
     return config;
   },
   images: {
     domains: ["ipfs-gateway.zeitgeist.pm"],
   },
-});
+};
