@@ -1,11 +1,12 @@
 import { observer } from "mobx-react";
+import { useState } from "react";
 import ReactSelect from "react-select";
 
 // import QuitIcon from "public/QuitIcon.png";
 
 const MarketFilterContainer = observer(({ children }) => {
   return (
-    <div className="w-full flex flex-col bg-black h-64 p-12">
+    <div className="w-full flex flex-col bg-black">
       {children}
     </div>
   );
@@ -16,7 +17,10 @@ const Control = ({ children, ...rest }) => {
   const { innerProps } = rest;
   const { onMouseDown } = innerProps;
   return (
-    <div className="flex px-ztg-16" onMouseDown={onMouseDown}>
+    <div
+      className="flex font-lato font-medium text-ztg-16-150 text-sky-600 h-ztg-44 bg-blue-600"
+      onMouseDown={onMouseDown}
+    >
       {children}
     </div>
   );
@@ -30,10 +34,11 @@ const IndicatorSeparator = () => {
   return <></>;
 };
 
-const DropDownSelect = observer(() => {
+const DropDownSelect = observer(({ label, options }) => {
   return (
     <ReactSelect
-      placeholder="Category"
+      placeholder={label}
+      options={options}
       components={{
         Control,
         SingleValue,
@@ -60,10 +65,32 @@ const FilterSelect = observer(() => {
   )
 });
 
-const MarketFilterOptions = observer(() => {
+const categoryOptions = [
+  { value: "sports", label: "Sports" },
+  { value: "politics", label: "Politics" },
+  { value: "esports", label: "eSports" },
+];
+
+const currencyOptions = [
+  { value: "ztg", label: "ZTG" },
+  { value: "usd", label: "USD" },
+];
+
+const statusOptions = [
+  { value: "proposed", label: "Proposed" },
+  { value: "active", label: "Active" },
+  { value: "closed", label: "Closed" },
+  { value: "reported", label: "Reported" },
+  { value: "disputed", label: "Disputed" },
+  { value: "resolved", label: "Resolved" },
+]
+
+const MarketFilterOptions = observer(({ add, remove }) => {
   return (
-    <div className="w-full flex h-12 bg-green-300 justify-between">
-      <DropDownSelect />
+    <div className="w-full flex justify-end items-center gap-ztg-5 bg-blue-200">
+      <DropDownSelect label="Category" options={categoryOptions} />
+      <DropDownSelect label="Currency" options={currencyOptions} />
+      <DropDownSelect label="Status" options={statusOptions} />
       <FilterSelect />
     </div>
   );
@@ -87,21 +114,42 @@ const SelectedItem = observer(({ label }) => {
   )
 });
 
-const MarketFilterSelected = observer(() => {
+const MarketFilterSelected = observer(({ activeFilters, clear }) => {
   return (
     <div className="w-full flex h-ztg-32 bg-red-200">
       <ClearAllBtn />
-      <SelectedItem label="Sports" />
-      <SelectedItem label="eSports" />
+      {activeFilters.map((af) => <SelectedItem label={af} />)}
     </div>
   );
 });
 
 const MarketFilter = observer(() => {
+  const [activeFilters, setActiveFilters] = useState(["Sports", "eSports"]);
+
+  // Filter controllers
+  const add = (item) => {
+    const currentFilters = activeFilters;
+    const nextFilters = [...currentFilters, item];
+    setActiveFilters(nextFilters);
+  };
+  const clear = () => setActiveFilters([]);
+  const remove = (item) => {
+    const currentFilters = activeFilters;
+    const idx = currentFilters.findIndex(item);
+    const nextFilters = [...currentFilters.slice(0, idx), ...currentFilters.slice(idx + 1, currentFilters.length)];
+    setActiveFilters(nextFilters);
+  }
+
   return (
     <MarketFilterContainer>
-      <MarketFilterOptions />
-      <MarketFilterSelected />
+      <MarketFilterOptions
+        add={add}
+        remove={remove}
+      />
+      <MarketFilterSelected
+        activeFilters={activeFilters}
+        clear={clear}
+      />
     </MarketFilterContainer>
   );
 });
