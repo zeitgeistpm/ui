@@ -5,7 +5,7 @@ import hashObject from "object-hash";
 
 import Store from "lib/stores/Store";
 import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
-import { MarketPreloader } from "lib/gql/markets-list";
+import { MarketsListPagiantor } from "lib/gql/markets-list";
 
 export const StoreContext = React.createContext<Store | null>(null);
 
@@ -30,7 +30,7 @@ export const StoreProvider: FC<{ store: Store }> = observer(
         return;
       }
 
-      const preloader = new MarketPreloader(graphQLClient);
+      const preloader = new MarketsListPagiantor(graphQLClient);
 
       const sub = from(preloader.fetchMarkets(query, address)).subscribe(
         (res) => {

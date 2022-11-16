@@ -10,7 +10,7 @@ export type MarketCardProps = {
   question: string;
   status: string;
   categories: MarketCategories;
-  prediction: string;
+  prediction?: string;
   volume: number;
   className?: string;
 };

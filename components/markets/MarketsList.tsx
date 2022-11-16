@@ -15,8 +15,7 @@ import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
 import { useContentScrollTop } from "components/context/ContentDimensionsContext";
 import { debounce, isEmpty } from "lodash";
 import { makeAutoObservable } from "mobx";
-import { useUserStore } from "lib/stores/UserStore";
-import { isPreloadedMarket, MarketCardData } from "lib/gql/markets-list";
+import { MarketCardData } from "lib/gql/markets-list/types";
 
 export type MarketsListProps = {
   className?: string;
@@ -81,11 +80,6 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   useEffect(() => {
     if (marketsStore.initialPageLoaded !== true) {
       setMarketsList(preloadedMarkets);
-    } else {
-      const markets = marketsStore.order.map((id) => {
-        return store.markets.markets[id];
-      });
-      setMarketsList(markets);
     }
   }, [marketsStore.initialPageLoaded, marketsStore.order, preloadedMarkets]);
 
@@ -150,20 +144,13 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       <div className="mb-ztg-38 grid grid-cols-3 gap-[30px]">
         {query != null &&
           marketsList?.map((market) => {
-            const preload = isPreloadedMarket(market);
-            const categories = preload
-              ? market.categories
-              : market.outcomesMetadata;
-            const prediction = categories[0].ticker;
             return (
               <MarketCard
                 marketId={market.id}
-                categories={
-                  preload ? market.categories : market.outcomesMetadata
-                }
+                categories={market.categories}
                 question={market.question}
                 status={market.status}
-                prediction={prediction}
+                // prediction={prediction}
                 volume={100}
                 key={`market-${market.id}`}
               />
