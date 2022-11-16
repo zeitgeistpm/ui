@@ -284,6 +284,7 @@ const OracleAndDisputePeriodInput = (props: {
         >
           <input
             type="number"
+            min={0}
             onChange={(e) => {
               props.onChange({
                 label: "Custom",
@@ -317,6 +318,7 @@ const OracleAndDisputePeriodInput = (props: {
         >
           <input
             type="number"
+            min={0}
             onChange={(e) => {
               props.onChange({
                 label: "Custom",
