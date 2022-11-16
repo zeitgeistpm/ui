@@ -9,7 +9,6 @@ import MarketsList from "components/markets/MarketsList";
 import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
 import TrendingMarkets from "components/markets/TrendingMarkets";
 import Image from "next/image";
-import GlitchImage from "components/ui/GlitchImage";
 import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
 import { GraphQLClient } from "graphql-request";
 import getTrendingMarkets from "lib/gql/trending-markets";
@@ -19,6 +18,7 @@ import Link from "next/link";
 import PopularCategories from "components/front-page/PopularCategories";
 import MarketScroll from "components/markets/MarketScroll";
 import { motion } from "framer-motion";
+import LearnSection from "components/front-page/LearnSection";
 
 const MAIN_IMAGE_PATH = "/carousel/intro_zeitgeist_avatar.png";
 
@@ -97,8 +97,8 @@ const IndexPage: NextPage<{
           </Link>
         </motion.div>
       </div>
-      <TrendingMarkets markets={trendingMarkets} />
-      <PopularCategories tagCounts={tagCounts} />
+      <LearnSection />
+      {/* <TrendingMarkets markets={trendingMarkets} /> */}
       <div className="my-[60px]">
         <MarketScroll
           title="Trending Markets"
@@ -112,6 +112,9 @@ const IndexPage: NextPage<{
             { question: "g" },
           ]}
         />
+      </div>
+      <div className="mb-[60px]">
+        <PopularCategories tagCounts={tagCounts} />
       </div>
       {/* <MarketsList /> */}
     </div>

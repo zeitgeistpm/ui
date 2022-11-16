@@ -72,7 +72,7 @@ const MarketScroll = observer(
             </Link>
             <button
               onClick={handleLeftClick}
-              className={`flex items-center justify-center w-[26px] h-[26px] rounded-full mx-[8px] ztg-transition ${
+              className={`flex items-center justify-center w-[26px] h-[26px] rounded-full ml-[12px] mr-[8px] ztg-transition ${
                 leftDisabled
                   ? "bg-geyser text-loblolly"
                   : "bg-loblolly text-white"
@@ -97,9 +97,9 @@ const MarketScroll = observer(
         {/* <div className="flex h-[175px] gap-x-[30px] overflow-auto"> */}
         <div className="relative">
           {/* <div
-          className="bg-gradient-to-r from-indigo-500 h-[175px] w-[1000px] absolute -left-[800px]"
-          style={{ zIndex: 10 }}
-        ></div> */}
+            className="bg-gradient-to-r from-indigo-500 h-[175px] w-[1000px] absolute -left-[800px]"
+            style={{ zIndex: 10 }}
+          ></div> */}
           <motion.div
             ref={scrollRef}
             animate={{ x: scrollLeft }}
