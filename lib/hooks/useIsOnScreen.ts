@@ -17,7 +17,7 @@ export const useIsOnScreen = (ref: React.MutableRefObject<HTMLElement>) => {
     return () => {
       observer.current.disconnect();
     };
-  }, []);
+  }, [ref?.current]);
 
   return isIntersecting;
 };

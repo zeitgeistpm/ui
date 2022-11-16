@@ -2,7 +2,10 @@ import SDK, { util } from "@zeitgeistpm/sdk";
 import { Swap } from "@zeitgeistpm/sdk/dist/models";
 import { waitReady } from "@polkadot/wasm-crypto";
 import { Command, Option } from "commander";
-import { KeyringPairOrExtSigner, MarketPeriod } from "@zeitgeistpm/sdk/dist/types";
+import {
+  KeyringPairOrExtSigner,
+  MarketPeriod,
+} from "@zeitgeistpm/sdk/dist/types";
 import dotenv from "dotenv";
 import { resolve } from "path";
 import { ZTG, DEFAULT_DEADLINES } from "../lib/constants";
@@ -29,12 +32,18 @@ program
     "markets beginings will be offset time units apart",
     "100",
   )
-  .option("-l, --length [number]", "market lenght in `block`s or `timestamp`s depending on unit option.", "86400000")
+  .option(
+    "-l, --length [number]",
+    "market lenght in `block`s or `timestamp`s depending on unit option.",
+    "86400000",
+  )
   .addOption(
     new Option(
       "-u, --unit [type]",
       "use `block` or `timestamp` for market period unit. timestamps will be calculated from current time in ms.",
-    ).default("timestamp").choices(["block", "timestamp"]),
+    )
+      .default("timestamp")
+      .choices(["block", "timestamp"]),
   )
   .option(
     "-no, --num-outcomes [numOutcomes]",
@@ -103,8 +112,6 @@ const createCategoricalMarket = async (
     scoringRule: "CPMM",
     callbackOrPaymentInfo: false,
   });
-
-  console.log(metadata);
 
   return +id;
 };
