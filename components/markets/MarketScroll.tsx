@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { observer } from "mobx-react";
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "react-feather";
 import { useResizeDetector } from "react-resize-detector";
@@ -63,10 +64,15 @@ const MarketScroll = observer(
       <div ref={containerRef} className="flex flex-col">
         <div className="flex items-center mb-ztg-30">
           <div className="font-lato font-bold text-[28px]">{title}</div>
-          <div className="hidden sm:flex ml-auto">
+          <div className="hidden sm:flex ml-auto items-center">
+            <Link href="markets">
+              <a className="text-ztg-14-150 border-2 border-loblolly rounded-[5px] px-[10px] py-[3px]">
+                Go To Markets
+              </a>
+            </Link>
             <button
               onClick={handleLeftClick}
-              className={`flex items-center justify-center w-[26px] h-[26px] rounded-full mr-[8px] ztg-transition ${
+              className={`flex items-center justify-center w-[26px] h-[26px] rounded-full mx-[8px] ztg-transition ${
                 leftDisabled
                   ? "bg-geyser text-loblolly"
                   : "bg-loblolly text-white"
