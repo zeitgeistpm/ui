@@ -1,5 +1,6 @@
 import { observer } from "mobx-react";
 import { useState } from "react";
+import { ChevronDown } from "react-feather";
 import ReactSelect from "react-select";
 
 // import QuitIcon from "public/QuitIcon.png";
@@ -13,14 +14,19 @@ const MarketFilterContainer = observer(({ children }) => {
 });
 
 
-const Control = ({ children, ...rest }) => {
+const Control = ({ children, label, ...rest }) => {
   const { innerProps } = rest;
   const { onMouseDown } = innerProps;
   return (
     <div
-      className="flex font-lato font-medium text-ztg-16-150 text-sky-600 h-ztg-44 bg-blue-600"
+      className="flex justify-center items-center pl-ztg-20 font-lato font-medium text-ztg-16-150 text-sky-600 h-ztg-44"
       onMouseDown={onMouseDown}
     >
+      {label}
+      <ChevronDown
+        size={18}
+        className="text-sky-600 ml-ztg-8 font-bold"
+      />
       {children}
     </div>
   );
@@ -34,15 +40,40 @@ const IndicatorSeparator = () => {
   return <></>;
 };
 
+const DropdownIndicator = () => {
+  return <></>;
+};
+
+const Placeholder = () => {
+  return <></>;
+};
+
+const customStyles = {
+  menu: (provided) => {
+    return {
+      ...provided,
+      backgroundColor: "black",
+    }
+  }
+}
+
 const DropDownSelect = observer(({ label, options }) => {
   return (
     <ReactSelect
-      placeholder={label}
       options={options}
+      styles={customStyles}
+      isMulti={false}
+      isSearchable={false}
       components={{
-        Control,
+        Control: ({ children, ...rest }) => (
+          <Control label={label} {...rest}>
+            {children}
+          </Control>
+        ),
         SingleValue,
         IndicatorSeparator,
+        DropdownIndicator,
+        Placeholder,
       }}
     />
   )
