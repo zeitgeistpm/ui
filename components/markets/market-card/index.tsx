@@ -80,7 +80,7 @@ const MarketCard = ({
         onClick={() => setShowDetailsOverlay(true)}
       />
       <div className="flex flex-row">
-        <div className="h-[60px] w-[60px] mr-[15px] flex-grow flex-shrink-0 relative z-ztg-10">
+        <div className="h-[60px] w-[60px] mr-[15px] flex-grow flex-shrink-0 relative z-ztg-4">
           <Image
             src={img ?? "/icons/default-market.png"}
             className="rounded-full bg-white"
