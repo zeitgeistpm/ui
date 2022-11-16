@@ -21,4 +21,7 @@ module.exports = {
 
     return config;
   },
+  images: {
+    domains: ["ipfs-gateway.zeitgeist.pm"],
+  },
 };

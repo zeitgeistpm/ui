@@ -69,7 +69,6 @@ const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
 
 export interface CreateMarketFormData {
   slug: string;
-  marketImage?: string;
   question: string;
   end: { type: EndType; value?: number | typeof NaN };
   tags: string[];
@@ -170,12 +169,33 @@ const CreatePage: NextPage = observer(() => {
 
   const questionInputRef = useRef();
   const oracleInputRef = useRef();
-  const descriptionInputRef = useRef();
+
+  const ipfsClient = store.sdk.models.ipfsClient;
 
   const [marketCost, setMarketCost] = useState<number>();
   const [newMarketId, setNewMarketId] = useState<number>();
 
-  const { data: deadlineConstants } = useMarketDeadlineConstants();
+  const [marketImageFile, setMarketImageFile] = useState<File>();
+  const [base64MarketImage, setBase64MarketImage] = useState<string>();
+  const [marketImageCid, setMarketImageCid] = useState<string>();
+
+  useEffect(() => {
+    if (marketImageFile == null) {
+      return;
+    }
+    const sub1 = from(toBase64(marketImageFile)).subscribe((encoded) =>
+      setBase64MarketImage(encoded),
+    );
+    const sub2 = from(ipfsClient.addFile(marketImageFile, true)).subscribe(
+      (cid) => {
+        setMarketImageCid(cid.toString());
+      },
+    );
+    return () => {
+      sub1.unsubscribe();
+      sub2.unsubscribe();
+    };
+  }, [marketImageFile]);
 
   useEffect(() => {
     if (store?.graphQLClient == null || newMarketId == null) return;
@@ -216,6 +236,7 @@ const CreatePage: NextPage = observer(() => {
     poolRows,
     deployPool,
     store.wallets.activeAccount,
+    marketImageCid,
   ]);
 
   useEffect(() => {
@@ -333,11 +354,6 @@ const CreatePage: NextPage = observer(() => {
     setFormData((data) => ({ ...data, advised }));
   };
 
-  const changeMarketImage = async (marketImage: File) => {
-    const base64Image = await toBase64(marketImage);
-    setFormData((data) => ({ ...data, marketImage: base64Image }));
-  };
-
   const onChangeDeadlines = (deadlines: MarketDeadlinesValue) => {
     setFormData((data) => ({ ...data, deadlines }));
   };
@@ -375,7 +391,7 @@ const CreatePage: NextPage = observer(() => {
       question: formData.question,
       description: formData.description,
       tags: formData.tags,
-      img: formData.marketImage,
+      img: marketImageCid,
       categories: entries,
       scalarType: isRangeOutcomeEntry(formData.outcomes.value)
         ? formData.outcomes.value.type
@@ -511,6 +527,9 @@ const CreatePage: NextPage = observer(() => {
             successMethod: "PoolCreate",
             successCallback: (data) => {
               const marketId: number = findMarketId(data);
+              if (marketImageFile != null) {
+                ipfsClient.addFile(marketImageFile);
+              }
               notificationStore.pushNotification(
                 `Market successfully created with id: ${marketId}`,
                 {
@@ -555,6 +574,9 @@ const CreatePage: NextPage = observer(() => {
                 notificationStore,
                 successMethod: "MarketCreated",
                 finalizedCallback: (data: JSONObject) => {
+                  if (marketImageFile != null) {
+                    ipfsClient.addFile(marketImageFile);
+                  }
                   const marketId = data[0];
                   notificationStore.pushNotification(
                     `Transaction successful! Market id ${marketId}`,
@@ -644,9 +666,9 @@ const CreatePage: NextPage = observer(() => {
       <MarketFormCard header="1. Market name*">
         <MarketSlugField
           slug={formData.slug}
-          base64Image={formData.marketImage}
+          base64Image={base64MarketImage}
           onSlugChange={changeSlug}
-          onImageChange={changeMarketImage}
+          onImageChange={setMarketImageFile}
           textMaxLength={30}
           form={form}
         />

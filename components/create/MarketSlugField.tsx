@@ -45,7 +45,11 @@ const MarketSlugField: FC<MarketSlugProps> = ({
       <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 center relative mr-ztg-20 bg-sky-600">
         {base64Image == null && <ImageIcon size={20} color="#fff" />}
         {base64Image != null && (
-          <img src={base64Image} className="w-full h-full rounded-ztg-10" />
+          <img
+            src={base64Image}
+            className="w-full h-full rounded-ztg-10"
+            style={{ objectFit: "cover" }}
+          />
         )}
         <div className="h-ztg-24 w-ztg-24 rounded-full absolute top-ztg-6 -right-ztg-12 center bg-white dark:bg-black">
           <Edit3

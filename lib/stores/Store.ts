@@ -100,8 +100,6 @@ export default class Store {
 
   blockTimestamp: number;
 
-  ipfs;
-
   leftDrawerClosed = false;
 
   rightDrawerClosed = false;
