@@ -20,7 +20,7 @@ import { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { ChevronLeft, Info } from "react-feather";
+import { BarChart2, ChevronLeft, Info } from "react-feather";
 
 const PoolDetail = ({
   header,
@@ -228,11 +228,15 @@ const PoolDetails: NextPage = observer(() => {
           <FullSetButtons marketId={saturatedPoolData.market.marketId} />
         )}
         {saturatedPoolData && (
-          <Link href={`/markets/${saturatedPoolData?.market.marketId}`}>
-            <span className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 ">
-              Market
-            </span>
-          </Link>
+          <div className="flex flex-1 justify-end">
+            <Link
+              href={`/markets/${saturatedPoolData?.market.marketId}`}
+              className="flex text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 justify-center items-center"
+            >
+              <BarChart2 size={14} className="mr-2" />
+              <div className="flex content-end">Market</div>
+            </Link>
+          </div>
         )}
       </div>
       <Table data={tableData} columns={columns} />
