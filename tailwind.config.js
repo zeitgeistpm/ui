@@ -200,6 +200,9 @@ module.exports = {
         "anti-flash-white": "#F0F2F5",
         loblolly: "#B5C1CA",
         geyser: "#D5DADF",
+        "tropical-blue": "#D7E6FA",
+        "link-water": "#CFE1EF",
+        mystic: "#E5EAF1",
       },
       inset: {
         "42%": "42%",
