@@ -3,17 +3,6 @@ import { useState } from "react";
 import { ChevronDown } from "react-feather";
 import ReactSelect from "react-select";
 
-// import QuitIcon from "public/QuitIcon.png";
-
-const MarketFilterContainer = observer(({ children }) => {
-  return (
-    <div className="w-full flex flex-col bg-black">
-      {children}
-    </div>
-  );
-});
-
-
 const Control = ({ children, label, ...rest }) => {
   const { innerProps } = rest;
   const { onMouseDown } = innerProps;
@@ -52,7 +41,9 @@ const customStyles = {
   menu: (provided) => {
     return {
       ...provided,
-      backgroundColor: "black",
+      backgroundColor: "white",
+      color: "black",
+      zIndex: 100
     }
   }
 }
@@ -85,14 +76,35 @@ const DropDownSelect = observer(({ label, options, add }) => {
 
 const filterOptions = [
   { value: "newest", label: "Newest" },
-  { value: "liquidity", label: "Liquidity" },
-  { value: "volume", label: "Volume" },
-]
+  { value: "oldest", label: "Oldest" },
+  { value: "most-liquid", label: "Most Liquid" },
+  { value: "least-liquid", label: "Least Liquid" },
+  { value: "most-volume", label: "Most Volume" },
+  { value: "least-volume", label: "Least Volume" },
+];
 
-const FilterSelect = observer(() => {
+const sortBySelectStyles = {
+  control: (provided) => {
+    return {
+      ...provided,
+      width: '220px',
+    }
+  },
+  menu: (provided) => {
+    return {
+      ...provided,
+      backgroundColor: "white",
+      color: "black",
+      zIndex: 100,
+    }
+  }
+}
+
+const SortBySelect = observer(() => {
   return (
     <ReactSelect
       options={filterOptions}
+      styles={sortBySelectStyles}
       components={{
         IndicatorSeparator,
       }}
@@ -126,7 +138,7 @@ const MarketFilterOptions = observer(({ add }) => {
       <DropDownSelect label="Category" options={categoryOptions} add={add} />
       <DropDownSelect label="Currency" options={currencyOptions} add={add} />
       <DropDownSelect label="Status" options={statusOptions} add={add} />
-      <FilterSelect />
+      <SortBySelect />
     </div>
   );
 });
@@ -145,7 +157,6 @@ const ClearAllBtn = observer(({ clear }) => {
 const SelectedItem = observer(({ label, remove }) => {
   return (
     <div className="flex px-ztg-10 py-ztg-5 rounded-ztg-5 bg-gray-400 text-gray-800 font-normal text-ztg-14-150 gap-ztg-5">
-      {/* <img src="public/QuitIcon.png" /> */}
       <button
         className="w-ztg-8"
         onClick={() => remove(label)}
@@ -162,6 +173,14 @@ const MarketFilterSelected = observer(({ activeFilters, clear, remove }) => {
     <div className="w-full flex gap-ztg-2">
       {!!activeFilters.length && <ClearAllBtn clear={clear} />}
       {activeFilters.map((af) => <SelectedItem label={af} remove={remove} />)}
+    </div>
+  );
+});
+
+const MarketFilterContainer = observer(({ children }) => {
+  return (
+    <div className="w-full flex flex-col">
+      {children}
     </div>
   );
 });
