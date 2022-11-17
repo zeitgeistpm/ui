@@ -104,17 +104,6 @@ const PoolDetails: NextPage = observer(() => {
 
   const saturatedPoolData = saturatedPoolIndex?.[poolId];
 
-  const volume = isIndexedData(pool)
-    ? new Decimal(pool.volume).div(ZTG).toFixed(2)
-    : NA;
-
-  const swapFee =
-    typeof pool?.swapFee === "string"
-      ? Number(pool?.swapFee)
-      : pool?.swapFee.isSome
-      ? pool?.swapFee.unwrap().toNumber()
-      : 0;
-
   const { data: ends } = useQuery<number | NA>(
     [id, "market-ends", saturatedPoolData?.market.marketId],
     async () => projectEndTimestamp(sdk.context, saturatedPoolData.market),
@@ -140,6 +129,21 @@ const PoolDetails: NextPage = observer(() => {
       setTableData(tableData);
     }
   }, [saturatedPoolData]);
+
+  const volume = isIndexedData(pool)
+    ? new Decimal(pool.volume).div(ZTG).toFixed(2)
+    : NA;
+
+  const swapFee =
+    typeof pool?.swapFee === "string"
+      ? Number(pool?.swapFee)
+      : pool?.swapFee.isSome
+      ? pool?.swapFee.unwrap().toNumber()
+      : 0;
+
+  const prediction = saturatedPoolData?.assets
+    .sort((a, b) => (a.price.greaterThan(b.price) ? 1 : 0))
+    .at(0);
 
   const columns: TableColumn[] = [
     {
@@ -216,7 +220,19 @@ const PoolDetails: NextPage = observer(() => {
           bottom=""
         />
 
-        <PoolDetail header="APR" middle="" bottom="" showInfo={true} />
+        <PoolDetail
+          header="Prediction"
+          middle={
+            <div className="flex mt-2">
+              <div
+                className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2"
+                style={{ backgroundColor: prediction?.category.color }}
+              />
+              {prediction?.category.ticker}
+            </div>
+          }
+          bottom=""
+        />
       </div>
       {/* <PoolChart /> */}
       {/* <PoolSummary /> */}
