@@ -228,7 +228,7 @@ const PoolDetails: NextPage = observer(() => {
                 className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2"
                 style={{ backgroundColor: prediction?.category.color }}
               />
-              {prediction?.category.ticker}
+              {prediction?.category.ticker.toUpperCase()}
             </div>
           }
           bottom=""

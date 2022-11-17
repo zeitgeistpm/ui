@@ -1,8 +1,10 @@
+import { transactionErrorToString } from "@zeitgeistpm/rpc";
 import { isRight } from "@zeitgeistpm/utility/dist/either";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import Loader from "react-spinners/PulseLoader";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
@@ -74,9 +76,12 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
                 `In block: sold ${new Decimal(amount).toFixed(
                   1,
                 )} full sets. Waiting for finalization..`,
-                { type: "Info", autoRemove: true, lifetime: 6000 },
+                { type: "Info", autoRemove: true, lifetime: 45 },
               );
-              modalStore.closeModal();
+              setTransacting(false);
+              setTimeout(() => {
+                modalStore.closeModal();
+              }, 66);
             },
           },
         })
@@ -85,25 +90,23 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
       if (isRight(result)) {
         notificationStore.pushNotification(
           `Finalized: Sell full set ${new Decimal(amount).toFixed(1)}`,
-          { type: "Success", autoRemove: true, lifetime: 6000 },
+          { type: "Success", autoRemove: true, lifetime: 9 },
         );
       } else {
         const error = result.unleft().unwrap();
-        const message =
-          "docs" in error
-            ? error.docs[0]
-            : "message" in error
-            ? error.message
-            : "Unable to decode error.";
+        const message = transactionErrorToString(error);
         notificationStore.pushNotification(message, {
           type: "Error",
-          lifetime: 8000,
+          lifetime: 9,
           autoRemove: true,
         });
       }
     }
 
     setTransacting(false);
+    setTimeout(() => {
+      modalStore.closeModal();
+    }, 66);
   };
 
   useEffect(() => {
@@ -162,7 +165,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
           Number(amount) === 0
         }
       >
-        Sign Transaction
+        {transacting ? <Loader size={8} /> : "Sign Transaction"}
       </TransactionButton>
     </div>
   );

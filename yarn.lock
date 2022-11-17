@@ -2938,9 +2938,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/rpc@npm:^2.2.3":
-  version: 2.2.3
-  resolution: "@zeitgeistpm/rpc@npm:2.2.3"
+"@zeitgeistpm/rpc@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "@zeitgeistpm/rpc@npm:2.2.4"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.2.2
     "@zeitgeistpm/utility": ^2.3.6
@@ -2948,17 +2948,17 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/keyring": "*"
     "@polkadot/types": "*"
-  checksum: 77902d00c08f5c0e6d7ce4da77e858218e64b300c7e6df17b31bb8190b274f3dd6f1f6f04baa309926449216cae0bc62f85c9514d0fbabec84445e241c43ce8c
+  checksum: 721ad29918d43ffefe45445957680bec6062ab6382d8ae6b88624115a5688f6dabc9c46464678e956142e1cc6ee46f7cf5cd0c92cedf837e56ba7f3dcd67c978
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.4.8":
-  version: 2.4.8
-  resolution: "@zeitgeistpm/sdk@npm:2.4.8"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.4.9":
+  version: 2.4.9
+  resolution: "@zeitgeistpm/sdk@npm:2.4.9"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.2.2
     "@zeitgeistpm/indexer": ^2.3.1
-    "@zeitgeistpm/rpc": ^2.2.3
+    "@zeitgeistpm/rpc": ^2.2.4
     "@zeitgeistpm/utility": ^2.3.6
     "@zeitgeistpm/web3.storage": ^2.2.1
     cids: ^1.1.9
@@ -2972,7 +2972,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: 097893b10ccb20b95806c4b6906a973d0c9bbe349c3b3eca0510645ea5191d205f49c162f62e9035f551bea049b5992a2d91d0d1e61bb78be1294df1c69cac38
+  checksum: 93504c932eb3c580c829393fcb778836d053d0f82b74104dd3cff27f15e89a64788a785e6fbfa8ad8654d1c3eb01aee505b581b57cb91129ac19efe8a4b7be4e
   languageName: node
   linkType: hard
 
@@ -3056,7 +3056,7 @@ __metadata:
     "@zeitgeistpm/avatara-react": ^1.3.0
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^0.9.4
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.4.8"
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.4.9"
     "@zeitgeistpm/utility": ^2.3.6
     autoprefixer: 10.2.5
     axios: ^0.21.4
