@@ -4,13 +4,14 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "react-feather";
 import { useResizeDetector } from "react-resize-detector";
+import MarketCard, { MarketCardProps } from "./market-card";
 
 interface MarketScrollProps {
   question: string;
 }
 
 const MarketScroll = observer(
-  ({ title, markets }: { title: string; markets: MarketScrollProps[] }) => {
+  ({ title, markets }: { title: string; markets: MarketCardProps[] }) => {
     const scrollRef = useRef<HTMLDivElement>();
     const [scrollLeft, setScrollLeft] = useState(0);
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
@@ -108,14 +109,21 @@ const MarketScroll = observer(
             className="flex h-[175px] gap-x-[30px] no-scroll-bar overflow-x-auto sm:overflow-x-visible"
           >
             {markets.map((market, index) => (
-              <div
-                key={index}
+              // <div
+              //   key={index}
+              //   className={`bg-anti-flash-white rounded-ztg-10 min-w-[320px] w-full transition duration-1000 ease-in-out ${
+              //     isInView(index) === false ? "opacity-0" : ""
+              //   }`}
+              // >
+              //   {market.question}
+              // </div>
+
+              <MarketCard
+                {...market}
                 className={`bg-anti-flash-white rounded-ztg-10 min-w-[320px] w-full transition duration-1000 ease-in-out ${
                   isInView(index) === false ? "opacity-0" : ""
                 }`}
-              >
-                {market.question}
-              </div>
+              />
             ))}
           </motion.div>
           {/* <div className="bg-gradient-to-l from-white  h-[175px] w-[80px] absolute -right-[60px] top-[0px]"></div> */}
