@@ -2,18 +2,18 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { isRpcData, PoolGetQuery } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 
-export const rootKey = "pool";
+export const rootKey = "market";
 
-export const usePool = (getPoolQuery?: PoolGetQuery) => {
+export const useMarket = (marketId: number) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, rootKey, getPoolQuery],
+    [id, rootKey, marketId],
     async () => {
-      return sdk.model.swaps.getPool(getPoolQuery);
+      return sdk.model.markets.get({ marketId });
     },
     {
-      enabled: Boolean(sdk && getPoolQuery),
+      enabled: Boolean(sdk),
     },
   );
 

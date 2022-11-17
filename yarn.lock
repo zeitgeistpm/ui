@@ -2952,14 +2952,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.4.4":
-  version: 2.4.4
-  resolution: "@zeitgeistpm/sdk@npm:2.4.4"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.4.6":
+  version: 2.4.6
+  resolution: "@zeitgeistpm/sdk@npm:2.4.6"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.2.2
     "@zeitgeistpm/indexer": ^2.3.1
     "@zeitgeistpm/rpc": ^2.2.1
-    "@zeitgeistpm/utility": ^2.3.3
+    "@zeitgeistpm/utility": ^2.3.4
     "@zeitgeistpm/web3.storage": ^2.2.1
     cids: ^1.1.9
     decimal.js: ^10.4.2
@@ -2972,7 +2972,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: 32b2024a14b087ab02f422ed8cdbc4c01c8d4f97186084a105c233398bfab3bdbcddc65b668afbaac5c2e67e876c3258b19ba261c459adf3a5f87c98a33c4a6c
+  checksum: a55404ffdc9e010881de991d13ef94d977da721c8c187153e5e4ae0db0e31a2651053c1f2ae965618aab08f7c50687cc4dac77c53e0ed6943b32bde1df0f4534
   languageName: node
   linkType: hard
 
@@ -3056,8 +3056,8 @@ __metadata:
     "@zeitgeistpm/avatara-react": ^1.3.0
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^0.9.4
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.4.4"
-    "@zeitgeistpm/utility": ^2.3.3
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.4.6"
+    "@zeitgeistpm/utility": ^2.3.4
     autoprefixer: 10.2.5
     axios: ^0.21.4
     boring-avatars: ^1.6.1
@@ -3127,9 +3127,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/utility@npm:^2.3.3":
-  version: 2.3.3
-  resolution: "@zeitgeistpm/utility@npm:2.3.3"
+"@zeitgeistpm/utility@npm:^2.3.4":
+  version: 2.3.4
+  resolution: "@zeitgeistpm/utility@npm:2.3.4"
   dependencies:
     decimal.js: ^10.4.2
     lodash.omit: ^4.5.0
@@ -3139,7 +3139,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: 69e46487cd9bf6b2b0fec05b98fc8bb28bf0bf87602b01006d207253fb8ece0aebccd5a523f5160c381518f28c158307133718868dc6f22d5485993cc518f10e
+  checksum: 311fae719cf331714fc3b855546d1cdb076c3b86694d16992fcc84697ac668e941c5918f5cf9e1a1dd7047fd0a185bf045df3ebd53d09e7dafe3c5e5d548c03e
   languageName: node
   linkType: hard
 

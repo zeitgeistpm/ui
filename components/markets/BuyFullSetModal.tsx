@@ -1,145 +1,157 @@
+import { isRpcData } from "@zeitgeistpm/sdk-next";
+import { isRight } from "@zeitgeistpm/utility/dist/either";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import { useMarketsStore } from "lib/stores/MarketsStore";
-import MarketStore from "lib/stores/MarketStore";
+import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
+import { useMarket } from "lib/hooks/queries/useMarket";
+import { usePool } from "lib/hooks/queries/usePool";
+import { useSaturatedMarket } from "lib/hooks/queries/useSaturatedMarket";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
-import { extrinsicCallback } from "lib/util/tx";
 import { observer } from "mobx-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-const BuyFullSetModal = observer(
-  ({ marketStore }: { marketStore: MarketStore }) => {
-    const store = useStore();
-    const { wallets } = store;
-    const modalStore = useModalStore();
-    const marketsStore = useMarketsStore();
-    const notificationStore = useNotificationStore();
-    const [amount, setAmount] = useState<string>("0");
-    const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
+const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
+  const store = useStore();
+  const { wallets } = store;
+  const notificationStore = useNotificationStore();
+  const modalStore = useModalStore();
 
-    const assets = marketStore.marketOutcomes.filter(
-      (outcome) => outcome.metadata !== "ztg",
-    );
+  const { data: market } = useMarket(marketId);
+  const { data: saturatedMarket } = useSaturatedMarket(market);
+  const { data: pool } = usePool({ marketId: marketId });
 
-    useEffect(() => {
-      let lowestTokenAmount: Decimal;
-      marketStore.marketOutcomes.forEach(async (outcome) => {
-        if (outcome.metadata !== "ztg") {
-          const balance = await store.getBalance(outcome.asset);
-          if (
-            lowestTokenAmount == null ||
-            balance.lessThan(lowestTokenAmount)
-          ) {
-            lowestTokenAmount = balance;
-          }
-        }
-        setMaxTokenSet(lowestTokenAmount ?? new Decimal(0));
-      });
-    }, [marketStore]);
+  const { data: balances } = useAccountPoolAssetBalances(
+    wallets.getActiveSigner(),
+    pool,
+  );
 
-    const handleAmountChange = (amount: string) => {
-      setAmount(amount);
-    };
+  const [amount, setAmount] = useState<string>("0");
+  const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 
-    const handleSignTransaction = async () => {
-      if (
-        Number(amount) > wallets.activeBalance.toNumber() ||
-        Number(amount) === 0
-      ) {
-        return;
+  useEffect(() => {
+    let lowestTokenAmount: Decimal = null;
+    balances?.forEach((balance) => {
+      const free = new Decimal(balance.free.toNumber());
+      if (!lowestTokenAmount || free.lessThan(lowestTokenAmount)) {
+        lowestTokenAmount = free;
       }
+    });
+    setMaxTokenSet(lowestTokenAmount ?? new Decimal(0));
+  }, [balances]);
 
+  const handleAmountChange = (amount: string) => {
+    setAmount(amount);
+  };
+
+  const handleSignTransaction = async () => {
+    if (
+      Number(amount) > wallets.activeBalance.toNumber() ||
+      Number(amount) === 0
+    ) {
+      return;
+    }
+
+    if ("buyCompleteSet" in market) {
       const signer = wallets.getActiveSigner();
 
-      await marketStore.market.buyCompleteSet(
-        signer,
-        new Decimal(amount).mul(ZTG).toNumber(),
-        extrinsicCallback({
-          notificationStore,
-          successCallback: () => {
-            notificationStore.pushNotification(
-              `Bought ${new Decimal(amount).toFixed(1)} full sets`,
-              { type: "Success" },
-            );
-            modalStore.closeModal();
-            marketsStore.getMarket(marketStore.id);
-          },
-          failCallback: ({ index, error }) => {
-            notificationStore.pushNotification(
-              store.getTransactionError(index, error),
-              {
-                type: "Error",
-              },
-            );
-          },
-        }),
-      );
-    };
+      notificationStore?.pushNotification("Transacting...", {
+        autoRemove: true,
+      });
 
-    useEffect(() => {
-      modalStore.setOnEnterKeyPress(() => handleSignTransaction());
-    }, [modalStore, handleSignTransaction]);
+      const result = await market
+        .buyCompleteSet({
+          amount: new Decimal(amount).mul(ZTG).toNumber(),
+          signer,
+        })
+        .asEither();
 
-    return (
+      if (isRight(result)) {
+        notificationStore.pushNotification(
+          `Bought ${new Decimal(amount).toFixed(1)} full sets.`,
+          { type: "Success" },
+        );
+
+        modalStore.closeModal();
+      } else {
+        const error = result.unleft().unwrap();
+        const message =
+          "docs" in error
+            ? error.docs[0]
+            : "message" in error
+            ? error.message
+            : "Unable to decode error.";
+        notificationStore.pushNotification(message, {
+          type: "Error",
+          lifetime: 8000,
+          autoRemove: true,
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    modalStore.setOnEnterKeyPress(() => handleSignTransaction());
+  }, [modalStore, market, handleSignTransaction]);
+
+  return (
+    <div>
       <div>
-        <div>
-          <div className="flex items-center mt-ztg-24 mb-ztg-8">
-            <div className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2 bg-ztg-blue"></div>
-            <div className="font-bold font-space  text-ztg-16-150 uppercase text-black dark:text-white">
-              {store.config.tokenSymbol}
-            </div>
-            <span className="font-mono text-ztg-12-150 font-medium ml-auto text-sky-600">
-              {wallets.activeBalance.toNumber()}
-            </span>
+        <div className="flex items-center mt-ztg-24 mb-ztg-8">
+          <div className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2 bg-ztg-blue"></div>
+          <div className="font-bold font-space  text-ztg-16-150 uppercase text-black dark:text-white">
+            {store.config.tokenSymbol}
           </div>
-          <AmountInput value={amount} onChange={handleAmountChange} min="0" />
-        </div>
-        <div>
-          <div className="flex items-center mt-ztg-24 mb-ztg-8">
-            {assets.map((outcome, index) => (
-              <div
-                key={index}
-                className="rounded-full w-ztg-20 h-ztg-20 -mr-ztg-8 border-sky-600 border-2"
-                style={{ backgroundColor: outcome.metadata["color"] }}
-              ></div>
-            ))}
-            <div className="font-bold font-space ml-ztg-20  text-ztg-16-150 text-black dark:text-white">
-              Full Set
-            </div>
-            <span className="font-mono text-ztg-12-150 font-medium ml-auto ">
-              {maxTokenSet.toString()}
-            </span>
-          </div>
-          <AmountInput
-            value={amount}
-            onChange={handleAmountChange}
-            disabled={true}
-            min="0"
-          />
-        </div>
-        <div className="h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 my-ztg-10 text-sky-600">
-          <span className="font-lato font-bold">Price per Set:</span>
-          <span className="font-mono font-medium">
-            1 {store.config.tokenSymbol}
+          <span className="font-mono text-ztg-12-150 font-medium ml-auto text-sky-600">
+            {wallets.activeBalance.toNumber()}
           </span>
         </div>
-        <TransactionButton
-          className="!rounded-ztg-10 h-ztg-50"
-          onClick={handleSignTransaction}
-          disabled={
-            Number(amount) > wallets.activeBalance.toNumber() ||
-            Number(amount) === 0
-          }
-        >
-          Sign Transaction
-        </TransactionButton>
+        <AmountInput value={amount} onChange={handleAmountChange} min="0" />
       </div>
-    );
-  },
-);
+      <div>
+        <div className="flex items-center mt-ztg-24 mb-ztg-8">
+          {saturatedMarket?.categories.map((outcome, index) => (
+            <div
+              key={index}
+              className="rounded-full w-ztg-20 h-ztg-20 -mr-ztg-8 border-sky-600 border-2"
+              style={{ backgroundColor: outcome.color }}
+            ></div>
+          ))}
+          <div className="font-bold font-space ml-ztg-20  text-ztg-16-150 text-black dark:text-white">
+            Full Set
+          </div>
+          <span className="font-mono text-ztg-12-150 font-medium ml-auto ">
+            {maxTokenSet.div(ZTG).toString()}
+          </span>
+        </div>
+        <AmountInput
+          value={amount}
+          onChange={handleAmountChange}
+          disabled={true}
+          min="0"
+        />
+      </div>
+      <div className="h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 my-ztg-10 text-sky-600">
+        <span className="font-lato font-bold">Price per Set:</span>
+        <span className="font-mono font-medium">
+          1 {store.config.tokenSymbol}
+        </span>
+      </div>
+      <TransactionButton
+        className="!rounded-ztg-10 h-ztg-50"
+        onClick={handleSignTransaction}
+        disabled={
+          Number(amount) > wallets.activeBalance.toNumber() ||
+          Number(amount) === 0
+        }
+      >
+        Sign Transaction
+      </TransactionButton>
+    </div>
+  );
+});
 
 export default BuyFullSetModal;

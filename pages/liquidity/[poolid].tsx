@@ -203,10 +203,14 @@ const PoolDetails: NextPage = observer(() => {
           header="Pool Value"
           middle={`${Math.round(
             saturatedPoolData?.liquidity.div(ZTG).toNumber() || 0,
-          )} ${store?.config?.tokenSymbol}`}
-          bottom={`$${ztgInfo?.price
-            .mul(saturatedPoolData?.liquidity.div(ZTG))
-            .toFixed(2)}`}
+          )} ${store?.config?.tokenSymbol ?? "--"}`}
+          bottom={`${
+            ztgInfo && saturatedPoolData
+              ? ztgInfo?.price
+                  ?.mul(saturatedPoolData?.liquidity.div(ZTG))
+                  .toFixed(2)
+              : "--"
+          }`}
         />
         <PoolDetail
           className="mx-ztg-20"
@@ -223,12 +227,16 @@ const PoolDetails: NextPage = observer(() => {
         <h3 className="font-space font-semibold text-ztg-20-150">
           Assets in Pool
         </h3>
-        {/* <FullSetButtons marketStore={marketStore} />
-        <Link href={`/markets/${marketStore.id}`}>
-          <span className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 ">
-            Market
-          </span>
-        </Link> */}
+        {saturatedPoolData && (
+          <FullSetButtons marketId={saturatedPoolData.market.marketId} />
+        )}
+        {saturatedPoolData && (
+          <Link href={`/markets/${saturatedPoolData?.market.marketId}`}>
+            <span className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 ">
+              Market
+            </span>
+          </Link>
+        )}
       </div>
       <Table data={tableData} columns={columns} />
     </div>
