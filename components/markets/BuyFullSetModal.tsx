@@ -56,7 +56,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
     ) {
       return;
     }
-    console.log("clicked");
+
     setTransacting(true);
 
     if ("buyCompleteSet" in market) {
