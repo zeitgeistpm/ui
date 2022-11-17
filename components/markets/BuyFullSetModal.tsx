@@ -28,6 +28,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
     pool,
   );
 
+  const [transacting, setTransacting] = useState(false);
   const [amount, setAmount] = useState<string>("0");
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 
@@ -54,6 +55,8 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
       return;
     }
 
+    setTransacting(true);
+
     if ("buyCompleteSet" in market) {
       const signer = wallets.getActiveSigner();
 
@@ -65,16 +68,25 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
         .buyCompleteSet({
           amount: new Decimal(amount).mul(ZTG).toNumber(),
           signer,
+          hooks: {
+            inBlock: () => {
+              notificationStore.pushNotification(
+                `In block: bought ${new Decimal(amount).toFixed(
+                  1,
+                )} full sets. Waiting for finalization...`,
+                { type: "Info", autoRemove: true, lifetime: 6000 },
+              );
+              modalStore.closeModal();
+            },
+          },
         })
         .asEither();
 
       if (isRight(result)) {
         notificationStore.pushNotification(
-          `Bought ${new Decimal(amount).toFixed(1)} full sets.`,
-          { type: "Success" },
+          `Finalized: Bought full set ${new Decimal(amount).toFixed(1)}`,
+          { type: "Success", autoRemove: true, lifetime: 6000 },
         );
-
-        modalStore.closeModal();
       } else {
         const error = result.unleft().unwrap();
         const message =
@@ -90,6 +102,8 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
         });
       }
     }
+
+    setTransacting(false);
   };
 
   useEffect(() => {
@@ -143,6 +157,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
         className="!rounded-ztg-10 h-ztg-50"
         onClick={handleSignTransaction}
         disabled={
+          transacting ||
           Number(amount) > wallets.activeBalance.toNumber() ||
           Number(amount) === 0
         }
