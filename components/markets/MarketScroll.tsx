@@ -65,10 +65,11 @@ const MarketScroll = observer(
         <div className="flex items-center mb-ztg-30">
           <div className="font-lato font-bold text-[28px]">{title}</div>
           <div className="hidden sm:flex ml-auto items-center">
-            <Link href="markets">
-              <a className="text-ztg-14-150 border-2 border-loblolly rounded-[5px] px-[10px] py-[3px]">
-                Go To Markets
-              </a>
+            <Link
+              href="markets"
+              className="text-ztg-14-150 border-2 border-loblolly rounded-[5px] px-[10px] py-[3px]"
+            >
+              Go To Markets
             </Link>
             <button
               onClick={handleLeftClick}

@@ -82,7 +82,7 @@ const IndexPage: NextPage<{
           transition={{ duration: 0.2 }}
         >
           <Link href="/markets/">
-            <a
+            <div
               className="font-lato text-[20px] h-[58px] w-[323px] center border-2 rounded-ztg-100 bg-white"
               style={{
                 boxShadow:
@@ -90,7 +90,7 @@ const IndexPage: NextPage<{
               }}
             >
               Go to All Markets
-            </a>
+            </div>
           </Link>
         </motion.div>
       </div>
