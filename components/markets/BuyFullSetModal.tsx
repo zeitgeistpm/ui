@@ -1,4 +1,3 @@
-import { isRpcData } from "@zeitgeistpm/sdk-next";
 import { isRight } from "@zeitgeistpm/utility/dist/either";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";

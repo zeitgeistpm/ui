@@ -1,10 +1,8 @@
-import { Context, isIndexedData, Market } from "@zeitgeistpm/sdk-next";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketIsTradingEnabled } from "lib/hooks/queries/useMarketIsTradingEnabled";
 import { useModalStore } from "lib/stores/ModalStore";
 import { observer } from "mobx-react";
 import dynamic from "next/dynamic";
-import { useMemo } from "react";
 import BuyFullSetModal from "./BuyFullSetModal";
 import SellFullSetModal from "./SellFullSetModal";
 

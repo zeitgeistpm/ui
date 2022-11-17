@@ -1,29 +1,26 @@
-import { observer } from "mobx-react";
-import { NextPage } from "next";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { ChevronLeft, Info } from "react-feather";
+import { useQuery } from "@tanstack/react-query";
+import {
+  isAvailable,
+  isIndexedData,
+  NA,
+  projectEndTimestamp,
+} from "@zeitgeistpm/sdk-next";
 import FullSetButtons from "components/markets/FullSetButtons";
 import InfoBoxes from "components/ui/InfoBoxes";
-import Table, { TableColumn, TableData } from "components/ui/Table";
-import MarketStore from "lib/stores/MarketStore";
-import { usePoolsStore, CPool } from "lib/stores/PoolsStore";
-import { useStore } from "lib/stores/Store";
-import NotFoundPage from "pages/404";
 import Pill from "components/ui/Pill";
+import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import Link from "next/link";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
-import {
-  NA,
-  isAvailable,
-  projectEndTimestamp,
-  isIndexedData,
-} from "@zeitgeistpm/sdk-next";
-import { useQuery } from "@tanstack/react-query";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useStore } from "lib/stores/Store";
+import { observer } from "mobx-react";
+import { NextPage } from "next";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { ChevronLeft, Info } from "react-feather";
 
 const PoolDetail = ({
   header,
