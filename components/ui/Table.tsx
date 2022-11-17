@@ -4,7 +4,13 @@ import { useEvent } from "lib/hooks";
 import { useStore } from "lib/stores/Store";
 import { formatNumberLocalized } from "lib/util";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import {
+  MutableRefObject,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { ArrowDown } from "react-feather";
 import { useTable } from "react-table";
 import { AmountInput } from "./inputs";
@@ -13,6 +19,7 @@ import PercentageChange from "./PercentageChange";
 import { ChartData } from "./TimeSeriesChart";
 import Avatar from "./Avatar";
 import { range } from "lodash";
+import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
 
 interface TableProps {
   data: TableData[];
@@ -26,6 +33,7 @@ interface TableProps {
   noDataMessage?: string;
   loadingMore?: boolean;
   loadingNumber?: number;
+  loadMoreThreshold?: number;
 }
 
 export interface TableColumn {
@@ -204,7 +212,10 @@ const Cell = observer(
                 {formatNumberLocalized(value.value)}
               </div>
               <div className="text-ztg-12-150 font-light text-sky-600">
-                ${ztgInfo?.price.mul(value.value).toFixed(2)}
+                $
+                {(
+                  (value.usdValue || ztgInfo?.price.toNumber()) * value.value
+                ).toFixed(2)}
               </div>
             </td>
           );
@@ -292,7 +303,7 @@ const Cell = observer(
       default:
         return <td>default</td>;
     }
-  }
+  },
 );
 
 const Table = observer(
@@ -308,12 +319,30 @@ const Table = observer(
     noDataMessage = "No data found",
     loadingMore = false,
     loadingNumber = 3,
+    loadMoreThreshold,
   }: TableProps) => {
     const { rows, prepareRow } = useTable({ columns, data: data ?? [] });
     const tableRef = useRef<HTMLTableElement>();
+    const loadMoreRef = useRef();
     const [isOverflowing, setIsOverflowing] = useState<boolean>();
     const store = useStore();
-    const windowResizeEvent = useEvent(window, "resize", 50);
+    const windowResizeEvent = useEvent(
+      typeof window !== "undefined" ? window : undefined,
+      "resize",
+      50,
+    );
+
+    const loadMoreInView = useIsOnScreen(loadMoreRef);
+
+    const loadMoreThresholdIndex = loadMoreThreshold
+      ? Math.floor((data.length / 100) * loadMoreThreshold)
+      : false;
+
+    useEffect(() => {
+      if (loadMoreInView && loadMoreThresholdIndex) {
+        onLoadMore?.();
+      }
+    }, [loadMoreRef, loadMoreInView, loadMoreThresholdIndex, data]);
 
     const getHeaderClass = (column: TableColumn) => {
       const base =
@@ -450,10 +479,14 @@ const Table = observer(
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((row) => {
+                  {rows.map((row, index) => {
                     prepareRow(row);
+
                     return (
                       <tr
+                        ref={
+                          index === loadMoreThresholdIndex ? loadMoreRef : null
+                        }
                         key={row.id}
                         className={`
                     ${
@@ -507,9 +540,7 @@ const Table = observer(
             </div>
 
             {onPaginate ? (
-              <Paginator
-                onPlusClicked={handlePlusClicked}
-              />
+              <Paginator onPlusClicked={handlePlusClicked} />
             ) : (
               <></>
             )}

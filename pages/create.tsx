@@ -54,14 +54,21 @@ import { useModalStore } from "lib/stores/ModalStore";
 import MarketCostModal from "components/markets/MarketCostModal";
 import { checkMarketExists } from "lib/gql/markets";
 import dynamic from "next/dynamic";
+import {
+  getBlocksDeltaForDuration,
+  MarketDeadlinesInput,
+  MarketDeadlinesValue,
+} from "components/create/MarketDeadlinesInput";
+import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
+import { dateBlock } from "@zeitgeistpm/utility/dist/time";
+import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
 });
 
-interface CreateMarketFormData {
+export interface CreateMarketFormData {
   slug: string;
-  marketImage?: string;
   question: string;
   end: { type: EndType; value?: number | typeof NaN };
   tags: string[];
@@ -72,6 +79,7 @@ interface CreateMarketFormData {
   oracle: string;
   description: string;
   advised: boolean;
+  deadlines: MarketDeadlinesValue & { isValid: boolean };
 }
 
 const initialFields = {
@@ -97,10 +105,22 @@ const initialFields = {
   outcomes: {
     fields: [],
   },
+  deadlines: {
+    grace: {
+      value: 0,
+    },
+    oracle: {
+      value: 28800,
+    },
+    dispute: {
+      value: 28800,
+    },
+  },
 };
 
 const CreatePage: NextPage = observer(() => {
   const store = useStore();
+  const { data: now } = useChainTimeNow();
   const notificationStore = useNotificationStore();
   const modalStore = useModalStore();
   const markets = useMarketsStore();
@@ -113,6 +133,21 @@ const CreatePage: NextPage = observer(() => {
     oracle: "",
     description: "",
     advised: false,
+    deadlines: {
+      grace: {
+        label: "None",
+        value: 0,
+      },
+      oracle: {
+        label: "4 Days",
+        value: 28800,
+      },
+      dispute: {
+        label: "4 Days",
+        value: 28800,
+      },
+      isValid: true,
+    },
   });
 
   const [form] = useState(() => {
@@ -134,10 +169,33 @@ const CreatePage: NextPage = observer(() => {
 
   const questionInputRef = useRef();
   const oracleInputRef = useRef();
-  const descriptionInputRef = useRef();
+
+  const ipfsClient = store.sdk.models.ipfsClient;
 
   const [marketCost, setMarketCost] = useState<number>();
   const [newMarketId, setNewMarketId] = useState<number>();
+
+  const [marketImageFile, setMarketImageFile] = useState<File>();
+  const [base64MarketImage, setBase64MarketImage] = useState<string>();
+  const [marketImageCid, setMarketImageCid] = useState<string>();
+
+  useEffect(() => {
+    if (marketImageFile == null) {
+      return;
+    }
+    const sub1 = from(toBase64(marketImageFile)).subscribe((encoded) =>
+      setBase64MarketImage(encoded),
+    );
+    const sub2 = from(ipfsClient.addFile(marketImageFile, true)).subscribe(
+      (cid) => {
+        setMarketImageCid(cid.toString());
+      },
+    );
+    return () => {
+      sub1.unsubscribe();
+      sub2.unsubscribe();
+    };
+  }, [marketImageFile]);
 
   useEffect(() => {
     if (store?.graphQLClient == null || newMarketId == null) return;
@@ -162,17 +220,23 @@ const CreatePage: NextPage = observer(() => {
   }, [store?.graphQLClient, newMarketId]);
 
   useEffect(() => {
-    if (!form.isValid || store.wallets.activeAccount == null) {
+    if (
+      !form.isValid ||
+      !formData.deadlines.isValid ||
+      store.wallets.activeAccount == null
+    ) {
       return;
     }
     const sub = from(getTransactionFee()).subscribe(setTxFee);
     return () => sub.unsubscribe();
   }, [
     form.isValid,
+    formData.deadlines.isValid,
     formData,
     poolRows,
     deployPool,
     store.wallets.activeAccount,
+    marketImageCid,
   ]);
 
   useEffect(() => {
@@ -290,9 +354,8 @@ const CreatePage: NextPage = observer(() => {
     setFormData((data) => ({ ...data, advised }));
   };
 
-  const changeMarketImage = async (marketImage: File) => {
-    const base64Image = await toBase64(marketImage);
-    setFormData((data) => ({ ...data, marketImage: base64Image }));
+  const onChangeDeadlines = (deadlines: MarketDeadlinesValue) => {
+    setFormData((data) => ({ ...data, deadlines }));
   };
 
   const getMarketPeriod = (): MarketPeriod => {
@@ -328,13 +391,36 @@ const CreatePage: NextPage = observer(() => {
       question: formData.question,
       description: formData.description,
       tags: formData.tags,
-      img: formData.marketImage,
+      img: marketImageCid,
       categories: entries,
       scalarType: isRangeOutcomeEntry(formData.outcomes.value)
         ? formData.outcomes.value.type
         : undefined,
     };
     return metadata;
+  };
+
+  const getMarketDeadlines = () => {
+    const gracePeriod = (
+      formData.deadlines.grace.label === "Custom"
+        ? dateBlock(now, formData.deadlines.grace.value)
+        : formData.deadlines.grace.value
+    ).toString();
+    const oracleDuration = (
+      formData.deadlines.oracle.label === "Custom"
+        ? getBlocksDeltaForDuration(now, formData.deadlines.oracle.value)
+        : formData.deadlines.oracle.value
+    ).toString();
+    const disputeDuration = (
+      formData.deadlines.dispute.label === "Custom"
+        ? getBlocksDeltaForDuration(now, formData.deadlines.dispute.value)
+        : formData.deadlines.dispute.value
+    ).toString();
+    return {
+      gracePeriod,
+      oracleDuration,
+      disputeDuration,
+    };
   };
 
   const getCreateMarketParameters = async (
@@ -363,12 +449,14 @@ const CreatePage: NextPage = observer(() => {
           Scalar: [outcomes.minimum, outcomes.maximum],
         };
 
+    const deadlines = getMarketDeadlines();
+
     return {
       marketType,
       signer,
       oracle,
       period,
-      deadlines: DEFAULT_DEADLINES,
+      deadlines,
       creationType,
       disputeMechanism: mdm,
       scoringRule,
@@ -413,11 +501,13 @@ const CreatePage: NextPage = observer(() => {
           ],
         };
 
+    const deadlines = getMarketDeadlines();
+
     return {
       signer,
       oracle,
       period,
-      deadlines: DEFAULT_DEADLINES,
+      deadlines,
       marketType,
       disputeMechanism: mdm,
       swapFee,
@@ -437,6 +527,9 @@ const CreatePage: NextPage = observer(() => {
             successMethod: "PoolCreate",
             successCallback: (data) => {
               const marketId: number = findMarketId(data);
+              if (marketImageFile != null) {
+                ipfsClient.addFile(marketImageFile);
+              }
               notificationStore.pushNotification(
                 `Market successfully created with id: ${marketId}`,
                 {
@@ -481,6 +574,9 @@ const CreatePage: NextPage = observer(() => {
                 notificationStore,
                 successMethod: "MarketCreated",
                 finalizedCallback: (data: JSONObject) => {
+                  if (marketImageFile != null) {
+                    ipfsClient.addFile(marketImageFile);
+                  }
                   const marketId = data[0];
                   notificationStore.pushNotification(
                     `Transaction successful! Market id ${marketId}`,
@@ -570,9 +666,9 @@ const CreatePage: NextPage = observer(() => {
       <MarketFormCard header="1. Market name*">
         <MarketSlugField
           slug={formData.slug}
-          base64Image={formData.marketImage}
+          base64Image={base64MarketImage}
           onSlugChange={changeSlug}
-          onImageChange={changeMarketImage}
+          onImageChange={setMarketImageFile}
           textMaxLength={30}
           form={form}
         />
@@ -625,6 +721,13 @@ const CreatePage: NextPage = observer(() => {
           name="oracle"
           data-test="oracleInput"
         />
+        <div className="mb-ztg-20">
+          <MarketDeadlinesInput
+            value={formData.deadlines}
+            marketEnd={formData.end}
+            onChange={(deadlines) => onChangeDeadlines(deadlines)}
+          />
+        </div>
         <div className="flex h-ztg-22 items-center text-sky-600 font-lato">
           <div className="w-ztg-20 h-ztg-20">
             <AlertTriangle size={20} />
@@ -700,7 +803,9 @@ const CreatePage: NextPage = observer(() => {
               createMarket();
             }}
             disabled={
-              !form.isValid || store.wallets.activeBalance.lessThan(marketCost)
+              !form.isValid ||
+              !formData.deadlines.isValid ||
+              store.wallets.activeBalance.lessThan(marketCost)
             }
           >
             Create Market

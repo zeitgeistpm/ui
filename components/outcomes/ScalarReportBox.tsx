@@ -30,7 +30,7 @@ const ScalarReportBox = observer(
     const { isAuthorityProxy } = marketStore;
 
     const handleSignTransaction = async () => {
-      const outcomeReport: OutcomeReport = {
+      const outcomeReport: any = {
         scalar: Number(scalarReportValue),
       };
       const signer = wallets.getActiveSigner();

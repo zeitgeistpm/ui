@@ -1,14 +1,9 @@
-import {
-  PaginationOptions,
-  FilterOptions,
-  SortOptions,
-  PoolsListQuery,
-} from "lib/types";
+import { PaginationOptions, PoolsListQuery } from "lib/types";
+import { DeepPartial } from "lib/types/DeepPartial";
+import { merge } from "lodash";
 import { useRouter } from "next/router";
 import type { ParsedUrlQuery } from "querystring";
 import { useCallback, useMemo } from "react";
-import { merge, last } from "lodash";
-import { DeepPartial } from "lib/types/DeepPartial";
 
 export type PoolsListQueryUpdater = (
   update: DeepPartial<PoolsListQuery>,
@@ -39,16 +34,13 @@ export const usePoolsListQuery = (): PoolsListQuery & {
 };
 
 export const defaultQueryState: PoolsListQuery = {
-  pagination: {
-    page: 1,
-    pageSize: 14,
-  },
+  page: 0,
 };
 
-const paginationKeys = Object.keys(defaultQueryState.pagination);
+const paginationKeys = Object.keys(defaultQueryState);
 
 const toString = (query: PoolsListQuery) => {
-  return [...Object.entries(query.pagination)]
+  return [...Object.entries(query)]
     .map(([key, value]) =>
       typeof value !== "undefined" ? `${key}=${value}` : null,
     )
@@ -57,16 +49,7 @@ const toString = (query: PoolsListQuery) => {
 };
 
 const parse = (rawQuery: ParsedUrlQuery): PoolsListQuery => {
-  let pagination: PaginationOptions = {
-    ...defaultQueryState.pagination,
-  };
-  for (const paginationKey of paginationKeys) {
-    if (rawQuery[paginationKey]) {
-      pagination[paginationKey] = JSON.parse(rawQuery[paginationKey] as string);
-    }
-  }
-
   return {
-    pagination,
+    page: JSON.parse((rawQuery["page"] ?? "0") as string),
   };
 };

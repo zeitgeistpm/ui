@@ -89,8 +89,8 @@ const ReportBox = observer(
     }, [selectedAssetOption]);
 
     const handleSignTransaction = async () => {
-      const outcomeReport: OutcomeReport = {
-        categorical: JSON.parse(selectedAssetOption.value)
+      const outcomeReport: any = {
+        Categorical: JSON.parse(selectedAssetOption.value)
           .categoricalOutcome[1],
       };
 

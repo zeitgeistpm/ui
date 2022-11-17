@@ -1,25 +1,28 @@
+import { Skeleton } from "@material-ui/lab";
+import { GraphQLClient } from "graphql-request";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
+import Image from "next/image";
 import React, { FC } from "react";
 
-import { Skeleton } from "@material-ui/lab";
-
-import { useStore } from "lib/stores/Store";
-import MarketsList from "components/markets/MarketsList";
-import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
-import TrendingMarkets from "components/markets/TrendingMarkets";
-import Image from "next/legacy/image";
 import GlitchImage from "components/ui/GlitchImage";
+import MarketsList from "components/markets/MarketsList";
+import FeaturedMarkets from "components/markets/featured-markets/FeaturedMarkets";
+import TrendingMarkets from "components/markets/TrendingMarkets";
 import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
-import { GraphQLClient } from "graphql-request";
-import getTrendingMarkets from "lib/gql/trending-markets";
+
 import { getPopularCategories, TagCounts } from "lib/gql/popular-categories";
+import getFeaturedMarkets from "lib/gql/featured-markets";
+import getTrendingMarkets from "lib/gql/trending-markets";
+import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
+import { useStore } from "lib/stores/Store";
 
 import MarketFilter from "components/markets/market-filter/MarketFilter";
 
 export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
+  const featuredMarkets = await getFeaturedMarkets(client);
   const trendingMarkets = await getTrendingMarkets(client);
 
   if (!trendingMarkets || trendingMarkets.length === 0) {
@@ -32,6 +35,7 @@ export async function getStaticProps() {
   const categories = await getPopularCategories(client);
   return {
     props: {
+      featuredMarkets: featuredMarkets,
       trendingMarkets: trendingMarkets,
       tagCounts: categories,
     },
@@ -139,9 +143,10 @@ const PopularCategories: FC<{ tagCounts: TagCounts }> = observer(
 );
 
 const IndexPage: NextPage<{
+  featuredMarkets: TrendingMarketInfo[];
   trendingMarkets: TrendingMarketInfo[];
   tagCounts: TagCounts;
-}> = observer(({ trendingMarkets, tagCounts }) => {
+}> = observer(({ featuredMarkets, trendingMarkets, tagCounts }) => {
   const store = useStore();
 
   return (
@@ -166,7 +171,8 @@ const IndexPage: NextPage<{
           />
         </GlitchImage>
       </a>
-      {/* <TrendingMarkets markets={trendingMarkets} /> */}
+      {!!featuredMarkets && <FeaturedMarkets markets={featuredMarkets} />}
+      <TrendingMarkets markets={trendingMarkets} />
       {/* <PopularCategories tagCounts={tagCounts} /> */}
       <MarketFilter />
       <MarketsList />
