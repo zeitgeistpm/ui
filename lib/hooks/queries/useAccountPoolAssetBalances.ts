@@ -26,12 +26,13 @@ export const useAccountPoolAssetBalances = (
               .filter((weight) => weight.assetId !== "Ztg")
               .map((weight) => JSON.parse(weight.assetId))
           : isRpcData(pool)
-          ? pool.assets.map((asset) => asset)
+          ? pool.assets
           : [];
 
         const balances = await sdk.context.api.query.tokens.accounts.multi(
           assets.map((assets) => [account.address, assets]),
         );
+
         return balances;
       }
     },
