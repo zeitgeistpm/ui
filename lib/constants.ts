@@ -15,8 +15,7 @@ export const ZTG = 10 ** 10;
 
 export const MAX_IN_OUT_RATIO = new Decimal(1).div(3).toString();
 
-export const DEFAULT_SLIPPAGE_PERCENTAGE =
-  Number(process.env.NEXT_PUBLIC_DEFAULT_SLIPPAGE_PERCENTAGE) || 1;
+export const DEFAULT_SLIPPAGE_PERCENTAGE = 1;
 
 export const REPORT_ALLOWED_DURATION_MS = 24 * 3600 * 1000; // 24 hours
 
@@ -39,7 +38,6 @@ export const sortOptions = Object.entries(ESortType).map((v) => {
   };
 });
 
-//parachain runtime values before 0.3.6
 export const DEFAULT_DEADLINES: MarketDeadlines = {
   gracePeriod: "0",
   oracleDuration: "28800",

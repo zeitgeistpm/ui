@@ -41,6 +41,7 @@ html {
   @apply justify-center;
   @apply items-center;
 }
+
 /* Stop purging. */
 
 @import "./kusama-derby.css";
@@ -92,7 +93,7 @@ html {
   border-radius: 3px;
 }
 
-#marketLayoutContent > * {
+#marketLayoutContent>* {
   @apply w-full;
 }
 
@@ -162,7 +163,7 @@ html {
   line-height: 1.5;
 }
 
-.card .card-foot > div {
+.card .card-foot>div {
   font-size: 0.625rem;
 }
 
@@ -170,6 +171,7 @@ html {
   .card .card-status {
     min-width: 100px;
   }
+
   .card .card-title {
     font-size: 0.875rem;
     line-height: 1.5;
@@ -192,6 +194,7 @@ html {
 @import "./drawer.css";
 @import "./card.css";
 @import "./date-picker.css";
+@import "./quill.css";
 
 body {
   --topbar-height: 76px;
@@ -203,7 +206,7 @@ body {
 }
 
 .main-container {
-  height: calc(100vh - var(--topbar-height));
+  height: calc(calc(100vh - var(--topbar-height)) - 38px);
 }
 
 .carousel__slide--visible {
@@ -257,7 +260,7 @@ td:last-child {
   background-clip: padding-box;
 }
 
-.dark > * ::-webkit-scrollbar-thumb {
+.dark>* ::-webkit-scrollbar-thumb {
   background: #1d2533;
 }
 
@@ -274,19 +277,17 @@ td:last-child {
 }
 
 /* Skeleton */
-.dark > * .MuiSkeleton-root {
+.dark>* .MuiSkeleton-root {
   height: 1.2em;
   display: block;
   background-color: #141a24 !important;
 }
 
-.dark > * .MuiSkeleton-wave::after {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    #1d2533,
-    transparent
-  ) !important;
+.dark>* .MuiSkeleton-wave::after {
+  background: linear-gradient(90deg,
+      transparent,
+      #1d2533,
+      transparent) !important;
 }
 
 * .MuiSkeleton-root {
@@ -296,12 +297,10 @@ td:last-child {
 }
 
 * .MuiSkeleton-wave::after {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    #d9e3ee,
-    transparent
-  ) !important;
+  background: linear-gradient(90deg,
+      transparent,
+      #d9e3ee,
+      transparent) !important;
 }
 
 .auth-page {
@@ -540,26 +539,32 @@ td:last-child {
     opacity: 1;
     text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
+
   8% {
     opacity: 0.1;
     text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
+
   9% {
     opacity: 1;
     text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
+
   12% {
     opacity: 0.1;
     text-shadow: 0px 0px rgba(242, 22, 22, 1);
   }
+
   20% {
     opacity: 1;
     text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
+
   25% {
     opacity: 0.3;
     text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
+
   30% {
     opacity: 1;
     text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
@@ -579,6 +584,12 @@ td:last-child {
     opacity: 0.9;
     text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
+
+  77% {
+    opacity: .9;
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1)
+  }
+
   100% {
     opacity: 0.9;
     text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
@@ -592,12 +603,14 @@ td:last-child {
     -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
     box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
   }
+
   2% {
     opacity: 1;
     -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
     -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
     box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
   }
+
   4% {
     opacity: 0.1;
     -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
@@ -611,12 +624,14 @@ td:last-child {
     -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
     box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
   }
+
   70% {
     opacity: 0.7;
     -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
     -moz-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
     box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
   }
+
   100% {
     opacity: 1;
     -webkit-box-shadow: 0px 0px 78px 4px rgba(16, 134, 232, 0.73);
@@ -629,9 +644,11 @@ td:last-child {
   0% {
     opacity: 0.1;
   }
+
   2% {
     opacity: 0.1;
   }
+
   4% {
     opacity: 1;
   }
@@ -639,9 +656,11 @@ td:last-child {
   19% {
     opacity: 1;
   }
+
   21% {
     opacity: 0.1;
   }
+
   23% {
     opacity: 1;
   }
@@ -649,9 +668,11 @@ td:last-child {
   80% {
     opacity: 1;
   }
+
   83% {
     opacity: 0.4;
   }
+
   87% {
     opacity: 1;
   }
@@ -670,6 +691,7 @@ td:last-child {
 }
 
 @keyframes bounceIn {
+
   from,
   20%,
   40%,

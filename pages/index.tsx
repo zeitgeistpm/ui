@@ -1,30 +1,25 @@
-import { observer } from "mobx-react";
-import { NextPage } from "next";
-import React, { FC } from "react";
-
-import { Skeleton } from "@material-ui/lab";
-
-import { useStore } from "lib/stores/Store";
-import MarketsList from "components/markets/MarketsList";
-import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
-import TrendingMarkets from "components/markets/TrendingMarkets";
-import Image from "next/image";
-import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
-import { GraphQLClient } from "graphql-request";
-import getTrendingMarkets from "lib/gql/trending-markets";
-import { getPopularCategories, TagCounts } from "lib/gql/popular-categories";
-import { getPlaiceholder, IGetPlaiceholderReturn } from "plaiceholder";
-import Link from "next/link";
+import LearnSection from "components/front-page/LearnSection";
 import PopularCategories from "components/front-page/PopularCategories";
 import MarketScroll from "components/markets/MarketScroll";
+import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
 import { motion } from "framer-motion";
-import LearnSection from "components/front-page/LearnSection";
+import { GraphQLClient } from "graphql-request";
+import getFeaturedMarkets from "lib/gql/featured-markets";
+import { getPopularCategories, TagCounts } from "lib/gql/popular-categories";
+import getTrendingMarkets from "lib/gql/trending-markets";
+import { useStore } from "lib/stores/Store";
+import { observer } from "mobx-react";
+import { NextPage } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { getPlaiceholder, IGetPlaiceholderReturn } from "plaiceholder";
+import React from "react";
 
 const MAIN_IMAGE_PATH = "/carousel/intro_zeitgeist_avatar.png";
-
 export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
+  const featuredMarkets = await getFeaturedMarkets(client);
   const trendingMarkets = await getTrendingMarkets(client);
 
   const img = await getPlaiceholder(MAIN_IMAGE_PATH, { size: 32 });
@@ -39,6 +34,7 @@ export async function getStaticProps() {
   const categories = await getPopularCategories(client);
   return {
     props: {
+      featuredMarkets: featuredMarkets,
       trendingMarkets: trendingMarkets,
       tagCounts: categories,
       img,
@@ -48,10 +44,11 @@ export async function getStaticProps() {
 }
 
 const IndexPage: NextPage<{
+  featuredMarkets: TrendingMarketInfo[];
   trendingMarkets: TrendingMarketInfo[];
   tagCounts: TagCounts;
   img: IGetPlaiceholderReturn;
-}> = observer(({ trendingMarkets, tagCounts, img }) => {
+}> = observer(({ trendingMarkets, featuredMarkets, tagCounts, img }) => {
   const store = useStore();
 
   return (
@@ -116,6 +113,8 @@ const IndexPage: NextPage<{
       <div className="mb-[60px]">
         <PopularCategories tagCounts={tagCounts} />
       </div>
+      {/* {!!featuredMarkets && <FeaturedMarkets markets={featuredMarkets} />} */}
+
       {/* <MarketsList /> */}
     </div>
   );

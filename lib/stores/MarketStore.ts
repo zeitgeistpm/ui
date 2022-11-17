@@ -6,6 +6,7 @@ import {
   MarketCreation,
   MarketDispute,
   MarketPeriod,
+  ScalarRangeType,
 } from "@zeitgeistpm/sdk/dist/types";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces";
 import Decimal from "decimal.js";
@@ -411,6 +412,13 @@ class MarketStore {
     return this.pool?.assets;
   }
 
+  get scalarType(): ScalarRangeType | null {
+    if (this.type !== "scalar") {
+      return null;
+    }
+    return this.market.scalarType;
+  }
+
   get tradingEnabled(): boolean | null {
     if (!this.loaded) {
       return null;
@@ -538,7 +546,7 @@ class MarketStore {
   async getPrizePool(): Promise<string> {
     if (this.assets == null) return "0";
     const prizePool = await this.store.sdk.api.query.tokens.totalIssuance(
-      this.assets[0],
+      this.assets[0] as any,
     );
     return new Decimal(prizePool.toString()).div(ZTG).toFixed(0);
   }

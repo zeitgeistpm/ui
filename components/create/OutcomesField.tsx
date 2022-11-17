@@ -12,17 +12,20 @@ import Form from "mobx-react-form";
 import { observer } from "mobx-react";
 import { Minus, Plus, ArrowDownCircle, ArrowUpCircle } from "react-feather";
 import { Color, HuePicker as ColorPicker } from "react-color";
+import LabeledToggle from "components/ui/LabeledToggle";
+import { DateTimeInput, Input } from "components/ui/inputs";
 
-import { Input } from "components/ui/inputs";
 import { randomHexColor } from "lib/util";
 import { useEvent } from "lib/hooks";
 import {
+  isDateRangeOutcomeEntry,
   isMultipleOutcomeEntries,
   isRangeOutcomeEntry,
   MultipleOutcomeEntry,
   Outcomes,
   OutcomeType,
   RangeOutcomeEntry,
+  RangeType,
   YesNoOutcome,
 } from "lib/types/create-market";
 import { useStore } from "lib/stores/Store";
@@ -35,6 +38,8 @@ const outcomeSettings = {
   tickerMaxLength: 7,
   outcomeNameMaxLength: 98,
 };
+
+const oneWeekInMs = 1000 * 60 * 60 * 24 * 7;
 
 export const createInitialMultipleOutcomeEntries =
   (): MultipleOutcomeEntry[] => {
@@ -56,7 +61,7 @@ export const addMultipleOutcomeEntry = (entries: MultipleOutcomeEntry[]) => {
 };
 
 export const createInitialRangeOutcomeEntry = (): RangeOutcomeEntry => {
-  return { minimum: NaN, maximum: NaN, ticker: "" };
+  return { minimum: NaN, maximum: NaN, ticker: "", type: "number" };
 };
 
 export const OutcomeColor: FC<{
@@ -311,7 +316,6 @@ export const RangeOutcomeField: FC<{
 }> = observer(({ outcome, onOutcomeChange, step = 0.1, namePrefix }) => {
   const form = useContext(FormContext);
   const parentField = form.$("outcomes");
-
   const shortFieldName = `${namePrefix}-short`;
   const longFieldName = `${namePrefix}-long`;
   const tickerFieldName = `${namePrefix}-ticker`;
@@ -368,6 +372,15 @@ export const RangeOutcomeField: FC<{
     onOutcomeChange({ ...outcome, ticker: v });
   };
 
+  const changeType = (type: RangeType) => {
+    onOutcomeChange({
+      ...outcome,
+      type,
+      minimum: type === "number" ? NaN : Date.now(),
+      maximum: type === "number" ? NaN : Date.now() + oneWeekInMs,
+    });
+  };
+
   return (
     <>
       <div className="flex text-ztg-10-150 uppercase text-sky-600 font-medium mb-ztg-8 h-ztg-15">
@@ -381,40 +394,65 @@ export const RangeOutcomeField: FC<{
         <div className="w-ztg-40 flex-shrink-0">Short</div>
         <div className="w-ztg-40 flex-shrink-0 ml-ztg-13">Long</div>
       </div>
-      <div className="flex">
-        <div className="flex-ztg-basis-248 flex-grow flex-shrink pr-ztg-16">
-          <Input
-            data-test="minRangeValueInput"
-            name={`outcomes.${namePrefix}-short`}
-            ref={shortRef}
-            form={form}
-            type="number"
-            placeholder="Minimum Range Value"
-            value={minStr}
-            min={0}
-            max={1}
-            step={step}
-            onChange={(e) => {
-              changeMinimum(e.target.value);
-            }}
-          />
+      <div className="flex mb-2">
+        <div className="flex-ztg-basis-248 h-12 flex-grow flex-shrink pr-ztg-16">
+          {outcome.type === "number" ? (
+            <Input
+              data-test="minRangeValueInput"
+              name={`outcomes.${namePrefix}-short`}
+              ref={shortRef}
+              form={form}
+              type="number"
+              placeholder="Minimum Range Value"
+              value={minStr}
+              min={0}
+              max={1}
+              step={step}
+              onChange={(e) => {
+                changeMinimum(e.target.value);
+              }}
+            />
+          ) : (
+            <DateTimeInput
+              data-test="minRangeValueInput"
+              name={`outcomes.${namePrefix}-short`}
+              onChange={(timestamp) => {
+                changeMinimum(timestamp.toString());
+              }}
+              form={form}
+              timestamp={outcome.minimum}
+            />
+          )}
         </div>
-        <div className="flex-ztg-basis-248 flex-grow flex-shrink pr-ztg-16">
-          <Input
-            data-test="maxRangeValueInput"
-            name={`outcomes.${namePrefix}-long`}
-            ref={longRef}
-            form={form}
-            type="number"
-            placeholder="Maximum Range Value"
-            value={maxStr}
-            min={0}
-            max={1}
-            step={step}
-            onChange={(e) => {
-              changeMaximum(e.target.value);
-            }}
-          />
+        <div className="flex-ztg-basis-248 h-12 flex-grow flex-shrink pr-ztg-16">
+          {outcome.type === "number" ? (
+            <Input
+              data-test="maxRangeValueInput"
+              name={`outcomes.${namePrefix}-long`}
+              ref={longRef}
+              form={form}
+              type="number"
+              placeholder="Maximum Range Value"
+              value={maxStr}
+              min={0}
+              max={1}
+              step={step}
+              onChange={(e) => {
+                changeMaximum(e.target.value);
+              }}
+            />
+          ) : (
+            <DateTimeInput
+              className="w-full"
+              onChange={(timestamp) => {
+                changeMaximum(timestamp.toString());
+              }}
+              data-test="maxRangeValueInput"
+              name={`outcomes.${namePrefix}-long`}
+              form={form}
+              timestamp={outcome.maximum}
+            />
+          )}
         </div>
         <div className="flex-ztg-basis-85 pr-ztg-15">
           <Input
@@ -443,6 +481,14 @@ export const RangeOutcomeField: FC<{
         >
           <ArrowUpCircle size={20} className="text-black" />
         </div>
+      </div>
+      <div>
+        <LabeledToggle
+          leftLabel="Number"
+          rightLabel="Date"
+          side={outcome.type == "number" ? "left" : "right"}
+          onChange={(side) => changeType(side === "left" ? "number" : "date")}
+        />
       </div>
     </>
   );
@@ -515,6 +561,20 @@ const OutcomesField: FC<OutcomesFieldProps> = observer(
       initOutcomesForType(type);
     }, []);
 
+    useEffect(() => {
+      if (
+        isDateRangeOutcomeEntry(value) &&
+        (isNaN(value.maximum) || isNaN(value.minimum))
+      ) {
+        onChange(type, {
+          ticker: "",
+          type: "date",
+          minimum: Date.now(),
+          maximum: Date.now() + oneWeekInMs,
+        });
+      }
+    }, [value]);
+
     /// need this because the form wouldn't revalidate when outcome type changes
     const [prevType, setPrevType] = useState(type);
     useEffect(() => {
@@ -524,7 +584,7 @@ const OutcomesField: FC<OutcomesFieldProps> = observer(
       form.$("outcomes").set("value", {});
       form.validate();
       setPrevType(type);
-    }, [type])
+    }, [type]);
 
     const changeMultipleOutcomeEntry = (
       idx: number,

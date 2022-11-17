@@ -1,161 +1,187 @@
-import InfoBoxes from "components/ui/InfoBoxes";
+import { isIndexedSdk, ZTG } from "@zeitgeistpm/sdk-next";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
+import { useMarketStatusCount } from "lib/hooks/queries/useMarketStatusCount";
+import { usePools } from "lib/hooks/queries/usePools";
+import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
+import { useTotalLiquidity } from "lib/hooks/queries/useTotalLiquidity";
+import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { usePoolsListQuery } from "lib/hooks/usePoolsUrlQuery";
-import { usePoolsStore } from "lib/stores/PoolsStore";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { formatNumberLocalized } from "lib/util";
 import { observer } from "mobx-react";
-import hashObject from "object-hash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
-import { useUserStore } from "lib/stores/UserStore";
+import { useMemo } from "react";
+import { AiOutlineRead } from "react-icons/ai";
 
-const MarketCell = ({ text }: { text: string }) => {
-  return (
-    <div className="text-ztg-12-120 font-bold uppercase text-sky-600">
-      {text}
-    </div>
-  );
-};
+const columns: TableColumn[] = [
+  {
+    header: "Market Id",
+    accessor: "marketId",
+    type: "component",
+    alignment: "text-left",
+  },
+  {
+    header: "Composition",
+    accessor: "composition",
+    type: "paragraph",
+  },
+  {
+    header: "Status",
+    accessor: "status",
+    type: "paragraph",
+  },
+  {
+    header: "Liquidity",
+    accessor: "poolBalance",
+    type: "currency",
+  },
+];
 
 const LiquidityPools: NextPage = observer(() => {
   const router = useRouter();
-  const { graphQlEnabled } = useUserStore();
 
-  const poolsStore = usePoolsStore();
+  const { data: ztgInfo } = useZtgInfo();
 
-  const [initialLoad, setInitialLoad] = useState(true);
+  const {
+    data: poolPages,
+    isLoading: isLoadingPools,
+    hasNextPage,
+    fetchNextPage,
+  } = usePools();
 
-  const query = usePoolsListQuery();
-  const queryHash = hashObject(query);
+  const pools = poolPages?.pages.flatMap((pools) => pools.data) || [];
 
-  const [loadingPage, setLoadingPage] = useState(false);
+  const { data: saturatedIndex, isFetched } = useSaturatedPoolsIndex(pools);
 
-  const paginatorRef = useRef<HTMLDivElement>();
-  const paginatorInView = useIsOnScreen(paginatorRef);
+  const totalLiquidity = useTotalLiquidity({ enabled: isFetched });
 
-  const tableData: TableData[] = useMemo(() => {
-    if (graphQlEnabled) {
-      return poolsStore.filteredPoolsInOrder.map((pool) => ({
-        marketId: <MarketCell text={pool.marketSlug} />,
-        poolId: pool.poolId,
-        composition: pool.assets
-          .map(
-            (asset) =>
-              `${asset.percentage}% ${
-                typeof asset.category === "string"
-                  ? "ztg"
-                  : asset.category.ticker
-              }`,
-          )
-          .join(" - "),
-        poolBalance: {
-          value: new Decimal(pool.liquidity).div(ZTG).toNumber(),
-          usdValue: 0,
-        },
-      }));
-    } else {
-      return poolsStore.chainPools?.map((pool) => ({
-        marketId: <MarketCell text={pool.market.slug} />,
-        poolId: pool.pool.poolId,
-        composition: pool.assets
-          .map((asset) => `${asset.percentage}% ${asset.ticker}`)
-          .join(" - "),
-        poolBalance: {
-          value: pool.liquidity,
-          usdValue: 0,
-        },
-      }));
+  const totalLiquidityValue = useMemo(() => {
+    if (ztgInfo) {
+      return totalLiquidity.div(ZTG).mul(ztgInfo.price);
     }
-  }, [poolsStore.filteredPoolsList, poolsStore.chainPools]);
+    return new Decimal(0);
+  }, [ztgInfo, totalLiquidity]);
 
-  useEffect(() => {
-    (async () => {
-      setLoadingPage(true);
-      if (initialLoad) {
-        if (graphQlEnabled) {
-          await poolsStore.loadFilteredPools({
-            pagination: {
-              page: 1,
-              pageSize: query.pagination.page * query.pagination.pageSize,
-            },
-          });
-        } else {
-          await poolsStore.loadPoolsFromChain(5);
-        }
+  const { data: activeMarketCount } = useMarketStatusCount("Active");
 
-        setLoadingPage(false);
-        setInitialLoad(false);
-      } else {
-        setLoadingPage(true);
-        await poolsStore.loadFilteredPools(query);
-        setLoadingPage(false);
-      }
-    })();
-  }, [queryHash]);
+  const tableData = useMemo<TableData[]>(() => {
+    return (
+      pools?.map((pool) => {
+        const saturatedData = saturatedIndex?.[pool.poolId];
+        return {
+          poolId: pool.poolId,
+          marketId: (
+            <div className="flex items-center py-3">
+              <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600 mr-4">
+                <div
+                  className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0"
+                  style={{
+                    backgroundImage:
+                      saturatedData?.market.img == null
+                        ? "url(/icons/default-market.png)"
+                        : `url(${saturatedData.market.img})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                />
+              </div>
 
-  useEffect(() => {
-    if (
-      paginatorInView &&
-      !initialLoad &&
-      !poolsStore.filteredPoolsListFullyLoaded &&
-      graphQlEnabled
-    ) {
-      query.updateQuery({
-        pagination: { page: query.pagination.page + 1 },
-      });
-    }
-  }, [paginatorInView]);
-
-  const columns: TableColumn[] = [
-    {
-      header: "Market Id",
-      accessor: "marketId",
-      type: "component",
-      alignment: "text-left",
-    },
-    {
-      header: "Composition",
-      accessor: "composition",
-      type: "paragraph",
-    },
-    {
-      header: "Liquidity",
-      accessor: "poolBalance",
-      type: "currency",
-    },
-  ];
+              <div className="text-ztg-12-120 font-bold uppercase text-sky-600">
+                {saturatedData?.market.slug?.toUpperCase() ||
+                  saturatedData?.market.marketId}
+              </div>
+            </div>
+          ),
+          status: (
+            <div className="w-28">{saturatedData?.market.status ?? "..."}</div>
+          ),
+          composition: (
+            <span>
+              {saturatedData?.assets
+                .map((asset) => `${asset.percentage}% ${asset.category.ticker}`)
+                .join(" - ") || "..."}
+            </span>
+          ),
+          poolBalance: saturatedData ? (
+            {
+              value: saturatedData?.liquidity.div(ZTG).toNumber(),
+              usdValue: ztgInfo?.price.toNumber() ?? 0,
+            }
+          ) : (
+            <span>...</span>
+          ),
+        };
+      }) ?? []
+    );
+  }, [pools, saturatedIndex]);
 
   const handleRowClick = (data: TableData) => {
     router.push(`/liquidity/${data.poolId}`);
   };
 
-  const handleLoadMoreFromChain = () => {
-    (async () => {
-      setLoadingPage(true);
-      await poolsStore.loadPoolsFromChain(5);
-      setLoadingPage(false);
-    })();
-  };
-
   return (
     <div>
-      <InfoBoxes />
-      <h2 className="header mb-ztg-23">Liquidity Pools</h2>
-      <h3 className="mb-ztg-23 font-medium text-ztg-14-150">All Pools</h3>
+      <div className="flex mb-ztg-20">
+        <div className="px-4 py-6 bg-sky-100 dark:bg-black rounded-ztg-10 w-1/3 mr-4">
+          <h3 className="bg-gray-200 dark:bg-gray-800 rounded-3xl py-1 px-3 font-bold text-sm inline-block mb-3">
+            Total Value
+          </h3>
+          <div className="font-bold font-mono px-1 text-xl mb-2">
+            {formatNumberLocalized(totalLiquidity.div(ZTG).toNumber())} ZTG
+          </div>
+          <div className="font-mono px-1 text-sm text-gray-600">
+            ≈ {formatNumberLocalized(totalLiquidityValue.toNumber())} USD
+          </div>
+        </div>
+
+        <div className="px-4 py-6 bg-sky-100 dark:bg-black rounded-ztg-10 w-1/3 mr-4">
+          <h3 className="bg-gray-200 dark:bg-gray-800 rounded-3xl py-1 px-3 font-bold text-sm inline-block mb-3">
+            Active Markets
+          </h3>
+          <div className="font-bold font-mono px-1 text-xl mb-2">
+            {activeMarketCount ?? 0}
+          </div>
+          <div className="font-mono px-1 text-sm text-gray-600">
+            Currently open markets.
+          </div>
+        </div>
+
+        <a
+          href={"https://docs.zeitgeist.pm/docs/learn/liquidity"}
+          target="_blank"
+          className="relative px-4 py-6 bg-ztg-blue rounded-ztg-10 w-1/3 cursor-pointer hover:scale-105 transition-all"
+        >
+          <div className="absolute top-2 right-4 text-gray-50">
+            <AiOutlineRead size={22} />
+          </div>
+          <h3 className="bg-gray-100 dark:bg-gray-800 rounded-3xl py-1 px-3 font-bold text-sm inline-block mb-3">
+            Learn & Earn
+          </h3>
+          <div className="font-bold text-gray-100 font-mono px-1 text-xl mb-2">
+            Liquidity Pools
+          </div>
+          <div className="font-mono px-1 text-sm text-gray-200">
+            Learn about earning ZTG by providing liquidity.
+          </div>
+        </a>
+      </div>
+
+      <h2 className="mb-ztg-20 font-space text-[24px] font-semibold">
+        Market Pools
+      </h2>
+
       <Table
         data={tableData}
         columns={columns}
         onRowClick={handleRowClick}
-        onLoadMore={handleLoadMoreFromChain}
-        hideLoadMore={graphQlEnabled || poolsStore.allPoolsShown}
-        loadingMore={loadingPage}
-        loadingNumber={graphQlEnabled ? 5 : query.pagination.pageSize}
+        onLoadMore={hasNextPage ? fetchNextPage : undefined}
+        loadingMore={isLoadingPools}
+        loadingNumber={10}
+        hideLoadMore
+        loadMoreThreshold={70}
       />
-      <div className="my-22 w-full h-40"></div>
-      <div ref={paginatorRef} />
     </div>
   );
 });

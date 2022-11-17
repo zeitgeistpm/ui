@@ -40,7 +40,7 @@ export type MarketListQuery = {
 };
 
 export type PoolsListQuery = {
-  pagination: PaginationOptions;
+  page: number;
 };
 
 export type PaginationOptions = {

@@ -1,11 +1,6 @@
 import { Skeleton } from "@material-ui/lab";
-import Decimal from "decimal.js";
-import { gql } from "graphql-request";
-import { DAY_SECONDS, ZTG } from "lib/constants";
-import { useMarketsStore } from "lib/stores/MarketsStore";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
+
 import TrendingMarketCard, { TrendingMarketInfo } from "./TrendingMarketCard";
 
 const TrendingMarkets = observer(

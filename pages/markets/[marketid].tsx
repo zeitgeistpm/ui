@@ -1,19 +1,21 @@
 import { Skeleton } from "@material-ui/lab";
+import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import LiquidityPill from "components/markets/LiquidityPill";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import MarketTimer from "components/markets/MarketTimer";
 import PoolDeployer from "components/markets/PoolDeployer";
+import ScalarPriceRange from "components/markets/ScalarPriceRange";
+import MarketImage from "components/ui/MarketImage";
 import Pill from "components/ui/Pill";
 import TimeSeriesChart, {
   ChartData,
   ChartSeries,
 } from "components/ui/TimeSeriesChart";
 import { GraphQLClient } from "graphql-request";
-import { DAY_SECONDS } from "lib/constants";
 import {
   getMarket,
-  getMarketIds,
+  getRecentMarketIds,
   MarketPageIndexedData,
 } from "lib/gql/markets";
 import { getBaseAsset } from "lib/gql/pool";
@@ -22,20 +24,28 @@ import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
+import useMarketImageUrl from "lib/hooks/useMarketImageUrl";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
+import { combineLatest, from } from "rxjs";
+
+const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
+  ssr: false,
+});
 
 export async function getStaticPaths() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
-  const marketIds = await getMarketIds(client);
-  const paths = marketIds.map((marketId) => ({
-    params: { marketid: marketId.toString() },
+  const marketIds = await getRecentMarketIds(client);
+
+  const paths = marketIds.map((market) => ({
+    params: { marketid: market.toString() },
   }));
 
   return { paths, fallback: "blocking" };
@@ -47,17 +57,16 @@ export async function getStaticProps({ params }) {
 
   const market = await getMarket(client, params.marketid);
 
-  const dateOneMonthAgo = new Date(
-    new Date().getTime() - DAY_SECONDS * 31 * 1000,
-  ).toISOString();
+  const startDate = new Date(Number(market?.period.start)).toISOString();
+  const assetPrices = market?.outcomeAssets
+    ? await Promise.all(
+        market?.outcomeAssets?.map((asset) =>
+          getAssetPriceHistory(client, asset, startDate),
+        ),
+      )
+    : undefined;
 
-  const assetPrices = await Promise.all(
-    market?.outcomeAssets?.map((asset) =>
-      getAssetPriceHistory(client, asset, dateOneMonthAgo),
-    ),
-  );
-
-  const chartSeries: ChartSeries[] = market.categories?.map(
+  const chartSeries: ChartSeries[] = market?.categories?.map(
     (category, index) => {
       return {
         accessor: `v${index}`,
@@ -76,7 +85,7 @@ export async function getStaticProps({ params }) {
     });
   });
 
-  const baseAsset = market.poolId
+  const baseAsset = market?.poolId
     ? await getBaseAsset(client, market.poolId)
     : null;
 
@@ -106,6 +115,29 @@ const Market: NextPage<{
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
   const [hasAuthReport, setHasAuthReport] = useState<boolean>();
+  const marketImageUrl = useMarketImageUrl(indexedMarket.img);
+
+  const [scalarPrices, setScalarPrices] =
+    useState<{ short: number; long: number; type: ScalarRangeType }>();
+
+  useEffect(() => {
+    if (marketStore == null) return;
+    if (marketStore.scalarType === "date") {
+      const observables = marketStore.marketOutcomes
+        .filter((o) => o.metadata !== "ztg")
+        .map((outcome) => {
+          return from(marketStore.assetPriceInZTG(outcome.asset));
+        });
+      const sub = combineLatest(observables).subscribe((prices) => {
+        setScalarPrices({
+          type: marketStore.scalarType,
+          short: prices[1].toNumber(),
+          long: prices[0].toNumber(),
+        });
+      });
+      return () => sub.unsubscribe();
+    }
+  }, [marketStore, marketStore?.pool]);
 
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
@@ -151,30 +183,17 @@ const Market: NextPage<{
       <Head>
         <title>{question}</title>
         <meta name="description" content={indexedMarket.description} />
+        <meta property="og:description" content={indexedMarket.description} />
+        {marketImageUrl && (
+          <meta property="og:image" content={marketImageUrl} />
+        )}
       </Head>
       <div>
         <div className="flex mb-ztg-33">
-          <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600">
-            {indexedMarket?.img ? (
-              <img
-                className="rounded-ztg-10"
-                src={indexedMarket.img}
-                alt="Market image"
-                loading="lazy"
-                width={70}
-                height={70}
-              />
-            ) : (
-              <img
-                className="rounded-ztg-10"
-                src="/icons/default-market.png"
-                alt="Market image"
-                loading="lazy"
-                width={70}
-                height={70}
-              />
-            )}
-          </div>
+          <MarketImage
+            image={indexedMarket.img}
+            alt={`Image depicting ${question}`}
+          />
           <div className="sub-header ml-ztg-20">{indexedMarket?.question}</div>
         </div>
         <div
@@ -187,7 +206,7 @@ const Market: NextPage<{
             title="Ends"
             value={new Intl.DateTimeFormat("en-US", {
               dateStyle: "medium",
-            }).format(indexedMarket.end)}
+            }).format(Number(indexedMarket.period.end))}
           />
           <Pill title="Status" value={indexedMarket.status} />
           {prizePool ? (
@@ -243,11 +262,20 @@ const Market: NextPage<{
             </div>
           </div>
         )}
-        {<MarketAssetDetails marketStore={marketStore} />}
+        <MarketAssetDetails marketStore={marketStore} />
+        {marketStore?.type === "scalar" && scalarPrices && (
+          <div className="mt-ztg-20 mb-ztg-30">
+            <ScalarPriceRange
+              scalarType={scalarPrices.type}
+              lowerBound={marketStore.bounds[0]}
+              upperBound={marketStore.bounds[1]}
+              shortPrice={scalarPrices.short}
+              longPrice={scalarPrices.long}
+            />
+          </div>
+        )}
         <div className="sub-header mt-ztg-40 mb-ztg-15">About Market</div>
-        <div className="font-lato text-ztg-14-180 text-sky-600">
-          {indexedMarket.description}
-        </div>
+        {<QuillViewer value={indexedMarket.description} />}
         <PoolDeployer
           marketStore={marketStore}
           onPoolDeployed={handlePoolDeployed}

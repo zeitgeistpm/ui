@@ -55,8 +55,8 @@ export default class PoolsStore {
 
   async loadFilteredPools(query: PoolsListQuery) {
     const pools = await this.store.sdk.models.filterPools({
-      offset: (query.pagination.page - 1) * query.pagination.pageSize,
-      limit: query.pagination.pageSize,
+      offset: query.page * 20,
+      limit: 20,
     });
     runInAction(() => {
       if (!pools.length) {

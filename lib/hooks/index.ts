@@ -4,7 +4,7 @@ import { fromEvent, Observable, Subscription } from "rxjs";
 import { debounceTime } from "rxjs/operators";
 
 export const useEvent = (
-  target: EventTarget,
+  target: EventTarget | undefined,
   eventName: string,
   debounceMs: number = 0,
 ) => {

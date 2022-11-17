@@ -67,7 +67,7 @@ export const MenuItem: FC<MenuItemProps> = observer(
 
     return (
       <WrapComponent href={href}>
-        <a
+        <div
           className={`${classes} ${className} ${
             active
               ? "text-black bg-white dark:text-white dark:bg-sky-1100 font-bold"
@@ -97,7 +97,7 @@ export const MenuItem: FC<MenuItemProps> = observer(
           ) : (
             <></>
           )}
-        </a>
+        </div>
       </WrapComponent>
     );
   },

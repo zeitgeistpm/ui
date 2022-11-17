@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { motion, Variants } from "framer-motion";
 import Decimal from "decimal.js";
+import moment from "moment";
 import { Skeleton } from "@material-ui/lab";
 import { combineLatest, from, map, Subscription } from "rxjs";
 import React, {
@@ -30,6 +31,7 @@ import { DAY_SECONDS } from "lib/constants";
 
 import MarketTable from "./MarketTable";
 import ScalarPriceRange from "./ScalarPriceRange";
+import MarketImage from "components/ui/MarketImage";
 
 const MarketCardContext = createContext<{
   market: MarketCardData;
@@ -60,11 +62,18 @@ const Card = observer(
     const tagsText = market.tags == null ? "" : market.tags.join(" / ");
     const preloaded = isPreloadedMarket(market);
 
-    const getImageUrlString = () => {
-      if (preloaded || (!preloaded && market.img == null)) {
-        return "url(/icons/default-market.png)";
+    const getPredictionHumanReadable = () => {
+      if (market.poolExists === false) {
+        return "--";
       }
-      return `url(${market.img})`;
+      if (market.scalarType === "date") {
+        const humanReadable = moment(Number(prediction)).format(
+          "d/MM/D/YY, hh:mm",
+        );
+        return humanReadable;
+      } else {
+        return `${prediction}`;
+      }
     };
 
     const buttonVariants: Variants = {
@@ -106,17 +115,11 @@ const Card = observer(
         >
           <div className="flex items-center mx-ztg-16 h-full">
             <Link href={`/markets/${market.id}`}>
-              <a className="flex items-center h-full">
-                <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600">
-                  <div
-                    className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0"
-                    style={{
-                      backgroundImage: getImageUrlString(),
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
-                  ></div>
-                </div>
+              <div className="flex items-center h-full">
+                <MarketImage
+                  image={preloaded ? undefined : market.img}
+                  alt={`Image depicting ${market.question}`}
+                />
 
                 <div className=" ml-ztg-16 mr-ztg-16 h-ztg-70 overflow-auto cursor-pointer">
                   <div className="text-ztg-12-120 font-bold uppercase text-sky-600">
@@ -126,7 +129,7 @@ const Card = observer(
                     {market.question}
                   </div>
                 </div>
-              </a>
+              </div>
             </Link>
 
             <div
@@ -142,14 +145,14 @@ const Card = observer(
                     prediction == null ? (
                       <Skeleton className="!transform-none !w-[50px] !h-[20px] !mt-ztg-4" />
                     ) : (
-                      prediction
+                      getPredictionHumanReadable()
                     )
                   ) : (
                     "--"
                   ))}
                 {!preloaded && (
                   <div className="text-ztg-16-120 font-bold text-black dark:text-white mt-ztg-4">
-                    {prediction ?? "--"}
+                    {getPredictionHumanReadable()}
                   </div>
                 )}
               </div>
@@ -158,9 +161,9 @@ const Card = observer(
               {/* TODO */}
               {/* <Star size={24} className="mr-ztg-10 cursor-pointer" /> */}
               <Link href={`/markets/${market.id}`}>
-                <a>
+                <span>
                   <ExternalLink size={24} className="cursor-pointer" />
-                </a>
+                </span>
               </Link>
               <div className="w-ztg-43">
                 <motion.button
@@ -301,6 +304,7 @@ const PoolExpandable = observer(
             upperBound={bounds?.[1]}
             shortPrice={shortPrice}
             longPrice={longPrice}
+            scalarType={market.scalarType}
           />
         ) : (
           market.type === "scalar" && (
@@ -328,7 +332,6 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
   const [expanded, setExpanded] = useState(false);
   const store = useStore();
 
-  const poolExists = market.poolExists;
   const status: string = market.status;
 
   const [innerStatus, setInnerStatus] = useState<string>(status);
@@ -338,19 +341,6 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
 
   const marketStore = isPreloadedMarket(market) ? undefined : market;
   const marketStorePool = marketStore?.pool;
-
-  const getPricesFromChain = async (market: MarketStore) => {
-    const pricePromises = market.marketOutcomes
-      .filter((o) => o.metadata !== "ztg")
-      .map(async (outcome) => {
-        return {
-          assetId: outcome.asset,
-          price: await market.assetPriceInZTG(outcome.asset),
-        };
-      });
-    const prices = await Promise.all(pricePromises);
-    return prices;
-  };
 
   const getAssetsFromChain = async (
     market: MarketStore,
@@ -392,9 +382,6 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
     if (isPreloadedMarket(market)) {
       return;
     }
-    if (!poolExists) {
-      return setPrediction(null);
-    }
 
     if (
       preloadAssetsSubRef.current != null &&
@@ -412,7 +399,7 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
 
   useEffect(() => {
     if (assets == null) {
-      return;
+      return setPrediction(null);
     }
     const preloaded = isPreloadedMarket(market);
     if (market.type === "categorical") {

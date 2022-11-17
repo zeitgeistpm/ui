@@ -76,6 +76,8 @@ module.exports = {
           "0px 12.5216px 10.0172px rgba(0, 1, 254, 0.14), 0px 4.5288px 3.62304px rgba(0, 1, 254, 0.0975551)",
         "ztg-3": "10px 30px 80px rgba(0, 1, 254, 0.5)",
         "ztg-4": "0px 0px 80px #3A475A",
+        "ztg-5":
+          "0px 126px 50px rgba(0, 0, 0, 0.01), 0px 71px 43px rgba(0, 0, 0, 0.05), 0px 32px 32px rgba(0, 0, 0, 0.09), 0px 8px 17px rgba(0, 0, 0, 0.1), 0px 0px 0px rgba(0, 0, 0, 0.1);",
       },
       fontSize: {
         "lg-2": ["1.375rem", "1.875rem"],
@@ -137,6 +139,7 @@ module.exports = {
         "560px": "560px",
       },
       colors: {
+        "maroon-base": "#3C0C0C",
         "kusama-base": "#E10178",
         "kusama-green": "#00E7BD",
         "kusama-blue": "#00B0E7",
@@ -203,6 +206,7 @@ module.exports = {
         "tropical-blue": "#D7E6FA",
         "link-water": "#CFE1EF",
         mystic: "#E5EAF1",
+        "pastel-blue": "#B5C1CA",
       },
       inset: {
         "42%": "42%",
