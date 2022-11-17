@@ -56,6 +56,7 @@ const LiquidityPools: NextPage = observer(() => {
   const { data: saturatedIndex, isFetched } = useSaturatedPoolsIndex(pools);
 
   const totalLiquidity = useTotalLiquidity({ enabled: isFetched });
+  console.log("TEST");
 
   const totalLiquidityValue = useMemo(() => {
     if (ztgInfo) {
