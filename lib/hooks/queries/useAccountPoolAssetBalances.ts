@@ -25,9 +25,7 @@ export const useAccountPoolAssetBalances = (
           ? pool.weights
               .filter((weight) => weight.assetId !== "Ztg")
               .map((weight) => JSON.parse(weight.assetId))
-          : isRpcData(pool)
-          ? pool.assets
-          : [];
+          : pool.assets;
 
         const balances = await sdk.context.api.query.tokens.accounts.multi(
           assets.map((assets) => [account.address, assets]),
