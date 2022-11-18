@@ -30,8 +30,8 @@ const MarketCardInfoRow = ({
 }) => {
   return (
     <div className="h-[18px]">
-      <span className="text-sky-600 font-semibold">{name}:</span>{" "}
-      <span className="text-black font-bold">{value}</span>
+      <span className="text-sky-600">{name}:</span>{" "}
+      <span className="text-black">{value}</span>
     </div>
   );
 };
@@ -99,7 +99,7 @@ const MarketCard = ({
             alt={`Image depicting ${question}`}
           />
         </div>
-        <div className="mr-[17px] black font-lato font-bold h-[75px] w-full line-clamp-3">
+        <div className="mr-[17px] black font-lato font-bold h-[75px] w-full line-clamp-3 text-ztg-14-150">
           {question}
         </div>
       </Link>

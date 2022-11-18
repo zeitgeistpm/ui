@@ -22,7 +22,7 @@ const LearnCard = ({
       className={`${className} min-w-[220px] w-full h-[126px] rounded-[10px] p-[15px]`}
     >
       <a href={link} target="_blank" rel="noopener noreferrer">
-        <div className="bg-white py-[6px] px-[10px] rounded-[50px] w-fit text-ztg-12-120 font-bold">
+        <div className="bg-white py-[3px] px-[10px] rounded-[50px] w-fit text-ztg-12-120 font-bold">
           {tag}
         </div>
         <div className="font-bold text-ztg-16-150 my-[8px]">{title}</div>
