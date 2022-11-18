@@ -1,4 +1,4 @@
-export type MarketCategory = { ticker: string; color: string };
+export type MarketCategory = { name: string; color: string };
 export type MarketCategories = MarketCategory[];
 
 export type MarketCardOverlayCategoryProps = {
@@ -18,7 +18,7 @@ const MarketCardOverlayCategory = ({
       ></div>
       <div className="flex flex-col w-[95px] flex-shrink-0 ml-[7px]">
         <div className="font-lato font-bold uppercase text-ztg-14-110 truncate h-[17px] flex-shrink-0">
-          {category.ticker}
+          {category.name}
         </div>
         {/* TODO: make a component for price diff */}
         <div className="h-full flex flex-row items-center">

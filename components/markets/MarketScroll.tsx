@@ -54,9 +54,10 @@ const MarketScroll = observer(
 
       return true;
     };
-    const leftDisabled = scrollLeft === 0 || markets.length < 4;
-    const rightDisabled =
-      scrollMax - containerWidth + scrollLeft === 0 || markets.length < 4;
+
+    //todo: review these for 3 or less markets
+    const leftDisabled = scrollLeft === 0;
+    const rightDisabled = scrollMax - containerWidth + scrollLeft === 0;
 
     return (
       <div ref={containerRef} className="flex flex-col">

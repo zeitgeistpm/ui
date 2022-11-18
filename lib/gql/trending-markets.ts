@@ -33,7 +33,8 @@ const marketQuery = gql`
         scalar
       }
       categories {
-        ticker
+        color
+        name
       }
     }
   }
@@ -77,7 +78,7 @@ const getTrendingMarkets = async (
           question: string;
           creation: MarketCreation;
           marketType: { [key: string]: string };
-          categories: { ticker: string }[];
+          categories: { color: string; name: string }[];
         }[];
       }>(marketQuery, {
         marketId: pool.marketId,
@@ -106,7 +107,7 @@ const getTrendingMarkets = async (
           }
         });
 
-        prediction = market.categories[highestPriceIndex].ticker;
+        prediction = market.categories[highestPriceIndex].name;
       } else {
         const bounds: number[] = market.marketType.scalar
           .split(",")
@@ -134,7 +135,7 @@ const getTrendingMarkets = async (
         prediction: prediction,
         volume: new Decimal(pool.volume).div(ZTG).toNumber(),
         baseAsset: pool.baseAsset,
-        categories: [],
+        categories: market.categories,
       };
       console.log(trendingMarket);
 
