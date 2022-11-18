@@ -1,19 +1,24 @@
+import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
 import Image from "next/image";
 import React, { useState } from "react";
 import { MoreVertical } from "react-feather";
 import MarketCardOverlay from "./overlay";
 import { MarketCategories } from "./overlay-categories";
 
-export type MarketCardProps = {
+export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
   question: string;
-  status: string;
+  creation: MarketCreation;
   categories: MarketCategories;
   prediction: string;
   volume: number;
+  baseAsset: string;
+}
+
+export interface MarketCardProps extends IndexedMarketCardData {
   className?: string;
-};
+}
 
 const MarketCardInfoRow = ({
   name,
@@ -48,18 +53,19 @@ const MarketCard = ({
   marketId,
   img,
   question,
-  status,
+  creation,
   categories,
   prediction,
   volume,
+  baseAsset,
   className = "",
 }: MarketCardProps) => {
   const [showDetailsOverlay, setShowDetailsOverlay] = useState<boolean>(false);
 
   const infoRows = [
     { name: "Prediction", value: prediction },
-    { name: "Volume", value: `${volume} ZTG` },
-    { name: "Status", value: status },
+    { name: "Volume", value: `${volume} ${baseAsset}` },
+    { name: "Status", value: creation },
   ];
   return (
     <div

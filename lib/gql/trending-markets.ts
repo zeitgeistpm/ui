@@ -1,4 +1,5 @@
-import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
+import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
+import { IndexedMarketCardData } from "components/markets/market-card";
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS, ZTG } from "lib/constants";
@@ -24,7 +25,8 @@ const marketQuery = gql`
     markets(where: { marketId_eq: $marketId }) {
       marketId
       outcomeAssets
-      slug
+      question
+      creation
       img
       marketType {
         categorical
@@ -47,7 +49,9 @@ const assetsQuery = gql`
   }
 `;
 
-const getTrendingMarkets = async (client: GraphQLClient) => {
+const getTrendingMarkets = async (
+  client: GraphQLClient,
+): Promise<IndexedMarketCardData[]> => {
   const dateTwoWeeksAgo = new Date(
     new Date().getTime() - DAY_SECONDS * 14 * 1000,
   ).toISOString();
@@ -64,13 +68,14 @@ const getTrendingMarkets = async (client: GraphQLClient) => {
   });
 
   const trendingPools = response.pools;
-  const trendingMarkets: TrendingMarketInfo[] = await Promise.all(
+  const trendingMarkets = await Promise.all(
     trendingPools.map(async (pool) => {
       const marketsRes = await client.request<{
         markets: {
           marketId: number;
           img: string;
-          slug: string;
+          question: string;
+          creation: MarketCreation;
           marketType: { [key: string]: string };
           categories: { ticker: string }[];
         }[];
@@ -121,17 +126,18 @@ const getTrendingMarkets = async (client: GraphQLClient) => {
           .toString();
       }
 
-      const trendingMarket: TrendingMarketInfo = {
+      const trendingMarket: IndexedMarketCardData = {
         marketId: market.marketId,
-        name: market.slug,
+        question: market.question,
+        creation: market.creation,
         img: market.img,
-        outcomes: market.marketType.categorical
-          ? market.marketType.categorical.toString()
-          : "Long/Short",
         prediction: prediction,
-        volume: new Decimal(pool.volume).div(ZTG).toFixed(0),
+        volume: new Decimal(pool.volume).div(ZTG).toNumber(),
         baseAsset: pool.baseAsset,
+        categories: [],
       };
+      console.log(trendingMarket);
+
       return trendingMarket;
     }),
   );

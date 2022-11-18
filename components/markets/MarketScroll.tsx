@@ -4,14 +4,10 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "react-feather";
 import { useResizeDetector } from "react-resize-detector";
-import MarketCard, { MarketCardProps } from "./market-card";
-
-interface MarketScrollProps {
-  question: string;
-}
+import MarketCard, { IndexedMarketCardData } from "./market-card";
 
 const MarketScroll = observer(
-  ({ title, markets }: { title: string; markets: MarketCardProps[] }) => {
+  ({ title, markets }: { title: string; markets: IndexedMarketCardData[] }) => {
     const scrollRef = useRef<HTMLDivElement>();
     const [scrollLeft, setScrollLeft] = useState(0);
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
@@ -58,8 +54,9 @@ const MarketScroll = observer(
 
       return true;
     };
-    const leftDisabled = scrollLeft === 0;
-    const rightDisabled = scrollMax - containerWidth + scrollLeft === 0;
+    const leftDisabled = scrollLeft === 0 || markets.length < 4;
+    const rightDisabled =
+      scrollMax - containerWidth + scrollLeft === 0 || markets.length < 4;
 
     return (
       <div ref={containerRef} className="flex flex-col">
