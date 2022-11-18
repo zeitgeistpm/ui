@@ -1,10 +1,10 @@
 import { transactionErrorToString } from "@zeitgeistpm/rpc";
+import { Context, hasMarketMethods } from "@zeitgeistpm/sdk-next";
 import { isRight } from "@zeitgeistpm/utility/dist/either";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import Loader from "react-spinners/PulseLoader";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
@@ -14,6 +14,7 @@ import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
+import Loader from "react-spinners/PulseLoader";
 
 const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const store = useStore();
@@ -59,7 +60,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
 
     setTransacting(true);
 
-    if ("buyCompleteSet" in market) {
+    if (hasMarketMethods<Context>(market)) {
       const signer = wallets.getActiveSigner();
 
       notificationStore?.pushNotification("Transacting...", {
@@ -79,9 +80,13 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
                 { type: "Info", autoRemove: true, lifetime: 45 },
               );
               setTransacting(false);
-              setTimeout(() => {
-                modalStore.closeModal();
-              }, 66);
+              modalStore.closeModal();
+            },
+            retracted: () => {
+              notificationStore.pushNotification(
+                `Transaction retracted and will take longer than usual to be finalized.`,
+                { type: "Info", lifetime: 45 },
+              );
             },
           },
         })
@@ -97,23 +102,25 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
         const message = transactionErrorToString(error);
         notificationStore.pushNotification(message, {
           type: "Error",
-          lifetime: 9,
+          lifetime: 12,
           autoRemove: true,
         });
       }
     }
 
     setTransacting(false);
-    setTimeout(() => {
-      modalStore.closeModal();
-    }, 66);
+    modalStore.closeModal();
   };
 
   useEffect(() => {
     modalStore.setOnEnterKeyPress(() => handleSignTransaction());
   }, [modalStore, market, handleSignTransaction]);
 
-  console.log(transacting);
+  const disabled =
+    transacting ||
+    !hasMarketMethods<Context>(market) ||
+    Number(amount) > wallets.activeBalance.toNumber() ||
+    Number(amount) === 0;
 
   return (
     <div>
@@ -161,11 +168,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
       <TransactionButton
         className="!rounded-ztg-10 h-ztg-50"
         onClick={handleSignTransaction}
-        disabled={
-          transacting ||
-          Number(amount) > wallets.activeBalance.toNumber() ||
-          Number(amount) === 0
-        }
+        disabled={disabled}
       >
         {transacting ? <Loader size={8} /> : "Sign Transaction"}
       </TransactionButton>
