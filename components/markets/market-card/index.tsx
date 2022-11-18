@@ -1,5 +1,6 @@
 import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState } from "react";
 import { MoreVertical } from "react-feather";
 import MarketCardOverlay from "./overlay";
@@ -64,7 +65,7 @@ const MarketCard = ({
 
   const infoRows = [
     { name: "Prediction", value: prediction },
-    { name: "Volume", value: `${volume} ${baseAsset}` },
+    { name: "Volume", value: `${volume} ${baseAsset.toUpperCase()}` },
     { name: "Status", value: creation },
   ];
   return (
@@ -87,7 +88,7 @@ const MarketCard = ({
           onClick={() => setShowDetailsOverlay(true)}
         />
       )}
-      <div className="flex flex-row">
+      <Link href={`/markets/${marketId}`} className="flex flex-row">
         <div className="h-[60px] w-[60px] mr-[15px] flex-grow flex-shrink-0 relative z-ztg-10">
           <Image
             src={img ?? "/icons/default-market.png"}
@@ -101,7 +102,7 @@ const MarketCard = ({
         <div className="mr-[17px] black font-lato font-bold h-[75px] w-full line-clamp-3">
           {question}
         </div>
-      </div>
+      </Link>
       <MarketCardInfo rows={infoRows} />
     </div>
   );
