@@ -81,10 +81,12 @@ const MarketCard = ({
           onCloseIconClick={() => setShowDetailsOverlay(false)}
         />
       )}
-      <MoreVertical
-        className="absolute right-[10px] text-pastel-blue cursor-pointer"
-        onClick={() => setShowDetailsOverlay(true)}
-      />
+      {categories?.length > 0 && (
+        <MoreVertical
+          className="absolute right-[10px] text-pastel-blue cursor-pointer"
+          onClick={() => setShowDetailsOverlay(true)}
+        />
+      )}
       <div className="flex flex-row">
         <div className="h-[60px] w-[60px] mr-[15px] flex-grow flex-shrink-0 relative z-ztg-10">
           <Image
@@ -96,7 +98,7 @@ const MarketCard = ({
             alt={`Image depicting ${question}`}
           />
         </div>
-        <div className="mr-[17px] black font-lato font-bold h-[75px] w-full">
+        <div className="mr-[17px] black font-lato font-bold h-[75px] w-full line-clamp-3">
           {question}
         </div>
       </div>
