@@ -7,7 +7,7 @@ import { DAY_SECONDS, ZTG } from "lib/constants";
 const poolQuery = gql`
   query TrendingMarkets($dateTwoWeeksAgo: DateTime) {
     pools(
-      limit: 3
+      limit: 10
       orderBy: volume_DESC
       where: { createdAt_gt: $dateTwoWeeksAgo, poolStatus_eq: "Active" }
     ) {
