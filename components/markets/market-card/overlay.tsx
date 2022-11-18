@@ -17,7 +17,7 @@ const MarketCardOverlay = ({
   return (
     <div
       className={
-        "w-full h-[367px] absolute bg-white z-ztg-20 rounded-[10px] shadow-ztg-5 p-[16px] flex flex-col " +
+        "w-full absolute bg-white z-ztg-20 rounded-[10px] shadow-ztg-5 p-[16px] flex flex-col " +
         className
       }
     >
@@ -37,7 +37,7 @@ const MarketCardOverlay = ({
         </div>
       </div>
       <MarketCardOverlayCategories categories={categories} />
-      <div className="flex flex-row mt-auto h-[24px] items-center cursor-pointer">
+      <div className="flex flex-row h-[24px] items-center cursor-pointer mt-[30px]">
         <ExternalLink size={24} className="text-sky-600" />
         <div className="ml-[11px] text-ztg-14-110 text-sky-600 font-bold">
           Go to Market

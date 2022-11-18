@@ -71,7 +71,7 @@ const MarketCard = ({
   return (
     <div
       className={
-        "w-full h-[175px] bg-anti-flash-white rounded-[10px] p-[15px] flex flex-col relative " +
+        "w-full h-full bg-anti-flash-white rounded-[10px] p-[15px] flex flex-col relative " +
         className
       }
     >

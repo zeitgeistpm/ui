@@ -46,7 +46,7 @@ const MarketCardOverlayCategories = ({
 }) => {
   const numCategories = categories.length;
   return (
-    <div className="flex flex-col h-[215px] overflow-y-scroll">
+    <div className="flex flex-col max-h-[215px] overflow-y-scroll">
       {categories.map((cat, idx) => {
         const botMargin = idx === numCategories - 1 ? "mb-0" : "mb-[25px]";
         return (
