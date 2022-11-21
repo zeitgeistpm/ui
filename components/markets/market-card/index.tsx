@@ -1,4 +1,3 @@
-import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
 import Link from "next/link";
 import React, { useState } from "react";
 import { MoreVertical } from "react-feather";
@@ -10,7 +9,7 @@ export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
   question: string;
-  creation: MarketCreation;
+  creation: string;
   categories: MarketCategories;
   prediction?: string;
   volume: number;
@@ -65,7 +64,7 @@ const MarketCard = ({
 
   const infoRows = [
     { name: "Prediction", value: prediction },
-    { name: "Volume", value: `${volume} ${baseAsset.toUpperCase()}` },
+    { name: "Volume", value: `${volume} ${baseAsset?.toUpperCase() ?? "ZTG"}` },
     { name: "Status", value: creation },
   ];
   return (

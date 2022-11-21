@@ -81,7 +81,8 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
                 marketId={market.marketId}
                 categories={market.categories}
                 question={market.question}
-                status={market.status}
+                creation={market.creation}
+                baseAsset="ZTG"
                 // prediction={prediction}
                 volume={100}
                 key={`market-${market.id}`}

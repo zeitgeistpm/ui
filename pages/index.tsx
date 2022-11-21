@@ -42,18 +42,18 @@ export async function getStaticProps() {
 
   const img = await getPlaiceholder(MAIN_IMAGE_PATH, { size: 32 });
 
-  if (!trendingMarkets || trendingMarkets.length === 0) {
-    // prevent rerender if server isn't returning markets
-    // commenting for now, as production currently has no trending
-    // markets and is failing to build
-    // throw new Error("Unable to fetch trending markets");
-  }
+  // commenting for now, as production currently has no trending
+  // if (trendingMarkets == null || trendingMarkets.length === 0) {
+  // prevent rerender if server isn't returning markets
+  // markets and is failing to build
+  // throw new Error("Unable to fetch trending markets");
+  // }
 
   const categories = await getPopularCategories(client);
   return {
     props: {
-      featuredMarkets: featuredMarkets,
-      trendingMarkets: trendingMarkets,
+      featuredMarkets: featuredMarkets ?? [],
+      trendingMarkets: trendingMarkets ?? [],
       tagCounts: categories,
       img,
     },
