@@ -31,7 +31,7 @@ const DefaultLayout: FC = observer(({ children }) => {
   const prevPathname = usePrevious(router.pathname);
 
   const onScrollCapture: React.UIEventHandler<HTMLDivElement> = debounce(() => {
-    //setScrollTop(contentRef.current?.scrollTop);
+    setScrollTop(contentRef.current?.scrollTop);
   }, 66);
 
   const scrollTo = (scrollTop: number) => {
