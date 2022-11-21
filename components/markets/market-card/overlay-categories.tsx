@@ -17,7 +17,7 @@ const MarketCardOverlayCategory = ({
         style={{ backgroundColor: `${category.color}` }}
       ></div>
       <div className="flex flex-col w-[95px] flex-shrink-0 ml-[7px]">
-        <div className="font-inter font-bold uppercase text-ztg-14-110 truncate h-[17px] flex-shrink-0">
+        <div className="font-lato font-bold uppercase text-ztg-14-110 truncate h-[17px] flex-shrink-0">
           {category.ticker}
         </div>
         {/* TODO: make a component for price diff */}
