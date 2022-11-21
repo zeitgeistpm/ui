@@ -1,5 +1,4 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { isRpcData, PoolGetQuery } from "@zeitgeistpm/sdk-next";
+import { useQuery } from "@tanstack/react-query";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "market";

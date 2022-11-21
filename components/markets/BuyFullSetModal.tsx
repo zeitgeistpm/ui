@@ -98,7 +98,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
           { type: "Success", autoRemove: true, lifetime: 9 },
         );
       } else {
-        const error = result.unleft().unwrap();
+        const error = result.left;
         const message = transactionErrorToString(error);
         notificationStore.pushNotification(message, {
           type: "Error",
