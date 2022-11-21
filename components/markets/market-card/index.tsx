@@ -1,20 +1,25 @@
-import MarketImage from "components/ui/MarketImage";
-import Image from "next/image";
+import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
+import Link from "next/link";
 import React, { useState } from "react";
 import { MoreVertical } from "react-feather";
+import MarketImage from "components/ui/MarketImage";
 import MarketCardOverlay from "./overlay";
 import { MarketCategories } from "./overlay-categories";
 
-export type MarketCardProps = {
+export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
   question: string;
-  status: string;
+  creation: MarketCreation;
   categories: MarketCategories;
   prediction?: string;
   volume: number;
+  baseAsset: string;
+}
+
+export interface MarketCardProps extends IndexedMarketCardData {
   className?: string;
-};
+}
 
 const MarketCardInfoRow = ({
   name,
@@ -25,8 +30,8 @@ const MarketCardInfoRow = ({
 }) => {
   return (
     <div className="h-[18px]">
-      <span className="text-sky-600 font-semibold">{name}:</span>{" "}
-      <span className="text-black font-bold">{value}</span>
+      <span className="text-sky-600">{name}:</span>{" "}
+      <span className="text-black">{value}</span>
     </div>
   );
 };
@@ -49,23 +54,24 @@ const MarketCard = ({
   marketId,
   img,
   question,
-  status,
+  creation,
   categories,
   prediction,
   volume,
+  baseAsset,
   className = "",
 }: MarketCardProps) => {
   const [showDetailsOverlay, setShowDetailsOverlay] = useState<boolean>(false);
 
   const infoRows = [
     { name: "Prediction", value: prediction },
-    { name: "Volume", value: `${volume} ZTG` },
-    { name: "Status", value: status },
+    { name: "Volume", value: `${volume} ${baseAsset.toUpperCase()}` },
+    { name: "Status", value: creation },
   ];
   return (
     <div
       className={
-        "w-full h-[175px] bg-anti-flash-white rounded-[10px] p-[15px] flex flex-col relative " +
+        "w-full h-full bg-anti-flash-white rounded-[10px] p-[15px] flex flex-col relative " +
         className
       }
     >
@@ -77,18 +83,18 @@ const MarketCard = ({
           onCloseIconClick={() => setShowDetailsOverlay(false)}
         />
       )}
-      <MoreVertical
-        className="absolute right-[10px] text-pastel-blue cursor-pointer"
-        onClick={() => setShowDetailsOverlay(true)}
-      />
-      <div className="flex flex-row">
-        <div className="h-[60px] w-[60px] mr-[15px] flex-grow flex-shrink-0 relative z-ztg-4">
-          <MarketImage image={img} alt={`Image depicting ${question}`} />
-        </div>
-        <div className="mr-[17px] black font-lato font-bold h-[75px] w-full">
+      {categories?.length > 0 && (
+        <MoreVertical
+          className="absolute right-[10px] text-pastel-blue cursor-pointer"
+          onClick={() => setShowDetailsOverlay(true)}
+        />
+      )}
+      <Link href={`/markets/${marketId}`} className="flex flex-row">
+        <MarketImage image={img} alt={`Image depicting ${question}`} />
+        <div className="mr-[17px] black font-lato font-bold h-[75px] w-full line-clamp-3 text-ztg-14-150">
           {question}
         </div>
-      </div>
+      </Link>
       <MarketCardInfo rows={infoRows} />
     </div>
   );

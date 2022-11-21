@@ -20,7 +20,7 @@ const MarketCardOverlay = ({
   return (
     <div
       className={
-        "w-full h-[367px] absolute bg-white z-ztg-20 rounded-[10px] shadow-ztg-5 p-[16px] flex flex-col " +
+        "w-full absolute bg-white z-ztg-20 rounded-[10px] shadow-ztg-5 p-[16px] flex flex-col " +
         className
       }
     >
