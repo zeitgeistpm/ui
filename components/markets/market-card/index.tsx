@@ -1,3 +1,4 @@
+import MarketImage from "components/ui/MarketImage";
 import Image from "next/image";
 import React, { useState } from "react";
 import { MoreVertical } from "react-feather";
@@ -81,14 +82,7 @@ const MarketCard = ({
       />
       <div className="flex flex-row">
         <div className="h-[60px] w-[60px] mr-[15px] flex-grow flex-shrink-0 relative z-ztg-4">
-          <Image
-            src={img ?? "/icons/default-market.png"}
-            className="rounded-full bg-white"
-            width={60}
-            height={60}
-            quality={100}
-            alt={`Image depicting ${question}`}
-          />
+          <MarketImage image={img} alt={`Image depicting ${question}`} />
         </div>
         <div className="mr-[17px] black font-lato font-bold h-[75px] w-full">
           {question}
