@@ -75,9 +75,6 @@ const IndexPage: NextPage<{
         target="_blank"
         rel="noreferrer"
       >
-        {/* <GlitchImage
-          src={MAIN_IMAGE_PATH}
-        > */}
         <Image
           className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
           src={MAIN_IMAGE_PATH}
@@ -90,7 +87,6 @@ const IndexPage: NextPage<{
           placeholder="blur"
           priority
         />
-        {/* </GlitchImage> */}
       </a>
       <div className="flex items-center w-full justify-center relative bottom-[29px]">
         <motion.div
@@ -112,7 +108,6 @@ const IndexPage: NextPage<{
         </motion.div>
       </div>
       <LearnSection />
-      {/* <TrendingMarkets markets={trendingMarkets} /> */}
       {featuredMarkets.length > 0 && (
         <div className="my-[60px]">
           <MarketScroll title="Featured Markets" markets={featuredMarkets} />
@@ -126,9 +121,6 @@ const IndexPage: NextPage<{
       <div className="mb-[60px]">
         <PopularCategories tagCounts={tagCounts} />
       </div>
-      {/* {!!featuredMarkets && <FeaturedMarkets markets={featuredMarkets} />} */}
-
-      {/* <MarketsList /> */}
     </div>
   );
 });

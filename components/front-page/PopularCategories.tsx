@@ -65,10 +65,6 @@ const PopularCategories: FC<{ tagCounts: TagCounts }> = observer(
           className="grid w-full gap-[28px]"
           style={{
             gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-            // gridTemplateColumns: "repeat(4, minmax(150px, 1fr))",
-            // gridAutoColumns: "1fr",
-
-            // gridAutoRows: "auto",
           }}
         >
           <Category

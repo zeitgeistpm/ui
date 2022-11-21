@@ -66,7 +66,7 @@ const MarketScroll = observer(
           <div className="hidden sm:flex ml-auto items-center">
             <Link
               href="markets"
-              className="text-ztg-14-150 border-2 border-loblolly rounded-[5px] px-[10px] py-[3px]"
+              className="text-ztg-14-150 border-2 border-pastel-blue rounded-[5px] px-[10px] py-[3px]"
             >
               Go To Markets
             </Link>
@@ -74,8 +74,8 @@ const MarketScroll = observer(
               onClick={handleLeftClick}
               className={`flex items-center justify-center w-[26px] h-[26px] rounded-full ml-[12px] mr-[8px] ztg-transition ${
                 leftDisabled
-                  ? "bg-geyser text-loblolly"
-                  : "bg-loblolly text-white"
+                  ? "bg-geyser text-pastel-blue"
+                  : "bg-pastel-blue text-white"
               }`}
               disabled={leftDisabled}
             >
@@ -85,8 +85,8 @@ const MarketScroll = observer(
               onClick={handleRightClick}
               className={`flex items-center justify-center w-[26px] h-[26px] rounded-full ztg-transition  ${
                 rightDisabled
-                  ? "bg-geyser text-loblolly"
-                  : "bg-loblolly text-white"
+                  ? "bg-geyser text-pastel-blue"
+                  : "bg-pastel-blue text-white"
               }`}
               disabled={rightDisabled}
             >

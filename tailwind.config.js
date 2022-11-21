@@ -201,7 +201,6 @@ module.exports = {
         "light-overlay": "rgba(0,0,0,0.4)",
         "dark-overlay": "rgba(5,5,5,0.7)",
         "anti-flash-white": "#F0F2F5",
-        loblolly: "#B5C1CA",
         geyser: "#D5DADF",
         "tropical-blue": "#D7E6FA",
         "link-water": "#CFE1EF",

@@ -27,7 +27,6 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@plaiceholder/next": "^2.5.0",
     "@polkadot/extension-dapp": "^0.44.6",
-    "@polkadot/keyring": "^9.4.1",
     "@polkadot/ui-keyring": "^2.4.1",
     "@tanstack/react-query": "^4.13.0",
     "@zeitgeistpm/augment-api": "^2.2.1",
