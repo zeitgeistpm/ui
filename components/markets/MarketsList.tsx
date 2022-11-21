@@ -4,10 +4,9 @@ import { useInView } from "react-intersection-observer";
 import { observer } from "mobx-react";
 import { X } from "react-feather";
 import { useRouter } from "next/router";
+import { debounce } from "lodash";
 import { useStore } from "lib/stores/Store";
 import MarketCard from "./market-card";
-import MainFilters from "./filters/MainFilters";
-import MyFilters from "./filters/MyFilters";
 import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
 import Loader from "react-spinners/PulseLoader";
 import { makeAutoObservable } from "mobx";
@@ -33,6 +32,13 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
   const [scrollTop, scrollTo] = useContentScrollTop();
+
+  useEffect(
+    debounce(() => {
+      scrollRestoration.set(scrollTop);
+    }, 150),
+    [scrollTop],
+  );
 
   const {
     data: marketsPages,

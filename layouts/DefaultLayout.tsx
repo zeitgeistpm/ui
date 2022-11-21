@@ -22,7 +22,6 @@ const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 const DefaultLayout: FC = observer(({ children }) => {
   const store = useStore();
   const router = useRouter();
-  const sdkv2 = useSdkv2();
 
   const { width, height, ref: mainRef } = useResizeDetector();
 
@@ -41,11 +40,7 @@ const DefaultLayout: FC = observer(({ children }) => {
   };
 
   useEffect(() => {
-    if (
-      router.pathname &&
-      prevPathname &&
-      shouldScrollTop(router.pathname, prevPathname)
-    ) {
+    if (shouldScrollTop(router.pathname, prevPathname)) {
       scrollTo(0);
     }
   }, [router.pathname, prevPathname, shouldScrollTop]);

@@ -71,6 +71,7 @@ const MarketCard = ({
     >
       {showDetailsOverlay && (
         <MarketCardOverlay
+          marketId={marketId}
           categories={categories}
           className="top-0 left-[0]"
           onCloseIconClick={() => setShowDetailsOverlay(false)}
