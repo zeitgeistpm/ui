@@ -37,7 +37,7 @@ const MarketCardInfo = ({
   rows: { name: string; value: string }[];
 }) => {
   return (
-    <div className="w-full h-full flex flex-col font-lato justify-between text-ztg-12-120 mt-[10px]">
+    <div className="w-full h-full flex flex-col font-inter justify-between text-ztg-12-120 mt-[10px]">
       {rows.map((r, idx) => (
         <MarketCardInfoRow {...r} key={idx} />
       ))}
@@ -84,7 +84,7 @@ const MarketCard = ({
         <div className="h-[60px] w-[60px] mr-[15px] flex-grow flex-shrink-0 relative z-ztg-4">
           <MarketImage image={img} alt={`Image depicting ${question}`} />
         </div>
-        <div className="mr-[17px] black font-lato font-bold h-[75px] w-full">
+        <div className="mr-[17px] black font-inter font-bold h-[75px] w-full">
           {question}
         </div>
       </div>

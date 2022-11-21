@@ -55,6 +55,7 @@ module.exports = {
       ],
       kanit: ["Kanit"],
       lato: ["Lato"],
+      inter: ["Inter"],
       space: ["Space Grotesk"],
     },
     extend: {
