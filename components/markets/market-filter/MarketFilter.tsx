@@ -12,10 +12,7 @@ const Control = ({ children, label, ...rest }) => {
       onMouseDown={onMouseDown}
     >
       {label}
-      <ChevronDown
-        size={18}
-        className="text-sky-600 ml-ztg-8 font-bold"
-      />
+      <ChevronDown size={18} className="text-sky-600 ml-ztg-8 font-bold" />
       {children}
     </div>
   );
@@ -43,10 +40,10 @@ const customStyles = {
       ...provided,
       backgroundColor: "white",
       color: "black",
-      zIndex: 100
-    }
-  }
-}
+      zIndex: 100,
+    };
+  },
+};
 
 const DropDownSelect = observer(({ label, options, add }) => {
   return (
@@ -71,7 +68,7 @@ const DropDownSelect = observer(({ label, options, add }) => {
         Placeholder,
       }}
     />
-  )
+  );
 });
 
 const filterOptions = [
@@ -87,8 +84,8 @@ const sortBySelectStyles = {
   control: (provided) => {
     return {
       ...provided,
-      width: '220px',
-    }
+      width: "220px",
+    };
   },
   menu: (provided) => {
     return {
@@ -96,9 +93,9 @@ const sortBySelectStyles = {
       backgroundColor: "white",
       color: "black",
       zIndex: 100,
-    }
-  }
-}
+    };
+  },
+};
 
 const SortBySelect = observer(() => {
   return (
@@ -109,7 +106,7 @@ const SortBySelect = observer(() => {
         IndicatorSeparator,
       }}
     />
-  )
+  );
 });
 
 const categoryOptions = [
@@ -130,7 +127,7 @@ const statusOptions = [
   { value: "reported", label: "Reported" },
   { value: "disputed", label: "Disputed" },
   { value: "resolved", label: "Resolved" },
-]
+];
 
 const MarketFilterOptions = observer(({ add }) => {
   return (
@@ -151,38 +148,33 @@ const ClearAllBtn = observer(({ clear }) => {
     >
       Clear All
     </button>
-  )
+  );
 });
 
 const SelectedItem = observer(({ label, remove }) => {
   return (
     <div className="flex px-ztg-10 py-ztg-5 rounded-ztg-5 bg-gray-400 text-gray-800 font-normal text-ztg-14-150 gap-ztg-5">
-      <button
-        className="w-ztg-8"
-        onClick={() => remove(label)}
-      >
+      <button className="w-ztg-8" onClick={() => remove(label)}>
         X
       </button>
       {label}
     </div>
-  )
+  );
 });
 
 const MarketFilterSelected = observer(({ activeFilters, clear, remove }) => {
   return (
     <div className="w-full flex gap-ztg-2">
       {!!activeFilters.length && <ClearAllBtn clear={clear} />}
-      {activeFilters.map((af) => <SelectedItem label={af} remove={remove} />)}
+      {activeFilters.map((af, idx) => (
+        <SelectedItem label={af} remove={remove} key={`af-${idx}`} />
+      ))}
     </div>
   );
 });
 
 const MarketFilterContainer = observer(({ children }) => {
-  return (
-    <div className="w-full flex flex-col">
-      {children}
-    </div>
-  );
+  return <div className="w-full flex flex-col">{children}</div>;
 });
 
 const MarketFilter = observer(() => {
@@ -201,15 +193,16 @@ const MarketFilter = observer(() => {
   const remove = (item) => {
     const currentFilters = activeFilters;
     const idx = currentFilters.findIndex((i) => i === item);
-    const nextFilters = [...currentFilters.slice(0, idx), ...currentFilters.slice(idx + 1, currentFilters.length)];
+    const nextFilters = [
+      ...currentFilters.slice(0, idx),
+      ...currentFilters.slice(idx + 1, currentFilters.length),
+    ];
     setActiveFilters(nextFilters);
-  }
+  };
 
   return (
     <MarketFilterContainer>
-      <MarketFilterOptions
-        add={add}
-      />
+      <MarketFilterOptions add={add} />
       <MarketFilterSelected
         activeFilters={activeFilters}
         clear={clear}
