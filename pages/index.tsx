@@ -17,6 +17,8 @@ import getTrendingMarkets from "lib/gql/trending-markets";
 import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
 import { useStore } from "lib/stores/Store";
 
+import MarketFilter from "components/markets/market-filter/MarketFilter";
+
 export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
@@ -172,6 +174,7 @@ const IndexPage: NextPage<{
       {!!featuredMarkets && <FeaturedMarkets markets={featuredMarkets} />}
       <TrendingMarkets markets={trendingMarkets} />
       {/* <PopularCategories tagCounts={tagCounts} /> */}
+      <MarketFilter />
       <MarketsList />
     </div>
   );
