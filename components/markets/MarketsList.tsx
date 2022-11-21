@@ -1,5 +1,5 @@
 import { isIndexedData } from "@zeitgeistpm/sdk-next";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { observer } from "mobx-react";
 import { X } from "react-feather";
@@ -51,6 +51,15 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const markets = marketsPages?.pages.flatMap((markets) => markets.data) ?? [];
   const count = markets.length;
 
+  useEffect(() => {
+    const pageNum = marketsPages?.pages.length ?? 0;
+    if (pageNum > 0) {
+      for (const market of marketsPages.pages[pageNum - 1].data) {
+        marketsStore.getMarket(market.marketId);
+      }
+    }
+  }, [marketsPages]);
+
   return (
     <div className={"pt-ztg-46 mb-[38px]" + className}>
       {/* TODO: Filters here */}
@@ -80,7 +89,13 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       {!isLoading && count === 0 && (
         <div className="text-center">No results!</div>
       )}
-      <div className="w-full h-[10px]" ref={loadMoreRef}></div>
+      <div
+        className="w-full h-[10px]"
+        style={
+          isFetchingMarkets ? { position: "absolute", left: "-10000px" } : {}
+        }
+        ref={loadMoreRef}
+      ></div>
     </div>
   );
 });
