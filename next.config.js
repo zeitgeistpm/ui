@@ -1,4 +1,6 @@
-module.exports = {
+const { withPlaiceholder } = require("@plaiceholder/next");
+
+module.exports = withPlaiceholder({
   experimental: {
     scrollRestoration: true,
     esmExternals: true,
@@ -24,4 +26,4 @@ module.exports = {
   images: {
     domains: ["ipfs-gateway.zeitgeist.pm"],
   },
-};
+});

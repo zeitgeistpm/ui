@@ -238,8 +238,15 @@ td:last-child {
 }
 
 /* Scroll */
+
+.no-scroll-bar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -305,9 +312,7 @@ td:last-child {
   @apply transition duration-200 ease-in-out;
 }
 
-
 @keyframes glitch-anim-1 {
-
   0%,
   100% {
     opacity: 1;
@@ -340,12 +345,10 @@ td:last-child {
   }
 
   65% {
-
     clip-path: polygon(0 70%, 100% 70%, 100% 70%, 0 70%);
   }
 
   70% {
-
     clip-path: polygon(0 80%, 100% 80%, 100% 80%, 0 80%);
   }
 
@@ -363,7 +366,6 @@ td:last-child {
 }
 
 @keyframes glitch-anim-2 {
-
   0%,
   100% {
     opacity: 1;
@@ -433,7 +435,6 @@ td:last-child {
 }
 
 @keyframes glitch-anim-3 {
-
   0%,
   100% {
     opacity: 1;
@@ -515,7 +516,6 @@ td:last-child {
 }
 
 @keyframes glitch-anim-4 {
-
   0%,
   5% {
     opacity: 0.2;
@@ -557,27 +557,32 @@ td:last-child {
 
   20% {
     opacity: 1;
-    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1)
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
 
   25% {
     opacity: 0.3;
-    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1)
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
 
   30% {
     opacity: 1;
-    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1)
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
 
   70% {
     opacity: 0.7;
-    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1)
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
 
   72% {
     opacity: 0.2;
-    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1)
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
+  }
+
+  77% {
+    opacity: 0.9;
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
 
   77% {
@@ -586,8 +591,8 @@ td:last-child {
   }
 
   100% {
-    opacity: .9;
-    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1)
+    opacity: 0.9;
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
 }
 
@@ -648,7 +653,6 @@ td:last-child {
     opacity: 1;
   }
 
-
   19% {
     opacity: 1;
   }
@@ -674,16 +678,13 @@ td:last-child {
   }
 }
 
-
 @keyframes jiggle {
   0% {
     transform: translateX(0px);
   }
-
   33% {
     transform: translateX(10px);
   }
-
   66% {
     transform: translateX(-10px);
   }

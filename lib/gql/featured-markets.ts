@@ -3,19 +3,20 @@ import { gql, GraphQLClient } from "graphql-request";
 
 import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
 import { ZTG } from "lib/constants";
+import { IndexedMarketCardData } from "components/markets/market-card";
+import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
 
 const getMarketIdsFromEnvVar = () => {
-  let marketIds = [];
   try {
-    let mIds = JSON.parse(process.env.NEXT_PUBLIC_FEATURED_MARKET_IDS);
+    const mIds = JSON.parse(process.env.NEXT_PUBLIC_FEATURED_MARKET_IDS);
     // this line *should not* be needed, but here just in case
-    marketIds = mIds.map(id => Number(id));
+    const marketIds = mIds.map((id) => Number(id));
+    return marketIds;
   } catch (err) {
     console.error(err);
+    return [];
   }
-
-  return marketIds;
-}
+};
 
 const marketIds = getMarketIdsFromEnvVar();
 
@@ -25,14 +26,16 @@ const marketQuery = gql`
       marketId
       poolId
       outcomeAssets
-      slug
+      question
+      creation
       img
       marketType {
         categorical
         scalar
       }
       categories {
-        ticker
+        color
+        name
       }
     }
   }
@@ -58,16 +61,27 @@ const assetsQuery = gql`
   }
 `;
 
-const getFeaturedMarkets = async (client: GraphQLClient) => {
-
+const getFeaturedMarkets = async (
+  client: GraphQLClient,
+): Promise<IndexedMarketCardData[]> => {
   // handles if we don't have any markets set
   if (marketIds.length === 0) return null;
 
   const featuredMarkets = await Promise.all(
     marketIds.map(async (id) => {
-      const marketRes = await client.request(marketQuery, {
+      const marketRes = await client.request<{
+        markets: {
+          poolId: number;
+          marketId: number;
+          img: string;
+          question: string;
+          creation: MarketCreation;
+          marketType: { [key: string]: string };
+          categories: { color: string; name: string }[];
+        }[];
+      }>(marketQuery, {
         marketId: id,
-      })
+      });
 
       const market = marketRes.markets[0];
 
@@ -81,7 +95,7 @@ const getFeaturedMarkets = async (client: GraphQLClient) => {
       if (!pool) {
         const trendingMarket: TrendingMarketInfo = {
           marketId: market.marketId,
-          name: market.slug,
+          name: market.question,
           img: market.img,
           outcomes: market.marketType.categorical
             ? market.marketType.categorical.toString()
@@ -116,7 +130,7 @@ const getFeaturedMarkets = async (client: GraphQLClient) => {
         });
 
         highestPriceIndex = 0;
-        prediction = market.categories[highestPriceIndex].ticker;
+        prediction = market.categories[highestPriceIndex].name;
       } else {
         const bounds: number[] = market.marketType.scalar
           .split(",")
@@ -136,22 +150,21 @@ const getFeaturedMarkets = async (client: GraphQLClient) => {
           .toString();
       }
 
-      const trendingMarket: TrendingMarketInfo = {
+      const feautedMarket: IndexedMarketCardData = {
         marketId: market.marketId,
-        name: market.slug,
+        question: market.question,
+        creation: market.creation,
         img: market.img,
-        outcomes: market.marketType.categorical
-          ? market.marketType.categorical.toString()
-          : "Long/Short",
         prediction: prediction,
-        volume: new Decimal(pool.volume).div(ZTG).toFixed(0),
+        volume: new Decimal(pool.volume).div(ZTG).toNumber(),
         baseAsset: pool.baseAsset,
+        categories: market.categories,
       };
-      return trendingMarket;
+      return feautedMarket;
     }),
   );
 
   return featuredMarkets;
-}
+};
 
 export default getFeaturedMarkets;

@@ -1,35 +1,24 @@
 import {
-  MarketCreation,
   MarketsFilteringOptions,
   MarketsOrderBy,
   MarketsOrdering,
   MarketsPaginationOptions,
   MarketStatusText,
-  ScalarRangeType,
 } from "@zeitgeistpm/sdk/dist/types";
 import { gql, GraphQLClient } from "graphql-request";
-import MarketStore from "lib/stores/MarketStore";
-import { MarketListQuery, MarketStatus } from "lib/types";
+import { MarketListQuery } from "lib/types";
 import { activeStatusesFromFilters } from "lib/util/market";
+import { MarketCardData } from "./types";
 
-export const marketDetailsQuery = gql`
+export const fragementMarket = gql`
   fragment MarketDetails on Market {
     marketId
-    description
-    creator
     creation
-    oracle
     question
-    slug
-    tags
     status
     scalarType
     poolId
-    period {
-      end
-    }
     categories {
-      name
       ticker
       color
     }
@@ -40,32 +29,14 @@ export const marketDetailsQuery = gql`
   }
 `;
 
-export type MarketPreload = {
-  id: number;
-  type: "scalar" | "categorical";
-  description: string;
-  creation: MarketCreation;
-  slug: string;
-  tags: string[] | null;
-  status: MarketStatus;
-  end: BigInt;
-  question: string;
-  preloaded: true;
-  poolId: number | null;
-  scalarType: ScalarRangeType | null;
-  categories: { name: string; ticker: string; color: string }[];
-  poolExists: boolean;
-  bounds?: [number, number];
-};
-
-export class MarketPreloader {
+export class MarketsListPagiantor {
   constructor(private graphQlClient: GraphQLClient) {}
 
   private async queryMarketPage(
     filteringOptions: MarketsFilteringOptions,
     paginationOptions: Partial<MarketsPaginationOptions>,
     countOnly = false,
-  ): Promise<MarketPreload[]> {
+  ): Promise<MarketCardData[]> {
     const { tags, searchText, creator, oracle, assetOwner } = filteringOptions;
     const liquidityOnly = filteringOptions.liquidityOnly ?? true;
 
@@ -100,7 +71,9 @@ export class MarketPreloader {
       orderingStr = ordering === "asc" ? "DESC" : "ASC";
     }
     const orderByQuery =
-      orderBy === "newest" ? `marketId_${orderingStr}` : `period_end_${orderingStr}`;
+      orderBy === "newest"
+        ? `marketId_${orderingStr}`
+        : `period_end_${orderingStr}`;
 
     const variables = {
       statuses,
@@ -116,7 +89,7 @@ export class MarketPreloader {
     };
 
     const marketsData = await this.graphQlClient.request<{
-      markets: MarketPreload[];
+      markets: MarketCardData[];
     }>(marketsQuery, variables);
 
     const queriedMarkets = marketsData.markets;
@@ -142,7 +115,7 @@ export class MarketPreloader {
       pageSize: 10,
       pageNumber: 1,
     },
-  ): Promise<MarketPreload[]> {
+  ): Promise<MarketCardData[]> {
     return this.queryMarketPage(filteringOptions, paginationOptions);
   }
 
@@ -237,7 +210,7 @@ export class MarketPreloader {
           ...MarketDetails
         }
       }
-      ${marketDetailsQuery}
+      ${fragementMarket}
     `;
 
     return {
@@ -247,8 +220,8 @@ export class MarketPreloader {
   }
 
   private constructMarketStoreFromQueryData(
-    data: MarketPreload,
-  ): MarketPreload {
+    data: MarketCardData,
+  ): MarketCardData {
     return data;
   }
 
@@ -276,7 +249,7 @@ export class MarketPreloader {
   async fetchMarkets(
     query: MarketListQuery,
     address?: string,
-  ): Promise<MarketPreload[]> {
+  ): Promise<MarketCardData[]> {
     const { pagination, filter, sorting, myMarketsOnly, tag, searchText } =
       query;
 
@@ -333,7 +306,7 @@ export class MarketPreloader {
       );
     }
 
-    let markets: MarketPreload[] = [];
+    let markets: MarketCardData[] = [];
 
     for (const data of marketsData) {
       const bounds: [number, number] | undefined = data.marketType["scalar"]
@@ -344,7 +317,6 @@ export class MarketPreloader {
         {
           ...data,
           id: data.marketId,
-          preloaded: true,
           poolExists: data.poolId != null,
           type: data.marketType["scalar"] == null ? "categorical" : "scalar",
           bounds,
@@ -355,9 +327,3 @@ export class MarketPreloader {
     return markets;
   }
 }
-
-export const isPreloadedMarket = (data: any): data is MarketPreload => {
-  return data.preloaded === true;
-};
-
-export type MarketCardData = MarketStore | MarketPreload;

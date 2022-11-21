@@ -22,7 +22,6 @@ const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 const DefaultLayout: FC = observer(({ children }) => {
   const store = useStore();
   const router = useRouter();
-  const sdkv2 = useSdkv2();
 
   const { width, height, ref: mainRef } = useResizeDetector();
 
@@ -31,7 +30,7 @@ const DefaultLayout: FC = observer(({ children }) => {
   const prevPathname = usePrevious(router.pathname);
 
   const onScrollCapture: React.UIEventHandler<HTMLDivElement> = debounce(() => {
-    //setScrollTop(contentRef.current?.scrollTop);
+    setScrollTop(contentRef.current?.scrollTop);
   }, 66);
 
   const scrollTo = (scrollTop: number) => {
@@ -41,11 +40,7 @@ const DefaultLayout: FC = observer(({ children }) => {
   };
 
   useEffect(() => {
-    if (
-      router.pathname &&
-      prevPathname &&
-      shouldScrollTop(router.pathname, prevPathname)
-    ) {
+    if (shouldScrollTop(router.pathname, prevPathname)) {
       scrollTo(0);
     }
   }, [router.pathname, prevPathname, shouldScrollTop]);
@@ -57,10 +52,7 @@ const DefaultLayout: FC = observer(({ children }) => {
     >
       <TradeSlipStoreContext.Provider value={store.tradeSlipStore}>
         <LeftDrawer />
-        <div
-          ref={contentRef}
-          className="overflow-y-auto overflow-x-hidden flex-grow"
-        >
+        <div ref={contentRef} className="overflow-y-auto overflow-x-hidden">
           <TopBar />
           {NOTIFICATION_MESSAGE && (
             <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38">

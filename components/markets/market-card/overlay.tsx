@@ -1,15 +1,18 @@
+import Link from "next/link";
 import { ExternalLink, X } from "react-feather";
 import MarketCardOverlayCategories, {
   MarketCategories,
 } from "./overlay-categories";
 
 export type MarketCardOverlayProps = {
+  marketId: number;
   categories: MarketCategories;
   className?: string;
   onCloseIconClick?: () => void;
 };
 
 const MarketCardOverlay = ({
+  marketId,
   categories,
   className = "",
   onCloseIconClick,
@@ -17,7 +20,7 @@ const MarketCardOverlay = ({
   return (
     <div
       className={
-        "w-full h-[367px] absolute bg-white z-ztg-20 rounded-[10px] shadow-ztg-5 p-[16px] flex flex-col " +
+        "w-full absolute bg-white z-ztg-20 rounded-[10px] shadow-ztg-5 p-[16px] flex flex-col " +
         className
       }
     >
@@ -37,12 +40,15 @@ const MarketCardOverlay = ({
         </div>
       </div>
       <MarketCardOverlayCategories categories={categories} />
-      <div className="flex flex-row mt-auto h-[24px] items-center cursor-pointer">
+      <Link
+        href={`/markets/${marketId}`}
+        className="flex flex-row mt-auto h-[24px] items-center cursor-pointer"
+      >
         <ExternalLink size={24} className="text-sky-600" />
         <div className="ml-[11px] text-ztg-14-110 text-sky-600 font-bold">
           Go to Market
         </div>
-      </div>
+      </Link>
     </div>
   );
 };

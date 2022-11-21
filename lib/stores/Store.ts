@@ -27,8 +27,8 @@ import PoolsStore from "./PoolsStore";
 import ExchangeStore from "./ExchangeStore";
 import CourtStore from "./CourtStore";
 import Wallets from "../wallets";
-import { MarketPreload } from "lib/gql/markets-list";
 
+import { Context, Sdk } from "@zeitgeistpm/sdk-next";
 interface Config {
   tokenSymbol: string;
   ss58Prefix: number;
@@ -78,7 +78,6 @@ export default class Store {
   ztgInfo: ZTGInfo;
 
   markets = new MarketsStore(this);
-  preloadedMarkets?: MarketPreload[] = undefined;
 
   pools = new PoolsStore(this);
 
@@ -93,6 +92,7 @@ export default class Store {
   }
 
   sdk: SDK | null;
+  sdkV2?: Sdk<Context> = undefined;
 
   blockNumber: Compact<BlockNumber> | null = null;
 
@@ -136,7 +136,6 @@ export default class Store {
       isTestEnv: false,
       unsubscribeNewHeads: false,
       balanceSubscription: false,
-      preloadedMarkets: observable.ref,
     });
   }
 
@@ -263,10 +262,6 @@ export default class Store {
     if (this.userStore.gqlEndpoint && this.userStore.gqlEndpoint.length > 0) {
       this.graphQLClient = new GraphQLClient(this.userStore.gqlEndpoint, {});
     }
-  }
-
-  setPreloadedMarkets(data: MarketPreload[]) {
-    this.preloadedMarkets = data;
   }
 
   private async fetchZTGPrice(): Promise<void> {
