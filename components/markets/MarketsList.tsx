@@ -90,7 +90,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
         <div className="text-center">No results!</div>
       )}
       <div
-        className="w-full h-[10px]"
+        className="w-full h-0"
         style={
           isFetchingMarkets ? { position: "absolute", left: "-10000px" } : {}
         }
