@@ -113,14 +113,16 @@ const IndexPage: NextPage<{
       </div>
       <LearnSection />
       {/* <TrendingMarkets markets={trendingMarkets} /> */}
-      {featuredMarkets && (
+      {featuredMarkets.length > 0 && (
         <div className="my-[60px]">
           <MarketScroll title="Featured Markets" markets={featuredMarkets} />
         </div>
       )}
-      <div className="my-[60px]">
-        <MarketScroll title="Trending Markets" markets={trendingMarkets} />
-      </div>
+      {trendingMarkets.length > 0 && (
+        <div className="my-[60px]">
+          <MarketScroll title="Trending Markets" markets={trendingMarkets} />
+        </div>
+      )}
       <div className="mb-[60px]">
         <PopularCategories tagCounts={tagCounts} />
       </div>
