@@ -1,4 +1,4 @@
-export type MarketCategory = { ticker: string; color: string };
+export type MarketCategory = { ticker?: string; color?: string };
 export type MarketCategories = MarketCategory[];
 
 export type MarketCardOverlayCategoryProps = {

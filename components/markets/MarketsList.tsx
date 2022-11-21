@@ -1,21 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
+import { isIndexedData } from "@zeitgeistpm/sdk-next";
+import React, { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 import { observer } from "mobx-react";
 import { X } from "react-feather";
 import { useRouter } from "next/router";
-import hashObject from "object-hash";
 import { useStore } from "lib/stores/Store";
 import MarketCard from "./market-card";
 import MainFilters from "./filters/MainFilters";
 import MyFilters from "./filters/MyFilters";
-import MarketSkeletons from "./MarketSkeletons";
 import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
-import { usePrevious } from "lib/hooks/usePrevious";
 import Loader from "react-spinners/PulseLoader";
-import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
-import { useContentScrollTop } from "components/context/ContentDimensionsContext";
-import { debounce, isEmpty } from "lodash";
 import { makeAutoObservable } from "mobx";
-import { MarketCardData } from "lib/gql/markets-list/types";
+import { useMarkets } from "lib/hooks/queries/useMarkets";
+import { useContentScrollTop } from "components/context/ContentDimensionsContext";
 
 export type MarketsListProps = {
   className?: string;
@@ -29,124 +26,44 @@ const scrollRestoration = makeAutoObservable({
 });
 
 const MarketsList = observer(({ className = "" }: MarketsListProps) => {
-  const store = useStore();
-  const { markets: marketsStore, preloadedMarkets } = store;
-  const [initialLoad, setInitialLoad] = useState(true);
-
   const query = useMarketsUrlQuery();
-  const [queryState, setQueryState] = useState(query);
-  const [hashedQuery, setHashedQuery] = useState<string>();
+  const store = useStore();
+  const { markets: marketsStore } = store;
 
-  const [totalPages, setTotalPages] = useState<number>(0);
-  const [loadingNextPage, setLoadingNextPage] = useState(false);
-  const [pageLoaded, setPageLoaded] = useState<boolean | null>(null);
+  const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
   const [scrollTop, scrollTo] = useContentScrollTop();
 
-  const [isMyMarkets, setIsMyMarkets] = useState<boolean>();
-
-  const prevPage = usePrevious(queryState?.pagination?.page);
-
-  const paginatorRef = useRef<HTMLDivElement>();
-  const listRef = useRef<HTMLDivElement>();
-
-  const count = marketsStore?.count;
-  const hasNext = query?.pagination?.page < totalPages;
-
-  const performQuery = () => {
-    return marketsStore.fetchMarkets(query);
-  };
-
-  const hasScrolledToEnd = useIsOnScreen(paginatorRef);
-
-  useEffect(
-    debounce(() => {
-      scrollRestoration.set(scrollTop);
-    }, 150),
-    [scrollTop],
-  );
+  const {
+    data: marketsPages,
+    isFetching: isFetchingMarkets,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+  } = useMarkets();
 
   useEffect(() => {
-    setHashedQuery(hashObject(query));
-    if (query.myMarketsOnly === true) {
-      setIsMyMarkets(true);
-    } else {
-      setIsMyMarkets(false);
+    if (isLoadMarkerInView === true && hasNextPage === true) {
+      fetchNextPage();
     }
-  }, [query]);
+  }, [isLoadMarkerInView, hasNextPage]);
 
-  const [marketsList, setMarketsList] = useState<MarketCardData[]>();
-
-  useEffect(() => {
-    if (marketsStore.initialPageLoaded !== true) {
-      setMarketsList(preloadedMarkets);
-    }
-  }, [marketsStore.initialPageLoaded, marketsStore.order, preloadedMarkets]);
-
-  useEffect(() => {
-    if (initialLoad && scrollRestoration.scrollTop) {
-      scrollTo(scrollRestoration.scrollTop);
-    }
-  }, [initialLoad, scrollRestoration.scrollTop]);
-
-  useEffect(() => {
-    if (pageLoaded !== true || !marketsStore.initialPageLoaded) {
-      return;
-    }
-    if (hasNext && hasScrolledToEnd) {
-      query.updateQuery({
-        pagination: { page: query?.pagination?.page + 1 },
-      });
-      setQueryState(query);
-    }
-  }, [hasScrolledToEnd, marketsStore.initialPageLoaded, hasNext]);
-
-  useEffect(() => {
-    if (store.sdk == null) {
-      return;
-    }
-    if (isMyMarkets && store.wallets.activeAccount == null) {
-      return;
-    }
-    setPageLoaded(false);
-    performQuery().then(() => {
-      setLoadingNextPage(false);
-      setPageLoaded(true);
-      setInitialLoad(false);
-      if (marketsStore.initialPageLoaded === false) {
-        marketsStore.setInitialPageLoaded();
-      }
-    });
-  }, [hashedQuery, store.sdk, store.wallets.activeAccount]);
-
-  useEffect(() => {
-    if (queryState?.pagination?.page > prevPage) {
-      setLoadingNextPage(true);
-    }
-  }, [queryState?.pagination?.page]);
-
-  useEffect(() => {
-    if (count) {
-      setTotalPages(Math.ceil(count / query.pagination.pageSize));
-    }
-  }, [count]);
+  const markets = marketsPages?.pages.flatMap((markets) => markets.data) ?? [];
+  const count = markets.length;
 
   return (
-    <div className={"pt-ztg-46 " + className} ref={listRef}>
-      <h3 className="mb-ztg-40 font-space text-[24px] font-semibold">
-        <span className="mr-4">
-          {isMyMarkets ? "My Markets" : "All Markets"}
-        </span>
-        {loadingNextPage || (!pageLoaded && <Loader size={8} />)}
-      </h3>
+    <div className={"pt-ztg-46 mb-[38px]" + className}>
       {/* TODO: Filters here */}
       <div></div>
-      <div className="mb-ztg-38 grid grid-cols-3 gap-[30px]">
+      <div className="grid grid-cols-3 gap-[30px]">
         {query != null &&
-          marketsList?.map((market) => {
+          markets.map((market) => {
+            if (!isIndexedData(market)) {
+              throw Error(`Market with id ${market.marketId} cannot be shown.`);
+            }
             return (
               <MarketCard
-                marketId={market.id}
+                marketId={market.marketId}
                 categories={market.categories}
                 question={market.question}
                 status={market.status}
@@ -156,19 +73,14 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
               />
             );
           })}
-
-        {(marketsList == null || loadingNextPage) && (
-          <MarketSkeletons pageSize={queryState?.pagination?.pageSize ?? 5} />
-        )}
-
-        {pageLoaded && count === 0 && (
-          <div className="text-center">No results!</div>
-        )}
-
-        <div className="my-22 w-full h-40"></div>
-
-        <div ref={paginatorRef} />
       </div>
+      <div className="flex justify-center w-full mt-[78px] h-[20px]">
+        {(isFetchingMarkets || isLoading) && <Loader />}
+      </div>
+      {!isLoading && count === 0 && (
+        <div className="text-center">No results!</div>
+      )}
+      <div className="w-full h-[10px]" ref={loadMoreRef}></div>
     </div>
   );
 });

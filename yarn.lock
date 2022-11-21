@@ -3094,6 +3094,7 @@ __metadata:
     react-feather: ^2.0.9
     react-hotjar: ^3.0.1
     react-icons: ^4.3.1
+    react-intersection-observer: ^9.4.1
     react-quill: ^2.0.0
     react-resize-detector: ^7.0.0
     react-select: ^5.4
@@ -9936,6 +9937,15 @@ __metadata:
   peerDependencies:
     react: "*"
   checksum: a08375d4563e381e156d826a8d551dd26c1bf7c424a79139173bf4c8df71e884badd7d4f5fe9faa0d73d18ace265bcc89891b65fd8f808812b1011b612ebbc53
+  languageName: node
+  linkType: hard
+
+"react-intersection-observer@npm:^9.4.1":
+  version: 9.4.1
+  resolution: "react-intersection-observer@npm:9.4.1"
+  peerDependencies:
+    react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: 13d1c36658470a781d8db8870dbd272c5b4b32329fa69c27ee96424de4e1599526a9bf2a91ea59922c18323c97d6909f0ac120c5af6076d1c01e654b43fb03c1
   languageName: node
   linkType: hard
 
