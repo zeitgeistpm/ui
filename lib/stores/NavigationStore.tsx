@@ -32,14 +32,20 @@ export default class NavigationStore {
       IconComponent: BarChart2,
       pageName: "markets",
     },
+    create: {
+      label: "Create Market",
+      IconComponent: PlusSquare,
+      href: "/create",
+      pageName: "create",
+    },
     portfolio: {
-      label: "My Portfolio",
+      label: "Portfolio",
       href: "/portfolio",
       IconComponent: Briefcase,
       pageName: "portfolio",
     },
     settings: {
-      label: "My Settings",
+      label: "Settings",
       href: "/settings",
       IconComponent: Settings,
       pageName: "settings",
@@ -49,12 +55,6 @@ export default class NavigationStore {
       href: "/avatar",
       IconComponent: User,
       pageName: "avatar",
-    },
-    create: {
-      label: "Create Market",
-      IconComponent: PlusSquare,
-      href: "/create",
-      pageName: "create",
     },
     liquidity: {
       label: "Liquidity Pools",

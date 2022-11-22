@@ -22,13 +22,6 @@ const Menu: FC = observer(() => {
   const store = useStore();
   initializeNavigation();
 
-  const marketsItem = navigationStore.items.markets as NavigationSingleItem;
-  const createItem = navigationStore.items.create as NavigationSingleItem;
-  // const accountItem = navigationStore.items.account as NavigationSingleItem;
-  const liquidityItem = navigationStore.items.liquidity as NavigationSingleItem;
-  const activityItem = navigationStore.items.activity as NavigationSingleItem;
-  const courtItem = navigationStore.items.court as NavigationSingleItem;
-
   const hideLabels = store.leftDrawerClosed;
 
   const navigate = (page: PageName) => {
@@ -51,6 +44,11 @@ const Menu: FC = observer(() => {
             if (
               itemKey === "court"
               && process.env.NEXT_PUBLIC_SHOW_COURT === "true"
+            ) return <></>;
+
+            // Skip activity feed page for now...
+            if (
+              itemKey === "activity"
             ) return <></>;
 
             return (
