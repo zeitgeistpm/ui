@@ -1,17 +1,23 @@
-export type MarketCategory = { name?: string; color?: string };
-export type MarketCategories = MarketCategory[];
+import BuySellButtons from "components/trade-slip/BuySellButtons";
+import { MarketCategories, MarketCategory } from ".";
 
 export type MarketCardOverlayCategoryProps = {
+  marketId: number;
   category: MarketCategory;
   className?: string;
 };
 
 const MarketCardOverlayCategory = ({
+  marketId,
   category,
   className = "",
 }: MarketCardOverlayCategoryProps) => {
   return (
-    <div className={"flex flex-row h-[35px] flex-shrink-0 " + className}>
+    <div
+      className={
+        "flex flex-row items-center  h-[35px] flex-shrink-0 " + className
+      }
+    >
       <div
         className="w-[20px] h-[20px] rounded-full border-sky-600 border-[2px]"
         style={{ backgroundColor: `${category.color}` }}
@@ -21,7 +27,7 @@ const MarketCardOverlayCategory = ({
           {category.name}
         </div>
         {/* TODO: make a component for price diff */}
-        <div className="h-full flex flex-row items-center">
+        {/* <div className="h-full flex flex-row items-center">
           <div
             className="mr-[5px]"
             style={{
@@ -33,15 +39,29 @@ const MarketCardOverlayCategory = ({
             }}
           ></div>
           <div className="font-mono text-ztg-10-150">0.5%</div>
-        </div>
+        </div> */}
+      </div>
+      <div className="ml-auto">
+        <BuySellButtons
+          item={{
+            amount: "",
+            assetId: category.assetId,
+            marketId: marketId,
+            assetTicker: category.ticker,
+            assetColor: category.color,
+          }}
+          disabled={category.assetId == null}
+        />
       </div>
     </div>
   );
 };
 
 const MarketCardOverlayCategories = ({
+  marketId,
   categories,
 }: {
+  marketId: number;
   categories: MarketCategories;
 }) => {
   const numCategories = categories.length;
@@ -52,6 +72,7 @@ const MarketCardOverlayCategories = ({
         return (
           <MarketCardOverlayCategory
             key={`cat-${idx}`}
+            marketId={marketId}
             category={cat}
             className={botMargin}
           />

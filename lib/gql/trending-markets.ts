@@ -1,5 +1,9 @@
 import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
-import { IndexedMarketCardData } from "components/markets/market-card";
+import {
+  IndexedMarketCardData,
+  MarketCategories,
+  MarketCategory,
+} from "components/markets/market-card";
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS, ZTG } from "lib/constants";
@@ -35,7 +39,9 @@ const marketQuery = gql`
       categories {
         color
         name
+        ticker
       }
+      outcomeAssets
     }
   }
 `;
@@ -78,7 +84,8 @@ const getTrendingMarkets = async (
           question: string;
           creation: MarketCreation;
           marketType: { [key: string]: string };
-          categories: { color: string; name: string }[];
+          categories: { color: string; name: string; ticker: string }[];
+          outcomeAssets: string[];
         }[];
       }>(marketQuery, {
         marketId: pool.marketId,
@@ -127,6 +134,17 @@ const getTrendingMarkets = async (
           .toString();
       }
 
+      const marketCategories: MarketCategories = market.categories.map(
+        (category, index) => {
+          const marketCategory: MarketCategory = {
+            ...category,
+            assetId: JSON.parse(market.outcomeAssets[index]),
+          };
+
+          return marketCategory;
+        },
+      );
+
       const trendingMarket: IndexedMarketCardData = {
         marketId: market.marketId,
         question: market.question,
@@ -135,7 +153,7 @@ const getTrendingMarkets = async (
         prediction: prediction,
         volume: new Decimal(pool.volume).div(ZTG).toNumber(),
         baseAsset: pool.baseAsset,
-        categories: market.categories,
+        categories: marketCategories,
       };
       console.log(trendingMarket);
 
