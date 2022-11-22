@@ -122,7 +122,7 @@ const NotificationCenter = observer(() => {
   const notificationStore = useNotificationStore();
 
   return (
-    <div className="fixed h-full w-full top-0 pointer-events-none">
+    <div className="fixed h-full w-full top-0 pointer-events-none z-ztg-50">
       <div className="flex flex-row justify-end pr-ztg-27 pt-20">
         <div className="flex flex-col">
           <AnimatePresence>
