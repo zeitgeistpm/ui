@@ -24,6 +24,7 @@ const Menu: FC = observer(() => {
 
   const marketsItem = navigationStore.items.markets as NavigationSingleItem;
   const createItem = navigationStore.items.create as NavigationSingleItem;
+  // const accountItem = navigationStore.items.account as NavigationSingleItem;
   const liquidityItem = navigationStore.items.liquidity as NavigationSingleItem;
   const activityItem = navigationStore.items.activity as NavigationSingleItem;
   const courtItem = navigationStore.items.court as NavigationSingleItem;
@@ -39,80 +40,32 @@ const Menu: FC = observer(() => {
   return (
     <>
       <div className="flex flex-col">
-        {/* <MenuItemGroup
-          groupName="markets"
-          hideLabel={hideLabels}
-          className="mt-ztg-32 mb-ztg-12"
-        /> */}
-        <MenuItem
-          href="/markets"
-          IconComponent={marketsItem.IconComponent}
-          hideLabel={hideLabels}
-          active={navigationStore.checkPage("markets")}
-          className="mt-ztg-32 mb-ztg-12"
-          onClick={() => {
-            navigate("markets");
-          }}
-        >
-          {marketsItem.label}
-        </MenuItem>
-        <MenuItem
-          href={createItem.href}
-          IconComponent={createItem.IconComponent}
-          hideLabel={hideLabels}
-          active={navigationStore.checkPage("create")}
-          className="mb-ztg-12"
-          onClick={() => {
-            navigate("create");
-          }}
-        >
-          {createItem.label}
-        </MenuItem>
-        <MenuItemGroup
-          groupName="account"
-          hideLabel={hideLabels}
-          className="mb-ztg-12"
-        />
-        <MenuItem
-          href={liquidityItem.href}
-          IconComponent={liquidityItem.IconComponent}
-          hideLabel={hideLabels}
-          active={navigationStore.checkPage(liquidityItem.pageName)}
-          className="mb-ztg-12"
-          onClick={() => {
-            navigate(liquidityItem.pageName);
-          }}
-        >
-          {liquidityItem.label}
-        </MenuItem>
-        {process.env.NEXT_PUBLIC_SHOW_COURT === "true" ? (
-          <MenuItem
-            href={courtItem.href}
-            IconComponent={courtItem.IconComponent}
-            hideLabel={hideLabels}
-            active={navigationStore.checkPage(courtItem.pageName)}
-            className="mb-ztg-12"
-            onClick={() => {
-              navigate(courtItem.pageName);
-            }}
-          >
-            {courtItem.label}
-          </MenuItem>
-        ) : (
-          <></>
-        )}
-        {/* <MenuItem
-          href={activityItem.href}
-          IconComponent={activityItem.IconComponent}
-          hideLabel={hideLabels}
-          active={navigationStore.checkPage(activityItem.pageName)}
-          className="mb-ztg-12"
-          onClick={() => {
-            navigate(activityItem.pageName);
-          }}
-        >
-          {activityItem.label}
-        </MenuItem> */}
+        {
+          Object.keys(navigationStore.items).map((itemKey, idx) => {
+            const item = navigationStore.items[itemKey];
+
+            // The top item should have a marginTop property.
+            const className = idx === 0 ? "mt-ztg-32 mb-ztg-12" : "mb-ztg-12";
+
+            // Skip court page for now...
+            if (
+              itemKey === "court"
+              && process.env.NEXT_PUBLIC_SHOW_COURT === "true"
+            ) return <></>;
+
+            return (
+              <MenuItem
+                href={item.href}
+                IconComponent={item.IconComponent}
+                textLabel={item.label}
+                hideLabel={hideLabels}
+                active={navigationStore.checkPage(itemKey as any)}
+                className={className}
+                onClick={() => navigate(itemKey as any)}
+              />
+            )
+          })
+        }
       </div>
       <div className="mt-auto">
         {/* <LocalizationSelect

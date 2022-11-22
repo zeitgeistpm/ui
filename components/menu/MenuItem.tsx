@@ -8,6 +8,7 @@ import { Icon, ChevronUp } from "react-feather";
 export interface MenuItemProps {
   hideLabel: boolean;
   IconComponent: Icon;
+  textLabel?: string;
   className?: string;
   href?: string;
   active?: boolean;
@@ -45,10 +46,10 @@ const MenuChevron = ({ open }: { open: boolean }) => {
 export const MenuItem: FC<MenuItemProps> = observer(
   ({
     IconComponent,
+    textLabel,
     className = "",
     hideLabel,
     href,
-    children,
     active = false,
     open,
     onClick,
@@ -68,8 +69,8 @@ export const MenuItem: FC<MenuItemProps> = observer(
       <WrapComponent href={href}>
         <div
           className={`${classes} ${className} ${active
-              ? "bg-border-dark text-white dark:bg-sky-1100 font-bold"
-              : "ztg-transition text-sky-600 hover:text-black dark:hover:text-white"
+            ? "bg-border-dark text-white dark:bg-sky-1100 font-bold"
+            : "ztg-transition text-sky-600 hover:text-black dark:hover:text-white"
             } 
           font-lato rounded-ztg-10 
           mx-ztg-20
@@ -87,7 +88,7 @@ export const MenuItem: FC<MenuItemProps> = observer(
             className={`text-ztg-16-150  ml-ztg-15 ${hideLabel ? "hidden" : ""}
             ${open ? "text-black dark:text-white" : ""}`}
           >
-            {children}
+            {textLabel}
           </div>
           {store.leftDrawerClosed === false && open !== undefined ? (
             <MenuChevron open={open} />

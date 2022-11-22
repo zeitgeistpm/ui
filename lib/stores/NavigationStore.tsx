@@ -15,6 +15,8 @@ import {
   Briefcase,
   Droplet,
   PlusSquare,
+  Settings,
+  User,
   Users,
 } from "react-feather";
 import Store, { useStore } from "./Store";
@@ -23,43 +25,30 @@ export default class NavigationStore {
   currentGroup: string | null = null;
   currentPage: PageName;
 
-  items: Record<string, NavigationItem> = {
+  items: Record<string, NavigationSingleItem> = {
     markets: {
       label: "Markets",
+      href: "/markets",
       IconComponent: BarChart2,
-      selected: false,
-      open: false,
-      subItems: [
-        { label: "All Markets", href: "/", pageName: "index", mobile: true },
-        {
-          label: "My Markets",
-          href: "/markets?myMarketsOnly=true",
-          pageName: "markets",
-        },
-      ],
+      pageName: "markets",
     },
-    account: {
-      label: "My Account",
+    portfolio: {
+      label: "My Portfolio",
+      href: "/portfolio",
       IconComponent: Briefcase,
-      selected: false,
-      open: false,
-      subItems: [
-        {
-          label: "My Portfolio",
-          href: "/portfolio",
-          pageName: "portfolio",
-        },
-        {
-          label: "My Settings",
-          href: "/settings",
-          pageName: "settings",
-        },
-        {
-          label: "Zeitgeist Identity",
-          href: "/avatar",
-          pageName: "avatar",
-        },
-      ],
+      pageName: "portfolio",
+    },
+    settings: {
+      label: "My Settings",
+      href: "/settings",
+      IconComponent: Settings,
+      pageName: "settings",
+    },
+    avatar: {
+      label: "Avatar and Badges",
+      href: "/avatar",
+      IconComponent: User,
+      pageName: "avatar",
     },
     create: {
       label: "Create Market",
