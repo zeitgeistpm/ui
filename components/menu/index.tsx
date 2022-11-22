@@ -113,7 +113,7 @@ const Menu: FC = observer(() => {
             setSelectedLanguage(option)
           }
         /> */}
-        <ThemeSwitch className="ml-ztg-33 mb-ztg-24" />
+        {/* <ThemeSwitch className="ml-ztg-33 mb-ztg-24" /> */}
         <div className="ml-ztg-42 mb-ztg-22 text-ztg-12-150">v.1.0.0</div>
       </div>
     </>
