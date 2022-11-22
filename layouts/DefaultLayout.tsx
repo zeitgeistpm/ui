@@ -52,7 +52,10 @@ const DefaultLayout: FC = observer(({ children }) => {
     >
       <TradeSlipStoreContext.Provider value={store.tradeSlipStore}>
         <LeftDrawer />
-        <div ref={contentRef} className="overflow-y-auto overflow-x-hidden">
+        <div
+          ref={contentRef}
+          className="overflow-y-auto overflow-x-hidden flex-grow"
+        >
           <TopBar />
           {NOTIFICATION_MESSAGE && (
             <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38">
