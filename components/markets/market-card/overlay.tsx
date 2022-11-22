@@ -35,14 +35,17 @@ const MarketCardOverlay = ({
             size={24}
           />
         </div>
-        <div className="flex flex-row items-center h-[26px] text-ztg-12-150 text-sky-600">
+        {/* <div className="flex flex-row items-center h-[26px] text-ztg-12-150 text-sky-600">
           Showing 1-4
-        </div>
+        </div> */}
       </div>
-      <MarketCardOverlayCategories categories={categories} />
+      <MarketCardOverlayCategories
+        marketId={marketId}
+        categories={categories}
+      />
       <Link
         href={`/markets/${marketId}`}
-        className="flex flex-row mt-auto h-[24px] items-center cursor-pointer"
+        className="flex flex-row mt-[30px] h-[24px] items-center cursor-pointer"
       >
         <ExternalLink size={24} className="text-sky-600" />
         <div className="ml-[11px] text-ztg-14-110 text-sky-600 font-bold">

@@ -95,7 +95,7 @@ const BuySellButtons = observer(({ item, disabled }: BuySellButtonsProps) => {
   };
 
   return (
-    <div className="card-exp-col-6 flex items-center justify-evenly">
+    <div className="card-exp-col-6 flex items-center justify-evenly gap-x-[6px]">
       <TradeButton
         active={assetActiveInTradeSlip && assetTypeActive === "buy"}
         type="buy"
