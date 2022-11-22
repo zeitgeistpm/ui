@@ -70,11 +70,14 @@ const AvatarPage = observer(() => {
 
   const loadData = async () => {
     try {
-      const [burnAmount, identity, tarotStats] = await Promise.all([
-        store.sdk.api.query.styx.burnAmount(),
-        getIdentity(address),
-        Tarot.fetchStatsForAddress(avatarContext, address),
-      ]);
+      const [burnAmount, identity, tarotStats, earnedBadges] =
+        await Promise.all([
+          store.sdk.api.query.styx.burnAmount(),
+          getIdentity(address),
+          Tarot.fetchStatsForAddress(avatarContext, address),
+          Avatar.fetchEarnedBadgesForAddress(avatarContext, address),
+        ]);
+      setEarnedBadges(earnedBadges);
       setBurnAmount(burnAmount.toJSON() as number);
       setIdentity(identity);
       setTarotStats(tarotStats);
