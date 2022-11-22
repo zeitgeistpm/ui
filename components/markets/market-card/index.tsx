@@ -1,9 +1,14 @@
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MoreVertical } from "react-feather";
 import MarketImage from "components/ui/MarketImage";
 import MarketCardOverlay from "./overlay";
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
+import { useOutcomePrices } from "lib/hooks/queries/useOutcomePrices";
+import { useMarketPrediction } from "lib/hooks/queries/useMarketPrediction";
+import { useMarketOutcomes } from "lib/hooks/queries/useMarketOutcomes";
+import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
+import { Skeleton } from "@material-ui/lab";
 
 export type MarketCategory = {
   name?: string;
@@ -18,7 +23,7 @@ export interface IndexedMarketCardData {
   img?: string;
   question: string;
   creation: string;
-  categories: MarketCategories;
+  categories?: MarketCategories;
   prediction?: string;
   volume?: number;
   baseAsset?: string;
@@ -38,7 +43,16 @@ const MarketCardInfoRow = ({
   return (
     <div className="h-[18px]">
       <span className="text-sky-600">{name}:</span>{" "}
-      <span className="text-black">{value}</span>
+      {value == null ? (
+        <Skeleton
+          height={15}
+          width={100}
+          classes={{ root: "!bg-sky-600" }}
+          className="!transform-none !inline-block"
+        />
+      ) : (
+        <span className="text-black">{value}</span>
+      )}
     </div>
   );
 };
@@ -70,8 +84,10 @@ const MarketCard = ({
 }: MarketCardProps) => {
   const [showDetailsOverlay, setShowDetailsOverlay] = useState<boolean>(false);
 
+  const predictionAsync = useMarketPrediction({ marketId }, 12000);
+
   const infoRows = [
-    { name: "Prediction", value: prediction },
+    { name: "Prediction", value: prediction || predictionAsync },
     { name: "Volume", value: `${volume} ${baseAsset?.toUpperCase() ?? "ZTG"}` },
     { name: "Status", value: creation },
   ];

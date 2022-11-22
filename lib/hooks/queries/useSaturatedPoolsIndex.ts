@@ -10,7 +10,10 @@ export const key = (pools?: Pool<Context>[]) => [
   ...(pools?.map(({ poolId }) => poolId).sort() || []),
 ];
 
-export const useSaturatedPoolsIndex = (pools?: Pool<Context>[]) => {
+export const useSaturatedPoolsIndex = (
+  pools?: Pool<Context>[],
+  refetchInterval?: number,
+) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
@@ -21,6 +24,7 @@ export const useSaturatedPoolsIndex = (pools?: Pool<Context>[]) => {
     {
       keepPreviousData: true,
       enabled: Boolean(sdk) && Boolean(pools),
+      refetchInterval: refetchInterval == null ? false : refetchInterval,
     },
   );
 
