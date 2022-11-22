@@ -9,6 +9,10 @@ export const shouldScrollTop = (
   const prevPaths = previousPathname.split("/");
   const currentPaths = currentPathname.split("/");
 
+  if (currentPaths?.[2] === "[marketid]") {
+    return true;
+  }
+
   // navigating from market to index and markets pages
   if (
     (currentPathname === "/" || currentPathname === "/markets") &&
