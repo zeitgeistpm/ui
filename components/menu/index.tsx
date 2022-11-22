@@ -22,6 +22,7 @@ const Menu: FC = observer(() => {
   const store = useStore();
   initializeNavigation();
 
+  const marketsItem = navigationStore.items.markets as NavigationSingleItem;
   const createItem = navigationStore.items.create as NavigationSingleItem;
   const liquidityItem = navigationStore.items.liquidity as NavigationSingleItem;
   const activityItem = navigationStore.items.activity as NavigationSingleItem;
@@ -38,11 +39,23 @@ const Menu: FC = observer(() => {
   return (
     <>
       <div className="flex flex-col">
-        <MenuItemGroup
+        {/* <MenuItemGroup
           groupName="markets"
           hideLabel={hideLabels}
           className="mt-ztg-32 mb-ztg-12"
-        />
+        /> */}
+        <MenuItem
+          href="/markets"
+          IconComponent={marketsItem.IconComponent}
+          hideLabel={hideLabels}
+          active={navigationStore.checkPage("markets")}
+          className="mt-ztg-32 mb-ztg-12"
+          onClick={() => {
+            navigate("markets");
+          }}
+        >
+          {marketsItem.label}
+        </MenuItem>
         <MenuItem
           href={createItem.href}
           IconComponent={createItem.IconComponent}

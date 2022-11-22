@@ -57,22 +57,20 @@ export const MenuItem: FC<MenuItemProps> = observer(
 
     const classes = useMemo(() => {
       return `flex flex-row h-ztg-56 items-center cursor-pointer
-      ${
-        store.leftDrawerClosed === true
+      ${store.leftDrawerClosed === true
           ? "justify-center"
           : "py-ztg-16 px-ztg-11"
-      }
+        }
     `;
     }, [store.leftDrawerClosed]);
 
     return (
       <WrapComponent href={href}>
         <div
-          className={`${classes} ${className} ${
-            active
-              ? "text-black bg-white dark:text-white dark:bg-sky-1100 font-bold"
+          className={`${classes} ${className} ${active
+              ? "bg-border-dark text-white dark:bg-sky-1100 font-bold"
               : "ztg-transition text-sky-600 hover:text-black dark:hover:text-white"
-          } 
+            } 
           font-lato rounded-ztg-10 
           mx-ztg-20
           `}
@@ -81,9 +79,8 @@ export const MenuItem: FC<MenuItemProps> = observer(
           <div className="center w-ztg-34">
             <IconComponent
               size={24}
-              className={`p-ztg-2 rounded-ztg-5 ${
-                active ? "bg-ztg-blue text-white" : ""
-              }`}
+              className={`p-ztg-2 rounded-ztg-5 ${active ? "bg-ztg-blue text-white" : ""
+                }`}
             />
           </div>
           <div
