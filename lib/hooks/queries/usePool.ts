@@ -10,7 +10,8 @@ export const usePool = (getPoolQuery?: PoolGetQuery) => {
   const query = useQuery(
     [id, rootKey, getPoolQuery],
     async () => {
-      return sdk.model.swaps.getPool(getPoolQuery);
+      const pool = await sdk.model.swaps.getPool(getPoolQuery);
+      return pool.unwrap();
     },
     {
       enabled: Boolean(sdk && getPoolQuery),

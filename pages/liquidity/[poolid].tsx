@@ -19,6 +19,7 @@ import { observer } from "mobx-react";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { BarChart2, ChevronLeft, Info } from "react-feather";
 
@@ -96,7 +97,7 @@ const PoolDetails: NextPage = observer(() => {
   const poolId = Number(router.query.poolid);
 
   const [sdk, id] = useSdkv2();
-  const { data: pool } = usePool({ poolId });
+  const { data: pool, isInitialLoading, isFetched } = usePool({ poolId });
 
   const { data: saturatedPoolIndex } = useSaturatedPoolsIndex(
     pool ? [pool] : undefined,
@@ -169,6 +170,14 @@ const PoolDetails: NextPage = observer(() => {
   const navigateBack = () => {
     router.push("/liquidity");
   };
+
+  if (!sdk || !poolId || isInitialLoading) {
+    return null;
+  }
+
+  if (isFetched && pool === null) {
+    return <NotFoundPage backText="Back To Pools" backLink="/liquidity" />;
+  }
 
   return (
     <div>
