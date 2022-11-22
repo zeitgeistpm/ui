@@ -3,7 +3,15 @@ import React, { useState } from "react";
 import { MoreVertical } from "react-feather";
 import MarketImage from "components/ui/MarketImage";
 import MarketCardOverlay from "./overlay";
-import { MarketCategories } from "./overlay-categories";
+import { AssetId } from "@zeitgeistpm/sdk/dist/types";
+
+export type MarketCategory = {
+  name?: string;
+  color?: string;
+  assetId: AssetId;
+  ticker: string;
+};
+export type MarketCategories = MarketCategory[];
 
 export interface IndexedMarketCardData {
   marketId: number;

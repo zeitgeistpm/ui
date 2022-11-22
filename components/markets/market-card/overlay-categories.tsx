@@ -1,13 +1,5 @@
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import BuySellButtons from "components/trade-slip/BuySellButtons";
-
-export type MarketCategory = {
-  name?: string;
-  color?: string;
-  assetId: AssetId;
-  ticker: string;
-};
-export type MarketCategories = MarketCategory[];
+import { MarketCategories, MarketCategory } from ".";
 
 export type MarketCardOverlayCategoryProps = {
   marketId: number;

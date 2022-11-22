@@ -1,10 +1,13 @@
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 
-import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
 import { ZTG } from "lib/constants";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
+import {
+  MarketCategories,
+  MarketCategory,
+} from "components/markets/market-card/";
 
 const getMarketIdsFromEnvVar = () => {
   try {
@@ -36,7 +39,9 @@ const marketQuery = gql`
       categories {
         color
         name
+        ticker
       }
+      outcomeAssets
     }
   }
 `;
@@ -77,7 +82,8 @@ const getFeaturedMarkets = async (
           question: string;
           creation: MarketCreation;
           marketType: { [key: string]: string };
-          categories: { color: string; name: string }[];
+          categories: { color: string; name: string; ticker: string }[];
+          outcomeAssets: string[];
         }[];
       }>(marketQuery, {
         marketId: id,
@@ -93,21 +99,19 @@ const getFeaturedMarkets = async (
       const pool = poolRes.pools[0];
 
       if (!pool) {
-        const trendingMarket: TrendingMarketInfo = {
+        const noPoolMarket: IndexedMarketCardData = {
           marketId: market.marketId,
-          name: market.question,
+          question: market.question,
+          creation: market.creation,
           img: market.img,
-          outcomes: market.marketType.categorical
-            ? market.marketType.categorical.toString()
-            : "Long/Short",
           prediction: "None",
-          volume: "No Pool",
+          volume: 0,
           baseAsset: "",
+          categories: [],
         };
 
-        return trendingMarket;
+        return noPoolMarket;
       }
-
       const assetsRes = await client.request<{
         assets: {
           poolId: number;
@@ -150,7 +154,18 @@ const getFeaturedMarkets = async (
           .toString();
       }
 
-      const feautedMarket: IndexedMarketCardData = {
+      const marketCategories: MarketCategories = market.categories.map(
+        (category, index) => {
+          const marketCategory: MarketCategory = {
+            ...category,
+            assetId: JSON.parse(market.outcomeAssets[index]),
+          };
+
+          return marketCategory;
+        },
+      );
+
+      const featuredMarket: IndexedMarketCardData = {
         marketId: market.marketId,
         question: market.question,
         creation: market.creation,
@@ -158,9 +173,10 @@ const getFeaturedMarkets = async (
         prediction: prediction,
         volume: new Decimal(pool.volume).div(ZTG).toNumber(),
         baseAsset: pool.baseAsset,
-        categories: market.categories,
+        categories: marketCategories,
       };
-      return feautedMarket;
+
+      return featuredMarket;
     }),
   );
 
