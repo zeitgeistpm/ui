@@ -8,29 +8,12 @@ import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getPopularCategories, TagCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
 import { useStore } from "lib/stores/Store";
-import { randomHexColor } from "lib/util";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getPlaiceholder, IGetPlaiceholderReturn } from "plaiceholder";
 import React from "react";
-
-const demoCategories = [
-  { ticker: "Vivamus tortor ipsum", color: randomHexColor() },
-  { ticker: "In blandit lorem sed", color: randomHexColor() },
-  { ticker: "Nulla sit amet mi", color: randomHexColor() },
-  { ticker: "Quisque consectetur massa", color: randomHexColor() },
-  { ticker: "Suspendisse ac", color: randomHexColor() },
-  { ticker: "Sed dictum ante arcu", color: randomHexColor() },
-  { ticker: "Nulla sit amet mi", color: randomHexColor() },
-  { ticker: "Vivamus tortor ipsum", color: randomHexColor() },
-  { ticker: "Vivamus tortor ipsum", color: randomHexColor() },
-  { ticker: "In blandit lorem sed", color: randomHexColor() },
-  { ticker: "Nulla sit amet mi", color: randomHexColor() },
-  { ticker: "Quisque consectetur massa", color: randomHexColor() },
-  { ticker: "Suspendisse ac", color: randomHexColor() },
-];
 
 const MAIN_IMAGE_PATH = "/carousel/intro_zeitgeist_avatar.png";
 

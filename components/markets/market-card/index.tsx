@@ -20,8 +20,8 @@ export interface IndexedMarketCardData {
   creation: string;
   categories: MarketCategories;
   prediction?: string;
-  volume: number;
-  baseAsset: string;
+  volume?: number;
+  baseAsset?: string;
 }
 
 export interface MarketCardProps extends IndexedMarketCardData {
@@ -75,6 +75,7 @@ const MarketCard = ({
     { name: "Volume", value: `${volume} ${baseAsset?.toUpperCase() ?? "ZTG"}` },
     { name: "Status", value: creation },
   ];
+
   return (
     <div
       className={
@@ -96,9 +97,9 @@ const MarketCard = ({
           onClick={() => setShowDetailsOverlay(true)}
         />
       )}
-      <Link href={`/markets/${marketId}`} className="flex flex-row">
-        <MarketImage image={img} alt={`Image depicting ${question}`} />
-        <div className="mr-[17px] black font-lato font-bold h-[75px] w-full line-clamp-3 text-ztg-14-150">
+      <Link href={`/markets/${marketId}`} className="flex flex-row mr-[17px]">
+        <MarketImage image={img} alt={question} />
+        <div className="ml-[15px] black font-lato font-bold h-[75px] w-full line-clamp-3 text-ztg-14-150">
           {question}
         </div>
       </Link>
