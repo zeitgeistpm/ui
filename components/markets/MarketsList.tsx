@@ -51,6 +51,8 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   useEffect(() => {
     if (isLoadMarkerInView === true && hasNextPage === true) {
       fetchNextPage();
+    } else {
+      scrollTo(scrollRestoration.scrollTop);
     }
   }, [isLoadMarkerInView, hasNextPage]);
 
