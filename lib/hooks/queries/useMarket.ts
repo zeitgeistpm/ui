@@ -9,7 +9,8 @@ export const useMarket = (marketId: number) => {
   const query = useQuery(
     [id, rootKey, marketId],
     async () => {
-      return sdk.model.markets.get({ marketId });
+      const market = await sdk.model.markets.get({ marketId });
+      return market.unwrap();
     },
     {
       enabled: Boolean(sdk),
