@@ -8,8 +8,8 @@ import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 export type MarketCategory = {
   name?: string;
   color?: string;
-  assetId: AssetId;
-  ticker: string;
+  assetId?: AssetId;
+  ticker?: string;
 };
 export type MarketCategories = MarketCategory[];
 

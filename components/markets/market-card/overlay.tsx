@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { ExternalLink, X } from "react-feather";
-import MarketCardOverlayCategories, {
-  MarketCategories,
-} from "./overlay-categories";
+import { MarketCategories } from ".";
+import MarketCardOverlayCategories from "./overlay-categories";
 
 export type MarketCardOverlayProps = {
   marketId: number;
