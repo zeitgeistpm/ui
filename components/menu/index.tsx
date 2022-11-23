@@ -33,37 +33,31 @@ const Menu: FC = observer(() => {
   return (
     <>
       <div className="flex flex-col">
-        {
-          Object.keys(navigationStore.items).map((itemKey, idx) => {
-            const item = navigationStore.items[itemKey];
+        {Object.keys(navigationStore.items).map((itemKey, idx) => {
+          const item = navigationStore.items[itemKey];
 
-            // The top item should have a marginTop property.
-            const className = idx === 0 ? "mt-ztg-32 mb-ztg-12" : "mb-ztg-12";
+          // Skip court page for now...
+          if (
+            itemKey === "court" &&
+            process.env.NEXT_PUBLIC_SHOW_COURT === "true"
+          )
+            return <></>;
 
-            // Skip court page for now...
-            if (
-              itemKey === "court"
-              && process.env.NEXT_PUBLIC_SHOW_COURT === "true"
-            ) return <></>;
+          // Skip activity feed page for now...
+          if (itemKey === "activity") return <></>;
 
-            // Skip activity feed page for now...
-            if (
-              itemKey === "activity"
-            ) return <></>;
-
-            return (
-              <MenuItem
-                href={item.href}
-                IconComponent={item.IconComponent}
-                textLabel={item.label}
-                hideLabel={hideLabels}
-                active={navigationStore.checkPage(itemKey as any)}
-                className={className}
-                onClick={() => navigate(itemKey as any)}
-              />
-            )
-          })
-        }
+          return (
+            <MenuItem
+              href={item.href}
+              IconComponent={item.IconComponent}
+              textLabel={item.label}
+              hideLabel={hideLabels}
+              active={navigationStore.checkPage(itemKey as any)}
+              className="mb-ztg-12"
+              onClick={() => navigate(itemKey as any)}
+            />
+          );
+        })}
       </div>
       <div className="mt-auto">
         {/* <LocalizationSelect

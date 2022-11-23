@@ -20,7 +20,7 @@ const LeftDrawer = observer(() => {
     <Drawer side="left">
       <div className="w-full flex flex-col h-full bg-fog-of-war dark:bg-black text-sky-600">
         <div
-          className="flex mx-ztg-30 mt-ztg-20 h-ztg-35 mb-ztg-4"
+          className="flex mx-ztg-30 mt-ztg-20 h-ztg-35 mb-ztg-36"
           onClick={handleHomeClick}
           role="button"
         >
