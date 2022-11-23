@@ -26,8 +26,9 @@ const LeftDrawer = observer(() => {
         >
           <Logo />
           <div
-            className={`flex flex-col text-white  ml-ztg-14  ${leftDrawerClosed ? "hidden" : ""
-              }`}
+            className={`flex flex-col text-white  ml-ztg-14  ${
+              leftDrawerClosed ? "hidden" : ""
+            }`}
           >
             {leftDrawerClosed === false ? (
               <>
