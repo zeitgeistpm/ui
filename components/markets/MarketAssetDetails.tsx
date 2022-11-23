@@ -128,7 +128,7 @@ const MarketAssetDetails = observer(
           const ticker = market.outcomesMetadata[index]["ticker"];
           const color = market.outcomesMetadata[index]["color"] || "#ffffff";
           const outcomeName = market.outcomesMetadata[index]["name"];
-          const currentPrice = pool.assets[index].price;
+          const currentPrice = pool.assets[index]?.price;
 
           let priceHistory: {
             newPrice: number;
@@ -160,7 +160,10 @@ const MarketAssetDetails = observer(
                 value: currentPrice,
                 usdValue: 0,
               },
-              pre: Math.round((currentPrice / totalAssetPrice) * 100),
+              pre:
+                currentPrice != null
+                  ? Math.round((currentPrice / totalAssetPrice) * 100)
+                  : 0,
               change: priceChange,
               buttons: (
                 <AssetActionButtons
