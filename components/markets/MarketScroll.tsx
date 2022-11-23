@@ -38,6 +38,12 @@ const MarketScroll = observer(
     //todo: recalculate when drawer changes
     //todo: should always return true for mobile
     const isInView = (index: number) => {
+      if (typeof window === "undefined") return true;
+      const clientWidth = window?.innerWidth;
+      if (clientWidth < 640) {
+        return true;
+      }
+
       const xPosition = scrollLeft * -1;
       const itemWidth = gap + cardWidth;
       const cardsBeforeView = Math.ceil(xPosition / itemWidth);
@@ -107,15 +113,6 @@ const MarketScroll = observer(
             className="flex h-[175px] gap-x-[30px] no-scroll-bar overflow-x-auto sm:overflow-x-visible"
           >
             {markets.map((market, index) => (
-              // <div
-              //   key={index}
-              //   className={`bg-anti-flash-white rounded-ztg-10 min-w-[320px] w-full transition duration-1000 ease-in-out ${
-              //     isInView(index) === false ? "opacity-0" : ""
-              //   }`}
-              // >
-              //   {market.question}
-              // </div>
-
               <MarketCard
                 key={market.marketId}
                 {...market}
