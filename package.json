@@ -14,7 +14,8 @@
     "dev:test": "NEXT_PUBLIC_TESTING_ENV=true next",
     "e2e:open": "NEXT_PUBLIC_TESTING_ENV=true start-test dev http://localhost:3000 cy:open",
     "e2e:run": "NEXT_PUBLIC_TESTING_ENV=true start-test dev http://localhost:3000 cy:run",
-    "make-pretty": "npx prettier --write",
+    "prettier:check": "npx prettier ./**/*.tsx --check",
+    "prettier:fix": "npx prettier ./**/*.tsx --write",
     "start": "next start",
     "test": "jest --watch"
   },

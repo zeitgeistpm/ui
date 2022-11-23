@@ -19,9 +19,7 @@ const WalletSelect = observer(() => {
       window.open(wallet.installUrl);
     } else {
       try {
-        await flowResult(
-          wallets.connectWallet(wallet.extensionName, true),
-        );
+        await flowResult(wallets.connectWallet(wallet.extensionName, true));
 
         if (!wallets.faultyConnection) {
           accountModals.openAccontSelect();
