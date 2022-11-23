@@ -92,7 +92,7 @@ const MarketCard = ({
       )}
       {categories?.length > 0 && (
         <MoreVertical
-          className="absolute right-[10px] text-pastel-blue cursor-pointer"
+          className="absolute right-[10px] text-pastel-blue cursor-pointer hidden sm:block"
           onClick={() => setShowDetailsOverlay(true)}
         />
       )}
