@@ -32,10 +32,6 @@ export type HelperNotifications = {
   avatarKsmFeesInfo: boolean;
 };
 
-interface RawValue {
-  Raw: string;
-}
-
 const getFromLocalStorage = (
   key: string,
   defaultValue: JSONObject,
@@ -55,8 +51,8 @@ const setToLocalStorage = (key: string, value: JSONObject | Primitive) => {
 type StoredTheme = Theme | "system";
 
 export default class UserStore {
-  theme: Theme | null = null;
-  storedTheme: StoredTheme | null = null;
+  theme: Theme | null = "light";
+  storedTheme: StoredTheme | null = "light";
   accountAddress: string | null = null;
   tradeSlipItems: JSONObject | null = null;
   endpoint: string;
@@ -67,30 +63,29 @@ export default class UserStore {
   walletId: string | null = null;
   helpnotifications: HelperNotifications | null = null;
   endpointKey = `endpoint-${process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"}`;
-  qglEndpointKey = `gql-endpoint-${
-    process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"
-  }`;
+  qglEndpointKey = `gql-endpoint-${process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"
+    }`;
 
   constructor(private store: Store) {
     makeAutoObservable(this, {}, { autoBind: true, deep: false });
-    reaction(
-      () => this.storedTheme,
-      (storedTheme: StoredTheme) => {
-        setToLocalStorage("theme", storedTheme);
-        this.theme = this.getTheme();
-      },
-    );
+    // reaction(
+    //   () => this.storedTheme,
+    //   (storedTheme: StoredTheme) => {
+    //     setToLocalStorage("theme", storedTheme);
+    //     this.theme = this.getTheme();
+    //   },
+    // );
 
-    reaction(
-      () => this.theme,
-      (theme: Theme) => {
-        if (theme === "dark") {
-          document.body.classList.add(theme);
-        } else if (theme === "light") {
-          document.body.classList.remove("dark");
-        }
-      },
-    );
+    // reaction(
+    //   () => this.theme,
+    //   (theme: Theme) => {
+    //     if (theme === "dark") {
+    //       document.body.classList.add(theme);
+    //     } else if (theme === "light") {
+    //       document.body.classList.remove("dark");
+    //     }
+    //   },
+    // );
 
     reaction(
       () => this.endpoint,
@@ -141,8 +136,8 @@ export default class UserStore {
   }
 
   async init() {
-    this.storedTheme = getFromLocalStorage("theme", "system") as StoredTheme;
-    this.theme = this.getTheme();
+    // this.storedTheme = getFromLocalStorage("theme", "system") as StoredTheme;
+    // this.theme = this.getTheme();
     this.accountAddress = getFromLocalStorage("accountAddress", "") as string;
     this.walletId = getFromLocalStorage("walletId", null) as string;
     this.tradeSlipItems = getFromLocalStorage(
@@ -243,15 +238,15 @@ export default class UserStore {
       const oneOrZero = Math.round(Math.random());
       return oneOrZero === 0
         ? endpoints.find(
-            (endpoint) =>
-              endpoint.parachain == SupportedParachain.KUSAMA &&
-              endpoint.label === "Dwellir",
-          ).value
+          (endpoint) =>
+            endpoint.parachain == SupportedParachain.KUSAMA &&
+            endpoint.label === "Dwellir",
+        ).value
         : endpoints.find(
-            (endpoint) =>
-              endpoint.parachain == SupportedParachain.KUSAMA &&
-              endpoint.label === "OnFinality",
-          ).value;
+          (endpoint) =>
+            endpoint.parachain == SupportedParachain.KUSAMA &&
+            endpoint.label === "OnFinality",
+        ).value;
     } else {
       return endpoints.find(
         (endpoint) => endpoint.parachain == SupportedParachain.BSR,
