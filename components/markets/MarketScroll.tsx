@@ -117,6 +117,7 @@ const MarketScroll = observer(
               // </div>
 
               <MarketCard
+                key={market.marketId}
                 {...market}
                 className={`bg-anti-flash-white rounded-ztg-10 min-w-[320px] w-full transition duration-500 ease-in-out ${
                   isInView(index) === false ? "opacity-0" : ""

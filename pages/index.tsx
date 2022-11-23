@@ -80,7 +80,6 @@ const IndexPage: NextPage<{
           className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
           src={MAIN_IMAGE_PATH}
           alt="Introducing Zeitgeist Avatar"
-          layout="responsive"
           width={1036}
           height={374}
           quality={100}
