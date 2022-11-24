@@ -11,11 +11,6 @@ describe("shouldScrollTop", () => {
     expect(shouldScroll).toEqual(true);
   });
 
-  test("should return false for market page to index page", () => {
-    const shouldScroll = shouldScrollTop("/", "/markets/12");
-    expect(shouldScroll).toEqual(false);
-  });
-
   test("should return false for pool page to pool list", () => {
     const shouldScroll = shouldScrollTop("/liquidty", "/liquidty/12");
     expect(shouldScroll).toEqual(false);
