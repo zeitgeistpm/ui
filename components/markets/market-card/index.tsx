@@ -98,7 +98,7 @@ const MarketCard = ({
       )}
       <Link href={`/markets/${marketId}`} className="flex flex-row">
         <MarketImage image={img} alt={`Image depicting ${question}`} />
-        <div className="mr-[17px] black font-lato font-bold h-[75px] w-full line-clamp-3 text-ztg-14-150">
+        <div className="ml-[15px] mr-[17px] black font-lato font-bold h-[75px] w-full line-clamp-3 text-ztg-14-150">
           {question}
         </div>
       </Link>
