@@ -121,6 +121,7 @@ const MarketScroll = observer(
                 className={`bg-anti-flash-white rounded-ztg-10 min-w-[320px] w-full transition duration-500 ease-in-out ${
                   isInView(index) === false ? "opacity-0" : ""
                 }`}
+                key={`marketScroll-${index}`}
               />
             ))}
           </motion.div>
