@@ -206,6 +206,7 @@ module.exports = {
         "link-water": "#CFE1EF",
         mystic: "#E5EAF1",
         "pastel-blue": "#B5C1CA",
+        "fog-of-war": "#0F1A2D",
       },
       inset: {
         "42%": "42%",

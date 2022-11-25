@@ -1,6 +1,5 @@
 import { observer } from "mobx-react";
 import { useStore } from "lib/stores/Store";
-import { useUserStore } from "lib/stores/UserStore";
 import { useNavigationStore } from "lib/stores/NavigationStore";
 import Menu from "../menu";
 import Drawer from "./Drawer";
@@ -19,9 +18,9 @@ const LeftDrawer = observer(() => {
 
   return (
     <Drawer side="left">
-      <div className="w-full flex flex-col h-full bg-sky-100 dark:bg-black text-sky-600">
+      <div className="w-full flex flex-col h-full bg-fog-of-war dark:bg-black text-sky-600">
         <div
-          className="flex mx-ztg-30 mt-ztg-20 h-ztg-35 mb-ztg-4"
+          className="flex mx-ztg-30 mt-ztg-20 h-ztg-35 mb-ztg-36"
           onClick={handleHomeClick}
           role="button"
         >
@@ -34,7 +33,7 @@ const LeftDrawer = observer(() => {
             {leftDrawerClosed === false ? (
               <>
                 <div className="flex items-center">
-                  <h1 className="text-ztg-19-120 font-bold font-kanit text-black dark:text-white">
+                  <h1 className="text-ztg-19-120 font-bold font-kanit text-white">
                     Zeitgeist
                   </h1>
                   {process.env.NEXT_PUBLIC_ENVIRONMENT_NAME?.length > 0 && (
