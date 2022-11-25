@@ -2962,17 +2962,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.6.2":
-  version: 2.6.2
-  resolution: "@zeitgeistpm/sdk@npm:2.6.2"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.6.6":
+  version: 2.6.6
+  resolution: "@zeitgeistpm/sdk@npm:2.6.6"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.2.2
     "@zeitgeistpm/indexer": ^2.4.0
     "@zeitgeistpm/rpc": ^2.2.5
-    "@zeitgeistpm/utility": ^2.4.1
+    "@zeitgeistpm/utility": ^2.4.2
     "@zeitgeistpm/web3.storage": ^2.2.1
     cids: ^1.1.9
     decimal.js: ^10.4.2
+    lodash-es: ^4.17.21
     lodash.memoize: ^4.1.2
     ms: ^2.1.3
     polly-js: ^1.8.3
@@ -2982,7 +2983,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: 93f5924b136d97f32ed649fece5e77060fb86a884d95c9b98a03e2e9ca645fa305448a9b2e36369cb04734d41df3646b22eb32a17776db857400e92af00b5072
+  checksum: 2a7d0b410884491df758d422abed2c5a4947e2bee1a91a2b96f751ae4d8e67f67eb1cc83838e5c4080800aaf1286dccefdec46d2b9e982c07dcac21d650a2c96
   languageName: node
   linkType: hard
 
@@ -3067,8 +3068,8 @@ __metadata:
     "@zeitgeistpm/avatara-react": ^1.3.0
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^0.9.4
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.6.2"
-    "@zeitgeistpm/utility": ^2.4.1
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.6.6"
+    "@zeitgeistpm/utility": ^2.4.2
     autoprefixer: 10.2.5
     axios: ^0.21.4
     boring-avatars: ^1.6.1
@@ -3158,9 +3159,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/utility@npm:^2.4.1":
-  version: 2.4.1
-  resolution: "@zeitgeistpm/utility@npm:2.4.1"
+"@zeitgeistpm/utility@npm:^2.4.2":
+  version: 2.4.2
+  resolution: "@zeitgeistpm/utility@npm:2.4.2"
   dependencies:
     decimal.js: ^10.4.2
     lodash.omit: ^4.5.0
@@ -3170,7 +3171,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: cc55e9208f161a06633936330d7fef82b2733a899b0a430461ac3d064b7b590c073270ffee15e04d4739d1faccfda93599cb0686d899ace8ec7c8cc7cff063bb
+  checksum: 9bc328e775c0ffac1ba46584a45fbcb2f12b086dd7d5ec33790ad6c9c75ccddf40ec14bce58d08fa6448f8f353d4dc0e3b00be00e11b629f2841e0b43042427a
   languageName: node
   linkType: hard
 
@@ -8285,7 +8286,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash-es@npm:^4.17.15":
+"lodash-es@npm:^4.17.15, lodash-es@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash-es@npm:4.17.21"
   checksum: 05cbffad6e2adbb331a4e16fbd826e7faee403a1a04873b82b42c0f22090f280839f85b95393f487c1303c8a3d2a010048bf06151a6cbe03eee4d388fb0a12d2

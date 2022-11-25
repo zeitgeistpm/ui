@@ -1,3 +1,4 @@
+import { fromString } from "@zeitgeistpm/sdk-next";
 import BuySellButtons from "components/trade-slip/BuySellButtons";
 import { MarketCategories, MarketCategory } from ".";
 
@@ -43,13 +44,7 @@ const MarketCardOverlayCategory = ({
       </div>
       <div className="ml-auto">
         <BuySellButtons
-          item={{
-            amount: "",
-            assetId: category.assetId,
-            marketId: marketId,
-            assetTicker: category.ticker,
-            assetColor: category.color,
-          }}
+          assetId={fromString(JSON.stringify(category.assetId)).unwrap()}
           disabled={category.assetId == null}
         />
       </div>

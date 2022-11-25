@@ -4,6 +4,7 @@ import {
   getIndexOf,
   isIndexedData,
   ScalarAssetId,
+  getMarketIdOf,
 } from "@zeitgeistpm/sdk-next";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { Decimal } from "decimal.js";
@@ -21,7 +22,6 @@ import { X } from "react-feather";
 import { AmountInput } from "../ui/inputs";
 
 export type TradeSlipBoxProps = {
-  marketId: number;
   assetId: ScalarAssetId | CategoricalAssetId;
   disabled?: boolean;
   type: "sell" | "buy";
@@ -30,16 +30,17 @@ export type TradeSlipBoxProps = {
   onClose?: () => void;
 };
 
-const TradeSlipBox = observer<FC<TradeSlipBoxProps>>(
-  ({ assetId, marketId, type, onClose, value, onChange, disabled }) => {
+const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
+  ({ assetId, type, onClose, value, onChange, disabled }) => {
     const { config, wallets } = useStore();
 
+    const marketId = getMarketIdOf(assetId);
     const signer = wallets.getActiveSigner();
     const assetIndex = getIndexOf(assetId);
 
     const { data: pool } = usePool({ marketId });
     const { data: poolAccountId } = usePoolAccountId(pool);
-    const { data: saturatedIndex } = useSaturatedPoolsIndex([pool]);
+    const { data: saturatedIndex } = useSaturatedPoolsIndex(pool ? [pool] : []);
 
     const { data: traderZtgBalance } = useZtgBalance(signer);
 
@@ -61,6 +62,16 @@ const TradeSlipBox = observer<FC<TradeSlipBoxProps>>(
     const saturatedData = saturatedIndex?.[pool?.poolId];
     const asset = saturatedData?.assets[assetIndex];
 
+    const loaded = Boolean(
+      pool &&
+        saturatedData &&
+        traderZtgBalance &&
+        traderAssetBalance &&
+        poolZtgBalance &&
+        poolAssetBalance &&
+        asset,
+    );
+
     const tradeablePoolBalance = new Decimal(
       poolAssetBalance?.free.toString() ?? 0,
     ).mul(MAX_IN_OUT_RATIO);
@@ -68,19 +79,22 @@ const TradeSlipBox = observer<FC<TradeSlipBoxProps>>(
     const amount = value;
 
     const swapFee = isIndexedData(pool)
-      ? new Decimal(pool.swapFee)
-      : new Decimal(pool.swapFee.isSome ? pool.swapFee.toString() : 0);
+      ? new Decimal(pool?.swapFee)
+      : new Decimal(pool?.swapFee.isSome ? pool.swapFee.toString() : 0);
 
-    const ztgWeight = getAssetWeight(pool, { Ztg: null });
+    const ztgWeight = pool
+      ? getAssetWeight(pool, { Ztg: null }).unwrap()
+      : undefined;
     const assetWeight = asset
-      ? getAssetWeight(pool, asset?.assetId)
+      ? getAssetWeight(pool, asset?.assetId).unwrap()
       : undefined;
 
     const max = useMemo(() => {
+      if (!loaded) return new Decimal(0);
       const ztg = new Decimal(traderZtgBalance?.free.toString() ?? 0);
-      const assets = new Decimal(traderAssetBalance.free.toString());
+      const assets = new Decimal(traderAssetBalance?.free.toString() ?? 0);
       if (type === "buy") {
-        const maxTokens = ztg.div(asset.price);
+        const maxTokens = ztg.div(asset?.price ?? 0);
         if (tradeablePoolBalance?.lte(maxTokens)) {
           return tradeablePoolBalance;
         } else {
@@ -95,9 +109,18 @@ const TradeSlipBox = observer<FC<TradeSlipBoxProps>>(
     }, [traderZtgBalance, tradeablePoolBalance]);
 
     const traded = useMemo(() => {
+      if (!loaded) return new Decimal(0);
       if (type === "buy") {
+        console.log(
+          poolZtgBalance?.free.toString(),
+          ztgWeight,
+          poolAssetBalance?.free.toString(),
+          assetWeight,
+          amount,
+          swapFee,
+        );
         return calcInGivenOut(
-          poolZtgBalance.free.toString(),
+          poolZtgBalance?.free.toString(),
           ztgWeight,
           poolAssetBalance?.free.toString(),
           assetWeight,
@@ -108,7 +131,7 @@ const TradeSlipBox = observer<FC<TradeSlipBoxProps>>(
         return calcOutGivenIn(
           poolAssetBalance?.free.toString(),
           assetWeight,
-          poolZtgBalance.free.toString(),
+          poolZtgBalance?.free.toString(),
           ztgWeight,
           amount,
           swapFee,
@@ -218,4 +241,4 @@ const TradeSlipBox = observer<FC<TradeSlipBoxProps>>(
   },
 );
 
-export default TradeSlipBox;
+export default TradeSlipContainer;
