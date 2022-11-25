@@ -20,11 +20,10 @@ const TradeSlipItemList = observer(() => {
       {tradeslip.items.map((item, index) => {
         return (
           <TradeSlipContainer
-            assetId={item.asset}
+            item={item}
             onChange={() => {}}
-            type={item.action}
             value={new Decimal(0)}
-            key={`tradeSlipItem${JSON.stringify(item.asset)}-${item.action}`}
+            key={`tradeSlipItem${JSON.stringify(item.assetId)}-${item.action}`}
           />
         );
       })}

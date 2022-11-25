@@ -6,7 +6,7 @@ export type TradeslipItemAction = "buy" | "sell";
 
 export type TradeSlipItem = {
   action: TradeslipItemAction;
-  asset: CategoricalAssetId | ScalarAssetId;
+  assetId: CategoricalAssetId | ScalarAssetId;
 };
 
 const tradeSlipIsTransactingAtom = atom<boolean>(false);
@@ -17,10 +17,14 @@ export const useTradeSlipAtom = () => {
   const [items, setItems] = useAtom(tradeSlipItemsAtom);
 
   const put = (item: TradeSlipItem) => {
-    const existing = items.find(({ asset }) => isEqual(asset, item.asset));
+    const existing = items.find(({ assetId: asset }) =>
+      isEqual(asset, item.assetId),
+    );
     if (existing) {
       setItems(
-        items.map((cand) => (isEqual(item.asset, cand.asset) ? item : cand)),
+        items.map((cand) =>
+          isEqual(item.assetId, cand.assetId) ? item : cand,
+        ),
       );
     } else {
       setItems([...items, item]);
@@ -28,7 +32,7 @@ export const useTradeSlipAtom = () => {
   };
 
   const remove = (asset: CategoricalAssetId | ScalarAssetId) => {
-    setItems(items.filter((cand) => !isEqual(asset, cand.asset)));
+    setItems(items.filter((cand) => !isEqual(asset, cand.assetId)));
   };
 
   const has = (item: TradeSlipItem) =>

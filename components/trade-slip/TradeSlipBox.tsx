@@ -15,6 +15,7 @@ import { usePoolAccountId } from "lib/hooks/queries/usePoolAccountId";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { calcInGivenOut, calcOutGivenIn } from "lib/math";
+import { TradeSlipItem, useTradeSlipAtom } from "lib/state/TradeSlip";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { FC, useMemo } from "react";
@@ -22,16 +23,15 @@ import { X } from "react-feather";
 import { AmountInput } from "../ui/inputs";
 
 export type TradeSlipBoxProps = {
-  assetId: ScalarAssetId | CategoricalAssetId;
+  item: TradeSlipItem;
   disabled?: boolean;
-  type: "sell" | "buy";
   value: Decimal;
   onChange: (value: Decimal) => void;
-  onClose?: () => void;
 };
 
 const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
-  ({ assetId, type, onClose, value, onChange, disabled }) => {
+  ({ item: { assetId, action }, value, onChange, disabled }) => {
+    const tradeslip = useTradeSlipAtom();
     const { config, wallets } = useStore();
 
     const marketId = getMarketIdOf(assetId);
@@ -93,7 +93,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
       if (!loaded) return new Decimal(0);
       const ztg = new Decimal(traderZtgBalance?.free.toString() ?? 0);
       const assets = new Decimal(traderAssetBalance?.free.toString() ?? 0);
-      if (type === "buy") {
+      if (action === "buy") {
         const maxTokens = ztg.div(asset?.price ?? 0);
         if (tradeablePoolBalance?.lte(maxTokens)) {
           return tradeablePoolBalance;
@@ -110,7 +110,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
 
     const traded = useMemo(() => {
       if (!loaded) return new Decimal(0);
-      if (type === "buy") {
+      if (action === "buy") {
         return calcInGivenOut(
           poolZtgBalance?.free.toString(),
           ztgWeight,
@@ -130,7 +130,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
         );
       }
     }, [
-      type,
+      action,
       poolZtgBalance,
       ztgWeight,
       poolAssetBalance,
@@ -149,10 +149,10 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
           <div
             className={
               "w-ztg-33 text-ztg-14-150 uppercase font-space font-bold " +
-              `${type === "buy" ? "text-sunglow-2" : "text-red-crayola"}`
+              `${action === "buy" ? "text-sunglow-2" : "text-red-crayola"}`
             }
           >
-            {type}
+            {action}
           </div>
           <div className="text-ztg-10-150 break-words whitespace-nowrap overflow-hidden overflow-ellipsis text-gray-dark-3 text-center font-lato font-bold uppercase flex-grow mx-ztg-10">
             {saturatedData?.market.slug}
@@ -161,7 +161,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
             <X
               size={16}
               className="cursor-pointer text-sky-600"
-              onClick={() => onClose()}
+              onClick={() => tradeslip.remove(assetId)}
             />
           </div>
         </div>
@@ -208,7 +208,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
                   />
                 </div>
                 <div className="ml-ztg-10 h-full flex flex-col text-sky-600 font-lato text-ztg-10-150 text-right flex-grow">
-                  {type === "sell" ? (
+                  {action === "sell" ? (
                     <div>To Receive</div>
                   ) : (
                     <div>To Spend:</div>
@@ -223,7 +223,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
                 Trading Fee:
                 <div className="text-black dark:text-white ml-1">
                   {amount.mul(swapFee.mul(ZTG) ?? 0).toString()}{" "}
-                  {type === "sell"
+                  {action === "sell"
                     ? asset.category.ticker?.toUpperCase()
                     : config.tokenSymbol}
                 </div>

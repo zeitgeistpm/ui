@@ -117,27 +117,27 @@ const BuySellButtons = observer(
     return (
       <div className="card-exp-col-6 flex items-center justify-evenly gap-x-[6px]">
         <TradeButton
-          active={tradeslip.has({ asset: assetId, action: "buy" })}
+          active={tradeslip.has({ assetId: assetId, action: "buy" })}
           type="buy"
           disabled={isDisabled}
           onClick={() => {
-            if (tradeslip.has({ asset: assetId, action: "buy" })) {
+            if (tradeslip.has({ assetId: assetId, action: "buy" })) {
               return tradeslip.remove(assetId);
             }
-            tradeslip.put({ asset: assetId, action: "buy" });
+            tradeslip.put({ assetId: assetId, action: "buy" });
           }}
         >
           Buy
         </TradeButton>
         <TradeButton
-          active={tradeslip.has({ asset: assetId, action: "sell" })}
+          active={tradeslip.has({ assetId: assetId, action: "sell" })}
           disabled={isDisabled}
           type="sell"
           onClick={() => {
-            if (tradeslip.has({ asset: assetId, action: "sell" })) {
+            if (tradeslip.has({ assetId: assetId, action: "sell" })) {
               return tradeslip.remove(assetId);
             }
-            tradeslip.put({ asset: assetId, action: "sell" });
+            tradeslip.put({ assetId: assetId, action: "sell" });
           }}
         >
           Sell
