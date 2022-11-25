@@ -19,7 +19,7 @@ const MarketCardOverlayCategory = ({
       }
     >
       <div
-        className="w-[20px] h-[20px] rounded-full border-sky-600 border-[2px]"
+        className="w-[20px] h-[20px] rounded-full border-sky-600 border-[2px] flex-shrink-0"
         style={{ backgroundColor: `${category.color}` }}
       ></div>
       <div className="flex flex-col w-[95px] flex-shrink-0 ml-[7px]">
