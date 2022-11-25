@@ -11,14 +11,14 @@ export const usePoolAccountId = (pool?: Pool<Context>) => {
   const query = useQuery(
     [id, rootKey, pool?.poolId],
     async () => {
-      if (isString(pool.accountId)) {
+      if (isString(pool?.accountId)) {
         return pool.accountId;
       }
 
       return await pool.accountId();
     },
     {
-      enabled: Boolean(sdk && isRpcSdk(sdk)),
+      enabled: Boolean(sdk && isRpcSdk(sdk) && pool),
     },
   );
 

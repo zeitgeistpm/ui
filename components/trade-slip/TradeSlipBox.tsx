@@ -111,14 +111,6 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
     const traded = useMemo(() => {
       if (!loaded) return new Decimal(0);
       if (type === "buy") {
-        console.log(
-          poolZtgBalance?.free.toString(),
-          ztgWeight,
-          poolAssetBalance?.free.toString(),
-          assetWeight,
-          amount,
-          swapFee,
-        );
         return calcInGivenOut(
           poolZtgBalance?.free.toString(),
           ztgWeight,
@@ -189,13 +181,16 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
                   {asset?.category.ticker}
                 </div>
                 <div className="font-lato font-bold text-ztg-12-150 ml-auto text-black dark:text-white">
-                  @{asset?.price.toFixed(4)} {config.tokenSymbol}
+                  @{asset?.price.div(ZTG).toFixed(4)} {config.tokenSymbol}
                 </div>
               </div>
               <div className="h-ztg-15 w-full mb-ztg-10 font-lato text-ztg-10-150 flex items-center text-gray-dark-3">
                 Balance:
                 <div className="text-black dark:text-white ml-1">
-                  {poolAssetBalance?.free.toNumber()}
+                  {new Decimal(traderAssetBalance?.free.toString() ?? 0)
+                    .div(ZTG)
+                    .toNumber()
+                    .toFixed(4)}
                 </div>
               </div>
               <div className="flex w-full h-ztg-34 mb-ztg-10">

@@ -43,10 +43,12 @@ const MarketCardOverlayCategory = ({
         </div> */}
       </div>
       <div className="ml-auto">
-        <BuySellButtons
-          assetId={fromString(JSON.stringify(category.assetId)).unwrap()}
-          disabled={category.assetId == null}
-        />
+        {category.assetId && (
+          <BuySellButtons
+            assetId={fromString(JSON.stringify(category.assetId)).unwrap()}
+            disabled={category.assetId == null}
+          />
+        )}
       </div>
     </div>
   );

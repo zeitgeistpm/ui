@@ -2,6 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import {
   AssetId,
   Context,
+  getIndexOf,
+  IOCategoricalAssetId,
+  IOScalarAssetId,
   isIndexedData,
   isRpcData,
   isRpcSdk,
@@ -22,16 +25,23 @@ export const useAccountAssetBalance = (
     [id, rootKey, account?.address, assetId],
     async () => {
       if (isRpcSdk(sdk)) {
-        const balances = await sdk.context.api.query.tokens.accounts(
-          account.address,
-          assetId,
-        );
+        try {
+          const balances = await sdk.context.api.query.tokens.accounts(
+            account.address,
+            assetId,
+          );
 
-        return balances;
+          return balances;
+        } catch (error) {
+          console.error("ERR");
+          console.log(account.address, assetId);
+        }
       }
     },
     {
-      enabled: Boolean(sdk && isRpcSdk(sdk) && account && assetId),
+      enabled: Boolean(
+        sdk && isRpcSdk(sdk) && account && account.address && assetId,
+      ),
     },
   );
 

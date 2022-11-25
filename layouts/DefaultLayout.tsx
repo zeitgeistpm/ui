@@ -22,6 +22,7 @@ const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 const DefaultLayout: FC = observer(({ children }) => {
   const store = useStore();
   const router = useRouter();
+  const sdk = useSdkv2();
 
   const { width, height, ref: mainRef } = useResizeDetector();
 
