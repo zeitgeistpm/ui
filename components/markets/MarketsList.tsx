@@ -87,7 +87,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
                 baseAsset="ZTG"
                 // prediction={prediction}
                 volume={100}
-                key={`market-${market.id}`}
+                key={`market-${market.marketId}`}
               />
             );
           })}
@@ -101,7 +101,9 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       <div
         className="w-full h-0"
         style={
-          isFetchingMarkets ? { position: "absolute", left: "-10000px" } : {}
+          isFetchingMarkets || !hasNextPage
+            ? { position: "absolute", left: "-10000px" }
+            : {}
         }
         ref={loadMoreRef}
       ></div>
