@@ -138,7 +138,7 @@ const getTrendingMarkets = async (
         (category, index) => {
           const marketCategory: MarketCategory = {
             ...category,
-            assetId: JSON.parse(market.outcomeAssets[index]),
+            assetId: market.outcomeAssets[index],
           };
 
           return marketCategory;

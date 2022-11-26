@@ -1,14 +1,15 @@
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MoreVertical } from "react-feather";
+import { Skeleton } from "@material-ui/lab";
 import MarketImage from "components/ui/MarketImage";
 import MarketCardOverlay from "./overlay";
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
+import { useMarketOutcomes } from "../MarketsListContext";
 
 export type MarketCategory = {
   name?: string;
   color?: string;
-  assetId?: AssetId;
+  assetId?: string;
   ticker?: string;
 };
 export type MarketCategories = MarketCategory[];
@@ -33,12 +34,21 @@ const MarketCardInfoRow = ({
   value,
 }: {
   name: string;
-  value: string;
+  value?: string;
 }) => {
   return (
     <div className="h-[18px]">
       <span className="text-sky-600">{name}:</span>{" "}
-      <span className="text-black">{value}</span>
+      {value == null ? (
+        <Skeleton
+          height={15}
+          width={125}
+          classes={{ root: "!bg-sky-600" }}
+          className="!transform-none !inline-block"
+        />
+      ) : (
+        <span className="text-black">{value}</span>
+      )}
     </div>
   );
 };
@@ -69,9 +79,20 @@ const MarketCard = ({
   className = "",
 }: MarketCardProps) => {
   const [showDetailsOverlay, setShowDetailsOverlay] = useState<boolean>(false);
+  const [predictionAsync, setPredictionAsync] = useState<string>();
+
+  const outcomes = useMarketOutcomes(marketId);
+
+  useEffect(() => {
+    if (outcomes == null) {
+      return;
+    }
+    const sortedByPrice = [...outcomes].sort((a, b) => b.price - a.price);
+    setPredictionAsync(sortedByPrice[0].name);
+  }, [outcomes]);
 
   const infoRows = [
-    { name: "Prediction", value: prediction },
+    { name: "Prediction", value: predictionAsync ?? prediction },
     { name: "Volume", value: `${volume} ${baseAsset?.toUpperCase() ?? "ZTG"}` },
     { name: "Status", value: creation },
   ];
@@ -85,7 +106,7 @@ const MarketCard = ({
       {showDetailsOverlay && (
         <MarketCardOverlay
           marketId={marketId}
-          categories={categories}
+          categories={outcomes ?? categories}
           className="top-0 left-[0]"
           onCloseIconClick={() => setShowDetailsOverlay(false)}
         />

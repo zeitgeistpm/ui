@@ -45,7 +45,7 @@ const MarketCardOverlayCategory = ({
         <BuySellButtons
           item={{
             amount: "",
-            assetId: category.assetId,
+            assetId: JSON.parse(category.assetId),
             marketId: marketId,
             assetTicker: category.ticker,
             assetColor: category.color,

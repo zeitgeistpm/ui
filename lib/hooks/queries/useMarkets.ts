@@ -1,4 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { MarketStatus } from "lib/types";
 import { useSdkv2 } from "../useSdkv2";
 
@@ -18,6 +19,12 @@ export const useMarkets = (filters?: Filters, sortBy?: SortBy) => {
   const limit = 12;
 
   const fetcher = async ({ pageParam = 0 }) => {
+    if (!isIndexedSdk(sdk)) {
+      return {
+        data: [],
+        next: false,
+      };
+    }
     const markets = await sdk.model.markets.list({
       offset: !pageParam ? 0 : limit * pageParam,
       limit: limit,
@@ -32,7 +39,7 @@ export const useMarkets = (filters?: Filters, sortBy?: SortBy) => {
   const query = useInfiniteQuery({
     queryKey: [id, rootKey],
     queryFn: fetcher,
-    enabled: Boolean(sdk),
+    enabled: Boolean(sdk) && isIndexedSdk(sdk),
     getNextPageParam: (lastPage) => lastPage.next,
   });
 
