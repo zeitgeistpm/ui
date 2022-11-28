@@ -19,10 +19,9 @@ const BuySellButtons = observer(
       !IOCategoricalAssetId.is(assetId) ||
       !IOCategoricalAssetId.is(assetId)
     ) {
-      console.warn(
-        "Non categorical or scalar asset id passed to BuySellButtons",
+      throw new Error(
+        "Non categorical or scalar asset id passed to BuySellButtons. Not supported.",
       );
-      return null;
     }
 
     // TODO: Move drawer state to jotai atoms and move should open or not logic there too.
