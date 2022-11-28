@@ -1,4 +1,3 @@
-import { Skeleton } from "@material-ui/lab";
 import { isIndexedData } from "@zeitgeistpm/sdk-next";
 import { Decimal } from "decimal.js";
 import { ZTG } from "lib/constants";
