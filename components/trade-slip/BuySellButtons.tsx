@@ -1,16 +1,8 @@
-import { TradeSlipItem, useTradeSlipStore } from "lib/stores/TradeSlipStore";
-import { useMarketsStore } from "lib/stores/MarketsStore";
+import { AssetId, IOCategoricalAssetId } from "@zeitgeistpm/sdk-next";
+import { useTradeSlipAtom } from "lib/state/TradeSlip";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
-import React, { FC, useEffect, useMemo, useState } from "react";
-import MarketStore from "lib/stores/MarketStore";
-import { useTradeSlipAtom } from "lib/state/TradeSlip";
-import {
-  AssetId,
-  fromString,
-  IOCategoricalAssetId,
-} from "@zeitgeistpm/sdk-next";
-import Decimal from "decimal.js";
+import { FC, useMemo } from "react";
 
 interface BuySellButtonsProps {
   assetId: AssetId;
@@ -47,7 +39,7 @@ const BuySellButtons = observer(
       tradeslip.put({
         assetId: assetId,
         action: "buy",
-        amount: new Decimal(0),
+        amount: 0,
       });
       openDrawer();
     };
@@ -59,7 +51,7 @@ const BuySellButtons = observer(
       tradeslip.put({
         assetId: assetId,
         action: "sell",
-        amount: new Decimal(0),
+        amount: 0,
       });
       openDrawer();
     };

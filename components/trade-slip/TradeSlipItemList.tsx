@@ -13,9 +13,9 @@ const TradeSlipItemList = observer(() => {
           <TradeSlipContainer
             item={item}
             onChange={(amount) => {
-              tradeslip.put({ ...item, amount });
+              tradeslip.put({ ...item, amount: amount.toNumber() });
             }}
-            value={item.amount}
+            value={new Decimal(item.amount)}
             key={`tradeSlipItem${JSON.stringify(item.assetId)}-${item.action}`}
           />
         );

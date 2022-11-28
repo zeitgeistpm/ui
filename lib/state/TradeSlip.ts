@@ -9,12 +9,12 @@ export type TradeslipItemAction = "buy" | "sell";
 export type TradeSlipItem = {
   action: TradeslipItemAction;
   assetId: CategoricalAssetId | ScalarAssetId;
-  amount: Decimal;
+  amount: number;
 };
 
 const tradeSlipIsTransactingAtom = atom<boolean>(false);
-const tradeSlipItemsAtom = atom<TradeSlipItem[]>(
-  //"trade-slip-items",
+const tradeSlipItemsAtom = atomWithStorage<TradeSlipItem[]>(
+  "trade-slip-items",
   [],
 );
 
