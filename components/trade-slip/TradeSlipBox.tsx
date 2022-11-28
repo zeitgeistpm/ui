@@ -20,7 +20,6 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
     const { config } = useStore();
 
     const tradeslip = useTradeSlipState();
-
     const data = tradeslip.data.get(itemKey(item));
     const amount = new Decimal(item.amount);
 
