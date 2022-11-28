@@ -35,7 +35,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
     const { config, wallets } = useStore();
 
     const marketId = getMarketIdOf(assetId);
-    const signer = wallets.getActiveSigner();
+    const signer = wallets.activeAccount ? wallets.getActiveSigner() : null;
     const assetIndex = getIndexOf(assetId);
 
     const { data: pool } = usePool({ marketId });
@@ -112,12 +112,12 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
       if (!loaded) return new Decimal(0);
       if (action === "buy") {
         return calcInGivenOut(
-          poolZtgBalance?.free.toString(),
-          ztgWeight,
-          poolAssetBalance?.free.toString(),
-          assetWeight,
+          new Decimal(poolZtgBalance?.free.toString()).div(ZTG),
+          ztgWeight.div(ZTG),
+          new Decimal(poolAssetBalance?.free.toString()).div(ZTG),
+          assetWeight.div(ZTG),
           amount,
-          swapFee,
+          swapFee.div(ZTG),
         );
       } else {
         return calcOutGivenIn(
@@ -161,7 +161,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
             <X
               size={16}
               className="cursor-pointer text-sky-600"
-              onClick={() => tradeslip.remove(assetId)}
+              onClick={() => tradeslip.removeAsset(assetId)}
             />
           </div>
         </div>
@@ -203,7 +203,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
                     className={
                       "!h-full w-full rounded-ztg-8 text-right mb-ztg-2"
                     }
-                    onChange={(val) => onChange(new Decimal(val))}
+                    onChange={(val) => onChange(new Decimal(val || 0))}
                     max={max.toString()}
                   />
                 </div>
@@ -222,7 +222,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
               <div className="flex w-full font-lato text-ztg-10-150 text-gray-dark-3 mt-ztg-5">
                 Trading Fee:
                 <div className="text-black dark:text-white ml-1">
-                  {amount.mul(swapFee.mul(ZTG) ?? 0).toString()}{" "}
+                  {amount.mul(swapFee.div(ZTG) ?? 0).toString()}{" "}
                   {action === "sell"
                     ? asset.category.ticker?.toUpperCase()
                     : config.tokenSymbol}

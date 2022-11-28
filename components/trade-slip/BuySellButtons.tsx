@@ -10,6 +10,7 @@ import {
   fromString,
   IOCategoricalAssetId,
 } from "@zeitgeistpm/sdk-next";
+import Decimal from "decimal.js";
 
 interface BuySellButtonsProps {
   assetId: AssetId;
@@ -18,89 +19,6 @@ interface BuySellButtonsProps {
 
 const BuySellButtons = observer(
   ({ assetId, disabled }: BuySellButtonsProps) => {
-    // const tradeSlipStore = useTradeSlipStore();
-
-    // const marketsStore = useMarketsStore();
-    // const [marketStore, setMarketStore] = useState<MarketStore>();
-    // const { txInProgress } = tradeSlipStore;
-
-    // const buttonsDisabled = useMemo<boolean>(() => {
-    //   if (disabled === true) {
-    //     return disabled;
-    //   }
-    //   return marketStore?.tradingEnabled === false || txInProgress;
-    // }, [marketStore?.tradingEnabled, txInProgress, disabled]);
-
-    // const tradeSlipItem = useMemo<TradeSlipItem | undefined>(() => {
-    //   return tradeSlipStore.findItemWithAssetId(item.assetId);
-    // }, [tradeSlipStore.tradeSlipItems, item]);
-
-    // const assetActiveInTradeSlip = useMemo<boolean>(() => {
-    //   return tradeSlipStore.assetActive(item.assetId);
-    // }, [tradeSlipItem]);
-
-    // const assetTypeActive = useMemo<"buy" | "sell" | undefined>(() => {
-    //   if (!assetActiveInTradeSlip) {
-    //     return;
-    //   }
-    //   return tradeSlipItem.type;
-    // }, [assetActiveInTradeSlip, tradeSlipItem]);
-
-    // const setMarket = async () => {
-    //   const market = await marketsStore.getMarket(item.marketId);
-    //   setMarketStore(market);
-    // };
-
-    // useEffect(() => {
-    //   if (item == null || store.sdk == null) {
-    //     return;
-    //   }
-    //   if (item.assetId == null) {
-    //     return;
-    //   }
-    //   setMarket();
-    // }, [item, item.assetId, store.sdk]);
-
-    // const addItem = async (
-    //   item: Omit<TradeSlipItem, "type">,
-    //   type: "buy" | "sell",
-    // ) => {
-    //   if (store.rightDrawerClosed) {
-    //     store.toggleDrawer("right");
-    //   }
-    //   const newItem = { ...item, type };
-    //   tradeSlipStore.addItem(newItem);
-    //   await tradeSlipStore.setFocusedAssetId(newItem);
-    // };
-
-    // const changeItem = async (
-    //   item: Omit<TradeSlipItem, "type">,
-    //   type: "buy" | "sell",
-    //   idx: number,
-    // ) => {
-    //   if (store.rightDrawerClosed) {
-    //     store.toggleDrawer("right");
-    //   }
-    //   const newItem = { ...item, type };
-    //   tradeSlipStore.changeItemAtIndex(newItem, idx);
-    //   await tradeSlipStore.setFocusedAssetId(newItem);
-    // };
-
-    // const handleClick = async (type: "buy" | "sell") => {
-    //   tradeSlipStore.unfocusItem();
-    //   const asset = tradeSlipItem;
-    //   if (asset == null) {
-    //     addItem(item, type);
-    //   } else {
-    //     if (asset.type === type) {
-    //       tradeSlipStore.removeItemWithAssetId(item.assetId);
-    //     } else if (asset.type !== type) {
-    //       const idxInStore = tradeSlipStore.findIndexWithAssetId(asset?.assetId);
-    //       changeItem(item, type, idxInStore);
-    //     }
-    //   }
-    // };
-
     const store = useStore();
     const tradeslip = useTradeSlipAtom();
     const isDisabled = false;
@@ -115,6 +33,7 @@ const BuySellButtons = observer(
       return null;
     }
 
+    // TODO: Move drawer state to jotai atoms and move should open or not logic there too.
     const openDrawer = () => {
       if (store.rightDrawerClosed) {
         store.toggleDrawer("right");
@@ -122,25 +41,33 @@ const BuySellButtons = observer(
     };
 
     const onClickBuy = () => {
-      if (tradeslip.has({ assetId: assetId, action: "buy" })) {
-        return tradeslip.remove(assetId);
+      if (tradeslip.getByAsset(assetId)?.action === "buy") {
+        return tradeslip.removeAsset(assetId);
       }
-      tradeslip.put({ assetId: assetId, action: "buy" });
+      tradeslip.put({
+        assetId: assetId,
+        action: "buy",
+        amount: new Decimal(0),
+      });
       openDrawer();
     };
 
     const onClickSell = () => {
-      if (tradeslip.has({ assetId: assetId, action: "sell" })) {
-        return tradeslip.remove(assetId);
+      if (tradeslip.getByAsset(assetId)?.action === "sell") {
+        return tradeslip.removeAsset(assetId);
       }
-      tradeslip.put({ assetId: assetId, action: "sell" });
+      tradeslip.put({
+        assetId: assetId,
+        action: "sell",
+        amount: new Decimal(0),
+      });
       openDrawer();
     };
 
     return (
       <div className="card-exp-col-6 flex items-center justify-evenly gap-x-[6px]">
         <TradeButton
-          active={tradeslip.has({ assetId: assetId, action: "buy" })}
+          active={tradeslip.getByAsset(assetId)?.action === "buy"}
           type="buy"
           disabled={isDisabled}
           onClick={onClickBuy}
@@ -148,7 +75,7 @@ const BuySellButtons = observer(
           Buy
         </TradeButton>
         <TradeButton
-          active={tradeslip.has({ assetId: assetId, action: "sell" })}
+          active={tradeslip.getByAsset(assetId)?.action === "sell"}
           disabled={isDisabled}
           type="sell"
           onClick={onClickSell}
