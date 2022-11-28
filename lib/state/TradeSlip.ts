@@ -197,6 +197,7 @@ export const useTradeSlipState = (): UseTradeslipState => {
     if (
       pools?.length &&
       saturatedIndex &&
+      Object.keys(saturatedIndex).length &&
       traderAssets?.length &&
       poolZtgBalances?.length &&
       poolAssetBalances?.length &&
