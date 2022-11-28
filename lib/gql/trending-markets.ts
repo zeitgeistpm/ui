@@ -155,7 +155,6 @@ const getTrendingMarkets = async (
         baseAsset: pool.baseAsset,
         categories: marketCategories,
       };
-      console.log(trendingMarket);
 
       return trendingMarket;
     }),

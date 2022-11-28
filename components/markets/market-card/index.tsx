@@ -96,9 +96,9 @@ const MarketCard = ({
           onClick={() => setShowDetailsOverlay(true)}
         />
       )}
-      <Link href={`/markets/${marketId}`} className="flex flex-row">
-        <MarketImage image={img} alt={`Image depicting ${question}`} />
-        <div className="ml-[15px] mr-[17px] black font-lato font-bold h-[75px] w-full line-clamp-3 text-ztg-14-150">
+      <Link href={`/markets/${marketId}`} className="flex flex-row mr-[17px]">
+        <MarketImage image={img} alt={question} />
+        <div className="ml-[15px] black font-lato font-bold h-[75px] w-full line-clamp-3 text-ztg-14-150">
           {question}
         </div>
       </Link>

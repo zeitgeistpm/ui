@@ -27,7 +27,11 @@ const marketQuery = gql`
   query Market($marketId: Int) {
     markets(where: { marketId_eq: $marketId }) {
       marketId
-      poolId
+      pool {
+        poolId
+        volume
+        baseAsset
+      }
       outcomeAssets
       question
       creation
@@ -42,16 +46,6 @@ const marketQuery = gql`
         ticker
       }
       outcomeAssets
-    }
-  }
-`;
-
-const poolQuery = gql`
-  query Pool($poolId: Int) {
-    pools(where: { poolId_eq: $poolId }) {
-      poolId
-      volume
-      baseAsset
     }
   }
 `;
@@ -76,7 +70,11 @@ const getFeaturedMarkets = async (
     marketIds.map(async (id) => {
       const marketRes = await client.request<{
         markets: {
-          poolId: number;
+          pool: {
+            poolId: number;
+            volume: string;
+            baseAsset: string;
+          } | null;
           marketId: number;
           img: string;
           question: string;
@@ -90,13 +88,7 @@ const getFeaturedMarkets = async (
       });
 
       const market = marketRes.markets[0];
-
-      // TODO: handle if the market doesn't have a pool attached
-      const poolRes = await client.request(poolQuery, {
-        poolId: market.poolId,
-      });
-
-      const pool = poolRes.pools[0];
+      const pool = market.pool;
 
       if (!pool) {
         const noPoolMarket: IndexedMarketCardData = {
