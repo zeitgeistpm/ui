@@ -8,8 +8,7 @@ const TradeSlipItemList = observer(() => {
 
   return (
     <div className="py-ztg-20 px-ztg-28 overflow-y-auto w-full">
-      {tradeslip.items.map((item, index) => {
-        console.log(item.amount.toNumber());
+      {tradeslip.items.map((item) => {
         return (
           <TradeSlipContainer
             item={item}

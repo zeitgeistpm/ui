@@ -115,7 +115,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
           ztgWeight,
           poolAssetBalance?.free.toString(),
           assetWeight,
-          amount,
+          amount.mul(ZTG),
           swapFee.div(ZTG),
         );
       } else {
@@ -124,8 +124,8 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
           assetWeight,
           poolZtgBalance?.data.free.toString(),
           ztgWeight,
-          amount,
-          swapFee,
+          amount.mul(ZTG),
+          swapFee.div(ZTG),
         );
       }
     }, [
@@ -217,7 +217,9 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
                     <div>To Spend:</div>
                   )}
                   <div className="font-bold text-black dark:text-white">
-                    {!traded ? "---" : traded?.toFixed(4, Decimal.ROUND_DOWN)}{" "}
+                    {!traded
+                      ? "---"
+                      : traded?.div(ZTG).toFixed(4, Decimal.ROUND_DOWN)}{" "}
                     {config.tokenSymbol}
                   </div>
                 </div>
