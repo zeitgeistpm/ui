@@ -47,7 +47,7 @@ export type UseTradeslipState = {
   /**
    * Remote data pr item; including pool, market, max amount, cost, swap fee, asset etc.
    */
-  data: Map<string, TradeSlipItemData>;
+  data: Map<TradeSlipItemDataKey, TradeSlipItemData>;
   /**
    * Total cost / gain for the items.
    */
@@ -57,7 +57,7 @@ export type UseTradeslipState = {
    */
   put: (item: TradeSlipItem) => void;
   /**
-   * Remove item from the items list.
+   * Remove item from the items list by its AssetId.
    */
   removeAsset: (asset: TradeSlipItem["assetId"]) => void;
   /**
@@ -146,14 +146,16 @@ const tradeSlipSlippagePercentage = atomWithStorage<number>(
   1,
 );
 
+type TradeSlipItemDataKey = string & { readonly _tag: unique symbol };
+
 /**
  * Identify a TradeSlipItem by its action and asset id.
  *
  * @param item TradeSlipItem
  * @returns string
  */
-export const itemKey = (item: TradeSlipItem): string =>
-  `${item.action}|${JSON.stringify(item.assetId)}`;
+export const itemKey = (item: TradeSlipItem): TradeSlipItemDataKey =>
+  `${item.action}|${JSON.stringify(item.assetId)}` as TradeSlipItemDataKey;
 
 /**
  * Hook to get the tradeslip state, calculated/remote data and interaction methods.
@@ -193,7 +195,7 @@ export const useTradeSlipState = (): UseTradeslipState => {
     })),
   );
 
-  const data: Map<string, TradeSlipItemData> = useMemo(() => {
+  const data: Map<TradeSlipItemDataKey, TradeSlipItemData> = useMemo(() => {
     if (
       pools?.length &&
       saturatedIndex &&
@@ -286,10 +288,10 @@ export const useTradeSlipState = (): UseTradeslipState => {
           traderAssetBalance: new Decimal(traderAssetBalance?.free.toString()),
           poolAssetBalance: new Decimal(poolAssetBalance?.free.toString()),
         });
-      }, new Map<string, TradeSlipItemData>());
+      }, new Map<TradeSlipItemDataKey, TradeSlipItemData>());
     }
 
-    return new Map<string, TradeSlipItemData>();
+    return new Map<TradeSlipItemDataKey, TradeSlipItemData>();
   }, [
     items,
     pools,
