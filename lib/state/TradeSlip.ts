@@ -24,51 +24,142 @@ import { useStore } from "lib/stores/Store";
 import { isEqual } from "lodash";
 import { useMemo } from "react";
 
+/**
+ * Hook and state related to the tradeslip.
+ */
+
 export type UseTradeslipState = {
+  /**
+   * The items added by the user using the `put` method.
+   * Rendered in the right drawer.
+   * @persistent - local
+   */
   items: TradeSlipItem[];
+  /**
+   * Is the user currently transacting for the current items.
+   */
   isTransacting: boolean;
+  /**
+   * The slippage percentage to use.
+   * @persistent - local
+   */
   slippage: number;
+  /**
+   * Remote data pr item; including pool, market, max amount, cost, swap fee, asset etc.
+   */
   data: Map<string, TradeSlipItemData>;
+  /**
+   * Total cost / gain for the items.
+   */
   total: Decimal;
+  /**
+   * Put(new or update) item to the items list.
+   */
   put: (item: TradeSlipItem) => void;
+  /**
+   * Remove item from the items list.
+   */
   removeAsset: (asset: TradeSlipItem["assetId"]) => void;
+  /**
+   * Check if the state has an item by its AssetId.
+   */
   hasAsset: (asset: TradeSlipItem["assetId"]) => boolean;
+  /**
+   * Get an item by its AssetId.
+   */
   getByAsset: (asset: TradeSlipItem["assetId"]) => TradeSlipItem;
+  /**
+   * Set the slippage percentage.
+   */
   setSlippage: (update?: number) => void;
 };
 
+/**
+ * An item in the tradeslip list.
+ */
 export type TradeSlipItem = {
   action: "buy" | "sell";
   assetId: CategoricalAssetId | ScalarAssetId;
   amount: number;
 };
 
+/**
+ * Remote and calculated data pr tradeslip item.
+ */
 export type TradeSlipItemData = {
+  /**
+   * Market related to the item.
+   */
   market: Market<Context>;
+  /**
+   * Pool related to the item.
+   */
   pool: Pool<IndexerContext>;
-  max: Decimal;
-  cost: Decimal;
-  swapFee: Decimal;
+  /**
+   * Asset data related to the item.
+   */
   asset: SaturatedPoolEntryAsset;
+  /**
+   * Max value for the item relative to which action the user is performing,
+   * pool asset balances. and user balances.
+   */
+  max: Decimal;
+  /**
+   * Total cost/gain for the combined transaction.
+   */
+  cost: Decimal;
+  /**
+   * Swap fee for the item transaction.
+   */
+  swapFee: Decimal;
+  /**
+   * Free balance the trader has of the items asset.
+   */
   traderAssetBalance: Decimal;
+  /**
+   * Free balance the pool has of the items asset.
+   */
   poolAssetBalance: Decimal;
 };
 
-const tradeSlipIsTransactingAtom = atom<boolean>(false);
-
+/**
+ * Atom storage for tradeslip items.
+ *
+ * @persistent - local
+ */
 const tradeSlipItemsAtom = atomWithStorage<TradeSlipItem[]>(
   "trade-slip-items",
   [],
 );
 
+/**
+ * Atom storage for the isTransacting state.
+ */
+const tradeSlipIsTransactingAtom = atom<boolean>(false);
+
+/**
+ * Atom storage for tradeslip slippage percentage.
+ * @persistent - local
+ */
 const tradeSlipSlippagePercentage = atomWithStorage<number>(
   "trade-slip-slippage-percentage",
   1,
 );
 
+/**
+ * Identify a TradeSlipItem by its action and asset id.
+ *
+ * @param item TradeSlipItem
+ * @returns string
+ */
 export const itemKey = (item: TradeSlipItem): string =>
   `${item.action}|${JSON.stringify(item.assetId)}`;
 
+/**
+ * Hook to get the tradeslip state, calculated/remote data and interaction methods.
+ *
+ * @returns UseTradeslipState
+ */
 export const useTradeSlipState = (): UseTradeslipState => {
   const [slippage, setSlippage] = useAtom(tradeSlipSlippagePercentage);
   const [isTransacting, setIsTransacting] = useAtom(tradeSlipIsTransactingAtom);
