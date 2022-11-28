@@ -9,13 +9,17 @@ import { TradeSlipStoreContext } from "lib/stores/TradeSlipStore";
 import TopBar from "components/top-bar";
 import Footer from "components/ui/Footer";
 import NotificationCenter from "components/ui/NotificationCenter";
-import RightDrawer from "components/drawer/RightDrawer";
 import LeftDrawer from "components/drawer/LeftDrawer";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { shouldScrollTop } from "lib/util/should-scroll";
+import dynamic from "next/dynamic";
+
+const RightDrawer = dynamic(() => import("components/drawer/RightDrawer"), {
+  ssr: false,
+});
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 
