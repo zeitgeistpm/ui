@@ -79,7 +79,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
     const amount = value;
 
     const swapFee = isIndexedData(pool)
-      ? new Decimal(pool?.swapFee)
+      ? new Decimal(pool?.swapFee || 0)
       : new Decimal(pool?.swapFee.isSome ? pool.swapFee.toString() : 0);
 
     const ztgWeight = pool

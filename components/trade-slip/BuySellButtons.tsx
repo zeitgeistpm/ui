@@ -101,6 +101,7 @@ const BuySellButtons = observer(
     //   }
     // };
 
+    const store = useStore();
     const tradeslip = useTradeSlipAtom();
     const isDisabled = false;
 
@@ -114,18 +115,35 @@ const BuySellButtons = observer(
       return null;
     }
 
+    const openDrawer = () => {
+      if (store.rightDrawerClosed) {
+        store.toggleDrawer("right");
+      }
+    };
+
+    const onClickBuy = () => {
+      if (tradeslip.has({ assetId: assetId, action: "buy" })) {
+        return tradeslip.remove(assetId);
+      }
+      tradeslip.put({ assetId: assetId, action: "buy" });
+      openDrawer();
+    };
+
+    const onClickSell = () => {
+      if (tradeslip.has({ assetId: assetId, action: "sell" })) {
+        return tradeslip.remove(assetId);
+      }
+      tradeslip.put({ assetId: assetId, action: "sell" });
+      openDrawer();
+    };
+
     return (
       <div className="card-exp-col-6 flex items-center justify-evenly gap-x-[6px]">
         <TradeButton
           active={tradeslip.has({ assetId: assetId, action: "buy" })}
           type="buy"
           disabled={isDisabled}
-          onClick={() => {
-            if (tradeslip.has({ assetId: assetId, action: "buy" })) {
-              return tradeslip.remove(assetId);
-            }
-            tradeslip.put({ assetId: assetId, action: "buy" });
-          }}
+          onClick={onClickBuy}
         >
           Buy
         </TradeButton>
@@ -133,12 +151,7 @@ const BuySellButtons = observer(
           active={tradeslip.has({ assetId: assetId, action: "sell" })}
           disabled={isDisabled}
           type="sell"
-          onClick={() => {
-            if (tradeslip.has({ assetId: assetId, action: "sell" })) {
-              return tradeslip.remove(assetId);
-            }
-            tradeslip.put({ assetId: assetId, action: "sell" });
-          }}
+          onClick={onClickSell}
         >
           Sell
         </TradeButton>
