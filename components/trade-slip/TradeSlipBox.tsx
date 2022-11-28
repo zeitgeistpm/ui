@@ -12,6 +12,7 @@ import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
 import { useAccountAssetBalance } from "lib/hooks/queries/useAccountAssetBalance";
 import { usePool } from "lib/hooks/queries/usePool";
 import { usePoolAccountId } from "lib/hooks/queries/usePoolAccountId";
+import { usePoolZtgBalance } from "lib/hooks/queries/usePoolZtgBalance";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { calcInGivenOut, calcOutGivenIn } from "lib/math";
@@ -48,11 +49,9 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
       signer,
       assetId,
     );
-
-    const { data: poolZtgBalance } = useAccountAssetBalance(
-      { address: poolAccountId } as KeyringPairOrExtSigner,
-      { Ztg: null },
-    );
+    const { data: poolZtgBalance } = usePoolZtgBalance({
+      address: poolAccountId,
+    } as KeyringPairOrExtSigner);
 
     const { data: poolAssetBalance } = useAccountAssetBalance(
       { address: poolAccountId } as KeyringPairOrExtSigner,
@@ -112,10 +111,10 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
       if (!loaded) return new Decimal(0);
       if (action === "buy") {
         return calcInGivenOut(
-          new Decimal(poolZtgBalance?.free.toString()).div(ZTG),
-          ztgWeight.div(ZTG),
-          new Decimal(poolAssetBalance?.free.toString()).div(ZTG),
-          assetWeight.div(ZTG),
+          poolZtgBalance?.data.free.toString(),
+          ztgWeight,
+          poolAssetBalance?.free.toString(),
+          assetWeight,
           amount,
           swapFee.div(ZTG),
         );
@@ -123,7 +122,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
         return calcOutGivenIn(
           poolAssetBalance?.free.toString(),
           assetWeight,
-          poolZtgBalance?.free.toString(),
+          poolZtgBalance?.data.free.toString(),
           ztgWeight,
           amount,
           swapFee,
@@ -138,6 +137,8 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
       amount,
       swapFee,
     ]);
+
+    console.log(max.toString());
 
     if (!saturatedData || !traderAssetBalance) {
       return null;
@@ -203,7 +204,9 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
                     className={
                       "!h-full w-full rounded-ztg-8 text-right mb-ztg-2"
                     }
-                    onChange={(val) => onChange(new Decimal(val || 0))}
+                    onChange={(val) => {
+                      onChange(new Decimal(val || 0));
+                    }}
                     max={max.toString()}
                   />
                 </div>

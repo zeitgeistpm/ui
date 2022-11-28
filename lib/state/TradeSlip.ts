@@ -13,8 +13,8 @@ export type TradeSlipItem = {
 };
 
 const tradeSlipIsTransactingAtom = atom<boolean>(false);
-const tradeSlipItemsAtom = atomWithStorage<TradeSlipItem[]>(
-  "trade-slip-items",
+const tradeSlipItemsAtom = atom<TradeSlipItem[]>(
+  //"trade-slip-items",
   [],
 );
 
