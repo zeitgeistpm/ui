@@ -90,10 +90,10 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
 
     const max = useMemo(() => {
       if (!loaded) return new Decimal(0);
-      const ztg = new Decimal(traderZtgBalance?.free.toString() ?? 0);
+      const ztg = new Decimal(traderZtgBalance?.data.free.toString() ?? 0);
       const assets = new Decimal(traderAssetBalance?.free.toString() ?? 0);
       if (action === "buy") {
-        const maxTokens = ztg.div(asset?.price ?? 0);
+        const maxTokens = ztg.div(asset?.price.div(ZTG) ?? 0);
         if (tradeablePoolBalance?.lte(maxTokens)) {
           return tradeablePoolBalance;
         } else {
@@ -105,7 +105,9 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
         }
         return assets;
       }
-    }, [traderZtgBalance, tradeablePoolBalance]);
+    }, [traderZtgBalance, tradeablePoolBalance, traderAssetBalance]);
+
+    //console.log("MAX", max?.div(ZTG).toString());
 
     const traded = useMemo(() => {
       if (!loaded) return new Decimal(0);
@@ -137,8 +139,6 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
       amount,
       swapFee,
     ]);
-
-    console.log(max.toString());
 
     if (!saturatedData || !traderAssetBalance) {
       return null;
@@ -207,7 +207,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
                     onChange={(val) => {
                       onChange(new Decimal(val || 0));
                     }}
-                    max={max.toString()}
+                    max={max.div(ZTG).toString()}
                   />
                 </div>
                 <div className="ml-ztg-10 h-full flex flex-col text-sky-600 font-lato text-ztg-10-150 text-right flex-grow">

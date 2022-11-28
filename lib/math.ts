@@ -50,14 +50,6 @@ export const calcInGivenOut = (
   tokenAmountOut,
   swapFee,
 ) => {
-  console.log({
-    tokenBalanceIn: new Decimal(tokenBalanceIn).toNumber(),
-    tokenWeightIn: new Decimal(tokenWeightIn).toNumber(),
-    tokenBalanceOut: new Decimal(tokenBalanceOut).toNumber(),
-    tokenWeightOut: new Decimal(tokenWeightOut).toNumber(),
-    tokenAmountOut: new Decimal(tokenAmountOut).toNumber(),
-    swapFee: new Decimal(swapFee).toNumber(),
-  });
   const weightRatio = new Decimal(tokenWeightOut).div(
     new Decimal(tokenWeightIn),
   );

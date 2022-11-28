@@ -12,7 +12,7 @@ export const useZtgBalance = (account?: KeyringPairOrExtSigner) => {
     [id, rootKey, account?.address],
     async () => {
       if (account && isRpcSdk(sdk)) {
-        return sdk.context.api.query.balances.account(account.address);
+        return sdk.context.api.query.system.account(account.address);
       }
     },
     {
