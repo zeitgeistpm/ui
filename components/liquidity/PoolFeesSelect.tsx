@@ -116,7 +116,7 @@ const PoolFeesSelect = observer(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default PoolFeesSelect;

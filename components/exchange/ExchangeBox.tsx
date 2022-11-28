@@ -131,7 +131,6 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
       const maxFromPool = exchangeStore.poolBalance.mul(MAX_IN_OUT_RATIO);
 
       if (type === "buy") {
-
         if (!wallets.connected) {
           return maxFromPool.toString();
         }
@@ -470,8 +469,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
             <TransactionButton
               className="mb-ztg-10 shadow-ztg-2"
               disabled={
-                !exchangeForm?.isValid ||
-                !exchangeStore.spotPrice?.gt(0)
+                !exchangeForm?.isValid || !exchangeStore.spotPrice?.gt(0)
               }
               onClick={() => {
                 openTransactionModal();
