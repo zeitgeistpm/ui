@@ -1,5 +1,5 @@
 import { AssetId, IOCategoricalAssetId } from "@zeitgeistpm/sdk-next";
-import { useTradeSlipAtom } from "lib/state/TradeSlip";
+import { useTradeSlipState } from "lib/state/TradeSlip";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { FC, useMemo } from "react";
@@ -12,7 +12,7 @@ interface BuySellButtonsProps {
 const BuySellButtons = observer(
   ({ assetId, disabled }: BuySellButtonsProps) => {
     const store = useStore();
-    const tradeslip = useTradeSlipAtom();
+    const tradeslip = useTradeSlipState();
     const isDisabled = false;
 
     if (

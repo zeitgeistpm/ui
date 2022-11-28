@@ -1,41 +1,30 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  AssetId,
-  Context,
-  getIndexOf,
-  IOCategoricalAssetId,
-  IOScalarAssetId,
-  isIndexedData,
-  isRpcData,
-  isRpcSdk,
-  Pool,
-} from "@zeitgeistpm/sdk-next";
-import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import { IndexerContext, isRpcSdk, PoolList } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "pool-ztg-balance";
 
-export const usePoolZtgBalance = (account?: KeyringPairOrExtSigner) => {
+export const usePoolZtgBalance = (pools?: PoolList<IndexerContext>) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, rootKey, account?.address],
+    [id, rootKey, pools?.map((p) => p.poolId)],
     async () => {
-      if (isRpcSdk(sdk)) {
-        try {
-          const balances = await sdk.context.api.query.system.account(
-            account.address,
-          );
-
-          return balances;
-        } catch (error) {
-          console.error("ERR");
-          console.log(account.address);
-        }
+      if (isRpcSdk(sdk) && pools) {
+        return (
+          await sdk.context.api.query.system.account.multi(
+            pools.map((p) => p.accountId),
+          )
+        ).map((balance, index) => ({
+          pool: pools[index],
+          balance,
+        }));
       }
+      return [];
     },
     {
-      enabled: Boolean(sdk && isRpcSdk(sdk) && account && account.address),
+      initialData: [],
+      enabled: Boolean(sdk && isRpcSdk(sdk) && pools && pools.length),
     },
   );
 

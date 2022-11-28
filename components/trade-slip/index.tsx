@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import Decimal from "decimal.js";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { when } from "mobx";
@@ -12,6 +12,8 @@ import TradeSlipItemList from "./TradeSlipItemList";
 import TransactionButton from "../ui/TransactionButton";
 import SlippageSettingInput from "../markets/SlippageInput";
 import { extractIndexFromErrorHex } from "../../lib/util/error-table";
+import { useTradeSlipState } from "lib/state/TradeSlip";
+import { ZTG } from "lib/constants";
 
 const TradeSlip = observer(() => {
   const tradeSlipStore = useTradeSlipStore();
@@ -26,6 +28,8 @@ const TradeSlip = observer(() => {
     txInProgress,
     setTxInProgress,
   } = tradeSlipStore;
+
+  const tradeSlip = useTradeSlipState();
 
   const processTransactions = useCallback(async () => {
     let failedItemId: number | null = null;
@@ -137,8 +141,8 @@ const TradeSlip = observer(() => {
           <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
             <div className="font-bold">Slippage Tolerance:</div>
             <SlippageSettingInput
-              value={tradeSlipStore.slippagePercentage?.toFixed(1)}
-              onChange={(val) => tradeSlipStore.setSlippagePercentage(val)}
+              value={tradeSlip.slippage.toString()}
+              onChange={(val) => tradeSlip.setSlippage(Number(val))}
               form={tradeSlipForm}
             />
           </div>
@@ -151,9 +155,7 @@ const TradeSlip = observer(() => {
           <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
             <div className="font-bold">Total cost / gain:</div>
             <div className="font-normal">
-              {totalCost.isNaN()
-                ? "---"
-                : totalCost.mul(-1).toFixed(4, Decimal.ROUND_DOWN)}{" "}
+              {tradeSlip.total.div(ZTG).toFixed(4).toString()}
               {store.config?.tokenSymbol}
             </div>
           </div>

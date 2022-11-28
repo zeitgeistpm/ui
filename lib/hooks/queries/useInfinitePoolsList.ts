@@ -1,9 +1,9 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useSdkv2 } from "../useSdkv2";
 
-export const rootKey = "pools";
+export const rootKey = "infinite-pools-list";
 
-export const usePools = () => {
+export const useInfinitePoolsList = () => {
   const [sdk, id] = useSdkv2();
 
   const limit = 20;

@@ -1,13 +1,11 @@
-import { isIndexedSdk, ZTG } from "@zeitgeistpm/sdk-next";
+import { ZTG } from "@zeitgeistpm/sdk-next";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
+import { useInfinitePoolsList } from "lib/hooks/queries/useInfinitePoolsList";
 import { useMarketStatusCount } from "lib/hooks/queries/useMarketStatusCount";
-import { usePools } from "lib/hooks/queries/usePools";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
 import { useTotalLiquidity } from "lib/hooks/queries/useTotalLiquidity";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
-import { usePoolsListQuery } from "lib/hooks/usePoolsUrlQuery";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { formatNumberLocalized } from "lib/util";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
@@ -49,7 +47,7 @@ const LiquidityPools: NextPage = observer(() => {
     isLoading: isLoadingPools,
     hasNextPage,
     fetchNextPage,
-  } = usePools();
+  } = useInfinitePoolsList();
 
   const pools = poolPages?.pages.flatMap((pools) => pools.data) || [];
 
