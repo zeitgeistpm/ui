@@ -1,16 +1,12 @@
 import Decimal from "decimal.js";
-import {
-  calcPrices,
-  calcWeightGivenSpotPrice,
-  PricePoint,
-} from "./weight-math";
+import { calcPrices, calcWeightGivenSpotPrice, PriceLock } from "./weight-math";
 
 describe("weight math", () => {
   describe("integration", () => {
     test("should calculate weights correctly given a new set of prices", () => {
       const ztgWeight = new Decimal(100);
       const tokenAmounts = new Decimal(100);
-      const prices: PricePoint[] = [
+      const prices: PriceLock[] = [
         { price: new Decimal(0.3333), locked: true },
         { price: new Decimal(0.5), locked: false },
         { price: new Decimal(0.5), locked: false },
@@ -55,7 +51,7 @@ describe("weight math", () => {
     });
 
     test("should calculate weights to match ztg weight", () => {
-      const prices: PricePoint[] = [
+      const prices: PriceLock[] = [
         { price: new Decimal(0.7), locked: true },
         { price: new Decimal(0.15), locked: false },
         { price: new Decimal(0.15), locked: false },
@@ -80,7 +76,7 @@ describe("weight math", () => {
 
   describe("calcPrices", () => {
     test("should not change locked prices", () => {
-      const prices: PricePoint[] = [
+      const prices: PriceLock[] = [
         { price: new Decimal(0.7), locked: true },
         { price: new Decimal(0.5), locked: false },
         { price: new Decimal(0.5), locked: false },
@@ -92,7 +88,7 @@ describe("weight math", () => {
     });
 
     test("should split prices evenly so the total is 1", () => {
-      const prices: PricePoint[] = [
+      const prices: PriceLock[] = [
         { price: new Decimal(0.7), locked: true },
         { price: new Decimal(0.5), locked: false },
         { price: new Decimal(0.5), locked: false },

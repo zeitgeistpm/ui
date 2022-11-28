@@ -11,12 +11,12 @@ export const calcWeightGivenSpotPrice = (
   return tokenWeightOut;
 };
 
-export type PricePoint = {
+export type PriceLock = {
   price: Decimal;
   locked: boolean;
 };
 
-export const calcPrices = (prices: PricePoint[]): PricePoint[] => {
+export const calcPrices = (prices: PriceLock[]): PriceLock[] => {
   const lockedPrices = calcLockedPriceTotal(prices);
   const remainingPrice = new Decimal(1).minus(lockedPrices.total);
   const unlockedAssetsCount = prices.length - lockedPrices.count;
@@ -32,7 +32,7 @@ export const calcPrices = (prices: PricePoint[]): PricePoint[] => {
 };
 
 export const calcLockedPriceTotal = (
-  prices: PricePoint[],
+  prices: PriceLock[],
 ): {
   total: Decimal;
   count: number;
