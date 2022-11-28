@@ -22,7 +22,8 @@ export const useMarketIsTradingEnabled = (
         ? market.status
         : market.status.toString();
       return (
-        status.toLowerCase() === "active" && (await hasPool<Context>(market))
+        status.toLowerCase() === "active" &&
+        (await hasPool<Context>(sdk.context, market))
       );
     },
     {
