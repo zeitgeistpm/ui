@@ -9,13 +9,13 @@ const getMarketIdsFromEnvVar = () => {
   try {
     let mIds = JSON.parse(process.env.NEXT_PUBLIC_FEATURED_MARKET_IDS);
     // this line *should not* be needed, but here just in case
-    marketIds = mIds.map(id => Number(id));
+    marketIds = mIds.map((id) => Number(id));
   } catch (err) {
     console.error(err);
   }
 
   return marketIds;
-}
+};
 
 const marketIds = getMarketIdsFromEnvVar();
 
@@ -23,7 +23,11 @@ const marketQuery = gql`
   query Market($marketId: Int) {
     markets(where: { marketId_eq: $marketId }) {
       marketId
-      poolId
+      pool {
+        poolId
+        volume
+        baseAsset
+      }
       outcomeAssets
       slug
       img
@@ -34,16 +38,6 @@ const marketQuery = gql`
       categories {
         ticker
       }
-    }
-  }
-`;
-
-const poolQuery = gql`
-  query Pool($poolId: Int) {
-    pools(where: { poolId_eq: $poolId }) {
-      poolId
-      volume
-      baseAsset
     }
   }
 `;
@@ -59,7 +53,6 @@ const assetsQuery = gql`
 `;
 
 const getFeaturedMarkets = async (client: GraphQLClient) => {
-
   // handles if we don't have any markets set
   if (marketIds.length === 0) return null;
 
@@ -67,16 +60,11 @@ const getFeaturedMarkets = async (client: GraphQLClient) => {
     marketIds.map(async (id) => {
       const marketRes = await client.request(marketQuery, {
         marketId: id,
-      })
+      });
 
       const market = marketRes.markets[0];
 
-      // TODO: handle if the market doesn't have a pool attached
-      const poolRes = await client.request(poolQuery, {
-        poolId: market.poolId,
-      });
-
-      const pool = poolRes.pools[0];
+      const pool = market.pool;
 
       if (!pool) {
         const trendingMarket: TrendingMarketInfo = {
@@ -152,6 +140,6 @@ const getFeaturedMarkets = async (client: GraphQLClient) => {
   );
 
   return featuredMarkets;
-}
+};
 
 export default getFeaturedMarkets;

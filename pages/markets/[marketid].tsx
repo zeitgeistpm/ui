@@ -85,8 +85,8 @@ export async function getStaticProps({ params }) {
     });
   });
 
-  const baseAsset = market?.poolId
-    ? await getBaseAsset(client, market.poolId)
+  const baseAsset = market?.pool
+    ? await getBaseAsset(client, market.pool.poolId)
     : null;
 
   return {
