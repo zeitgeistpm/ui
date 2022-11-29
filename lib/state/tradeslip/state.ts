@@ -316,7 +316,7 @@ export const useTradeSlipState = (): UseTradeslipState => {
 
             return sdk.context.api.tx.swaps.swapExactAmountOut(
               pool.poolId,
-              asset.assetId,
+              { Ztg: null },
               maxAmountIn.toFixed(0),
               asset.assetId,
               amount.toFixed(0),
