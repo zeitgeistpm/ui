@@ -11,8 +11,7 @@ import Loader from "react-spinners/PulseLoader";
 import { makeAutoObservable } from "mobx";
 import { useMarkets } from "lib/hooks/queries/useMarkets";
 import { useContentScrollTop } from "components/context/ContentDimensionsContext";
-import { useOutcomesForMarkets } from "lib/hooks/queries/useOutcomesForMarkets";
-import MarketsListContext from "./MarketsListContext";
+import { MarketOutcomes } from "lib/types/markets";
 
 export type MarketsListProps = {
   className?: string;
@@ -56,17 +55,12 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     }
   }, [isLoadMarkerInView, hasNextPage]);
 
-  const [markets, setMarkets] = useState<IndexedMarket<Context>[]>();
-
-  const [outcomes, setOutcomes] = useState<{
-    [marketId: number]: {
-      color: string;
-      name: string;
-      assetId: string;
-      price: number;
-      amountInPool: string;
-    }[];
-  }>({});
+  const [markets, setMarkets] = useState<
+    (IndexedMarket<Context> & {
+      outcomes: MarketOutcomes;
+      prediction: string;
+    })[]
+  >();
 
   useEffect(() => {
     const markets =
@@ -75,18 +69,6 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   }, [marketsPages?.pages]);
 
   const count = markets?.length ?? 0;
-  const numPages = marketsPages?.pages.length;
-
-  const { data: lastPageOutcomes } = useOutcomesForMarkets(
-    marketsPages?.pages[numPages - 1].data.filter((m) => m.pool != null) ?? [],
-  );
-
-  useEffect(() => {
-    if (lastPageOutcomes == null) {
-      return;
-    }
-    setOutcomes((prev) => ({ ...prev, ...lastPageOutcomes }));
-  }, [lastPageOutcomes]);
 
   useEffect(() => {
     const pageNum = marketsPages?.pages.length ?? 0;
@@ -102,21 +84,20 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       {/* TODO: Filters here */}
       <div></div>
       <div className="grid grid-cols-3 gap-[30px]">
-        <MarketsListContext.Provider value={{ outcomes }}>
-          {markets?.map((market) => {
-            return (
-              <MarketCard
-                marketId={market.marketId}
-                categories={market.categories}
-                question={market.question}
-                creation={market.creation}
-                baseAsset={market.pool?.baseAsset}
-                volume={market.pool?.volume}
-                key={`market-${market.marketId}`}
-              />
-            );
-          })}
-        </MarketsListContext.Provider>
+        {markets?.map((market) => {
+          return (
+            <MarketCard
+              marketId={market.marketId}
+              outcomes={market.outcomes}
+              question={market.question}
+              creation={market.creation}
+              prediction={market.prediction}
+              baseAsset={market.pool?.baseAsset}
+              volume={market.pool?.volume}
+              key={`market-${market.marketId}`}
+            />
+          );
+        })}
       </div>
       <div className="flex justify-center w-full mt-[78px] h-[20px]">
         {(isFetchingMarkets || isLoading) && <Loader />}

@@ -3,24 +3,17 @@ import React, { useEffect, useState } from "react";
 import { MoreVertical } from "react-feather";
 import { Skeleton } from "@material-ui/lab";
 import MarketImage from "components/ui/MarketImage";
+import { MarketOutcomes } from "lib/types/markets";
 import MarketCardOverlay from "./overlay";
-import { useMarketOutcomes } from "../MarketsListContext";
-
-export type MarketCategory = {
-  name?: string;
-  color?: string;
-  assetId?: string;
-  ticker?: string;
-};
-export type MarketCategories = MarketCategory[];
+import MarketCardContext from "./context";
 
 export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
   question: string;
   creation: string;
-  categories: MarketCategories;
-  prediction?: string;
+  outcomes: MarketOutcomes;
+  prediction: string;
   volume: number;
   baseAsset: string;
 }
@@ -72,59 +65,50 @@ const MarketCard = ({
   img,
   question,
   creation,
-  categories,
+  outcomes,
   prediction,
   volume,
   baseAsset,
   className = "",
 }: MarketCardProps) => {
   const [showDetailsOverlay, setShowDetailsOverlay] = useState<boolean>(false);
-  const [predictionAsync, setPredictionAsync] = useState<string>();
-
-  const outcomes = useMarketOutcomes(marketId);
-
-  useEffect(() => {
-    if (outcomes == null) {
-      return;
-    }
-    const sortedByPrice = [...outcomes].sort((a, b) => b.price - a.price);
-    setPredictionAsync(sortedByPrice[0].name);
-  }, [outcomes]);
 
   const infoRows = [
-    { name: "Prediction", value: predictionAsync ?? prediction },
+    { name: "Prediction", value: prediction },
     { name: "Volume", value: `${volume} ${baseAsset?.toUpperCase() ?? "ZTG"}` },
     { name: "Status", value: creation },
   ];
   return (
-    <div
-      className={
-        "w-full h-full bg-anti-flash-white rounded-[10px] p-[15px] flex flex-col relative " +
-        className
-      }
-    >
-      {showDetailsOverlay && (
-        <MarketCardOverlay
-          marketId={marketId}
-          categories={outcomes ?? categories}
-          className="top-0 left-[0]"
-          onCloseIconClick={() => setShowDetailsOverlay(false)}
-        />
-      )}
-      {categories?.length > 0 && (
-        <MoreVertical
-          className="absolute right-[10px] text-pastel-blue cursor-pointer"
-          onClick={() => setShowDetailsOverlay(true)}
-        />
-      )}
-      <Link href={`/markets/${marketId}`} className="flex flex-row mr-[17px]">
-        <MarketImage image={img} alt={question} />
-        <div className="ml-[15px] black font-lato font-bold h-[75px] w-full line-clamp-3 text-ztg-14-150">
-          {question}
-        </div>
-      </Link>
-      <MarketCardInfo rows={infoRows} />
-    </div>
+    <MarketCardContext.Provider value={{ baseAsset }}>
+      <div
+        className={
+          "w-full h-full bg-anti-flash-white rounded-[10px] p-[15px] flex flex-col relative " +
+          className
+        }
+      >
+        {showDetailsOverlay && (
+          <MarketCardOverlay
+            marketId={marketId}
+            outcomes={outcomes}
+            className="top-0 left-[0]"
+            onCloseIconClick={() => setShowDetailsOverlay(false)}
+          />
+        )}
+        {outcomes?.length > 0 && (
+          <MoreVertical
+            className="absolute right-[10px] text-pastel-blue cursor-pointer"
+            onClick={() => setShowDetailsOverlay(true)}
+          />
+        )}
+        <Link href={`/markets/${marketId}`} className="flex flex-row mr-[17px]">
+          <MarketImage image={img} alt={question} />
+          <div className="ml-[15px] black font-lato font-bold h-[75px] w-full line-clamp-3 text-ztg-14-150">
+            {question}
+          </div>
+        </Link>
+        <MarketCardInfo rows={infoRows} />
+      </div>
+    </MarketCardContext.Provider>
   );
 };
 
