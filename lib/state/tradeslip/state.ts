@@ -38,10 +38,6 @@ export type UseTradeslipState = {
    */
   total: Decimal;
   /**
-   * Get remote and calculated data for a tradeslip item; including pool, market, max amount, cost, swap fee, asset etc.
-   */
-  get: (key: TradeSlipItemDataKey) => TradeSlipItemData;
-  /**
    * The batched transaction for the current tradeslip.
    */
   transaction?: SubmittableExtrinsic<"promise", ISubmittableResult> | null;
@@ -49,6 +45,18 @@ export type UseTradeslipState = {
    * The transaction fees for the current tradeslip.
    */
   transactionFees: Decimal;
+  /**
+   * Is the user currently transacting the tradeslip
+   */
+  isTransacting: boolean;
+  /**
+   * Get remote and calculated data for a tradeslip item; including pool, market, max amount, cost, swap fee, asset etc.
+   */
+  get: (key: TradeSlipItemDataKey) => TradeSlipItemData;
+  /**
+   * Submit the batched transaction for the current tradeslip items.
+   */
+  submit: () => void;
 };
 
 /**
@@ -376,10 +384,27 @@ export const useTradeSlipState = (): UseTradeslipState => {
 
   const get = (key: TradeSlipItemDataKey) => data.get(key);
 
+  const submit = () => {
+    if (!isTransacting && transaction) {
+      const { signer } = wallets.getActiveSigner() as any;
+      transaction.signAndSend(
+        wallets.activeAccount.address,
+        { signer },
+        (result) => {
+          if (result.isFinalized) {
+            console.log("finalized");
+          }
+        },
+      );
+    }
+  };
+
   return {
     get,
     total,
     transaction,
     transactionFees,
+    isTransacting,
+    submit,
   };
 };

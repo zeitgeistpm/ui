@@ -25,16 +25,7 @@ const TradeSlip = observer(() => {
 
   const onSubmit = () => {
     if (tradeSlipState.transaction) {
-      const { signer } = store.wallets.getActiveSigner() as any;
-      tradeSlipState.transaction.signAndSend(
-        store.wallets.activeAccount.address,
-        { signer },
-        (result) => {
-          if (result.isFinalized) {
-            console.log("finalized");
-          }
-        },
-      );
+      tradeSlipState.submit();
     }
   };
 
