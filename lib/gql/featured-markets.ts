@@ -117,9 +117,11 @@ const getFeaturedMarkets = async (
 
       const marketCategories: MarketOutcomes = market.categories.map(
         (category, index) => {
+          const asset = assets[index];
           const marketCategory: MarketOutcome = {
             ...category,
             assetId: market.outcomeAssets[index],
+            price: asset.price,
           };
 
           return marketCategory;
