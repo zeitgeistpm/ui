@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React, { ChangeEvent, FC, MouseEvent, useState } from "react";
+import React, { ChangeEvent, FC, MouseEvent } from "react";
 import { useStore } from "lib/stores/Store";
 import { MultipleOutcomeEntry } from "lib/types/create-market";
 import Table, { TableColumn, TableData } from "components/ui/Table";
@@ -71,10 +71,16 @@ type PriceInfo = { price: string; locked: boolean };
 type PriceSetterProps = {
   price: string;
   isLocked: boolean;
+  disabled: boolean;
   onChange?: (priceLock: PriceInfo) => void;
 };
 
-const PriceSetter = ({ price, isLocked, onChange }: PriceSetterProps) => {
+const PriceSetter = ({
+  price,
+  isLocked,
+  disabled = false,
+  onChange,
+}: PriceSetterProps) => {
   const handleLockClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation();
@@ -92,6 +98,7 @@ const PriceSetter = ({ price, isLocked, onChange }: PriceSetterProps) => {
         className="h-ztg-40 w-full rounded-ztg-5 bg-sky-200 text-right !pr-ztg-8"
         value={price}
         type="number"
+        disabled={disabled}
         onChange={handlePriceChange}
       />
       {/* <AmountInput
@@ -99,7 +106,7 @@ const PriceSetter = ({ price, isLocked, onChange }: PriceSetterProps) => {
         value={price.toString()}
         onChange={handlePriceChange}
       /> */}
-      <button onClick={handleLockClick}>
+      <button onClick={handleLockClick} disabled={disabled}>
         {isLocked === true ? "locked" : "unlocked"}
       </button>
     </div>
@@ -174,6 +181,7 @@ const PoolSettings: FC<{
         <PriceSetter
           price={d.price.price.toString()}
           isLocked={d.price.locked}
+          disabled={index === data.length - 1}
           onChange={(priceInfo) => onPriceChange(priceInfo, index)}
         />
       ),
