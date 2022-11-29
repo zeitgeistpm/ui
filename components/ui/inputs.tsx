@@ -323,7 +323,8 @@ export const AmountInput: FC<AmountInputProps> = observer(
             value={val == null ? "" : val}
             disabled={disabled}
             ref={ref}
-            type="text"
+            type="number"
+            max={Number(max)}
             autoComplete="off"
             placeholder={placeholder}
             onChange={onChanged}

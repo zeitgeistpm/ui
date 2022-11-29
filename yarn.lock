@@ -2599,6 +2599,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash-es@npm:^4.17.6":
+  version: 4.17.6
+  resolution: "@types/lodash-es@npm:4.17.6"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 9bd239dd525086e278821949ce12fbdd4f100a060fed9323fc7ad5661113e1641f28a7ebab617230ed3474680d8f4de705c1928b48252bb684be6ec9eed715db
+  languageName: node
+  linkType: hard
+
 "@types/lodash.merge@npm:^4.6.6":
   version: 4.6.7
   resolution: "@types/lodash.merge@npm:4.6.7"
@@ -3059,6 +3068,7 @@ __metadata:
     "@testing-library/react": ^13.4.0
     "@types/flexsearch": ^0.7.2
     "@types/jest": ^27.5.1
+    "@types/lodash-es": ^4.17.6
     "@types/lodash.merge": ^4.6.6
     "@types/object-hash": ^2.2.1
     "@types/react": ^17.0.38
