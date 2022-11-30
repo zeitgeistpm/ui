@@ -93,9 +93,9 @@ const PriceSetter = ({
     onChange({ price: newPrice, locked: true });
   };
   return (
-    <div>
+    <div className="flex items-center">
       <input
-        className="h-ztg-40 w-full rounded-ztg-5 bg-sky-200 text-right !pr-ztg-8"
+        className="h-ztg-40 w-[100px] rounded-ztg-5 bg-sky-200 text-right !pr-ztg-8"
         value={price}
         type="number"
         disabled={disabled}
@@ -106,8 +106,16 @@ const PriceSetter = ({
         value={price.toString()}
         onChange={handlePriceChange}
       /> */}
-      <button onClick={handleLockClick} disabled={disabled}>
-        {isLocked === true ? "locked" : "unlocked"}
+      <button
+        className="flex items-center justify-center w-[30px] h-[30px] bg-sky-200 rounded-full ml-[20px] flex-grow-0"
+        onClick={handleLockClick}
+        disabled={disabled}
+      >
+        {isLocked === true ? (
+          <img src="/icons/lock.svg" alt="Locked" />
+        ) : (
+          <img src="/icons/unlock.svg" alt="Unlocked" />
+        )}
       </button>
     </div>
   );
