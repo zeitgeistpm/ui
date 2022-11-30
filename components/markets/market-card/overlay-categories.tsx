@@ -1,17 +1,19 @@
 import BuySellButtons from "components/trade-slip/BuySellButtons";
-import { MarketCategories, MarketCategory } from ".";
+import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
+import { useMarketCardContext } from "./context";
 
-export type MarketCardOverlayCategoryProps = {
+export type MarketCardOverlayOutcomeProps = {
   marketId: number;
-  category: MarketCategory;
+  outcome: MarketOutcome;
   className?: string;
 };
 
-const MarketCardOverlayCategory = ({
+const MarketCardOverlayOutcome = ({
   marketId,
-  category,
+  outcome,
   className = "",
-}: MarketCardOverlayCategoryProps) => {
+}: MarketCardOverlayOutcomeProps) => {
+  const context = useMarketCardContext();
   return (
     <div
       className={
@@ -20,37 +22,32 @@ const MarketCardOverlayCategory = ({
     >
       <div
         className="w-[20px] h-[20px] rounded-full border-sky-600 border-[2px] flex-shrink-0"
-        style={{ backgroundColor: `${category.color}` }}
+        style={{ backgroundColor: `${outcome.color}` }}
       ></div>
       <div className="flex flex-col w-[95px] flex-shrink-0 ml-[7px]">
         <div className="font-lato font-bold uppercase text-ztg-14-110 truncate h-[17px] flex-shrink-0">
-          {category.name}
+          {outcome.name}
         </div>
-        {/* TODO: make a component for price diff */}
-        {/* <div className="h-full flex flex-row items-center">
-          <div
-            className="mr-[5px]"
-            style={{
-              width: 0,
-              height: 0,
-              borderLeft: "7px solid transparent",
-              borderRight: "7px solid transparent",
-              borderTop: "10px solid #E90303",
-            }}
-          ></div>
-          <div className="font-mono text-ztg-10-150">0.5%</div>
-        </div> */}
+        <div className="h-full flex flex-row items-center">
+          {outcome.price && (
+            <>
+              <div className="font-mono text-ztg-10-150">
+                {outcome.price} {context.baseAsset}
+              </div>
+            </>
+          )}
+        </div>
       </div>
       <div className="ml-auto">
         <BuySellButtons
           item={{
             amount: "",
-            assetId: category.assetId,
+            assetId: JSON.parse(outcome.assetId),
             marketId: marketId,
-            assetTicker: category.ticker,
-            assetColor: category.color,
+            assetTicker: outcome.ticker,
+            assetColor: outcome.color,
           }}
-          disabled={category.assetId == null}
+          disabled={outcome.assetId == null}
         />
       </div>
     </div>
@@ -59,21 +56,21 @@ const MarketCardOverlayCategory = ({
 
 const MarketCardOverlayCategories = ({
   marketId,
-  categories,
+  outcomes,
 }: {
   marketId: number;
-  categories: MarketCategories;
+  outcomes: MarketOutcomes;
 }) => {
-  const numCategories = categories.length;
+  const numCategories = outcomes.length;
   return (
     <div className="flex flex-col max-h-[215px] overflow-y-scroll">
-      {categories.map((cat, idx) => {
+      {outcomes.map((cat, idx) => {
         const botMargin = idx === numCategories - 1 ? "mb-0" : "mb-[25px]";
         return (
-          <MarketCardOverlayCategory
+          <MarketCardOverlayOutcome
             key={`cat-${idx}`}
             marketId={marketId}
-            category={cat}
+            outcome={cat}
             className={botMargin}
           />
         );

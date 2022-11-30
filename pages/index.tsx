@@ -8,7 +8,6 @@ import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getPopularCategories, TagCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
 import { useStore } from "lib/stores/Store";
-import { randomHexColor } from "lib/util";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import Image from "next/image";
