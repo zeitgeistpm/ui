@@ -20,10 +20,11 @@ const MAIN_IMAGE_PATH = "/carousel/intro_zeitgeist_avatar.png";
 export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
-  const featuredMarkets = await getFeaturedMarkets(client);
-  const trendingMarkets = await getTrendingMarkets(client);
-
-  const img = await getPlaiceholder(MAIN_IMAGE_PATH, { size: 32 });
+  const [featuredMarkets, trendingMarkets, img] = await Promise.all([
+    getFeaturedMarkets(client),
+    getTrendingMarkets(client),
+    getPlaiceholder(MAIN_IMAGE_PATH, { size: 32 }),
+  ]);
 
   // commenting for now, as production currently has no trending
   // if (trendingMarkets == null || trendingMarkets.length === 0) {
@@ -63,7 +64,6 @@ const IndexPage: NextPage<{
           className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
           src={MAIN_IMAGE_PATH}
           alt="Introducing Zeitgeist Avatar"
-          layout="responsive"
           width={1036}
           height={374}
           quality={100}
