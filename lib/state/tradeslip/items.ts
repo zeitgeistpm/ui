@@ -36,6 +36,12 @@ export type UseTradeslipItems = {
    * Get an item by its AssetId.
    */
   getByAsset: (asset: TradeSlipItem["assetId"]) => TradeSlipItem;
+  /**
+   * Clear all items.
+   */
+  clear: () => void;
+
+  slice: (start: number, end?: number) => void;
 };
 
 /**
@@ -76,11 +82,18 @@ export const useTradeslipItems = (): UseTradeslipItems => {
   const hasAsset = (asset: TradeSlipItem["assetId"]) =>
     Boolean(getByAsset(asset));
 
+  const clear = () => setItems([]);
+
+  const slice = (start: number, end?: number) =>
+    setItems(items.slice(start, end));
+
   return {
     items,
     put,
     removeAsset,
     getByAsset,
     hasAsset,
+    clear,
+    slice,
   };
 };

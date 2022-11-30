@@ -16,6 +16,7 @@ export const useAccountAssetBalance = (
     [id, rootKey, pairs],
     async () => {
       if (isRpcSdk(sdk)) {
+        console.log("useAccountAssetBalance query");
         return sdk.context.api.query.tokens.accounts.multi(
           pairs.map(({ account, assetId }) => [account, assetId]),
         );

@@ -1,3 +1,9 @@
+import { SubmittableExtrinsic } from "@polkadot/api/types";
+import { Signer, ISubmittableResult } from "@polkadot/types/types";
+
+import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import * as Te from "@zeitgeistpm/utility/dist/taskeither";
+import Decimal from "decimal.js";
 import { useAtom } from "jotai";
 import { ZTG } from "lib/constants";
 import { useTradeslipItems } from "lib/state/tradeslip/items";
@@ -6,11 +12,13 @@ import { useTradeSlipState } from "lib/state/tradeslip/state";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { tradeSlipForm } from "lib/stores/TradeSlipStore";
+import { extractIndexFromErrorHex } from "lib/util/error-table";
+import { extrinsicCallback } from "lib/util/tx";
 import { observer } from "mobx-react";
-import { finalize } from "rxjs";
+import { useCallback, useState } from "react";
 import SlippageSettingInput from "../markets/SlippageInput";
 import TransactionButton from "../ui/TransactionButton";
-import TradeSlipItemList from "./TradeSlipItemList";
+import TradeSlipContainer from "./TradeSlipBox";
 
 const TradeSlip = observer(() => {
   const store = useStore();
@@ -23,21 +31,109 @@ const TradeSlip = observer(() => {
   const fees = tradeSlipState.transactionFees.div(ZTG);
   const total = tradeSlipState.total.div(ZTG);
 
-  const onSubmit = () => {
-    if (tradeSlipState.transaction) {
-      tradeSlipState.submit();
+  const [isTransacting, setIsTransacting] = useState(false);
+
+  const onSubmit = async () => {
+    if (!isTransacting && tradeSlipState.transaction) {
+      try {
+        setIsTransacting(true);
+        await processTransactions();
+      } catch (error) {
+        console.error(error);
+      }
+      setIsTransacting(false);
     }
   };
 
+  const processTransactions = useCallback(async () => {
+    let failedItemId: number | null = null;
+    const { signer } = store.wallets.getActiveSigner() as ExtSigner;
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        const unsub = await tradeSlipState.transaction.signAndSend(
+          store.wallets.activeAccount.address,
+          { signer },
+          extrinsicCallback({
+            notificationStore,
+            successCallback: () => {
+              let message = "All trades suceeded";
+              if (failedItemId == null) {
+                tradeslipItems.clear();
+              } else {
+                tradeslipItems.slice(failedItemId);
+                message = "Some trades failed left in tradeslip";
+              }
+              notificationStore.pushNotification(message, {
+                type: "Success",
+              });
+              unsub();
+              resolve();
+            },
+            failCallback: ({ index, error }, batchIdx?: number) => {
+              const { errorName } = store.sdk.errorTable.getEntry(
+                index,
+                extractIndexFromErrorHex(error),
+              );
+              if (batchIdx != null) {
+                failedItemId = batchIdx;
+                const item = tradeslipItems.items[batchIdx];
+                const data = tradeSlipState.get(item);
+                notificationStore.pushNotification(
+                  `Trade failed: ${errorName} - ${data?.asset.category.ticker}`,
+                  {
+                    type: "Error",
+                  },
+                );
+              } else {
+                notificationStore.pushNotification(
+                  `Transaction failed. Error: ${errorName}`,
+                  {
+                    type: "Error",
+                  },
+                );
+              }
+              reject();
+              unsub();
+            },
+          }),
+        );
+      } catch (err) {
+        console.log("Transaction canceled", err.toString());
+        reject();
+      }
+    });
+  }, [tradeSlipState.transaction]);
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <TradeSlipItemList items={tradeslipItems} state={tradeSlipState} />
+      <div className="py-ztg-20 px-ztg-28 overflow-y-auto w-full">
+        {tradeslipItems.items.map((item) => {
+          return (
+            <TradeSlipContainer
+              item={item}
+              state={tradeSlipState.get(item)}
+              onChange={(amount) => {
+                tradeslipItems.put({ ...item, amount: amount.toNumber() });
+              }}
+              value={new Decimal(item.amount)}
+              key={`tradeSlipItem${JSON.stringify(item.assetId)}-${
+                item.action
+              }`}
+            />
+          );
+        })}
+      </div>
+
       <div className="p-ztg-28 mt-auto">
         <div className="p-ztg-15 rounded-ztg-10 bg-white dark:bg-sky-1000">
           <TransactionButton
             className="shadow-ztg-2 mb-ztg-16"
             onClick={onSubmit}
-            disabled={false}
+            disabled={
+              isTransacting ||
+              tradeslipItems.items.length === 0 ||
+              !tradeSlipState?.transaction
+            }
           >
             Sign Transactions
           </TransactionButton>
@@ -65,22 +161,5 @@ const TradeSlip = observer(() => {
     </div>
   );
 });
-
-// const processTransactions = useCallback(async () => {
-//   let failedItemId: number | null = null;
-//   const { signer } = wallets.getActiveSigner() as ExtSigner;
-//   return new Promise<void>(async (resolve, reject) => {
-//     try {
-//       const unsub = await batchTx.signAndSend(
-//         wallets.activeAccount.address,
-//         { signer },
-//
-//       );
-//     } catch (err) {
-//       console.log("Transaction canceled", err.toString());
-//       reject();
-//     }
-//   });
-// }, [batchTx]);
 
 export default TradeSlip;

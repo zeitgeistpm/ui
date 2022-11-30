@@ -1,6 +1,6 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
-import { RuntimeDispatchInfo } from "@polkadot/types/interfaces";
+import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import { useQuery } from "@tanstack/react-query";
 import {
   Context,
@@ -46,17 +46,9 @@ export type UseTradeslipState = {
    */
   transactionFees: Decimal;
   /**
-   * Is the user currently transacting the tradeslip
-   */
-  isTransacting: boolean;
-  /**
    * Get remote and calculated data for a tradeslip item; including pool, market, max amount, cost, swap fee, asset etc.
    */
-  get: (key: TradeSlipItemDataKey) => TradeSlipItemData;
-  /**
-   * Submit the batched transaction for the current tradeslip items.
-   */
-  submit: () => void;
+  get: (key: TradeSlipItem) => TradeSlipItemData;
 };
 
 /**
@@ -117,11 +109,6 @@ export const itemKey = (item: TradeSlipItem): TradeSlipItemDataKey =>
   `${item.action}|${JSON.stringify(item.assetId)}` as TradeSlipItemDataKey;
 
 /**
- * Atom storage for the isTransacting state.
- */
-const tradeSlipIsTransactingAtom = atom<boolean>(false);
-
-/**
  * Hook to get the tradeslip state, calculated/remote data and interaction methods.
  *
  * @container
@@ -134,7 +121,6 @@ const tradeSlipIsTransactingAtom = atom<boolean>(false);
 export const useTradeSlipState = (): UseTradeslipState => {
   const [sdk, id] = useSdkv2();
   const [slippage] = useAtom(slippagePercentageAtom);
-  const [isTransacting, setIsTransacting] = useAtom(tradeSlipIsTransactingAtom);
   const { items } = useTradeslipItems();
 
   const { wallets } = useStore();
@@ -290,10 +276,10 @@ export const useTradeSlipState = (): UseTradeslipState => {
     return new Decimal(0);
   }, [data]);
 
-  const transaction: SubmittableExtrinsic<
+  const transaction: null | SubmittableExtrinsic<
     "promise",
     ISubmittableResult
-  > | null = useMemo(() => {
+  > = useMemo(() => {
     if (data && sdk && isRpcSdk(sdk)) {
       const transactions = items
         .map((item) => {
@@ -350,12 +336,7 @@ export const useTradeSlipState = (): UseTradeslipState => {
             );
           }
         })
-        .filter(
-          (
-            a: null | SubmittableExtrinsic<"promise", ISubmittableResult>,
-          ): a is SubmittableExtrinsic<"promise", ISubmittableResult> =>
-            a !== null,
-        );
+        .filter(isNotNull);
 
       if (transactions.length) {
         return sdk.context.api.tx.utility.batch(transactions);
@@ -382,29 +363,12 @@ export const useTradeSlipState = (): UseTradeslipState => {
     },
   );
 
-  const get = (key: TradeSlipItemDataKey) => data.get(key);
-
-  const submit = () => {
-    if (!isTransacting && transaction) {
-      const { signer } = wallets.getActiveSigner() as any;
-      transaction.signAndSend(
-        wallets.activeAccount.address,
-        { signer },
-        (result) => {
-          if (result.isFinalized) {
-            console.log("finalized");
-          }
-        },
-      );
-    }
-  };
+  const get = (item: TradeSlipItem) => data.get(itemKey(item));
 
   return {
     get,
     total,
     transaction,
     transactionFees,
-    isTransacting,
-    submit,
   };
 };
