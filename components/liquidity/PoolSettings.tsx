@@ -133,7 +133,7 @@ const PoolSettings: FC<{
       data.map((row) => ({
         ...row,
         amount,
-        value: (+amount * +row.price).toFixed(0),
+        value: row.price.price.mul(amount).toFixed(0),
       })),
     );
   };

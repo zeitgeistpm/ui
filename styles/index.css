@@ -28,6 +28,16 @@ html {
   }
 }
 
+/* hide number input arrows */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 /* Write your own custom component styles here */
 .btn-blue {
   @apply px-4 py-2 font-bold text-white bg-blue-500 rounded;
@@ -93,7 +103,7 @@ html {
   border-radius: 3px;
 }
 
-#marketLayoutContent>* {
+#marketLayoutContent > * {
   @apply w-full;
 }
 
@@ -163,7 +173,7 @@ html {
   line-height: 1.5;
 }
 
-.card .card-foot>div {
+.card .card-foot > div {
   font-size: 0.625rem;
 }
 
@@ -260,7 +270,7 @@ td:last-child {
   background-clip: padding-box;
 }
 
-.dark>* ::-webkit-scrollbar-thumb {
+.dark > * ::-webkit-scrollbar-thumb {
   background: #1d2533;
 }
 
@@ -277,17 +287,19 @@ td:last-child {
 }
 
 /* Skeleton */
-.dark>* .MuiSkeleton-root {
+.dark > * .MuiSkeleton-root {
   height: 1.2em;
   display: block;
   background-color: #141a24 !important;
 }
 
-.dark>* .MuiSkeleton-wave::after {
-  background: linear-gradient(90deg,
-      transparent,
-      #1d2533,
-      transparent) !important;
+.dark > * .MuiSkeleton-wave::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #1d2533,
+    transparent
+  ) !important;
 }
 
 * .MuiSkeleton-root {
@@ -297,10 +309,12 @@ td:last-child {
 }
 
 * .MuiSkeleton-wave::after {
-  background: linear-gradient(90deg,
-      transparent,
-      #d9e3ee,
-      transparent) !important;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #d9e3ee,
+    transparent
+  ) !important;
 }
 
 .auth-page {
@@ -586,8 +600,8 @@ td:last-child {
   }
 
   77% {
-    opacity: .9;
-    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1)
+    opacity: 0.9;
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
 
   100% {
@@ -691,7 +705,6 @@ td:last-child {
 }
 
 @keyframes bounceIn {
-
   from,
   20%,
   40%,
