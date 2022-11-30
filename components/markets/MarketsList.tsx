@@ -11,7 +11,8 @@ import { useStore } from "lib/stores/Store";
 import { useContentScrollTop } from "components/context/ContentDimensionsContext";
 import { useMarkets } from "lib/hooks/queries/useMarkets";
 import { MarketOutcomes } from "lib/types/markets";
-import MarketFilter from "./market-filter";
+import { MarketFilter } from "lib/types/market-filter";
+import MarketFilterSelection from "./market-filter";
 import MarketCard from "./market-card";
 
 export type MarketsListProps = {
@@ -28,6 +29,7 @@ const scrollRestoration = makeAutoObservable({
 const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const store = useStore();
   const { markets: marketsStore } = store;
+  const [filters, setFilters] = useState<MarketFilter[]>([]);
 
   const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
@@ -82,7 +84,10 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
 
   return (
     <div className={"pt-ztg-46 mb-[38px]" + className}>
-      <MarketFilter />
+      <MarketFilterSelection
+        initialFilters={filters}
+        onFiltersChange={setFilters}
+      />
       <div className="grid grid-cols-3 gap-[30px]">
         {markets?.map((market) => {
           return (

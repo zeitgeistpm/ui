@@ -2,7 +2,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets";
 import { useStore } from "lib/stores/Store";
-import { MarketStatus } from "lib/types";
+import { MarketStatus } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
 import { useSdkv2 } from "../useSdkv2";
 
