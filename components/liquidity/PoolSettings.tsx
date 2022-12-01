@@ -12,13 +12,11 @@ import {
   calcWeightGivenSpotPrice,
   PriceLock,
 } from "lib/util/weight-math";
-import { AmountInput } from "components/ui/inputs";
 
 export interface PoolAssetRowData {
   assetColor: string;
   asset: string;
   weight: string;
-  percent: string;
   amount: string;
   price: PriceLock;
   value: string;
@@ -41,8 +39,7 @@ export const poolRowDataFromOutcomes = (
       return {
         assetColor: outcome.color,
         asset: outcome.ticker,
-        weight: weight.toFixed(2),
-        percent: `${weight.toFixed(2)}%`,
+        weight: weight.toFixed(0),
         amount: "100",
         price: {
           price: new Decimal(ratio.toString()),
@@ -54,9 +51,8 @@ export const poolRowDataFromOutcomes = (
     {
       assetColor: ZTG_BLUE_COLOR,
       asset: tokenSymbol,
-      weight: "100",
+      weight: "64",
       amount: "100",
-      percent: "100.00",
       price: {
         price: new Decimal(1),
         locked: true,
@@ -93,19 +89,14 @@ const PriceSetter = ({
     onChange({ price: newPrice, locked: true });
   };
   return (
-    <div className="flex items-center">
+    <div className="flex items-center justify-center">
       <input
-        className="h-ztg-40 w-[100px] rounded-ztg-5 bg-sky-200 text-right !pr-ztg-8"
+        className="h-ztg-40 w-[100px] rounded-ztg-5 bg-sky-200 text-right p-ztg-8 focus:outline-none"
         value={price}
         type="number"
         disabled={disabled}
         onChange={handlePriceChange}
       />
-      {/* <AmountInput
-        className="h-ztg-40 w-full rounded-ztg-5 bg-sky-200 text-right !pr-ztg-8"
-        value={price.toString()}
-        onChange={handlePriceChange}
-      /> */}
       <button
         className="flex items-center justify-center w-[30px] h-[30px] bg-sky-200 rounded-full ml-[20px] flex-grow-0"
         onClick={handleLockClick}
@@ -155,7 +146,7 @@ const PoolSettings: FC<{
     const prices = calcPrices(priceLocks);
     prices.forEach((p) => console.log(p.price.toString()));
 
-    const ztgWeight = new Decimal(100);
+    const ztgWeight = new Decimal(64);
     const tokenAmount = new Decimal(data[0].amount);
     //todo: can weight be ""?
     const weights = prices.map((price) =>

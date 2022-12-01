@@ -99,5 +99,17 @@ describe("weight math", () => {
       expect(newPrices[1].price.toNumber()).toEqual(0.15);
       expect(newPrices[2].price.toNumber()).toEqual(0.15);
     });
+
+    test("should set price to zero if calculated as a negative number", () => {
+      const prices: PriceLock[] = [
+        { price: new Decimal(1), locked: true },
+        { price: new Decimal(0.5), locked: true },
+        { price: new Decimal(0.5), locked: false },
+      ];
+
+      const newPrices = calcPrices(prices);
+
+      expect(newPrices[2].price.toNumber()).toEqual(0);
+    });
   });
 });

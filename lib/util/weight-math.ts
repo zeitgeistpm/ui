@@ -24,7 +24,12 @@ export const calcPrices = (prices: PriceLock[]): PriceLock[] => {
   const newPrices = prices.map((price) => {
     return {
       ...price,
-      price: price.locked === true ? price.price : distributedPrice,
+      price:
+        price.locked === true
+          ? price.price
+          : distributedPrice.greaterThan(0)
+          ? distributedPrice
+          : new Decimal(0),
     };
   });
 

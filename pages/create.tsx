@@ -480,13 +480,9 @@ const CreatePage: NextPage = observer(() => {
 
     const numOutcomes = metadata.categories.length;
 
-    const baseWeight = (1 / numOutcomes) * 10 * ZTG;
-
-    const weightsNums = poolRows.slice(0, -1).map((_) => {
-      return baseWeight;
+    const weights = poolRows.slice(0, -1).map((row) => {
+      return new Decimal(row.weight).mul(ZTG).toFixed(0, Decimal.ROUND_DOWN);
     });
-
-    const weights = [...weightsNums.map((w) => Math.floor(w).toString())];
 
     const baseAssetAmount = (
       Number([...poolRows].pop().amount) * ZTG
