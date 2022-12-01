@@ -30,8 +30,6 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
       [item, state],
     );
 
-    console.log(state?.max.div(ZTG).toString());
-
     return (
       <div className="rounded-ztg-10 mb-ztg-15 relative">
         {!state ? (
