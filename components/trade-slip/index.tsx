@@ -11,7 +11,6 @@ import { slippagePercentageAtom } from "lib/state/tradeslip/slippage";
 import { useTradeSlipState } from "lib/state/tradeslip/state";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
-import { tradeSlipForm } from "lib/stores/TradeSlipStore";
 import { extractIndexFromErrorHex } from "lib/util/error-table";
 import { extrinsicCallback } from "lib/util/tx";
 import { observer } from "mobx-react";
@@ -142,7 +141,6 @@ const TradeSlip = observer(() => {
             <SlippageSettingInput
               value={slippage.toString()}
               onChange={(val) => setSlippage(Number(val))}
-              form={tradeSlipForm}
             />
           </div>
           <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
