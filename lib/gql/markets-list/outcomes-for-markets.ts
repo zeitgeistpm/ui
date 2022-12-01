@@ -28,6 +28,7 @@ export const getOutcomesForMarkets = async (
     .filter((m) => m.pool != null)
     .map((m) => m.pool.poolId)
     .sort();
+
   const response = await client.request<{
     assets: {
       price: number;
@@ -36,31 +37,42 @@ export const getOutcomesForMarkets = async (
       poolId: number;
     }[];
   }>(assetsQuery, { poolIds });
+
   const { assets } = response;
+
   return markets.reduce((prev, market) => {
     const filteredAssets = assets.filter(
       (a) => a.poolId === market.pool?.poolId,
     );
+
     const { marketId, categories } = market;
+
     const type =
       market.marketType.categorical != null ? "categorical" : "scalar";
+
     const prevOutcomes = prev[marketId] == null ? [] : [...prev[marketId]];
+
     if (filteredAssets.length === 0) {
       return {
         ...prev,
         [marketId]: [...prevOutcomes, ...categories],
       };
     }
+
     const res = { ...prev };
+
     let currentOutcomes = [];
+
     for (const asset of filteredAssets) {
       const assetIdJson = JSON.parse(asset.assetId);
       let categoryIndex: number;
+
       if (type === "categorical") {
         categoryIndex = assetIdJson["categoricalOutcome"][1];
       } else {
         categoryIndex = assetIdJson["scalarOutcome"][1] === "Long" ? 0 : 1;
       }
+
       const category = categories[categoryIndex];
       const currentOutcome = {
         ...category,
@@ -68,9 +80,11 @@ export const getOutcomesForMarkets = async (
         assetId: asset.assetId,
         amountInPool: asset.amountInPool,
       };
+
       currentOutcomes = [...currentOutcomes, currentOutcome];
     }
     res[marketId] = [...prevOutcomes, ...currentOutcomes];
+
     return res;
   }, {});
 };
