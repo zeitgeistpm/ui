@@ -24,7 +24,9 @@ export const marketDetailsQuery = gql`
     tags
     status
     scalarType
-    poolId
+    pool {
+      poolId
+    }
     period {
       end
     }
@@ -100,7 +102,9 @@ export class MarketPreloader {
       orderingStr = ordering === "asc" ? "DESC" : "ASC";
     }
     const orderByQuery =
-      orderBy === "newest" ? `marketId_${orderingStr}` : `period_end_${orderingStr}`;
+      orderBy === "newest"
+        ? `marketId_${orderingStr}`
+        : `period_end_${orderingStr}`;
 
     const variables = {
       statuses,
@@ -188,7 +192,7 @@ export class MarketPreloader {
       ${whereCreatorOrOracle}
       creator_eq: $creator
       oracle_eq: $oracle
-      poolId_gte: $minPoolId
+      pool: { poolId_gte: $minPoolId }
       outcomeAssets_containsAny: $assets
     }`;
 
@@ -345,7 +349,8 @@ export class MarketPreloader {
           ...data,
           id: data.marketId,
           preloaded: true,
-          poolExists: data.poolId != null,
+          poolExists: data.pool?.poolId != null,
+          poolId: data.pool?.poolId ?? null,
           type: data.marketType["scalar"] == null ? "categorical" : "scalar",
           bounds,
         },

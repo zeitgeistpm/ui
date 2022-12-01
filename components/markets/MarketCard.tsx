@@ -352,7 +352,7 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
         ...result,
         {
           assetId: JSON.stringify(assetId),
-          price: (await market.assetPriceInZTG(assetId)).toNumber(),
+          price: (await market.assetPriceInZTG(assetId))?.toNumber() ?? 0,
         },
       ];
     }
@@ -398,7 +398,7 @@ const MarketCard: FC<MarketCardProps> = observer(({ market }) => {
   }, [market, marketStorePool]);
 
   useEffect(() => {
-    if (assets == null) {
+    if (assets == null || marketStore?.pool == null) {
       return setPrediction(null);
     }
     const preloaded = isPreloadedMarket(market);
