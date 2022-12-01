@@ -16,6 +16,7 @@ import LiquidityPoolsBox from "../liquidity/LiquidityPoolsBox";
 import Drawer from "./Drawer";
 import Tabs from "../ui/Tabs";
 import ExchangeBox from "../exchange/ExchangeBox";
+import { useTradeslipItems } from "lib/state/tradeslip/items";
 
 const ZTGSummary = observer(() => {
   const { ztgInfo } = useStore();
@@ -115,7 +116,7 @@ const Box = observer(
 const RightDrawer = observer(() => {
   const navigationStore = useNavigationStore();
   const { currentPage } = navigationStore;
-  const tradeSlipStore = useTradeSlipStore();
+  const tradeslipItems = useTradeslipItems();
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [market, setMarket] = useState<MarketStore | null>();
   const router = useRouter();
@@ -175,7 +176,7 @@ const RightDrawer = observer(() => {
 
   useEffect(() => {
     setActiveTabIndex(0);
-  }, [tradeSlipStore.tradeSlipItems.length]);
+  }, [tradeslipItems.items.length]);
 
   const handleMarketChange = async () => {
     const market = await markets.getMarket(Number(marketid));
