@@ -2996,16 +2996,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "@zeitgeistpm/sdk@npm:0.10.0"
+"@zeitgeistpm/sdk@npm:^0.10.2":
+  version: 0.10.2
+  resolution: "@zeitgeistpm/sdk@npm:0.10.2"
   dependencies:
     "@polkadot/api": ^9.6.2
     "@polkadot/keyring": ^10.1.11
     "@polkadot/util": ^10.1.11
     "@polkadot/util-crypto": ^10.1.11
     "@zeitgeistpm/type-defs": ^0.10.0
-    "@zeitgeistpm/types": ^0.10.0
+    "@zeitgeistpm/types": ^0.10.1
     commander: ^7.2.0
     decimal.js: ^10.3.1
     graphql: 15.x
@@ -3013,7 +3013,7 @@ __metadata:
     ipfs-http-client: ^49.0.4
     it-all: ^1.0.4
     uint8arrays: ^2.1.4
-  checksum: 0d75d5a36c25bdca3ec3813a9b1e7aad2dfe01924bfb234fa18dec2883e376ec2f447544f6982406ed3a1269a325d12486b30d2b4c280e5b07dc2432b3f72275
+  checksum: d452daaa5798b55ee1c41e901e17ddc017fd45d0029140020d0beb6c92aec799297322d4e23b8c21d640d3d35e1ad00d7c912acf77e81b08bef592d4b8a04ea6
   languageName: node
   linkType: hard
 
@@ -3039,14 +3039,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/types@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "@zeitgeistpm/types@npm:0.10.0"
+"@zeitgeistpm/types@npm:^0.10.1":
+  version: 0.10.1
+  resolution: "@zeitgeistpm/types@npm:0.10.1"
   dependencies:
     "@polkadot/types": 9.6.2
     "@zeitgeistpm/type-defs": ^0.10.0
     axios: ^0.21.1
-  checksum: e1cde585721b7f4e4e2f35fbcc769be9a425b1d88a3ebdb2524f13eef32066c93784254b7067402557a61fbcd9183b721b54f41f2bb6b690b65078f401e8704f
+  checksum: d4307390b77a52f114689fa0e5aefe64f7b33b61029353d2d4875924dfa9be3b584d02b3f3d95eb03431a6616e3f5875433215f03706e3f6c98765714eff9dbb
   languageName: node
   linkType: hard
 
@@ -3077,7 +3077,7 @@ __metadata:
     "@zeitgeistpm/avatara-nft-sdk": ^1.3.0
     "@zeitgeistpm/avatara-react": ^1.3.0
     "@zeitgeistpm/avatara-util": ^1.2.0
-    "@zeitgeistpm/sdk": ^0.10.0
+    "@zeitgeistpm/sdk": ^0.10.2
     "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.6.6"
     "@zeitgeistpm/utility": ^2.4.2
     autoprefixer: 10.2.5

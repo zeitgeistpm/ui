@@ -1,12 +1,10 @@
 import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
-import {
-  IndexedMarketCardData,
-  MarketCategories,
-  MarketCategory,
-} from "components/markets/market-card";
+import { IndexedMarketCardData } from "components/markets/market-card";
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS, ZTG } from "lib/constants";
+import { MarketOutcomes, MarketOutcome } from "lib/types/markets";
+import { getCurrentPrediction } from "lib/util/assets";
 
 const poolQuery = gql`
   query TrendingMarkets($dateTwoWeeksAgo: DateTime) {
@@ -104,41 +102,15 @@ const getTrendingMarkets = async (
 
       const assets = assetsRes.assets;
 
-      let prediction: string;
-      if (market.marketType.categorical) {
-        let [highestPrice, highestPriceIndex] = [0, 0];
-        assets.forEach((asset, index) => {
-          if (asset.price > highestPrice) {
-            highestPrice = asset.price;
-            highestPriceIndex = index;
-          }
-        });
+      const prediction = getCurrentPrediction(assets, market);
 
-        prediction = market.categories[highestPriceIndex].name;
-      } else {
-        const bounds: number[] = market.marketType.scalar
-          .split(",")
-          .map((b) => Number(b));
-
-        const range = Number(bounds[1]) - Number(bounds[0]);
-        const significantDigits = bounds[1].toString().length;
-        const longPrice = assets[0].price;
-        const shortPrice = assets[1].price;
-
-        const shortPricePrediction = range * (1 - shortPrice) + bounds[0];
-        const longPricePrediction = range * longPrice + bounds[0];
-        const averagePricePrediction =
-          (longPricePrediction + shortPricePrediction) / 2;
-        prediction = new Decimal(averagePricePrediction)
-          .toSignificantDigits(significantDigits)
-          .toString();
-      }
-
-      const marketCategories: MarketCategories = market.categories.map(
+      const marketCategories: MarketOutcomes = market.categories.map(
         (category, index) => {
-          const marketCategory: MarketCategory = {
+          const asset = assets[index];
+          const marketCategory: MarketOutcome = {
             ...category,
-            assetId: JSON.parse(market.outcomeAssets[index]),
+            assetId: market.outcomeAssets[index],
+            price: asset.price,
           };
 
           return marketCategory;
@@ -153,7 +125,7 @@ const getTrendingMarkets = async (
         prediction: prediction,
         volume: new Decimal(pool.volume).div(ZTG).toNumber(),
         baseAsset: pool.baseAsset,
-        categories: marketCategories,
+        outcomes: marketCategories,
       };
 
       return trendingMarket;

@@ -1,18 +1,18 @@
+import { MarketOutcomes } from "lib/types/markets";
 import Link from "next/link";
 import { ExternalLink, X } from "react-feather";
-import { MarketCategories } from ".";
-import MarketCardOverlayCategories from "./overlay-categories";
+import MarketCardOverlayOutcomes from "./overlay-categories";
 
 export type MarketCardOverlayProps = {
   marketId: number;
-  categories: MarketCategories;
+  outcomes: MarketOutcomes;
   className?: string;
   onCloseIconClick?: () => void;
 };
 
 const MarketCardOverlay = ({
   marketId,
-  categories,
+  outcomes,
   className = "",
   onCloseIconClick,
 }: MarketCardOverlayProps) => {
@@ -26,7 +26,7 @@ const MarketCardOverlay = ({
       <div className="flex flex-col mb-[25px]">
         <div className="flex flex-row justify-between">
           <div className="font-lato font-bold text-ztg-16-150">
-            {categories.length} Outcomes
+            {outcomes.length} Outcomes
           </div>
           <X
             onClick={onCloseIconClick}
@@ -38,10 +38,7 @@ const MarketCardOverlay = ({
           Showing 1-4
         </div> */}
       </div>
-      <MarketCardOverlayCategories
-        marketId={marketId}
-        categories={categories}
-      />
+      <MarketCardOverlayOutcomes marketId={marketId} outcomes={outcomes} />
       <Link
         href={`/markets/${marketId}`}
         className="flex flex-row mt-[30px] h-[24px] items-center cursor-pointer"
