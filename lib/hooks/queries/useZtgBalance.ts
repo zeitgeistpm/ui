@@ -1,6 +1,7 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { isRpcData, isRpcSdk, PoolGetQuery } from "@zeitgeistpm/sdk-next";
+import { isRpcData, isRpcSdk, NA, PoolGetQuery } from "@zeitgeistpm/sdk-next";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import Decimal from "decimal.js";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "ztg-balance";
@@ -12,10 +13,15 @@ export const useZtgBalance = (account?: KeyringPairOrExtSigner) => {
     [id, rootKey, account?.address],
     async () => {
       if (account && isRpcSdk(sdk)) {
-        return sdk.context.api.query.system.account(account.address);
+        const balance = await sdk.context.api.query.system.account(
+          account.address,
+        );
+        return new Decimal(balance.data.free.toString());
       }
+      return NA;
     },
     {
+      initialData: NA,
       enabled: Boolean(sdk && account && isRpcSdk(sdk)),
     },
   );

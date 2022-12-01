@@ -6,7 +6,7 @@ import { TradeSlipItemData } from "lib/state/tradeslip/state";
 import { useStore } from "lib/stores/Store";
 import { debounce } from "lodash-es";
 import { observer } from "mobx-react";
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { X } from "react-feather";
 import { AmountInput } from "../ui/inputs";
 
@@ -29,6 +29,8 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
       () => debounce((val: string) => onChange(new Decimal(val || 0)), 300),
       [item, state],
     );
+
+    console.log(state?.max.div(ZTG).toString());
 
     return (
       <div className="rounded-ztg-10 mb-ztg-15 relative">
@@ -79,7 +81,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
                     </div>
                     <div className="font-lato font-bold text-ztg-12-150 ml-auto text-black dark:text-white">
                       @{state?.asset?.price.div(ZTG).toFixed(4)}{" "}
-                      {config.tokenSymbol}
+                      {config?.tokenSymbol}
                     </div>
                   </div>
                   <div className="h-ztg-15 w-full mb-ztg-10 font-lato text-ztg-10-150 flex items-center text-gray-dark-3">
@@ -117,7 +119,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
                           : state.sum
                               ?.div(ZTG)
                               .toFixed(4, Decimal.ROUND_DOWN)}{" "}
-                        {config.tokenSymbol}
+                        {config?.tokenSymbol}
                       </div>
                     </div>
                   </div>
@@ -127,7 +129,7 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
                       {amount.mul(state?.swapFee.div(ZTG) ?? 0).toString()}{" "}
                       {item.action === "sell"
                         ? state?.asset.category.ticker?.toUpperCase()
-                        : config.tokenSymbol}
+                        : config?.tokenSymbol}
                     </div>
                   </div>
                 </>

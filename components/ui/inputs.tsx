@@ -315,6 +315,12 @@ export const AmountInput: FC<AmountInputProps> = observer(
         !initialBlur && setInitialBlur(true);
       };
 
+      useEffect(() => {
+        if (val && max && Number(val) > Number(max)) {
+          setVal(checkVal(max, amountRegex));
+        }
+      }, [max]);
+
       return (
         <div className={`relative ${containerClass}`}>
           {leftComponent && leftComponent}

@@ -8,6 +8,7 @@ import {
   getIndexOf,
   getMarketIdOf,
   IndexerContext,
+  isNA,
   isRpcSdk,
   Market,
   Pool,
@@ -16,7 +17,7 @@ import {
 import Decimal from "decimal.js";
 import { atom, useAtom } from "jotai";
 import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
-import { useAccountAssetBalance } from "lib/hooks/queries/useAccountAssetBalance";
+import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalances";
 import { usePoolsByIds } from "lib/hooks/queries/usePoolsByIds";
 import { usePoolZtgBalance } from "lib/hooks/queries/usePoolZtgBalance";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
@@ -136,14 +137,14 @@ export const useTradeSlipState = (): UseTradeslipState => {
 
   const { data: poolZtgBalances } = usePoolZtgBalance(pools ?? []);
 
-  const { data: traderAssets } = useAccountAssetBalance(
+  const { data: traderAssets } = useAccountAssetBalances(
     items.map((item) => ({
       account: signer?.address,
       assetId: item.assetId,
     })),
   );
 
-  const { data: poolAssetBalances } = useAccountAssetBalance(
+  const { data: poolAssetBalances } = useAccountAssetBalances(
     items.map((item) => ({
       account: pools?.find((p) => p.marketId === getMarketIdOf(item.assetId))
         ?.accountId,
@@ -190,17 +191,24 @@ export const useTradeSlipState = (): UseTradeslipState => {
           ? getAssetWeight(pool, asset?.assetId).unwrap()
           : undefined;
 
-        const ztg = new Decimal(traderZtgBalance?.data.free.toString() ?? 0);
-        const assets = new Decimal(traderAssetBalance?.free.toString() ?? 0);
+        const assets = new Decimal(
+          isNA(traderAssetBalance)
+            ? Infinity
+            : traderAssetBalance?.free.toString() ?? 0,
+        );
 
         const tradeablePoolBalance = new Decimal(
-          poolAssetBalance?.free.toString() ?? 0,
+          isNA(poolAssetBalance)
+            ? Infinity
+            : poolAssetBalance.free.toString() ?? 0,
         ).mul(MAX_IN_OUT_RATIO);
 
         let max = new Decimal(0);
 
         if (item.action === "buy") {
-          const maxTokens = ztg.div(asset?.price.div(ZTG) ?? 0);
+          const maxTokens = isNA(traderZtgBalance)
+            ? new Decimal(Infinity)
+            : traderZtgBalance.div(asset?.price.div(ZTG) ?? 0);
           if (tradeablePoolBalance?.lte(maxTokens)) {
             max = tradeablePoolBalance;
           } else {
@@ -220,14 +228,14 @@ export const useTradeSlipState = (): UseTradeslipState => {
           sum = calcInGivenOut(
             poolZtgBalance?.balance.data.free.toString(),
             ztgWeight,
-            poolAssetBalance?.free.toString(),
+            isNA(poolAssetBalance) ? 0 : poolAssetBalance.free.toString(),
             assetWeight,
             amount.mul(ZTG),
             swapFee.div(ZTG),
           );
         } else {
           sum = calcOutGivenIn(
-            poolAssetBalance?.free.toString(),
+            isNA(poolAssetBalance) ? 0 : poolAssetBalance.free.toString(),
             assetWeight,
             poolZtgBalance?.balance.data.free.toString(),
             ztgWeight,
@@ -246,14 +254,19 @@ export const useTradeSlipState = (): UseTradeslipState => {
           poolZtgBalance: new Decimal(
             poolZtgBalance?.balance.data.free.toString(),
           ),
-          traderAssetBalance: new Decimal(traderAssetBalance?.free.toString()),
-          poolAssetBalance: new Decimal(poolAssetBalance?.free.toString()),
+          traderAssetBalance: new Decimal(
+            isNA(traderAssetBalance) ? 0 : traderAssetBalance.free.toString(),
+          ),
+          poolAssetBalance: new Decimal(
+            isNA(poolAssetBalance) ? 0 : poolAssetBalance.free.toString(),
+          ),
         });
       }, new Map<TradeSlipItemDataKey, TradeSlipItemData>());
     }
 
     return new Map<TradeSlipItemDataKey, TradeSlipItemData>();
   }, [
+    signer,
     items,
     pools,
     saturatedIndex,

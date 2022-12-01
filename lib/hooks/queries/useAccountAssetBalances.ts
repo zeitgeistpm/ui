@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { AssetId, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { AssetId, isRpcSdk, NA } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "account-asset-balance";
 
-export const useAccountAssetBalance = (
+export const useAccountAssetBalances = (
   pairs: {
-    account: string;
+    account?: string;
     assetId: AssetId;
   }[],
 ) => {
@@ -16,9 +16,13 @@ export const useAccountAssetBalance = (
     [id, rootKey, pairs],
     async () => {
       if (isRpcSdk(sdk)) {
-        console.log("useAccountAssetBalance query");
-        return sdk.context.api.query.tokens.accounts.multi(
-          pairs.map(({ account, assetId }) => [account, assetId]),
+        return Promise.all(
+          pairs.map(async ({ account, assetId }) => {
+            if (!account) {
+              return NA;
+            }
+            return sdk.context.api.query.tokens.accounts(account, assetId);
+          }),
         );
       }
       return [];

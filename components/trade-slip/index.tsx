@@ -1,8 +1,4 @@
-import { SubmittableExtrinsic } from "@polkadot/api/types";
-import { Signer, ISubmittableResult } from "@polkadot/types/types";
-
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import * as Te from "@zeitgeistpm/utility/dist/taskeither";
 import Decimal from "decimal.js";
 import { useAtom } from "jotai";
 import { ZTG } from "lib/constants";
