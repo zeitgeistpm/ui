@@ -2342,18 +2342,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:4.13.0":
-  version: 4.13.0
-  resolution: "@tanstack/query-core@npm:4.13.0"
-  checksum: 11cb95be4dc6e1ba3f0f4eb04c255eab7fa5eca3441d6e698e2c6d03c84c03efaf34d475594e259593d76f584af0c0e830c7d868a682d6dc0f61d1a439728d12
+"@tanstack/query-core@npm:4.19.0":
+  version: 4.19.0
+  resolution: "@tanstack/query-core@npm:4.19.0"
+  checksum: ca8bb8cbba8ff7f6f223731a637eadf0c47943d84e964f24b02c8092d6629b84bcfbad897da8193004566e7618cc4746a9d9be67d2d4b441225c6cce5c802a7a
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^4.13.0":
-  version: 4.13.0
-  resolution: "@tanstack/react-query@npm:4.13.0"
+"@tanstack/react-query@npm:^4.19.0":
+  version: 4.19.0
+  resolution: "@tanstack/react-query@npm:4.19.0"
   dependencies:
-    "@tanstack/query-core": 4.13.0
+    "@tanstack/query-core": 4.19.0
     use-sync-external-store: ^1.2.0
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -2364,7 +2364,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: e538b585e4c2b4a8ff84c17509f4ce226e18e3e862553b6a9ca90e29c200db4ec7ab4f400f19ef4846a76c51babe0db120c54779054805fbecdcd29b369caf0e
+  checksum: bce0a8a1b44e6c0a9732615158408e432ee94173e2bddef68d1384bbdd40e59a4dd1b023ac194a757d653b76a451abb8c1493f591e027230bdf13a371179d084
   languageName: node
   linkType: hard
 
@@ -2858,17 +2858,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/augment-api@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "@zeitgeistpm/augment-api@npm:2.2.1"
-  peerDependencies:
-    "@polkadot/api-base": "*"
-    "@polkadot/rpc-core": "*"
-    "@polkadot/types": "*"
-  checksum: 684f1dc6de17e579b34a2cd338413de114a4fb58e198fcce1ba02acc8aaec3fd9c1f98e2dc4bbb44e0e1ebba134c577d03a2cbbc89d3e1dfee315a4b34e189bf
-  languageName: node
-  linkType: hard
-
 "@zeitgeistpm/augment-api@npm:^2.2.2":
   version: 2.2.2
   resolution: "@zeitgeistpm/augment-api@npm:2.2.2"
@@ -2877,6 +2866,17 @@ __metadata:
     "@polkadot/rpc-core": "*"
     "@polkadot/types": "*"
   checksum: 5848fe32d1707ce8ddf273ccac65f07eb0999eb1934bac3f40bbd84e25e9ad64009abda7624ed0ec236ef4b4b3600ce7f88b9b8e5b1bea0720c64f11304425e1
+  languageName: node
+  linkType: hard
+
+"@zeitgeistpm/augment-api@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "@zeitgeistpm/augment-api@npm:2.3.0"
+  peerDependencies:
+    "@polkadot/api-base": "*"
+    "@polkadot/rpc-core": "*"
+    "@polkadot/types": "*"
+  checksum: 60b13dfc521cb997312e182f7b55d0407a080ff44eebf408907ce9785eb3df76cab918232490ce745568263ade0946cbb454b863291ddcef4c0d83a318d3487b
   languageName: node
   linkType: hard
 
@@ -2971,11 +2971,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.6.6":
-  version: 2.6.6
-  resolution: "@zeitgeistpm/sdk@npm:2.6.6"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.7.0":
+  version: 2.7.0
+  resolution: "@zeitgeistpm/sdk@npm:2.7.0"
   dependencies:
-    "@zeitgeistpm/augment-api": ^2.2.2
+    "@zeitgeistpm/augment-api": ^2.3.0
     "@zeitgeistpm/indexer": ^2.4.0
     "@zeitgeistpm/rpc": ^2.2.5
     "@zeitgeistpm/utility": ^2.4.2
@@ -2992,7 +2992,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: 2a7d0b410884491df758d422abed2c5a4947e2bee1a91a2b96f751ae4d8e67f67eb1cc83838e5c4080800aaf1286dccefdec46d2b9e982c07dcac21d650a2c96
+  checksum: 4cad4f31b94ae72a3e86f9f6da65d8639e579a4ba1f628d78219485211f2162d288a8bcc1e620783106b5cf6a0965caba32f554c3aef96ce8054b76da57560a3
   languageName: node
   linkType: hard
 
@@ -3063,7 +3063,7 @@ __metadata:
     "@polkadot/ui-keyring": ^2.4.1
     "@polkadot/wasm-crypto": ^6.3.1
     "@tailwindcss/line-clamp": ^0.4.2
-    "@tanstack/react-query": ^4.13.0
+    "@tanstack/react-query": ^4.19.0
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.4.0
     "@types/flexsearch": ^0.7.2
@@ -3073,12 +3073,12 @@ __metadata:
     "@types/object-hash": ^2.2.1
     "@types/react": ^17.0.38
     "@types/react-color": ^3.0.6
-    "@zeitgeistpm/augment-api": ^2.2.1
+    "@zeitgeistpm/augment-api": ^2.3.0
     "@zeitgeistpm/avatara-nft-sdk": ^1.3.0
     "@zeitgeistpm/avatara-react": ^1.3.0
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^0.10.2
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.6.6"
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.7.0"
     "@zeitgeistpm/utility": ^2.4.2
     autoprefixer: 10.2.5
     axios: ^0.21.4
