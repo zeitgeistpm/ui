@@ -141,14 +141,12 @@ const PoolSettings: FC<{
       };
     });
 
-    const ztgPriceRow = priceLocks.pop();
+    priceLocks.pop();
 
     const prices = calcPrices(priceLocks);
-    prices.forEach((p) => console.log(p.price.toString()));
 
     const ztgWeight = new Decimal(64);
     const tokenAmount = new Decimal(data[0].amount);
-    //todo: can weight be ""?
     const weights = prices.map((price) =>
       calcWeightGivenSpotPrice(
         tokenAmount,
