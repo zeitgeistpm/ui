@@ -4,7 +4,7 @@ import { useAtom } from "jotai";
 import { ZTG } from "lib/constants";
 import { useTradeslipItems } from "lib/state/tradeslip/items";
 import { slippagePercentageAtom } from "lib/state/tradeslip/slippage";
-import { useTradeSlipState } from "lib/state/tradeslip/state";
+import { itemKey, useTradeSlipState } from "lib/state/tradeslip/state";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { extractIndexFromErrorHex } from "lib/util/error-table";
@@ -105,15 +105,13 @@ const TradeSlip = observer(() => {
         {tradeslipItems.items.map((item) => {
           return (
             <TradeSlipContainer
+              key={itemKey(item)}
               item={item}
               state={tradeSlipState.get(item)}
               onChange={(amount) => {
                 tradeslipItems.put({ ...item, amount: amount.toNumber() });
               }}
               value={new Decimal(item.amount)}
-              key={`tradeSlipItem${JSON.stringify(item.assetId)}-${
-                item.action
-              }`}
             />
           );
         })}

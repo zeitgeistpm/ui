@@ -22,6 +22,7 @@ export const useZtgBalance = (account?: KeyringPairOrExtSigner) => {
     },
     {
       initialData: NA,
+      keepPreviousData: true,
       enabled: Boolean(sdk && account && isRpcSdk(sdk)),
     },
   );

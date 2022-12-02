@@ -13,7 +13,7 @@ export const useAccountAssetBalances = (
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, rootKey, pairs],
+    [id, rootKey, ...pairs],
     async () => {
       if (isRpcSdk(sdk)) {
         return Promise.all(
@@ -29,6 +29,7 @@ export const useAccountAssetBalances = (
     },
     {
       initialData: [],
+      keepPreviousData: true,
       enabled: Boolean(sdk && isRpcSdk(sdk) && pairs && pairs.length),
     },
   );

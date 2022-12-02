@@ -6,7 +6,7 @@ import { TradeSlipItemData } from "lib/state/tradeslip/state";
 import { useStore } from "lib/stores/Store";
 import { debounce } from "lodash-es";
 import { observer } from "mobx-react";
-import { FC, useEffect, useMemo } from "react";
+import { FC, useMemo, useRef } from "react";
 import { X } from "react-feather";
 import { AmountInput } from "../ui/inputs";
 
@@ -16,6 +16,18 @@ export type TradeSlipBoxProps = {
   disabled?: boolean;
   value: Decimal;
   onChange: (value: Decimal) => void;
+};
+
+const keepPreviousValid = function <T>(
+  value: T,
+  isValid = (value: T) => Boolean(value),
+) {
+  const previousValidValue = useRef<T | undefined>(value);
+  if (isValid(value)) {
+    previousValidValue.current = value;
+    return value;
+  }
+  return previousValidValue.current;
 };
 
 const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
@@ -29,6 +41,10 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
       () => debounce((val: string) => onChange(new Decimal(val || 0)), 300),
       [item, state],
     );
+
+    // const state = keepPreviousValid(state, (state) =>
+    //   Boolean(state && !state.sum.isNaN()),
+    // );
 
     return (
       <div className="rounded-ztg-10 mb-ztg-15 relative">
@@ -72,7 +88,9 @@ const TradeSlipContainer = observer<FC<TradeSlipBoxProps>>(
                   <div className="flex items-center h-ztg-30 w-full">
                     <div
                       className="w-ztg-20 h-ztg-20 rounded-full border-2 border-sky-600 flex-shrink-0"
-                      style={{ background: `${state?.asset.category.color}` }}
+                      style={{
+                        background: `${state?.asset.category.color}`,
+                      }}
                     ></div>
                     <div className="uppercase font-space font-bold text-ztg-14-150 ml-ztg-8 mr-ztg-10 text-black dark:text-white">
                       {state?.asset?.category.ticker}
