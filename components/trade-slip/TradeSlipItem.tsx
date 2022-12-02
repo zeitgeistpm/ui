@@ -20,9 +20,7 @@ const TradeSlipItem = observer<FC<TradeSlipItemProps>>(({ item, disabled }) => {
   const { put, removeAsset } = useTradeslipItems();
   const amount = new Decimal(item.amount);
 
-  const { data: state, isFetching } = useTradslipItemState(item);
-
-  console.log(isFetching, state);
+  const { data: state } = useTradslipItemState(item);
 
   const onAmountChange = (val: string) => put({ ...item, amount: Number(val) });
 
