@@ -4,11 +4,7 @@ import { ZTG } from "lib/constants";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useMemo } from "react";
 import { useTradeslipItems } from "./items";
-import {
-  itemKey,
-  rootKey,
-  UseTradslipRemoteDataQuery,
-} from "./tradeslipItemState";
+import { itemKey, rootKey, UseTradeslipItemState } from "./tradeslipItemState";
 
 export const useTradeslipTotalState = () => {
   const [, id] = useSdkv2();
@@ -19,7 +15,7 @@ export const useTradeslipTotalState = () => {
   const { items } = useTradeslipItems();
 
   const tradeslipItemsState = useMemo(() => {
-    return queryClient.getQueriesData<UseTradslipRemoteDataQuery>(key);
+    return queryClient.getQueriesData<UseTradeslipItemState>(key);
   }, [key, items, queryClient.getQueryState(key)]);
 
   const sum = useMemo(() => {

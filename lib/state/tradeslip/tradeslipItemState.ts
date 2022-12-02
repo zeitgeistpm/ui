@@ -33,54 +33,6 @@ import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import objectHash from "object-hash";
 
 /**
- * Hook and state related to a tradeslip item.
- */
-
-export type UseTradeslipItemState = {
-  /**
-   * Market related to the item.
-   */
-  market: Market<Context>;
-  /**
-   * Pool related to the item.
-   */
-  pool: Pool<IndexerContext>;
-  /**
-   * Asset data related to the item.
-   */
-  asset: SaturatedPoolEntryAsset;
-  /**
-   * Max value for the item relative to which action the user is performing,
-   * pool asset balances. and user balances.
-   */
-  max: Decimal;
-  /**
-   * Total cost/gain for the combined transaction.
-   */
-  sum: Decimal;
-  /**
-   * Swap fee for the item transaction.
-   */
-  swapFee: Decimal;
-  /**
-   * Free ztg balance in the assets pool.
-   */
-  poolZtgBalance: Decimal;
-  /**
-   * Free balance the trader has of the items asset.
-   */
-  traderAssetBalance: Decimal;
-  /**
-   * Free balance the pool has of the items asset.
-   */
-  poolAssetBalance: Decimal;
-  /**
-   * The batched transaction for the current tradeslip.
-   */
-  transaction?: SubmittableExtrinsic<"promise", ISubmittableResult> | null;
-};
-
-/**
  * Composite id/key for a certain item by its assetid and action.
  */
 export type TradeSlipItemDataKey = string & { readonly _tag: unique symbol };
@@ -100,7 +52,7 @@ export const rootKey = "trade-slip-item-state";
  * Hook and state related to a tradeslip item.
  */
 
-export type UseTradslipRemoteDataQuery = {
+export type UseTradeslipItemState = {
   /**
    * Pool related to the item.
    */
@@ -151,7 +103,7 @@ export type UseTradslipRemoteDataQuery = {
   max: Decimal;
 };
 
-export const useTradslipItemState = (item: TradeSlipItem) => {
+export const useTradeslipItemState = (item: TradeSlipItem) => {
   const [, id] = useSdkv2();
   const { wallets } = useStore();
   const signer = wallets.activeAccount ? wallets.getActiveSigner() : null;
@@ -229,10 +181,8 @@ export const useTradslipItemState = (item: TradeSlipItem) => {
       tradeablePoolBalance,
   );
 
-  const query = useQuery<UseTradslipRemoteDataQuery>(
-    [id, rootKey, objectHash(item?.assetId)],
-    async () => {
-      if (!enabled) return null;
+  return useMemo(() => {
+    if (enabled) {
       const max = (() => {
         if (isNA(traderZtgBalance)) {
           return new Decimal(0);
@@ -289,16 +239,8 @@ export const useTradslipItemState = (item: TradeSlipItem) => {
         sum,
         max,
       };
-    },
-    {
-      keepPreviousData: true,
-      enabled,
-    },
-  );
+    }
 
-  useEffect(() => {
-    query.refetch();
-  }, [itemKey(item), item?.amount]);
-
-  return query;
+    return null;
+  }, [id, rootKey, enabled, itemKey(item), item?.amount]);
 };
