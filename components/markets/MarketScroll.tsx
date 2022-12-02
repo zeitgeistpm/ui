@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -8,6 +9,7 @@ import MarketCard, { IndexedMarketCardData } from "./market-card";
 
 const MarketScroll = observer(
   ({ title, markets }: { title: string; markets: IndexedMarketCardData[] }) => {
+    const store = useStore();
     const scrollRef = useRef<HTMLDivElement>();
     const [scrollLeft, setScrollLeft] = useState(0);
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
@@ -40,7 +42,14 @@ const MarketScroll = observer(
       cards.forEach((card) => {
         observer.observe(card);
       });
-    }, []);
+
+      return () => observer.disconnect();
+    }, [
+      store.leftDrawerClosed,
+      store.rightDrawerClosed,
+      store.leftDrawerAnimating,
+      store.rightDrawerAnimating,
+    ]);
 
     const handleRightClick = () => {
       setScrollLeft((prev) => {
