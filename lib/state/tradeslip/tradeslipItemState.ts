@@ -30,6 +30,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TradeSlipItem, useTradeslipItems } from "./items";
 import { slippagePercentageAtom } from "./slippage";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import objectHash from "object-hash";
 
 /**
  * Hook and state related to a tradeslip item.
@@ -229,7 +230,7 @@ export const useTradslipItemState = (item: TradeSlipItem) => {
   );
 
   const query = useQuery<UseTradslipRemoteDataQuery>(
-    [id, rootKey, itemKey(item)],
+    [id, rootKey, objectHash(item?.assetId)],
     async () => {
       if (!enabled) return null;
       const max = (() => {
