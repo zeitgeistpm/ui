@@ -19,8 +19,8 @@ const TradeSlip = observer(() => {
   const tradeslipItems = useTradeslipItems();
   const [slippage, setSlippage] = useAtom(slippagePercentageAtom);
 
+  const { sum } = useTradeslipTotalState();
   const fees = new Decimal(0); //tradeSlipState.transactionFees.div(ZTG);
-  const total = new Decimal(0); //totals.sum.div(ZTG); //tradeSlipState.total.div(ZTG);
 
   const [isTransacting, setIsTransacting] = useState(false);
 
@@ -131,7 +131,7 @@ const TradeSlip = observer(() => {
           <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
             <div className="font-bold">Total cost / gain:</div>
             <div className="font-normal">
-              {total.isNaN() ? "-- " : total.toFixed(2).toString()}{" "}
+              {sum.isNaN() ? "-- " : sum.div(ZTG).toFixed(2).toString()}{" "}
               {store.config?.tokenSymbol}
             </div>
           </div>

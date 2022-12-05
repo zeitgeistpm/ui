@@ -1,6 +1,3 @@
-import { SubmittableExtrinsic } from "@polkadot/api/types";
-import { ISubmittableResult } from "@polkadot/types/types";
-import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import { useQuery } from "@tanstack/react-query";
 import {
   Context,
@@ -9,14 +6,13 @@ import {
   getMarketIdOf,
   IndexerContext,
   isNA,
-  isRpcSdk,
   Market,
   NA,
   Pool,
   SaturatedPoolEntryAsset,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
 import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
 import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalances";
 import { usePoolsByIds } from "lib/hooks/queries/usePoolsByIds";
@@ -26,11 +22,9 @@ import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { calcInGivenOut, calcOutGivenIn } from "lib/math";
 import { useStore } from "lib/stores/Store";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { TradeSlipItem, useTradeslipItems } from "./items";
+import { useEffect } from "react";
+import { TradeSlipItem } from "./items";
 import { slippagePercentageAtom } from "./slippage";
-import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import objectHash from "object-hash";
 
 /**
  * Composite id/key for a certain item by its assetid and action.
@@ -108,6 +102,8 @@ export const useTradeslipItemState = (item: TradeSlipItem) => {
   const { wallets } = useStore();
   const signer = wallets.activeAccount ? wallets.getActiveSigner() : null;
 
+  const [slippage] = useAtom(slippagePercentageAtom);
+
   const { data: traderZtgBalance } = useZtgBalance(signer);
 
   const { data: pools } = usePoolsByIds([
@@ -116,9 +112,9 @@ export const useTradeslipItemState = (item: TradeSlipItem) => {
 
   const { data: saturatedIndex } = useSaturatedPoolsIndex(pools || []);
 
-  const { data: poolZtgBalances } = usePoolZtgBalance(pools ?? []);
+  const poolZtgBalances = usePoolZtgBalance(pools ?? []);
 
-  const { data: traderAssets } = useAccountAssetBalances([
+  const traderAssets = useAccountAssetBalances([
     {
       account: signer?.address,
       assetId: item.assetId,
@@ -127,7 +123,7 @@ export const useTradeslipItemState = (item: TradeSlipItem) => {
 
   const pool = pools?.[0];
 
-  const { data: poolAssetBalances } = useAccountAssetBalances([
+  const poolAssetBalances = useAccountAssetBalances([
     {
       account: pool?.accountId,
       assetId: item.assetId,
@@ -181,66 +177,78 @@ export const useTradeslipItemState = (item: TradeSlipItem) => {
       tradeablePoolBalance,
   );
 
-  return useMemo(() => {
-    if (enabled) {
-      const max = (() => {
-        if (isNA(traderZtgBalance)) {
-          return new Decimal(0);
-        }
-        if (item.action === "buy") {
-          const maxTokens = isNA(traderZtgBalance)
-            ? new Decimal(Infinity)
-            : traderZtgBalance.div(asset?.price.div(ZTG) ?? 0);
-          if (tradeablePoolBalance?.lte(maxTokens)) {
-            return tradeablePoolBalance;
-          } else {
-            return maxTokens;
+  const query = useQuery<UseTradeslipItemState>(
+    [id, rootKey, itemKey(item)],
+    async () => {
+      if (enabled) {
+        const max = (() => {
+          if (isNA(traderZtgBalance)) {
+            return new Decimal(0);
           }
-        } else {
-          if (tradeablePoolBalance?.lte(traderAssetBalance)) {
-            return tradeablePoolBalance;
+          if (item.action === "buy") {
+            const maxTokens = isNA(traderZtgBalance)
+              ? new Decimal(Infinity)
+              : traderZtgBalance.div(asset?.price.div(ZTG) ?? 0);
+            if (tradeablePoolBalance?.lte(maxTokens)) {
+              return tradeablePoolBalance;
+            } else {
+              return maxTokens;
+            }
           } else {
-            return traderAssetBalance;
+            if (tradeablePoolBalance?.lte(traderAssetBalance)) {
+              return tradeablePoolBalance;
+            } else {
+              return traderAssetBalance;
+            }
           }
-        }
-      })();
+        })();
 
-      const sum =
-        item.action === "buy"
-          ? calcInGivenOut(
-              poolZtgBalance,
-              ztgWeight,
-              poolAssetBalance,
-              assetWeight,
-              new Decimal(item.amount).mul(ZTG),
-              swapFee.div(ZTG),
-            )
-          : calcOutGivenIn(
-              poolAssetBalance,
-              assetWeight,
-              poolZtgBalance,
-              ztgWeight,
-              new Decimal(item.amount).mul(ZTG),
-              swapFee.div(ZTG),
-            );
+        const sum =
+          item.action === "buy"
+            ? calcInGivenOut(
+                poolZtgBalance,
+                ztgWeight,
+                poolAssetBalance,
+                assetWeight,
+                new Decimal(item.amount).mul(ZTG),
+                swapFee.div(ZTG),
+              )
+            : calcOutGivenIn(
+                poolAssetBalance,
+                assetWeight,
+                poolZtgBalance,
+                ztgWeight,
+                new Decimal(item.amount).mul(ZTG),
+                swapFee.div(ZTG),
+              );
 
-      return {
-        pool,
-        asset,
-        market,
-        ztgWeight,
-        assetWeight,
-        swapFee,
-        traderZtgBalance,
-        poolZtgBalance,
-        traderAssetBalance,
-        poolAssetBalance,
-        tradeablePoolBalance,
-        sum,
-        max,
-      };
-    }
+        return {
+          pool,
+          asset,
+          market,
+          ztgWeight,
+          assetWeight,
+          swapFee,
+          traderZtgBalance,
+          poolZtgBalance,
+          traderAssetBalance,
+          poolAssetBalance,
+          tradeablePoolBalance,
+          sum,
+          max,
+        };
+      }
 
-    return null;
-  }, [id, rootKey, enabled, itemKey(item), item?.amount]);
+      return null;
+    },
+    {
+      enabled,
+    },
+  );
+
+  useEffect(() => {
+    query.refetch();
+  }, [itemKey(item), slippage, item?.amount]);
+
+  return query;
 };

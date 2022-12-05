@@ -18,7 +18,7 @@ const TradeSlipItem = observer<FC<TradeSlipItemProps>>(({ item, disabled }) => {
   const { config } = useStore();
 
   const { put, removeAsset } = useTradeslipItems();
-  const state = useTradeslipItemState(item);
+  const { data: state } = useTradeslipItemState(item);
 
   const amount = new Decimal(item.amount);
   const onAmountChange = (val: string) => put({ ...item, amount: Number(val) });

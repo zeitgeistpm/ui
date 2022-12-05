@@ -1,5 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, UseQueryOptions } from "@tanstack/react-query";
 import { AssetId, isRpcSdk, NA } from "@zeitgeistpm/sdk-next";
+import { OrmlTokensAccountData } from "@polkadot/types/lookup";
+import objectHash from "object-hash";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "account-asset-balance";
@@ -12,27 +14,26 @@ export const useAccountAssetBalances = (
 ) => {
   const [sdk, id] = useSdkv2();
 
-  const query = useQuery(
-    [id, rootKey, ...pairs],
-    async () => {
-      if (isRpcSdk(sdk)) {
-        return Promise.all(
-          pairs.map(async ({ account, assetId }) => {
-            if (!account) {
+  const query = useQueries({
+    queries: pairs.map<UseQueryOptions<NA | OrmlTokensAccountData>>((pair) => {
+      return {
+        queryKey: [id, rootKey, objectHash(pair)],
+        queryFn: async () => {
+          if (isRpcSdk(sdk)) {
+            if (!pair.account) {
               return NA;
             }
-            return sdk.context.api.query.tokens.accounts(account, assetId);
-          }),
-        );
-      }
-      return [];
-    },
-    {
-      initialData: [],
-      keepPreviousData: true,
-      enabled: Boolean(sdk && isRpcSdk(sdk) && pairs && pairs.length),
-    },
-  );
+            return sdk.context.api.query.tokens.accounts(
+              pair.account,
+              pair.assetId,
+            );
+          }
+        },
+        enabled: Boolean(sdk) && isRpcSdk(sdk),
+        keepPreviousData: true,
+      };
+    }),
+  });
 
-  return query;
+  return query.flatMap((q) => q.data);
 };

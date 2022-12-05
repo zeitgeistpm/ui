@@ -1,32 +1,44 @@
-import { useQuery } from "@tanstack/react-query";
-import { IndexerContext, isRpcSdk, PoolList } from "@zeitgeistpm/sdk-next";
+import { FrameSystemAccountInfo } from "@polkadot/types/lookup";
+import { useQueries, UseQueryOptions } from "@tanstack/react-query";
+import {
+  Context,
+  IndexerContext,
+  isRpcSdk,
+  Pool,
+  PoolList,
+} from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "pool-ztg-balance";
 
+export type PoolZtgBalancePair = {
+  pool: Pool<Context>;
+  balance: FrameSystemAccountInfo;
+};
+
 export const usePoolZtgBalance = (pools?: PoolList<IndexerContext>) => {
   const [sdk, id] = useSdkv2();
 
-  const query = useQuery(
-    [id, rootKey, pools?.map((p) => p.poolId)],
-    async () => {
-      if (isRpcSdk(sdk) && pools) {
-        return (
-          await sdk.context.api.query.system.account.multi(
-            pools.map((p) => p.accountId),
-          )
-        ).map((balance, index) => ({
-          pool: pools[index],
-          balance,
-        }));
-      }
-      return [];
-    },
-    {
-      initialData: [],
-      enabled: Boolean(sdk && isRpcSdk(sdk) && pools && pools.length),
-    },
-  );
+  const query = useQueries({
+    queries:
+      pools?.map<UseQueryOptions<null | PoolZtgBalancePair>>((pool) => {
+        return {
+          queryKey: [id, rootKey, pool.poolId],
+          queryFn: async () => {
+            if (isRpcSdk(sdk) && pools) {
+              return {
+                pool,
+                balance: await sdk.context.api.query.system.account(
+                  pool.accountId,
+                ),
+              };
+            }
+            return null;
+          },
+          enabled: Boolean(sdk) && isRpcSdk(sdk),
+        };
+      }) ?? [],
+  });
 
-  return query;
+  return query.flatMap((q) => q.data);
 };

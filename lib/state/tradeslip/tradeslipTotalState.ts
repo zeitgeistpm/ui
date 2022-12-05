@@ -1,41 +1,47 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
 import Decimal from "decimal.js";
+import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import { ZTG } from "lib/constants";
+import { key } from "lib/hooks/queries/useSaturatedPoolsIndex";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useMemo } from "react";
-import { useTradeslipItems } from "./items";
+import { useEffect, useMemo, useState } from "react";
+import { TradeSlipItem, useTradeslipItems } from "./items";
 import { itemKey, rootKey, UseTradeslipItemState } from "./tradeslipItemState";
 
 export const useTradeslipTotalState = () => {
   const [, id] = useSdkv2();
+  const { items } = useTradeslipItems();
+
   const queryClient = useQueryClient();
+
+  const [sum, setSum] = useState(new Decimal(0));
 
   const key = [id, rootKey];
 
-  const { items } = useTradeslipItems();
+  useEffect(() => {
+    setTimeout(() => {
+      const states = queryClient.getQueriesData<UseTradeslipItemState>(key);
 
-  const tradeslipItemsState = useMemo(() => {
-    return queryClient.getQueriesData<UseTradeslipItemState>(key);
-  }, [key, items, queryClient.getQueryState(key)]);
+      const itemStates: [TradeSlipItem, UseTradeslipItemState][] = items
+        .map((item) => {
+          const state = states.find(([key]) => key[2] === itemKey(item));
+          if (state) {
+            return [item, state[1]] as [TradeSlipItem, UseTradeslipItemState];
+          }
+          return null;
+        })
+        .filter(isNotNull);
 
-  const sum = useMemo(() => {
-    if (items && tradeslipItemsState) {
-      return items.reduce((acc, item) => {
-        const state = tradeslipItemsState.find(([key]) => {
-          return itemKey(item) === key[2];
-        });
-
-        if (!state) return acc;
-
-        console.log(state[1]?.sum.div(ZTG).toString());
-
-        return item.action === "buy"
-          ? acc.minus(state[1]?.sum ?? 0)
-          : acc.plus(state[1]?.sum ?? 0);
-      }, new Decimal(0));
-    }
-    return new Decimal(0);
-  }, [tradeslipItemsState]);
+      setSum(
+        itemStates.reduce((sum, [item, state]) => {
+          if (item.action === "buy") {
+            return sum.minus(state?.sum ?? 0);
+          }
+          return sum.plus(state?.sum ?? 0);
+        }, new Decimal(0)),
+      );
+    }, 66);
+  }, [queryClient, items, queryClient.getQueryState(key)]);
 
   return {
     sum,
