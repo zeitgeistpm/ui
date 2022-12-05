@@ -1,20 +1,38 @@
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
-import Decimal from "decimal.js";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
+import { useQuery } from "@tanstack/react-query";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import Decimal from "decimal.js";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useStore } from "lib/stores/Store";
+import objectHash from "object-hash";
 import { useMemo } from "react";
 import { useTradeslipItems } from "./items";
 import { useTradeslipItemsState } from "./tradeslipItemsState";
-import { useQuery } from "@tanstack/react-query";
-import { useStore } from "lib/stores/Store";
 
+/**
+ * Total state for the tradeslip items.
+ */
 export type UseTradeslipTotalState = {
+  /**
+   * The aggregated sum/cost/gain for all trade slip items.
+   */
   sum: Decimal;
+  /**
+   * The batched transaction for all trade slip items.
+   */
   batchTransaction: null | SubmittableExtrinsic<"promise", ISubmittableResult>;
+  /**
+   * Transaction fees for the batched transaction.
+   */
   transactionFees: Decimal;
 };
 
+/**
+ * Get totals state for all trade slip items like sum and batched transaction.
+ *
+ * @returns UseTradeslipTotalState
+ */
 export const useTradeslipTotalState = (): UseTradeslipTotalState => {
   const [sdk, id] = useSdkv2();
 
@@ -43,7 +61,12 @@ export const useTradeslipTotalState = (): UseTradeslipTotalState => {
   }, [sdk, states]);
 
   const { data: transactionFees } = useQuery(
-    [id, items, batchTransaction?.hash.toString()],
+    [
+      id,
+      "tradeslip-batch-transaction-fee",
+      objectHash(items),
+      batchTransaction?.hash.toString(),
+    ],
     async () => {
       if (!batchTransaction) return new Decimal(0);
       return new Decimal(

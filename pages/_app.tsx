@@ -2,7 +2,9 @@ import "react-datetime/css/react-datetime.css";
 import "styles/index.css";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import * as Fathom from "fathom-client";
+
 import { observer } from "mobx-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -27,7 +29,7 @@ const environment = process.env.NEXT_PUBLIC_ENVIRONMENT_NAME;
 const isProduction = environment === "production" || environment == null;
 
 const queryClient = new QueryClient();
-
+console.log(process.env.NEXT_REACT_QUERY_DEVTOOLS);
 const MyApp = observer(({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
   const router = useRouter();
@@ -103,6 +105,9 @@ const MyApp = observer(({ Component, pageProps }) => {
                 <Component {...pageProps} />
               </Layout>
             </DefaultLayout>
+            {process.env.NEXT_PUBLIC_REACT_QUERY_DEVTOOLS === "true" && (
+              <ReactQueryDevtools initialIsOpen={false} />
+            )}
           </ModalStoreContext.Provider>
         </AvatarContext.Provider>
       </StoreProvider>

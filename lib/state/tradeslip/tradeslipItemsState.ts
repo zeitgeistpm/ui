@@ -25,8 +25,6 @@ import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { calcInGivenOut, calcOutGivenIn } from "lib/math";
 import { useStore } from "lib/stores/Store";
-import objectHash from "object-hash";
-import { useEffect, useMemo } from "react";
 import { TradeSlipItem } from "./items";
 import { slippagePercentageAtom } from "./slippage";
 
@@ -47,9 +45,8 @@ export const itemKey = (item: TradeSlipItem): TradeSlipItemDataKey =>
 export const rootKey = "trade-slip-item-state";
 
 /**
- * Hook and state related to a tradeslip item.
+ * State pr trade slip item that contains computed and related remote data.
  */
-
 export type UseTradeslipItemsState = Record<
   TradeSlipItemDataKey,
   {
@@ -116,6 +113,13 @@ export type UseTradeslipItemsState = Record<
   }
 >;
 
+/**
+ * Returns remote and computed state pr trade slip item like max amount, sum, market, asset
+ * the transaction etc.
+ *
+ * @param items TradeSlipItem[]
+ * @returns UseTradeslipItemsState
+ */
 export const useTradeslipItemsState = (
   items: TradeSlipItem[],
 ): UseTradeslipItemsState => {
@@ -149,8 +153,6 @@ export const useTradeslipItemsState = (
       assetId: item.assetId,
     })),
   );
-
-  const states = useMemo(() => {}, []);
 
   const query = useQueries({
     queries: items.map((item) => {
@@ -213,7 +215,9 @@ export const useTradeslipItemsState = (
         keepPreviousData: true,
         queryKey: [id, rootKey, itemKey(item), amount],
         queryFn: async () => {
-          if (!enabled || !sdk || !isRpcSdk(sdk)) return null;
+          if (!enabled || !sdk || !isRpcSdk(sdk)) {
+            return null;
+          }
 
           const max = (() => {
             if (isNA(traderZtgBalance)) {
@@ -269,18 +273,16 @@ export const useTradeslipItemsState = (
                 swapFee.div(ZTG),
               ).mul(new Decimal(slippage / 100 + 1));
 
-              if (maxAmountIn.isNaN()) {
-                return null;
+              if (!maxAmountIn.isNaN()) {
+                transaction = sdk.context.api.tx.swaps.swapExactAmountOut(
+                  pool.poolId,
+                  { Ztg: null },
+                  maxAmountIn.toFixed(0),
+                  asset.assetId,
+                  amount.toFixed(0),
+                  null,
+                );
               }
-
-              transaction = sdk.context.api.tx.swaps.swapExactAmountOut(
-                pool.poolId,
-                { Ztg: null },
-                maxAmountIn.toFixed(0),
-                asset.assetId,
-                amount.toFixed(0),
-                null,
-              );
             } else {
               const minAmountOut = calcOutGivenIn(
                 poolAssetBalance,
@@ -291,14 +293,16 @@ export const useTradeslipItemsState = (
                 swapFee.div(ZTG),
               ).mul(new Decimal(1 - slippage / 100));
 
-              transaction = sdk.context.api.tx.swaps.swapExactAmountIn(
-                pool.poolId,
-                asset.assetId,
-                amount.toFixed(0),
-                { Ztg: null },
-                minAmountOut.toFixed(0),
-                null,
-              );
+              if (!minAmountOut.isNaN) {
+                transaction = sdk.context.api.tx.swaps.swapExactAmountIn(
+                  pool.poolId,
+                  asset.assetId,
+                  amount.toFixed(0),
+                  { Ztg: null },
+                  minAmountOut.toFixed(0),
+                  null,
+                );
+              }
             }
           } catch (error) {
             return null;
