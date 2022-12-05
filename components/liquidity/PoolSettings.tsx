@@ -162,8 +162,6 @@ const PoolSettings: FC<{
       price: prices[index] ?? row.price,
     }));
 
-    console.log(newData);
-
     onChange(newData);
   };
 
