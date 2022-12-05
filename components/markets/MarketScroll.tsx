@@ -9,7 +9,6 @@ import MarketCard, { IndexedMarketCardData } from "./market-card";
 
 const MarketScroll = observer(
   ({ title, markets }: { title: string; markets: IndexedMarketCardData[] }) => {
-    const store = useStore();
     const scrollRef = useRef<HTMLDivElement>();
     const [scrollLeft, setScrollLeft] = useState(0);
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
@@ -19,41 +18,38 @@ const MarketScroll = observer(
     const scrollMax = cardWidth * markets.length + gap * (markets.length - 1);
     const cardsShown = Math.floor(containerWidth / (gap + cardWidth));
     const moveSize = cardsShown * (cardWidth + gap);
-    console.log(containerWidth);
 
-    useEffect(() => {
-      if (typeof window === "undefined") return;
-      if (window.innerWidth < 640) return;
+    // useEffect(() => {
+    //   if (typeof window === "undefined") return;
+    //   if (window.innerWidth < 640) return;
 
-      const cards = document.querySelectorAll(".market-card");
+    // const cards = document.querySelectorAll(".market-card");
 
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            console.log(entry);
-            if (entry.isIntersecting) {
-              entry.target.classList.remove("opacity-0");
-            } else {
-              entry.target.classList.add("opacity-0");
-            }
-          });
-        },
-        { root: containerRef.current, threshold: 0.7 },
-      );
+    // const observer = new IntersectionObserver(
+    //   (entries) => {
+    //     entries.forEach((entry) => {
+    //       console.log(entry);
+    //       if (entry.isIntersecting) {
+    //         entry.target.classList.remove("opacity-0");
+    //       } else {
+    //         entry.target.classList.add("opacity-0");
+    //       }
+    //     });
+    //   },
+    //   { root: containerRef.current },
+    // );
 
-      cards.forEach((card) => {
-        observer.observe(card);
-      });
-    }, []);
+    // cards.forEach((card) => {
+    //   observer.observe(card);
+    // });
+    // }, []);
 
-    useEffect(() => {
-      console.log("remove classes");
-
-      const cards = document.querySelectorAll(".market-card");
-      cards.forEach((card) => {
-        card.classList.remove("opacity-0");
-      });
-    }, [store.leftDrawerClosed, store.rightDrawerClosed]);
+    // useEffect(() => {
+    //   const cards = document.querySelectorAll(".market-card");
+    //   cards.forEach((card) => {
+    //     card.classList.remove("opacity-0");
+    //   });
+    // }, [store.leftDrawerClosed, store.rightDrawerClosed]);
 
     const handleRightClick = () => {
       setScrollLeft((prev) => {
