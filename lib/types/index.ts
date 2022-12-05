@@ -3,6 +3,7 @@ import { Asset } from "@zeitgeistpm/types/dist/interfaces";
 import Decimal from "decimal.js";
 import { NextPage } from "next";
 import { FC } from "react";
+import { MarketStatus } from "./markets";
 
 export enum SupportedParachain {
   KUSAMA = "kusama",
@@ -88,22 +89,6 @@ export interface SelectOption {
 export interface OutcomeSelectOption extends SelectOption {
   value: number;
 }
-
-/**
- * Used to generate [[MarketStatus]] and marketStatuses array in
- * 'lib/constants'. Values are irrelevant, but have to be strings so we don't
- * get numbers from Object.keys(..)
- */
-export enum EMarketStatus {
-  Proposed = "Proposed",
-  Active = "Active",
-  Closed = "Closed",
-  Reported = "Reported",
-  Disputed = "Disputed",
-  Resolved = "Resolved",
-}
-
-export type MarketStatus = keyof typeof EMarketStatus;
 
 export const isAsset = (val: any): val is Asset => {
   return val.type === "Asset";

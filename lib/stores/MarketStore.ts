@@ -25,10 +25,11 @@ import {
 import { MarketStoreContext } from "components/context/MarketStoreContext";
 
 import { ZTG } from "../constants";
-import { JSONObject, MarketOutcome, MarketStatus } from "../types";
+import { MarketOutcome } from "../types";
 import Store from "./Store";
 import { calcSpotPrice } from "lib/math";
 import { AssetIdFromString } from "@zeitgeistpm/sdk/dist/util";
+import { MarketStatus } from "lib/types/markets";
 
 class MarketStore {
   // is market data loaded

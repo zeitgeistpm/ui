@@ -1,22 +1,14 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import { MarketOrderByInput } from "@zeitgeistpm/indexer";
 import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets";
 import { useStore } from "lib/stores/Store";
-import { MarketStatus } from "lib/types";
 import { getCurrentPrediction } from "lib/util/assets";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "markets";
 
-type Filters = {
-  liquidity: boolean;
-  tags?: string;
-  statuses: MarketStatus[];
-};
-
-type SortBy = "Newest" | "Oldest";
-
-export const useMarkets = (filters?: Filters, sortBy?: SortBy) => {
+export const useMarkets = () => {
   const [sdk, id] = useSdkv2();
   const { graphQLClient } = useStore();
 
@@ -30,8 +22,13 @@ export const useMarkets = (filters?: Filters, sortBy?: SortBy) => {
       };
     }
     const markets = await sdk.model.markets.list({
+      where: {
+        categories_isNull: false,
+        status_not_in: ["Destroyed"],
+      },
       offset: !pageParam ? 0 : limit * pageParam,
       limit: limit,
+      order: MarketOrderByInput.MarketIdDesc,
     });
 
     const outcomes = await getOutcomesForMarkets(graphQLClient, markets);
