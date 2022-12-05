@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
-import { X, Check, Plus } from "react-feather";
+import { X, Check } from "react-feather";
+import { defaultTags } from "lib/constants/markets";
 
 export interface TagButtonProps {
   label: string;
@@ -43,27 +44,6 @@ export const TagButton: FC<TagButtonProps> = ({
     </div>
   );
 };
-
-export const defaultTags = [
-  "Politics",
-  "Governance",
-  "North America",
-  "China",
-  "India",
-  "Crypto",
-  "Dotsama",
-  "Zeitgeist",
-  "Technology",
-  "Science",
-  "Pandemics",
-  "Space",
-  "News",
-  "Sports",
-  "E-sports",
-  "Football",
-  "MMA",
-  "Cricket",
-];
 
 const TagChoices: FC<{ onTagsChange: (tags: string[]) => void }> = ({
   onTagsChange,

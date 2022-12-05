@@ -1,5 +1,6 @@
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
-import { FilterOptions, MarketStatus } from "lib/types";
+import { FilterOptions } from "lib/types";
+import { MarketStatus } from "lib/types/markets";
 interface BondPrices {
   advisedCost: number;
   permissionlessCost: number;
