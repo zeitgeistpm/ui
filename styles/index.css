@@ -305,7 +305,6 @@ td:last-child {
 * .MuiSkeleton-root {
   height: 1.2em;
   display: block;
-  background-color: #f4f7fa !important;
 }
 
 * .MuiSkeleton-wave::after {

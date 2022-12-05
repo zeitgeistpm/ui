@@ -364,6 +364,12 @@ const CreatePage: NextPage = observer(() => {
       : { timestamp: [store.blockTimestamp, formData.end.value] };
   };
 
+  const getMarketEndBlock = () => {
+    return formData.end.type === "block"
+      ? formData.end.value
+      : dateBlock(now, new Date(formData.end.value));
+  };
+
   const mapRangeToEntires = (
     range: RangeOutcomeEntry,
   ): MultipleOutcomeEntry[] => {
@@ -403,7 +409,7 @@ const CreatePage: NextPage = observer(() => {
   const getMarketDeadlines = () => {
     const gracePeriod = (
       formData.deadlines.grace.label === "Custom"
-        ? dateBlock(now, formData.deadlines.grace.value)
+        ? dateBlock(now, formData.deadlines.grace.value) - getMarketEndBlock()
         : formData.deadlines.grace.value
     ).toString();
     const oracleDuration = (

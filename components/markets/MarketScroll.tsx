@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { observer } from "mobx-react";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "react-feather";
 import { useResizeDetector } from "react-resize-detector";
 import MarketCard, { IndexedMarketCardData } from "./market-card";
@@ -17,6 +17,30 @@ const MarketScroll = observer(
     const scrollMax = cardWidth * markets.length + gap * (markets.length - 1);
     const cardsShown = Math.floor(containerWidth / (gap + cardWidth));
     const moveSize = cardsShown * (cardWidth + gap);
+
+    useEffect(() => {
+      if (typeof window === "undefined") return;
+      if (window.innerWidth < 640) return;
+
+      const cards = document.querySelectorAll(".market-card");
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.remove("opacity-0");
+            } else {
+              entry.target.classList.add("opacity-0");
+            }
+          });
+        },
+        { root: containerRef.current, threshold: 0.7 },
+      );
+
+      cards.forEach((card) => {
+        observer.observe(card);
+      });
+    }, []);
 
     const handleRightClick = () => {
       setScrollLeft((prev) => {
@@ -35,29 +59,9 @@ const MarketScroll = observer(
       });
     };
 
-    //todo: recalculate when drawer changes
-    //todo: should always return true for mobile
-    const isInView = (index: number) => {
-      const xPosition = scrollLeft * -1;
-      const itemWidth = gap + cardWidth;
-      const cardsBeforeView = Math.ceil(xPosition / itemWidth);
-
-      //card is outside the view port to the left
-      if (index < cardsBeforeView) {
-        return false;
-      }
-      const cardsDisplayed = Math.ceil(containerWidth / itemWidth);
-
-      if (index >= cardsBeforeView + cardsDisplayed) {
-        return false;
-      }
-
-      return true;
-    };
-
-    //todo: review these for 3 or less markets
     const leftDisabled = scrollLeft === 0;
-    const rightDisabled = scrollMax - containerWidth + scrollLeft === 0;
+    const rightDisabled =
+      scrollMax - containerWidth + scrollLeft === 0 || markets.length <= 3;
 
     return (
       <div ref={containerRef} className="flex flex-col">
@@ -94,38 +98,21 @@ const MarketScroll = observer(
             </button>
           </div>
         </div>
-        {/* <div className="flex h-[175px] gap-x-[30px] overflow-auto"> */}
         <div className="relative">
-          {/* <div
-            className="bg-gradient-to-r from-indigo-500 h-[175px] w-[1000px] absolute -left-[800px]"
-            style={{ zIndex: 10 }}
-          ></div> */}
           <motion.div
             ref={scrollRef}
             animate={{ x: scrollLeft }}
             transition={{ duration: 0.5, type: "tween" }}
             className="flex h-[175px] gap-x-[30px] no-scroll-bar overflow-x-auto sm:overflow-x-visible"
           >
-            {markets.map((market, index) => (
-              // <div
-              //   key={index}
-              //   className={`bg-anti-flash-white rounded-ztg-10 min-w-[320px] w-full transition duration-1000 ease-in-out ${
-              //     isInView(index) === false ? "opacity-0" : ""
-              //   }`}
-              // >
-              //   {market.question}
-              // </div>
-
+            {markets.map((market) => (
               <MarketCard
+                key={market.marketId}
                 {...market}
-                className={`bg-anti-flash-white rounded-ztg-10 min-w-[320px] w-full transition duration-500 ease-in-out ${
-                  isInView(index) === false ? "opacity-0" : ""
-                }`}
-                key={`marketScroll-${index}`}
+                className="market-card bg-anti-flash-white rounded-ztg-10 min-w-[320px] w-[320px] transition duration-500 ease-in-out"
               />
             ))}
           </motion.div>
-          {/* <div className="bg-gradient-to-l from-white  h-[175px] w-[80px] absolute -right-[60px] top-[0px]"></div> */}
         </div>
       </div>
     );

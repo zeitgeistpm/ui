@@ -1,5 +1,5 @@
 import { MarketCreation, ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
-import { MarketStatus } from "lib/types";
+import { MarketStatus } from "lib/types/markets";
 
 export type MarketCardData = {
   id: number;

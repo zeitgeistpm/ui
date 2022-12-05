@@ -1,17 +1,19 @@
-import { isIndexedData } from "@zeitgeistpm/sdk-next";
+import { Context, IndexedMarket } from "@zeitgeistpm/sdk-next";
 import React, { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { observer } from "mobx-react";
+import { makeAutoObservable } from "mobx";
+import Loader from "react-spinners/PulseLoader";
 import { X } from "react-feather";
 import { useRouter } from "next/router";
 import { debounce } from "lodash";
 import { useStore } from "lib/stores/Store";
-import MarketCard from "./market-card";
-import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
-import Loader from "react-spinners/PulseLoader";
-import { makeAutoObservable } from "mobx";
-import { useMarkets } from "lib/hooks/queries/useMarkets";
 import { useContentScrollTop } from "components/context/ContentDimensionsContext";
+import { useMarkets } from "lib/hooks/queries/useMarkets";
+import { MarketOutcomes } from "lib/types/markets";
+import { MarketFilter } from "lib/types/market-filter";
+import MarketFilterSelection from "./market-filter";
+import MarketCard from "./market-card";
 
 export type MarketsListProps = {
   className?: string;
@@ -25,9 +27,9 @@ const scrollRestoration = makeAutoObservable({
 });
 
 const MarketsList = observer(({ className = "" }: MarketsListProps) => {
-  const query = useMarketsUrlQuery();
   const store = useStore();
   const { markets: marketsStore } = store;
+  const [filters, setFilters] = useState<MarketFilter[]>([]);
 
   const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
@@ -56,8 +58,20 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     }
   }, [isLoadMarkerInView, hasNextPage]);
 
-  const markets = marketsPages?.pages.flatMap((markets) => markets.data) ?? [];
-  const count = markets.length;
+  const [markets, setMarkets] = useState<
+    (IndexedMarket<Context> & {
+      outcomes: MarketOutcomes;
+      prediction: string;
+    })[]
+  >();
+
+  useEffect(() => {
+    const markets =
+      marketsPages?.pages.flatMap((markets) => markets.data) ?? [];
+    setMarkets(markets);
+  }, [marketsPages?.pages]);
+
+  const count = markets?.length ?? 0;
 
   useEffect(() => {
     const pageNum = marketsPages?.pages.length ?? 0;
@@ -70,27 +84,25 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
 
   return (
     <div className={"pt-ztg-46 mb-[38px]" + className}>
-      {/* TODO: Filters here */}
-      <div></div>
+      <MarketFilterSelection
+        initialFilters={filters}
+        onFiltersChange={setFilters}
+      />
       <div className="grid grid-cols-3 gap-[30px]">
-        {query != null &&
-          markets.map((market) => {
-            if (!isIndexedData(market)) {
-              throw Error(`Market with id ${market.marketId} cannot be shown.`);
-            }
-            return (
-              <MarketCard
-                marketId={market.marketId}
-                categories={market.categories}
-                question={market.question}
-                creation={market.creation}
-                baseAsset="ZTG"
-                // prediction={prediction}
-                volume={100}
-                key={`market-${market.marketId}`}
-              />
-            );
-          })}
+        {markets?.map((market) => {
+          return (
+            <MarketCard
+              marketId={market.marketId}
+              outcomes={market.outcomes}
+              question={market.question}
+              creation={market.creation}
+              prediction={market.prediction}
+              baseAsset={market.pool?.baseAsset}
+              volume={market.pool?.volume}
+              key={`market-${market.marketId}`}
+            />
+          );
+        })}
       </div>
       <div className="flex justify-center w-full mt-[78px] h-[20px]">
         {(isFetchingMarkets || isLoading) && <Loader />}
