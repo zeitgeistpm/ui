@@ -1,49 +1,66 @@
-import { useQueries, useQueryClient } from "@tanstack/react-query";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
-import { isNotNull } from "@zeitgeistpm/utility/dist/null";
-import { ZTG } from "lib/constants";
-import { key } from "lib/hooks/queries/useSaturatedPoolsIndex";
+import { SubmittableExtrinsic } from "@polkadot/api/types";
+import { ISubmittableResult } from "@polkadot/types/types";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useEffect, useMemo, useState } from "react";
-import { TradeSlipItem, useTradeslipItems } from "./items";
-import { itemKey, rootKey, UseTradeslipItemState } from "./tradeslipItemState";
+import { useMemo } from "react";
+import { useTradeslipItems } from "./items";
+import { useTradeslipItemsState } from "./tradeslipItemsState";
+import { useQuery } from "@tanstack/react-query";
+import { useStore } from "lib/stores/Store";
 
-export const useTradeslipTotalState = () => {
-  const [, id] = useSdkv2();
+export type UseTradeslipTotalState = {
+  sum: Decimal;
+  batchTransaction: null | SubmittableExtrinsic<"promise", ISubmittableResult>;
+  transactionFees: Decimal;
+};
+
+export const useTradeslipTotalState = (): UseTradeslipTotalState => {
+  const [sdk, id] = useSdkv2();
+
+  const { wallets } = useStore();
+  const signer = wallets.activeAccount ? wallets.getActiveSigner() : null;
+
   const { items } = useTradeslipItems();
+  const states = useTradeslipItemsState(items);
 
-  const queryClient = useQueryClient();
+  const sum = Object.values(states).reduce((sum, state) => {
+    if (state.item.action === "buy") return sum.minus(state.sum);
+    return sum.plus(state.sum);
+  }, new Decimal(0));
 
-  const [sum, setSum] = useState(new Decimal(0));
+  const batchTransaction: null | SubmittableExtrinsic<
+    "promise",
+    ISubmittableResult
+  > = useMemo(() => {
+    const transactions = Object.values(states).map(
+      ({ transaction }) => transaction,
+    );
+    if (sdk && isRpcSdk(sdk) && transactions.length) {
+      return sdk.context.api.tx.utility.batch(transactions);
+    }
+    return null;
+  }, [sdk, states]);
 
-  const key = [id, rootKey];
-
-  useEffect(() => {
-    setTimeout(() => {
-      const states = queryClient.getQueriesData<UseTradeslipItemState>(key);
-
-      const itemStates: [TradeSlipItem, UseTradeslipItemState][] = items
-        .map((item) => {
-          const state = states.find(([key]) => key[2] === itemKey(item));
-          if (state) {
-            return [item, state[1]] as [TradeSlipItem, UseTradeslipItemState];
-          }
-          return null;
-        })
-        .filter(isNotNull);
-
-      setSum(
-        itemStates.reduce((sum, [item, state]) => {
-          if (item.action === "buy") {
-            return sum.minus(state?.sum ?? 0);
-          }
-          return sum.plus(state?.sum ?? 0);
-        }, new Decimal(0)),
+  const { data: transactionFees } = useQuery(
+    [id, items, batchTransaction?.hash.toString()],
+    async () => {
+      if (!batchTransaction) return new Decimal(0);
+      return new Decimal(
+        (
+          await batchTransaction.paymentInfo(signer.address)
+        ).partialFee.toNumber(),
       );
-    }, 66);
-  }, [queryClient, items, queryClient.getQueryState(key)]);
+    },
+    {
+      keepPreviousData: true,
+      enabled: Boolean(signer),
+    },
+  );
 
   return {
     sum,
+    batchTransaction,
+    transactionFees,
   };
 };

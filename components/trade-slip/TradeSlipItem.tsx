@@ -2,7 +2,10 @@ import { isIndexedData } from "@zeitgeistpm/sdk-next";
 import { Decimal } from "decimal.js";
 import { ZTG } from "lib/constants";
 import { TradeSlipItem, useTradeslipItems } from "lib/state/tradeslip/items";
-import { useTradeslipItemState } from "lib/state/tradeslip/tradeslipItemState";
+import {
+  itemKey,
+  useTradeslipItemsState,
+} from "lib/state/tradeslip/tradeslipItemsState";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { FC } from "react";
@@ -18,7 +21,7 @@ const TradeSlipItem = observer<FC<TradeSlipItemProps>>(({ item, disabled }) => {
   const { config } = useStore();
 
   const { put, removeAsset } = useTradeslipItems();
-  const { data: state } = useTradeslipItemState(item);
+  const state = useTradeslipItemsState([item])[itemKey(item)];
 
   const amount = new Decimal(item.amount);
   const onAmountChange = (val: string) => put({ ...item, amount: Number(val) });

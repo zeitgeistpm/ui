@@ -19,7 +19,7 @@ const TradeSlip = observer(() => {
   const tradeslipItems = useTradeslipItems();
   const [slippage, setSlippage] = useAtom(slippagePercentageAtom);
 
-  const { sum } = useTradeslipTotalState();
+  const { sum, batchTransaction, transactionFees } = useTradeslipTotalState();
   const fees = new Decimal(0); //tradeSlipState.transactionFees.div(ZTG);
 
   const [isTransacting, setIsTransacting] = useState(false);
@@ -126,7 +126,9 @@ const TradeSlip = observer(() => {
           </div>
           <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
             <div className="font-bold">Network fee:</div>
-            <div className="font-normal">{fees.toFixed(4)}</div>
+            <div className="font-normal">
+              {transactionFees?.div(ZTG).toFixed(4) ?? "--"}
+            </div>
           </div>
           <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
             <div className="font-bold">Total cost / gain:</div>
