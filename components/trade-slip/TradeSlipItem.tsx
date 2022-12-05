@@ -1,6 +1,7 @@
 import { isIndexedData } from "@zeitgeistpm/sdk-next";
 import { Decimal } from "decimal.js";
 import { ZTG } from "lib/constants";
+import { usePrevious } from "lib/hooks/usePrevious";
 import { TradeSlipItem, useTradeslipItems } from "lib/state/tradeslip/items";
 import {
   itemKey,
@@ -8,8 +9,9 @@ import {
 } from "lib/state/tradeslip/tradeslipItemsState";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { X } from "react-feather";
+import { useDebounce } from "use-debounce";
 import { AmountInput } from "../ui/inputs";
 
 export type TradeSlipItemProps = {
@@ -23,8 +25,18 @@ const TradeSlipItem = observer<FC<TradeSlipItemProps>>(({ item, disabled }) => {
   const { put, removeAsset } = useTradeslipItems();
   const state = useTradeslipItemsState([item])[itemKey(item)];
 
-  const amount = new Decimal(item.amount);
-  const onAmountChange = (val: string) => put({ ...item, amount: Number(val) });
+  const [amountInput, setAmountInput] = useState(item.amount);
+  const [debouncedAmountInput] = useDebounce(amountInput, 300);
+  const prevDebouncedAmountInput = usePrevious(debouncedAmountInput);
+
+  useEffect(() => {
+    if (prevDebouncedAmountInput !== debouncedAmountInput) {
+      put({ ...item, amount: Number(debouncedAmountInput) });
+    }
+  }, [debouncedAmountInput]);
+
+  const onAmountChange = (val: string) => setAmountInput(Number(val));
+  //const onAmountChange = (val: string) => ;
 
   return (
     <div className="rounded-ztg-10 mb-ztg-15 relative">
@@ -117,7 +129,9 @@ const TradeSlipItem = observer<FC<TradeSlipItemProps>>(({ item, disabled }) => {
                 <div className="flex w-full font-lato text-ztg-10-150 text-gray-dark-3 mt-ztg-5">
                   Trading Fee:
                   <div className="text-black dark:text-white ml-1">
-                    {amount.mul(state?.swapFee?.div(ZTG) ?? 0).toFixed(4)}{" "}
+                    {new Decimal(item.amount)
+                      .mul(state?.swapFee?.div(ZTG) ?? 0)
+                      .toFixed(4)}{" "}
                     {item.action === "sell"
                       ? state?.asset.category.ticker?.toUpperCase()
                       : config?.tokenSymbol}
