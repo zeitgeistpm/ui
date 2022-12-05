@@ -295,11 +295,16 @@ class MarketStore {
   get bounds(): [number, number] | null {
     if (this.market.marketType.isScalar) {
       const bounds = this.market.marketType.asScalar;
-      return [Number(bounds[0].toString()), Number(bounds[1].toString())];
+      return [
+        Number(bounds[0].toString()) / ZTG,
+        Number(bounds[1].toString()) / ZTG,
+      ];
       //@ts-ignore - marketType is inconsistent
     } else if (this.market.marketType.scalar) {
       //@ts-ignore
-      return this.market.marketType.scalar;
+      const bounds = this.market.marketType.scalar;
+
+      return [Number(bounds[0]) / ZTG, Number(bounds[1]) / ZTG];
     } else {
       return null;
     }

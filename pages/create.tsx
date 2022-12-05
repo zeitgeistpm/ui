@@ -452,7 +452,7 @@ const CreatePage: NextPage = observer(() => {
           Categorical: outcomes.length,
         }
       : {
-          Scalar: [outcomes.minimum, outcomes.maximum],
+          Scalar: [outcomes.minimum * ZTG, outcomes.maximum * ZTG],
         };
 
     const deadlines = getMarketDeadlines();
