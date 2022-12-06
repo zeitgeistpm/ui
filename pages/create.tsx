@@ -447,13 +447,8 @@ const CreatePage: NextPage = observer(() => {
     const metadata = getMarketMetadata();
 
     const outcomes = formData.outcomes.value;
-    const marketType = isMultipleOutcomeEntries(outcomes)
-      ? {
-          Categorical: outcomes.length,
-        }
-      : {
-          Scalar: [outcomes.minimum * ZTG, outcomes.maximum * ZTG],
-        };
+    const marketType = getMarketType(outcomes);
+    console.log(marketType);
 
     const deadlines = getMarketDeadlines();
 
@@ -469,6 +464,19 @@ const CreatePage: NextPage = observer(() => {
       metadata,
       callbackOrPaymentInfo,
     };
+  };
+
+  const getMarketType = (outcomes: Outcomes) => {
+    return isMultipleOutcomeEntries(outcomes)
+      ? {
+          Categorical: outcomes.length,
+        }
+      : {
+          Scalar: [
+            Number((outcomes.minimum * ZTG).toFixed(0)),
+            Number((outcomes.maximum * ZTG).toFixed(0)),
+          ],
+        };
   };
 
   const getCreateCpmmMarketAndAddPoolParameters = async (
@@ -498,14 +506,7 @@ const CreatePage: NextPage = observer(() => {
       Number([...poolRows].pop().amount) * ZTG
     ).toString();
 
-    const marketType = isMultipleOutcomeEntries(formData.outcomes.value)
-      ? { Categorical: numOutcomes }
-      : {
-          Scalar: [
-            formData.outcomes.value.minimum,
-            formData.outcomes.value.maximum,
-          ],
-        };
+    const marketType = getMarketType(formData.outcomes.value);
 
     const deadlines = getMarketDeadlines();
 
