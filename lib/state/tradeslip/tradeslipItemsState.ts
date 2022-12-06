@@ -47,71 +47,81 @@ export const rootKey = "trade-slip-item-state";
 /**
  * State pr trade slip item that contains computed and related remote data.
  */
-export type UseTradeslipItemsState = Record<
-  TradeSlipItemDataKey,
-  {
-    /**
-     * The item the state is for.
-     */
-    item: TradeSlipItem;
-    /**
-     * Pool related to the item.
-     */
-    pool: Pool<IndexerContext>;
-    /**
-     * Asset data related to the item.
-     */
-    asset: SaturatedPoolEntryAsset;
-    /**
-     * Market related to the item.
-     */
-    market: Market<Context>;
-    /**
-     * Weight setting of the ztg in the pool.
-     */
-    ztgWeight: Decimal;
-    /**
-     * Weight setting of the items asset in the pool.
-     */
-    assetWeight: Decimal;
-    /**
-     * Swap fee for the items pool.
-     */
-    swapFee: Decimal;
-    /**
-     * Ztg balance of the trader.
-     */
-    traderZtgBalance: Decimal | NA;
-    /**
-     * Free ztg balance in the assets pool.
-     */
-    poolZtgBalance: Decimal | NA;
-    /**
-     * Free balance the trader has of the items asset.
-     */
-    traderAssetBalance: Decimal;
-    /**
-     * Free balance the pool has of the items asset.
-     */
-    poolAssetBalance: Decimal;
-    /**
-     * Amount of tradable assets in the pool.
-     */
-    tradeablePoolBalance: Decimal;
-    /**
-     * The sum cost/gain for the buy or sell.
-     */
-    sum: Decimal;
-    /**
-     * The max ammount the trader can buy or sell. Depends on the item action.
-     */
-    max: Decimal;
-    /**
-     * Transaction for the item.
-     */
-    transaction: SubmittableExtrinsic<"promise", ISubmittableResult>;
-  }
->;
+export type TradeSlipItemState = {
+  /**
+   * The item the state is for.
+   */
+  item: TradeSlipItem;
+  /**
+   * Pool related to the item.
+   */
+  pool: Pool<IndexerContext>;
+  /**
+   * Asset data related to the item.
+   */
+  asset: SaturatedPoolEntryAsset;
+  /**
+   * Market related to the item.
+   */
+  market: Market<Context>;
+  /**
+   * Weight setting of the ztg in the pool.
+   */
+  ztgWeight: Decimal;
+  /**
+   * Weight setting of the items asset in the pool.
+   */
+  assetWeight: Decimal;
+  /**
+   * Swap fee for the items pool.
+   */
+  swapFee: Decimal;
+  /**
+   * Ztg balance of the trader.
+   */
+  traderZtgBalance: Decimal | NA;
+  /**
+   * Free ztg balance in the assets pool.
+   */
+  poolZtgBalance: Decimal | NA;
+  /**
+   * Free balance the trader has of the items asset.
+   */
+  traderAssetBalance: Decimal;
+  /**
+   * Free balance the pool has of the items asset.
+   */
+  poolAssetBalance: Decimal;
+  /**
+   * Amount of tradable assets in the pool.
+   */
+  tradeablePoolBalance: Decimal;
+  /**
+   * The sum cost/gain for the buy or sell.
+   */
+  sum: Decimal;
+  /**
+   * The max ammount the trader can buy or sell. Depends on the item action.
+   */
+  max: Decimal;
+  /**
+   * Transaction for the item.
+   */
+  transaction: SubmittableExtrinsic<"promise", ISubmittableResult>;
+};
+
+/**
+ * Get the state for a singel trade slip item.
+ *
+ * @param item TradeSlipItem
+ * @returns TradeSlipItemState | null
+ */
+export const useTradeslipItemState = (
+  item: TradeSlipItem,
+): TradeSlipItemState | null => {
+  const states = useTradeslipItemsState([item]);
+  return states[itemKey(item)];
+};
 
 /**
  * Returns remote and computed state pr trade slip item like max amount, sum, market, asset
@@ -122,7 +132,7 @@ export type UseTradeslipItemsState = Record<
  */
 export const useTradeslipItemsState = (
   items: TradeSlipItem[],
-): UseTradeslipItemsState => {
+): Record<TradeSlipItemDataKey, TradeSlipItemState> => {
   const [sdk, id] = useSdkv2();
   const { wallets } = useStore();
   const signer = wallets.activeAccount ? wallets.getActiveSigner() : null;

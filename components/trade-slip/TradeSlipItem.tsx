@@ -6,6 +6,7 @@ import { TradeSlipItem, useTradeslipItems } from "lib/state/tradeslip/items";
 import {
   itemKey,
   useTradeslipItemsState,
+  useTradeslipItemState,
 } from "lib/state/tradeslip/tradeslipItemsState";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
@@ -23,7 +24,7 @@ const TradeSlipItem = observer<FC<TradeSlipItemProps>>(({ item, disabled }) => {
   const { config } = useStore();
 
   const { put, removeAsset } = useTradeslipItems();
-  const state = useTradeslipItemsState([item])[itemKey(item)];
+  const state = useTradeslipItemState(item);
 
   const [amountInput, setAmountInput] = useState(item.amount);
   const [debouncedAmountInput] = useDebounce(amountInput, 300);
