@@ -122,7 +122,7 @@ const Market: NextPage<{
 
   useEffect(() => {
     if (marketStore == null) return;
-    if (marketStore.scalarType === "date") {
+    if (marketStore.type === "scalar") {
       const observables = marketStore.marketOutcomes
         .filter((o) => o.metadata !== "ztg")
         .map((outcome) => {
