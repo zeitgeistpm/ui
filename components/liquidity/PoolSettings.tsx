@@ -160,6 +160,7 @@ const PoolSettings: FC<{
       ...row,
       weight: weights[index]?.toString() ?? row.weight,
       price: prices[index] ?? row.price,
+      value: (prices[index] ?? row.price).price.mul(row.amount).toFixed(4),
     }));
 
     onChange(newData);
