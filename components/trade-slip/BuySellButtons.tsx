@@ -19,7 +19,7 @@ const BuySellButtons = observer(
     const tradeslip = useTradeslipItems();
     const isDisabled = false;
 
-    if (!IOCategoricalAssetId.is(assetId) || !IOScalarAssetId.is(assetId)) {
+    if (!IOCategoricalAssetId.is(assetId) && !IOScalarAssetId.is(assetId)) {
       return null;
     }
 
