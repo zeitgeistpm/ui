@@ -30,22 +30,6 @@ import { TradeSlipItem } from "./items";
 import { slippagePercentageAtom } from "./slippage";
 
 /**
- * Composite id/key for a certain item by its assetid and action.
- */
-export type TradeSlipItemDataKey = string & { readonly _tag: unique symbol };
-
-/**
- * Identify a TradeSlipItem by its action and asset id.
- *
- * @param item TradeSlipItem
- * @returns string
- */
-export const itemKey = (item: TradeSlipItem): TradeSlipItemDataKey =>
-  `${item.action}|${JSON.stringify(item.assetId)}` as TradeSlipItemDataKey;
-
-export const rootKey = "trade-slip-item-state";
-
-/**
  * State pr trade slip item that contains computed and related remote data.
  */
 export type TradeSlipItemState = {
@@ -112,6 +96,25 @@ export type TradeSlipItemState = {
 };
 
 /**
+ * Composite id/key for a certain item by its assetid and action.
+ */
+export type TradeSlipItemStateKey = string & { readonly _tag: unique symbol };
+
+/**
+ * Identify a TradeSlipItem by its action and asset id.
+ *
+ * @param item TradeSlipItem
+ * @returns string
+ */
+export const itemKey = (item: TradeSlipItem): TradeSlipItemStateKey =>
+  `${item.action}|${JSON.stringify(item.assetId)}` as TradeSlipItemStateKey;
+
+/**
+ * Rootkey for trade slip item state query cache.
+ */
+export const rootKey = "trade-slip-item-state";
+
+/**
  * Get the state for a singel trade slip item.
  *
  * @param item TradeSlipItem
@@ -133,7 +136,7 @@ export const useTradeslipItemState = (
  */
 export const useTradeslipItemsState = (
   items: TradeSlipItem[],
-): Record<TradeSlipItemDataKey, TradeSlipItemState> => {
+): Record<TradeSlipItemStateKey, TradeSlipItemState> => {
   const [sdk, id] = useSdkv2();
   const { wallets } = useStore();
   const signer = wallets.activeAccount ? wallets.getActiveSigner() : null;
@@ -355,7 +358,7 @@ export const useTradeslipItemsState = (
     }),
   });
 
-  return query.reduce<Record<TradeSlipItemDataKey, TradeSlipItemState>>(
+  return query.reduce<Record<TradeSlipItemStateKey, TradeSlipItemState>>(
     (index, { data: state }) => {
       if (!state) return index;
       return {
