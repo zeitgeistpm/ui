@@ -137,6 +137,9 @@ const TradeSlipItem = observer<FC<TradeSlipItemProps>>(({ item, disabled }) => {
                       ? state?.asset.category.ticker?.toUpperCase()
                       : config?.tokenSymbol}
                   </div>
+                  <span className="ml-2">
+                    ({state.swapFee.div(ZTG).toString()}%)
+                  </span>
                 </div>
               </>
             )}
