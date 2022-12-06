@@ -448,7 +448,6 @@ const CreatePage: NextPage = observer(() => {
 
     const outcomes = formData.outcomes.value;
     const marketType = getMarketType(outcomes);
-    console.log(marketType);
 
     const deadlines = getMarketDeadlines();
 
