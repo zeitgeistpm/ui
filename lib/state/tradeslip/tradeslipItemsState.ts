@@ -174,7 +174,9 @@ export const useTradeslipItemsState = (
         ? getAssetWeight(pool, asset?.assetId).unwrap()
         : null;
 
-      const swapFee = pool?.swapFee ? new Decimal(pool.swapFee) : null;
+      const swapFee = pool?.swapFee
+        ? new Decimal(pool.swapFee)
+        : new Decimal(0);
 
       const poolZtgBalance =
         !poolZtgBalances[0] || isNA(poolZtgBalances[0])
