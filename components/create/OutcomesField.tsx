@@ -407,7 +407,6 @@ export const RangeOutcomeField: FC<{
               value={minStr}
               min={0}
               max={1}
-              step={step}
               onChange={(e) => {
                 changeMinimum(e.target.value);
               }}
