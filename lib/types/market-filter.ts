@@ -1,3 +1,4 @@
+import { filterTypes } from "lib/constants/market-filter";
 import { defaultTags } from "lib/constants/markets";
 import { MarketStatus } from "./markets";
 
@@ -11,7 +12,7 @@ export type MarketFilterTagLabel = typeof defaultTags[number];
 
 export type MarketFilterStatusLabel = MarketStatus;
 
-export type MarketFilterType = "tag" | "status" | "currency";
+export type MarketFilterType = typeof filterTypes[number];
 
 export type MarketFilter = {
   type: MarketFilterType;
@@ -50,4 +51,10 @@ export const isMarketCurrencyFilter = (
   filter: MarketFilter,
 ): filter is MarketCurrencyFilter => {
   return filter.type === "currency";
+};
+
+export type MarketsListQuery = {
+  filters: {
+    [key in MarketFilterType]?: string[];
+  };
 };

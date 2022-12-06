@@ -9,7 +9,6 @@ import { makeAutoObservable, runInAction, when } from "mobx";
 import MarketStore from "./MarketStore";
 import Store, { useStore } from "./Store";
 import { MarketsOrderBy, MarketsOrdering } from "@zeitgeistpm/sdk/dist/types";
-import { MarketListQuery } from "lib/types";
 import { activeStatusesFromFilters } from "lib/util/market";
 
 class MarketsStore {
@@ -101,85 +100,6 @@ class MarketsStore {
       }
       this.markets = { ...this.markets, [market.id]: market };
     });
-  }
-
-  async fetchMarkets(query: MarketListQuery) {
-    const { activeAccount } = this.store.wallets;
-
-    const { pagination, filter, sorting, myMarketsOnly, tag, searchText } =
-      query;
-
-    let orderBy: MarketsOrderBy;
-
-    if (sorting.sortBy === "EndDate") {
-      orderBy = "end";
-    } else if (sorting.sortBy === "CreatedAt") {
-      orderBy = "newest";
-    } else {
-      orderBy = "end";
-    }
-
-    let marketsData: Market[];
-    let count: number;
-
-    if (myMarketsOnly) {
-      const filtersOff =
-        filter.creator === false &&
-        filter.oracle === false &&
-        filter.hasAssets === false;
-
-      const oracle =
-        filtersOff || filter.oracle ? activeAccount?.address : undefined;
-      const creator =
-        filtersOff || filter.creator ? activeAccount?.address : undefined;
-      const assetOwner =
-        filtersOff || filter.hasAssets ? activeAccount?.address : undefined;
-
-      const filterBy = {
-        oracle,
-        creator,
-        assetOwner,
-        liquidityOnly: false,
-      };
-      ({ result: marketsData, count } =
-        await this.store.sdk.models.filterMarkets(filterBy, {
-          pageSize: pagination.pageSize * pagination.page,
-          pageNumber: 1,
-          ordering: sorting.order as MarketsOrdering,
-          orderBy,
-        }));
-    } else {
-      const statuses = activeStatusesFromFilters(filter);
-      ({ result: marketsData, count } =
-        await this.store.sdk.models.filterMarkets(
-          {
-            statuses: statuses.length === 0 ? undefined : statuses,
-            searchText,
-            liquidityOnly: filter.HasLiquidityPool,
-            tags: tag && [tag],
-          },
-          {
-            pageSize: pagination.pageSize * pagination.page,
-            pageNumber: 1,
-            ordering: sorting.order as MarketsOrdering,
-            orderBy,
-          },
-        ));
-    }
-
-    let markets: MarketStore[] = [];
-
-    let order = [];
-    for (const data of marketsData) {
-      const id = data.marketId;
-      markets = [...markets, await this.getMarket(id)];
-      order = [...order, id];
-    }
-
-    this.setCount(count);
-    this.setOrder(order);
-
-    return { markets, count };
   }
 
   setCount(count: number) {

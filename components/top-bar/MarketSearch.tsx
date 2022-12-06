@@ -6,15 +6,11 @@ import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
 const MarketSearch: FC = observer(() => {
   const [text, setText] = useState("");
   const inputRef = useRef<HTMLInputElement>();
-  const query = useMarketsUrlQuery();
+
+  const router = useRouter();
 
   const searchMarkets = (searchText: string) => {
-    if (searchText) {
-      query.updateQuery({
-        searchText,
-      });
-    }
-    setText("");
+    router.push({ pathname: "/markets", query: { searchText } });
   };
 
   const focusInput = () => {
