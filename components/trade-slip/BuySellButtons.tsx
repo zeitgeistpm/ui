@@ -1,4 +1,8 @@
-import { AssetId, IOCategoricalAssetId } from "@zeitgeistpm/sdk-next";
+import {
+  AssetId,
+  IOCategoricalAssetId,
+  IOScalarAssetId,
+} from "@zeitgeistpm/sdk-next";
 import { useTradeslipItems } from "lib/state/tradeslip/items";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
@@ -15,10 +19,7 @@ const BuySellButtons = observer(
     const tradeslip = useTradeslipItems();
     const isDisabled = false;
 
-    if (
-      !IOCategoricalAssetId.is(assetId) ||
-      !IOCategoricalAssetId.is(assetId)
-    ) {
+    if (!IOCategoricalAssetId.is(assetId) || !IOScalarAssetId.is(assetId)) {
       return null;
     }
 

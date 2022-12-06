@@ -204,7 +204,7 @@ const checkVal = (v: string, amountRegex: RegExp): string => {
       return val;
     }
   }
-  return "";
+  return "0";
 };
 
 export const AmountInput: FC<AmountInputProps> = observer(

@@ -37,7 +37,6 @@ const TradeSlipItem = observer<FC<TradeSlipItemProps>>(({ item, disabled }) => {
   }, [debouncedAmountInput]);
 
   const onAmountChange = (val: string) => setAmountInput(Number(val));
-  //const onAmountChange = (val: string) => ;
 
   return (
     <div className="rounded-ztg-10 mb-ztg-15 relative">

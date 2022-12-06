@@ -250,7 +250,7 @@ export const useTradeslipItemsState = (
           const max = (() => {
             if (item.action === "buy") {
               const maxTokens = isNA(traderZtgBalance)
-                ? new Decimal(Infinity)
+                ? tradeablePoolBalance
                 : traderZtgBalance.div(asset?.price.div(ZTG) ?? 0);
               if (tradeablePoolBalance?.lte(maxTokens)) {
                 return tradeablePoolBalance;
