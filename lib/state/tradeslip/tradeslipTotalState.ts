@@ -61,12 +61,7 @@ export const useTradeslipTotalState = (): UseTradeslipTotalState => {
   }, [sdk, states]);
 
   const { data: transactionFees } = useQuery(
-    [
-      id,
-      "tradeslip-batch-transaction-fee",
-      objectHash(items),
-      batchTransaction?.hash.toString(),
-    ],
+    [id, "tradeslip-batch-transaction-fee", items],
     async () => {
       if (!batchTransaction) return new Decimal(0);
       return new Decimal(

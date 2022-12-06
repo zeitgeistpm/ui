@@ -1,7 +1,6 @@
+import { OrmlTokensAccountData } from "@polkadot/types/lookup";
 import { useQueries, UseQueryOptions } from "@tanstack/react-query";
 import { AssetId, isRpcSdk, NA } from "@zeitgeistpm/sdk-next";
-import { OrmlTokensAccountData } from "@polkadot/types/lookup";
-import objectHash from "object-hash";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "account-asset-balance";
@@ -17,7 +16,7 @@ export const useAccountAssetBalances = (
   const query = useQueries({
     queries: pairs.map<UseQueryOptions<NA | OrmlTokensAccountData>>((pair) => {
       return {
-        queryKey: [id, rootKey, objectHash(pair)],
+        queryKey: [id, rootKey, pair],
         queryFn: async () => {
           if (isRpcSdk(sdk)) {
             if (!pair.account) {
