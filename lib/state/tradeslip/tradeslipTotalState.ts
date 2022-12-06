@@ -5,7 +5,6 @@ import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useStore } from "lib/stores/Store";
-import objectHash from "object-hash";
 import { useMemo } from "react";
 import { useTradeslipItems } from "./items";
 import { useTradeslipItemsState } from "./tradeslipItemsState";
@@ -13,7 +12,7 @@ import { useTradeslipItemsState } from "./tradeslipItemsState";
 /**
  * Total state for the tradeslip items.
  */
-export type UseTradeslipTotalState = {
+export type TradeslipTotalState = {
   /**
    * The aggregated sum/cost/gain for all trade slip items.
    */
@@ -29,11 +28,11 @@ export type UseTradeslipTotalState = {
 };
 
 /**
- * Get totals state for all trade slip items like sum and batched transaction.
+ * Get totals state for all trade slip items like total sum, batched transaction and total transaction fees.
  *
  * @returns UseTradeslipTotalState
  */
-export const useTradeslipTotalState = (): UseTradeslipTotalState => {
+export const useTradeslipTotalState = (): TradeslipTotalState => {
   const [sdk, id] = useSdkv2();
 
   const { wallets } = useStore();

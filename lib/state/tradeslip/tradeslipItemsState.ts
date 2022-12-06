@@ -342,11 +342,14 @@ export const useTradeslipItemsState = (
     }),
   });
 
-  return query.reduce((index, { data: state }) => {
-    if (!state) return index;
-    return {
-      ...index,
-      [itemKey(state.item)]: state,
-    };
-  }, {});
+  return query.reduce<Record<TradeSlipItemDataKey, TradeSlipItemState>>(
+    (index, { data: state }) => {
+      if (!state) return index;
+      return {
+        ...index,
+        [itemKey(state.item)]: state,
+      };
+    },
+    {},
+  );
 };
