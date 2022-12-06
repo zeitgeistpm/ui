@@ -29,7 +29,7 @@ const environment = process.env.NEXT_PUBLIC_ENVIRONMENT_NAME;
 const isProduction = environment === "production" || environment == null;
 
 const queryClient = new QueryClient();
-console.log(process.env.NEXT_REACT_QUERY_DEVTOOLS);
+
 const MyApp = observer(({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
   const router = useRouter();
