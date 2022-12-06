@@ -1,7 +1,6 @@
 import React, { FC, useRef, useState } from "react";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
-import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
 
 const MarketSearch: FC = observer(() => {
   const [text, setText] = useState("");

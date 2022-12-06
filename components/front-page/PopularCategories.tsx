@@ -1,6 +1,4 @@
-import { Skeleton } from "@material-ui/lab";
 import { TagCounts } from "lib/gql/popular-categories";
-import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
 import { observer } from "mobx-react";
 import { FC, useState } from "react";
 import Image from "next/image";
