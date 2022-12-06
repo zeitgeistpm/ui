@@ -2893,14 +2893,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/augment-api@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "@zeitgeistpm/augment-api@npm:2.3.0"
+"@zeitgeistpm/augment-api@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@zeitgeistpm/augment-api@npm:2.4.0"
   peerDependencies:
     "@polkadot/api-base": "*"
     "@polkadot/rpc-core": "*"
     "@polkadot/types": "*"
-  checksum: 60b13dfc521cb997312e182f7b55d0407a080ff44eebf408907ce9785eb3df76cab918232490ce745568263ade0946cbb454b863291ddcef4c0d83a318d3487b
+  checksum: 665d9c5655ef500c74a4ca9b6eeecabbacd06a3674b1ae14948b00058c9c64856a54c716522c0229db7d917f022f2ba6249de5c9189bf60aa8026561b53ec1a9
   languageName: node
   linkType: hard
 
@@ -2995,11 +2995,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.7.0":
-  version: 2.7.0
-  resolution: "@zeitgeistpm/sdk@npm:2.7.0"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.8.0":
+  version: 2.8.0
+  resolution: "@zeitgeistpm/sdk@npm:2.8.0"
   dependencies:
-    "@zeitgeistpm/augment-api": ^2.3.0
+    "@zeitgeistpm/augment-api": ^2.4.0
     "@zeitgeistpm/indexer": ^2.4.0
     "@zeitgeistpm/rpc": ^2.2.5
     "@zeitgeistpm/utility": ^2.4.2
@@ -3016,7 +3016,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: 4cad4f31b94ae72a3e86f9f6da65d8639e579a4ba1f628d78219485211f2162d288a8bcc1e620783106b5cf6a0965caba32f554c3aef96ce8054b76da57560a3
+  checksum: 4ca912036526700d616198b5442ddb42ed24a6f816ffe0b872e3d2edf86b0bced6eebb25b75cc2f8c1ba4ccdc0f919d052e77692635bb2f504b1c0ff8ae159ec
   languageName: node
   linkType: hard
 
@@ -3098,12 +3098,12 @@ __metadata:
     "@types/object-hash": ^2.2.1
     "@types/react": ^17.0.38
     "@types/react-color": ^3.0.6
-    "@zeitgeistpm/augment-api": ^2.3.0
+    "@zeitgeistpm/augment-api": ^2.4.0
     "@zeitgeistpm/avatara-nft-sdk": ^1.3.0
     "@zeitgeistpm/avatara-react": ^1.3.0
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^0.10.2
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.7.0"
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.8.0"
     "@zeitgeistpm/utility": ^2.4.2
     autoprefixer: 10.2.5
     axios: ^0.21.4

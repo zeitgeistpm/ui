@@ -10,6 +10,7 @@ import {
   isNA,
   isRpcSdk,
   Market,
+  na,
   NA,
   Pool,
   SaturatedPoolEntryAsset,
@@ -87,7 +88,7 @@ export type TradeSlipItemState = {
   /**
    * Free balance the trader has of the items asset.
    */
-  traderAssetBalance: Decimal;
+  traderAssetBalance: Decimal | NA;
   /**
    * Free balance the pool has of the items asset.
    */
@@ -164,6 +165,11 @@ export const useTradeslipItemsState = (
     })),
   );
 
+  const balancesKey = {
+    traderZtgBalance: traderZtgBalance.toString(),
+    traderAssets: traderAssets?.map((a) => a?.toString()),
+  };
+
   const query = useQueries({
     queries: items.map((item) => {
       const pool = pools?.find(
@@ -194,9 +200,9 @@ export const useTradeslipItemsState = (
           : new Decimal(poolZtgBalances[0].balance.data.free.toString());
 
       const traderAssetBalance =
-        !traderAssets[0] || isNA(traderAssets[0])
-          ? null
-          : new Decimal(traderAssets[0].free.toString());
+        !traderAssets?.[0] || isNA(traderAssets?.[0])
+          ? na("Account balance not available.")
+          : new Decimal(traderAssets?.[0].free.toString());
 
       const poolAssetBalance =
         !poolAssetBalances[0] || isNA(poolAssetBalances[0])
@@ -225,16 +231,20 @@ export const useTradeslipItemsState = (
       return {
         enabled: Boolean(sdk) && isRpcSdk(sdk) && enabled,
         keepPreviousData: true,
-        queryKey: [id, rootKey, itemKey(item), amount],
+        queryKey: [
+          id,
+          rootKey,
+          itemKey(item),
+          amount,
+          signer?.address,
+          balancesKey,
+        ],
         queryFn: async () => {
           if (!enabled || !sdk || !isRpcSdk(sdk)) {
             return null;
           }
 
           const max = (() => {
-            if (isNA(traderZtgBalance)) {
-              return new Decimal(0);
-            }
             if (item.action === "buy") {
               const maxTokens = isNA(traderZtgBalance)
                 ? new Decimal(Infinity)
@@ -245,6 +255,9 @@ export const useTradeslipItemsState = (
                 return maxTokens;
               }
             } else {
+              if (!traderAssetBalance || isNA(traderAssetBalance)) {
+                return tradeablePoolBalance;
+              }
               if (tradeablePoolBalance?.lte(traderAssetBalance)) {
                 return tradeablePoolBalance;
               } else {

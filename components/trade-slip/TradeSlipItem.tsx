@@ -1,4 +1,4 @@
-import { isIndexedData } from "@zeitgeistpm/sdk-next";
+import { isIndexedData, isNA } from "@zeitgeistpm/sdk-next";
 import { Decimal } from "decimal.js";
 import { ZTG } from "lib/constants";
 import { usePrevious } from "lib/hooks/usePrevious";
@@ -94,7 +94,12 @@ const TradeSlipItem = observer<FC<TradeSlipItemProps>>(({ item, disabled }) => {
                 <div className="h-ztg-15 w-full mb-ztg-10 font-lato text-ztg-10-150 flex items-center text-gray-dark-3">
                   Balance:
                   <div className="text-black dark:text-white ml-1">
-                    {state?.traderAssetBalance?.div(ZTG).toNumber().toFixed(4)}
+                    {isNA(state?.traderAssetBalance)
+                      ? "--"
+                      : state?.traderAssetBalance
+                          ?.div(ZTG)
+                          .toNumber()
+                          .toFixed(4)}
                   </div>
                 </div>
                 <div className="flex w-full h-ztg-34 mb-ztg-10">
