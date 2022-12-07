@@ -1,4 +1,12 @@
-import { Context, create$, Sdk, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
+import {
+  Context,
+  create$,
+  createStorage,
+  MarketMetadata,
+  Sdk,
+  ZeitgeistIpfs,
+} from "@zeitgeistpm/sdk-next";
+import { IPFS } from "@zeitgeistpm/web3.storage";
 import Store, { useStore } from "lib/stores/Store";
 import { memoize } from "lodash";
 import { useEffect, useState } from "react";
@@ -60,11 +68,24 @@ export const useSdkv2 = (): UseSdkv2 => {
  */
 const init = memoize(
   (store: Store) => {
-    return create$({
-      provider: store.userStore.endpoint,
-      indexer: store.userStore.gqlEndpoint,
-      storage: ZeitgeistIpfs(),
-    });
+    const { endpoint, gqlEndpoint } = store.userStore;
+    const isLocalEndpoint =
+      endpoint.includes("localhost") || endpoint.includes("127.0.0.1");
+    if (isLocalEndpoint) {
+      return create$({
+        provider: endpoint,
+        indexer: gqlEndpoint,
+        storage: createStorage<MarketMetadata>(
+          IPFS.storage({ node: { url: "http://localhost:5001 " } }),
+        ),
+      });
+    } else {
+      return create$({
+        provider: endpoint,
+        indexer: gqlEndpoint,
+        storage: ZeitgeistIpfs(),
+      });
+    }
   },
   (store) => identify(store),
 );
