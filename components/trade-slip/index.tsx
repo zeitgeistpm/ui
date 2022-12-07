@@ -113,7 +113,11 @@ const TradeSlip = observer(() => {
           <TransactionButton
             className="shadow-ztg-2 mb-ztg-16"
             onClick={processTransactions}
-            disabled={isTransacting || tradeslipItems.items.length === 0}
+            disabled={
+              isTransacting ||
+              tradeslipItems.items.length === 0 ||
+              !Boolean(batchTransaction)
+            }
           >
             Sign Transactions
           </TransactionButton>

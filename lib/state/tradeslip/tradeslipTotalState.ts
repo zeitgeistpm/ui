@@ -1,13 +1,16 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { useQuery } from "@tanstack/react-query";
+import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useStore } from "lib/stores/Store";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useTradeslipItems } from "./items";
 import { useTradeslipItemsState } from "./tradeslipItemsState";
+import { useDebounce } from "use-debounce";
+import objectHash from "object-hash";
 
 /**
  * Total state for the tradeslip items.
@@ -50,17 +53,21 @@ export const useTradeslipTotalState = (): TradeslipTotalState => {
     "promise",
     ISubmittableResult
   > = useMemo(() => {
-    const transactions = Object.values(states).map(
-      ({ transaction }) => transaction,
-    );
+    const transactions = Object.values(states)
+      .map(({ transaction }) => transaction ?? null)
+      .filter(isNotNull);
+
     if (sdk && isRpcSdk(sdk) && transactions.length) {
       return sdk.context.api.tx.utility.batch(transactions);
     }
+
     return null;
   }, [sdk, states]);
 
+  const debouncedItems = useDebounce(items, 300);
+
   const { data: transactionFees } = useQuery(
-    [id, "tradeslip-batch-transaction-fee", items],
+    [id, "tradeslip-batch-transaction-fee", debouncedItems],
     async () => {
       if (!batchTransaction) return new Decimal(0);
       return new Decimal(

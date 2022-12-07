@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Context, Pool } from "@zeitgeistpm/sdk-next";
+import { Context, isIndexedSdk, Pool } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "saturated-pools-index";
@@ -19,7 +19,7 @@ export const useSaturatedPoolsIndex = (pools?: Pool<Context>[]) => {
     },
     {
       keepPreviousData: true,
-      enabled: Boolean(sdk && pools),
+      enabled: Boolean(sdk && pools && isIndexedSdk(sdk)),
     },
   );
 

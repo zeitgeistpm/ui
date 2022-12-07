@@ -26,17 +26,7 @@ const TradeSlipItem = observer<FC<TradeSlipItemProps>>(({ item, disabled }) => {
   const { put, removeAsset } = useTradeslipItems();
   const state = useTradeslipItemState(item);
 
-  const [amountInput, setAmountInput] = useState(item.amount);
-  const [debouncedAmountInput] = useDebounce(amountInput, 300);
-  const prevDebouncedAmountInput = usePrevious(debouncedAmountInput);
-
-  useEffect(() => {
-    if (prevDebouncedAmountInput !== debouncedAmountInput) {
-      put({ ...item, amount: Number(debouncedAmountInput) });
-    }
-  }, [debouncedAmountInput]);
-
-  const onAmountChange = (val: string) => setAmountInput(Number(val));
+  const onAmountChange = (val: string) => put({ ...item, amount: Number(val) });
 
   return (
     <div className="rounded-ztg-10 mb-ztg-15 relative">
