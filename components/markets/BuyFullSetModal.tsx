@@ -160,7 +160,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
         />
       </div>
       <div className="h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 my-ztg-10 text-sky-600">
-        <span className="font-lato font-bold">Price per Set:</span>
+        <span className=" font-bold">Price per Set:</span>
         <span className="font-mono font-medium">
           1 {store.config.tokenSymbol}
         </span>

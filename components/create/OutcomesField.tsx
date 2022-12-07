@@ -109,7 +109,7 @@ export const YesNoOutcomesField: FC<{ entries: YesNoOutcome }> = ({
   entries,
 }) => {
   return (
-    <div className="text-ztg-10-150 font-bold mb-ztg-8 text-sky-600 uppercase font-lato">
+    <div className="text-ztg-10-150 font-bold mb-ztg-8 text-sky-600 uppercase ">
       <div className="flex-ztg-basis-520 flex-grow flex-shrink mb-2">
         OUTCOMES/TICKER
       </div>
@@ -269,7 +269,7 @@ export const MultipleOutcomesField: FC<{
 
   return (
     <div data-test="multipleOutcomesField">
-      <div className="flex text-ztg-10-150 font-bold mb-ztg-8 h-ztg-15 text-sky-600 uppercase font-lato">
+      <div className="flex text-ztg-10-150 font-bold mb-ztg-8 h-ztg-15 text-sky-600 uppercase ">
         <div className="flex-ztg-basis-520 flex-grow flex-shrink">Outcomes</div>
         <div className="flex-ztg-basis-85 flex-grow">Ticker</div>
         <div className="w-ztg-40 flex-shrink-0 text-center">Color</div>

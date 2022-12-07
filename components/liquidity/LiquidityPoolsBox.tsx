@@ -407,7 +407,7 @@ const LiquidityPoolsBox = observer(() => {
           value={slippagePercentage}
           label="slippage"
           onChange={(v) => setSlippagePercentage(v)}
-          className="ml-auto font-medium font-lato"
+          className="ml-auto font-medium "
         />
       </div>
       {/* <Switch
@@ -475,7 +475,7 @@ const LiquidityPoolsBox = observer(() => {
 
       {joinPool === true ? (
         <div className="h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 my-ztg-10 ">
-          <span className="font-lato font-bold">Pool Shares to Receive:</span>
+          <span className=" font-bold">Pool Shares to Receive:</span>
           <span className="font-mono font-medium">
             {sharesToRecieve.toFixed(2)}
           </span>

@@ -56,7 +56,7 @@ const Input = (props) => {
         ref={innerRef}
         onBlur={() => {}}
         placeholder="Search by Name"
-        className="bg-transparent focus:outline-none text-sky-600 font-lato text-ztg-14-120"
+        className="bg-transparent focus:outline-none text-sky-600  text-ztg-14-120"
       />
     </div>
   );
@@ -91,7 +91,7 @@ const Option = observer(({ innerProps, label, data, isSelected }) => {
       }`}
       {...innerProps}
     >
-      <div className="h-ztg-15 font-lato font-bold text-ztg-10-150 flex items-center text-sky-600 mt-ztg-5 uppercase">
+      <div className="h-ztg-15  font-bold text-ztg-10-150 flex items-center text-sky-600 mt-ztg-5 uppercase">
         {marketSlug}
       </div>
       <div className="flex h-ztg-36 items-center">

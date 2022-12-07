@@ -35,7 +35,7 @@ const Category = ({
         </motion.div>
       </div>
       <span className="flex mt-[10px] items-center">
-        <span className="font-lato font-bold text-ztg-16-150">{title}</span>
+        <span className=" font-bold text-ztg-16-150">{title}</span>
         <span className="ml-auto">
           <span className="flex justify-center items-center bg-anti-flash-white rounded-ztg-5 w-[41px] h-[19px]">
             <span className="text-ztg-10-150">{count}</span>
@@ -58,9 +58,7 @@ const PopularCategories: FC<{ tagCounts: TagCounts }> = observer(
 
     return (
       <div className="flex flex-col mt-ztg-30">
-        <h3 className="font-lato font-bold text-[28px] mb-ztg-30">
-          Popular Categories
-        </h3>
+        <h3 className=" font-bold text-[28px] mb-ztg-30">Popular Categories</h3>
         <div
           className="grid w-full gap-[28px]"
           style={{

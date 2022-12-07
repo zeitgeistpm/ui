@@ -66,7 +66,7 @@ const MarketScroll = observer(
     return (
       <div ref={containerRef} className="flex flex-col">
         <div className="flex items-center mb-ztg-30">
-          <div className="font-lato font-bold text-[28px]">{title}</div>
+          <div className=" font-bold text-[28px]">{title}</div>
           <div className="hidden sm:flex ml-auto items-center">
             <Link
               href="markets"

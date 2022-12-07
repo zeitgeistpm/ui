@@ -16,7 +16,7 @@ const Control = ({ children, label, ...rest }) => {
   const { onMouseDown } = innerProps;
   return (
     <div
-      className="flex justify-center items-center pl-ztg-20 font-lato font-medium text-ztg-16-150 text-sky-600 h-ztg-44"
+      className="flex justify-center items-center pl-ztg-20  font-medium text-ztg-16-150 text-sky-600 h-ztg-44"
       onMouseDown={onMouseDown}
     >
       {label}

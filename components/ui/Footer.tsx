@@ -94,7 +94,7 @@ const FooterMenu: FC<FooterMenuProps> = observer(
           font-space`}
       >
         <h3 className="text-ztg-16-150 font-bold h-ztg-38 mb-ztg-5">{title}</h3>
-        <div className="text-ztg-12-150 flex flex-col text-sky-600 font-lato mb-auto">
+        <div className="text-ztg-12-150 flex flex-col text-sky-600  mb-auto">
           {links.map(({ text, href }, idx) => {
             return (
               <Link href={href} key={`footerMenuLink${idx}`} target="_blank">

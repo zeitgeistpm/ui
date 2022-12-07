@@ -422,7 +422,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
                     changeInAmount(maxIn);
                   }}
                 >
-                  <div className="font-lato text-ztg-12-150 center">MAX</div>
+                  <div className=" text-ztg-12-150 center">MAX</div>
                 </button>
               }
               value={exchangeStore?.amount?.toString()}
@@ -432,9 +432,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               }}
             />
             <div className="h-ztg-18 flex px-ztg-8 justify-between mb-ztg-16 text-sky-600">
-              <span className="font-lato text-ztg-12-150">
-                Price per Share:
-              </span>
+              <span className=" text-ztg-12-150">Price per Share:</span>
               <span className="font-mono text-ztg-12-150 text-right font-medium">
                 {exchangeStore?.spotPrice?.toFixed(4)}
               </span>
@@ -477,19 +475,19 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
             >
               Sign Transaction
             </TransactionButton>
-            <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
+            <div className=" h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
               <span>Max profit:</span>
               <span className="font-mono">
                 {exchangeStore?.maxProfit} {store.config.tokenSymbol}
               </span>
             </div>
-            <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
+            <div className=" h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
               <span>Network Fee:</span>
               <span className="font-mono">
                 {txFee} {store.config.tokenSymbol}
               </span>
             </div>
-            <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
+            <div className=" h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
               <span>Trading Fee:</span>
               <span className="font-mono">
                 {`${(

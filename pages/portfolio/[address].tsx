@@ -285,7 +285,7 @@ const Portfolio: NextPage = observer(() => {
             marketStores={positions.map((p) => p.marketStore)}
             onSuccess={() => incrementUpdateNum()}
           />
-          <div className="mb-ztg-50 font-lato ">
+          <div className="mb-ztg-50  ">
             {positions.map((position, index) => (
               <PortfolioCard key={index} position={position} />
             ))}

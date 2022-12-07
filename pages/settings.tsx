@@ -438,7 +438,7 @@ const Settings: NextPage = observer(() => {
       >
         Account Settings
       </h2>
-      <div className="p-ztg-30 rounded-ztg-10 mb-ztg-32 font-lato font-bold bg-sky-100 dark:bg-sky-700">
+      <div className="p-ztg-30 rounded-ztg-10 mb-ztg-32  font-bold bg-sky-100 dark:bg-sky-700">
         <IdentitySettings />
         <EndpointsSettings />
         {/* Post beta */}

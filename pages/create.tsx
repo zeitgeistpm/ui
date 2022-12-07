@@ -734,7 +734,7 @@ const CreatePage: NextPage = observer(() => {
             onChange={(deadlines) => onChangeDeadlines(deadlines)}
           />
         </div>
-        <div className="flex h-ztg-22 items-center text-sky-600 font-lato">
+        <div className="flex h-ztg-22 items-center text-sky-600 ">
           <div className="w-ztg-20 h-ztg-20">
             <AlertTriangle size={20} />
           </div>
@@ -762,7 +762,7 @@ const CreatePage: NextPage = observer(() => {
               changeAdvised(!formData.advised);
             }}
           />
-          <div className="ml-ztg-15 font-lato text-ztg-10-150 text-sky-600">
+          <div className="ml-ztg-15  text-ztg-10-150 text-sky-600">
             An advised market means a smaller deposit, but requires approval
             from the advisory committee before becoming active.
           </div>

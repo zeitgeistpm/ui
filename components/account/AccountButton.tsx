@@ -66,7 +66,7 @@ const AccountButton: FC<{
             (locationAllowed !== true || isUsingVPN === true) ? (
               <div
                 className="bg-white dark:bg-sky-1100 absolute rounded-ztg-10 font-bold text-black dark:text-white 
-            px-ztg-10 py-ztg-14 font-lato text-ztg-12-150 top-ztg-50 z-20 right-10"
+            px-ztg-10 py-ztg-14  text-ztg-12-150 top-ztg-50 z-20 right-10"
               >
                 {locationAllowed !== true
                   ? "Your jurisdiction is not authorised to trade"

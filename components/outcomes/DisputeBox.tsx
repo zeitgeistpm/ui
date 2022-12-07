@@ -183,7 +183,7 @@ const DisputeBox = observer(
                     setIsSelectView(true);
                   }}
                 />
-                <div className="font-lato text-ztg-10-150 mb-ztg-2">
+                <div className=" text-ztg-10-150 mb-ztg-2">
                   Bond will start at {disputeBond} {tokenSymbol}, increasing by{" "}
                   {disputeFactor} {tokenSymbol} for each dispute
                 </div>
@@ -207,7 +207,7 @@ const DisputeBox = observer(
                   disabled
                 />
                 {bond !== disputeBond && bond !== undefined ? (
-                  <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600 mb-ztg-10">
+                  <div className=" h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600 mb-ztg-10">
                     <span>Previous Bond:</span>
                     <span className="font-mono">{bond - disputeFactor}</span>
                   </div>

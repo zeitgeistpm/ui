@@ -29,7 +29,7 @@ const LabeledToggle: FC<{
   return (
     <div className={classes}>
       <div
-        className={`text-ztg-14-150 mr-ztg-10 font-lato ${
+        className={`text-ztg-14-150 mr-ztg-10  ${
           !disabled && side === "left" ? activeClass : ""
         } ${disabled ? "text-sky-600" : ""}`}
         data-test={leftLabel}
@@ -56,7 +56,7 @@ const LabeledToggle: FC<{
         ></motion.div>
       </div>
       <div
-        className={`text-ztg-14-150 font-lato ${
+        className={`text-ztg-14-150  ${
           !disabled && side === "right" ? activeClass : ""
         } ${disabled ? "text-sky-600" : ""}`}
         data-test={rightLabel}

@@ -346,7 +346,7 @@ const BadgeItem = (props: { item: Badge.IndexedBadge }) => {
             animate={{ opacity: 1, transform: "translateY(-105%)" }}
             exit={{ opacity: 0, transform: "translateY(-115%)" }}
             style={{ left: "2px" }}
-            className="border-2 border-gray-500/10  absolute text-sm z-ztg-10 bg-gray-100 dark:bg-black rounded-ztg-10 text-black dark:text-white px-ztg-12 py-ztg-14 font-lato w-ztg-240"
+            className="border-2 border-gray-500/10  absolute text-sm z-ztg-10 bg-gray-100 dark:bg-black rounded-ztg-10 text-black dark:text-white px-ztg-12 py-ztg-14  w-ztg-240"
           >
             <div className="flex mb-ztg-2">
               <div className="flex-1">
@@ -608,7 +608,7 @@ const ClaimModal = (props: {
             </div>
             {!props.isTarotHolder && (
               <div className="text-center text-xs">
-                <div className="font-lato h-ztg-18 px-ztg-8 text-ztg-12-150 font-bold text-sky-600">
+                <div className=" h-ztg-18 px-ztg-8 text-ztg-12-150 font-bold text-sky-600">
                   <div className="flex px-ztg-8 justify-between">
                     <span>Exchange Fee: </span>
                     <span className="font-mono">{(fee / ZTG).toFixed(4)}</span>

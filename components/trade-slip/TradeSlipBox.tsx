@@ -122,7 +122,7 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
           >
             {state.type}
           </div>
-          <div className="text-ztg-10-150 break-words whitespace-nowrap overflow-hidden overflow-ellipsis text-gray-dark-3 text-center font-lato font-bold uppercase flex-grow mx-ztg-10">
+          <div className="text-ztg-10-150 break-words whitespace-nowrap overflow-hidden overflow-ellipsis text-gray-dark-3 text-center  font-bold uppercase flex-grow mx-ztg-10">
             {state.slug}
           </div>
           <div className="w-ztg-16 h-ztg-16 rounded-full bg-sky-400 dark:bg-black center">
@@ -135,7 +135,7 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
         </div>
         <div className="py-ztg-8 px-ztg-16 bg-white dark:bg-sky-1000 flex flex-col items-center mb-ztg-8 rounded-b-ztg-10">
           {state.disabled ? (
-            <div className="text-vermilion font-lato font-bold text-ztg-12-120 h-ztg-30 center">
+            <div className="text-vermilion  font-bold text-ztg-12-120 h-ztg-30 center">
               Market Ended
             </div>
           ) : (
@@ -148,11 +148,11 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
                 <div className="uppercase font-space font-bold text-ztg-14-150 ml-ztg-8 mr-ztg-10 text-black dark:text-white">
                   {state.assetTicker}
                 </div>
-                <div className="font-lato font-bold text-ztg-12-150 ml-auto text-black dark:text-white">
+                <div className=" font-bold text-ztg-12-150 ml-auto text-black dark:text-white">
                   @{state.assetZtgPrice?.toFixed(4)} {config.tokenSymbol}
                 </div>
               </div>
-              <div className="h-ztg-15 w-full mb-ztg-10 font-lato text-ztg-10-150 flex items-center text-gray-dark-3">
+              <div className="h-ztg-15 w-full mb-ztg-10  text-ztg-10-150 flex items-center text-gray-dark-3">
                 Balance:
                 <div className="text-black dark:text-white ml-1">
                   {state.assetBalance?.toFixed(4)}
@@ -176,7 +176,7 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
                     max={state.maxLimit?.toString()}
                   />
                 </div>
-                <div className="ml-ztg-10 h-full flex flex-col text-sky-600 font-lato text-ztg-10-150 text-right flex-grow">
+                <div className="ml-ztg-10 h-full flex flex-col text-sky-600  text-ztg-10-150 text-right flex-grow">
                   {state.type === "sell" ? (
                     <div>To Receive</div>
                   ) : (
@@ -190,7 +190,7 @@ const TradeSlipBoxContent = observer<FC<TradeSlipBoxProps>>(
                   </div>
                 </div>
               </div>
-              <div className="flex w-full font-lato text-ztg-10-150 text-gray-dark-3 mt-ztg-5">
+              <div className="flex w-full  text-ztg-10-150 text-gray-dark-3 mt-ztg-5">
                 Trading Fee:
                 <div className="text-black dark:text-white ml-1">
                   {boxAmountDecimal.mul(swapFee?.mul(ZTG) ?? 0).toString()}{" "}

@@ -134,7 +134,7 @@ const TradeSlip = observer(() => {
           >
             Sign Transactions
           </TransactionButton>
-          <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
+          <div className="flex items-center h-ztg-25 text-sky-600  text-ztg-12-150 justify-between">
             <div className="font-bold">Slippage Tolerance:</div>
             <SlippageSettingInput
               value={tradeSlipStore.slippagePercentage?.toFixed(1)}
@@ -142,13 +142,13 @@ const TradeSlip = observer(() => {
               form={tradeSlipForm}
             />
           </div>
-          <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
+          <div className="flex items-center h-ztg-25 text-sky-600  text-ztg-12-150 justify-between">
             <div className="font-bold">Network fee:</div>
             <div className="font-normal">
               {txFee.toFixed(4)} {store.config?.tokenSymbol}
             </div>
           </div>
-          <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
+          <div className="flex items-center h-ztg-25 text-sky-600  text-ztg-12-150 justify-between">
             <div className="font-bold">Total cost / gain:</div>
             <div className="font-normal">
               {totalCost.isNaN()

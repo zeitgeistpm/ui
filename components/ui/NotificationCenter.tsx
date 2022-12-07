@@ -110,9 +110,7 @@ const NotificationCard: FC<{
             width: `${((100 * timer) / lifetime).toFixed(2)}%`,
           }}
         />
-        <div className="font-lato text-ztg-12-120 text-sky-600 mb-ztg-8">
-          {content}
-        </div>
+        <div className=" text-ztg-12-120 text-sky-600 mb-ztg-8">{content}</div>
       </span>
     </motion.div>
   );
