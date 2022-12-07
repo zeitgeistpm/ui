@@ -121,11 +121,14 @@ const PoolSettings: FC<{
 
   const changeOutcomeRow = (amount: string) => {
     onChange(
-      data.map((row) => ({
-        ...row,
-        amount,
-        value: row.price.price.mul(amount).toFixed(0),
-      })),
+      data.map((row) => {
+        const handledAmount = amount && amount.length > 0 ? amount : "0";
+        return {
+          ...row,
+          amount,
+          value: row.price.price.mul(handledAmount).toFixed(0),
+        };
+      }),
     );
   };
 
