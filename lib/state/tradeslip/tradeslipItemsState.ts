@@ -332,9 +332,7 @@ export const useTradeslipItemsState = (
                 );
               }
             }
-          } catch (error) {
-            return null;
-          }
+          } catch (error) {}
 
           return {
             item,
