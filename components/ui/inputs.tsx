@@ -78,6 +78,9 @@ export const Input: FC<InputProps & InputHTMLAttributes<HTMLInputElement>> =
             max={max}
             step={step}
             value={value}
+            onWheel={(event) => {
+              if (type === "number") event.currentTarget.blur();
+            }}
           />
         );
       },
