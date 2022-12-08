@@ -405,8 +405,6 @@ export const RangeOutcomeField: FC<{
               type="number"
               placeholder="Minimum Range Value"
               value={minStr}
-              min={0}
-              max={1}
               onChange={(e) => {
                 changeMinimum(e.target.value);
               }}
@@ -433,9 +431,6 @@ export const RangeOutcomeField: FC<{
               type="number"
               placeholder="Maximum Range Value"
               value={maxStr}
-              min={0}
-              max={1}
-              step={step}
               onChange={(e) => {
                 changeMaximum(e.target.value);
               }}
