@@ -11,7 +11,7 @@ import { useSdkv2 } from "../useSdkv2";
 export const rootKey = "markets";
 
 const hashFilters = (filters: MarketFilter[]): string => {
-  const sortedFilters = filters.sort((a, b) => {
+  const sortedFilters = [...filters].sort((a, b) => {
     if (a.type !== b.type) {
       return a.type < b.type ? -1 : 1;
     } else {

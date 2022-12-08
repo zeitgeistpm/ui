@@ -28,9 +28,15 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
       for (const pair of queryParamsArr) {
         queryParams[pair[0]] = pair[1];
       }
-      if (firstLoad && isEmpty(queryParams)) {
-        setQuery(defaultMarketsQueryState);
-        updateQuery(defaultMarketsQueryState);
+      if (firstLoad) {
+        if (isEmpty(queryParams)) {
+          setQuery(defaultMarketsQueryState);
+          updateQuery(defaultMarketsQueryState);
+        } else {
+          const query = parse(queryParams);
+          setQuery(query);
+          updateQuery(query);
+        }
         setFirstLoad(false);
       } else {
         setQuery(parse(queryParams));
@@ -49,7 +55,7 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
         query: toString(newQuery),
       });
     },
-    [routerPath],
+    [routerPath, query],
   );
 
   const [queryState, setQueryState] = useState<
