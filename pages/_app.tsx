@@ -19,6 +19,66 @@ import DefaultLayout from "layouts/DefaultLayout";
 import ModalStore from "lib/stores/ModalStore";
 import Store from "lib/stores/Store";
 
+//font optimization
+import { Inter } from "@next/font/google";
+import { Kanit } from "@next/font/google";
+import { Lato } from "@next/font/google";
+import { Roboto } from "@next/font/google";
+import { Roboto_Mono } from "@next/font/google";
+import { Space_Grotesk } from "@next/font/google";
+const inter = Inter({
+  subsets: [
+    "cyrillic",
+    "cyrillic-ext",
+    "greek",
+    "greek-ext",
+    "latin",
+    "latin-ext",
+    "vietnamese",
+  ],
+  variable: "--font-inter",
+});
+const kanit = Kanit({
+  subsets: ["latin", "latin-ext", "thai", "vietnamese"],
+  weight: "700",
+  variable: "--font-kanit",
+});
+const lato = Lato({
+  subsets: ["latin", "latin-ext"],
+  weight: ["100", "300", "400", "700"],
+  variable: "--font-lato",
+});
+const roboto = Roboto({
+  subsets: [
+    "cyrillic",
+    "cyrillic-ext",
+    "greek",
+    "greek-ext",
+    "latin",
+    "latin-ext",
+    "vietnamese",
+  ],
+  weight: ["400", "500"],
+  variable: "--font-roboto",
+});
+const roboto_mono = Roboto_Mono({
+  subsets: [
+    "cyrillic",
+    "cyrillic-ext",
+    "greek",
+    "latin",
+    "latin-ext",
+    "vietnamese",
+  ],
+  weight: ["400", "700"],
+  variable: "--font-roboto-mono",
+});
+const space_grotesk = Space_Grotesk({
+  subsets: ["latin", "latin-ext", "vietnamese"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-space-grotesk",
+});
+
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
 const domain = process.env["NEXT_PUBLIC_DOMAIN"];
@@ -95,6 +155,18 @@ const MyApp = observer(({ Component, pageProps }) => {
             <Head>
               <title>Zeitgeist - Prediction Markets</title>
             </Head>
+            <style jsx global>
+              {`
+                :root {
+                  --font-inter: ${inter.style.fontFamily};
+                  --font-kanit: ${kanit.style.fontFamily};
+                  --font-lato: ${lato.style.fontFamily};
+                  --font-roboto: ${roboto.style.fontFamily};
+                  --font-roboto-mono: ${roboto_mono.style.fontFamily};
+                  --font-space-grotesk: ${space_grotesk.style.fontFamily};
+                }
+              `}
+            </style>
             <DefaultLayout>
               <AnimatePresence>
                 {store.showMobileMenu && <MobileMenu />}

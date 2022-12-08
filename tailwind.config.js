@@ -32,6 +32,7 @@ module.exports = {
     },
     fontFamily: {
       mono: [
+        "var(--font-roboto-mono)",
         "Roboto Mono",
         "Space Mono",
         "Menlo",
@@ -45,7 +46,7 @@ module.exports = {
         "monospace",
       ],
       sans: [
-        "Inter",
+        "var(--font-inter)",
         "Roboto",
         "ui-sans-serif",
         "system-ui",
@@ -57,10 +58,10 @@ module.exports = {
         "sans-serif",
         ...defaultTheme.fontFamily.sans,
       ],
-      kanit: ["Kanit"],
+      kanit: ["var(--font-kanit)"],
       //TODO: remove Lato if not used
-      lato: ["Lato"],
-      space: ["Space Grotesk"],
+      lato: ["var(--font-lato)"],
+      space: ["var(--font-space-grotesk)"],
     },
     extend: {
       borderWidth: {
