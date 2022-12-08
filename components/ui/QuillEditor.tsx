@@ -27,6 +27,8 @@ const QuillEditor = ({
     ],
   };
 
+  const formats = ["bold", "underline", "italic", "link", "list"];
+
   return (
     <ReactQuill
       className={className}
@@ -34,6 +36,7 @@ const QuillEditor = ({
       onChange={setValue}
       placeholder={placeholder}
       modules={modules}
+      formats={formats}
     />
   );
 };
