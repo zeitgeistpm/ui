@@ -93,7 +93,7 @@ const NotificationCard: FC<{
       </span>
       <span className="w-full">
         <div
-          className="text-black dark:text-white font-space font-bold text-ztg-16-150 flex items-center w-full"
+          className="text-black dark:text-white  font-bold text-ztg-16-150 flex items-center w-full"
           data-test={dataTest}
         >
           <span>{getMessage(type)}</span>

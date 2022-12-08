@@ -246,9 +246,7 @@ const PoolDetails: NextPage = observer(() => {
       {/* <PoolChart /> */}
       {/* <PoolSummary /> */}
       <div className="flex my-ztg-23 items-center">
-        <h3 className="font-space font-semibold text-ztg-20-150">
-          Assets in Pool
-        </h3>
+        <h3 className=" font-semibold text-ztg-20-150">Assets in Pool</h3>
         {saturatedPoolData && (
           <FullSetButtons marketId={saturatedPoolData.market.marketId} />
         )}

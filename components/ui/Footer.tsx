@@ -110,7 +110,7 @@ const FooterMenu: FC<FooterMenuProps> = observer(
 
 const Footer = observer(() => {
   return (
-    <div className="mt-auto font-space text-black bg-white dark:bg-sky-1000 dark:text-white border-t-1 border-border-light dark:border-border-dark px-ztg-32">
+    <div className="mt-auto  text-black bg-white dark:bg-sky-1000 dark:text-white border-t-1 border-border-light dark:border-border-dark px-ztg-32">
       <div className="mx-auto max-w-ztg-1100 flex flex-wrap pb-ztg-25 pt-ztg-30">
         <FooterMenu
           title="General"
@@ -147,7 +147,7 @@ const Footer = observer(() => {
           ]}
           className="mb-ztg-10"
         />
-        <div className="w-full text-ztg-10-150 text-black dark:text-white font-lato mt-ztg-5 mb-ztg-10">
+        <div className="w-full text-ztg-10-150 text-black dark:text-white  mt-ztg-5 mb-ztg-10">
           Please be advised that Equipoise Corp. d/b/a Zeitgeist is registered
           under the laws of Panama, and Zeitgeist has not sought licensing with
           any other regulatory authority of any country or jurisdiction, nor has

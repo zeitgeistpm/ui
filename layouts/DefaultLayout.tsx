@@ -18,14 +18,7 @@ import { usePrevious } from "lib/hooks/usePrevious";
 import { shouldScrollTop } from "lib/util/should-scroll";
 
 // font optimization from @next/font
-import {
-  inter,
-  kanit,
-  lato,
-  roboto,
-  roboto_mono,
-  space_grotesk,
-} from "lib/util/fonts";
+import { inter, kanit, roboto_mono } from "lib/util/fonts";
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 
@@ -63,10 +56,7 @@ const DefaultLayout: FC = observer(({ children }) => {
           :root {
             --font-inter: ${inter.style.fontFamily};
             --font-kanit: ${kanit.style.fontFamily};
-            --font-lato: ${lato.style.fontFamily};
-            --font-roboto: ${roboto.style.fontFamily};
             --font-roboto-mono: ${roboto_mono.style.fontFamily};
-            --font-space-grotesk: ${space_grotesk.style.fontFamily};
           }
         `}
       </style>

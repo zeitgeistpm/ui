@@ -384,7 +384,7 @@ const LiquidityPoolsBox = observer(() => {
 
   return (
     <div className="p-ztg-15 rounded-ztg-10 text-sky-600 bg-white dark:bg-sky-1000">
-      <div className="font-space font-bold text-ztg-14-150 flex">
+      <div className=" font-bold text-ztg-14-150 flex">
         {pool?.pool?.status !== "Stale" ? (
           <span
             onClick={handleJoinPoolClick}
@@ -440,7 +440,7 @@ const LiquidityPoolsBox = observer(() => {
       {joinPool === false ? (
         <>
           <label>
-            <div className="font-space font-bold text-black dark:text-white px-ztg-8 mb-ztg-10 mt-ztg-20">
+            <div className=" font-bold text-black dark:text-white px-ztg-8 mb-ztg-10 mt-ztg-20">
               Pool Shares to Withdraw
             </div>
             <input

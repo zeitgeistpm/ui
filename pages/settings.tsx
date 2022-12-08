@@ -433,7 +433,7 @@ const Settings: NextPage = observer(() => {
   return (
     <>
       <h2
-        className="text-ztg-20-150 font-bold font-space mb-ztg-23"
+        className="text-ztg-20-150 font-bold  mb-ztg-23"
         data-test="accountSettingsHeader"
       >
         Account Settings

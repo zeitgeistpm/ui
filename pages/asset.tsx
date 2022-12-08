@@ -165,7 +165,7 @@ const AssetPage: NextPage = observer(() => {
           <div className="text-ztg-10-150  uppercase font-bold text-sky-600 mb-ztg-4">
             Asset
           </div>
-          <div className="flex items-center justify-center h-ztg-38 bg-sky-300 text-black dark:bg-sky-700 dark:text-white  px-ztg-10 font-space text-ztg-22-120 font-bold rounded-ztg-5">
+          <div className="flex items-center justify-center h-ztg-38 bg-sky-300 text-black dark:bg-sky-700 dark:text-white  px-ztg-10  text-ztg-22-120 font-bold rounded-ztg-5">
             <div
               className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2"
               style={{ background: assetColor }}

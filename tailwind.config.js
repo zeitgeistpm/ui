@@ -33,7 +33,6 @@ module.exports = {
     fontFamily: {
       mono: [
         "var(--font-roboto-mono)",
-        "Roboto Mono",
         "Space Mono",
         "Menlo",
         "ui-monospace",
@@ -59,8 +58,6 @@ module.exports = {
         ...defaultTheme.fontFamily.sans,
       ],
       kanit: ["var(--font-kanit)"],
-      space: ["var(--font-space-grotesk)"],
-      lato: ["var(--font-lato)"],
     },
     extend: {
       borderWidth: {

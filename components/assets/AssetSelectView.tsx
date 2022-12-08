@@ -99,7 +99,7 @@ const Option = observer(({ innerProps, label, data, isSelected }) => {
           className="h-ztg-20 w-ztg-20 border-2 border-sky-600 rounded-full mr-ztg-8"
           style={{ background: `${color}` }}
         ></div>
-        <div className="font-space h-ztg-20 flex items-center font-bold dark:text-white">
+        <div className=" h-ztg-20 flex items-center font-bold dark:text-white">
           {label}
         </div>
         <div className="h-ztg-20 flex items-center font-mono text-ztg-12-120 ml-auto text-sky-600">
@@ -148,7 +148,7 @@ const AssetSelectView: FC<AssetSelectViewProps> = ({
         onClick={() => onBack()}
       >
         <ArrowLeft size={16} className="mr-ztg-10 text-sky-600" />
-        <div className="font-space text-ztg-14-150 text-sky-600 font-bold">
+        <div className=" text-ztg-14-150 text-sky-600 font-bold">
           Select Token
         </div>
       </div>

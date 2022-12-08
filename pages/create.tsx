@@ -780,7 +780,7 @@ const CreatePage: NextPage = observer(() => {
               />
               <label
                 htmlFor="deployPool"
-                className="text-ztg-20-150 font-bold font-space"
+                className="text-ztg-20-150 font-bold "
               >
                 Deploy Liquidity Pool
               </label>
