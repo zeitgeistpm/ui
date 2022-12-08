@@ -1,5 +1,3 @@
-import { defaultTags } from "../constants/markets";
-
 export type MarketOutcome = {
   name: string;
   ticker: string;

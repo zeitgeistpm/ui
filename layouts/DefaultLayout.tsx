@@ -43,7 +43,7 @@ const DefaultLayout: FC = observer(({ children }) => {
     if (shouldScrollTop(router.pathname, prevPathname)) {
       scrollTo(0);
     }
-  }, [router.pathname, prevPathname, shouldScrollTop]);
+  }, [router.pathname, prevPathname]);
 
   return (
     <div

@@ -1,10 +1,9 @@
-import { Skeleton } from "@material-ui/lab";
 import { TagCounts } from "lib/gql/popular-categories";
-import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
 import { observer } from "mobx-react";
 import { FC, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useRouter } from "next/router";
 
 const Category = ({
   title,
@@ -48,12 +47,10 @@ const Category = ({
 
 const PopularCategories: FC<{ tagCounts: TagCounts }> = observer(
   ({ tagCounts }) => {
-    const query = useMarketsUrlQuery();
+    const router = useRouter();
 
     const navigateToTag = (tag: string) => {
-      query.updateQuery({
-        tag,
-      });
+      router.push({ pathname: "/markets", query: { tag } });
     };
 
     return (

@@ -75,7 +75,10 @@ const MarketCard = ({
 
   const infoRows = [
     { name: "Prediction", value: prediction },
-    { name: "Volume", value: `${volume} ${baseAsset?.toUpperCase() ?? "ZTG"}` },
+    {
+      name: "Volume",
+      value: `${volume ?? 0} ${baseAsset?.toUpperCase() ?? "ZTG"}`,
+    },
     { name: "Status", value: creation },
   ];
   return (
