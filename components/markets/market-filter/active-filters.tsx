@@ -33,8 +33,8 @@ export const MarketActiveFilters = ({
 }: MarketActiveFiltersProps) => {
   return (
     <div className="w-full flex gap-ztg-2">
-      {filters.length > 0 && <ClearAllBtn clear={onClear} />}
-      {filters.map((af, idx) => (
+      {filters?.length > 0 && <ClearAllBtn clear={onClear} />}
+      {filters?.map((af, idx) => (
         <MarketActiveFilterItem
           filter={af}
           onRemove={onFilterRemove}

@@ -295,11 +295,16 @@ class MarketStore {
   get bounds(): [number, number] | null {
     if (this.market.marketType.isScalar) {
       const bounds = this.market.marketType.asScalar;
-      return [Number(bounds[0].toString()), Number(bounds[1].toString())];
+      return [
+        Number(bounds[0].toString()) / ZTG,
+        Number(bounds[1].toString()) / ZTG,
+      ];
       //@ts-ignore - marketType is inconsistent
     } else if (this.market.marketType.scalar) {
       //@ts-ignore
-      return this.market.marketType.scalar;
+      const bounds = this.market.marketType.scalar;
+
+      return [Number(bounds[0]) / ZTG, Number(bounds[1]) / ZTG];
     } else {
       return null;
     }
@@ -523,11 +528,12 @@ class MarketStore {
         ztg: null,
       }),
     ]);
-    const assetWeight = this.getAssetWeight();
+    const assetWeight = this.getAssetWeight(assetId);
+    const baseWeight = Number(this.pool.totalWeight) / 2;
 
     const price = calcSpotPrice(
       ztgBalance,
-      100000000000,
+      baseWeight,
       assetBalance,
       assetWeight,
       0,
@@ -536,10 +542,9 @@ class MarketStore {
     return new Decimal(price);
   }
 
-  private getAssetWeight(): number {
-    // outcome asset weights are all equal so just need to find one that's not ztg
+  private getAssetWeight(assetId: AssetId): number {
     for (const [token, weight] of this.pool.weights.unwrap().entries()) {
-      if (token.ztg !== null) {
+      if (JSON.stringify(assetId) === JSON.stringify(token)) {
         return weight.toNumber();
       }
     }
