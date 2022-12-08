@@ -172,14 +172,17 @@ export default class PoolsStore {
   ): Promise<CAsset[]> {
     const { pool } = marketStore;
     const assets: CAsset[] = [];
-    const assetWeight = 10 / (pool.assets.length - 1);
     const ztgBalance = await this.store.getPoolBalance(pool, { ztg: null });
+
+    //base weight is equal to the sum of all other assets
+    const baseWeight = Number(pool.totalWeight) / 2;
 
     for (const [token, weight] of pool.weights.unwrap().entries()) {
       // convert token to JSON / AssetId
       const assetId = token.toJSON() as AssetId;
       // check if token is ZTG
       const isZTG = isAssetZTG(assetId);
+      const assetWeight = weight.toNumber();
 
       const ids = getAssetIds(token);
       const id = ids?.assetId;
@@ -191,7 +194,13 @@ export default class PoolsStore {
 
       const price = isZTG
         ? 1
-        : calcSpotPrice(ztgBalance, 10, amount, assetWeight, 0).toNumber();
+        : calcSpotPrice(
+            ztgBalance,
+            baseWeight,
+            amount,
+            assetWeight,
+            0,
+          ).toNumber();
 
       const percentage = Math.round((weight / Number(pool.totalWeight)) * 100);
       const marketOutcome = marketStore.getMarketOutcome(assetId);
