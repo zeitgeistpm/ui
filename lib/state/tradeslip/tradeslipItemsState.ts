@@ -237,7 +237,7 @@ export const useTradeslipItemsState = (
       );
 
       return {
-        enabled: Boolean(sdk) && isRpcSdk(sdk) && enabled,
+        enabled: Boolean(sdk) && enabled,
         keepPreviousData: true,
         queryKey: [
           id,
