@@ -28,6 +28,16 @@ html {
   }
 }
 
+/* hide number input arrows */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 /* Write your own custom component styles here */
 .btn-blue {
   @apply px-4 py-2 font-bold text-white bg-blue-500 rounded;

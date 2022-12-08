@@ -1,9 +1,12 @@
 import {
   MarketCurrencyFilter,
+  MarketsListQuery,
   MarketStatusFilter,
   MarketTagFilter,
 } from "lib/types/market-filter";
 import { defaultTags, marketStatuses } from "./markets";
+
+export const filterTypes = ["status", "tag", "currency"] as const;
 
 export const marketStatusFilterOptions: MarketStatusFilter[] =
   marketStatuses.map((status) => ({
@@ -27,3 +30,15 @@ export const marketCurrencyFilterOptions: MarketCurrencyFilter[] = [
     label: "Ztg",
   },
 ];
+
+export const defaultMarketFilters = [
+  ...marketStatusFilterOptions.filter((f) => f.value === "Active"),
+];
+
+export const defaultMarketsQueryState: MarketsListQuery = {
+  filters: {
+    status: ["Active"],
+    tag: [],
+    currency: [],
+  },
+};
