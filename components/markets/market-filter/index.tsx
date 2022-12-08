@@ -2,11 +2,16 @@ import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import { ChevronDown } from "react-feather";
 import ReactSelect from "react-select";
-import { MarketFilter, MarketsListQuery } from "lib/types/market-filter";
+import {
+  MarketFilter,
+  MarketsListQuery,
+  MarketsOrderBy,
+} from "lib/types/market-filter";
 import { findFilterIndex } from "lib/util/market-filter";
 import {
   filterTypes,
   marketCurrencyFilterOptions,
+  marketsOrderByOptions,
   marketStatusFilterOptions,
   marketTagFilterOptions,
 } from "lib/constants/market-filter";
@@ -90,15 +95,6 @@ const DropDownSelect = observer(
   },
 );
 
-const filterOptions = [
-  { value: "newest", label: "Newest" },
-  { value: "oldest", label: "Oldest" },
-  { value: "most-liquid", label: "Most Liquid" },
-  { value: "least-liquid", label: "Least Liquid" },
-  { value: "most-volume", label: "Most Volume" },
-  { value: "least-volume", label: "Least Volume" },
-];
-
 const sortBySelectStyles = {
   control: (provided) => {
     return {
@@ -116,22 +112,29 @@ const sortBySelectStyles = {
   },
 };
 
-const SortBySelect = observer(() => {
-  return (
-    <ReactSelect
-      options={filterOptions}
-      styles={sortBySelectStyles}
-      components={{
-        IndicatorSeparator,
-      }}
-    />
-  );
-});
+const SortBySelect = observer(
+  ({ onOrderingChange }: { onOrderingChange: (v: MarketsOrderBy) => void }) => {
+    return (
+      <ReactSelect
+        onChange={(v) => {
+          onOrderingChange(v.value);
+        }}
+        options={marketsOrderByOptions}
+        styles={sortBySelectStyles}
+        components={{
+          IndicatorSeparator,
+        }}
+      />
+    );
+  },
+);
 
 const MarketFilterOptions = ({
   add,
+  onOrderingChange,
 }: {
   add: (filter: MarketFilter) => void;
+  onOrderingChange: (ordering: MarketsOrderBy) => void;
 }) => {
   return (
     <div className="w-full flex justify-end items-center gap-ztg-5">
@@ -150,7 +153,7 @@ const MarketFilterOptions = ({
         options={marketStatusFilterOptions}
         add={add}
       />
-      <SortBySelect />
+      <SortBySelect onOrderingChange={onOrderingChange} />
     </div>
   );
 };
@@ -187,8 +190,10 @@ const getFiltersFromQueryState = (
 
 const MarketFilterSelection = ({
   onFiltersChange,
+  onOrderingChange,
 }: {
   onFiltersChange: (filters: MarketFilter[]) => void;
+  onOrderingChange: (ordering: MarketsOrderBy) => void;
 }) => {
   const [activeFilters, setActiveFilters] = useState<MarketFilter[]>();
   const queryState = useMarketsUrlQuery();
@@ -262,7 +267,7 @@ const MarketFilterSelection = ({
 
   return (
     <MarketFilterContainer>
-      <MarketFilterOptions add={add} />
+      <MarketFilterOptions add={add} onOrderingChange={onOrderingChange} />
       <MarketActiveFilters
         filters={activeFilters}
         onClear={clear}

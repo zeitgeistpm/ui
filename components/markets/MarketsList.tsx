@@ -11,7 +11,7 @@ import { useStore } from "lib/stores/Store";
 import { useMarkets } from "lib/hooks/queries/useMarkets";
 import { MarketOutcomes } from "lib/types/markets";
 import { useContentScrollTop } from "components/context/ContentDimensionsContext";
-import { MarketFilter } from "lib/types/market-filter";
+import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
 import MarketFilterSelection from "./market-filter";
 import MarketCard from "./market-card";
 
@@ -30,6 +30,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const store = useStore();
   const { markets: marketsStore } = store;
   const [filters, setFilters] = useState<MarketFilter[]>();
+  const [orderBy, setOrderBy] = useState<MarketsOrderBy>(MarketsOrderBy.Newest);
 
   const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
@@ -42,7 +43,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     isLoading,
     hasNextPage,
     fetchNextPage,
-  } = useMarkets(filters);
+  } = useMarkets(orderBy, filters);
 
   useEffect(
     debounce(() => {
@@ -99,9 +100,8 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   return (
     <div className={"pt-ztg-46 mb-[38px]" + className}>
       <MarketFilterSelection
-        onFiltersChange={(filters) => {
-          setFilters(filters);
-        }}
+        onFiltersChange={setFilters}
+        onOrderingChange={setOrderBy}
       />
       <div className="grid grid-cols-3 gap-[30px]">
         {markets?.map((market) => {

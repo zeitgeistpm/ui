@@ -8,6 +8,18 @@ export type MarketFilterSortOptionLabel =
   | "Most Volume"
   | "Least Volume";
 
+export enum MarketsOrderBy {
+  Newest = "Newest",
+  Oldest = "Oldest",
+  MostVolume = "Most Volume",
+  LeastVolume = "Least Volume",
+}
+
+export type MarketOrderByOption = {
+  label: MarketsOrderBy;
+  value: MarketsOrderBy;
+};
+
 export type MarketFilterTagLabel = typeof defaultTags[number];
 
 export type MarketFilterStatusLabel = MarketStatus;

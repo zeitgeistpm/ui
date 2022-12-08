@@ -5,7 +5,11 @@ import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets
 import objectHash from "object-hash";
 import { useStore } from "lib/stores/Store";
 import { getCurrentPrediction } from "lib/util/assets";
-import { MarketFilter, MarketFilterType } from "lib/types/market-filter";
+import {
+  MarketFilter,
+  MarketFilterType,
+  MarketsOrderBy,
+} from "lib/types/market-filter";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "markets";
@@ -29,7 +33,17 @@ const getFilterValuesByType = (
   return filters.filter((f) => f.type === type).map((f) => f.value);
 };
 
-export const useMarkets = (filters?: MarketFilter[]) => {
+const orderByMap = {
+  [MarketsOrderBy.Newest]: MarketOrderByInput.MarketIdDesc,
+  [MarketsOrderBy.Oldest]: MarketOrderByInput.MarketIdAsc,
+  [MarketsOrderBy.MostVolume]: MarketOrderByInput.PoolVolumeAsc,
+  [MarketsOrderBy.LeastVolume]: MarketOrderByInput.PoolVolumeDesc,
+};
+
+export const useMarkets = (
+  orderBy: MarketsOrderBy,
+  filters?: MarketFilter[],
+) => {
   const [sdk, id] = useSdkv2();
   const { graphQLClient } = useStore();
 
@@ -64,7 +78,7 @@ export const useMarkets = (filters?: MarketFilter[]) => {
       },
       offset: !pageParam ? 0 : limit * pageParam,
       limit: limit,
-      order: MarketOrderByInput.MarketIdDesc,
+      order: orderByMap[orderBy],
     });
 
     const outcomes = await getOutcomesForMarkets(graphQLClient, markets);
@@ -91,7 +105,7 @@ export const useMarkets = (filters?: MarketFilter[]) => {
   };
 
   const query = useInfiniteQuery({
-    queryKey: [id, rootKey, hashFilters(filters)],
+    queryKey: [id, rootKey, hashFilters(filters), orderBy],
     queryFn: fetcher,
     enabled: Boolean(sdk) && isIndexedSdk(sdk),
     getNextPageParam: (lastPage) => lastPage.next,
