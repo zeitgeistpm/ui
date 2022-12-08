@@ -19,16 +19,6 @@ import DefaultLayout from "layouts/DefaultLayout";
 import ModalStore from "lib/stores/ModalStore";
 import Store from "lib/stores/Store";
 
-// font optimization from @next/font
-import {
-  inter,
-  kanit,
-  lato,
-  roboto,
-  roboto_mono,
-  space_grotesk,
-} from "lib/util/fonts";
-
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
 const domain = process.env["NEXT_PUBLIC_DOMAIN"];
@@ -105,19 +95,6 @@ const MyApp = observer(({ Component, pageProps }) => {
             <Head>
               <title>Zeitgeist - Prediction Markets</title>
             </Head>
-            {/* loads optimized fonts for global access */}
-            <style jsx global>
-              {`
-                :root {
-                  --font-inter: ${inter.style.fontFamily};
-                  --font-kanit: ${kanit.style.fontFamily};
-                  --font-lato: ${lato.style.fontFamily};
-                  --font-roboto: ${roboto.style.fontFamily};
-                  --font-roboto-mono: ${roboto_mono.style.fontFamily};
-                  --font-space-grotesk: ${space_grotesk.style.fontFamily};
-                }
-              `}
-            </style>
             <DefaultLayout>
               <AnimatePresence>
                 {store.showMobileMenu && <MobileMenu />}

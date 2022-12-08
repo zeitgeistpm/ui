@@ -17,6 +17,16 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { shouldScrollTop } from "lib/util/should-scroll";
 
+// font optimization from @next/font
+import {
+  inter,
+  kanit,
+  lato,
+  roboto,
+  roboto_mono,
+  space_grotesk,
+} from "lib/util/fonts";
+
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 
 const DefaultLayout: FC = observer(({ children }) => {
@@ -46,55 +56,70 @@ const DefaultLayout: FC = observer(({ children }) => {
   }, [router.pathname, prevPathname, shouldScrollTop]);
 
   return (
-    <div
-      onScrollCapture={onScrollCapture}
-      className="relative flex min-h-screen justify-evenly bg-white dark:bg-sky-1000 overflow-hidden"
-    >
-      <TradeSlipStoreContext.Provider value={store.tradeSlipStore}>
-        <LeftDrawer />
-        <div
-          ref={contentRef}
-          className="overflow-y-auto overflow-x-hidden flex-grow"
-        >
-          <TopBar />
-          {NOTIFICATION_MESSAGE && (
-            <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38">
-              <div className="text-ztg-12-150 font-semibold">
-                {NOTIFICATION_MESSAGE}
-              </div>
-            </div>
-          )}
-          <main
-            className="main-container flex flex-col dark:text-white"
-            ref={mainRef}
+    <>
+      {/* loads optimized fonts for global access */}
+      <style jsx global>
+        {`
+          :root {
+            --font-inter: ${inter.style.fontFamily};
+            --font-kanit: ${kanit.style.fontFamily};
+            --font-lato: ${lato.style.fontFamily};
+            --font-roboto: ${roboto.style.fontFamily};
+            --font-roboto-mono: ${roboto_mono.style.fontFamily};
+            --font-space-grotesk: ${space_grotesk.style.fontFamily};
+          }
+        `}
+      </style>
+      <div
+        onScrollCapture={onScrollCapture}
+        className="relative flex min-h-screen justify-evenly bg-white dark:bg-sky-1000 overflow-hidden"
+      >
+        <TradeSlipStoreContext.Provider value={store.tradeSlipStore}>
+          <LeftDrawer />
+          <div
+            ref={contentRef}
+            className="overflow-y-auto overflow-x-hidden flex-grow"
           >
-            <div className="max-w-ztg-1100 mx-auto py-0 px-ztg-32 pt-ztg-14 w-full ">
-              <ContentDimensionsProvider
-                scrollTop={scrollTop}
-                scrollTo={scrollTo}
-                height={height}
-                width={width}
-              >
-                {store.initialized ||
-                router.pathname === "/" ||
-                router.pathname.split("/")[1] === "markets" ||
-                router.pathname.split("/")[1] === "liquidity" ? (
-                  children
-                ) : (
-                  <Skeleton
-                    className="!transform-none !mt-ztg-30"
-                    style={{ height: "550px" }}
-                  />
-                )}
-              </ContentDimensionsProvider>
-            </div>
-            <Footer />
-          </main>
-        </div>
-        <RightDrawer />
-        <NotificationCenter />
-      </TradeSlipStoreContext.Provider>
-    </div>
+            <TopBar />
+            {NOTIFICATION_MESSAGE && (
+              <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38">
+                <div className="text-ztg-12-150 font-semibold">
+                  {NOTIFICATION_MESSAGE}
+                </div>
+              </div>
+            )}
+            <main
+              className="main-container flex flex-col dark:text-white"
+              ref={mainRef}
+            >
+              <div className="max-w-ztg-1100 mx-auto py-0 px-ztg-32 pt-ztg-14 w-full ">
+                <ContentDimensionsProvider
+                  scrollTop={scrollTop}
+                  scrollTo={scrollTo}
+                  height={height}
+                  width={width}
+                >
+                  {store.initialized ||
+                  router.pathname === "/" ||
+                  router.pathname.split("/")[1] === "markets" ||
+                  router.pathname.split("/")[1] === "liquidity" ? (
+                    children
+                  ) : (
+                    <Skeleton
+                      className="!transform-none !mt-ztg-30"
+                      style={{ height: "550px" }}
+                    />
+                  )}
+                </ContentDimensionsProvider>
+              </div>
+              <Footer />
+            </main>
+          </div>
+          <RightDrawer />
+          <NotificationCenter />
+        </TradeSlipStoreContext.Provider>
+      </div>
+    </>
   );
 });
 
