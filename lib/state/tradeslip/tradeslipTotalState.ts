@@ -1,16 +1,15 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { useQuery } from "@tanstack/react-query";
-import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import Decimal from "decimal.js";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useStore } from "lib/stores/Store";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
+import { useDebounce } from "use-debounce";
 import { useTradeslipItems } from "./items";
 import { useTradeslipItemsState } from "./tradeslipItemsState";
-import { useDebounce } from "use-debounce";
-import objectHash from "object-hash";
 
 /**
  * Total state for the tradeslip items.
