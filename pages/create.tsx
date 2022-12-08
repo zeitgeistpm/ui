@@ -659,6 +659,15 @@ const CreatePage: NextPage = observer(() => {
     );
   };
 
+  const poolPricesEqualOne = poolRows
+    ?.slice(0, -1)
+    .reduce((acc, pool) => acc.plus(pool.price.price), new Decimal(0))
+    .eq(1);
+
+  const poolPriceNotZero = !poolRows?.some((pool) => pool.price.price.eq(0));
+
+  const poolValid = poolPricesEqualOne === true && poolPriceNotZero === true;
+
   return (
     <form data-test="createMarketForm">
       <InfoBoxes />
@@ -784,15 +793,28 @@ const CreatePage: NextPage = observer(() => {
           </>
         )}
         {deployPool && poolRows != null && (
-          <PoolSettings
-            data={poolRows}
-            onChange={(v) => {
-              setPoolRows(v);
-            }}
-            onFeeChange={(fee: Decimal) => {
-              setSwapFee(fee.toString());
-            }}
-          />
+          <>
+            {poolPriceNotZero === false && (
+              <div className="text-ztg-12-120 ml-ztg-10">
+                Pool prices must be greater than zero
+              </div>
+            )}
+            {poolPricesEqualOne === false && (
+              <div className="text-ztg-12-120 ml-ztg-10">
+                The sum of pool prices must equal one. Unlock prices to
+                recalculate
+              </div>
+            )}
+            <PoolSettings
+              data={poolRows}
+              onChange={(v) => {
+                setPoolRows(v);
+              }}
+              onFeeChange={(fee: Decimal) => {
+                setSwapFee(fee.toString());
+              }}
+            />
+          </>
         )}
 
         <div className="flex justify-center mb-ztg-10 mt-ztg-12 w-full h-ztg-40">
@@ -807,7 +829,8 @@ const CreatePage: NextPage = observer(() => {
             disabled={
               !form.isValid ||
               !formData.deadlines.isValid ||
-              store.wallets.activeBalance.lessThan(marketCost)
+              store.wallets.activeBalance.lessThan(marketCost) ||
+              (poolRows?.length > 0 && poolValid === false)
             }
           >
             Create Market
