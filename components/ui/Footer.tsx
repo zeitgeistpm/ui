@@ -91,7 +91,7 @@ const FooterMenu: FC<FooterMenuProps> = observer(
       <div
         className={`flex-ztg-basis-164 h-ztg-100 flex flex-col justify-between lg:mr-ztg-10
           md:mr-ztg-5 lg:flex-shrink-0 flex-shrink flex-grow ${className}
-          font-space`}
+          `}
       >
         <h3 className="text-ztg-16-150 font-bold h-ztg-38 mb-ztg-5">{title}</h3>
         <div className="text-ztg-12-150 flex flex-col text-sky-600  mb-auto">
@@ -147,7 +147,7 @@ const Footer = observer(() => {
           ]}
           className="mb-ztg-10"
         />
-        <div className="w-full text-ztg-10-150 text-black dark:text-white font-sans mt-ztg-5 mb-ztg-10">
+        <div className="w-full text-ztg-10-150 text-black dark:text-white font-lato mt-ztg-5 mb-ztg-10">
           Please be advised that Equipoise Corp. d/b/a Zeitgeist is registered
           under the laws of Panama, and Zeitgeist has not sought licensing with
           any other regulatory authority of any country or jurisdiction, nor has

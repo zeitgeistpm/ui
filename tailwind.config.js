@@ -59,9 +59,8 @@ module.exports = {
         ...defaultTheme.fontFamily.sans,
       ],
       kanit: ["var(--font-kanit)"],
-      //TODO: remove Lato if not used
-      lato: ["var(--font-lato)"],
       space: ["var(--font-space-grotesk)"],
+      lato: ["var(--font-lato)"],
     },
     extend: {
       borderWidth: {
