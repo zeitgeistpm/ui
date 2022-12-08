@@ -81,7 +81,7 @@ const TradeSlipItem = observer<FC<TradeSlipItemProps>>(({ item, disabled }) => {
             <div className="flex w-full h-ztg-34 mb-ztg-10">
               <div className="h-full w-ztg-164">
                 <AmountInput
-                  disabled={disabled}
+                  disabled={disabled || !state}
                   value={item.amount.toString()}
                   name={""}
                   containerClass="h-full"
