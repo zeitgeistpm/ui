@@ -1,18 +1,12 @@
 import { isIndexedData, isNA } from "@zeitgeistpm/sdk-next";
 import { Decimal } from "decimal.js";
 import { ZTG } from "lib/constants";
-import { usePrevious } from "lib/hooks/usePrevious";
 import { TradeSlipItem, useTradeslipItems } from "lib/state/tradeslip/items";
-import {
-  itemKey,
-  useTradeslipItemsState,
-  useTradeslipItemState,
-} from "lib/state/tradeslip/tradeslipItemsState";
+import { useTradeslipItemState } from "lib/state/tradeslip/tradeslipItemsState";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { X } from "react-feather";
-import { useDebounce } from "use-debounce";
 import { AmountInput } from "../ui/inputs";
 
 export type TradeSlipItemProps = {
@@ -76,8 +70,7 @@ const TradeSlipItem = observer<FC<TradeSlipItemProps>>(({ item, disabled }) => {
                     {state?.asset?.category.ticker}
                   </div>
                   <div className="font-lato font-bold text-ztg-12-150 ml-auto text-black dark:text-white">
-                    @{state?.asset?.price.div(ZTG).toFixed(4)}{" "}
-                    {config?.tokenSymbol}
+                    @{state?.price?.toFixed(4)} {config?.tokenSymbol}
                   </div>
                 </div>
                 <div className="h-ztg-15 w-full mb-ztg-10 font-lato text-ztg-10-150 flex items-center text-gray-dark-3">

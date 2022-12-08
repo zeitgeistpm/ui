@@ -19,12 +19,13 @@ import Decimal from "decimal.js";
 import { useAtom } from "jotai";
 import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
 import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalances";
+import { useAssetPrices } from "lib/hooks/queries/useAssetPrices";
 import { usePoolsByIds } from "lib/hooks/queries/usePoolsByIds";
 import { usePoolZtgBalance } from "lib/hooks/queries/usePoolZtgBalance";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { calcInGivenOut, calcOutGivenIn } from "lib/math";
+import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import { useStore } from "lib/stores/Store";
 import { TradeSlipItem } from "./items";
 import { slippagePercentageAtom } from "./slippage";
@@ -82,6 +83,10 @@ export type TradeSlipItemState = {
    */
   tradeablePoolBalance: Decimal;
   /**
+   * Calculated price of the asset.
+   */
+  price: Decimal;
+  /**
    * The sum cost/gain for the buy or sell.
    */
   sum: Decimal;
@@ -138,6 +143,7 @@ export const useTradeslipItemsState = (
   items: TradeSlipItem[],
 ): Record<TradeSlipItemStateKey, TradeSlipItemState> => {
   const [sdk, id] = useSdkv2();
+
   const { wallets } = useStore();
   const signer = wallets.activeAccount ? wallets.getActiveSigner() : null;
 
@@ -247,11 +253,19 @@ export const useTradeslipItemsState = (
             return null;
           }
 
+          const price = calcSpotPrice(
+            poolZtgBalance,
+            ztgWeight,
+            poolAssetBalance,
+            assetWeight,
+            0,
+          );
+
           const max = (() => {
             if (item.action === "buy") {
               const maxTokens = isNA(traderZtgBalance)
                 ? tradeablePoolBalance
-                : traderZtgBalance.div(asset?.price.div(ZTG) ?? 0);
+                : traderZtgBalance.div(price.div(ZTG) ?? 0);
               if (tradeablePoolBalance?.lte(maxTokens)) {
                 return tradeablePoolBalance;
               } else {
@@ -349,6 +363,7 @@ export const useTradeslipItemsState = (
             tradeablePoolBalance,
             sum,
             max,
+            price,
             transaction,
           };
         },
