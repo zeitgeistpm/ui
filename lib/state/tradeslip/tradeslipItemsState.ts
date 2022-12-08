@@ -96,7 +96,7 @@ export type TradeSlipItemState = {
   /**
    * Transaction for the item.
    */
-  transaction: SubmittableExtrinsic<"promise", ISubmittableResult>;
+  transaction: SubmittableExtrinsic<"promise", ISubmittableResult> | null;
 };
 
 /**
@@ -248,7 +248,7 @@ export const useTradeslipItemsState = (
           balancesKey,
         ],
         queryFn: async () => {
-          if (!enabled || !sdk || !isRpcSdk(sdk)) {
+          if (!enabled || !sdk) {
             return null;
           }
 
@@ -301,51 +301,56 @@ export const useTradeslipItemsState = (
                   swapFee.div(ZTG),
                 );
 
-          let transaction: SubmittableExtrinsic<"promise", ISubmittableResult>;
+          let transaction: SubmittableExtrinsic<
+            "promise",
+            ISubmittableResult
+          > | null;
 
-          try {
-            if (item.action == "buy") {
-              const maxAmountIn = calcInGivenOut(
-                poolZtgBalance,
-                ztgWeight,
-                poolAssetBalance,
-                assetWeight,
-                amount,
-                swapFee.div(ZTG),
-              ).mul(new Decimal(slippage / 100 + 1));
+          if (isRpcSdk(sdk)) {
+            try {
+              if (item.action == "buy") {
+                const maxAmountIn = calcInGivenOut(
+                  poolZtgBalance,
+                  ztgWeight,
+                  poolAssetBalance,
+                  assetWeight,
+                  amount,
+                  swapFee.div(ZTG),
+                ).mul(new Decimal(slippage / 100 + 1));
 
-              if (!maxAmountIn.isNaN()) {
-                transaction = sdk.context.api.tx.swaps.swapExactAmountOut(
-                  pool.poolId,
-                  { Ztg: null },
-                  maxAmountIn.toFixed(0),
-                  asset.assetId,
-                  amount.toFixed(0),
-                  null,
-                );
+                if (!maxAmountIn.isNaN()) {
+                  transaction = sdk.context.api.tx.swaps.swapExactAmountOut(
+                    pool.poolId,
+                    { Ztg: null },
+                    maxAmountIn.toFixed(0),
+                    asset.assetId,
+                    amount.toFixed(0),
+                    null,
+                  );
+                }
+              } else {
+                const minAmountOut = calcOutGivenIn(
+                  poolAssetBalance,
+                  assetWeight,
+                  poolZtgBalance,
+                  ztgWeight,
+                  amount.toNumber(),
+                  swapFee.div(ZTG),
+                ).mul(new Decimal(1 - slippage / 100));
+
+                if (!minAmountOut.isNaN) {
+                  transaction = sdk.context.api.tx.swaps.swapExactAmountIn(
+                    pool.poolId,
+                    asset.assetId,
+                    amount.toFixed(0),
+                    { Ztg: null },
+                    minAmountOut.toFixed(0),
+                    null,
+                  );
+                }
               }
-            } else {
-              const minAmountOut = calcOutGivenIn(
-                poolAssetBalance,
-                assetWeight,
-                poolZtgBalance,
-                ztgWeight,
-                amount.toNumber(),
-                swapFee.div(ZTG),
-              ).mul(new Decimal(1 - slippage / 100));
-
-              if (!minAmountOut.isNaN) {
-                transaction = sdk.context.api.tx.swaps.swapExactAmountIn(
-                  pool.poolId,
-                  asset.assetId,
-                  amount.toFixed(0),
-                  { Ztg: null },
-                  minAmountOut.toFixed(0),
-                  null,
-                );
-              }
-            }
-          } catch (error) {}
+            } catch (error) {}
+          }
 
           return {
             item,
