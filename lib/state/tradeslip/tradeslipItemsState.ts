@@ -19,7 +19,6 @@ import Decimal from "decimal.js";
 import { useAtom } from "jotai";
 import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
 import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalances";
-import { useAssetPrices } from "lib/hooks/queries/useAssetPrices";
 import { usePoolsByIds } from "lib/hooks/queries/usePoolsByIds";
 import { usePoolZtgBalance } from "lib/hooks/queries/usePoolZtgBalance";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
