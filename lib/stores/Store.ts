@@ -248,10 +248,6 @@ export default class Store {
       console.error("Graphql service not available " + graphQlEndpoint);
     }
 
-    setTimeout(() => {
-      sdk.api.disconnect();
-    }, 10000);
-
     this.userStore.setEndpoint(endpoint);
 
     runInAction(() => {
