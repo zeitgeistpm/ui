@@ -344,7 +344,7 @@ export const useTradeslipItemsState = (
                   swapFee.div(ZTG),
                 ).mul(new Decimal(1 - slippage / 100));
 
-                if (!minAmountOut.isNaN) {
+                if (!minAmountOut.isNaN()) {
                   transaction = sdk.context.api.tx.swaps.swapExactAmountIn(
                     pool.poolId,
                     asset.assetId,
@@ -355,7 +355,9 @@ export const useTradeslipItemsState = (
                   );
                 }
               }
-            } catch (error) {}
+            } catch (error) {
+              console.log(error);
+            }
           }
 
           return {
