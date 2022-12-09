@@ -248,23 +248,6 @@ export default class Store {
       console.error("Graphql service not available " + graphQlEndpoint);
     }
 
-    sdk.api.on("disconnected", (a) => {
-      console.log(a);
-      console.log("disconnect");
-      // this.initialize();
-      this.notificationStore.pushNotification(
-        "Disconnected from chain. Please refresh",
-        {
-          type: "Error",
-        },
-      );
-    });
-
-    //todo: need to unsub before switch endpoint
-    sdk.api.off("disconnected", () => {
-      console.log("off");
-    });
-
     setTimeout(() => {
       sdk.api.disconnect();
     }, 10000);
