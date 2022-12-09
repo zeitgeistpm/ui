@@ -28,11 +28,12 @@ export const poolRowDataFromOutcomes = (
   initialAmount: string = "100",
 ): PoolAssetRowData[] => {
   const amountNum = +initialAmount;
+  const baseWeight = 64;
 
   const numOutcomes = outcomes.length;
 
   const ratio = 1 / numOutcomes;
-  const weight = ratio * 100;
+  const weight = ratio * baseWeight;
 
   return [
     ...outcomes.map((outcome) => {
@@ -51,7 +52,7 @@ export const poolRowDataFromOutcomes = (
     {
       assetColor: ZTG_BLUE_COLOR,
       asset: tokenSymbol,
-      weight: "64",
+      weight: baseWeight.toString(),
       amount: "100",
       price: {
         price: new Decimal(1),
