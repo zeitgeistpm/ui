@@ -19,6 +19,7 @@ import Decimal from "decimal.js";
 import { useAtom } from "jotai";
 import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
 import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalances";
+import { usePoolAccountIds } from "lib/hooks/queries/usePoolAccountIds";
 import { usePoolsByIds } from "lib/hooks/queries/usePoolsByIds";
 import { usePoolZtgBalance } from "lib/hooks/queries/usePoolZtgBalance";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
@@ -26,6 +27,7 @@ import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import { useStore } from "lib/stores/Store";
+import { useEffect } from "react";
 import { TradeSlipItem } from "./items";
 import { slippagePercentageAtom } from "./slippage";
 
@@ -165,13 +167,14 @@ export const useTradeslipItemsState = (
     })),
   );
 
-  // todo: get pool acount ids from rpc
+  const poolAccountIds = usePoolAccountIds(pools);
 
   const poolAssetBalances = useAccountAssetBalances(
     items.map((item) => ({
-      // todo: use rpc fetched account id
-      account: pools?.find((p) => p.marketId == getMarketIdOf(item.assetId))
-        ?.accountId,
+      account:
+        poolAccountIds[
+          pools?.find((p) => p.marketId == getMarketIdOf(item.assetId)).poolId
+        ],
       assetId: item.assetId,
     })),
   );
