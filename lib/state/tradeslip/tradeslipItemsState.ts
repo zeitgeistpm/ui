@@ -165,8 +165,11 @@ export const useTradeslipItemsState = (
     })),
   );
 
+  // todo: get pool acount ids from rpc
+
   const poolAssetBalances = useAccountAssetBalances(
     items.map((item) => ({
+      // todo: use rpc fetched account id
       account: pools?.find((p) => p.marketId == getMarketIdOf(item.assetId))
         ?.accountId,
       assetId: item.assetId,
