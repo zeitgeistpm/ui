@@ -6,6 +6,7 @@ import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import MarketTimer from "components/markets/MarketTimer";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
+import MarketImage from "components/ui/MarketImage";
 import Pill from "components/ui/Pill";
 import TimeSeriesChart, {
   ChartData,
@@ -23,6 +24,7 @@ import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
+import useMarketImageUrl from "lib/hooks/useMarketImageUrl";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
@@ -83,9 +85,10 @@ export async function getStaticProps({ params }) {
     });
   });
 
-  const baseAsset = market?.poolId
-    ? await getBaseAsset(client, market.poolId)
-    : null;
+  const baseAsset =
+    market?.pool != null
+      ? await getBaseAsset(client, market.pool.poolId)
+      : null;
 
   return {
     props: {
@@ -113,13 +116,14 @@ const Market: NextPage<{
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
   const [hasAuthReport, setHasAuthReport] = useState<boolean>();
+  const marketImageUrl = useMarketImageUrl(indexedMarket.img);
 
   const [scalarPrices, setScalarPrices] =
     useState<{ short: number; long: number; type: ScalarRangeType }>();
 
   useEffect(() => {
     if (marketStore == null) return;
-    if (marketStore.scalarType === "date") {
+    if (marketStore.type === "scalar") {
       const observables = marketStore.marketOutcomes
         .filter((o) => o.metadata !== "ztg")
         .map((outcome) => {
@@ -180,30 +184,17 @@ const Market: NextPage<{
       <Head>
         <title>{question}</title>
         <meta name="description" content={indexedMarket.description} />
+        <meta property="og:description" content={indexedMarket.description} />
+        {marketImageUrl && (
+          <meta property="og:image" content={marketImageUrl} />
+        )}
       </Head>
       <div>
         <div className="flex mb-ztg-33">
-          <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600">
-            {indexedMarket?.img ? (
-              <img
-                className="rounded-ztg-10"
-                src={indexedMarket.img}
-                alt="Market image"
-                loading="lazy"
-                width={70}
-                height={70}
-              />
-            ) : (
-              <img
-                className="rounded-ztg-10"
-                src="/icons/default-market.png"
-                alt="Market image"
-                loading="lazy"
-                width={70}
-                height={70}
-              />
-            )}
-          </div>
+          <MarketImage
+            image={indexedMarket.img}
+            alt={`Image depicting ${question}`}
+          />
           <div className="sub-header ml-ztg-20">{indexedMarket?.question}</div>
         </div>
         <div

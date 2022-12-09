@@ -1,11 +1,9 @@
 import { Compact } from "@polkadot/types";
 import { BlockNumber } from "@polkadot/types/interfaces";
-import { AccountInfo } from "@polkadot/types/interfaces/system";
 import { Swap } from "@zeitgeistpm/sdk/dist/models";
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import SDK from "@zeitgeistpm/sdk";
 import { useContext } from "react";
-import { observable } from "mobx";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 import Decimal from "decimal.js";
 import { makeAutoObservable, runInAction, when } from "mobx";
@@ -27,8 +25,8 @@ import PoolsStore from "./PoolsStore";
 import ExchangeStore from "./ExchangeStore";
 import CourtStore from "./CourtStore";
 import Wallets from "../wallets";
-import { MarketPreload } from "lib/gql/markets-list";
 
+import { Context, Sdk } from "@zeitgeistpm/sdk-next";
 interface Config {
   tokenSymbol: string;
   ss58Prefix: number;
@@ -62,7 +60,7 @@ interface Config {
   };
 }
 
-interface ZTGInfo {
+export interface ZTGInfo {
   price: Decimal;
   change: Decimal;
 }
@@ -78,7 +76,6 @@ export default class Store {
   ztgInfo: ZTGInfo;
 
   markets = new MarketsStore(this);
-  preloadedMarkets?: MarketPreload[] = undefined;
 
   pools = new PoolsStore(this);
 
@@ -93,6 +90,7 @@ export default class Store {
   }
 
   sdk: SDK | null;
+  sdkV2?: Sdk<Context> = undefined;
 
   blockNumber: Compact<BlockNumber> | null = null;
 
@@ -100,11 +98,9 @@ export default class Store {
 
   blockTimestamp: number;
 
-  ipfs;
-
   leftDrawerClosed = false;
 
-  rightDrawerClosed = false;
+  rightDrawerClosed = true;
 
   leftDrawerAnimating = false;
 
@@ -138,7 +134,6 @@ export default class Store {
       isTestEnv: false,
       unsubscribeNewHeads: false,
       balanceSubscription: false,
-      preloadedMarkets: observable.ref,
     });
   }
 
@@ -288,10 +283,6 @@ export default class Store {
     }
   }
 
-  setPreloadedMarkets(data: MarketPreload[]) {
-    this.preloadedMarkets = data;
-  }
-
   private async fetchZTGPrice(): Promise<void> {
     const res = await fetch(
       "https://api.coingecko.com/api/v3/simple/price?ids=zeitgeist&vs_currencies=usd&include_24hr_change=true",
@@ -430,15 +421,15 @@ export default class Store {
         : (this.sdk.api as any).createType("Asset", asset);
     }
     if (assetObj.isZtg) {
-      const { data } = (await this.sdk.api.query.system.account(
+      const { data } = await this.sdk.api.query.system.account(
         this.wallets.activeAccount.address,
-      )) as AccountInfo;
+      );
       return new Decimal(data.free.toString()).div(ZTG);
     }
 
     const data = await this.sdk.api.query.tokens.accounts(
       this.wallets.activeAccount.address,
-      asset,
+      asset as any,
     );
 
     //@ts-ignore
@@ -468,7 +459,7 @@ export default class Store {
 
     const b = (await this.sdk.api.query.tokens.accounts(
       account,
-      assetObj,
+      assetObj as any,
     )) as any;
 
     return new Decimal(b.free.toString()).div(ZTG);

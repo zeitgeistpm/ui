@@ -139,6 +139,7 @@ module.exports = {
         "560px": "560px",
       },
       colors: {
+        "maroon-base": "#3C0C0C",
         "kusama-base": "#E10178",
         "kusama-green": "#00E7BD",
         "kusama-blue": "#00B0E7",
@@ -200,7 +201,12 @@ module.exports = {
         "light-overlay": "rgba(0,0,0,0.4)",
         "dark-overlay": "rgba(5,5,5,0.7)",
         "anti-flash-white": "#F0F2F5",
+        geyser: "#D5DADF",
+        "tropical-blue": "#D7E6FA",
+        "link-water": "#CFE1EF",
+        mystic: "#E5EAF1",
         "pastel-blue": "#B5C1CA",
+        "fog-of-war": "#0F1A2D",
       },
       inset: {
         "42%": "42%",

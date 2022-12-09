@@ -163,7 +163,7 @@ const Portfolio: NextPage = observer(() => {
           const pool = await poolStore.getPoolFromChain(Number(poolId));
           const currentPrice = pool.assets.find(
             (asset) => asset.ticker === outcome.ticker,
-          ).price;
+          )?.price;
 
           const marketEnd = market.endTimestamp;
           return {

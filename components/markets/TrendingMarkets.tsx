@@ -1,5 +1,6 @@
 import { Skeleton } from "@material-ui/lab";
 import { observer } from "mobx-react";
+
 import TrendingMarketCard, { TrendingMarketInfo } from "./TrendingMarketCard";
 
 const TrendingMarkets = observer(

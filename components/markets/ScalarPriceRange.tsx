@@ -54,8 +54,9 @@ const ScalarPriceRange = observer(
       const pos =
         (upperBound - lowerBound) * ((1 - shortPrice + longPrice) / 2) +
         lowerBound;
+      const decimals = pos > 10 ? 0 : 3;
       return inferedType === "number"
-        ? pos.toFixed(0)
+        ? pos.toFixed(decimals)
         : moment(pos).format(dateFormat);
     }, [upperBound, lowerBound, shortPrice, longPrice]);
 

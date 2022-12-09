@@ -128,7 +128,7 @@ const MarketAssetDetails = observer(
           const ticker = market.outcomesMetadata[index]["ticker"];
           const color = market.outcomesMetadata[index]["color"] || "#ffffff";
           const outcomeName = market.outcomesMetadata[index]["name"];
-          const currentPrice = pool.assets[index].price;
+          const currentPrice = pool.assets[index]?.price;
 
           let priceHistory: {
             newPrice: number;
@@ -160,7 +160,10 @@ const MarketAssetDetails = observer(
                 value: currentPrice,
                 usdValue: 0,
               },
-              pre: Math.round((currentPrice / totalAssetPrice) * 100),
+              pre:
+                currentPrice != null
+                  ? Math.round((currentPrice / totalAssetPrice) * 100)
+                  : 0,
               change: priceChange,
               buttons: (
                 <AssetActionButtons
@@ -287,12 +290,15 @@ const MarketAssetDetails = observer(
         )}
         <div className="flex mt-ztg-40 items-center">
           <span className="sub-header">Outcomes</span>
-          {marketStore && <FullSetButtons marketStore={marketStore} />}
+          {marketStore && (
+            <FullSetButtons marketId={marketStore.market.marketId} />
+          )}
           {marketStore?.pool ? (
-            <Link href={`/liquidity/${marketStore.pool.poolId}`}>
-              <span className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 ">
-                Liquidity Pool
-              </span>
+            <Link
+              href={`/liquidity/${marketStore.pool.poolId}`}
+              className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 "
+            >
+              Liquidity Pool
             </Link>
           ) : (
             <></>

@@ -15,13 +15,14 @@ const marketQuery = gql`
     markets(where: { marketId_eq: $marketId }) {
       marketId
       description
-      poolId
+      pool {
+        poolId
+      }
       question
       slug
       status
       img
       outcomeAssets
-      poolId
       scalarType
       period {
         start
@@ -48,7 +49,7 @@ export interface MarketPageIndexedData {
   };
   categories: { ticker: string; color: string }[];
   outcomeAssets: string[];
-  poolId: number;
+  pool: { poolId: number };
   scalarType: ScalarRangeType | null;
 }
 

@@ -1,19 +1,27 @@
-import { observer } from "mobx-react";
-import { NextPage } from "next";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { ChevronLeft, Info } from "react-feather";
+import { useQuery } from "@tanstack/react-query";
+import {
+  isAvailable,
+  isIndexedData,
+  NA,
+  projectEndTimestamp,
+} from "@zeitgeistpm/sdk-next";
 import FullSetButtons from "components/markets/FullSetButtons";
 import InfoBoxes from "components/ui/InfoBoxes";
-import Table, { TableColumn, TableData } from "components/ui/Table";
-import MarketStore from "lib/stores/MarketStore";
-import { usePoolsStore, CPool } from "lib/stores/PoolsStore";
-import { useStore } from "lib/stores/Store";
-import NotFoundPage from "pages/404";
 import Pill from "components/ui/Pill";
+import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { usePool } from "lib/hooks/queries/usePool";
+import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useStore } from "lib/stores/Store";
+import { observer } from "mobx-react";
+import { NextPage } from "next";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import NotFoundPage from "pages/404";
+import { useEffect, useState } from "react";
+import { BarChart2, ChevronLeft, Info } from "react-feather";
 
 const PoolDetail = ({
   header,
@@ -82,45 +90,61 @@ const PoolDetail = ({
 const PoolDetails: NextPage = observer(() => {
   const router = useRouter();
   const store = useStore();
+
   const { ztgInfo } = store;
   const [tableData, setTableData] = useState<TableData[]>();
-  const [pool, setPool] = useState<CPool | null>(null);
-  const poolsStore = usePoolsStore();
-  const [marketStore, setMarketStore] = useState<MarketStore>();
-  const [pageLoad, setPageLoad] = useState<boolean>(false);
 
   const poolId = Number(router.query.poolid);
 
-  const setMarketData = async () => {
-    const pool = await poolsStore.getPoolFromChain(poolId);
-    if (pool != null) {
-      setPool(pool);
-      setMarketStore(pool.market);
-    }
-    setPageLoad(true);
-  };
+  const [sdk, id] = useSdkv2();
+  const { data: pool, isInitialLoading, isFetched } = usePool({ poolId });
+
+  const { data: saturatedPoolIndex } = useSaturatedPoolsIndex(
+    pool ? [pool] : undefined,
+  );
+
+  const saturatedPoolData = saturatedPoolIndex?.[poolId];
+
+  const { data: ends } = useQuery<number | NA>(
+    [id, "market-ends", saturatedPoolData?.market.marketId],
+    async () => projectEndTimestamp(sdk.context, saturatedPoolData.market),
+    {
+      enabled: Boolean(sdk && saturatedPoolData?.market),
+    },
+  );
 
   useEffect(() => {
-    if (store.sdk == null) {
-      return;
-    }
-    setMarketData();
-  }, [poolId, marketStore?.pool, store.sdk]);
-
-  useEffect(() => {
-    if (pool?.pool != null) {
-      const tableData = pool.assets.map((asset) => ({
-        token: { color: asset.color || "#ffffff", label: asset.ticker },
+    if (saturatedPoolData) {
+      const tableData = saturatedPoolData.assets.map((asset) => ({
+        token: {
+          color: asset.category.color || "#ffffff",
+          label: asset.category.ticker,
+        },
         weights: asset.percentage,
         poolBalance: {
-          value: asset.amount.toFixed(2),
+          value: asset.amount.div(ZTG).toFixed(2),
           usdValue: 0,
         },
       }));
 
       setTableData(tableData);
     }
-  }, [pool?.pool]);
+  }, [saturatedPoolData]);
+
+  const volume = isIndexedData(pool)
+    ? new Decimal(pool.volume).div(ZTG).toFixed(2)
+    : NA;
+
+  const swapFee =
+    typeof pool?.swapFee === "string"
+      ? Number(pool?.swapFee)
+      : pool?.swapFee.isSome
+      ? pool?.swapFee.unwrap().toNumber()
+      : 0;
+
+  const prediction = saturatedPoolData?.assets
+    .sort((a, b) => (a.price.greaterThan(b.price) ? 1 : 0))
+    .at(0);
 
   const columns: TableColumn[] = [
     {
@@ -141,27 +165,17 @@ const PoolDetails: NextPage = observer(() => {
       type: "currency",
       width: "33%",
     },
-    // {
-    //   header: "Your Balance",
-    //   accessor: "yourBalance",
-    //   type: "currency",
-    // },
-    // {
-    //   header: "Asset Value",
-    //   accessor: "assetValue",
-    //   type: "currency",
-    // },
   ];
 
   const navigateBack = () => {
     router.push("/liquidity");
   };
 
-  if (pageLoad === false) {
+  if (!sdk || !poolId || isInitialLoading) {
     return null;
   }
 
-  if (pool == null) {
+  if (isFetched && pool === null) {
     return <NotFoundPage backText="Back To Pools" backLink="/liquidity" />;
   }
 
@@ -181,30 +195,53 @@ const PoolDetails: NextPage = observer(() => {
         <Pill
           title="Ends"
           value={
-            marketStore?.endTimestamp
+            ends && isAvailable(ends)
               ? new Intl.DateTimeFormat("en-US", {
                   dateStyle: "medium",
-                }).format(new Date(marketStore.endTimestamp))
+                }).format(new Date(ends))
               : ""
           }
         />
-        <Pill title="Volume" value="" />
-        <Pill title="Status" value={pool?.pool.status} />
+        <Pill
+          title="Volume"
+          value={`${isAvailable(volume) ? volume : "NA"} ZTG`}
+        />
+        <Pill title="Status" value={saturatedPoolData?.market.status} />
       </div>
       <div className="flex flex-row mt-ztg-53 mb-ztg-38">
         <PoolDetail
           header="Pool Value"
-          middle={`${Math.round(pool.liquidity)} ${store.config.tokenSymbol}`}
-          bottom={`$${ztgInfo?.price.mul(pool.liquidity).toFixed(2)}`}
+          middle={`${Math.round(
+            saturatedPoolData?.liquidity.div(ZTG).toNumber() || 0,
+          )} ${store?.config?.tokenSymbol ?? "--"}`}
+          bottom={`${
+            ztgInfo && saturatedPoolData
+              ? ztgInfo?.price
+                  ?.mul(saturatedPoolData?.liquidity.div(ZTG))
+                  .toFixed(2)
+              : "--"
+          }`}
         />
         <PoolDetail
           className="mx-ztg-20"
           header="Fees"
-          middle={`${new Decimal(pool?.pool.swapFee ?? 0).div(ZTG).mul(100)} %`}
+          middle={`${new Decimal(swapFee).div(ZTG).mul(100)} %`}
           bottom=""
         />
 
-        <PoolDetail header="APR" middle="" bottom="" showInfo={true} />
+        <PoolDetail
+          header="Prediction"
+          middle={
+            <div className="flex mt-2">
+              <div
+                className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2"
+                style={{ backgroundColor: prediction?.category.color }}
+              />
+              {prediction?.category.ticker.toUpperCase()}
+            </div>
+          }
+          bottom=""
+        />
       </div>
       {/* <PoolChart /> */}
       {/* <PoolSummary /> */}
@@ -212,15 +249,19 @@ const PoolDetails: NextPage = observer(() => {
         <h3 className="font-space font-semibold text-ztg-20-150">
           Assets in Pool
         </h3>
-        {marketStore && (
-          <>
-            <FullSetButtons marketStore={marketStore} />
-            <Link href={`/markets/${marketStore.id}`}>
-              <span className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 ">
-                Market
-              </span>
+        {saturatedPoolData && (
+          <FullSetButtons marketId={saturatedPoolData.market.marketId} />
+        )}
+        {saturatedPoolData && (
+          <div className="flex flex-1 justify-end">
+            <Link
+              href={`/markets/${saturatedPoolData?.market.marketId}`}
+              className="flex text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 justify-center items-center"
+            >
+              <BarChart2 size={14} className="mr-2" />
+              <div className="flex content-end">Market</div>
             </Link>
-          </>
+          </div>
         )}
       </div>
       <Table data={tableData} columns={columns} />

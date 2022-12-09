@@ -1,6 +1,7 @@
 import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
 import {
   AssetId,
+  CategoryMetadata,
   CourtDisputeMechanism,
   isAuthorisedDisputeMechanism,
   MarketCreation,
@@ -24,10 +25,11 @@ import {
 import { MarketStoreContext } from "components/context/MarketStoreContext";
 
 import { ZTG } from "../constants";
-import { JSONObject, MarketOutcome, MarketStatus } from "../types";
+import { MarketOutcome } from "../types";
 import Store from "./Store";
 import { calcSpotPrice } from "lib/math";
 import { AssetIdFromString } from "@zeitgeistpm/sdk/dist/util";
+import { MarketStatus } from "lib/types/markets";
 
 class MarketStore {
   // is market data loaded
@@ -293,11 +295,16 @@ class MarketStore {
   get bounds(): [number, number] | null {
     if (this.market.marketType.isScalar) {
       const bounds = this.market.marketType.asScalar;
-      return [Number(bounds[0].toString()), Number(bounds[1].toString())];
+      return [
+        Number(bounds[0].toString()) / ZTG,
+        Number(bounds[1].toString()) / ZTG,
+      ];
       //@ts-ignore - marketType is inconsistent
     } else if (this.market.marketType.scalar) {
       //@ts-ignore
-      return this.market.marketType.scalar;
+      const bounds = this.market.marketType.scalar;
+
+      return [Number(bounds[0]) / ZTG, Number(bounds[1]) / ZTG];
     } else {
       return null;
     }
@@ -392,8 +399,8 @@ class MarketStore {
     return this.outcomesMetadata?.map((meta) => meta["name"]);
   }
 
-  get outcomesMetadata(): JSONObject[] {
-    return this.market.categories;
+  get outcomesMetadata(): Required<CategoryMetadata>[] {
+    return this.market.categories as any;
   }
 
   get question(): string {
@@ -521,11 +528,12 @@ class MarketStore {
         ztg: null,
       }),
     ]);
-    const assetWeight = this.getAssetWeight();
+    const assetWeight = this.getAssetWeight(assetId);
+    const baseWeight = Number(this.pool.totalWeight) / 2;
 
     const price = calcSpotPrice(
       ztgBalance,
-      100000000000,
+      baseWeight,
       assetBalance,
       assetWeight,
       0,
@@ -534,10 +542,9 @@ class MarketStore {
     return new Decimal(price);
   }
 
-  private getAssetWeight(): number {
-    // outcome asset weights are all equal so just need to find one that's not ztg
+  private getAssetWeight(assetId: AssetId): number {
     for (const [token, weight] of this.pool.weights.unwrap().entries()) {
-      if (token.ztg !== null) {
+      if (JSON.stringify(assetId) === JSON.stringify(token)) {
         return weight.toNumber();
       }
     }
@@ -546,7 +553,7 @@ class MarketStore {
   async getPrizePool(): Promise<string> {
     if (this.assets == null) return "0";
     const prizePool = await this.store.sdk.api.query.tokens.totalIssuance(
-      this.assets[0],
+      this.assets[0] as any,
     );
     return new Decimal(prizePool.toString()).div(ZTG).toFixed(0);
   }

@@ -13,6 +13,7 @@ import RightDrawer from "components/drawer/RightDrawer";
 import LeftDrawer from "components/drawer/LeftDrawer";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { shouldScrollTop } from "lib/util/should-scroll";
 
@@ -39,14 +40,10 @@ const DefaultLayout: FC = observer(({ children }) => {
   };
 
   useEffect(() => {
-    if (
-      router.pathname &&
-      prevPathname &&
-      shouldScrollTop(router.pathname, prevPathname)
-    ) {
+    if (shouldScrollTop(router.pathname, prevPathname)) {
       scrollTo(0);
     }
-  }, [router.pathname, prevPathname, shouldScrollTop]);
+  }, [router.pathname, prevPathname]);
 
   return (
     <div
@@ -60,16 +57,13 @@ const DefaultLayout: FC = observer(({ children }) => {
           className="overflow-y-auto overflow-x-hidden flex-grow"
         >
           <TopBar />
-          {
-            NOTIFICATION_MESSAGE &&
-            (
-              <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38">
-                <div className="text-ztg-12-150 font-semibold">
-                  {NOTIFICATION_MESSAGE}
-                </div>
+          {NOTIFICATION_MESSAGE && (
+            <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38">
+              <div className="text-ztg-12-150 font-semibold">
+                {NOTIFICATION_MESSAGE}
               </div>
-            )
-          }
+            </div>
+          )}
           <main
             className="main-container flex flex-col dark:text-white"
             ref={mainRef}
@@ -82,8 +76,9 @@ const DefaultLayout: FC = observer(({ children }) => {
                 width={width}
               >
                 {store.initialized ||
-                  router.pathname === "/" ||
-                  router.pathname.split("/")[1] === "markets" ? (
+                router.pathname === "/" ||
+                router.pathname.split("/")[1] === "markets" ||
+                router.pathname.split("/")[1] === "liquidity" ? (
                   children
                 ) : (
                   <Skeleton
