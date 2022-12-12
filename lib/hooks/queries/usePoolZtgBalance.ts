@@ -1,25 +1,27 @@
-import {
-  FrameSystemAccountInfo,
-  PalletBalancesAccountData,
-} from "@polkadot/types/lookup";
-import { useQueries, UseQueryOptions } from "@tanstack/react-query";
-import {
-  Context,
-  IndexerContext,
-  isRpcSdk,
-  Pool,
-  PoolList,
-} from "@zeitgeistpm/sdk-next";
+import { PalletBalancesAccountData } from "@polkadot/types/lookup";
+import { useQueries } from "@tanstack/react-query";
+import { Context, isRpcSdk, PoolList } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 import { usePoolAccountIds } from "./usePoolAccountIds";
 
 export const rootKey = "pool-ztg-balance";
 
+/**
+ * Account balance index for pr pool.
+ */
 export type PoolZtgBalanceLookup = {
   [poolId: number]: PalletBalancesAccountData;
 };
 
-export const usePoolZtgBalance = (pools?: PoolList<IndexerContext>) => {
+/**
+ * Fetch pool ZTG balances for a list of pools.
+ *
+ * @param pools PoolList<Context>
+ * @returns PoolZtgBalanceLookup
+ */
+export const usePoolZtgBalance = (
+  pools?: PoolList<Context>,
+): PoolZtgBalanceLookup => {
   const [sdk, id] = useSdkv2();
 
   const poolAccountIds = usePoolAccountIds(pools);

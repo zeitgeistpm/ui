@@ -27,7 +27,6 @@ import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import { useStore } from "lib/stores/Store";
-import { useEffect } from "react";
 import { TradeSlipItem } from "./items";
 import { slippagePercentageAtom } from "./slippage";
 

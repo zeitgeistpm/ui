@@ -1,17 +1,42 @@
+import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import { OrmlTokensAccountData } from "@polkadot/types/lookup";
-import { useQueries, UseQueryOptions } from "@tanstack/react-query";
 import { AssetId, isRpcSdk, NA } from "@zeitgeistpm/sdk-next";
 import objectHash from "object-hash";
 import { useSdkv2 } from "../useSdkv2";
 
+export type UseAccountAssetBalances = {
+  /**
+   * Get a single balance by account and asset id.
+   */
+  get: (account: string, assetId: AssetId) => null | NA | OrmlTokensAccountData;
+  /**
+   * Raw react query access.
+   */
+  query: UseQueryResult<
+    {
+      pair: AccountAssetIdPair;
+      balance: NA | OrmlTokensAccountData;
+    },
+    unknown
+  >[];
+};
+
+export type AccountAssetIdPair = {
+  account?: string;
+  assetId: AssetId;
+};
+
 export const rootKey = "account-asset-balance";
 
+/**
+ * Fetch account balances for a list of account/asset pairs.
+ *
+ * @param pairs AccountAssetIdPair[]
+ * @returns UseAccountAssetBalances
+ */
 export const useAccountAssetBalances = (
-  pairs: {
-    account?: string;
-    assetId: AssetId;
-  }[],
-) => {
+  pairs: AccountAssetIdPair[],
+): UseAccountAssetBalances => {
   const [sdk, id] = useSdkv2();
 
   const query = useQueries({
