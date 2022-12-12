@@ -87,7 +87,13 @@ const TradeSlipItem = observer<FC<TradeSlipItemProps>>(({ item, disabled }) => {
                   containerClass="h-full"
                   className={"!h-full w-full rounded-ztg-8 text-right mb-ztg-2"}
                   onChange={onAmountChange}
-                  max={state?.max.div(ZTG).toString()}
+                  max={
+                    !state
+                      ? "0"
+                      : state.max.isNaN()
+                      ? "0"
+                      : state.max.div(ZTG).toString()
+                  }
                 />
               </div>
               <div className="ml-ztg-10 h-full flex flex-col text-sky-600 font-lato text-ztg-10-150 text-right flex-grow">

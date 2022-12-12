@@ -181,7 +181,7 @@ export const useTradeslipItemsState = (
 
   const balancesKey = {
     traderZtgBalance: traderZtgBalance.toString(),
-    traderAssets: traderAssets?.map((a) => a?.toString()),
+    traderAssets: traderAssets?.query.map((a) => a?.toString()),
   };
 
   const query = useQueries({
@@ -209,19 +209,31 @@ export const useTradeslipItemsState = (
         : new Decimal(0);
 
       const poolZtgBalance =
-        !poolZtgBalances[0] || isNA(poolZtgBalances[0])
+        !pool ||
+        !poolZtgBalances[pool?.poolId] ||
+        isNA(poolZtgBalances[pool?.poolId])
           ? null
-          : new Decimal(poolZtgBalances[0].balance.data.free.toString());
+          : new Decimal(poolZtgBalances[pool.poolId].free.toString());
+
+      const traderAssetBalanceLookup = traderAssets.get(
+        signer?.address,
+        item.assetId,
+      );
+
+      const poolAssetBalanceLookup = poolAssetBalances.get(
+        poolAccountIds[pool?.poolId],
+        item.assetId,
+      );
 
       const traderAssetBalance =
-        !traderAssets?.[0] || isNA(traderAssets?.[0])
+        !traderAssetBalanceLookup || isNA(traderAssetBalanceLookup)
           ? na("Account balance not available.")
-          : new Decimal(traderAssets?.[0].free.toString());
+          : new Decimal(traderAssetBalanceLookup.free.toString());
 
       const poolAssetBalance =
-        !poolAssetBalances[0] || isNA(poolAssetBalances[0])
+        !poolAssetBalanceLookup || isNA(poolAssetBalanceLookup)
           ? null
-          : new Decimal(poolAssetBalances[0]?.free.toString());
+          : new Decimal(poolAssetBalanceLookup.free.toString());
 
       const tradeablePoolBalance =
         !poolAssetBalance || isNA(poolAssetBalance)
