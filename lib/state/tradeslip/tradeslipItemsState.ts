@@ -172,7 +172,7 @@ export const useTradeslipItemsState = (
     items.map((item) => ({
       account:
         poolAccountIds[
-          pools?.find((p) => p.marketId == getMarketIdOf(item.assetId)).poolId
+          pools?.find((p) => p.marketId == getMarketIdOf(item.assetId))?.poolId
         ],
       assetId: item.assetId,
     })),
