@@ -21,6 +21,9 @@ export type UseAccountAssetBalances = {
   >[];
 };
 
+/**
+ * Pair of account and asset id.
+ */
 export type AccountAssetIdPair = {
   account?: string;
   assetId: AssetId;
