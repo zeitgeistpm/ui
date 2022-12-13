@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ChevronDown } from "react-feather";
 import ReactSelect from "react-select";
 import {
@@ -113,9 +113,16 @@ const sortBySelectStyles = {
 };
 
 const SortBySelect = observer(
-  ({ onOrderingChange }: { onOrderingChange: (v: MarketsOrderBy) => void }) => {
+  ({
+    onOrderingChange,
+    ordering,
+  }: {
+    ordering: MarketsOrderBy;
+    onOrderingChange: (v: MarketsOrderBy) => void;
+  }) => {
     return (
       <ReactSelect
+        value={marketsOrderByOptions.find((opt) => opt.value === ordering)}
         onChange={(v) => {
           onOrderingChange(v.value);
         }}
@@ -132,9 +139,11 @@ const SortBySelect = observer(
 const MarketFilterOptions = ({
   add,
   onOrderingChange,
+  ordering,
 }: {
   add: (filter: MarketFilter) => void;
   onOrderingChange: (ordering: MarketsOrderBy) => void;
+  ordering: MarketsOrderBy;
 }) => {
   return (
     <div className="w-full flex justify-end items-center gap-ztg-5">
@@ -153,7 +162,7 @@ const MarketFilterOptions = ({
         options={marketStatusFilterOptions}
         add={add}
       />
-      <SortBySelect onOrderingChange={onOrderingChange} />
+      <SortBySelect ordering={ordering} onOrderingChange={onOrderingChange} />
     </div>
   );
 };
@@ -196,6 +205,7 @@ const MarketFilterSelection = ({
   onOrderingChange: (ordering: MarketsOrderBy) => void;
 }) => {
   const [activeFilters, setActiveFilters] = useState<MarketFilter[]>();
+  const [activeOrdering, setActiveOrdering] = useState<MarketsOrderBy>();
   const queryState = useMarketsUrlQuery();
 
   const add = (filter: MarketFilter) => {
@@ -203,13 +213,6 @@ const MarketFilterSelection = ({
 
     const nextFilters = [...activeFilters, filter];
 
-    const queryStateFilters = queryState.filters[filter.type];
-
-    queryState.updateQuery({
-      filters: {
-        [filter.type]: [...queryStateFilters, filter.value],
-      },
-    });
     setActiveFilters(nextFilters);
   };
 
@@ -231,21 +234,6 @@ const MarketFilterSelection = ({
       ...activeFilters.slice(idx + 1),
     ];
 
-    const filterValue = filter.value;
-
-    const queryStateFilters = queryState.filters[filter.type];
-    const queryStateFilterIdx = queryStateFilters.findIndex(
-      (f) => f === filterValue,
-    );
-
-    queryState.updateQuery({
-      filters: {
-        [filter.type]: [
-          ...queryStateFilters.slice(0, queryStateFilterIdx),
-          ...queryStateFilters.slice(queryStateFilterIdx + 1),
-        ],
-      },
-    });
     setActiveFilters(nextFilters);
   };
 
@@ -258,16 +246,31 @@ const MarketFilterSelection = ({
   }, [activeFilters]);
 
   useEffect(() => {
-    if (queryState == null) {
+    if (activeOrdering == null) {
       return;
     }
-    const activeFilters = getFiltersFromQueryState(queryState);
-    setActiveFilters(activeFilters);
+    onOrderingChange(activeOrdering);
+  }, [activeOrdering]);
+
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    if (queryState && !initialized) {
+      const filters = getFiltersFromQueryState(queryState);
+      const ordering = queryState.ordering;
+      setActiveFilters(filters);
+      setActiveOrdering(ordering);
+      setInitialized(true);
+    }
   }, [queryState]);
 
   return (
     <MarketFilterContainer>
-      <MarketFilterOptions add={add} onOrderingChange={onOrderingChange} />
+      <MarketFilterOptions
+        add={add}
+        onOrderingChange={setActiveOrdering}
+        ordering={activeOrdering}
+      />
       <MarketActiveFilters
         filters={activeFilters}
         onClear={clear}

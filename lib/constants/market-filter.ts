@@ -43,6 +43,7 @@ export const defaultMarketsQueryState: MarketsListQuery = {
     tag: [],
     currency: [],
   },
+  ordering: MarketsOrderBy.Newest,
 };
 
 export const marketsOrderByOptions: MarketOrderByOption[] = Object.values(

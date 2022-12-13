@@ -69,4 +69,5 @@ export type MarketsListQuery = {
   filters: {
     [key in MarketFilterType]?: string[];
   };
+  ordering: MarketsOrderBy;
 };

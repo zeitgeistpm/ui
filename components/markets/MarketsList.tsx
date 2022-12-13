@@ -14,6 +14,8 @@ import { useContentScrollTop } from "components/context/ContentDimensionsContext
 import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
 import MarketFilterSelection from "./market-filter";
 import MarketCard from "./market-card";
+import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
+import { filterTypes } from "lib/constants/market-filter";
 
 export type MarketsListProps = {
   className?: string;
@@ -26,16 +28,43 @@ const scrollRestoration = makeAutoObservable({
   },
 });
 
+const useChangeQuery = (filters?: MarketFilter[], orderBy?: MarketsOrderBy) => {
+  const queryState = useMarketsUrlQuery();
+
+  useEffect(() => {
+    if (filters == null) {
+      return;
+    }
+    const newFilters = {};
+    for (const filterType of filterTypes) {
+      const filterByType = filters.filter((f) => f.type === filterType);
+      newFilters[filterType] = filterByType.map((f) => f.value);
+    }
+    queryState.updateQuery({
+      filters: newFilters,
+    });
+  }, [filters]);
+
+  useEffect(() => {
+    if (orderBy == null) {
+      return;
+    }
+    queryState.updateQuery({ ordering: orderBy });
+  }, [orderBy]);
+};
+
 const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const store = useStore();
   const { markets: marketsStore } = store;
   const [filters, setFilters] = useState<MarketFilter[]>();
-  const [orderBy, setOrderBy] = useState<MarketsOrderBy>(MarketsOrderBy.Newest);
+  const [orderBy, setOrderBy] = useState<MarketsOrderBy>();
 
   const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
   const [scrollTop, scrollTo] = useContentScrollTop();
   const [scrollingRestored, setScrollingRestored] = useState(false);
+
+  useChangeQuery(filters, orderBy);
 
   const {
     data: marketsPages,
@@ -92,10 +121,6 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       }
     }
   }, [marketsPages]);
-
-  useEffect(() => {
-    console.log("filters changed", filters);
-  }, [filters]);
 
   return (
     <div className={"pt-ztg-46 mb-[38px]" + className}>
