@@ -172,13 +172,23 @@ const AddressModalHeader = ({ name }: { name: string }) => {
   );
 };
 
+interface MarketAddressesProps {
+  creatorAddress: string;
+  authorityAddress: string;
+  oracleAddress: string;
+}
+
 const MarketAddresses = observer(
-  ({ marketStore }: { marketStore: MarketStore }) => {
+  ({
+    creatorAddress,
+    authorityAddress,
+    oracleAddress,
+  }: MarketAddressesProps) => {
     const modalStore = useModalStore();
 
-    const { data: creatorIdentity } = useIdentity(marketStore.creator);
-    const { data: authorityIdentity } = useIdentity(marketStore.authority);
-    const { data: oracleIdentity } = useIdentity(marketStore.oracle);
+    const { data: creatorIdentity } = useIdentity(creatorAddress);
+    const { data: authorityIdentity } = useIdentity(authorityAddress);
+    const { data: oracleIdentity } = useIdentity(oracleAddress);
 
     const handleInspect = (address: string, identity: UserIdentity) => {
       modalStore.openModal(
@@ -195,39 +205,37 @@ const MarketAddresses = observer(
       <div className="flex flex-col my-ztg-20">
         <AddressDetails
           title="Creator"
-          address={marketStore?.creator}
+          address={creatorAddress}
           displayName={
             creatorIdentity?.displayName?.length > 0
               ? creatorIdentity.displayName
               : null
           }
           judgement={creatorIdentity?.judgement}
-          onInspect={() => handleInspect(marketStore?.creator, creatorIdentity)}
+          onInspect={() => handleInspect(creatorAddress, creatorIdentity)}
         />
         <AddressDetails
           title="Oracle"
-          address={marketStore?.oracle}
+          address={oracleAddress}
           displayName={
             oracleIdentity?.displayName?.length > 0
               ? oracleIdentity.displayName
               : null
           }
           judgement={oracleIdentity?.judgement}
-          onInspect={() => handleInspect(marketStore?.oracle, oracleIdentity)}
+          onInspect={() => handleInspect(oracleAddress, oracleIdentity)}
         />
         {authorityIdentity && (
           <AddressDetails
             title="Authority"
-            address={marketStore?.authority}
+            address={authorityAddress}
             displayName={
               authorityIdentity?.displayName?.length > 0
                 ? authorityIdentity.displayName
                 : null
             }
             judgement={authorityIdentity?.judgement}
-            onInspect={() =>
-              handleInspect(marketStore?.authority, authorityIdentity)
-            }
+            onInspect={() => handleInspect(authorityAddress, authorityIdentity)}
           />
         )}
       </div>
