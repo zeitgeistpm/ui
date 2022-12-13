@@ -36,12 +36,7 @@ export const colorForRarity = (rarity: Badge.Rarity) => {
 };
 
 const BadgesPage = observer(() => {
-  const router = useRouter();
-  const store = useStore();
   const avatarContext = useAvatarContext();
-
-  const { getIdentity, toggleHelpNotification, helpnotifications } =
-    useUserStore();
 
   const [rarity, setRarity] = useState<RaritySelectValue>(rarities[1]);
   const [badgeSpecs, setBadgeSpecs] = useState<Badge.BadgeSpec[]>([]);
