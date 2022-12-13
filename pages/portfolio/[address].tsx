@@ -30,7 +30,7 @@ const Portfolio: NextPage = observer(() => {
   const [chartData, setChartData] = useState<ChartData[]>([]);
   const [positions, setPositions] = useState<Position[]>([]);
   const [message, setMessage] = useState<string>();
-  const [startTime, setStartTime] = useState<TimeFilter>(
+  const [timeFilter, setTimeFilter] = useState<TimeFilter>(
     filters.find((f) => f.label === "Month"),
   );
   const [updateNum, setUpdateNum] = useState(0);
@@ -53,11 +53,10 @@ const Portfolio: NextPage = observer(() => {
   useEffect(() => {
     if (!address || isValidPolkadotAddress(address) === false) return;
     (async () => {
-      console.log(startTime);
       const historicalValues =
         await store.sdk.models.getAccountHistoricalValues(
           address,
-          startTime.time,
+          timeFilter.time,
         );
 
       // push extra record to ensure line continues to current time
@@ -75,7 +74,7 @@ const Portfolio: NextPage = observer(() => {
 
       setChartData(chart);
     })();
-  }, [startTime]);
+  }, [timeFilter]);
 
   useEffect(() => {
     if (!address) {
@@ -265,7 +264,7 @@ const Portfolio: NextPage = observer(() => {
   };
 
   const handleTimeFilterClick = (filter: TimeFilter) => {
-    setStartTime(filter);
+    setTimeFilter(filter);
   };
 
   return (
@@ -279,7 +278,7 @@ const Portfolio: NextPage = observer(() => {
         <>
           <div className="-ml-ztg-22 mb-ztg-30">
             <div className="flex justify-end -mt-ztg-30">
-              <TimeFilters value={startTime} onClick={handleTimeFilterClick} />
+              <TimeFilters value={timeFilter} onClick={handleTimeFilterClick} />
             </div>
             <TimeSeriesChart
               data={chartData}
