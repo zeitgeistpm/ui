@@ -20,7 +20,6 @@ import UserStore from "./UserStore";
 import MarketsStore from "./MarketsStore";
 import NotificationStore from "./NotificationStore";
 import NavigationStore from "./NavigationStore";
-import TradeSlipStore from "./TradeSlipStore";
 import PoolsStore from "./PoolsStore";
 import ExchangeStore from "./ExchangeStore";
 import CourtStore from "./CourtStore";
@@ -69,7 +68,6 @@ export default class Store {
   userStore = new UserStore(this);
   notificationStore = new NotificationStore();
   navigationStore = new NavigationStore(this);
-  tradeSlipStore = new TradeSlipStore(this);
   exchangeStore = new ExchangeStore(this);
   courtStore: CourtStore;
   wallets = new Wallets(this);
@@ -100,7 +98,7 @@ export default class Store {
 
   leftDrawerClosed = false;
 
-  rightDrawerClosed = true;
+  rightDrawerClosed = false;
 
   leftDrawerAnimating = false;
 
@@ -170,7 +168,6 @@ export default class Store {
   }
 
   private initializeMarkets() {
-    this.initTradeSlipStore();
     this.exchangeStore.initialize();
   }
 
@@ -378,10 +375,6 @@ export default class Store {
   async getBlockTimestamp(): Promise<number> {
     const now = await this.sdk.api.query.timestamp.now();
     return Number(now.toString());
-  }
-
-  private initTradeSlipStore() {
-    this.tradeSlipStore.initialize(this.userStore.tradeSlipItems as any);
   }
 
   /**

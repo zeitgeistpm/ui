@@ -2342,18 +2342,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:4.13.0":
-  version: 4.13.0
-  resolution: "@tanstack/query-core@npm:4.13.0"
-  checksum: 11cb95be4dc6e1ba3f0f4eb04c255eab7fa5eca3441d6e698e2c6d03c84c03efaf34d475594e259593d76f584af0c0e830c7d868a682d6dc0f61d1a439728d12
+"@tanstack/match-sorter-utils@npm:^8.7.0":
+  version: 8.7.0
+  resolution: "@tanstack/match-sorter-utils@npm:8.7.0"
+  dependencies:
+    remove-accents: 0.4.2
+  checksum: 7ec97963b44016acb324b1c6009efd87e724aa7d8caac360be7aa75c60cbbd707dffbadcbe4aad565764b591fe8d3ce725ce95f4f90b61c7e5df431e5946b3e5
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^4.13.0":
-  version: 4.13.0
-  resolution: "@tanstack/react-query@npm:4.13.0"
+"@tanstack/query-core@npm:4.19.0":
+  version: 4.19.0
+  resolution: "@tanstack/query-core@npm:4.19.0"
+  checksum: ca8bb8cbba8ff7f6f223731a637eadf0c47943d84e964f24b02c8092d6629b84bcfbad897da8193004566e7618cc4746a9d9be67d2d4b441225c6cce5c802a7a
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query-devtools@npm:^4.19.1":
+  version: 4.19.1
+  resolution: "@tanstack/react-query-devtools@npm:4.19.1"
   dependencies:
-    "@tanstack/query-core": 4.13.0
+    "@tanstack/match-sorter-utils": ^8.7.0
+    superjson: ^1.10.0
+    use-sync-external-store: ^1.2.0
+  peerDependencies:
+    "@tanstack/react-query": 4.19.1
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 0c40e7b55d06600ff8a2448f8679e52657f22f05ae397ccee83842ee9ce6dcd681f41bd33606adc6590535bb868561dce3da631233c339701fffa602ec1e381c
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^4.19.0":
+  version: 4.19.0
+  resolution: "@tanstack/react-query@npm:4.19.0"
+  dependencies:
+    "@tanstack/query-core": 4.19.0
     use-sync-external-store: ^1.2.0
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -2364,7 +2388,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: e538b585e4c2b4a8ff84c17509f4ce226e18e3e862553b6a9ca90e29c200db4ec7ab4f400f19ef4846a76c51babe0db120c54779054805fbecdcd29b369caf0e
+  checksum: bce0a8a1b44e6c0a9732615158408e432ee94173e2bddef68d1384bbdd40e59a4dd1b023ac194a757d653b76a451abb8c1493f591e027230bdf13a371179d084
   languageName: node
   linkType: hard
 
@@ -2596,6 +2620,15 @@ __metadata:
     "@types/parse5": ^6.0.3
     "@types/tough-cookie": "*"
   checksum: e038335321bef42ebf220aaf597e186e2eec8de6107ce7a70de1c046a84c1fbb42d454e195a20383a6870b18c7ef6fa6b73812a626f88a4a2ef1f711d2e2e13c
+  languageName: node
+  linkType: hard
+
+"@types/lodash-es@npm:^4.17.6":
+  version: 4.17.6
+  resolution: "@types/lodash-es@npm:4.17.6"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 9bd239dd525086e278821949ce12fbdd4f100a060fed9323fc7ad5661113e1641f28a7ebab617230ed3474680d8f4de705c1928b48252bb684be6ec9eed715db
   languageName: node
   linkType: hard
 
@@ -2849,17 +2882,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/augment-api@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "@zeitgeistpm/augment-api@npm:2.2.1"
-  peerDependencies:
-    "@polkadot/api-base": "*"
-    "@polkadot/rpc-core": "*"
-    "@polkadot/types": "*"
-  checksum: 684f1dc6de17e579b34a2cd338413de114a4fb58e198fcce1ba02acc8aaec3fd9c1f98e2dc4bbb44e0e1ebba134c577d03a2cbbc89d3e1dfee315a4b34e189bf
-  languageName: node
-  linkType: hard
-
 "@zeitgeistpm/augment-api@npm:^2.2.2":
   version: 2.2.2
   resolution: "@zeitgeistpm/augment-api@npm:2.2.2"
@@ -2868,6 +2890,17 @@ __metadata:
     "@polkadot/rpc-core": "*"
     "@polkadot/types": "*"
   checksum: 5848fe32d1707ce8ddf273ccac65f07eb0999eb1934bac3f40bbd84e25e9ad64009abda7624ed0ec236ef4b4b3600ce7f88b9b8e5b1bea0720c64f11304425e1
+  languageName: node
+  linkType: hard
+
+"@zeitgeistpm/augment-api@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@zeitgeistpm/augment-api@npm:2.4.0"
+  peerDependencies:
+    "@polkadot/api-base": "*"
+    "@polkadot/rpc-core": "*"
+    "@polkadot/types": "*"
+  checksum: 665d9c5655ef500c74a4ca9b6eeecabbacd06a3674b1ae14948b00058c9c64856a54c716522c0229db7d917f022f2ba6249de5c9189bf60aa8026561b53ec1a9
   languageName: node
   linkType: hard
 
@@ -2962,11 +2995,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.6.6":
-  version: 2.6.6
-  resolution: "@zeitgeistpm/sdk@npm:2.6.6"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.8.0":
+  version: 2.8.0
+  resolution: "@zeitgeistpm/sdk@npm:2.8.0"
   dependencies:
-    "@zeitgeistpm/augment-api": ^2.2.2
+    "@zeitgeistpm/augment-api": ^2.4.0
     "@zeitgeistpm/indexer": ^2.4.0
     "@zeitgeistpm/rpc": ^2.2.5
     "@zeitgeistpm/utility": ^2.4.2
@@ -2983,7 +3016,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: 2a7d0b410884491df758d422abed2c5a4947e2bee1a91a2b96f751ae4d8e67f67eb1cc83838e5c4080800aaf1286dccefdec46d2b9e982c07dcac21d650a2c96
+  checksum: 4ca912036526700d616198b5442ddb42ed24a6f816ffe0b872e3d2edf86b0bced6eebb25b75cc2f8c1ba4ccdc0f919d052e77692635bb2f504b1c0ff8ae159ec
   languageName: node
   linkType: hard
 
@@ -3054,21 +3087,23 @@ __metadata:
     "@polkadot/ui-keyring": ^2.4.1
     "@polkadot/wasm-crypto": ^6.3.1
     "@tailwindcss/line-clamp": ^0.4.2
-    "@tanstack/react-query": ^4.13.0
+    "@tanstack/react-query": ^4.19.0
+    "@tanstack/react-query-devtools": ^4.19.1
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^13.4.0
     "@types/flexsearch": ^0.7.2
     "@types/jest": ^27.5.1
+    "@types/lodash-es": ^4.17.6
     "@types/lodash.merge": ^4.6.6
     "@types/object-hash": ^2.2.1
     "@types/react": ^17.0.38
     "@types/react-color": ^3.0.6
-    "@zeitgeistpm/augment-api": ^2.2.1
+    "@zeitgeistpm/augment-api": ^2.4.0
     "@zeitgeistpm/avatara-nft-sdk": ^1.3.0
     "@zeitgeistpm/avatara-react": ^1.3.0
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^0.10.2
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.6.6"
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.8.0"
     "@zeitgeistpm/utility": ^2.4.2
     autoprefixer: 10.2.5
     axios: ^0.21.4
@@ -3105,6 +3140,7 @@ __metadata:
     react-datetime: ^3.1.1
     react-dom: ^18.2.0
     react-feather: ^2.0.9
+    react-hook-form: ^7.39.5
     react-hotjar: ^3.0.1
     react-icons: ^4.3.1
     react-intersection-observer: ^9.4.1
@@ -4425,6 +4461,15 @@ __metadata:
   version: 1.9.0
   resolution: "convert-source-map@npm:1.9.0"
   checksum: dc55a1f28ddd0e9485ef13565f8f756b342f9a46c4ae18b843fe3c30c675d058d6a4823eff86d472f187b176f0adf51ea7b69ea38be34be4a63cbbf91b0593c8
+  languageName: node
+  linkType: hard
+
+"copy-anything@npm:^3.0.2":
+  version: 3.0.3
+  resolution: "copy-anything@npm:3.0.3"
+  dependencies:
+    is-what: ^4.1.8
+  checksum: d456dc5ec98dee7c7cf87d809eac30dc2ac942acd4cf970fab394e280ceb6dd7a8a7a5a44fcbcc50e0206658de3cc20b92863562f5797930bb2619f164f4c182
   languageName: node
   linkType: hard
 
@@ -7091,6 +7136,13 @@ __metadata:
     call-bind: ^1.0.2
     get-intrinsic: ^1.1.1
   checksum: 5d8698d1fa599a0635d7ca85be9c26d547b317ed8fd83fc75f03efbe75d50001b5eececb1e9971de85fcde84f69ae6f8346bc92d20d55d46201d328e4c74a367
+  languageName: node
+  linkType: hard
+
+"is-what@npm:^4.1.8":
+  version: 4.1.8
+  resolution: "is-what@npm:4.1.8"
+  checksum: b9bec3acff102d14ad467f4c74c9886af310fa160e07a63292c8c181e6768c7c4c1054644e13d67185b963644e4a513bce8c6b8ce3d3ca6f9488a69fccad5f97
   languageName: node
   linkType: hard
 
@@ -10174,6 +10226,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-hook-form@npm:^7.39.5":
+  version: 7.39.5
+  resolution: "react-hook-form@npm:7.39.5"
+  peerDependencies:
+    react: ^16.8.0 || ^17 || ^18
+  checksum: 91bc9543c17b9924c0786fbc4fed6b9d85db52843cdb053de81c9a7c8ad5cb9b28a39615b1b67196f6bdf49fa92c14cd924238c2555be0c23591273713041f88
+  languageName: node
+  linkType: hard
+
 "react-hotjar@npm:^3.0.1":
   version: 3.0.1
   resolution: "react-hotjar@npm:3.0.1"
@@ -10473,6 +10534,13 @@ __metadata:
     define-properties: ^1.1.3
     functions-have-names: ^1.2.2
   checksum: 51228bae732592adb3ededd5e15426be25f289e9c4ef15212f4da73f4ec3919b6140806374b8894036a86020d054a8d2657d3fee6bb9b4d35d8939c20030b7a6
+  languageName: node
+  linkType: hard
+
+"remove-accents@npm:0.4.2":
+  version: 0.4.2
+  resolution: "remove-accents@npm:0.4.2"
+  checksum: 84a6988555dea24115e2d1954db99509588d43fe55a1590f0b5894802776f7b488b3151c37ceb9e4f4b646f26b80b7325dcea2fae58bc3865df146e1fa606711
   languageName: node
   linkType: hard
 
@@ -11227,6 +11295,15 @@ __metadata:
     function-timeout: ^0.1.0
     time-span: ^5.1.0
   checksum: 99865cb002a7e4af78cbfb51ef9636d51c1678319cf50e3cca8a7ef205eff41732430de1d36f2872949388c11506ef6e9c7dbf220bea6748a80edd98c8170866
+  languageName: node
+  linkType: hard
+
+"superjson@npm:^1.10.0":
+  version: 1.11.0
+  resolution: "superjson@npm:1.11.0"
+  dependencies:
+    copy-anything: ^3.0.2
+  checksum: 943c2ffd67422a601fae0b2b9df176f421cebcee710cc2c379b0c01bca6aca98d0941bb0e91856dc785ede1c3353c524f8215a67916a48e3a59a45539a2c2bc4
   languageName: node
   linkType: hard
 
