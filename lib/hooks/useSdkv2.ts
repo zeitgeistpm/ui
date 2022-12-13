@@ -1,6 +1,8 @@
 import { Context, create$, Sdk, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
+import { SupportedParachain } from "lib/types";
+import { endpoints } from "lib/constants";
 import Store, { useStore } from "lib/stores/Store";
-import { memoize } from "lodash";
+import { memoize } from "lodash-es";
 import { useEffect, useState } from "react";
 import { Subscription } from "rxjs";
 import { usePrevious } from "./usePrevious";
@@ -34,10 +36,12 @@ export const useSdkv2 = (): UseSdkv2 => {
   const prevId = usePrevious(id);
 
   useEffect(() => {
-    if (store.userStore.endpoint || store.userStore.gqlEndpoint) {
+    if ((id && store.userStore.endpoint) || store.userStore.gqlEndpoint) {
       if (sub && prevId && id !== prevId) {
-        sub.unsubscribe();
-        init.cache.delete(id);
+        setTimeout(() => {
+          init.cache.delete(prevId);
+          sub.unsubscribe();
+        }, 500);
       }
 
       const sdk$ = init(store);
@@ -45,7 +49,11 @@ export const useSdkv2 = (): UseSdkv2 => {
 
       setSub(nextSub);
 
-      return () => nextSub.unsubscribe();
+      return () => {
+        setTimeout(() => {
+          nextSub.unsubscribe();
+        }, 500);
+      };
     }
   }, [id]);
 
@@ -60,13 +68,25 @@ export const useSdkv2 = (): UseSdkv2 => {
  */
 const init = memoize(
   (store: Store) => {
+    const chain = endpoints.find(
+      (e) => e.value === store.userStore.endpoint,
+    ).parachain;
+
+    const backupRPCs = endpoints
+      .filter(
+        (endpoint) =>
+          endpoint.parachain === chain &&
+          store.userStore.endpoint !== endpoint.value,
+      )
+      .map((e) => e.value);
+
     return create$({
-      provider: store.userStore.endpoint,
+      provider: [store.userStore.endpoint, ...backupRPCs],
       indexer: store.userStore.gqlEndpoint,
       storage: ZeitgeistIpfs(),
     });
   },
-  (store) => identify(store),
+  (store) => identify(store) ?? "--",
 );
 
 /**

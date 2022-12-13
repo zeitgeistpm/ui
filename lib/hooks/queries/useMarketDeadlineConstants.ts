@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 
-export const rootKey = "pools";
+export const rootKey = "market-deadline-constants";
 
 export type MarketDeadlineConstants = {
   minDisputeDuration: number;
@@ -16,7 +16,7 @@ export const useMarketDeadlineConstants = () => {
   const [sdk, id] = useSdkv2();
 
   return useQuery<MarketDeadlineConstants>(
-    [rootKey, id],
+    [id, rootKey],
     async () => {
       if (isRpcSdk(sdk)) {
         return {

@@ -78,6 +78,7 @@ export const MarketDeadlinesInput = (props: {
   const [tab, setTab] = useState<MarketDeadlineInputType>("grace");
 
   const graceIsValid = useMemo(() => {
+    if (!now) return false;
     const minDate =
       props.marketEnd.type == "timestamp"
         ? new Date(props.marketEnd.value)

@@ -1,21 +1,20 @@
-import { observer } from "mobx-react";
-import { useRouter } from "next/router";
-import React, { ReactFragment, useEffect, useMemo, useState } from "react";
-import { useNavigationStore } from "lib/stores/NavigationStore";
-import { useTradeSlipStore } from "lib/stores/TradeSlipStore";
-import { useStore } from "lib/stores/Store";
-import MarketStore from "lib/stores/MarketStore";
-import { useExchangeStore } from "lib/stores/ExchangeStore";
-import PercentageChange from "components/ui/PercentageChange";
-import ReportBox from "components/outcomes/ReportBox";
 import DisputeBox from "components/outcomes/DisputeBox";
 import RedeemBox from "components/outcomes/RedeemBox";
-
-import TradeSlip from "../trade-slip";
-import LiquidityPoolsBox from "../liquidity/LiquidityPoolsBox";
-import Drawer from "./Drawer";
-import Tabs from "../ui/Tabs";
+import ReportBox from "components/outcomes/ReportBox";
+import PercentageChange from "components/ui/PercentageChange";
+import { useExchangeStore } from "lib/stores/ExchangeStore";
+import MarketStore from "lib/stores/MarketStore";
+import { useNavigationStore } from "lib/stores/NavigationStore";
+import { useStore } from "lib/stores/Store";
+import { observer } from "mobx-react";
+import { useRouter } from "next/router";
+import { ReactFragment, useEffect, useMemo, useState } from "react";
+import { useTradeslipItems } from "lib/state/tradeslip/items";
 import ExchangeBox from "../exchange/ExchangeBox";
+import LiquidityPoolsBox from "../liquidity/LiquidityPoolsBox";
+import TradeSlip from "../trade-slip";
+import Tabs from "../ui/Tabs";
+import Drawer from "./Drawer";
 
 const ZTGSummary = observer(() => {
   const { ztgInfo } = useStore();
@@ -113,7 +112,7 @@ const Box = observer(
 const RightDrawer = observer(() => {
   const navigationStore = useNavigationStore();
   const { currentPage } = navigationStore;
-  const tradeSlipStore = useTradeSlipStore();
+  const tradeslipItems = useTradeslipItems();
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [market, setMarket] = useState<MarketStore | null>();
   const router = useRouter();
@@ -173,7 +172,7 @@ const RightDrawer = observer(() => {
 
   useEffect(() => {
     setActiveTabIndex(0);
-  }, [tradeSlipStore.tradeSlipItems.length]);
+  }, [tradeslipItems.items.length]);
 
   const handleMarketChange = async () => {
     const market = await markets.getMarket(Number(marketid));

@@ -119,6 +119,25 @@ const getDateFromTimestamp = (timestamp?: number) => {
   return new Date(ts);
 };
 
+const getLocalDateFormat = () => {
+  const formatObj = new Intl.DateTimeFormat().formatToParts(new Date());
+
+  return formatObj
+    .map((obj) => {
+      switch (obj.type) {
+        case "day":
+          return "DD";
+        case "month":
+          return "MM";
+        case "year":
+          return "YYYY";
+        default:
+          return obj.value;
+      }
+    })
+    .join("");
+};
+
 export const DateTimeInput: FC<{
   timestamp?: number;
   className?: string;
@@ -137,6 +156,7 @@ export const DateTimeInput: FC<{
       onChange(v.valueOf());
     }
   };
+  const localDateFormat = getLocalDateFormat();
 
   return (
     <DateTime
@@ -144,7 +164,7 @@ export const DateTimeInput: FC<{
       renderInput={rdtpInput}
       inputProps={{ ref, className: `${invalid ? invalidClasses : ""}` }}
       onChange={dateChange}
-      dateFormat={true}
+      dateFormat={localDateFormat}
       className={className}
     />
   );
@@ -207,7 +227,7 @@ const checkVal = (v: string, amountRegex: RegExp): string => {
       return val;
     }
   }
-  return "";
+  return "0";
 };
 
 export const AmountInput: FC<AmountInputProps> = observer(
@@ -326,7 +346,8 @@ export const AmountInput: FC<AmountInputProps> = observer(
             value={val == null ? "" : val}
             disabled={disabled}
             ref={ref}
-            type="text"
+            type="number"
+            max={Number(max)}
             autoComplete="off"
             placeholder={placeholder}
             onChange={onChanged}

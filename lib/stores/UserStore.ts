@@ -7,7 +7,6 @@ import {
 } from "lib/types";
 import Store, { useStore } from "./Store";
 import { endpoints, gqlEndpoints } from "lib/constants";
-import { TradeSlipItem } from "./TradeSlipStore";
 import ipRangeCheck from "ip-range-check";
 
 export type Theme = "dark" | "light";
@@ -54,7 +53,6 @@ export default class UserStore {
   theme: Theme | null = "light";
   storedTheme: StoredTheme | null = "light";
   accountAddress: string | null = null;
-  tradeSlipItems: JSONObject | null = null;
   endpoint: string;
   gqlEndpoint: string;
   identity?: UserIdentity;
@@ -63,8 +61,9 @@ export default class UserStore {
   walletId: string | null = null;
   helpnotifications: HelperNotifications | null = null;
   endpointKey = `endpoint-${process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"}`;
-  qglEndpointKey = `gql-endpoint-${process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"
-    }`;
+  qglEndpointKey = `gql-endpoint-${
+    process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"
+  }`;
 
   constructor(private store: Store) {
     makeAutoObservable(this, {}, { autoBind: true, deep: false });
@@ -114,13 +113,6 @@ export default class UserStore {
     );
 
     reaction(
-      () => this.store.tradeSlipStore.tradeSlipItems,
-      (items) => {
-        setToLocalStorage("tradeSlipItems", items);
-      },
-    );
-
-    reaction(
       () => this.store.wallets.wallet,
       (wallet) => {
         setToLocalStorage("walletId", wallet?.extensionName ?? null);
@@ -140,10 +132,6 @@ export default class UserStore {
     // this.theme = this.getTheme();
     this.accountAddress = getFromLocalStorage("accountAddress", "") as string;
     this.walletId = getFromLocalStorage("walletId", null) as string;
-    this.tradeSlipItems = getFromLocalStorage(
-      "tradeSlipItems",
-      [],
-    ) as TradeSlipItem[];
 
     this.setupEndpoints();
 
@@ -238,15 +226,15 @@ export default class UserStore {
       const oneOrZero = Math.round(Math.random());
       return oneOrZero === 0
         ? endpoints.find(
-          (endpoint) =>
-            endpoint.parachain == SupportedParachain.KUSAMA &&
-            endpoint.label === "Dwellir",
-        ).value
+            (endpoint) =>
+              endpoint.parachain == SupportedParachain.KUSAMA &&
+              endpoint.label === "Dwellir",
+          ).value
         : endpoints.find(
-          (endpoint) =>
-            endpoint.parachain == SupportedParachain.KUSAMA &&
-            endpoint.label === "OnFinality",
-        ).value;
+            (endpoint) =>
+              endpoint.parachain == SupportedParachain.KUSAMA &&
+              endpoint.label === "OnFinality",
+          ).value;
     } else {
       return endpoints.find(
         (endpoint) => endpoint.parachain == SupportedParachain.BSR,

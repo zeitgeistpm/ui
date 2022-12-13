@@ -8,7 +8,7 @@ export const useTotalLiquidity = (options: { enabled: boolean }) => {
   const [sdk, id] = useSdkv2();
 
   const { data: pools } = useQuery(
-    [id, rootKey, "pools"],
+    [id, rootKey],
     () => sdk.model.swaps.listPools({}),
     {
       enabled: options.enabled && Boolean(sdk),
