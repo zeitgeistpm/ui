@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -18,29 +19,37 @@ const MarketScroll = observer(
     const cardsShown = Math.floor(containerWidth / (gap + cardWidth));
     const moveSize = cardsShown * (cardWidth + gap);
 
-    useEffect(() => {
-      if (typeof window === "undefined") return;
-      if (window.innerWidth < 640) return;
+    // useEffect(() => {
+    //   if (typeof window === "undefined") return;
+    //   if (window.innerWidth < 640) return;
 
-      const cards = document.querySelectorAll(".market-card");
+    // const cards = document.querySelectorAll(".market-card");
 
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.remove("opacity-0");
-            } else {
-              entry.target.classList.add("opacity-0");
-            }
-          });
-        },
-        { root: containerRef.current, threshold: 0.7 },
-      );
+    // const observer = new IntersectionObserver(
+    //   (entries) => {
+    //     entries.forEach((entry) => {
+    //       console.log(entry);
+    //       if (entry.isIntersecting) {
+    //         entry.target.classList.remove("opacity-0");
+    //       } else {
+    //         entry.target.classList.add("opacity-0");
+    //       }
+    //     });
+    //   },
+    //   { root: containerRef.current },
+    // );
 
-      cards.forEach((card) => {
-        observer.observe(card);
-      });
-    }, []);
+    // cards.forEach((card) => {
+    //   observer.observe(card);
+    // });
+    // }, []);
+
+    // useEffect(() => {
+    //   const cards = document.querySelectorAll(".market-card");
+    //   cards.forEach((card) => {
+    //     card.classList.remove("opacity-0");
+    //   });
+    // }, [store.leftDrawerClosed, store.rightDrawerClosed]);
 
     const handleRightClick = () => {
       setScrollLeft((prev) => {

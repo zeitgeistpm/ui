@@ -31,15 +31,6 @@ export type PageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   Layout?: FC | (() => JSX.Element);
 };
 
-export type MarketListQuery = {
-  pagination: PaginationOptions;
-  filter: FilterOptions;
-  sorting: SortOptions;
-  myMarketsOnly?: boolean;
-  tag?: string;
-  searchText?: string;
-};
-
 export type PoolsListQuery = {
   page: number;
 };

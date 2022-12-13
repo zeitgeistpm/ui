@@ -1,5 +1,5 @@
 import { Context, IndexedMarket } from "@zeitgeistpm/sdk-next";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { observer } from "mobx-react";
 import { makeAutoObservable } from "mobx";
@@ -8,9 +8,9 @@ import { X } from "react-feather";
 import { useRouter } from "next/router";
 import { debounce } from "lodash";
 import { useStore } from "lib/stores/Store";
-import { useContentScrollTop } from "components/context/ContentDimensionsContext";
 import { useMarkets } from "lib/hooks/queries/useMarkets";
 import { MarketOutcomes } from "lib/types/markets";
+import { useContentScrollTop } from "components/context/ContentDimensionsContext";
 import { MarketFilter } from "lib/types/market-filter";
 import MarketFilterSelection from "./market-filter";
 import MarketCard from "./market-card";
@@ -29,18 +29,12 @@ const scrollRestoration = makeAutoObservable({
 const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const store = useStore();
   const { markets: marketsStore } = store;
-  const [filters, setFilters] = useState<MarketFilter[]>([]);
+  const [filters, setFilters] = useState<MarketFilter[]>();
 
   const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
   const [scrollTop, scrollTo] = useContentScrollTop();
-
-  useEffect(
-    debounce(() => {
-      scrollRestoration.set(scrollTop);
-    }, 150),
-    [scrollTop],
-  );
+  const [scrollingRestored, setScrollingRestored] = useState(false);
 
   const {
     data: marketsPages,
@@ -48,15 +42,31 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     isLoading,
     hasNextPage,
     fetchNextPage,
-  } = useMarkets();
+  } = useMarkets(filters);
+
+  useEffect(
+    debounce(() => {
+      if (scrollingRestored) {
+        scrollRestoration.set(scrollTop);
+      }
+    }, 150),
+    [scrollTop, scrollingRestored],
+  );
 
   useEffect(() => {
     if (isLoadMarkerInView === true && hasNextPage === true) {
       fetchNextPage();
-    } else {
-      scrollTo(scrollRestoration.scrollTop);
     }
   }, [isLoadMarkerInView, hasNextPage]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (!scrollingRestored) {
+        scrollTo(scrollRestoration.scrollTop);
+        setScrollingRestored(true);
+      }
+    }, 50);
+  }, []);
 
   const [markets, setMarkets] = useState<
     (IndexedMarket<Context> & {
@@ -82,11 +92,16 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     }
   }, [marketsPages]);
 
+  useEffect(() => {
+    console.log("filters changed", filters);
+  }, [filters]);
+
   return (
     <div className={"pt-ztg-46 mb-[38px]" + className}>
       <MarketFilterSelection
-        initialFilters={filters}
-        onFiltersChange={setFilters}
+        onFiltersChange={(filters) => {
+          setFilters(filters);
+        }}
       />
       <div className="grid grid-cols-3 gap-[30px]">
         {markets?.map((market) => {
@@ -96,6 +111,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
               outcomes={market.outcomes}
               question={market.question}
               creation={market.creation}
+              img={market.img}
               prediction={market.prediction}
               baseAsset={market.pool?.baseAsset}
               volume={market.pool?.volume}
