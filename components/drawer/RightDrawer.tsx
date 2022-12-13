@@ -26,12 +26,10 @@ const ZTGSummary = observer(() => {
       </div>
 
       <div className="flex flex-col ml-ztg-12 mr-ztg-6">
-        <div className="font-space text-ztg-16-150 font-bold text-sky-1100 dark:text-white">
+        <div className=" text-ztg-16-150 font-bold text-sky-1100 dark:text-white">
           ZTG
         </div>
-        <div className="font-lato text-ztg-12-150 text-sky-600 w-ztg-90 ">
-          Zeitgeist
-        </div>
+        <div className=" text-ztg-12-150 text-sky-600 w-ztg-90 ">Zeitgeist</div>
       </div>
       {ztgInfo ? (
         <>
@@ -211,7 +209,7 @@ const RightDrawer = observer(() => {
               <div className="w-1/4 flex justify-center items-center">
                 <img src="/support.png" className="w-ztg-18 h-ztg-18" />
               </div>
-              <p className="font-bold text-sky-600 font-lato text-ztg-16-150">
+              <p className="font-bold text-sky-600  text-ztg-16-150">
                 Feedback and Support
               </p>
             </button>

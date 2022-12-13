@@ -121,20 +121,20 @@ const TradeSlip = observer(() => {
           >
             Sign Transactions
           </TransactionButton>
-          <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
+          <div className="flex items-center h-ztg-25 text-sky-600  text-ztg-12-150 justify-between">
             <div className="font-bold">Slippage Tolerance:</div>
             <SlippageSettingInput
               value={slippage.toString()}
               onChange={(val) => setSlippage(Number(val))}
             />
           </div>
-          <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
+          <div className="flex items-center h-ztg-25 text-sky-600  text-ztg-12-150 justify-between">
             <div className="font-bold">Network fee:</div>
             <div className="font-normal">
               {transactionFees?.div(ZTG).toFixed(4) ?? "--"}
             </div>
           </div>
-          <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
+          <div className="flex items-center h-ztg-25 text-sky-600  text-ztg-12-150 justify-between">
             <div className="font-bold">Total cost / gain:</div>
             <div className="font-normal">
               {sum.isNaN() ? "-- " : sum.div(ZTG).toFixed(2).toString()}{" "}

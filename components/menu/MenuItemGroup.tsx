@@ -35,7 +35,7 @@ const PopoutMenu = observer(({ groupName }: { groupName: string }) => {
       ref={menuRef}
       className="flex flex-col absolute w-ztg-200 left-28 -mt-ztg-56 z-ztg-2 bg-sky-100 shadow-md dark:bg-black rounded-ztg-10"
     >
-      <div className="font-lato pl-ztg-22 py-ztg-18 text-ztg-16-150 font-bold text-black dark:text-white border-b-1 border-sky-600">
+      <div className=" pl-ztg-22 py-ztg-18 text-ztg-16-150 font-bold text-black dark:text-white border-b-1 border-sky-600">
         {group.label}
       </div>
       <div className="b0 rounded-b-ztg-10">

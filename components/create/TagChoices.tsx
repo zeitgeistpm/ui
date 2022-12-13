@@ -30,10 +30,7 @@ export const TagButton: FC<TagButtonProps> = ({
       }}
       data-test="tagButton"
     >
-      <div
-        className="px-ztg-15 text-center font-lato font-bold"
-        data-test="tag"
-      >
+      <div className="px-ztg-15 text-center  font-bold" data-test="tag">
         {label}
       </div>
       <div
@@ -88,7 +85,7 @@ const TagChoices: FC<{ onTagsChange: (tags: string[]) => void }> = ({
       {/*   <div className="w-ztg-20 h-ztg-20 rounded-full center"> */}
       {/*     <Plus size={12} className="text-sky-600" /> */}
       {/*   </div> */}
-      {/*   <div className="text-ztg-10-150 flex-grow text-center mr-ztg-5 text-sky-600 font-lato font-bold"> */}
+      {/*   <div className="text-ztg-10-150 flex-grow text-center mr-ztg-5 text-sky-600  font-bold"> */}
       {/*     Add Tag */}
       {/*   </div> */}
       {/* </div> */}

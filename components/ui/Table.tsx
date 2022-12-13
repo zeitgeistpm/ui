@@ -134,7 +134,7 @@ const Cell = observer(
     if (value == null) {
       return (
         <td
-          className={`font-lato font-bold text-ztg-12-150 text-center ${base}`}
+          className={` font-bold text-ztg-12-150 text-center ${base}`}
           onClick={onClick}
           style={style}
         >
@@ -148,7 +148,7 @@ const Cell = observer(
       case "text":
         return (
           <td
-            className={`font-lato font-bold text-ztg-14-150 text-center ${base}`}
+            className={` font-bold text-ztg-14-150 text-center ${base}`}
             data-test="outcomeText"
             onClick={onClick}
             style={style}
@@ -193,7 +193,7 @@ const Cell = observer(
       case "paragraph":
         return (
           <td
-            className={`font-lato font-bold text-ztg-12-150 text-left ${base}`}
+            className={` font-bold text-ztg-12-150 text-left ${base}`}
             onClick={onClick}
             style={style}
           >
@@ -222,7 +222,7 @@ const Cell = observer(
         }
       case "address":
         return (
-          <td className={`font-space ${base}`} onClick={onClick} style={style}>
+          <td className={` ${base}`} onClick={onClick} style={style}>
             <div className="flex items-center">
               <Avatar address={typeof value === "string" ? value : ""} />
               <div className="font-mono font-semibold text-ztg-12-150 ml-ztg-10">
@@ -234,11 +234,7 @@ const Cell = observer(
       case "token":
         if (isTokenData(value)) {
           return (
-            <td
-              className={`font-space ${base}`}
-              onClick={onClick}
-              style={style}
-            >
+            <td className={` ${base}`} onClick={onClick} style={style}>
               <div className="flex items-center">
                 <div
                   className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2"
@@ -257,7 +253,7 @@ const Cell = observer(
       case "market":
         if (isMarketData(value)) {
           return (
-            <td className={`font-lato ${base}`} onClick={onClick} style={style}>
+            <td className={` ${base}`} onClick={onClick} style={style}>
               <div className="flex items-center">
                 <img
                   className="rounded-ztg-5 w-ztg-40 h-ztg-40 mr-ztg-10"
@@ -346,7 +342,7 @@ const Table = observer(
 
     const getHeaderClass = (column: TableColumn) => {
       const base =
-        "px-ztg-15 text-ztg-10-150 font-lato uppercase font-bold text-sky-600";
+        "px-ztg-15 text-ztg-10-150  uppercase font-bold text-sky-600";
 
       if (column.alignment) {
         return `${column.alignment} ${base}`;
@@ -548,7 +544,7 @@ const Table = observer(
             {onLoadMore && !hideLoadMore && (
               <div className="flex justify-center mt-ztg-16 mb-ztg-20">
                 <div
-                  className="uppercase font-lato text-sky-600 font-bold text-ztg-10-150"
+                  className="uppercase  text-sky-600 font-bold text-ztg-10-150"
                   role="button"
                   onClick={handleLoadMore}
                 >

@@ -1,3 +1,5 @@
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 const spacings = [...new Array(101)]
   .map((_, idx) => idx)
   .reduce((prev, val) => {
@@ -30,7 +32,7 @@ module.exports = {
     },
     fontFamily: {
       mono: [
-        "Roboto Mono",
+        "var(--font-roboto-mono)",
         "Space Mono",
         "Menlo",
         "ui-monospace",
@@ -43,6 +45,7 @@ module.exports = {
         "monospace",
       ],
       sans: [
+        "var(--font-inter)",
         "Roboto",
         "ui-sans-serif",
         "system-ui",
@@ -52,10 +55,9 @@ module.exports = {
         "Arial",
         "Noto Sans",
         "sans-serif",
+        ...defaultTheme.fontFamily.sans,
       ],
-      kanit: ["Kanit"],
-      lato: ["Lato"],
-      space: ["Space Grotesk"],
+      kanit: ["var(--font-kanit)"],
     },
     extend: {
       borderWidth: {

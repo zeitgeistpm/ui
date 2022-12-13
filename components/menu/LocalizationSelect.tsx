@@ -69,7 +69,7 @@ const LocalizationSelect: FC<LocalizationSelectProps> = observer(
         )}
         <div
           onClick={() => setMenuOpen(!menuOpen)}
-          className={`flex items-center cursor-pointer w-ztg-118 relative font-lato ${className}`}
+          className={`flex items-center cursor-pointer w-ztg-118 relative  ${className}`}
           {...restProps}
         >
           <div className="w-ztg-34 h-ztg-34 center text-ztg-12-120 font-bold rounded-full text-white  bg-ztg-blue">

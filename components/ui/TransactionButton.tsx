@@ -50,7 +50,7 @@ const TransactionButton: FC<TransactionButtonProps> = observer(
     return (
       <button
         className={`ztg-transition bg-ztg-blue text-white focus:outline-none disabled:opacity-20 disabled:cursor-default 
-        rounded-full w-full font-space font-bold text-ztg-16-150 h-ztg-40 ${className}`}
+        rounded-full w-full  font-bold text-ztg-16-150 h-ztg-40 ${className}`}
         onClick={(e) => click(e)}
         disabled={isDisabled()}
         data-test={dataTest}

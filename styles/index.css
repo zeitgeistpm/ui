@@ -208,7 +208,6 @@ input[type="number"] {
 
 body {
   --topbar-height: 76px;
-  @apply font-lato;
 }
 
 .topbar {
@@ -275,13 +274,11 @@ td:last-child {
 }
 
 .header {
-  @apply font-space;
   @apply font-bold;
   @apply text-ztg-20-150;
 }
 
 .sub-header {
-  @apply font-space;
   @apply font-medium;
   @apply text-ztg-20-150;
 }
