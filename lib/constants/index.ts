@@ -36,11 +36,11 @@ export const DEFAULT_DEADLINES: MarketDeadlines = {
 };
 
 export const endpoints: EndpointOption[] = [
-  {
-    value: "wss://rpc-0.zeitgeist.pm/",
-    label: "ZeitgeistPM",
-    parachain: SupportedParachain.KUSAMA,
-  },
+  // {
+  //   value: "wss://rpc-0.zeitgeist.pm/",
+  //   label: "ZeitgeistPM",
+  //   parachain: SupportedParachain.KUSAMA,
+  // },
   {
     value: "wss://zeitgeist-rpc.dwellir.com/",
     label: "Dwellir",

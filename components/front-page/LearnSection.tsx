@@ -35,7 +35,7 @@ const LearnCard = ({
 const LearnSection = () => {
   return (
     <div>
-      <div className="font-lato font-bold text-[28px] mb-[30px]">
+      <div className=" font-bold text-[28px] mb-[30px]">
         Welcome to Zeitgeist
       </div>
       <div className="flex flex-col md:flex-row gap-[30px]">

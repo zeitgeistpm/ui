@@ -162,7 +162,7 @@ const DisputeBox = observer(
     return (
       <div className="py-ztg-10 rounded-ztg-10 text-sky-600 bg-white dark:bg-sky-1000">
         <div className="flex items-center px-ztg-16">
-          <div className="font-space font-bold text-ztg-14-150 h-ztg-25">
+          <div className=" font-bold text-ztg-14-150 h-ztg-25">
             Dispute outcome
           </div>
         </div>
@@ -183,7 +183,7 @@ const DisputeBox = observer(
                     setIsSelectView(true);
                   }}
                 />
-                <div className="font-lato text-ztg-10-150 mb-ztg-2">
+                <div className=" text-ztg-10-150 mb-ztg-2">
                   Bond will start at {disputeBond} {tokenSymbol}, increasing by{" "}
                   {disputeFactor} {tokenSymbol} for each dispute
                 </div>
@@ -191,7 +191,7 @@ const DisputeBox = observer(
                   <div className="w-ztg-108">
                     <div className="flex h-ztg-20">
                       <div className="w-ztg-20 h-ztg-20 border-2 border-sky-600 rounded-full mr-ztg-8 bg-ztg-blue"></div>
-                      <div className="font-space text-base font-bold flex items-center text-black dark:text-white">
+                      <div className=" text-base font-bold flex items-center text-black dark:text-white">
                         {tokenSymbol}
                       </div>
                     </div>
@@ -207,7 +207,7 @@ const DisputeBox = observer(
                   disabled
                 />
                 {bond !== disputeBond && bond !== undefined ? (
-                  <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600 mb-ztg-10">
+                  <div className=" h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600 mb-ztg-10">
                     <span>Previous Bond:</span>
                     <span className="font-mono">{bond - disputeFactor}</span>
                   </div>

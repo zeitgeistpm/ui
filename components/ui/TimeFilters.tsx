@@ -41,7 +41,7 @@ const TimeFilters = observer(
         {filters.map((filter, index) => (
           <span
             key={index}
-            className={`text-sky-600 font-space text-ztg-10-150 rounded-ztg-100 w-[47px] flex justify-center ${
+            className={`text-sky-600  text-ztg-10-150 rounded-ztg-100 w-[47px] flex justify-center ${
               filter.label === value.label
                 ? "bg-sky-300 dark:bg-black"
                 : "bg-sky-100 dark:bg-sky-800"

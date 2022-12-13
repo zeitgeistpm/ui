@@ -28,11 +28,12 @@ export const poolRowDataFromOutcomes = (
   initialAmount: string = "100",
 ): PoolAssetRowData[] => {
   const amountNum = +initialAmount;
+  const baseWeight = 64;
 
   const numOutcomes = outcomes.length;
 
   const ratio = 1 / numOutcomes;
-  const weight = ratio * 100;
+  const weight = ratio * baseWeight;
 
   return [
     ...outcomes.map((outcome) => {
@@ -51,7 +52,7 @@ export const poolRowDataFromOutcomes = (
     {
       assetColor: ZTG_BLUE_COLOR,
       asset: tokenSymbol,
-      weight: "64",
+      weight: baseWeight.toString(),
       amount: "100",
       price: {
         price: new Decimal(1),
@@ -231,8 +232,8 @@ const PoolSettings: FC<{
     <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
       <Table data={tableData} columns={columns} />
       <div className="mt-[20px] mb-[40px]">
-        <div className="text-ztg-16-150 font-bold font-lato">Pool Fees*</div>
-        <p className="text-ztg-14-150 mb-[30px] mt-[10px] text-sky-600 font-lato">
+        <div className="text-ztg-16-150 font-bold ">Pool Fees*</div>
+        <p className="text-ztg-14-150 mb-[30px] mt-[10px] text-sky-600 ">
           High fees will allow liquidity providers to collect more value from a
           given trade. However, high fees may also reduce market participants.
         </p>

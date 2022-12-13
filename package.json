@@ -27,6 +27,7 @@
     "@babel/helper-compilation-targets": "^7.19.3",
     "@material-ui/core": "^4.12.3",
     "@material-ui/lab": "^4.0.0-alpha.60",
+    "@next/font": "13.0.3",
     "@plaiceholder/next": "^2.5.0",
     "@polkadot/extension-dapp": "^0.44.6",
     "@polkadot/ui-keyring": "^2.4.1",

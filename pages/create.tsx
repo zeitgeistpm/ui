@@ -35,8 +35,8 @@ import { JSONObject } from "lib/types";
 import { toBase64 } from "lib/util";
 import { extrinsicCallback } from "lib/util/tx";
 import { calculateMarketCost } from "lib/util/market";
-import { DEFAULT_DEADLINES, NUM_BLOCKS_IN_DAY, ZTG } from "lib/constants";
-import { Input, TextArea } from "components/ui/inputs";
+import { NUM_BLOCKS_IN_DAY, ZTG } from "lib/constants";
+import { Input } from "components/ui/inputs";
 import OutcomesField from "components/create/OutcomesField";
 import MarketSlugField from "components/create/MarketSlugField";
 import TagChoices from "components/create/TagChoices";
@@ -739,7 +739,7 @@ const CreatePage: NextPage = observer(() => {
             onChange={(deadlines) => onChangeDeadlines(deadlines)}
           />
         </div>
-        <div className="flex h-ztg-22 items-center text-sky-600 font-lato">
+        <div className="flex h-ztg-22 items-center text-sky-600 ">
           <div className="w-ztg-20 h-ztg-20">
             <AlertTriangle size={20} />
           </div>
@@ -767,7 +767,7 @@ const CreatePage: NextPage = observer(() => {
               changeAdvised(!formData.advised);
             }}
           />
-          <div className="ml-ztg-15 font-lato text-ztg-10-150 text-sky-600">
+          <div className="ml-ztg-15  text-ztg-10-150 text-sky-600">
             An advised market means a smaller deposit, but requires approval
             from the advisory committee before becoming active.
           </div>
@@ -785,7 +785,7 @@ const CreatePage: NextPage = observer(() => {
               />
               <label
                 htmlFor="deployPool"
-                className="text-ztg-20-150 font-bold font-space"
+                className="text-ztg-20-150 font-bold "
               >
                 Deploy Liquidity Pool
               </label>

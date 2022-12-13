@@ -80,7 +80,7 @@ const IndexPage: NextPage<{
         >
           <Link href="/markets/">
             <div
-              className="font-lato text-[20px] h-[58px] w-[323px] center border-2 rounded-ztg-100 bg-white"
+              className=" text-[20px] h-[58px] w-[323px] center border-2 rounded-ztg-100 bg-white"
               style={{
                 boxShadow:
                   "0px 70px 28px rgba(0, 0, 0, 0.01), 0px 40px 24px rgba(0, 0, 0, 0.05), 0px 18px 18px rgba(0, 0, 0, 0.09), 0px 4px 10px rgba(0, 0, 0, 0.1), 0px 0px 0px rgba(0, 0, 0, 0.1)",

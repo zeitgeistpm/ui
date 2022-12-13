@@ -25,7 +25,7 @@ const MarketCardOverlay = ({
     >
       <div className="flex flex-col mb-[25px]">
         <div className="flex flex-row justify-between">
-          <div className="font-lato font-bold text-ztg-16-150">
+          <div className=" font-bold text-ztg-16-150">
             {outcomes.length} Outcomes
           </div>
           <X

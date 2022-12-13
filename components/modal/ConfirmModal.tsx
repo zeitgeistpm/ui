@@ -27,13 +27,13 @@ const ConfirmModal: FC<ConfirmModalProps> = observer(
         {children}
         <div className="flex">
           <button
-            className="rounded-ztg-10 h-ztg-50 center bg-ztg-blue text-white w-full h-ztg-40 mr-ztg-15 font-lato font-medium text-ztg-16-150 focus:outline-none"
+            className="rounded-ztg-10 h-ztg-50 center bg-ztg-blue text-white w-full h-ztg-40 mr-ztg-15  font-medium text-ztg-16-150 focus:outline-none"
             onClick={() => confirm()}
           >
             {confirmButtonText}
           </button>
           <button
-            className="rounded-ztg-10 h-ztg-50 center bg-border-light dark:bg-sky-700 text-white w-full h-ztg-40 font-lato font-medium text-ztg-16-150 focus:outline-none"
+            className="rounded-ztg-10 h-ztg-50 center bg-border-light dark:bg-sky-700 text-white w-full h-ztg-40  font-medium text-ztg-16-150 focus:outline-none"
             onClick={() => modalStore.closeModal()}
           >
             {cancelButtonText}
