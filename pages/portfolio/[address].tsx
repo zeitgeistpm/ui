@@ -10,7 +10,7 @@ import { useObservable } from "lib/hooks";
 import TimeSeriesChart, { ChartData } from "components/ui/TimeSeriesChart";
 import InfoBoxes from "components/ui/InfoBoxes";
 import { useMarketsStore } from "lib/stores/MarketsStore";
-import TimeFilters, { TimeFilter } from "components/ui/TimeFilters";
+import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import PortfolioCard, { Position } from "components/account/PortfolioCard";
 import RedeemAllButton from "components/account/RedeemAllButton";
@@ -30,7 +30,9 @@ const Portfolio: NextPage = observer(() => {
   const [chartData, setChartData] = useState<ChartData[]>([]);
   const [positions, setPositions] = useState<Position[]>([]);
   const [message, setMessage] = useState<string>();
-  const [startTime, setStartTime] = useState<string>();
+  const [startTime, setStartTime] = useState<TimeFilter>(
+    filters.find((f) => f.label === "Month"),
+  );
   const [updateNum, setUpdateNum] = useState(0);
 
   const incrementUpdateNum = () => {
@@ -51,8 +53,12 @@ const Portfolio: NextPage = observer(() => {
   useEffect(() => {
     if (!address || isValidPolkadotAddress(address) === false) return;
     (async () => {
+      console.log(startTime);
       const historicalValues =
-        await store.sdk.models.getAccountHistoricalValues(address, startTime);
+        await store.sdk.models.getAccountHistoricalValues(
+          address,
+          startTime.time,
+        );
 
       // push extra record to ensure line continues to current time
       if (historicalValues.length > 0) {
@@ -259,7 +265,7 @@ const Portfolio: NextPage = observer(() => {
   };
 
   const handleTimeFilterClick = (filter: TimeFilter) => {
-    setStartTime(filter.time);
+    setStartTime(filter);
   };
 
   return (
@@ -273,7 +279,7 @@ const Portfolio: NextPage = observer(() => {
         <>
           <div className="-ml-ztg-22 mb-ztg-30">
             <div className="flex justify-end -mt-ztg-30">
-              <TimeFilters onClick={handleTimeFilterClick} />
+              <TimeFilters value={startTime} onClick={handleTimeFilterClick} />
             </div>
             <TimeSeriesChart
               data={chartData}
