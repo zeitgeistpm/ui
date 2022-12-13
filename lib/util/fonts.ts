@@ -17,7 +17,7 @@ export const inter = Inter({
 });
 
 export const kanit = Kanit({
-  subsets: ["latin", "latin-ext", "thai", "vietnamese"],
+  subsets: ["latin"],
   weight: "700",
   variable: "--font-kanit",
 });
