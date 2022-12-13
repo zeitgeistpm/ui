@@ -36,8 +36,8 @@ const getFilterValuesByType = (
 const orderByMap = {
   [MarketsOrderBy.Newest]: MarketOrderByInput.MarketIdDesc,
   [MarketsOrderBy.Oldest]: MarketOrderByInput.MarketIdAsc,
-  [MarketsOrderBy.MostVolume]: MarketOrderByInput.PoolVolumeAsc,
-  [MarketsOrderBy.LeastVolume]: MarketOrderByInput.PoolVolumeDesc,
+  [MarketsOrderBy.MostVolume]: MarketOrderByInput.PoolVolumeDesc,
+  [MarketsOrderBy.LeastVolume]: MarketOrderByInput.PoolVolumeAsc,
 };
 
 export const useMarkets = (
@@ -109,8 +109,6 @@ export const useMarkets = (
     queryFn: fetcher,
     enabled: Boolean(sdk) && isIndexedSdk(sdk),
     getNextPageParam: (lastPage) => lastPage.next,
-    refetchOnMount: false,
-    refetchInterval: 12000,
   });
 
   return query;

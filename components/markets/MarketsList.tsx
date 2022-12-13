@@ -1,5 +1,6 @@
 import { Context, IndexedMarket } from "@zeitgeistpm/sdk-next";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import Decimal from "decimal.js";
 import { useInView } from "react-intersection-observer";
 import { observer } from "mobx-react";
 import { makeAutoObservable } from "mobx";
@@ -16,6 +17,7 @@ import MarketFilterSelection from "./market-filter";
 import MarketCard from "./market-card";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import { filterTypes } from "lib/constants/market-filter";
+import { ZTG } from "lib/constants";
 
 export type MarketsListProps = {
   className?: string;
@@ -128,6 +130,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       />
       <div className="grid grid-cols-3 gap-[30px]">
         {markets?.map((market) => {
+          const volume = market.pool?.volume ?? 0;
           return (
             <MarketCard
               marketId={market.marketId}
@@ -137,7 +140,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
               img={market.img}
               prediction={market.prediction}
               baseAsset={market.pool?.baseAsset}
-              volume={market.pool?.volume}
+              volume={new Decimal(volume).div(ZTG).toNumber()}
               key={`market-${market.marketId}`}
             />
           );
