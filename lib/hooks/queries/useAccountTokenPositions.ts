@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
-import { ChainTime } from "@zeitgeistpm/utility/dist/time";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "account-token-positions";

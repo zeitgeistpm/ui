@@ -1,24 +1,26 @@
-import { concatWith, from } from "rxjs";
-import { observer } from "mobx-react";
-import { NextPage } from "next";
-import React, { useEffect, useMemo, useState } from "react";
+import { fromPrimitive } from "@zeitgeistpm/sdk-next";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
-import { useRouter } from "next/router";
-import { formatBal, isValidPolkadotAddress } from "lib/util";
-import { useStore } from "lib/stores/Store";
-import { useObservable } from "lib/hooks";
-import TimeSeriesChart, { ChartData } from "components/ui/TimeSeriesChart";
-import InfoBoxes from "components/ui/InfoBoxes";
-import { useMarketsStore } from "lib/stores/MarketsStore";
-import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
-import AssetActionButtons from "components/assets/AssetActionButtons";
 import PortfolioCard, { Position } from "components/account/PortfolioCard";
 import RedeemAllButton from "components/account/RedeemAllButton";
-import { get24HrPriceChange, getAssetIds } from "lib/util/market";
+import AssetActionButtons from "components/assets/AssetActionButtons";
+import InfoBoxes from "components/ui/InfoBoxes";
+import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
+import TimeSeriesChart, { ChartData } from "components/ui/TimeSeriesChart";
 import { DAY_SECONDS, ZTG } from "lib/constants";
-import { usePoolsStore } from "lib/stores/PoolsStore";
+import { useObservable } from "lib/hooks";
 import { useAccountBalanceHistory } from "lib/hooks/queries/useAccountBalanceHistory";
 import { useAccountTokenPositions } from "lib/hooks/queries/useAccountTokenPositions";
+import { useAssetsPriceHistory } from "lib/hooks/queries/useAssetsPriceHistory";
+import { useMarketsStore } from "lib/stores/MarketsStore";
+import { usePoolsStore } from "lib/stores/PoolsStore";
+import { useStore } from "lib/stores/Store";
+import { formatBal, isValidPolkadotAddress } from "lib/util";
+import { get24HrPriceChange, getAssetIds } from "lib/util/market";
+import { observer } from "mobx-react";
+import { NextPage } from "next";
+import { useRouter } from "next/router";
+import { useEffect, useMemo, useState } from "react";
+import { concatWith, from } from "rxjs";
 
 const Portfolio: NextPage = observer(() => {
   const store = useStore();
@@ -53,6 +55,13 @@ const Portfolio: NextPage = observer(() => {
 
   const balanceHistory = useAccountBalanceHistory(address, timeFilter);
   const accountTokenPositions = useAccountTokenPositions(address);
+
+  const assetPricesHistoryLookup = useAssetsPriceHistory(
+    accountTokenPositions.data?.map(({ asset }) => fromPrimitive(asset)),
+    {
+      startTimeStamp: dateOneWeekAgo,
+    },
+  );
 
   const chartData = useMemo<ChartData[]>(() => {
     if (balanceHistory?.data) {
@@ -97,10 +106,6 @@ const Portfolio: NextPage = observer(() => {
         setMessage(null);
       }
 
-      const dateOneWeekAgo = new Date(
-        new Date().getTime() - DAY_SECONDS * 28 * 1000,
-      ).toISOString();
-
       const positionPromises = accountTokenPositions.data.map(
         async (p, index) => {
           const { asset, balance } = p;
@@ -128,16 +133,7 @@ const Portfolio: NextPage = observer(() => {
 
           if (market.poolExists) {
             const poolId = market.pool.poolId;
-            const prices = await store.sdk.models.getAssetPriceHistory(
-              market.id,
-              //@ts-ignore
-              asset.isCategoricalOutcome
-                ? //@ts-ignore
-                  asset.asCategoricalOutcome?.[1]
-                : //@ts-ignore
-                  asset.asScalarOutcome?.[1].toString(),
-              dateOneWeekAgo,
-            );
+            const prices = assetPricesHistoryLookup.data.get(asset) ?? [];
             const priceHistory = prices.map((record) => {
               return {
                 time: new Date(record.timestamp).getTime(),
@@ -281,5 +277,9 @@ const Portfolio: NextPage = observer(() => {
     </>
   );
 });
+
+const dateOneWeekAgo = new Date(
+  new Date().getTime() - DAY_SECONDS * 28 * 1000,
+).toISOString();
 
 export default Portfolio;
