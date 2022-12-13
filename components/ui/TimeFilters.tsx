@@ -1,6 +1,5 @@
 import { DAY_SECONDS } from "lib/constants";
 import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
 
 export interface TimeFilter {
   label: FilterResolution;
@@ -34,8 +33,6 @@ const TimeFilters = observer(
     value: TimeFilter;
     onClick: (filter: TimeFilter) => void;
   }) => {
-    const [selectedFilterIndex, setSelectedFilterIndex] = useState<number>();
-
     return (
       <div className="flex gap-x-2 mb-1">
         {filters.map((filter, index) => (
