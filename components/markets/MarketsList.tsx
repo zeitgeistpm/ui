@@ -11,6 +11,7 @@ import { useStore } from "lib/stores/Store";
 import { useMarkets } from "lib/hooks/queries/useMarkets";
 import { MarketOutcomes } from "lib/types/markets";
 import { useContentScrollTop } from "components/context/ContentDimensionsContext";
+import { useContentWidth } from "components/context/ContentDimensionsContext";
 import { MarketFilter } from "lib/types/market-filter";
 import MarketFilterSelection from "./market-filter";
 import MarketCard from "./market-card";
@@ -35,6 +36,8 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
 
   const [scrollTop, scrollTo] = useContentScrollTop();
   const [scrollingRestored, setScrollingRestored] = useState(false);
+  const [gridColsClass, setGridColsClass] = useState<string>("grid-cols-3");
+  const contentWidth = useContentWidth();
 
   const {
     data: marketsPages,
@@ -96,6 +99,16 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     console.log("filters changed", filters);
   }, [filters]);
 
+  useEffect(() => {
+    if (contentWidth <= 620) {
+      return setGridColsClass("grid-cols-1");
+    }
+    if (contentWidth <= 915) {
+      return setGridColsClass("grid-cols-2");
+    }
+    setGridColsClass("grid-cols-3");
+  }, [contentWidth]);
+
   return (
     <div className={"pt-ztg-46 mb-[38px]" + className}>
       <MarketFilterSelection
@@ -103,7 +116,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
           setFilters(filters);
         }}
       />
-      <div className="grid grid-cols-3 gap-[30px]">
+      <div className={`grid grid-cols-3 gap-[30px] ${gridColsClass}`}>
         {markets?.map((market) => {
           return (
             <MarketCard
