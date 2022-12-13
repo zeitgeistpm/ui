@@ -42,6 +42,7 @@ const orderByMap = {
 
 export const useMarkets = (
   orderBy: MarketsOrderBy,
+  withLiquidityOnly = false,
   filters?: MarketFilter[],
 ) => {
   const [sdk, id] = useSdkv2();
@@ -69,6 +70,7 @@ export const useMarkets = (
         status_not_in: ["Destroyed"],
         status_in: statuses.length === 0 ? undefined : statuses,
         tags_containsAny: tags.length === 0 ? undefined : tags,
+        pool_isNull: withLiquidityOnly ? false : undefined,
         pool:
           currencies.length === 0
             ? undefined
@@ -105,7 +107,7 @@ export const useMarkets = (
   };
 
   const query = useInfiniteQuery({
-    queryKey: [id, rootKey, hashFilters(filters), orderBy],
+    queryKey: [id, rootKey, hashFilters(filters), orderBy, withLiquidityOnly],
     queryFn: fetcher,
     enabled: Boolean(sdk) && isIndexedSdk(sdk),
     getNextPageParam: (lastPage) => lastPage.next,

@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown } from "react-feather";
 import ReactSelect from "react-select";
 import {
@@ -136,17 +136,31 @@ const SortBySelect = observer(
   },
 );
 
+type MarketFilterOptionsProps = {
+  add: (filter: MarketFilter) => void;
+  ordering: MarketsOrderBy;
+  onOrderingChange: (ordering: MarketsOrderBy) => void;
+  withLiquidityOnly: boolean;
+  onWithLiquidityOnlyChange: (liqudityOnly: boolean) => void;
+};
+
 const MarketFilterOptions = ({
   add,
-  onOrderingChange,
   ordering,
-}: {
-  add: (filter: MarketFilter) => void;
-  onOrderingChange: (ordering: MarketsOrderBy) => void;
-  ordering: MarketsOrderBy;
-}) => {
+  onOrderingChange,
+  withLiquidityOnly,
+  onWithLiquidityOnlyChange,
+}: MarketFilterOptionsProps) => {
   return (
     <div className="w-full flex justify-end items-center gap-ztg-5">
+      <label>
+        <input
+          type="checkbox"
+          checked={withLiquidityOnly}
+          onChange={(e) => onWithLiquidityOnlyChange(e.target.checked)}
+        />
+        Liquidity only
+      </label>
       <DropDownSelect
         label="Category"
         options={marketTagFilterOptions}
@@ -200,12 +214,15 @@ const getFiltersFromQueryState = (
 const MarketFilterSelection = ({
   onFiltersChange,
   onOrderingChange,
+  onWithLiquidityOnlyChange,
 }: {
   onFiltersChange: (filters: MarketFilter[]) => void;
   onOrderingChange: (ordering: MarketsOrderBy) => void;
+  onWithLiquidityOnlyChange: (liqudityOnly: boolean) => void;
 }) => {
   const [activeFilters, setActiveFilters] = useState<MarketFilter[]>();
   const [activeOrdering, setActiveOrdering] = useState<MarketsOrderBy>();
+  const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>(false);
   const queryState = useMarketsUrlQuery();
 
   const add = (filter: MarketFilter) => {
@@ -246,6 +263,10 @@ const MarketFilterSelection = ({
   }, [activeFilters]);
 
   useEffect(() => {
+    onWithLiquidityOnlyChange(withLiquidityOnly);
+  }, [withLiquidityOnly]);
+
+  useEffect(() => {
     if (activeOrdering == null) {
       return;
     }
@@ -258,8 +279,10 @@ const MarketFilterSelection = ({
     if (queryState && !initialized) {
       const filters = getFiltersFromQueryState(queryState);
       const ordering = queryState.ordering;
+      const liqudityOnly = queryState.liquidityOnly;
       setActiveFilters(filters);
       setActiveOrdering(ordering);
+      setWithLiquidityOnly(liqudityOnly);
       setInitialized(true);
     }
   }, [queryState]);
@@ -270,6 +293,8 @@ const MarketFilterSelection = ({
         add={add}
         onOrderingChange={setActiveOrdering}
         ordering={activeOrdering}
+        withLiquidityOnly={withLiquidityOnly}
+        onWithLiquidityOnlyChange={setWithLiquidityOnly}
       />
       <MarketActiveFilters
         filters={activeFilters}

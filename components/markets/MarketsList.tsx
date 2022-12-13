@@ -30,7 +30,11 @@ const scrollRestoration = makeAutoObservable({
   },
 });
 
-const useChangeQuery = (filters?: MarketFilter[], orderBy?: MarketsOrderBy) => {
+const useChangeQuery = (
+  filters?: MarketFilter[],
+  orderBy?: MarketsOrderBy,
+  withLiquidityOnly?: boolean,
+) => {
   const queryState = useMarketsUrlQuery();
 
   useEffect(() => {
@@ -42,7 +46,7 @@ const useChangeQuery = (filters?: MarketFilter[], orderBy?: MarketsOrderBy) => {
       const filterByType = filters.filter((f) => f.type === filterType);
       newFilters[filterType] = filterByType.map((f) => f.value);
     }
-    queryState.updateQuery({
+    queryState?.updateQuery({
       filters: newFilters,
     });
   }, [filters]);
@@ -51,8 +55,15 @@ const useChangeQuery = (filters?: MarketFilter[], orderBy?: MarketsOrderBy) => {
     if (orderBy == null) {
       return;
     }
-    queryState.updateQuery({ ordering: orderBy });
+    queryState?.updateQuery({ ordering: orderBy });
   }, [orderBy]);
+
+  useEffect(() => {
+    if (withLiquidityOnly == null) {
+      return;
+    }
+    queryState?.updateQuery({ liquidityOnly: withLiquidityOnly });
+  }, [withLiquidityOnly]);
 };
 
 const MarketsList = observer(({ className = "" }: MarketsListProps) => {
@@ -60,13 +71,14 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const { markets: marketsStore } = store;
   const [filters, setFilters] = useState<MarketFilter[]>();
   const [orderBy, setOrderBy] = useState<MarketsOrderBy>();
+  const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
 
   const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
   const [scrollTop, scrollTo] = useContentScrollTop();
   const [scrollingRestored, setScrollingRestored] = useState(false);
 
-  useChangeQuery(filters, orderBy);
+  useChangeQuery(filters, orderBy, withLiquidityOnly);
 
   const {
     data: marketsPages,
@@ -74,7 +86,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     isLoading,
     hasNextPage,
     fetchNextPage,
-  } = useMarkets(orderBy, filters);
+  } = useMarkets(orderBy, withLiquidityOnly, filters);
 
   useEffect(
     debounce(() => {
@@ -127,6 +139,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       <MarketFilterSelection
         onFiltersChange={setFilters}
         onOrderingChange={setOrderBy}
+        onWithLiquidityOnlyChange={setWithLiquidityOnly}
       />
       <div className="grid grid-cols-3 gap-[30px]">
         {markets?.map((market) => {

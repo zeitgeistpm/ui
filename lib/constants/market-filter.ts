@@ -44,6 +44,7 @@ export const defaultMarketsQueryState: MarketsListQuery = {
     currency: [],
   },
   ordering: MarketsOrderBy.Newest,
+  liquidityOnly: true,
 };
 
 export const marketsOrderByOptions: MarketOrderByOption[] = Object.values(

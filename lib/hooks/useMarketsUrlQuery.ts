@@ -63,7 +63,8 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
     (update) => {
       const filters = update.filters ?? query.filters;
       const ordering = update.ordering ?? query.ordering;
-      const newQuery = { filters, ordering };
+      const liquidityOnly = update.liquidityOnly ?? query.liquidityOnly;
+      const newQuery = { filters, ordering, liquidityOnly };
       router.replace({
         query: toString(newQuery),
       });
@@ -86,7 +87,7 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
 };
 
 const toString = (query: MarketsListQuery) => {
-  const { filters, ordering } = query;
+  const { filters, ordering, liquidityOnly } = query;
 
   const filtersEntries = filterTypes.map((type) => [
     type,
@@ -104,7 +105,9 @@ const toString = (query: MarketsListQuery) => {
 
   const orderingQueryStr = `ordering=${ordering}`;
 
-  return [filtersQueryStr, orderingQueryStr].join("&");
+  const liquidityOnlyQueryStr = `liquidityOnly=${liquidityOnly}`;
+
+  return [filtersQueryStr, orderingQueryStr, liquidityOnlyQueryStr].join("&");
 };
 
 const parse = (rawQuery: ParsedUrlQuery): MarketsListQuery => {
@@ -115,6 +118,7 @@ const parse = (rawQuery: ParsedUrlQuery): MarketsListQuery => {
   };
 
   const ordering: MarketsOrderBy = rawQuery["ordering"] as MarketsOrderBy;
+  const liquidityOnly = rawQuery["liquidityOnly"] === "true";
 
   for (const filterType of filterTypes) {
     if (rawQuery[filterType]) {
@@ -127,6 +131,7 @@ const parse = (rawQuery: ParsedUrlQuery): MarketsListQuery => {
   return {
     filters,
     ordering: ordering ?? MarketsOrderBy.Newest,
+    liquidityOnly,
   };
 };
 

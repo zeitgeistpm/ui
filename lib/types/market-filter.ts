@@ -70,4 +70,5 @@ export type MarketsListQuery = {
     [key in MarketFilterType]?: string[];
   };
   ordering: MarketsOrderBy;
+  liquidityOnly: boolean;
 };
