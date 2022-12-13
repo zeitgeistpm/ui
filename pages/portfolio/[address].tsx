@@ -1,7 +1,7 @@
 import { concatWith, from } from "rxjs";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 import { useRouter } from "next/router";
 import { formatBal, isValidPolkadotAddress } from "lib/util";
@@ -17,6 +17,8 @@ import RedeemAllButton from "components/account/RedeemAllButton";
 import { get24HrPriceChange, getAssetIds } from "lib/util/market";
 import { DAY_SECONDS, ZTG } from "lib/constants";
 import { usePoolsStore } from "lib/stores/PoolsStore";
+import { useAccountBalanceHistory } from "lib/hooks/queries/useAccountBalanceHistory";
+import { useAccountTokenPositions } from "lib/hooks/queries/useAccountTokenPositions";
 
 const Portfolio: NextPage = observer(() => {
   const store = useStore();
@@ -27,7 +29,6 @@ const Portfolio: NextPage = observer(() => {
     ? router.query.address[0]
     : router.query.address;
 
-  const [chartData, setChartData] = useState<ChartData[]>([]);
   const [positions, setPositions] = useState<Position[]>([]);
   const [message, setMessage] = useState<string>();
   const [timeFilter, setTimeFilter] = useState<TimeFilter>(
@@ -50,31 +51,27 @@ const Portfolio: NextPage = observer(() => {
     500,
   );
 
-  useEffect(() => {
-    if (!address || isValidPolkadotAddress(address) === false) return;
-    (async () => {
-      const historicalValues =
-        await store.sdk.models.getAccountHistoricalValues(
-          address,
-          timeFilter.time,
-        );
+  const balanceHistory = useAccountBalanceHistory(address, timeFilter);
+  const accountTokenPositions = useAccountTokenPositions(address);
 
-      // push extra record to ensure line continues to current time
-      if (historicalValues.length > 0) {
-        historicalValues.unshift({
-          pvalue: historicalValues[0].pvalue,
-          timestamp: new Date().toISOString(),
-        });
-      }
-
-      const chart: ChartData[] = historicalValues.map((val) => ({
+  const chartData = useMemo<ChartData[]>(() => {
+    if (balanceHistory?.data) {
+      let chartData = balanceHistory.data.map((val) => ({
         v: val.pvalue / ZTG,
         t: new Date(val.timestamp).getTime(),
       }));
 
-      setChartData(chart);
-    })();
-  }, [timeFilter]);
+      if (chartData.length > 0) {
+        chartData.unshift({
+          v: chartData[0].v,
+          t: new Date().getTime(),
+        });
+      }
+
+      return chartData;
+    }
+    return [];
+  }, [balanceHistory.data]);
 
   useEffect(() => {
     if (!address) {
@@ -91,27 +88,9 @@ const Portfolio: NextPage = observer(() => {
     }
 
     (async () => {
-      const entries = await store.sdk.api.query.tokens.accounts.entries(
-        address,
-      );
+      if (!accountTokenPositions?.data) return;
 
-      const positions = entries
-        .map((entry) => {
-          const [storageKey, data] = entry;
-          const [, asset] = storageKey.args;
-          if (
-            (!(asset as unknown as Asset).isCategoricalOutcome &&
-              !(asset as unknown as Asset).isScalarOutcome) ||
-            //@ts-ignore
-            data.free.toNumber() === 0
-          ) {
-            return;
-          }
-          return { asset, data };
-        })
-        .filter((v) => v != null);
-
-      if (positions.length === 0) {
+      if (accountTokenPositions?.data.length === 0) {
         setMessage("You don't have any positions");
         return;
       } else {
@@ -122,86 +101,88 @@ const Portfolio: NextPage = observer(() => {
         new Date().getTime() - DAY_SECONDS * 28 * 1000,
       ).toISOString();
 
-      const positionPromises = positions.map(async (p, index) => {
-        const { asset, data } = p;
-        const { marketId, assetId } = getAssetIds(asset as unknown as Asset);
-        const assetIdJson = asset.toJSON();
+      const positionPromises = accountTokenPositions.data.map(
+        async (p, index) => {
+          const { asset, balance } = p;
+          const { marketId, assetId } = getAssetIds(asset as unknown as Asset);
+          const assetIdJson = asset.toJSON();
 
-        const market = await marketsStore.getMarket(marketId.toNumber());
-        if (!market) return;
-        //@ts-ignore
-        const amount = formatBal(data.free.toString());
-        const assetCount = market.marketOutcomes.length - 1;
+          const market = await marketsStore.getMarket(marketId.toNumber());
+          if (!market) return;
+          //@ts-ignore
+          const amount = formatBal(balance.free.toString());
+          const assetCount = market.marketOutcomes.length - 1;
 
-        let outcome: any;
-        const metadata = market.outcomesMetadata[assetId];
-        if (typeof metadata === "string") {
-          outcome = {
-            name: metadata,
-            ticker: metadata,
-            color: "#ff0054",
-          };
-        } else {
-          metadata["color"] = metadata["color"] || "#ffffff";
-          outcome = metadata;
-        }
-
-        if (market.poolExists) {
-          const poolId = market.pool.poolId;
-          const prices = await store.sdk.models.getAssetPriceHistory(
-            market.id,
-            //@ts-ignore
-            asset.isCategoricalOutcome
-              ? //@ts-ignore
-                asset.asCategoricalOutcome?.[1]
-              : //@ts-ignore
-                asset.asScalarOutcome?.[1].toString(),
-            dateOneWeekAgo,
-          );
-          const priceHistory = prices.map((record) => {
-            return {
-              time: new Date(record.timestamp).getTime(),
-              v: record.newPrice,
+          let outcome: any;
+          const metadata = market.outcomesMetadata[assetId];
+          if (typeof metadata === "string") {
+            outcome = {
+              name: metadata,
+              ticker: metadata,
+              color: "#ff0054",
             };
-          });
+          } else {
+            metadata["color"] = metadata["color"] || "#ffffff";
+            outcome = metadata;
+          }
 
-          const pool = await poolStore.getPoolFromChain(Number(poolId));
-          const currentPrice = pool.assets.find(
-            (asset) => asset.ticker === outcome.ticker,
-          )?.price;
+          if (market.poolExists) {
+            const poolId = market.pool.poolId;
+            const prices = await store.sdk.models.getAssetPriceHistory(
+              market.id,
+              //@ts-ignore
+              asset.isCategoricalOutcome
+                ? //@ts-ignore
+                  asset.asCategoricalOutcome?.[1]
+                : //@ts-ignore
+                  asset.asScalarOutcome?.[1].toString(),
+              dateOneWeekAgo,
+            );
+            const priceHistory = prices.map((record) => {
+              return {
+                time: new Date(record.timestamp).getTime(),
+                v: record.newPrice,
+              };
+            });
 
-          const marketEnd = market.endTimestamp;
-          return {
-            id: index,
-            market: market,
-            assetId: assetIdJson,
-            marketEndTimeStamp: marketEnd,
-            outcome,
-            title: market.slug,
-            amount: amount,
-            price: currentPrice,
-            priceHistory: priceHistory,
-            //@ts-ignore
-            change24hr: get24HrPriceChange(prices),
-            assetCount,
-          };
-        } else {
-          return {
-            id: index,
-            market: market,
-            assetId: assetIdJson,
-            marketEndTimeStamp: market.endTimestamp,
-            outcome,
-            title: market.slug,
-            amount: amount,
-            priceHistory: [],
-            price: 0,
-            assetCount,
-            marketCap: 0,
-            change24hr: 0,
-          };
-        }
-      });
+            const pool = await poolStore.getPoolFromChain(Number(poolId));
+            const currentPrice = pool.assets.find(
+              (asset) => asset.ticker === outcome.ticker,
+            )?.price;
+
+            const marketEnd = market.endTimestamp;
+            return {
+              id: index,
+              market: market,
+              assetId: assetIdJson,
+              marketEndTimeStamp: marketEnd,
+              outcome,
+              title: market.slug,
+              amount: amount,
+              price: currentPrice,
+              priceHistory: priceHistory,
+              //@ts-ignore
+              change24hr: get24HrPriceChange(prices),
+              assetCount,
+            };
+          } else {
+            return {
+              id: index,
+              market: market,
+              assetId: assetIdJson,
+              marketEndTimeStamp: market.endTimestamp,
+              outcome,
+              title: market.slug,
+              amount: amount,
+              priceHistory: [],
+              price: 0,
+              assetCount,
+              marketCap: 0,
+              change24hr: 0,
+            };
+          }
+        },
+      );
 
       const fullPositions = (await Promise.all(positionPromises)).filter(
         (p) => !!p,
@@ -231,7 +212,7 @@ const Portfolio: NextPage = observer(() => {
 
       setPositions(displayPositons);
     })();
-  }, [updateNum]);
+  }, [updateNum, accountTokenPositions]);
 
   const createTableRow = (position) => {
     return {
