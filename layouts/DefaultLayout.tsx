@@ -27,7 +27,11 @@ const DefaultLayout: FC = observer(({ children }) => {
   const router = useRouter();
   const sdk = useSdkv2();
 
-  const { width, height, ref: mainRef } = useResizeDetector();
+  const {
+    width,
+    height,
+    ref: mainRef,
+  } = useResizeDetector({ refreshMode: "debounce", refreshRate: 50 });
 
   const contentRef = useRef<HTMLDivElement>();
   const [scrollTop, setScrollTop] = useState(0);

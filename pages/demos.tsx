@@ -62,6 +62,7 @@ const DemosPage: NextPage = observer(() => {
   const [gridColsClass, setGridColsClass] = useState<string>("grid-cols-3");
 
   useEffect(() => {
+    console.log(contentWidth);
     if (contentWidth <= 620) {
       return setGridColsClass("grid-cols-1");
     }
@@ -73,11 +74,11 @@ const DemosPage: NextPage = observer(() => {
 
   return (
     <div className={"grid grid-cols-3 gap-[30px] " + gridColsClass}>
-      {/* <MarketCard {...demoMarketCardProps1} />
+      <MarketCard {...demoMarketCardProps1} />
       <MarketCard {...demoMarketCardProps2} />
       <MarketCard {...demoMarketCardProps3} />
       <MarketCard {...demoMarketCardProps2} />
-      <MarketCard {...demoMarketCardProps1} /> */}
+      <MarketCard {...demoMarketCardProps1} />
     </div>
   );
 });
