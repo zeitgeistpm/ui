@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from "react";
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
 import {
   IReactionDisposer,
   makeAutoObservable,
@@ -8,10 +8,10 @@ import {
   runInAction,
   when,
 } from "mobx";
+import { useEffect, useMemo } from "react";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "../math";
 import { JSONObject, ztgAsset } from "../types";
 import Store, { useStore } from "./Store";
-import { ZTG } from "lib/constants";
 
 export type OutcomeOption = {
   label: string;

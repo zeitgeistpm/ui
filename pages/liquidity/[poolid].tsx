@@ -135,12 +135,7 @@ const PoolDetails: NextPage = observer(() => {
     ? new Decimal(pool.volume).div(ZTG).toFixed(2)
     : NA;
 
-  const swapFee =
-    typeof pool?.swapFee === "string"
-      ? Number(pool?.swapFee)
-      : pool?.swapFee.isSome
-      ? pool?.swapFee.unwrap().toNumber()
-      : 0;
+  const swapFee = Number(pool?.swapFee);
 
   const prediction = saturatedPoolData?.assets
     .sort((a, b) => (a.price.greaterThan(b.price) ? 1 : 0))

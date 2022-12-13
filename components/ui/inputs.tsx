@@ -207,7 +207,7 @@ const checkVal = (v: string, amountRegex: RegExp): string => {
       return val;
     }
   }
-  return "";
+  return "0";
 };
 
 export const AmountInput: FC<AmountInputProps> = observer(
@@ -326,7 +326,8 @@ export const AmountInput: FC<AmountInputProps> = observer(
             value={val == null ? "" : val}
             disabled={disabled}
             ref={ref}
-            type="text"
+            type="number"
+            max={Number(max)}
             autoComplete="off"
             placeholder={placeholder}
             onChange={onChanged}
