@@ -1,4 +1,6 @@
 import { Context, create$, Sdk, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
+import { SupportedParachain } from "lib/types";
+import { endpoints } from "lib/constants";
 import Store, { useStore } from "lib/stores/Store";
 import { memoize } from "lodash-es";
 import { useEffect, useState } from "react";
@@ -66,9 +68,20 @@ export const useSdkv2 = (): UseSdkv2 => {
  */
 const init = memoize(
   (store: Store) => {
-    //console.log("init sdk", identify(store));
+    const chain = endpoints.find(
+      (e) => e.value === store.userStore.endpoint,
+    ).parachain;
+
+    const backupRPCs = endpoints
+      .filter(
+        (endpoint) =>
+          endpoint.parachain === chain &&
+          store.userStore.endpoint !== endpoint.value,
+      )
+      .map((e) => e.value);
+
     return create$({
-      provider: store.userStore.endpoint,
+      provider: [store.userStore.endpoint, ...backupRPCs],
       indexer: store.userStore.gqlEndpoint,
       storage: ZeitgeistIpfs(),
     });
