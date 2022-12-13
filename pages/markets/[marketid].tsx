@@ -281,7 +281,11 @@ const Market: NextPage<{
           marketStore={marketStore}
           onPoolDeployed={handlePoolDeployed}
         />
-        {marketStore && <MarketAddresses marketStore={marketStore} />}
+        <MarketAddresses
+          oracleAddress={indexedMarket.oracle}
+          authorityAddress={indexedMarket.disputeMechanism?.authorized}
+          creatorAddress={indexedMarket.creator}
+        />
       </div>
     </>
   );
