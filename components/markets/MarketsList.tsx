@@ -79,7 +79,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       if (scrollingRestored) {
         scrollRestoration.set(scrollTop);
       }
-    }, 150),
+    }, 50),
     [scrollTop, scrollingRestored],
   );
 
@@ -88,15 +88,6 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       fetchNextPage();
     }
   }, [isLoadMarkerInView, hasNextPage]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (!scrollingRestored) {
-        scrollTo(scrollRestoration.scrollTop);
-        setScrollingRestored(true);
-      }
-    }, 50);
-  }, []);
 
   const [markets, setMarkets] = useState<
     (IndexedMarket<Context> & {
@@ -112,6 +103,13 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   }, [marketsPages?.pages]);
 
   const count = markets?.length ?? 0;
+
+  useEffect(() => {
+    if (!scrollingRestored && count > 0) {
+      scrollTo(scrollRestoration.scrollTop);
+      setScrollingRestored(true);
+    }
+  }, [scrollingRestored, scrollRestoration.scrollTop, count]);
 
   useEffect(() => {
     const pageNum = marketsPages?.pages.length ?? 0;

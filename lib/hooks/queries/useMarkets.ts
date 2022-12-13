@@ -109,6 +109,8 @@ export const useMarkets = (
     queryFn: fetcher,
     enabled: Boolean(sdk) && isIndexedSdk(sdk),
     getNextPageParam: (lastPage) => lastPage.next,
+    refetchOnMount: false,
+    refetchInterval: 12000,
   });
 
   return query;
