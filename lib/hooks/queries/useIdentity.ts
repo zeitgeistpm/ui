@@ -11,7 +11,7 @@ export const useIdentity = (address: string) => {
   const query = useQuery(
     [id, rootKey, address],
     async () => {
-      if (isRpcSdk(sdk)) {
+      if (address && isRpcSdk(sdk)) {
         const identity = (await sdk.context.api.query.identity.identityOf(
           address,
         )) as any;
@@ -60,6 +60,7 @@ export const useIdentity = (address: string) => {
           };
         }
       }
+      return null;
     },
     {
       enabled: Boolean(sdk && isRpcSdk(sdk)),

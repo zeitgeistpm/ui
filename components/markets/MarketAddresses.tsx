@@ -5,6 +5,7 @@ import TwitterIcon from "components/icons/TwitterIcon";
 import ZeitgeistIcon from "components/icons/ZeitgeistIcon";
 import Avatar from "components/ui/Avatar";
 import CopyIcon from "components/ui/CopyIcon";
+import { useIdentity } from "lib/hooks/queries/useIdentity";
 import MarketStore from "lib/stores/MarketStore";
 import { useModalStore } from "lib/stores/ModalStore";
 import { Judgement, UserIdentity, useUserStore } from "lib/stores/UserStore";
@@ -173,28 +174,11 @@ const AddressModalHeader = ({ name }: { name: string }) => {
 
 const MarketAddresses = observer(
   ({ marketStore }: { marketStore: MarketStore }) => {
-    const [oracleIdentity, setOracleIdentity] = useState<UserIdentity>();
-    const [creatorIdentity, setCreatorIdentity] = useState<UserIdentity>();
-    const [authorityIdentity, setAuthorityIdentity] = useState<UserIdentity>();
     const modalStore = useModalStore();
-    const { getIdentity } = useUserStore();
 
-    useEffect(() => {
-      if (!marketStore || !marketStore.creator || !marketStore.oracle) return;
-      (async () => {
-        const identities = [
-          getIdentity(marketStore.creator),
-          getIdentity(marketStore.oracle),
-          marketStore.authority ? getIdentity(marketStore.authority) : null,
-        ];
-
-        const [creator, oracle, authority] = await Promise.all(identities);
-
-        setCreatorIdentity(creator);
-        setOracleIdentity(oracle);
-        setAuthorityIdentity(authority);
-      })();
-    }, [marketStore?.creator, marketStore?.oracle]);
+    const { data: creatorIdentity } = useIdentity(marketStore.creator);
+    const { data: authorityIdentity } = useIdentity(marketStore.authority);
+    const { data: oracleIdentity } = useIdentity(marketStore.oracle);
 
     const handleInspect = (address: string, identity: UserIdentity) => {
       modalStore.openModal(
