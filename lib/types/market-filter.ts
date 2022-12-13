@@ -2,12 +2,6 @@ import { filterTypes } from "lib/constants/market-filter";
 import { defaultTags } from "lib/constants/markets";
 import { MarketStatus } from "./markets";
 
-export type MarketFilterSortOptionLabel =
-  | "Newest"
-  | "Oldest"
-  | "Most Volume"
-  | "Least Volume";
-
 export enum MarketsOrderBy {
   Newest = "Newest",
   Oldest = "Oldest",

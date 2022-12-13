@@ -2,7 +2,7 @@ import { MarketDeadlines } from "@zeitgeistpm/sdk/dist/types";
 import Decimal from "decimal.js";
 import resolveTailwindConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../../tailwind.config";
-import { ESortType, EndpointOption, SupportedParachain } from "../types";
+import { EndpointOption, SupportedParachain } from "../types";
 
 export const ZTG = 10 ** 10;
 
@@ -21,13 +21,6 @@ export const DAY_SECONDS = 86400;
 
 export const ZTG_BLUE_COLOR = resolveTailwindConfig(tailwindConfig as any).theme
   .colors["ztg-blue"];
-
-// export const sortOptions = Object.entries(ESortType).map((v) => {
-//   return {
-//     sortBy: v[0],
-//     label: v[1],
-//   };
-// });
 
 export const DEFAULT_DEADLINES: MarketDeadlines = {
   gracePeriod: "0",

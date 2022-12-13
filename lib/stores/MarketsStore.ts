@@ -4,12 +4,10 @@ import {
   Observable,
   Subscription,
 } from "rxjs";
-import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
+import { Swap } from "@zeitgeistpm/sdk/dist/models";
 import { makeAutoObservable, runInAction, when } from "mobx";
 import MarketStore from "./MarketStore";
 import Store, { useStore } from "./Store";
-import { MarketsOrderBy, MarketsOrdering } from "@zeitgeistpm/sdk/dist/types";
-import { activeStatusesFromFilters } from "lib/util/market";
 
 class MarketsStore {
   markets: Partial<Record<number, MarketStore>> = {};
