@@ -56,7 +56,7 @@ const Input = (props) => {
         ref={innerRef}
         onBlur={() => {}}
         placeholder="Search by Name"
-        className="bg-transparent focus:outline-none text-sky-600 font-lato text-ztg-14-120"
+        className="bg-transparent focus:outline-none text-sky-600  text-ztg-14-120"
       />
     </div>
   );
@@ -91,7 +91,7 @@ const Option = observer(({ innerProps, label, data, isSelected }) => {
       }`}
       {...innerProps}
     >
-      <div className="h-ztg-15 font-lato font-bold text-ztg-10-150 flex items-center text-sky-600 mt-ztg-5 uppercase">
+      <div className="h-ztg-15  font-bold text-ztg-10-150 flex items-center text-sky-600 mt-ztg-5 uppercase">
         {marketSlug}
       </div>
       <div className="flex h-ztg-36 items-center">
@@ -99,7 +99,7 @@ const Option = observer(({ innerProps, label, data, isSelected }) => {
           className="h-ztg-20 w-ztg-20 border-2 border-sky-600 rounded-full mr-ztg-8"
           style={{ background: `${color}` }}
         ></div>
-        <div className="font-space h-ztg-20 flex items-center font-bold dark:text-white">
+        <div className=" h-ztg-20 flex items-center font-bold dark:text-white">
           {label}
         </div>
         <div className="h-ztg-20 flex items-center font-mono text-ztg-12-120 ml-auto text-sky-600">
@@ -148,7 +148,7 @@ const AssetSelectView: FC<AssetSelectViewProps> = ({
         onClick={() => onBack()}
       >
         <ArrowLeft size={16} className="mr-ztg-10 text-sky-600" />
-        <div className="font-space text-ztg-14-150 text-sky-600 font-bold">
+        <div className=" text-ztg-14-150 text-sky-600 font-bold">
           Select Token
         </div>
       </div>

@@ -68,7 +68,7 @@ const ExchangeConfirmModal = observer(
               backgroundColor: exchangeStore.outcome.metadata["color"],
             }}
           ></span>
-          <span className="font-bold font-space text-ztg-16-150">
+          <span className="font-bold  text-ztg-16-150">
             {exchangeStore.outcome.metadata["ticker"]}
           </span>
           <span className="font-mono text-ztg-16-150 ml-auto">
@@ -422,7 +422,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
                     changeInAmount(maxIn);
                   }}
                 >
-                  <div className="font-lato text-ztg-12-150 center">MAX</div>
+                  <div className=" text-ztg-12-150 center">MAX</div>
                 </button>
               }
               value={exchangeStore?.amount?.toString()}
@@ -432,15 +432,13 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               }}
             />
             <div className="h-ztg-18 flex px-ztg-8 justify-between mb-ztg-16 text-sky-600">
-              <span className="font-lato text-ztg-12-150">
-                Price per Share:
-              </span>
+              <span className=" text-ztg-12-150">Price per Share:</span>
               <span className="font-mono text-ztg-12-150 text-right font-medium">
                 {exchangeStore?.spotPrice?.toFixed(4)}
               </span>
             </div>
             <div className="w-full center h-ztg-40 flex items-center mb-ztg-10">
-              <div className="font-space rounded-ztg-10 w-ztg-40 h-ztg-40 text-ztg-14-150 text-sky-600 center font-bold bg-sky-100 dark:bg-sky-1100">
+              <div className=" rounded-ztg-10 w-ztg-40 h-ztg-40 text-ztg-14-150 text-sky-600 center font-bold bg-sky-100 dark:bg-sky-1100">
                 For
               </div>
             </div>
@@ -448,7 +446,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
               <div className="w-ztg-108">
                 <div className="flex h-ztg-20">
                   <div className="w-ztg-20 h-ztg-20 border-2 border-sky-600 rounded-full mr-ztg-8 bg-ztg-blue"></div>
-                  <div className="font-space text-base font-bold flex items-center dark:text-white">
+                  <div className=" text-base font-bold flex items-center dark:text-white">
                     {store.config.tokenSymbol}
                   </div>
                 </div>
@@ -477,19 +475,19 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
             >
               Sign Transaction
             </TransactionButton>
-            <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
+            <div className=" h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
               <span>Max profit:</span>
               <span className="font-mono">
                 {exchangeStore?.maxProfit} {store.config.tokenSymbol}
               </span>
             </div>
-            <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
+            <div className=" h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
               <span>Network Fee:</span>
               <span className="font-mono">
                 {txFee} {store.config.tokenSymbol}
               </span>
             </div>
-            <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
+            <div className=" h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
               <span>Trading Fee:</span>
               <span className="font-mono">
                 {`${(

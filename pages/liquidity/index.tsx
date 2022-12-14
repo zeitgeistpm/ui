@@ -166,9 +166,7 @@ const LiquidityPools: NextPage = observer(() => {
         </a>
       </div>
 
-      <h2 className="mb-ztg-20 font-space text-[24px] font-semibold">
-        Market Pools
-      </h2>
+      <h2 className="mb-ztg-20  text-[24px] font-semibold">Market Pools</h2>
 
       <Table
         data={tableData}

@@ -7,7 +7,7 @@ const SectionTitle: FC<{ text: string; className?: string }> = ({
   text,
   className = "",
 }) => {
-  const classes = "text-ztg-16-150 font-bold mb-ztg-20 font-lato" + className;
+  const classes = "text-ztg-16-150 font-bold mb-ztg-20 " + className;
   return <div className={classes}>{text}</div>;
 };
 

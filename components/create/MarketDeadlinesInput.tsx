@@ -306,9 +306,9 @@ const OracleAndDisputePeriodInput = (props: {
                 ? 1
                 : props.value.value.days
             }
-            className="bg-sky-200 dark:bg-black text-ztg-14-150 w-full rounded-ztg-5 h-ztg-40 p-ztg-8 font-lato focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-18"
+            className="bg-sky-200 dark:bg-black text-ztg-14-150 w-full rounded-ztg-5 h-ztg-40 p-ztg-8  focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-18"
           />
-          <div className="bg-sky-200 dark:bg-black text-ztg-14-150  -ml-2 font-bold rounded-ztg-5 h-ztg-40 p-ztg-8 font-lato focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-14">
+          <div className="bg-sky-200 dark:bg-black text-ztg-14-150  -ml-2 font-bold rounded-ztg-5 h-ztg-40 p-ztg-8  focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-14">
             DAYS
           </div>
         </div>
@@ -339,9 +339,9 @@ const OracleAndDisputePeriodInput = (props: {
                 ? 0
                 : props.value.value.hours
             }
-            className="bg-sky-200 dark:bg-black text-ztg-14-150 w-full rounded-ztg-5 h-ztg-40 p-ztg-8 font-lato focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-18"
+            className="bg-sky-200 dark:bg-black text-ztg-14-150 w-full rounded-ztg-5 h-ztg-40 p-ztg-8  focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-18"
           />
-          <div className="bg-sky-200 dark:bg-black text-ztg-14-150 w-full -ml-2 font-bold rounded-ztg-5 h-ztg-40 p-ztg-8 font-lato focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-18">
+          <div className="bg-sky-200 dark:bg-black text-ztg-14-150 w-full -ml-2 font-bold rounded-ztg-5 h-ztg-40 p-ztg-8  focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-18">
             HOURS
           </div>
         </div>

@@ -18,7 +18,7 @@ const ToggleButton: FC<{
   return (
     <div
       className={
-        "h-ztg-32 flex-ztg-basis-80 flex-shrink flex-grow text-center rounded-full center text-ztg-12-150 cursor-pointer mr-ztg-8 font-lato dark:text-white " +
+        "h-ztg-32 flex-ztg-basis-80 flex-shrink flex-grow text-center rounded-full center text-ztg-12-150 cursor-pointer mr-ztg-8  dark:text-white " +
         className
       }
       onClick={() => toggle()}

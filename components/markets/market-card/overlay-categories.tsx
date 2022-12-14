@@ -26,7 +26,7 @@ const MarketCardOverlayOutcome = ({
         style={{ backgroundColor: `${outcome.color}` }}
       ></div>
       <div className="flex flex-col w-[95px] flex-shrink-0 ml-[7px]">
-        <div className="font-lato font-bold uppercase text-ztg-14-110 truncate h-[17px] flex-shrink-0">
+        <div className=" font-bold uppercase text-ztg-14-110 truncate h-[17px] flex-shrink-0">
           {outcome.name}
         </div>
         <div className="h-full flex flex-row items-center">

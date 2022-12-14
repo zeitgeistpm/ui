@@ -132,7 +132,7 @@ const AddressDetails = ({
   };
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center mb-ztg-18 ">
-      <div className="font-space font-bold text-ztg-14-150 mr-[20px] mb-ztg-15 sm:mb-0">
+      <div className=" font-bold text-ztg-14-150 mr-[20px] mb-ztg-15 sm:mb-0">
         {title}
       </div>
       <div className="flex items-center">
@@ -153,7 +153,7 @@ const AddressDetails = ({
         </div>
         <button
           onClick={handleInspectClick}
-          className="text-white bg-border-dark rounded-ztg-50 text-ztg-10-150 w-[60px] font-space h-[20px] "
+          className="text-white bg-border-dark rounded-ztg-50 text-ztg-10-150 w-[60px]  h-[20px] "
           data-test="inspectButton"
         >
           Inspect

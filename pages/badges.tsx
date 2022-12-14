@@ -149,7 +149,7 @@ const BadgeItem = (props: { item: Badge.DiscreteBadge<any> }) => {
             animate={{ opacity: 1, transform: "translateY(-105%)" }}
             exit={{ opacity: 0, transform: "translateY(-115%)" }}
             style={{ left: "2px" }}
-            className="border-2 border-gray-500/10  absolute text-sm z-ztg-10 bg-gray-100 dark:bg-black rounded-ztg-10 text-black dark:text-white px-ztg-12 py-ztg-14 font-lato w-ztg-240"
+            className="border-2 border-gray-500/10  absolute text-sm z-ztg-10 bg-gray-100 dark:bg-black rounded-ztg-10 text-black dark:text-white px-ztg-12 py-ztg-14  w-ztg-240"
           >
             <div className="flex mb-ztg-2">
               <div className="flex-1">

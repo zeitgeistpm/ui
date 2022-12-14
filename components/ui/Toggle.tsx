@@ -15,7 +15,7 @@ const Toggle: FC<ToggleProps> = ({
   disabled = false,
 }) => {
   const classes =
-    "h-ztg-40 bg-sky-300 dark:bg-sky-700 font-lato font-bold text-sky-600 uppercase flex items-center justify-between rounded-full px-ztg-8 w-ztg-100 " +
+    "h-ztg-40 bg-sky-300 dark:bg-sky-700  font-bold text-sky-600 uppercase flex items-center justify-between rounded-full px-ztg-8 w-ztg-100 " +
     `${disabled ? "cursor-default" : "cursor-pointer"} ` +
     className;
   const activeClasses = "text-black dark:text-white";

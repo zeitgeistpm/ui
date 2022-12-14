@@ -48,7 +48,7 @@ const PoolDetail = ({
           className
         }
       >
-        <div className="font-lato text-sky-600 text-ztg-12-150 font-bold">
+        <div className=" text-sky-600 text-ztg-12-150 font-bold">
           <div className="flex">
             <span>{header}</span>
             {showInfo === true ? (
@@ -60,7 +60,7 @@ const PoolDetail = ({
                   className="inline cursor-pointer ml-ztg-10"
                 />
                 {hoveringInfo === true ? (
-                  <div className="bg-sky-200 dark:bg-border-dark absolute left-ztg-50 bottom-ztg-20 rounded-ztg-5 text-black dark:text-white px-ztg-8 py-ztg-14 font-lato text-ztg-12-150 w-ztg-164">
+                  <div className="bg-sky-200 dark:bg-border-dark absolute left-ztg-50 bottom-ztg-20 rounded-ztg-5 text-black dark:text-white px-ztg-8 py-ztg-14  text-ztg-12-150 w-ztg-164">
                     <div className="font-bold border-b-1 border-sky-600 pb-ztg-7">
                       Total APR
                     </div>
@@ -184,7 +184,7 @@ const PoolDetails: NextPage = observer(() => {
           className="cursor-pointer ml-5 mr-1"
           onClick={navigateBack}
         />
-        <span className="text-sm font-lato">Back to pools</span>
+        <span className="text-sm ">Back to pools</span>
       </div>
       <div className="flex flex-wrap">
         <Pill
@@ -241,9 +241,7 @@ const PoolDetails: NextPage = observer(() => {
       {/* <PoolChart /> */}
       {/* <PoolSummary /> */}
       <div className="flex my-ztg-23 items-center">
-        <h3 className="font-space font-semibold text-ztg-20-150">
-          Assets in Pool
-        </h3>
+        <h3 className=" font-semibold text-ztg-20-150">Assets in Pool</h3>
         {saturatedPoolData && (
           <FullSetButtons marketId={saturatedPoolData.market.marketId} />
         )}
