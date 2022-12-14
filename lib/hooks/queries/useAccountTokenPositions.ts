@@ -33,7 +33,10 @@ export const useAccountTokenPositions = (account?: string) => {
         return entries
           .map(([key, balance]) => {
             const [, asset] = key.args;
-            if (!asset.isScalarOutcome && !asset.isCategoricalOutcome) {
+            if (
+              (!asset.isScalarOutcome && !asset.isCategoricalOutcome) ||
+              balance.free.isZero()
+            ) {
               return null;
             }
             return {

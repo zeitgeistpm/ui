@@ -1,17 +1,9 @@
 import {
-  CategoricalAssetId,
-  fromPrimitive,
   getIndexOf,
   getMarketIdOf,
-  hasPool,
-  IOCategoricalAssetId,
-  IOScalarAssetId,
   projectEndTimestamp,
-  ScalarAssetId,
 } from "@zeitgeistpm/sdk-next";
-import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 import PortfolioCard, { Position } from "components/account/PortfolioCard";
-import RedeemAllButton from "components/account/RedeemAllButton";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import InfoBoxes from "components/ui/InfoBoxes";
 import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
@@ -29,7 +21,7 @@ import { useMarketsStore } from "lib/stores/MarketsStore";
 import { usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
 import { formatBal, isValidPolkadotAddress } from "lib/util";
-import { get24HrPriceChange, getAssetIds } from "lib/util/market";
+import { get24HrPriceChange } from "lib/util/market";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -49,7 +41,7 @@ const Portfolio: NextPage = observer(() => {
   const [positions, setPositions] = useState<Position[]>([]);
   const [message, setMessage] = useState<string>();
   const [timeFilter, setTimeFilter] = useState<TimeFilter>(
-    filters.find((f) => f.label === "Month"),
+    filters.find((f) => f.label === "All"),
   );
   const [updateNum, setUpdateNum] = useState(0);
 
@@ -72,8 +64,6 @@ const Portfolio: NextPage = observer(() => {
 
   const balanceHistory = useAccountBalanceHistory(address, timeFilter);
   const accountTokenPositions = useAccountTokenPositions(address);
-
-  console.log(accountTokenPositions?.data);
 
   const pools = usePoolsByIds(
     accountTokenPositions.data?.map(({ asset }) => ({
@@ -164,8 +154,6 @@ const Portfolio: NextPage = observer(() => {
             outcome = metadata;
           }
 
-          console.log(outcome);
-
           const marketEnd = await projectEndTimestamp(sdk.context, market, now);
 
           if (market.pool) {
@@ -243,8 +231,6 @@ const Portfolio: NextPage = observer(() => {
       setPositions(displayPositons);
     })();
   }, [now, updateNum, accountTokenPositions?.data]);
-
-  console.log(positions?.length);
 
   const createTableRow = (position) => {
     return {

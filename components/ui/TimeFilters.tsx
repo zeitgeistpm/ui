@@ -6,9 +6,13 @@ export interface TimeFilter {
   time: string; // ISO string
 }
 
-export type FilterResolution = "Day" | "Week" | "Month";
+export type FilterResolution = "All" | "Day" | "Week" | "Month";
 
 export const filters: TimeFilter[] = [
+  {
+    label: "All",
+    time: new Date("Wed Dec 30 2020").toISOString(),
+  },
   {
     label: "Day",
     time: new Date(new Date().getTime() - DAY_SECONDS * 1000).toISOString(),
