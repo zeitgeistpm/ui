@@ -21,6 +21,8 @@ import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { AlertTriangle } from "react-feather";
 import { groupBy } from "lodash";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
 
 const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean }> = ({
   onClick = () => {},
@@ -48,9 +50,39 @@ const IdentitySettings = observer(() => {
   const [displayName, setDisplayName] = useState("");
   const [discordHandle, setDiscordHandle] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
+  //todo: replace with isLoading
   const [transactionPending, setTransactionPending] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: identity } = useIdentity(store.wallets.activeAccount?.address);
+
+  const { send: updateIdentity } = useExtrinsic(
+    () =>
+      store.sdk.api.tx.identity.setIdentity({
+        additional: [[{ Raw: "discord" }, { Raw: discordHandle }]],
+        display: { Raw: displayName },
+        twitter: { Raw: twitterHandle },
+      }),
+    {
+      onSuccess: () => {
+        // queryClient.invalidateQueries('')
+        notificationStore.pushNotification("Successfully set Identity", {
+          type: "Success",
+        });
+      },
+    },
+  );
+  const { send: clearIdentity } = useExtrinsic(
+    () => store.sdk.api.tx.identity.clearIdentity(),
+    {
+      onSuccess: () => {
+        // queryClient.invalidateQueries('')
+        notificationStore.pushNotification("Successfully cleared Identity", {
+          type: "Success",
+        });
+      },
+    },
+  );
 
   useEffect(() => {
     if (!identity) {
@@ -65,66 +97,11 @@ const IdentitySettings = observer(() => {
   }, [identity]);
 
   const handleSubmit = async () => {
-    setTransactionPending(true);
-    const signer = wallets.getActiveSigner() as ExtSigner;
-    const tx = store.sdk.api.tx.identity.setIdentity({
-      additional: [[{ Raw: "discord" }, { Raw: discordHandle }]],
-      display: { Raw: displayName },
-      twitter: { Raw: twitterHandle },
-    });
-    try {
-      await signAndSend(
-        tx,
-        signer,
-        extrinsicCallback({
-          notificationStore,
-          successCallback: async () => {
-            // todo: invalidate identity cache
-            // await loadIdentity(wallets.activeAccount.address);
-            setTransactionPending(false);
-            notificationStore.pushNotification("Successfully set Identity", {
-              type: "Success",
-            });
-          },
-          failCallback: ({ index, error }) => {
-            setTransactionPending(false);
-            notificationStore.pushNotification(
-              store.getTransactionError(index, error),
-              { type: "Error" },
-            );
-          },
-        }),
-      );
-    } catch (err) {
-      setTransactionPending(false);
-    }
+    updateIdentity();
   };
 
   const handleClear = async () => {
-    const signer = store.wallets.getActiveSigner() as ExtSigner;
-    const tx = store.sdk.api.tx.identity.clearIdentity();
-
-    signAndSend(
-      tx,
-      signer,
-      extrinsicCallback({
-        notificationStore,
-        successCallback: async () => {
-          // todo: invalidate identity cache
-
-          // await loadIdentity(wallets.activeAccount.address);
-          notificationStore.pushNotification("Successfully cleared Identity", {
-            type: "Success",
-          });
-        },
-        failCallback: ({ index, error }) => {
-          notificationStore.pushNotification(
-            store.getTransactionError(index, error),
-            { type: "Error" },
-          );
-        },
-      }),
-    );
+    clearIdentity();
   };
 
   const handleDisplayNameChange = (value: string) => {
