@@ -1,4 +1,14 @@
-import { fromPrimitive } from "@zeitgeistpm/sdk-next";
+import {
+  CategoricalAssetId,
+  fromPrimitive,
+  getIndexOf,
+  getMarketIdOf,
+  hasPool,
+  IOCategoricalAssetId,
+  IOScalarAssetId,
+  projectEndTimestamp,
+  ScalarAssetId,
+} from "@zeitgeistpm/sdk-next";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 import PortfolioCard, { Position } from "components/account/PortfolioCard";
 import RedeemAllButton from "components/account/RedeemAllButton";
@@ -11,6 +21,10 @@ import { useObservable } from "lib/hooks";
 import { useAccountBalanceHistory } from "lib/hooks/queries/useAccountBalanceHistory";
 import { useAccountTokenPositions } from "lib/hooks/queries/useAccountTokenPositions";
 import { useAssetsPriceHistory } from "lib/hooks/queries/useAssetsPriceHistory";
+import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
+import { usePoolsByIds } from "lib/hooks/queries/usePoolsByIds";
+import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import { usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
@@ -23,6 +37,7 @@ import { useEffect, useMemo, useState } from "react";
 import { concatWith, from } from "rxjs";
 
 const Portfolio: NextPage = observer(() => {
+  const [sdk, id] = useSdkv2();
   const store = useStore();
   const marketsStore = useMarketsStore();
   const poolStore = usePoolsStore();
@@ -53,11 +68,23 @@ const Portfolio: NextPage = observer(() => {
     500,
   );
 
+  const { data: now } = useChainTimeNow();
+
   const balanceHistory = useAccountBalanceHistory(address, timeFilter);
   const accountTokenPositions = useAccountTokenPositions(address);
 
+  console.log(accountTokenPositions?.data);
+
+  const pools = usePoolsByIds(
+    accountTokenPositions.data?.map(({ asset }) => ({
+      marketId: getMarketIdOf(asset),
+    })),
+  );
+
+  const saturatedPoolsIndex = useSaturatedPoolsIndex(pools?.data);
+
   const assetPricesHistoryLookup = useAssetsPriceHistory(
-    accountTokenPositions.data?.map(({ asset }) => fromPrimitive(asset)),
+    accountTokenPositions.data?.map(({ asset }) => asset),
     {
       startTimeStamp: dateOneWeekAgo,
     },
@@ -109,17 +136,23 @@ const Portfolio: NextPage = observer(() => {
       const positionPromises = accountTokenPositions.data.map(
         async (p, index) => {
           const { asset, balance } = p;
-          const { marketId, assetId } = getAssetIds(asset as unknown as Asset);
-          const assetIdJson = asset.toJSON();
 
-          const market = await marketsStore.getMarket(marketId.toNumber());
-          if (!market) return;
-          //@ts-ignore
+          const assetIndex = getIndexOf(asset);
+          const marketId = getMarketIdOf(asset);
+
+          const saturated = Object.values(saturatedPoolsIndex?.data).find(
+            (d) => d.market.marketId === marketId,
+          );
+
+          //const market = await marketsStore.getMarket(marketId);
+          if (!saturated || !saturated.market || !saturated.market.categories)
+            return;
+
+          const market = saturated.market;
           const amount = formatBal(balance.free.toString());
-          const assetCount = market.marketOutcomes.length - 1;
 
           let outcome: any;
-          const metadata = market.outcomesMetadata[assetId];
+          const metadata = market.categories[assetIndex];
           if (typeof metadata === "string") {
             outcome = {
               name: metadata,
@@ -131,7 +164,11 @@ const Portfolio: NextPage = observer(() => {
             outcome = metadata;
           }
 
-          if (market.poolExists) {
+          console.log(outcome);
+
+          const marketEnd = await projectEndTimestamp(sdk.context, market, now);
+
+          if (market.pool) {
             const poolId = market.pool.poolId;
             const prices = assetPricesHistoryLookup.data.get(asset) ?? [];
             const priceHistory = prices.map((record) => {
@@ -142,15 +179,15 @@ const Portfolio: NextPage = observer(() => {
             });
 
             const pool = await poolStore.getPoolFromChain(Number(poolId));
+
             const currentPrice = pool.assets.find(
               (asset) => asset.ticker === outcome.ticker,
             )?.price;
 
-            const marketEnd = market.endTimestamp;
             return {
               id: index,
               market: market,
-              assetId: assetIdJson,
+              assetId: asset,
               marketEndTimeStamp: marketEnd,
               outcome,
               title: market.slug,
@@ -159,20 +196,18 @@ const Portfolio: NextPage = observer(() => {
               priceHistory: priceHistory,
               //@ts-ignore
               change24hr: get24HrPriceChange(prices),
-              assetCount,
             };
           } else {
             return {
               id: index,
               market: market,
-              assetId: assetIdJson,
-              marketEndTimeStamp: market.endTimestamp,
+              assetId: asset,
+              marketEndTimeStamp: marketEnd,
               outcome,
               title: market.slug,
               amount: amount,
               priceHistory: [],
               price: 0,
-              assetCount,
               marketCap: 0,
               change24hr: 0,
             };
@@ -188,16 +223,15 @@ const Portfolio: NextPage = observer(() => {
 
       fullPositions.forEach((position) => {
         const existingMarketIndex = displayPositons.findIndex(
-          (p) => p.marketId === position.market.id.toString(),
+          (p) => p.marketId === position.market.marketId.toString(),
         );
 
         if (existingMarketIndex === -1) {
           displayPositons.push({
-            marketId: position.market.id.toString(),
+            marketId: position.market.marketId.toString(),
             marketTitle: position.title,
             marketEndTimeStamp: position.marketEndTimeStamp,
             tableData: [createTableRow(position)],
-            marketStore: position.market,
           });
         } else {
           displayPositons[existingMarketIndex].tableData.push(
@@ -208,7 +242,9 @@ const Portfolio: NextPage = observer(() => {
 
       setPositions(displayPositons);
     })();
-  }, [updateNum, accountTokenPositions]);
+  }, [now, updateNum, accountTokenPositions?.data]);
+
+  console.log(positions?.length);
 
   const createTableRow = (position) => {
     return {
@@ -263,10 +299,10 @@ const Portfolio: NextPage = observer(() => {
               yUnits={store.config.tokenSymbol}
             />
           </div>
-          <RedeemAllButton
+          {/* <RedeemAllButton
             marketStores={positions.map((p) => p.marketStore)}
             onSuccess={() => incrementUpdateNum()}
-          />
+          /> */}
           <div className="mb-ztg-50  ">
             {positions.map((position, index) => (
               <PortfolioCard key={index} position={position} />
