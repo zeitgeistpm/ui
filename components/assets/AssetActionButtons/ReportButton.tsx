@@ -1,6 +1,11 @@
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
+import {
+  AssetId,
+  CategoricalAssetId,
+  getMarketIdOf,
+  ScalarAssetId,
+} from "@zeitgeistpm/sdk-next";
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
-import MarketStore from "lib/stores/MarketStore";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
@@ -9,18 +14,19 @@ import { observer } from "mobx-react";
 
 const ReportButton = observer(
   ({
-    marketStore,
     assetId,
     ticker,
   }: {
-    marketStore: MarketStore;
-    assetId: AssetId;
+    assetId: ScalarAssetId | CategoricalAssetId;
     ticker: string;
   }) => {
     const store = useStore();
     const { wallets } = store;
     const notificationStore = useNotificationStore();
     const modalStore = useModalStore();
+
+    const marketId = getMarketIdOf(assetId);
+    const { data: market } = useMarket(marketId);
 
     const reportDisabled = !marketStore.connectedWalletCanReport;
 

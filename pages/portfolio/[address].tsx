@@ -21,7 +21,7 @@ import { useMarketsStore } from "lib/stores/MarketsStore";
 import { usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
 import { formatBal, isValidPolkadotAddress } from "lib/util";
-import { get24HrPriceChange } from "lib/util/market";
+import { get24HrPriceChange, PricePoint } from "lib/util/market";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -173,7 +173,6 @@ const Portfolio: NextPage = observer(() => {
             )?.price;
 
             return {
-              id: index,
               market: market,
               assetId: asset,
               marketEndTimeStamp: marketEnd,
@@ -182,12 +181,10 @@ const Portfolio: NextPage = observer(() => {
               amount: amount,
               price: currentPrice,
               priceHistory: priceHistory,
-              //@ts-ignore
-              change24hr: get24HrPriceChange(prices),
+              change24hr: get24HrPriceChange(prices as PricePoint[]),
             };
           } else {
             return {
-              id: index,
               market: market,
               assetId: asset,
               marketEndTimeStamp: marketEnd,
@@ -254,8 +251,6 @@ const Portfolio: NextPage = observer(() => {
       buttons: (
         <AssetActionButtons
           assetId={position.assetId}
-          marketId={position.market.id}
-          assetColor={position.outcome.color}
           assetTicker={position.outcome.ticker}
         />
       ),
