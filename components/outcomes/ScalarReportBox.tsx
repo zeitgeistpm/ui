@@ -1,6 +1,14 @@
+import {
+  CategoricalAssetId,
+  getMarketIdOf,
+  isRpcSdk,
+  ScalarAssetId,
+} from "@zeitgeistpm/sdk-next";
 import { OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
+import { useMarket } from "lib/hooks/queries/useMarket";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import MarketStore from "lib/stores/MarketStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
@@ -10,22 +18,28 @@ import { useState } from "react";
 
 const ScalarReportBox = observer(
   ({
-    marketStore,
+    assetId,
     onReport,
   }: {
-    marketStore: MarketStore;
-    onReport: () => void;
+    assetId: ScalarAssetId | CategoricalAssetId;
+    onReport?: () => void;
   }) => {
+    const [sdk] = useSdkv2();
     const store = useStore();
     const { wallets } = store;
     const notificationStore = useNotificationStore();
     const [scalarReportValue, setScalarReportValue] = useState("");
 
+    const marketId = getMarketIdOf(assetId);
+    const { data: market } = useMarket(marketId);
+
+    if (!market) return null;
+
     const handleNumberChange = (val: string) => {
       setScalarReportValue(val);
     };
 
-    const reportDisabled = !marketStore.connectedWalletCanReport;
+    const reportDisabled = !sdk || !isRpcSdk(sdk);
 
     const { isAuthorityProxy } = marketStore;
 
@@ -34,7 +48,6 @@ const ScalarReportBox = observer(
         scalar: Number(scalarReportValue),
       };
       const signer = wallets.getActiveSigner();
-      const { market } = marketStore;
 
       const callback = extrinsicCallback({
         notificationStore,
@@ -42,8 +55,7 @@ const ScalarReportBox = observer(
           notificationStore.pushNotification("Outcome Reported", {
             type: "Success",
           });
-          await marketStore.refetchMarketData();
-          onReport();
+          onReport?.();
         },
         failCallback: ({ index, error }) => {
           notificationStore.pushNotification(
@@ -55,17 +67,14 @@ const ScalarReportBox = observer(
         },
       });
 
-      if (
-        marketStore.disputeMechanism === "authorized" &&
-        marketStore.status === "Disputed"
-      ) {
+      if (market.disputeMechanism.Authorized && market.status === "Disputed") {
         const tx = store.sdk.api.tx.authorized.authorizeMarketOutcome(
           market.marketId,
           outcomeReport,
         );
         if (isAuthorityProxy) {
           const proxyTx = store.sdk.api.tx.proxy.proxy(
-            marketStore.authority,
+            market.disputeMechanism.Authorized,
             "Any",
             tx,
           );
@@ -81,8 +90,8 @@ const ScalarReportBox = observer(
       <>
         <AmountInput
           value={scalarReportValue}
-          min={marketStore.bounds?.[0].toString()}
-          max={marketStore.bounds?.[1].toString()}
+          min={market.bounds?.[0].toString()}
+          max={market.bounds?.[1].toString()}
           onChange={handleNumberChange}
           showErrorMessage={false}
         />

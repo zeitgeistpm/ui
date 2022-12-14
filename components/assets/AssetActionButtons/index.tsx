@@ -24,13 +24,9 @@ const AssetActionButtons = observer(
 
     if (!market) return null;
 
-    const mdm: any = isCodec(market.disputeMechanism)
-      ? market.disputeMechanism.toHuman()
-      : market.disputeMechanism;
-
     if (
       market?.status === "Closed" ||
-      (market?.status === "Disputed" && mdm.Authorized)
+      (market?.status === "Disputed" && market.disputeMechanism.Authorized)
     ) {
       return <ReportButton assetId={assetId} ticker={assetTicker} />;
     } else if (market?.status === "Reported") {
