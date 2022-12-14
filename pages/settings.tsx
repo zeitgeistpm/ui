@@ -20,6 +20,7 @@ import { useNotificationStore } from "lib/stores/NotificationStore";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { AlertTriangle } from "react-feather";
 import { groupBy } from "lodash";
+import { useIdentity } from "lib/hooks/queries/useIdentity";
 
 const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean }> = ({
   onClick = () => {},
@@ -42,13 +43,14 @@ const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean }> = ({
 const IdentitySettings = observer(() => {
   const store = useStore();
   const { wallets } = store;
-  const { identity, loadIdentity } = useUserStore();
   const notificationStore = useNotificationStore();
 
   const [displayName, setDisplayName] = useState("");
   const [discordHandle, setDiscordHandle] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
   const [transactionPending, setTransactionPending] = useState(false);
+
+  const { data: identity } = useIdentity(store.wallets.activeAccount?.address);
 
   useEffect(() => {
     if (!identity) {
@@ -77,7 +79,8 @@ const IdentitySettings = observer(() => {
         extrinsicCallback({
           notificationStore,
           successCallback: async () => {
-            await loadIdentity(wallets.activeAccount.address);
+            // todo: invalidate identity cache
+            // await loadIdentity(wallets.activeAccount.address);
             setTransactionPending(false);
             notificationStore.pushNotification("Successfully set Identity", {
               type: "Success",
@@ -107,7 +110,9 @@ const IdentitySettings = observer(() => {
       extrinsicCallback({
         notificationStore,
         successCallback: async () => {
-          await loadIdentity(wallets.activeAccount.address);
+          // todo: invalidate identity cache
+
+          // await loadIdentity(wallets.activeAccount.address);
           notificationStore.pushNotification("Successfully cleared Identity", {
             type: "Success",
           });

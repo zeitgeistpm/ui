@@ -3,7 +3,7 @@ import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { Judgement } from "lib/stores/UserStore";
 import { useSdkv2 } from "../useSdkv2";
 
-export const rootKey = "pool";
+export const rootKey = "identity";
 
 export const useIdentity = (address: string) => {
   const [sdk, id] = useSdkv2();
