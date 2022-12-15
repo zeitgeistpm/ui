@@ -53,6 +53,7 @@ const RedeemButton = observer(
 
     const ztgToReceive = useMemo(() => {
       if (market.marketType.categorical) {
+        //TODO! check the the balance is actually for the resolved otucome
         const balance = assetBalances?.get(signer?.address, assetId)?.data
           .balance;
         if (!balance || isNA(balance)) return new Decimal(0);
