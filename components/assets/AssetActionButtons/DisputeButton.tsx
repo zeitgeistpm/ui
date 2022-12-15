@@ -55,7 +55,7 @@ const DisputeButton = observer(
       if (market.marketType.scalar) {
         modalStore.openModal(
           <div>
-            <ScalarDisputeBox marketStore={marketStore} onDispute={() => {}} />
+            <ScalarDisputeBox market={market} />
           </div>,
           "Dispute outcome",
         );

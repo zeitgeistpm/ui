@@ -8,6 +8,7 @@ import {
 import BuySellButtons from "components/trade-slip/BuySellButtons";
 import { observer } from "mobx-react";
 import DisputeButton from "./DisputeButton";
+import RedeemButton from "./RedeemButton";
 import ReportButton from "./ReportButton";
 
 interface AssetActionButtonsProps {
@@ -30,11 +31,11 @@ const AssetActionButtons = observer(
         <ReportButton market={market} assetId={assetId} ticker={assetTicker} />
       );
     } else if (market?.status === "Reported") {
-      // return (
-      //   <DisputeButton market={market} assetId={assetId} ticker={assetTicker} />
-      // );
+      return (
+        <DisputeButton market={market} assetId={assetId} ticker={assetTicker} />
+      );
     } else if (market?.status === "Resolved") {
-      // return <RedeemButton assetId={assetId} />;
+      return <RedeemButton assetId={assetId} market={market} />;
     } else {
       return (
         <BuySellButtons

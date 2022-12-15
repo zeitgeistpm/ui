@@ -1,58 +1,71 @@
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
+import {
+  AssetId,
+  IndexerContext,
+  isRpcSdk,
+  Market,
+} from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
+import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalances";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import MarketStore from "lib/stores/MarketStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
-import { extrinsicCallback } from "lib/util/tx";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 
 const RedeemButton = observer(
   ({
-    marketStore,
+    market,
     assetId,
   }: {
-    marketStore: MarketStore;
+    market: Market<IndexerContext>;
     assetId: AssetId;
   }) => {
+    const [sdk] = useSdkv2();
     const store = useStore();
     const { wallets } = store;
     const notificationStore = useNotificationStore();
     const [ztgToReceive, setZtgToReceive] = useState<Decimal>();
+
+    const a = useAccountAssetBalances;
 
     useEffect(() => {
       (async () => {
         const winningBalance = await marketStore.calcWinnings();
         setZtgToReceive(winningBalance);
       })();
-    }, [marketStore]);
+    }, [market]);
 
     const handleClick = async () => {
+      if (!isRpcSdk(sdk)) return;
       const signer = wallets.getActiveSigner();
-      const { market } = marketStore;
-      await market.redeemShares(
-        signer,
-        extrinsicCallback({
-          notificationStore,
-          successCallback: async () => {
-            notificationStore.pushNotification(
-              `Redeemed ${ztgToReceive.toFixed(2)}${store.config.tokenSymbol}`,
-              {
-                type: "Success",
-              },
-            );
-            setZtgToReceive(new Decimal(0));
-          },
-          failCallback: ({ index, error }) => {
-            notificationStore.pushNotification(
-              store.getTransactionError(index, error),
-              {
-                type: "Error",
-              },
-            );
-          },
-        }),
+      const callback = extrinsicCallback({
+        notificationStore,
+        successCallback: async () => {
+          notificationStore.pushNotification(
+            `Redeemed ${ztgToReceive.toFixed(2)}${store.config.tokenSymbol}`,
+            {
+              type: "Success",
+            },
+          );
+          setZtgToReceive(new Decimal(0));
+        },
+        failCallback: ({ index, error }) => {
+          notificationStore.pushNotification(
+            store.getTransactionError(index, error),
+            {
+              type: "Error",
+            },
+          );
+        },
+      });
+
+      const tx = sdk.context.api.tx.predictionMarkets.redeemShares(
+        market.marketId,
       );
+
+      await signAndSend(tx, signer, callback);
     };
     return (
       <div className="w-full flex items-center justify-center">

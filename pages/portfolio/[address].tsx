@@ -172,7 +172,7 @@ const Portfolio: NextPage = observer(() => {
             return {
               market: market,
               assetId: asset,
-              marketEndTimeStamp: marketEnd,
+              marketEndTimeStamp: marketEnd as number,
               outcome,
               title: market.slug,
               amount: amount,
@@ -184,7 +184,7 @@ const Portfolio: NextPage = observer(() => {
             return {
               market: market,
               assetId: asset,
-              marketEndTimeStamp: marketEnd,
+              marketEndTimeStamp: marketEnd as number,
               outcome,
               title: market.slug,
               amount: amount,
