@@ -124,9 +124,7 @@ const Portfolio: NextPage = observer(() => {
       }
 
       const positionPromises = accountTokenPositions.data.map(
-        async (p, index) => {
-          const { asset, balance } = p;
-
+        async ({ asset, balance }) => {
           const assetIndex = getIndexOf(asset);
           const marketId = getMarketIdOf(asset);
 
@@ -134,7 +132,6 @@ const Portfolio: NextPage = observer(() => {
             (d) => d.market.marketId === marketId,
           );
 
-          //const market = await marketsStore.getMarket(marketId);
           if (!saturated || !saturated.market || !saturated.market.categories)
             return;
 
@@ -251,6 +248,7 @@ const Portfolio: NextPage = observer(() => {
       buttons: (
         <AssetActionButtons
           assetId={position.assetId}
+          market={position.market}
           assetTicker={position.outcome.ticker}
         />
       ),

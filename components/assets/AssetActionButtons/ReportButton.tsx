@@ -1,11 +1,11 @@
 import {
   CategoricalAssetId,
-  getMarketIdOf,
+  IndexerContext,
   isRpcSdk,
+  Market,
   ScalarAssetId,
 } from "@zeitgeistpm/sdk-next";
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
-import { useMarket } from "lib/hooks/queries/useMarket";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
@@ -15,9 +15,11 @@ import { observer } from "mobx-react";
 
 const ReportButton = observer(
   ({
+    market,
     assetId,
     ticker,
   }: {
+    market: Market<IndexerContext>;
     assetId: ScalarAssetId | CategoricalAssetId;
     ticker: string;
   }) => {
@@ -26,9 +28,6 @@ const ReportButton = observer(
     const { wallets } = store;
     const notificationStore = useNotificationStore();
     const modalStore = useModalStore();
-
-    const marketId = getMarketIdOf(assetId);
-    const { data: market } = useMarket(marketId);
 
     if (!market) return null;
 
@@ -40,7 +39,7 @@ const ReportButton = observer(
       if (market.marketType.scalar) {
         modalStore.openModal(
           <div>
-            <ScalarReportBox assetId={assetId} />
+            <ScalarReportBox market={market} />
           </div>,
           "Report outcome",
         );

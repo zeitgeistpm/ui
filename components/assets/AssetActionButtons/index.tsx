@@ -1,38 +1,40 @@
-import { isCodec } from "@polkadot/util";
 import {
   CategoricalAssetId,
   fromString,
-  getMarketIdOf,
+  IndexerContext,
+  Market,
   ScalarAssetId,
 } from "@zeitgeistpm/sdk-next";
 import BuySellButtons from "components/trade-slip/BuySellButtons";
-import { useMarket } from "lib/hooks/queries/useMarket";
 import { observer } from "mobx-react";
 import DisputeButton from "./DisputeButton";
-import RedeemButton from "./RedeemButton";
 import ReportButton from "./ReportButton";
 
 interface AssetActionButtonsProps {
+  market: Market<IndexerContext>;
   assetId?: ScalarAssetId | CategoricalAssetId;
   assetTicker: string;
 }
 
 const AssetActionButtons = observer(
-  ({ assetId, assetTicker }: AssetActionButtonsProps) => {
-    const marketId = getMarketIdOf(assetId);
-    const { data: market } = useMarket(marketId);
-
-    if (!market) return null;
-
+  ({ market, assetId, assetTicker }: AssetActionButtonsProps) => {
+    if (!market) {
+      console.error("no market");
+      return null;
+    }
     if (
       market?.status === "Closed" ||
       (market?.status === "Disputed" && market.disputeMechanism.Authorized)
     ) {
-      return <ReportButton assetId={assetId} ticker={assetTicker} />;
+      return (
+        <ReportButton market={market} assetId={assetId} ticker={assetTicker} />
+      );
     } else if (market?.status === "Reported") {
-      return <DisputeButton assetId={assetId} ticker={assetTicker} />;
+      // return (
+      //   <DisputeButton market={market} assetId={assetId} ticker={assetTicker} />
+      // );
     } else if (market?.status === "Resolved") {
-      return <RedeemButton assetId={assetId} />;
+      // return <RedeemButton assetId={assetId} />;
     } else {
       return (
         <BuySellButtons

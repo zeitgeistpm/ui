@@ -1,3 +1,4 @@
+import { IndexerContext, Market } from "@zeitgeistpm/sdk-next";
 import { OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
@@ -10,10 +11,10 @@ import { useState } from "react";
 
 const ScalarDisputeBox = observer(
   ({
-    marketStore,
+    market,
     onDispute,
   }: {
-    marketStore: MarketStore;
+    market: Market<IndexerContext>;
     onDispute: () => void;
   }) => {
     const store = useStore();
@@ -30,7 +31,6 @@ const ScalarDisputeBox = observer(
       : disputeBond;
 
     const handleSignTransaction = async () => {
-      const { market } = marketStore;
       const outcomeReport: OutcomeReport = {
         scalar: Number(scalarReportValue),
       };
@@ -45,7 +45,6 @@ const ScalarDisputeBox = observer(
             notificationStore.pushNotification("Outcome Disputed", {
               type: "Success",
             });
-            await marketStore.refetchMarketData();
             onDispute();
           },
           failCallback: ({ index, error }) => {

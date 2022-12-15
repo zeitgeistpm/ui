@@ -1,15 +1,14 @@
 import {
-  CategoricalAssetId,
-  getMarketIdOf,
+  getScalarBounds,
+  IndexerContext,
+  isNA,
   isRpcSdk,
-  ScalarAssetId,
+  Market,
 } from "@zeitgeistpm/sdk-next";
-import { OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
-import { useMarket } from "lib/hooks/queries/useMarket";
+import { useAuthorityProxiesForMarket } from "lib/hooks/queries/useAuthorityProxiesForMarket";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import MarketStore from "lib/stores/MarketStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
@@ -18,10 +17,10 @@ import { useState } from "react";
 
 const ScalarReportBox = observer(
   ({
-    assetId,
+    market,
     onReport,
   }: {
-    assetId: ScalarAssetId | CategoricalAssetId;
+    market: Market<IndexerContext>;
     onReport?: () => void;
   }) => {
     const [sdk] = useSdkv2();
@@ -30,10 +29,12 @@ const ScalarReportBox = observer(
     const notificationStore = useNotificationStore();
     const [scalarReportValue, setScalarReportValue] = useState("");
 
-    const marketId = getMarketIdOf(assetId);
-    const { data: market } = useMarket(marketId);
+    const signer = wallets?.getActiveSigner();
+    const { data: authorityProxies } = useAuthorityProxiesForMarket(market);
 
     if (!market) return null;
+
+    const bounds = getScalarBounds(market).unwrap();
 
     const handleNumberChange = (val: string) => {
       setScalarReportValue(val);
@@ -41,7 +42,8 @@ const ScalarReportBox = observer(
 
     const reportDisabled = !sdk || !isRpcSdk(sdk);
 
-    const { isAuthorityProxy } = marketStore;
+    const isAuthorityProxy =
+      !isNA(authorityProxies) && authorityProxies.includes(signer?.address);
 
     const handleSignTransaction = async () => {
       const outcomeReport: any = {
@@ -82,16 +84,21 @@ const ScalarReportBox = observer(
         } else {
           signAndSend(tx, signer, callback);
         }
-      } else {
-        await market.reportOutcome(signer, outcomeReport, callback);
+      } else if (isRpcSdk(sdk)) {
+        const tx = sdk.context.api.tx.predictionMarkets.report(
+          market.marketId,
+          outcomeReport,
+        );
+        signAndSend(tx, signer, callback);
       }
     };
+
     return (
       <>
         <AmountInput
           value={scalarReportValue}
-          min={market.bounds?.[0].toString()}
-          max={market.bounds?.[1].toString()}
+          min={bounds[0].toString()}
+          max={bounds[1].toString()}
           onChange={handleNumberChange}
           showErrorMessage={false}
         />
