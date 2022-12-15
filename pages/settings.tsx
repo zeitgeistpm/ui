@@ -444,7 +444,7 @@ const Settings: NextPage = observer(() => {
           Subscribe to the newsletter
         </label>
         <SubmitButton onClick={handleEmailAddressSubmit} /> */}
-        <div className="text-ztg-16-150 mt-ztg-40">
+        {/* <div className="text-ztg-16-150 mt-ztg-40">
           Theme
           <div className="flex flex-wrap mt-ztg-20">
             <SubmitButton
@@ -454,7 +454,7 @@ const Settings: NextPage = observer(() => {
               Sync with computer
             </SubmitButton>
           </div>
-        </div>
+        </div> */}
         {/* TODO */}
         {/* <div className="p-ztg-15 bg-efefef mx-ztg-17 rounded-ztg-10 flex flex-row">
           <div className="flex flex-col w-full">
