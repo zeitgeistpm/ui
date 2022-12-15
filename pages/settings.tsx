@@ -15,14 +15,13 @@ import {
 } from "lib/types";
 import { endpoints, gqlEndpoints } from "lib/constants";
 import { getEndpointOption } from "lib/util";
-import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useNotificationStore } from "lib/stores/NotificationStore";
-import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { AlertTriangle } from "react-feather";
 import { groupBy } from "lodash";
-import { useIdentity } from "lib/hooks/queries/useIdentity";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { identityRootKey, useIdentity } from "lib/hooks/queries/useIdentity";
+import { useQueryClient } from "@tanstack/react-query";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 
 const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean }> = ({
   onClick = () => {},
@@ -51,8 +50,10 @@ const IdentitySettings = observer(() => {
   const [discordHandle, setDiscordHandle] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
   const queryClient = useQueryClient();
+  const [_, id] = useSdkv2();
+  const address = store.wallets.activeAccount?.address;
 
-  const { data: identity } = useIdentity(store.wallets.activeAccount?.address);
+  const { data: identity } = useIdentity(address);
 
   const { send: updateIdentity, isLoading: isUpdating } = useExtrinsic(
     () =>
@@ -63,7 +64,7 @@ const IdentitySettings = observer(() => {
       }),
     {
       onSuccess: () => {
-        // queryClient.invalidateQueries('')
+        queryClient.invalidateQueries([id, identityRootKey, address]);
         notificationStore.pushNotification("Successfully set Identity", {
           type: "Success",
         });
@@ -74,7 +75,7 @@ const IdentitySettings = observer(() => {
     () => store.sdk.api.tx.identity.clearIdentity(),
     {
       onSuccess: () => {
-        // queryClient.invalidateQueries('')
+        queryClient.invalidateQueries([id, identityRootKey, address]);
         notificationStore.pushNotification("Successfully cleared Identity", {
           type: "Success",
         });

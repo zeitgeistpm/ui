@@ -3,13 +3,13 @@ import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { Judgement } from "lib/stores/UserStore";
 import { useSdkv2 } from "../useSdkv2";
 
-export const rootKey = "identity";
+export const identityRootKey = "identity";
 
 export const useIdentity = (address: string) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, rootKey, address],
+    [id, identityRootKey, address],
     async () => {
       if (address && isRpcSdk(sdk)) {
         const identity = (await sdk.context.api.query.identity.identityOf(

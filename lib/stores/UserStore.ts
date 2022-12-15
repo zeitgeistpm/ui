@@ -103,12 +103,7 @@ export default class UserStore {
     reaction(
       () => this.store.wallets.activeAccount,
       (activeAccount) => {
-        if (activeAccount == null) {
-          this.clearIdentity();
-          return;
-        }
         setToLocalStorage("accountAddress", activeAccount.address);
-        this.loadIdentity(activeAccount.address);
       },
     );
 
@@ -250,65 +245,6 @@ export default class UserStore {
     } else {
       return this.storedTheme;
     }
-  }
-
-  async getIdentity(address: string): Promise<UserIdentity> {
-    const identity = (await this.store.sdk.api.query.identity.identityOf(
-      address,
-    )) as any;
-
-    const indentityInfo =
-      identity.isNone === false ? (identity.value as any).get("info") : null;
-    if (indentityInfo) {
-      const textDecoder = new TextDecoder();
-
-      let discordHandle: string;
-      indentityInfo.get("additional").forEach((element) => {
-        if (
-          element[0].value?.isEmpty === false &&
-          textDecoder.decode(element[0].value)
-        ) {
-          discordHandle = textDecoder.decode(element[1].value);
-        }
-      });
-
-      const judgements = identity.value.get("judgements")[0];
-
-      const judgementType: Judgement = judgements
-        ? judgements[1].type
-        : "Unknown";
-
-      return {
-        displayName:
-          indentityInfo.get("display").isNone === false
-            ? textDecoder.decode(indentityInfo.get("display").value)
-            : "",
-        twitter:
-          indentityInfo.get("twitter").isNone === false
-            ? textDecoder.decode(indentityInfo.get("twitter").value)
-            : "",
-        discord: discordHandle,
-        judgement: judgementType,
-      };
-    } else {
-      return {
-        displayName: "",
-        twitter: "",
-        discord: "",
-        judgement: null,
-      };
-    }
-  }
-
-  async loadIdentity(address: string) {
-    const identity = await this.getIdentity(address);
-    runInAction(() => {
-      this.identity = identity;
-    });
-  }
-
-  clearIdentity() {
-    this.identity = undefined;
   }
 
   async checkIP() {

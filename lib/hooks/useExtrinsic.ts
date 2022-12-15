@@ -35,7 +35,7 @@ export const useExtrinsic = <T>(
           setIsLoading(false);
           setIsSuccess(true);
 
-          callbacks.onSuccess();
+          callbacks?.onSuccess();
         },
         failCallback: ({ index, error }) => {
           setIsLoading(false);
