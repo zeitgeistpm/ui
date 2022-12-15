@@ -97,14 +97,6 @@ const IdentitySettings = observer(() => {
     }
   }, [identity]);
 
-  const handleSubmit = async () => {
-    updateIdentity();
-  };
-
-  const handleClear = async () => {
-    clearIdentity();
-  };
-
   const handleDisplayNameChange = (value: string) => {
     if (getBytesCount(value) <= 32) {
       setDisplayName(value);
@@ -185,12 +177,12 @@ const IdentitySettings = observer(() => {
         </div>
       </div>
       <div className="flex mb-ztg-20" data-test="createMarketButton">
-        <SubmitButton onClick={handleSubmit} disabled={submitDisabled}>
+        <SubmitButton onClick={updateIdentity} disabled={submitDisabled}>
           Set Identity
         </SubmitButton>
         <button
           className="ml-ztg-20 text-ztg-14-120 text-sky-600 focus:outline-none"
-          onClick={handleClear}
+          onClick={clearIdentity}
         >
           Clear Identity
         </button>
