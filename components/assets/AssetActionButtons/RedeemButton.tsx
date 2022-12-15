@@ -1,18 +1,26 @@
 import {
   AssetId,
+  getScalarBounds,
   IndexerContext,
+  isAvailable,
+  isNA,
   isRpcSdk,
   Market,
+  MarketId,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
-import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalances";
+import { ZTG } from "lib/constants";
+import {
+  AccountAssetIdPair,
+  useAccountAssetBalances,
+} from "lib/hooks/queries/useAccountAssetBalances";
+import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import MarketStore from "lib/stores/MarketStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const RedeemButton = observer(
   ({
@@ -25,21 +33,77 @@ const RedeemButton = observer(
     const [sdk] = useSdkv2();
     const store = useStore();
     const { wallets } = store;
+    const signer = wallets?.getActiveSigner();
     const notificationStore = useNotificationStore();
-    const [ztgToReceive, setZtgToReceive] = useState<Decimal>();
 
-    const a = useAccountAssetBalances;
+    const scalarBounds = getScalarBounds(market);
 
-    useEffect(() => {
-      (async () => {
-        const winningBalance = await marketStore.calcWinnings();
-        setZtgToReceive(winningBalance);
-      })();
-    }, [market]);
+    const balanceQueries: AccountAssetIdPair[] = market.marketType.categorical
+      ? [{ assetId, account: signer?.address }]
+      : [
+          {
+            account: signer?.address,
+            assetId: { ScalarOutcome: [market.marketId as MarketId, "Short"] },
+          },
+          {
+            account: signer?.address,
+            assetId: { ScalarOutcome: [market.marketId as MarketId, "Long"] },
+          },
+        ];
+
+    const assetBalances = useAccountAssetBalances(balanceQueries);
+
+    const ztgToReceive = useMemo(() => {
+      if (market.marketType.categorical) {
+        const balance = assetBalances?.get(signer?.address, assetId)?.data
+          .balance;
+        if (!balance || isNA(balance)) return new Decimal(0);
+
+        return new Decimal(balance?.free.toString()).div(ZTG);
+      } else {
+        const shortBalance = assetBalances?.get(signer?.address, {
+          ScalarOutcome: [market.marketId as MarketId, "Short"],
+        })?.data?.balance;
+
+        const longBalance = assetBalances?.get(signer?.address, {
+          ScalarOutcome: [market.marketId as MarketId, "Long"],
+        })?.data?.balance;
+
+        if (
+          !shortBalance ||
+          isNA(shortBalance) ||
+          !longBalance ||
+          isNA(longBalance)
+        )
+          return new Decimal(0);
+
+        const bounds = scalarBounds.unwrap();
+        const lowerBound = bounds[0].toNumber();
+        const upperBound = bounds[1].toNumber();
+        const resolvedNumber = Number(market.resolvedOutcome);
+
+        const priceRange = upperBound - lowerBound;
+        const resolvedNumberAsPercentage =
+          (resolvedNumber - lowerBound) / priceRange;
+
+        const longTokenValue = resolvedNumberAsPercentage;
+        const shortTokenValue = 1 - resolvedNumberAsPercentage;
+
+        const longRewards = new Decimal(longBalance.free.toString())
+          .div(ZTG)
+          .mul(longTokenValue);
+
+        const shortRewards = new Decimal(shortBalance.free.toString())
+          .div(ZTG)
+          .mul(shortTokenValue);
+
+        return longRewards.add(shortRewards).div(ZTG);
+      }
+    }, [market, assetId, ...assetBalances.query.map((q) => q.data)]);
 
     const handleClick = async () => {
       if (!isRpcSdk(sdk)) return;
-      const signer = wallets.getActiveSigner();
+
       const callback = extrinsicCallback({
         notificationStore,
         successCallback: async () => {
@@ -49,7 +113,7 @@ const RedeemButton = observer(
               type: "Success",
             },
           );
-          setZtgToReceive(new Decimal(0));
+          assetBalances?.query.forEach((q) => q.refetch());
         },
         failCallback: ({ index, error }) => {
           notificationStore.pushNotification(
@@ -79,8 +143,9 @@ const RedeemButton = observer(
           className="rounded-full h-ztg-20  text-ztg-10-150 focus:outline-none px-ztg-15 
               py-ztg-2 ml-auto bg-ztg-blue text-white disabled:opacity-20 disabled:cursor-default"
         >
-          Redeem Tokens
+          Redeem Tokens ({ztgToReceive?.toFixed(2)})
         </button>
+        ({ztgToReceive?.toFixed(2)})
       </div>
     );
   },
