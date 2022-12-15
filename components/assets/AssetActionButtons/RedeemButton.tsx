@@ -2,7 +2,6 @@ import {
   AssetId,
   getScalarBounds,
   IndexerContext,
-  isAvailable,
   isNA,
   isRpcSdk,
   Market,
@@ -14,13 +13,12 @@ import {
   AccountAssetIdPair,
   useAccountAssetBalances,
 } from "lib/hooks/queries/useAccountAssetBalances";
-import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 const RedeemButton = observer(
   ({
