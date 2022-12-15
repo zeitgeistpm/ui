@@ -50,13 +50,11 @@ const IdentitySettings = observer(() => {
   const [displayName, setDisplayName] = useState("");
   const [discordHandle, setDiscordHandle] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
-  //todo: replace with isLoading
-  const [transactionPending, setTransactionPending] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: identity } = useIdentity(store.wallets.activeAccount?.address);
 
-  const { send: updateIdentity } = useExtrinsic(
+  const { send: updateIdentity, isLoading: isUpdating } = useExtrinsic(
     () =>
       store.sdk.api.tx.identity.setIdentity({
         additional: [[{ Raw: "discord" }, { Raw: discordHandle }]],
@@ -72,7 +70,7 @@ const IdentitySettings = observer(() => {
       },
     },
   );
-  const { send: clearIdentity } = useExtrinsic(
+  const { send: clearIdentity, isLoading: isClearing } = useExtrinsic(
     () => store.sdk.api.tx.identity.clearIdentity(),
     {
       onSuccess: () => {
@@ -83,6 +81,8 @@ const IdentitySettings = observer(() => {
       },
     },
   );
+
+  const transactionPending = isClearing || isUpdating;
 
   useEffect(() => {
     if (!identity) {
