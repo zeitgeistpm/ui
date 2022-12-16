@@ -135,7 +135,10 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   }, [marketsPages]);
 
   return (
-    <div className={"pt-ztg-46 mb-[38px]" + className}>
+    <div
+      className={"pt-ztg-46 mb-[38px]" + className}
+      data-testid="marketsList"
+    >
       <MarketFilterSelection
         onFiltersChange={setFilters}
         onOrderingChange={setOrderBy}
