@@ -1,6 +1,7 @@
 import { OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
+import { ZTG } from "lib/constants";
 import MarketStore from "lib/stores/MarketStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
@@ -32,7 +33,7 @@ const ScalarDisputeBox = observer(
     const handleSignTransaction = async () => {
       const { market } = marketStore;
       const outcomeReport: OutcomeReport = {
-        scalar: Number(scalarReportValue),
+        scalar: Number(scalarReportValue) * ZTG,
       };
 
       const signer = store.wallets.getActiveSigner();
