@@ -1,6 +1,8 @@
 import {
   MarketCurrencyFilter,
+  MarketOrderByOption,
   MarketsListQuery,
+  MarketsOrderBy,
   MarketStatusFilter,
   MarketTagFilter,
 } from "lib/types/market-filter";
@@ -41,4 +43,12 @@ export const defaultMarketsQueryState: MarketsListQuery = {
     tag: [],
     currency: [],
   },
+  ordering: MarketsOrderBy.Newest,
+  liquidityOnly: true,
 };
+
+export const marketsOrderByOptions: MarketOrderByOption[] = Object.values(
+  MarketsOrderBy,
+).map((value) => {
+  return { value, label: value };
+});

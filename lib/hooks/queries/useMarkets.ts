@@ -5,13 +5,17 @@ import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets
 import objectHash from "object-hash";
 import { useStore } from "lib/stores/Store";
 import { getCurrentPrediction } from "lib/util/assets";
-import { MarketFilter, MarketFilterType } from "lib/types/market-filter";
+import {
+  MarketFilter,
+  MarketFilterType,
+  MarketsOrderBy,
+} from "lib/types/market-filter";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "markets";
 
 const hashFilters = (filters: MarketFilter[]): string => {
-  const sortedFilters = filters.sort((a, b) => {
+  const sortedFilters = [...filters].sort((a, b) => {
     if (a.type !== b.type) {
       return a.type < b.type ? -1 : 1;
     } else {
@@ -29,7 +33,18 @@ const getFilterValuesByType = (
   return filters.filter((f) => f.type === type).map((f) => f.value);
 };
 
-export const useMarkets = (filters?: MarketFilter[]) => {
+const orderByMap = {
+  [MarketsOrderBy.Newest]: MarketOrderByInput.MarketIdDesc,
+  [MarketsOrderBy.Oldest]: MarketOrderByInput.MarketIdAsc,
+  [MarketsOrderBy.MostVolume]: MarketOrderByInput.PoolVolumeDesc,
+  [MarketsOrderBy.LeastVolume]: MarketOrderByInput.PoolVolumeAsc,
+};
+
+export const useMarkets = (
+  orderBy: MarketsOrderBy,
+  withLiquidityOnly = false,
+  filters?: MarketFilter[],
+) => {
   const [sdk, id] = useSdkv2();
   const { graphQLClient } = useStore();
 
@@ -55,6 +70,7 @@ export const useMarkets = (filters?: MarketFilter[]) => {
         status_not_in: ["Destroyed"],
         status_in: statuses.length === 0 ? undefined : statuses,
         tags_containsAny: tags.length === 0 ? undefined : tags,
+        pool_isNull: withLiquidityOnly ? false : undefined,
         pool:
           currencies.length === 0
             ? undefined
@@ -64,7 +80,7 @@ export const useMarkets = (filters?: MarketFilter[]) => {
       },
       offset: !pageParam ? 0 : limit * pageParam,
       limit: limit,
-      order: MarketOrderByInput.MarketIdDesc,
+      order: orderByMap[orderBy],
     });
 
     const outcomes = await getOutcomesForMarkets(graphQLClient, markets);
@@ -91,7 +107,7 @@ export const useMarkets = (filters?: MarketFilter[]) => {
   };
 
   const query = useInfiniteQuery({
-    queryKey: [id, rootKey, hashFilters(filters)],
+    queryKey: [id, rootKey, hashFilters(filters), orderBy, withLiquidityOnly],
     queryFn: fetcher,
     enabled: Boolean(sdk) && isIndexedSdk(sdk),
     getNextPageParam: (lastPage) => lastPage.next,
