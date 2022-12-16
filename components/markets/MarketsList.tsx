@@ -1,5 +1,6 @@
 import { Context, IndexedMarket } from "@zeitgeistpm/sdk-next";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import Decimal from "decimal.js";
 import { useInView } from "react-intersection-observer";
 import { observer } from "mobx-react";
 import { makeAutoObservable } from "mobx";
@@ -11,9 +12,12 @@ import { useStore } from "lib/stores/Store";
 import { useMarkets } from "lib/hooks/queries/useMarkets";
 import { MarketOutcomes } from "lib/types/markets";
 import { useContentScrollTop } from "components/context/ContentDimensionsContext";
-import { MarketFilter } from "lib/types/market-filter";
+import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
 import MarketFilterSelection from "./market-filter";
 import MarketCard from "./market-card";
+import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
+import { filterTypes } from "lib/constants/market-filter";
+import { ZTG } from "lib/constants";
 
 export type MarketsListProps = {
   className?: string;
@@ -26,15 +30,55 @@ const scrollRestoration = makeAutoObservable({
   },
 });
 
+const useChangeQuery = (
+  filters?: MarketFilter[],
+  orderBy?: MarketsOrderBy,
+  withLiquidityOnly?: boolean,
+) => {
+  const queryState = useMarketsUrlQuery();
+
+  useEffect(() => {
+    if (filters == null) {
+      return;
+    }
+    const newFilters = {};
+    for (const filterType of filterTypes) {
+      const filterByType = filters.filter((f) => f.type === filterType);
+      newFilters[filterType] = filterByType.map((f) => f.value);
+    }
+    queryState?.updateQuery({
+      filters: newFilters,
+    });
+  }, [filters]);
+
+  useEffect(() => {
+    if (orderBy == null) {
+      return;
+    }
+    queryState?.updateQuery({ ordering: orderBy });
+  }, [orderBy]);
+
+  useEffect(() => {
+    if (withLiquidityOnly == null) {
+      return;
+    }
+    queryState?.updateQuery({ liquidityOnly: withLiquidityOnly });
+  }, [withLiquidityOnly]);
+};
+
 const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const store = useStore();
   const { markets: marketsStore } = store;
   const [filters, setFilters] = useState<MarketFilter[]>();
+  const [orderBy, setOrderBy] = useState<MarketsOrderBy>();
+  const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
 
   const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
   const [scrollTop, scrollTo] = useContentScrollTop();
   const [scrollingRestored, setScrollingRestored] = useState(false);
+
+  useChangeQuery(filters, orderBy, withLiquidityOnly);
 
   const {
     data: marketsPages,
@@ -42,14 +86,14 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     isLoading,
     hasNextPage,
     fetchNextPage,
-  } = useMarkets(filters);
+  } = useMarkets(orderBy, withLiquidityOnly, filters);
 
   useEffect(
     debounce(() => {
       if (scrollingRestored) {
         scrollRestoration.set(scrollTop);
       }
-    }, 150),
+    }, 50),
     [scrollTop, scrollingRestored],
   );
 
@@ -58,15 +102,6 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       fetchNextPage();
     }
   }, [isLoadMarkerInView, hasNextPage]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (!scrollingRestored) {
-        scrollTo(scrollRestoration.scrollTop);
-        setScrollingRestored(true);
-      }
-    }, 50);
-  }, []);
 
   const [markets, setMarkets] = useState<
     (IndexedMarket<Context> & {
@@ -84,6 +119,13 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const count = markets?.length ?? 0;
 
   useEffect(() => {
+    if (!scrollingRestored && count > 0) {
+      scrollTo(scrollRestoration.scrollTop);
+      setScrollingRestored(true);
+    }
+  }, [scrollingRestored, scrollRestoration.scrollTop, count]);
+
+  useEffect(() => {
     const pageNum = marketsPages?.pages.length ?? 0;
     if (pageNum > 0) {
       for (const market of marketsPages.pages[pageNum - 1].data) {
@@ -92,19 +134,16 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     }
   }, [marketsPages]);
 
-  useEffect(() => {
-    console.log("filters changed", filters);
-  }, [filters]);
-
   return (
     <div className={"pt-ztg-46 mb-[38px]" + className}>
       <MarketFilterSelection
-        onFiltersChange={(filters) => {
-          setFilters(filters);
-        }}
+        onFiltersChange={setFilters}
+        onOrderingChange={setOrderBy}
+        onWithLiquidityOnlyChange={setWithLiquidityOnly}
       />
       <div className="grid grid-cols-3 gap-[30px]">
         {markets?.map((market) => {
+          const volume = market.pool?.volume ?? 0;
           return (
             <MarketCard
               marketId={market.marketId}
@@ -114,7 +153,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
               img={market.img}
               prediction={market.prediction}
               baseAsset={market.pool?.baseAsset}
-              volume={market.pool?.volume}
+              volume={new Decimal(volume).div(ZTG).toNumber()}
               key={`market-${market.marketId}`}
             />
           );

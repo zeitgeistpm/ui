@@ -2,11 +2,17 @@ import { filterTypes } from "lib/constants/market-filter";
 import { defaultTags } from "lib/constants/markets";
 import { MarketStatus } from "./markets";
 
-export type MarketFilterSortOptionLabel =
-  | "Newest"
-  | "Oldest"
-  | "Most Volume"
-  | "Least Volume";
+export enum MarketsOrderBy {
+  Newest = "Newest",
+  Oldest = "Oldest",
+  MostVolume = "Most Volume",
+  LeastVolume = "Least Volume",
+}
+
+export type MarketOrderByOption = {
+  label: MarketsOrderBy;
+  value: MarketsOrderBy;
+};
 
 export type MarketFilterTagLabel = typeof defaultTags[number];
 
@@ -57,4 +63,6 @@ export type MarketsListQuery = {
   filters: {
     [key in MarketFilterType]?: string[];
   };
+  ordering: MarketsOrderBy;
+  liquidityOnly: boolean;
 };

@@ -6,7 +6,7 @@ import {
 } from "../types";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { hexToU8a, isHex } from "@polkadot/util";
-import { endpoints, gqlEndpoints } from "../constants";
+import { endpoints } from "../constants";
 
 export const padBalance = (bal: string): string => {
   const digits = bal.length;

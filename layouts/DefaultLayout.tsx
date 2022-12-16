@@ -16,6 +16,9 @@ import { usePrevious } from "lib/hooks/usePrevious";
 import { shouldScrollTop } from "lib/util/should-scroll";
 import dynamic from "next/dynamic";
 
+// font optimization from @next/font
+import { inter, kanit, roboto_mono } from "lib/util/fonts";
+
 const RightDrawer = dynamic(() => import("components/drawer/RightDrawer"), {
   ssr: false,
 });
@@ -54,6 +57,16 @@ const DefaultLayout: FC = observer(({ children }) => {
       onScrollCapture={onScrollCapture}
       className="relative flex min-h-screen justify-evenly bg-white dark:bg-sky-1000 overflow-hidden"
     >
+      {/* loads optimized fonts for global access */}
+      <style jsx global>
+        {`
+          :root {
+            --font-inter: ${inter.style.fontFamily};
+            --font-kanit: ${kanit.style.fontFamily};
+            --font-roboto-mono: ${roboto_mono.style.fontFamily};
+          }
+        `}
+      </style>
       <LeftDrawer />
       <div
         ref={contentRef}

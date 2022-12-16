@@ -2,11 +2,16 @@ import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import { ChevronDown } from "react-feather";
 import ReactSelect from "react-select";
-import { MarketFilter, MarketsListQuery } from "lib/types/market-filter";
+import {
+  MarketFilter,
+  MarketsListQuery,
+  MarketsOrderBy,
+} from "lib/types/market-filter";
 import { findFilterIndex } from "lib/util/market-filter";
 import {
   filterTypes,
   marketCurrencyFilterOptions,
+  marketsOrderByOptions,
   marketStatusFilterOptions,
   marketTagFilterOptions,
 } from "lib/constants/market-filter";
@@ -90,15 +95,6 @@ const DropDownSelect = observer(
   },
 );
 
-const filterOptions = [
-  { value: "newest", label: "Newest" },
-  { value: "oldest", label: "Oldest" },
-  { value: "most-liquid", label: "Most Liquid" },
-  { value: "least-liquid", label: "Least Liquid" },
-  { value: "most-volume", label: "Most Volume" },
-  { value: "least-volume", label: "Least Volume" },
-];
-
 const sortBySelectStyles = {
   control: (provided) => {
     return {
@@ -116,25 +112,55 @@ const sortBySelectStyles = {
   },
 };
 
-const SortBySelect = observer(() => {
-  return (
-    <ReactSelect
-      options={filterOptions}
-      styles={sortBySelectStyles}
-      components={{
-        IndicatorSeparator,
-      }}
-    />
-  );
-});
+const SortBySelect = observer(
+  ({
+    onOrderingChange,
+    ordering,
+  }: {
+    ordering: MarketsOrderBy;
+    onOrderingChange: (v: MarketsOrderBy) => void;
+  }) => {
+    return (
+      <ReactSelect
+        value={marketsOrderByOptions.find((opt) => opt.value === ordering)}
+        onChange={(v) => {
+          onOrderingChange(v.value);
+        }}
+        options={marketsOrderByOptions}
+        styles={sortBySelectStyles}
+        components={{
+          IndicatorSeparator,
+        }}
+      />
+    );
+  },
+);
+
+type MarketFilterOptionsProps = {
+  add: (filter: MarketFilter) => void;
+  ordering: MarketsOrderBy;
+  onOrderingChange: (ordering: MarketsOrderBy) => void;
+  withLiquidityOnly: boolean;
+  onWithLiquidityOnlyChange: (liqudityOnly: boolean) => void;
+};
 
 const MarketFilterOptions = ({
   add,
-}: {
-  add: (filter: MarketFilter) => void;
-}) => {
+  ordering,
+  onOrderingChange,
+  withLiquidityOnly,
+  onWithLiquidityOnlyChange,
+}: MarketFilterOptionsProps) => {
   return (
     <div className="w-full flex justify-end items-center gap-ztg-5">
+      <label>
+        <input
+          type="checkbox"
+          checked={withLiquidityOnly}
+          onChange={(e) => onWithLiquidityOnlyChange(e.target.checked)}
+        />
+        Liquidity only
+      </label>
       <DropDownSelect
         label="Category"
         options={marketTagFilterOptions}
@@ -150,7 +176,7 @@ const MarketFilterOptions = ({
         options={marketStatusFilterOptions}
         add={add}
       />
-      <SortBySelect />
+      <SortBySelect ordering={ordering} onOrderingChange={onOrderingChange} />
     </div>
   );
 };
@@ -187,10 +213,16 @@ const getFiltersFromQueryState = (
 
 const MarketFilterSelection = ({
   onFiltersChange,
+  onOrderingChange,
+  onWithLiquidityOnlyChange,
 }: {
   onFiltersChange: (filters: MarketFilter[]) => void;
+  onOrderingChange: (ordering: MarketsOrderBy) => void;
+  onWithLiquidityOnlyChange: (liqudityOnly: boolean) => void;
 }) => {
   const [activeFilters, setActiveFilters] = useState<MarketFilter[]>();
+  const [activeOrdering, setActiveOrdering] = useState<MarketsOrderBy>();
+  const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>(false);
   const queryState = useMarketsUrlQuery();
 
   const add = (filter: MarketFilter) => {
@@ -198,13 +230,6 @@ const MarketFilterSelection = ({
 
     const nextFilters = [...activeFilters, filter];
 
-    const queryStateFilters = queryState.filters[filter.type];
-
-    queryState.updateQuery({
-      filters: {
-        [filter.type]: [...queryStateFilters, filter.value],
-      },
-    });
     setActiveFilters(nextFilters);
   };
 
@@ -226,21 +251,6 @@ const MarketFilterSelection = ({
       ...activeFilters.slice(idx + 1),
     ];
 
-    const filterValue = filter.value;
-
-    const queryStateFilters = queryState.filters[filter.type];
-    const queryStateFilterIdx = queryStateFilters.findIndex(
-      (f) => f === filterValue,
-    );
-
-    queryState.updateQuery({
-      filters: {
-        [filter.type]: [
-          ...queryStateFilters.slice(0, queryStateFilterIdx),
-          ...queryStateFilters.slice(queryStateFilterIdx + 1),
-        ],
-      },
-    });
     setActiveFilters(nextFilters);
   };
 
@@ -253,16 +263,39 @@ const MarketFilterSelection = ({
   }, [activeFilters]);
 
   useEffect(() => {
-    if (queryState == null) {
+    onWithLiquidityOnlyChange(withLiquidityOnly);
+  }, [withLiquidityOnly]);
+
+  useEffect(() => {
+    if (activeOrdering == null) {
       return;
     }
-    const activeFilters = getFiltersFromQueryState(queryState);
-    setActiveFilters(activeFilters);
+    onOrderingChange(activeOrdering);
+  }, [activeOrdering]);
+
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    if (queryState && !initialized) {
+      const filters = getFiltersFromQueryState(queryState);
+      const ordering = queryState.ordering;
+      const liqudityOnly = queryState.liquidityOnly;
+      setActiveFilters(filters);
+      setActiveOrdering(ordering);
+      setWithLiquidityOnly(liqudityOnly);
+      setInitialized(true);
+    }
   }, [queryState]);
 
   return (
     <MarketFilterContainer>
-      <MarketFilterOptions add={add} />
+      <MarketFilterOptions
+        add={add}
+        onOrderingChange={setActiveOrdering}
+        ordering={activeOrdering}
+        withLiquidityOnly={withLiquidityOnly}
+        onWithLiquidityOnlyChange={setWithLiquidityOnly}
+      />
       <MarketActiveFilters
         filters={activeFilters}
         onClear={clear}
