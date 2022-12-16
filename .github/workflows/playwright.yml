@@ -11,7 +11,6 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare testing env
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
