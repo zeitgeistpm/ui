@@ -108,7 +108,7 @@ const MarketCard = ({
           className="flex flex-row mb-3 mr-[17px]"
         >
           <MarketImage image={img} alt={question} />
-          <div className="ml-[15px] black  font-bold w-full line-clamp-3 text-ztg-14-150">
+          <div className="ml-[15px] black font-bold w-full h-fit line-clamp-3 text-ztg-14-150">
             {question}
           </div>
         </Link>
