@@ -4,21 +4,9 @@ on:
     branches: [staging]
   pull_request:
     branches: [staging]
+  deployment_status:
 jobs:
-  setup:
-    name: Test setup
-    runs-on: ubuntu-latest
-    outputs:
-      preview_url: ${{ steps.waitForVercelPreviewDeployment.outputs.url }}
-    steps:
-      - name: Wait for Vercel preview deployment to be ready
-        uses: patrickedqvist/wait-for-vercel-preview@1.2.0
-        id: waitForVercelPreviewDeployment
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 600
   test:
-    needs: setup
     name: Playwright tests
     timeout-minutes: 5
     runs-on: ubuntu-latest
@@ -34,7 +22,8 @@ jobs:
         run: yarn playwright install --with-deps
       - name: Run Playwright tests
         run: yarn playwright test
-        env: PLAYWRIGHT_TEST_BASE_URL: ${{ needs.setup.outputs.preview_url }}
+        env:
+          PLAYWRIGHT_TEST_BASE_URL: ${{ github.event.deployment_status.target_url }}
       - uses: actions/upload-artifact@v3
         if: always()
         with:
