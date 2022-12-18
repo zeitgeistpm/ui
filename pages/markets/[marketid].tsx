@@ -1,5 +1,16 @@
 import { Skeleton } from "@material-ui/lab";
 import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
+import { GraphQLClient } from "graphql-request";
+import { observer } from "mobx-react-lite";
+import { NextPage } from "next";
+import dynamic from "next/dynamic";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { AlertTriangle } from "react-feather";
+import { combineLatest, from } from "rxjs";
+
+import MarketChart from "components/chart/marketChart";
 import LiquidityPill from "components/markets/LiquidityPill";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
@@ -12,7 +23,6 @@ import TimeSeriesChart, {
   ChartData,
   ChartSeries,
 } from "components/ui/TimeSeriesChart";
-import { GraphQLClient } from "graphql-request";
 import {
   getMarket,
   getRecentMarketIds,
@@ -25,15 +35,7 @@ import MarketStore from "lib/stores/MarketStore";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
 import useMarketImageUrl from "lib/hooks/useMarketImageUrl";
-import { observer } from "mobx-react-lite";
-import { NextPage } from "next";
-import dynamic from "next/dynamic";
-import Head from "next/head";
-import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
-import { useEffect, useState } from "react";
-import { AlertTriangle } from "react-feather";
-import { combineLatest, from } from "rxjs";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -237,6 +239,7 @@ const Market: NextPage<{
             />
           )}
         </div>
+        <MarketChart market={indexedMarket} />
         {chartData?.length > 0 && chartSeries ? (
           <div className="-ml-ztg-25">
             <TimeSeriesChart
@@ -286,4 +289,5 @@ const Market: NextPage<{
     </>
   );
 });
+
 export default Market;
