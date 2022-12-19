@@ -14,6 +14,7 @@ import AssetSelectView from "components/assets/AssetSelectView";
 import AssetSelectButton from "components/assets/AssetSelectButton";
 import { OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
 import ScalarReportBox from "./ScalarReportBox";
+import { useMarket } from "lib/hooks/queries/useMarket";
 
 const ReportBox = observer(
   ({
@@ -29,6 +30,8 @@ const ReportBox = observer(
     const [selectedAssetOption, setSelectedAssetOption] =
       useState<OutcomeOption>();
     const [options, setOptions] = useState<OutcomeOption[]>();
+
+    const { data: marketsdkv2 } = useMarket(marketStore?.market?.marketId);
 
     const { isAuthorityProxy } = marketStore;
 
@@ -185,12 +188,9 @@ const ReportBox = observer(
                   )}
                 </>
               )}
-              {marketStore.type === "scalar" && (
+              {marketsdkv2?.marketType.scalar && (
                 <div className="px-ztg-16">
-                  <ScalarReportBox
-                    marketStore={marketStore}
-                    onReport={onReport}
-                  />
+                  <ScalarReportBox market={marketsdkv2} onReport={onReport} />
                 </div>
               )}
             </>

@@ -20,10 +20,8 @@ interface AssetActionButtonsProps {
 const AssetActionButtons = observer(
   ({ market, assetId, assetTicker }: AssetActionButtonsProps) => {
     if (!market) {
-      console.error("no market");
       return null;
     }
-    console.log({ market, assetId });
     if (
       market?.status === "Closed" ||
       (market?.status === "Disputed" && market.disputeMechanism.Authorized)

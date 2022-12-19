@@ -12,6 +12,7 @@ import AssetSelectView from "../assets/AssetSelectView";
 import { AmountInput } from "../ui/inputs";
 import { OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
 import ScalarDisputeBox from "./ScalarDisputeBox";
+import { useMarket } from "lib/hooks/queries/useMarket";
 
 const DisputeBox = observer(
   ({
@@ -30,6 +31,8 @@ const DisputeBox = observer(
     const store = useStore();
     const { wallets } = store;
     const notificationStore = useNotificationStore();
+
+    const { data: marketsdkv2 } = useMarket(marketStore?.market?.marketId);
 
     const disputeBond = store.config.markets.disputeBond;
     const disputeFactor = store.config.markets.disputeFactor;
@@ -167,9 +170,9 @@ const DisputeBox = observer(
           </div>
         </div>
 
-        {marketStore.type === "scalar" && (
+        {marketsdkv2?.marketType.scalar && (
           <div className="px-ztg-16">
-            <ScalarDisputeBox marketStore={marketStore} onDispute={onDispute} />
+            <ScalarDisputeBox market={marketsdkv2} onDispute={onDispute} />
           </div>
         )}
 
