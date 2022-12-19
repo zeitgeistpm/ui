@@ -1,6 +1,6 @@
 import {
   CategoricalAssetId,
-  fromString,
+  fromCompositeIndexerAssetId,
   IndexerContext,
   Market,
   ScalarAssetId,
@@ -39,7 +39,9 @@ const AssetActionButtons = observer(
     } else {
       return (
         <BuySellButtons
-          assetId={fromString(JSON.stringify(assetId)).unwrap()}
+          assetId={fromCompositeIndexerAssetId(
+            JSON.stringify(assetId),
+          ).unwrap()}
           disabled={assetId == null}
         />
       );

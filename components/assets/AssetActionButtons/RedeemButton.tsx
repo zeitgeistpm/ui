@@ -1,5 +1,6 @@
 import {
   AssetId,
+  fromCompositeIndexerAssetId,
   getScalarBounds,
   IndexerContext,
   isNA,
@@ -53,9 +54,15 @@ const RedeemButton = observer(
 
     const ztgToReceive = useMemo(() => {
       if (market.marketType.categorical) {
-        //TODO! check the the balance is actually for the resolved otucome
-        const balance = assetBalances?.get(signer?.address, assetId)?.data
-          .balance;
+        const resolvedAssetIdString =
+          market.outcomeAssets[Number(market.resolvedOutcome)];
+
+        const resolvedAssetId = fromCompositeIndexerAssetId(
+          resolvedAssetIdString,
+        ).unwrap();
+
+        const balance = assetBalances?.get(signer?.address, resolvedAssetId)
+          ?.data.balance;
         if (!balance || isNA(balance)) return new Decimal(0);
 
         return new Decimal(balance?.free.toString()).div(ZTG);
@@ -142,7 +149,7 @@ const RedeemButton = observer(
           className="rounded-full h-ztg-20  text-ztg-10-150 focus:outline-none px-ztg-15 
               py-ztg-2 ml-auto bg-ztg-blue text-white disabled:opacity-20 disabled:cursor-default"
         >
-          Redeem Tokens ({ztgToReceive?.toFixed(2)})
+          Redeem Tokens
         </button>
         ({ztgToReceive?.toFixed(2)})
       </div>

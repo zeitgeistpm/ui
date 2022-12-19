@@ -167,6 +167,7 @@ const MarketAssetDetails = observer(
               change: priceChange,
               buttons: (
                 <AssetActionButtons
+                  market={market}
                   assetId={assetId}
                   marketId={market.id}
                   assetColor={color}
