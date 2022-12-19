@@ -1,6 +1,7 @@
 import { OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
+import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import MarketStore from "lib/stores/MarketStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
@@ -79,8 +80,14 @@ const ScalarDisputeBox = observer(
             <span className="font-mono">
               {
                 //@ts-ignore
-                marketStore.lastDispute?.outcome.scalar ??
-                  marketStore.reportedScalarOutcome
+                marketStore.lastDispute?.outcome.scalar
+                  ? //@ts-ignore
+                    new Decimal(marketStore.lastDispute.outcome.scalar)
+                      .div(ZTG)
+                      .toFixed(2)
+                  : new Decimal(marketStore.reportedScalarOutcome)
+                      .div(ZTG)
+                      .toFixed(2)
               }
             </span>
           </div>

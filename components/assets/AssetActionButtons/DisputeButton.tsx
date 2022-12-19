@@ -73,6 +73,7 @@ const DisputeButton = observer(
                 },
               );
               await marketStore.refetchMarketData();
+              modalStore.closeModal();
             },
             failCallback: ({ index, error }) => {
               notificationStore.pushNotification(

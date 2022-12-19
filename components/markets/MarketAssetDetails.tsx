@@ -1,6 +1,7 @@
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
-import { DAY_SECONDS } from "lib/constants";
+import Decimal from "decimal.js";
+import { DAY_SECONDS, ZTG } from "lib/constants";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
 import { useNavigationStore } from "lib/stores/NavigationStore";
@@ -248,8 +249,14 @@ const MarketAssetDetails = observer(
               <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
                 {
                   //@ts-ignore
-                  marketStore.lastDispute?.outcome.scalar ??
-                    marketStore.reportedScalarOutcome
+                  marketStore.lastDispute?.outcome.scalar
+                    ? //@ts-ignore
+                      new Decimal(marketStore.lastDispute.outcome.scalar)
+                        .div(ZTG)
+                        .toFixed(2)
+                    : new Decimal(marketStore.reportedScalarOutcome)
+                        .div(ZTG)
+                        .toFixed(2)
                 }
               </div>
             )}
@@ -264,8 +271,14 @@ const MarketAssetDetails = observer(
               <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
                 {
                   //@ts-ignore
-                  marketStore.lastDispute?.outcome.scalar ??
-                    marketStore.reportedScalarOutcome
+                  marketStore.lastDispute?.outcome.scalar
+                    ? //@ts-ignore
+                      new Decimal(marketStore.lastDispute.outcome.scalar)
+                        .div(ZTG)
+                        .toFixed(2)
+                    : new Decimal(marketStore.reportedScalarOutcome)
+                        .div(ZTG)
+                        .toFixed(2)
                 }
               </div>
             )}
@@ -281,7 +294,9 @@ const MarketAssetDetails = observer(
               />
             ) : (
               <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-                {marketStore.resolvedScalarOutcome}
+                {new Decimal(marketStore.resolvedScalarOutcome)
+                  .div(ZTG)
+                  .toFixed(2)}
               </div>
             )}
           </>
