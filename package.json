@@ -17,7 +17,8 @@
     "prettier:check": "npx prettier ./**/*.tsx --check",
     "prettier:fix": "npx prettier ./**/*.tsx --write",
     "start": "next start",
-    "test": "jest --watch"
+    "test:watch": "jest --watch",
+    "test": "jest"
   },
   "resolutions": {
     "@types/react": "17.0.2",
