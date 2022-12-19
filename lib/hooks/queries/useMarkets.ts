@@ -118,7 +118,10 @@ export const useMarkets = (
       data.pages
         .flatMap((p) => p.data)
         .forEach((market) => {
-          queryClient.setQueryData([id, rootKey, market.marketId], market);
+          queryClient.setQueryData(
+            [id, marketsRootKey, market.marketId],
+            market,
+          );
         });
     },
   });
