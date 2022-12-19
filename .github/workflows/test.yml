@@ -1,4 +1,4 @@
-name: Jest Unit Tests
+name: Unit Tests
 on:
   push:
     branches: [staging]
@@ -6,7 +6,7 @@ on:
     branches: [staging]
 jobs:
   test:
-    name: Jest Unit Tests
+    name: Jest
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
