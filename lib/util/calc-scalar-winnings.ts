@@ -1,16 +1,20 @@
-export const calcScalarWinnings = (
-  lowerBound: number,
-  upperBound: number,
-  resolvedNumber: number,
-  shortAssetAmount: number,
-  longAssetAmount: number,
-) => {
-  const priceRange = upperBound - lowerBound;
-  const resolvedNumberAsPercentage = (resolvedNumber - lowerBound) / priceRange;
-  const longTokenValue = resolvedNumberAsPercentage;
-  const shortTokenValue = 1 - resolvedNumberAsPercentage;
-  const longRewards = longAssetAmount * longTokenValue;
-  const shortRewards = shortAssetAmount * shortTokenValue;
+import Decimal from "decimal.js";
 
-  return longRewards + shortRewards;
+export const calcScalarWinnings = (
+  lowerBound: number | Decimal,
+  upperBound: number | Decimal,
+  resolvedNumber: number | Decimal,
+  shortAssetAmount: number | Decimal,
+  longAssetAmount: number | Decimal,
+) => {
+  const priceRange = new Decimal(upperBound).minus(lowerBound);
+  const resolvedNumberAsPercentage = new Decimal(resolvedNumber)
+    .minus(lowerBound)
+    .div(priceRange);
+  const longTokenValue = resolvedNumberAsPercentage;
+  const shortTokenValue = new Decimal(1).minus(resolvedNumberAsPercentage);
+  const longRewards = new Decimal(longAssetAmount).mul(longTokenValue);
+  const shortRewards = new Decimal(shortAssetAmount).mul(shortTokenValue);
+
+  return new Decimal(longRewards).plus(shortRewards);
 };
