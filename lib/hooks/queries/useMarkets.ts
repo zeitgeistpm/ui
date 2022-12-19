@@ -15,7 +15,7 @@ import {
   MarketFilterType,
   MarketsOrderBy,
 } from "lib/types/market-filter";
-import { rootKey as marketsRootKey } from "./useMarket";
+import { marketsRootQuery } from "./useMarket";
 import { useSdkv2 } from "../useSdkv2";
 import { MarketOutcomes } from "lib/types/markets";
 
@@ -132,7 +132,7 @@ export const useMarkets = (
         .flatMap((p) => p.data)
         .forEach((market) => {
           queryClient.setQueryData(
-            [id, marketsRootKey, market.marketId],
+            [id, marketsRootQuery, market.marketId],
             market,
           );
         });
