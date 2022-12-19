@@ -4,12 +4,11 @@ import {
   isRpcSdk,
   Market,
 } from "@zeitgeistpm/sdk-next";
-import { OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
+import { ZTG } from "lib/constants";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import MarketStore from "lib/stores/MarketStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
@@ -48,7 +47,7 @@ const ScalarDisputeBox = observer(
     const handleSignTransaction = async () => {
       if (!isRpcSdk(sdk)) return;
       const outcomeReport = {
-        Scalar: Number(scalarReportValue),
+        Scalar: Number(scalarReportValue) * ZTG,
       };
 
       const callback = extrinsicCallback({
