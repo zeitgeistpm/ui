@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { MarketOrderByInput } from "@zeitgeistpm/indexer";
 import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets";
@@ -10,9 +10,10 @@ import {
   MarketFilterType,
   MarketsOrderBy,
 } from "lib/types/market-filter";
+import { rootKey as marketsRootKey } from "./useMarket";
 import { useSdkv2 } from "../useSdkv2";
 
-export const rootKey = "markets";
+export const rootKey = "markets-filtered";
 
 const hashFilters = (filters: MarketFilter[]): string => {
   const sortedFilters = [...filters].sort((a, b) => {
@@ -106,11 +107,20 @@ export const useMarkets = (
     };
   };
 
+  const queryClient = useQueryClient();
+
   const query = useInfiniteQuery({
     queryKey: [id, rootKey, hashFilters(filters), orderBy, withLiquidityOnly],
     queryFn: fetcher,
     enabled: Boolean(sdk) && isIndexedSdk(sdk),
     getNextPageParam: (lastPage) => lastPage.next,
+    onSuccess(data) {
+      data.pages
+        .flatMap((p) => p.data)
+        .forEach((market) => {
+          queryClient.setQueryData([id, rootKey, market.marketId], market);
+        });
+    },
   });
 
   return query;

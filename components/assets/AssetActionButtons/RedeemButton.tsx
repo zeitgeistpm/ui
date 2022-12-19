@@ -17,6 +17,7 @@ import {
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
+import { calcScalarWinnings } from "lib/util/calc-scalar-winnings";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useMemo } from "react";
@@ -88,22 +89,13 @@ const RedeemButton = observer(
         const upperBound = bounds[1].toNumber();
         const resolvedNumber = Number(market.resolvedOutcome);
 
-        const priceRange = upperBound - lowerBound;
-        const resolvedNumberAsPercentage =
-          (resolvedNumber - lowerBound) / priceRange;
-
-        const longTokenValue = resolvedNumberAsPercentage;
-        const shortTokenValue = 1 - resolvedNumberAsPercentage;
-
-        const longRewards = new Decimal(longBalance.free.toString())
-          .div(ZTG)
-          .mul(longTokenValue);
-
-        const shortRewards = new Decimal(shortBalance.free.toString())
-          .div(ZTG)
-          .mul(shortTokenValue);
-
-        return longRewards.add(shortRewards).div(ZTG);
+        return calcScalarWinnings(
+          lowerBound,
+          upperBound,
+          resolvedNumber,
+          shortBalance.free.toNumber(),
+          longBalance.free.toNumber(),
+        );
       }
     }, [market, assetId, ...assetBalances.query.map((q) => q.data)]);
 

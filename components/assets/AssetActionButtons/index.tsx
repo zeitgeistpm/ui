@@ -23,6 +23,7 @@ const AssetActionButtons = observer(
       console.error("no market");
       return null;
     }
+    console.log({ market, assetId });
     if (
       market?.status === "Closed" ||
       (market?.status === "Disputed" && market.disputeMechanism.Authorized)
@@ -37,14 +38,7 @@ const AssetActionButtons = observer(
     } else if (market?.status === "Resolved") {
       return <RedeemButton assetId={assetId} market={market} />;
     } else {
-      return (
-        <BuySellButtons
-          assetId={fromCompositeIndexerAssetId(
-            JSON.stringify(assetId),
-          ).unwrap()}
-          disabled={assetId == null}
-        />
-      );
+      return <BuySellButtons assetId={assetId} disabled={assetId == null} />;
     }
   },
 );

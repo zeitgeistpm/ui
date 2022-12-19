@@ -1,6 +1,8 @@
+import { fromCompositeIndexerAssetId } from "@zeitgeistpm/sdk-next";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import { DAY_SECONDS } from "lib/constants";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
 import { useNavigationStore } from "lib/stores/NavigationStore";
@@ -49,6 +51,8 @@ const MarketAssetDetails = observer(
     const [poolAlreadyDeployed, setPoolAlreadyDeployed] = useState(false);
     const poolStore = usePoolsStore();
     const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
+
+    const { data: sdkv2market } = useMarket(marketStore?.market?.marketId);
 
     useEffect(() => {
       navigationStore.setPage("marketDetails");
@@ -167,10 +171,12 @@ const MarketAssetDetails = observer(
               change: priceChange,
               buttons: (
                 <AssetActionButtons
-                  market={market}
-                  assetId={assetId}
-                  marketId={market.id}
-                  assetColor={color}
+                  market={sdkv2market}
+                  assetId={
+                    fromCompositeIndexerAssetId(
+                      JSON.stringify(assetId),
+                    ).unwrap() as any
+                  }
                   assetTicker={ticker}
                 />
               ),

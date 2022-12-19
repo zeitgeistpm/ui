@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 
-export const rootKey = "market";
+export const rootKey = "markets";
 
 export const useMarket = (marketId: number) => {
   const [sdk, id] = useSdkv2();
