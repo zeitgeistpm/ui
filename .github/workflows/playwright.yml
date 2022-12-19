@@ -2,7 +2,7 @@ name: Playwright Tests
 on:
   deployment_status:
 jobs:
-  test:
+  test-e2e:
     name: Playwright tests
     if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
     timeout-minutes: 5

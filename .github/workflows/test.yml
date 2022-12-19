@@ -1,0 +1,16 @@
+name: Jest Unit Tests
+on:
+  push:
+    branches: [staging]
+  pull_request:
+    branches: [staging]
+jobs:
+  test:
+    name: Jest Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+      - run: yarn
+      - name: Run tests
+      - run: yarn test
