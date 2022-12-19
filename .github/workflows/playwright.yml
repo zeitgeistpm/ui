@@ -8,6 +8,7 @@ on:
 jobs:
   test:
     name: Playwright tests
+    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
