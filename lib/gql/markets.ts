@@ -24,6 +24,11 @@ const marketQuery = gql`
       img
       outcomeAssets
       scalarType
+      creator
+      oracle
+      disputeMechanism {
+        authorized
+      }
       period {
         start
         end
@@ -51,6 +56,11 @@ export interface MarketPageIndexedData {
   outcomeAssets: string[];
   pool: { poolId: number };
   scalarType: ScalarRangeType | null;
+  creator: string;
+  oracle: string;
+  disputeMechanism: {
+    authorized?: string;
+  };
 }
 
 export const getRecentMarketIds = async (

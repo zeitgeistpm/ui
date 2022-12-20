@@ -33,6 +33,7 @@ import { ZTG } from "lib/constants";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { delay } from "lib/util/delay";
+import { useIdentity } from "lib/hooks/queries/useIdentity";
 
 const AvatarPage = observer(() => {
   const router = useRouter();
@@ -42,14 +43,12 @@ const AvatarPage = observer(() => {
   const address = router.query.address as string;
   const zeitAddress = encodeAddress(router.query.address as string, 73);
 
-  const { getIdentity, toggleHelpNotification, helpnotifications } =
-    useUserStore();
+  const { toggleHelpNotification, helpnotifications } = useUserStore();
 
   const modalStore = useModalStore();
 
   const [loading, setLoading] = useState(true);
   const [mintingAvatar, setMintingAvatar] = useState(false);
-  const [identity, setIdentity] = useState<UserIdentity>();
   const [burnAmount, setBurnAmount] = useState<number>();
   const [hasCrossed, setHasCrossed] = useState(false);
 
@@ -57,6 +56,7 @@ const AvatarPage = observer(() => {
 
   const [tarotStats, setTarotStats] =
     useState<Tarot.TarotStatsForAddress>(null);
+  const { data: identity } = useIdentity(address);
 
   const isOwner =
     store.wallets.activeAccount?.address === address ||
@@ -70,16 +70,13 @@ const AvatarPage = observer(() => {
 
   const loadData = async () => {
     try {
-      const [burnAmount, identity, tarotStats, earnedBadges] =
-        await Promise.all([
-          store.sdk.api.query.styx.burnAmount(),
-          getIdentity(address),
-          Tarot.fetchStatsForAddress(avatarContext, address),
-          Avatar.fetchEarnedBadgesForAddress(avatarContext, address),
-        ]);
+      const [burnAmount, tarotStats, earnedBadges] = await Promise.all([
+        store.sdk.api.query.styx.burnAmount(),
+        Tarot.fetchStatsForAddress(avatarContext, address),
+        Avatar.fetchEarnedBadgesForAddress(avatarContext, address),
+      ]);
       setEarnedBadges(earnedBadges);
       setBurnAmount(burnAmount.toJSON() as number);
-      setIdentity(identity);
       setTarotStats(tarotStats);
       if (store.wallets.activeAccount?.address) {
         const crossing = await store.sdk.api.query.styx.crossings(

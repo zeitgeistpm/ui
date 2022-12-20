@@ -11,7 +11,6 @@ export const useChainTimeNow = () => {
   return useQuery<ChainTime | null>(
     [rootKey, id],
     async () => sdk.model.time.now(),
-
     {
       enabled: Boolean(sdk) && isRpcSdk(sdk),
       refetchInterval: 12 * 1000,

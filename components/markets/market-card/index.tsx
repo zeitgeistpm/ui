@@ -30,7 +30,7 @@ const MarketCardInfoRow = ({
   value?: string;
 }) => {
   return (
-    <div className="h-[18px]">
+    <div className="mb-1 line-clamp-1">
       <span className="text-sky-600">{name}:</span>{" "}
       {value == null ? (
         <Skeleton
@@ -103,9 +103,12 @@ const MarketCard = ({
             onClick={() => setShowDetailsOverlay(true)}
           />
         )}
-        <Link href={`/markets/${marketId}`} className="flex flex-row mr-[17px]">
+        <Link
+          href={`/markets/${marketId}`}
+          className="flex flex-row mb-3 mr-[17px]"
+        >
           <MarketImage image={img} alt={question} />
-          <div className="ml-[15px] black  font-bold h-[75px] w-full line-clamp-3 text-ztg-14-150">
+          <div className="ml-[15px] black font-bold w-full h-fit line-clamp-3 text-ztg-14-150">
             {question}
           </div>
         </Link>
