@@ -114,7 +114,7 @@ const Carousel: FC<CarouselProps> = () => {
   //   };
   // }, []);
 
-  //TODO: once ready; remove padding in innerClassName and match inner hero container with rest of page
+  //TODO: once ready; remove padding in innerClassName and match inner hero container with rest of page. remove rounded-ztg-10 from slider.
 
   return (
     <CarouselProvider
@@ -124,7 +124,7 @@ const Carousel: FC<CarouselProps> = () => {
       currentSlide={currentSlide}
       infinite={true}
     >
-      <Slider className="">
+      <Slider className="rounded-ztg-10">
         {slides.map((slide, index) => {
           return (
             <Slide
@@ -133,7 +133,7 @@ const Carousel: FC<CarouselProps> = () => {
               className="h-full w-full bg-cover p-5"
               innerClassName="max-w-ztg-1100 mx-auto flex flex-col justify-center p-5"
             >
-              <div className="max-w-[540px]">
+              <div className="max-w-[540px] pb-8">
                 <h2
                   style={{
                     color: `${slide.title.color}`,
