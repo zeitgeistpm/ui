@@ -216,7 +216,6 @@ export default class Store {
     this.markets.unsubscribeAll();
 
     if (this.wallets.connected) {
-      await this.userStore.loadIdentity(this.wallets.activeAccount.address);
       this.wallets.subscribeToBalanceChanges();
     }
 
