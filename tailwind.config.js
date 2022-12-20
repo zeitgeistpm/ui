@@ -100,6 +100,7 @@ module.exports = {
         "ztg-20-150": ["1.25rem", "1.5"],
         "ztg-22-120": ["1.375rem", "1.2"],
         "ztg-28-120": ["1.75rem", "1.2"],
+        "ztg-64-120": ["4rem", "1.2"],
       },
       backgroundImage: (theme) => ({
         "rectangle-red": "url('/kusama-derby/rectangle-red.svg')",
