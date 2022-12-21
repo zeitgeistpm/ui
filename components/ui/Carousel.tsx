@@ -130,7 +130,7 @@ const Carousel: FC<CarouselProps> = () => {
             <Slide
               index={index}
               style={{ backgroundImage: `url(${slide.bg})` }}
-              className="h-full w-full bg-cover p-5"
+              className="w-full bg-cover p-5"
               innerClassName="max-w-ztg-1100 mx-auto flex flex-col justify-center p-5"
             >
               <div className="max-w-[540px] pb-8">
@@ -143,32 +143,34 @@ const Carousel: FC<CarouselProps> = () => {
                 >
                   {slide.title.text}
                 </h2>
-                <a
-                  style={{
-                    borderColor: `${slide.color1.border}`,
-                    backgroundColor: `${slide.color1.primary}`,
-                    color: `${slide.color1.secondary}`,
-                  }}
-                  className="border rounded py-2 px-5 mr-5 font-bold"
-                  href={slide.link1}
-                  target="_blank"
-                >
-                  {slide.cta1}
-                </a>
-                {slide.cta2 && (
+                <div className="flex flex-col md:flex-row">
                   <a
                     style={{
-                      borderColor: `${slide.color2.border}`,
-                      backgroundColor: `${slide.color2.primary}`,
-                      color: `${slide.color2.secondary}`,
+                      borderColor: `${slide.color1.border}`,
+                      backgroundColor: `${slide.color1.primary}`,
+                      color: `${slide.color1.secondary}`,
                     }}
-                    className="border rounded py-2 px-3 mr-5 font-bold"
-                    href={slide.link2}
+                    className="w-fit border rounded py-2 px-5 mb-5 mr-5 font-bold"
+                    href={slide.link1}
                     target="_blank"
                   >
-                    {slide.cta2}
+                    {slide.cta1}
                   </a>
-                )}
+                  {slide.cta2 && (
+                    <a
+                      style={{
+                        borderColor: `${slide.color2.border}`,
+                        backgroundColor: `${slide.color2.primary}`,
+                        color: `${slide.color2.secondary}`,
+                      }}
+                      className="w-fit border rounded py-2 px-3 mb-5 mr-5 font-bold"
+                      href={slide.link2}
+                      target="_blank"
+                    >
+                      {slide.cta2}
+                    </a>
+                  )}
+                </div>
               </div>
             </Slide>
           );
