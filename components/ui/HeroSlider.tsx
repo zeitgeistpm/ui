@@ -97,20 +97,24 @@ const slides = [
 
 const HeroSlider: FC<HeroSliderProps> = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [animate, setAnimate] = useState(0);
 
   const goToPrevious = () => {
+    setAnimate(1);
     const isFirstSlide = currentSlide === 0;
     const newSlide = isFirstSlide ? slides.length - 1 : currentSlide - 1;
     setCurrentSlide(newSlide);
   };
 
   const goToNext = () => {
+    setAnimate(1);
     const isFirstSlide = currentSlide === slides.length - 1;
     const newSlide = isFirstSlide ? 0 : currentSlide + 1;
     setCurrentSlide(newSlide);
   };
 
   const goToSlide = (index) => {
+    setAnimate(1);
     setCurrentSlide(index);
   };
 
@@ -118,8 +122,10 @@ const HeroSlider: FC<HeroSliderProps> = () => {
     <section className="w-full h-[527px] mx-auto">
       <div className="h-full relative">
         <div
-          className="bg-cover bg-center h-full w-full p-10"
+          className="flex items-center bg-cover bg-center h-full w-full p-10 fade-in-image"
           style={{ backgroundImage: `url(${slides[currentSlide].bg})` }}
+          onAnimationEnd={() => setAnimate(0)}
+          data-animate={animate}
         >
           <div className="max-w-[540px] pb-8">
             <h2
