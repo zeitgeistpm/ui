@@ -7,7 +7,7 @@ const slides = [
   {
     title: {
       text: `Introducing Zeitgeist Avatar`,
-      size: `4rem`,
+      size: `3.5rem`,
       color: `#FFF`,
     },
     bg: "/carousel/slide-1.jpeg",
@@ -118,11 +118,21 @@ const HeroSlider: FC<HeroSliderProps> = () => {
     setCurrentSlide(index);
   };
 
+  //autoplay
+  useEffect(() => {
+    const ref = setTimeout(() => {
+      goToNext();
+    }, 5000);
+    return () => {
+      clearTimeout(ref);
+    };
+  }, [currentSlide]);
+
   return (
     <section className="w-full h-[527px] mx-auto">
       <div className="h-full relative">
         <div
-          className="flex items-center bg-cover bg-center h-full w-full p-10 fade-in-image"
+          className="flex items-center bg-cover bg-center h-full w-full p-5 md:p-10 fade-in-image"
           style={{ backgroundImage: `url(${slides[currentSlide].bg})` }}
           onAnimationEnd={() => setAnimate(0)}
           data-animate={animate}
