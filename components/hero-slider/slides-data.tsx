@@ -1,5 +1,7 @@
 export const slidesData = [
   {
+    custom: false,
+    id: 1,
     title: {
       text: `Introducing Zeitgeist Avatar`,
       size: `3.5rem`,
@@ -22,6 +24,8 @@ export const slidesData = [
     },
   },
   {
+    custom: false,
+    id: 2,
     title: {
       text: `Exiled Racers`,
       size: `4rem`,
@@ -44,6 +48,8 @@ export const slidesData = [
     },
   },
   {
+    custom: false,
+    id: 3,
     title: {
       text: `ZTG is now traded on DEXs`,
       size: `4rem`,
@@ -66,6 +72,8 @@ export const slidesData = [
     },
   },
   {
+    custom: false,
+    id: 4,
     title: {
       text: `Presenting Zeitgeist’s 
       "Rikiddo Scoring Rule"`,

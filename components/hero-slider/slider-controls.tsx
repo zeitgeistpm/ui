@@ -18,4 +18,5 @@ export const moveSlider = (
   if (direction === "goto") {
     setCurrentSlide(index);
   }
+  return;
 };

@@ -9,8 +9,8 @@ import { moveSlider } from "./slider-controls";
 export interface HeroSliderProps {}
 
 const HeroSlider: FC<HeroSliderProps> = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [animate, setAnimate] = useState();
+  const [currentSlide, setCurrentSlide] = useState<number>(0);
+  const [animate, setAnimate] = useState<number>(0);
   const slidesLength = slidesData.length;
 
   //autoplay

@@ -6,8 +6,8 @@ export interface HeroControlsProps {
   slides: [];
   slidesLength: number;
   currentSlide: number;
-  setCurrentSlide: () => void;
-  setAnimate: (a: 0 | 1) => void;
+  setCurrentSlide: (val: number) => void;
+  setAnimate: (val: 0 | 1) => void;
 }
 
 export const HeroControls: FC<HeroControlsProps> = ({
