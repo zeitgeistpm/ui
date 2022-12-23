@@ -15,7 +15,7 @@ import Link from "next/link";
 import { getPlaiceholder, IGetPlaiceholderReturn } from "plaiceholder";
 import React from "react";
 import Carousel from "components/ui/Carousel";
-import HeroSlider from "components/ui/HeroSlider";
+import HeroSlider from "components/hero-slider/HeroSlider";
 
 const MAIN_IMAGE_PATH = "/carousel/intro_zeitgeist_avatar.png";
 
