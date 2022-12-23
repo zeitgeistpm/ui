@@ -14,7 +14,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { getPlaiceholder, IGetPlaiceholderReturn } from "plaiceholder";
 import React from "react";
-import Carousel from "components/ui/Carousel";
 import HeroSlider from "components/hero-slider/HeroSlider";
 
 const MAIN_IMAGE_PATH = "/carousel/intro_zeitgeist_avatar.png";
@@ -57,7 +56,7 @@ const IndexPage: NextPage<{
 
   return (
     <div data-test="indexPage">
-      {/* <a
+      <a
         href="https://blog.zeitgeist.pm/announcing-zeitgeist-launch-nfts/"
         target="_blank"
         rel="noreferrer"
@@ -73,10 +72,9 @@ const IndexPage: NextPage<{
           placeholder="blur"
           priority
         />
-      </a> */}
-      <HeroSlider />
-      {/* <Carousel /> */}
-      {/* <div className="flex items-center w-full justify-center relative bottom-[29px]">
+      </a>
+      {/* <HeroSlider /> */}
+      <div className="flex items-center w-full justify-center relative bottom-[29px]">
         <motion.div
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 1 }}
@@ -94,7 +92,7 @@ const IndexPage: NextPage<{
             </div>
           </Link>
         </motion.div>
-      </div> */}
+      </div>
       <LearnSection />
       {featuredMarkets.length > 0 && (
         <div className="my-[60px]">
