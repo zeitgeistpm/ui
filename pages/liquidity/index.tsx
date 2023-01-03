@@ -177,6 +177,7 @@ const LiquidityPools: NextPage = observer(() => {
         loadingNumber={10}
         hideLoadMore
         loadMoreThreshold={70}
+        testId="liquidityTable"
       />
     </div>
   );
