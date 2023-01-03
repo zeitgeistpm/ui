@@ -230,20 +230,6 @@ body {
   opacity: 60%;
 }
 
-/* hero slider animation */
-.fade-in-image[data-animate="1"] {
-  animation: fadeIn 500ms;
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
 table {
   border-spacing: 0 15px;
 }

@@ -7,6 +7,7 @@ import {
 } from "./CustomSlides";
 
 import { HeroSlideProps } from "./slider-types";
+import styles from "./HeroSlider.module.css";
 
 export const HeroSlide: FC<HeroSlideProps> = ({
   slides,
@@ -27,20 +28,26 @@ export const HeroSlide: FC<HeroSlideProps> = ({
       return <CustomSlide3 />;
     }
     if (id === 4) {
-      return <CustomSlide3 />;
+      return <CustomSlide4 />;
     }
   };
 
   return (
     <>
       {slide.custom ? (
-        getCustomSlide(slide.id)
+        <div
+          className={`${animate && styles.fadeIn}`}
+          onAnimationEnd={() => setAnimate(0)}
+        >
+          {getCustomSlide(slide.id)}
+        </div>
       ) : (
         <div
-          className="flex items-center bg-cover bg-center h-full w-full p-5 md:p-10 fade-in-image"
+          className={`${
+            animate && styles.fadeIn
+          } flex items-center bg-cover bg-center h-full w-full p-5 md:p-10`}
           style={{ backgroundImage: `url(${slide.bg})` }}
           onAnimationEnd={() => setAnimate(0)}
-          data-animate={animate}
         >
           <div className="max-w-[540px] pb-8">
             <h2

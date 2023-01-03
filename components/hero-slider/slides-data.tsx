@@ -24,7 +24,7 @@ export const slidesData = [
     },
   },
   {
-    custom: false,
+    custom: true,
     id: 2,
     title: {
       text: `Exiled Racers`,

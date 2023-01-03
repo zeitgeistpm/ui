@@ -16,6 +16,7 @@ const HeroSlider: FC<HeroSliderProps> = () => {
   //autoplay
   useEffect(() => {
     const ref = setTimeout(() => {
+      setAnimate(1);
       moveSlider("next", currentSlide, setCurrentSlide, slidesLength);
     }, 5000);
     return () => {
