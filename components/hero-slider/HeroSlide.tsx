@@ -6,12 +6,7 @@ import {
   CustomSlide4,
 } from "./CustomSlides";
 
-export interface HeroSlideProps {
-  slides: [];
-  currentSlide: number;
-  animate: 0 | 1;
-  setAnimate: (a: 0 | 1) => void;
-}
+import { HeroSlideProps } from "./slider-types";
 
 export const HeroSlide: FC<HeroSlideProps> = ({
   slides,

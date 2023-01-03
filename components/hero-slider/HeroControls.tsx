@@ -1,14 +1,7 @@
 import { FC } from "react";
 import { ChevronLeft, ChevronRight } from "react-feather";
 import { moveSlider } from "./slider-controls";
-
-export interface HeroControlsProps {
-  slides: [];
-  slidesLength: number;
-  currentSlide: number;
-  setCurrentSlide: (val: number) => void;
-  setAnimate: (val: 0 | 1) => void;
-}
+import { HeroControlsProps } from "./slider-types";
 
 export const HeroControls: FC<HeroControlsProps> = ({
   slides,
