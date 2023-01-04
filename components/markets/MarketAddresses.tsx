@@ -6,13 +6,11 @@ import ZeitgeistIcon from "components/icons/ZeitgeistIcon";
 import Avatar from "components/ui/Avatar";
 import CopyIcon from "components/ui/CopyIcon";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
-import MarketStore from "lib/stores/MarketStore";
 import { useModalStore } from "lib/stores/ModalStore";
-import { Judgement, UserIdentity, useUserStore } from "lib/stores/UserStore";
+import { Judgement, UserIdentity } from "lib/stores/UserStore";
 import { shortenAddress } from "lib/util";
 import { observer } from "mobx-react";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
 
 const AddressInspectContent = ({
   address,
@@ -174,20 +172,14 @@ const AddressModalHeader = ({ name }: { name: string }) => {
 
 interface MarketAddressesProps {
   creatorAddress: string;
-  authorityAddress: string;
   oracleAddress: string;
 }
 
 const MarketAddresses = observer(
-  ({
-    creatorAddress,
-    authorityAddress,
-    oracleAddress,
-  }: MarketAddressesProps) => {
+  ({ creatorAddress, oracleAddress }: MarketAddressesProps) => {
     const modalStore = useModalStore();
 
     const { data: creatorIdentity } = useIdentity(creatorAddress);
-    const { data: authorityIdentity } = useIdentity(authorityAddress);
     const { data: oracleIdentity } = useIdentity(oracleAddress);
 
     const handleInspect = (address: string, identity: UserIdentity) => {
@@ -225,19 +217,6 @@ const MarketAddresses = observer(
           judgement={oracleIdentity?.judgement}
           onInspect={() => handleInspect(oracleAddress, oracleIdentity)}
         />
-        {authorityIdentity && (
-          <AddressDetails
-            title="Authority"
-            address={authorityAddress}
-            displayName={
-              authorityIdentity?.displayName?.length > 0
-                ? authorityIdentity.displayName
-                : null
-            }
-            judgement={authorityIdentity?.judgement}
-            onInspect={() => handleInspect(authorityAddress, authorityIdentity)}
-          />
-        )}
       </div>
     );
   },
