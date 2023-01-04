@@ -48,8 +48,8 @@ const DisputeButton = observer(
       //     disputedOutcome.categorical === assetId.categoricalOutcome[1]
       //   );
       // }
-      return !isRpcSdk(sdk);
-    }, [sdk, disputes.length]);
+      return sdk && !isRpcSdk(sdk);
+    }, [sdk, disputes?.length]);
 
     const handleClick = async () => {
       if (market.marketType.scalar) {
