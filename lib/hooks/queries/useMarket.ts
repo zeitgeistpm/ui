@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import { useEffect } from "react";
 import { useSdkv2 } from "../useSdkv2";
 
 export const marketsRootQuery = "markets";
