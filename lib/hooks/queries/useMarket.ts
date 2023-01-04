@@ -1,9 +1,30 @@
 import { useQuery } from "@tanstack/react-query";
-import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
-import { useEffect } from "react";
+import { IndexerContext, isIndexedSdk, Sdk } from "@zeitgeistpm/sdk-next";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
+import * as batshit from "@yornaath/batshit";
 import { useSdkv2 } from "../useSdkv2";
 
 export const marketsRootQuery = "markets";
+
+const marketsBatcher = batshit.create<
+  FullMarketFragment,
+  { marketId: number; sdk: Sdk<IndexerContext> }
+>({
+  name: marketsRootQuery,
+  fetcher: async (queries) => {
+    const sdk = queries[0].sdk;
+    const { markets } = await sdk.context.indexer.markets({
+      where: {
+        marketId_in: queries.map((q) => q.marketId),
+      },
+    });
+    return markets;
+  },
+  scheduler: batshit.windowScheduler(10),
+  resolver: (markets, query) => {
+    return markets.find((m) => m.marketId === query.marketId);
+  },
+});
 
 export const useMarket = (marketId: number) => {
   const [sdk, id] = useSdkv2();
@@ -12,8 +33,7 @@ export const useMarket = (marketId: number) => {
     [id, marketsRootQuery, marketId],
     async () => {
       if (isIndexedSdk(sdk)) {
-        const market = await sdk.model.markets.get({ marketId });
-        return market.unwrap();
+        return marketsBatcher.fetch({ marketId, sdk });
       }
     },
     {

@@ -1,6 +1,7 @@
 import "react-datetime/css/react-datetime.css";
 import "styles/index.css";
 
+import BatsthitDevtools from "@yornaath/batshit-devtools-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import * as Fathom from "fathom-client";
@@ -105,9 +106,13 @@ const MyApp = observer(({ Component, pageProps }) => {
                 <Component {...pageProps} />
               </Layout>
             </DefaultLayout>
-            {process.env.NEXT_PUBLIC_REACT_QUERY_DEVTOOLS === "true" && (
-              <ReactQueryDevtools initialIsOpen={false} />
-            )}
+            {process.env.NEXT_PUBLIC_REACT_QUERY_DEVTOOLS === "true" &&
+            typeof window === "object" ? (
+              <>
+                <ReactQueryDevtools initialIsOpen={false} />
+                <BatsthitDevtools />
+              </>
+            ) : null}
           </ModalStoreContext.Provider>
         </AvatarContext.Provider>
       </StoreProvider>
