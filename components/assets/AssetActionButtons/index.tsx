@@ -6,22 +6,26 @@ import {
   ScalarAssetId,
 } from "@zeitgeistpm/sdk-next";
 import BuySellButtons from "components/trade-slip/BuySellButtons";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import { observer } from "mobx-react";
 import DisputeButton from "./DisputeButton";
 import RedeemButton from "./RedeemButton";
 import ReportButton from "./ReportButton";
 
 interface AssetActionButtonsProps {
-  market: Market<IndexerContext>;
+  marketId: number;
   assetId?: ScalarAssetId | CategoricalAssetId;
   assetTicker: string;
 }
 
 const AssetActionButtons = observer(
-  ({ market, assetId, assetTicker }: AssetActionButtonsProps) => {
+  ({ marketId, assetId, assetTicker }: AssetActionButtonsProps) => {
+    const { data: market } = useMarket(marketId);
+
     if (!market) {
       return null;
     }
+
     if (
       market?.status === "Closed" ||
       (market?.status === "Disputed" && market.disputeMechanism.Authorized)

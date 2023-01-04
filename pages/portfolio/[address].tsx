@@ -248,7 +248,7 @@ const Portfolio: NextPage = observer(() => {
       buttons: (
         <AssetActionButtons
           assetId={position.assetId}
-          market={position.market}
+          marketId={position.marketId}
           assetTicker={position.outcome.ticker}
         />
       ),

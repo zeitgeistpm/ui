@@ -52,8 +52,6 @@ const MarketAssetDetails = observer(
     const poolStore = usePoolsStore();
     const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
-    const { data: sdkv2market } = useMarket(marketStore?.market?.marketId);
-
     useEffect(() => {
       navigationStore.setPage("marketDetails");
       (async () => {
@@ -171,7 +169,7 @@ const MarketAssetDetails = observer(
               change: priceChange,
               buttons: (
                 <AssetActionButtons
-                  market={sdkv2market}
+                  marketId={marketStore?.market.marketId}
                   assetId={
                     fromCompositeIndexerAssetId(
                       JSON.stringify(assetId),
