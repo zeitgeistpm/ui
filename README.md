@@ -12,22 +12,25 @@
 
 Some features require environment variables. To test locally create `.env.local` file from `.env.example`.
 
+# Components
+
 ## Hero Slider
 
 This lightweight slider is a custom solution created for the Zeitgeist UI homepage.
 
 ### Files
 
-| File                | Purpose                                                            |
-| ------------------- | ------------------------------------------------------------------ |
-| /hero-slider        | contains all relevant hero slider files                            |
-| CustomSlides.tsx    | (optional) custom slides that require unique styling               |
-| HeroControls.tsx    | left/right buttons and dot navigation                              |
-| HeroSlider.tsx      | main file with container, slide, and control components            |
-| HeroSlide.tsx       | main template file for default slides                              |
-| slider-controls.tsx | business logic for slider controls                                 |
-| slider-types.tsx    | TypeScript interfaces for hero slider elements                     |
-| slider-data.tsx     | an array of objects used to display slide content in HeroSlide.tsx |
+| File                  | Purpose                                                            |
+| --------------------- | ------------------------------------------------------------------ |
+| /hero-slider          | contains all relevant hero slider files                            |
+| CustomSlides.tsx      | (optional) custom slides that require unique styling               |
+| HeroControls.tsx      | left/right buttons and dot navigation                              |
+| HeroSlider.tsx        | main file with container, slide, and control components            |
+| HeroSlide.tsx         | main template file for default slides                              |
+| slider-controls.tsx   | business logic for slider controls                                 |
+| slider-types.tsx      | TypeScript interfaces for hero slider elements                     |
+| slider-data.tsx       | an array of objects used to display slide content in HeroSlide.tsx |
+| HeroSlider.module.css | css animation for slider transitions                               |
 
 ### Usage
 
@@ -39,4 +42,6 @@ To add more template slides: expand on the array in slider-date.tsx. To add addi
 
 Autoplay can be turned off by commenting out the the useEffect hook in HeroSlider.tsx. Duration of autoplay can adjusted in the setTimeout function.
 
-The slider animation styles can be found ...
+### Future Considerations
+
+Refactor to allow more customized instances of the hero slider. For example; styles could be passed in as props to the components. Create a settings file where traits like transition style or speed could be adjusted in.

@@ -1,3 +1,5 @@
+//Use false as the value in the custom key to use the default template or true to enable to use of a custom slide from the CustomSlides.tsx file.
+
 export const slidesData = [
   {
     custom: false,
@@ -24,7 +26,7 @@ export const slidesData = [
     },
   },
   {
-    custom: true,
+    custom: false,
     id: 2,
     title: {
       text: `Exiled Racers`,

@@ -1,3 +1,5 @@
+// when using a custom slide: match the id from slider-data.tsx to the CustomSlide component. For exmaple: id of 2 will activate CustomSlide2.
+
 export const CustomSlide1 = () => {
   return (
     <div>
