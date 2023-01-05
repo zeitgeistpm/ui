@@ -1,15 +1,16 @@
 import { observer } from "mobx-react";
-import { FC, useState } from "react";
+import { FC } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { IGetPlaiceholderReturn } from "plaiceholder";
 
 export const CATEGORIES = [
-  { name: "Crypto", imagePath: "/category/crypto.png" },
-  { name: "Governance", imagePath: "/category/governance.png" },
-  { name: "Politics", imagePath: "/category/politics.png" },
   { name: "Sports", imagePath: "/category/sports.png" },
+  { name: "Politics", imagePath: "/category/politics.png" },
+  { name: "Technology", imagePath: "/category/tech.png" },
+  { name: "Crypto", imagePath: "/category/crypto.png" },
+  { name: "Science", imagePath: "/category/science.png" },
+  { name: "E-Sports", imagePath: "/category/esports.png" },
 ] as const;
 
 const Category = ({
@@ -26,28 +27,17 @@ const Category = ({
   count: number;
   className?: string;
 }) => {
-  const [isHoving, setIsHoving] = useState(false);
-
   return (
-    <div
-      className="flex flex-col min-w-[150px] w-full h-[184px]"
-      onMouseEnter={() => setIsHoving(true)}
-      onMouseLeave={() => setIsHoving(false)}
-    >
-      <div
-        className="bg-anti-flash-white rounded-ztg-10 flex justify-center items-center h-full cursor-pointer"
+    <div className="flex flex-col min-w-[150px] w-full h-[184px]">
+      <Image
+        className=" rounded-ztg-10 cursor-pointer"
+        src={imgURL}
+        alt={title}
+        width={170}
+        height={170}
+        blurDataURL={blurImage.base64}
         onClick={onClick}
-      >
-        <motion.div animate={isHoving ? { scale: 1.05 } : { scale: 1.0 }}>
-          <Image
-            src={imgURL}
-            alt={title}
-            width={100}
-            height={100}
-            blurDataURL={blurImage.base64}
-          />
-        </motion.div>
-      </div>
+      />
       <span className="flex mt-[10px] items-center">
         <span className="font-medium text-ztg-16-150">{title}</span>
         <span className="flex justify-center items-center bg-anti-flash-white rounded-ztg-5 w-[41px] h-[24px] ml-[10px]">
