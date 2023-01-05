@@ -35,8 +35,9 @@ const Category = ({
         alt={title}
         width={170}
         height={170}
-        blurDataURL={blurImage.base64}
         onClick={onClick}
+        placeholder="blur"
+        blurDataURL={blurImage.base64}
       />
       <span className="flex mt-[10px] items-center">
         <span className="font-medium text-ztg-16-150">{title}</span>
