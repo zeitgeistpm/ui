@@ -48,7 +48,7 @@ const DisputeButton = observer(
       //     disputedOutcome.categorical === assetId.categoricalOutcome[1]
       //   );
       // }
-      return !isRpcSdk(sdk);
+      return sdk && !isRpcSdk(sdk);
     }, [sdk, disputes.length]);
 
     const handleClick = async () => {
