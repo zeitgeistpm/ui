@@ -49,7 +49,7 @@ const DisputeButton = observer(
       //   );
       // }
       return sdk && !isRpcSdk(sdk);
-    }, [sdk, disputes.length]);
+    }, [sdk, disputes?.length]);
 
     const handleClick = async () => {
       if (market.marketType.scalar) {
