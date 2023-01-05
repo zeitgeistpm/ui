@@ -9,7 +9,7 @@ import * as Fathom from "fathom-client";
 import { observer } from "mobx-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { hotjar } from "react-hotjar";
 
 import { AvatarContext } from "@zeitgeistpm/avatara-react";
@@ -108,10 +108,10 @@ const MyApp = observer(({ Component, pageProps }) => {
             </DefaultLayout>
             {process.env.NEXT_PUBLIC_REACT_QUERY_DEVTOOLS === "true" &&
             typeof window === "object" ? (
-              <>
-                <ReactQueryDevtools initialIsOpen={false} />
+              <Suspense fallback={<></>}>
+                <ReactQueryDevtools />
                 <BatsthitDevtools />
-              </>
+              </Suspense>
             ) : null}
           </ModalStoreContext.Provider>
         </AvatarContext.Provider>

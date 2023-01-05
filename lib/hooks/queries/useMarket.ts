@@ -1,30 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { IndexerContext, isIndexedSdk, Sdk } from "@zeitgeistpm/sdk-next";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
+import { memoize } from "lodash-es";
 import * as batshit from "@yornaath/batshit";
 import { useSdkv2 } from "../useSdkv2";
 
 export const marketsRootQuery = "markets";
-
-const marketsBatcher = batshit.create<
-  FullMarketFragment,
-  { marketId: number; sdk: Sdk<IndexerContext> }
->({
-  name: marketsRootQuery,
-  fetcher: async (queries) => {
-    const sdk = queries[0].sdk;
-    const { markets } = await sdk.context.indexer.markets({
-      where: {
-        marketId_in: queries.map((q) => q.marketId),
-      },
-    });
-    return markets;
-  },
-  scheduler: batshit.windowScheduler(10),
-  resolver: (markets, query) => {
-    return markets.find((m) => m.marketId === query.marketId);
-  },
-});
 
 export const useMarket = (marketId: number) => {
   const [sdk, id] = useSdkv2();
@@ -33,7 +14,7 @@ export const useMarket = (marketId: number) => {
     [id, marketsRootQuery, marketId],
     async () => {
       if (isIndexedSdk(sdk)) {
-        return marketsBatcher.fetch({ marketId, sdk });
+        return batcher(sdk).fetch(marketId);
       }
     },
     {
@@ -43,3 +24,19 @@ export const useMarket = (marketId: number) => {
 
   return query;
 };
+
+const batcher = memoize((sdk: Sdk<IndexerContext>) => {
+  return batshit.create<FullMarketFragment, number>({
+    name: marketsRootQuery,
+    fetcher: async (ids) => {
+      const { markets } = await sdk.context.indexer.markets({
+        where: {
+          marketId_in: ids,
+        },
+      });
+      return markets;
+    },
+    scheduler: batshit.windowScheduler(10),
+    resolver: batshit.keyResolver("marketId"),
+  });
+});
