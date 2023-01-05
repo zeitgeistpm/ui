@@ -30,7 +30,7 @@ const Category = ({
   return (
     <div className="flex flex-col min-w-[150px] w-full h-[184px]">
       <Image
-        className=" rounded-ztg-10 cursor-pointer"
+        className="rounded-ztg-10 cursor-pointer"
         src={imgURL}
         alt={title}
         width={170}
