@@ -54,7 +54,7 @@ const IndexPage: NextPage<{
   const store = useStore();
 
   return (
-    <div data-test="indexPage">
+    <div data-testid="indexPage">
       <a
         href="https://blog.zeitgeist.pm/announcing-zeitgeist-launch-nfts/"
         target="_blank"
@@ -78,7 +78,7 @@ const IndexPage: NextPage<{
           whileTap={{ scale: 1 }}
           transition={{ duration: 0.2 }}
         >
-          <Link href="/markets/">
+          <Link href="/markets/" data-testid="bannerButton">
             <div
               className=" text-[20px] h-[58px] w-[323px] center border-2 rounded-ztg-100 bg-white"
               style={{

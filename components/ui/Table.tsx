@@ -34,6 +34,7 @@ interface TableProps {
   loadingMore?: boolean;
   loadingNumber?: number;
   loadMoreThreshold?: number;
+  testId?: string;
 }
 
 export interface TableColumn {
@@ -316,6 +317,7 @@ const Table = observer(
     loadingMore = false,
     loadingNumber = 3,
     loadMoreThreshold,
+    testId,
   }: TableProps) => {
     const { rows, prepareRow } = useTable({ columns, data: data ?? [] });
     const tableRef = useRef<HTMLTableElement>();
@@ -431,7 +433,7 @@ const Table = observer(
           </div>
         ) : (
           <>
-            <div>
+            <div data-testid={testId}>
               <table
                 className="border-separate w-full"
                 ref={tableRef}

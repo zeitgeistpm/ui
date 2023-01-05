@@ -17,7 +17,8 @@
     "prettier:check": "npx prettier ./**/*.tsx --check",
     "prettier:fix": "npx prettier ./**/*.tsx --write",
     "start": "next start",
-    "test": "jest --watch"
+    "test:watch": "jest --watch",
+    "test": "jest"
   },
   "resolutions": {
     "@types/react": "17.0.2",
@@ -84,6 +85,7 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^12.3.1",
+    "@playwright/test": "^1.28.1",
     "@polkadot/wasm-crypto": "^6.3.1",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@testing-library/jest-dom": "^5.16.5",
