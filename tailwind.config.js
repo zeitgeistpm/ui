@@ -59,6 +59,31 @@ module.exports = {
       ],
       kanit: ["var(--font-kanit)"],
     },
+    screens: {
+      sm: "600px",
+      md: "905px",
+      lg: "1240px",
+      xl: "1440px",
+      "2xl": "1728px",
+    },
+    container: {
+      // screens: {
+      //   sm: "600px",
+      //   md: "905px",
+      //   lg: "1240px",
+      //   xl: "1440px",
+      //   "2xl": "1728px",
+      // },
+      padding: {
+        DEFAULT: "16px",
+        sm: "40px",
+        md: "94px",
+        lg: "94px",
+        xl: "128px",
+        "2xl": "128px",
+        "3xl": "128px",
+      },
+    },
     extend: {
       borderWidth: {
         1: "1px",
@@ -310,6 +335,7 @@ module.exports = {
         "ztg-184": "184px",
         "ztg-390": "390px",
         "ztg-1100": "1100px",
+        "ztg-1200": "1200px",
       },
       minWidth: {
         // NEW
