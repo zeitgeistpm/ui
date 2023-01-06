@@ -19,6 +19,9 @@ const MarketScroll = observer(
   }) => {
     const scrollRef = useRef<HTMLDivElement>();
     const [scrollLeft, setScrollLeft] = useState(0);
+    const [scrollDirection, setScrollDirection] = useState<"left" | "right">(
+      "right",
+    );
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
     const cardWidth = 320;
     const gap = 30;
@@ -32,6 +35,7 @@ const MarketScroll = observer(
     }, [scrollRef, scrollLeft]);
 
     const handleRightClick = () => {
+      setScrollDirection("right");
       setScrollLeft((prev) => {
         const newScroll = prev + moveSize;
         const max = scrollMax - containerWidth;
@@ -41,6 +45,7 @@ const MarketScroll = observer(
     };
 
     const handleLeftClick = () => {
+      setScrollDirection("left");
       setScrollLeft((prev) => {
         const newScroll = prev - moveSize;
 
@@ -48,9 +53,9 @@ const MarketScroll = observer(
       });
     };
 
+    const hasReachedEnd = scrollMax - containerWidth - scrollLeft === 0;
     const leftDisabled = scrollLeft === 0;
-    const rightDisabled =
-      scrollMax - containerWidth - scrollLeft === 0 || markets.length <= 3;
+    const rightDisabled = hasReachedEnd || markets.length <= 3;
 
     return (
       <div ref={containerRef} className="flex flex-col">
@@ -90,6 +95,12 @@ const MarketScroll = observer(
           </div>
         </div>
         <div className="relative">
+          {(scrollDirection === "left" && scrollLeft !== 0) ||
+          (scrollDirection === "right" && hasReachedEnd) ? (
+            <div className="bg-gradient-to-r from-white h-[175px] w-[20px] absolute z-ztg-10 -left-[5px]"></div>
+          ) : (
+            <div className="bg-gradient-to-r from-transparent to-white h-[175px] w-[20px] absolute z-ztg-10 -right-[5px]"></div>
+          )}
           <div
             ref={scrollRef}
             className="flex h-[175px] gap-x-[30px] no-scroll-bar overflow-x-auto"
