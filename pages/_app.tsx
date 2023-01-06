@@ -18,6 +18,7 @@ import MobileMenu from "components/menu/MobileMenu";
 import ModalContainer from "components/modal/ModalContainer";
 import { AnimatePresence } from "framer-motion";
 import DefaultLayout from "layouts/DefaultLayout";
+import DemoLayout from "layouts/DemoLayout";
 import ModalStore from "lib/stores/ModalStore";
 import Store from "lib/stores/Store";
 
@@ -97,14 +98,16 @@ const MyApp = observer(({ Component, pageProps }) => {
             <Head>
               <title>Zeitgeist - Prediction Markets</title>
             </Head>
-            <DefaultLayout>
+            {/* <DefaultLayout> */}
+            <DemoLayout>
               <AnimatePresence>
                 {store.showMobileMenu && <MobileMenu />}
               </AnimatePresence>
               <Layout>
                 <Component {...pageProps} />
               </Layout>
-            </DefaultLayout>
+              {/* </DefaultLayout> */}
+            </DemoLayout>
             {process.env.NEXT_PUBLIC_REACT_QUERY_DEVTOOLS === "true" && (
               <ReactQueryDevtools initialIsOpen={false} />
             )}
