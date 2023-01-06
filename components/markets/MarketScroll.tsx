@@ -27,52 +27,24 @@ const MarketScroll = observer(
     const cardsShown = Math.floor(containerWidth / (gap + cardWidth));
     const moveSize = cardsShown * (cardWidth + gap);
 
-    // useEffect(() => {
-    //   if (typeof window === "undefined") return;
-    //   if (window.innerWidth < 640) return;
-
-    // const cards = document.querySelectorAll(".market-card");
-
-    // const observer = new IntersectionObserver(
-    //   (entries) => {
-    //     entries.forEach((entry) => {
-    //       console.log(entry);
-    //       if (entry.isIntersecting) {
-    //         entry.target.classList.remove("opacity-0");
-    //       } else {
-    //         entry.target.classList.add("opacity-0");
-    //       }
-    //     });
-    //   },
-    //   { root: containerRef.current },
-    // );
-
-    // cards.forEach((card) => {
-    //   observer.observe(card);
-    // });
-    // }, []);
-
-    // useEffect(() => {
-    //   const cards = document.querySelectorAll(".market-card");
-    //   cards.forEach((card) => {
-    //     card.classList.remove("opacity-0");
-    //   });
-    // }, [store.leftDrawerClosed, store.rightDrawerClosed]);
+    useEffect(() => {
+      scrollRef.current.scroll({ left: scrollLeft, behavior: "smooth" });
+    }, [scrollLeft]);
 
     const handleRightClick = () => {
       setScrollLeft((prev) => {
-        const newScroll = prev - moveSize;
+        const newScroll = prev + moveSize;
         const max = scrollMax - containerWidth;
 
-        return newScroll * -1 > max ? -(scrollMax - containerWidth) : newScroll;
+        return newScroll > max ? scrollMax - containerWidth : newScroll;
       });
     };
 
     const handleLeftClick = () => {
       setScrollLeft((prev) => {
-        const newScroll = prev + moveSize;
+        const newScroll = prev - moveSize;
 
-        return newScroll > scrollMin ? scrollMin : newScroll;
+        return newScroll < scrollMin ? scrollMin : newScroll;
       });
     };
 
@@ -118,11 +90,9 @@ const MarketScroll = observer(
           </div>
         </div>
         <div className="relative">
-          <motion.div
+          <div
             ref={scrollRef}
-            animate={{ x: scrollLeft }}
-            transition={{ duration: 0.5, type: "tween" }}
-            className="flex h-[175px] gap-x-[30px] no-scroll-bar overflow-x-auto sm:overflow-x-visible"
+            className="flex h-[175px] gap-x-[30px] no-scroll-bar overflow-x-auto"
           >
             {markets.map((market) => (
               <MarketCard
@@ -131,7 +101,7 @@ const MarketScroll = observer(
                 className="market-card bg-anti-flash-white rounded-ztg-10 min-w-[320px] w-[320px] transition duration-500 ease-in-out"
               />
             ))}
-          </motion.div>
+          </div>
         </div>
       </div>
     );
