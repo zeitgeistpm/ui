@@ -29,7 +29,7 @@ const MarketScroll = observer(
 
     useEffect(() => {
       scrollRef.current.scroll({ left: scrollLeft, behavior: "smooth" });
-    }, [scrollLeft]);
+    }, [scrollRef, scrollLeft]);
 
     const handleRightClick = () => {
       setScrollLeft((prev) => {
@@ -50,13 +50,13 @@ const MarketScroll = observer(
 
     const leftDisabled = scrollLeft === 0;
     const rightDisabled =
-      scrollMax - containerWidth + scrollLeft === 0 || markets.length <= 3;
+      scrollMax - containerWidth - scrollLeft === 0 || markets.length <= 3;
 
     return (
       <div ref={containerRef} className="flex flex-col">
         <div className="flex items-center mb-ztg-30">
           <div className=" font-bold text-[28px]">{title}</div>
-          <div className="hidden sm:flex ml-auto items-center">
+          <div className="flex ml-auto items-center">
             {showMarketsLink && (
               <Link
                 href="markets"
@@ -67,7 +67,7 @@ const MarketScroll = observer(
             )}
             <button
               onClick={handleLeftClick}
-              className={`flex items-center justify-center w-[26px] h-[26px] rounded-full ml-[12px] mr-[8px] ztg-transition ${
+              className={`hidden sm:flex items-center justify-center w-[26px] h-[26px] rounded-full ml-[12px] mr-[8px] ztg-transition ${
                 leftDisabled
                   ? "bg-geyser text-pastel-blue"
                   : "bg-pastel-blue text-white"
@@ -78,7 +78,7 @@ const MarketScroll = observer(
             </button>
             <button
               onClick={handleRightClick}
-              className={`flex items-center justify-center w-[26px] h-[26px] rounded-full ztg-transition  ${
+              className={`hidden sm:flex items-center justify-center w-[26px] h-[26px] rounded-full ztg-transition  ${
                 rightDisabled
                   ? "bg-geyser text-pastel-blue"
                   : "bg-pastel-blue text-white"
