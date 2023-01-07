@@ -33,6 +33,8 @@ const AssetActionButtons = observer(
       return (
         <ReportButton market={market} assetId={assetId} ticker={assetTicker} />
       );
+    } else if (market?.status === "Disputed") {
+      return null;
     } else if (market?.status === "Reported") {
       return (
         <DisputeButton market={market} assetId={assetId} ticker={assetTicker} />

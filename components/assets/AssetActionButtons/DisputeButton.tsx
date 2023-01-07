@@ -33,21 +33,6 @@ const DisputeButton = observer(
     const { data: disputes } = useMarketDisputes(market);
 
     const disputeDisabled = useMemo(() => {
-      // TODO: fix this
-      // if (!wallets.activeAccount) return true;
-      // if (market.marketType.scalar) return false;
-      // if (disputes?.length === 0) {
-      //   return (
-      //     JSON.stringify(market.report?.outcome) ===
-      //     JSON.stringify(assetId)
-      //   );
-      // } else {
-      //   const disputedOutcome = marketStore.lastDispute.outcome;
-      //   return (
-      //     //@ts-ignore
-      //     disputedOutcome.categorical === assetId.categoricalOutcome[1]
-      //   );
-      // }
       return sdk && !isRpcSdk(sdk);
     }, [sdk, disputes?.length]);
 
@@ -61,7 +46,7 @@ const DisputeButton = observer(
         );
       } else if (isRpcSdk(sdk)) {
         //@ts-ignore
-        const ID = assetId.categoricalOutcome[1];
+        const ID = assetId.CategoricalOutcome[1];
         const signer = wallets.getActiveSigner();
 
         const callback = extrinsicCallback({
