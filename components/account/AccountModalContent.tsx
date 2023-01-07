@@ -46,7 +46,7 @@ const AccountModalContent: FC = observer(() => {
             modalStore.closeModal();
           }}
         >
-          <div className="font-lato text-ztg-16-150 capitalize">disconnect</div>
+          <div className=" text-ztg-16-150 capitalize">disconnect</div>
           <LogOut size={16} className="text-white -ml-ztg-30" />
         </div>
       </div>

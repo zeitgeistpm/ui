@@ -43,15 +43,10 @@ const PoolDeployer = observer(
       // We are assuming all rows have the same amount
       const amount = poolRows[0].amount;
 
-      const baseWeight = (1 / (poolRows.length - 1)) * 10 * ZTG;
-
-      const weightsNums = poolRows.slice(0, -1).map((_) => {
-        return baseWeight;
+      const weights = poolRows.slice(0, -1).map((row) => {
+        return new Decimal(row.weight).mul(ZTG).toFixed(0, Decimal.ROUND_DOWN);
       });
 
-      const weightsParams = [
-        ...weightsNums.map((w) => Math.floor(w).toString()),
-      ];
       const signer = store.wallets.getActiveSigner();
 
       const deployPoolTx = () => {
@@ -60,7 +55,7 @@ const PoolDeployer = observer(
             signer,
             swapFee,
             new Decimal(amount).mul(ZTG).toFixed(0),
-            weightsParams,
+            weights,
             extrinsicCallback({
               notificationStore,
               successCallback: () => {
@@ -127,7 +122,7 @@ const PoolDeployer = observer(
             <>
               {!marketStore.is("Proposed") && (
                 <button
-                  className="my-ztg-20 font-space font-bold text-ztg-16-150 text-sky-600 border-1 px-ztg-20 py-ztg-10 rounded-ztg-10 border-sky-600"
+                  className="my-ztg-20  font-bold text-ztg-16-150 text-sky-600 border-1 px-ztg-20 py-ztg-10 rounded-ztg-10 border-sky-600"
                   data-test="deployLiquidityButton"
                   onClick={handleDeployClick}
                 >

@@ -43,7 +43,7 @@ const JurorStatusPill = ({ active }: { active: boolean }) => {
           className="inline cursor-pointer ml-ztg-10 mb-ztg-2"
         />
         {hoveringInfo === true ? (
-          <div className="bg-white dark:bg-black absolute rounded-ztg-10 text-black dark:text-white px-ztg-8 py-ztg-14 font-lato text-ztg-12-150 w-ztg-240">
+          <div className="bg-white dark:bg-black absolute rounded-ztg-10 text-black dark:text-white px-ztg-8 py-ztg-14  text-ztg-12-150 w-ztg-240">
             <div className="font-bold mb-ztg-4">
               {active === true ? "Active Juror" : "Tardy Juror"}
             </div>

@@ -21,9 +21,7 @@ interface AssetDetailProps {
 const AssetDetail = ({ header, middle, bottom }: AssetDetailProps) => {
   return (
     <div className="flex flex-col h-ztg-89 w-full rounded-ztg-10 bg-sky-100 dark:bg-black p-ztg-15 mx-ztg-10">
-      <div className="font-lato text-sky-600 text-ztg-12-150 font-bold">
-        {header}
-      </div>
+      <div className=" text-sky-600 text-ztg-12-150 font-bold">{header}</div>
       <div className="font-bold font-mono text-ztg-14-150">{middle}</div>
       <div className="font-mono text-ztg-12-150 text-sky-600">{bottom}</div>
     </div>
@@ -164,10 +162,10 @@ const AssetPage: NextPage = observer(() => {
       </div>
       <div className="flex">
         <div className="flex flex-col">
-          <div className="text-ztg-10-150 font-lato uppercase font-bold text-sky-600 mb-ztg-4">
+          <div className="text-ztg-10-150  uppercase font-bold text-sky-600 mb-ztg-4">
             Asset
           </div>
-          <div className="flex items-center justify-center h-ztg-38 bg-sky-300 text-black dark:bg-sky-700 dark:text-white  px-ztg-10 font-space text-ztg-22-120 font-bold rounded-ztg-5">
+          <div className="flex items-center justify-center h-ztg-38 bg-sky-300 text-black dark:bg-sky-700 dark:text-white  px-ztg-10  text-ztg-22-120 font-bold rounded-ztg-5">
             <div
               className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2"
               style={{ background: assetColor }}
@@ -176,7 +174,7 @@ const AssetPage: NextPage = observer(() => {
           </div>
         </div>
         <div className="flex flex-col ml-ztg-19">
-          <div className="text-ztg-10-150 font-lato uppercase font-bold text-sky-600 mb-ztg-4">
+          <div className="text-ztg-10-150  uppercase font-bold text-sky-600 mb-ztg-4">
             Amount
           </div>
           <div className="flex items-center font-mono text-ztg-18-150 font-bold h-ztg-38 dark:bg-black px-ztg-15 rounded-ztg-5">

@@ -10,14 +10,9 @@ export const useChainTimeNow = () => {
 
   return useQuery<ChainTime | null>(
     [rootKey, id],
-    async () => {
-      if (isRpcSdk(sdk)) {
-        return sdk.model.time.now();
-      }
-      return null;
-    },
+    async () => sdk.model.time.now(),
     {
-      enabled: Boolean(sdk),
+      enabled: Boolean(sdk) && isRpcSdk(sdk),
       refetchInterval: 12 * 1000,
     },
   );

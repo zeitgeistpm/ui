@@ -30,15 +30,6 @@ export type PageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   Layout?: FC | (() => JSX.Element);
 };
 
-export type MarketListQuery = {
-  pagination: PaginationOptions;
-  filter: FilterOptions;
-  sorting: SortOptions;
-  myMarketsOnly?: boolean;
-  tag?: string;
-  searchText?: string;
-};
-
 export type PoolsListQuery = {
   page: number;
 };
@@ -47,33 +38,6 @@ export type PaginationOptions = {
   page: number;
   pageSize: number;
 };
-
-// market id represents creation date, markets with bigger marketId are latest
-export enum ESortType {
-  Volume = "Volume",
-  CreatedAt = "Newest",
-  EndDate = "Ends Soon",
-}
-
-export type SortType = keyof typeof ESortType;
-export type SortOrder = "asc" | "desc";
-
-export type SortOptions = {
-  order: SortOrder;
-  sortBy: SortType;
-};
-
-export type MyMarketsFilterOptions = {
-  creator: boolean;
-  oracle: boolean;
-  hasAssets: boolean;
-};
-
-export type MarketsFilterOptions = {
-  [K in MarketStatus]: boolean;
-} & { HasLiquidityPool: boolean; tags?: string[] };
-
-export type FilterOptions = MyMarketsFilterOptions & MarketsFilterOptions;
 
 export interface SharesBalances {
   yes: Decimal;
@@ -88,22 +52,6 @@ export interface SelectOption {
 export interface OutcomeSelectOption extends SelectOption {
   value: number;
 }
-
-/**
- * Used to generate [[MarketStatus]] and marketStatuses array in
- * 'lib/constants'. Values are irrelevant, but have to be strings so we don't
- * get numbers from Object.keys(..)
- */
-export enum EMarketStatus {
-  Proposed = "Proposed",
-  Active = "Active",
-  Closed = "Closed",
-  Reported = "Reported",
-  Disputed = "Disputed",
-  Resolved = "Resolved",
-}
-
-export type MarketStatus = keyof typeof EMarketStatus;
 
 export const isAsset = (val: any): val is Asset => {
   return val.type === "Asset";

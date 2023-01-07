@@ -1,21 +1,20 @@
-import { observer } from "mobx-react";
-import { useRouter } from "next/router";
-import React, { ReactFragment, useEffect, useMemo, useState } from "react";
-import { useNavigationStore } from "lib/stores/NavigationStore";
-import { useTradeSlipStore } from "lib/stores/TradeSlipStore";
-import { useStore } from "lib/stores/Store";
-import MarketStore from "lib/stores/MarketStore";
-import { useExchangeStore } from "lib/stores/ExchangeStore";
-import PercentageChange from "components/ui/PercentageChange";
-import ReportBox from "components/outcomes/ReportBox";
 import DisputeBox from "components/outcomes/DisputeBox";
 import RedeemBox from "components/outcomes/RedeemBox";
-
-import TradeSlip from "../trade-slip";
-import LiquidityPoolsBox from "../liquidity/LiquidityPoolsBox";
-import Drawer from "./Drawer";
-import Tabs from "../ui/Tabs";
+import ReportBox from "components/outcomes/ReportBox";
+import PercentageChange from "components/ui/PercentageChange";
+import { useExchangeStore } from "lib/stores/ExchangeStore";
+import MarketStore from "lib/stores/MarketStore";
+import { useNavigationStore } from "lib/stores/NavigationStore";
+import { useStore } from "lib/stores/Store";
+import { observer } from "mobx-react";
+import { useRouter } from "next/router";
+import { ReactFragment, useEffect, useMemo, useState } from "react";
+import { useTradeslipItems } from "lib/state/tradeslip/items";
 import ExchangeBox from "../exchange/ExchangeBox";
+import LiquidityPoolsBox from "../liquidity/LiquidityPoolsBox";
+import TradeSlip from "../trade-slip";
+import Tabs from "../ui/Tabs";
+import Drawer from "./Drawer";
 
 const ZTGSummary = observer(() => {
   const { ztgInfo } = useStore();
@@ -27,12 +26,10 @@ const ZTGSummary = observer(() => {
       </div>
 
       <div className="flex flex-col ml-ztg-12 mr-ztg-6">
-        <div className="font-space text-ztg-16-150 font-bold text-sky-1100 dark:text-white">
+        <div className=" text-ztg-16-150 font-bold text-sky-1100 dark:text-white">
           ZTG
         </div>
-        <div className="font-lato text-ztg-12-150 text-sky-600 w-ztg-90 ">
-          Zeitgeist
-        </div>
+        <div className=" text-ztg-12-150 text-sky-600 w-ztg-90 ">Zeitgeist</div>
       </div>
       {ztgInfo ? (
         <>
@@ -115,7 +112,7 @@ const Box = observer(
 const RightDrawer = observer(() => {
   const navigationStore = useNavigationStore();
   const { currentPage } = navigationStore;
-  const tradeSlipStore = useTradeSlipStore();
+  const tradeslipItems = useTradeslipItems();
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [market, setMarket] = useState<MarketStore | null>();
   const router = useRouter();
@@ -175,7 +172,7 @@ const RightDrawer = observer(() => {
 
   useEffect(() => {
     setActiveTabIndex(0);
-  }, [tradeSlipStore.tradeSlipItems.length]);
+  }, [tradeslipItems.items.length]);
 
   const handleMarketChange = async () => {
     const market = await markets.getMarket(Number(marketid));
@@ -212,7 +209,7 @@ const RightDrawer = observer(() => {
               <div className="w-1/4 flex justify-center items-center">
                 <img src="/support.png" className="w-ztg-18 h-ztg-18" />
               </div>
-              <p className="font-bold text-sky-600 font-lato text-ztg-16-150">
+              <p className="font-bold text-sky-600  text-ztg-16-150">
                 Feedback and Support
               </p>
             </button>

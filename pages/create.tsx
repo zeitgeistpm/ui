@@ -35,8 +35,8 @@ import { JSONObject } from "lib/types";
 import { toBase64 } from "lib/util";
 import { extrinsicCallback } from "lib/util/tx";
 import { calculateMarketCost } from "lib/util/market";
-import { DEFAULT_DEADLINES, NUM_BLOCKS_IN_DAY, ZTG } from "lib/constants";
-import { Input, TextArea } from "components/ui/inputs";
+import { NUM_BLOCKS_IN_DAY, ZTG } from "lib/constants";
+import { Input } from "components/ui/inputs";
 import OutcomesField from "components/create/OutcomesField";
 import MarketSlugField from "components/create/MarketSlugField";
 import TagChoices from "components/create/TagChoices";
@@ -493,13 +493,9 @@ const CreatePage: NextPage = observer(() => {
 
     const numOutcomes = metadata.categories.length;
 
-    const baseWeight = (1 / numOutcomes) * 10 * ZTG;
-
-    const weightsNums = poolRows.slice(0, -1).map((_) => {
-      return baseWeight;
+    const weights = poolRows.slice(0, -1).map((row) => {
+      return new Decimal(row.weight).mul(ZTG).toFixed(0, Decimal.ROUND_DOWN);
     });
-
-    const weights = [...weightsNums.map((w) => Math.floor(w).toString())];
 
     const baseAssetAmount = (
       Number([...poolRows].pop().amount) * ZTG
@@ -663,6 +659,15 @@ const CreatePage: NextPage = observer(() => {
     );
   };
 
+  const poolPricesEqualOne = poolRows
+    ?.slice(0, -1)
+    .reduce((acc, pool) => acc.plus(pool.price.price), new Decimal(0))
+    .eq(1);
+
+  const poolPriceNotZero = !poolRows?.some((pool) => pool.price.price.eq(0));
+
+  const poolValid = poolPricesEqualOne === true && poolPriceNotZero === true;
+
   return (
     <form data-test="createMarketForm">
       <InfoBoxes />
@@ -734,7 +739,7 @@ const CreatePage: NextPage = observer(() => {
             onChange={(deadlines) => onChangeDeadlines(deadlines)}
           />
         </div>
-        <div className="flex h-ztg-22 items-center text-sky-600 font-lato">
+        <div className="flex h-ztg-22 items-center text-sky-600 ">
           <div className="w-ztg-20 h-ztg-20">
             <AlertTriangle size={20} />
           </div>
@@ -762,7 +767,7 @@ const CreatePage: NextPage = observer(() => {
               changeAdvised(!formData.advised);
             }}
           />
-          <div className="ml-ztg-15 font-lato text-ztg-10-150 text-sky-600">
+          <div className="ml-ztg-15  text-ztg-10-150 text-sky-600">
             An advised market means a smaller deposit, but requires approval
             from the advisory committee before becoming active.
           </div>
@@ -780,7 +785,7 @@ const CreatePage: NextPage = observer(() => {
               />
               <label
                 htmlFor="deployPool"
-                className="text-ztg-20-150 font-bold font-space"
+                className="text-ztg-20-150 font-bold "
               >
                 Deploy Liquidity Pool
               </label>
@@ -788,15 +793,28 @@ const CreatePage: NextPage = observer(() => {
           </>
         )}
         {deployPool && poolRows != null && (
-          <PoolSettings
-            data={poolRows}
-            onChange={(v) => {
-              setPoolRows(v);
-            }}
-            onFeeChange={(fee: Decimal) => {
-              setSwapFee(fee.toString());
-            }}
-          />
+          <>
+            {poolPriceNotZero === false && (
+              <div className="text-ztg-12-120 ml-ztg-10">
+                Pool prices must be greater than zero
+              </div>
+            )}
+            {poolPricesEqualOne === false && (
+              <div className="text-ztg-12-120 ml-ztg-10">
+                The sum of pool prices must equal one. Unlock prices to
+                recalculate
+              </div>
+            )}
+            <PoolSettings
+              data={poolRows}
+              onChange={(v) => {
+                setPoolRows(v);
+              }}
+              onFeeChange={(fee: Decimal) => {
+                setSwapFee(fee.toString());
+              }}
+            />
+          </>
         )}
 
         <div className="flex justify-center mb-ztg-10 mt-ztg-12 w-full h-ztg-40">
@@ -811,7 +829,8 @@ const CreatePage: NextPage = observer(() => {
             disabled={
               !form.isValid ||
               !formData.deadlines.isValid ||
-              store.wallets.activeBalance.lessThan(marketCost)
+              store.wallets.activeBalance.lessThan(marketCost) ||
+              (poolRows?.length > 0 && poolValid === false)
             }
           >
             Create Market

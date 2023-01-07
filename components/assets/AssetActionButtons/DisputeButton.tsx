@@ -92,7 +92,7 @@ const DisputeButton = observer(
         <button
           onClick={handleClick}
           disabled={disputeDisabled}
-          className="rounded-full h-ztg-20 font-space text-ztg-10-150 focus:outline-none px-ztg-15 py-ztg-2 ml-auto bg-dark-yellow text-white disabled:opacity-20 disabled:cursor-default"
+          className="rounded-full h-ztg-20  text-ztg-10-150 focus:outline-none px-ztg-15 py-ztg-2 ml-auto bg-dark-yellow text-white disabled:opacity-20 disabled:cursor-default"
         >
           Dispute Outcome
         </button>

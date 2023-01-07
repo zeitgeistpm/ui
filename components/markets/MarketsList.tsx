@@ -1,23 +1,24 @@
-import React, { useEffect, useRef, useState } from "react";
+import { Context, IndexedMarket } from "@zeitgeistpm/sdk-next";
+import React, { useEffect, useState } from "react";
+import Decimal from "decimal.js";
+import { useInView } from "react-intersection-observer";
 import { observer } from "mobx-react";
+import { makeAutoObservable } from "mobx";
+import Loader from "react-spinners/PulseLoader";
 import { X } from "react-feather";
 import { useRouter } from "next/router";
-import hashObject from "object-hash";
+import { debounce } from "lodash";
 import { useStore } from "lib/stores/Store";
-import MarketCard from "./MarketCard";
-import MainFilters from "./filters/MainFilters";
-import MyFilters from "./filters/MyFilters";
-import MarketSkeletons from "./MarketSkeletons";
-import { useMarketsUrlQuery } from "lib/hooks/useMarketsUrlQuery";
-import { usePrevious } from "lib/hooks/usePrevious";
-import Loader from "react-spinners/PulseLoader";
-import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
+import { useMarkets } from "lib/hooks/queries/useMarkets";
+import { MarketOutcomes } from "lib/types/markets";
 import { useContentScrollTop } from "components/context/ContentDimensionsContext";
-import { debounce, isEmpty } from "lodash";
-import { makeAutoObservable } from "mobx";
-import { useUserStore } from "lib/stores/UserStore";
-import { MarketCardData } from "lib/gql/markets-list";
-import MarketsStore from "lib/stores/MarketsStore";
+import { useContentWidth } from "components/context/ContentDimensionsContext";
+import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
+import MarketFilterSelection from "./market-filter";
+import MarketCard from "./market-card";
+import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
+import { filterTypes } from "lib/constants/market-filter";
+import { ZTG } from "lib/constants";
 
 export type MarketsListProps = {
   className?: string;
@@ -30,199 +31,165 @@ const scrollRestoration = makeAutoObservable({
   },
 });
 
-const MarketsFilters = observer(
-  ({ onFilterClick }: { onFilterClick: () => void }) => {
-    const query = useMarketsUrlQuery();
+const useChangeQuery = (
+  filters?: MarketFilter[],
+  orderBy?: MarketsOrderBy,
+  withLiquidityOnly?: boolean,
+) => {
+  const queryState = useMarketsUrlQuery();
 
-    const userStore = useUserStore();
-
-    if (userStore.graphQlEnabled === false) {
-      return null;
+  useEffect(() => {
+    if (filters == null) {
+      return;
     }
+    const newFilters = {};
+    for (const filterType of filterTypes) {
+      const filterByType = filters.filter((f) => f.type === filterType);
+      newFilters[filterType] = filterByType.map((f) => f.value);
+    }
+    queryState?.updateQuery({
+      filters: newFilters,
+    });
+  }, [filters]);
 
-    return (
-      <>
-        {query.searchText && (
-          <MarketsSearchInfo searchText={query.searchText} />
-        )}
+  useEffect(() => {
+    if (orderBy == null) {
+      return;
+    }
+    queryState?.updateQuery({ ordering: orderBy });
+  }, [orderBy]);
 
-        {query.tag && <MarketsSearchInfo searchText={query.tag} />}
-
-        {query.myMarketsOnly == null && (
-          <MainFilters
-            filters={query.filter}
-            sortOptions={query.sorting}
-            onFiltersChange={(filter) => {
-              onFilterClick();
-              query.updateQuery({ filter, pagination: { page: 1 } });
-            }}
-            onSortOptionChange={(sorting) => {
-              query.updateQuery({ sorting });
-            }}
-          />
-        )}
-
-        {query.myMarketsOnly === true && (
-          <MyFilters
-            filters={query.filter}
-            onFiltersChange={(filter) => {
-              onFilterClick();
-              query.updateQuery({
-                filter,
-                pagination: { page: 1 },
-              });
-            }}
-            onSortOptionChange={(sorting) => {
-              query.updateQuery({ sorting });
-            }}
-          />
-        )}
-      </>
-    );
-  },
-);
+  useEffect(() => {
+    if (withLiquidityOnly == null) {
+      return;
+    }
+    queryState?.updateQuery({ liquidityOnly: withLiquidityOnly });
+  }, [withLiquidityOnly]);
+};
 
 const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const store = useStore();
-  const { markets: marketsStore, preloadedMarkets } = store;
-  const [initialLoad, setInitialLoad] = useState(true);
+  const { markets: marketsStore } = store;
+  const [filters, setFilters] = useState<MarketFilter[]>();
+  const [orderBy, setOrderBy] = useState<MarketsOrderBy>();
+  const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
 
-  const query = useMarketsUrlQuery();
-  const [queryState, setQueryState] = useState(query);
-  const [hashedQuery, setHashedQuery] = useState<string>();
-
-  const [totalPages, setTotalPages] = useState<number>(0);
-  const [loadingNextPage, setLoadingNextPage] = useState(false);
-  const [pageLoaded, setPageLoaded] = useState<boolean | null>(null);
+  const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
   const [scrollTop, scrollTo] = useContentScrollTop();
+  const [scrollingRestored, setScrollingRestored] = useState(false);
 
-  const [isMyMarkets, setIsMyMarkets] = useState<boolean>();
+  useChangeQuery(filters, orderBy, withLiquidityOnly);
+  const [gridColsClass, setGridColsClass] = useState<string>("grid-cols-3");
+  const contentWidth = useContentWidth();
 
-  const prevPage = usePrevious(queryState?.pagination?.page);
-
-  const paginatorRef = useRef<HTMLDivElement>();
-  const listRef = useRef<HTMLDivElement>();
-
-  const count = marketsStore?.count;
-  const hasNext = query?.pagination?.page < totalPages;
-
-  const performQuery = () => {
-    return marketsStore.fetchMarkets(query);
-  };
-
-  const hasScrolledToEnd = useIsOnScreen(paginatorRef);
+  const {
+    data: marketsPages,
+    isFetching: isFetchingMarkets,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+  } = useMarkets(orderBy, withLiquidityOnly, filters);
 
   useEffect(
     debounce(() => {
-      scrollRestoration.set(scrollTop);
-    }, 150),
-    [scrollTop],
+      if (scrollingRestored) {
+        scrollRestoration.set(scrollTop);
+      }
+    }, 50),
+    [scrollTop, scrollingRestored],
   );
 
   useEffect(() => {
-    setHashedQuery(hashObject(query));
-    if (query.myMarketsOnly === true) {
-      setIsMyMarkets(true);
-    } else {
-      setIsMyMarkets(false);
+    if (isLoadMarkerInView === true && hasNextPage === true) {
+      fetchNextPage();
     }
-  }, [query]);
+  }, [isLoadMarkerInView, hasNextPage]);
 
-  const [marketsList, setMarketsList] = useState<MarketCardData[]>();
+  const [markets, setMarkets] = useState<
+    (IndexedMarket<Context> & {
+      outcomes: MarketOutcomes;
+      prediction: string;
+    })[]
+  >();
 
   useEffect(() => {
-    if (marketsStore.initialPageLoaded !== true) {
-      setMarketsList(preloadedMarkets);
-    } else {
-      const markets = marketsStore.order.map((id) => {
-        return store.markets.markets[id];
-      });
-      setMarketsList(markets);
-    }
-  }, [marketsStore.initialPageLoaded, marketsStore.order, preloadedMarkets]);
+    const markets =
+      marketsPages?.pages.flatMap((markets) => markets.data) ?? [];
+    setMarkets(markets);
+  }, [marketsPages?.pages]);
+
+  const count = markets?.length ?? 0;
 
   useEffect(() => {
-    if (initialLoad && scrollRestoration.scrollTop) {
+    if (!scrollingRestored && count > 0) {
       scrollTo(scrollRestoration.scrollTop);
+      setScrollingRestored(true);
     }
-  }, [initialLoad, scrollRestoration.scrollTop]);
+  }, [scrollingRestored, scrollRestoration.scrollTop, count]);
 
   useEffect(() => {
-    if (pageLoaded !== true || !marketsStore.initialPageLoaded) {
-      return;
-    }
-    if (hasNext && hasScrolledToEnd) {
-      query.updateQuery({
-        pagination: { page: query?.pagination?.page + 1 },
-      });
-      setQueryState(query);
-    }
-  }, [hasScrolledToEnd, marketsStore.initialPageLoaded, hasNext]);
-
-  useEffect(() => {
-    if (store.sdk == null) {
-      return;
-    }
-    if (isMyMarkets && store.wallets.activeAccount == null) {
-      return;
-    }
-    setPageLoaded(false);
-    performQuery().then(() => {
-      setLoadingNextPage(false);
-      setPageLoaded(true);
-      setInitialLoad(false);
-      if (marketsStore.initialPageLoaded === false) {
-        marketsStore.setInitialPageLoaded();
+    const pageNum = marketsPages?.pages.length ?? 0;
+    if (pageNum > 0) {
+      for (const market of marketsPages.pages[pageNum - 1].data) {
+        marketsStore.getMarket(market.marketId);
       }
-    });
-  }, [hashedQuery, store.sdk, store.wallets.activeAccount]);
+    }
+  }, [marketsPages]);
 
   useEffect(() => {
-    if (queryState?.pagination?.page > prevPage) {
-      setLoadingNextPage(true);
+    if (contentWidth <= 620) {
+      return setGridColsClass("grid-cols-1");
     }
-  }, [queryState?.pagination?.page]);
-
-  useEffect(() => {
-    if (count) {
-      setTotalPages(Math.ceil(count / query.pagination.pageSize));
+    if (contentWidth <= 915) {
+      return setGridColsClass("grid-cols-2");
     }
-  }, [count]);
+    setGridColsClass("grid-cols-3");
+  }, [contentWidth]);
 
   return (
-    <div className={"pt-ztg-46 " + className} ref={listRef}>
-      <h3 className="mb-ztg-40 font-space text-[24px] font-semibold">
-        <span className="mr-4">
-          {isMyMarkets ? "My Markets" : "All Markets"}
-        </span>
-        {loadingNextPage || (!pageLoaded && <Loader size={8} />)}
-      </h3>
-      <div id="marketsList">
-        <MarketsFilters
-          onFilterClick={() => {
-            setPageLoaded(false);
-          }}
-        />
+    <div
+      className={"pt-ztg-46 mb-[38px]" + className}
+      data-testid="marketsList"
+    >
+      <MarketFilterSelection
+        onFiltersChange={setFilters}
+        onOrderingChange={setOrderBy}
+        onWithLiquidityOnlyChange={setWithLiquidityOnly}
+      />
+      <div className={`grid grid-cols-3 gap-[30px] ${gridColsClass}`}>
+        {markets?.map((market) => {
+          const volume = market.pool?.volume ?? 0;
+          return (
+            <MarketCard
+              marketId={market.marketId}
+              outcomes={market.outcomes}
+              question={market.question}
+              creation={market.creation}
+              img={market.img}
+              prediction={market.prediction}
+              baseAsset={market.pool?.baseAsset}
+              volume={new Decimal(volume).div(ZTG).toNumber()}
+              key={`market-${market.marketId}`}
+            />
+          );
+        })}
       </div>
-      <div className="mb-ztg-38">
-        {query != null &&
-          marketsList?.map((market) => {
-            return <MarketCard market={market} key={`market-${market.id}`} />;
-          })}
-
-        {(marketsList == null || loadingNextPage) && (
-          <MarketSkeletons pageSize={queryState?.pagination?.pageSize ?? 5} />
-        )}
-
-        {pageLoaded && count === 0 && (
-          <div className="text-center">No results!</div>
-        )}
-
-        <div className="my-22 w-full h-40"></div>
-
-        <div ref={paginatorRef} />
+      <div className="flex justify-center w-full mt-[78px] h-[20px]">
+        {(isFetchingMarkets || isLoading) && <Loader />}
       </div>
+      {!isLoading && count === 0 && (
+        <div className="text-center">No results!</div>
+      )}
+      <div
+        className="w-full h-0"
+        style={
+          isFetchingMarkets || !hasNextPage
+            ? { position: "absolute", left: "-10000px" }
+            : {}
+        }
+        ref={loadMoreRef}
+      ></div>
     </div>
   );
 });
@@ -232,7 +199,7 @@ const MarketsSearchInfo = observer(({ searchText }: { searchText: string }) => {
 
   return (
     <div className="flex my-ztg-30 h-ztg-34">
-      <h6 className="font-space  text-ztg-[24px]" id="marketsHead">
+      <h6 className="text-ztg-[24px]" id="marketsHead">
         {`Search results for: "${searchText}"`}
       </h6>
       <div className="w-ztg-24 h-ztg-24 rounded-full bg-sky-400 dark:bg-black center ml-ztg-15">

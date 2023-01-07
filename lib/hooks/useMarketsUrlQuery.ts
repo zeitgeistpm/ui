@@ -1,138 +1,138 @@
-import {
-  PaginationOptions,
-  FilterOptions,
-  SortOptions,
-  MarketListQuery,
-} from "lib/types";
 import { useRouter } from "next/router";
 import type { ParsedUrlQuery } from "querystring";
-import { useCallback, useMemo } from "react";
-import { merge, last, isEmpty } from "lodash";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { isUndefined, isEmpty } from "lodash";
 import { DeepPartial } from "lib/types/DeepPartial";
 import { parse as parseUri } from "uri-js";
+import { MarketsListQuery, MarketsOrderBy } from "lib/types/market-filter";
+import { defaultMarketsQueryState } from "lib/constants/market-filter";
+import { filterTypes } from "lib/constants/market-filter";
 
 export type MarketListQueryUpdater = (
-  update: DeepPartial<MarketListQuery>,
+  update: DeepPartial<MarketsListQuery>,
 ) => void;
 
-export const useMarketsUrlQuery = (): MarketListQuery & {
+const getQueryParams = (path: string) => {
+  const url = parseUri(path);
+  let queryParams = {};
+  const queryParamsArr = [...Array.from(new URLSearchParams(url.query))];
+  for (const pair of queryParamsArr) {
+    queryParams[pair[0]] = pair[1];
+  }
+  return queryParams;
+};
+
+const useMarketsUrlQuery = (): MarketsListQuery & {
   updateQuery: MarketListQueryUpdater;
 } => {
   const router = useRouter();
   const routerPath = router.asPath;
-  const query = useMemo(() => {
+  const [query, setQuery] = useState<MarketsListQuery>();
+
+  const setQueryToDefault = () => {
+    setQuery(defaultMarketsQueryState);
+    updateQuery(defaultMarketsQueryState);
+  };
+
+  const setInitialQuery = useCallback(() => {
+    const queryParams = getQueryParams(routerPath);
     try {
-      const url = parseUri(routerPath);
-      let queryParams = {};
-      const queryParamsArr = [...Array.from(new URLSearchParams(url.query))];
-      for (const pair of queryParamsArr) {
-        queryParams[pair[0]] = pair[1];
+      if (isEmpty(queryParams)) {
+        setQueryToDefault();
+      } else {
+        const query = parse(queryParams);
+        setQuery(query);
       }
-      return parse(queryParams);
     } catch (error) {
-      return defaultQueryState;
+      console.warn(error);
+      setQueryToDefault();
     }
   }, [routerPath]);
 
+  useEffect(() => {
+    const queryParams = getQueryParams(routerPath);
+    const query = parse(queryParams);
+    setQuery(query);
+  }, [routerPath]);
+
+  useEffect(() => {
+    setInitialQuery();
+  }, []);
+
   const updateQuery = useCallback<MarketListQueryUpdater>(
     (update) => {
-      const newQuery: MarketListQuery = merge(query, update);
+      const filters = update.filters ?? query.filters;
+      const ordering = update.ordering ?? query.ordering;
+      const liquidityOnly = update.liquidityOnly ?? query.liquidityOnly;
+      const newQuery = { filters, ordering, liquidityOnly };
       router.replace({
         query: toString(newQuery),
       });
     },
-    [routerPath],
+    [routerPath, query],
   );
 
-  return {
-    ...query,
-    updateQuery,
-  };
+  const [queryState, setQueryState] = useState<
+    MarketsListQuery & { updateQuery: MarketListQueryUpdater }
+  >();
+
+  useEffect(() => {
+    if (query == null) {
+      return;
+    }
+    setQueryState({ ...query, updateQuery });
+  }, [query]);
+
+  return queryState;
 };
 
-export const defaultQueryState: MarketListQuery = {
-  pagination: {
-    page: 1,
-    pageSize: 5,
-  },
-  filter: {
-    Proposed: false,
-    Active: true,
-    Closed: false,
-    Reported: false,
-    Disputed: false,
-    Resolved: false,
-    HasLiquidityPool: true,
-    oracle: false,
-    creator: true,
-    hasAssets: false,
-  },
-  sorting: {
-    order: "asc",
-    sortBy: "CreatedAt",
-  },
-};
+const toString = (query: MarketsListQuery) => {
+  const { filters, ordering, liquidityOnly } = query;
 
-const paginationKeys = Object.keys(defaultQueryState.pagination);
-const filterKeys = Object.keys(defaultQueryState.filter);
-const sortKeys = Object.keys(defaultQueryState.sorting);
+  const filtersEntries = filterTypes.map((type) => [
+    type,
+    encodeURIComponent(filters[type].join(",")),
+  ]);
 
-const toString = (query: MarketListQuery) => {
-  return [
-    ...Object.entries(query.pagination),
-    ...Object.entries(query.filter),
-    ...Object.entries(query.sorting),
-    ["tag", query.tag],
-    ["myMarketsOnly", query.myMarketsOnly],
-    ["searchText", query.searchText],
-  ]
-    .map(([key, value]) =>
-      typeof value !== "undefined" ? `${key}=${value}` : null,
-    )
-    .filter((queryString) => queryString !== null)
+  const filtersQueryStr = filtersEntries
+    .map(([key, value]) => {
+      if (value) {
+        return `${key}=${value}`;
+      }
+    })
+    .filter((qs) => !isUndefined(qs))
     .join("&");
+
+  const orderingQueryStr = `ordering=${ordering}`;
+
+  const liquidityOnlyQueryStr = `liquidityOnly=${liquidityOnly}`;
+
+  return [filtersQueryStr, orderingQueryStr, liquidityOnlyQueryStr].join("&");
 };
 
-const parse = (rawQuery: ParsedUrlQuery): MarketListQuery => {
-  let pagination: PaginationOptions = {
-    ...defaultQueryState.pagination,
+const parse = (rawQuery: ParsedUrlQuery): MarketsListQuery => {
+  const filters = {
+    status: [],
+    tag: [],
+    currency: [],
   };
-  let filter: FilterOptions = { ...defaultQueryState.filter };
-  let sorting: SortOptions = { ...defaultQueryState.sorting };
-  for (const paginationKey of paginationKeys) {
-    if (rawQuery[paginationKey]) {
-      pagination[paginationKey] = JSON.parse(rawQuery[paginationKey] as string);
+
+  const ordering: MarketsOrderBy = rawQuery["ordering"] as MarketsOrderBy;
+  const liquidityOnly = rawQuery["liquidityOnly"] === "true";
+
+  for (const filterType of filterTypes) {
+    if (rawQuery[filterType]) {
+      const val: string = rawQuery[filterType] as string;
+      const parsedVal = val.split(",");
+      filters[filterType] = parsedVal;
     }
   }
-  for (const filterKey of filterKeys) {
-    if (rawQuery[filterKey]) {
-      filter[filterKey] = JSON.parse(rawQuery[filterKey] as string);
-    }
-  }
-  for (const sortKey of sortKeys) {
-    if (rawQuery[sortKey]) {
-      sorting[sortKey] = rawQuery[sortKey];
-    }
-  }
-
-  const tag = Array.isArray(rawQuery.tag) ? last(rawQuery.tag) : rawQuery.tag;
-
-  const searchText = Array.isArray(rawQuery.searchText)
-    ? last(rawQuery.searchText)
-    : rawQuery.searchText;
-
-  const myMarketsOnly: boolean | undefined = !rawQuery.myMarketsOnly
-    ? undefined
-    : Array.isArray(rawQuery.myMarketsOnly)
-    ? JSON.parse(last(rawQuery.myMarketsOnly))
-    : JSON.parse(rawQuery.myMarketsOnly);
 
   return {
-    pagination,
-    filter,
-    sorting,
-    tag,
-    searchText,
-    myMarketsOnly,
+    filters,
+    ordering: ordering ?? MarketsOrderBy.Newest,
+    liquidityOnly,
   };
 };
+
+export default useMarketsUrlQuery;

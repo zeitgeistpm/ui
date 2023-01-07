@@ -1,12 +1,15 @@
-import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
+import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
+import { IndexedMarketCardData } from "components/markets/market-card";
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS, ZTG } from "lib/constants";
+import { MarketOutcomes, MarketOutcome } from "lib/types/markets";
+import { getCurrentPrediction } from "lib/util/assets";
 
 const poolQuery = gql`
   query TrendingMarkets($dateTwoWeeksAgo: DateTime) {
     pools(
-      limit: 3
+      limit: 10
       orderBy: volume_DESC
       where: { createdAt_gt: $dateTwoWeeksAgo, poolStatus_eq: "Active" }
     ) {
@@ -24,15 +27,19 @@ const marketQuery = gql`
     markets(where: { marketId_eq: $marketId }) {
       marketId
       outcomeAssets
-      slug
+      question
+      creation
       img
       marketType {
         categorical
         scalar
       }
       categories {
+        color
+        name
         ticker
       }
+      outcomeAssets
     }
   }
 `;
@@ -47,7 +54,9 @@ const assetsQuery = gql`
   }
 `;
 
-const getTrendingMarkets = async (client: GraphQLClient) => {
+const getTrendingMarkets = async (
+  client: GraphQLClient,
+): Promise<IndexedMarketCardData[]> => {
   const dateTwoWeeksAgo = new Date(
     new Date().getTime() - DAY_SECONDS * 14 * 1000,
   ).toISOString();
@@ -64,15 +73,17 @@ const getTrendingMarkets = async (client: GraphQLClient) => {
   });
 
   const trendingPools = response.pools;
-  const trendingMarkets: TrendingMarketInfo[] = await Promise.all(
+  const trendingMarkets = await Promise.all(
     trendingPools.map(async (pool) => {
       const marketsRes = await client.request<{
         markets: {
           marketId: number;
           img: string;
-          slug: string;
+          question: string;
+          creation: MarketCreation;
           marketType: { [key: string]: string };
-          categories: { ticker: string }[];
+          categories: { color: string; name: string; ticker: string }[];
+          outcomeAssets: string[];
         }[];
       }>(marketQuery, {
         marketId: pool.marketId,
@@ -91,47 +102,32 @@ const getTrendingMarkets = async (client: GraphQLClient) => {
 
       const assets = assetsRes.assets;
 
-      let prediction: string;
-      if (market.marketType.categorical) {
-        let [highestPrice, highestPriceIndex] = [0, 0];
-        assets.forEach((asset, index) => {
-          if (asset.price > highestPrice) {
-            highestPrice = asset.price;
-            highestPriceIndex = index;
-          }
-        });
+      const prediction = getCurrentPrediction(assets, market);
 
-        prediction = market.categories[highestPriceIndex].ticker;
-      } else {
-        const bounds: number[] = market.marketType.scalar
-          .split(",")
-          .map((b) => Number(b));
+      const marketCategories: MarketOutcomes = market.categories.map(
+        (category, index) => {
+          const asset = assets[index];
+          const marketCategory: MarketOutcome = {
+            ...category,
+            assetId: market.outcomeAssets[index],
+            price: asset.price,
+          };
 
-        const range = Number(bounds[1]) - Number(bounds[0]);
-        const significantDigits = bounds[1].toString().length;
-        const longPrice = assets[0].price;
-        const shortPrice = assets[1].price;
+          return marketCategory;
+        },
+      );
 
-        const shortPricePrediction = range * (1 - shortPrice) + bounds[0];
-        const longPricePrediction = range * longPrice + bounds[0];
-        const averagePricePrediction =
-          (longPricePrediction + shortPricePrediction) / 2;
-        prediction = new Decimal(averagePricePrediction)
-          .toSignificantDigits(significantDigits)
-          .toString();
-      }
-
-      const trendingMarket: TrendingMarketInfo = {
+      const trendingMarket: IndexedMarketCardData = {
         marketId: market.marketId,
-        name: market.slug,
+        question: market.question,
+        creation: market.creation,
         img: market.img,
-        outcomes: market.marketType.categorical
-          ? market.marketType.categorical.toString()
-          : "Long/Short",
         prediction: prediction,
-        volume: new Decimal(pool.volume).div(ZTG).toFixed(0),
+        volume: new Decimal(pool.volume).div(ZTG).toNumber(),
         baseAsset: pool.baseAsset,
+        outcomes: marketCategories,
       };
+
       return trendingMarket;
     }),
   );

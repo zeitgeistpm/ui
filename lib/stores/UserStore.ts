@@ -7,7 +7,6 @@ import {
 } from "lib/types";
 import Store, { useStore } from "./Store";
 import { endpoints, gqlEndpoints } from "lib/constants";
-import { TradeSlipItem } from "./TradeSlipStore";
 import ipRangeCheck from "ip-range-check";
 
 export type Theme = "dark" | "light";
@@ -32,10 +31,6 @@ export type HelperNotifications = {
   avatarKsmFeesInfo: boolean;
 };
 
-interface RawValue {
-  Raw: string;
-}
-
 const getFromLocalStorage = (
   key: string,
   defaultValue: JSONObject,
@@ -55,10 +50,9 @@ const setToLocalStorage = (key: string, value: JSONObject | Primitive) => {
 type StoredTheme = Theme | "system";
 
 export default class UserStore {
-  theme: Theme | null = null;
-  storedTheme: StoredTheme | null = null;
+  theme: Theme | null = "light";
+  storedTheme: StoredTheme | null = "light";
   accountAddress: string | null = null;
-  tradeSlipItems: JSONObject | null = null;
   endpoint: string;
   gqlEndpoint: string;
   identity?: UserIdentity;
@@ -73,24 +67,24 @@ export default class UserStore {
 
   constructor(private store: Store) {
     makeAutoObservable(this, {}, { autoBind: true, deep: false });
-    reaction(
-      () => this.storedTheme,
-      (storedTheme: StoredTheme) => {
-        setToLocalStorage("theme", storedTheme);
-        this.theme = this.getTheme();
-      },
-    );
+    // reaction(
+    //   () => this.storedTheme,
+    //   (storedTheme: StoredTheme) => {
+    //     setToLocalStorage("theme", storedTheme);
+    //     this.theme = this.getTheme();
+    //   },
+    // );
 
-    reaction(
-      () => this.theme,
-      (theme: Theme) => {
-        if (theme === "dark") {
-          document.body.classList.add(theme);
-        } else if (theme === "light") {
-          document.body.classList.remove("dark");
-        }
-      },
-    );
+    // reaction(
+    //   () => this.theme,
+    //   (theme: Theme) => {
+    //     if (theme === "dark") {
+    //       document.body.classList.add(theme);
+    //     } else if (theme === "light") {
+    //       document.body.classList.remove("dark");
+    //     }
+    //   },
+    // );
 
     reaction(
       () => this.endpoint,
@@ -109,19 +103,7 @@ export default class UserStore {
     reaction(
       () => this.store.wallets.activeAccount,
       (activeAccount) => {
-        if (activeAccount == null) {
-          this.clearIdentity();
-          return;
-        }
         setToLocalStorage("accountAddress", activeAccount.address);
-        this.loadIdentity(activeAccount.address);
-      },
-    );
-
-    reaction(
-      () => this.store.tradeSlipStore.tradeSlipItems,
-      (items) => {
-        setToLocalStorage("tradeSlipItems", items);
       },
     );
 
@@ -141,14 +123,10 @@ export default class UserStore {
   }
 
   async init() {
-    this.storedTheme = getFromLocalStorage("theme", "system") as StoredTheme;
-    this.theme = this.getTheme();
+    // this.storedTheme = getFromLocalStorage("theme", "system") as StoredTheme;
+    // this.theme = this.getTheme();
     this.accountAddress = getFromLocalStorage("accountAddress", "") as string;
     this.walletId = getFromLocalStorage("walletId", null) as string;
-    this.tradeSlipItems = getFromLocalStorage(
-      "tradeSlipItems",
-      [],
-    ) as TradeSlipItem[];
 
     this.setupEndpoints();
 
@@ -267,65 +245,6 @@ export default class UserStore {
     } else {
       return this.storedTheme;
     }
-  }
-
-  async getIdentity(address: string): Promise<UserIdentity> {
-    const identity = (await this.store.sdk.api.query.identity.identityOf(
-      address,
-    )) as any;
-
-    const indentityInfo =
-      identity.isNone === false ? (identity.value as any).get("info") : null;
-    if (indentityInfo) {
-      const textDecoder = new TextDecoder();
-
-      let discordHandle: string;
-      indentityInfo.get("additional").forEach((element) => {
-        if (
-          element[0].value?.isEmpty === false &&
-          textDecoder.decode(element[0].value)
-        ) {
-          discordHandle = textDecoder.decode(element[1].value);
-        }
-      });
-
-      const judgements = identity.value.get("judgements")[0];
-
-      const judgementType: Judgement = judgements
-        ? judgements[1].type
-        : "Unknown";
-
-      return {
-        displayName:
-          indentityInfo.get("display").isNone === false
-            ? textDecoder.decode(indentityInfo.get("display").value)
-            : "",
-        twitter:
-          indentityInfo.get("twitter").isNone === false
-            ? textDecoder.decode(indentityInfo.get("twitter").value)
-            : "",
-        discord: discordHandle,
-        judgement: judgementType,
-      };
-    } else {
-      return {
-        displayName: "",
-        twitter: "",
-        discord: "",
-        judgement: null,
-      };
-    }
-  }
-
-  async loadIdentity(address: string) {
-    const identity = await this.getIdentity(address);
-    runInAction(() => {
-      this.identity = identity;
-    });
-  }
-
-  clearIdentity() {
-    this.identity = undefined;
   }
 
   async checkIP() {

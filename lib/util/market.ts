@@ -1,5 +1,4 @@
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
-import { FilterOptions, MarketStatus } from "lib/types";
 interface BondPrices {
   advisedCost: number;
   permissionlessCost: number;
@@ -27,17 +26,6 @@ export const calculateMarketCost = (
 
 export const calculatePoolCost = (poolAmounts?: number[]) => {
   return poolAmounts[0] * 2;
-};
-
-export const activeStatusesFromFilters = (
-  filters: FilterOptions,
-): MarketStatus[] => {
-  const statuses = Object.keys(filters).filter(
-    (k) =>
-      !["oracle", "creator", "hasAssets", "HasLiquidityPool"].includes(k) &&
-      filters[k] === true,
-  );
-  return statuses as MarketStatus[];
 };
 
 export const getAssetIds = (asset: Asset) => {

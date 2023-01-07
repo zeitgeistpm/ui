@@ -37,7 +37,7 @@ const MobileTopBar = observer(() => {
 
 const TopBar = observer(() => {
   return (
-    <div className="topbar flex w-full px-ztg-32 py-ztg-18 bg-white dark:bg-sky-1000 sticky top-0 z-ztg-2 shadow-md dark:shadow-2xl">
+    <div className="topbar flex w-full px-ztg-32 py-ztg-18 bg-white dark:bg-sky-1000 sticky top-0 z-ztg-5 shadow-md dark:shadow-2xl">
       <div className="hidden sm:flex justify-between h-full w-full">
         <MarketSearch />
         <div className="flex h-full items-center">

@@ -1,11 +1,9 @@
 import { Compact } from "@polkadot/types";
 import { BlockNumber } from "@polkadot/types/interfaces";
-import { AccountInfo } from "@polkadot/types/interfaces/system";
 import { Swap } from "@zeitgeistpm/sdk/dist/models";
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import SDK from "@zeitgeistpm/sdk";
 import { useContext } from "react";
-import { observable } from "mobx";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 import Decimal from "decimal.js";
 import { makeAutoObservable, runInAction, when } from "mobx";
@@ -22,13 +20,12 @@ import UserStore from "./UserStore";
 import MarketsStore from "./MarketsStore";
 import NotificationStore from "./NotificationStore";
 import NavigationStore from "./NavigationStore";
-import TradeSlipStore from "./TradeSlipStore";
 import PoolsStore from "./PoolsStore";
 import ExchangeStore from "./ExchangeStore";
 import CourtStore from "./CourtStore";
 import Wallets from "../wallets";
-import { MarketPreload } from "lib/gql/markets-list";
 
+import { Context, Sdk } from "@zeitgeistpm/sdk-next";
 interface Config {
   tokenSymbol: string;
   ss58Prefix: number;
@@ -71,14 +68,12 @@ export default class Store {
   userStore = new UserStore(this);
   notificationStore = new NotificationStore();
   navigationStore = new NavigationStore(this);
-  tradeSlipStore = new TradeSlipStore(this);
   exchangeStore = new ExchangeStore(this);
   courtStore: CourtStore;
   wallets = new Wallets(this);
   ztgInfo: ZTGInfo;
 
   markets = new MarketsStore(this);
-  preloadedMarkets?: MarketPreload[] = undefined;
 
   pools = new PoolsStore(this);
 
@@ -93,6 +88,7 @@ export default class Store {
   }
 
   sdk: SDK | null;
+  sdkV2?: Sdk<Context> = undefined;
 
   blockNumber: Compact<BlockNumber> | null = null;
 
@@ -136,7 +132,6 @@ export default class Store {
       isTestEnv: false,
       unsubscribeNewHeads: false,
       balanceSubscription: false,
-      preloadedMarkets: observable.ref,
     });
   }
 
@@ -173,7 +168,6 @@ export default class Store {
   }
 
   private initializeMarkets() {
-    this.initTradeSlipStore();
     this.exchangeStore.initialize();
   }
 
@@ -222,7 +216,6 @@ export default class Store {
     this.markets.unsubscribeAll();
 
     if (this.wallets.connected) {
-      await this.userStore.loadIdentity(this.wallets.activeAccount.address);
       this.wallets.subscribeToBalanceChanges();
     }
 
@@ -263,10 +256,6 @@ export default class Store {
     if (this.userStore.gqlEndpoint && this.userStore.gqlEndpoint.length > 0) {
       this.graphQLClient = new GraphQLClient(this.userStore.gqlEndpoint, {});
     }
-  }
-
-  setPreloadedMarkets(data: MarketPreload[]) {
-    this.preloadedMarkets = data;
   }
 
   private async fetchZTGPrice(): Promise<void> {
@@ -385,10 +374,6 @@ export default class Store {
   async getBlockTimestamp(): Promise<number> {
     const now = await this.sdk.api.query.timestamp.now();
     return Number(now.toString());
-  }
-
-  private initTradeSlipStore() {
-    this.tradeSlipStore.initialize(this.userStore.tradeSlipItems as any);
   }
 
   /**

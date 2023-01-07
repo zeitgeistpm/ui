@@ -1,20 +1,22 @@
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 
-import { TrendingMarketInfo } from "components/markets/TrendingMarketCard";
 import { ZTG } from "lib/constants";
+import { IndexedMarketCardData } from "components/markets/market-card";
+import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
+import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
+import { getCurrentPrediction } from "lib/util/assets";
 
 const getMarketIdsFromEnvVar = () => {
-  let marketIds = [];
   try {
-    let mIds = JSON.parse(process.env.NEXT_PUBLIC_FEATURED_MARKET_IDS);
+    const mIds = JSON.parse(process.env.NEXT_PUBLIC_FEATURED_MARKET_IDS);
     // this line *should not* be needed, but here just in case
-    marketIds = mIds.map((id) => Number(id));
+    const marketIds = mIds.map((id) => Number(id));
+    return marketIds;
   } catch (err) {
     console.error(err);
+    return [];
   }
-
-  return marketIds;
 };
 
 const marketIds = getMarketIdsFromEnvVar();
@@ -29,15 +31,19 @@ const marketQuery = gql`
         baseAsset
       }
       outcomeAssets
-      slug
+      question
+      creation
       img
       marketType {
         categorical
         scalar
       }
       categories {
+        color
+        name
         ticker
       }
+      outcomeAssets
     }
   }
 `;
@@ -52,36 +58,50 @@ const assetsQuery = gql`
   }
 `;
 
-const getFeaturedMarkets = async (client: GraphQLClient) => {
+const getFeaturedMarkets = async (
+  client: GraphQLClient,
+): Promise<IndexedMarketCardData[]> => {
   // handles if we don't have any markets set
   if (marketIds.length === 0) return null;
 
   const featuredMarkets = await Promise.all(
     marketIds.map(async (id) => {
-      const marketRes = await client.request(marketQuery, {
+      const marketRes = await client.request<{
+        markets: {
+          pool: {
+            poolId: number;
+            volume: string;
+            baseAsset: string;
+          } | null;
+          marketId: number;
+          img: string;
+          question: string;
+          creation: MarketCreation;
+          marketType: { [key: string]: string };
+          categories: { color: string; name: string; ticker: string }[];
+          outcomeAssets: string[];
+        }[];
+      }>(marketQuery, {
         marketId: id,
       });
 
       const market = marketRes.markets[0];
-
       const pool = market.pool;
 
       if (!pool) {
-        const trendingMarket: TrendingMarketInfo = {
+        const noPoolMarket: IndexedMarketCardData = {
           marketId: market.marketId,
-          name: market.slug,
+          question: market.question,
+          creation: market.creation,
           img: market.img,
-          outcomes: market.marketType.categorical
-            ? market.marketType.categorical.toString()
-            : "Long/Short",
           prediction: "None",
-          volume: "No Pool",
+          volume: 0,
           baseAsset: "",
+          outcomes: [],
         };
 
-        return trendingMarket;
+        return noPoolMarket;
       }
-
       const assetsRes = await client.request<{
         assets: {
           poolId: number;
@@ -93,49 +113,33 @@ const getFeaturedMarkets = async (client: GraphQLClient) => {
 
       const assets = assetsRes.assets;
 
-      let prediction: string;
-      if (market.marketType.categorical) {
-        let [highestPrice, highestPriceIndex] = [0, 0];
-        assets.forEach((asset, index) => {
-          if (asset.price > highestPrice) {
-            highestPrice = asset.price;
-            highestPriceIndex = index;
-          }
-        });
+      const prediction = getCurrentPrediction(assets, market);
 
-        highestPriceIndex = 0;
-        prediction = market.categories[highestPriceIndex].ticker;
-      } else {
-        const bounds: number[] = market.marketType.scalar
-          .split(",")
-          .map((b) => Number(b));
+      const marketCategories: MarketOutcomes = market.categories.map(
+        (category, index) => {
+          const asset = assets[index];
+          const marketCategory: MarketOutcome = {
+            ...category,
+            assetId: market.outcomeAssets[index],
+            price: asset.price,
+          };
 
-        const range = Number(bounds[1]) - Number(bounds[0]);
-        const significantDigits = bounds[1].toString().length;
-        const longPrice = assets[0].price;
-        const shortPrice = assets[1].price;
+          return marketCategory;
+        },
+      );
 
-        const shortPricePrediction = range * (1 - shortPrice) + bounds[0];
-        const longPricePrediction = range * longPrice + bounds[0];
-        const averagePricePrediction =
-          (longPricePrediction + shortPricePrediction) / 2;
-        prediction = new Decimal(averagePricePrediction)
-          .toSignificantDigits(significantDigits)
-          .toString();
-      }
-
-      const trendingMarket: TrendingMarketInfo = {
+      const featuredMarket: IndexedMarketCardData = {
         marketId: market.marketId,
-        name: market.slug,
+        question: market.question,
+        creation: market.creation,
         img: market.img,
-        outcomes: market.marketType.categorical
-          ? market.marketType.categorical.toString()
-          : "Long/Short",
         prediction: prediction,
-        volume: new Decimal(pool.volume).div(ZTG).toFixed(0),
+        volume: new Decimal(pool.volume).div(ZTG).toNumber(),
         baseAsset: pool.baseAsset,
+        outcomes: marketCategories,
       };
-      return trendingMarket;
+
+      return featuredMarket;
     }),
   );
 

@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "es6",
     "lib": ["esnext", "dom"],
-    "allowJs": true,
+    "allowJs": false,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,

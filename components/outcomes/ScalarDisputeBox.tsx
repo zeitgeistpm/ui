@@ -63,7 +63,7 @@ const ScalarDisputeBox = observer(
     };
     return (
       <>
-        <div className="font-lato text-ztg-10-150 mb-ztg-5">
+        <div className=" text-ztg-10-150 mb-ztg-5">
           Bond will start at {disputeBond} {tokenSymbol}, increasing by{" "}
           {disputeFactor} {tokenSymbol} for each dispute
         </div>
@@ -75,24 +75,18 @@ const ScalarDisputeBox = observer(
           showErrorMessage={false}
         />
         <div className="my-ztg-10">
-          <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
+          <div className=" h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
             <span>Previous Report:</span>
             <span className="font-mono">
               {
-                //@ts-ignore
-                marketStore.lastDispute?.outcome.scalar
-                  ? //@ts-ignore
-                    new Decimal(marketStore.lastDispute.outcome.scalar)
-                      .div(ZTG)
-                      .toFixed(2)
-                  : new Decimal(marketStore.reportedScalarOutcome)
-                      .div(ZTG)
-                      .toFixed(2)
+                new Decimal(
+                  //@ts-ignore
+                  marketStore.lastDispute?.outcome.scalar ?? marketStore.reportedScalarOutcome).div(ZTG).toString()
               }
             </span>
           </div>
           {bondAmount !== disputeBond && bondAmount !== undefined ? (
-            <div className="font-lato h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600 ">
+            <div className=" h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600 ">
               <span>Previous Bond:</span>
               <span className="font-mono">{bondAmount - disputeFactor}</span>
             </div>

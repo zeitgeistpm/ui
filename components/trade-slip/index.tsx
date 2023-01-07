@@ -1,159 +1,143 @@
-import React, { useCallback } from "react";
-import Decimal from "decimal.js";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import { when } from "mobx";
-import { observer } from "mobx-react";
-import { useStore } from "lib/stores/Store";
-import { tradeSlipForm, useTradeSlipStore } from "lib/stores/TradeSlipStore";
+import Decimal from "decimal.js";
+import { useAtom } from "jotai";
+import { ZTG } from "lib/constants";
+import { useTradeslipItems } from "lib/state/tradeslip/items";
+import { slippagePercentageAtom } from "lib/state/tradeslip/slippage";
+import {
+  itemKey,
+  useTradeslipItemsState,
+} from "lib/state/tradeslip/tradeslipItemsState";
+import { useTradeslipTotalState } from "lib/state/tradeslip/tradeslipTotalState";
 import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useStore } from "lib/stores/Store";
+import { extractIndexFromErrorHex } from "lib/util/error-table";
 import { extrinsicCallback } from "lib/util/tx";
-
-import TradeSlipItemList from "./TradeSlipItemList";
-import TransactionButton from "../ui/TransactionButton";
+import { observer } from "mobx-react";
+import { useCallback, useState } from "react";
 import SlippageSettingInput from "../markets/SlippageInput";
-import { extractIndexFromErrorHex } from "../../lib/util/error-table";
+import TransactionButton from "../ui/TransactionButton";
+import TradeSlipItem from "./TradeSlipItem";
 
 const TradeSlip = observer(() => {
-  const tradeSlipStore = useTradeSlipStore();
-  const notificationStore = useNotificationStore();
   const store = useStore();
-  const { wallets } = store;
-  const {
-    batchTx,
-    totalCost,
-    txFee,
-    insufficientZtg,
-    txInProgress,
-    setTxInProgress,
-  } = tradeSlipStore;
+  const notificationStore = useNotificationStore();
+
+  const tradeslipItems = useTradeslipItems();
+  const states = useTradeslipItemsState(tradeslipItems.items);
+  const [slippage, setSlippage] = useAtom(slippagePercentageAtom);
+
+  const { sum, batchTransaction, transactionFees } = useTradeslipTotalState();
+
+  const [isTransacting, setIsTransacting] = useState(false);
 
   const processTransactions = useCallback(async () => {
     let failedItemId: number | null = null;
-    const { signer } = wallets.getActiveSigner() as ExtSigner;
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        const unsub = await batchTx.signAndSend(
-          wallets.activeAccount.address,
-          { signer },
-          extrinsicCallback({
-            notificationStore,
-            successCallback: () => {
-              let message = "All trades suceeded";
-              if (failedItemId == null) {
-                tradeSlipStore.clearItems();
-              } else {
-                // copy sorted array, the wone thet won't change when items are
-                // removed
-                const sortedItems = [...tradeSlipStore.sortedTrades];
-                const indexesToRemove: number[] = [];
-                for (const sortedId of Array.from(sortedItems.keys())) {
-                  if (sortedId < failedItemId) {
-                    const itemFromSorted = sortedItems[sortedId];
-                    const itemId = tradeSlipStore.findIndexWithAssetId(
-                      itemFromSorted.assetId,
-                    );
-                    indexesToRemove.push(itemId);
-                  }
+    const { signer } = store.wallets.getActiveSigner() as ExtSigner;
+    setIsTransacting(true);
+    try {
+      new Promise<void>(async (resolve, reject) => {
+        try {
+          const unsub = await batchTransaction.signAndSend(
+            store.wallets.activeAccount.address,
+            { signer },
+            extrinsicCallback({
+              notificationStore,
+              successCallback: () => {
+                let message = "All trades suceeded";
+                if (failedItemId == null) {
+                  tradeslipItems.clear();
+                } else {
+                  tradeslipItems.slice(failedItemId);
+                  message = "Some trades failed left in tradeslip";
                 }
-                tradeSlipStore.removeItemsAtIndexes(indexesToRemove, true);
-                message = "Some trades failed left in tradeslip";
-              }
-              notificationStore.pushNotification(message, {
-                type: "Success",
-              });
-              unsub();
-              resolve();
-            },
-            failCallback: ({ index, error }, batchIdx?: number) => {
-              const { errorName } = store.sdk.errorTable.getEntry(
-                index,
-                extractIndexFromErrorHex(error),
-              );
-              if (batchIdx != null) {
-                failedItemId = batchIdx;
-                const item = tradeSlipStore.tradeSlipItems[batchIdx];
-                notificationStore.pushNotification(
-                  `Trade failed: ${errorName} - ${item.assetTicker}`,
-                  {
-                    type: "Error",
-                  },
+                notificationStore.pushNotification(message, {
+                  type: "Success",
+                });
+                unsub();
+                resolve();
+              },
+              failCallback: ({ index, error }, batchIdx?: number) => {
+                const { errorName } = store.sdk.errorTable.getEntry(
+                  index,
+                  extractIndexFromErrorHex(error),
                 );
-              } else {
-                notificationStore.pushNotification(
-                  `Transaction failed. Error: ${errorName}`,
-                  {
-                    type: "Error",
-                  },
-                );
-              }
-              reject();
-              unsub();
-            },
-          }),
-        );
-      } catch (err) {
-        console.log("Transaction canceled", err.toString());
-        reject();
-      }
-    });
-  }, [batchTx]);
-
-  const submitTransactions = async () => {
-    tradeSlipForm.submit({
-      onSuccess: async () => {
-        if (tradeSlipForm.isValid) {
-          setTxInProgress(true);
-          try {
-            await processTransactions();
-          } catch {
-            setTxInProgress(false);
-          } finally {
-            setTxInProgress(false);
-          }
+                if (batchIdx != null) {
+                  failedItemId = batchIdx;
+                  const item = tradeslipItems.items[batchIdx];
+                  const data = states[itemKey(item)];
+                  notificationStore.pushNotification(
+                    `Trade failed: ${errorName} - ${data?.asset.category.ticker}`,
+                    {
+                      type: "Error",
+                    },
+                  );
+                } else {
+                  notificationStore.pushNotification(
+                    `Transaction failed. Error: ${errorName}`,
+                    {
+                      type: "Error",
+                    },
+                  );
+                }
+                reject();
+                unsub();
+              },
+            }),
+          );
+        } catch (err) {
+          console.log("Transaction canceled", err.toString());
+          reject();
         }
-      },
-    });
-  };
+      });
+    } finally {
+      setIsTransacting(false);
+    }
+  }, [batchTransaction]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <TradeSlipItemList />
+      <div className="py-ztg-20 px-ztg-28 overflow-y-auto w-full">
+        {tradeslipItems.items.map((item) => {
+          return (
+            <TradeSlipItem
+              key={`${item.action}|${JSON.stringify(item.assetId)}`}
+              item={item}
+            />
+          );
+        })}
+      </div>
+
       <div className="p-ztg-28 mt-auto">
         <div className="p-ztg-15 rounded-ztg-10 bg-white dark:bg-sky-1000">
           <TransactionButton
             className="shadow-ztg-2 mb-ztg-16"
-            onClick={() => {
-              submitTransactions();
-            }}
+            onClick={processTransactions}
             disabled={
-              !tradeSlipForm.isValid ||
-              batchTx == null ||
-              txInProgress ||
-              insufficientZtg
+              isTransacting ||
+              tradeslipItems.items.length === 0 ||
+              !Boolean(batchTransaction)
             }
           >
             Sign Transactions
           </TransactionButton>
-          <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
+          <div className="flex items-center h-ztg-25 text-sky-600  text-ztg-12-150 justify-between">
             <div className="font-bold">Slippage Tolerance:</div>
             <SlippageSettingInput
-              value={tradeSlipStore.slippagePercentage?.toFixed(1)}
-              onChange={(val) => tradeSlipStore.setSlippagePercentage(val)}
-              form={tradeSlipForm}
+              value={slippage.toString()}
+              onChange={(val) => setSlippage(Number(val))}
             />
           </div>
-          <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
+          <div className="flex items-center h-ztg-25 text-sky-600  text-ztg-12-150 justify-between">
             <div className="font-bold">Network fee:</div>
             <div className="font-normal">
-              {txFee.toFixed(4)} {store.config?.tokenSymbol}
+              {transactionFees?.div(ZTG).toFixed(4) ?? "--"}
             </div>
           </div>
-          <div className="flex items-center h-ztg-25 text-sky-600 font-lato text-ztg-12-150 justify-between">
+          <div className="flex items-center h-ztg-25 text-sky-600  text-ztg-12-150 justify-between">
             <div className="font-bold">Total cost / gain:</div>
             <div className="font-normal">
-              {totalCost.isNaN()
-                ? "---"
-                : totalCost.mul(-1).toFixed(4, Decimal.ROUND_DOWN)}{" "}
+              {sum.isNaN() ? "-- " : sum.div(ZTG).toFixed(2).toString()}{" "}
               {store.config?.tokenSymbol}
             </div>
           </div>

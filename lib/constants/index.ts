@@ -1,15 +1,8 @@
 import { MarketDeadlines } from "@zeitgeistpm/sdk/dist/types";
 import Decimal from "decimal.js";
 import resolveTailwindConfig from "tailwindcss/resolveConfig";
-import tailwindConfig from "../tailwind.config";
-import {
-  MarketStatus,
-  EMarketStatus,
-  ESortType,
-  EndpointOption,
-  MarketsFilterOptions,
-  SupportedParachain,
-} from "./types";
+import tailwindConfig from "../../tailwind.config";
+import { EndpointOption, SupportedParachain } from "../types";
 
 export const ZTG = 10 ** 10;
 
@@ -29,15 +22,6 @@ export const DAY_SECONDS = 86400;
 export const ZTG_BLUE_COLOR = resolveTailwindConfig(tailwindConfig as any).theme
   .colors["ztg-blue"];
 
-export const marketStatuses = Object.keys(EMarketStatus) as MarketStatus[];
-
-export const sortOptions = Object.entries(ESortType).map((v) => {
-  return {
-    sortBy: v[0],
-    label: v[1],
-  };
-});
-
 export const DEFAULT_DEADLINES: MarketDeadlines = {
   gracePeriod: "0",
   oracleDuration: "28800",
@@ -45,11 +29,11 @@ export const DEFAULT_DEADLINES: MarketDeadlines = {
 };
 
 export const endpoints: EndpointOption[] = [
-  {
-    value: "wss://rpc-0.zeitgeist.pm/",
-    label: "ZeitgeistPM",
-    parachain: SupportedParachain.KUSAMA,
-  },
+  // {
+  //   value: "wss://rpc-0.zeitgeist.pm/",
+  //   label: "ZeitgeistPM",
+  //   parachain: SupportedParachain.KUSAMA,
+  // },
   {
     value: "wss://zeitgeist-rpc.dwellir.com/",
     label: "Dwellir",
@@ -89,13 +73,3 @@ export const gqlEndpoints: EndpointOption[] = [
     parachain: SupportedParachain.CUSTOM,
   },
 ];
-
-export const allMarketsFiltersOff: MarketsFilterOptions = {
-  Proposed: false,
-  Active: false,
-  Closed: false,
-  Reported: false,
-  Disputed: false,
-  Resolved: false,
-  HasLiquidityPool: false,
-};

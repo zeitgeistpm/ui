@@ -43,7 +43,7 @@ const ChartToolTip = observer((props) => {
       props.label !== -Infinity &&
       props.label !== Infinity ? (
         <div
-          className="px-ztg-9 py-ztg-12 bg-white dark:bg-black font-lato rounded-ztg-10"
+          className="px-ztg-9 py-ztg-12 bg-white dark:bg-black  rounded-ztg-10"
           style={{ boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)" }}
         >
           <div className="font-bold text-ztg-14-150">

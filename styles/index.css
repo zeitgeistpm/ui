@@ -28,6 +28,16 @@ html {
   }
 }
 
+/* hide number input arrows */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 /* Write your own custom component styles here */
 .btn-blue {
   @apply px-4 py-2 font-bold text-white bg-blue-500 rounded;
@@ -93,7 +103,7 @@ html {
   border-radius: 3px;
 }
 
-#marketLayoutContent>* {
+#marketLayoutContent > * {
   @apply w-full;
 }
 
@@ -163,7 +173,7 @@ html {
   line-height: 1.5;
 }
 
-.card .card-foot>div {
+.card .card-foot > div {
   font-size: 0.625rem;
 }
 
@@ -198,7 +208,6 @@ html {
 
 body {
   --topbar-height: 76px;
-  @apply font-lato;
 }
 
 .topbar {
@@ -238,8 +247,15 @@ td:last-child {
 }
 
 /* Scroll */
+
+.no-scroll-bar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -253,47 +269,48 @@ td:last-child {
   background-clip: padding-box;
 }
 
-.dark>* ::-webkit-scrollbar-thumb {
+.dark > * ::-webkit-scrollbar-thumb {
   background: #1d2533;
 }
 
 .header {
-  @apply font-space;
   @apply font-bold;
   @apply text-ztg-20-150;
 }
 
 .sub-header {
-  @apply font-space;
   @apply font-medium;
   @apply text-ztg-20-150;
 }
 
 /* Skeleton */
-.dark>* .MuiSkeleton-root {
+.dark > * .MuiSkeleton-root {
   height: 1.2em;
   display: block;
   background-color: #141a24 !important;
 }
 
-.dark>* .MuiSkeleton-wave::after {
-  background: linear-gradient(90deg,
-      transparent,
-      #1d2533,
-      transparent) !important;
+.dark > * .MuiSkeleton-wave::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #1d2533,
+    transparent
+  ) !important;
 }
 
 * .MuiSkeleton-root {
   height: 1.2em;
   display: block;
-  background-color: #f4f7fa !important;
 }
 
 * .MuiSkeleton-wave::after {
-  background: linear-gradient(90deg,
-      transparent,
-      #d9e3ee,
-      transparent) !important;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #d9e3ee,
+    transparent
+  ) !important;
 }
 
 .auth-page {
@@ -305,9 +322,7 @@ td:last-child {
   @apply transition duration-200 ease-in-out;
 }
 
-
 @keyframes glitch-anim-1 {
-
   0%,
   100% {
     opacity: 1;
@@ -340,12 +355,10 @@ td:last-child {
   }
 
   65% {
-
     clip-path: polygon(0 70%, 100% 70%, 100% 70%, 0 70%);
   }
 
   70% {
-
     clip-path: polygon(0 80%, 100% 80%, 100% 80%, 0 80%);
   }
 
@@ -363,7 +376,6 @@ td:last-child {
 }
 
 @keyframes glitch-anim-2 {
-
   0%,
   100% {
     opacity: 1;
@@ -433,7 +445,6 @@ td:last-child {
 }
 
 @keyframes glitch-anim-3 {
-
   0%,
   100% {
     opacity: 1;
@@ -515,7 +526,6 @@ td:last-child {
 }
 
 @keyframes glitch-anim-4 {
-
   0%,
   5% {
     opacity: 0.2;
@@ -557,37 +567,42 @@ td:last-child {
 
   20% {
     opacity: 1;
-    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1)
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
 
   25% {
     opacity: 0.3;
-    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1)
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
 
   30% {
     opacity: 1;
-    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1)
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
 
   70% {
     opacity: 0.7;
-    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1)
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
 
   72% {
     opacity: 0.2;
-    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1)
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
 
   77% {
-    opacity: .9;
-    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1)
+    opacity: 0.9;
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
+  }
+
+  77% {
+    opacity: 0.9;
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
 
   100% {
-    opacity: .9;
-    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1)
+    opacity: 0.9;
+    text-shadow: 0px 0px 29px rgba(242, 22, 22, 1);
   }
 }
 
@@ -648,7 +663,6 @@ td:last-child {
     opacity: 1;
   }
 
-
   19% {
     opacity: 1;
   }
@@ -674,23 +688,19 @@ td:last-child {
   }
 }
 
-
 @keyframes jiggle {
   0% {
     transform: translateX(0px);
   }
-
   33% {
     transform: translateX(10px);
   }
-
   66% {
     transform: translateX(-10px);
   }
 }
 
 @keyframes bounceIn {
-
   from,
   20%,
   40%,

@@ -249,7 +249,7 @@ const Market: NextPage<{
           <></>
         )}
         {marketStore?.poolExists === false && (
-          <div className="flex h-ztg-22 items-center font-lato bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
+          <div className="flex h-ztg-22 items-center  bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
             <div className="w-ztg-20 h-ztg-20">
               <AlertTriangle size={20} />
             </div>
@@ -280,7 +280,10 @@ const Market: NextPage<{
           marketStore={marketStore}
           onPoolDeployed={handlePoolDeployed}
         />
-        {marketStore && <MarketAddresses marketStore={marketStore} />}
+        <MarketAddresses
+          oracleAddress={indexedMarket.oracle}
+          creatorAddress={indexedMarket.creator}
+        />
       </div>
     </>
   );
