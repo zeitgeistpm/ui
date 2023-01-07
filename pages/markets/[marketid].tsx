@@ -283,7 +283,6 @@ const Market: NextPage<{
         />
         <MarketAddresses
           oracleAddress={indexedMarket.oracle}
-          authorityAddress={indexedMarket.disputeMechanism?.authorized}
           creatorAddress={indexedMarket.creator}
         />
       </div>

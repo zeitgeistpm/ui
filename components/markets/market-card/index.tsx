@@ -88,6 +88,7 @@ const MarketCard = ({
           "w-full h-full bg-anti-flash-white rounded-[10px] p-[15px] flex flex-col relative " +
           className
         }
+        data-testid={`marketCard-${marketId}`}
       >
         {showDetailsOverlay && (
           <MarketCardOverlay

@@ -16,11 +16,7 @@ const MarketCardOverlayOutcome = ({
 }: MarketCardOverlayOutcomeProps) => {
   const context = useMarketCardContext();
   return (
-    <div
-      className={
-        "flex flex-row items-center  h-[35px] flex-shrink-0 " + className
-      }
-    >
+    <div className={"flex flex-row items-center flex-shrink-0 " + className}>
       <div
         className="w-[20px] h-[20px] rounded-full border-sky-600 border-[2px] flex-shrink-0"
         style={{ backgroundColor: `${outcome.color}` }}
@@ -33,7 +29,7 @@ const MarketCardOverlayOutcome = ({
           {outcome.price && (
             <>
               <div className="font-mono text-ztg-10-150">
-                {outcome.price} {context.baseAsset}
+                {outcome.price.toFixed(3)} {context.baseAsset.toUpperCase()}
               </div>
             </>
           )}
@@ -60,7 +56,7 @@ const MarketCardOverlayCategories = ({
 }) => {
   const numCategories = outcomes.length;
   return (
-    <div className="flex flex-col max-h-[215px] overflow-y-scroll">
+    <div className="flex flex-col overflow-y-scroll">
       {outcomes.map((cat, idx) => {
         const botMargin = idx === numCategories - 1 ? "mb-0" : "mb-[25px]";
         return (
