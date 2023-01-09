@@ -98,16 +98,16 @@ const MyApp = observer(({ Component, pageProps }) => {
             <Head>
               <title>Zeitgeist - Prediction Markets</title>
             </Head>
-            {/* <DefaultLayout> */}
-            <DemoLayout>
+            <DefaultLayout>
+              {/* <DemoLayout> */}
               <AnimatePresence>
                 {store.showMobileMenu && <MobileMenu />}
               </AnimatePresence>
               <Layout>
                 <Component {...pageProps} />
               </Layout>
-              {/* </DefaultLayout> */}
-            </DemoLayout>
+            </DefaultLayout>
+            {/* </DemoLayout> */}
             {process.env.NEXT_PUBLIC_REACT_QUERY_DEVTOOLS === "true" && (
               <ReactQueryDevtools initialIsOpen={false} />
             )}

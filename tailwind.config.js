@@ -67,21 +67,20 @@ module.exports = {
       "2xl": "1728px",
     },
     container: {
-      // screens: {
-      //   sm: "600px",
-      //   md: "905px",
-      //   lg: "1240px",
-      //   xl: "1440px",
-      //   "2xl": "1728px",
-      // },
+      screens: {
+        sm: "600px",
+        md: "905px",
+        lg: "1240px",
+        xl: "1440px",
+        "2xl": "1728px",
+      },
       padding: {
         DEFAULT: "16px",
         sm: "40px",
         md: "94px",
-        lg: "94px",
+        lg: "128px",
         xl: "128px",
         "2xl": "128px",
-        "3xl": "128px",
       },
     },
     extend: {

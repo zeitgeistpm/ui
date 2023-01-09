@@ -8,7 +8,6 @@ import { useStore } from "lib/stores/Store";
 import TopBar from "components/top-bar";
 import FooterNew from "components/ui/FooterNew";
 import NotificationCenter from "components/ui/NotificationCenter";
-import LeftDrawer from "components/drawer/LeftDrawer";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -18,10 +17,6 @@ import dynamic from "next/dynamic";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
-
-const RightDrawer = dynamic(() => import("components/drawer/RightDrawer"), {
-  ssr: false,
-});
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 
