@@ -26,9 +26,7 @@ const marketQuery = gql`
       scalarType
       creator
       oracle
-      disputeMechanism {
-        authorized
-      }
+      disputeMechanism
       period {
         start
         end
@@ -58,9 +56,7 @@ export interface MarketPageIndexedData {
   scalarType: ScalarRangeType | null;
   creator: string;
   oracle: string;
-  disputeMechanism: {
-    authorized?: string;
-  };
+  disputeMechanism: "SimpleDisputes" | "Authorized" | "Court";
 }
 
 export const getRecentMarketIds = async (
