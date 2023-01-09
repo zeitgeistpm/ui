@@ -8,7 +8,6 @@ import {
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import { ZTG } from "lib/constants";
-import { useAuthorityProxiesForMarket } from "lib/hooks/queries/useAuthorityProxiesForMarket";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
@@ -31,7 +30,6 @@ const ScalarReportBox = observer(
     const [scalarReportValue, setScalarReportValue] = useState("");
 
     const signer = wallets?.getActiveSigner();
-    const { data: authorityProxies } = useAuthorityProxiesForMarket(market);
 
     if (!market) return null;
 
@@ -42,9 +40,6 @@ const ScalarReportBox = observer(
     };
 
     const reportDisabled = !sdk || !isRpcSdk(sdk);
-
-    const isAuthorityProxy =
-      !isNA(authorityProxies) && authorityProxies.includes(signer?.address);
 
     const handleSignTransaction = async () => {
       const outcomeReport: any = {
@@ -70,22 +65,7 @@ const ScalarReportBox = observer(
         },
       });
 
-      if (market.disputeMechanism.Authorized && market.status === "Disputed") {
-        const tx = store.sdk.api.tx.authorized.authorizeMarketOutcome(
-          market.marketId,
-          outcomeReport,
-        );
-        if (isAuthorityProxy) {
-          const proxyTx = store.sdk.api.tx.proxy.proxy(
-            market.disputeMechanism.Authorized,
-            "Any",
-            tx,
-          );
-          signAndSend(proxyTx, signer, callback);
-        } else {
-          signAndSend(tx, signer, callback);
-        }
-      } else if (isRpcSdk(sdk)) {
+      if (isRpcSdk(sdk)) {
         const tx = sdk.context.api.tx.predictionMarkets.report(
           market.marketId,
           outcomeReport,

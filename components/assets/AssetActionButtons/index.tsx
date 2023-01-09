@@ -1,8 +1,6 @@
 import {
   CategoricalAssetId,
   fromCompositeIndexerAssetId,
-  IndexerContext,
-  Market,
   ScalarAssetId,
 } from "@zeitgeistpm/sdk-next";
 import BuySellButtons from "components/trade-slip/BuySellButtons";
@@ -26,10 +24,7 @@ const AssetActionButtons = observer(
       return null;
     }
 
-    if (
-      market?.status === "Closed" ||
-      (market?.status === "Disputed" && market.disputeMechanism.Authorized)
-    ) {
+    if (market?.status === "Closed") {
       return (
         <ReportButton market={market} assetId={assetId} ticker={assetTicker} />
       );
@@ -42,7 +37,14 @@ const AssetActionButtons = observer(
     } else if (market?.status === "Resolved") {
       return <RedeemButton assetId={assetId} market={market} />;
     } else {
-      return <BuySellButtons assetId={assetId} disabled={assetId == null} />;
+      return (
+        <BuySellButtons
+          assetId={fromCompositeIndexerAssetId(
+            JSON.stringify(assetId),
+          ).unwrap()}
+          disabled={assetId == null}
+        />
+      );
     }
   },
 );

@@ -68,16 +68,7 @@ const ReportButton = observer(
           },
         });
 
-        if (
-          market.disputeMechanism.Authorized &&
-          market.status === "Disputed"
-        ) {
-          const tx = store.sdk.api.tx.authorized.authorizeMarketOutcome(
-            market.marketId,
-            { Categorical: ID },
-          );
-          signAndSend(tx, signer, callback);
-        } else {
+        if (isRpcSdk(sdk)) {
           const tx = sdk.context.api.tx.predictionMarkets.report(
             market.marketId,
             { Categorical: ID },

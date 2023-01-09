@@ -12,9 +12,10 @@ import MarketStore from "lib/stores/MarketStore";
 import TransactionButton from "components/ui/TransactionButton";
 import AssetSelectView from "components/assets/AssetSelectView";
 import AssetSelectButton from "components/assets/AssetSelectButton";
-import { OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
-import ScalarReportBox from "./ScalarReportBox";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useMarket } from "lib/hooks/queries/useMarket";
+import ScalarReportBox from "./ScalarReportBox";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 
 const ReportBox = observer(
   ({
@@ -25,6 +26,7 @@ const ReportBox = observer(
     onReport: () => void;
   }) => {
     const store = useStore();
+    const [sdk] = useSdkv2();
     const { wallets } = store;
     const [isSelectView, setIsSelectView] = useState(false);
     const [selectedAssetOption, setSelectedAssetOption] =
@@ -32,8 +34,6 @@ const ReportBox = observer(
     const [options, setOptions] = useState<OutcomeOption[]>();
 
     const { data: marketsdkv2 } = useMarket(marketStore?.market?.marketId);
-
-    const { isAuthorityProxy } = marketStore;
 
     const getOptions = async (): Promise<OutcomeOption[]> => {
       const outcomes = marketStore.marketOutcomes.filter(
@@ -119,26 +119,12 @@ const ReportBox = observer(
         },
       });
 
-      if (
-        marketStore.disputeMechanism === "authorized" &&
-        marketStore.status === "Disputed"
-      ) {
-        const tx = store.sdk.api.tx.authorized.authorizeMarketOutcome(
+      if (isRpcSdk(sdk)) {
+        const tx = sdk.context.api.tx.predictionMarkets.report(
           market.marketId,
           outcomeReport,
         );
-        if (isAuthorityProxy) {
-          const proxyTx = store.sdk.api.tx.proxy.proxy(
-            marketStore.authority,
-            "Any",
-            tx,
-          );
-          signAndSend(proxyTx, signer, callback);
-        } else {
-          signAndSend(tx, signer, callback);
-        }
-      } else {
-        await market.reportOutcome(signer, outcomeReport, callback);
+        signAndSend(tx, signer, callback);
       }
     };
 
