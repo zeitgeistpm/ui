@@ -148,7 +148,10 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   }, [contentWidth]);
 
   return (
-    <div className={"pt-ztg-46 mb-[38px]" + className}>
+    <div
+      className={"pt-ztg-46 mb-[38px]" + className}
+      data-testid="marketsList"
+    >
       <MarketFilterSelection
         onFiltersChange={setFilters}
         onOrderingChange={setOrderBy}
@@ -196,7 +199,7 @@ const MarketsSearchInfo = observer(({ searchText }: { searchText: string }) => {
 
   return (
     <div className="flex my-ztg-30 h-ztg-34">
-      <h6 className="  text-ztg-[24px]" id="marketsHead">
+      <h6 className="text-ztg-[24px]" id="marketsHead">
         {`Search results for: "${searchText}"`}
       </h6>
       <div className="w-ztg-24 h-ztg-24 rounded-full bg-sky-400 dark:bg-black center ml-ztg-15">

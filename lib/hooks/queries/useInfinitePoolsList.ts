@@ -1,11 +1,13 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
+import { poolsRootKey } from "./usePool";
 
 export const rootKey = "infinite-pools-list";
 
 export const useInfinitePoolsList = () => {
   const [sdk, id] = useSdkv2();
-
+  const queryClient = useQueryClient();
   const limit = 20;
 
   const fetcher = async ({ pageParam = 0 }) => {
@@ -25,6 +27,16 @@ export const useInfinitePoolsList = () => {
     queryFn: fetcher,
     enabled: Boolean(sdk),
     getNextPageParam: (lastPage) => lastPage.next,
+    onSuccess(data) {
+      data.pages
+        .flatMap(({ data }) => data)
+        .forEach((pool) => {
+          queryClient.setQueryData(
+            [id, poolsRootKey, { poolId: pool.poolId }],
+            pool,
+          );
+        });
+    },
   });
 
   return query;

@@ -1,6 +1,8 @@
+import { fromCompositeIndexerAssetId } from "@zeitgeistpm/sdk-next";
+import Decimal from "decimal.js";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
-import { DAY_SECONDS } from "lib/constants";
+import { DAY_SECONDS, ZTG } from "lib/constants";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
 import { useNavigationStore } from "lib/stores/NavigationStore";
@@ -167,9 +169,12 @@ const MarketAssetDetails = observer(
               change: priceChange,
               buttons: (
                 <AssetActionButtons
-                  assetId={assetId}
-                  marketId={market.id}
-                  assetColor={color}
+                  marketId={marketStore?.market.marketId}
+                  assetId={
+                    fromCompositeIndexerAssetId(
+                      JSON.stringify(assetId),
+                    ).unwrap() as any
+                  }
                   assetTicker={ticker}
                 />
               ),
@@ -246,11 +251,13 @@ const MarketAssetDetails = observer(
               <Table columns={columns} data={getReportedOutcome()} />
             ) : (
               <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-                {
+                {new Decimal(
                   //@ts-ignore
                   marketStore.lastDispute?.outcome.scalar ??
-                    marketStore.reportedScalarOutcome
-                }
+                    marketStore.reportedScalarOutcome,
+                )
+                  .div(ZTG)
+                  .toString()}
               </div>
             )}
           </>
@@ -262,11 +269,13 @@ const MarketAssetDetails = observer(
               <Table columns={columns} data={getReportedOutcome()} />
             ) : (
               <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-                {
+                {new Decimal(
                   //@ts-ignore
                   marketStore.lastDispute?.outcome.scalar ??
-                    marketStore.reportedScalarOutcome
-                }
+                    marketStore.reportedScalarOutcome,
+                )
+                  .div(ZTG)
+                  .toString()}
               </div>
             )}
           </>
@@ -281,7 +290,7 @@ const MarketAssetDetails = observer(
               />
             ) : (
               <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-                {marketStore.resolvedScalarOutcome}
+                {new Decimal(marketStore.resolvedScalarOutcome).toString()}
               </div>
             )}
           </>
