@@ -217,12 +217,12 @@ export const useTradeslipItemsState = (
       const traderAssetBalanceLookup = traderAssets.get(
         signer?.address,
         item.assetId,
-      );
+      )?.data?.balance;
 
       const poolAssetBalanceLookup = poolAssetBalances.get(
         poolAccountIds[pool?.poolId],
         item.assetId,
-      );
+      )?.data?.balance;
 
       const traderAssetBalance =
         !traderAssetBalanceLookup || isNA(traderAssetBalanceLookup)

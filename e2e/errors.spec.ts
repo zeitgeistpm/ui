@@ -14,7 +14,6 @@ test.describe("pages open without errors", () => {
 
       const element = page.locator(`[data-testid^=${route.testId}]`).first();
       await element.waitFor();
-      await page.waitForLoadState("networkidle");
 
       expect(consoleErrors.length, `There were errors: ${consoleErrors}`).toBe(
         0,

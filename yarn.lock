@@ -3296,6 +3296,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@yornaath/batshit-devtools-react@npm:^0.5.4":
+  version: 0.5.4
+  resolution: "@yornaath/batshit-devtools-react@npm:0.5.4"
+  dependencies:
+    "@yornaath/batshit": ^0.7.1
+    "@yornaath/batshit-devtools": ^1.4.1
+    lodash-es: ^4.17.21
+  peerDependencies:
+    react: "*"
+  checksum: 307e61f9ed45b9045d0765bab8da026265b30fa931c71bcc3e0680e348bb47a41a0d60a6ca16484af07c94af6bbe743c7a2f5b614569aa013acffebb62896801
+  languageName: node
+  linkType: hard
+
+"@yornaath/batshit-devtools@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "@yornaath/batshit-devtools@npm:1.4.1"
+  checksum: 1dfd461d190f09fc7f7707dfac316f344dd1434adf7fe836fb3da8cf95ac7a8d94c97d91af5f593df9994091d5f36f6e0eeda85650355650ea5f10c9eee90602
+  languageName: node
+  linkType: hard
+
+"@yornaath/batshit@npm:^0.7.1":
+  version: 0.7.1
+  resolution: "@yornaath/batshit@npm:0.7.1"
+  dependencies:
+    "@yornaath/batshit-devtools": ^1.4.1
+  checksum: b9e93d8826982a249a5c50d10e88a80bbfd57382f65cf236eb502aee09f20d194a178ac8442dd33170a8bcc795b2b78f1bd50473993ed0e6c5aca2e8009a08c6
+  languageName: node
+  linkType: hard
+
 "@zeitgeistpm/augment-api@npm:^2.7.1":
   version: 2.7.1
   resolution: "@zeitgeistpm/augment-api@npm:2.7.1"
@@ -3503,6 +3532,8 @@ __metadata:
     "@types/object-hash": ^2.2.1
     "@types/react": ^17.0.38
     "@types/react-color": ^3.0.6
+    "@yornaath/batshit": ^0.7.1
+    "@yornaath/batshit-devtools-react": ^0.5.4
     "@zeitgeistpm/augment-api": ^2.7.1
     "@zeitgeistpm/avatara-nft-sdk": ^1.3.0
     "@zeitgeistpm/avatara-react": ^1.3.0

@@ -1,6 +1,12 @@
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
+import {
+  CategoricalAssetId,
+  IndexerContext,
+  isRpcSdk,
+  Market,
+  ScalarAssetId,
+} from "@zeitgeistpm/sdk-next";
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
-import MarketStore from "lib/stores/MarketStore";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
@@ -9,34 +15,38 @@ import { observer } from "mobx-react";
 
 const ReportButton = observer(
   ({
-    marketStore,
+    market,
     assetId,
     ticker,
   }: {
-    marketStore: MarketStore;
-    assetId: AssetId;
+    market: Market<IndexerContext>;
+    assetId: ScalarAssetId | CategoricalAssetId;
     ticker: string;
   }) => {
+    const [sdk] = useSdkv2();
     const store = useStore();
     const { wallets } = store;
     const notificationStore = useNotificationStore();
     const modalStore = useModalStore();
 
-    const reportDisabled = !marketStore.connectedWalletCanReport;
+    if (!market) return null;
+
+    const reportDisabled = !sdk || !isRpcSdk(sdk);
 
     const handleClick = async () => {
-      if (marketStore.type === "scalar") {
+      if (!isRpcSdk(sdk)) return;
+
+      if (market.marketType.scalar) {
         modalStore.openModal(
           <div>
-            <ScalarReportBox marketStore={marketStore} onReport={() => {}} />
+            <ScalarReportBox market={market} />
           </div>,
           "Report outcome",
         );
       } else {
         //@ts-ignore
-        const ID = assetId.categoricalOutcome[1];
+        const ID = assetId.CategoricalOutcome[1];
         const signer = wallets.getActiveSigner();
-        const { market } = marketStore;
 
         const callback = extrinsicCallback({
           notificationStore,
@@ -47,7 +57,6 @@ const ReportButton = observer(
                 type: "Success",
               },
             );
-            await marketStore.refetchMarketData();
           },
           failCallback: ({ index, error }) => {
             notificationStore.pushNotification(
@@ -59,17 +68,12 @@ const ReportButton = observer(
           },
         });
 
-        if (
-          marketStore.disputeMechanism === "authorized" &&
-          marketStore.status === "Disputed"
-        ) {
-          const tx = store.sdk.api.tx.authorized.authorizeMarketOutcome(
+        if (isRpcSdk(sdk)) {
+          const tx = sdk.context.api.tx.predictionMarkets.report(
             market.marketId,
             { Categorical: ID },
           );
           signAndSend(tx, signer, callback);
-        } else {
-          await market.reportOutcome(signer, { categorical: ID }, callback);
         }
       }
     };

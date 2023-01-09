@@ -1,5 +1,10 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Context,
+  IndexerContext,
+  isIndexedSdk,
+  Market,
+} from "@zeitgeistpm/sdk-next";
 import { MarketOrderByInput } from "@zeitgeistpm/indexer";
 import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets";
 import objectHash from "object-hash";
@@ -10,9 +15,11 @@ import {
   MarketFilterType,
   MarketsOrderBy,
 } from "lib/types/market-filter";
+import { marketsRootQuery } from "./useMarket";
 import { useSdkv2 } from "../useSdkv2";
+import { MarketOutcomes } from "lib/types/markets";
 
-export const rootKey = "markets";
+export const rootKey = "markets-filtered";
 
 const hashFilters = (filters: MarketFilter[]): string => {
   const sortedFilters = [...filters].sort((a, b) => {
@@ -40,6 +47,11 @@ const orderByMap = {
   [MarketsOrderBy.LeastVolume]: MarketOrderByInput.PoolVolumeAsc,
 };
 
+export type QueryMarketData = Market<IndexerContext> & {
+  outcomes: MarketOutcomes;
+  prediction: string;
+};
+
 export const useMarkets = (
   orderBy: MarketsOrderBy,
   withLiquidityOnly = false,
@@ -52,7 +64,9 @@ export const useMarkets = (
 
   const limit = 12;
 
-  const fetcher = async ({ pageParam = 0 }) => {
+  const fetcher = async ({
+    pageParam = 0,
+  }): Promise<{ data: QueryMarketData[]; next: number | boolean }> => {
     if (!isIndexedSdk(sdk) || filters == null) {
       return {
         data: [],
@@ -64,7 +78,7 @@ export const useMarkets = (
     const tags = getFilterValuesByType(filters, "tag");
     const currencies = getFilterValuesByType(filters, "currency");
 
-    const markets = await sdk.model.markets.list({
+    const markets: Market<IndexerContext>[] = await sdk.model.markets.list({
       where: {
         categories_isNull: false,
         status_not_in: ["Destroyed"],
@@ -85,7 +99,7 @@ export const useMarkets = (
 
     const outcomes = await getOutcomesForMarkets(graphQLClient, markets);
 
-    let resMarkets = [];
+    let resMarkets: Array<QueryMarketData> = [];
 
     for (const m of markets) {
       const marketOutcomes = outcomes[m.marketId];
@@ -102,15 +116,27 @@ export const useMarkets = (
 
     return {
       data: resMarkets,
-      next: markets.length >= limit ? pageParam + 1 : undefined,
+      next: markets.length >= limit ? pageParam + 1 : false,
     };
   };
+
+  const queryClient = useQueryClient();
 
   const query = useInfiniteQuery({
     queryKey: [id, rootKey, hashFilters(filters), orderBy, withLiquidityOnly],
     queryFn: fetcher,
     enabled: Boolean(sdk) && isIndexedSdk(sdk),
     getNextPageParam: (lastPage) => lastPage.next,
+    onSuccess(data) {
+      data.pages
+        .flatMap((p) => p.data)
+        .forEach((market) => {
+          queryClient.setQueryData(
+            [id, marketsRootQuery, market.marketId],
+            market,
+          );
+        });
+    },
   });
 
   return query;
