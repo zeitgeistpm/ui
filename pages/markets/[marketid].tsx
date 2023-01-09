@@ -6,6 +6,7 @@ import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import MarketTimer from "components/markets/MarketTimer";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
+import { Og } from "components/og/Og";
 import MarketImage from "components/ui/MarketImage";
 import Pill from "components/ui/Pill";
 import TimeSeriesChart, {
@@ -20,15 +21,14 @@ import {
 } from "lib/gql/markets";
 import { getBaseAsset } from "lib/gql/pool";
 import { getAssetPriceHistory } from "lib/gql/prices";
+import useMarketImageUrl from "lib/hooks/useMarketImageUrl";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
-import useMarketImageUrl from "lib/hooks/useMarketImageUrl";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
-import Head from "next/head";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
@@ -181,19 +181,11 @@ const Market: NextPage<{
 
   return (
     <>
-      <Head>
-        <title>{question}</title>
-        <meta property="og:title" content={question} key="title" />
-        <meta name="description" content={indexedMarket.description} />
-        <meta property="og:description" content={indexedMarket.description} />
-        {marketImageUrl && (
-          <meta
-            key="og:image"
-            property="og:image"
-            content={`/api/og?marketId=${indexedMarket.marketId}`}
-          />
-        )}
-      </Head>
+      <Og
+        title={indexedMarket.question}
+        description={indexedMarket.description}
+        image={`/api/og?marketId=${indexedMarket.marketId}`}
+      />
       <div>
         <div className="flex mb-ztg-33">
           <MarketImage
