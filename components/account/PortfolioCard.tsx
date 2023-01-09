@@ -9,7 +9,6 @@ export interface Position {
   marketId: string;
   marketEndTimeStamp: number;
   marketTitle: string;
-  marketStore: MarketStore;
   tableData: TableData[];
 }
 

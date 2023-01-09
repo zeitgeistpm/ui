@@ -8,7 +8,15 @@ import { useResizeDetector } from "react-resize-detector";
 import MarketCard, { IndexedMarketCardData } from "./market-card";
 
 const MarketScroll = observer(
-  ({ title, markets }: { title: string; markets: IndexedMarketCardData[] }) => {
+  ({
+    title,
+    markets,
+    showMarketsLink = true,
+  }: {
+    title: string;
+    markets: IndexedMarketCardData[];
+    showMarketsLink?: boolean;
+  }) => {
     const scrollRef = useRef<HTMLDivElement>();
     const [scrollLeft, setScrollLeft] = useState(0);
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
@@ -77,12 +85,14 @@ const MarketScroll = observer(
         <div className="flex items-center mb-ztg-30">
           <div className=" font-bold text-[28px]">{title}</div>
           <div className="hidden sm:flex ml-auto items-center">
-            <Link
-              href="markets"
-              className="text-ztg-14-150 border-2 border-pastel-blue rounded-[5px] px-[10px] py-[3px]"
-            >
-              Go To Markets
-            </Link>
+            {showMarketsLink && (
+              <Link
+                href="markets"
+                className="text-ztg-14-150 border-2 border-pastel-blue rounded-[5px] px-[10px] py-[3px]"
+              >
+                Go To Markets
+              </Link>
+            )}
             <button
               onClick={handleLeftClick}
               className={`flex items-center justify-center w-[26px] h-[26px] rounded-full ml-[12px] mr-[8px] ztg-transition ${

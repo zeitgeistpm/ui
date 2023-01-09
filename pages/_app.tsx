@@ -1,6 +1,7 @@
 import "react-datetime/css/react-datetime.css";
 import "styles/index.css";
 
+import BatsthitDevtools from "@yornaath/batshit-devtools-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import * as Fathom from "fathom-client";
@@ -8,7 +9,7 @@ import * as Fathom from "fathom-client";
 import { observer } from "mobx-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { hotjar } from "react-hotjar";
 
 import { AvatarContext } from "@zeitgeistpm/avatara-react";
@@ -106,11 +107,15 @@ const MyApp = observer(({ Component, pageProps }) => {
               <Layout>
                 <Component {...pageProps} />
               </Layout>
+              {/* </DemoLayout> */}
             </DefaultLayout>
-            {/* </DemoLayout> */}
-            {process.env.NEXT_PUBLIC_REACT_QUERY_DEVTOOLS === "true" && (
-              <ReactQueryDevtools initialIsOpen={false} />
-            )}
+            {process.env.NEXT_PUBLIC_REACT_QUERY_DEVTOOLS === "true" &&
+            typeof window === "object" ? (
+              <Suspense fallback={<></>}>
+                <ReactQueryDevtools />
+                <BatsthitDevtools />
+              </Suspense>
+            ) : null}
           </ModalStoreContext.Provider>
         </AvatarContext.Provider>
       </StoreProvider>

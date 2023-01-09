@@ -153,13 +153,14 @@ const MarketFilterOptions = ({
 }: MarketFilterOptionsProps) => {
   return (
     <div className="w-full flex justify-end items-center gap-ztg-5">
-      <label>
+      <label className="text-sky-600 font-medium">
+        Liquidity only
         <input
+          className="ml-[10px]"
           type="checkbox"
           checked={withLiquidityOnly}
           onChange={(e) => onWithLiquidityOnlyChange(e.target.checked)}
         />
-        Liquidity only
       </label>
       <DropDownSelect
         label="Category"
@@ -182,7 +183,7 @@ const MarketFilterOptions = ({
 };
 
 const MarketFilterContainer = observer(({ children }) => {
-  return <div className="w-full flex flex-col">{children}</div>;
+  return <div className="w-full flex flex-col mb-[30px]">{children}</div>;
 });
 
 const getFiltersFromQueryState = (
