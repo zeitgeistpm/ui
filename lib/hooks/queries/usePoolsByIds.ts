@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   isIndexedSdk,
   isMarketIdQuery,
@@ -6,11 +6,13 @@ import {
   PoolGetQuery,
 } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
+import { poolsRootKey } from "./usePool";
 
 export const rootKey = "pools-by-id";
 
 export const usePoolsByIds = (poolQueries?: PoolGetQuery[]) => {
   const [sdk, id] = useSdkv2();
+  const queryClient = useQueryClient();
 
   const query = useQuery(
     [id, rootKey, poolQueries],
@@ -37,6 +39,18 @@ export const usePoolsByIds = (poolQueries?: PoolGetQuery[]) => {
     },
     {
       enabled: Boolean(sdk && poolQueries && isIndexedSdk(sdk)),
+      onSuccess(data) {
+        data?.forEach((pool) => {
+          queryClient.setQueryData(
+            [id, poolsRootKey, { marketId: pool.marketId }],
+            pool,
+          );
+          queryClient.setQueryData(
+            [id, poolsRootKey, { poolId: pool.poolId }],
+            pool,
+          );
+        });
+      },
     },
   );
 
