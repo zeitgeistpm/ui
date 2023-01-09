@@ -6,7 +6,7 @@ import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import MarketTimer from "components/markets/MarketTimer";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
-import { Og } from "components/og/Og";
+import { OgHead } from "components/og/OgHead";
 import MarketImage from "components/ui/MarketImage";
 import Pill from "components/ui/Pill";
 import TimeSeriesChart, {
@@ -181,7 +181,7 @@ const Market: NextPage<{
 
   return (
     <>
-      <Og
+      <OgHead
         title={indexedMarket.question}
         description={indexedMarket.description}
         image={`/api/og?marketId=${indexedMarket.marketId}`}

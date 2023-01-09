@@ -6,7 +6,7 @@ export type OgProps = {
   image?: string;
 };
 
-export const Og = (props: OgProps) => {
+export const OgHead = (props: OgProps) => {
   return (
     <Head>
       {props.title && <title>{props.title}</title>}
