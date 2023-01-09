@@ -1,4 +1,4 @@
-import { fromString } from "@zeitgeistpm/sdk-next";
+import { fromCompositeIndexerAssetId } from "@zeitgeistpm/sdk-next";
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import BuySellButtons from "components/trade-slip/BuySellButtons";
 import { useMarketsStore } from "lib/stores/MarketsStore";
@@ -56,7 +56,9 @@ const AssetActionButtons = observer(
     } else {
       return (
         <BuySellButtons
-          assetId={fromString(JSON.stringify(assetId)).unwrap()}
+          assetId={fromCompositeIndexerAssetId(
+            JSON.stringify(assetId),
+          ).unwrap()}
           disabled={assetId == null}
         />
       );
