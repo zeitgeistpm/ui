@@ -183,10 +183,15 @@ const Market: NextPage<{
     <>
       <Head>
         <title>{question}</title>
+        <meta property="og:title" content={question} key="title" />
         <meta name="description" content={indexedMarket.description} />
         <meta property="og:description" content={indexedMarket.description} />
         {marketImageUrl && (
-          <meta property="og:image" content={marketImageUrl} />
+          <meta
+            key="og:image"
+            property="og:image"
+            content={`/api/og?marketId=${indexedMarket.marketId}`}
+          />
         )}
       </Head>
       <div>
