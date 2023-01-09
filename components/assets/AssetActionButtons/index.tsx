@@ -27,10 +27,7 @@ const AssetActionButtons = observer(
       return null;
     }
 
-    if (
-      market?.status === "Closed" ||
-      (market?.status === "Disputed" && market.disputeMechanism.Authorized)
-    ) {
+    if (market?.status === "Closed" || market?.status === "Disputed") {
       return (
         <ReportButton market={market} assetId={assetId} ticker={assetTicker} />
       );
