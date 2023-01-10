@@ -56,7 +56,7 @@ const IndexPage: NextPage<{
 
   return (
     <div data-testid="indexPage">
-      {/* <a
+      <a
         href="https://blog.zeitgeist.pm/announcing-zeitgeist-launch-nfts/"
         target="_blank"
         rel="noreferrer"
@@ -72,8 +72,8 @@ const IndexPage: NextPage<{
           placeholder="blur"
           priority
         />
-      </a> */}
-      <HeroSlider />
+      </a>
+      {/* <HeroSlider /> */}
       <div className="flex items-center w-full justify-center relative bottom-[29px]">
         <motion.div
           whileHover={{ scale: 1.03 }}
