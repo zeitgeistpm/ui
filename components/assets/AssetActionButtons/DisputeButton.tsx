@@ -1,90 +1,79 @@
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
+import {
+  AssetId,
+  IndexerContext,
+  isRpcSdk,
+  Market,
+} from "@zeitgeistpm/sdk-next";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
-import MarketStore from "lib/stores/MarketStore";
+import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
-import { extrinsicCallback } from "lib/util/tx";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useMemo } from "react";
 
 const DisputeButton = observer(
   ({
-    marketStore,
+    market,
     assetId,
     ticker,
   }: {
-    marketStore: MarketStore;
+    market: Market<IndexerContext>;
     assetId: AssetId;
     ticker: string;
   }) => {
+    const [sdk, id] = useSdkv2();
     const store = useStore();
     const { wallets } = store;
     const notificationStore = useNotificationStore();
     const modalStore = useModalStore();
 
+    const { data: disputes } = useMarketDisputes(market);
+
     const disputeDisabled = useMemo(() => {
-      if (!wallets.activeAccount) return true;
-      if (marketStore.type === "scalar") return false;
-      if (marketStore.numDisputes === 0) {
-        return (
-          JSON.stringify(marketStore.reportedOutcome.asset) ===
-          JSON.stringify(assetId)
-        );
-      } else {
-        const disputedOutcome = marketStore.lastDispute.outcome;
-        return (
-          //@ts-ignore
-          disputedOutcome.categorical === assetId.categoricalOutcome[1]
-        );
-      }
-    }, [
-      marketStore.numDisputes,
-      assetId,
-      marketStore.disputes,
-      marketStore.lastDispute,
-      wallets.activeAccount,
-    ]);
+      return sdk && !isRpcSdk(sdk);
+    }, [sdk, disputes?.length]);
 
     const handleClick = async () => {
-      if (marketStore.type === "scalar") {
+      if (market.marketType.scalar) {
         modalStore.openModal(
           <div>
-            <ScalarDisputeBox marketStore={marketStore} onDispute={() => {}} />
+            <ScalarDisputeBox market={market} />
           </div>,
           "Dispute outcome",
         );
-      } else {
+      } else if (isRpcSdk(sdk)) {
         //@ts-ignore
-        const ID = assetId.categoricalOutcome[1];
+        const ID = assetId.CategoricalOutcome[1];
         const signer = wallets.getActiveSigner();
-        const { market } = marketStore;
 
-        await market.dispute(
-          signer,
-          { categorical: ID },
-          extrinsicCallback({
-            notificationStore,
-            successCallback: async () => {
-              notificationStore.pushNotification(
-                `Disputed reported outcome with ${ticker}`,
-                {
-                  type: "Success",
-                },
-              );
-              await marketStore.refetchMarketData();
-              modalStore.closeModal();
-            },
-            failCallback: ({ index, error }) => {
-              notificationStore.pushNotification(
-                store.getTransactionError(index, error),
-                {
-                  type: "Error",
-                },
-              );
-            },
-          }),
+        const callback = extrinsicCallback({
+          notificationStore,
+          successCallback: async () => {
+            notificationStore.pushNotification(
+              `Disputed reported outcome with ${ticker}`,
+              {
+                type: "Success",
+              },
+            );
+          },
+          failCallback: ({ index, error }) => {
+            notificationStore.pushNotification(
+              store.getTransactionError(index, error),
+              {
+                type: "Error",
+              },
+            );
+          },
+        });
+
+        const tx = sdk.context.api.tx.predictionMarkets.dispute(
+          market.marketId,
+          { Categorical: ID },
         );
+        await signAndSend(tx, signer, callback);
       }
     };
     return (
