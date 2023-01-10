@@ -143,7 +143,6 @@ const RedeemButton = observer(
         >
           Redeem Tokens
         </button>
-        ({ztgToReceive?.toFixed(2)})
       </div>
     );
   },
