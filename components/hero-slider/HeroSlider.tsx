@@ -10,13 +10,13 @@ export interface HeroSliderProps {}
 
 const HeroSlider: FC<HeroSliderProps> = () => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
-  const [animate, setAnimate] = useState<number>(0);
+  const [animate, setAnimate] = useState<boolean>(false);
   const slidesLength = slidesData.length;
 
   //autoplay
   useEffect(() => {
     const ref = setTimeout(() => {
-      setAnimate(1);
+      setAnimate(true);
       moveSlider("next", currentSlide, setCurrentSlide, slidesLength);
     }, 5000);
     return () => {
@@ -28,8 +28,7 @@ const HeroSlider: FC<HeroSliderProps> = () => {
     <section className="w-full h-[527px] mx-auto">
       <div className="h-full relative">
         <HeroSlide
-          slides={slidesData}
-          currentSlide={currentSlide}
+          slide={slidesData[currentSlide]}
           animate={animate}
           setAnimate={setAnimate}
         />

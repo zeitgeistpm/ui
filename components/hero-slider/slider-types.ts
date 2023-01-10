@@ -3,15 +3,14 @@ interface Title {
   size: string;
   color: string;
 }
-
 interface Color {
   primary: string;
   secondary: string;
   border: string;
 }
 
+type Animate = (val: boolean) => void;
 export interface Slides {
-  custom: boolean;
   id: number;
   title: Title;
   bg: string;
@@ -22,18 +21,15 @@ export interface Slides {
   link2: string;
   color2: Color;
 }
-
 export interface HeroSlideProps {
-  slides: Slides[];
-  currentSlide: number;
-  animate: number;
-  setAnimate: (a: 0 | 1) => void;
+  slide: Slides;
+  animate: boolean;
+  setAnimate: Animate;
 }
-
 export interface HeroControlsProps {
   slides: Slides[];
   slidesLength: number;
   currentSlide: number;
   setCurrentSlide: (val: number) => void;
-  setAnimate: (val: number) => void;
+  setAnimate: Animate;
 }

@@ -14,7 +14,7 @@ export const HeroControls: FC<HeroControlsProps> = ({
     <div className="flex items-center justify-center md:justify-end w-full mx-auto gap-1 p-10 absolute bottom-0">
       <button
         onClick={() => {
-          setAnimate(1);
+          setAnimate(true);
           moveSlider("next", currentSlide, setCurrentSlide, slidesLength);
         }}
         className={`bg-black border border-white flex items-center justify-center w-[40px] h-[40px] rounded-full`}
@@ -25,7 +25,7 @@ export const HeroControls: FC<HeroControlsProps> = ({
         {slides.map((slide, index) => (
           <span
             onClick={() => {
-              setAnimate(1);
+              setAnimate(true);
               moveSlider(
                 "goto",
                 currentSlide,
@@ -45,7 +45,7 @@ export const HeroControls: FC<HeroControlsProps> = ({
       </div>
       <button
         onClick={() => {
-          setAnimate(1);
+          setAnimate(true);
           moveSlider("prev", currentSlide, setCurrentSlide, slidesLength);
         }}
         className={`bg-black border border-white flex items-center justify-center w-[40px] h-[40px] rounded-full ztg-transition`}

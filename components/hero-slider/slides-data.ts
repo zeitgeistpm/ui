@@ -1,8 +1,5 @@
-//Use false as the value in the custom key to use the default template or true to enable to use of a custom slide from the CustomSlides.tsx file.
-
 export const slidesData = [
   {
-    custom: false,
     id: 1,
     title: {
       text: `Introducing Zeitgeist Avatar`,
@@ -26,7 +23,6 @@ export const slidesData = [
     },
   },
   {
-    custom: false,
     id: 2,
     title: {
       text: `Exiled Racers`,
@@ -50,7 +46,6 @@ export const slidesData = [
     },
   },
   {
-    custom: false,
     id: 3,
     title: {
       text: `ZTG is now traded on DEXs`,
@@ -74,7 +69,6 @@ export const slidesData = [
     },
   },
   {
-    custom: false,
     id: 4,
     title: {
       text: `Presenting Zeitgeist’s 
