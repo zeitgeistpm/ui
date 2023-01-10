@@ -11,20 +11,16 @@ export const getCurrentPrediction = (
   if (market.marketType.categorical) {
     let [highestPrice, highestPriceIndex] = [0, 0];
 
-    assets.sort((a, b) => {
-      return (
+    assets.sort(
+      (a, b) =>
         getIndexOf(fromCompositeIndexerAssetId(a.assetId).unwrap()) -
-        getIndexOf(fromCompositeIndexerAssetId(b.assetId).unwrap())
-      );
-    });
+        getIndexOf(fromCompositeIndexerAssetId(b.assetId).unwrap()),
+    );
 
     assets.forEach((asset, index) => {
       if (asset.price > highestPrice) {
         highestPrice = asset.price;
         highestPriceIndex = index;
-        if ((market as any).marketId === 21) {
-          console.log(index);
-        }
       }
     });
 
