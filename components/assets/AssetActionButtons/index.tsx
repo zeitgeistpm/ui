@@ -1,8 +1,4 @@
-import {
-  CategoricalAssetId,
-  fromCompositeIndexerAssetId,
-  ScalarAssetId,
-} from "@zeitgeistpm/sdk-next";
+import { CategoricalAssetId, ScalarAssetId } from "@zeitgeistpm/sdk-next";
 import BuySellButtons from "components/trade-slip/BuySellButtons";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { observer } from "mobx-react";
@@ -37,14 +33,7 @@ const AssetActionButtons = observer(
     } else if (market?.status === "Resolved") {
       return <RedeemButton assetId={assetId} market={market} />;
     } else {
-      return (
-        <BuySellButtons
-          assetId={fromCompositeIndexerAssetId(
-            JSON.stringify(assetId),
-          ).unwrap()}
-          disabled={assetId == null}
-        />
-      );
+      return <BuySellButtons assetId={assetId} disabled={assetId == null} />;
     }
   },
 );

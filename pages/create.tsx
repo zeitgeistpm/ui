@@ -491,8 +491,6 @@ const CreatePage: NextPage = observer(() => {
     };
     const metadata = getMarketMetadata();
 
-    const numOutcomes = metadata.categories.length;
-
     const weights = poolRows.slice(0, -1).map((row) => {
       return new Decimal(row.weight).mul(ZTG).toFixed(0, Decimal.ROUND_DOWN);
     });

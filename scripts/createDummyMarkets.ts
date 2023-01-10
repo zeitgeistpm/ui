@@ -10,6 +10,7 @@ import dotenv from "dotenv";
 import { resolve } from "path";
 import { ZTG, DEFAULT_DEADLINES } from "../lib/constants";
 import { randomHexColor } from "../lib/util";
+import { capitalize } from "lodash";
 
 const program = new Command();
 
@@ -51,6 +52,11 @@ program
     "2",
   )
   .option(
+    "-ct, --creation-type [creationType]",
+    "market creation type - permissionless or advised",
+    "advised",
+  )
+  .option(
     "-p, --deploy-pool",
     "deploy default liquidity pool for each market",
     false,
@@ -58,8 +64,17 @@ program
 program.parse(process.argv);
 
 console.log(program.opts());
-const { endpoint, numMarkets, offset, numOutcomes, deployPool, unit, length } =
-  program.opts();
+
+const {
+  endpoint,
+  numMarkets,
+  offset,
+  numOutcomes,
+  deployPool,
+  unit,
+  length,
+  creationType,
+} = program.opts();
 
 const createCategoricalMarket = async (
   sdk: SDK,
@@ -105,7 +120,7 @@ const createCategoricalMarket = async (
     oracle: signer.address,
     period,
     metadata,
-    creationType: "Permissionless",
+    creationType: capitalize(creationType as string),
     deadlines: DEFAULT_DEADLINES,
     marketType: { Categorical: numOutcomes },
     disputeMechanism: { authorized: signer.address },
@@ -154,7 +169,13 @@ const createCategoricalMarket = async (
       signer,
     );
 
-    if (deployPool) {
+    if (deployPool && creationType === "advised") {
+      console.log(
+        "Unable to deploy pool for advised markets before they're accepted",
+      );
+    }
+
+    if (deployPool && creationType !== "advised") {
       let market = await sdk.models.fetchMarketData(marketId);
 
       await market.buyCompleteSet(signer, 100 * ZTG);
