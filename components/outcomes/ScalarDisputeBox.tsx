@@ -6,6 +6,7 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
+import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -47,7 +48,7 @@ const ScalarDisputeBox = observer(
     const handleSignTransaction = async () => {
       if (!isRpcSdk(sdk)) return;
       const outcomeReport = {
-        Scalar: Number(scalarReportValue) * ZTG,
+        Scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
       };
 
       const callback = extrinsicCallback({
@@ -68,6 +69,7 @@ const ScalarDisputeBox = observer(
         },
       });
 
+      console.log(outcomeReport);
       const tx = sdk.context.api.tx.predictionMarkets.dispute(
         market.marketId,
         outcomeReport,
@@ -92,8 +94,12 @@ const ScalarDisputeBox = observer(
           <div className=" h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
             <span>Previous Report:</span>
             <span className="font-mono">
-              {lastDispute?.outcome.asScalar.toString() ??
-                market.report.outcome.scalar}
+              {new Decimal(
+                lastDispute?.outcome.asScalar.toString() ??
+                  market.report?.outcome.scalar,
+              )
+                .div(ZTG)
+                .toString()}
             </span>
           </div>
           {bondAmount !== disputeBond && bondAmount !== undefined ? (
