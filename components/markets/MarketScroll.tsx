@@ -19,6 +19,9 @@ const MarketScroll = observer(
   }) => {
     const scrollRef = useRef<HTMLDivElement>();
     const [scrollLeft, setScrollLeft] = useState(0);
+    const [scrollDirection, setScrollDirection] = useState<"left" | "right">(
+      "right",
+    );
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
     const cardWidth = 320;
     const gap = 30;
@@ -27,64 +30,38 @@ const MarketScroll = observer(
     const cardsShown = Math.floor(containerWidth / (gap + cardWidth));
     const moveSize = cardsShown * (cardWidth + gap);
 
-    // useEffect(() => {
-    //   if (typeof window === "undefined") return;
-    //   if (window.innerWidth < 640) return;
-
-    // const cards = document.querySelectorAll(".market-card");
-
-    // const observer = new IntersectionObserver(
-    //   (entries) => {
-    //     entries.forEach((entry) => {
-    //       console.log(entry);
-    //       if (entry.isIntersecting) {
-    //         entry.target.classList.remove("opacity-0");
-    //       } else {
-    //         entry.target.classList.add("opacity-0");
-    //       }
-    //     });
-    //   },
-    //   { root: containerRef.current },
-    // );
-
-    // cards.forEach((card) => {
-    //   observer.observe(card);
-    // });
-    // }, []);
-
-    // useEffect(() => {
-    //   const cards = document.querySelectorAll(".market-card");
-    //   cards.forEach((card) => {
-    //     card.classList.remove("opacity-0");
-    //   });
-    // }, [store.leftDrawerClosed, store.rightDrawerClosed]);
+    useEffect(() => {
+      scrollRef.current.scroll({ left: scrollLeft, behavior: "smooth" });
+    }, [scrollRef, scrollLeft]);
 
     const handleRightClick = () => {
+      setScrollDirection("right");
       setScrollLeft((prev) => {
-        const newScroll = prev - moveSize;
+        const newScroll = prev + moveSize;
         const max = scrollMax - containerWidth;
 
-        return newScroll * -1 > max ? -(scrollMax - containerWidth) : newScroll;
+        return newScroll > max ? scrollMax - containerWidth : newScroll;
       });
     };
 
     const handleLeftClick = () => {
+      setScrollDirection("left");
       setScrollLeft((prev) => {
-        const newScroll = prev + moveSize;
+        const newScroll = prev - moveSize;
 
-        return newScroll > scrollMin ? scrollMin : newScroll;
+        return newScroll < scrollMin ? scrollMin : newScroll;
       });
     };
 
+    const hasReachedEnd = scrollMax - containerWidth - scrollLeft === 0;
     const leftDisabled = scrollLeft === 0;
-    const rightDisabled =
-      scrollMax - containerWidth + scrollLeft === 0 || markets.length <= 3;
+    const rightDisabled = hasReachedEnd || markets.length <= 3;
 
     return (
       <div ref={containerRef} className="flex flex-col">
         <div className="flex items-center mb-ztg-30">
           <div className=" font-bold text-[28px]">{title}</div>
-          <div className="hidden sm:flex ml-auto items-center">
+          <div className="flex ml-auto items-center">
             {showMarketsLink && (
               <Link
                 href="markets"
@@ -95,7 +72,7 @@ const MarketScroll = observer(
             )}
             <button
               onClick={handleLeftClick}
-              className={`flex items-center justify-center w-[26px] h-[26px] rounded-full ml-[12px] mr-[8px] ztg-transition ${
+              className={`hidden sm:flex items-center justify-center w-[26px] h-[26px] rounded-full ml-[12px] mr-[8px] ztg-transition ${
                 leftDisabled
                   ? "bg-geyser text-pastel-blue"
                   : "bg-pastel-blue text-white"
@@ -106,7 +83,7 @@ const MarketScroll = observer(
             </button>
             <button
               onClick={handleRightClick}
-              className={`flex items-center justify-center w-[26px] h-[26px] rounded-full ztg-transition  ${
+              className={`hidden sm:flex items-center justify-center w-[26px] h-[26px] rounded-full ztg-transition  ${
                 rightDisabled
                   ? "bg-geyser text-pastel-blue"
                   : "bg-pastel-blue text-white"
@@ -118,11 +95,15 @@ const MarketScroll = observer(
           </div>
         </div>
         <div className="relative">
-          <motion.div
+          {(scrollDirection === "left" && scrollLeft !== 0) ||
+          (scrollDirection === "right" && hasReachedEnd) ? (
+            <div className="bg-gradient-to-r from-white h-[175px] w-[20px] absolute z-ztg-10 -left-[5px]"></div>
+          ) : (
+            <div className="bg-gradient-to-r from-transparent to-white h-[175px] w-[20px] absolute z-ztg-10 -right-[5px]"></div>
+          )}
+          <div
             ref={scrollRef}
-            animate={{ x: scrollLeft }}
-            transition={{ duration: 0.5, type: "tween" }}
-            className="flex h-[175px] gap-x-[30px] no-scroll-bar overflow-x-auto sm:overflow-x-visible"
+            className="flex h-[175px] gap-x-[30px] no-scroll-bar overflow-x-auto"
           >
             {markets.map((market) => (
               <MarketCard
@@ -131,7 +112,7 @@ const MarketScroll = observer(
                 className="market-card bg-anti-flash-white rounded-ztg-10 min-w-[320px] w-[320px] transition duration-500 ease-in-out"
               />
             ))}
-          </motion.div>
+          </div>
         </div>
       </div>
     );
