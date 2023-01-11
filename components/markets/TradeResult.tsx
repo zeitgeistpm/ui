@@ -34,6 +34,7 @@ interface TradeResultProps {
   baseTokenAmount: Decimal;
   baseToken: string;
   marketId: number;
+  marketQuestion: string;
 }
 
 const TradeResult = ({
@@ -43,26 +44,32 @@ const TradeResult = ({
   baseTokenAmount,
   baseToken,
   marketId,
+  marketQuestion,
 }: TradeResultProps) => {
-  const handleClick = () => {
-    console.log("yo");
-  };
+  const marketUrl = `https://app.zeitgeist.pm/markets/${marketId}`;
+  const potentialGain = amount.div(baseTokenAmount);
+  const twitterBaseUrl = "https://twitter.com/intent/tweet?text=";
+  const tweetUrl =
+    type === "buy"
+      ? `${twitterBaseUrl}I'm betting on "${marketQuestion}", if I'm right I'll gain ${potentialGain
+          .minus(1)
+          .times(100)
+          .toFixed(0)}%25&url=${marketUrl}`
+      : `${twitterBaseUrl}I'm trading "${marketQuestion}"&url=${marketUrl}`;
+
   return (
     <div className="flex flex-col items-center gap-y-[10px] rounded-ztg-10 bg-white p-[30px] border-black border-[1px] text-ztg-18-150 w-fit">
-      <div>
-        You've just {type === "buy" ? "bought" : "sold"}{" "}
-        <span className="font-bold">{tokenName}</span>
-      </div>
-      <div className="text-[58px]">{amount.toFixed(3)}</div>
+      <div>You've just {type === "buy" ? "bought" : "sold"}</div>
+      <div className="text-[58px]">{amount.toFixed(2)}</div>
       <div className="text-center">
         <span className="font-bold">{tokenName}</span> Predictions For
         <div className="font-bold">
-          {baseTokenAmount.toFixed(3)} {baseToken}
+          {baseTokenAmount.toFixed(2)} {baseToken}
         </div>
       </div>
-      <button className="mt-[10px]" onClick={handleClick}>
+      <a target="_blank" rel="noopener noreferrer" href={tweetUrl}>
         <TwitterBird />
-      </button>
+      </a>
     </div>
   );
 };
