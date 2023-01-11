@@ -34,6 +34,9 @@ import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import { combineLatest, from } from "rxjs";
+import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
+import { useMarket } from "lib/hooks/queries/useMarket";
+import Decimal from "decimal.js";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -109,36 +112,49 @@ const Market: NextPage<{
 }> = observer(({ indexedMarket, chartSeries, chartData, baseAsset }) => {
   const marketsStore = useMarketsStore();
   const router = useRouter();
-  const [marketStore, setMarketStore] = useState<MarketStore>();
-  const [prizePool, setPrizePool] = useState<string>();
   const { marketid } = router.query;
+  const [marketStore, setMarketStore] = useState<MarketStore>();
+  const { data: market } = useMarket(Number(marketid));
+  const [prizePool, setPrizePool] = useState<string>();
   const store = useStore();
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
   const [hasAuthReport, setHasAuthReport] = useState<boolean>();
   const marketImageUrl = useMarketImageUrl(indexedMarket.img);
-
   const [scalarPrices, setScalarPrices] =
     useState<{ short: number; long: number; type: ScalarRangeType }>();
 
   useEffect(() => {
     if (marketStore == null) return;
     if (marketStore.type === "scalar") {
-      const observables = marketStore.marketOutcomes
-        .filter((o) => o.metadata !== "ztg")
-        .map((outcome) => {
-          return from(marketStore.assetPriceInZTG(outcome.asset));
-        });
-      const sub = combineLatest(observables).subscribe((prices) => {
+      if (market?.status === "Resolved") {
+        const { shortTokenValue, longTokenValue } = calcScalarResolvedPrices(
+          marketStore.bounds[0],
+          marketStore.bounds[1],
+          new Decimal(market.resolvedOutcome),
+        );
         setScalarPrices({
           type: marketStore.scalarType,
-          short: prices[1].toNumber(),
-          long: prices[0].toNumber(),
+          short: shortTokenValue.toNumber(),
+          long: longTokenValue.toNumber(),
         });
-      });
-      return () => sub.unsubscribe();
+      } else {
+        const observables = marketStore.marketOutcomes
+          .filter((o) => o.metadata !== "ztg")
+          .map((outcome) => {
+            return from(marketStore.assetPriceInZTG(outcome.asset));
+          });
+        const sub = combineLatest(observables).subscribe((prices) => {
+          setScalarPrices({
+            type: marketStore.scalarType,
+            short: prices[1].toNumber(),
+            long: prices[0].toNumber(),
+          });
+        });
+        return () => sub.unsubscribe();
+      }
     }
-  }, [marketStore, marketStore?.pool]);
+  }, [marketStore, marketStore?.pool, market]);
 
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
@@ -184,7 +200,7 @@ const Market: NextPage<{
       <Head>
         <title>{question}</title>
         <meta name="description" content={indexedMarket.description} />
-        <meta property="og:description" content={indexedMarket.description} />
+        <meta property="og:description" content={indexedMarket.question} />
         {marketImageUrl && (
           <meta property="og:image" content={marketImageUrl} />
         )}
@@ -219,7 +235,9 @@ const Market: NextPage<{
             <></>
           )}
           {pool?.liquidity != null ? (
-            <LiquidityPill liquidity={pool.liquidity} />
+            <LiquidityPill
+              liquidity={Number.isNaN(pool.liquidity) ? 0 : pool.liquidity}
+            />
           ) : (
             <></>
           )}
