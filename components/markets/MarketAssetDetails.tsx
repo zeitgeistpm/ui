@@ -290,7 +290,9 @@ const MarketAssetDetails = observer(
               />
             ) : (
               <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-                {new Decimal(marketStore.resolvedScalarOutcome).toString()}
+                {new Decimal(marketStore.resolvedScalarOutcome)
+                  .div(ZTG)
+                  .toString()}
               </div>
             )}
           </>
