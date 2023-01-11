@@ -30,7 +30,7 @@ const MarketCardInfoRow = ({
   value?: string;
 }) => {
   return (
-    <div className="line-clamp-1">
+    <div className="">
       <span className="text-sky-600">{name}:</span>{" "}
       {value == null ? (
         <Skeleton
@@ -54,7 +54,7 @@ const MarketCardInfo = ({
   question: string;
 }) => {
   return (
-    <div className="w-full h-full flex flex-col text-ztg-14-165">
+    <div className="pl-[15px] w-full h-full flex flex-col justify-center text-ztg-14-165">
       <h5 className="black font-bold w-full h-fit">{question}</h5>
       {rows.map((r, idx) => (
         <MarketCardInfoRow {...r} key={idx} />
@@ -87,7 +87,7 @@ const MarketCard = ({
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
-        className={`w-full h-full bg-anti-flash-white rounded-[10px] p-[15px] flex flex-col relative ${className}`}
+        className={`flex flex-col justify-center w-full bg-anti-flash-white rounded-[10px] p-[15px] relative ${className}`}
         data-testid={`marketCard-${marketId}`}
       >
         {showDetailsOverlay && (
@@ -98,20 +98,15 @@ const MarketCard = ({
             onCloseIconClick={() => setShowDetailsOverlay(false)}
           />
         )}
-        {outcomes?.length > 0 && (
+        {/* {outcomes?.length > 0 && (
           <MoreVertical
             className="absolute right-[10px] text-pastel-blue cursor-pointer"
             onClick={() => setShowDetailsOverlay(true)}
           />
-        )}
-        <Link
-          href={`/markets/${marketId}`}
-          className="flex items-center mr-[15px] h-full"
-        >
+        )} */}
+        <Link href={`/markets/${marketId}`} className="flex items-center">
           <MarketImage image={img} alt={question} />
-          <div className="pl-[15px]">
-            <MarketCardInfo question={question} rows={infoRows} />
-          </div>
+          <MarketCardInfo question={question} rows={infoRows} />
         </Link>
       </div>
     </MarketCardContext.Provider>

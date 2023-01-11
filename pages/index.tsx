@@ -2,6 +2,7 @@ import LearnSection from "components/front-page/LearnSection";
 import PopularCategories from "components/front-page/PopularCategories";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
+import MarketScrollNew from "components/markets/MarketScrollNew";
 import { motion } from "framer-motion";
 import { GraphQLClient } from "graphql-request";
 import getFeaturedMarkets from "lib/gql/featured-markets";
@@ -94,12 +95,12 @@ const IndexPage: NextPage<{
       <LearnSection />
       {featuredMarkets.length > 0 && (
         <div className="my-[60px]">
-          <MarketScroll title="Featured Markets" markets={featuredMarkets} />
+          <MarketScrollNew title="Featured Markets" markets={featuredMarkets} />
         </div>
       )}
       {trendingMarkets.length > 0 && (
         <div className="my-[60px]">
-          <MarketScroll title="Trending Markets" markets={trendingMarkets} />
+          <MarketScrollNew title="Trending Markets" markets={trendingMarkets} />
         </div>
       )}
       <div className="mb-[60px]">
