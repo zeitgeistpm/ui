@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { from } from "rxjs";
 import FullSetButtons from "./FullSetButtons";
+import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 
 const columns: TableColumn[] = [
   {
@@ -126,6 +127,15 @@ const MarketAssetDetails = observer(
         ).toISOString();
 
         const totalAssetPrice = calcTotalAssetPrice(pool);
+
+        const scalarPrices =
+          market.status === "Resolved" && market.type === "scalar"
+            ? calcScalarResolvedPrices(
+                market.bounds[0],
+                market.bounds[1],
+                new Decimal(market.resolvedScalarOutcome),
+              )
+            : null;
 
         for (const [index, assetId] of Array.from(
           market.outcomeAssetIds.entries(),
