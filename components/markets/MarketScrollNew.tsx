@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "react-feather";
 import { useResizeDetector } from "react-resize-detector";
 import MarketCard, { IndexedMarketCardData } from "./market-card";
+import HorizontalScroll from "components/ui/HorizontalScroll";
 
 const MarketScrollNew = observer(
   ({
@@ -61,38 +62,14 @@ const MarketScrollNew = observer(
       <div ref={containerRef} className="flex flex-col">
         <div className="flex items-center mb-ztg-30">
           <div className=" font-bold text-[28px]">{title}</div>
-          <div className="flex ml-auto items-center">
-            {showMarketsLink && (
-              <Link
-                href="markets"
-                className="text-ztg-14-150 border-2 border-pastel-blue rounded-[5px] px-[10px] py-[3px]"
-              >
-                Go To Markets
-              </Link>
-            )}
-            <button
-              onClick={handleLeftClick}
-              className={`hidden sm:flex items-center justify-center w-[26px] h-[26px] rounded-full ml-[12px] mr-[8px] ztg-transition ${
-                leftDisabled
-                  ? "bg-geyser text-pastel-blue"
-                  : "bg-pastel-blue text-white"
-              }`}
-              disabled={leftDisabled}
-            >
-              <ChevronLeft className="relative right-[1px]" />
-            </button>
-            <button
-              onClick={handleRightClick}
-              className={`hidden sm:flex items-center justify-center w-[26px] h-[26px] rounded-full ztg-transition  ${
-                rightDisabled
-                  ? "bg-geyser text-pastel-blue"
-                  : "bg-pastel-blue text-white"
-              }`}
-              disabled={rightDisabled}
-            >
-              <ChevronRight className="relative left-[1px]" />
-            </button>
-          </div>
+          <HorizontalScroll
+            showLink={showMarketsLink}
+            link="markets"
+            handleLeftClick={handleLeftClick}
+            handleRightClick={handleRightClick}
+            rightDisabled={rightDisabled}
+            leftDisabled={leftDisabled}
+          />
         </div>
         <div className="relative">
           {(scrollDirection === "left" && scrollLeft !== 0) ||
