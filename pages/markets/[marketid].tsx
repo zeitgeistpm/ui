@@ -263,7 +263,7 @@ const Market: NextPage<{
             </div>
           </div>
         )}
-        <MarketAssetDetails marketStore={marketStore} />
+        {marketStore && <MarketAssetDetails marketStore={marketStore} />}
         {marketStore?.type === "scalar" && scalarPrices && (
           <div className="mt-ztg-20 mb-ztg-30">
             <ScalarPriceRange
