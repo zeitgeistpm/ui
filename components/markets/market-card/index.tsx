@@ -30,7 +30,7 @@ const MarketCardInfoRow = ({
   value?: string;
 }) => {
   return (
-    <div className="mb-1 line-clamp-1">
+    <div className="line-clamp-1">
       <span className="text-sky-600">{name}:</span>{" "}
       {value == null ? (
         <Skeleton
@@ -48,11 +48,14 @@ const MarketCardInfoRow = ({
 
 const MarketCardInfo = ({
   rows,
+  question,
 }: {
   rows: { name: string; value: string }[];
+  question: string;
 }) => {
   return (
-    <div className="w-full h-full flex flex-col text-ztg-12-120">
+    <div className="w-full h-full flex flex-col text-ztg-14-165">
+      <h5 className="black font-bold w-full h-fit">{question}</h5>
       {rows.map((r, idx) => (
         <MarketCardInfoRow {...r} key={idx} />
       ))}
@@ -107,10 +110,7 @@ const MarketCard = ({
         >
           <MarketImage image={img} alt={question} />
           <div className="pl-[15px]">
-            <h5 className="black font-bold w-full h-fit text-ztg-14-150">
-              {question}
-            </h5>
-            <MarketCardInfo rows={infoRows} />
+            <MarketCardInfo question={question} rows={infoRows} />
           </div>
         </Link>
       </div>
