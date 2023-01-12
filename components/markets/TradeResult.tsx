@@ -57,7 +57,7 @@ const TradeResult = ({
           .toFixed(
             0,
           )}%25!%0A%0ACheck out the market here%3A%0A&url=${marketUrl}`
-      : `${twitterBaseUrl}I'm trading "${marketQuestion}"&url=${marketUrl}`;
+      : `${twitterBaseUrl}I'm using %40ZeitgeistPM to bet on "${marketQuestion}" %0A%0ACheck out the market here%3A%0A&url=${marketUrl}`;
 
   return (
     <div className="flex flex-col items-center gap-y-[10px] rounded-ztg-10 bg-white p-[30px] border-black border-[1px] text-ztg-18-150 w-fit">
