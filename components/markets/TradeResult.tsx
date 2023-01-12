@@ -51,10 +51,12 @@ const TradeResult = ({
   const twitterBaseUrl = "https://twitter.com/intent/tweet?text=";
   const tweetUrl =
     type === "buy"
-      ? `${twitterBaseUrl}I'm betting on "${marketQuestion}", if I'm right I'll gain ${potentialGain
+      ? `${twitterBaseUrl}I'm using %40ZeitgeistPM to bet on "${marketQuestion}" %0A%0AIf I'm right, I'll gain ${potentialGain
           .minus(1)
           .times(100)
-          .toFixed(0)}%25&url=${marketUrl}`
+          .toFixed(
+            0,
+          )}%25!%0A%0ACheck out the market here%3A%0A&url=${marketUrl}`
       : `${twitterBaseUrl}I'm trading "${marketQuestion}"&url=${marketUrl}`;
 
   return (
