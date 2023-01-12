@@ -2,10 +2,9 @@ import { FC } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "react-feather";
 import { ChevronRight } from "react-feather";
-import { useResizeDetector } from "react-resize-detector";
-import { IndexedMarketCardData } from "components/markets/market-card";
 
 interface HorizontalScrollProps {
+  classes?: string;
   showLink?: boolean;
   link: string;
   handleLeftClick: () => void;
@@ -15,6 +14,7 @@ interface HorizontalScrollProps {
 }
 
 const HorizontalScroll: FC<HorizontalScrollProps> = ({
+  classes,
   showLink,
   link,
   handleRightClick,
@@ -23,20 +23,22 @@ const HorizontalScroll: FC<HorizontalScrollProps> = ({
   leftDisabled,
 }) => {
   return (
-    <div className="flex ml-auto items-center">
+    <div
+      className={`flex md:ml-auto w-full items-center justify-end ${classes}`}
+    >
       {showLink && (
         <Link
           href={link}
-          className="text-ztg-14-150 border-2 border-pastel-blue rounded-[5px] px-[10px] py-[3px]"
+          className="leading-[40px] rounded-ztg-100 text-ztg-14-150 bg-mystic px-[15px] text-center w-full sm:w-fit"
         >
           Go To Markets
         </Link>
       )}
       <button
         onClick={handleLeftClick}
-        className={`hidden sm:flex items-center justify-center w-[26px] h-[26px] rounded-full ml-[12px] mr-[8px] ztg-transition ${
+        className={`hidden sm:flex items-center justify-center w-[40px] h-[40px] rounded-full ml-[12px] mr-[8px] ztg-transition ${
           leftDisabled
-            ? "bg-geyser text-pastel-blue"
+            ? "bg-sky-600 opacity-30 text-pastel-blue"
             : "bg-pastel-blue text-white"
         }`}
         disabled={leftDisabled}
@@ -45,9 +47,9 @@ const HorizontalScroll: FC<HorizontalScrollProps> = ({
       </button>
       <button
         onClick={handleRightClick}
-        className={`hidden sm:flex items-center justify-center w-[26px] h-[26px] rounded-full ztg-transition  ${
+        className={`hidden sm:flex items-center justify-center w-[40px] h-[40px] rounded-full ztg-transition  ${
           rightDisabled
-            ? "bg-geyser text-pastel-blue"
+            ? "bg-sky-600 opacity-30 text-pastel-blue"
             : "bg-pastel-blue text-white"
         }`}
         disabled={rightDisabled}

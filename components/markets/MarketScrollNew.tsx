@@ -28,8 +28,11 @@ const MarketScrollNew = observer(
     const gap = 30;
     const scrollMin = 0;
     const scrollMax = cardWidth * markets.length + gap * (markets.length - 1);
-    const cardsShown = Math.floor(containerWidth / (gap + cardWidth));
+    // const cardsShown = Math.floor(containerWidth / (gap + cardWidth));
+    const cardsShown = containerWidth > 600 ? 2 : 3;
     const moveSize = cardsShown * (cardWidth + gap);
+    console.log(cardsShown, containerWidth);
+    //if continaer width > 600px show 2, else show 3
 
     useEffect(() => {
       scrollRef.current.scroll({ left: scrollLeft, behavior: "smooth" });
@@ -59,19 +62,20 @@ const MarketScrollNew = observer(
     const rightDisabled = hasReachedEnd || markets.length <= 3;
 
     return (
-      <div ref={containerRef} className="flex flex-col">
-        <div className="flex items-center mb-ztg-30">
-          <div className=" font-bold text-[28px]">{title}</div>
-          <HorizontalScroll
-            showLink={showMarketsLink}
-            link="markets"
-            handleLeftClick={handleLeftClick}
-            handleRightClick={handleRightClick}
-            rightDisabled={rightDisabled}
-            leftDisabled={leftDisabled}
-          />
-        </div>
-        <div className="relative">
+      <div ref={containerRef} className="grid sm:grid-cols-2 gap-4">
+        <h3 className="sm:col-span-1 font-bold text-[28px]">{title}</h3>
+        <HorizontalScroll
+          classes="order-2 sm:order-none"
+          showLink={showMarketsLink}
+          link="markets"
+          handleLeftClick={handleLeftClick}
+          handleRightClick={handleRightClick}
+          rightDisabled={rightDisabled}
+          leftDisabled={leftDisabled}
+        />
+        {/* <div className="flex items-center mb-ztg-30">
+        </div> */}
+        <div className="sm:col-span-2 relative">
           {(scrollDirection === "left" && scrollLeft !== 0) ||
           (scrollDirection === "right" && hasReachedEnd) ? (
             <div className="bg-gradient-to-r from-white w-[20px] absolute z-ztg-10 -left-[5px]"></div>
@@ -80,13 +84,13 @@ const MarketScrollNew = observer(
           )}
           <div
             ref={scrollRef}
-            className="flex gap-x-[30px] no-scroll-bar overflow-x-auto"
+            className="flex flex-col md:flex-row gap-4 no-scroll-bar overflow-x-auto"
           >
             {markets.map((market) => (
               <MarketCard
                 key={market.marketId}
                 {...market}
-                className="market-card bg-anti-flash-white rounded-ztg-10 min-w-[320px] w-[320px] transition duration-500 ease-in-out"
+                className="market-card bg-anti-flash-white rounded-ztg-10 transition duration-500 ease-in-out"
               />
             ))}
           </div>
