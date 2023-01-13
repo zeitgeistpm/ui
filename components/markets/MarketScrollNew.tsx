@@ -59,7 +59,8 @@ const MarketScrollNew = observer(
 
     const hasReachedEnd = scrollMax - containerWidth - scrollLeft === 0;
     const leftDisabled = scrollLeft === 0;
-    const rightDisabled = hasReachedEnd || markets.length <= 3;
+    const rightDisabled =
+      hasReachedEnd || cardWidth * markets.length < containerWidth;
 
     return (
       <div ref={containerRef} className="grid sm:grid-cols-2 gap-4">
