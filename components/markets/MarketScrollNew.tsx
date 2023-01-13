@@ -9,15 +9,7 @@ import MarketCard, { IndexedMarketCardData } from "./market-card";
 import HorizontalScroll from "components/ui/HorizontalScroll";
 
 const MarketScrollNew = observer(
-  ({
-    title,
-    markets,
-    showMarketsLink = true,
-  }: {
-    title: string;
-    markets: IndexedMarketCardData[];
-    showMarketsLink?: boolean;
-  }) => {
+  ({ title, markets }: { title: string; markets: IndexedMarketCardData[] }) => {
     const scrollRef = useRef<HTMLDivElement>();
     const [scrollLeft, setScrollLeft] = useState(0);
     const [scrollDirection, setScrollDirection] = useState<"left" | "right">(
@@ -67,7 +59,6 @@ const MarketScrollNew = observer(
         <h3 className="sm:col-span-1 font-bold text-[28px]">{title}</h3>
         <HorizontalScroll
           classes="order-2 sm:order-none"
-          showLink={showMarketsLink}
           link="markets"
           handleLeftClick={handleLeftClick}
           handleRightClick={handleRightClick}

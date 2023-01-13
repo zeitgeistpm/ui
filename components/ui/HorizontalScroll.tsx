@@ -5,8 +5,8 @@ import { ChevronRight } from "react-feather";
 
 interface HorizontalScrollProps {
   classes?: string;
-  showLink?: boolean;
-  link: string;
+  title?: string;
+  link?: string;
   handleLeftClick: () => void;
   handleRightClick: () => void;
   rightDisabled: boolean;
@@ -15,7 +15,7 @@ interface HorizontalScrollProps {
 
 const HorizontalScroll: FC<HorizontalScrollProps> = ({
   classes,
-  showLink,
+  title,
   link,
   handleRightClick,
   handleLeftClick,
@@ -26,12 +26,12 @@ const HorizontalScroll: FC<HorizontalScrollProps> = ({
     <div
       className={`flex md:ml-auto w-full items-center justify-end ${classes}`}
     >
-      {showLink && (
+      {link && (
         <Link
           href={link}
           className="leading-[40px] rounded-ztg-100 text-ztg-14-150 bg-mystic px-[15px] text-center w-full sm:w-fit"
         >
-          Go To Markets
+          {title}
         </Link>
       )}
       <button
