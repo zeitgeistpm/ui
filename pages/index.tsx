@@ -14,6 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getPlaiceholder, IGetPlaiceholderReturn } from "plaiceholder";
 import React from "react";
+import HeroSlider from "components/hero-slider/HeroSlider";
 
 const MAIN_IMAGE_PATH = "/carousel/intro_zeitgeist_avatar.png";
 
@@ -72,6 +73,7 @@ const IndexPage: NextPage<{
           priority
         />
       </a>
+      {/* <HeroSlider /> */}
       <div className="flex items-center w-full justify-center relative bottom-[29px]">
         <motion.div
           whileHover={{ scale: 1.03 }}
