@@ -24,17 +24,24 @@ const Category = ({
       className="flex flex-col min-w-[150px] w-full h-[184px]"
       onMouseEnter={() => setIsHoving(true)}
       onMouseLeave={() => setIsHoving(false)}
+      data-testid="category"
     >
       <div
         className="bg-anti-flash-white rounded-ztg-10 flex justify-center items-center h-full cursor-pointer"
         onClick={onClick}
+        data-testid="categoryButton"
       >
         <motion.div animate={isHoving ? { scale: 1.05 } : { scale: 1.0 }}>
           <Image src={imgURL} alt={title} width={100} height={100} />
         </motion.div>
       </div>
       <span className="flex mt-[10px] items-center">
-        <span className=" font-bold text-ztg-16-150">{title}</span>
+        <span
+          className=" font-bold text-ztg-16-150"
+          data-testid="categoryTitle"
+        >
+          {title}
+        </span>
         <span className="ml-auto">
           <span className="flex justify-center items-center bg-anti-flash-white rounded-ztg-5 w-[41px] h-[19px]">
             <span className="text-ztg-10-150">{count}</span>
@@ -54,7 +61,7 @@ const PopularCategories: FC<{ tagCounts: TagCounts }> = observer(
     };
 
     return (
-      <div className="flex flex-col mt-ztg-30">
+      <div className="flex flex-col mt-ztg-30" data-testId="popularCategories">
         <h3 className=" font-bold text-[28px] mb-ztg-30">Popular Categories</h3>
         <div
           className="grid w-full gap-[28px]"

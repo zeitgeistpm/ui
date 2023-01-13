@@ -34,7 +34,7 @@ const LearnCard = ({
 
 const LearnSection = () => {
   return (
-    <div>
+    <div data-testid="learnSection">
       <div className=" font-bold text-[28px] mb-[30px]">
         Welcome to Zeitgeist
       </div>
