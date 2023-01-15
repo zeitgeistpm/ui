@@ -357,7 +357,7 @@ const LiquidityPoolsBox = observer(() => {
       totalPoolShares
         .sub(config.balances.existentialDeposit)
         .lte(poolSharesAmount) &&
-      pool?.market.status === "Active"
+      pool?.market.status !== "Resolved"
     ) {
       return false;
     }
