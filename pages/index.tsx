@@ -1,6 +1,6 @@
 import LearnSection from "components/front-page/LearnSection";
 import PopularCategories from "components/front-page/PopularCategories";
-import { IndexedMarketCardData } from "components/markets/market-card";
+import { IndexedMarketCardData } from "components/markets/market-card/index";
 import MarketScroll from "components/markets/MarketScroll";
 import MarketScrollNew from "components/markets/MarketScrollNew";
 import { motion } from "framer-motion";

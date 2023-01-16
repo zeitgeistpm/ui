@@ -5,7 +5,7 @@ import { NextPage } from "next";
 
 import MarketsList from "components/markets/MarketsList";
 import { GraphQLClient } from "graphql-request";
-import { IndexedMarketCardData } from "components/markets/market-card";
+import { IndexedMarketCardData } from "components/markets/market-card/index";
 import MarketScroll from "components/markets/MarketScroll";
 import getNewestMarkets from "lib/gql/newest-markets";
 
