@@ -86,7 +86,7 @@ const MarketCard = ({
     },
     // { name: "Status", value: creation },
   ];
-  console.log(width);
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
