@@ -16,6 +16,7 @@ export interface IndexedMarketCardData {
   prediction: string;
   volume: number;
   baseAsset: string;
+  width: number;
 }
 
 export interface MarketCardProps extends IndexedMarketCardData {
@@ -54,7 +55,7 @@ const MarketCardInfo = ({
   question: string;
 }) => {
   return (
-    <div className="pl-[15px] w-full h-full flex flex-col justify-center text-ztg-14-165">
+    <div className="pl-[15px] w-full h-full flex flex-col justify-center text-ztg-14-165 whitespace-normal">
       <h5 className="black font-bold w-full h-fit">{question}</h5>
       {rows.map((r, idx) => (
         <MarketCardInfoRow {...r} key={idx} />
@@ -72,6 +73,7 @@ const MarketCard = ({
   prediction,
   volume,
   baseAsset,
+  width,
   className = "",
 }: MarketCardProps) => {
   const [showDetailsOverlay, setShowDetailsOverlay] = useState<boolean>(false);
@@ -84,11 +86,13 @@ const MarketCard = ({
     },
     // { name: "Status", value: creation },
   ];
+  console.log(width);
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
         className={`flex flex-col justify-center w-full bg-anti-flash-white rounded-[10px] p-[15px] relative ${className}`}
         data-testid={`marketCard-${marketId}`}
+        style={{ minWidth: width, maxWidth: width }}
       >
         {showDetailsOverlay && (
           <MarketCardOverlay

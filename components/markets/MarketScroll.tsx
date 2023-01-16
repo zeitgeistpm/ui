@@ -5,29 +5,44 @@ import MarketCard, { IndexedMarketCardData } from "./market-card/index";
 import HorizontalScroll from "components/ui/HorizontalScroll";
 
 const MarketScroll = observer(
-  ({ title, markets }: { title: string; markets: IndexedMarketCardData[] }) => {
+  ({
+    title,
+    markets,
+    link,
+  }: {
+    title: string;
+    markets: IndexedMarketCardData[];
+    link?: string;
+  }) => {
     const scrollRef = useRef<HTMLDivElement>();
     const [scrollLeft, setScrollLeft] = useState(0);
     const [scrollDirection, setScrollDirection] = useState<"left" | "right">(
       "right",
     );
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
-    const cardWidth = 320;
-    const gap = 30;
-    const scrollMin = 0;
-    const scrollMax = cardWidth * markets.length + gap * (markets.length - 1);
-    // const cardsShown = Math.floor(containerWidth / (gap + cardWidth));
+    const gap = 16;
+    //calculate cards shown and width based on container width
     const cardsShown =
       containerWidth < 716
         ? 3
         : containerWidth >= 716 && containerWidth < 1183
         ? 2
         : 3;
+    // const cardsShown = Math.floor(containerWidth / (gap + cardWidth));
+    const cardWidth =
+      containerWidth < 716
+        ? containerWidth
+        : containerWidth >= 1183
+        ? (containerWidth - gap * 2) / cardsShown
+        : (containerWidth - gap) / cardsShown;
+    const scrollMin = 0;
+    const scrollMax = cardWidth * markets.length + gap * (markets.length - 1);
+
     const moveSize = cardsShown * (cardWidth + gap);
 
     useEffect(() => {
       scrollRef.current.scroll({ left: scrollLeft, behavior: "smooth" });
-    }, [scrollRef, scrollLeft]);
+    }, [scrollRef, scrollLeft, cardWidth]);
 
     const handleRightClick = () => {
       setScrollDirection("right");
@@ -58,8 +73,8 @@ const MarketScroll = observer(
         <h3 className="sm:col-span-1 font-bold text-[28px]">{title}</h3>
         <HorizontalScroll
           classes="order-2 sm:order-none"
-          link="markets"
-          title="Go To Markets"
+          link={link}
+          cta="Go To Markets"
           handleLeftClick={handleLeftClick}
           handleRightClick={handleRightClick}
           rightDisabled={rightDisabled}
@@ -76,18 +91,17 @@ const MarketScroll = observer(
           )}
           <div
             ref={scrollRef}
-            className="flex flex-col md:flex-row gap-4 no-scroll-bar overflow-x-auto"
+            className="flex flex-col md:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
+            style={{ gap: `${gap}px` }}
           >
-            {markets.map(
-              (market, index) =>
-                index < cardsShown && (
-                  <MarketCard
-                    key={market.marketId}
-                    {...market}
-                    className="market-card bg-anti-flash-white rounded-ztg-10 transition duration-500 ease-in-out"
-                  />
-                ),
-            )}
+            {markets.map((market) => (
+              <MarketCard
+                key={market.marketId}
+                {...market}
+                width={cardWidth}
+                className="market-card bg-anti-flash-white rounded-ztg-10 transition duration-500 ease-in-out"
+              />
+            ))}
           </div>
         </div>
       </div>

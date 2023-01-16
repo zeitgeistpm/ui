@@ -5,7 +5,7 @@ import { ChevronRight } from "react-feather";
 
 interface HorizontalScrollProps {
   classes?: string;
-  title?: string;
+  cta?: string;
   link?: string;
   handleLeftClick: () => void;
   handleRightClick: () => void;
@@ -15,7 +15,7 @@ interface HorizontalScrollProps {
 
 const HorizontalScroll: FC<HorizontalScrollProps> = ({
   classes,
-  title,
+  cta,
   link,
   handleRightClick,
   handleLeftClick,
@@ -31,7 +31,7 @@ const HorizontalScroll: FC<HorizontalScrollProps> = ({
           href={link}
           className="leading-[40px] rounded-ztg-100 text-ztg-14-150 bg-mystic px-[15px] text-center w-full sm:w-fit"
         >
-          {title}
+          {cta}
         </Link>
       )}
       <button

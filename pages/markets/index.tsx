@@ -35,7 +35,7 @@ const MarketsPage: NextPage<{
           <MarketScroll
             title="Newest Markets"
             markets={newestMarkets}
-            showMarketsLink={false}
+            // showMarketsLink={false}
           />
         </div>
       )}

@@ -97,12 +97,20 @@ const IndexPage: NextPage<{
       <LearnSection />
       {featuredMarkets.length > 0 && (
         <div className="my-[60px]">
-          <MarketScroll title="Featured Markets" markets={featuredMarkets} />
+          <MarketScroll
+            title="Featured Markets"
+            markets={featuredMarkets}
+            link="markets"
+          />
         </div>
       )}
       {trendingMarkets.length > 0 && (
         <div className="my-[60px]">
-          <MarketScroll title="Trending Markets" markets={trendingMarkets} />
+          <MarketScroll
+            title="Trending Markets"
+            markets={trendingMarkets}
+            link="markets"
+          />
         </div>
       )}
       <div className="mb-[60px]">
