@@ -28,20 +28,26 @@ const Category = ({
   className?: string;
 }) => {
   return (
-    <div className="flex flex-col min-w-[150px] w-full h-[184px]">
-      <Image
-        className="rounded-ztg-10 cursor-pointer"
-        src={imgURL}
-        alt={title}
-        width={170}
-        height={170}
-        onClick={onClick}
-        placeholder="blur"
-        blurDataURL={blurImage.base64}
-      />
-      <span className="flex mt-[10px] items-center">
-        <span className="font-medium text-ztg-16-150">{title}</span>
-        <span className="flex justify-center items-center bg-anti-flash-white rounded-ztg-5 w-[41px] h-[24px] ml-[10px]">
+    <div className="flex flex-col w-full max-w-[230px] min-w-[80px]">
+      <div
+        className="relative max-w-[230px] max-h-[230px] w-full h-full"
+        style={{ aspectRatio: "1/1" }}
+      >
+        <Image
+          className="rounded-ztg-10 cursor-pointer"
+          src={imgURL}
+          alt={title}
+          fill
+          onClick={onClick}
+          placeholder="blur"
+          blurDataURL={blurImage.base64}
+        />
+      </div>
+      <span className="flex flex-col lg:flex-row lg:items-center mt-[10px] ">
+        <span className="font-medium text-ztg-16-150 line-clamp-1">
+          {title}
+        </span>
+        <span className="flex justify-center items-center bg-anti-flash-white rounded-ztg-5 w-[41px] h-[24px] mt-[8px] lg:mt-0 lg:ml-[10px]">
           <span className="text-ztg-12-150">{count}</span>
         </span>
       </span>
@@ -62,12 +68,7 @@ const PopularCategories: FC<{
   return (
     <div className="flex flex-col mt-ztg-30">
       <h3 className=" font-bold text-[28px] mb-ztg-30">Popular Categories</h3>
-      <div
-        className="grid w-full gap-[28px]"
-        style={{
-          gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-        }}
-      >
+      <div className="flex gap-x-[20px] overflow-x-auto no-scroll-bar">
         {CATEGORIES.map((category, index) => (
           <Category
             title={category.name}
