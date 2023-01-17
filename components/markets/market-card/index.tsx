@@ -56,7 +56,7 @@ const MarketCardInfo = ({
 }) => {
   return (
     <div className="pl-[15px] w-full h-full flex flex-col justify-center text-ztg-14-165 whitespace-normal">
-      <h5 className="black font-bold w-full h-fit">{question}</h5>
+      <h5 className="black font-medium w-full h-fit">{question}</h5>
       {rows.map((r, idx) => (
         <MarketCardInfoRow {...r} key={idx} />
       ))}
