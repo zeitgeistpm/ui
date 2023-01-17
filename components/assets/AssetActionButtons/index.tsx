@@ -1,65 +1,39 @@
-import { fromString } from "@zeitgeistpm/sdk-next";
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
+import { CategoricalAssetId, ScalarAssetId } from "@zeitgeistpm/sdk-next";
 import BuySellButtons from "components/trade-slip/BuySellButtons";
-import { useMarketsStore } from "lib/stores/MarketsStore";
-import MarketStore from "lib/stores/MarketStore";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
 import DisputeButton from "./DisputeButton";
 import RedeemButton from "./RedeemButton";
 import ReportButton from "./ReportButton";
 
 interface AssetActionButtonsProps {
   marketId: number;
-  assetId?: AssetId;
+  assetId?: ScalarAssetId | CategoricalAssetId;
   assetTicker: string;
-  assetColor?: string;
 }
 
 const AssetActionButtons = observer(
-  ({ marketId, assetId, assetColor, assetTicker }: AssetActionButtonsProps) => {
-    const marketsStore = useMarketsStore();
-    const [marketStore, setMarketStore] = useState<MarketStore>();
+  ({ marketId, assetId, assetTicker }: AssetActionButtonsProps) => {
+    const { data: market } = useMarket(marketId);
 
-    useEffect(() => {
-      if (assetId == null) {
-        return;
-      }
-      (async () => {
-        const market = await marketsStore.getMarket(marketId);
-        setMarketStore(market);
-      })();
-    }, [marketId, marketsStore]);
+    if (!market) {
+      return null;
+    }
 
-    if (
-      marketStore?.status === "Closed" ||
-      (marketStore?.status === "Disputed" &&
-        marketStore?.disputeMechanism === "authorized")
-    ) {
+    if (market?.status === "Closed") {
       return (
-        <ReportButton
-          marketStore={marketStore}
-          assetId={assetId}
-          ticker={assetTicker}
-        />
+        <ReportButton market={market} assetId={assetId} ticker={assetTicker} />
       );
-    } else if (marketStore?.status === "Reported") {
+    } else if (market?.status === "Disputed") {
+      return null;
+    } else if (market?.status === "Reported") {
       return (
-        <DisputeButton
-          marketStore={marketStore}
-          assetId={assetId}
-          ticker={assetTicker}
-        />
+        <DisputeButton market={market} assetId={assetId} ticker={assetTicker} />
       );
-    } else if (marketStore?.status === "Resolved") {
-      return <RedeemButton marketStore={marketStore} assetId={assetId} />;
+    } else if (market?.status === "Resolved") {
+      return <RedeemButton assetId={assetId} market={market} />;
     } else {
-      return (
-        <BuySellButtons
-          assetId={fromString(JSON.stringify(assetId)).unwrap()}
-          disabled={assetId == null}
-        />
-      );
+      return <BuySellButtons assetId={assetId} disabled={assetId == null} />;
     }
   },
 );

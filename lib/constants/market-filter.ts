@@ -29,7 +29,7 @@ export const marketCurrencyFilterOptions: MarketCurrencyFilter[] = [
   {
     type: "currency",
     value: "Ztg",
-    label: "Ztg",
+    label: "ZTG",
   },
 ];
 

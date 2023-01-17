@@ -91,41 +91,6 @@ class MarketStore {
     return this.inReportPeriod && !this.inOracleReportPeriod;
   }
 
-  //authorised wallet address
-  get authority(): string | undefined {
-    if (isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
-      return this.market.disputeMechanism.authorized;
-    }
-  }
-
-  authorityProxies?: string[];
-
-  get isAuthorityProxy(): boolean {
-    if (this.authorityProxies == null) {
-      return false;
-    }
-    return this.authorityProxies.includes(
-      this.store.wallets.activeAccount?.address,
-    );
-  }
-
-  async getAuthorityProxies(): Promise<string[] | undefined> {
-    if (!isAuthorisedDisputeMechanism(this.market.disputeMechanism)) {
-      return;
-    }
-
-    const { sdk } = this.store;
-
-    const res = (await sdk.api.query.proxy.proxies(this.authority)).toJSON();
-
-    const proxies = res[0].map((item) => item.delegate);
-
-    runInAction(() => {
-      this.authorityProxies = proxies;
-    });
-    return proxies;
-  }
-
   get disputeMechanism(): "authorized" | "other" {
     if (
       this.market.disputeMechanism &&
@@ -143,13 +108,6 @@ class MarketStore {
 
     const activeAddress = this.store.wallets.activeAccount?.address;
     if (this.status === "Closed" && this.isOracle) {
-      return true;
-    } else if (
-      this.status === "Disputed" &&
-      this.disputeMechanism === "authorized" &&
-      (this.authority === activeAddress ||
-        this.authorityProxies?.includes(activeAddress))
-    ) {
       return true;
     } else {
       return false;
@@ -366,6 +324,7 @@ class MarketStore {
     return this.marketOutcomes[0];
   }
 
+  // Warning returns wrong value. better use `useMarket` hook to get this data
   get resolvedScalarOutcome(): number | null {
     if (!this.is("Resolved") || this.type !== "scalar") return null;
 
@@ -649,16 +608,13 @@ class MarketStore {
       market: observable.ref,
       disputes: observable.ref,
       pool: observable.ref,
-      authorityProxies: observable.ref,
       poolAccount: observable,
-      isAuthorityProxy: computed,
       poolExists: computed,
       slug: computed,
       description: computed,
       assets: computed,
       tags: computed,
       oracle: computed,
-      authority: computed,
       isOracle: computed,
       isCourt: computed,
       oracleReportPeriodPassed: computed,

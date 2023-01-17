@@ -1,4 +1,5 @@
 import { MarketFilter } from "lib/types/market-filter";
+import { X } from "react-feather";
 import { ClearAllBtn } from "./ui";
 
 export type MarketActiveFilterProps = {
@@ -11,9 +12,9 @@ export const MarketActiveFilterItem = ({
   onRemove,
 }: MarketActiveFilterProps) => {
   return (
-    <div className="flex px-ztg-10 py-ztg-5 rounded-ztg-5 bg-gray-400 text-gray-800 font-normal text-ztg-14-150 gap-ztg-5">
-      <button className="w-ztg-8" onClick={() => onRemove(filter)}>
-        X
+    <div className="flex px-ztg-10 py-ztg-5 rounded-ztg-5 bg-sky-200 text-gray-800 font-normal text-ztg-14-150 gap-ztg-5">
+      <button onClick={() => onRemove(filter)}>
+        <X size={16} className="text-gray-800"></X>
       </button>
       {filter.label}
     </div>
@@ -32,7 +33,7 @@ export const MarketActiveFilters = ({
   onFilterRemove,
 }: MarketActiveFiltersProps) => {
   return (
-    <div className="w-full flex gap-ztg-2">
+    <div className="w-full flex gap-[10px] mt-[10px]">
       {filters?.length > 0 && <ClearAllBtn clear={onClear} />}
       {filters?.map((af, idx) => (
         <MarketActiveFilterItem

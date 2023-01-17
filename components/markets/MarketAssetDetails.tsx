@@ -1,6 +1,8 @@
+import { fromCompositeIndexerAssetId } from "@zeitgeistpm/sdk-next";
+import Decimal from "decimal.js";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
-import { DAY_SECONDS } from "lib/constants";
+import { DAY_SECONDS, ZTG } from "lib/constants";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
 import { useNavigationStore } from "lib/stores/NavigationStore";
@@ -9,6 +11,7 @@ import { useStore } from "lib/stores/Store";
 import { useUserStore } from "lib/stores/UserStore";
 import { get24HrPriceChange } from "lib/util/market";
 import { calcTotalAssetPrice } from "lib/util/pool";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import { observer } from "mobx-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -49,6 +52,8 @@ const MarketAssetDetails = observer(
     const [poolAlreadyDeployed, setPoolAlreadyDeployed] = useState(false);
     const poolStore = usePoolsStore();
     const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
+
+    const { data: market } = useMarket(marketStore.id);
 
     useEffect(() => {
       navigationStore.setPage("marketDetails");
@@ -167,9 +172,12 @@ const MarketAssetDetails = observer(
               change: priceChange,
               buttons: (
                 <AssetActionButtons
-                  assetId={assetId}
-                  marketId={market.id}
-                  assetColor={color}
+                  marketId={marketStore?.market.marketId}
+                  assetId={
+                    fromCompositeIndexerAssetId(
+                      JSON.stringify(assetId),
+                    ).unwrap() as any
+                  }
                   assetTicker={ticker}
                 />
               ),
@@ -246,11 +254,13 @@ const MarketAssetDetails = observer(
               <Table columns={columns} data={getReportedOutcome()} />
             ) : (
               <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-                {
+                {new Decimal(
                   //@ts-ignore
                   marketStore.lastDispute?.outcome.scalar ??
-                    marketStore.reportedScalarOutcome
-                }
+                    marketStore.reportedScalarOutcome,
+                )
+                  .div(ZTG)
+                  .toString()}
               </div>
             )}
           </>
@@ -262,11 +272,13 @@ const MarketAssetDetails = observer(
               <Table columns={columns} data={getReportedOutcome()} />
             ) : (
               <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-                {
+                {new Decimal(
                   //@ts-ignore
                   marketStore.lastDispute?.outcome.scalar ??
-                    marketStore.reportedScalarOutcome
-                }
+                    marketStore.reportedScalarOutcome,
+                )
+                  .div(ZTG)
+                  .toString()}
               </div>
             )}
           </>
@@ -281,7 +293,7 @@ const MarketAssetDetails = observer(
               />
             ) : (
               <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-                {marketStore.resolvedScalarOutcome}
+                {market?.resolvedOutcome}
               </div>
             )}
           </>
