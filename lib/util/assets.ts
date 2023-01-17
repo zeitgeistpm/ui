@@ -1,4 +1,8 @@
-import { fromCompositeIndexerAssetId, getIndexOf } from "@zeitgeistpm/sdk-next";
+import {
+  fromCompositeIndexerAssetId,
+  getIndexOf,
+  ZTG,
+} from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 
 export const getCurrentPrediction = (
@@ -29,7 +33,6 @@ export const getCurrentPrediction = (
     const bounds: number[] = market.marketType.scalar.map((b) => Number(b));
 
     const range = bounds[1] - bounds[0];
-    const significantDigits = bounds[1].toString().length;
     const longPrice = assets[0].price;
     const shortPrice = assets[1].price;
 
@@ -38,8 +41,6 @@ export const getCurrentPrediction = (
     const averagePricePrediction =
       (longPricePrediction + shortPricePrediction) / 2;
 
-    return new Decimal(averagePricePrediction)
-      .toSignificantDigits(significantDigits)
-      .toString();
+    return new Decimal(averagePricePrediction).div(ZTG).toString();
   }
 };
