@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import MobxReactForm from "mobx-react-form";
 import Decimal from "decimal.js";
 import React, { useEffect, useRef, useState } from "react";
-import { from } from "rxjs";
+import { catchError, from } from "rxjs";
 import { AlertTriangle } from "react-feather";
 import {
   CreateMarketParams,
@@ -175,17 +175,21 @@ const CreatePage: NextPage = observer(() => {
   const [marketCost, setMarketCost] = useState<number>();
   const [newMarketId, setNewMarketId] = useState<number>();
 
-  const [marketImageFile, setMarketImageFile] = useState<File>();
-  const [base64MarketImage, setBase64MarketImage] = useState<string>();
+  const [marketImageFile, setMarketImageFile] = useState<File | undefined>();
+  const [base64MarketImage, setBase64MarketImage] = useState<
+    string | undefined
+  >(null);
+
   const [marketImageCid, setMarketImageCid] = useState<string>();
 
   useEffect(() => {
     if (marketImageFile == null) {
+      setBase64MarketImage(undefined);
       return;
     }
-    const sub1 = from(toBase64(marketImageFile)).subscribe((encoded) =>
-      setBase64MarketImage(encoded),
-    );
+    const sub1 = from(toBase64(marketImageFile)).subscribe((encoded) => {
+      setBase64MarketImage(encoded);
+    });
     const sub2 = from(ipfsClient.addFile(marketImageFile, true)).subscribe(
       (cid) => {
         setMarketImageCid(cid.toString());
