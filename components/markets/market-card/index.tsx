@@ -98,12 +98,12 @@ const MarketCard = ({
             onCloseIconClick={() => setShowDetailsOverlay(false)}
           />
         )}
-        {outcomes?.length > 0 && (
+        {/* {outcomes?.length > 0 && (
           <MoreVertical
             className="absolute right-[10px] text-pastel-blue cursor-pointer"
             onClick={() => setShowDetailsOverlay(true)}
           />
-        )}
+        )} */}
         <Link
           href={`/markets/${marketId}`}
           className="flex flex-row mb-3 mr-[17px]"
