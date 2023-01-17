@@ -124,6 +124,47 @@ export const toBase64 = (file: File): Promise<string> => {
   });
 };
 
+export const isValidImageFile = (file: File): Promise<boolean> => {
+  return new Promise<boolean>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const res = reader.result;
+      var arr = new Uint8Array(res as ArrayBuffer).subarray(0, 4);
+      var header = "";
+      for (var i = 0; i < arr.length; i++) {
+        header += arr[i].toString(16);
+      }
+      let type: string;
+      switch (header) {
+        case "89504e47":
+          type = "image/png";
+          break;
+        case "47494638":
+          type = "image/gif";
+          break;
+        case "ffd8ffe0":
+        case "ffd8ffe1":
+        case "ffd8ffe2":
+        case "ffd8ffe3":
+        case "ffd8ffe8":
+          type = "image/jpeg";
+          break;
+        default:
+          type = "unknown"; // Or you can use the blob.type as fallback
+          break;
+      }
+      console.log(type);
+      if (type === "image/png" || type === "image/jpeg") {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    };
+    reader.onerror = (error) => reject(error);
+    reader.readAsArrayBuffer(file);
+  });
+};
+
 export const formatNumberLocalized = (
   num: number,
   locale: string = "en-US",
