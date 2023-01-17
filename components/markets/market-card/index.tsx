@@ -16,11 +16,11 @@ export interface IndexedMarketCardData {
   prediction: string;
   volume: number;
   baseAsset: string;
-  width: number;
 }
 
 export interface MarketCardProps extends IndexedMarketCardData {
   className?: string;
+  width?: number;
 }
 
 const MarketCardInfoRow = ({
