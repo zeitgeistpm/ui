@@ -7,14 +7,14 @@ interface LearnCardProps {
   description: string;
   link: string;
   img: string;
-  className?: string;
+  classes?: string;
 }
 
 const LearnCard = ({
   tag,
   title,
   description,
-  className,
+  classes,
   link,
   img,
 }: LearnCardProps) => {
@@ -25,8 +25,7 @@ const LearnCard = ({
         boxShadow: "0px 10px 20px 5px rgba(0,0,0,0.25)",
       }}
       whileTap={{ scale: 1 }}
-      animate={{}}
-      className={`${className} w-full rounded-[10px] p-[15px] pr-[20px]`}
+      className={`${classes} w-full rounded-[10px] p-[15px] pr-[20px]`}
     >
       <a href={link} target="_blank" rel="noopener noreferrer">
         <span className="bg-white p-[6px] rounded-[50px] w-fit text-ztg-12-120">
@@ -59,7 +58,7 @@ const LearnSection = () => {
           title="Prediction Markets"
           description="Make money on your Beliefs"
           link="https://docs.zeitgeist.pm/docs/learn/prediction-markets"
-          className="bg-tropical-blue"
+          classes="bg-tropical-blue"
           img="/learn/learn-1.png"
         />
         <LearnCard
@@ -67,7 +66,7 @@ const LearnSection = () => {
           title="Liquidity Pools"
           description="Earn ZTG providing Liquidity"
           link="https://docs.zeitgeist.pm/docs/learn/liquidity"
-          className="bg-link-water"
+          classes="bg-link-water"
           img="/learn/learn-2.png"
         />
         <LearnCard
@@ -75,7 +74,7 @@ const LearnSection = () => {
           title="ZTG Token"
           description="Tokenomics and Future of ZTG"
           link="https://docs.zeitgeist.pm/docs/learn/market-rules"
-          className="bg-mystic col-span-2 sm:col-span-1 min-h-[84px]"
+          classes="bg-mystic col-span-2 sm:col-span-1 min-h-[84px]"
           img="/learn/learn-3.png"
         />
       </div>
