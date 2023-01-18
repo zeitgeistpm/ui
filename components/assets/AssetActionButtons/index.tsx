@@ -27,19 +27,14 @@ const AssetActionButtons = observer(
       return null;
     }
 
-    if (marketStage.type === "ReportPeriod") {
-      if (
-        (marketStage.access === "oracle" && isOracle) ||
-        marketStage.access === "open"
-      ) {
-        return (
-          <ReportButton
-            market={market}
-            assetId={assetId}
-            ticker={assetTicker}
-          />
-        );
-      }
+    if (
+      marketStage.type === "ReportPeriod" &&
+      ((marketStage.access === "oracle" && isOracle) ||
+        marketStage.access === "open")
+    ) {
+      return (
+        <ReportButton market={market} assetId={assetId} ticker={assetTicker} />
+      );
     }
 
     if (marketStage.type === "Disputed") {
