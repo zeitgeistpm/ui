@@ -2,13 +2,14 @@ import { Input } from "components/ui/inputs";
 import React, { FC, useRef } from "react";
 import Form from "mobx-react-form";
 import { Edit3, Image as ImageIcon } from "react-feather";
+import { isValidImageFile } from "lib/util";
 
 export interface MarketSlugProps {
   slug: string;
   textMaxLength: number;
   base64Image?: string;
   onSlugChange: (id: string) => void;
-  onImageChange: (file: File) => void;
+  onImageChange: (file?: File) => void;
   form: Form;
 }
 
@@ -25,8 +26,14 @@ const MarketSlugField: FC<MarketSlugProps> = ({
   const fileInputRef = useRef(null);
   const marketSlug = useRef();
 
-  const changeImage = (file?: File) => {
+  const changeImage = async (file?: File) => {
     if (file == null) {
+      return;
+    }
+    const isValidImage = await isValidImageFile(file);
+    if (isValidImage === false) {
+      window.alert(`Unknown or unaccepted file type.`);
+      onImageChange(undefined);
       return;
     }
     if (file.size > imageMaxSize) {
