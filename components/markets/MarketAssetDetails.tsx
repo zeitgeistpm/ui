@@ -133,7 +133,7 @@ const MarketAssetDetails = observer(
             ? calcScalarResolvedPrices(
                 market.bounds[0],
                 market.bounds[1],
-                new Decimal(market.resolvedScalarOutcome),
+                new Decimal(market.resolvedScalarOutcome).div(ZTG),
               )
             : null;
 
@@ -143,7 +143,11 @@ const MarketAssetDetails = observer(
           const ticker = market.outcomesMetadata[index]["ticker"];
           const color = market.outcomesMetadata[index]["color"] || "#ffffff";
           const outcomeName = market.outcomesMetadata[index]["name"];
-          const currentPrice = pool.assets[index]?.price;
+          const currentPrice =
+            (scalarPrices && outcomeName.toLowerCase() === "short"
+              ? scalarPrices?.shortTokenValue.toNumber()
+              : scalarPrices?.longTokenValue.toNumber()) ??
+            pool.assets[index]?.price;
 
           let priceHistory: {
             newPrice: number;
@@ -302,9 +306,11 @@ const MarketAssetDetails = observer(
                 data={getWinningCategoricalOutcome() as TableData[]}
               />
             ) : (
-              <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-                {market?.resolvedOutcome}
-              </div>
+              market && (
+                <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
+                  {new Decimal(market.resolvedOutcome).div(ZTG).toNumber()}
+                </div>
+              )
             )}
           </>
         ) : (
