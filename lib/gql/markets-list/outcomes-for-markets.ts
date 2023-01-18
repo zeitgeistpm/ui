@@ -17,7 +17,7 @@ export const getOutcomesForMarkets = async (
   markets: {
     pool?: { poolId: number };
     marketId: number;
-    marketType: { categorical?: string; scalar?: string };
+    marketType: { categorical?: string; scalar?: string[] };
     categories?: { color?: string; name?: string; ticker?: string }[];
   }[],
 ): Promise<{ [marketId: number]: MarketOutcomes }> => {
