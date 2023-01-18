@@ -28,9 +28,8 @@ const AssetActionButtons = observer(
     }
 
     if (
-      marketStage.type === "ReportPeriod" &&
-      ((marketStage.access === "oracle" && isOracle) ||
-        marketStage.access === "open")
+      marketStage.type === "OpenReportingPeriod" ||
+      (marketStage.type === "OracleReportingPeriod" && isOracle)
     ) {
       return (
         <ReportButton market={market} assetId={assetId} ticker={assetTicker} />
