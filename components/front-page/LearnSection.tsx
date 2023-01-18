@@ -14,7 +14,7 @@ const LearnCard = ({
   tag,
   title,
   description,
-  classes,
+  classes = "",
   link,
   img,
 }: LearnCardProps) => {
@@ -25,7 +25,7 @@ const LearnCard = ({
         boxShadow: "0px 10px 20px 5px rgba(0,0,0,0.25)",
       }}
       whileTap={{ scale: 1 }}
-      className={`${classes} w-full rounded-[10px] p-[15px] pr-[20px]`}
+      className={`w-full rounded-[10px] p-[15px] pr-[20px] ${classes} `}
     >
       <a href={link} target="_blank" rel="noopener noreferrer">
         <span className="bg-white p-[6px] rounded-[50px] w-fit text-ztg-12-120">
@@ -41,7 +41,7 @@ const LearnCard = ({
             width={84}
             height={80}
             alt={title}
-            className="hidden lg:block"
+            className="hidden lg:block object-contain"
           />
         </div>
       </a>

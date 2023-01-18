@@ -67,13 +67,13 @@ module.exports = {
       "2xl": "1728px",
     },
     container: {
-      screens: {
-        sm: "600px",
-        md: "905px",
-        lg: "1240px",
-        xl: "1440px",
-        "2xl": "1728px",
-      },
+      // screens: {
+      //   sm: "600px",
+      //   md: "905px",
+      //   lg: "1240px",
+      //   xl: "1440px",
+      //   "2xl": "1728px",
+      // },
       padding: {
         DEFAULT: "16px",
         sm: "40px",
