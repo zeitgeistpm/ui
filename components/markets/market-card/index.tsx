@@ -1,11 +1,11 @@
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import { MoreVertical } from "react-feather";
+import React, { useState } from "react";
 import { Skeleton } from "@material-ui/lab";
 import MarketImage from "components/ui/MarketImage";
 import { MarketOutcomes } from "lib/types/markets";
 import MarketCardOverlay from "./overlay";
 import MarketCardContext from "./context";
+import { motion } from "framer-motion";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -89,33 +89,39 @@ const MarketCard = ({
 
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
-      <div
-        className={`flex flex-col justify-center w-full bg-anti-flash-white rounded-[10px] p-[15px] relative ${className}`}
+      <motion.div
+        whileHover={{ opacity: 0.3, background: "white" }}
+        whileFocus={{ opacity: 0.5, background: "white" }}
+        whileTap={{ opacity: 0.3, background: "white" }}
         data-testid={`marketCard-${marketId}`}
         style={{
           minWidth: width ? width : "100%",
           maxWidth: width ? width : "100%",
         }}
       >
-        {showDetailsOverlay && (
-          <MarketCardOverlay
-            marketId={marketId}
-            outcomes={outcomes}
-            className="top-0 left-[0]"
-            onCloseIconClick={() => setShowDetailsOverlay(false)}
-          />
-        )}
-        {/* {outcomes?.length > 0 && (
+        <div
+          className={`flex flex-col justify-center w-full h-full bg-anti-flash-white rounded-[10px] p-[15px] relative ${className}`}
+        >
+          {showDetailsOverlay && (
+            <MarketCardOverlay
+              marketId={marketId}
+              outcomes={outcomes}
+              className="top-0 left-[0]"
+              onCloseIconClick={() => setShowDetailsOverlay(false)}
+            />
+          )}
+          {/* {outcomes?.length > 0 && (
           <MoreVertical
             className="absolute right-[10px] text-pastel-blue cursor-pointer"
             onClick={() => setShowDetailsOverlay(true)}
           />
         )} */}
-        <Link href={`/markets/${marketId}`} className="flex items-center">
-          <MarketImage image={img} alt={question} />
-          <MarketCardInfo question={question} rows={infoRows} />
-        </Link>
-      </div>
+          <Link href={`/markets/${marketId}`} className="flex items-center">
+            <MarketImage image={img} alt={question} />
+            <MarketCardInfo question={question} rows={infoRows} />
+          </Link>
+        </div>
+      </motion.div>
     </MarketCardContext.Provider>
   );
 };
