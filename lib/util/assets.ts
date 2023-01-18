@@ -1,10 +1,14 @@
-import { fromCompositeIndexerAssetId, getIndexOf } from "@zeitgeistpm/sdk-next";
+import {
+  fromCompositeIndexerAssetId,
+  getIndexOf,
+  ZTG,
+} from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 
 export const getCurrentPrediction = (
   assets: { price: number; assetId?: string }[],
   market: {
-    marketType: { categorical?: string; scalar?: string };
+    marketType: { categorical?: string; scalar?: string[] };
     categories: { color: string; name: string; ticker: string }[];
   },
 ): string => {
@@ -26,12 +30,9 @@ export const getCurrentPrediction = (
 
     return market.categories[highestPriceIndex].name;
   } else {
-    const bounds: number[] = (
-      market.marketType.scalar as unknown as string[]
-    ).map((b) => Number(b));
+    const bounds: number[] = market.marketType.scalar.map((b) => Number(b));
 
-    const range = Number(bounds[1]) - Number(bounds[0]);
-    const significantDigits = bounds[1].toString().length;
+    const range = bounds[1] - bounds[0];
     const longPrice = assets[0].price;
     const shortPrice = assets[1].price;
 
@@ -40,8 +41,6 @@ export const getCurrentPrediction = (
     const averagePricePrediction =
       (longPricePrediction + shortPricePrediction) / 2;
 
-    return new Decimal(averagePricePrediction)
-      .toSignificantDigits(significantDigits)
-      .toString();
+    return new Decimal(averagePricePrediction).div(ZTG).toString();
   }
 };
