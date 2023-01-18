@@ -27,8 +27,6 @@ const AssetActionButtons = observer(
       return null;
     }
 
-    console.log(marketStage);
-
     if (marketStage.type === "ReportPeriod") {
       if (
         (marketStage.access === "oracle" && isOracle) ||
