@@ -7,10 +7,12 @@ import HorizontalScroll from "components/ui/HorizontalScroll";
 const MarketScroll = observer(
   ({
     title,
+    cta,
     markets,
     link,
   }: {
     title: string;
+    cta?: string;
     markets: IndexedMarketCardData[];
     link?: string;
   }) => {
@@ -22,13 +24,7 @@ const MarketScroll = observer(
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
     const gap = 16;
     //calculate cards shown and width based on container width
-    const cardsShown =
-      containerWidth < 716
-        ? 3
-        : containerWidth >= 716 && containerWidth < 1183
-        ? 2
-        : 3;
-    // const cardsShown = Math.floor(containerWidth / (gap + cardWidth));
+    const cardsShown = containerWidth >= 716 && containerWidth < 1183 ? 2 : 3;
     const cardWidth =
       containerWidth < 716
         ? containerWidth
@@ -42,7 +38,7 @@ const MarketScroll = observer(
 
     useEffect(() => {
       scrollRef.current.scroll({ left: scrollLeft, behavior: "smooth" });
-    }, [scrollRef, scrollLeft, cardWidth]);
+    }, [scrollRef, scrollLeft]);
 
     const handleRightClick = () => {
       setScrollDirection("right");
@@ -74,7 +70,7 @@ const MarketScroll = observer(
         <HorizontalScroll
           classes="order-2 sm:order-none"
           link={link}
-          cta="Go To Markets"
+          cta={cta}
           handleLeftClick={handleLeftClick}
           handleRightClick={handleRightClick}
           rightDisabled={rightDisabled}

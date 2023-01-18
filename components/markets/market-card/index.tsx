@@ -92,7 +92,10 @@ const MarketCard = ({
       <div
         className={`flex flex-col justify-center w-full bg-anti-flash-white rounded-[10px] p-[15px] relative ${className}`}
         data-testid={`marketCard-${marketId}`}
-        style={{ minWidth: width, maxWidth: width }}
+        style={{
+          minWidth: width ? width : "100%",
+          maxWidth: width ? width : "100%",
+        }}
       >
         {showDetailsOverlay && (
           <MarketCardOverlay

@@ -120,6 +120,7 @@ const IndexPage: NextPage<{
           <div className="my-[60px]">
             <MarketScroll
               title="Featured Markets"
+              cta="Go to Markets"
               markets={featuredMarkets}
               link="markets"
             />
@@ -129,6 +130,7 @@ const IndexPage: NextPage<{
           <div className="my-[60px]">
             <MarketScroll
               title="Trending Markets"
+              cta="Go to Markets"
               markets={trendingMarkets}
               link="markets"
             />
