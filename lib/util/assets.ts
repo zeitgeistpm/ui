@@ -26,9 +26,9 @@ export const getCurrentPrediction = (
 
     return market.categories[highestPriceIndex].name;
   } else {
-    const bounds: number[] = market.marketType.scalar
-      .split(",")
-      .map((b) => Number(b));
+    const bounds: number[] = (
+      market.marketType.scalar as unknown as string[]
+    ).map((b) => Number(b));
 
     const range = Number(bounds[1]) - Number(bounds[0]);
     const significantDigits = bounds[1].toString().length;
