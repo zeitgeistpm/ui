@@ -119,26 +119,6 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
 };
 
 export const MarketTimerSkeleton = () => {
-  const remainingTime = 10;
-  const totalTime = 100;
-
-  const percentage = ((totalTime - remainingTime) / totalTime) * 100;
-
-  const timeUntilStageEnds = moment.duration(remainingTime, "millisecond");
-
-  const format =
-    timeUntilStageEnds.months() > 1
-      ? "month"
-      : timeUntilStageEnds.days() > 1
-      ? "day"
-      : timeUntilStageEnds.minutes() < 60
-      ? "minute"
-      : timeUntilStageEnds.seconds() < 60
-      ? "second"
-      : "hour";
-
-  const timer = timeUntilStageEnds.as(format);
-
   return (
     <div>
       <div className="flex mb-4 items-center">
@@ -158,7 +138,7 @@ export const MarketTimerSkeleton = () => {
         <div className="w-full rounded-lg h-2 bg-gray-200">
           <div
             className={`rounded-lg h-full transition-all bg-gray-400`}
-            style={{ width: `${percentage}%` }}
+            style={{ width: `10%` }}
           />
         </div>
       </div>
