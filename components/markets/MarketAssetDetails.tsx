@@ -113,10 +113,8 @@ const MarketAssetDetails = observer(
     const getPageData = async () => {
       let tblData: TableData[] = [];
 
-      const market = marketStore;
-
-      if (market.poolExists) {
-        const { poolId } = market.pool;
+      if (marketStore.poolExists) {
+        const { poolId } = marketStore.pool;
 
         // poolid is incorrectly typed, it's actually a string
         const pool = await poolStore.getPoolFromChain(Number(poolId));
@@ -129,20 +127,21 @@ const MarketAssetDetails = observer(
         const totalAssetPrice = calcTotalAssetPrice(pool);
 
         const scalarPrices =
-          market.status === "Resolved" && market.type === "scalar"
+          marketStore.status === "Resolved" && marketStore.type === "scalar"
             ? calcScalarResolvedPrices(
-                market.bounds[0],
-                market.bounds[1],
-                new Decimal(market.resolvedScalarOutcome).div(ZTG),
+                marketStore.bounds[0],
+                marketStore.bounds[1],
+                new Decimal(market.resolvedOutcome).div(ZTG),
               )
             : null;
 
         for (const [index, assetId] of Array.from(
-          market.outcomeAssetIds.entries(),
+          marketStore.outcomeAssetIds.entries(),
         )) {
-          const ticker = market.outcomesMetadata[index]["ticker"];
-          const color = market.outcomesMetadata[index]["color"] || "#ffffff";
-          const outcomeName = market.outcomesMetadata[index]["name"];
+          const ticker = marketStore.outcomesMetadata[index]["ticker"];
+          const color =
+            marketStore.outcomesMetadata[index]["color"] || "#ffffff";
+          const outcomeName = marketStore.outcomesMetadata[index]["name"];
           const currentPrice =
             (scalarPrices && outcomeName.toLowerCase() === "short"
               ? scalarPrices?.shortTokenValue.toNumber()
@@ -155,7 +154,7 @@ const MarketAssetDetails = observer(
           }[];
           if (graphQlEnabled === true) {
             priceHistory = await store.sdk.models.getAssetPriceHistory(
-              market.id,
+              marketStore.id,
               //@ts-ignore
               assetId.categoricalOutcome?.[1] ?? assetId.scalarOutcome?.[1],
               dateOneDayAgo,
@@ -200,7 +199,7 @@ const MarketAssetDetails = observer(
         }
         setTableData(tblData);
       } else {
-        tblData = market.outcomesMetadata.map((outcome) => ({
+        tblData = marketStore.outcomesMetadata.map((outcome) => ({
           token: {
             color: outcome["color"] || "#ffffff",
             label: outcome["ticker"],

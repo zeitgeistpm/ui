@@ -37,6 +37,7 @@ import { combineLatest, from } from "rxjs";
 import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import Decimal from "decimal.js";
+import { ZTG } from "@zeitgeistpm/sdk-next";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -131,7 +132,7 @@ const Market: NextPage<{
         const { shortTokenValue, longTokenValue } = calcScalarResolvedPrices(
           marketStore.bounds[0],
           marketStore.bounds[1],
-          new Decimal(market.resolvedOutcome),
+          new Decimal(market.resolvedOutcome).div(ZTG),
         );
         setScalarPrices({
           type: marketStore.scalarType,
