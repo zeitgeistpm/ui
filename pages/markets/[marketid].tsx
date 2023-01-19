@@ -115,51 +115,14 @@ const Market: NextPage<{
   const router = useRouter();
   const { marketid } = router.query;
   const [marketStore, setMarketStore] = useState<MarketStore>();
-  const { data: market } = useMarket(Number(marketid));
   const [prizePool, setPrizePool] = useState<string>();
   const store = useStore();
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
   const [hasAuthReport, setHasAuthReport] = useState<boolean>();
   const marketImageUrl = useMarketImageUrl(indexedMarket.img);
-  const [scalarPrices, setScalarPrices] =
-    useState<{ short: number; long: number; type: ScalarRangeType }>();
 
   const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
-
-  console.log(spotPrices);
-
-  useEffect(() => {
-    if (marketStore == null) return;
-    if (marketStore.type === "scalar") {
-      if (market?.status === "Resolved") {
-        const { shortTokenValue, longTokenValue } = calcScalarResolvedPrices(
-          marketStore.bounds[0],
-          marketStore.bounds[1],
-          new Decimal(market.resolvedOutcome).div(ZTG),
-        );
-        setScalarPrices({
-          type: marketStore.scalarType,
-          short: shortTokenValue.toNumber(),
-          long: longTokenValue.toNumber(),
-        });
-      } else {
-        const observables = marketStore.marketOutcomes
-          .filter((o) => o.metadata !== "ztg")
-          .map((outcome) => {
-            return from(marketStore.assetPriceInZTG(outcome.asset));
-          });
-        const sub = combineLatest(observables).subscribe((prices) => {
-          setScalarPrices({
-            type: marketStore.scalarType,
-            short: prices[1].toNumber(),
-            long: prices[0].toNumber(),
-          });
-        });
-        return () => sub.unsubscribe();
-      }
-    }
-  }, [marketStore, marketStore?.pool, market]);
 
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
@@ -287,14 +250,14 @@ const Market: NextPage<{
           </div>
         )}
         {marketStore && <MarketAssetDetails marketStore={marketStore} />}
-        {marketStore?.type === "scalar" && scalarPrices && (
+        {marketStore?.type === "scalar" && spotPrices && (
           <div className="mt-ztg-20 mb-ztg-30">
             <ScalarPriceRange
-              scalarType={scalarPrices.type}
+              scalarType={marketStore.scalarType}
               lowerBound={marketStore.bounds[0]}
               upperBound={marketStore.bounds[1]}
-              shortPrice={scalarPrices.short}
-              longPrice={scalarPrices.long}
+              shortPrice={spotPrices?.get(1).toNumber()}
+              longPrice={spotPrices?.get(0).toNumber()}
             />
           </div>
         )}
