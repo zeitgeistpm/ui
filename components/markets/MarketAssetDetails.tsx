@@ -6,11 +6,9 @@ import { DAY_SECONDS, ZTG } from "lib/constants";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
 import { useNavigationStore } from "lib/stores/NavigationStore";
-import { usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
 import { useUserStore } from "lib/stores/UserStore";
 import { get24HrPriceChange } from "lib/util/market";
-import { calcTotalAssetPrice } from "lib/util/pool";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { observer } from "mobx-react";
 import dynamic from "next/dynamic";
@@ -18,7 +16,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { from } from "rxjs";
 import FullSetButtons from "./FullSetButtons";
-import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
+import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 
 const columns: TableColumn[] = [
   {
@@ -51,10 +49,10 @@ const MarketAssetDetails = observer(
     const navigationStore = useNavigationStore();
     const marketsStore = useMarketsStore();
     const [poolAlreadyDeployed, setPoolAlreadyDeployed] = useState(false);
-    const poolStore = usePoolsStore();
     const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
     const { data: market } = useMarket(marketStore.id);
+    const { data: spotPrices } = useMarketSpotPrices(marketStore.id);
 
     useEffect(() => {
       navigationStore.setPage("marketDetails");
@@ -76,7 +74,7 @@ const MarketAssetDetails = observer(
         return;
       }
       getPageData();
-    }, [marketStore]);
+    }, [marketStore, spotPrices]);
 
     useEffect(() => {
       if (
@@ -113,27 +111,15 @@ const MarketAssetDetails = observer(
     const getPageData = async () => {
       let tblData: TableData[] = [];
 
-      if (marketStore.poolExists) {
-        const { poolId } = marketStore.pool;
-
-        // poolid is incorrectly typed, it's actually a string
-        const pool = await poolStore.getPoolFromChain(Number(poolId));
-        if (!pool) return;
-
+      if (marketStore.poolExists && spotPrices) {
         const dateOneDayAgo = new Date(
           new Date().getTime() - DAY_SECONDS * 1000,
         ).toISOString();
 
-        const totalAssetPrice = calcTotalAssetPrice(pool);
-
-        const scalarPrices =
-          marketStore.status === "Resolved" && marketStore.type === "scalar"
-            ? calcScalarResolvedPrices(
-                marketStore.bounds[0],
-                marketStore.bounds[1],
-                new Decimal(market.resolvedOutcome).div(ZTG),
-              )
-            : null;
+        const totalAssetPrice = Array.from(spotPrices.values()).reduce(
+          (val, cur) => val.plus(cur),
+          new Decimal(0),
+        );
 
         for (const [index, assetId] of Array.from(
           marketStore.outcomeAssetIds.entries(),
@@ -142,11 +128,7 @@ const MarketAssetDetails = observer(
           const color =
             marketStore.outcomesMetadata[index]["color"] || "#ffffff";
           const outcomeName = marketStore.outcomesMetadata[index]["name"];
-          const currentPrice =
-            (scalarPrices && outcomeName.toLowerCase() === "short"
-              ? scalarPrices?.shortTokenValue.toNumber()
-              : scalarPrices?.longTokenValue.toNumber()) ??
-            pool.assets[index]?.price;
+          const currentPrice = spotPrices.get(index).toNumber();
 
           let priceHistory: {
             newPrice: number;
@@ -180,7 +162,9 @@ const MarketAssetDetails = observer(
               },
               pre:
                 currentPrice != null
-                  ? Math.round((currentPrice / totalAssetPrice) * 100)
+                  ? Math.round(
+                      (currentPrice / totalAssetPrice.toNumber()) * 100,
+                    )
                   : 0,
               change: priceChange,
               buttons: (
