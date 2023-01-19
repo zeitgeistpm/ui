@@ -38,7 +38,7 @@ import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import Decimal from "decimal.js";
 import { ZTG } from "@zeitgeistpm/sdk-next";
-
+import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
 });
@@ -124,6 +124,10 @@ const Market: NextPage<{
   const marketImageUrl = useMarketImageUrl(indexedMarket.img);
   const [scalarPrices, setScalarPrices] =
     useState<{ short: number; long: number; type: ScalarRangeType }>();
+
+  const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
+
+  console.log(spotPrices);
 
   useEffect(() => {
     if (marketStore == null) return;
