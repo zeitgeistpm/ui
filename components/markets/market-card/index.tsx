@@ -90,9 +90,9 @@ const MarketCard = ({
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <motion.div
-        whileHover={{ opacity: 0.3, background: "white" }}
+        whileHover={{ opacity: 0.7, background: "white" }}
         whileFocus={{ opacity: 0.5, background: "white" }}
-        whileTap={{ opacity: 0.3, background: "white" }}
+        whileTap={{ opacity: 0.7, background: "white" }}
         data-testid={`marketCard-${marketId}`}
         style={{
           minWidth: width ? width : "100%",
