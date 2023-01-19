@@ -18,19 +18,19 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
   const timeUntilStageEnds = moment.duration(remainingTime, "millisecond");
 
   const format =
-    timeUntilStageEnds.years() > 1
+    timeUntilStageEnds.asYears() > 1
       ? "year"
-      : timeUntilStageEnds.months() > 1
+      : timeUntilStageEnds.asMonths() > 1
       ? "month"
-      : timeUntilStageEnds.weeks() > 1
+      : timeUntilStageEnds.asWeeks() > 1
       ? "week"
-      : timeUntilStageEnds.days() > 1
+      : timeUntilStageEnds.asDays() > 1
       ? "day"
-      : timeUntilStageEnds.hours() > 1
+      : timeUntilStageEnds.asHours() > 1
       ? "hour"
-      : timeUntilStageEnds.minutes() > 1
+      : timeUntilStageEnds.asMinutes() > 1
       ? "minute"
-      : timeUntilStageEnds.seconds() > 1
+      : timeUntilStageEnds.asSeconds() > 1
       ? "second"
       : "hour";
 
