@@ -35,23 +35,24 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
       : "hour";
 
   const timer = timeUntilStageEnds.as(format);
+  console.log({ timer });
 
   return (
-    <div>
+    <div className="inline-block">
       <div className="flex mb-4 items-center">
-        <h3 className="font-bold text-lg mr-4 text-gray-600">
+        <h3 className="font-bold text-lg mr-4 text-gray-700">
           {copy[stage.type].title}
         </h3>
-        <h4 className="mr-4 text-gray-600">{copy[stage.type].description}</h4>
+        <h4 className="mr-20 text-gray-500">{copy[stage.type].description}</h4>
         {!isInfinite(stage) && (
-          <h4 className="text-gray-600">
-            {timer.toFixed(0)} {upperFirst(format + (timer > 1 ? "s" : ""))}{" "}
-            left
+          <h4 className="text-gray-500">
+            {timer.toFixed(0)}{" "}
+            {upperFirst(format + (Math.floor(timer) > 1 ? "s" : ""))} left
           </h4>
         )}
       </div>
-      <div className="w-ztg-360">
-        <div className="text-gray-600 text-sm text-right">
+      <div className="w-full">
+        <div className="text-gray-500 text-sm text-right">
           {percentage.toFixed(0)}%
         </div>
         <div className="w-full rounded-lg h-2 bg-gray-200">
@@ -71,19 +72,19 @@ export const MarketTimerSkeleton = () => {
   return (
     <div>
       <div className="flex mb-4 items-center">
-        <h3 className="font-bold text-lg mr-4 text-gray-600">
+        <h3 className="font-bold text-lg mr-4 text-gray-500">
           <Skeleton width={150} />
         </h3>
-        <h4 className="mr-4 text-gray-600">
+        <h4 className="mr-4 text-gray-500">
           <Skeleton width={320} />
         </h4>
 
-        <h4 className="text-gray-600">
+        <h4 className="text-gray-500">
           <Skeleton width={40} />
         </h4>
       </div>
       <div className="w-ztg-360">
-        <div className="text-gray-600 text-sm text-right flex justify-end h-4"></div>
+        <div className="text-gray-500 text-sm text-right flex justify-end h-4"></div>
         <div className="w-full rounded-lg h-2 bg-gray-200">
           <div
             className={`rounded-lg h-full transition-all bg-gray-400`}
