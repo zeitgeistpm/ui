@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { isIndexedSdk, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { calcSpotPrice } from "lib/math";
 import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
@@ -7,16 +7,14 @@ import { useSdkv2 } from "../useSdkv2";
 import { useAccountPoolAssetBalances } from "./useAccountPoolAssetBalances";
 import { useMarket } from "./useMarket";
 import { usePool } from "./usePool";
-import { usePoolZtgBalance } from "./usePoolZtgBalance";
 
 export const assetPricesKey = Symbol();
 
 export const useMarketSpotPrices = (marketId: number) => {
   const [sdk, id] = useSdkv2();
 
-  const { data: pool } = usePool({ marketId: marketId });
   const { data: market } = useMarket(marketId);
-
+  const pool = market?.pool;
   const { data: balances } = useAccountPoolAssetBalances(pool?.accountId, pool);
 
   const query = useQuery(
@@ -24,6 +22,12 @@ export const useMarketSpotPrices = (marketId: number) => {
     async () => {
       if (isRpcSdk(sdk)) {
         const spotPrices = new Map<number, Decimal>();
+        const outcomeWeights = pool.weights.filter(
+          (weight) =>
+            weight.assetId.toLocaleLowerCase() !==
+            pool.baseAsset.toLocaleLowerCase(),
+        );
+
         if (market.status !== "Resolved") {
           const basePoolBalance = await sdk.context.api.query.system.account(
             pool.accountId,
@@ -32,27 +36,19 @@ export const useMarketSpotPrices = (marketId: number) => {
           //base weight is equal to the sum of all other assets
           const baseWeight = new Decimal(pool.totalWeight).div(2);
 
-          //todo: pre filter weights to reduce repetition
-          pool.weights.forEach((weight, index) => {
-            if (
-              weight.assetId.toLocaleLowerCase() !==
-              pool.baseAsset.toLocaleLowerCase()
-            ) {
-              const spotPrice = calcSpotPrice(
-                basePoolBalance.data.free.toString(),
-                baseWeight,
-                balances[index].free.toString(),
-                weight.len,
-                0,
-              );
+          outcomeWeights.forEach((weight, index) => {
+            const spotPrice = calcSpotPrice(
+              basePoolBalance.data.free.toString(),
+              baseWeight,
+              balances[index].free.toString(),
+              weight.len,
+              0,
+            );
 
-              spotPrices.set(index, spotPrice);
-            }
+            spotPrices.set(index, spotPrice);
           });
           return spotPrices;
         } else {
-          console.log(market.marketType);
-
           if (market.marketType.scalar) {
             const { shortTokenValue, longTokenValue } =
               calcScalarResolvedPrices(
@@ -61,41 +57,26 @@ export const useMarketSpotPrices = (marketId: number) => {
                 new Decimal(market.resolvedOutcome),
               );
 
-            console.log(shortTokenValue, longTokenValue);
-
-            pool.weights.forEach((weight, index) => {
-              if (
-                weight.assetId.toLocaleLowerCase() !==
-                pool.baseAsset.toLocaleLowerCase()
-              ) {
-                if (weight.assetId.includes("Short")) {
-                  spotPrices.set(index, shortTokenValue);
-                } else if (weight.assetId.includes("Long")) {
-                  spotPrices.set(index, longTokenValue);
-                }
+            outcomeWeights.forEach((weight, index) => {
+              if (weight.assetId.toLowerCase().includes("short")) {
+                spotPrices.set(index, shortTokenValue);
+              } else if (weight.assetId.toLowerCase().includes("long")) {
+                spotPrices.set(index, longTokenValue);
               }
             });
             return spotPrices;
           } else {
-            pool.weights.forEach((weight, index) => {
-              if (
-                weight.assetId.toLocaleLowerCase() !==
-                pool.baseAsset.toLocaleLowerCase()
-              ) {
-                if (index === Number(market.resolvedOutcome)) {
-                  spotPrices.set(index, new Decimal(1));
-                } else {
-                  spotPrices.set(index, new Decimal(0));
-                }
+            outcomeWeights.forEach((weight, index) => {
+              if (index === Number(market.resolvedOutcome)) {
+                spotPrices.set(index, new Decimal(1));
+              } else {
+                spotPrices.set(index, new Decimal(0));
               }
             });
             return spotPrices;
           }
         }
       }
-      // else {
-      //   return null;
-      // }
     },
     {
       enabled: Boolean(
