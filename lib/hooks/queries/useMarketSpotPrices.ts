@@ -6,7 +6,6 @@ import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 import { useSdkv2 } from "../useSdkv2";
 import { useAccountPoolAssetBalances } from "./useAccountPoolAssetBalances";
 import { useMarket } from "./useMarket";
-import { usePool } from "./usePool";
 
 export const assetPricesKey = Symbol();
 
@@ -80,7 +79,11 @@ export const useMarketSpotPrices = (marketId: number) => {
     },
     {
       enabled: Boolean(
-        sdk && isRpcSdk(sdk) && marketId && pool && balances?.length > 0,
+        sdk &&
+          isRpcSdk(sdk) &&
+          marketId != null &&
+          pool &&
+          balances?.length > 0,
       ),
     },
   );
