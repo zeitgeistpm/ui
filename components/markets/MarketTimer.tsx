@@ -69,20 +69,20 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
 
 export const MarketTimerSkeleton = () => {
   return (
-    <div>
+    <div className="inline-block">
       <div className="flex mb-4 items-center">
         <h3 className="font-bold text-lg mr-4 text-gray-500">
           <Skeleton width={150} />
         </h3>
         <h4 className="mr-4 text-gray-500">
-          <Skeleton width={320} />
+          <Skeleton width={260} />
         </h4>
 
         <h4 className="text-gray-500">
           <Skeleton width={40} />
         </h4>
       </div>
-      <div className="w-ztg-360">
+      <div className="w-full">
         <div className="text-gray-500 text-sm text-right flex justify-end h-4"></div>
         <div className="w-full rounded-lg h-2 bg-gray-200">
           <div
