@@ -35,7 +35,6 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
       : "hour";
 
   const timer = timeUntilStageEnds.as(format);
-  console.log({ timer });
 
   return (
     <div className="inline-block">
