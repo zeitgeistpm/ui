@@ -136,6 +136,15 @@ const Portfolio: NextPage = observer(() => {
             return;
 
           const market = saturated.market;
+
+          if (
+            market.marketType.categorical != null &&
+            market.status === "Resolved" &&
+            Number(market.resolvedOutcome) !== assetIndex
+          ) {
+            return;
+          }
+
           const amount = formatBal(balance.free.toString());
 
           let outcome: any;
