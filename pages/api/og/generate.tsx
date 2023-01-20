@@ -1,34 +1,22 @@
 import { ImageResponse } from "@vercel/og";
-import { create } from "@zeitgeistpm/indexer";
-import Decimal from "decimal.js";
+import absoluteUrl from "next-absolute-url";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
-import { getCurrentPrediction } from "lib/util/assets";
-import moment from "moment";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export const config = {
   runtime: "experimental-edge",
-  unstable_allowDynamic: [
-    "/node_modules/lodash/**",
-    "/node_modules/lodash-es/**",
-    "/node_modules/@protobufjs/**",
-  ],
 };
 
-const ZTG = 10 ** 10;
-
-const sdkPromise = create({
-  uri: process.env.NEXT_PUBLIC_SSR_INDEXER_URL,
-});
-
 const boldFont = fetch(
-  new URL("../../public/fonts/inter/static/Inter-Bold.ttf", import.meta.url)
+  new URL("../../../public/fonts/inter/static/Inter-Bold.ttf", import.meta.url)
     .href,
 ).then((res) => res.arrayBuffer());
 
 const regularFont = fetch(
-  new URL("../../public/fonts/inter/static/Inter-Regular.ttf", import.meta.url)
-    .href,
+  new URL(
+    "../../../public/fonts/inter/static/Inter-Regular.ttf",
+    import.meta.url,
+  ).href,
 ).then((res) => res.arrayBuffer());
 
 export default async function (
@@ -45,40 +33,12 @@ export default async function (
 
   const marketId = searchParams.get("marketId");
 
-  const sdk = await sdkPromise;
-
-  // const market = await getMarket(client, marketId as string);
-  const { markets } = await sdk.markets({
-    where: {
-      marketId_eq: Number(marketId),
-    },
-  });
-
-  const market = markets[0];
-
-  if (!market) {
-    return new Response(`no market found by id ${marketId}`, {
-      status: 404,
-    });
-  }
-
-  let prediction: { outcome: string; percentage: number } = {
-    outcome: "No Prediction",
-    percentage: 0,
-  };
-
-  if (market.pool) {
-    const { assets } = await sdk.assets({
-      where: {
-        poolId_eq: market.pool.poolId,
-      },
-    });
-
-    prediction = getCurrentPrediction(assets as any, market as any);
-  }
+  const { market, volume, prediction, ends } = await fetch(
+    `${absoluteUrl(request, "localhost:3000").origin}/api/og/${marketId}`,
+  ).then((r) => r.json());
 
   const marketImage = !market.img
-    ? new URL("../../public/icons/default-market.png", import.meta.url).href
+    ? new URL("../../../public/icons/default-market.png", import.meta.url).href
     : isMarketImageBase64Encoded(market.img)
     ? market.img
     : `https://ipfs-gateway.zeitgeist.pm/ipfs/${market.img}`;
@@ -96,7 +56,7 @@ export default async function (
       }}
     >
       <img
-        src={new URL("../../public/og/bg1.png", import.meta.url).href}
+        src={new URL("../../../public/og/bg1.png", import.meta.url).href}
         tw="absolute top-0 left-0"
         style={{
           width: 1200,
@@ -120,7 +80,7 @@ export default async function (
         <div tw="flex flex-col">
           <h2 tw="font-bold text-3xl font-sans">Ends:</h2>
           <div tw="text-2xl -mt-3" style={{ color: "#ABC1F9" }}>
-            {moment(Number(market.period.end)).format("MMM Do, YYYY")}
+            {ends}
           </div>
         </div>
       </div>
@@ -146,7 +106,7 @@ export default async function (
         <div tw="flex flex-col">
           <h2 tw="font-bold text-3xl font-sans">Volume:</h2>
           <div tw="flex text-2xl -mt-3" style={{ color: "#ABC1F9" }}>
-            {new Decimal(market.pool?.volume).div(ZTG).toFixed(2)}
+            {volume}
             {" ZTG"}
           </div>
         </div>
@@ -159,7 +119,8 @@ export default async function (
           transformOrigin: "bottom right",
         }}
         src={
-          new URL("../../public/og/zeitgeist_badge.png", import.meta.url).href
+          new URL("../../../public/og/zeitgeist_badge.png", import.meta.url)
+            .href
         }
       />
     </div>

@@ -3594,6 +3594,7 @@ __metadata:
     mobx-react-form: ^3.2.0
     moment: ^2.29.1
     next: ^13.0.3
+    next-absolute-url: ^1.2.2
     next-transpile-modules: ^9.1.0
     object-hash: ^2.2.0
     plaiceholder: ^2.5.0
@@ -9490,6 +9491,13 @@ __metadata:
   version: 0.6.3
   resolution: "negotiator@npm:0.6.3"
   checksum: b8ffeb1e262eff7968fc90a2b6767b04cfd9842582a9d0ece0af7049537266e7b2506dfb1d107a32f06dd849ab2aea834d5830f7f4d0e5cb7d36e1ae55d021d9
+  languageName: node
+  linkType: hard
+
+"next-absolute-url@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "next-absolute-url@npm:1.2.2"
+  checksum: 438829a98a00550f2e7277ac9355c3d57eeb6af99a83c2b2903097c0e2107c7217111e4bb338cd0c703392c6001c8b79912c6860b4d9388d47cf942a171fb866
   languageName: node
   linkType: hard
 
