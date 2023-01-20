@@ -1,11 +1,10 @@
 import { ImageResponse } from "@vercel/og";
 import { create } from "@zeitgeistpm/indexer";
 import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { getCurrentPrediction } from "lib/util/assets";
 import moment from "moment";
-import { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 export const config = {
   runtime: "experimental-edge",
@@ -15,6 +14,8 @@ export const config = {
     "/node_modules/@protobufjs/**",
   ],
 };
+
+const ZTG = 10 ** 10;
 
 const sdkPromise = create({
   uri: process.env.NEXT_PUBLIC_SSR_INDEXER_URL,
