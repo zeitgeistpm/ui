@@ -184,7 +184,7 @@ const Market: NextPage<{
       <OgHead
         title={indexedMarket.question}
         description={indexedMarket.description}
-        image={`/api/og?marketId=${indexedMarket.marketId}`}
+        image={`/api/og/generate?marketId=${indexedMarket.marketId}`}
       />
       <div>
         <div className="flex mb-ztg-33">

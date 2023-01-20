@@ -180,7 +180,7 @@ const PoolDetails: NextPage = observer(() => {
       <OgHead
         title={saturatedPoolData?.market.question}
         description={saturatedPoolData?.market.description}
-        image={`/api/og?marketId=${saturatedPoolData?.market.marketId}`}
+        image={`/api/og/generate?marketId=${saturatedPoolData?.market.marketId}`}
       />
       <div>
         <InfoBoxes />
