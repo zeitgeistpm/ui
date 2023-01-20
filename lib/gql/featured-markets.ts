@@ -2,7 +2,7 @@ import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 
 import { ZTG } from "lib/constants";
-import { IndexedMarketCardData } from "components/markets/market-card";
+import { IndexedMarketCardData } from "components/markets/market-card/index";
 import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
 import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";

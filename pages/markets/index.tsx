@@ -5,7 +5,7 @@ import { NextPage } from "next";
 
 import MarketsList from "components/markets/MarketsList";
 import { GraphQLClient } from "graphql-request";
-import { IndexedMarketCardData } from "components/markets/market-card";
+import { IndexedMarketCardData } from "components/markets/market-card/index";
 import MarketScroll from "components/markets/MarketScroll";
 import getNewestMarkets from "lib/gql/newest-markets";
 
@@ -32,11 +32,7 @@ const MarketsPage: NextPage<{
     <>
       {newestMarkets?.length > 0 && (
         <div className="mt-[30px]">
-          <MarketScroll
-            title="Newest Markets"
-            markets={newestMarkets}
-            showMarketsLink={false}
-          />
+          <MarketScroll title="Newest Markets" markets={newestMarkets} />
         </div>
       )}
       <DynamicMarketList />
