@@ -105,7 +105,7 @@ export const useMarkets = (
       const marketOutcomes = outcomes[m.marketId];
       const prediction =
         m.pool != null
-          ? getCurrentPrediction(marketOutcomes, m as any)
+          ? getCurrentPrediction(marketOutcomes, m as any).outcome
           : "None";
 
       resMarkets = [

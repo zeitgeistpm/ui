@@ -61,7 +61,10 @@ export default async function (
     });
   }
 
-  let prediction: string = "No Prediction";
+  let prediction: { outcome: string; percentage: number } = {
+    outcome: "No Prediction",
+    percentage: 0,
+  };
 
   if (market.pool) {
     const assetsRes = await client.request<{
@@ -85,8 +88,6 @@ export default async function (
     );
 
     prediction = getCurrentPrediction(assetsRes.assets, market as any);
-  } else {
-    prediction = "No Prediction";
   }
 
   const marketImage = !market.img
@@ -149,7 +150,9 @@ export default async function (
               : "Prediction:"}
           </h2>
           <div tw="text-3xl -mt-3" style={{ color: "#ABC1F9" }}>
-            {prediction}
+            {market.marketType.categorical
+              ? `${prediction.percentage}% — ${prediction.outcome}`
+              : `${prediction.outcome}`}
           </div>
         </div>
 

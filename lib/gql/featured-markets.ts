@@ -113,7 +113,7 @@ const getFeaturedMarkets = async (
 
       const assets = assetsRes.assets;
 
-      const prediction = getCurrentPrediction(assets, market);
+      const prediction = getCurrentPrediction(assets, market).outcome;
 
       const marketCategories: MarketOutcomes = market.categories.map(
         (category, index) => {
