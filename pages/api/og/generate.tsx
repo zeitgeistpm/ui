@@ -1,14 +1,13 @@
+import { ImageResponse } from "@vercel/og";
+import absoluteUrl from "next-absolute-url";
+import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import type { NextApiRequest, NextConfig } from "next";
+
 export const config = {
   runtime: "edge",
 };
 
-export default async function (request: any) {
-  const { ImageResponse } = await import("@vercel/og");
-  const absoluteUrl = await (await import("next-absolute-url")).default;
-  const { isMarketImageBase64Encoded } = await import(
-    "lib/types/create-market"
-  );
-
+export default async function (request: NextApiRequest) {
   const boldFont = fetch(
     new URL(
       "../../../public/fonts/inter/static/Inter-Bold.ttf",
