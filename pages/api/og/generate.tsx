@@ -3,6 +3,9 @@ import absoluteUrl from "next-absolute-url";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import type { NextApiRequest, NextConfig } from "next";
 
+/**
+ * WOT
+ */
 export const config = {
   runtime: "experimental-edge",
 };
