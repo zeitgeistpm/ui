@@ -1,5 +1,5 @@
 import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
-import { IndexedMarketCardData } from "components/markets/market-card";
+import { IndexedMarketCardData } from "components/markets/market-card/index";
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS, ZTG } from "lib/constants";

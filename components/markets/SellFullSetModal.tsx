@@ -28,7 +28,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const { data: pool } = usePool({ marketId: marketId });
 
   const { data: balances } = useAccountPoolAssetBalances(
-    wallets.getActiveSigner(),
+    wallets.getActiveSigner()?.address,
     pool,
   );
 

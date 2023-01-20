@@ -12,13 +12,13 @@ import { useSdkv2 } from "../useSdkv2";
 export const rootKey = "account-pool-asset-balances";
 
 export const useAccountPoolAssetBalances = (
-  account?: KeyringPairOrExtSigner,
+  address?: string,
   pool?: Pool<Context>,
 ) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, rootKey, account?.address, pool?.poolId],
+    [id, rootKey, address, pool?.poolId],
     async () => {
       if (isRpcSdk(sdk)) {
         const assets = isIndexedData(pool)
@@ -28,14 +28,14 @@ export const useAccountPoolAssetBalances = (
           : pool.assets;
 
         const balances = await sdk.context.api.query.tokens.accounts.multi(
-          assets.map((assets) => [account.address, assets]),
+          assets.map((assets) => [address, assets]),
         );
 
         return balances;
       }
     },
     {
-      enabled: Boolean(sdk && isRpcSdk(sdk) && account && pool),
+      enabled: Boolean(sdk && isRpcSdk(sdk) && address && pool),
       initialData: [],
     },
   );

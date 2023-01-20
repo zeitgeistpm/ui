@@ -6,11 +6,9 @@ import { DAY_SECONDS, ZTG } from "lib/constants";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
 import { useNavigationStore } from "lib/stores/NavigationStore";
-import { usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
 import { useUserStore } from "lib/stores/UserStore";
 import { get24HrPriceChange } from "lib/util/market";
-import { calcTotalAssetPrice } from "lib/util/pool";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { observer } from "mobx-react";
 import dynamic from "next/dynamic";
@@ -18,6 +16,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { from } from "rxjs";
 import FullSetButtons from "./FullSetButtons";
+import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 
 const columns: TableColumn[] = [
   {
@@ -50,10 +49,10 @@ const MarketAssetDetails = observer(
     const navigationStore = useNavigationStore();
     const marketsStore = useMarketsStore();
     const [poolAlreadyDeployed, setPoolAlreadyDeployed] = useState(false);
-    const poolStore = usePoolsStore();
     const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
     const { data: market } = useMarket(marketStore.id);
+    const { data: spotPrices } = useMarketSpotPrices(marketStore.id);
 
     useEffect(() => {
       navigationStore.setPage("marketDetails");
@@ -75,7 +74,7 @@ const MarketAssetDetails = observer(
         return;
       }
       getPageData();
-    }, [marketStore]);
+    }, [marketStore, spotPrices]);
 
     useEffect(() => {
       if (
@@ -112,28 +111,24 @@ const MarketAssetDetails = observer(
     const getPageData = async () => {
       let tblData: TableData[] = [];
 
-      const market = marketStore;
-
-      if (market.poolExists) {
-        const { poolId } = market.pool;
-
-        // poolid is incorrectly typed, it's actually a string
-        const pool = await poolStore.getPoolFromChain(Number(poolId));
-        if (!pool) return;
-
+      if (marketStore.poolExists && spotPrices) {
         const dateOneDayAgo = new Date(
           new Date().getTime() - DAY_SECONDS * 1000,
         ).toISOString();
 
-        const totalAssetPrice = calcTotalAssetPrice(pool);
+        const totalAssetPrice = Array.from(spotPrices.values()).reduce(
+          (val, cur) => val.plus(cur),
+          new Decimal(0),
+        );
 
         for (const [index, assetId] of Array.from(
-          market.outcomeAssetIds.entries(),
+          marketStore.outcomeAssetIds.entries(),
         )) {
-          const ticker = market.outcomesMetadata[index]["ticker"];
-          const color = market.outcomesMetadata[index]["color"] || "#ffffff";
-          const outcomeName = market.outcomesMetadata[index]["name"];
-          const currentPrice = pool.assets[index]?.price;
+          const ticker = marketStore.outcomesMetadata[index]["ticker"];
+          const color =
+            marketStore.outcomesMetadata[index]["color"] || "#ffffff";
+          const outcomeName = marketStore.outcomesMetadata[index]["name"];
+          const currentPrice = spotPrices.get(index).toNumber();
 
           let priceHistory: {
             newPrice: number;
@@ -141,7 +136,7 @@ const MarketAssetDetails = observer(
           }[];
           if (graphQlEnabled === true) {
             priceHistory = await store.sdk.models.getAssetPriceHistory(
-              market.id,
+              marketStore.id,
               //@ts-ignore
               assetId.categoricalOutcome?.[1] ?? assetId.scalarOutcome?.[1],
               dateOneDayAgo,
@@ -167,7 +162,9 @@ const MarketAssetDetails = observer(
               },
               pre:
                 currentPrice != null
-                  ? Math.round((currentPrice / totalAssetPrice) * 100)
+                  ? Math.round(
+                      (currentPrice / totalAssetPrice.toNumber()) * 100,
+                    )
                   : 0,
               change: priceChange,
               buttons: (
@@ -186,7 +183,7 @@ const MarketAssetDetails = observer(
         }
         setTableData(tblData);
       } else {
-        tblData = market.outcomesMetadata.map((outcome) => ({
+        tblData = marketStore.outcomesMetadata.map((outcome) => ({
           token: {
             color: outcome["color"] || "#ffffff",
             label: outcome["ticker"],
@@ -292,9 +289,11 @@ const MarketAssetDetails = observer(
                 data={getWinningCategoricalOutcome() as TableData[]}
               />
             ) : (
-              <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-                {market?.resolvedOutcome}
-              </div>
+              market && (
+                <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
+                  {new Decimal(market.resolvedOutcome).div(ZTG).toNumber()}
+                </div>
+              )
             )}
           </>
         ) : (
