@@ -324,6 +324,7 @@ class MarketStore {
     return this.marketOutcomes[0];
   }
 
+  // Warning returns wrong value. better use `useMarket` hook to get this data
   get resolvedScalarOutcome(): number | null {
     if (!this.is("Resolved") || this.type !== "scalar") return null;
 

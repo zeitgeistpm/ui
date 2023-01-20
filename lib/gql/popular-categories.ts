@@ -8,24 +8,15 @@ const tagsQuery = gql`
   }
 `;
 
-export interface TagCounts {
-  sports: number;
-  politics: number;
-  governance: number;
-  crypto: number;
-}
-
-export const getPopularCategories = async (
+export const getCategoryCounts = async (
   client: GraphQLClient,
-): Promise<TagCounts> => {
-  const [sports, politics, governance, crypto] = await Promise.all([
-    getTagCount(client, "Sports"),
-    getTagCount(client, "Politics"),
-    getTagCount(client, "Governance"),
-    getTagCount(client, "Crypto"),
-  ]);
+  categoryNames: string[],
+): Promise<number[]> => {
+  const counts = await Promise.all(
+    categoryNames.map((category) => getTagCount(client, category)),
+  );
 
-  return { sports, politics, governance, crypto };
+  return counts;
 };
 
 const getTagCount = async (client: GraphQLClient, tag: string) => {

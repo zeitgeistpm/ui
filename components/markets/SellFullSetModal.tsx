@@ -1,6 +1,4 @@
-import { transactionErrorToString } from "@zeitgeistpm/rpc";
-import { Context, hasMarketMethods } from "@zeitgeistpm/sdk-next";
-import { isRight } from "@zeitgeistpm/utility/dist/either";
+import { Market } from "@zeitgeistpm/sdk/dist/models";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
@@ -12,15 +10,18 @@ import { useSaturatedMarket } from "lib/hooks/queries/useSaturatedMarket";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
+import { extrinsicCallback } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
+import { from } from "rxjs";
 
 const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const store = useStore();
   const { wallets } = store;
   const notificationStore = useNotificationStore();
   const modalStore = useModalStore();
+  const [sdkMarket, setSdkMarket] = useState<Market>();
 
   const { data: market } = useMarket(marketId);
   const { data: saturatedMarket } = useSaturatedMarket(market);
@@ -34,6 +35,15 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const [transacting, setTransacting] = useState(false);
   const [amount, setAmount] = useState<string>("0");
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
+
+  useEffect(() => {
+    const sub = from(store.sdk.models.fetchMarketData(marketId)).subscribe(
+      (market) => {
+        setSdkMarket(market);
+      },
+    );
+    return () => sub.unsubscribe();
+  }, [store.sdk]);
 
   useEffect(() => {
     let lowestTokenAmount: Decimal = null;
@@ -53,60 +63,38 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const handleSignTransaction = async () => {
     if (
       Number(amount) > wallets.activeBalance.toNumber() ||
-      Number(amount) === 0
+      Number(amount) === 0 ||
+      sdkMarket == null
     ) {
       return;
     }
 
     setTransacting(true);
 
-    if (hasMarketMethods<Context>(market)) {
-      const signer = wallets.getActiveSigner();
+    const signer = wallets.getActiveSigner();
 
-      notificationStore?.pushNotification("Transacting...", {
-        autoRemove: true,
-      });
-
-      const result = await market
-        .sellCompleteSet({
-          amount: new Decimal(amount).mul(ZTG).toNumber(),
-          signer,
-          hooks: {
-            inBlock: () => {
-              notificationStore.pushNotification(
-                `In block: sold ${new Decimal(amount).toFixed(
-                  1,
-                )} full sets. Waiting for finalization..`,
-                { type: "Info", autoRemove: true, lifetime: 45 },
-              );
-              setTransacting(false);
-              modalStore.closeModal();
+    sdkMarket.sellCompleteSet(
+      signer,
+      new Decimal(amount).mul(ZTG).toNumber(),
+      extrinsicCallback({
+        notificationStore,
+        successCallback: () => {
+          notificationStore.pushNotification(
+            `Bought ${new Decimal(amount).toFixed(1)} full sets`,
+            { type: "Success" },
+          );
+          modalStore.closeModal();
+        },
+        failCallback: ({ index, error }) => {
+          notificationStore.pushNotification(
+            store.getTransactionError(index, error),
+            {
+              type: "Error",
             },
-            retracted: () => {
-              notificationStore.pushNotification(
-                `Transaction retracted and will take longer than usual to be finalized.`,
-                { type: "Info", lifetime: 45 },
-              );
-            },
-          },
-        })
-        .asEither();
-
-      if (isRight(result)) {
-        notificationStore.pushNotification(
-          `Finalized: Sell full set ${new Decimal(amount).toFixed(1)}`,
-          { type: "Success", autoRemove: true, lifetime: 9 },
-        );
-      } else {
-        const error = result.unleft().unwrap();
-        const message = transactionErrorToString(error);
-        notificationStore.pushNotification(message, {
-          type: "Error",
-          lifetime: 12,
-          autoRemove: true,
-        });
-      }
-    }
+          );
+        },
+      }),
+    );
 
     setTransacting(false);
     modalStore.closeModal();
@@ -118,7 +106,6 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
 
   const disabled =
     transacting ||
-    !hasMarketMethods<Context>(market) ||
     Number(amount) > maxTokenSet.toNumber() ||
     Number(amount) === 0;
 

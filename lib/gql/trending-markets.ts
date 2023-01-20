@@ -1,30 +1,31 @@
 import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
-import { IndexedMarketCardData } from "components/markets/market-card";
+import { IndexedMarketCardData } from "components/markets/market-card/index";
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS, ZTG } from "lib/constants";
 import { MarketOutcomes, MarketOutcome } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
 
-const poolQuery = gql`
-  query TrendingMarkets($dateTwoWeeksAgo: DateTime) {
-    pools(
-      limit: 10
-      orderBy: volume_DESC
-      where: { createdAt_gt: $dateTwoWeeksAgo, poolStatus_eq: "Active" }
+const poolChangesQuery = gql`
+  query PoolChanges($start: DateTime, $end: DateTime) {
+    historicalPools(
+      where: {
+        timestamp_gt: $start
+        volume_gt: "0"
+        event_contains: "Swap"
+        timestamp_lt: $end
+      }
+      orderBy: id_DESC
     ) {
-      volume
-      marketId
-      createdAt
       poolId
-      baseAsset
+      dVolume
     }
   }
 `;
 
 const marketQuery = gql`
-  query Market($marketId: Int) {
-    markets(where: { marketId_eq: $marketId }) {
+  query Market($poolId: Int) {
+    markets(where: { pool: { poolId_eq: $poolId } }) {
       marketId
       outcomeAssets
       question
@@ -38,6 +39,10 @@ const marketQuery = gql`
         color
         name
         ticker
+      }
+      pool {
+        volume
+        baseAsset
       }
       outcomeAssets
     }
@@ -57,24 +62,25 @@ const assetsQuery = gql`
 const getTrendingMarkets = async (
   client: GraphQLClient,
 ): Promise<IndexedMarketCardData[]> => {
-  const dateTwoWeeksAgo = new Date(
-    new Date().getTime() - DAY_SECONDS * 14 * 1000,
+  const now = new Date().toISOString();
+  const dateOneWeekAgo = new Date(
+    new Date().getTime() - DAY_SECONDS * 7 * 1000,
   ).toISOString();
 
   const response = await client.request<{
-    pools: {
-      marketId: number;
-      volume: number;
+    historicalPools: {
+      dVolume: string;
       poolId: number;
-      baseAsset: string;
     }[];
-  }>(poolQuery, {
-    dateTwoWeeksAgo,
+  }>(poolChangesQuery, {
+    start: dateOneWeekAgo,
+    end: now,
   });
 
-  const trendingPools = response.pools;
+  const trendingPoolIds = calcTrendingPools(response.historicalPools);
+
   const trendingMarkets = await Promise.all(
-    trendingPools.map(async (pool) => {
+    trendingPoolIds.map(async (poolId) => {
       const marketsRes = await client.request<{
         markets: {
           marketId: number;
@@ -84,9 +90,13 @@ const getTrendingMarkets = async (
           marketType: { [key: string]: string };
           categories: { color: string; name: string; ticker: string }[];
           outcomeAssets: string[];
+          pool: {
+            volume: string;
+            baseAsset: string;
+          };
         }[];
       }>(marketQuery, {
-        marketId: pool.marketId,
+        poolId: Number(poolId),
       });
 
       const market = marketsRes.markets[0];
@@ -97,7 +107,7 @@ const getTrendingMarkets = async (
           price: number;
         }[];
       }>(assetsQuery, {
-        poolId: pool.poolId,
+        poolId: Number(poolId),
       });
 
       const assets = assetsRes.assets;
@@ -123,8 +133,8 @@ const getTrendingMarkets = async (
         creation: market.creation,
         img: market.img,
         prediction: prediction,
-        volume: new Decimal(pool.volume).div(ZTG).toNumber(),
-        baseAsset: pool.baseAsset,
+        volume: Number(new Decimal(market.pool.volume).div(ZTG).toFixed(0)),
+        baseAsset: market.pool.baseAsset,
         outcomes: marketCategories,
       };
 
@@ -132,6 +142,34 @@ const getTrendingMarkets = async (
     }),
   );
   return trendingMarkets;
+};
+
+const calcTrendingPools = (
+  transactions: {
+    poolId: number;
+    dVolume: string;
+  }[],
+) => {
+  const poolVolumes: { [key: string]: Decimal } = {};
+  const maxPools = 8;
+
+  // find total volume for each pool
+  transactions.forEach((transaction) => {
+    const volume = poolVolumes[transaction.poolId];
+    if (volume) {
+      poolVolumes[transaction.poolId] = volume.plus(transaction.dVolume);
+    } else {
+      poolVolumes[transaction.poolId] = new Decimal(transaction.dVolume);
+    }
+  });
+
+  const poolIdsByVolumeDesc = Object.keys(poolVolumes).sort((a, b) => {
+    const aVol = poolVolumes[a];
+    const bVol = poolVolumes[b];
+    return bVol.minus(aVol).toNumber();
+  });
+
+  return poolIdsByVolumeDesc.splice(0, maxPools);
 };
 
 export default getTrendingMarkets;

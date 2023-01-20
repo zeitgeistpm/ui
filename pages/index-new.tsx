@@ -4,12 +4,12 @@ import PopularCategories, {
 } from "components/front-page/PopularCategories";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
+import MarketScrollNew from "components/markets/MarketScroll";
 import { motion } from "framer-motion";
 import { GraphQLClient } from "graphql-request";
 import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import Image from "next/image";
@@ -118,22 +118,12 @@ const IndexPage: NextPage<{
         <LearnSection />
         {featuredMarkets.length > 0 && (
           <div className="my-[60px]">
-            <MarketScroll
-              title="Featured Markets"
-              cta="Go to Markets"
-              markets={featuredMarkets}
-              link="markets"
-            />
+            <MarketScroll title="Featured Markets" markets={featuredMarkets} />
           </div>
         )}
         {trendingMarkets.length > 0 && (
           <div className="my-[60px]">
-            <MarketScroll
-              title="Trending Markets"
-              cta="Go to Markets"
-              markets={trendingMarkets}
-              link="markets"
-            />
+            <MarketScroll title="Trending Markets" markets={trendingMarkets} />
           </div>
         )}
         <div className="mb-[60px]">

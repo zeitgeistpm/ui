@@ -15,7 +15,7 @@ import { useContentScrollTop } from "components/context/ContentDimensionsContext
 import { useContentWidth } from "components/context/ContentDimensionsContext";
 import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
 import MarketFilterSelection from "./market-filter";
-import MarketCard from "./market-card";
+import MarketCard from "./market-card/index";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import { filterTypes } from "lib/constants/market-filter";
 import { ZTG } from "lib/constants";

@@ -1,137 +1,103 @@
-import { motion } from "framer-motion";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "react-feather";
 import { useResizeDetector } from "react-resize-detector";
-import MarketCard, { IndexedMarketCardData } from "./market-card";
+import MarketCard, { IndexedMarketCardData } from "./market-card/index";
+import HorizontalScroll from "components/ui/HorizontalScroll";
 
 const MarketScroll = observer(
   ({
     title,
+    cta,
     markets,
-    showMarketsLink = true,
+    link,
   }: {
     title: string;
+    cta?: string;
     markets: IndexedMarketCardData[];
-    showMarketsLink?: boolean;
+    link?: string;
   }) => {
     const scrollRef = useRef<HTMLDivElement>();
     const [scrollLeft, setScrollLeft] = useState(0);
+    const [scrollDirection, setScrollDirection] = useState<"left" | "right">(
+      "right",
+    );
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
-    const cardWidth = 320;
-    const gap = 30;
+    const gap = 16;
+    //calculate cards shown and width based on container width
+    const cardsShown = containerWidth >= 716 && containerWidth < 1183 ? 2 : 3;
+    const cardWidth =
+      containerWidth < 716
+        ? containerWidth
+        : containerWidth >= 1183
+        ? (containerWidth - gap * 2) / cardsShown
+        : (containerWidth - gap) / cardsShown;
     const scrollMin = 0;
     const scrollMax = cardWidth * markets.length + gap * (markets.length - 1);
-    const cardsShown = Math.floor(containerWidth / (gap + cardWidth));
+
     const moveSize = cardsShown * (cardWidth + gap);
 
-    // useEffect(() => {
-    //   if (typeof window === "undefined") return;
-    //   if (window.innerWidth < 640) return;
-
-    // const cards = document.querySelectorAll(".market-card");
-
-    // const observer = new IntersectionObserver(
-    //   (entries) => {
-    //     entries.forEach((entry) => {
-    //       console.log(entry);
-    //       if (entry.isIntersecting) {
-    //         entry.target.classList.remove("opacity-0");
-    //       } else {
-    //         entry.target.classList.add("opacity-0");
-    //       }
-    //     });
-    //   },
-    //   { root: containerRef.current },
-    // );
-
-    // cards.forEach((card) => {
-    //   observer.observe(card);
-    // });
-    // }, []);
-
-    // useEffect(() => {
-    //   const cards = document.querySelectorAll(".market-card");
-    //   cards.forEach((card) => {
-    //     card.classList.remove("opacity-0");
-    //   });
-    // }, [store.leftDrawerClosed, store.rightDrawerClosed]);
+    useEffect(() => {
+      scrollRef.current.scroll({ left: scrollLeft, behavior: "smooth" });
+    }, [scrollRef, scrollLeft]);
 
     const handleRightClick = () => {
+      setScrollDirection("right");
       setScrollLeft((prev) => {
-        const newScroll = prev - moveSize;
+        const newScroll = prev + moveSize;
         const max = scrollMax - containerWidth;
 
-        return newScroll * -1 > max ? -(scrollMax - containerWidth) : newScroll;
+        return newScroll > max ? scrollMax - containerWidth : newScroll;
       });
     };
 
     const handleLeftClick = () => {
+      setScrollDirection("left");
       setScrollLeft((prev) => {
-        const newScroll = prev + moveSize;
+        const newScroll = prev - moveSize;
 
-        return newScroll > scrollMin ? scrollMin : newScroll;
+        return newScroll < scrollMin ? scrollMin : newScroll;
       });
     };
 
+    const hasReachedEnd = scrollMax - containerWidth - scrollLeft === 0;
     const leftDisabled = scrollLeft === 0;
     const rightDisabled =
-      scrollMax - containerWidth + scrollLeft === 0 || markets.length <= 3;
+      hasReachedEnd || cardWidth * markets.length < containerWidth;
 
     return (
-      <div ref={containerRef} className="flex flex-col">
-        <div className="flex items-center mb-ztg-30">
-          <div className=" font-bold text-[28px]">{title}</div>
-          <div className="hidden sm:flex ml-auto items-center">
-            {showMarketsLink && (
-              <Link
-                href="markets"
-                className="text-ztg-14-150 border-2 border-pastel-blue rounded-[5px] px-[10px] py-[3px]"
-              >
-                Go To Markets
-              </Link>
-            )}
-            <button
-              onClick={handleLeftClick}
-              className={`flex items-center justify-center w-[26px] h-[26px] rounded-full ml-[12px] mr-[8px] ztg-transition ${
-                leftDisabled
-                  ? "bg-geyser text-pastel-blue"
-                  : "bg-pastel-blue text-white"
-              }`}
-              disabled={leftDisabled}
-            >
-              <ChevronLeft className="relative right-[1px]" />
-            </button>
-            <button
-              onClick={handleRightClick}
-              className={`flex items-center justify-center w-[26px] h-[26px] rounded-full ztg-transition  ${
-                rightDisabled
-                  ? "bg-geyser text-pastel-blue"
-                  : "bg-pastel-blue text-white"
-              }`}
-              disabled={rightDisabled}
-            >
-              <ChevronRight className="relative left-[1px]" />
-            </button>
-          </div>
-        </div>
-        <div className="relative">
-          <motion.div
+      <div ref={containerRef} className="grid sm:grid-cols-2 gap-4 md:gap-6">
+        <h3 className="sm:col-span-1 font-bold text-[28px]">{title}</h3>
+        <HorizontalScroll
+          classes="order-2 sm:order-none"
+          link={link}
+          cta={cta}
+          handleLeftClick={handleLeftClick}
+          handleRightClick={handleRightClick}
+          rightDisabled={rightDisabled}
+          leftDisabled={leftDisabled}
+        />
+        {/* <div className="flex items-center mb-ztg-30"></div> */}
+        <div className="sm:col-span-2 relative">
+          {(scrollDirection === "left" && scrollLeft !== 0) ||
+          (scrollDirection === "right" && hasReachedEnd) ? (
+            <div className="bg-gradient-to-r from-white w-[20px] absolute z-ztg-10 -left-[5px] h-full"></div>
+          ) : (
+            <div className="bg-gradient-to-r from-transparent to-white w-[20px] absolute z-ztg-1 -right-[5px] h-full"></div>
+          )}
+          <div
             ref={scrollRef}
-            animate={{ x: scrollLeft }}
-            transition={{ duration: 0.5, type: "tween" }}
-            className="flex h-[175px] gap-x-[30px] no-scroll-bar overflow-x-auto sm:overflow-x-visible"
+            className="flex flex-col md:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
+            style={{ gap: `${gap}px` }}
           >
             {markets.map((market) => (
               <MarketCard
                 key={market.marketId}
                 {...market}
-                className="market-card bg-anti-flash-white rounded-ztg-10 min-w-[320px] w-[320px] transition duration-500 ease-in-out"
+                width={cardWidth}
+                className="market-card bg-anti-flash-white rounded-ztg-10 transition duration-500 ease-in-out"
               />
             ))}
-          </motion.div>
+          </div>
         </div>
       </div>
     );

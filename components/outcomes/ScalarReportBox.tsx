@@ -1,12 +1,12 @@
 import {
   getScalarBounds,
   IndexerContext,
-  isNA,
   isRpcSdk,
   Market,
 } from "@zeitgeistpm/sdk-next";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
+import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotificationStore } from "lib/stores/NotificationStore";
@@ -29,8 +29,6 @@ const ScalarReportBox = observer(
     const notificationStore = useNotificationStore();
     const [scalarReportValue, setScalarReportValue] = useState("");
 
-    const signer = wallets?.getActiveSigner();
-
     if (!market) return null;
 
     const bounds = getScalarBounds(market).unwrap();
@@ -43,7 +41,7 @@ const ScalarReportBox = observer(
 
     const handleSignTransaction = async () => {
       const outcomeReport: any = {
-        scalar: Number(scalarReportValue) * ZTG,
+        scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
       };
       const signer = wallets.getActiveSigner();
 

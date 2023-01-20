@@ -17,7 +17,7 @@ const MarketImage = observer(
     return (
       <div
         className={
-          "w-[60px] h-[60px] rounded-full flex-shrink-0 relative overflow-hidden" +
+          "w-[40px] h-[40px] sm:w-[60px] sm:h-[60px] rounded-full flex-shrink-0 relative overflow-hidden" +
           className
         }
       >

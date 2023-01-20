@@ -59,6 +59,30 @@ module.exports = {
       ],
       kanit: ["var(--font-kanit)"],
     },
+    screens: {
+      sm: "600px",
+      md: "905px",
+      lg: "1240px",
+      xl: "1440px",
+      "2xl": "1728px",
+    },
+    container: {
+      screens: {
+        sm: "600px",
+        md: "905px",
+        lg: "1240px",
+        xl: "1440px",
+        "2xl": "1728px",
+      },
+      padding: {
+        DEFAULT: "16px",
+        sm: "40px",
+        md: "94px",
+        lg: "128px",
+        xl: "128px",
+        "2xl": "128px",
+      },
+    },
     extend: {
       borderWidth: {
         1: "1px",
@@ -93,6 +117,7 @@ module.exports = {
         "ztg-14-110": ["0.875rem", "1.1"],
         "ztg-14-120": ["0.875rem", "1.2"],
         "ztg-14-150": ["0.875rem", "1.5"],
+        "ztg-14-165": ["0.875rem", "1.65"],
         "ztg-14-180": ["0.875rem", "1.8"],
         "ztg-16-150": ["1rem", "1.5"],
         "ztg-18-150": ["1.125rem", "1.5"],
@@ -100,6 +125,7 @@ module.exports = {
         "ztg-20-150": ["1.25rem", "1.5"],
         "ztg-22-120": ["1.375rem", "1.2"],
         "ztg-28-120": ["1.75rem", "1.2"],
+        "ztg-64-120": ["4rem", "1.2"],
       },
       backgroundImage: (theme) => ({
         "rectangle-red": "url('/kusama-derby/rectangle-red.svg')",
@@ -310,6 +336,7 @@ module.exports = {
         "ztg-184": "184px",
         "ztg-390": "390px",
         "ztg-1100": "1100px",
+        "ztg-1200": "1200px",
       },
       minWidth: {
         // NEW

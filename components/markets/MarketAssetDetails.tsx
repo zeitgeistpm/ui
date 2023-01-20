@@ -11,6 +11,7 @@ import { useStore } from "lib/stores/Store";
 import { useUserStore } from "lib/stores/UserStore";
 import { get24HrPriceChange } from "lib/util/market";
 import { calcTotalAssetPrice } from "lib/util/pool";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import { observer } from "mobx-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -51,6 +52,8 @@ const MarketAssetDetails = observer(
     const [poolAlreadyDeployed, setPoolAlreadyDeployed] = useState(false);
     const poolStore = usePoolsStore();
     const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
+
+    const { data: market } = useMarket(marketStore.id);
 
     useEffect(() => {
       navigationStore.setPage("marketDetails");
@@ -290,7 +293,7 @@ const MarketAssetDetails = observer(
               />
             ) : (
               <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-                {new Decimal(marketStore.resolvedScalarOutcome).toString()}
+                {market?.resolvedOutcome}
               </div>
             )}
           </>
