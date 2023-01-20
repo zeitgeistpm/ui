@@ -85,7 +85,7 @@ export default async function (
       },
     );
 
-    prediction = getCurrentPrediction(assetsRes.assets, market);
+    prediction = getCurrentPrediction(assetsRes.assets, market as any);
   } else {
     prediction = "No Prediction";
   }
