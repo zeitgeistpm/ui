@@ -7,21 +7,19 @@ export const config = {
   runtime: "edge",
 };
 
+const boldFont = fetch(
+  new URL("../../../public/fonts/inter/static/Inter-Bold.ttf", import.meta.url)
+    .href,
+).then((res) => res.arrayBuffer());
+
+const regularFont = fetch(
+  new URL(
+    "../../../public/fonts/inter/static/Inter-Regular.ttf",
+    import.meta.url,
+  ).href,
+).then((res) => res.arrayBuffer());
+
 export default async function (request: NextApiRequest) {
-  const boldFont = fetch(
-    new URL(
-      "../../../public/fonts/inter/static/Inter-Bold.ttf",
-      import.meta.url,
-    ).href,
-  ).then((res) => res.arrayBuffer());
-
-  const regularFont = fetch(
-    new URL(
-      "../../../public/fonts/inter/static/Inter-Regular.ttf",
-      import.meta.url,
-    ).href,
-  ).then((res) => res.arrayBuffer());
-
   const { searchParams } = new URL(request.url);
 
   if (!searchParams.has("marketId")) {

@@ -1,13 +1,19 @@
 const { withPlaiceholder } = require("@plaiceholder/next");
 
-module.exports = withPlaiceholder({
-  reactStrictMode: true,
-  experimental: {
-    scrollRestoration: true,
-    esmExternals: true,
-  },
-
-  images: {
-    domains: ["ipfs-gateway.zeitgeist.pm"],
-  },
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: false,
 });
+
+module.exports = withBundleAnalyzer(
+  withBundleAnalyzer({
+    reactStrictMode: true,
+    experimental: {
+      scrollRestoration: true,
+      esmExternals: true,
+    },
+
+    images: {
+      domains: ["ipfs-gateway.zeitgeist.pm"],
+    },
+  }),
+);
