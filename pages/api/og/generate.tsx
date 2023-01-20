@@ -1,28 +1,28 @@
-import { ImageResponse } from "@vercel/og";
-import absoluteUrl from "next-absolute-url";
-import { isMarketImageBase64Encoded } from "lib/types/create-market";
-import type { NextApiRequest, NextApiResponse } from "next";
-
 export const config = {
   runtime: "edge",
 };
 
-const boldFont = fetch(
-  new URL("../../../public/fonts/inter/static/Inter-Bold.ttf", import.meta.url)
-    .href,
-).then((res) => res.arrayBuffer());
+export default async function (request: any) {
+  const { ImageResponse } = await import("@vercel/og");
+  const absoluteUrl = await (await import("next-absolute-url")).default;
+  const { isMarketImageBase64Encoded } = await import(
+    "lib/types/create-market"
+  );
 
-const regularFont = fetch(
-  new URL(
-    "../../../public/fonts/inter/static/Inter-Regular.ttf",
-    import.meta.url,
-  ).href,
-).then((res) => res.arrayBuffer());
+  const boldFont = fetch(
+    new URL(
+      "../../../public/fonts/inter/static/Inter-Bold.ttf",
+      import.meta.url,
+    ).href,
+  ).then((res) => res.arrayBuffer());
 
-export default async function (
-  request: NextApiRequest,
-  response: NextApiResponse,
-) {
+  const regularFont = fetch(
+    new URL(
+      "../../../public/fonts/inter/static/Inter-Regular.ttf",
+      import.meta.url,
+    ).href,
+  ).then((res) => res.arrayBuffer());
+
   const { searchParams } = new URL(request.url);
 
   if (!searchParams.has("marketId")) {

@@ -19,7 +19,6 @@ import MobileMenu from "components/menu/MobileMenu";
 import ModalContainer from "components/modal/ModalContainer";
 import { AnimatePresence } from "framer-motion";
 import DefaultLayout from "layouts/DefaultLayout";
-import DemoLayout from "layouts/DemoLayout";
 import ModalStore from "lib/stores/ModalStore";
 import Store from "lib/stores/Store";
 
