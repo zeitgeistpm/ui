@@ -1,6 +1,6 @@
 import { ImageResponse } from "@vercel/og";
 import { gql, GraphQLClient } from "graphql-request";
-import { create } from "@zeitgeistpm/sdk-next";
+import { create } from "@zeitgeistpm/indexer";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { getCurrentPrediction } from "lib/util/assets";
 import moment from "moment";
@@ -18,7 +18,7 @@ export const config = {
 };
 
 const sdkPromise = create({
-  indexer: process.env.NEXT_PUBLIC_SSR_INDEXER_URL,
+  uri: process.env.NEXT_PUBLIC_SSR_INDEXER_URL,
 });
 
 const boldFont = fetch(
@@ -52,7 +52,7 @@ export default async function (
   });
 
   // const market = await getMarket(client, marketId as string);
-  const { markets } = await sdk.context.indexer.markets({
+  const { markets } = await sdk.markets({
     where: {
       marketId_eq: Number(marketId),
     },
