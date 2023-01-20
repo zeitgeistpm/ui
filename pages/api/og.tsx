@@ -10,6 +10,11 @@ import { ZTG } from "lib/constants";
 
 export const config = {
   runtime: "experimental-edge",
+  unstable_allowDynamic: [
+    "/node_modules/lodash/**",
+    "/node_modules/lodash-es/**",
+    "/node_modules/@protobufjs/**",
+  ],
 };
 
 const sdkPromise = create({
