@@ -11,21 +11,7 @@ body {
 }
 
 html {
-  font-size: 16px;
-}
-
-/* tailwind sm breakpoint */
-@media only screen and (max-width: 640px) {
-  html {
-    font-size: 12px;
-  }
-}
-
-/* tailwind md breakpoint */
-@media only screen and (max-width: 768px) {
-  html {
-    font-size: 14px;
-  }
+  font-size: 100%;
 }
 
 /* hide number input arrows */
@@ -216,6 +202,7 @@ body {
 
 .main-container {
   height: calc(calc(100vh - var(--topbar-height)) - 38px);
+  @apply px-4 sm:px-10 md:px-24 lg:px-32;
 }
 
 .carousel__slide--visible {

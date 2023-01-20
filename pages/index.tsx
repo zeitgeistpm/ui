@@ -3,6 +3,7 @@ import PopularCategories, {
   CATEGORIES,
 } from "components/front-page/PopularCategories";
 import { IndexedMarketCardData } from "components/markets/market-card";
+import HeroSlider from "components/hero-slider/HeroSlider";
 import MarketScroll from "components/markets/MarketScroll";
 import { motion } from "framer-motion";
 import { GraphQLClient } from "graphql-request";
@@ -20,7 +21,6 @@ import {
   IGetPlaiceholderReturn,
 } from "plaiceholder";
 import React from "react";
-import HeroSlider from "components/hero-slider/HeroSlider";
 
 const MAIN_IMAGE_PATH = "/carousel/intro_zeitgeist_avatar.png";
 
@@ -79,23 +79,7 @@ const IndexPage: NextPage<{
   }) => {
     return (
       <div data-testid="indexPage">
-        <a
-          href="https://blog.zeitgeist.pm/announcing-zeitgeist-launch-nfts/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <Image
-            className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
-            src={MAIN_IMAGE_PATH}
-            alt="Introducing Zeitgeist Avatar"
-            width={1036}
-            height={374}
-            quality={100}
-            blurDataURL={img.base64}
-            placeholder="blur"
-            priority
-          />
-        </a>
+        <HeroSlider />
         <div className="flex items-center w-full justify-center relative bottom-[29px]">
           <motion.div
             whileHover={{ scale: 1.03 }}
