@@ -19,11 +19,7 @@ export const HeroSlide: FC<HeroSlideProps> = ({
       >
         <div className="max-w-[540px] pb-8">
           <h2
-            style={{
-              color: `${slide.title.color}`,
-              fontSize: `${slide.title.size}`,
-            }}
-            className="font-kanit mb-6 leading-tight"
+            className={`font-kanit text-center sm:text-left mb-6 leading-tight ${slide.title.styles}`}
           >
             {slide.title.text}
           </h2>

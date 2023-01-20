@@ -2,9 +2,8 @@ export const slidesData = [
   {
     id: 1,
     title: {
-      text: `Introducing Zeitgeist Avatar`,
-      size: `3.5rem`,
-      color: `#FFF`,
+      text: "Introducing Zeitgeist Avatar",
+      styles: "text-white text-3xl sm:text-4xl md:text-6xl",
     },
     bg: "/carousel/slide-1.jpeg",
     cta1: "Protocol Exclusive",
@@ -25,9 +24,8 @@ export const slidesData = [
   {
     id: 2,
     title: {
-      text: `Exiled Racers`,
-      size: `4rem`,
-      color: `#FFF`,
+      text: "Exiled Racers",
+      styles: "text-white text-3xl sm:text-4xl md:text-6xl",
     },
     bg: "/carousel/slide-2.jpeg",
     cta1: "New Markets",
@@ -38,7 +36,7 @@ export const slidesData = [
       border: "#E90303",
     },
     cta2: "",
-    link2: "https://shapethefuture.zeitgeist.pm",
+    link2: "",
     color2: {
       primary: "",
       secondary: "",
@@ -48,9 +46,8 @@ export const slidesData = [
   {
     id: 3,
     title: {
-      text: `ZTG is now traded on DEXs`,
-      size: `4rem`,
-      color: `#FFF`,
+      text: "ZTG is now traded on DEXs",
+      styles: "text-white text-3xl sm:text-4xl md:text-6xl",
     },
     bg: "/carousel/slide-3.jpeg",
     cta1: "Visit In-App Exchange",
@@ -71,10 +68,9 @@ export const slidesData = [
   {
     id: 4,
     title: {
-      text: `Presenting Zeitgeist’s 
-      "Rikiddo Scoring Rule"`,
-      size: `3rem`,
-      color: `#FFF`,
+      text: `Presenting Zeitgeist’s
+      "Rikiddo Scoring Rule`,
+      styles: "text-white text-2xl sm:text-3xl md:text-5xl",
     },
     bg: "/carousel/slide-4.jpeg",
     cta1: "New Markets",

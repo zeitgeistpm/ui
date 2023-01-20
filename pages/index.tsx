@@ -80,28 +80,11 @@ const IndexPage: NextPage<{
     return (
       <div data-testid="indexPage">
         <HeroSlider />
-        <div className="flex items-center w-full justify-center relative bottom-[29px]">
-          <motion.div
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 1 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Link href="/markets/" data-testid="bannerButton">
-              <div
-                className=" text-[20px] h-[58px] w-[323px] center border-2 rounded-ztg-100 bg-white"
-                style={{
-                  boxShadow:
-                    "0px 70px 28px rgba(0, 0, 0, 0.01), 0px 40px 24px rgba(0, 0, 0, 0.05), 0px 18px 18px rgba(0, 0, 0, 0.09), 0px 4px 10px rgba(0, 0, 0, 0.1), 0px 0px 0px rgba(0, 0, 0, 0.1)",
-                }}
-              >
-                Go to All Markets
-              </div>
-            </Link>
-          </motion.div>
+        <div className="flex items-center w-full justify-center relative bottom-[60px]">
+          <LearnSection />
         </div>
-        <LearnSection />
         {featuredMarkets.length > 0 && (
-          <div className="my-[60px]">
+          <div className="mb-[60px]">
             <MarketScroll
               title="Featured Markets"
               cta="Go to Markets"
