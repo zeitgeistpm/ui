@@ -4,7 +4,7 @@ import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export const config = {
-  runtime: "experimental-edge",
+  runtime: "edge",
 };
 
 const boldFont = fetch(
