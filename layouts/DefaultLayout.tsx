@@ -5,6 +5,7 @@ import { useResizeDetector } from "react-resize-detector";
 import { debounce } from "lodash";
 
 import { useStore } from "lib/stores/Store";
+import HeroSlider from "components/hero-slider/HeroSlider";
 import TopBar from "components/top-bar";
 import Footer from "components/ui/Footer";
 import NotificationCenter from "components/ui/NotificationCenter";
@@ -55,7 +56,7 @@ const DefaultLayout: FC = observer(({ children }) => {
       scrollTo(0);
     }
   }, [router.pathname, prevPathname]);
-
+  console.log(router.pathname);
   return (
     <div
       onScrollCapture={onScrollCapture}
@@ -84,6 +85,7 @@ const DefaultLayout: FC = observer(({ children }) => {
             </div>
           </div>
         )}
+        {router.pathname === "/" && <HeroSlider />}
         <main
           className="main-container flex flex-col dark:text-white"
           ref={mainRef}

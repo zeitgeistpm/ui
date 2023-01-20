@@ -3,7 +3,6 @@ import PopularCategories, {
   CATEGORIES,
 } from "components/front-page/PopularCategories";
 import { IndexedMarketCardData } from "components/markets/market-card";
-import HeroSlider from "components/hero-slider/HeroSlider";
 import MarketScroll from "components/markets/MarketScroll";
 import { motion } from "framer-motion";
 import { GraphQLClient } from "graphql-request";
@@ -79,7 +78,6 @@ const IndexPage: NextPage<{
   }) => {
     return (
       <div data-testid="indexPage">
-        <HeroSlider />
         <div className="flex items-center w-full justify-center relative bottom-[60px]">
           <LearnSection />
         </div>
