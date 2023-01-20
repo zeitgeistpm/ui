@@ -1,12 +1,11 @@
 import { ImageResponse } from "@vercel/og";
-import { gql, GraphQLClient } from "graphql-request";
 import { create } from "@zeitgeistpm/indexer";
+import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import { getCurrentPrediction } from "lib/util/assets";
 import moment from "moment";
 import { NextApiRequest, NextApiResponse } from "next";
-import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
 
 export const config = {
   runtime: "experimental-edge",
@@ -47,10 +46,6 @@ export default async function (
 
   const sdk = await sdkPromise;
 
-  const client = new GraphQLClient(process.env.NEXT_PUBLIC_SSR_INDEXER_URL, {
-    fetch,
-  });
-
   // const market = await getMarket(client, marketId as string);
   const { markets } = await sdk.markets({
     where: {
@@ -72,27 +67,13 @@ export default async function (
   };
 
   if (market.pool) {
-    const assetsRes = await client.request<{
-      assets: {
-        poolId: number;
-        price: number;
-      }[];
-    }>(
-      gql`
-        query Assets($poolId: Int) {
-          assets(where: { poolId_eq: $poolId }) {
-            poolId
-            price
-            assetId
-          }
-        }
-      `,
-      {
-        poolId: market.pool.poolId,
+    const { assets } = await sdk.assets({
+      where: {
+        poolId_eq: market.pool.poolId,
       },
-    );
+    });
 
-    prediction = getCurrentPrediction(assetsRes.assets, market as any);
+    prediction = getCurrentPrediction(assets as any, market as any);
   }
 
   const marketImage = !market.img
