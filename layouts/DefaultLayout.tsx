@@ -56,7 +56,7 @@ const DefaultLayout: FC = observer(({ children }) => {
       scrollTo(0);
     }
   }, [router.pathname, prevPathname]);
-  console.log(router.pathname);
+
   return (
     <div
       onScrollCapture={onScrollCapture}
