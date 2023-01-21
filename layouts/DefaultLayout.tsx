@@ -36,7 +36,7 @@ const DefaultLayout: FC = observer(({ children }) => {
     height,
     ref: mainRef,
   } = useResizeDetector({ refreshMode: "debounce", refreshRate: 50 });
-
+  console.log(width, height);
   const contentRef = useRef<HTMLDivElement>();
   const [scrollTop, setScrollTop] = useState(0);
   const prevPathname = usePrevious(router.pathname);

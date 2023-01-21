@@ -11,9 +11,9 @@ export const HeroSlide: FC<HeroSlideProps> = ({
   return (
     <>
       <div
-        className={`${
+        className={`flex items-center bg-cover bg-center h-full w-full p-5 md:p-10 ${
           animate && styles.fadeIn
-        } flex items-center bg-cover bg-center h-full w-full p-5 md:p-10`}
+        }`}
         style={{ backgroundImage: `url(${slide.bg})` }}
         onAnimationEnd={() => setAnimate(false)}
       >
