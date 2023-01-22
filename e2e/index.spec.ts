@@ -23,6 +23,8 @@ test.describe("index page", () => {
     const buttons = indexPage.getLearnSectionButtons();
     const buttonCount = await buttons.count();
 
+    expect(buttonCount).toBeGreaterThan(0);
+
     for (let index = 0; index < buttonCount; index++) {
       const link = buttons.nth(index);
 
@@ -45,6 +47,8 @@ test.describe("index page", () => {
 
     const buttons = indexPage.popularCategories.getByTestId("category");
     const buttonCount = await buttons.count();
+
+    expect(buttonCount).toBeGreaterThan(0);
 
     for (let index = 0; index < buttonCount; index++) {
       const button = buttons.nth(index);
