@@ -125,27 +125,6 @@ const Market: NextPage<{
   const { data: marketSdkv2 } = useMarket(Number(marketid));
   const { data: marketStage } = useMarketStage(marketSdkv2);
 
-  const [scalarPrices, setScalarPrices] =
-    useState<{ short: number; long: number; type: ScalarRangeType }>();
-
-  useEffect(() => {
-    if (marketStore == null) return;
-    if (marketStore.type === "scalar") {
-      const observables = marketStore.marketOutcomes
-        .filter((o) => o.metadata !== "ztg")
-        .map((outcome) => {
-          return from(marketStore.assetPriceInZTG(outcome.asset));
-        });
-      const sub = combineLatest(observables).subscribe((prices) => {
-        setScalarPrices({
-          type: marketStore.scalarType,
-          short: prices[1].toNumber(),
-          long: prices[0].toNumber(),
-        });
-      });
-      return () => sub.unsubscribe();
-    }
-  }, [marketStore, marketStore?.pool]);
   const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
 
   if (indexedMarket == null) {

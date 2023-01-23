@@ -130,13 +130,13 @@ const copy: Record<
     color: "bg-orange-400",
   },
   Reported: {
-    title: "Outcome Reported.",
-    description: "The market outcome reported by the oracle",
+    title: "Outcome Reported",
+    description: "Disputes are open to all",
     color: "bg-green-400",
   },
   AuthorizedReport: {
-    title: "Outcome Reported by Authority.",
-    description: "The market outcome reported by the authority",
+    title: "Outcome Reported by Authority",
+    description: "Waiting for correction period to end",
     color: "bg-green-400",
   },
   Resolved: {

@@ -24,7 +24,6 @@ export const useMarketStage = (market?: Market<Context>) => {
     },
     {
       enabled: Boolean(sdk && isRpcSdk(sdk) && market),
-      refetchInterval: 12 * 1000,
     },
   );
 };
