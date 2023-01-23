@@ -3,11 +3,8 @@ import absoluteUrl from "next-absolute-url";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import type { NextApiRequest, NextConfig } from "next";
 
-/**
- * WOT
- */
 export const config = {
-  runtime: "experimental-edge",
+  runtime: "edge",
 };
 
 const boldFont = fetch(
@@ -22,7 +19,7 @@ const regularFont = fetch(
   ).href,
 ).then((res) => res.arrayBuffer());
 
-export default async function (request: NextApiRequest) {
+export default async function GenerateOgImage(request: NextApiRequest) {
   const { searchParams } = new URL(request.url);
 
   if (!searchParams.has("marketId")) {
