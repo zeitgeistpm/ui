@@ -23,6 +23,7 @@ import {
 import { getBaseAsset } from "lib/gql/pool";
 import { getAssetPriceHistory } from "lib/gql/prices";
 import { useMarket } from "lib/hooks/queries/useMarket";
+import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import useMarketImageUrl from "lib/hooks/useMarketImageUrl";
 import { useMarketsStore } from "lib/stores/MarketsStore";
@@ -38,7 +39,6 @@ import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import { combineLatest, from } from "rxjs";
-
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
 });
@@ -113,9 +113,9 @@ const Market: NextPage<{
 }> = observer(({ indexedMarket, chartSeries, chartData, baseAsset }) => {
   const marketsStore = useMarketsStore();
   const router = useRouter();
+  const { marketid } = router.query;
   const [marketStore, setMarketStore] = useState<MarketStore>();
   const [prizePool, setPrizePool] = useState<string>();
-  const { marketid } = router.query;
   const store = useStore();
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
@@ -146,6 +146,7 @@ const Market: NextPage<{
       return () => sub.unsubscribe();
     }
   }, [marketStore, marketStore?.pool]);
+  const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
 
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
@@ -191,7 +192,7 @@ const Market: NextPage<{
       <Head>
         <title>{question}</title>
         <meta name="description" content={indexedMarket.description} />
-        <meta property="og:description" content={indexedMarket.description} />
+        <meta property="og:description" content={indexedMarket.question} />
         {marketImageUrl && (
           <meta property="og:image" content={marketImageUrl} />
         )}
@@ -226,7 +227,9 @@ const Market: NextPage<{
             <></>
           )}
           {pool?.liquidity != null ? (
-            <LiquidityPill liquidity={pool.liquidity} />
+            <LiquidityPill
+              liquidity={Number.isNaN(pool.liquidity) ? 0 : pool.liquidity}
+            />
           ) : (
             <></>
           )}
@@ -265,14 +268,14 @@ const Market: NextPage<{
           </div>
         )}
         {marketStore && <MarketAssetDetails marketStore={marketStore} />}
-        {marketStore?.type === "scalar" && scalarPrices && (
+        {marketStore?.type === "scalar" && spotPrices && (
           <div className="mt-ztg-20 mb-ztg-30">
             <ScalarPriceRange
-              scalarType={scalarPrices.type}
+              scalarType={marketStore.scalarType}
               lowerBound={marketStore.bounds[0]}
               upperBound={marketStore.bounds[1]}
-              shortPrice={scalarPrices.short}
-              longPrice={scalarPrices.long}
+              shortPrice={spotPrices?.get(1).toNumber()}
+              longPrice={spotPrices?.get(0).toNumber()}
             />
           </div>
         )}
