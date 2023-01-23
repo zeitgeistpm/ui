@@ -1,9 +1,11 @@
-import { Skeleton } from "@material-ui/lab";
 import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import LiquidityPill from "components/markets/LiquidityPill";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
-import MarketTimer from "components/markets/MarketTimer";
+import {
+  MarketTimer,
+  MarketTimerSkeleton,
+} from "components/markets/MarketTimer";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketImage from "components/ui/MarketImage";
@@ -20,11 +22,14 @@ import {
 } from "lib/gql/markets";
 import { getBaseAsset } from "lib/gql/pool";
 import { getAssetPriceHistory } from "lib/gql/prices";
+import { useMarket } from "lib/hooks/queries/useMarket";
+import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
+import { useMarketStage } from "lib/hooks/queries/useMarketStage";
+import useMarketImageUrl from "lib/hooks/useMarketImageUrl";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
-import useMarketImageUrl from "lib/hooks/useMarketImageUrl";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
@@ -34,11 +39,6 @@ import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import { combineLatest, from } from "rxjs";
-import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
-import { useMarket } from "lib/hooks/queries/useMarket";
-import Decimal from "decimal.js";
-import { ZTG } from "@zeitgeistpm/sdk-next";
-import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
 });
@@ -121,6 +121,9 @@ const Market: NextPage<{
   const poolStore = usePoolsStore();
   const [hasAuthReport, setHasAuthReport] = useState<boolean>();
   const marketImageUrl = useMarketImageUrl(indexedMarket.img);
+
+  const { data: marketSdkv2 } = useMarket(Number(marketid));
+  const { data: marketStage } = useMarketStage(marketSdkv2);
 
   const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
 
@@ -210,17 +213,11 @@ const Market: NextPage<{
             <></>
           )}
         </div>
-        <div className="mb-ztg-20">
-          {marketStore ? (
-            <MarketTimer
-              marketStore={marketStore}
-              hasAuthReport={hasAuthReport}
-            />
+        <div className="py-ztg-20 mb-10 h-32">
+          {marketStore && marketStage ? (
+            <MarketTimer stage={marketStage} />
           ) : (
-            <Skeleton
-              className="!py-ztg-10 !rounded-ztg-10 !transform-none"
-              height={70}
-            />
+            <MarketTimerSkeleton />
           )}
         </div>
         {chartData?.length > 0 && chartSeries ? (
