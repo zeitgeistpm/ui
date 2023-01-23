@@ -1,9 +1,9 @@
 import { ImageResponse } from "@vercel/og";
 import absoluteUrl from "next-absolute-url";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
-import type { NextApiRequest, NextConfig } from "next";
+import type { NextApiRequest, NextConfig, PageConfig } from "next";
 
-// export const config = {
+// export const config: PageConfig = {
 //   runtime: "edge",
 // };
 
