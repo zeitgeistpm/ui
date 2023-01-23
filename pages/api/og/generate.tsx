@@ -3,9 +3,9 @@ import absoluteUrl from "next-absolute-url";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import type { NextApiRequest, NextConfig } from "next";
 
-export const config = {
-  runtime: "edge",
-};
+// export const config = {
+//   runtime: "edge",
+// };
 
 const boldFont = fetch(
   new URL("../../../public/fonts/inter/static/Inter-Bold.ttf", import.meta.url)
