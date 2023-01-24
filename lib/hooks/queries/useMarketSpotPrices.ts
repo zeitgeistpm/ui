@@ -17,7 +17,7 @@ export const useMarketSpotPrices = (marketId: number) => {
   const { data: balances } = useAccountPoolAssetBalances(pool?.accountId, pool);
 
   const query = useQuery(
-    [id, assetPricesKey, pool],
+    [id, assetPricesKey, pool, balances],
     async () => {
       if (isRpcSdk(sdk)) {
         const spotPrices = new Map<number, Decimal>();

@@ -1,15 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  Context,
-  isIndexedData,
-  isRpcData,
-  isRpcSdk,
-  Pool,
-} from "@zeitgeistpm/sdk-next";
-import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import { Context, isIndexedData, isRpcSdk, Pool } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 
-export const rootKey = "account-pool-asset-balances";
+export const accountPoolAssetBalancesRootKey = Symbol();
 
 export const useAccountPoolAssetBalances = (
   address?: string,
@@ -18,7 +11,7 @@ export const useAccountPoolAssetBalances = (
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, rootKey, address, pool?.poolId],
+    [id, accountPoolAssetBalancesRootKey, address, pool?.poolId],
     async () => {
       if (isRpcSdk(sdk)) {
         const assets = isIndexedData(pool)
