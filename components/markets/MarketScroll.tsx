@@ -89,6 +89,7 @@ const MarketScroll = observer(
             className="flex flex-col md:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
             style={{ gap: `${gap}px` }}
           >
+            {console.log(markets)}
             {markets.map((market) => (
               <MarketCard
                 key={market.marketId}

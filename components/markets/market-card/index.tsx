@@ -16,6 +16,7 @@ export interface IndexedMarketCardData {
   prediction: string;
   volume: number;
   baseAsset: string;
+  tags: [];
 }
 
 export interface MarketCardProps extends IndexedMarketCardData {
@@ -63,7 +64,14 @@ const MarketCardInfo = ({
     </div>
   );
 };
-
+/*TODO:
+- get category
+- ending soon: what is considered "soon"?
+- verified: what is that?
+- percenatges of each outcome
+- end date
+- liquidity
+*/
 const MarketCard = ({
   marketId,
   img,
@@ -77,7 +85,6 @@ const MarketCard = ({
   className = "",
 }: MarketCardProps) => {
   const [showDetailsOverlay, setShowDetailsOverlay] = useState<boolean>(false);
-
   const infoRows = [
     { name: "Prediction", value: prediction },
     {
@@ -116,8 +123,24 @@ const MarketCard = ({
             onClick={() => setShowDetailsOverlay(true)}
           />
         )} */}
-          <Link href={`/markets/${marketId}`} className="flex items-center">
-            <MarketImage image={img} alt={question} />
+          <Link
+            href={`/markets/${marketId}`}
+            className="flex flex-col items-center"
+          >
+            <div className="flex ">
+              <MarketImage image={img} alt={question} />
+              <div className="flex flex-wrap">
+                <span>Lorem</span>
+                <span>Lorem</span>
+                <span>Lorem</span>
+                <span>Lorem</span>
+                <span>Lorem</span>
+                <span>Lorem</span>
+                <span>Lorem</span>
+                <span>Lorem</span>
+                <span>Lorem</span>
+              </div>
+            </div>
             <MarketCardInfo question={question} rows={infoRows} />
           </Link>
         </div>

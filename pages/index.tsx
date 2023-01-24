@@ -116,6 +116,7 @@ const IndexPage: NextPage<{
           </motion.div>
         </div>
         <LearnSection />
+        {console.log(featuredMarkets)}
         {featuredMarkets.length > 0 && (
           <div className="my-[60px]">
             <MarketScroll

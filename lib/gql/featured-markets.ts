@@ -44,6 +44,7 @@ const marketQuery = gql`
         ticker
       }
       outcomeAssets
+      tags
     }
   }
 `;
@@ -80,6 +81,7 @@ const getFeaturedMarkets = async (
           marketType: { [key: string]: string };
           categories: { color: string; name: string; ticker: string }[];
           outcomeAssets: string[];
+          tags: [];
         }[];
       }>(marketQuery, {
         marketId: id,
@@ -127,7 +129,6 @@ const getFeaturedMarkets = async (
           return marketCategory;
         },
       );
-
       const featuredMarket: IndexedMarketCardData = {
         marketId: market.marketId,
         question: market.question,
@@ -137,6 +138,7 @@ const getFeaturedMarkets = async (
         volume: new Decimal(pool.volume).div(ZTG).toNumber(),
         baseAsset: pool.baseAsset,
         outcomes: marketCategories,
+        tags: market.tags,
       };
 
       return featuredMarket;
