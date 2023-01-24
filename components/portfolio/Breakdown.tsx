@@ -42,6 +42,12 @@ export type PortfolioBreakdownProps =
       usdZtgPrice: Decimal;
     };
 
+/**
+ * Show a breakdown of an accounts portofolio.
+ *
+ * @param props PortfolioBreakdownProps
+ * @returns JSX.Element
+ */
 export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
   return (
     <div className="flex">
@@ -116,6 +122,12 @@ export type BreakdownSlotProps = {
   changePercentage: number;
 };
 
+/**
+ * A slot for a portofolio breakdown value.
+ *
+ * @param props BreakdownSlotProps
+ * @returns JSX.Element
+ */
 export const BreakdownSlot = ({
   title,
   value,
@@ -144,7 +156,12 @@ export const BreakdownSlot = ({
   );
 };
 
-export const BreakdownSlotSkeleton = () => {
+/**
+ * A skeleton for a breakdown slot that renders closely to how it will look when loaded.
+ *
+ * @returns JSX.Element
+ */
+const BreakdownSlotSkeleton = () => {
   const { title, value, conversion } = useMemo(() => {
     return {
       title: random(120, 165),
