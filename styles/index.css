@@ -275,7 +275,7 @@ td:last-child {
 
 .header {
   @apply font-bold;
-  @apply text-ztg-20-150;
+  @apply text-3xl;
 }
 
 .sub-header {

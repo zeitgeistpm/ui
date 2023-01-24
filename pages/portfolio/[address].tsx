@@ -5,9 +5,11 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import PortfolioCard, { Position } from "components/account/PortfolioCard";
 import AssetActionButtons from "components/assets/AssetActionButtons";
+import { PortfolioBreakdown } from "components/portfolio/Breakdown";
 import InfoBoxes from "components/ui/InfoBoxes";
 import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
 import TimeSeriesChart, { ChartData } from "components/ui/TimeSeriesChart";
+import Decimal from "decimal.js";
 import { DAY_SECONDS, ZTG } from "lib/constants";
 import { useObservable } from "lib/hooks";
 import { useAccountBalanceHistory } from "lib/hooks/queries/useAccountBalanceHistory";
@@ -268,15 +270,39 @@ const Portfolio: NextPage = observer(() => {
     setTimeFilter(filter);
   };
 
+  const breakdown = {
+    usdZtgPrice: new Decimal(0.1),
+    total: {
+      value: new Decimal(1238147473712737),
+      changePercentage: 12,
+    },
+    tradingPositions: {
+      value: new Decimal(489384787458),
+      changePercentage: -32,
+    },
+    subsidy: {
+      value: new Decimal(9459388294948958),
+      changePercentage: 12,
+    },
+    bonded: {
+      value: new Decimal(234422344),
+      changePercentage: 30,
+    },
+  };
+
   return (
     <>
       <InfoBoxes />
 
-      <h2 className="header mb-ztg-23">Portfolio</h2>
+      <h2 className="header text-xs font-bold mb-8">Portfolio</h2>
       {message ? (
         <div>{message}</div>
       ) : (
         <>
+          <div className="mb-12">
+            <h3 className="font-bold text-xl mb-4">Breakdown</h3>
+            <PortfolioBreakdown {...breakdown} />
+          </div>
           <div className="-ml-ztg-22 mb-ztg-30">
             <div className="flex justify-end -mt-ztg-30">
               <TimeFilters value={timeFilter} onClick={handleTimeFilterClick} />
