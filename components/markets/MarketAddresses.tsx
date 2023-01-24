@@ -2,9 +2,10 @@ import DiscordIcon from "components/icons/DiscordIcon";
 import SubIdIcon from "components/icons/SubIdIcon";
 import SubScanIcon from "components/icons/SubScanIcon";
 import TwitterIcon from "components/icons/TwitterIcon";
-import ZeitgeistIcon from "components/icons/ZeitgeistIcon";
+import ZeitgeistIconDark from "components/icons/ZeitgeistIconDark";
 import Avatar from "components/ui/Avatar";
 import CopyIcon from "components/ui/CopyIcon";
+import Link from "next/link";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { useModalStore } from "lib/stores/ModalStore";
 import { Judgement, UserIdentity } from "lib/stores/UserStore";
@@ -87,15 +88,15 @@ const AddressInspectContent = ({
           <SubScanIcon />
           <span className="ml-ztg-10">SubScan</span>
         </a>
-        <a
+        <Link
           className="flex"
-          href={`https://app.zeitgeist.pm/portfolio/${address}`}
+          href={`/portfolio/${address}`}
           target="_blank"
           rel="noreferrer"
         >
-          <ZeitgeistIcon width={25} height={25} />
+          <ZeitgeistIconDark width={25} height={25} />
           <span className="ml-ztg-10">Portfolio</span>
-        </a>
+        </Link>
       </div>
     </div>
   );
