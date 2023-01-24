@@ -18,9 +18,11 @@ export const extractSwapWeights = (
 };
 
 export const calcTotalAssetPrice = (pool: CPool) => {
-  return pool?.assets
+  const totalPrice = pool?.assets
     .map((asset) => (asset.id != null ? asset.price : 0))
     .reduce((prev, acc) => acc + prev, 0);
+
+  return isNaN(totalPrice) ? 1 : totalPrice;
 };
 
 export const generateSwapExactAmountOutTx = (

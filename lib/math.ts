@@ -5,11 +5,11 @@ export const calcRelativeDiff = (expected, actual) => {
 };
 
 export const calcSpotPrice = (
-  tokenBalanceIn,
-  tokenWeightIn,
-  tokenBalanceOut,
-  tokenWeightOut,
-  swapFee,
+  tokenBalanceIn: Decimal | string | number,
+  tokenWeightIn: Decimal | string | number,
+  tokenBalanceOut: Decimal | string | number,
+  tokenWeightOut: Decimal | string | number,
+  swapFee: Decimal | string | number,
 ) => {
   const numer = new Decimal(tokenBalanceIn).div(new Decimal(tokenWeightIn));
   const denom = new Decimal(tokenBalanceOut).div(new Decimal(tokenWeightOut));
