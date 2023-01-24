@@ -3,10 +3,15 @@ import { ZTG } from "@zeitgeistpm/sdk-next";
 import { random } from "lodash-es";
 import Decimal from "decimal.js";
 import { formatNumberLocalized } from "lib/util";
-import { useMemo } from "react";
+import { use, useMemo } from "react";
 
 export type PortfolioBreakdownProps =
-  | { loading: true }
+  | {
+      /**
+       * The breakdown is loading and should render a skeleton.
+       */
+      loading: true;
+    }
   | {
       /**
        * The total value of the portfolio in ztg(planck)

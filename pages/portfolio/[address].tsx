@@ -27,7 +27,7 @@ import { get24HrPriceChange, PricePoint } from "lib/util/market";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { concatWith, from } from "rxjs";
 
 const Portfolio: NextPage = observer(() => {
@@ -270,6 +270,15 @@ const Portfolio: NextPage = observer(() => {
     setTimeFilter(filter);
   };
 
+  /**
+   * for trading positions and subsidy
+   *  lookup accountBalances, filter by accountId
+   *  group by assetId is subsidy or trading related clientside
+   *    for trading and subsidy respectively
+   *      get assetId
+   *      fetch price and ballance from rpc
+   */
+
   const breakdown = {
     usdZtgPrice: new Decimal(0.1),
     total: {
@@ -292,8 +301,6 @@ const Portfolio: NextPage = observer(() => {
 
   return (
     <>
-      <InfoBoxes />
-
       <h2 className="header text-xs font-bold mb-8">Portfolio</h2>
       {message ? (
         <div>{message}</div>
@@ -301,7 +308,9 @@ const Portfolio: NextPage = observer(() => {
         <>
           <div className="mb-12">
             <h3 className="font-bold text-xl mb-4">Breakdown</h3>
-            <PortfolioBreakdown {...breakdown} />
+            <Suspense fallback={<div>Loading...</div>}>
+              <PortfolioBreakdown {...breakdown} />
+            </Suspense>
           </div>
           <div className="-ml-ztg-22 mb-ztg-30">
             <div className="flex justify-end -mt-ztg-30">
