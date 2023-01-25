@@ -9,6 +9,7 @@ import {
   IndexedPool,
   PoolShareAssetId,
   ScalarAssetId,
+  ZTG,
 } from "@zeitgeistpm/sdk-next";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import {
@@ -19,10 +20,13 @@ import { MarketPositions } from "components/portfolio/MarketPositions";
 import InfoBoxes from "components/ui/InfoBoxes";
 import Decimal from "decimal.js";
 import { DAY_SECONDS } from "lib/constants";
+import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalances";
 import { useAccountTokenPositions } from "lib/hooks/queries/useAccountTokenPositions";
 import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
 import { useMarketsByIds } from "lib/hooks/queries/useMarketsByIds";
+import { usePoolAccountIds } from "lib/hooks/queries/usePoolAccountIds";
 import { usePoolsByIds } from "lib/hooks/queries/usePoolsByIds";
+import { usePoolZtgBalance } from "lib/hooks/queries/usePoolZtgBalance";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
@@ -62,11 +66,43 @@ const Portfolio: NextPage = observer(() => {
   const pools = usePoolsByIds(filter);
   const markets = useMarketsByIds(filter);
 
+  const poolAccountIds = usePoolAccountIds(pools.data);
+  const poolsZtgBalances = usePoolZtgBalance(pools.data ?? []);
+
+  const poolAssetBalances = useAccountAssetBalances(
+    positions.data
+      ?.map((position) => {
+        const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
+        const pool = pools.data?.find((pool) => {
+          if ("PoolShare" in assetId) {
+            return pool.poolId === assetId.PoolShare;
+          }
+          if ("CategoricalOutcome" in assetId || "ScalarOutcome" in assetId) {
+            return pool.marketId === getMarketIdOf(assetId);
+          }
+        });
+        if (!pool) return null;
+        return {
+          account: poolAccountIds[pool.poolId],
+          assetId,
+        };
+      })
+      .filter(isNotNull) ?? [],
+  );
+
+  const userAssetBalances = useAccountAssetBalances(
+    positions.data?.map((position) => ({
+      assetId: fromCompositeIndexerAssetId(position.assetId).unwrap(),
+      account: address,
+    })) ?? [],
+  );
+
   type PositionData<T extends AssetId> = {
     assetId: T;
     marketId: number;
     market: FullMarketFragment;
     pool: IndexedPool<Context>;
+    assetPrice: Decimal;
   };
 
   const { marketPositions, subsidyPositions } = useMemo(() => {
@@ -86,6 +122,7 @@ const Portfolio: NextPage = observer(() => {
             marketId,
             market,
             pool,
+            assetPrice: new Decimal(ZTG), // mock
           });
         }
         if ("PoolShare" in assetId) {
@@ -99,6 +136,7 @@ const Portfolio: NextPage = observer(() => {
             marketId,
             market,
             pool,
+            assetPrice: new Decimal(ZTG), // mock
           });
         }
       });
@@ -109,8 +147,6 @@ const Portfolio: NextPage = observer(() => {
       subsidyPositions,
     };
   }, [positions.data, pools.data, markets.data]);
-
-  console.log(marketPositions, subsidyPositions);
 
   // const assetPricesHistoryLookup = useAssetsPriceHistory(
   //   accountTokenPositions.data?.map(({ asset }) => asset),
