@@ -119,7 +119,6 @@ const Market: NextPage<{
   const store = useStore();
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
-  const [hasAuthReport, setHasAuthReport] = useState<boolean>();
   const marketImageUrl = useMarketImageUrl(indexedMarket.img);
 
   const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket(
@@ -146,13 +145,6 @@ const Market: NextPage<{
 
         setPool(pool);
       }
-
-      const report =
-        await store.sdk.api.query.authorized.authorizedOutcomeReports(
-          market.id,
-        );
-
-      setHasAuthReport(report.isEmpty === false);
     }
   };
 
