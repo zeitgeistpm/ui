@@ -16,7 +16,6 @@ export const useMarket = (filter?: UseMarketFilter) => {
     [id, marketsRootQuery, filter],
     async () => {
       if (isIndexedSdk(sdk)) {
-        console.log(filter);
         return batcher(sdk).fetch(filter);
       }
       return null;

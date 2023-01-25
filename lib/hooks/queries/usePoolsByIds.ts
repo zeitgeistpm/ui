@@ -1,5 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  Context,
+  IndexedPool,
   isIndexedSdk,
   isMarketIdQuery,
   isPoolIdQuery,
@@ -14,7 +16,7 @@ export const usePoolsByIds = (poolQueries?: PoolGetQuery[]) => {
   const [sdk, id] = useSdkv2();
   const queryClient = useQueryClient();
 
-  const query = useQuery(
+  const query = useQuery<IndexedPool<Context>[]>(
     [id, rootKey, poolQueries],
     async () => {
       if (poolQueries && isIndexedSdk(sdk)) {

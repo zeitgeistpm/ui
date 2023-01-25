@@ -10,11 +10,6 @@ import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "account-token-positions";
 
-export type AccountTokenPosition = {
-  asset: CategoricalAssetId | ScalarAssetId;
-  balance: OrmlTokensAccountData;
-};
-
 export const useAccountTokenPositions = (account?: string) => {
   const [sdk, id] = useSdkv2();
 

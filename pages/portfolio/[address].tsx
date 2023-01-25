@@ -1,31 +1,34 @@
 import { Tab } from "@headlessui/react";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import {
   AssetId,
   CategoricalAssetId,
+  Context,
   fromCompositeIndexerAssetId,
   getMarketIdOf,
-  getPoolId,
+  IndexedPool,
   PoolShareAssetId,
   ScalarAssetId,
 } from "@zeitgeistpm/sdk-next";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
-import { PortfolioBreakdown } from "components/portfolio/Breakdown";
+import {
+  PortfolioBreakdown,
+  PortfolioBreakdownProps,
+} from "components/portfolio/Breakdown";
 import { MarketPositions } from "components/portfolio/MarketPositions";
 import InfoBoxes from "components/ui/InfoBoxes";
-import { filters, TimeFilter } from "components/ui/TimeFilters";
 import Decimal from "decimal.js";
 import { DAY_SECONDS } from "lib/constants";
-import { useAccountBalanceHistory } from "lib/hooks/queries/useAccountBalanceHistory";
 import { useAccountTokenPositions } from "lib/hooks/queries/useAccountTokenPositions";
-import { useRpcPricesForAssets } from "lib/hooks/queries/useRpcPricesForAssets";
 import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
+import { useMarketsByIds } from "lib/hooks/queries/useMarketsByIds";
 import { usePoolsByIds } from "lib/hooks/queries/usePoolsByIds";
-import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
+import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 const Portfolio: NextPage = observer(() => {
   const store = useStore();
@@ -34,72 +37,80 @@ const Portfolio: NextPage = observer(() => {
     ? router.query.address[0]
     : router.query.address;
 
-  const [timeFilter, setTimeFilter] = useState<TimeFilter>(
-    filters.find((f) => f.label === "All"),
-  );
-
   const { data: now } = useChainTimeNow();
 
-  const balanceHistory = useAccountBalanceHistory(address, timeFilter);
-  const accountTokenPositions = useAccountTokenPositions(address);
+  const { data: ztgPrice } = useZtgInfo();
+  const positions = useAccountTokenPositions(address);
 
-  const { marketPositions, subsidyPositions } = useMemo(() => {
-    let marketPositions: Array<{
-      assetId: ScalarAssetId | CategoricalAssetId;
-      marketId: number;
-    }> = [];
-
-    let subsidyPositions: Array<{
-      assetId: PoolShareAssetId;
-      poolId: number;
-    }> = [];
-
-    accountTokenPositions.data?.forEach((position) => {
+  const filter = positions.data
+    ?.map((position) => {
       const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
       if ("CategoricalOutcome" in assetId || "ScalarOutcome" in assetId) {
-        marketPositions.push({
-          assetId,
+        return {
           marketId: getMarketIdOf(assetId),
-        });
+        };
       }
       if ("PoolShare" in assetId) {
-        subsidyPositions.push({
-          assetId,
+        return {
           poolId: assetId.PoolShare,
-        });
+        };
       }
-    });
+      return null;
+    })
+    .filter(isNotNull);
+
+  const pools = usePoolsByIds(filter);
+  const markets = useMarketsByIds(filter);
+
+  type PositionData<T extends AssetId> = {
+    assetId: T;
+    marketId: number;
+    market: FullMarketFragment;
+    pool: IndexedPool<Context>;
+  };
+
+  const { marketPositions, subsidyPositions } = useMemo(() => {
+    let marketPositions: PositionData<ScalarAssetId | CategoricalAssetId>[] =
+      [];
+    let subsidyPositions: PositionData<PoolShareAssetId>[] = [];
+
+    if (positions.data && pools.data && markets.data) {
+      positions.data?.forEach((position) => {
+        const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
+        if ("CategoricalOutcome" in assetId || "ScalarOutcome" in assetId) {
+          const marketId = getMarketIdOf(assetId);
+          const market = markets.data?.find((m) => m.marketId === marketId);
+          const pool = pools.data.find((pool) => pool.marketId === marketId);
+          marketPositions.push({
+            assetId,
+            marketId,
+            market,
+            pool,
+          });
+        }
+        if ("PoolShare" in assetId) {
+          const pool = pools.data.find(
+            (pool) => pool.poolId === assetId.PoolShare,
+          );
+          const marketId = pool.marketId;
+          const market = markets.data?.find((m) => m.marketId === marketId);
+          subsidyPositions.push({
+            assetId,
+            marketId,
+            market,
+            pool,
+          });
+        }
+      });
+    }
 
     return {
       marketPositions,
       subsidyPositions,
     };
-  }, [accountTokenPositions.data]);
+  }, [positions.data, pools.data, markets.data]);
 
-  console.log({ marketPositions, subsidyPositions });
-
-  // const pools = usePoolsByIds(
-  //   accountTokenPositions.data
-  //     ?.map((position) => {
-  //       const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
-  //       if ("Ztg" in assetId) {
-  //         return null;
-  //       }
-  //       if ("PoolShare" in assetId) {
-  //         return {
-  //           poolId: assetId.PoolShare,
-  //         };
-  //       }
-  //       return {
-  //         marketId: getMarketIdOf(
-  //           assetId as CategoricalAssetId | ScalarAssetId,
-  //         ),
-  //       };
-  //     })
-  //     .filter(isNotNull),
-  // );
-
-  // const saturatedPoolsIndex = useSaturatedPoolsIndex(pools?.data);
+  console.log(marketPositions, subsidyPositions);
 
   // const assetPricesHistoryLookup = useAssetsPriceHistory(
   //   accountTokenPositions.data?.map(({ asset }) => asset),
@@ -117,25 +128,31 @@ const Portfolio: NextPage = observer(() => {
    *      fetch price and ballance from rpc
    */
 
-  const breakdown = {
-    usdZtgPrice: new Decimal(0.1),
-    total: {
-      value: new Decimal(1238147473712737),
-      changePercentage: 12,
-    },
-    tradingPositions: {
-      value: new Decimal(489384787458),
-      changePercentage: -32,
-    },
-    subsidy: {
-      value: new Decimal(9459388294948958),
-      changePercentage: 12,
-    },
-    bonded: {
-      value: new Decimal(234422344),
-      changePercentage: 30,
-    },
-  };
+  const breakdown = useMemo<PortfolioBreakdownProps>(() => {
+    if (ztgPrice) {
+      return {
+        usdZtgPrice: ztgPrice.price,
+        total: {
+          value: new Decimal(1238147473712737),
+          changePercentage: 12,
+        },
+        tradingPositions: {
+          value: new Decimal(489384787458),
+          changePercentage: -32,
+        },
+        subsidy: {
+          value: new Decimal(9459388294948958),
+          changePercentage: 12,
+        },
+        bonded: {
+          value: new Decimal(234422344),
+          changePercentage: 30,
+        },
+      };
+    }
+
+    return { loading: true };
+  }, [ztgPrice]);
 
   return (
     <>
