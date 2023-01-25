@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { isNA, isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { calcSpotPrice } from "lib/math";
 import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
@@ -15,11 +15,15 @@ export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
 
   const { data: market } = useMarket(marketId);
   const pool = market?.pool;
-  const { data: balances } = useAccountPoolAssetBalances(pool?.accountId, pool);
-  const { data: basePoolBalance } = useZtgBalance(pool?.accountId);
+  const { data: balances } = useAccountPoolAssetBalances(
+    pool?.accountId,
+    pool,
+    blockNumber,
+  );
+  const { data: basePoolBalance } = useZtgBalance(pool?.accountId, blockNumber);
 
   const query = useQuery(
-    [id, assetPricesKey, pool],
+    [id, assetPricesKey, pool, blockNumber],
     async () => {
       if (isRpcSdk(sdk)) {
         const spotPrices = new Map<number, Decimal>();
@@ -33,6 +37,7 @@ export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
           //base weight is equal to the sum of all other assets
           const baseWeight = new Decimal(pool.totalWeight).div(2);
 
+          //todo: check with fresh market, balances could be null
           outcomeWeights.forEach((weight, index) => {
             const spotPrice = calcSpotPrice(
               basePoolBalance.toString(),
@@ -81,7 +86,7 @@ export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
           isRpcSdk(sdk) &&
           marketId != null &&
           pool &&
-          basePoolBalance &&
+          isNA(basePoolBalance) === false &&
           balances?.length > 0,
       ),
     },

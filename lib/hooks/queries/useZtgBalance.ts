@@ -10,7 +10,7 @@ export const useZtgBalance = (address: string, blockNumber?: number) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, rootKey, address],
+    [id, rootKey, address, blockNumber],
     async () => {
       if (address && isRpcSdk(sdk)) {
         const api = await getApiAtBlock(sdk.context.api, blockNumber);

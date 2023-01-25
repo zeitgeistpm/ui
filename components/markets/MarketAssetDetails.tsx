@@ -3,12 +3,9 @@ import Decimal from "decimal.js";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import { DAY_SECONDS, ZTG } from "lib/constants";
-import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
 import { useNavigationStore } from "lib/stores/NavigationStore";
 import { useStore } from "lib/stores/Store";
-import { useUserStore } from "lib/stores/UserStore";
-import { get24HrPriceChange } from "lib/util/market";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { observer } from "mobx-react";
 import dynamic from "next/dynamic";
@@ -16,6 +13,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { from } from "rxjs";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
+import { useMarket24hrPriceChanges } from "lib/hooks/queries/useMarket24hrPriceChanges";
 
 const columns: TableColumn[] = [
   {
@@ -54,8 +52,8 @@ const MarketAssetDetails = observer(
     const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
     const { data: market } = useMarket(marketId);
-
     const { data: spotPrices } = useMarketSpotPrices(marketId);
+    const { data: priceChanges } = useMarket24hrPriceChanges(marketId);
 
     const poolAlreadyDeployed = market?.pool?.poolId != null;
 
@@ -63,20 +61,12 @@ const MarketAssetDetails = observer(
       navigationStore.setPage("marketDetails");
     }, []);
 
-    const marketLoaded = marketStore != null;
-
-    // useEffect(() => {
-    //   if (marketLoaded && poolAlreadyDeployed) {
-    //     getPageData();
-    //   }
-    // }, [marketStore?.pool]);
-
     useEffect(() => {
       if (market == null) {
         return;
       }
       getPageData();
-    }, [market, spotPrices]);
+    }, [market, spotPrices, priceChanges]);
 
     useEffect(() => {
       if (
@@ -131,22 +121,7 @@ const MarketAssetDetails = observer(
           const outcomeName = category.name;
           const currentPrice = spotPrices?.get(index).toNumber();
 
-          let priceHistory: {
-            newPrice: number;
-            timestamp: string;
-          }[] = [];
-
-          //maybe run this async?
-          //todo: test with scalar
-          // priceHistory = await store.sdk.models.getAssetPriceHistory(
-          //   marketId,
-          //   market.pool.weights[index][1] ?? assetId.scalarOutcome?.[1],
-          //   dateOneDayAgo,
-          // );
-
-          const priceChange = priceHistory
-            ? get24HrPriceChange(priceHistory)
-            : 0;
+          const priceChange = priceChanges?.get(index);
           tblData = [
             ...tblData,
             {

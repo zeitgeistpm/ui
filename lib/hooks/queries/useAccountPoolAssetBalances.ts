@@ -13,7 +13,7 @@ export const useAccountPoolAssetBalances = (
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, rootKey, address, pool?.poolId],
+    [id, rootKey, address, pool?.poolId, blockNumber],
     async () => {
       if (isRpcSdk(sdk)) {
         const assets = isIndexedData(pool)
