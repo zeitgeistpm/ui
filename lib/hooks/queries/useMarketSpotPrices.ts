@@ -37,7 +37,6 @@ export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
           //base weight is equal to the sum of all other assets
           const baseWeight = new Decimal(pool.totalWeight).div(2);
 
-          //todo: check with fresh market, balances could be null
           outcomeWeights.forEach((weight, index) => {
             const spotPrice = calcSpotPrice(
               basePoolBalance.toString(),
@@ -47,7 +46,7 @@ export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
               0,
             );
 
-            spotPrices.set(index, spotPrice);
+            spotPrices.set(index, spotPrice.isNaN() ? null : spotPrice);
           });
           return spotPrices;
         } else {
