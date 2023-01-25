@@ -1,6 +1,7 @@
 import { Tab } from "@headlessui/react";
 import { getMarketIdOf } from "@zeitgeistpm/sdk-next";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
+import { MarketPositions } from "components/portfolio/MarketPositions";
 import InfoBoxes from "components/ui/InfoBoxes";
 import { filters, TimeFilter } from "components/ui/TimeFilters";
 import Decimal from "decimal.js";
@@ -91,16 +92,35 @@ const Portfolio: NextPage = observer(() => {
       <div>
         <h3 className="text-3xl mb-6 text-center">Predictions</h3>
         <Tab.Group>
-          <Tab.List className="flex center">
-            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500">
+          <Tab.List className="flex center mb-8">
+            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
               By Markets
             </Tab>
-            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500">
+            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
               Subsidy
             </Tab>
           </Tab.List>
           <Tab.Panels>
-            <Tab.Panel>Content 1</Tab.Panel>
+            <Tab.Panel>
+              <MarketPositions
+                title="Who will win the 2022 Men's T20 Cricket World Cup?"
+                usdZtgPrice={new Decimal(0.1)}
+                positions={[
+                  {
+                    outcome: "Morocco",
+                    balance: new Decimal(82746729345743),
+                    price: new Decimal(2.4),
+                    dailyChangePercentage: 12,
+                  },
+                  {
+                    outcome: "Zimbabwe",
+                    balance: new Decimal(123431233423),
+                    price: new Decimal(1.1),
+                    dailyChangePercentage: -5,
+                  },
+                ]}
+              />
+            </Tab.Panel>
             <Tab.Panel>Content 3</Tab.Panel>
           </Tab.Panels>
         </Tab.Group>

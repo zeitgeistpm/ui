@@ -234,17 +234,6 @@ table {
   border-spacing: 0 15px;
 }
 
-td:first-child {
-  padding-left: 15px;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
-}
-
-td:last-child {
-  padding-right: 15px;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-}
 
 /* Scroll */
 

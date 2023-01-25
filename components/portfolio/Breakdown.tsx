@@ -154,7 +154,7 @@ export const BreakdownSlot = ({
           {changePercentage}%
         </div>
       </div>
-      <div className="text-gray-500 mb-1">
+      <div className="text-gray-500 mb-1 font-light">
         ${formatNumberLocalized(usdZtgPrice.mul(value.div(ZTG)).toNumber())}
       </div>
     </>
