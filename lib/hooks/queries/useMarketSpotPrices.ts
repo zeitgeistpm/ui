@@ -6,15 +6,17 @@ import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 import { useSdkv2 } from "../useSdkv2";
 import { useAccountPoolAssetBalances } from "./useAccountPoolAssetBalances";
 import { useMarket } from "./useMarket";
+import { useZtgBalance } from "./useZtgBalance";
 
 export const assetPricesKey = Symbol();
 
-export const useMarketSpotPrices = (marketId: number) => {
+export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
   const [sdk, id] = useSdkv2();
 
   const { data: market } = useMarket(marketId);
   const pool = market?.pool;
   const { data: balances } = useAccountPoolAssetBalances(pool?.accountId, pool);
+  const { data: basePoolBalance } = useZtgBalance(pool?.accountId);
 
   const query = useQuery(
     [id, assetPricesKey, pool],
@@ -28,16 +30,12 @@ export const useMarketSpotPrices = (marketId: number) => {
         );
 
         if (market.status !== "Resolved") {
-          const basePoolBalance = await sdk.context.api.query.system.account(
-            pool.accountId,
-          );
-
           //base weight is equal to the sum of all other assets
           const baseWeight = new Decimal(pool.totalWeight).div(2);
 
           outcomeWeights.forEach((weight, index) => {
             const spotPrice = calcSpotPrice(
-              basePoolBalance.data.free.toString(),
+              basePoolBalance.toString(),
               baseWeight,
               balances[index].free.toString(),
               weight.len,
@@ -83,6 +81,7 @@ export const useMarketSpotPrices = (marketId: number) => {
           isRpcSdk(sdk) &&
           marketId != null &&
           pool &&
+          basePoolBalance &&
           balances?.length > 0,
       ),
     },
