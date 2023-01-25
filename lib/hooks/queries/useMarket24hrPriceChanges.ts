@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { useStore } from "lib/stores/Store";
+import { useEffect, useState } from "react";
 import { useSdkv2 } from "../useSdkv2";
 import { useMarketSpotPrices } from "./useMarketSpotPrices";
 
@@ -9,20 +10,30 @@ export const market24hrPriceChangesKey = Symbol();
 const getBlock24hrsAgo = (blockTimeSec: number, currentBlock: number) => {
   const daySeconds = 24 * 60 * 60;
   const dayBlocks = daySeconds / blockTimeSec;
-  console.log(dayBlocks);
 
   return currentBlock - dayBlocks;
 };
 
 export const useMarket24hrPriceChanges = (marketId: number) => {
   const [sdk, id] = useSdkv2();
+  const [debouncedBlockNumber, setDebouncedBlockNumber] = useState<number>();
 
-  //todo: prevent block number change updates
   const { config, blockNumber } = useStore();
 
+  useEffect(() => {
+    if (!blockNumber) return;
+
+    if (
+      !debouncedBlockNumber ||
+      blockNumber.toNumber() - debouncedBlockNumber > 100
+    ) {
+      setDebouncedBlockNumber(blockNumber.toNumber());
+    }
+  }, [blockNumber]);
+
   const block24hrsAgo =
-    config?.blockTimeSec && blockNumber
-      ? getBlock24hrsAgo(config.blockTimeSec, blockNumber.toNumber())
+    config?.blockTimeSec && debouncedBlockNumber
+      ? getBlock24hrsAgo(config.blockTimeSec, debouncedBlockNumber)
       : null;
 
   const { data: pricesNow } = useMarketSpotPrices(marketId);
