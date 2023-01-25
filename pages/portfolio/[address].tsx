@@ -1,5 +1,14 @@
 import { Tab } from "@headlessui/react";
-import { getMarketIdOf } from "@zeitgeistpm/sdk-next";
+import {
+  AssetId,
+  CategoricalAssetId,
+  fromCompositeIndexerAssetId,
+  getMarketIdOf,
+  getPoolId,
+  PoolShareAssetId,
+  ScalarAssetId,
+} from "@zeitgeistpm/sdk-next";
+import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
 import { MarketPositions } from "components/portfolio/MarketPositions";
 import InfoBoxes from "components/ui/InfoBoxes";
@@ -8,7 +17,7 @@ import Decimal from "decimal.js";
 import { DAY_SECONDS } from "lib/constants";
 import { useAccountBalanceHistory } from "lib/hooks/queries/useAccountBalanceHistory";
 import { useAccountTokenPositions } from "lib/hooks/queries/useAccountTokenPositions";
-import { useAssetsPriceHistory } from "lib/hooks/queries/useAssetsPriceHistory";
+import { useRpcPricesForAssets } from "lib/hooks/queries/useRpcPricesForAssets";
 import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
 import { usePoolsByIds } from "lib/hooks/queries/usePoolsByIds";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
@@ -16,7 +25,7 @@ import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 const Portfolio: NextPage = observer(() => {
   const store = useStore();
@@ -34,20 +43,70 @@ const Portfolio: NextPage = observer(() => {
   const balanceHistory = useAccountBalanceHistory(address, timeFilter);
   const accountTokenPositions = useAccountTokenPositions(address);
 
-  const pools = usePoolsByIds(
-    accountTokenPositions.data?.map(({ asset }) => ({
-      marketId: getMarketIdOf(asset),
-    })),
-  );
+  const { marketPositions, subsidyPositions } = useMemo(() => {
+    let marketPositions: Array<{
+      assetId: ScalarAssetId | CategoricalAssetId;
+      marketId: number;
+    }> = [];
 
-  const saturatedPoolsIndex = useSaturatedPoolsIndex(pools?.data);
+    let subsidyPositions: Array<{
+      assetId: PoolShareAssetId;
+      poolId: number;
+    }> = [];
 
-  const assetPricesHistoryLookup = useAssetsPriceHistory(
-    accountTokenPositions.data?.map(({ asset }) => asset),
-    {
-      startTimeStamp: dateOneWeekAgo,
-    },
-  );
+    accountTokenPositions.data?.forEach((position) => {
+      const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
+      if ("CategoricalOutcome" in assetId || "ScalarOutcome" in assetId) {
+        marketPositions.push({
+          assetId,
+          marketId: getMarketIdOf(assetId),
+        });
+      }
+      if ("PoolShare" in assetId) {
+        subsidyPositions.push({
+          assetId,
+          poolId: assetId.PoolShare,
+        });
+      }
+    });
+
+    return {
+      marketPositions,
+      subsidyPositions,
+    };
+  }, [accountTokenPositions.data]);
+
+  console.log({ marketPositions, subsidyPositions });
+
+  // const pools = usePoolsByIds(
+  //   accountTokenPositions.data
+  //     ?.map((position) => {
+  //       const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
+  //       if ("Ztg" in assetId) {
+  //         return null;
+  //       }
+  //       if ("PoolShare" in assetId) {
+  //         return {
+  //           poolId: assetId.PoolShare,
+  //         };
+  //       }
+  //       return {
+  //         marketId: getMarketIdOf(
+  //           assetId as CategoricalAssetId | ScalarAssetId,
+  //         ),
+  //       };
+  //     })
+  //     .filter(isNotNull),
+  // );
+
+  // const saturatedPoolsIndex = useSaturatedPoolsIndex(pools?.data);
+
+  // const assetPricesHistoryLookup = useAssetsPriceHistory(
+  //   accountTokenPositions.data?.map(({ asset }) => asset),
+  //   {
+  //     startTimeStamp: dateOneWeekAgo,
+  //   },
+  // );
 
   /**
    * for trading positions and subsidy
@@ -92,7 +151,7 @@ const Portfolio: NextPage = observer(() => {
       <div>
         <h3 className="text-3xl mb-6 text-center">Predictions</h3>
         <Tab.Group>
-          <Tab.List className="flex center mb-8">
+          <Tab.List className="flex center mb-14">
             <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
               By Markets
             </Tab>
@@ -103,6 +162,7 @@ const Portfolio: NextPage = observer(() => {
           <Tab.Panels>
             <Tab.Panel>
               <MarketPositions
+                className="mb-14"
                 title="Who will win the 2022 Men's T20 Cricket World Cup?"
                 usdZtgPrice={new Decimal(0.1)}
                 positions={[

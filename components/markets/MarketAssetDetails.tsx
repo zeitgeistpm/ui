@@ -51,7 +51,7 @@ const MarketAssetDetails = observer(
     const [poolAlreadyDeployed, setPoolAlreadyDeployed] = useState(false);
     const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
-    const { data: market } = useMarket(marketStore.id);
+    const { data: market } = useMarket({ marketId: marketStore.id });
     const { data: spotPrices } = useMarketSpotPrices(marketStore.id);
 
     useEffect(() => {

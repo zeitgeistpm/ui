@@ -122,7 +122,7 @@ const Market: NextPage<{
   const [hasAuthReport, setHasAuthReport] = useState<boolean>();
   const marketImageUrl = useMarketImageUrl(indexedMarket.img);
 
-  const { data: marketSdkv2 } = useMarket(Number(marketid));
+  const { data: marketSdkv2 } = useMarket({ marketId: Number(marketid) });
   const { data: marketStage } = useMarketStage(marketSdkv2);
 
   const { data: spotPrices } = useMarketSpotPrices(Number(marketid));

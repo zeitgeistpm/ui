@@ -17,7 +17,7 @@ interface AssetActionButtonsProps {
 const AssetActionButtons = observer(
   ({ marketId, assetId, assetTicker }: AssetActionButtonsProps) => {
     const store = useStore();
-    const { data: market } = useMarket(marketId);
+    const { data: market } = useMarket({ marketId });
     const { data: marketStage } = useMarketStage(market);
 
     const userAddress = store.wallets?.getActiveSigner()?.address;

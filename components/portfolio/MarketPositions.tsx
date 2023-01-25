@@ -6,6 +6,7 @@ export type MarketPositionsProps = {
   title: string;
   usdZtgPrice: Decimal;
   positions: MarketPosition[];
+  className?: string;
 };
 
 export type MarketPosition = {
@@ -19,9 +20,10 @@ export const MarketPositions = ({
   title,
   positions,
   usdZtgPrice,
+  className,
 }: MarketPositionsProps) => {
   return (
-    <div>
+    <div className={`${className}`}>
       <h2 className="text-xl text-center font-light mb-6">{title}</h2>
       <table className="table-auto w-full">
         <thead className="border-b-1 border-gray-300">

@@ -33,7 +33,9 @@ const ReportBox = observer(
       useState<OutcomeOption>();
     const [options, setOptions] = useState<OutcomeOption[]>();
 
-    const { data: marketsdkv2 } = useMarket(marketStore?.market?.marketId);
+    const { data: marketsdkv2 } = useMarket({
+      marketId: marketStore?.market?.marketId,
+    });
 
     const getOptions = async (): Promise<OutcomeOption[]> => {
       const outcomes = marketStore.marketOutcomes.filter(

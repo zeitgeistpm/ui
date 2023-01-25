@@ -32,7 +32,9 @@ const DisputeBox = observer(
     const { wallets } = store;
     const notificationStore = useNotificationStore();
 
-    const { data: marketsdkv2 } = useMarket(marketStore?.market?.marketId);
+    const { data: marketsdkv2 } = useMarket({
+      marketId: marketStore?.market?.marketId,
+    });
 
     const disputeBond = store.config.markets.disputeBond;
     const disputeFactor = store.config.markets.disputeFactor;

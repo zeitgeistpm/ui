@@ -12,7 +12,7 @@ export const assetPricesKey = Symbol();
 export const useMarketSpotPrices = (marketId: number) => {
   const [sdk, id] = useSdkv2();
 
-  const { data: market } = useMarket(marketId);
+  const { data: market } = useMarket({ marketId });
   const pool = market?.pool;
   const { data: balances } = useAccountPoolAssetBalances(pool?.accountId, pool);
 
