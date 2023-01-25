@@ -43,8 +43,6 @@ export const useMarket24hrPriceChanges = (marketId: number) => {
     [id, market24hrPriceChangesKey],
     async () => {
       if (isRpcSdk(sdk)) {
-        console.log("recalc");
-
         const priceChanges = new Map<number, number>();
 
         for (const [key, nowPrice] of pricesNow.entries()) {
