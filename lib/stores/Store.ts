@@ -176,6 +176,7 @@ export default class Store {
     this.initGraphQlClient();
 
     this.userStore.checkIP();
+    this.fetchZTGPrice();
     try {
       await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
       await this.loadConfig();
@@ -200,8 +201,6 @@ export default class Store {
       );
       this.initialize();
     }
-
-    this.fetchZTGPrice();
   }
 
   async connectNewSDK(endpoint: string, gqlEndpoint: string) {
