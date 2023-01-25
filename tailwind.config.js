@@ -235,6 +235,11 @@ module.exports = {
         mystic: "#E5EAF1",
         "pastel-blue": "#B5C1CA",
         "fog-of-war": "#0F1A2D",
+        blue: {
+          light: "#E1EFFE",
+          DEFAULT: "#1C64F2",
+          dark: "#1E429F",
+        },
       },
       inset: {
         "42%": "42%",

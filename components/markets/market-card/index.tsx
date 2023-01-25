@@ -64,6 +64,25 @@ const MarketCardInfo = ({
     </div>
   );
 };
+
+const MarketCardCategories = ({ tags }: { tags: [] }) => {
+  return (
+    <div className="flex flex-wrap">
+      {!tags ? (
+        <Skeleton height={20} width={100} variant="rect" className="ml-2.5" />
+      ) : (
+        tags.map((tags) => {
+          return (
+            <span className="text-blue-dark bg-blue-light ml-2.5 px-2.5 h-fit text-xs rounded">
+              {tags}
+            </span>
+          );
+        })
+      )}
+    </div>
+  );
+};
+
 /*TODO:
 - get category
 - ending soon: what is considered "soon"?
@@ -82,6 +101,7 @@ const MarketCard = ({
   volume,
   baseAsset,
   width,
+  tags,
   className = "",
 }: MarketCardProps) => {
   const [showDetailsOverlay, setShowDetailsOverlay] = useState<boolean>(false);
@@ -123,23 +143,10 @@ const MarketCard = ({
             onClick={() => setShowDetailsOverlay(true)}
           />
         )} */}
-          <Link
-            href={`/markets/${marketId}`}
-            className="flex flex-col items-center"
-          >
+          <Link href={`/markets/${marketId}`} className="flex flex-col">
             <div className="flex ">
               <MarketImage image={img} alt={question} />
-              <div className="flex flex-wrap">
-                <span>Lorem</span>
-                <span>Lorem</span>
-                <span>Lorem</span>
-                <span>Lorem</span>
-                <span>Lorem</span>
-                <span>Lorem</span>
-                <span>Lorem</span>
-                <span>Lorem</span>
-                <span>Lorem</span>
-              </div>
+              <MarketCardCategories tags={tags} />
             </div>
             <MarketCardInfo question={question} rows={infoRows} />
           </Link>

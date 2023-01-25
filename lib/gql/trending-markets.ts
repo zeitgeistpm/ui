@@ -45,6 +45,7 @@ const marketQuery = gql`
         baseAsset
       }
       outcomeAssets
+      tags
     }
   }
 `;
@@ -94,6 +95,7 @@ const getTrendingMarkets = async (
             volume: string;
             baseAsset: string;
           };
+          tags: [];
         }[];
       }>(marketQuery, {
         poolId: Number(poolId),
@@ -136,6 +138,7 @@ const getTrendingMarkets = async (
         volume: Number(new Decimal(market.pool.volume).div(ZTG).toFixed(0)),
         baseAsset: market.pool.baseAsset,
         outcomes: marketCategories,
+        tags: market.tags,
       };
 
       return trendingMarket;
