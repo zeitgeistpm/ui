@@ -22,7 +22,7 @@ const columns: TableColumn[] = [
     type: "token",
   },
   { header: "Implied %", accessor: "pre", type: "percentage" },
-  { header: "Total Value", accessor: "totalValue", type: "currency" },
+  { header: "Price", accessor: "totalValue", type: "currency" },
   { header: "Outcome", accessor: "outcome", type: "text" },
   {
     header: "24Hr Change",
@@ -275,7 +275,7 @@ const MarketAssetDetails = observer(
         ) : (
           <></>
         )}
-        <div className="flex mt-ztg-40 items-center">
+        <div className="flex mt-ztg-40 mb-ztg-30 items-center">
           <span className="sub-header">Outcomes</span>
           {marketStore?.pool ? (
             <Link
