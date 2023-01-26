@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Context, isIndexedData, isRpcSdk, Pool } from "@zeitgeistpm/sdk-next";
+import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
 
 export const accountPoolAssetBalancesRootKey = Symbol();
@@ -7,11 +8,12 @@ export const accountPoolAssetBalancesRootKey = Symbol();
 export const useAccountPoolAssetBalances = (
   address?: string,
   pool?: Pool<Context>,
+  blockNumber?: number,
 ) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, accountPoolAssetBalancesRootKey, address, pool?.poolId],
+    [id, accountPoolAssetBalancesRootKey, address, pool?.poolId, blockNumber],
     async () => {
       if (isRpcSdk(sdk)) {
         const assets = isIndexedData(pool)
@@ -20,7 +22,9 @@ export const useAccountPoolAssetBalances = (
               .map((weight) => JSON.parse(weight.assetId))
           : pool.assets;
 
-        const balances = await sdk.context.api.query.tokens.accounts.multi(
+        const api = await getApiAtBlock(sdk.context.api, blockNumber);
+
+        const balances = await api.query.tokens.accounts.multi(
           assets.map((assets) => [address, assets]),
         );
 

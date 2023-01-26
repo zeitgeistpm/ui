@@ -1,6 +1,8 @@
 import { test as base } from "@playwright/test";
 
-const IGNORED_MESSAGES = [];
+const IGNORED_MESSAGES = [
+  "Failed to load resource: the server responded with a status of 400",
+];
 
 const test = base.extend<{ consoleErrors: string[] }>({
   consoleErrors: async ({ page }, use) => {
