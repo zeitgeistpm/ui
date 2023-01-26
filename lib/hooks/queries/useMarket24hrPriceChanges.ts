@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useSdkv2 } from "../useSdkv2";
 import { useMarketSpotPrices } from "./useMarketSpotPrices";
 
-export const market24hrPriceChangesKey = Symbol();
+export const market24hrPriceChangesKey = "market-24hr-price-changes";
 
 const getBlock24hrsAgo = (blockTimeSec: number, currentBlock: number) => {
   const daySeconds = 24 * 60 * 60;

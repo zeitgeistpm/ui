@@ -38,7 +38,7 @@ export type AccountAssetIdPair = {
   assetId: AssetId;
 };
 
-export const accountAssetBalanceRootKey = Symbol();
+export const accountAssetBalanceRootKey = "account-asset-balance";
 
 /**
  * Fetch account balances for a list of account/asset pairs.

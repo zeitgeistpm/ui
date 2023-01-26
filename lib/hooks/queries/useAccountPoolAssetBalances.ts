@@ -3,7 +3,7 @@ import { Context, isIndexedData, isRpcSdk, Pool } from "@zeitgeistpm/sdk-next";
 import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
 
-export const accountPoolAssetBalancesRootKey = Symbol();
+export const accountPoolAssetBalancesRootKey = "account-pool-asset-balances";
 
 export const useAccountPoolAssetBalances = (
   address?: string,
