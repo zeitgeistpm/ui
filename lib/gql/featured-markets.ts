@@ -63,6 +63,7 @@ const getFeaturedMarkets = async (
   client: GraphQLClient,
 ): Promise<IndexedMarketCardData[]> => {
   // handles if we don't have any markets set
+
   if (marketIds.length === 0) return null;
 
   const featuredMarkets = await Promise.all(
@@ -100,6 +101,7 @@ const getFeaturedMarkets = async (
           volume: 0,
           baseAsset: "",
           outcomes: [],
+          tags: [],
         };
 
         return noPoolMarket;

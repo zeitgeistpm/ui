@@ -6,6 +6,10 @@ import { MarketOutcomes } from "lib/types/markets";
 import MarketCardOverlay from "./overlay";
 import MarketCardContext from "./context";
 import { motion } from "framer-motion";
+import Decimal from "decimal.js";
+
+import { useMarket } from "lib/hooks/queries/useMarket";
+import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -56,8 +60,10 @@ const MarketCardInfo = ({
   question: string;
 }) => {
   return (
-    <div className="pl-[15px] w-full h-full flex flex-col justify-center text-ztg-14-165 whitespace-normal">
-      <h5 className="black font-medium w-full h-fit">{question}</h5>
+    <div className="w-full h-full flex flex-col justify-center text-ztg-14-165 whitespace-normal">
+      <h5 className="font-semibold text-lg w-full h-fit line-clamp-3">
+        {question}
+      </h5>
       {rows.map((r, idx) => (
         <MarketCardInfoRow {...r} key={idx} />
       ))}
@@ -65,29 +71,53 @@ const MarketCardInfo = ({
   );
 };
 
-const MarketCardCategories = ({ tags }: { tags: [] }) => {
+const Pill = ({ value, classes }: { value: string; classes: string }) => {
   return (
-    <div className="flex flex-wrap">
+    <span className={`px-2.5 py-0.5 h-fit text-xs rounded ${classes}`}>
+      {value}
+    </span>
+  );
+};
+
+const MarketCardTags = ({ tags }: { tags: [] }) => {
+  return (
+    <>
+      {" "}
       {!tags ? (
         <Skeleton height={20} width={100} variant="rect" className="ml-2.5" />
       ) : (
-        tags.map((tags) => {
-          return (
-            <span className="text-blue-dark bg-blue-light ml-2.5 px-2.5 h-fit text-xs rounded">
-              {tags}
-            </span>
-          );
+        tags.map((tag) => {
+          return <Pill value={tag} classes="text-blue-dark bg-blue-light" />;
         })
       )}
+    </>
+  );
+};
+
+const MarketCardOutcomes = () => {
+  return (
+    <div>
+      <div className="w-full">
+        <div className="text-sm flex justify-between mb-1">
+          <span className="text-blue">New York</span>
+          <span className="text-gray-500">75%</span>
+        </div>
+        <div className="w-full rounded-lg h-1.5 bg-gray-200">
+          <div
+            className="rounded-lg h-full transition-all bg-blue"
+            style={{ width: `75%` }}
+          />
+        </div>
+      </div>
     </div>
   );
 };
 
 /*TODO:
-- get category
-- ending soon: what is considered "soon"?
+- ending soon: what is considered "soon"? (less than 6hrs)
 - verified: what is that?
 - percenatges of each outcome
+- Math.round((currentPrice / totalAssetPrice.toNumber()) * 100,)
 - end date
 - liquidity
 */
@@ -113,6 +143,21 @@ const MarketCard = ({
     },
     // { name: "Status", value: creation },
   ];
+
+  // const { data: market } = useMarket(marketId);
+  // const { data: spotPrices } = useMarketSpotPrices(marketId);
+
+  // if (spotPrices) {
+  //   const totalAssetPrice = Array.from(spotPrices.values()).reduce(
+  //     (val, cur) => val.plus(cur),
+  //     new Decimal(0),
+  //   );
+  //   console.log(totalAssetPrice.toNumber());
+
+  //   const currentPrice = spotPrices.get(index).toNumber();
+  // }
+
+  // console.log(market);
 
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
@@ -143,12 +188,20 @@ const MarketCard = ({
             onClick={() => setShowDetailsOverlay(true)}
           />
         )} */}
-          <Link href={`/markets/${marketId}`} className="flex flex-col">
-            <div className="flex ">
+          <Link href={`/markets/${marketId}`} className="flex flex-col gap-2.5">
+            <div className="flex gap-2.5">
               <MarketImage image={img} alt={question} />
-              <MarketCardCategories tags={tags} />
+              <div className="flex flex-wrap gap-2.5 font-medium">
+                <MarketCardTags tags={tags} />
+                <Pill value="Ends Soon" classes="bg-red-light text-red" />
+                <Pill
+                  value="&#x2713; Verified"
+                  classes="bg-green-light text-green"
+                />
+              </div>
             </div>
             <MarketCardInfo question={question} rows={infoRows} />
+            <MarketCardOutcomes />
           </Link>
         </div>
       </motion.div>

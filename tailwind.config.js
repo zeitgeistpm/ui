@@ -240,6 +240,14 @@ module.exports = {
           DEFAULT: "#1C64F2",
           dark: "#1E429F",
         },
+        red: {
+          light: "#FEE1E1",
+          DEFAULT: "#E90303",
+        },
+        green: {
+          light: "#DEF7EC",
+          DEFAULT: "#03543F",
+        },
       },
       inset: {
         "42%": "42%",
