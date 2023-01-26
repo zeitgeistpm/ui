@@ -26,29 +26,41 @@ export const MarketPositions = ({
     <div className={`${className}`}>
       <h2 className="text-xl text-center font-light mb-6">{title}</h2>
       <table className="table-auto w-full">
-        <thead className="border-b-1 border-gray-300">
-          <tr className="text-gray-400">
-            <th className="pb-2 font-normal text-left">Outcome</th>
-            <th className="pb-2 font-normal text-right">Balance</th>
-            <th className="pb-2 font-normal text-right">Price Per Share</th>
-            <th className="pb-2 font-normal text-right">Total Value</th>
-            <th className="pb-2 font-normal text-right">24 Hrs</th>
-            <th className="pb-2 font-normal text-right">Trade</th>
+        <thead className="border-b-1 border-gray-300 ">
+          <tr className="text-gray-500 ">
+            <th className="py-5 pl-5 font-normal bg-gray-100 rounded-tl-md text-left">
+              Outcomes
+            </th>
+            <th className="py-5 px-2 font-normal bg-gray-100 text-right">
+              Balance
+            </th>
+            <th className="py-5 px-2 font-normal bg-gray-100 text-right">
+              Price
+            </th>
+            <th className="py-5 px-2 font-normal bg-gray-100 text-right">
+              Total Value
+            </th>
+            <th className="py-5 px-2 font-normal bg-gray-100 text-right">
+              24 Hrs
+            </th>
+            <th className="py-5 pr-5 font-normal bg-gray-100 rounded-tr-md text-right">
+              Trade
+            </th>
           </tr>
         </thead>
         <tbody>
           {positions.map(
             ({ outcome, balance, price, dailyChangePercentage }) => (
               <tr className="text-lg border-b-1 border-gray-300">
-                <td className="py-6 pl-0 text-left">
-                  <span className="font-bold">{outcome}</span>
+                <td className="py-5 pl-5 text-left max-w-sm overflow-hidden">
+                  <span className="">{outcome}</span>
                 </td>
-                <td className="py-6 text-right pl-0">
+                <td className="py-6 px-2 text-right pl-0">
                   <span className="text-blue-500">
                     {formatNumberLocalized(balance.div(ZTG).toNumber())}
                   </span>
                 </td>
-                <td className="py-6 text-right pl-0">
+                <td className="py-6 px-2 text-right pl-0">
                   <div className="font-bold mb-2">
                     {formatNumberLocalized(price.toNumber())}
                   </div>
@@ -57,7 +69,7 @@ export const MarketPositions = ({
                     {formatNumberLocalized(usdZtgPrice.mul(price).toNumber())}
                   </div>
                 </td>
-                <td className="py-6 text-right pl-0">
+                <td className="py-6 px-2 text-right pl-0">
                   <div className="font-bold mb-2">
                     {formatNumberLocalized(
                       balance.mul(price).div(ZTG).toNumber(),
@@ -70,10 +82,12 @@ export const MarketPositions = ({
                     )}
                   </div>
                 </td>
-                <td className="py-6 text-right pl-0">
+                <td className="py-6 px-2 text-right pl-0">
                   <div
                     className={`font-bold ${
-                      dailyChangePercentage > 0
+                      dailyChangePercentage === 0
+                        ? "text-gray-800"
+                        : dailyChangePercentage > 0
                         ? "text-green-400"
                         : "text-red-400"
                     }`}
@@ -82,7 +96,7 @@ export const MarketPositions = ({
                     {dailyChangePercentage}%
                   </div>
                 </td>
-                <td className="py-6 text-right pl-0">
+                <td className="py-5 pr-5 text-right">
                   <button className="border-gray-300 border-2 py-3 px-5 rounded-md">
                     Trade
                   </button>

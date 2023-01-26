@@ -5,8 +5,11 @@ import {
   CategoricalAssetId,
   Context,
   fromCompositeIndexerAssetId,
+  getAssetWeight,
+  getIndexOf,
   getMarketIdOf,
   IndexedPool,
+  isNA,
   PoolShareAssetId,
   ScalarAssetId,
   ZTG,
@@ -28,7 +31,9 @@ import { usePoolAccountIds } from "lib/hooks/queries/usePoolAccountIds";
 import { usePoolsByIds } from "lib/hooks/queries/usePoolsByIds";
 import { usePoolZtgBalance } from "lib/hooks/queries/usePoolZtgBalance";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
+import { calcSpotPrice } from "lib/math";
 import { useStore } from "lib/stores/Store";
+import { groupBy } from "lodash-es";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -102,67 +107,91 @@ const Portfolio: NextPage = observer(() => {
     marketId: number;
     market: FullMarketFragment;
     pool: IndexedPool<Context>;
-    assetPrice: Decimal;
+    outcome: string;
+    price: Decimal;
+    userBalance: Decimal;
   };
 
-  const { marketPositions, subsidyPositions } = useMemo(() => {
+  const marketPositions = useMemo(() => {
     let marketPositions: PositionData<ScalarAssetId | CategoricalAssetId>[] =
       [];
-    let subsidyPositions: PositionData<PoolShareAssetId>[] = [];
 
     if (positions.data && pools.data && markets.data) {
+      const calculatePrice = (pool: IndexedPool<Context>, assetId: AssetId) => {
+        const poolZtgBalance = poolsZtgBalances[pool.poolId]?.free.toNumber();
+
+        if (!poolZtgBalance) {
+          return new Decimal(0);
+        }
+
+        const poolAssetBalance = poolAssetBalances.get(
+          poolAccountIds[pool.poolId],
+          assetId,
+        )?.data.balance;
+
+        if (!poolAssetBalance || isNA(poolAssetBalance)) return new Decimal(0);
+
+        const ztgWeight = new Decimal(pool.totalWeight).div(2);
+        const assetWeight = getAssetWeight(pool, assetId).unwrap();
+
+        return calcSpotPrice(
+          poolZtgBalance,
+          ztgWeight,
+          poolAssetBalance.free.toNumber(),
+          assetWeight,
+          0,
+        );
+      };
+
       positions.data?.forEach((position) => {
         const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
         if ("CategoricalOutcome" in assetId || "ScalarOutcome" in assetId) {
           const marketId = getMarketIdOf(assetId);
           const market = markets.data?.find((m) => m.marketId === marketId);
           const pool = pools.data.find((pool) => pool.marketId === marketId);
+          const price = calculatePrice(pool, assetId);
+          const assetIndex = getIndexOf(assetId);
+          const outcome = market.marketType.categorical
+            ? market.categories[assetIndex].name
+            : assetIndex == 1
+            ? "Short"
+            : "Long";
+
+          const balance = userAssetBalances.get(address, assetId)?.data.balance;
+          const userBalance = new Decimal(
+            !balance || isNA(balance) ? 0 : balance.free.toNumber(),
+          );
+
           marketPositions.push({
             assetId,
             marketId,
             market,
             pool,
-            assetPrice: new Decimal(ZTG), // mock
-          });
-        }
-        if ("PoolShare" in assetId) {
-          const pool = pools.data.find(
-            (pool) => pool.poolId === assetId.PoolShare,
-          );
-          const marketId = pool.marketId;
-          const market = markets.data?.find((m) => m.marketId === marketId);
-          subsidyPositions.push({
-            assetId,
-            marketId,
-            market,
-            pool,
-            assetPrice: new Decimal(ZTG), // mock
+            price,
+            outcome,
+            userBalance,
           });
         }
       });
     }
 
-    return {
-      marketPositions,
-      subsidyPositions,
-    };
-  }, [positions.data, pools.data, markets.data]);
+    return marketPositions;
+  }, [
+    positions.data,
+    pools.data,
+    markets.data,
+    ztgPrice,
+    poolsZtgBalances,
+    poolAssetBalances,
+    userAssetBalances,
+  ]);
 
-  // const assetPricesHistoryLookup = useAssetsPriceHistory(
-  //   accountTokenPositions.data?.map(({ asset }) => asset),
-  //   {
-  //     startTimeStamp: dateOneWeekAgo,
-  //   },
-  // );
-
-  /**
-   * for trading positions and subsidy
-   *  lookup accountBalances, filter by accountId
-   *  group by assetId is subsidy or trading related clientside
-   *    for trading and subsidy respectively
-   *      get assetId
-   *      fetch price and ballance from rpc
-   */
+  const marketPositionsByMarket = useMemo(() => {
+    if (marketPositions) {
+      return groupBy(marketPositions, (position) => position.marketId);
+    }
+    return {};
+  }, [marketPositions]);
 
   const breakdown = useMemo<PortfolioBreakdownProps>(() => {
     if (ztgPrice) {
@@ -214,25 +243,39 @@ const Portfolio: NextPage = observer(() => {
           </Tab.List>
           <Tab.Panels>
             <Tab.Panel>
-              <MarketPositions
-                className="mb-14"
-                title="Who will win the 2022 Men's T20 Cricket World Cup?"
-                usdZtgPrice={new Decimal(0.1)}
-                positions={[
-                  {
-                    outcome: "Morocco",
-                    balance: new Decimal(82746729345743),
-                    price: new Decimal(2.4),
-                    dailyChangePercentage: 12,
-                  },
-                  {
-                    outcome: "Zimbabwe",
-                    balance: new Decimal(123431233423),
-                    price: new Decimal(1.1),
-                    dailyChangePercentage: -5,
-                  },
-                ]}
-              />
+              {Object.values(marketPositionsByMarket).map((marketPositions) => {
+                const market = marketPositions[0].market;
+                return (
+                  <MarketPositions
+                    className="mb-14"
+                    title={market.question}
+                    usdZtgPrice={ztgPrice.price}
+                    positions={
+                      marketPositions.map((position) => ({
+                        outcome: position.outcome,
+                        price: position.price,
+                        balance: position.userBalance,
+                        dailyChangePercentage: 0,
+                      }))
+                      // [
+                      //   ...
+                      //   // {
+                      //   //   outcome: "Morocco",
+                      //   //   balance: new Decimal(82746729345743),
+                      //   //   price: new Decimal(2.4),
+                      //   //   dailyChangePercentage: 12,
+                      //   // },
+                      //   // {
+                      //   //   outcome: "Zimbabwe",
+                      //   //   balance: new Decimal(123431233423),
+                      //   //   price: new Decimal(1.1),
+                      //   //   dailyChangePercentage: -5,
+                      //   // },
+                      // ]
+                    }
+                  />
+                );
+              })}
             </Tab.Panel>
             <Tab.Panel>Content 3</Tab.Panel>
           </Tab.Panels>
