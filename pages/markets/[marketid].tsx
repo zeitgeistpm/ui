@@ -1,4 +1,3 @@
-import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import LiquidityPill from "components/markets/LiquidityPill";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
@@ -38,7 +37,6 @@ import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
-import { combineLatest, from } from "rxjs";
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
 });
@@ -119,10 +117,11 @@ const Market: NextPage<{
   const store = useStore();
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
-  const [hasAuthReport, setHasAuthReport] = useState<boolean>();
   const marketImageUrl = useMarketImageUrl(indexedMarket.img);
 
-  const { data: marketSdkv2 } = useMarket(Number(marketid));
+  const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket(
+    Number(marketid),
+  );
   const { data: marketStage } = useMarketStage(marketSdkv2);
 
   const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
@@ -144,13 +143,6 @@ const Market: NextPage<{
 
         setPool(pool);
       }
-
-      const report =
-        await store.sdk.api.query.authorized.authorizedOutcomeReports(
-          market.id,
-        );
-
-      setHasAuthReport(report.isEmpty === false);
     }
   };
 
@@ -232,7 +224,7 @@ const Market: NextPage<{
         ) : (
           <></>
         )}
-        {marketStore?.poolExists === false && (
+        {marketSdkv2?.pool?.poolId == null && marketIsLoading === false && (
           <div className="flex h-ztg-22 items-center  bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
             <div className="w-ztg-20 h-ztg-20">
               <AlertTriangle size={20} />
@@ -246,7 +238,10 @@ const Market: NextPage<{
             </div>
           </div>
         )}
-        {marketStore && <MarketAssetDetails marketStore={marketStore} />}
+        <MarketAssetDetails
+          marketId={Number(marketid)}
+          marketStore={marketStore}
+        />
         {marketStore?.type === "scalar" && spotPrices && (
           <div className="mt-ztg-20 mb-ztg-30">
             <ScalarPriceRange
