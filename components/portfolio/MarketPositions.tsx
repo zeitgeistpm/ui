@@ -1,3 +1,4 @@
+import { Skeleton } from "@material-ui/lab";
 import { ZTG } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { formatNumberLocalized } from "lib/util";
@@ -51,7 +52,7 @@ export const MarketPositions = ({
         <tbody>
           {positions.map(
             ({ outcome, balance, price, dailyChangePercentage }) => (
-              <tr className="text-lg border-b-1 border-gray-300">
+              <tr key={outcome} className="text-lg border-b-1 border-gray-300">
                 <td className="py-5 pl-5 text-left max-w-sm overflow-hidden">
                   <span className="">{outcome}</span>
                 </td>
@@ -93,19 +94,34 @@ export const MarketPositions = ({
                     }`}
                   >
                     {dailyChangePercentage > 0 ? "+" : ""}
-                    {dailyChangePercentage}%
+                    {dailyChangePercentage.toFixed(1)}%
                   </div>
                 </td>
                 <td className="py-5 pr-5 text-right">
-                  <button className="border-gray-300 border-2 py-3 px-5 rounded-md">
+                  <span className="text-blue-600 font-bold cursor-pointer">
                     Trade
-                  </button>
+                  </span>
                 </td>
               </tr>
             ),
           )}
         </tbody>
       </table>
+    </div>
+  );
+};
+
+export const MarketPositionsSkeleton = ({
+  className,
+}: {
+  className?: string;
+}) => {
+  return (
+    <div className={`${className}`}>
+      <Skeleton className="mb-6" height={20} width={"100%"} />
+      <Skeleton className="mb-1" height={60} width={"100%"} />
+      <Skeleton className="mb-1" height={90} width={"100%"} />
+      <Skeleton height={90} width={"100%"} />
     </div>
   );
 };
