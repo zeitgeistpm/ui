@@ -56,7 +56,7 @@ const LearnSection = () => {
         <LearnCard
           tag="Trade"
           title="Prediction Markets"
-          description="Make money on your Beliefs"
+          description="Make money from what you believe"
           link="https://docs.zeitgeist.pm/docs/learn/prediction-markets"
           classes="bg-tropical-blue"
           img="/learn/learn-1.png"
@@ -64,16 +64,16 @@ const LearnSection = () => {
         <LearnCard
           tag="Earn"
           title="Liquidity Pools"
-          description="Earn ZTG providing Liquidity"
+          description="Earn ZTG by providing Liquidity"
           link="https://docs.zeitgeist.pm/docs/learn/liquidity"
           classes="bg-link-water"
           img="/learn/learn-2.png"
         />
         <LearnCard
-          tag="Native Currency"
-          title="ZTG Token"
-          description="Tokenomics and Future of ZTG"
-          link="https://docs.zeitgeist.pm/docs/learn/market-rules"
+          tag="Learn"
+          title="Get Started"
+          description="Learn all about the Zeitgeist ecosystem in our Docs"
+          link="https://docs.zeitgeist.pm/docs/getting-started"
           classes="bg-mystic col-span-2 sm:col-span-1 min-h-[84px]"
           img="/learn/learn-3.png"
         />
