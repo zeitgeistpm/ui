@@ -3,7 +3,7 @@ import { Context, isIndexedData, isRpcSdk, Pool } from "@zeitgeistpm/sdk-next";
 import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
 
-export const rootKey = "account-pool-asset-balances";
+export const accountPoolAssetBalancesRootKey = "account-pool-asset-balances";
 
 export const useAccountPoolAssetBalances = (
   address?: string,
@@ -13,7 +13,7 @@ export const useAccountPoolAssetBalances = (
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, rootKey, address, pool?.poolId, blockNumber],
+    [id, accountPoolAssetBalancesRootKey, address, pool?.poolId, blockNumber],
     async () => {
       if (isRpcSdk(sdk)) {
         const assets = isIndexedData(pool)

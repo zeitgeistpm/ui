@@ -11,10 +11,10 @@ import NotificationCenter from "components/ui/NotificationCenter";
 import LeftDrawer from "components/drawer/LeftDrawer";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { shouldScrollTop } from "lib/util/should-scroll";
 import dynamic from "next/dynamic";
+import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
@@ -28,7 +28,7 @@ const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 const DefaultLayout: FC = observer(({ children }) => {
   const store = useStore();
   const router = useRouter();
-  const sdk = useSdkv2();
+  useSubscribeBlockEvents();
 
   const {
     width,
