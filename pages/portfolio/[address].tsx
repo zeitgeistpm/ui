@@ -343,32 +343,8 @@ const Portfolio: NextPage = observer(() => {
           </Tab.Panels>
         </Tab.Group>
       </div>
-
-      {/* <div className="-ml-ztg-22 mb-ztg-30">
-            <div className="flex justify-end -mt-ztg-30">
-              <TimeFilters value={timeFilter} onClick={handleTimeFilterClick} />
-            </div>
-            <TimeSeriesChart
-              data={chartData}
-              series={[{ accessor: "v", label: "Price" }]}
-              yUnits={store.config.tokenSymbol}
-            />
-          </div>
-          <RedeemAllButton
-            marketStores={positions.map((p) => p.marketStore)}
-            onSuccess={() => incrementUpdateNum()}
-          />
-          <div className="mb-ztg-50  ">
-            {positions.map((position, index) => (
-              <PortfolioCard key={index} position={position} />
-            ))}
-          </div> */}
     </>
   );
 });
-
-const dateOneWeekAgo = new Date(
-  new Date().getTime() - DAY_SECONDS * 28 * 1000,
-).toISOString();
 
 export default Portfolio;
