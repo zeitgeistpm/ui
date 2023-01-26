@@ -2,13 +2,17 @@ import { useQuery } from "@tanstack/react-query";
 import { isNA, isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { calcSpotPrice } from "lib/math";
-import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 import { useSdkv2 } from "../useSdkv2";
 import { useAccountPoolAssetBalances } from "./useAccountPoolAssetBalances";
 import { useMarket } from "./useMarket";
 import { useZtgBalance } from "./useZtgBalance";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
+import { OrmlTokensAccountData } from "@polkadot/types/lookup";
+import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 
 export const assetPricesKey = Symbol();
+
+export type MarketPrices = Map<number, Decimal>;
 
 export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
   const [sdk, id] = useSdkv2();
@@ -25,58 +29,13 @@ export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
   const query = useQuery(
     [id, assetPricesKey, pool, blockNumber],
     async () => {
-      if (isRpcSdk(sdk)) {
-        const spotPrices = new Map<number, Decimal>();
-        const outcomeWeights = pool.weights.filter(
-          (weight) =>
-            weight.assetId.toLocaleLowerCase() !==
-            pool.baseAsset.toLocaleLowerCase(),
-        );
+      if (isRpcSdk(sdk) && isNA(basePoolBalance) === false) {
+        const spotPrices: MarketPrices =
+          market.status !== "Resolved"
+            ? calcMarketPrices(market, basePoolBalance as Decimal, balances)
+            : calcResolvedMarketPrices(market);
 
-        if (market.status !== "Resolved") {
-          //base weight is equal to the sum of all other assets
-          const baseWeight = new Decimal(pool.totalWeight).div(2);
-
-          outcomeWeights.forEach((weight, index) => {
-            const spotPrice = calcSpotPrice(
-              basePoolBalance.toString(),
-              baseWeight,
-              balances[index].free.toString(),
-              weight.len,
-              0,
-            );
-
-            spotPrices.set(index, spotPrice.isNaN() ? null : spotPrice);
-          });
-          return spotPrices;
-        } else {
-          if (market.marketType.scalar) {
-            const { shortTokenValue, longTokenValue } =
-              calcScalarResolvedPrices(
-                new Decimal(market.marketType.scalar[0]),
-                new Decimal(market.marketType.scalar[1]),
-                new Decimal(market.resolvedOutcome),
-              );
-
-            outcomeWeights.forEach((weight, index) => {
-              if (weight.assetId.toLowerCase().includes("short")) {
-                spotPrices.set(index, shortTokenValue);
-              } else if (weight.assetId.toLowerCase().includes("long")) {
-                spotPrices.set(index, longTokenValue);
-              }
-            });
-            return spotPrices;
-          } else {
-            outcomeWeights.forEach((weight, index) => {
-              if (index === Number(market.resolvedOutcome)) {
-                spotPrices.set(index, new Decimal(1));
-              } else {
-                spotPrices.set(index, new Decimal(0));
-              }
-            });
-            return spotPrices;
-          }
-        }
+        return spotPrices;
       }
     },
     {
@@ -92,4 +51,35 @@ export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
   );
 
   return query;
+};
+
+const calcMarketPrices = (
+  market: FullMarketFragment,
+  basePoolBalance: Decimal,
+  balances: OrmlTokensAccountData[],
+) => {
+  const spotPrices: MarketPrices = new Map();
+
+  const outcomeWeights = market.pool.weights.filter(
+    (weight) =>
+      weight.assetId.toLocaleLowerCase() !==
+      market.pool.baseAsset.toLocaleLowerCase(),
+  );
+
+  //base weight is equal to the sum of all other assets
+  const baseWeight = new Decimal(market.pool.totalWeight).div(2);
+
+  outcomeWeights.forEach((weight, index) => {
+    const spotPrice = calcSpotPrice(
+      basePoolBalance.toString(),
+      baseWeight,
+      balances[index].free.toString(),
+      weight.len,
+      0,
+    );
+
+    spotPrices.set(index, spotPrice.isNaN() ? null : spotPrice);
+  });
+
+  return spotPrices;
 };
