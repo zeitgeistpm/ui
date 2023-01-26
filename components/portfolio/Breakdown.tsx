@@ -80,7 +80,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
           />
         )}
       </div>
-      <div className="flex-1 border-r-2 border-gray-200 h-32 py-4 pl-4">
+      <div className="flex-1  border-gray-200 h-32 py-4 pl-4">
         {"loading" in props ? (
           <BreakdownSlotSkeleton />
         ) : (
@@ -92,7 +92,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
           />
         )}
       </div>
-      <div className="flex-1 py-4 pl-4">
+      {/* <div className="flex-1 py-4 pl-4">
         {"loading" in props ? (
           <BreakdownSlotSkeleton />
         ) : (
@@ -103,7 +103,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
             changePercentage={props.bonded.changePercentage}
           />
         )}
-      </div>
+      </div> */}
     </div>
   );
 };
@@ -151,7 +151,7 @@ export const BreakdownSlot = ({
             changePercentage < 0 ? "text-red-600" : "text-green-500"
           }`}
         >
-          {changePercentage}%
+          {changePercentage.toFixed(1)}%
         </div>
       </div>
       <div className="text-gray-500 mb-1 font-light">

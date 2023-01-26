@@ -221,14 +221,7 @@ const Portfolio: NextPage = observer(() => {
 
         const userBalance = new Decimal(balance.free.toNumber());
 
-        const change = new Decimal(100)
-          .mul(
-            price
-              .minus(price24HoursAgo)
-              .div(price.plus(price24HoursAgo).div(2))
-              .abs(),
-          )
-          .toNumber();
+        const change = diffChange(price, price24HoursAgo);
 
         marketPositions.push({
           assetId,
@@ -271,19 +264,59 @@ const Portfolio: NextPage = observer(() => {
       return { loading: true };
     }
 
+    const tradingPositionsTotal = marketPositions.reduce((acc, position) => {
+      if (position.userBalance.isNaN() || position.price.isNaN()) {
+        return acc;
+      }
+      const value = position.userBalance.mul(position.price);
+      return !value.isNaN() ? acc.plus(value) : acc;
+    }, new Decimal(0));
+
+    const tradingPositionsTotal24HoursAgo = marketPositions.reduce(
+      (acc, position) => {
+        if (position.userBalance.isNaN() || position.price24HoursAgo.isNaN()) {
+          return acc;
+        }
+        const value = position.userBalance.mul(position.price24HoursAgo);
+        return !value.isNaN() ? acc.plus(value) : acc;
+      },
+      new Decimal(0),
+    );
+
+    const tradingPositionsChange = diffChange(
+      tradingPositionsTotal,
+      tradingPositionsTotal24HoursAgo,
+    );
+
+    // TODO: load subsidy positions data
+    const subsidyPositionsTotal = new Decimal(10).mul(ZTG);
+    const subsidyPositionsTotal24HoursAgo = new Decimal(10).mul(ZTG);
+
+    const subsidyPositionsChange = diffChange(
+      subsidyPositionsTotal,
+      subsidyPositionsTotal24HoursAgo,
+    );
+
+    const positionsTotal = tradingPositionsTotal.plus(subsidyPositionsTotal);
+    const positionsTotal24HoursAgo = tradingPositionsTotal24HoursAgo.plus(
+      subsidyPositionsTotal24HoursAgo,
+    );
+
+    const totalChange = diffChange(positionsTotal, positionsTotal24HoursAgo);
+
     return {
       usdZtgPrice: ztgPrice.price,
       total: {
-        value: new Decimal(1238147473712737),
-        changePercentage: 12,
+        value: positionsTotal,
+        changePercentage: totalChange,
       },
       tradingPositions: {
-        value: new Decimal(489384787458),
-        changePercentage: -32,
+        value: tradingPositionsTotal,
+        changePercentage: tradingPositionsChange,
       },
       subsidy: {
-        value: new Decimal(9459388294948958),
-        changePercentage: 12,
+        value: subsidyPositionsTotal,
+        changePercentage: subsidyPositionsChange,
       },
       bonded: {
         value: new Decimal(234422344),
@@ -346,5 +379,11 @@ const Portfolio: NextPage = observer(() => {
     </>
   );
 });
+
+const diffChange = (a: Decimal, b: Decimal) => {
+  return new Decimal(100)
+    .mul(a.minus(b).div(a.plus(b).div(2)).abs())
+    .toNumber();
+};
 
 export default Portfolio;
