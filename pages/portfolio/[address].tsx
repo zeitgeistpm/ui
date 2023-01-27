@@ -75,7 +75,14 @@ const Portfolio: NextPage = observer(() => {
   const { data: ztgPrice } = useZtgInfo();
   const block24HoursAgo = Math.floor(now?.block - 7200);
 
-  const positions = useAccountTokenPositions(address);
+  const positions = useAccountTokenPositions({
+    where: {
+      account: {
+        accountId_eq: address,
+      },
+      balance_gt: 0,
+    },
+  });
 
   const filter = positions.data
     ?.map((position) => {
