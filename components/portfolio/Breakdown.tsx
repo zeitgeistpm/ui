@@ -4,6 +4,7 @@ import { random } from "lodash-es";
 import Decimal from "decimal.js";
 import { formatNumberLocalized } from "lib/util";
 import { use, useMemo } from "react";
+import { PorfolioBreakdown } from "lib/hooks/queries/usePortfolioPositions";
 
 export type PortfolioBreakdownProps =
   | {
@@ -12,40 +13,7 @@ export type PortfolioBreakdownProps =
        */
       loading: true;
     }
-  | {
-      /**
-       * The total value of the portfolio in ztg(planck)
-       */
-      total: {
-        value: Decimal;
-        changePercentage: number;
-      };
-      /**
-       * The value of the trading positions in ztg(planck)
-       */
-      tradingPositions: {
-        value: Decimal;
-        changePercentage: number;
-      };
-      /**
-       * The value of the subsidy in ztg(planck)
-       */
-      subsidy: {
-        value: Decimal;
-        changePercentage: number;
-      };
-      /**
-       * The value of the bonded in ztg(planck)
-       */
-      bonded: {
-        value: Decimal;
-        changePercentage: number;
-      };
-      /**
-       * The price of ztg in usd.
-       */
-      usdZtgPrice: Decimal;
-    };
+  | PorfolioBreakdown;
 
 /**
  * Show a breakdown of an accounts portofolio.
