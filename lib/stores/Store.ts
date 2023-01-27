@@ -147,11 +147,11 @@ export default class Store {
       "Enter amount greater than zero.",
     );
 
-    validatorjs.register("timestamp_gt_now", (val: number) => {
-      if (typeof val !== "number") {
+    validatorjs.register("timestamp_gt_now", (val: string) => {
+      if (typeof val !== "string") {
         return false;
       }
-      return new Date().valueOf() < val;
+      return new Date().valueOf() < Number(val);
     });
 
     validatorjs.register("gt_current_blocknum", (val: number | string) => {
