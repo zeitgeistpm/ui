@@ -29,10 +29,10 @@ export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
   const query = useQuery(
     [id, assetPricesKey, pool, blockNumber],
     async () => {
-      if (isRpcSdk(sdk) && isNA(basePoolBalance) === false) {
+      if (isRpcSdk(sdk) && !isNA(basePoolBalance)) {
         const spotPrices: MarketPrices =
           market.status !== "Resolved"
-            ? calcMarketPrices(market, basePoolBalance as Decimal, balances)
+            ? calcMarketPrices(market, basePoolBalance, balances)
             : calcResolvedMarketPrices(market);
 
         return spotPrices;
