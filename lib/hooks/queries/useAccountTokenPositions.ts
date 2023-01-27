@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import {
+  AccountBalanceOrderByInput,
   AccountBalancesQuery,
   AccountBalanceWhereInput,
-  AccountBalanceOrderByInput,
 } from "@zeitgeistpm/indexer";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";

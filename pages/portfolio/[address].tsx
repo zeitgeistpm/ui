@@ -43,7 +43,6 @@ import {
 import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { calcSpotPrice } from "lib/math";
-import { useStore } from "lib/stores/Store";
 import { groupBy, range } from "lodash-es";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
@@ -64,7 +63,6 @@ type PositionData<T extends AssetId = AssetId> = {
 };
 
 const Portfolio: NextPage = observer(() => {
-  const { config, blockNumber } = useStore();
   const router = useRouter();
   const address = Array.isArray(router.query.address)
     ? router.query.address[0]
