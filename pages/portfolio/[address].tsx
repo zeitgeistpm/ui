@@ -214,7 +214,6 @@ const Portfolio: NextPage = observer(() => {
       }
 
       if (!market || !pool) {
-        console.log("market / pool is NA", assetId);
         stillLoading = true;
         return;
       }
@@ -279,7 +278,6 @@ const Portfolio: NextPage = observer(() => {
       const balance = userAssetBalances.get(address, assetId)?.data.balance;
 
       if (!balance || isNA(balance)) {
-        console.log("balance is NA");
         stillLoading = true;
         return;
       }
