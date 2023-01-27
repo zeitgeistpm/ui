@@ -75,7 +75,7 @@ const Portfolio: NextPage = observer(() => {
   const { data: now } = useChainTimeNow();
 
   const { data: ztgPrice } = useZtgInfo();
-  const block24HoursAgo = Math.floor(now?.block - 86400 / now?.period);
+  const block24HoursAgo = Math.floor(now?.block - 7200);
 
   const positions = useAccountTokenPositions(address);
 
@@ -115,7 +115,7 @@ const Portfolio: NextPage = observer(() => {
 
   const poolAssetBalancesFilter =
     positions.data
-      ?.map((position) => {
+      ?.flatMap((position) => {
         const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
         const pool = pools.data?.find((pool) => {
           if (IOPoolShareAssetId.is(assetId)) {
@@ -125,11 +125,17 @@ const Portfolio: NextPage = observer(() => {
             return pool.marketId === getMarketIdOf(assetId);
           }
         });
+
         if (!pool) return null;
-        return {
-          account: poolAccountIds[pool.poolId],
+
+        const assetIds = pool.weights
+          .map((w) => fromCompositeIndexerAssetId(w.assetId).unwrap())
+          .filter(IOMarketOutcomeAssetId.is.bind(IOMarketOutcomeAssetId));
+
+        return assetIds.map((assetId) => ({
           assetId,
-        };
+          account: poolAccountIds[pool.poolId],
+        }));
       })
       .filter(isNotNull) ?? [];
 
@@ -232,7 +238,10 @@ const Portfolio: NextPage = observer(() => {
       let price: Decimal;
       let price24HoursAgo: Decimal;
 
-      if (IOMarketOutcomeAssetId.is(assetId)) {
+      if (market.status === "Resolved") {
+        price = new Decimal(0);
+        price24HoursAgo = new Decimal(0);
+      } else if (IOMarketOutcomeAssetId.is(assetId)) {
         price = calculatePrice(
           pool,
           assetId,
@@ -246,15 +255,74 @@ const Portfolio: NextPage = observer(() => {
           poolsZtgBalances24HoursAgo,
           poolAssetBalances24HoursAgo,
         );
-      }
+      } else if (IOPoolShareAssetId.is(assetId)) {
+        const poolAssetIds = pool.weights
+          .map((w) => fromCompositeIndexerAssetId(w.assetId).unwrap())
+          .filter(IOMarketOutcomeAssetId.is.bind(IOMarketOutcomeAssetId));
 
-      if (IOPoolShareAssetId.is(assetId)) {
-        price = new Decimal(ZTG);
-        price24HoursAgo = new Decimal(ZTG);
+        const poolTotalValue = poolAssetIds.reduce(
+          (acc, assetId) => {
+            const balance = poolAssetBalances.get(
+              poolAccountIds[pool.poolId],
+              assetId,
+            )?.data?.balance;
+
+            if (!balance || isNA(balance)) {
+              return;
+            }
+
+            const price = calculatePrice(
+              pool,
+              assetId,
+              poolsZtgBalances,
+              poolAssetBalances,
+            );
+
+            const price24HoursAgo = calculatePrice(
+              pool,
+              assetId,
+              poolsZtgBalances24HoursAgo,
+              poolAssetBalances24HoursAgo,
+            );
+
+            if (!price || !price24HoursAgo) {
+              return;
+            }
+
+            return {
+              total: acc.total.add(price.mul(balance.free.toNumber())),
+              total24HoursAgo: acc.total24HoursAgo.add(
+                price24HoursAgo.mul(balance.free.toNumber()),
+              ),
+            };
+          },
+          {
+            total: new Decimal(0),
+            total24HoursAgo: new Decimal(0),
+          },
+        );
+
+        if (!poolTotalValue) {
+          stillLoading = true;
+          return;
+        }
+
+        const totalIssuanceData = poolsTotalIssuance[pool.poolId]?.data;
+
+        if (!totalIssuanceData) {
+          stillLoading = true;
+          return;
+        }
+
+        const totalIssuance = new Decimal(
+          totalIssuanceData.totalIssuance.toString(),
+        );
+
+        price = poolTotalValue.total.div(totalIssuance);
+        price24HoursAgo = poolTotalValue.total24HoursAgo.div(totalIssuance);
       }
 
       if (!price || !price24HoursAgo) {
-        console.log("price is NA");
         stillLoading = true;
         return;
       }
@@ -284,6 +352,7 @@ const Portfolio: NextPage = observer(() => {
 
       const userBalance = new Decimal(balance.free.toNumber());
       const change = diffChange(price, price24HoursAgo);
+      console.log(change.toString());
 
       positionsData.push({
         assetId,
@@ -345,6 +414,13 @@ const Portfolio: NextPage = observer(() => {
     }
     return null;
   }, [marketPositions]);
+
+  const subsidyPositionsByMarket = useMemo(() => {
+    if (subsidyPositions) {
+      return groupBy(subsidyPositions, (position) => position.marketId);
+    }
+    return null;
+  }, [subsidyPositions]);
 
   const breakdown = useMemo<PortfolioBreakdownProps>(() => {
     if (!marketPositions || !ztgPrice) {
@@ -459,7 +535,31 @@ const Portfolio: NextPage = observer(() => {
                     },
                   )}
             </Tab.Panel>
-            <Tab.Panel>Content 3</Tab.Panel>
+
+            <Tab.Panel>
+              {!subsidyPositionsByMarket
+                ? range(0, 8).map((i) => (
+                    <MarketPositionsSkeleton className="mb-14" key={i} />
+                  ))
+                : Object.values(subsidyPositionsByMarket).map(
+                    (subsidyPositions) => {
+                      const market = subsidyPositions[0].market;
+                      return (
+                        <MarketPositions
+                          className="mb-14"
+                          title={market.question}
+                          usdZtgPrice={ztgPrice.price}
+                          positions={subsidyPositions.map((position) => ({
+                            outcome: position.outcome,
+                            price: position.price,
+                            balance: position.userBalance,
+                            dailyChangePercentage: position.change,
+                          }))}
+                        />
+                      );
+                    },
+                  )}
+            </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
       </div>
@@ -468,9 +568,9 @@ const Portfolio: NextPage = observer(() => {
 });
 
 const diffChange = (a: Decimal, b: Decimal) => {
-  return new Decimal(100)
-    .mul(a.minus(b).div(a.plus(b).div(2)).abs())
-    .toNumber();
+  const priceDiff = a.minus(b);
+  const priceChange = priceDiff.div(b);
+  return priceChange.mul(100).round().toNumber();
 };
 
 export default Portfolio;

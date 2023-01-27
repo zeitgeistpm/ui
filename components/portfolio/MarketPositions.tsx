@@ -86,7 +86,8 @@ export const MarketPositions = ({
                 <td className="py-6 px-2 text-right pl-0">
                   <div
                     className={`font-bold ${
-                      dailyChangePercentage === 0
+                      dailyChangePercentage === 0 ||
+                      isNaN(dailyChangePercentage)
                         ? "text-gray-800"
                         : dailyChangePercentage > 0
                         ? "text-green-400"
@@ -94,7 +95,10 @@ export const MarketPositions = ({
                     }`}
                   >
                     {dailyChangePercentage > 0 ? "+" : ""}
-                    {dailyChangePercentage.toFixed(1)}%
+                    {isNaN(dailyChangePercentage)
+                      ? "0"
+                      : dailyChangePercentage.toFixed(1)}
+                    %
                   </div>
                 </td>
                 <td className="py-5 pr-5 text-right">

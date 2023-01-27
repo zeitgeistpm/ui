@@ -1,18 +1,10 @@
-// const totalPoolShares = await store.sdk.api.query.tokens.totalIssuance({
-//   PoolShare: poolId,
-// });
-
-import * as batshit from "@yornaath/batshit";
-import {
-  IndexerContext,
-  isRpcSdk,
-  RpcContext,
-  Sdk,
-} from "@zeitgeistpm/sdk-next";
 import type { u128 } from "@polkadot/types";
-import { memoize } from "lodash-es";
-import { useSdkv2 } from "../useSdkv2";
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
+import * as batshit from "@yornaath/batshit";
+import { isRpcSdk, RpcContext, Sdk } from "@zeitgeistpm/sdk-next";
+import { memoize } from "lodash-es";
+import { useEffect } from "react";
+import { useSdkv2 } from "../useSdkv2";
 
 export type UsePoolTotalIssuance = {
   [poolId: number]: UseQueryResult<PoolTotalIssuance, unknown>;
@@ -35,6 +27,7 @@ export const useTotalIssuanceForPools = (poolIds: number[]) => {
         if (isRpcSdk(sdk)) return batcher(sdk).fetch(poolId);
         return null;
       },
+      keepPreviousData: true,
       enabled: Boolean(sdk && isRpcSdk(sdk)),
     })),
   });
@@ -51,7 +44,7 @@ const batcher = memoize((sdk: Sdk<RpcContext>) => {
   return batshit.create<PoolTotalIssuance, number>({
     name: poolTotalIssuanceRootQuery,
     fetcher: async (ids) => {
-      const data = await await sdk.context.api.query.tokens.totalIssuance.multi(
+      const data = await sdk.context.api.query.tokens.totalIssuance.multi(
         ids.map((id) => ({ PoolShare: id })),
       );
 
