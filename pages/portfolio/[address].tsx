@@ -539,6 +539,7 @@ const Portfolio: NextPage = observer(() => {
                       const market = marketPositions[0].market;
                       return (
                         <MarketPositions
+                          key={market.marketId}
                           className="mb-14"
                           title={market.question}
                           usdZtgPrice={ztgPrice.price}
@@ -564,6 +565,7 @@ const Portfolio: NextPage = observer(() => {
                       const market = subsidyPositions[0].market;
                       return (
                         <MarketPositions
+                          key={market.marketId}
                           className="mb-14"
                           title={market.question}
                           usdZtgPrice={ztgPrice.price}
