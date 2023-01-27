@@ -429,6 +429,8 @@ const Portfolio: NextPage = observer(() => {
       return { loading: true };
     }
 
+    //TODO: these reduction methods for totals are very similar, make them dry.
+
     const tradingPositionsTotal = marketPositions.reduce((acc, position) => {
       if (position.userBalance.isNaN() || position.price.isNaN()) {
         return acc;
