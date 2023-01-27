@@ -35,6 +35,7 @@ const marketQuery = gql`
         ticker
         color
       }
+      tags
     }
   }
 `;
@@ -56,6 +57,7 @@ export interface MarketPageIndexedData {
   scalarType: ScalarRangeType | null;
   creator: string;
   oracle: string;
+  tags: [];
   disputeMechanism: "SimpleDisputes" | "Authorized" | "Court";
 }
 

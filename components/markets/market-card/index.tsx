@@ -7,6 +7,7 @@ import MarketCardOverlay from "./overlay";
 import MarketCardContext from "./context";
 import { motion } from "framer-motion";
 import Decimal from "decimal.js";
+import { Users, BarChart2, Droplet } from "react-feather";
 
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
@@ -20,7 +21,7 @@ export interface IndexedMarketCardData {
   prediction: string;
   volume: number;
   baseAsset: string;
-  tags: [];
+  tags: string[];
 }
 
 export interface MarketCardProps extends IndexedMarketCardData {
@@ -52,21 +53,12 @@ const MarketCardInfoRow = ({
   );
 };
 
-const MarketCardInfo = ({
-  rows,
-  question,
-}: {
-  rows: { name: string; value: string }[];
-  question: string;
-}) => {
+const MarketCardInfo = ({ question }: { question: string }) => {
   return (
     <div className="w-full h-full flex flex-col justify-center text-ztg-14-165 whitespace-normal">
       <h5 className="font-semibold text-lg w-full h-fit line-clamp-3">
         {question}
       </h5>
-      {rows.map((r, idx) => (
-        <MarketCardInfoRow {...r} key={idx} />
-      ))}
     </div>
   );
 };
@@ -94,20 +86,41 @@ const MarketCardTags = ({ tags }: { tags: [] }) => {
   );
 };
 
-const MarketCardOutcomes = () => {
+const MarketCardDetails = ({
+  rows,
+}: {
+  rows: { volume: string; outcomes: number };
+}) => {
   return (
-    <div>
-      <div className="w-full">
-        <div className="text-sm flex justify-between mb-1">
-          <span className="text-blue">New York</span>
-          <span className="text-gray-500">75%</span>
+    <div className="w-full">
+      <div className="text-sm flex justify-between mb-1">
+        <span className="text-blue">New York</span>
+        <span className="text-gray-500">75%</span>
+      </div>
+      <div className="w-full rounded-lg h-1.5 bg-gray-200">
+        <div
+          className="rounded-lg h-full transition-all bg-blue"
+          style={{ width: `75%` }}
+        />
+      </div>
+      <div className="text-xs my-2.5">
+        <span className="font-semibold">{rows.outcomes} outcomes</span>
+        <span> | </span>
+        <span>Ends March 12, 2023</span>
+      </div>
+      <div className="flex gap-2.5 text-sm">
+        {/* <div className="flex items-center gap-2">
+          <Users size={18} />
+          <span>223</span>
+        </div> */}
+        <div className="flex items-center gap-2">
+          <BarChart2 size={18} />
+          <span>{rows.volume}</span>
         </div>
-        <div className="w-full rounded-lg h-1.5 bg-gray-200">
-          <div
-            className="rounded-lg h-full transition-all bg-blue"
-            style={{ width: `75%` }}
-          />
-        </div>
+        {/* <div className="flex items-center gap-2">
+          <Droplet size={18} />
+          <span>223K ZTG</span>
+        </div> */}
       </div>
     </div>
   );
@@ -135,14 +148,12 @@ const MarketCard = ({
   className = "",
 }: MarketCardProps) => {
   const [showDetailsOverlay, setShowDetailsOverlay] = useState<boolean>(false);
-  const infoRows = [
-    { name: "Prediction", value: prediction },
-    {
-      name: "Volume",
-      value: `${volume ?? 0} ${baseAsset?.toUpperCase() ?? "ZTG"}`,
-    },
+  const infoRows = {
+    // { name: "Prediction", value: prediction },
+    outcomes: outcomes.length,
+    volume: `${volume ?? 0} ${baseAsset?.toUpperCase() ?? "ZTG"}`,
     // { name: "Status", value: creation },
-  ];
+  };
 
   // const { data: market } = useMarket(marketId);
   // const { data: spotPrices } = useMarketSpotPrices(marketId);
@@ -183,11 +194,11 @@ const MarketCard = ({
             />
           )}
           {/* {outcomes?.length > 0 && (
-          <MoreVertical
-            className="absolute right-[10px] text-pastel-blue cursor-pointer"
-            onClick={() => setShowDetailsOverlay(true)}
-          />
-        )} */}
+            <MoreVertical
+              className="absolute right-[10px] text-pastel-blue cursor-pointer"
+              onClick={() => setShowDetailsOverlay(true)}
+            />
+          )} */}
           <Link href={`/markets/${marketId}`} className="flex flex-col gap-2.5">
             <div className="flex gap-2.5">
               <MarketImage image={img} alt={question} />
@@ -200,8 +211,8 @@ const MarketCard = ({
                 />
               </div>
             </div>
-            <MarketCardInfo question={question} rows={infoRows} />
-            <MarketCardOutcomes />
+            <MarketCardInfo question={question} />
+            <MarketCardDetails rows={infoRows} />
           </Link>
         </div>
       </motion.div>

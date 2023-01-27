@@ -29,6 +29,7 @@ const marketsQuery = gql`
         volume
         poolId
       }
+      tags
     }
   }
 `;
@@ -56,6 +57,7 @@ const getNewestMarkets = async (
       categories: { color: string; name: string; ticker: string }[];
       outcomeAssets: string[];
       pool: { baseAsset: string; volume: string; poolId: number };
+      tags: [];
     }[];
   }>(marketsQuery);
 
@@ -96,6 +98,7 @@ const getNewestMarkets = async (
         volume: new Decimal(market.pool.volume).div(ZTG).toNumber(),
         baseAsset: market.pool.baseAsset,
         outcomes: marketCategories,
+        tags: market.tags,
       };
 
       return newMarket;
