@@ -221,7 +221,6 @@ const Portfolio: NextPage = observer(() => {
 
       if (!market || !pool) {
         stillLoading = true;
-
         continue;
       }
 
@@ -229,7 +228,6 @@ const Portfolio: NextPage = observer(() => {
 
       if (!totalIssuanceForPoolQuery.data) {
         stillLoading = true;
-
         continue;
       }
 
@@ -313,7 +311,6 @@ const Portfolio: NextPage = observer(() => {
 
         if (!totalIssuanceData) {
           stillLoading = true;
-
           continue;
         }
 
@@ -327,7 +324,6 @@ const Portfolio: NextPage = observer(() => {
 
       if (!price || !price24HoursAgo) {
         stillLoading = true;
-
         continue;
       }
 

@@ -8,7 +8,7 @@ import { useAccountPoolAssetBalances } from "./useAccountPoolAssetBalances";
 import { useMarket } from "./useMarket";
 import { useZtgBalance } from "./useZtgBalance";
 
-export const assetPricesKey = Symbol();
+export const marketSpotPricesKey = "market-spot-prices";
 
 export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
   const [sdk, id] = useSdkv2();
@@ -23,7 +23,7 @@ export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
   const { data: basePoolBalance } = useZtgBalance(pool?.accountId, blockNumber);
 
   const query = useQuery(
-    [id, assetPricesKey, pool, blockNumber],
+    [id, marketSpotPricesKey, pool, blockNumber],
     async () => {
       if (isRpcSdk(sdk)) {
         const spotPrices = new Map<number, Decimal>();

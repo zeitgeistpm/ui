@@ -231,9 +231,13 @@ body {
 }
 
 table {
-  border-spacing: 0 15px;
+  /* override tailwind utils */
+  border-collapse: collapse !important;
 }
 
+tr {
+  border-bottom: 1px solid #e5e7eb;
+}
 
 /* Scroll */
 

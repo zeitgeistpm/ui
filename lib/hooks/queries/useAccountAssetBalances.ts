@@ -39,7 +39,7 @@ export type AccountAssetIdPair = {
   assetId: AssetId;
 };
 
-export const rootKey = "account-asset-balance";
+export const accountAssetBalanceRootKey = "account-asset-balance";
 
 /**
  * Fetch account balances for a list of account/asset pairs.
@@ -59,7 +59,13 @@ export const useAccountAssetBalances = (
   const queries = useQueries({
     queries: pairs.map((pair) => {
       return {
-        queryKey: [id, rootKey, pair.account, pair.assetId, blockNumber],
+        queryKey: [
+          id,
+          accountAssetBalanceRootKey,
+          pair.account,
+          pair.assetId,
+          blockNumber,
+        ],
         queryFn: async () => {
           if (sdk && isRpcSdk(sdk)) {
             const api = await getApiAtBlock(sdk.context.api, blockNumber);
