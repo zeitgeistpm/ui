@@ -61,7 +61,7 @@ const Portfolio: NextPage = observer(() => {
           </Tab.List>
           <Tab.Panels>
             <Tab.Panel>
-              {!marketPositionsByMarket
+              {!marketPositionsByMarket || !ztgPrice
                 ? range(0, 8).map((i) => (
                     <MarketPositionsSkeleton className="mb-14" key={i} />
                   ))
@@ -87,7 +87,7 @@ const Portfolio: NextPage = observer(() => {
             </Tab.Panel>
 
             <Tab.Panel>
-              {!subsidyPositionsByMarket
+              {!subsidyPositionsByMarket || !ztgPrice
                 ? range(0, 8).map((i) => (
                     <MarketPositionsSkeleton className="mb-14" key={i} />
                   ))
