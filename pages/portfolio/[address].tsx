@@ -195,7 +195,6 @@ const Portfolio: NextPage = observer(() => {
     if (!positions.data) return null;
 
     let stillLoading = false;
-    console.time("positionsData");
 
     for (const position of positions.data) {
       const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
@@ -371,8 +370,6 @@ const Portfolio: NextPage = observer(() => {
         totalIssuance,
       });
     }
-
-    console.timeEnd("positionsData");
 
     if (stillLoading) return null;
 
