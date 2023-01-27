@@ -1,8 +1,5 @@
 import { Tab } from "@headlessui/react";
-import {
-  PortfolioBreakdown,
-  PortfolioBreakdownProps,
-} from "components/portfolio/Breakdown";
+import { PortfolioBreakdown } from "components/portfolio/Breakdown";
 import {
   MarketPositions,
   MarketPositionsSkeleton,
