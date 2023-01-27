@@ -187,9 +187,7 @@ const MarketAssetDetails = observer(
       const reportedOutcome = marketStore.resolvedCategoricalOutcome;
 
       const outcome = tableData?.find(
-        (data) =>
-          JSON.stringify(data.assetId) ===
-          JSON.stringify(reportedOutcome.asset),
+        (data) => data.assetId === JSON.stringify(reportedOutcome.asset),
       );
 
       return outcome ? [outcome] : undefined;
