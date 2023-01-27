@@ -450,7 +450,6 @@ const Portfolio: NextPage = observer(() => {
       tradingPositionsTotal24HoursAgo,
     );
 
-    // TODO: load subsidy positions data
     const subsidyPositionsTotal = subsidyPositions.reduce((acc, position) => {
       if (position.userBalance.isNaN() || position.price.isNaN()) {
         return acc;
