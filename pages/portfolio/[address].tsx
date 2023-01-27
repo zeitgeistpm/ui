@@ -289,7 +289,7 @@ const Portfolio: NextPage = observer(() => {
             );
 
             if (!price || !price24HoursAgo) {
-              return;
+              return acc;
             }
 
             return {
