@@ -62,7 +62,7 @@ export interface MarketPageIndexedData {
 export const getRecentMarketIds = async (
   client: GraphQLClient,
 ): Promise<number[]> => {
-  const timstampOneMonthAgo = new Date(
+  const timestampOneMonthAgo = new Date(
     new Date().getTime() - DAY_SECONDS * 31 * 1000,
   ).getTime();
 
@@ -71,7 +71,7 @@ export const getRecentMarketIds = async (
       marketId: number;
     }[];
   }>(marketIdsQuery, {
-    end: timstampOneMonthAgo,
+    end: timestampOneMonthAgo,
   });
 
   return response.markets.map((m) => m.marketId);

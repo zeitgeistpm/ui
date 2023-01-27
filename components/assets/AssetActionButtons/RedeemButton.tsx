@@ -92,9 +92,9 @@ const RedeemButton = observer(
         return calcScalarWinnings(
           lowerBound,
           upperBound,
-          resolvedNumber,
-          shortBalance.free.toNumber(),
-          longBalance.free.toNumber(),
+          new Decimal(resolvedNumber).div(ZTG),
+          new Decimal(shortBalance.free.toNumber()).div(ZTG),
+          new Decimal(longBalance.free.toNumber()).div(ZTG),
         );
       }
     }, [market, assetId, ...assetBalances.query.map((q) => q.data)]);
