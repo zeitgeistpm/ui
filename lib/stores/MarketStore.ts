@@ -2,8 +2,6 @@ import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
 import {
   AssetId,
   CategoryMetadata,
-  CourtDisputeMechanism,
-  isAuthorisedDisputeMechanism,
   MarketCreation,
   MarketDispute,
   MarketPeriod,
@@ -94,7 +92,7 @@ class MarketStore {
   get disputeMechanism(): "authorized" | "other" {
     if (
       this.market.disputeMechanism &&
-      isAuthorisedDisputeMechanism(this.market.disputeMechanism)
+      this.market.disputeMechanism === "Authorized"
     ) {
       return "authorized";
     } else {
@@ -245,9 +243,7 @@ class MarketStore {
   }
 
   get isCourt(): boolean {
-    return (
-      (this.market.disputeMechanism as CourtDisputeMechanism).Court === null
-    );
+    return this.market.disputeMechanism === "Court";
   }
 
   get bounds(): [number, number] | null {
