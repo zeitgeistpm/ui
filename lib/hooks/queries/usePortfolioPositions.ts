@@ -475,7 +475,7 @@ export const usePortfolioPositions = (
   );
 
   const breakdown = useMemo<PorfolioBreakdown>(() => {
-    if (!marketPositions || !subsidyPositions) {
+    if (!ztgPrice || !marketPositions || !subsidyPositions) {
       return null;
     }
 
