@@ -139,7 +139,6 @@ export const BreakdownSlot = ({
   usdZtgPrice,
   changePercentage,
 }: BreakdownSlotProps) => {
-  console.log(changePercentage);
   return (
     <>
       <h4 className="text-gray-500 mb-1">{title}</h4>
