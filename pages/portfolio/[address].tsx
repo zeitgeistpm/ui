@@ -205,7 +205,7 @@ const Portfolio: NextPage = observer(() => {
       let market: FullMarketFragment;
 
       if (IOZtgAssetId.is(assetId)) {
-        break;
+        continue;
       }
 
       if (IOPoolShareAssetId.is(assetId)) {
@@ -223,7 +223,7 @@ const Portfolio: NextPage = observer(() => {
       if (!market || !pool) {
         stillLoading = true;
 
-        break;
+        continue;
       }
 
       const totalIssuanceForPoolQuery = poolsTotalIssuance[pool.poolId];
@@ -231,7 +231,7 @@ const Portfolio: NextPage = observer(() => {
       if (!totalIssuanceForPoolQuery.data) {
         stillLoading = true;
 
-        break;
+        continue;
       }
 
       const totalIssuance = new Decimal(
@@ -307,7 +307,7 @@ const Portfolio: NextPage = observer(() => {
 
         if (!poolTotalValue) {
           stillLoading = true;
-          break;
+          continue;
         }
 
         const totalIssuanceData = poolsTotalIssuance[pool.poolId]?.data;
@@ -315,7 +315,7 @@ const Portfolio: NextPage = observer(() => {
         if (!totalIssuanceData) {
           stillLoading = true;
 
-          break;
+          continue;
         }
 
         const totalIssuance = new Decimal(
@@ -329,7 +329,7 @@ const Portfolio: NextPage = observer(() => {
       if (!price || !price24HoursAgo) {
         stillLoading = true;
 
-        break;
+        continue;
       }
 
       const assetIndex = getIndexOf(assetId);
@@ -352,7 +352,7 @@ const Portfolio: NextPage = observer(() => {
 
       if (!balance || isNA(balance)) {
         stillLoading = true;
-        break;
+        continue;
       }
 
       const userBalance = new Decimal(balance.free.toNumber());
