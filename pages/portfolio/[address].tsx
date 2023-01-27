@@ -1,6 +1,4 @@
 import { Tab } from "@headlessui/react";
-import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { AssetId, Context, IndexedPool } from "@zeitgeistpm/sdk-next";
 import {
   PortfolioBreakdown,
   PortfolioBreakdownProps,
@@ -10,7 +8,6 @@ import {
   MarketPositionsSkeleton,
 } from "components/portfolio/MarketPositions";
 import InfoBoxes from "components/ui/InfoBoxes";
-import Decimal from "decimal.js";
 import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { groupBy, range } from "lodash-es";
@@ -123,11 +120,5 @@ const Portfolio: NextPage = observer(() => {
     </>
   );
 });
-
-const diffChange = (a: Decimal, b: Decimal) => {
-  const priceDiff = a.minus(b);
-  const priceChange = priceDiff.div(b);
-  return priceChange.mul(100).toNumber();
-};
 
 export default Portfolio;

@@ -1,10 +1,10 @@
 import { Skeleton } from "@material-ui/lab";
 import { ZTG } from "@zeitgeistpm/sdk-next";
-import { random } from "lodash-es";
 import Decimal from "decimal.js";
-import { formatNumberLocalized } from "lib/util";
-import { use, useMemo } from "react";
 import { PorfolioBreakdown } from "lib/hooks/queries/usePortfolioPositions";
+import { formatNumberLocalized } from "lib/util";
+import { random } from "lodash-es";
+import { useMemo } from "react";
 
 export type PortfolioBreakdownProps =
   | {
