@@ -36,10 +36,6 @@ const Portfolio: NextPage = observer(() => {
     [subsidy],
   );
 
-  const breakdownProps: PortfolioBreakdownProps = breakdown ?? {
-    loading: true,
-  };
-
   return (
     <>
       <InfoBoxes />
@@ -48,7 +44,11 @@ const Portfolio: NextPage = observer(() => {
 
       <div className="mb-12">
         <h3 className="font-bold text-xl mb-4">Breakdown</h3>
-        <PortfolioBreakdown {...breakdownProps} />
+        <PortfolioBreakdown
+          {...(breakdown ?? {
+            loading: true,
+          })}
+        />
       </div>
 
       <div>
