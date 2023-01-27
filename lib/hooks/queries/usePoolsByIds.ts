@@ -40,6 +40,7 @@ export const usePoolsByIds = (poolQueries?: PoolGetQuery[]) => {
       return [];
     },
     {
+      keepPreviousData: true,
       enabled: Boolean(sdk && poolQueries && isIndexedSdk(sdk)),
       onSuccess(data) {
         data?.forEach((pool) => {

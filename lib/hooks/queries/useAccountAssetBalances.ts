@@ -1,6 +1,6 @@
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import { OrmlTokensAccountData } from "@polkadot/types/lookup";
-import { AssetId, isRpcSdk, NA } from "@zeitgeistpm/sdk-next";
+import { AssetId, IOAssetId, isRpcSdk, NA } from "@zeitgeistpm/sdk-next";
 import objectHash from "object-hash";
 import { useSdkv2 } from "../useSdkv2";
 import { getApiAtBlock } from "lib/util/get-api-at";
@@ -87,7 +87,7 @@ export const useAccountAssetBalances = (
       (q) =>
         q.data &&
         q.data.pair.account === account &&
-        objectHash(q.data.pair.assetId) === objectHash(assetId),
+        JSON.stringify(q.data.pair.assetId) === JSON.stringify(assetId),
     );
     return query;
   };

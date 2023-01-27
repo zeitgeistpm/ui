@@ -14,6 +14,7 @@ export const usePoolAccountIds = (pools?: Pool<Context>[]) => {
         return {
           enabled: Boolean(sdk && isRpcSdk(sdk) && pool),
           queryKey: [id, rootKey, pool?.poolId],
+          keepPreviousData: true,
           queryFn: async () => {
             if (sdk && isRpcSdk(sdk)) {
               return {

@@ -41,6 +41,7 @@ export const useMarketsByIds = (marketQueries?: UseMarketFilter[]) => {
       return [];
     },
     {
+      keepPreviousData: true,
       enabled: Boolean(sdk && marketQueries && isIndexedSdk(sdk)),
       onSuccess(data) {
         data?.forEach((market) => {

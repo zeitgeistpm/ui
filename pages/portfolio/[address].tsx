@@ -195,8 +195,9 @@ const Portfolio: NextPage = observer(() => {
     if (!positions.data) return null;
 
     let stillLoading = false;
+    console.time("positionsData");
 
-    positions.data.forEach((position) => {
+    for (const position of positions.data) {
       const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
 
       let pool: IndexedPool<Context>;
@@ -204,7 +205,7 @@ const Portfolio: NextPage = observer(() => {
       let market: FullMarketFragment;
 
       if (IOZtgAssetId.is(assetId)) {
-        return;
+        break;
       }
 
       if (IOPoolShareAssetId.is(assetId)) {
@@ -221,14 +222,16 @@ const Portfolio: NextPage = observer(() => {
 
       if (!market || !pool) {
         stillLoading = true;
-        return;
+
+        break;
       }
 
       const totalIssuanceForPoolQuery = poolsTotalIssuance[pool.poolId];
 
       if (!totalIssuanceForPoolQuery.data) {
         stillLoading = true;
-        return;
+
+        break;
       }
 
       const totalIssuance = new Decimal(
@@ -304,14 +307,15 @@ const Portfolio: NextPage = observer(() => {
 
         if (!poolTotalValue) {
           stillLoading = true;
-          return;
+          break;
         }
 
         const totalIssuanceData = poolsTotalIssuance[pool.poolId]?.data;
 
         if (!totalIssuanceData) {
           stillLoading = true;
-          return;
+
+          break;
         }
 
         const totalIssuance = new Decimal(
@@ -324,7 +328,8 @@ const Portfolio: NextPage = observer(() => {
 
       if (!price || !price24HoursAgo) {
         stillLoading = true;
-        return;
+
+        break;
       }
 
       const assetIndex = getIndexOf(assetId);
@@ -347,7 +352,7 @@ const Portfolio: NextPage = observer(() => {
 
       if (!balance || isNA(balance)) {
         stillLoading = true;
-        return;
+        break;
       }
 
       const userBalance = new Decimal(balance.free.toNumber());
@@ -365,7 +370,9 @@ const Portfolio: NextPage = observer(() => {
         change,
         totalIssuance,
       });
-    });
+    }
+
+    console.timeEnd("positionsData");
 
     if (stillLoading) return null;
 

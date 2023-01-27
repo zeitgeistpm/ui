@@ -30,6 +30,7 @@ export const useAccountTokenPositions = (account?: string) => {
       return null;
     },
     {
+      keepPreviousData: true,
       enabled: Boolean(sdk && isIndexedSdk(sdk) && account),
       refetchInterval: 12 * 1000,
     },
