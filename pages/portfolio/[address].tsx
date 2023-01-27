@@ -15,7 +15,6 @@ import {
   isNA,
   PoolShareAssetId,
   ScalarAssetId,
-  ZTG,
 } from "@zeitgeistpm/sdk-next";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import {
@@ -28,7 +27,6 @@ import {
 } from "components/portfolio/MarketPositions";
 import InfoBoxes from "components/ui/InfoBoxes";
 import Decimal from "decimal.js";
-import { DAY_SECONDS } from "lib/constants";
 import {
   UseAccountAssetBalances,
   useAccountAssetBalances,

@@ -1,9 +1,8 @@
-import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import { OrmlTokensAccountData } from "@polkadot/types/lookup";
-import { AssetId, IOAssetId, isRpcSdk, NA } from "@zeitgeistpm/sdk-next";
-import objectHash from "object-hash";
-import { useSdkv2 } from "../useSdkv2";
+import { useQueries, UseQueryResult } from "@tanstack/react-query";
+import { AssetId, isRpcSdk, NA } from "@zeitgeistpm/sdk-next";
 import { getApiAtBlock } from "lib/util/get-api-at";
+import { useSdkv2 } from "../useSdkv2";
 
 export type UseAccountAssetBalances = {
   /**

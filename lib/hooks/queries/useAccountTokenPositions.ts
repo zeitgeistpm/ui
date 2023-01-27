@@ -1,11 +1,6 @@
-import { OrmlTokensAccountData } from "@polkadot/types/lookup";
 import { useQuery } from "@tanstack/react-query";
 import { AccountBalancesQuery } from "@zeitgeistpm/indexer";
-import {
-  CategoricalAssetId,
-  isIndexedSdk,
-  ScalarAssetId,
-} from "@zeitgeistpm/sdk-next";
+import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "account-token-positions";
