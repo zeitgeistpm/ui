@@ -91,7 +91,7 @@ export type Position<T extends AssetId = AssetId> = {
   /**
    * The change in the price of the position the last 24 hours.
    */
-  change: number;
+  changePercentage: number;
 };
 
 export type PorfolioBreakdown = {
@@ -434,7 +434,7 @@ export const usePortfolioPositions = (
         price24HoursAgo,
         outcome,
         userBalance,
-        change,
+        changePercentage: change,
         totalIssuance,
       });
     }

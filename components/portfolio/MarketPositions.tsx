@@ -14,7 +14,7 @@ export type MarketPosition = {
   outcome: string;
   balance: Decimal;
   price: Decimal;
-  dailyChangePercentage: number;
+  changePercentage: number;
 };
 
 export const MarketPositions = ({
@@ -51,7 +51,12 @@ export const MarketPositions = ({
         </thead>
         <tbody>
           {positions.map(
-            ({ outcome, balance, price, dailyChangePercentage }) => (
+            ({
+              outcome,
+              balance,
+              price,
+              changePercentage: dailyChangePercentage,
+            }) => (
               <tr key={outcome} className="text-lg border-b-1 border-gray-300">
                 <td className="py-5 pl-5 text-left max-w-sm overflow-hidden">
                   <span className="">{outcome}</span>

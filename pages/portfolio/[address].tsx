@@ -81,7 +81,7 @@ const Portfolio: NextPage = observer(() => {
                             outcome: position.outcome,
                             price: position.price,
                             balance: position.userBalance,
-                            dailyChangePercentage: position.change,
+                            changePercentage: position.changePercentage,
                           }))}
                         />
                       );
@@ -107,7 +107,7 @@ const Portfolio: NextPage = observer(() => {
                             outcome: position.outcome,
                             price: position.price,
                             balance: position.userBalance,
-                            dailyChangePercentage: position.change,
+                            changePercentage: position.changePercentage,
                           }))}
                         />
                       );
