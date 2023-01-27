@@ -1,24 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
-import { AccountBalancesQuery } from "@zeitgeistpm/indexer";
+import {
+  AccountBalancesQuery,
+  AccountBalanceWhereInput,
+  AccountBalanceOrderByInput,
+} from "@zeitgeistpm/indexer";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "account-token-positions";
 
-export const useAccountTokenPositions = (account?: string) => {
+export const useAccountTokenPositions = (filter?: {
+  where?: AccountBalanceWhereInput;
+  order?: AccountBalanceOrderByInput | AccountBalanceOrderByInput[];
+  offset?: number;
+  limit?: number;
+}) => {
   const [sdk, id] = useSdkv2();
 
   return useQuery<AccountBalancesQuery["accountBalances"]>(
-    [id, rootKey, account],
+    [id, rootKey, filter],
     async () => {
-      if (sdk && isIndexedSdk(sdk) && account) {
-        const { accountBalances } = await sdk.context.indexer.accountBalances({
-          where: {
-            account: {
-              accountId_eq: account,
-            },
-          },
-        });
+      if (sdk && isIndexedSdk(sdk) && filter) {
+        const { accountBalances } = await sdk.context.indexer.accountBalances(
+          filter,
+        );
 
         return accountBalances;
       }
@@ -26,7 +31,7 @@ export const useAccountTokenPositions = (account?: string) => {
     },
     {
       keepPreviousData: true,
-      enabled: Boolean(sdk && isIndexedSdk(sdk) && account),
+      enabled: Boolean(sdk && isIndexedSdk(sdk) && filter),
       refetchInterval: 12 * 1000,
     },
   );
