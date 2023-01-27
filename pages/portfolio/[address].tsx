@@ -497,6 +497,7 @@ const Portfolio: NextPage = observer(() => {
         changePercentage: subsidyPositionsChange,
       },
       bonded: {
+        // TODO: load bonded positions data
         value: new Decimal(234422344),
         changePercentage: 30,
       },
