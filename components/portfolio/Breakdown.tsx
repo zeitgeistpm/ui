@@ -139,6 +139,7 @@ export const BreakdownSlot = ({
   usdZtgPrice,
   changePercentage,
 }: BreakdownSlotProps) => {
+  console.log(changePercentage);
   return (
     <>
       <h4 className="text-gray-500 mb-1">{title}</h4>
@@ -148,7 +149,11 @@ export const BreakdownSlot = ({
         </div>
         <div
           className={`flex-1 w-1/3 ${
-            changePercentage < 0 ? "text-red-600" : "text-green-500"
+            changePercentage < 0.01
+              ? "text-gray-800"
+              : changePercentage < 0
+              ? "text-red-600"
+              : "text-green-500"
           }`}
         >
           {changePercentage.toFixed(1)}%

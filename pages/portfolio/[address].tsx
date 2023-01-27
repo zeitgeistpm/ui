@@ -352,7 +352,6 @@ const Portfolio: NextPage = observer(() => {
 
       const userBalance = new Decimal(balance.free.toNumber());
       const change = diffChange(price, price24HoursAgo);
-      console.log(change.toString());
 
       positionsData.push({
         assetId,
@@ -452,8 +451,24 @@ const Portfolio: NextPage = observer(() => {
     );
 
     // TODO: load subsidy positions data
-    const subsidyPositionsTotal = new Decimal(10).mul(ZTG);
-    const subsidyPositionsTotal24HoursAgo = new Decimal(10).mul(ZTG);
+    const subsidyPositionsTotal = subsidyPositions.reduce((acc, position) => {
+      if (position.userBalance.isNaN() || position.price.isNaN()) {
+        return acc;
+      }
+      const value = position.userBalance.mul(position.price);
+      return !value.isNaN() ? acc.plus(value) : acc;
+    }, new Decimal(0));
+
+    const subsidyPositionsTotal24HoursAgo = subsidyPositions.reduce(
+      (acc, position) => {
+        if (position.userBalance.isNaN() || position.price24HoursAgo.isNaN()) {
+          return acc;
+        }
+        const value = position.userBalance.mul(position.price24HoursAgo);
+        return !value.isNaN() ? acc.plus(value) : acc;
+      },
+      new Decimal(0),
+    );
 
     const subsidyPositionsChange = diffChange(
       subsidyPositionsTotal,
@@ -570,7 +585,7 @@ const Portfolio: NextPage = observer(() => {
 const diffChange = (a: Decimal, b: Decimal) => {
   const priceDiff = a.minus(b);
   const priceChange = priceDiff.div(b);
-  return priceChange.mul(100).round().toNumber();
+  return priceChange.mul(100).toNumber();
 };
 
 export default Portfolio;
