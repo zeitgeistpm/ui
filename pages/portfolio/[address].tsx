@@ -169,7 +169,7 @@ const Portfolio: NextPage = observer(() => {
     ): null | Decimal => {
       const poolZtgBalance = poolsZtgBalances[pool.poolId]?.free.toNumber();
 
-      if (!poolZtgBalance) {
+      if (typeof poolZtgBalance === "undefined") {
         return null;
       }
 
