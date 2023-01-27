@@ -51,7 +51,13 @@ export const useMarket24hrPriceChanges = (marketId: number) => {
           if (pastPrice != null && nowPrice != null) {
             const priceDiff = nowPrice.minus(pastPrice);
             const priceChange = priceDiff.div(pastPrice);
-            priceChanges.set(key, Math.round(priceChange.mul(100).toNumber()));
+
+            priceChanges.set(
+              key,
+              priceChange.isNaN()
+                ? 0
+                : Math.round(priceChange.mul(100).toNumber()),
+            );
           } else {
             priceChanges.set(key, 0);
           }
