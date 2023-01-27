@@ -9,6 +9,9 @@ import {
   getIndexOf,
   getMarketIdOf,
   IndexedPool,
+  IOMarketOutcomeAssetId,
+  IOPoolShareAssetId,
+  IOZtgAssetId,
   isNA,
   PoolShareAssetId,
   ScalarAssetId,
@@ -39,6 +42,7 @@ import {
   PoolZtgBalanceLookup,
   usePoolZtgBalance,
 } from "lib/hooks/queries/usePoolZtgBalance";
+import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { calcSpotPrice } from "lib/math";
 import { useStore } from "lib/stores/Store";
@@ -47,6 +51,19 @@ import { observer } from "mobx-react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
+
+type PositionData<T extends AssetId = AssetId> = {
+  assetId: T;
+  marketId: number;
+  market: FullMarketFragment;
+  pool: IndexedPool<Context>;
+  outcome: string;
+  price24HoursAgo: Decimal;
+  price: Decimal;
+  userBalance: Decimal;
+  totalIssuance: Decimal;
+  change: number;
+};
 
 const Portfolio: NextPage = observer(() => {
   const { config, blockNumber } = useStore();
@@ -58,18 +75,19 @@ const Portfolio: NextPage = observer(() => {
   const { data: now } = useChainTimeNow();
 
   const { data: ztgPrice } = useZtgInfo();
-  const block24HoursAgo = now?.block - 3000;
+  const block24HoursAgo = Math.floor(now?.block - 86400 / now?.period);
+
   const positions = useAccountTokenPositions(address);
 
   const filter = positions.data
     ?.map((position) => {
       const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
-      if ("CategoricalOutcome" in assetId || "ScalarOutcome" in assetId) {
+      if (IOMarketOutcomeAssetId.is(assetId)) {
         return {
           marketId: getMarketIdOf(assetId),
         };
       }
-      if ("PoolShare" in assetId) {
+      if (IOPoolShareAssetId.is(assetId)) {
         return {
           poolId: assetId.PoolShare,
         };
@@ -84,6 +102,11 @@ const Portfolio: NextPage = observer(() => {
   const poolAccountIds = usePoolAccountIds(pools.data);
 
   const poolsZtgBalances = usePoolZtgBalance(pools.data ?? []);
+
+  const poolsTotalIssuance = useTotalIssuanceForPools(
+    pools.data?.map((p) => p.poolId) ?? [],
+  );
+
   const poolsZtgBalances24HoursAgo = usePoolZtgBalance(
     pools.data ?? [],
     block24HoursAgo,
@@ -95,10 +118,10 @@ const Portfolio: NextPage = observer(() => {
       ?.map((position) => {
         const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
         const pool = pools.data?.find((pool) => {
-          if ("PoolShare" in assetId) {
+          if (IOPoolShareAssetId.is(assetId)) {
             return pool.poolId === assetId.PoolShare;
           }
-          if ("CategoricalOutcome" in assetId || "ScalarOutcome" in assetId) {
+          if (IOMarketOutcomeAssetId.is(assetId)) {
             return pool.marketId === getMarketIdOf(assetId);
           }
         });
@@ -125,21 +148,8 @@ const Portfolio: NextPage = observer(() => {
     })) ?? [],
   );
 
-  type PositionData<T extends AssetId> = {
-    assetId: T;
-    marketId: number;
-    market: FullMarketFragment;
-    pool: IndexedPool<Context>;
-    outcome: string;
-    price24HoursAgo: Decimal;
-    price: Decimal;
-    userBalance: Decimal;
-    change: number;
-  };
-
-  const marketPositions = useMemo(() => {
-    let marketPositions: PositionData<ScalarAssetId | CategoricalAssetId>[] =
-      [];
+  const positionsData = useMemo<PositionData[] | null>(() => {
+    let positionsData: PositionData[] = [];
 
     if (!positions.data || !pools.data || !markets.data) {
       return null;
@@ -182,75 +192,154 @@ const Portfolio: NextPage = observer(() => {
 
     positions.data.forEach((position) => {
       const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
-      if ("CategoricalOutcome" in assetId || "ScalarOutcome" in assetId) {
-        const marketId = getMarketIdOf(assetId);
-        const market = markets.data?.find((m) => m.marketId === marketId);
-        const pool = pools.data.find((pool) => pool.marketId === marketId);
 
-        const price = calculatePrice(
+      let pool: IndexedPool<Context>;
+      let marketId: number;
+      let market: FullMarketFragment;
+
+      if (IOZtgAssetId.is(assetId)) {
+        return;
+      }
+
+      if (IOPoolShareAssetId.is(assetId)) {
+        pool = pools.data.find((pool) => pool.poolId === assetId.PoolShare);
+        marketId = pool.marketId;
+        market = markets.data?.find((m) => m.marketId === marketId);
+      }
+
+      if (IOMarketOutcomeAssetId.is(assetId)) {
+        marketId = getMarketIdOf(assetId);
+        market = markets.data?.find((m) => m.marketId === marketId);
+        pool = pools.data.find((pool) => pool.marketId === marketId);
+      }
+
+      if (!market || !pool) {
+        console.log("market / pool is NA", assetId);
+        stillLoading = true;
+        return;
+      }
+
+      const totalIssuanceForPoolQuery = poolsTotalIssuance[pool.poolId];
+
+      if (!totalIssuanceForPoolQuery.data) {
+        stillLoading = true;
+        return;
+      }
+
+      const totalIssuance = new Decimal(
+        totalIssuanceForPoolQuery.data.totalIssuance.toString(),
+      );
+
+      let price: Decimal;
+      let price24HoursAgo: Decimal;
+
+      if (IOMarketOutcomeAssetId.is(assetId)) {
+        price = calculatePrice(
           pool,
           assetId,
           poolsZtgBalances,
           poolAssetBalances,
         );
-        const price24HoursAgo = calculatePrice(
+
+        price24HoursAgo = calculatePrice(
           pool,
           assetId,
           poolsZtgBalances24HoursAgo,
           poolAssetBalances24HoursAgo,
         );
+      }
 
-        if (!price || !price24HoursAgo) {
-          stillLoading = true;
-          return;
-        }
+      if (IOPoolShareAssetId.is(assetId)) {
+        price = new Decimal(ZTG);
+        price24HoursAgo = new Decimal(ZTG);
+      }
 
-        const assetIndex = getIndexOf(assetId);
-        const outcome = market.marketType.categorical
+      if (!price || !price24HoursAgo) {
+        console.log("price is NA");
+        stillLoading = true;
+        return;
+      }
+
+      const assetIndex = getIndexOf(assetId);
+
+      let outcome: string;
+
+      if (IOMarketOutcomeAssetId.is(assetId)) {
+        outcome = market.marketType.categorical
           ? market.categories[assetIndex].name
           : assetIndex == 1
           ? "Short"
           : "Long";
-
-        const balance = userAssetBalances.get(address, assetId)?.data.balance;
-
-        if (!balance || isNA(balance)) {
-          stillLoading = true;
-          return;
-        }
-
-        const userBalance = new Decimal(balance.free.toNumber());
-
-        const change = diffChange(price, price24HoursAgo);
-
-        marketPositions.push({
-          assetId,
-          marketId,
-          market,
-          pool,
-          price,
-          price24HoursAgo,
-          outcome,
-          userBalance,
-          change,
-        });
       }
+
+      if (IOPoolShareAssetId.is(assetId)) {
+        outcome = "Pool Share";
+      }
+
+      const balance = userAssetBalances.get(address, assetId)?.data.balance;
+
+      if (!balance || isNA(balance)) {
+        console.log("balance is NA");
+        stillLoading = true;
+        return;
+      }
+
+      const userBalance = new Decimal(balance.free.toNumber());
+      const change = diffChange(price, price24HoursAgo);
+
+      positionsData.push({
+        assetId,
+        marketId,
+        market,
+        pool,
+        price,
+        price24HoursAgo,
+        outcome,
+        userBalance,
+        change,
+        totalIssuance,
+      });
     });
 
     if (stillLoading) return null;
 
-    return marketPositions;
+    return positionsData;
   }, [
     positions.data,
     pools.data,
     markets.data,
     ztgPrice,
+    poolsTotalIssuance,
     userAssetBalances,
     poolsZtgBalances,
     poolAssetBalances,
     poolsZtgBalances24HoursAgo,
     poolAssetBalances24HoursAgo,
   ]);
+
+  const marketPositions = useMemo<
+    PositionData<CategoricalAssetId | ScalarAssetId>[]
+  >(() => {
+    if (positionsData) {
+      return positionsData.filter(
+        (
+          position,
+        ): position is PositionData<CategoricalAssetId | ScalarAssetId> =>
+          IOMarketOutcomeAssetId.is(position.assetId),
+      );
+    }
+    return null;
+  }, [positionsData]);
+
+  const subsidyPositions = useMemo<PositionData<PoolShareAssetId>[]>(() => {
+    if (positionsData) {
+      return positionsData.filter(
+        (position): position is PositionData<PoolShareAssetId> =>
+          IOPoolShareAssetId.is(position.assetId),
+      );
+    }
+    return [];
+  }, [positionsData]);
 
   const marketPositionsByMarket = useMemo(() => {
     if (marketPositions) {
@@ -260,7 +349,7 @@ const Portfolio: NextPage = observer(() => {
   }, [marketPositions]);
 
   const breakdown = useMemo<PortfolioBreakdownProps>(() => {
-    if (!marketPositions) {
+    if (!marketPositions || !ztgPrice) {
       return { loading: true };
     }
 
@@ -323,7 +412,7 @@ const Portfolio: NextPage = observer(() => {
         changePercentage: 30,
       },
     };
-  }, [marketPositions]);
+  }, [ztgPrice, marketPositions]);
 
   return (
     <>

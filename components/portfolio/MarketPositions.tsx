@@ -118,10 +118,30 @@ export const MarketPositionsSkeleton = ({
 }) => {
   return (
     <div className={`${className}`}>
-      <Skeleton className="mb-6" height={20} width={"100%"} />
-      <Skeleton className="mb-1" height={60} width={"100%"} />
-      <Skeleton className="mb-1" height={90} width={"100%"} />
-      <Skeleton height={90} width={"100%"} />
+      <Skeleton
+        variant="rect"
+        className="mb-6 center mx-auto rounded-md"
+        height={20}
+        width={"70%"}
+      />
+      <Skeleton
+        variant="rect"
+        className="mb-2 rounded-md"
+        height={50}
+        width={"100%"}
+      />
+      <Skeleton
+        variant="rect"
+        className="mb-2 rounded-md"
+        height={90}
+        width={"100%"}
+      />
+      <Skeleton
+        variant="rect"
+        className="rounded-md"
+        height={90}
+        width={"100%"}
+      />
     </div>
   );
 };
