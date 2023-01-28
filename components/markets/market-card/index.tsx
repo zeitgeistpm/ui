@@ -110,7 +110,11 @@ const MarketCardDetails = ({
         {/* <span> | </span> */}
         <span>
           {rows.endDate &&
-            ` | ${new Date(Number(rows?.endDate)).toISOString()}`}
+            ` | Ends ${new Date(Number(rows?.endDate)).toLocaleString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}`}
         </span>
         {/* {new Intl.DateTimeFormat("en-US", {
               dateStyle: "medium",
