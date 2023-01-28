@@ -22,6 +22,7 @@ export interface IndexedMarketCardData {
   volume: number;
   baseAsset: string;
   tags: string[];
+  endDate: string;
 }
 
 export interface MarketCardProps extends IndexedMarketCardData {
@@ -71,7 +72,7 @@ const Pill = ({ value, classes }: { value: string; classes: string }) => {
   );
 };
 
-const MarketCardTags = ({ tags }: { tags: [] }) => {
+const MarketCardTags = ({ tags }: { tags: string[] }) => {
   return (
     <>
       {" "}
@@ -89,8 +90,9 @@ const MarketCardTags = ({ tags }: { tags: [] }) => {
 const MarketCardDetails = ({
   rows,
 }: {
-  rows: { volume: string; outcomes: number };
+  rows: { volume: string; outcomes: number; endDate: string };
 }) => {
+  console.log(rows.endDate);
   return (
     <div className="w-full">
       <div className="text-sm flex justify-between mb-1">
@@ -105,8 +107,14 @@ const MarketCardDetails = ({
       </div>
       <div className="text-xs my-2.5">
         <span className="font-semibold">{rows.outcomes} outcomes</span>
-        <span> | </span>
-        <span>Ends March 12, 2023</span>
+        {/* <span> | </span> */}
+        <span>
+          {rows.endDate &&
+            ` | ${new Date(Number(rows?.endDate)).toISOString()}`}
+        </span>
+        {/* {new Intl.DateTimeFormat("en-US", {
+              dateStyle: "medium",
+          }).format(Number(indexedMarket.period.end))} */}
       </div>
       <div className="flex gap-2.5 text-sm">
         {/* <div className="flex items-center gap-2">
@@ -145,11 +153,13 @@ const MarketCard = ({
   baseAsset,
   width,
   tags,
+  endDate,
   className = "",
 }: MarketCardProps) => {
   const [showDetailsOverlay, setShowDetailsOverlay] = useState<boolean>(false);
   const infoRows = {
     // { name: "Prediction", value: prediction },
+    endDate: endDate,
     outcomes: outcomes.length,
     volume: `${volume ?? 0} ${baseAsset?.toUpperCase() ?? "ZTG"}`,
     // { name: "Status", value: creation },

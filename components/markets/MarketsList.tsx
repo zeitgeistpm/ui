@@ -169,6 +169,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
               creation={market.creation}
               img={market.img}
               prediction={market.prediction}
+              endDate={market.period.end}
               baseAsset={market.pool?.baseAsset}
               volume={new Decimal(volume).div(ZTG).toNumber()}
               tags={market.tags}

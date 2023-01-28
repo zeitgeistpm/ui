@@ -30,6 +30,9 @@ const marketsQuery = gql`
         poolId
       }
       tags
+      period {
+        end
+      }
     }
   }
 `;
@@ -58,6 +61,7 @@ const getNewestMarkets = async (
       outcomeAssets: string[];
       pool: { baseAsset: string; volume: string; poolId: number };
       tags: [];
+      period: { end: number };
     }[];
   }>(marketsQuery);
 
@@ -99,6 +103,7 @@ const getNewestMarkets = async (
         baseAsset: market.pool.baseAsset,
         outcomes: marketCategories,
         tags: market.tags,
+        period: market.period.end,
       };
 
       return newMarket;
