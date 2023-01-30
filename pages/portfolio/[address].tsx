@@ -8,6 +8,7 @@ import AssetActionButtons from "components/assets/AssetActionButtons";
 import InfoBoxes from "components/ui/InfoBoxes";
 import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
 import TimeSeriesChart, { ChartData } from "components/ui/TimeSeriesChart";
+import Decimal from "decimal.js";
 import { DAY_SECONDS, ZTG } from "lib/constants";
 import { useObservable } from "lib/hooks";
 import { useAccountBalanceHistory } from "lib/hooks/queries/useAccountBalanceHistory";
@@ -21,6 +22,7 @@ import { useMarketsStore } from "lib/stores/MarketsStore";
 import { usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
 import { formatBal, isValidPolkadotAddress } from "lib/util";
+import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 import { get24HrPriceChange, PricePoint } from "lib/util/market";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
@@ -174,9 +176,29 @@ const Portfolio: NextPage = observer(() => {
 
             const pool = await poolStore.getPoolFromChain(Number(poolId));
 
-            const currentPrice = pool.assets.find(
-              (asset) => asset.ticker === outcome.ticker,
-            )?.price;
+            let currentPrice: number;
+
+            if (market.status === "Resolved") {
+              if (market.marketType.categorical != null) {
+                currentPrice = 1;
+              } else {
+                const resolvedNumber = market.resolvedOutcome;
+                const [loBound, hiBound] = market.marketType.scalar;
+                const key =
+                  asset["ScalarOutcome"][1].toLowerCase() === "long"
+                    ? "longTokenValue"
+                    : "shortTokenValue";
+                currentPrice = calcScalarResolvedPrices(
+                  new Decimal(loBound).div(ZTG),
+                  new Decimal(hiBound).div(ZTG),
+                  new Decimal(resolvedNumber).div(ZTG),
+                )[key].toNumber();
+              }
+            } else {
+              currentPrice = pool.assets.find(
+                (asset) => asset.ticker === outcome.ticker,
+              )?.price;
+            }
 
             return {
               market: market,
