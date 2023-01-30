@@ -1,7 +1,7 @@
 import { useTransactionHistory } from "lib/hooks/queries/useTransactionHistory";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 
-const col: TableColumn[] = [
+const columns: TableColumn[] = [
   {
     header: "Market",
     accessor: "question",
@@ -51,7 +51,7 @@ const TransactionHistoryTable = ({ address }: { address: string }) => {
     };
   });
 
-  return <Table columns={col} data={tableData} />;
+  return <Table columns={columns} data={tableData} />;
 };
 
 export default TransactionHistoryTable;
