@@ -5,6 +5,7 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import PortfolioCard, { Position } from "components/account/PortfolioCard";
 import AssetActionButtons from "components/assets/AssetActionButtons";
+import TransactionHistoryTable from "components/portfolio/TransactionHistoryTable";
 import InfoBoxes from "components/ui/InfoBoxes";
 import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
 import TimeSeriesChart, { ChartData } from "components/ui/TimeSeriesChart";
@@ -318,6 +319,7 @@ const Portfolio: NextPage = observer(() => {
               <PortfolioCard key={index} position={position} />
             ))}
           </div>
+          <TransactionHistoryTable address={address} />
         </>
       )}
     </>

@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { getMarketIdOf, isIndexedSdk } from "@zeitgeistpm/sdk-next";
-import { MappedUndefined } from "@zeitgeistpm/utility/dist/object";
+import Decimal from "decimal.js";
 import { gql } from "graphql-request";
+import { ZTG } from "lib/constants";
 import { useSdkv2 } from "../useSdkv2";
 
 export const transactionHistoryKey = "transaction-history";
@@ -13,7 +14,6 @@ const transactionHistoryQuery = gql`
       orderBy: timestamp_DESC
     ) {
       assetId
-      dAmountInPool
       ztgTraded
       timestamp
       event
@@ -38,11 +38,13 @@ const humanReadableEventMap = {
   PoolJoin: "Add Subsidy",
 } as const;
 
+type Action = typeof humanReadableEventMap[keyof typeof humanReadableEventMap];
+
 type TradeEvent = {
   question: string;
-  action: typeof humanReadableEventMap[keyof typeof humanReadableEventMap];
-  value: string;
-  price: string;
+  action: Action;
+  value: number;
+  price: number;
   time: string;
 };
 
@@ -62,7 +64,7 @@ export const useTransactionHistory = (address: string) => {
             assetId: string;
             dAmountInPool: string;
             ztgTraded: string;
-            newPrice: string;
+            newPrice: number;
             timestamp: string;
             event: string;
           }[];
@@ -103,17 +105,19 @@ export const useTransactionHistory = (address: string) => {
 
         const transactions: TradeEvent[] = eventsToDisplay.map((asset) => {
           const assetId = JSON.parse(asset.assetId);
+          const action: Action = humanReadableEventMap[asset.event];
 
           return {
             question: marketsMap.get(
               assetId.categoricalOutcome?.[0] ?? assetId.scalarOutcome[0],
             ).question,
-            action: humanReadableEventMap[asset.event],
-            value: asset.ztgTraded,
-            price: asset.newPrice,
-            time: new Intl.DateTimeFormat("default", {
-              dateStyle: "long",
-            }).format(new Date(asset.timestamp)),
+            action: action,
+            value:
+              action === "Trade" && asset.ztgTraded != null
+                ? new Decimal(asset.ztgTraded).div(ZTG).toNumber()
+                : null,
+            price: action === "Trade" ? asset.newPrice : null,
+            time: asset.timestamp,
           };
         });
 
