@@ -161,6 +161,7 @@ const MarketCard = ({
   className = "",
 }: MarketCardProps) => {
   const [showDetailsOverlay, setShowDetailsOverlay] = useState<boolean>(false);
+  const [implied, setImplied] = useState(0);
   const infoRows = {
     // { name: "Prediction", value: prediction },
     endDate: endDate,
@@ -170,19 +171,20 @@ const MarketCard = ({
   };
 
   // const { data: market } = useMarket(marketId);
-  // const { data: spotPrices } = useMarketSpotPrices(marketId);
+  const { data: spotPrices } = useMarketSpotPrices(marketId);
 
-  // if (spotPrices) {
-  //   const totalAssetPrice = Array.from(spotPrices.values()).reduce(
-  //     (val, cur) => val.plus(cur),
-  //     new Decimal(0),
-  //   );
-  //   console.log(totalAssetPrice.toNumber());
+  if (spotPrices) {
+    const totalAssetPrice = Array.from(spotPrices.values()).reduce(
+      (val, cur) => val.plus(cur),
+      new Decimal(0),
+    );
+    console.log(totalAssetPrice.toNumber());
+    // console.log(
+    //   Math.round((outcomes[0].price / totalAssetPrice.toNumber()) * 100),
+    // );
+  }
 
-  //   const currentPrice = spotPrices.get(index).toNumber();
-  // }
-
-  // console.log(market);
+  // console.log(outcomes);
 
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
