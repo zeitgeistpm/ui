@@ -33,6 +33,7 @@ import {
 import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { calcSpotPrice } from "lib/math";
+import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { useMemo } from "react";
 
 export type UsePortfolioPositions = {
@@ -143,6 +144,7 @@ export const usePortfolioPositions = (
   const { data: ztgPrice } = useZtgInfo();
   const block24HoursAgo = Math.floor(now?.block - 7200);
 
+  // TODO: loosing markets might have balance. Only applicabble to categorical.
   const rawPositions = useAccountTokenPositions({
     where: {
       account: {
@@ -311,23 +313,25 @@ export const usePortfolioPositions = (
       let price: Decimal;
       let price24HoursAgo: Decimal;
 
-      if (market.status === "Resolved") {
-        price = new Decimal(0);
-        price24HoursAgo = new Decimal(0);
-      } else if (IOMarketOutcomeAssetId.is(assetId)) {
-        price = calculatePrice(
-          pool,
-          assetId,
-          poolsZtgBalances,
-          poolAssetBalances,
-        );
+      if (IOMarketOutcomeAssetId.is(assetId)) {
+        if (market.status === "Resolved") {
+          price = calcResolvedMarketPrices(market).get(getIndexOf(assetId));
+          price24HoursAgo = price;
+        } else {
+          price = calculatePrice(
+            pool,
+            assetId,
+            poolsZtgBalances,
+            poolAssetBalances,
+          );
 
-        price24HoursAgo = calculatePrice(
-          pool,
-          assetId,
-          poolsZtgBalances24HoursAgo,
-          poolAssetBalances24HoursAgo,
-        );
+          price24HoursAgo = calculatePrice(
+            pool,
+            assetId,
+            poolsZtgBalances24HoursAgo,
+            poolAssetBalances24HoursAgo,
+          );
+        }
       } else if (IOPoolShareAssetId.is(assetId)) {
         const poolAssetIds = pool.weights
           .map((w) => fromCompositeIndexerAssetId(w.assetId).unwrap())

@@ -1,4 +1,5 @@
 import { Tab } from "@headlessui/react";
+import { getIndexOf } from "@zeitgeistpm/sdk-next";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
 import {
   MarketPositions,
@@ -68,18 +69,38 @@ const Portfolio: NextPage = observer(() => {
                 : Object.values(marketPositionsByMarket).map(
                     (marketPositions) => {
                       const market = marketPositions[0].market;
+
+                      if (
+                        market.status === "Resolved" &&
+                        market.marketType.categorical
+                      ) {
+                        const hasRedeemableWinningOutcomeTokens = Boolean(
+                          marketPositions.find(
+                            (position) =>
+                              getIndexOf(position.assetId) ===
+                                Number(market.resolvedOutcome) &&
+                              position.userBalance.gt(0),
+                          ),
+                        );
+                        if (!hasRedeemableWinningOutcomeTokens) return null;
+                      }
+
                       return (
                         <MarketPositions
                           key={market.marketId}
                           className="mb-14"
                           title={market.question}
                           usdZtgPrice={ztgPrice.price}
-                          positions={marketPositions.map((position) => ({
-                            outcome: position.outcome,
-                            price: position.price,
-                            balance: position.userBalance,
-                            changePercentage: position.changePercentage,
-                          }))}
+                          market={market}
+                          positions={marketPositions
+                            .filter((position) => position.userBalance.gt(0))
+                            .map((position) => ({
+                              outcome: position.outcome,
+                              assetId: position.assetId,
+                              price: position.price,
+                              balance: position.userBalance,
+                              changePercentage: position.changePercentage,
+                            }))}
                         />
                       );
                     },
@@ -100,12 +121,16 @@ const Portfolio: NextPage = observer(() => {
                           className="mb-14"
                           title={market.question}
                           usdZtgPrice={ztgPrice.price}
-                          positions={subsidyPositions.map((position) => ({
-                            outcome: position.outcome,
-                            price: position.price,
-                            balance: position.userBalance,
-                            changePercentage: position.changePercentage,
-                          }))}
+                          market={market}
+                          positions={subsidyPositions
+                            .filter((position) => position.userBalance.gt(0))
+                            .map((position) => ({
+                              outcome: position.outcome,
+                              assetId: position.assetId,
+                              price: position.price,
+                              balance: position.userBalance,
+                              changePercentage: position.changePercentage,
+                            }))}
                         />
                       );
                     },

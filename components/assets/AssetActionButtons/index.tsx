@@ -31,9 +31,7 @@ const AssetActionButtons = observer(
       marketStage.type === "OpenReportingPeriod" ||
       (marketStage.type === "OracleReportingPeriod" && isOracle)
     ) {
-      return (
-        <ReportButton market={market} assetId={assetId} ticker={assetTicker} />
-      );
+      return <ReportButton market={market} assetId={assetId} />;
     }
 
     if (marketStage.type === "Disputed") {
@@ -41,9 +39,7 @@ const AssetActionButtons = observer(
     }
 
     if (marketStage.type === "Reported") {
-      return (
-        <DisputeButton market={market} assetId={assetId} ticker={assetTicker} />
-      );
+      return <DisputeButton market={market} assetId={assetId} />;
     }
 
     if (marketStage.type === "Resolved") {
