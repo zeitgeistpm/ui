@@ -18,7 +18,7 @@ const col: TableColumn[] = [
     type: "currency",
   },
   {
-    header: "Value(ZTG)",
+    header: "Cost(ZTG)",
     accessor: "value",
     type: "currency",
   },

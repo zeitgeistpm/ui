@@ -18,6 +18,7 @@ const transactionHistoryQuery = gql`
       timestamp
       event
       newPrice
+      dPrice
     }
   }
 `;
@@ -65,6 +66,7 @@ export const useTransactionHistory = (address: string) => {
             dAmountInPool: string;
             ztgTraded: string;
             newPrice: number;
+            dPrice: number;
             timestamp: string;
             event: string;
           }[];
@@ -116,7 +118,8 @@ export const useTransactionHistory = (address: string) => {
               action === "Trade" && asset.ztgTraded != null
                 ? new Decimal(asset.ztgTraded).div(ZTG).toNumber()
                 : null,
-            price: action === "Trade" ? asset.newPrice : null,
+            price:
+              action === "Trade" ? asset.newPrice - asset.dPrice / 2 : null,
             time: asset.timestamp,
           };
         });
