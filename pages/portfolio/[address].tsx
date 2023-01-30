@@ -49,8 +49,9 @@ const Portfolio: NextPage = observer(() => {
         />
       </div>
 
-      <div>
+      <div className="mb-12">
         <h3 className="text-3xl mb-6 text-center">Predictions</h3>
+
         <Tab.Group>
           <Tab.List className="flex center mb-14">
             <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
@@ -60,6 +61,7 @@ const Portfolio: NextPage = observer(() => {
               Subsidy
             </Tab>
           </Tab.List>
+
           <Tab.Panels>
             <Tab.Panel>
               {!marketPositionsByMarket || !ztgPrice

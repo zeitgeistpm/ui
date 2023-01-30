@@ -144,7 +144,6 @@ export const usePortfolioPositions = (
   const { data: ztgPrice } = useZtgInfo();
   const block24HoursAgo = Math.floor(now?.block - 7200);
 
-  // TODO: loosing markets might have balance. Only applicabble to categorical.
   const rawPositions = useAccountTokenPositions({
     where: {
       account: {
