@@ -1,5 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMarketIdOf, isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import {
+  fromCompositeIndexerAssetId,
+  getMarketIdOf,
+  isIndexedSdk,
+  IOMarketOutcomeAssetId,
+} from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { gql } from "graphql-request";
 import { ZTG } from "lib/constants";
@@ -82,13 +87,11 @@ export const useTransactionHistory = (address: string) => {
 
         const marketIds = new Set<number>(
           eventsToDisplay.map((event) => {
-            // const marketId = getMarketIdOf(JSON.parse(event.assetId));
-            const assetId = JSON.parse(event.assetId);
-            //todo replace with sdk
-            const marketId =
-              assetId.categoricalOutcome?.[0] ?? assetId.scalarOutcome[0];
+            const assetId = fromCompositeIndexerAssetId(event.assetId).unwrap();
 
-            return marketId;
+            return IOMarketOutcomeAssetId.is(assetId)
+              ? getMarketIdOf(assetId)
+              : null;
           }),
         );
 
@@ -106,13 +109,14 @@ export const useTransactionHistory = (address: string) => {
         });
 
         const transactions: TradeEvent[] = eventsToDisplay.map((asset) => {
-          const assetId = JSON.parse(asset.assetId);
           const action: Action = humanReadableEventMap[asset.event];
+          const assetId = fromCompositeIndexerAssetId(asset.assetId).unwrap();
+          const marketId = IOMarketOutcomeAssetId.is(assetId)
+            ? getMarketIdOf(assetId)
+            : null;
 
           return {
-            question: marketsMap.get(
-              assetId.categoricalOutcome?.[0] ?? assetId.scalarOutcome[0],
-            ).question,
+            question: marketsMap.get(marketId).question,
             action: action,
             value:
               action === "Trade" && asset.ztgTraded != null
