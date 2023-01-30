@@ -70,20 +70,22 @@ const Portfolio: NextPage = observer(() => {
                     (marketPositions) => {
                       const market = marketPositions[0].market;
 
+                      marketPositions = marketPositions.filter((position) =>
+                        position.userBalance.gt(0),
+                      );
+
                       if (
                         market.status === "Resolved" &&
                         market.marketType.categorical
                       ) {
-                        const hasRedeemableWinningOutcomeTokens = Boolean(
-                          marketPositions.find(
-                            (position) =>
-                              getIndexOf(position.assetId) ===
-                                Number(market.resolvedOutcome) &&
-                              position.userBalance.gt(0),
-                          ),
+                        marketPositions = marketPositions.filter(
+                          (position) =>
+                            getIndexOf(position.assetId) ===
+                            Number(market.resolvedOutcome),
                         );
-                        if (!hasRedeemableWinningOutcomeTokens) return null;
                       }
+
+                      if (marketPositions.length === 0) return null;
 
                       return (
                         <MarketPositions

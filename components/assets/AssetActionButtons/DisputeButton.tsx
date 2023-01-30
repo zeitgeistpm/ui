@@ -29,7 +29,7 @@ const DisputeButton = observer(
     const notificationStore = useNotificationStore();
     const modalStore = useModalStore();
 
-    const ticker = market.categories?.[getIndexOf(assetId)];
+    const ticker = market.categories?.[getIndexOf(assetId)].ticker;
 
     const { data: disputes } = useMarketDisputes(market);
 

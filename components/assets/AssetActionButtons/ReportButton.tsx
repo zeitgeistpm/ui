@@ -30,7 +30,7 @@ const ReportButton = observer(
 
     if (!market) return null;
 
-    const ticker = market.categories?.[getIndexOf(assetId)];
+    const ticker = market.categories?.[getIndexOf(assetId)].ticker;
 
     const reportDisabled = !sdk || !isRpcSdk(sdk);
 
