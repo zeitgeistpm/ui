@@ -100,18 +100,6 @@ class MarketStore {
     }
   }
 
-  get connectedWalletCanReport(): boolean {
-    if (this.inOpenReportPeriod === true) return true;
-    if (!this.store.wallets.activeAccount?.address) return false;
-
-    const activeAddress = this.store.wallets.activeAccount?.address;
-    if (this.status === "Closed" && this.isOracle) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   get creator(): string {
     return this.market.creator;
   }
@@ -124,14 +112,6 @@ class MarketStore {
     const marketEnd = moment(this.endTimestamp);
     const periodEnd = marketEnd.clone().add(1, "day");
     return now.isBetween(marketEnd, periodEnd);
-  }
-
-  get inOpenReportPeriod(): boolean {
-    return (
-      this.status === "Closed" &&
-      (new Date().getTime() - this.endTimestamp) / 1000 >
-        this.store.config.markets.reportingPeriodSec
-    );
   }
 
   get inReportPeriod(): boolean {
@@ -188,58 +168,6 @@ class MarketStore {
     const timeRemaining = this.endTimestamp - new Date().getTime();
 
     return timeRemaining > 0 ? timeRemaining / 1000 : 0;
-  }
-
-  get oracleReportDuration(): number | null {
-    if (this.status === "Active" || this.market.report) {
-      return null;
-    }
-
-    const timeRemaining =
-      this.store.config.markets.reportingPeriodSec -
-      (new Date().getTime() - this.endTimestamp) / 1000;
-
-    return timeRemaining > 0 ? timeRemaining : 0;
-  }
-
-  get openReportDuration(): number | null {
-    if (this.status === "Active" || this.market.report) {
-      return null;
-    }
-
-    const timeRemaining =
-      2 * this.store.config.markets.reportingPeriodSec -
-      (new Date().getTime() - this.endTimestamp) / 1000;
-
-    return timeRemaining;
-  }
-
-  get reportCooldownDuration(): number | null {
-    if (!this.market.report) {
-      return null;
-    }
-    const blockDiff =
-      this.store.blockNumber.toNumber() - this.market.report?.at;
-
-    return blockDiff > 0
-      ? this.store.config.markets.disputePeriodSec -
-          blockDiff * this.store.config.blockTimeSec
-      : 0;
-  }
-
-  get disputeCooldownDuration(): number | null {
-    if (!(this.disputes?.length > 0)) {
-      return null;
-    }
-
-    const blockDiff =
-      this.store.blockNumber.toNumber() -
-      this.disputes[this.disputes.length - 1].at;
-
-    return blockDiff > 0
-      ? this.store.config.markets.disputePeriodSec -
-          blockDiff * this.store.config.blockTimeSec
-      : null;
   }
 
   get isCourt(): boolean {
@@ -616,7 +544,6 @@ class MarketStore {
       oracleReportPeriodPassed: computed,
       inOracleReportPeriod: computed,
       inReportPeriod: computed,
-      connectedWalletCanReport: computed,
       hasReport: computed,
       status: computed,
       creator: computed,
