@@ -92,10 +92,9 @@ const Portfolio: NextPage = observer(() => {
                       return (
                         <MarketPositions
                           key={market.marketId}
-                          className="mb-14"
-                          title={market.question}
-                          usdZtgPrice={ztgPrice.price}
+                          className="mb-14 border-b-4 border-gray-200"
                           market={market}
+                          usdZtgPrice={ztgPrice.price}
                           positions={marketPositions
                             .filter((position) => position.userBalance.gt(0))
                             .map((position) => ({
@@ -122,10 +121,9 @@ const Portfolio: NextPage = observer(() => {
                       return (
                         <MarketPositions
                           key={market.marketId}
-                          className="mb-14"
-                          title={market.question}
-                          usdZtgPrice={ztgPrice.price}
+                          className="mb-14 border-b-4 border-gray-200"
                           market={market}
+                          usdZtgPrice={ztgPrice.price}
                           positions={subsidyPositions
                             .filter((position) => position.userBalance.gt(0))
                             .map((position) => ({

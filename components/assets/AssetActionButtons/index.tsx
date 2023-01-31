@@ -11,11 +11,10 @@ import ReportButton from "./ReportButton";
 interface AssetActionButtonsProps {
   marketId: number;
   assetId?: ScalarAssetId | CategoricalAssetId;
-  assetTicker: string;
 }
 
 const AssetActionButtons = observer(
-  ({ marketId, assetId, assetTicker }: AssetActionButtonsProps) => {
+  ({ marketId, assetId }: AssetActionButtonsProps) => {
     const store = useStore();
     const { data: market } = useMarket({ marketId });
     const { data: marketStage } = useMarketStage(market);

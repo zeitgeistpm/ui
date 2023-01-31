@@ -1,31 +1,22 @@
 import { Skeleton } from "@material-ui/lab";
 import {
   AssetId,
-  CategoricalAssetId,
-  getIndexOf,
   IndexerContext,
   IOMarketOutcomeAssetId,
-  isRpcSdk,
+  IOPoolShareAssetId,
   Market,
-  ScalarAssetId,
   ZTG,
 } from "@zeitgeistpm/sdk-next";
-import * as AE from "@zeitgeistpm/utility/dist/aeither";
 import DisputeButton from "components/assets/AssetActionButtons/DisputeButton";
+import RedeemButton from "components/assets/AssetActionButtons/RedeemButton";
 import ReportButton from "components/assets/AssetActionButtons/ReportButton";
-
 import Decimal from "decimal.js";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { formatNumberLocalized } from "lib/util";
-import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import Link from "next/link";
-import { useState } from "react";
 
 export type MarketPositionsProps = {
-  title: string;
   usdZtgPrice: Decimal;
   positions: MarketPosition[];
   market: Market<IndexerContext>;
@@ -41,7 +32,6 @@ export type MarketPosition = {
 };
 
 export const MarketPositions = ({
-  title,
   positions,
   usdZtgPrice,
   market,
@@ -55,7 +45,11 @@ export const MarketPositions = ({
 
   return (
     <div className={`${className}`}>
-      <h2 className="text-xl text-center font-light mb-6">{title}</h2>
+      <h2 className="text-xl text-center font-light mb-6">
+        <Link href={`/markets/${market.marketId}`}>
+          <span className="hover:text-blue-600">{market.question}</span>
+        </Link>
+      </h2>
       <table className="table-auto w-full">
         <thead className="border-b-1 border-gray-300 ">
           <tr className="text-gray-500 ">
@@ -77,7 +71,7 @@ export const MarketPositions = ({
             <th className="py-5 pr-5 font-normal bg-gray-100 rounded-tr-md text-right"></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="border-b-4 border-gray-200">
           {positions.map(
             ({
               outcome,
@@ -89,7 +83,7 @@ export const MarketPositions = ({
               return (
                 <tr
                   key={outcome}
-                  className="text-lg border-b-1 border-gray-300"
+                  className="text-lg border-b-1 border-gray-200"
                 >
                   <td className="py-5 pl-5 text-left max-w-sm overflow-hidden">
                     <span className="">{outcome}</span>
@@ -140,7 +134,13 @@ export const MarketPositions = ({
                     </div>
                   </td>
                   <td className="py-5 pr-5 text-right w-64">
-                    {marketStage?.type === "Trading" ? (
+                    {IOPoolShareAssetId.is(assetId) ? (
+                      <Link href={`/liquidity/${market.pool?.poolId}`}>
+                        <span className="text-blue-600 font-bold">
+                          View Pool
+                        </span>
+                      </Link>
+                    ) : marketStage?.type === "Trading" ? (
                       <Link href={`/markets/${market.marketId}`}>
                         <span className="text-blue-600 font-bold">Trade</span>
                       </Link>
@@ -167,76 +167,6 @@ export const MarketPositions = ({
         </tbody>
       </table>
     </div>
-  );
-};
-
-const RedeemButton = ({
-  market,
-  value,
-}: {
-  market: Market<IndexerContext>;
-  value: Decimal;
-}) => {
-  const [sdk] = useSdkv2();
-
-  const store = useStore();
-  const { wallets } = store;
-  const signer = wallets?.getActiveSigner();
-  const notificationStore = useNotificationStore();
-
-  const [isRedeeming, setIsRedeeming] = useState(false);
-  const [isRedeemed, setIsRedeemed] = useState(false);
-
-  const handleClick = async () => {
-    if (!isRpcSdk(sdk)) return;
-
-    setIsRedeeming(true);
-
-    const callback = extrinsicCallback({
-      notificationStore,
-      successCallback: async () => {
-        notificationStore.pushNotification(`Redeemed ${value.toFixed(2)} ZTG`, {
-          type: "Success",
-        });
-        setIsRedeeming(false);
-        setIsRedeemed(true);
-      },
-      failCallback: ({ index, error }) => {
-        notificationStore.pushNotification(
-          store.getTransactionError(index, error),
-          {
-            type: "Error",
-          },
-        );
-        setIsRedeeming(false);
-      },
-    });
-
-    const tx = sdk.context.api.tx.predictionMarkets.redeemShares(
-      market.marketId,
-    );
-
-    await AE.from(() => signAndSend(tx, signer, callback));
-
-    setIsRedeeming(false);
-  };
-
-  return (
-    <>
-      {isRedeemed ? (
-        <span className="text-green-500 font-bold">Redeemed Tokens!</span>
-      ) : (
-        <button
-          onClick={handleClick}
-          className={`text-blue-600 font-bold ${
-            isRedeeming && "animate-pulse"
-          }`}
-          disabled={isRedeeming}
-        >
-          Redeem Tokens
-        </button>
-      )}
-    </>
   );
 };
 
