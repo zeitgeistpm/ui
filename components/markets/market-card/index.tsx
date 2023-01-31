@@ -23,6 +23,7 @@ export interface IndexedMarketCardData {
   volume: number;
   baseAsset: string;
   tags: string[];
+  status: string;
   endDate: string;
 }
 
@@ -167,6 +168,7 @@ const MarketCard = ({
   width,
   tags,
   endDate,
+  status,
   className = "",
 }: MarketCardProps) => {
   const [showDetailsOverlay, setShowDetailsOverlay] = useState<boolean>(false);
@@ -215,6 +217,11 @@ const MarketCard = ({
     //checks if event has passed and is within 6 hours
     return diff < sixHours && diff > 0 ? true : false;
   };
+
+  const isVerified = () => {
+    return creation === "Advised" && status === "Proposed" ? true : false;
+  };
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <motion.div
@@ -252,10 +259,12 @@ const MarketCard = ({
                 {isEnding() && (
                   <Pill value="Ends Soon" classes="bg-red-light text-red" />
                 )}
-                <Pill
-                  value="&#x2713; Verified"
-                  classes="bg-green-light text-green"
-                />
+                {isVerified() && (
+                  <Pill
+                    value="&#x2713; Verified"
+                    classes="bg-green-light text-green"
+                  />
+                )}
               </div>
             </div>
             <MarketCardInfo question={question} />

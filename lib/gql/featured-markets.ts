@@ -48,6 +48,7 @@ const marketQuery = gql`
       period {
         end
       }
+      status
     }
   }
 `;
@@ -86,6 +87,7 @@ const getFeaturedMarkets = async (
           categories: { color: string; name: string; ticker: string }[];
           outcomeAssets: string[];
           tags: [];
+          status: string;
           period: { end: string };
         }[];
       }>(marketQuery, {
@@ -106,6 +108,7 @@ const getFeaturedMarkets = async (
           baseAsset: "",
           outcomes: [],
           tags: [],
+          status: market.status,
           endDate: market.period.end,
         };
 
@@ -146,6 +149,7 @@ const getFeaturedMarkets = async (
         baseAsset: pool.baseAsset,
         outcomes: marketCategories,
         tags: market.tags,
+        status: market.status,
         endDate: market.period.end,
       };
 

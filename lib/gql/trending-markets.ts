@@ -49,6 +49,7 @@ const marketQuery = gql`
       period {
         end
       }
+      status
     }
   }
 `;
@@ -99,6 +100,7 @@ const getTrendingMarkets = async (
             baseAsset: string;
           };
           tags: [];
+          status: string;
           period: { end: string };
         }[];
       }>(marketQuery, {
@@ -143,6 +145,7 @@ const getTrendingMarkets = async (
         baseAsset: market.pool.baseAsset,
         outcomes: marketCategories,
         tags: market.tags,
+        status: market.status,
         endDate: market.period.end,
       };
 
