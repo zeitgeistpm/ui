@@ -19,7 +19,7 @@ export interface IndexedMarketCardData {
   question: string;
   creation: string;
   outcomes: MarketOutcomes;
-  marketType: { [key: string]: string };
+  marketType: string;
   prediction: string;
   volume: number;
   baseAsset: string;
@@ -74,7 +74,7 @@ const MarketCardDetails = ({
     baseAsset: string;
     outcomes: number;
     endDate: string;
-    marketType: { [key: string]: string };
+    marketType: string;
   };
 }) => {
   if (rows.getImplied()) {

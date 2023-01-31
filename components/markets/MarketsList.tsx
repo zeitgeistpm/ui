@@ -158,11 +158,15 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
         onWithLiquidityOnlyChange={setWithLiquidityOnly}
       />
       <div className={`grid grid-cols-3 gap-[30px] ${gridColsClass}`}>
+        {console.log(
+          markets?.filter((market) => {
+            return market.period.timestamp === null;
+          }),
+        )}
         {markets?.map((market) => {
+          console.log(market);
           const volume = market.pool?.volume ?? 0;
-          const endDate = market.period?.timestamp
-            ? market.period.timestamp[1]
-            : "";
+          const endDate = market.period?.endDate;
           return (
             <MarketCard
               marketId={market.marketId}
