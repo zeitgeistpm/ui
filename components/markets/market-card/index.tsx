@@ -19,6 +19,7 @@ export interface IndexedMarketCardData {
   question: string;
   creation: string;
   outcomes: MarketOutcomes;
+  marketType: { [key: string]: string };
   prediction: string;
   volume: number;
   baseAsset: string;
@@ -97,22 +98,27 @@ const MarketCardDetails = ({
     volume: string;
     outcomes: number;
     endDate: string;
+    marketType: { [key: string]: string };
   };
 }) => {
   if (rows.getImplied()) {
     const { price, color, name } = rows.getImplied();
     return (
       <div className="w-full">
-        <div className="text-sm flex justify-between mb-1">
-          <span className="text-blue">{name}</span>
-          <span className="text-gray-500">{price}</span>
-        </div>
-        <div className="w-full rounded-lg h-1.5 bg-gray-200">
-          <div
-            className={`rounded-lg h-full transition-all bg-blue`}
-            style={{ width: `${price}%` }}
-          />
-        </div>
+        {!rows.marketType?.scalar && (
+          <>
+            <div className="text-sm flex justify-between mb-1">
+              <span className="text-blue">{name}</span>
+              <span className="text-gray-500">{price}</span>
+            </div>
+            <div className="w-full rounded-lg h-1.5 bg-gray-200">
+              <div
+                className={`rounded-lg h-full transition-all bg-blue`}
+                style={{ width: `${price}%` }}
+              />
+            </div>
+          </>
+        )}
         <div className="text-xs my-2.5">
           <span className="font-semibold">{rows.outcomes} outcomes</span>
           <span>
@@ -163,6 +169,7 @@ const MarketCard = ({
   creation,
   outcomes,
   prediction,
+  marketType,
   volume,
   baseAsset,
   width,
@@ -202,6 +209,7 @@ const MarketCard = ({
   };
   const infoRows = {
     // { name: "Prediction", value: prediction },
+    marketType: marketType,
     getImplied: getImplied,
     endDate: endDate,
     outcomes: outcomes.length,
@@ -221,7 +229,7 @@ const MarketCard = ({
   const isVerified = () => {
     return creation === "Advised" && status === "Proposed" ? true : false;
   };
-
+  console.log(marketType);
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <motion.div
@@ -254,7 +262,7 @@ const MarketCard = ({
           <Link href={`/markets/${marketId}`} className="flex flex-col gap-2.5">
             <div className="flex gap-2.5">
               <MarketImage image={img} alt={question} />
-              <div className="flex flex-wrap gap-2.5 font-medium">
+              <div className="flex flex-wrap items-start gap-2.5 font-medium">
                 <MarketCardTags tags={tags} />
                 {isEnding() && (
                   <Pill value="Ends Soon" classes="bg-red-light text-red" />

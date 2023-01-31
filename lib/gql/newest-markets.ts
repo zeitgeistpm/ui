@@ -63,7 +63,7 @@ const getNewestMarkets = async (
       pool: { baseAsset: string; volume: string; poolId: number };
       tags: [];
       status: string;
-      period: { end: number };
+      period: { end: string };
     }[];
   }>(marketsQuery);
 
@@ -104,6 +104,7 @@ const getNewestMarkets = async (
         volume: new Decimal(market.pool.volume).div(ZTG).toNumber(),
         baseAsset: market.pool.baseAsset,
         outcomes: marketCategories,
+        marketType: market.marketType,
         tags: market.tags,
         status: market.status,
         endDate: market.period.end,

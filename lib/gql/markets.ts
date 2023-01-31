@@ -36,9 +36,6 @@ const marketQuery = gql`
         color
       }
       tags
-      period {
-        end
-      }
     }
   }
 `;
@@ -61,7 +58,6 @@ export interface MarketPageIndexedData {
   creator: string;
   oracle: string;
   tags: [];
-  endDate: { period: string };
   disputeMechanism: "SimpleDisputes" | "Authorized" | "Court";
 }
 
