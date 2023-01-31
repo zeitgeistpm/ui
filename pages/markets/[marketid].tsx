@@ -1,19 +1,9 @@
-<<<<<<< HEAD
 import { Skeleton } from "@material-ui/lab";
 import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { GraphQLClient } from "graphql-request";
-import { observer } from "mobx-react-lite";
-import { NextPage } from "next";
-import dynamic from "next/dynamic";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { AlertTriangle } from "react-feather";
-import { combineLatest, from } from "rxjs";
 
 import MarketChart from "components/chart/marketChart";
-=======
->>>>>>> staging
+
 import LiquidityPill from "components/markets/LiquidityPill";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
