@@ -119,12 +119,10 @@ const Market: NextPage<{
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
   const marketImageUrl = useMarketImageUrl(indexedMarket.img);
-
   const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket(
     Number(marketid),
   );
   const { data: marketStage } = useMarketStage(marketSdkv2);
-
   const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
 
   if (indexedMarket == null) {
@@ -206,6 +204,11 @@ const Market: NextPage<{
             <></>
           )}
         </div>
+        {marketSdkv2.rejectReason && (
+          <div className="mt-[10px] text-ztg-14-150">
+            Market rejected: {marketSdkv2.rejectReason}
+          </div>
+        )}
         <div className="py-ztg-20 mb-10 h-32">
           {marketStore && marketStage ? (
             <MarketTimer stage={marketStage} />
