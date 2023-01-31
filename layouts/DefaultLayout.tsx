@@ -11,10 +11,13 @@ import NotificationCenter from "components/ui/NotificationCenter";
 import LeftDrawer from "components/drawer/LeftDrawer";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { shouldScrollTop } from "lib/util/should-scroll";
 import dynamic from "next/dynamic";
+import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
+
+// font optimization from @next/font
+import { inter, kanit, roboto_mono } from "lib/util/fonts";
 
 const RightDrawer = dynamic(() => import("components/drawer/RightDrawer"), {
   ssr: false,
@@ -25,9 +28,13 @@ const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 const DefaultLayout: FC = observer(({ children }) => {
   const store = useStore();
   const router = useRouter();
-  const sdk = useSdkv2();
+  useSubscribeBlockEvents();
 
-  const { width, height, ref: mainRef } = useResizeDetector();
+  const {
+    width,
+    height,
+    ref: mainRef,
+  } = useResizeDetector({ refreshMode: "debounce", refreshRate: 50 });
 
   const contentRef = useRef<HTMLDivElement>();
   const [scrollTop, setScrollTop] = useState(0);
@@ -54,6 +61,16 @@ const DefaultLayout: FC = observer(({ children }) => {
       onScrollCapture={onScrollCapture}
       className="relative flex min-h-screen justify-evenly bg-white dark:bg-sky-1000 overflow-hidden"
     >
+      {/* loads optimized fonts for global access */}
+      <style jsx global>
+        {`
+          :root {
+            --font-inter: ${inter.style.fontFamily};
+            --font-kanit: ${kanit.style.fontFamily};
+            --font-roboto-mono: ${roboto_mono.style.fontFamily};
+          }
+        `}
+      </style>
       <LeftDrawer />
       <div
         ref={contentRef}

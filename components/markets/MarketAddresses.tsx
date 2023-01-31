@@ -2,16 +2,16 @@ import DiscordIcon from "components/icons/DiscordIcon";
 import SubIdIcon from "components/icons/SubIdIcon";
 import SubScanIcon from "components/icons/SubScanIcon";
 import TwitterIcon from "components/icons/TwitterIcon";
-import ZeitgeistIcon from "components/icons/ZeitgeistIcon";
+import ZeitgeistIconDark from "components/icons/ZeitgeistIconDark";
 import Avatar from "components/ui/Avatar";
 import CopyIcon from "components/ui/CopyIcon";
-import MarketStore from "lib/stores/MarketStore";
+import Link from "next/link";
+import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { useModalStore } from "lib/stores/ModalStore";
-import { Judgement, UserIdentity, useUserStore } from "lib/stores/UserStore";
+import { Judgement, UserIdentity } from "lib/stores/UserStore";
 import { shortenAddress } from "lib/util";
 import { observer } from "mobx-react";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
 
 const AddressInspectContent = ({
   address,
@@ -88,15 +88,15 @@ const AddressInspectContent = ({
           <SubScanIcon />
           <span className="ml-ztg-10">SubScan</span>
         </a>
-        <a
+        <Link
           className="flex"
-          href={`https://app.zeitgeist.pm/portfolio/${address}`}
+          href={`/portfolio/${address}`}
           target="_blank"
           rel="noreferrer"
         >
-          <ZeitgeistIcon width={25} height={25} />
+          <ZeitgeistIconDark width={25} height={25} />
           <span className="ml-ztg-10">Portfolio</span>
-        </a>
+        </Link>
       </div>
     </div>
   );
@@ -132,7 +132,7 @@ const AddressDetails = ({
   };
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center mb-ztg-18 ">
-      <div className="font-space font-bold text-ztg-14-150 mr-[20px] mb-ztg-15 sm:mb-0">
+      <div className=" font-bold text-ztg-14-150 mr-[20px] mb-ztg-15 sm:mb-0">
         {title}
       </div>
       <div className="flex items-center">
@@ -153,7 +153,7 @@ const AddressDetails = ({
         </div>
         <button
           onClick={handleInspectClick}
-          className="text-white bg-border-dark rounded-ztg-50 text-ztg-10-150 w-[60px] font-space h-[20px] "
+          className="text-white bg-border-dark rounded-ztg-50 text-ztg-10-150 w-[60px]  h-[20px] "
           data-test="inspectButton"
         >
           Inspect
@@ -171,30 +171,17 @@ const AddressModalHeader = ({ name }: { name: string }) => {
   );
 };
 
+interface MarketAddressesProps {
+  creatorAddress: string;
+  oracleAddress: string;
+}
+
 const MarketAddresses = observer(
-  ({ marketStore }: { marketStore: MarketStore }) => {
-    const [oracleIdentity, setOracleIdentity] = useState<UserIdentity>();
-    const [creatorIdentity, setCreatorIdentity] = useState<UserIdentity>();
-    const [authorityIdentity, setAuthorityIdentity] = useState<UserIdentity>();
+  ({ creatorAddress, oracleAddress }: MarketAddressesProps) => {
     const modalStore = useModalStore();
-    const { getIdentity } = useUserStore();
 
-    useEffect(() => {
-      if (!marketStore || !marketStore.creator || !marketStore.oracle) return;
-      (async () => {
-        const identities = [
-          getIdentity(marketStore.creator),
-          getIdentity(marketStore.oracle),
-          marketStore.authority ? getIdentity(marketStore.authority) : null,
-        ];
-
-        const [creator, oracle, authority] = await Promise.all(identities);
-
-        setCreatorIdentity(creator);
-        setOracleIdentity(oracle);
-        setAuthorityIdentity(authority);
-      })();
-    }, [marketStore?.creator, marketStore?.oracle]);
+    const { data: creatorIdentity } = useIdentity(creatorAddress);
+    const { data: oracleIdentity } = useIdentity(oracleAddress);
 
     const handleInspect = (address: string, identity: UserIdentity) => {
       modalStore.openModal(
@@ -211,41 +198,26 @@ const MarketAddresses = observer(
       <div className="flex flex-col my-ztg-20">
         <AddressDetails
           title="Creator"
-          address={marketStore?.creator}
+          address={creatorAddress}
           displayName={
             creatorIdentity?.displayName?.length > 0
               ? creatorIdentity.displayName
               : null
           }
           judgement={creatorIdentity?.judgement}
-          onInspect={() => handleInspect(marketStore?.creator, creatorIdentity)}
+          onInspect={() => handleInspect(creatorAddress, creatorIdentity)}
         />
         <AddressDetails
           title="Oracle"
-          address={marketStore?.oracle}
+          address={oracleAddress}
           displayName={
             oracleIdentity?.displayName?.length > 0
               ? oracleIdentity.displayName
               : null
           }
           judgement={oracleIdentity?.judgement}
-          onInspect={() => handleInspect(marketStore?.oracle, oracleIdentity)}
+          onInspect={() => handleInspect(oracleAddress, oracleIdentity)}
         />
-        {authorityIdentity && (
-          <AddressDetails
-            title="Authority"
-            address={marketStore?.authority}
-            displayName={
-              authorityIdentity?.displayName?.length > 0
-                ? authorityIdentity.displayName
-                : null
-            }
-            judgement={authorityIdentity?.judgement}
-            onInspect={() =>
-              handleInspect(marketStore?.authority, authorityIdentity)
-            }
-          />
-        )}
       </div>
     );
   },

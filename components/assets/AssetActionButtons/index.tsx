@@ -1,65 +1,57 @@
-import { fromString } from "@zeitgeistpm/sdk-next";
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
+import { CategoricalAssetId, ScalarAssetId } from "@zeitgeistpm/sdk-next";
 import BuySellButtons from "components/trade-slip/BuySellButtons";
-import { useMarketsStore } from "lib/stores/MarketsStore";
-import MarketStore from "lib/stores/MarketStore";
+import { useMarket } from "lib/hooks/queries/useMarket";
+import { useMarketStage } from "lib/hooks/queries/useMarketStage";
+import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
 import DisputeButton from "./DisputeButton";
 import RedeemButton from "./RedeemButton";
 import ReportButton from "./ReportButton";
 
 interface AssetActionButtonsProps {
   marketId: number;
-  assetId?: AssetId;
+  assetId?: ScalarAssetId | CategoricalAssetId;
   assetTicker: string;
-  assetColor?: string;
 }
 
 const AssetActionButtons = observer(
-  ({ marketId, assetId, assetColor, assetTicker }: AssetActionButtonsProps) => {
-    const marketsStore = useMarketsStore();
-    const [marketStore, setMarketStore] = useState<MarketStore>();
+  ({ marketId, assetId, assetTicker }: AssetActionButtonsProps) => {
+    const store = useStore();
+    const { data: market } = useMarket(marketId);
+    const { data: marketStage } = useMarketStage(market);
 
-    useEffect(() => {
-      if (assetId == null) {
-        return;
-      }
-      (async () => {
-        const market = await marketsStore.getMarket(marketId);
-        setMarketStore(market);
-      })();
-    }, [marketId, marketsStore]);
+    const userAddress = store.wallets?.getActiveSigner()?.address;
+    const isOracle = market?.oracle === userAddress;
+
+    if (!market || !marketStage) {
+      return null;
+    }
 
     if (
-      marketStore?.status === "Closed" ||
-      (marketStore?.status === "Disputed" &&
-        marketStore?.disputeMechanism === "authorized")
+      marketStage.type === "OpenReportingPeriod" ||
+      (marketStage.type === "OracleReportingPeriod" && isOracle)
     ) {
       return (
-        <ReportButton
-          marketStore={marketStore}
-          assetId={assetId}
-          ticker={assetTicker}
-        />
+        <ReportButton market={market} assetId={assetId} ticker={assetTicker} />
       );
-    } else if (marketStore?.status === "Reported") {
+    }
+
+    if (marketStage.type === "Disputed") {
+      return null;
+    }
+
+    if (marketStage.type === "Reported") {
       return (
-        <DisputeButton
-          marketStore={marketStore}
-          assetId={assetId}
-          ticker={assetTicker}
-        />
+        <DisputeButton market={market} assetId={assetId} ticker={assetTicker} />
       );
-    } else if (marketStore?.status === "Resolved") {
-      return <RedeemButton marketStore={marketStore} assetId={assetId} />;
-    } else {
-      return (
-        <BuySellButtons
-          assetId={fromString(JSON.stringify(assetId)).unwrap()}
-          disabled={assetId == null}
-        />
-      );
+    }
+
+    if (marketStage.type === "Resolved") {
+      return <RedeemButton assetId={assetId} market={market} />;
+    }
+
+    if (marketStage.type === "Trading") {
+      return <BuySellButtons assetId={assetId} disabled={assetId == null} />;
     }
   },
 );

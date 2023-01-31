@@ -24,7 +24,7 @@ const CourtToggle = ({
   return (
     <div className="flex items-center mt-ztg-49">
       <button
-        className={`font-space font-bold focus:outline-none ${
+        className={` font-bold focus:outline-none ${
           selectedTab === "allCases" ? activeClasses : inactiveClasses
         }`}
         onClick={() => setSelectedTab("allCases")}
@@ -32,7 +32,7 @@ const CourtToggle = ({
         All Cases {allCasesCount ? `(${allCasesCount})` : <></>}
       </button>
       <button
-        className={`font-space font-bold focus:outline-none ml-ztg-10 ${
+        className={` font-bold focus:outline-none ml-ztg-10 ${
           selectedTab === "myCases" ? activeClasses : inactiveClasses
         }`}
         onClick={() => setSelectedTab("myCases")}
@@ -40,7 +40,7 @@ const CourtToggle = ({
         My Cases {myCasesCount ? `(${myCasesCount})` : <></>}
       </button>
       <button
-        className={`font-space font-bold focus:outline-none ml-ztg-10 ${
+        className={` font-bold focus:outline-none ml-ztg-10 ${
           selectedTab === "jurors" ? activeClasses : inactiveClasses
         }`}
         onClick={() => setSelectedTab("jurors")}

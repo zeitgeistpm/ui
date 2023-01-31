@@ -12,6 +12,6 @@
     "moduleResolution": "node",
     "resolveJsonModule": true
   },
-  "include": ["**/*.mts"],
+  "include": ["*.mts"],
   "exclude": []
 }

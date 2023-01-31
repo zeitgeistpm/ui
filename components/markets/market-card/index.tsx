@@ -1,11 +1,11 @@
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import { MoreVertical } from "react-feather";
+import React, { useState } from "react";
 import { Skeleton } from "@material-ui/lab";
 import MarketImage from "components/ui/MarketImage";
 import { MarketOutcomes } from "lib/types/markets";
 import MarketCardOverlay from "./overlay";
 import MarketCardContext from "./context";
+import { motion } from "framer-motion";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -20,6 +20,7 @@ export interface IndexedMarketCardData {
 
 export interface MarketCardProps extends IndexedMarketCardData {
   className?: string;
+  width?: number;
 }
 
 const MarketCardInfoRow = ({
@@ -30,7 +31,7 @@ const MarketCardInfoRow = ({
   value?: string;
 }) => {
   return (
-    <div className="h-[18px]">
+    <div className="">
       <span className="text-sky-600">{name}:</span>{" "}
       {value == null ? (
         <Skeleton
@@ -48,11 +49,14 @@ const MarketCardInfoRow = ({
 
 const MarketCardInfo = ({
   rows,
+  question,
 }: {
   rows: { name: string; value: string }[];
+  question: string;
 }) => {
   return (
-    <div className="w-full h-full flex flex-col font-lato justify-between text-ztg-12-120 mt-[10px]">
+    <div className="pl-[15px] w-full h-full flex flex-col justify-center text-ztg-14-165 whitespace-normal">
+      <h5 className="black font-medium w-full h-fit">{question}</h5>
       {rows.map((r, idx) => (
         <MarketCardInfoRow {...r} key={idx} />
       ))}
@@ -69,6 +73,7 @@ const MarketCard = ({
   prediction,
   volume,
   baseAsset,
+  width,
   className = "",
 }: MarketCardProps) => {
   const [showDetailsOverlay, setShowDetailsOverlay] = useState<boolean>(false);
@@ -79,38 +84,44 @@ const MarketCard = ({
       name: "Volume",
       value: `${volume ?? 0} ${baseAsset?.toUpperCase() ?? "ZTG"}`,
     },
-    { name: "Status", value: creation },
+    // { name: "Status", value: creation },
   ];
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
-      <div
-        className={
-          "w-full h-full bg-anti-flash-white rounded-[10px] p-[15px] flex flex-col relative " +
-          className
-        }
+      <motion.div
+        whileHover={{ opacity: 0.7, background: "white" }}
+        whileFocus={{ opacity: 0.5, background: "white" }}
+        whileTap={{ opacity: 0.7, background: "white" }}
+        data-testid={`marketCard-${marketId}`}
+        style={{
+          minWidth: width ? width : "100%",
+          maxWidth: width ? width : "100%",
+        }}
       >
-        {showDetailsOverlay && (
-          <MarketCardOverlay
-            marketId={marketId}
-            outcomes={outcomes}
-            className="top-0 left-[0]"
-            onCloseIconClick={() => setShowDetailsOverlay(false)}
-          />
-        )}
-        {outcomes?.length > 0 && (
+        <div
+          className={`flex flex-col justify-center w-full h-full bg-anti-flash-white rounded-[10px] p-[15px] relative ${className}`}
+        >
+          {showDetailsOverlay && (
+            <MarketCardOverlay
+              marketId={marketId}
+              outcomes={outcomes}
+              className="top-0 left-[0]"
+              onCloseIconClick={() => setShowDetailsOverlay(false)}
+            />
+          )}
+          {/* {outcomes?.length > 0 && (
           <MoreVertical
             className="absolute right-[10px] text-pastel-blue cursor-pointer"
             onClick={() => setShowDetailsOverlay(true)}
           />
-        )}
-        <Link href={`/markets/${marketId}`} className="flex flex-row mr-[17px]">
-          <MarketImage image={img} alt={question} />
-          <div className="ml-[15px] black font-lato font-bold h-[75px] w-full line-clamp-3 text-ztg-14-150">
-            {question}
-          </div>
-        </Link>
-        <MarketCardInfo rows={infoRows} />
-      </div>
+        )} */}
+          <Link href={`/markets/${marketId}`} className="flex items-center">
+            <MarketImage image={img} alt={question} />
+            <MarketCardInfo question={question} rows={infoRows} />
+          </Link>
+        </div>
+      </motion.div>
     </MarketCardContext.Provider>
   );
 };

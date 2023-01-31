@@ -37,7 +37,7 @@ const LeftDrawer = observer(() => {
                     Zeitgeist
                   </h1>
                   {process.env.NEXT_PUBLIC_ENVIRONMENT_NAME?.length > 0 && (
-                    <span className="bg-ztg-blue rounded-ztg-5 px-ztg-10 py-ztg-3 font-lato font-bold text-ztg-14-120 ml-ztg-10">
+                    <span className="bg-ztg-blue rounded-ztg-5 px-ztg-10 py-ztg-3  font-bold text-ztg-14-120 ml-ztg-10">
                       {process.env.NEXT_PUBLIC_ENVIRONMENT_NAME}
                     </span>
                   )}

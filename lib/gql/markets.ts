@@ -24,6 +24,9 @@ const marketQuery = gql`
       img
       outcomeAssets
       scalarType
+      creator
+      oracle
+      disputeMechanism
       period {
         start
         end
@@ -51,12 +54,15 @@ export interface MarketPageIndexedData {
   outcomeAssets: string[];
   pool: { poolId: number };
   scalarType: ScalarRangeType | null;
+  creator: string;
+  oracle: string;
+  disputeMechanism: "SimpleDisputes" | "Authorized" | "Court";
 }
 
 export const getRecentMarketIds = async (
   client: GraphQLClient,
 ): Promise<number[]> => {
-  const timstampOneMonthAgo = new Date(
+  const timestampOneMonthAgo = new Date(
     new Date().getTime() - DAY_SECONDS * 31 * 1000,
   ).getTime();
 
@@ -65,7 +71,7 @@ export const getRecentMarketIds = async (
       marketId: number;
     }[];
   }>(marketIdsQuery, {
-    end: timstampOneMonthAgo,
+    end: timestampOneMonthAgo,
   });
 
   return response.markets.map((m) => m.marketId);

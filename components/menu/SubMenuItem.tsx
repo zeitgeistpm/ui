@@ -25,7 +25,7 @@ const SubMenuItem: FC<SubMenuItemProps> = ({
     <Wrap>
       <div
         className={`cursor-pointer h-ztg-56 flex items-center py-ztg-16 ml-ztg-24 
-        text-ztg-16-150 font-lato ${
+        text-ztg-16-150  ${
           active
             ? "font-bold text-black dark:text-white"
             : "font-medium text-sky-600"

@@ -34,7 +34,7 @@ export const LiquidityPill = observer(
           )}
         </Pill>
         {hoveringInfo === true ? (
-          <div className="bg-sky-100 dark:bg-border-dark absolute left-ztg-100 rounded-ztg-10 text-black dark:text-white px-ztg-8 py-ztg-14 font-lato text-ztg-12-150 w-ztg-240">
+          <div className="bg-sky-100 dark:bg-border-dark absolute left-ztg-100 rounded-ztg-10 text-black dark:text-white px-ztg-8 py-ztg-14  text-ztg-12-150 w-ztg-240 z-ztg-10">
             This market has low liquidity. Price slippage will be high for small
             trades and larger trades may be impossible
           </div>

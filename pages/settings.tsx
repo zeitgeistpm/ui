@@ -15,11 +15,13 @@ import {
 } from "lib/types";
 import { endpoints, gqlEndpoints } from "lib/constants";
 import { getEndpointOption } from "lib/util";
-import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useNotificationStore } from "lib/stores/NotificationStore";
-import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { AlertTriangle } from "react-feather";
 import { groupBy } from "lodash";
+import { identityRootKey, useIdentity } from "lib/hooks/queries/useIdentity";
+import { useQueryClient } from "@tanstack/react-query";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 
 const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean }> = ({
   onClick = () => {},
@@ -42,13 +44,46 @@ const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean }> = ({
 const IdentitySettings = observer(() => {
   const store = useStore();
   const { wallets } = store;
-  const { identity, loadIdentity } = useUserStore();
   const notificationStore = useNotificationStore();
 
   const [displayName, setDisplayName] = useState("");
   const [discordHandle, setDiscordHandle] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
-  const [transactionPending, setTransactionPending] = useState(false);
+  const queryClient = useQueryClient();
+  const [_, id] = useSdkv2();
+  const address = store.wallets.activeAccount?.address;
+
+  const { data: identity } = useIdentity(address);
+
+  const { send: updateIdentity, isLoading: isUpdating } = useExtrinsic(
+    () =>
+      store.sdk.api.tx.identity.setIdentity({
+        additional: [[{ Raw: "discord" }, { Raw: discordHandle }]],
+        display: { Raw: displayName },
+        twitter: { Raw: twitterHandle },
+      }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([id, identityRootKey, address]);
+        notificationStore.pushNotification("Successfully set Identity", {
+          type: "Success",
+        });
+      },
+    },
+  );
+  const { send: clearIdentity, isLoading: isClearing } = useExtrinsic(
+    () => store.sdk.api.tx.identity.clearIdentity(),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([id, identityRootKey, address]);
+        notificationStore.pushNotification("Successfully cleared Identity", {
+          type: "Success",
+        });
+      },
+    },
+  );
+
+  const transactionPending = isClearing || isUpdating;
 
   useEffect(() => {
     if (!identity) {
@@ -61,66 +96,6 @@ const IdentitySettings = observer(() => {
       setTwitterHandle(identity.twitter ?? "");
     }
   }, [identity]);
-
-  const handleSubmit = async () => {
-    setTransactionPending(true);
-    const signer = wallets.getActiveSigner() as ExtSigner;
-    const tx = store.sdk.api.tx.identity.setIdentity({
-      additional: [[{ Raw: "discord" }, { Raw: discordHandle }]],
-      display: { Raw: displayName },
-      twitter: { Raw: twitterHandle },
-    });
-    try {
-      await signAndSend(
-        tx,
-        signer,
-        extrinsicCallback({
-          notificationStore,
-          successCallback: async () => {
-            await loadIdentity(wallets.activeAccount.address);
-            setTransactionPending(false);
-            notificationStore.pushNotification("Successfully set Identity", {
-              type: "Success",
-            });
-          },
-          failCallback: ({ index, error }) => {
-            setTransactionPending(false);
-            notificationStore.pushNotification(
-              store.getTransactionError(index, error),
-              { type: "Error" },
-            );
-          },
-        }),
-      );
-    } catch (err) {
-      setTransactionPending(false);
-    }
-  };
-
-  const handleClear = async () => {
-    const signer = store.wallets.getActiveSigner() as ExtSigner;
-    const tx = store.sdk.api.tx.identity.clearIdentity();
-
-    signAndSend(
-      tx,
-      signer,
-      extrinsicCallback({
-        notificationStore,
-        successCallback: async () => {
-          await loadIdentity(wallets.activeAccount.address);
-          notificationStore.pushNotification("Successfully cleared Identity", {
-            type: "Success",
-          });
-        },
-        failCallback: ({ index, error }) => {
-          notificationStore.pushNotification(
-            store.getTransactionError(index, error),
-            { type: "Error" },
-          );
-        },
-      }),
-    );
-  };
 
   const handleDisplayNameChange = (value: string) => {
     if (getBytesCount(value) <= 32) {
@@ -202,12 +177,12 @@ const IdentitySettings = observer(() => {
         </div>
       </div>
       <div className="flex mb-ztg-20" data-test="createMarketButton">
-        <SubmitButton onClick={handleSubmit} disabled={submitDisabled}>
+        <SubmitButton onClick={updateIdentity} disabled={submitDisabled}>
           Set Identity
         </SubmitButton>
         <button
           className="ml-ztg-20 text-ztg-14-120 text-sky-600 focus:outline-none"
-          onClick={handleClear}
+          onClick={clearIdentity}
         >
           Clear Identity
         </button>
@@ -433,12 +408,12 @@ const Settings: NextPage = observer(() => {
   return (
     <>
       <h2
-        className="text-ztg-20-150 font-bold font-space mb-ztg-23"
+        className="text-ztg-20-150 font-bold  mb-ztg-23"
         data-test="accountSettingsHeader"
       >
         Account Settings
       </h2>
-      <div className="p-ztg-30 rounded-ztg-10 mb-ztg-32 font-lato font-bold bg-sky-100 dark:bg-sky-700">
+      <div className="p-ztg-30 rounded-ztg-10 mb-ztg-32  font-bold bg-sky-100 dark:bg-sky-700">
         <IdentitySettings />
         <EndpointsSettings />
         {/* Post beta */}
@@ -462,7 +437,7 @@ const Settings: NextPage = observer(() => {
           Subscribe to the newsletter
         </label>
         <SubmitButton onClick={handleEmailAddressSubmit} /> */}
-        <div className="text-ztg-16-150 mt-ztg-40">
+        {/* <div className="text-ztg-16-150 mt-ztg-40">
           Theme
           <div className="flex flex-wrap mt-ztg-20">
             <SubmitButton
@@ -472,7 +447,7 @@ const Settings: NextPage = observer(() => {
               Sync with computer
             </SubmitButton>
           </div>
-        </div>
+        </div> */}
         {/* TODO */}
         {/* <div className="p-ztg-15 bg-efefef mx-ztg-17 rounded-ztg-10 flex flex-row">
           <div className="flex flex-col w-full">

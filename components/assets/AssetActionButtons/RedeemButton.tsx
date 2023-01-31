@@ -1,58 +1,133 @@
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
+import {
+  AssetId,
+  fromCompositeIndexerAssetId,
+  getScalarBounds,
+  IndexerContext,
+  isNA,
+  isRpcSdk,
+  Market,
+  MarketId,
+} from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
-import MarketStore from "lib/stores/MarketStore";
+import { ZTG } from "lib/constants";
+import {
+  AccountAssetIdPair,
+  useAccountAssetBalances,
+} from "lib/hooks/queries/useAccountAssetBalances";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
-import { extrinsicCallback } from "lib/util/tx";
+import { calcScalarWinnings } from "lib/util/calc-scalar-winnings";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 
 const RedeemButton = observer(
   ({
-    marketStore,
+    market,
     assetId,
   }: {
-    marketStore: MarketStore;
+    market: Market<IndexerContext>;
     assetId: AssetId;
   }) => {
+    const [sdk] = useSdkv2();
     const store = useStore();
     const { wallets } = store;
+    const signer = wallets?.getActiveSigner();
     const notificationStore = useNotificationStore();
-    const [ztgToReceive, setZtgToReceive] = useState<Decimal>();
 
-    useEffect(() => {
-      (async () => {
-        const winningBalance = await marketStore.calcWinnings();
-        setZtgToReceive(winningBalance);
-      })();
-    }, [marketStore]);
+    const scalarBounds = getScalarBounds(market);
+
+    const balanceQueries: AccountAssetIdPair[] = market.marketType.categorical
+      ? [{ assetId, account: signer?.address }]
+      : [
+          {
+            account: signer?.address,
+            assetId: { ScalarOutcome: [market.marketId as MarketId, "Short"] },
+          },
+          {
+            account: signer?.address,
+            assetId: { ScalarOutcome: [market.marketId as MarketId, "Long"] },
+          },
+        ];
+
+    const assetBalances = useAccountAssetBalances(balanceQueries);
+
+    const ztgToReceive = useMemo(() => {
+      if (market.marketType.categorical) {
+        const resolvedAssetIdString =
+          market.outcomeAssets[Number(market.resolvedOutcome)];
+
+        const resolvedAssetId = fromCompositeIndexerAssetId(
+          resolvedAssetIdString,
+        ).unwrap();
+
+        const balance = assetBalances?.get(signer?.address, resolvedAssetId)
+          ?.data.balance;
+        if (!balance || isNA(balance)) return new Decimal(0);
+
+        return new Decimal(balance?.free.toString()).div(ZTG);
+      } else {
+        const shortBalance = assetBalances?.get(signer?.address, {
+          ScalarOutcome: [market.marketId as MarketId, "Short"],
+        })?.data?.balance;
+
+        const longBalance = assetBalances?.get(signer?.address, {
+          ScalarOutcome: [market.marketId as MarketId, "Long"],
+        })?.data?.balance;
+
+        if (
+          !shortBalance ||
+          isNA(shortBalance) ||
+          !longBalance ||
+          isNA(longBalance)
+        )
+          return new Decimal(0);
+
+        const bounds = scalarBounds.unwrap();
+        const lowerBound = bounds[0].toNumber();
+        const upperBound = bounds[1].toNumber();
+        const resolvedNumber = Number(market.resolvedOutcome);
+
+        return calcScalarWinnings(
+          lowerBound,
+          upperBound,
+          new Decimal(resolvedNumber).div(ZTG),
+          new Decimal(shortBalance.free.toNumber()).div(ZTG),
+          new Decimal(longBalance.free.toNumber()).div(ZTG),
+        );
+      }
+    }, [market, assetId, ...assetBalances.query.map((q) => q.data)]);
 
     const handleClick = async () => {
-      const signer = wallets.getActiveSigner();
-      const { market } = marketStore;
-      await market.redeemShares(
-        signer,
-        extrinsicCallback({
-          notificationStore,
-          successCallback: async () => {
-            notificationStore.pushNotification(
-              `Redeemed ${ztgToReceive.toFixed(2)}${store.config.tokenSymbol}`,
-              {
-                type: "Success",
-              },
-            );
-            setZtgToReceive(new Decimal(0));
-          },
-          failCallback: ({ index, error }) => {
-            notificationStore.pushNotification(
-              store.getTransactionError(index, error),
-              {
-                type: "Error",
-              },
-            );
-          },
-        }),
+      if (!isRpcSdk(sdk)) return;
+
+      const callback = extrinsicCallback({
+        notificationStore,
+        successCallback: async () => {
+          notificationStore.pushNotification(
+            `Redeemed ${ztgToReceive.toFixed(2)}${store.config.tokenSymbol}`,
+            {
+              type: "Success",
+            },
+          );
+          assetBalances?.query.forEach((q) => q.refetch());
+        },
+        failCallback: ({ index, error }) => {
+          notificationStore.pushNotification(
+            store.getTransactionError(index, error),
+            {
+              type: "Error",
+            },
+          );
+        },
+      });
+
+      const tx = sdk.context.api.tx.predictionMarkets.redeemShares(
+        market.marketId,
       );
+
+      await signAndSend(tx, signer, callback);
     };
     return (
       <div className="w-full flex items-center justify-center">
@@ -63,7 +138,7 @@ const RedeemButton = observer(
             ztgToReceive.equals(0) ||
             wallets.activeAccount == null
           }
-          className="rounded-full h-ztg-20 font-space text-ztg-10-150 focus:outline-none px-ztg-15 
+          className="rounded-full h-ztg-20  text-ztg-10-150 focus:outline-none px-ztg-15 
               py-ztg-2 ml-auto bg-ztg-blue text-white disabled:opacity-20 disabled:cursor-default"
         >
           Redeem Tokens

@@ -59,7 +59,7 @@ const WalletSelect = observer(() => {
                 alt={wallet.logo.alt}
                 src={wallet.logo.src}
               />
-              <div className="flex items-center font-lato text-ztg-18-150">
+              <div className="flex items-center  text-ztg-18-150">
                 {wallet.title}
               </div>
               {!wallet.installed && (
@@ -68,7 +68,7 @@ const WalletSelect = observer(() => {
                 </div>
               )}
               {hasError && (
-                <div className="text-vermilion ml-auto font-lato text-ztg-12-120 w-ztg-275">
+                <div className="text-vermilion ml-auto  text-ztg-12-120 w-ztg-275">
                   {error.message}
                 </div>
               )}

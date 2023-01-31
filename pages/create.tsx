@@ -70,7 +70,7 @@ const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
 export interface CreateMarketFormData {
   slug: string;
   question: string;
-  end: { type: EndType; value?: number | typeof NaN };
+  end: { type: EndType; value?: string };
   tags: string[];
   outcomes: {
     type: OutcomeType;
@@ -127,7 +127,7 @@ const CreatePage: NextPage = observer(() => {
   const [formData, setFormData] = useState<CreateMarketFormData>({
     slug: "",
     question: "",
-    end: { type: "timestamp", value: Moment().add(1, "day").valueOf() },
+    end: { type: "timestamp", value: `${Moment().add(1, "day").valueOf()}` },
     tags: [],
     outcomes: { type: "multiple" },
     oracle: "",
@@ -175,17 +175,21 @@ const CreatePage: NextPage = observer(() => {
   const [marketCost, setMarketCost] = useState<number>();
   const [newMarketId, setNewMarketId] = useState<number>();
 
-  const [marketImageFile, setMarketImageFile] = useState<File>();
-  const [base64MarketImage, setBase64MarketImage] = useState<string>();
+  const [marketImageFile, setMarketImageFile] = useState<File | undefined>();
+  const [base64MarketImage, setBase64MarketImage] = useState<
+    string | undefined
+  >(null);
+
   const [marketImageCid, setMarketImageCid] = useState<string>();
 
   useEffect(() => {
     if (marketImageFile == null) {
+      setBase64MarketImage(undefined);
       return;
     }
-    const sub1 = from(toBase64(marketImageFile)).subscribe((encoded) =>
-      setBase64MarketImage(encoded),
-    );
+    const sub1 = from(toBase64(marketImageFile)).subscribe((encoded) => {
+      setBase64MarketImage(encoded);
+    });
     const sub2 = from(ipfsClient.addFile(marketImageFile, true)).subscribe(
       (cid) => {
         setMarketImageCid(cid.toString());
@@ -277,10 +281,10 @@ const CreatePage: NextPage = observer(() => {
 
   useEffect(() => {
     if (formData?.end?.type === "block") {
-      changeEnd(store.blockNumber.toNumber() + NUM_BLOCKS_IN_DAY);
+      changeEnd(`${store.blockNumber.toNumber() + NUM_BLOCKS_IN_DAY}`);
       form.$("end").set("rules", `gt_current_blocknum|required`);
     } else {
-      changeEnd(Moment().add(1, "day").valueOf());
+      changeEnd(`${Moment().add(1, "day").valueOf()}`);
       form.$("end").set("rules", "timestamp_gt_now");
     }
   }, [formData?.end?.type]);
@@ -302,7 +306,7 @@ const CreatePage: NextPage = observer(() => {
     });
   };
 
-  const changeEnd = (value: number) => {
+  const changeEnd = (value: string) => {
     setFormData((data) => {
       return { ...data, end: { ...data.end, value } };
     });
@@ -360,14 +364,14 @@ const CreatePage: NextPage = observer(() => {
 
   const getMarketPeriod = (): MarketPeriod => {
     return formData.end.type === "block"
-      ? { block: [store.blockNumber.toNumber(), formData.end.value] }
-      : { timestamp: [store.blockTimestamp, formData.end.value] };
+      ? { block: [store.blockNumber.toNumber(), Number(formData.end.value)] }
+      : { timestamp: [store.blockTimestamp, Number(formData.end.value)] };
   };
 
   const getMarketEndBlock = () => {
     return formData.end.type === "block"
-      ? formData.end.value
-      : dateBlock(now, new Date(formData.end.value));
+      ? Number(formData.end.value)
+      : dateBlock(now, new Date(Number(formData.end.value)));
   };
 
   const mapRangeToEntires = (
@@ -472,8 +476,14 @@ const CreatePage: NextPage = observer(() => {
         }
       : {
           Scalar: [
-            Number((outcomes.minimum * ZTG).toFixed(0)),
-            Number((outcomes.maximum * ZTG).toFixed(0)),
+            new Decimal(outcomes.minimum)
+              .mul(ZTG)
+              .toDecimalPlaces(0)
+              .toNumber(),
+            new Decimal(outcomes.maximum)
+              .mul(ZTG)
+              .toDecimalPlaces(0)
+              .toNumber(),
           ],
         };
   };
@@ -490,8 +500,6 @@ const CreatePage: NextPage = observer(() => {
       authorized: process.env.NEXT_PUBLIC_MDM_AUTHORIZED_DEFAULT_ADDRESS,
     };
     const metadata = getMarketMetadata();
-
-    const numOutcomes = metadata.categories.length;
 
     const weights = poolRows.slice(0, -1).map((row) => {
       return new Decimal(row.weight).mul(ZTG).toFixed(0, Decimal.ROUND_DOWN);
@@ -703,7 +711,7 @@ const CreatePage: NextPage = observer(() => {
       <MarketFormCard header="3. Market ends *">
         <EndField
           endType={formData.end.type}
-          value={isNaN(formData.end.value) ? "" : formData.end.value.toString()}
+          value={formData.end.value}
           onEndTypeChange={changeEndType}
           onEndChange={changeEnd}
           form={form}
@@ -739,7 +747,7 @@ const CreatePage: NextPage = observer(() => {
             onChange={(deadlines) => onChangeDeadlines(deadlines)}
           />
         </div>
-        <div className="flex h-ztg-22 items-center text-sky-600 font-lato">
+        <div className="flex h-ztg-22 items-center text-sky-600 ">
           <div className="w-ztg-20 h-ztg-20">
             <AlertTriangle size={20} />
           </div>
@@ -767,7 +775,7 @@ const CreatePage: NextPage = observer(() => {
               changeAdvised(!formData.advised);
             }}
           />
-          <div className="ml-ztg-15 font-lato text-ztg-10-150 text-sky-600">
+          <div className="ml-ztg-15  text-ztg-10-150 text-sky-600">
             An advised market means a smaller deposit, but requires approval
             from the advisory committee before becoming active.
           </div>
@@ -785,7 +793,7 @@ const CreatePage: NextPage = observer(() => {
               />
               <label
                 htmlFor="deployPool"
-                className="text-ztg-20-150 font-bold font-space"
+                className="text-ztg-20-150 font-bold "
               >
                 Deploy Liquidity Pool
               </label>

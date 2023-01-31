@@ -38,7 +38,7 @@ const Menu: FC = observer(() => {
             // Skip court page for now...
             if (
               itemKey === "court" &&
-              process.env.NEXT_PUBLIC_SHOW_COURT === "true"
+              process.env.NEXT_PUBLIC_SHOW_COURT === "false"
             ) {
               return false;
             }

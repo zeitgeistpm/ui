@@ -74,7 +74,7 @@ export const MenuItem: FC<MenuItemProps> = observer(
               ? "bg-border-dark text-white dark:bg-sky-1100 font-bold"
               : "ztg-transition text-sky-600 hover:text-white"
           } 
-          font-lato rounded-ztg-10 
+           rounded-ztg-10 
           mx-ztg-20
           `}
           onClick={onClick}

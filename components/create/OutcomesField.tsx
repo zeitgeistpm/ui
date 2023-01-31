@@ -3,7 +3,6 @@ import React, {
   FC,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -61,7 +60,7 @@ export const addMultipleOutcomeEntry = (entries: MultipleOutcomeEntry[]) => {
 };
 
 export const createInitialRangeOutcomeEntry = (): RangeOutcomeEntry => {
-  return { minimum: NaN, maximum: NaN, ticker: "", type: "number" };
+  return { minimum: "", maximum: "", ticker: "", type: "number" };
 };
 
 export const OutcomeColor: FC<{
@@ -109,7 +108,7 @@ export const YesNoOutcomesField: FC<{ entries: YesNoOutcome }> = ({
   entries,
 }) => {
   return (
-    <div className="text-ztg-10-150 font-bold mb-ztg-8 text-sky-600 uppercase font-lato">
+    <div className="text-ztg-10-150 font-bold mb-ztg-8 text-sky-600 uppercase ">
       <div className="flex-ztg-basis-520 flex-grow flex-shrink mb-2">
         OUTCOMES/TICKER
       </div>
@@ -269,7 +268,7 @@ export const MultipleOutcomesField: FC<{
 
   return (
     <div data-test="multipleOutcomesField">
-      <div className="flex text-ztg-10-150 font-bold mb-ztg-8 h-ztg-15 text-sky-600 uppercase font-lato">
+      <div className="flex text-ztg-10-150 font-bold mb-ztg-8 h-ztg-15 text-sky-600 uppercase ">
         <div className="flex-ztg-basis-520 flex-grow flex-shrink">Outcomes</div>
         <div className="flex-ztg-basis-85 flex-grow">Ticker</div>
         <div className="w-ztg-40 flex-shrink-0 text-center">Color</div>
@@ -312,8 +311,7 @@ export const RangeOutcomeField: FC<{
   namePrefix: string;
   outcome: RangeOutcomeEntry;
   onOutcomeChange: (outcome: RangeOutcomeEntry) => void;
-  step?: number;
-}> = observer(({ outcome, onOutcomeChange, step = 0.1, namePrefix }) => {
+}> = observer(({ outcome, onOutcomeChange, namePrefix }) => {
   const form = useContext(FormContext);
   const parentField = form.$("outcomes");
   const shortFieldName = `${namePrefix}-short`;
@@ -344,28 +342,12 @@ export const RangeOutcomeField: FC<{
   const shortRef = useRef();
   const tickerRef = useRef();
 
-  const minStr = useMemo(() => {
-    if (isNaN(outcome.minimum)) {
-      return "";
-    }
-    return outcome.minimum.toString();
-  }, [outcome.minimum]);
-
-  const maxStr = useMemo(() => {
-    if (isNaN(outcome.maximum)) {
-      return "";
-    }
-    return outcome.maximum.toString();
-  }, [outcome.maximum]);
-
   const changeMinimum = (v: string) => {
-    const minimum = v === "" ? NaN : parseFloat(v);
-    onOutcomeChange({ ...outcome, minimum });
+    onOutcomeChange({ ...outcome, minimum: v });
   };
 
   const changeMaximum = (v: string) => {
-    const maximum = v === "" ? NaN : parseFloat(v);
-    onOutcomeChange({ ...outcome, maximum });
+    onOutcomeChange({ ...outcome, maximum: v });
   };
 
   const changeTicker = (v: string) => {
@@ -376,8 +358,8 @@ export const RangeOutcomeField: FC<{
     onOutcomeChange({
       ...outcome,
       type,
-      minimum: type === "number" ? NaN : Date.now(),
-      maximum: type === "number" ? NaN : Date.now() + oneWeekInMs,
+      minimum: type === "number" ? "" : `${Date.now()}`,
+      maximum: type === "number" ? "" : `${Date.now() + oneWeekInMs}`,
     });
   };
 
@@ -404,7 +386,7 @@ export const RangeOutcomeField: FC<{
               form={form}
               type="number"
               placeholder="Minimum Range Value"
-              value={minStr}
+              value={outcome.minimum}
               min={0}
               onChange={(e) => {
                 changeMinimum(e.target.value);
@@ -431,7 +413,7 @@ export const RangeOutcomeField: FC<{
               form={form}
               type="number"
               placeholder="Maximum Range Value"
-              value={maxStr}
+              value={outcome.maximum}
               min={0}
               onChange={(e) => {
                 changeMaximum(e.target.value);
@@ -441,7 +423,7 @@ export const RangeOutcomeField: FC<{
             <DateTimeInput
               className="w-full"
               onChange={(timestamp) => {
-                changeMaximum(timestamp.toString());
+                changeMaximum(timestamp);
               }}
               data-test="maxRangeValueInput"
               name={`outcomes.${namePrefix}-long`}
@@ -556,20 +538,6 @@ const OutcomesField: FC<OutcomesFieldProps> = observer(
     useEffect(() => {
       initOutcomesForType(type);
     }, []);
-
-    useEffect(() => {
-      if (
-        isDateRangeOutcomeEntry(value) &&
-        (isNaN(value.maximum) || isNaN(value.minimum))
-      ) {
-        onChange(type, {
-          ticker: "",
-          type: "date",
-          minimum: Date.now(),
-          maximum: Date.now() + oneWeekInMs,
-        });
-      }
-    }, [value]);
 
     /// need this because the form wouldn't revalidate when outcome type changes
     const [prevType, setPrevType] = useState(type);

@@ -84,7 +84,7 @@ const TradeButton: FC<{
   type: "buy" | "sell";
 }> = observer(({ onClick, active, type, children, disabled = false }) => {
   const defaultClass =
-    "rounded-full h-ztg-20 font-space text-ztg-10-150 w-ztg-47 font-normal flex items-center justify-center focus:outline-none border-2";
+    "rounded-full h-ztg-20  text-ztg-10-150 w-ztg-47 font-normal flex items-center justify-center focus:outline-none border-2";
 
   const classes = useMemo(() => {
     if (disabled) {

@@ -3,7 +3,6 @@ import { Asset } from "@zeitgeistpm/types/dist/interfaces";
 import Decimal from "decimal.js";
 import { NextPage } from "next";
 import { FC } from "react";
-import { MarketStatus } from "./markets";
 
 export enum SupportedParachain {
   KUSAMA = "kusama",
@@ -39,33 +38,6 @@ export type PaginationOptions = {
   page: number;
   pageSize: number;
 };
-
-// market id represents creation date, markets with bigger marketId are latest
-export enum ESortType {
-  Volume = "Volume",
-  CreatedAt = "Newest",
-  EndDate = "Ends Soon",
-}
-
-export type SortType = keyof typeof ESortType;
-export type SortOrder = "asc" | "desc";
-
-export type SortOptions = {
-  order: SortOrder;
-  sortBy: SortType;
-};
-
-export type MyMarketsFilterOptions = {
-  creator: boolean;
-  oracle: boolean;
-  hasAssets: boolean;
-};
-
-export type MarketsFilterOptions = {
-  [K in MarketStatus]: boolean;
-} & { HasLiquidityPool: boolean; tags?: string[] };
-
-export type FilterOptions = MyMarketsFilterOptions & MarketsFilterOptions;
 
 export interface SharesBalances {
   yes: Decimal;

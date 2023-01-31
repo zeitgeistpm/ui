@@ -119,16 +119,14 @@ const Court: NextPage = observer(() => {
     <section>
       <CourtHeader />
       <button
-        className="font-space text-ztg-16-150 text-sky-600"
+        className=" text-ztg-16-150 text-sky-600"
         onClick={handleBackClick}
       >
         Back to Cases
       </button>
 
       <h2 className="header my-ztg-23">{marketStore?.slug}</h2>
-      <p className="font-space text-ztg-16-150 mb-ztg-20">
-        {marketStore?.description}
-      </p>
+      <p className=" text-ztg-16-150 mb-ztg-20">{marketStore?.description}</p>
       <CaseSummary courtCase={courtCase} />
       {courtCase.endTimestamp - new Date().getTime() > 0 ? (
         <div className="my-ztg-20 ml-ztg-10">
@@ -155,13 +153,9 @@ const Court: NextPage = observer(() => {
       ) : (
         <></>
       )}
-      <div className="font-space text-ztg-16-150 mt-ztg-20 font-bold">
-        Outcomes
-      </div>
+      <div className=" text-ztg-16-150 mt-ztg-20 font-bold">Outcomes</div>
       <OutcomesTable marketStore={marketStore} courtCase={courtCase} />
-      <div className="font-space text-ztg-16-150 mt-ztg-20 font-bold">
-        Jurors
-      </div>
+      <div className=" text-ztg-16-150 mt-ztg-20 font-bold">Jurors</div>
       <JurorsTable courtCase={courtCase} marketStore={marketStore} />
     </section>
   );

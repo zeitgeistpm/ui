@@ -122,7 +122,7 @@ const PoolDeployer = observer(
             <>
               {!marketStore.is("Proposed") && (
                 <button
-                  className="my-ztg-20 font-space font-bold text-ztg-16-150 text-sky-600 border-1 px-ztg-20 py-ztg-10 rounded-ztg-10 border-sky-600"
+                  className="my-ztg-20  font-bold text-ztg-16-150 text-sky-600 border-1 px-ztg-20 py-ztg-10 rounded-ztg-10 border-sky-600"
                   data-test="deployLiquidityButton"
                   onClick={handleDeployClick}
                 >

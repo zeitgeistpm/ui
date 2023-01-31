@@ -149,7 +149,7 @@ export const useTradeslipItemsState = (
 
   const [slippage] = useAtom(slippagePercentageAtom);
 
-  const { data: traderZtgBalance } = useZtgBalance(signer);
+  const { data: traderZtgBalance } = useZtgBalance(signer?.address);
 
   const { data: pools } = usePoolsByIds(
     items.map((item) => ({ marketId: getMarketIdOf(item.assetId) })),
@@ -217,12 +217,12 @@ export const useTradeslipItemsState = (
       const traderAssetBalanceLookup = traderAssets.get(
         signer?.address,
         item.assetId,
-      );
+      )?.data?.balance;
 
       const poolAssetBalanceLookup = poolAssetBalances.get(
         poolAccountIds[pool?.poolId],
         item.assetId,
-      );
+      )?.data?.balance;
 
       const traderAssetBalance =
         !traderAssetBalanceLookup || isNA(traderAssetBalanceLookup)

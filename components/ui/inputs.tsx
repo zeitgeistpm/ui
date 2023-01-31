@@ -29,7 +29,7 @@ interface InputProps {
 }
 
 const inputClasses =
-  "bg-sky-200 dark:bg-black text-ztg-14-150 w-full rounded-ztg-5 h-ztg-40 p-ztg-8 font-lato focus:outline-none border-1 dark:border-black text-black dark:text-white";
+  "bg-sky-200 dark:bg-black text-ztg-14-150 w-full rounded-ztg-5 h-ztg-40 p-ztg-8  focus:outline-none border-1 dark:border-black text-black dark:text-white";
 const disabledInputClasses =
   "disabled:bg-transparent dark:disabled:bg-transparent disabled:border-sky-200 dark:disabled:border-border-dark ";
 const invalidClasses = "!border-vermilion !text-vermilion";
@@ -114,8 +114,8 @@ const rdtpInput = (
   );
 };
 
-const getDateFromTimestamp = (timestamp?: number) => {
-  const ts = timestamp || new Date().valueOf();
+const getDateFromTimestamp = (timestamp?: string) => {
+  const ts = Number(timestamp) || new Date().valueOf();
   return new Date(ts);
 };
 
@@ -139,9 +139,9 @@ const getLocalDateFormat = () => {
 };
 
 export const DateTimeInput: FC<{
-  timestamp?: number;
+  timestamp?: string;
   className?: string;
-  onChange: (timestamp: number) => void;
+  onChange: (timestamp: string) => void;
   name: string;
   form?: Form;
 }> = observer(({ className = "", onChange, timestamp, name, form }) => {
@@ -153,7 +153,7 @@ export const DateTimeInput: FC<{
 
   const dateChange = (v: Moment | string) => {
     if (isMoment(v)) {
-      onChange(v.valueOf());
+      onChange(`${v.valueOf()}`);
     }
   };
   const localDateFormat = getLocalDateFormat();
@@ -358,7 +358,7 @@ export const AmountInput: FC<AmountInputProps> = observer(
             } ${className}`}
           />
           {showErrorMessage && message != null ? (
-            <div className="font-lato text-vermilion h-ztg-15 items-center flex text-ztg-10-150">
+            <div className=" text-vermilion h-ztg-15 items-center flex text-ztg-10-150">
               {message}
             </div>
           ) : null}
@@ -396,7 +396,7 @@ export const TextArea: FC<TextAreaProps> = observer(
     ) => {
       const { invalid } = useFormField(form, name, value);
       const classes =
-        "w-full font-lato rounded-ztg-5 p-ztg-8 min-h-ztg-96 mb-ztg-20 text-ztg-14-150 text-sky-600 bg-sky-200 dark:bg-black focus:outline-none border-1 dark:border-black " +
+        "w-full  rounded-ztg-5 p-ztg-8 min-h-ztg-96 mb-ztg-20 text-ztg-14-150 text-sky-600 bg-sky-200 dark:bg-black focus:outline-none border-1 dark:border-black " +
         ` ${invalid ? "!border-red-400" : ""} ` +
         className;
       return (

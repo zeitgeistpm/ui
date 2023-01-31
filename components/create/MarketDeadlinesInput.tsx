@@ -81,8 +81,8 @@ export const MarketDeadlinesInput = (props: {
     if (!now) return false;
     const minDate =
       props.marketEnd.type == "timestamp"
-        ? new Date(props.marketEnd.value)
-        : blockDate(now, props.marketEnd.value);
+        ? new Date(Number(props.marketEnd.value))
+        : blockDate(now, Number(props.marketEnd.value));
 
     if (props.value.grace.label !== "Custom") {
       return true;
@@ -239,12 +239,12 @@ const GracePeriodInput = (props: {
         <DateTimeInput
           timestamp={
             props.value.label === "Custom"
-              ? props.value.value.getTime()
-              : Date.now() + 2 * 24 * 60 * 60 * 1000
+              ? `${props.value.value.getTime()}`
+              : `${Date.now() + 2 * 24 * 60 * 60 * 1000}`
           }
           name="grace-period"
           onChange={(date) => {
-            props.onChange({ label: "Custom", value: new Date(date) });
+            props.onChange({ label: "Custom", value: new Date(Number(date)) });
           }}
         />
       </div>
@@ -306,9 +306,9 @@ const OracleAndDisputePeriodInput = (props: {
                 ? 1
                 : props.value.value.days
             }
-            className="bg-sky-200 dark:bg-black text-ztg-14-150 w-full rounded-ztg-5 h-ztg-40 p-ztg-8 font-lato focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-18"
+            className="bg-sky-200 dark:bg-black text-ztg-14-150 w-full rounded-ztg-5 h-ztg-40 p-ztg-8  focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-18"
           />
-          <div className="bg-sky-200 dark:bg-black text-ztg-14-150  -ml-2 font-bold rounded-ztg-5 h-ztg-40 p-ztg-8 font-lato focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-14">
+          <div className="bg-sky-200 dark:bg-black text-ztg-14-150  -ml-2 font-bold rounded-ztg-5 h-ztg-40 p-ztg-8  focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-14">
             DAYS
           </div>
         </div>
@@ -339,9 +339,9 @@ const OracleAndDisputePeriodInput = (props: {
                 ? 0
                 : props.value.value.hours
             }
-            className="bg-sky-200 dark:bg-black text-ztg-14-150 w-full rounded-ztg-5 h-ztg-40 p-ztg-8 font-lato focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-18"
+            className="bg-sky-200 dark:bg-black text-ztg-14-150 w-full rounded-ztg-5 h-ztg-40 p-ztg-8  focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-18"
           />
-          <div className="bg-sky-200 dark:bg-black text-ztg-14-150 w-full -ml-2 font-bold rounded-ztg-5 h-ztg-40 p-ztg-8 font-lato focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-18">
+          <div className="bg-sky-200 dark:bg-black text-ztg-14-150 w-full -ml-2 font-bold rounded-ztg-5 h-ztg-40 p-ztg-8  focus:outline-none border-1 dark:border-black text-black dark:text-white text-right  w-18">
             HOURS
           </div>
         </div>

@@ -12,8 +12,10 @@ import MarketStore from "lib/stores/MarketStore";
 import TransactionButton from "components/ui/TransactionButton";
 import AssetSelectView from "components/assets/AssetSelectView";
 import AssetSelectButton from "components/assets/AssetSelectButton";
-import { OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import ScalarReportBox from "./ScalarReportBox";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 
 const ReportBox = observer(
   ({
@@ -24,13 +26,14 @@ const ReportBox = observer(
     onReport: () => void;
   }) => {
     const store = useStore();
+    const [sdk] = useSdkv2();
     const { wallets } = store;
     const [isSelectView, setIsSelectView] = useState(false);
     const [selectedAssetOption, setSelectedAssetOption] =
       useState<OutcomeOption>();
     const [options, setOptions] = useState<OutcomeOption[]>();
 
-    const { isAuthorityProxy } = marketStore;
+    const { data: marketsdkv2 } = useMarket(marketStore?.market?.marketId);
 
     const getOptions = async (): Promise<OutcomeOption[]> => {
       const outcomes = marketStore.marketOutcomes.filter(
@@ -116,26 +119,12 @@ const ReportBox = observer(
         },
       });
 
-      if (
-        marketStore.disputeMechanism === "authorized" &&
-        marketStore.status === "Disputed"
-      ) {
-        const tx = store.sdk.api.tx.authorized.authorizeMarketOutcome(
+      if (isRpcSdk(sdk)) {
+        const tx = sdk.context.api.tx.predictionMarkets.report(
           market.marketId,
           outcomeReport,
         );
-        if (isAuthorityProxy) {
-          const proxyTx = store.sdk.api.tx.proxy.proxy(
-            marketStore.authority,
-            "Any",
-            tx,
-          );
-          signAndSend(proxyTx, signer, callback);
-        } else {
-          signAndSend(tx, signer, callback);
-        }
-      } else {
-        await market.reportOutcome(signer, outcomeReport, callback);
+        signAndSend(tx, signer, callback);
       }
     };
 
@@ -149,7 +138,7 @@ const ReportBox = observer(
         ) : (
           <>
             <div className="flex items-center px-ztg-16">
-              <div className="font-space font-bold text-ztg-14-150 h-ztg-25">
+              <div className=" font-bold text-ztg-14-150 h-ztg-25">
                 Report outcome
               </div>
             </div>
@@ -185,12 +174,9 @@ const ReportBox = observer(
                   )}
                 </>
               )}
-              {marketStore.type === "scalar" && (
+              {marketsdkv2?.marketType.scalar && (
                 <div className="px-ztg-16">
-                  <ScalarReportBox
-                    marketStore={marketStore}
-                    onReport={onReport}
-                  />
+                  <ScalarReportBox market={marketsdkv2} onReport={onReport} />
                 </div>
               )}
             </>

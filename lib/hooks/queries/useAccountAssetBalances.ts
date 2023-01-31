@@ -8,7 +8,16 @@ export type UseAccountAssetBalances = {
   /**
    * Get a single balance by account and asset id.
    */
-  get: (account: string, assetId: AssetId) => null | NA | OrmlTokensAccountData;
+  get: (
+    account: string,
+    assetId: AssetId,
+  ) => UseQueryResult<
+    {
+      pair: AccountAssetIdPair;
+      balance: NA | OrmlTokensAccountData;
+    },
+    unknown
+  >;
   /**
    * Raw react query access.
    */
@@ -29,7 +38,7 @@ export type AccountAssetIdPair = {
   assetId: AssetId;
 };
 
-export const rootKey = "account-asset-balance";
+export const accountAssetBalanceRootKey = "account-asset-balance";
 
 /**
  * Fetch account balances for a list of account/asset pairs.
@@ -42,10 +51,10 @@ export const useAccountAssetBalances = (
 ): UseAccountAssetBalances => {
   const [sdk, id] = useSdkv2();
 
-  const query = useQueries({
+  const queries = useQueries({
     queries: pairs.map((pair) => {
       return {
-        queryKey: [id, rootKey, pair.account, pair.assetId],
+        queryKey: [id, accountAssetBalanceRootKey, pair.account, pair.assetId],
         queryFn: async () => {
           if (sdk && isRpcSdk(sdk)) {
             const balance = !pair.account
@@ -68,13 +77,14 @@ export const useAccountAssetBalances = (
   });
 
   const get = (account: string, assetId: AssetId) => {
-    return query.find(
+    const query = queries.find(
       (q) =>
         q.data &&
         q.data.pair.account === account &&
         objectHash(q.data.pair.assetId) === objectHash(assetId),
-    )?.data?.balance;
+    );
+    return query;
   };
 
-  return { get, query };
+  return { get, query: queries };
 };

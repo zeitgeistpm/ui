@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { isUndefined, isEmpty } from "lodash";
 import { DeepPartial } from "lib/types/DeepPartial";
 import { parse as parseUri } from "uri-js";
-import { MarketsListQuery } from "lib/types/market-filter";
+import { MarketsListQuery, MarketsOrderBy } from "lib/types/market-filter";
 import { defaultMarketsQueryState } from "lib/constants/market-filter";
 import { filterTypes } from "lib/constants/market-filter";
 
@@ -12,44 +12,64 @@ export type MarketListQueryUpdater = (
   update: DeepPartial<MarketsListQuery>,
 ) => void;
 
+const getQueryParams = (path: string) => {
+  const url = parseUri(path);
+  let queryParams = {};
+  const queryParamsArr = [...Array.from(new URLSearchParams(url.query))];
+  for (const pair of queryParamsArr) {
+    queryParams[pair[0]] = pair[1];
+  }
+  return queryParams;
+};
+
 const useMarketsUrlQuery = (): MarketsListQuery & {
   updateQuery: MarketListQueryUpdater;
 } => {
   const router = useRouter();
   const routerPath = router.asPath;
-  const [firstLoad, setFirstLoad] = useState(true);
   const [query, setQuery] = useState<MarketsListQuery>();
 
-  useEffect(() => {
+  const setQueryToDefault = () => {
+    setQuery(defaultMarketsQueryState);
+    updateQuery(defaultMarketsQueryState);
+  };
+
+  const setInitialQuery = useCallback(() => {
+    const queryParams = getQueryParams(routerPath);
     try {
-      const url = parseUri(routerPath);
-      let queryParams = {};
-      const queryParamsArr = [...Array.from(new URLSearchParams(url.query))];
-      for (const pair of queryParamsArr) {
-        queryParams[pair[0]] = pair[1];
-      }
-      if (firstLoad && isEmpty(queryParams)) {
-        setQuery(defaultMarketsQueryState);
-        updateQuery(defaultMarketsQueryState);
-        setFirstLoad(false);
+      if (isEmpty(queryParams)) {
+        setQueryToDefault();
       } else {
-        setQuery(parse(queryParams));
+        const query = parse(queryParams);
+        setQuery(query);
       }
     } catch (error) {
       console.warn(error);
-      setQuery(defaultMarketsQueryState);
+      setQueryToDefault();
     }
   }, [routerPath]);
 
+  useEffect(() => {
+    const queryParams = getQueryParams(routerPath);
+    const query = parse(queryParams);
+    setQuery(query);
+  }, [routerPath]);
+
+  useEffect(() => {
+    setInitialQuery();
+  }, []);
+
   const updateQuery = useCallback<MarketListQueryUpdater>(
     (update) => {
-      const newFilters = { ...(query?.filters ?? []), ...update.filters };
-      const newQuery = { filters: newFilters };
+      const filters = update.filters ?? query.filters;
+      const ordering = update.ordering ?? query.ordering;
+      const liquidityOnly = update.liquidityOnly ?? query.liquidityOnly;
+      const newQuery = { filters, ordering, liquidityOnly };
       router.replace({
         query: toString(newQuery),
       });
     },
-    [routerPath],
+    [routerPath, query],
   );
 
   const [queryState, setQueryState] = useState<
@@ -67,14 +87,14 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
 };
 
 const toString = (query: MarketsListQuery) => {
-  const { filters } = query;
+  const { filters, ordering, liquidityOnly } = query;
 
   const filtersEntries = filterTypes.map((type) => [
     type,
     encodeURIComponent(filters[type].join(",")),
   ]);
 
-  return filtersEntries
+  const filtersQueryStr = filtersEntries
     .map(([key, value]) => {
       if (value) {
         return `${key}=${value}`;
@@ -82,6 +102,12 @@ const toString = (query: MarketsListQuery) => {
     })
     .filter((qs) => !isUndefined(qs))
     .join("&");
+
+  const orderingQueryStr = `ordering=${ordering}`;
+
+  const liquidityOnlyQueryStr = `liquidityOnly=${liquidityOnly}`;
+
+  return [filtersQueryStr, orderingQueryStr, liquidityOnlyQueryStr].join("&");
 };
 
 const parse = (rawQuery: ParsedUrlQuery): MarketsListQuery => {
@@ -90,6 +116,9 @@ const parse = (rawQuery: ParsedUrlQuery): MarketsListQuery => {
     tag: [],
     currency: [],
   };
+
+  const ordering: MarketsOrderBy = rawQuery["ordering"] as MarketsOrderBy;
+  const liquidityOnly = rawQuery["liquidityOnly"] === "true";
 
   for (const filterType of filterTypes) {
     if (rawQuery[filterType]) {
@@ -101,6 +130,8 @@ const parse = (rawQuery: ParsedUrlQuery): MarketsListQuery => {
 
   return {
     filters,
+    ordering: ordering ?? MarketsOrderBy.Newest,
+    liquidityOnly,
   };
 };
 

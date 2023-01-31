@@ -66,7 +66,7 @@ const ScalarPriceRange = observer(
           <div className="flex justify-between font-mono">
             <div className="flex flex-col justify-start">
               <div className="mb-ztg-8">{lower}</div>
-              <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full"></div>
+              <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full mt-auto"></div>
             </div>
             <div className="flex flex-col justify-end items-end">
               <div className="mb-ztg-8">{upper}</div>

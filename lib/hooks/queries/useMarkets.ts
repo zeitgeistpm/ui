@@ -1,17 +1,28 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Context,
+  IndexerContext,
+  isIndexedSdk,
+  Market,
+} from "@zeitgeistpm/sdk-next";
 import { MarketOrderByInput } from "@zeitgeistpm/indexer";
 import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets";
 import objectHash from "object-hash";
 import { useStore } from "lib/stores/Store";
 import { getCurrentPrediction } from "lib/util/assets";
-import { MarketFilter, MarketFilterType } from "lib/types/market-filter";
+import {
+  MarketFilter,
+  MarketFilterType,
+  MarketsOrderBy,
+} from "lib/types/market-filter";
+import { marketsRootQuery } from "./useMarket";
 import { useSdkv2 } from "../useSdkv2";
+import { MarketOutcomes } from "lib/types/markets";
 
-export const rootKey = "markets";
+export const rootKey = "markets-filtered";
 
 const hashFilters = (filters: MarketFilter[]): string => {
-  const sortedFilters = filters.sort((a, b) => {
+  const sortedFilters = [...filters].sort((a, b) => {
     if (a.type !== b.type) {
       return a.type < b.type ? -1 : 1;
     } else {
@@ -29,7 +40,23 @@ const getFilterValuesByType = (
   return filters.filter((f) => f.type === type).map((f) => f.value);
 };
 
-export const useMarkets = (filters?: MarketFilter[]) => {
+const orderByMap = {
+  [MarketsOrderBy.Newest]: MarketOrderByInput.MarketIdDesc,
+  [MarketsOrderBy.Oldest]: MarketOrderByInput.MarketIdAsc,
+  [MarketsOrderBy.MostVolume]: MarketOrderByInput.PoolVolumeDesc,
+  [MarketsOrderBy.LeastVolume]: MarketOrderByInput.PoolVolumeAsc,
+};
+
+export type QueryMarketData = Market<IndexerContext> & {
+  outcomes: MarketOutcomes;
+  prediction: string;
+};
+
+export const useMarkets = (
+  orderBy: MarketsOrderBy,
+  withLiquidityOnly = false,
+  filters?: MarketFilter[],
+) => {
   const [sdk, id] = useSdkv2();
   const { graphQLClient } = useStore();
 
@@ -37,7 +64,9 @@ export const useMarkets = (filters?: MarketFilter[]) => {
 
   const limit = 12;
 
-  const fetcher = async ({ pageParam = 0 }) => {
+  const fetcher = async ({
+    pageParam = 0,
+  }): Promise<{ data: QueryMarketData[]; next: number | boolean }> => {
     if (!isIndexedSdk(sdk) || filters == null) {
       return {
         data: [],
@@ -49,12 +78,13 @@ export const useMarkets = (filters?: MarketFilter[]) => {
     const tags = getFilterValuesByType(filters, "tag");
     const currencies = getFilterValuesByType(filters, "currency");
 
-    const markets = await sdk.model.markets.list({
+    const markets: Market<IndexerContext>[] = await sdk.model.markets.list({
       where: {
         categories_isNull: false,
         status_not_in: ["Destroyed"],
         status_in: statuses.length === 0 ? undefined : statuses,
         tags_containsAny: tags.length === 0 ? undefined : tags,
+        pool_isNull: withLiquidityOnly ? false : undefined,
         pool:
           currencies.length === 0
             ? undefined
@@ -64,12 +94,12 @@ export const useMarkets = (filters?: MarketFilter[]) => {
       },
       offset: !pageParam ? 0 : limit * pageParam,
       limit: limit,
-      order: MarketOrderByInput.MarketIdDesc,
+      order: orderByMap[orderBy],
     });
 
     const outcomes = await getOutcomesForMarkets(graphQLClient, markets);
 
-    let resMarkets = [];
+    let resMarkets: Array<QueryMarketData> = [];
 
     for (const m of markets) {
       const marketOutcomes = outcomes[m.marketId];
@@ -86,15 +116,27 @@ export const useMarkets = (filters?: MarketFilter[]) => {
 
     return {
       data: resMarkets,
-      next: markets.length >= limit ? pageParam + 1 : undefined,
+      next: markets.length >= limit ? pageParam + 1 : false,
     };
   };
 
+  const queryClient = useQueryClient();
+
   const query = useInfiniteQuery({
-    queryKey: [id, rootKey, hashFilters(filters)],
+    queryKey: [id, rootKey, hashFilters(filters), orderBy, withLiquidityOnly],
     queryFn: fetcher,
     enabled: Boolean(sdk) && isIndexedSdk(sdk),
     getNextPageParam: (lastPage) => lastPage.next,
+    onSuccess(data) {
+      data.pages
+        .flatMap((p) => p.data)
+        .forEach((market) => {
+          queryClient.setQueryData(
+            [id, marketsRootQuery, market.marketId],
+            market,
+          );
+        });
+    },
   });
 
   return query;

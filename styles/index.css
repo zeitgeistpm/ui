@@ -208,7 +208,6 @@ input[type="number"] {
 
 body {
   --topbar-height: 76px;
-  @apply font-lato;
 }
 
 .topbar {
@@ -232,19 +231,12 @@ body {
 }
 
 table {
-  border-spacing: 0 15px;
+  /* override tailwind utils */
+  border-collapse: collapse !important;
 }
 
-td:first-child {
-  padding-left: 15px;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
-}
-
-td:last-child {
-  padding-right: 15px;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
+tr {
+  border-bottom: 1px solid #e5e7eb;
 }
 
 /* Scroll */
@@ -275,13 +267,11 @@ td:last-child {
 }
 
 .header {
-  @apply font-space;
   @apply font-bold;
   @apply text-ztg-20-150;
 }
 
 .sub-header {
-  @apply font-space;
   @apply font-medium;
   @apply text-ztg-20-150;
 }
