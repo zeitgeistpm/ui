@@ -114,8 +114,8 @@ const rdtpInput = (
   );
 };
 
-const getDateFromTimestamp = (timestamp?: number) => {
-  const ts = timestamp || new Date().valueOf();
+const getDateFromTimestamp = (timestamp?: string) => {
+  const ts = Number(timestamp) || new Date().valueOf();
   return new Date(ts);
 };
 
@@ -139,9 +139,9 @@ const getLocalDateFormat = () => {
 };
 
 export const DateTimeInput: FC<{
-  timestamp?: number;
+  timestamp?: string;
   className?: string;
-  onChange: (timestamp: number) => void;
+  onChange: (timestamp: string) => void;
   name: string;
   form?: Form;
 }> = observer(({ className = "", onChange, timestamp, name, form }) => {
@@ -153,7 +153,7 @@ export const DateTimeInput: FC<{
 
   const dateChange = (v: Moment | string) => {
     if (isMoment(v)) {
-      onChange(v.valueOf());
+      onChange(`${v.valueOf()}`);
     }
   };
   const localDateFormat = getLocalDateFormat();

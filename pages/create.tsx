@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import MobxReactForm from "mobx-react-form";
 import Decimal from "decimal.js";
 import React, { useEffect, useRef, useState } from "react";
-import { catchError, from } from "rxjs";
+import { from } from "rxjs";
 import { AlertTriangle } from "react-feather";
 import {
   CreateMarketParams,
@@ -70,7 +70,7 @@ const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
 export interface CreateMarketFormData {
   slug: string;
   question: string;
-  end: { type: EndType; value?: number | typeof NaN };
+  end: { type: EndType; value?: string };
   tags: string[];
   outcomes: {
     type: OutcomeType;
@@ -127,7 +127,7 @@ const CreatePage: NextPage = observer(() => {
   const [formData, setFormData] = useState<CreateMarketFormData>({
     slug: "",
     question: "",
-    end: { type: "timestamp", value: Moment().add(1, "day").valueOf() },
+    end: { type: "timestamp", value: `${Moment().add(1, "day").valueOf()}` },
     tags: [],
     outcomes: { type: "multiple" },
     oracle: "",
@@ -281,10 +281,10 @@ const CreatePage: NextPage = observer(() => {
 
   useEffect(() => {
     if (formData?.end?.type === "block") {
-      changeEnd(store.blockNumber.toNumber() + NUM_BLOCKS_IN_DAY);
+      changeEnd(`${store.blockNumber.toNumber() + NUM_BLOCKS_IN_DAY}`);
       form.$("end").set("rules", `gt_current_blocknum|required`);
     } else {
-      changeEnd(Moment().add(1, "day").valueOf());
+      changeEnd(`${Moment().add(1, "day").valueOf()}`);
       form.$("end").set("rules", "timestamp_gt_now");
     }
   }, [formData?.end?.type]);
@@ -306,7 +306,7 @@ const CreatePage: NextPage = observer(() => {
     });
   };
 
-  const changeEnd = (value: number) => {
+  const changeEnd = (value: string) => {
     setFormData((data) => {
       return { ...data, end: { ...data.end, value } };
     });
@@ -364,14 +364,14 @@ const CreatePage: NextPage = observer(() => {
 
   const getMarketPeriod = (): MarketPeriod => {
     return formData.end.type === "block"
-      ? { block: [store.blockNumber.toNumber(), formData.end.value] }
-      : { timestamp: [store.blockTimestamp, formData.end.value] };
+      ? { block: [store.blockNumber.toNumber(), Number(formData.end.value)] }
+      : { timestamp: [store.blockTimestamp, Number(formData.end.value)] };
   };
 
   const getMarketEndBlock = () => {
     return formData.end.type === "block"
-      ? formData.end.value
-      : dateBlock(now, new Date(formData.end.value));
+      ? Number(formData.end.value)
+      : dateBlock(now, new Date(Number(formData.end.value)));
   };
 
   const mapRangeToEntires = (
@@ -476,8 +476,14 @@ const CreatePage: NextPage = observer(() => {
         }
       : {
           Scalar: [
-            Number((outcomes.minimum * ZTG).toFixed(0)),
-            Number((outcomes.maximum * ZTG).toFixed(0)),
+            new Decimal(outcomes.minimum)
+              .mul(ZTG)
+              .toDecimalPlaces(0)
+              .toNumber(),
+            new Decimal(outcomes.maximum)
+              .mul(ZTG)
+              .toDecimalPlaces(0)
+              .toNumber(),
           ],
         };
   };
@@ -705,7 +711,7 @@ const CreatePage: NextPage = observer(() => {
       <MarketFormCard header="3. Market ends *">
         <EndField
           endType={formData.end.type}
-          value={isNaN(formData.end.value) ? "" : formData.end.value.toString()}
+          value={formData.end.value}
           onEndTypeChange={changeEndType}
           onEndChange={changeEnd}
           form={form}
