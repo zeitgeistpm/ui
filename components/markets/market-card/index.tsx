@@ -11,6 +11,7 @@ import { Users, BarChart2, Droplet } from "react-feather";
 
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
+import { assetPrefix } from "next.config";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -90,52 +91,60 @@ const MarketCardTags = ({ tags }: { tags: string[] }) => {
 const MarketCardDetails = ({
   rows,
 }: {
-  rows: { volume: string; outcomes: number; endDate: string };
+  rows: {
+    getImplied: () => { price: number; color: string; name: string };
+    volume: string;
+    outcomes: number;
+    endDate: string;
+  };
 }) => {
-  console.log(rows.endDate);
-  return (
-    <div className="w-full">
-      <div className="text-sm flex justify-between mb-1">
-        <span className="text-blue">New York</span>
-        <span className="text-gray-500">75%</span>
-      </div>
-      <div className="w-full rounded-lg h-1.5 bg-gray-200">
-        <div
-          className="rounded-lg h-full transition-all bg-blue"
-          style={{ width: `75%` }}
-        />
-      </div>
-      <div className="text-xs my-2.5">
-        <span className="font-semibold">{rows.outcomes} outcomes</span>
-        {/* <span> | </span> */}
-        <span>
-          {rows.endDate &&
-            ` | Ends ${new Date(Number(rows?.endDate)).toLocaleString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}`}
-        </span>
-        {/* {new Intl.DateTimeFormat("en-US", {
-              dateStyle: "medium",
-          }).format(Number(indexedMarket.period.end))} */}
-      </div>
-      <div className="flex gap-2.5 text-sm">
-        {/* <div className="flex items-center gap-2">
-          <Users size={18} />
-          <span>223</span>
-        </div> */}
-        <div className="flex items-center gap-2">
-          <BarChart2 size={18} />
-          <span>{rows.volume}</span>
+  if (rows.getImplied()) {
+    const { price, color, name } = rows.getImplied();
+    return (
+      <div className="w-full">
+        <div className="text-sm flex justify-between mb-1">
+          <span className="text-blue">{name}</span>
+          <span className="text-gray-500">{price}</span>
         </div>
-        {/* <div className="flex items-center gap-2">
-          <Droplet size={18} />
-          <span>223K ZTG</span>
-        </div> */}
+        <div className="w-full rounded-lg h-1.5 bg-gray-200">
+          <div
+            className={`rounded-lg h-full transition-all bg-blue`}
+            style={{ width: `${price}%` }}
+          />
+        </div>
+        <div className="text-xs my-2.5">
+          <span className="font-semibold">{rows.outcomes} outcomes</span>
+          <span>
+            {rows.endDate &&
+              ` | Ends ${new Date(Number(rows?.endDate)).toLocaleString(
+                "en-US",
+                {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                },
+              )}`}
+          </span>
+        </div>
+        <div className="flex gap-2.5 text-sm">
+          {/* <div className="flex items-center gap-2">
+            <Users size={18} />
+            <span>223</span>
+          </div> */}
+          <div className="flex items-center gap-2">
+            <BarChart2 size={18} />
+            <span>{rows.volume}</span>
+          </div>
+          {/* <div className="flex items-center gap-2">
+            <Droplet size={18} />
+            <span>223K ZTG</span>
+          </div> */}
+        </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    <Skeleton variant="rect" />;
+  }
 };
 
 /*TODO:
@@ -161,31 +170,51 @@ const MarketCard = ({
   className = "",
 }: MarketCardProps) => {
   const [showDetailsOverlay, setShowDetailsOverlay] = useState<boolean>(false);
-  const [implied, setImplied] = useState(0);
+
+  const { data: spotPrices } = useMarketSpotPrices(marketId);
+
+  const getImplied = () => {
+    if (spotPrices) {
+      const totalAssetPrice = Array.from(spotPrices.values()).reduce(
+        (val, cur, index) => val.plus(cur),
+        new Decimal(0),
+      );
+      const assetPrices = outcomes.map((outcome) => {
+        return {
+          price: Math.round((outcome.price / totalAssetPrice.toNumber()) * 100),
+          name: outcome.name,
+          color: outcome.color,
+        };
+      });
+
+      const highestAsset = assetPrices.reduce((highest, asset) =>
+        highest.price > asset.price ? highest : asset,
+      );
+      return highestAsset;
+      // if (highestAsset.price > 0 && highestAsset.price < 100) {
+      //   return highestAsset;
+      // } else {
+      //   return {price: }
+      // }
+    }
+  };
   const infoRows = {
     // { name: "Prediction", value: prediction },
+    getImplied: getImplied,
     endDate: endDate,
     outcomes: outcomes.length,
     volume: `${volume ?? 0} ${baseAsset?.toUpperCase() ?? "ZTG"}`,
     // { name: "Status", value: creation },
   };
-
-  // const { data: market } = useMarket(marketId);
-  const { data: spotPrices } = useMarketSpotPrices(marketId);
-
-  if (spotPrices) {
-    const totalAssetPrice = Array.from(spotPrices.values()).reduce(
-      (val, cur) => val.plus(cur),
-      new Decimal(0),
-    );
-    console.log(totalAssetPrice.toNumber());
-    // console.log(
-    //   Math.round((outcomes[0].price / totalAssetPrice.toNumber()) * 100),
-    // );
-  }
-
-  // console.log(outcomes);
-
+  const isEnding = () => {
+    const currentTime = new Date();
+    const endTime = Number(infoRows.endDate);
+    //6 hours in milliseconds
+    const sixHours = 21600000;
+    const diff = endTime - currentTime.getTime();
+    //checks if event has passed and is within 6 hours
+    return diff < sixHours && diff > 0 ? true : false;
+  };
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <motion.div
@@ -220,7 +249,9 @@ const MarketCard = ({
               <MarketImage image={img} alt={question} />
               <div className="flex flex-wrap gap-2.5 font-medium">
                 <MarketCardTags tags={tags} />
-                <Pill value="Ends Soon" classes="bg-red-light text-red" />
+                {isEnding() && (
+                  <Pill value="Ends Soon" classes="bg-red-light text-red" />
+                )}
                 <Pill
                   value="&#x2713; Verified"
                   classes="bg-green-light text-green"
