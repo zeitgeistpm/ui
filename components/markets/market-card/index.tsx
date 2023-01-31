@@ -33,30 +33,6 @@ export interface MarketCardProps extends IndexedMarketCardData {
   width?: number;
 }
 
-const MarketCardInfoRow = ({
-  name,
-  value,
-}: {
-  name: string;
-  value?: string;
-}) => {
-  return (
-    <div className="">
-      <span className="text-sky-600">{name}:</span>{" "}
-      {value == null ? (
-        <Skeleton
-          height={15}
-          width={125}
-          classes={{ root: "!bg-sky-600" }}
-          className="!transform-none !inline-block"
-        />
-      ) : (
-        <span className="text-black">{value}</span>
-      )}
-    </div>
-  );
-};
-
 const MarketCardInfo = ({ question }: { question: string }) => {
   return (
     <div className="w-full h-full flex flex-col justify-center text-ztg-14-165 whitespace-normal">
@@ -94,7 +70,7 @@ const MarketCardDetails = ({
   rows,
 }: {
   rows: {
-    getImplied: () => { price: number; color: string; name: string };
+    getImplied: () => { price: number; name: string };
     volume: string;
     outcomes: number;
     endDate: string;
@@ -102,9 +78,10 @@ const MarketCardDetails = ({
   };
 }) => {
   if (rows.getImplied()) {
-    const { price, color, name } = rows.getImplied();
+    const { price, name } = rows.getImplied();
     return (
       <div className="w-full">
+        {/* don't show if market type is scalar */}
         {!rows.marketType?.scalar && (
           <>
             <div className="text-sm flex justify-between mb-1">
@@ -134,6 +111,7 @@ const MarketCardDetails = ({
           </span>
         </div>
         <div className="flex gap-2.5 text-sm">
+          {/* TODO: add market particpants and liquidity once added to indexer */}
           {/* <div className="flex items-center gap-2">
             <Users size={18} />
             <span>223</span>
@@ -154,14 +132,6 @@ const MarketCardDetails = ({
   }
 };
 
-/*TODO:
-- ending soon: what is considered "soon"? (less than 6hrs)
-- verified: what is that?
-- percenatges of each outcome
-- Math.round((currentPrice / totalAssetPrice.toNumber()) * 100,)
-- end date
-- liquidity
-*/
 const MarketCard = ({
   marketId,
   img,
@@ -192,7 +162,6 @@ const MarketCard = ({
         return {
           price: Math.round((outcome.price / totalAssetPrice.toNumber()) * 100),
           name: outcome.name,
-          color: outcome.color,
         };
       });
 
@@ -247,12 +216,6 @@ const MarketCard = ({
               onCloseIconClick={() => setShowDetailsOverlay(false)}
             />
           )}
-          {/* {outcomes?.length > 0 && (
-            <MoreVertical
-              className="absolute right-[10px] text-pastel-blue cursor-pointer"
-              onClick={() => setShowDetailsOverlay(true)}
-            />
-          )} */}
           <Link href={`/markets/${marketId}`} className="flex flex-col gap-2.5">
             <div className="flex gap-2.5">
               <MarketImage image={img} alt={question} />
