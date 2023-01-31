@@ -1,13 +1,7 @@
 import Skeleton from "@material-ui/lab/Skeleton";
 import React, { useState, useEffect } from "react";
 
-import {
-  Axis,
-  Grid,
-  LineSeries,
-  XYChart,
-  Tooltip,
-} from "@visx/xychart";
+import { Axis, Grid, LineSeries, XYChart, Tooltip } from "@visx/xychart";
 import { defaultStyles } from "@visx/tooltip";
 import { curveStepAfter } from "@visx/curve";
 import { ParentSize } from "@visx/responsive";
@@ -56,7 +50,7 @@ const TooltipContent = ({ tooltipData, categories }) => {
           return (
             <div className="flex">
               <span style={{ color }}>{ticker}</span>
-              <span className="ml-auto">
+              <span className="ml-auto text-xs">
                 {value.toFixed(3)} ZTG ({Math.floor(value.toFixed(2) * 100)}%)
               </span>
             </div>
