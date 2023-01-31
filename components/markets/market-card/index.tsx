@@ -200,25 +200,19 @@ const MarketCard = ({
         highest.price > asset.price ? highest : asset,
       );
       return highestAsset;
-      // if (highestAsset.price > 0 && highestAsset.price < 100) {
-      //   return highestAsset;
-      // } else {
-      //   return {price: }
-      // }
     }
   };
   const infoRows = {
-    // { name: "Prediction", value: prediction },
     marketType: marketType,
     getImplied: getImplied,
     endDate: endDate,
     outcomes: outcomes.length,
     volume: `${volume ?? 0} ${baseAsset?.toUpperCase() ?? "ZTG"}`,
-    // { name: "Status", value: creation },
   };
+
   const isEnding = () => {
     const currentTime = new Date();
-    const endTime = Number(infoRows.endDate);
+    const endTime = Number(endDate);
     //6 hours in milliseconds
     const sixHours = 21600000;
     const diff = endTime - currentTime.getTime();
@@ -229,7 +223,7 @@ const MarketCard = ({
   const isVerified = () => {
     return creation === "Advised" && status === "Proposed" ? true : false;
   };
-  console.log(marketType);
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <motion.div
