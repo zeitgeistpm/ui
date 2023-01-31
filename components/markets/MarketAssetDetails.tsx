@@ -2,7 +2,7 @@ import { fromCompositeIndexerAssetId } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
-import { DAY_SECONDS, ZTG } from "lib/constants";
+import { ZTG } from "lib/constants";
 import MarketStore from "lib/stores/MarketStore";
 import { useNavigationStore } from "lib/stores/NavigationStore";
 import { useStore } from "lib/stores/Store";
@@ -104,10 +104,6 @@ const MarketAssetDetails = observer(
       let tblData: TableData[] = [];
 
       if (market && poolAlreadyDeployed) {
-        const dateOneDayAgo = new Date(
-          new Date().getTime() - DAY_SECONDS * 1000,
-        ).toISOString();
-
         const totalAssetPrice = spotPrices
           ? Array.from(spotPrices.values()).reduce(
               (val, cur) => val.plus(cur),
@@ -187,9 +183,7 @@ const MarketAssetDetails = observer(
       const reportedOutcome = marketStore.resolvedCategoricalOutcome;
 
       const outcome = tableData?.find(
-        (data) =>
-          JSON.stringify(data.assetId) ===
-          JSON.stringify(reportedOutcome.asset),
+        (data) => data.assetId === JSON.stringify(reportedOutcome.asset),
       );
 
       return outcome ? [outcome] : undefined;
@@ -212,6 +206,7 @@ const MarketAssetDetails = observer(
                       ]
                     : []
                 }
+                loadingNumber={1}
               />
             ) : (
               <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
@@ -224,7 +219,11 @@ const MarketAssetDetails = observer(
           <>
             <div className="sub-header mt-ztg-40">Reported Outcome</div>
             {marketStore.type === "categorical" ? (
-              <Table columns={columns} data={getReportedOutcome()} />
+              <Table
+                columns={columns}
+                data={getReportedOutcome()}
+                loadingNumber={1}
+              />
             ) : (
               <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
                 {new Decimal(
@@ -242,7 +241,11 @@ const MarketAssetDetails = observer(
           <>
             <div className="sub-header mt-ztg-40">Disputed Outcome</div>
             {marketStore.type === "categorical" ? (
-              <Table columns={columns} data={getReportedOutcome()} />
+              <Table
+                columns={columns}
+                data={getReportedOutcome()}
+                loadingNumber={1}
+              />
             ) : (
               <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
                 {new Decimal(
@@ -263,6 +266,7 @@ const MarketAssetDetails = observer(
               <Table
                 columns={columns}
                 data={getWinningCategoricalOutcome() as TableData[]}
+                loadingNumber={1}
               />
             ) : (
               market && (
