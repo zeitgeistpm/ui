@@ -3,6 +3,8 @@ import BuySellButtons from "components/trade-slip/BuySellButtons";
 import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
 import { useMarketCardContext } from "./context";
 
+// TODO: check if this file can be removed
+
 export type MarketCardOverlayOutcomeProps = {
   marketId: number;
   outcome: MarketOutcome;

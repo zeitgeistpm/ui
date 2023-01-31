@@ -45,7 +45,7 @@ const MarketCardInfo = ({ question }: { question: string }) => {
 
 const Pill = ({ value, classes }: { value: string; classes: string }) => {
   return (
-    <span className={`px-2.5 py-0.5 h-fit text-xs rounded ${classes}`}>
+    <span className={`px-2.5 ml-2.5 py-0.5 h-fit text-xs rounded ${classes}`}>
       {value}
     </span>
   );
@@ -54,7 +54,6 @@ const Pill = ({ value, classes }: { value: string; classes: string }) => {
 const MarketCardTags = ({ tags }: { tags: string[] }) => {
   return (
     <>
-      {" "}
       {!tags ? (
         <Skeleton height={20} width={100} variant="rect" className="ml-2.5" />
       ) : (
@@ -71,7 +70,8 @@ const MarketCardDetails = ({
 }: {
   rows: {
     getImplied: () => { price: number; name: string };
-    volume: string;
+    volume: number;
+    baseAsset: string;
     outcomes: number;
     endDate: string;
     marketType: { [key: string]: string };
@@ -118,7 +118,9 @@ const MarketCardDetails = ({
           </div> */}
           <div className="flex items-center gap-2">
             <BarChart2 size={18} />
-            <span>{rows.volume}</span>
+            <span>
+              {rows.volume} {rows.baseAsset}
+            </span>
           </div>
           {/* <div className="flex items-center gap-2">
             <Droplet size={18} />
@@ -127,8 +129,10 @@ const MarketCardDetails = ({
         </div>
       </div>
     );
+  } else if (rows.volume <= 0) {
+    return <></>;
   } else {
-    <Skeleton variant="rect" />;
+    return <Skeleton height={86} width="100%" variant="rect" />;
   }
 };
 
@@ -138,7 +142,6 @@ const MarketCard = ({
   question,
   creation,
   outcomes,
-  prediction,
   marketType,
   volume,
   baseAsset,
@@ -148,8 +151,6 @@ const MarketCard = ({
   status,
   className = "",
 }: MarketCardProps) => {
-  const [showDetailsOverlay, setShowDetailsOverlay] = useState<boolean>(false);
-
   const { data: spotPrices } = useMarketSpotPrices(marketId);
 
   const getImplied = () => {
@@ -176,7 +177,8 @@ const MarketCard = ({
     getImplied: getImplied,
     endDate: endDate,
     outcomes: outcomes.length,
-    volume: `${volume ?? 0} ${baseAsset?.toUpperCase() ?? "ZTG"}`,
+    volume: volume,
+    baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
   };
 
   const isEnding = () => {
@@ -192,7 +194,6 @@ const MarketCard = ({
   const isVerified = () => {
     return creation === "Advised" && status === "Proposed" ? true : false;
   };
-
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <motion.div
@@ -206,20 +207,15 @@ const MarketCard = ({
         }}
       >
         <div
-          className={`flex flex-col justify-center w-full h-full bg-anti-flash-white rounded-[10px] p-[15px] relative ${className}`}
+          className={`flex flex-col w-full h-full bg-anti-flash-white rounded-[10px] p-[15px] relative ${className}`}
         >
-          {showDetailsOverlay && (
-            <MarketCardOverlay
-              marketId={marketId}
-              outcomes={outcomes}
-              className="top-0 left-[0]"
-              onCloseIconClick={() => setShowDetailsOverlay(false)}
-            />
-          )}
-          <Link href={`/markets/${marketId}`} className="flex flex-col gap-2.5">
+          <Link
+            href={`/markets/${marketId}`}
+            className="flex flex-col flex-1 gap-2.5"
+          >
             <div className="flex gap-2.5">
               <MarketImage image={img} alt={question} />
-              <div className="flex flex-wrap items-start gap-2.5 font-medium">
+              <div className="flex flex-wrap font-medium">
                 <MarketCardTags tags={tags} />
                 {isEnding() && (
                   <Pill value="Ends Soon" classes="bg-red-light text-red" />
