@@ -2,9 +2,9 @@ import Skeleton from "@material-ui/lab/Skeleton";
 import React, { useState, useEffect } from "react";
 
 import {
-  AnimatedAxis, // any of these can be non-animated equivalents
-  AnimatedGrid,
-  AnimatedLineSeries,
+  Axis,
+  Grid,
+  LineSeries,
   XYChart,
   Tooltip,
 } from "@visx/xychart";
@@ -154,11 +154,7 @@ const MarketChart = ({ market }) => {
       />
     );
   }
-  // const start = data[market.outcomeAssets[0]][0].x;
-  // const end =
-  //   data[market.outcomeAssets[0]][data[market.outcomeAssets[0]].length - 1].x;
 
-  // console.log("START< END", start, end);
   return (
     <div style={{ width: "100%", height: 400 }}>
       <ParentSize>
@@ -169,18 +165,14 @@ const MarketChart = ({ market }) => {
             xScale={{ type: "time", clamp: true }}
             yScale={{ domain: [0, 1], type: "linear" }}
           >
-            <AnimatedAxis
+            <Axis
               orientation="bottom"
               numTicks={4}
               label="Date"
               tickFormat={formatDate}
             />
-            <AnimatedAxis
-              orientation="left"
-              numTicks={8}
-              label="Price ($ZTG)"
-            />
-            <AnimatedGrid columns={false} numTicks={8} />
+            <Axis orientation="left" numTicks={8} label="Price ($ZTG)" />
+            <Grid columns={false} numTicks={8} />
             <Tooltip
               snapTooltipToDatumX
               snapTooltipToDatumY
@@ -209,7 +201,7 @@ const MarketChart = ({ market }) => {
             />
             {market.outcomeAssets.map((asset, i) => {
               return (
-                <AnimatedLineSeries
+                <LineSeries
                   dataKey={`Line ${asset}`}
                   data={data[asset]}
                   curve={curveStepAfter}
