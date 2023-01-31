@@ -151,7 +151,6 @@ const MarketAssetDetails = observer(
                       market.pool.weights[index].assetId,
                     ).unwrap() as any
                   }
-                  assetTicker={ticker}
                 />
               ),
             },
