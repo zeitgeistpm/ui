@@ -27,7 +27,7 @@ export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
   const { data: basePoolBalance } = useZtgBalance(pool?.accountId, blockNumber);
 
   const query = useQuery(
-    [id, marketSpotPricesKey, pool, blockNumber],
+    [id, marketSpotPricesKey, pool, blockNumber, balances, basePoolBalance],
     async () => {
       if (isRpcSdk(sdk) && !isNA(basePoolBalance)) {
         const spotPrices: MarketPrices =
