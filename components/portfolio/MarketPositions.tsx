@@ -111,7 +111,7 @@ export const MarketPositions = ({
                 value: userBalance.mul(price).div(ZTG),
                 usdValue: usdZtgPrice,
               },
-              change: changePercentage.toFixed(1),
+              change: isNaN(changePercentage) ? 0 : changePercentage.toFixed(1),
               actions: (
                 <div className="text-right">
                   {IOPoolShareAssetId.is(assetId) ? (
