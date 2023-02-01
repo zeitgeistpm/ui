@@ -188,6 +188,11 @@ const MarketAssetDetails = observer(
       return outcome ? [outcome] : undefined;
     };
 
+    console.log({
+      columns,
+      tableData,
+    });
+
     return (
       <div>
         {marketStore?.is("Disputed") && authReportNumberOrId != null && (

@@ -95,15 +95,9 @@ const Portfolio: NextPage = observer(() => {
                           className="mb-14 border-b-4 border-gray-200"
                           market={market}
                           usdZtgPrice={ztgPrice.price}
-                          positions={marketPositions
-                            .filter((position) => position.userBalance.gt(0))
-                            .map((position) => ({
-                              outcome: position.outcome,
-                              assetId: position.assetId,
-                              price: position.price,
-                              balance: position.userBalance,
-                              changePercentage: position.changePercentage,
-                            }))}
+                          positions={marketPositions.filter((position) =>
+                            position.userBalance.gt(0),
+                          )}
                         />
                       );
                     },
@@ -124,15 +118,9 @@ const Portfolio: NextPage = observer(() => {
                           className="mb-14 border-b-4 border-gray-200"
                           market={market}
                           usdZtgPrice={ztgPrice.price}
-                          positions={subsidyPositions
-                            .filter((position) => position.userBalance.gt(0))
-                            .map((position) => ({
-                              outcome: position.outcome,
-                              assetId: position.assetId,
-                              price: position.price,
-                              balance: position.userBalance,
-                              changePercentage: position.changePercentage,
-                            }))}
+                          positions={subsidyPositions.filter((position) =>
+                            position.userBalance.gt(0),
+                          )}
                         />
                       );
                     },

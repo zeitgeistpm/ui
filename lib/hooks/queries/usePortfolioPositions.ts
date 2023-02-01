@@ -73,6 +73,10 @@ export type Position<T extends AssetId = AssetId> = {
    */
   outcome: string;
   /**
+   * The color of the outcome asset
+   */
+  color: string;
+  /**
    * The current price of the position.
    */
   price: Decimal;
@@ -408,6 +412,7 @@ export const usePortfolioPositions = (
       const assetIndex = getIndexOf(assetId);
 
       let outcome: string;
+      let color: string;
 
       if (IOMarketOutcomeAssetId.is(assetId)) {
         outcome = market.marketType.categorical
@@ -415,10 +420,16 @@ export const usePortfolioPositions = (
           : assetIndex == 1
           ? "Short"
           : "Long";
+        color = market.marketType.categorical
+          ? market.categories[assetIndex].color ?? "#ffffff"
+          : assetIndex == 1
+          ? "rgb(255, 0, 0)"
+          : "rgb(36, 255, 0)";
       }
 
       if (IOPoolShareAssetId.is(assetId)) {
         outcome = "Pool Share";
+        color = "#DF0076";
       }
 
       const change = diffChange(price, price24HoursAgo);
@@ -430,6 +441,7 @@ export const usePortfolioPositions = (
         price,
         price24HoursAgo,
         outcome,
+        color,
         userBalance,
         changePercentage: change,
         totalIssuance,
