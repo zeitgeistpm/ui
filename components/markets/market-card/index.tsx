@@ -80,7 +80,7 @@ const MarketCardPredictionBar = ({
         <div className="w-full rounded-lg h-1.5 bg-gray-200">
           <div
             className={`rounded-lg h-full transition-all bg-blue`}
-            style={{ width: `${price}` }}
+            style={{ width: `${price}%` }}
           />
         </div>
       </>
