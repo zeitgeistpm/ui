@@ -158,7 +158,6 @@ const Market: NextPage<{
 
   //required to fix title element warning
   const question = indexedMarket.question;
-  console.log(indexedMarket.description);
 
   return (
     <>
@@ -266,7 +265,7 @@ const Market: NextPage<{
           onPoolDeployed={handlePoolDeployed}
         />
 
-        <div className="sub-header mt-ztg-40 mb-ztg-15">Market Cast</div>
+        <div className="sub-header my-ztg-40 text-center">Market Cast</div>
         <MarketAddresses
           oracleAddress={indexedMarket.oracle}
           creatorAddress={indexedMarket.creator}
