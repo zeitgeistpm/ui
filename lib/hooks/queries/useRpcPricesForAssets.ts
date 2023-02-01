@@ -12,7 +12,7 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 
-export const rootKey = "asset-prices";
+export const rootKey = "rpc-asset-prices";
 
 export const useRpcPricesForAssets = (assets?: Array<AssetId>, at?: number) => {
   const [sdk, id] = useSdkv2();
