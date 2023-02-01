@@ -107,7 +107,6 @@ const AddressDetails = ({
   address,
   displayName,
   onInspect,
-  judgement,
 }: {
   title: string;
   address: string;
@@ -119,17 +118,6 @@ const AddressDetails = ({
     onInspect();
   };
 
-  const getJudgementColorClass = (judgement: Judgement) => {
-    if (judgement === "KnownGood" || judgement === "Reasonable") {
-      return "text-sheen-green";
-    } else if (
-      judgement === "LowQuality" ||
-      judgement === "OutOfDate" ||
-      judgement === "Erroneous"
-    ) {
-      return "text-vermilion";
-    }
-  };
   return (
     <div
       className="flex flex-col sm:flex-row items-start sm:items-center mb-ztg-18 cursor-pointer hover:bg-sky-100 ztg-transition rounded-lg p-[5px]"
@@ -144,15 +132,8 @@ const AddressDetails = ({
           <div className="flex flex-col font-medium text-ztg-16-150">
             <div className=" text-sky-600">{title}</div>
             <div className="">
-              {displayName ?? shortenAddress(address, 4, 4)}
+              {displayName ?? shortenAddress(address, 8, 8)}
             </div>
-
-            {/* todo: move this to modal */}
-            {/* <div
-              className={`text-ztg-10-150 ${getJudgementColorClass(judgement)}`}
-            >
-              {judgement?.split(/(?=[A-Z])/).join(" ")}
-            </div> */}
           </div>
         </div>
       </div>
@@ -160,10 +141,34 @@ const AddressDetails = ({
   );
 };
 
-const AddressModalHeader = ({ name }: { name: string }) => {
+const AddressModalHeader = ({
+  name,
+  judgement,
+}: {
+  name: string;
+  judgement: Judgement;
+}) => {
+  const getJudgementColorClass = (judgement: Judgement) => {
+    if (judgement === "KnownGood" || judgement === "Reasonable") {
+      return "text-sheen-green";
+    } else if (
+      judgement === "LowQuality" ||
+      judgement === "OutOfDate" ||
+      judgement === "Erroneous"
+    ) {
+      return "text-vermilion";
+    }
+  };
   return (
-    <span className="w-full mx-ztg-10 font-mono text-sunglow-2 font-medium ml-ztg-30">
-      {name}
+    <span className="w-full mx-ztg-10">
+      <span className="text-sunglow-2 font-medium ml-ztg-30">{name}</span>
+      <span
+        className={`text-ztg-10-150 mx-ztg-30 ${getJudgementColorClass(
+          judgement,
+        )}`}
+      >
+        {judgement?.split(/(?=[A-Z])/).join(" ")}
+      </span>
     </span>
   );
 };
@@ -185,14 +190,17 @@ const MarketAddresses = observer(
         <AddressInspectContent address={address} identity={identity} />,
         <>
           Address Details
-          <AddressModalHeader name={identity.displayName ?? ""} />
+          <AddressModalHeader
+            name={identity.displayName ?? ""}
+            judgement={identity.judgement}
+          />
         </>,
         { styles: { width: "70%", maxWidth: "473px" } },
       );
     };
 
     return (
-      <div className="flex gap-x-[20px] justify-center my-ztg-20">
+      <div className="flex flex-wrap gap-[20px] justify-center my-ztg-20">
         <AddressDetails
           title="Creator"
           address={creatorAddress}
