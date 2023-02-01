@@ -98,6 +98,7 @@ const DefaultLayout: FC = observer(({ children }) => {
               {store.initialized ||
               router.pathname === "/" ||
               router.pathname.split("/")[1] === "markets" ||
+              router.pathname.split("/")[1] === "portfolio" ||
               router.pathname.split("/")[1] === "liquidity" ? (
                 children
               ) : (

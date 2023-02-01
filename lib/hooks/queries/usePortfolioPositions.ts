@@ -298,12 +298,21 @@ export const usePortfolioPositions = (
         continue;
       }
 
+      const balance = userAssetBalances.get(address, assetId)?.data.balance;
       const totalIssuanceForPoolQuery = poolsTotalIssuance[pool.poolId];
+      const totalIssuanceData = poolsTotalIssuance[pool.poolId]?.data;
 
-      if (!totalIssuanceForPoolQuery.data) {
+      if (
+        !balance ||
+        isNA(balance) ||
+        !totalIssuanceForPoolQuery.data ||
+        !totalIssuanceData
+      ) {
         stillLoading = true;
         continue;
       }
+
+      const userBalance = new Decimal(balance.free.toNumber());
 
       const totalIssuance = new Decimal(
         totalIssuanceForPoolQuery.data.totalIssuance.toString(),
@@ -383,13 +392,6 @@ export const usePortfolioPositions = (
           continue;
         }
 
-        const totalIssuanceData = poolsTotalIssuance[pool.poolId]?.data;
-
-        if (!totalIssuanceData) {
-          stillLoading = true;
-          continue;
-        }
-
         const totalIssuance = new Decimal(
           totalIssuanceData.totalIssuance.toString(),
         );
@@ -419,14 +421,6 @@ export const usePortfolioPositions = (
         outcome = "Pool Share";
       }
 
-      const balance = userAssetBalances.get(address, assetId)?.data.balance;
-
-      if (!balance || isNA(balance)) {
-        stillLoading = true;
-        continue;
-      }
-
-      const userBalance = new Decimal(balance.free.toNumber());
       const change = diffChange(price, price24HoursAgo);
 
       positionsData.push({
