@@ -5,7 +5,7 @@ import MarketImage from "components/ui/MarketImage";
 import { MarketOutcomes } from "lib/types/markets";
 import MarketCardContext from "./context";
 import { motion } from "framer-motion";
-import Decimal from "decimal.js";
+import ScalarPriceRange from "../ScalarPriceRange";
 import { Users, BarChart2, Droplet } from "react-feather";
 
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
@@ -194,6 +194,8 @@ const MarketCard = ({
     baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
   };
 
+  console.log(marketType, outcomes);
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <motion.div
@@ -231,10 +233,18 @@ const MarketCard = ({
             <MarketCardInfo question={question} />
             <div className="w-full">
               {/* don't show if market type is scalar */}
-              {!marketType?.scalar && (
+              {!marketType?.scalar ? (
                 <MarketCardPredictionBar
                   volume={volume}
                   prediction={prediction}
+                />
+              ) : (
+                <ScalarPriceRange
+                  scalarType="number"
+                  lowerBound={Number(marketType?.scalar?.[1])}
+                  upperBound={Number(marketType?.scalar?.[0])}
+                  shortPrice={outcomes[1].price}
+                  longPrice={outcomes[0].price}
                 />
               )}
             </div>
