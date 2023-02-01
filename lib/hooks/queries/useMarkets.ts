@@ -49,7 +49,7 @@ const orderByMap = {
 
 export type QueryMarketData = Market<IndexerContext> & {
   outcomes: MarketOutcomes;
-  prediction: string;
+  prediction: string | [string, number];
 };
 
 export const useMarkets = (
@@ -107,7 +107,6 @@ export const useMarkets = (
         m.pool != null
           ? getCurrentPrediction(marketOutcomes, m as any)
           : "None";
-
       resMarkets = [
         ...resMarkets,
         { ...m, outcomes: marketOutcomes, prediction },

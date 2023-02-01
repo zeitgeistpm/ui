@@ -16,7 +16,7 @@ export interface IndexedMarketCardData {
   creation: string;
   outcomes: MarketOutcomes;
   marketType: { categorical?: string; scalar?: string[] };
-  prediction: string;
+  prediction: string | [string, number];
   volume: number;
   baseAsset: string;
   tags: string[];
@@ -61,31 +61,30 @@ const MarketCardTags = ({ tags }: { tags: string[] }) => {
 };
 
 const MarketCardPredictionBar = ({
-  details,
+  prediction,
   volume,
 }: {
-  details: { price: number; name: string };
+  prediction: string | [string, number];
   volume: number;
 }) => {
-  if (details) {
+  if (prediction) {
     //if details are still loading then render skeleton
-    const { price, name } = details;
-
+    const impliedPercentage = Math.round(Number(prediction[1]) * 100);
     return (
       <>
         <div className="text-sm flex justify-between mb-1">
-          <span className="text-blue">{name}</span>
-          <span className="text-gray-500">{price}%</span>
+          <span className="text-blue">{prediction[0]}</span>
+          <span className="text-gray-500">{impliedPercentage}%</span>
         </div>
         <div className="w-full rounded-lg h-1.5 bg-gray-200">
           <div
             className={`rounded-lg h-full transition-all bg-blue`}
-            style={{ width: `${price}%` }}
+            style={{ width: `${impliedPercentage}%` }}
           />
         </div>
       </>
     );
-  } else if (!details && volume <= 0) {
+  } else if (!prediction && volume <= 0) {
     // for markets with no liquidity
     return (
       <>
@@ -156,6 +155,7 @@ const MarketCard = ({
   creation,
   outcomes,
   marketType,
+  prediction,
   volume,
   baseAsset,
   width,
@@ -164,28 +164,6 @@ const MarketCard = ({
   status,
   className = "",
 }: MarketCardProps) => {
-  const { data: spotPrices } = useMarketSpotPrices(marketId);
-  const currentTime = new Date();
-  //returns highest implied percentage for market to display in progress bar
-  const getImplied = () => {
-    if (spotPrices) {
-      const totalAssetPrice = Array.from(spotPrices.values()).reduce(
-        (val, cur) => val.plus(cur),
-        new Decimal(0),
-      );
-      const assetPrices = outcomes.map((outcome) => {
-        return {
-          price: Math.round((outcome.price / totalAssetPrice.toNumber()) * 100),
-          name: outcome.name,
-        };
-      });
-      const highestAsset = assetPrices.reduce((highest, asset) =>
-        highest.price > asset.price ? highest : asset,
-      );
-      return highestAsset;
-    }
-  };
-
   const hasEnded = () => {
     const currentTime = new Date();
     const endTime = Number(endDate);
@@ -256,7 +234,7 @@ const MarketCard = ({
               {!marketType?.scalar && (
                 <MarketCardPredictionBar
                   volume={volume}
-                  details={getImplied()}
+                  prediction={prediction}
                 />
               )}
             </div>

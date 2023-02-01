@@ -109,7 +109,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const [markets, setMarkets] = useState<
     (IndexedMarket<Context> & {
       outcomes: MarketOutcomes;
-      prediction: string;
+      prediction: string | [string, number];
     })[]
   >();
 
