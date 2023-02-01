@@ -264,7 +264,6 @@ const Market: NextPage<{
           marketStore={marketStore}
           onPoolDeployed={handlePoolDeployed}
         />
-
         <div className="sub-header my-ztg-40 text-center">Market Cast</div>
         <MarketAddresses
           oracleAddress={indexedMarket.oracle}
