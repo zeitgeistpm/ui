@@ -107,7 +107,6 @@ const AddressDetails = ({
   address,
   displayName,
   onInspect,
-  judgement,
 }: {
   title: string;
   address: string;
@@ -119,6 +118,36 @@ const AddressDetails = ({
     onInspect();
   };
 
+  return (
+    <div
+      className="flex flex-col sm:flex-row items-start sm:items-center mb-ztg-18 cursor-pointer hover:bg-sky-100 ztg-transition rounded-lg p-[5px]"
+      onClick={handleInspectClick}
+      data-test="inspectButton"
+    >
+      <div className="flex items-center">
+        <div className="flex justify-center items-center pl-ztg-6 pr-ztg-10">
+          <div className="w-ztg-40 h-ztg-40 rounded-full bg-white overflow-hidden text-ztg-14-150 mr-[15px]">
+            <Avatar address={address} size={40} />
+          </div>
+          <div className="flex flex-col font-medium text-ztg-16-150">
+            <div className=" text-sky-600">{title}</div>
+            <div className="">
+              {displayName ?? shortenAddress(address, 8, 8)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AddressModalHeader = ({
+  name,
+  judgement,
+}: {
+  name: string;
+  judgement: Judgement;
+}) => {
   const getJudgementColorClass = (judgement: Judgement) => {
     if (judgement === "KnownGood" || judgement === "Reasonable") {
       return "text-sheen-green";
@@ -131,42 +160,15 @@ const AddressDetails = ({
     }
   };
   return (
-    <div className="flex flex-col sm:flex-row items-start sm:items-center mb-ztg-18 ">
-      <div className=" font-bold text-ztg-14-150 mr-[20px] mb-ztg-15 sm:mb-0">
-        {title}
-      </div>
-      <div className="flex items-center">
-        <div className="flex justify-center items-center pl-ztg-6 pr-ztg-10 h-ztg-40 mr-ztg-17 ">
-          <div className="w-ztg-30 h-ztg-30 rounded-full bg-white mr-ztg-10 overflow-hidden text-ztg-14-150 font-mono">
-            <Avatar address={address} />
-          </div>
-          <div className="flex flex-col">
-            <div className="font-mono">
-              {displayName ?? shortenAddress(address, 4, 4)}
-            </div>
-            <div
-              className={`text-ztg-10-150 ${getJudgementColorClass(judgement)}`}
-            >
-              {judgement?.split(/(?=[A-Z])/).join(" ")}
-            </div>
-          </div>
-        </div>
-        <button
-          onClick={handleInspectClick}
-          className="text-white bg-border-dark rounded-ztg-50 text-ztg-10-150 w-[60px]  h-[20px] "
-          data-test="inspectButton"
-        >
-          Inspect
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const AddressModalHeader = ({ name }: { name: string }) => {
-  return (
-    <span className="w-full mx-ztg-10 font-mono text-sunglow-2 font-medium ml-ztg-30">
-      {name}
+    <span className="w-full mx-ztg-10">
+      <span className="text-sunglow-2 font-medium ml-ztg-30">{name}</span>
+      <span
+        className={`text-ztg-10-150 mx-ztg-30 ${getJudgementColorClass(
+          judgement,
+        )}`}
+      >
+        {judgement?.split(/(?=[A-Z])/).join(" ")}
+      </span>
     </span>
   );
 };
@@ -188,14 +190,17 @@ const MarketAddresses = observer(
         <AddressInspectContent address={address} identity={identity} />,
         <>
           Address Details
-          <AddressModalHeader name={identity.displayName ?? ""} />
+          <AddressModalHeader
+            name={identity.displayName ?? ""}
+            judgement={identity.judgement}
+          />
         </>,
         { styles: { width: "70%", maxWidth: "473px" } },
       );
     };
 
     return (
-      <div className="flex flex-col my-ztg-20">
+      <div className="flex flex-wrap gap-[20px] justify-center my-ztg-20">
         <AddressDetails
           title="Creator"
           address={creatorAddress}
