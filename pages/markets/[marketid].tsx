@@ -158,6 +158,7 @@ const Market: NextPage<{
 
   //required to fix title element warning
   const question = indexedMarket.question;
+  console.log(indexedMarket.description);
 
   return (
     <>
@@ -254,12 +255,18 @@ const Market: NextPage<{
             />
           </div>
         )}
-        <div className="sub-header mt-ztg-40 mb-ztg-15">About Market</div>
-        {<QuillViewer value={indexedMarket.description} />}
+        {indexedMarket.description?.length > 0 && (
+          <>
+            <div className="sub-header mt-ztg-40 mb-ztg-15">About Market</div>
+            <QuillViewer value={indexedMarket.description} />
+          </>
+        )}
         <PoolDeployer
           marketStore={marketStore}
           onPoolDeployed={handlePoolDeployed}
         />
+
+        <div className="sub-header mt-ztg-40 mb-ztg-15">Market Cast</div>
         <MarketAddresses
           oracleAddress={indexedMarket.oracle}
           creatorAddress={indexedMarket.creator}
