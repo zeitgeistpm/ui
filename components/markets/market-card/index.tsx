@@ -1,17 +1,14 @@
 import Link from "next/link";
-import React, { useState } from "react";
+import React from "react";
 import { Skeleton } from "@material-ui/lab";
 import MarketImage from "components/ui/MarketImage";
 import { MarketOutcomes } from "lib/types/markets";
-import MarketCardOverlay from "./overlay";
 import MarketCardContext from "./context";
 import { motion } from "framer-motion";
 import Decimal from "decimal.js";
 import { Users, BarChart2, Droplet } from "react-feather";
 
-import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
-import { assetPrefix } from "next.config";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -19,7 +16,7 @@ export interface IndexedMarketCardData {
   question: string;
   creation: string;
   outcomes: MarketOutcomes;
-  marketType: string;
+  marketType: { categorical?: string; scalar?: string[] };
   prediction: string;
   volume: number;
   baseAsset: string;
@@ -65,75 +62,89 @@ const MarketCardTags = ({ tags }: { tags: string[] }) => {
   );
 };
 
+const MarketCardPredictionBar = ({
+  details,
+  volume,
+}: {
+  details: { price: number; name: string };
+  volume: number;
+}) => {
+  if (details) {
+    const { price, name } = details;
+
+    return (
+      <>
+        <div className="text-sm flex justify-between mb-1">
+          <span className="text-blue">{name}</span>
+          <span className="text-gray-500">{price}</span>
+        </div>
+        <div className="w-full rounded-lg h-1.5 bg-gray-200">
+          <div
+            className={`rounded-lg h-full transition-all bg-blue`}
+            style={{ width: `${price}%` }}
+          />
+        </div>
+      </>
+    );
+  } else if (!details && volume <= 0) {
+    // for markets with no liquidity
+    return (
+      <>
+        <div className="text-sm flex justify-between mb-1">
+          <span className="text-gray-500">No liquidity in this market</span>
+          <span className="text-gray-500">0%</span>
+        </div>
+        <div className="w-full rounded-lg h-1.5 bg-gray-200"></div>
+      </>
+    );
+  } else {
+    return <Skeleton height={30} width="100%" variant="rect" />;
+  }
+};
+
 const MarketCardDetails = ({
   rows,
 }: {
   rows: {
-    getImplied: () => { price: number; name: string };
     volume: number;
     baseAsset: string;
     outcomes: number;
     endDate: string;
-    marketType: string;
+    marketType: { categorical?: string; scalar?: string[] };
   };
 }) => {
-  if (rows.getImplied()) {
-    const { price, name } = rows.getImplied();
-    return (
-      <div className="w-full">
-        {/* don't show if market type is scalar */}
-        {!rows.marketType?.scalar && (
-          <>
-            <div className="text-sm flex justify-between mb-1">
-              <span className="text-blue">{name}</span>
-              <span className="text-gray-500">{price}</span>
-            </div>
-            <div className="w-full rounded-lg h-1.5 bg-gray-200">
-              <div
-                className={`rounded-lg h-full transition-all bg-blue`}
-                style={{ width: `${price}%` }}
-              />
-            </div>
-          </>
-        )}
-        <div className="text-xs my-2.5">
-          <span className="font-semibold">{rows.outcomes} outcomes</span>
-          <span>
-            {rows.endDate &&
-              ` | Ends ${new Date(Number(rows?.endDate)).toLocaleString(
-                "en-US",
-                {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                },
-              )}`}
-          </span>
-        </div>
-        <div className="flex gap-2.5 text-sm">
-          {/* TODO: add market particpants and liquidity once added to indexer */}
-          {/* <div className="flex items-center gap-2">
+  return (
+    <div>
+      <div className="text-xs my-2.5">
+        <span className="font-semibold">{rows.outcomes} outcomes</span>
+        <span>
+          {rows.endDate &&
+            ` | Ends ${new Date(Number(rows?.endDate)).toLocaleString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}`}
+        </span>
+      </div>
+      <div className="flex gap-2.5 text-sm">
+        {/* TODO: add market particpants and liquidity once added to indexer */}
+        {/* <div className="flex items-center gap-2">
             <Users size={18} />
             <span>223</span>
           </div> */}
-          <div className="flex items-center gap-2">
-            <BarChart2 size={18} />
-            <span>
-              {rows.volume} {rows.baseAsset}
-            </span>
-          </div>
-          {/* <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          <BarChart2 size={18} />
+          <span>
+            {rows.volume} {rows.baseAsset}
+          </span>
+        </div>
+        {/* <div className="flex items-center gap-2">
             <Droplet size={18} />
             <span>223K ZTG</span>
           </div> */}
-        </div>
       </div>
-    );
-  } else if (rows.volume <= 0) {
-    return <></>;
-  } else {
-    return <Skeleton height={86} width="100%" variant="rect" />;
-  }
+    </div>
+  );
 };
 
 const MarketCard = ({
@@ -152,7 +163,6 @@ const MarketCard = ({
   className = "",
 }: MarketCardProps) => {
   const { data: spotPrices } = useMarketSpotPrices(marketId);
-
   const getImplied = () => {
     if (spotPrices) {
       const totalAssetPrice = Array.from(spotPrices.values()).reduce(
@@ -174,7 +184,6 @@ const MarketCard = ({
   };
   const infoRows = {
     marketType: marketType,
-    getImplied: getImplied,
     endDate: endDate,
     outcomes: outcomes.length,
     volume: volume,
@@ -194,6 +203,7 @@ const MarketCard = ({
   const isVerified = () => {
     return creation === "Advised" && status === "Proposed" ? true : false;
   };
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <motion.div
@@ -229,6 +239,15 @@ const MarketCard = ({
               </div>
             </div>
             <MarketCardInfo question={question} />
+            <div className="w-full">
+              {/* don't show if market type is scalar */}
+              {!marketType?.scalar && (
+                <MarketCardPredictionBar
+                  volume={volume}
+                  details={getImplied()}
+                />
+              )}
+            </div>
             <MarketCardDetails rows={infoRows} />
           </Link>
         </div>
