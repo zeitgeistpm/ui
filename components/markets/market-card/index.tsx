@@ -47,11 +47,17 @@ const MarketCardInfo = ({ question }: { question: string }) => {
 
 const MarketCardTags = ({ tags }: { tags: string[] }) => {
   return (
-    <div>
-      {tags.map((tag) => {
-        return <Pill value={tag} classes="text-blue-dark bg-blue-light" />;
+    <>
+      {tags.map((tag, index) => {
+        return (
+          <Pill
+            key={index}
+            value={tag}
+            classes="text-blue-dark bg-blue-light"
+          />
+        );
       })}
-    </div>
+    </>
   );
 };
 
