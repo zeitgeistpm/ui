@@ -38,11 +38,8 @@ const Portfolio: NextPage = observer(() => {
   return (
     <>
       <InfoBoxes />
-
-      <h2 className="header text-xs font-bold mb-8">Portfolio</h2>
-
       <Tab.Group>
-        <Tab.List className="flex center mb-14">
+        <Tab.List className="flex center my-14">
           <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
             Portfolio
           </Tab>
@@ -66,11 +63,31 @@ const Portfolio: NextPage = observer(() => {
 
               <Tab.Group>
                 <Tab.List className="flex center mb-14">
-                  <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
-                    By Markets
+                  <Tab className="text-lg px-4">
+                    {({ selected }) => (
+                      <div
+                        className={
+                          selected
+                            ? "font-bold text-gray-800 transition-all"
+                            : "text-gray-500 transition-all"
+                        }
+                      >
+                        by
+                      </div>
+                    )}
                   </Tab>
-                  <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
-                    Subsidy
+                  <Tab className="text-lg px-4">
+                    {({ selected }) => (
+                      <div
+                        className={
+                          selected
+                            ? "font-bold text-gray-800 transition-all"
+                            : "text-gray-500 transition-all"
+                        }
+                      >
+                        Subsidy
+                      </div>
+                    )}
                   </Tab>
                 </Tab.List>
 
