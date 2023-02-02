@@ -120,9 +120,9 @@ const Market: NextPage<{
   const poolStore = usePoolsStore();
   const marketImageUrl = useMarketImageUrl(indexedMarket.img);
 
-  const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket(
-    Number(marketid),
-  );
+  const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
+    marketId: Number(marketid),
+  });
   const { data: marketStage } = useMarketStage(marketSdkv2);
 
   const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
@@ -254,12 +254,17 @@ const Market: NextPage<{
             />
           </div>
         )}
-        <div className="sub-header mt-ztg-40 mb-ztg-15">About Market</div>
-        {<QuillViewer value={indexedMarket.description} />}
+        {indexedMarket.description?.length > 0 && (
+          <>
+            <div className="sub-header mt-ztg-40 mb-ztg-15">About Market</div>
+            <QuillViewer value={indexedMarket.description} />
+          </>
+        )}
         <PoolDeployer
           marketStore={marketStore}
           onPoolDeployed={handlePoolDeployed}
         />
+        <div className="sub-header my-ztg-40 text-center">Market Cast</div>
         <MarketAddresses
           oracleAddress={indexedMarket.oracle}
           creatorAddress={indexedMarket.creator}

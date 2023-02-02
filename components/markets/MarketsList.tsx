@@ -9,7 +9,7 @@ import { X } from "react-feather";
 import { useRouter } from "next/router";
 import { debounce } from "lodash";
 import { useStore } from "lib/stores/Store";
-import { useMarkets } from "lib/hooks/queries/useMarkets";
+import { useInfiniteMarkets } from "lib/hooks/queries/useInfiniteMarkets";
 import { MarketOutcomes } from "lib/types/markets";
 import { useContentScrollTop } from "components/context/ContentDimensionsContext";
 import { useContentWidth } from "components/context/ContentDimensionsContext";
@@ -89,7 +89,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     isLoading,
     hasNextPage,
     fetchNextPage,
-  } = useMarkets(orderBy, withLiquidityOnly, filters);
+  } = useInfiniteMarkets(orderBy, withLiquidityOnly, filters);
 
   useEffect(
     debounce(() => {

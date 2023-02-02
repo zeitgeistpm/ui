@@ -51,7 +51,7 @@ const MarketAssetDetails = observer(
     const navigationStore = useNavigationStore();
     const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
-    const { data: market } = useMarket(marketId);
+    const { data: market } = useMarket({ marketId });
     const { data: spotPrices } = useMarketSpotPrices(marketId);
     const { data: priceChanges } = useMarket24hrPriceChanges(marketId);
 
@@ -150,7 +150,6 @@ const MarketAssetDetails = observer(
                       market.pool.weights[index].assetId,
                     ).unwrap() as any
                   }
-                  assetTicker={ticker}
                 />
               ),
             },

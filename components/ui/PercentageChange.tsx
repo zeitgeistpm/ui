@@ -17,11 +17,11 @@ const PercentageChange = ({ change }: { change: string }) => {
 
       {Number(change) < 0 ? (
         <svg
+          className="rotate-180"
           width="10"
           height="8"
           viewBox="0 0 10 8"
           fill="none"
-          transform="rotate(180)"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path d="M5 0L9.33013 7.5H0.669873L5 0Z" fill="#FF0054" />
