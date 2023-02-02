@@ -50,6 +50,7 @@ const marketQuery = gql`
         end
       }
       status
+      scalarType
     }
   }
 `;
@@ -101,6 +102,7 @@ const getTrendingMarkets = async (
           };
           tags: [];
           status: string;
+          scalarType: string | null;
           period: { end: string };
         }[];
       }>(marketQuery, {
@@ -147,6 +149,7 @@ const getTrendingMarkets = async (
         marketType: market.marketType,
         tags: market.tags,
         status: market.status,
+        scalarType: market.scalarType,
         endDate: market.period.end,
       };
 

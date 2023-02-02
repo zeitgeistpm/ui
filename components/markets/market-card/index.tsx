@@ -7,7 +7,6 @@ import MarketCardContext from "./context";
 import { motion } from "framer-motion";
 import ScalarPriceRange from "../ScalarPriceRange";
 import { Users, BarChart2, Droplet } from "react-feather";
-import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
@@ -15,8 +14,8 @@ export interface IndexedMarketCardData {
   creation: string;
   outcomes: MarketOutcomes;
   marketType: { categorical?: string; scalar?: string[] };
-  scalarType: string | ScalarRangeType;
-  prediction: string | { name: string; price: number };
+  scalarType: string | null;
+  prediction: { name: string; price: number };
   volume: number;
   baseAsset: string;
   tags: string[];
@@ -64,7 +63,7 @@ const MarketCardPredictionBar = ({
   prediction,
   volume,
 }: {
-  prediction: string | { name: string; price: number };
+  prediction: { name: string; price: number };
   volume: number;
 }) => {
   if (prediction) {
@@ -194,7 +193,7 @@ const MarketCard = ({
     volume: volume,
     baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
   };
-
+  console.log(scalarType);
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <motion.div
@@ -231,19 +230,18 @@ const MarketCard = ({
             </div>
             <MarketCardInfo question={question} />
             <div className="w-full">
-              {/* don't show if market type is scalar */}
-              {!marketType?.scalar ? (
-                <MarketCardPredictionBar
-                  volume={volume}
-                  prediction={prediction}
-                />
-              ) : (
+              {scalarType ? (
                 <ScalarPriceRange
                   scalarType={scalarType}
                   lowerBound={Number(marketType?.scalar?.[1])}
                   upperBound={Number(marketType?.scalar?.[0])}
                   shortPrice={outcomes[1].price}
                   longPrice={outcomes[0].price}
+                />
+              ) : (
+                <MarketCardPredictionBar
+                  volume={volume}
+                  prediction={prediction}
                 />
               )}
             </div>

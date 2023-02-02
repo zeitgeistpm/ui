@@ -49,6 +49,7 @@ const marketQuery = gql`
         end
       }
       status
+      scalarType
     }
   }
 `;
@@ -84,6 +85,7 @@ const getFeaturedMarkets = async (
           question: string;
           creation: MarketCreation;
           marketType: { [key: string]: string };
+          scalarType: string | null;
           categories: { color: string; name: string; ticker: string }[];
           outcomeAssets: string[];
           tags: [];
@@ -105,6 +107,7 @@ const getFeaturedMarkets = async (
           img: market.img,
           prediction: { name: "None", price: 0 },
           marketType: market.marketType,
+          scalarType: market.scalarType,
           volume: 0,
           baseAsset: "",
           outcomes: [],
@@ -150,6 +153,7 @@ const getFeaturedMarkets = async (
         baseAsset: pool.baseAsset,
         outcomes: marketCategories,
         marketType: market.marketType,
+        scalarType: market.scalarType,
         tags: market.tags,
         status: market.status,
         endDate: market.period.end,

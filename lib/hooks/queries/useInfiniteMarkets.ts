@@ -49,7 +49,7 @@ const orderByMap = {
 
 export type QueryMarketData = Market<IndexerContext> & {
   outcomes: MarketOutcomes;
-  prediction: string | { name: string; price: number };
+  prediction: { name: string; price: number };
 };
 
 export const useInfiniteMarkets = (
@@ -106,7 +106,7 @@ export const useInfiniteMarkets = (
       const prediction =
         m.pool != null
           ? getCurrentPrediction(marketOutcomes, m as any)
-          : "None";
+          : { name: "None", price: 0 };
       resMarkets = [
         ...resMarkets,
         { ...m, outcomes: marketOutcomes, prediction },

@@ -34,6 +34,7 @@ const marketsQuery = gql`
         end
       }
       status
+      scalarType
     }
   }
 `;
@@ -63,6 +64,7 @@ const getNewestMarkets = async (
       pool: { baseAsset: string; volume: string; poolId: number };
       tags: [];
       status: string;
+      scalarType: string | null;
       period: { end: string };
     }[];
   }>(marketsQuery);
@@ -105,6 +107,7 @@ const getNewestMarkets = async (
         baseAsset: market.pool.baseAsset,
         outcomes: marketCategories,
         marketType: market.marketType,
+        scalarType: market.scalarType,
         tags: market.tags,
         status: market.status,
         endDate: market.period.end,
