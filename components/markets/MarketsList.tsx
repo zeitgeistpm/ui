@@ -160,7 +160,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       <div className={`grid grid-cols-3 gap-[30px] ${gridColsClass}`}>
         {markets?.map((market) => {
           const volume = market.pool?.volume ?? 0;
-          //MarketsQuery in sdk listed scalarType as string | null but it is "number' | "date"
+
           return (
             <MarketCard
               marketId={market.marketId}

@@ -47,32 +47,28 @@ const MarketCardInfo = ({ question }: { question: string }) => {
 
 const MarketCardTags = ({ tags }: { tags: string[] }) => {
   return (
-    <>
-      {!tags ? (
-        <Skeleton height={20} width={100} variant="rect" className="ml-2.5" />
-      ) : (
-        tags.map((tag) => {
-          return <Pill value={tag} classes="text-blue-dark bg-blue-light" />;
-        })
-      )}
-    </>
+    <div>
+      {tags.map((tag) => {
+        return <Pill value={tag} classes="text-blue-dark bg-blue-light" />;
+      })}
+    </div>
   );
 };
 
 const MarketCardPredictionBar = ({
-  prediction,
+  prediction: { name, price },
   volume,
 }: {
   prediction: { name: string; price: number };
   volume: number;
 }) => {
-  if (prediction) {
-    //if details are still loading then render skeleton
-    const impliedPercentage = Math.round(Number(prediction[1]) * 100);
+  // check if market has liquidity
+  if (volume > 0) {
+    const impliedPercentage = Math.round(Number(price) * 100);
     return (
       <>
         <div className="text-sm flex justify-between mb-1">
-          <span className="text-blue">{prediction[0]}</span>
+          <span className="text-blue">{name}</span>
           <span className="text-gray-500">{impliedPercentage}%</span>
         </div>
         <div className="w-full rounded-lg h-1.5 bg-gray-200">
@@ -83,8 +79,7 @@ const MarketCardPredictionBar = ({
         </div>
       </>
     );
-  } else if (!prediction && volume <= 0) {
-    // for markets with no liquidity
+  } else {
     return (
       <>
         <div className="text-sm flex justify-between mb-1">
@@ -94,8 +89,6 @@ const MarketCardPredictionBar = ({
         <div className="w-full rounded-lg h-1.5 bg-gray-200"></div>
       </>
     );
-  } else {
-    return <Skeleton height={30} width="100%" variant="rect" />;
   }
 };
 
@@ -193,7 +186,7 @@ const MarketCard = ({
     volume: volume,
     baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
   };
-  console.log(scalarType);
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <motion.div
@@ -230,15 +223,16 @@ const MarketCard = ({
             </div>
             <MarketCardInfo question={question} />
             <div className="w-full">
-              {scalarType ? (
-                <ScalarPriceRange
-                  scalarType={scalarType}
-                  lowerBound={Number(marketType?.scalar?.[1])}
-                  upperBound={Number(marketType?.scalar?.[0])}
-                  shortPrice={outcomes[1].price}
-                  longPrice={outcomes[0].price}
-                />
-              ) : (
+              {scalarType ? null : (
+                // (
+                //   <ScalarPriceRange
+                //     scalarType={scalarType}
+                //     lowerBound={Number(marketType?.scalar?.[1])}
+                //     upperBound={Number(marketType?.scalar?.[0])}
+                //     shortPrice={outcomes[1].price}
+                //     longPrice={outcomes[0].price}
+                //   />
+                // )
                 <MarketCardPredictionBar
                   volume={volume}
                   prediction={prediction}

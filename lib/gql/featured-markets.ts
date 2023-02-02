@@ -5,6 +5,8 @@ import { ZTG } from "lib/constants";
 import { IndexedMarketCardData } from "components/markets/market-card/index";
 import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
 import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
+import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
+
 import { getCurrentPrediction } from "lib/util/assets";
 
 const getMarketIdsFromEnvVar = () => {
@@ -85,7 +87,7 @@ const getFeaturedMarkets = async (
           question: string;
           creation: MarketCreation;
           marketType: { [key: string]: string };
-          scalarType: string | null;
+          scalarType: ScalarRangeType | null;
           categories: { color: string; name: string; ticker: string }[];
           outcomeAssets: string[];
           tags: [];

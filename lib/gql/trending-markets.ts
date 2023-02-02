@@ -5,6 +5,7 @@ import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS, ZTG } from "lib/constants";
 import { MarketOutcomes, MarketOutcome } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
+import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
 
 const poolChangesQuery = gql`
   query PoolChanges($start: DateTime, $end: DateTime) {
@@ -102,7 +103,7 @@ const getTrendingMarkets = async (
           };
           tags: [];
           status: string;
-          scalarType: string | null;
+          scalarType: ScalarRangeType | null;
           period: { end: string };
         }[];
       }>(marketQuery, {

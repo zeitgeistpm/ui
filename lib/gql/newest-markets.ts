@@ -5,6 +5,7 @@ import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 import { MarketOutcomes, MarketOutcome } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
+import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
 
 const marketsQuery = gql`
   query Market {
@@ -64,7 +65,7 @@ const getNewestMarkets = async (
       pool: { baseAsset: string; volume: string; poolId: number };
       tags: [];
       status: string;
-      scalarType: string | null;
+      scalarType: ScalarRangeType | null;
       period: { end: string };
     }[];
   }>(marketsQuery);
