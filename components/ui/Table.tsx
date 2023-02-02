@@ -4,13 +4,7 @@ import { useEvent } from "lib/hooks";
 import { useStore } from "lib/stores/Store";
 import { formatNumberLocalized } from "lib/util";
 import { observer } from "mobx-react-lite";
-import {
-  MutableRefObject,
-  ReactNode,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { ArrowDown } from "react-feather";
 import { useTable } from "react-table";
 import { AmountInput } from "./inputs";
@@ -135,7 +129,7 @@ const Cell = observer(
     if (value == null) {
       return (
         <td
-          className={` font-bold text-ztg-12-150 text-center ${base}`}
+          className={`font-semibold text-ztg-12-150 text-center ${base}`}
           onClick={onClick}
           style={style}
         >
@@ -149,7 +143,7 @@ const Cell = observer(
       case "text":
         return (
           <td
-            className={` font-bold text-ztg-14-150 text-center ${base}`}
+            className={`font-semibold text-ztg-14-150 text-center ${base}`}
             data-test="outcomeText"
             onClick={onClick}
             style={style}
@@ -160,7 +154,7 @@ const Cell = observer(
       case "number":
         return (
           <td
-            className={`font-mono font-bold text-ztg-12-150 text-right ${base}`}
+            className={`font-mono font-semibold text-ztg-12-150 text-right ${base}`}
             onClick={onClick}
             style={style}
           >
@@ -194,7 +188,7 @@ const Cell = observer(
       case "paragraph":
         return (
           <td
-            className={` font-bold text-ztg-12-150 text-left ${base}`}
+            className={` font-semibold text-ztg-12-150 text-left ${base}`}
             onClick={onClick}
             style={style}
           >
@@ -242,7 +236,7 @@ const Cell = observer(
                   style={{ background: value.color }}
                 ></div>
                 <div
-                  className="font-bold text-ztg-16-150 uppercase"
+                  className="font-semibold text-ztg-16-150 uppercase"
                   data-test="tokenText"
                 >
                   {value.label}
@@ -261,7 +255,7 @@ const Cell = observer(
                   src={value.url}
                   loading="lazy"
                 />
-                <span className="font-bold text-ztg-10-150 text-sky-600 uppercase">
+                <span className="font-semibold text-ztg-10-150 text-sky-600 uppercase">
                   {value.label}
                 </span>
               </div>
@@ -271,7 +265,7 @@ const Cell = observer(
       case "percentage":
         return (
           <td
-            className={`font-mono text-ztg-14-150 text-right font-bold ${base}`}
+            className={`font-mono text-ztg-14-150 text-right font-semibold ${base}`}
             onClick={onClick}
             style={style}
           >
@@ -282,7 +276,7 @@ const Cell = observer(
         if (isAmountInput(value)) {
           return (
             <td
-              className={`font-mono text-ztg-14-150 text-right font-bold ${base}`}
+              className={`font-mono text-ztg-14-150 text-right font-semibold ${base}`}
               onClick={onClick}
               style={style}
             >
@@ -343,8 +337,7 @@ const Table = observer(
     }, [loadMoreRef, loadMoreInView, loadMoreThresholdIndex, data]);
 
     const getHeaderClass = (column: TableColumn) => {
-      const base =
-        "px-ztg-15 text-ztg-10-150  uppercase font-bold text-sky-600";
+      const base = "px-ztg-15 text-sky-600 font-semibold text-ztg-12-150";
 
       if (column.alignment) {
         return `${column.alignment} ${base}`;
@@ -448,17 +441,21 @@ const Table = observer(
                 }
               >
                 <thead>
-                  <tr>
+                  <tr className="bg-sky-100 h-[50px]">
                     {columns.map((column, index) => (
                       <th
                         key={index}
-                        className={getHeaderClass(column)}
+                        className={`${getHeaderClass(column)} ${
+                          index == 0 ? "rounded-tl-md" : ""
+                        } ${
+                          index == columns.length - 1 ? "rounded-tr-md" : ""
+                        }`}
                         style={column.width ? { width: column.width } : {}}
                       >
                         <div
-                          className={`-mb-ztg-10 ${
+                          className={`${
                             column.onSort ? "flex justify-center" : ""
-                          } `}
+                          }`}
                         >
                           {column.header}
                           {column.onSort ? (
@@ -487,10 +484,7 @@ const Table = observer(
                         }
                         key={row.id}
                         className={`
-                    ${
-                      rowColorClass ??
-                      "bg-sky-100 dark:bg-black hover:bg-light-hover dark:hover:bg-dark-hover"
-                    }
+                    ${rowColorClass}
                     ${onRowClick ? "cursor-pointer" : ""} mx-ztg-5`}
                         onClick={() => handleRowClick(row)}
                       >

@@ -28,7 +28,7 @@ const FullSetButtons = observer(({ marketId }: { marketId: number }) => {
     );
   };
 
-  const { data: market } = useMarket(marketId);
+  const { data: market } = useMarket({ marketId });
   const enabled = useMarketIsTradingEnabled(market);
 
   return (

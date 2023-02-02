@@ -363,5 +363,8 @@ module.exports = {
       borderWidth: ["first"],
     },
   },
-  plugins: [require("@tailwindcss/line-clamp")],
+  plugins: [
+    require("@tailwindcss/line-clamp"),
+    require("@headlessui/tailwindcss"),
+  ],
 };

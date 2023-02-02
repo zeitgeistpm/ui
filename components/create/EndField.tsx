@@ -48,7 +48,7 @@ const EndTypeSwitch: FC<EndTypeSwitchProps> = ({ selected, onChange }) => {
 export interface EndFieldProps {
   className?: string;
   onEndTypeChange: (endType: EndType) => void;
-  onEndChange: (end: number) => void;
+  onEndChange: (end: string) => void;
   endType: EndType;
   form?: Form;
   value: string;
@@ -90,7 +90,7 @@ const EndField: FC<EndFieldProps> = observer(
               min={blockNumber}
               step={1}
               onChange={(e) => {
-                onEndChange(parseInt(e.target.value));
+                onEndChange(e.target.value);
               }}
             />
           ) : (
@@ -98,7 +98,7 @@ const EndField: FC<EndFieldProps> = observer(
               onChange={onEndChange}
               name={timestampFieldName}
               form={form}
-              timestamp={+value}
+              timestamp={value}
             />
           )}
         </div>

@@ -52,7 +52,7 @@ export type QueryMarketData = Market<IndexerContext> & {
   prediction: string;
 };
 
-export const useMarkets = (
+export const useInfiniteMarkets = (
   orderBy: MarketsOrderBy,
   withLiquidityOnly = false,
   filters?: MarketFilter[],
