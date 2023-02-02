@@ -4,7 +4,6 @@ import MobxReactForm from "mobx-react-form";
 import { ChevronRight } from "react-feather";
 import { observer } from "mobx-react";
 import Link from "next/link";
-import Image from "next/image";
 
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { defaultOptions, defaultPlugins } from "lib/form";
@@ -114,13 +113,6 @@ const Footer = observer(() => {
     <div className="mx-auto max-w-screen-2xl flex flex-col pb-32">
       <div className="flex justify-between gap-5 mb-8 md:mb-16">
         <FooterNewsletterSub title="Subscribe to Newsletter" />
-        <Image
-          src="/footer-image.png"
-          alt="droid robot"
-          width={100}
-          height={100}
-          className="hidden lg:block mx-12 h-fit"
-        />
         <div className="hidden md:flex justify-between gap-5 w-full ">
           <FooterMenu
             title="General"

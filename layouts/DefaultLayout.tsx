@@ -91,6 +91,7 @@ const DefaultLayout: FC = observer(({ children }) => {
           ref={mainRef}
         >
           <div className="max-w-ztg-1100 mx-auto py-0 px-ztg-32 pt-ztg-14 w-full">
+            {/* {router.pathname === "/" && <HeroSlider />} */}
             <ContentDimensionsProvider
               scrollTop={scrollTop}
               scrollTo={scrollTo}
