@@ -1,3 +1,4 @@
+import PoolTable from "components/liquidity/PoolTable";
 import LiquidityPill from "components/markets/LiquidityPill";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
@@ -243,6 +244,7 @@ const Market: NextPage<{
           marketId={Number(marketid)}
           marketStore={marketStore}
         />
+        {marketSdkv2 && <PoolTable poolId={marketSdkv2.pool.poolId} />}
         {marketStore?.type === "scalar" && spotPrices && (
           <div className="mt-ztg-20 mb-ztg-30">
             <ScalarPriceRange

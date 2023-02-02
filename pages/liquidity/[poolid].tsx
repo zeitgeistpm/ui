@@ -5,10 +5,10 @@ import {
   NA,
   projectEndTimestamp,
 } from "@zeitgeistpm/sdk-next";
+import PoolTable from "components/liquidity/PoolTable";
 import FullSetButtons from "components/markets/FullSetButtons";
 import InfoBoxes from "components/ui/InfoBoxes";
 import Pill from "components/ui/Pill";
-import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { usePool } from "lib/hooks/queries/usePool";
@@ -20,7 +20,7 @@ import { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BarChart2, ChevronLeft, Info } from "react-feather";
 
 const PoolDetail = ({
@@ -92,8 +92,6 @@ const PoolDetails: NextPage = observer(() => {
   const store = useStore();
 
   const { ztgInfo } = store;
-  const [tableData, setTableData] = useState<TableData[]>();
-
   const poolId = Number(router.query.poolid);
 
   const [sdk, id] = useSdkv2();
@@ -113,24 +111,6 @@ const PoolDetails: NextPage = observer(() => {
     },
   );
 
-  useEffect(() => {
-    if (saturatedPoolData) {
-      const tableData = saturatedPoolData.assets.map((asset) => ({
-        token: {
-          color: asset.category.color || "#ffffff",
-          label: asset.category.ticker,
-        },
-        weights: asset.percentage,
-        poolBalance: {
-          value: asset.amount.div(ZTG).toFixed(2),
-          usdValue: 0,
-        },
-      }));
-
-      setTableData(tableData);
-    }
-  }, [saturatedPoolData]);
-
   const volume = isIndexedData(pool)
     ? new Decimal(pool.volume).div(ZTG).toFixed(2)
     : NA;
@@ -140,27 +120,6 @@ const PoolDetails: NextPage = observer(() => {
   const prediction = saturatedPoolData?.assets
     .sort((a, b) => (a.price.greaterThan(b.price) ? 1 : 0))
     .at(0);
-
-  const columns: TableColumn[] = [
-    {
-      header: "Token",
-      accessor: "token",
-      type: "token",
-      width: "29%",
-    },
-    {
-      header: "Weights",
-      accessor: "weights",
-      type: "percentage",
-      width: "8%",
-    },
-    {
-      header: "Pool Balance",
-      accessor: "poolBalance",
-      type: "currency",
-      width: "33%",
-    },
-  ];
 
   const navigateBack = () => {
     router.push("/liquidity");
@@ -257,7 +216,7 @@ const PoolDetails: NextPage = observer(() => {
           </div>
         )}
       </div>
-      <Table data={tableData} columns={columns} />
+      <PoolTable poolId={poolId} />
     </div>
   );
 });
