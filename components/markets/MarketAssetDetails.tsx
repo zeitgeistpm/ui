@@ -82,20 +82,23 @@ const MarketAssetDetails = observer(
           await store.sdk.api.query.authorized.authorizedOutcomeReports(
             marketId,
           );
+
         if (report.isEmpty === true) {
-          setAuthReportNumberOrId(null);
+          return null;
         } else {
           const reportJSON: any = report.toJSON();
-          if (reportJSON.scalar) {
-            return reportJSON.scalar;
+          if (reportJSON.outcome.scalar) {
+            return reportJSON.outcome.scalar;
           } else {
-            return reportJSON.categorical;
+            return reportJSON.outcome.categorical;
           }
         }
       };
 
-      const sub = from(fetchAuthorizedReport(marketStore.id)).subscribe((res) =>
-        setAuthReportNumberOrId(res),
+      const sub = from(fetchAuthorizedReport(marketStore.id)).subscribe(
+        (res) => {
+          setAuthReportNumberOrId(res);
+        },
       );
       return () => sub.unsubscribe();
     }, [store.sdk?.api, marketStore?.id, marketStore?.status]);
