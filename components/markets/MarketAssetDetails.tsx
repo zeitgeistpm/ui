@@ -9,21 +9,15 @@ import { useStore } from "lib/stores/Store";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { observer } from "mobx-react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { from } from "rxjs";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarket24hrPriceChanges } from "lib/hooks/queries/useMarket24hrPriceChanges";
 
 const columns: TableColumn[] = [
-  {
-    header: "Token",
-    accessor: "token",
-    type: "token",
-  },
+  { header: "Outcome", accessor: "outcome", type: "paragraph" },
   { header: "Implied %", accessor: "pre", type: "percentage" },
   { header: "Price", accessor: "totalValue", type: "currency" },
-  { header: "Outcome", accessor: "outcome", type: "text" },
   {
     header: "24Hr Change",
     accessor: "change",
@@ -115,8 +109,6 @@ const MarketAssetDetails = observer(
           : new Decimal(0);
 
         for (const [index, category] of market.categories.entries()) {
-          const ticker = category.ticker;
-          const color = category.color || "#ffffff";
           const outcomeName = category.name;
           const currentPrice = spotPrices?.get(index).toNumber();
 
@@ -126,10 +118,6 @@ const MarketAssetDetails = observer(
             {
               assetId: market.pool.weights[index].assetId,
               id: index,
-              token: {
-                color,
-                label: ticker,
-              },
               outcome: outcomeName,
               totalValue: {
                 value: currentPrice,
@@ -158,10 +146,6 @@ const MarketAssetDetails = observer(
         setTableData(tblData);
       } else {
         tblData = market.categories.map((category) => ({
-          token: {
-            color: category.color || "#ffffff",
-            label: category.ticker,
-          },
           outcome: category.name,
         }));
         setTableData(tblData);
