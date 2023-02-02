@@ -26,6 +26,7 @@ import CourtStore from "./CourtStore";
 import Wallets from "../wallets";
 
 import { Context, Sdk } from "@zeitgeistpm/sdk-next";
+import { fetchZTGPrice } from "lib/util/fetch-ztg-price";
 interface Config {
   tokenSymbol: string;
   ss58Prefix: number;
@@ -257,17 +258,16 @@ export default class Store {
   }
 
   private async fetchZTGPrice(): Promise<void> {
-    const res = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=zeitgeist&vs_currencies=usd&include_24hr_change=true",
-    );
-    const json = await res.json();
-
-    runInAction(() => {
-      this.ztgInfo = {
-        price: new Decimal(json.zeitgeist.usd),
-        change: new Decimal(json.zeitgeist.usd_24h_change),
-      };
-    });
+    try {
+      const res = await fetchZTGPrice();
+      runInAction(() => {
+        this.ztgInfo = res;
+      });
+    } catch (err) {
+      runInAction(() => {
+        this.ztgInfo = { change: new Decimal(0), price: new Decimal(0) };
+      });
+    }
   }
 
   private async loadConfig() {
