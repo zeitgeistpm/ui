@@ -49,7 +49,7 @@ const orderByMap = {
 
 export type QueryMarketData = Market<IndexerContext> & {
   outcomes: MarketOutcomes;
-  prediction: string | [string, number];
+  prediction: string | { name: string; price: number };
 };
 
 export const useMarkets = (

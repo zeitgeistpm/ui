@@ -109,7 +109,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const [markets, setMarkets] = useState<
     (IndexedMarket<Context> & {
       outcomes: MarketOutcomes;
-      prediction: string | [string, number];
+      prediction: string | { name: string; price: number };
     })[]
   >();
 
@@ -170,7 +170,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
               prediction={market.prediction}
               endDate={market.period.end}
               marketType={market.marketType}
-              // scalar={market.scalarType}
+              scalarType={market.scalarType}
               status={market.status}
               baseAsset={market.pool?.baseAsset}
               volume={new Decimal(volume).div(ZTG).toNumber()}

@@ -103,7 +103,7 @@ const getFeaturedMarkets = async (
           question: market.question,
           creation: market.creation,
           img: market.img,
-          prediction: "None",
+          prediction: { name: "None", price: 0 },
           marketType: market.marketType,
           volume: 0,
           baseAsset: "",

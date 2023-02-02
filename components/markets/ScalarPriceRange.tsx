@@ -6,7 +6,7 @@ import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import moment from "moment";
 
 interface ScalarPriceRangeProps {
-  scalarType: ScalarRangeType;
+  scalarType: string | ScalarRangeType;
   lowerBound: number;
   upperBound: number;
   shortPrice: number; //between 0 and 1
@@ -31,7 +31,7 @@ const ScalarPriceRange = observer(
     const longPosition = width * longPercentage;
 
     const showShortAndLongPrices = Math.abs(1 - shortPrice - longPrice) > 0.03;
-    const inferedType: ScalarRangeType = scalarType ?? "number";
+    const inferedType: string | ScalarRangeType = scalarType ?? "number";
 
     const dateFormat = "d/MM/D/YY, h:mm a";
 

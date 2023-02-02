@@ -15,8 +15,8 @@ export interface IndexedMarketCardData {
   creation: string;
   outcomes: MarketOutcomes;
   marketType: { categorical?: string; scalar?: string[] };
-  scalarType?: ScalarRangeType;
-  prediction: string | [string, number];
+  scalarType: string | ScalarRangeType;
+  prediction: string | { name: string; price: number };
   volume: number;
   baseAsset: string;
   tags: string[];
@@ -64,7 +64,7 @@ const MarketCardPredictionBar = ({
   prediction,
   volume,
 }: {
-  prediction: string | [string, number];
+  prediction: string | { name: string; price: number };
   volume: number;
 }) => {
   if (prediction) {
@@ -232,26 +232,20 @@ const MarketCard = ({
             <MarketCardInfo question={question} />
             <div className="w-full">
               {/* don't show if market type is scalar */}
-              {
-                !marketType?.scalar ? (
-                  <MarketCardPredictionBar
-                    volume={volume}
-                    prediction={prediction}
-                  />
-                ) : null
-                // TODO:
-                // add scalar types to feat, newest and trending markets query.
-                // follow up regarding scalarType type in sdk: string | null vs 'number' | 'date'
-                // (
-                //   <ScalarPriceRange
-                //     scalarType={scalarType}
-                //     lowerBound={Number(marketType?.scalar?.[1])}
-                //     upperBound={Number(marketType?.scalar?.[0])}
-                //     shortPrice={outcomes[1].price}
-                //     longPrice={outcomes[0].price}
-                //   />
-                // )
-              }
+              {!marketType?.scalar ? (
+                <MarketCardPredictionBar
+                  volume={volume}
+                  prediction={prediction}
+                />
+              ) : (
+                <ScalarPriceRange
+                  scalarType={scalarType}
+                  lowerBound={Number(marketType?.scalar?.[1])}
+                  upperBound={Number(marketType?.scalar?.[0])}
+                  shortPrice={outcomes[1].price}
+                  longPrice={outcomes[0].price}
+                />
+              )}
             </div>
             <MarketCardDetails rows={infoRows} />
           </Link>
