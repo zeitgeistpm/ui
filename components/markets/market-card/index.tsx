@@ -7,8 +7,7 @@ import MarketCardContext from "./context";
 import { motion } from "framer-motion";
 import ScalarPriceRange from "../ScalarPriceRange";
 import { Users, BarChart2, Droplet } from "react-feather";
-
-import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
+import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
@@ -16,6 +15,7 @@ export interface IndexedMarketCardData {
   creation: string;
   outcomes: MarketOutcomes;
   marketType: { categorical?: string; scalar?: string[] };
+  scalarType?: ScalarRangeType;
   prediction: string | [string, number];
   volume: number;
   baseAsset: string;
@@ -156,6 +156,7 @@ const MarketCard = ({
   outcomes,
   marketType,
   prediction,
+  scalarType,
   volume,
   baseAsset,
   width,
@@ -194,8 +195,6 @@ const MarketCard = ({
     baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
   };
 
-  console.log(marketType, outcomes);
-
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <motion.div
@@ -233,20 +232,26 @@ const MarketCard = ({
             <MarketCardInfo question={question} />
             <div className="w-full">
               {/* don't show if market type is scalar */}
-              {!marketType?.scalar ? (
-                <MarketCardPredictionBar
-                  volume={volume}
-                  prediction={prediction}
-                />
-              ) : (
-                <ScalarPriceRange
-                  scalarType="number"
-                  lowerBound={Number(marketType?.scalar?.[1])}
-                  upperBound={Number(marketType?.scalar?.[0])}
-                  shortPrice={outcomes[1].price}
-                  longPrice={outcomes[0].price}
-                />
-              )}
+              {
+                !marketType?.scalar ? (
+                  <MarketCardPredictionBar
+                    volume={volume}
+                    prediction={prediction}
+                  />
+                ) : null
+                // TODO:
+                // add scalar types to feat, newest and trending markets query.
+                // follow up regarding scalarType type in sdk: string | null vs 'number' | 'date'
+                // (
+                //   <ScalarPriceRange
+                //     scalarType={scalarType}
+                //     lowerBound={Number(marketType?.scalar?.[1])}
+                //     upperBound={Number(marketType?.scalar?.[0])}
+                //     shortPrice={outcomes[1].price}
+                //     longPrice={outcomes[0].price}
+                //   />
+                // )
+              }
             </div>
             <MarketCardDetails rows={infoRows} />
           </Link>

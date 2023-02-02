@@ -159,7 +159,6 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       />
       <div className={`grid grid-cols-3 gap-[30px] ${gridColsClass}`}>
         {markets?.map((market) => {
-          console.log(market);
           const volume = market.pool?.volume ?? 0;
           return (
             <MarketCard
@@ -171,6 +170,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
               prediction={market.prediction}
               endDate={market.period.end}
               marketType={market.marketType}
+              // scalar={market.scalarType}
               status={market.status}
               baseAsset={market.pool?.baseAsset}
               volume={new Decimal(volume).div(ZTG).toNumber()}
