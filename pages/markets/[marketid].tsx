@@ -38,6 +38,7 @@ import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
+import { Tab } from "@headlessui/react";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -240,11 +241,29 @@ const Market: NextPage<{
             </div>
           </div>
         )}
-        <MarketAssetDetails
-          marketId={Number(marketid)}
-          marketStore={marketStore}
-        />
-        {marketSdkv2 && <PoolTable poolId={marketSdkv2.pool.poolId} />}
+        <Tab.Group>
+          <Tab.List className="flex center my-6">
+            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+              Predictions
+            </Tab>
+            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+              Subsidy
+            </Tab>
+          </Tab.List>
+
+          <Tab.Panels>
+            <Tab.Panel>
+              <MarketAssetDetails
+                marketId={Number(marketid)}
+                marketStore={marketStore}
+              />
+            </Tab.Panel>
+            <Tab.Panel>
+              {marketSdkv2 && <PoolTable poolId={marketSdkv2.pool.poolId} />}
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
+
         {marketStore?.type === "scalar" && spotPrices && (
           <div className="mt-ztg-20 mb-ztg-30">
             <ScalarPriceRange
