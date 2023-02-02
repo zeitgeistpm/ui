@@ -58,7 +58,7 @@ export const MarketPositions = ({
           {
             header: "Outcomes",
             accessor: "outcome",
-            type: "token",
+            type: "paragraph",
             width: "130px",
           },
           {
@@ -79,7 +79,7 @@ export const MarketPositions = ({
           {
             header: "24 Hrs",
             accessor: "change",
-            type: "percentage",
+            type: "change",
           },
           {
             header: "",
@@ -89,19 +89,9 @@ export const MarketPositions = ({
           },
         ]}
         data={positions.map<TableData>(
-          ({
-            assetId,
-            price,
-            userBalance,
-            outcome,
-            color,
-            changePercentage,
-          }) => {
+          ({ assetId, price, userBalance, outcome, changePercentage }) => {
             return {
-              outcome: {
-                label: outcome,
-                color: color,
-              },
+              outcome: outcome,
               userBalance: userBalance.div(ZTG).toNumber(),
               price: {
                 value: price,
