@@ -1,5 +1,4 @@
-import { isString } from "@polkadot/util";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import { Context, isRpcSdk, Pool } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 
@@ -14,6 +13,7 @@ export const usePoolAccountIds = (pools?: Pool<Context>[]) => {
         return {
           enabled: Boolean(sdk && isRpcSdk(sdk) && pool),
           queryKey: [id, rootKey, pool?.poolId],
+          keepPreviousData: true,
           queryFn: async () => {
             if (sdk && isRpcSdk(sdk)) {
               return {

@@ -8,10 +8,10 @@
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "CommonJS",
+    "module": "ESNext",
     "moduleResolution": "node",
     "resolveJsonModule": true
   },
-  "include": ["*.ts"],
+  "include": ["*.mts"],
   "exclude": []
 }

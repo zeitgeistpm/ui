@@ -14,10 +14,12 @@ test.describe("pages open without errors", () => {
 
       const element = page.locator(`[data-testid^=${route.testId}]`).first();
       await element.waitFor();
+      await page.waitForLoadState();
 
-      expect(consoleErrors.length, `There were errors: ${consoleErrors}`).toBe(
-        0,
-      );
+      expect(
+        consoleErrors.length,
+        `There were errors: ${consoleErrors.join(", ")}`,
+      ).toBe(0);
     });
   }
 });

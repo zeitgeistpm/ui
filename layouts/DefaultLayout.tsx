@@ -12,10 +12,10 @@ import NotificationCenter from "components/ui/NotificationCenter";
 import LeftDrawer from "components/drawer/LeftDrawer";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { shouldScrollTop } from "lib/util/should-scroll";
 import dynamic from "next/dynamic";
+import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
@@ -29,7 +29,7 @@ const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 const DefaultLayout: FC = observer(({ children }) => {
   const store = useStore();
   const router = useRouter();
-  const sdk = useSdkv2();
+  useSubscribeBlockEvents();
 
   const {
     width,
@@ -90,7 +90,7 @@ const DefaultLayout: FC = observer(({ children }) => {
           className="main-container flex flex-col dark:text-white"
           ref={mainRef}
         >
-          <div className="">
+          <div className="max-w-ztg-1100 mx-auto py-0 px-ztg-32 pt-ztg-14 w-full">
             <ContentDimensionsProvider
               scrollTop={scrollTop}
               scrollTo={scrollTo}
@@ -100,6 +100,7 @@ const DefaultLayout: FC = observer(({ children }) => {
               {store.initialized ||
               router.pathname === "/" ||
               router.pathname.split("/")[1] === "markets" ||
+              router.pathname.split("/")[1] === "portfolio" ||
               router.pathname.split("/")[1] === "liquidity" ? (
                 children
               ) : (

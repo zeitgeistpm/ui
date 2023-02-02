@@ -236,7 +236,7 @@ export default class Wallets {
 
     const signer = this.wallet.signer;
 
-    return { address: this.activeAccount.address, signer: signer };
+    return { address: this.activeAccount?.address, signer: signer };
   }
 
   get testingKeyringPair(): KeyringPair | undefined {
