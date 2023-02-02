@@ -88,7 +88,7 @@ const DefaultLayout: FC = observer(({ children }) => {
           className="main-container flex flex-col dark:text-white"
           ref={mainRef}
         >
-          <div className="max-w-full 2xl:px-20% lg:px-10% xl:px-10% px-12 mx-auto py-0 pt-12 w-full ">
+          <div className="max-w-ztg-1100 mx-auto py-0 px-ztg-32 pt-ztg-14 w-full">
             <ContentDimensionsProvider
               scrollTop={scrollTop}
               scrollTo={scrollTo}
