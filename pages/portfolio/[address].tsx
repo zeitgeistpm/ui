@@ -5,6 +5,7 @@ import {
   MarketPositions,
   MarketPositionsSkeleton,
 } from "components/portfolio/MarketPositions";
+import TransactionHistoryTable from "components/portfolio/TransactionHistoryTable";
 import InfoBoxes from "components/ui/InfoBoxes";
 import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
@@ -40,95 +41,112 @@ const Portfolio: NextPage = observer(() => {
 
       <h2 className="header text-xs font-bold mb-8">Portfolio</h2>
 
-      <div className="mb-12">
-        <h3 className="font-bold text-xl mb-4">Breakdown</h3>
-        <PortfolioBreakdown
-          {...(breakdown ?? {
-            loading: true,
-          })}
-        />
-      </div>
+      <Tab.Group>
+        <Tab.List className="flex center mb-14">
+          <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+            Portfolio
+          </Tab>
+          <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+            Activity
+          </Tab>
+        </Tab.List>
+        <Tab.Panels>
+          <Tab.Panel>
+            {" "}
+            <div className="mb-12">
+              <h3 className="font-bold text-xl mb-4 text-center">Breakdown</h3>
+              <PortfolioBreakdown
+                {...(breakdown ?? {
+                  loading: true,
+                })}
+              />
+            </div>
+            <div className="mb-12">
+              <h3 className="text-3xl mb-6 text-center">Predictions</h3>
 
-      <div className="mb-12">
-        <h3 className="text-3xl mb-6 text-center">Predictions</h3>
+              <Tab.Group>
+                <Tab.List className="flex center mb-14">
+                  <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+                    By Markets
+                  </Tab>
+                  <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+                    Subsidy
+                  </Tab>
+                </Tab.List>
 
-        <Tab.Group>
-          <Tab.List className="flex center mb-14">
-            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
-              By Markets
-            </Tab>
-            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
-              Subsidy
-            </Tab>
-          </Tab.List>
+                <Tab.Panels>
+                  <Tab.Panel>
+                    {!marketPositionsByMarket || !ztgPrice
+                      ? range(0, 8).map((i) => (
+                          <MarketPositionsSkeleton className="mb-14" key={i} />
+                        ))
+                      : Object.values(marketPositionsByMarket).map(
+                          (marketPositions) => {
+                            const market = marketPositions[0].market;
 
-          <Tab.Panels>
-            <Tab.Panel>
-              {!marketPositionsByMarket || !ztgPrice
-                ? range(0, 8).map((i) => (
-                    <MarketPositionsSkeleton className="mb-14" key={i} />
-                  ))
-                : Object.values(marketPositionsByMarket).map(
-                    (marketPositions) => {
-                      const market = marketPositions[0].market;
+                            marketPositions = marketPositions.filter(
+                              (position) => position.userBalance.gt(0),
+                            );
 
-                      marketPositions = marketPositions.filter((position) =>
-                        position.userBalance.gt(0),
-                      );
+                            if (
+                              market.status === "Resolved" &&
+                              market.marketType.categorical
+                            ) {
+                              marketPositions = marketPositions.filter(
+                                (position) =>
+                                  getIndexOf(position.assetId) ===
+                                  Number(market.resolvedOutcome),
+                              );
+                            }
 
-                      if (
-                        market.status === "Resolved" &&
-                        market.marketType.categorical
-                      ) {
-                        marketPositions = marketPositions.filter(
-                          (position) =>
-                            getIndexOf(position.assetId) ===
-                            Number(market.resolvedOutcome),
-                        );
-                      }
+                            if (marketPositions.length === 0) return null;
 
-                      if (marketPositions.length === 0) return null;
+                            return (
+                              <MarketPositions
+                                key={market.marketId}
+                                className="mb-14 border-b-4 border-gray-200"
+                                market={market}
+                                usdZtgPrice={ztgPrice.price}
+                                positions={marketPositions.filter((position) =>
+                                  position.userBalance.gt(0),
+                                )}
+                              />
+                            );
+                          },
+                        )}
+                  </Tab.Panel>
 
-                      return (
-                        <MarketPositions
-                          key={market.marketId}
-                          className="mb-14 border-b-4 border-gray-200"
-                          market={market}
-                          usdZtgPrice={ztgPrice.price}
-                          positions={marketPositions.filter((position) =>
-                            position.userBalance.gt(0),
-                          )}
-                        />
-                      );
-                    },
-                  )}
-            </Tab.Panel>
-
-            <Tab.Panel>
-              {!subsidyPositionsByMarket || !ztgPrice
-                ? range(0, 8).map((i) => (
-                    <MarketPositionsSkeleton className="mb-14" key={i} />
-                  ))
-                : Object.values(subsidyPositionsByMarket).map(
-                    (subsidyPositions) => {
-                      const market = subsidyPositions[0].market;
-                      return (
-                        <MarketPositions
-                          key={market.marketId}
-                          className="mb-14 border-b-4 border-gray-200"
-                          market={market}
-                          usdZtgPrice={ztgPrice.price}
-                          positions={subsidyPositions.filter((position) =>
-                            position.userBalance.gt(0),
-                          )}
-                        />
-                      );
-                    },
-                  )}
-            </Tab.Panel>
-          </Tab.Panels>
-        </Tab.Group>
-      </div>
+                  <Tab.Panel>
+                    {!subsidyPositionsByMarket || !ztgPrice
+                      ? range(0, 8).map((i) => (
+                          <MarketPositionsSkeleton className="mb-14" key={i} />
+                        ))
+                      : Object.values(subsidyPositionsByMarket).map(
+                          (subsidyPositions) => {
+                            const market = subsidyPositions[0].market;
+                            return (
+                              <MarketPositions
+                                key={market.marketId}
+                                className="mb-14 border-b-4 border-gray-200"
+                                market={market}
+                                usdZtgPrice={ztgPrice.price}
+                                positions={subsidyPositions.filter((position) =>
+                                  position.userBalance.gt(0),
+                                )}
+                              />
+                            );
+                          },
+                        )}
+                  </Tab.Panel>
+                </Tab.Panels>
+              </Tab.Group>
+            </div>
+          </Tab.Panel>
+          <Tab.Panel>
+            <TransactionHistoryTable address={address} />
+          </Tab.Panel>
+        </Tab.Panels>
+      </Tab.Group>
     </>
   );
 });
