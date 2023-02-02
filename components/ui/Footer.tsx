@@ -110,8 +110,8 @@ const FooterMenu: FC<FooterMenuProps> = observer(
 
 const Footer = observer(() => {
   return (
-    <div className="mt-auto  text-black bg-white dark:bg-sky-1000 dark:text-white border-t-1 border-border-light dark:border-border-dark px-ztg-32">
-      <div className="mx-auto max-w-ztg-1100 flex flex-wrap pb-ztg-25 pt-ztg-30">
+    <div className="mt-auto  text-black bg-white dark:bg-sky-1000 dark:text-white border-t-1 border-border-light dark:border-border-dark">
+      <div className="mx-auto max-w-full 2xl:px-20% lg:px-10% xl:px-10% px-12 flex flex-wrap pt-12">
         <FooterMenu
           title="General"
           links={[

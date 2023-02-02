@@ -1,5 +1,6 @@
 import {
   AssetId,
+  getIndexOf,
   IndexerContext,
   isRpcSdk,
   Market,
@@ -18,17 +19,17 @@ const DisputeButton = observer(
   ({
     market,
     assetId,
-    ticker,
   }: {
     market: Market<IndexerContext>;
     assetId: AssetId;
-    ticker: string;
   }) => {
     const [sdk, id] = useSdkv2();
     const store = useStore();
     const { wallets } = store;
     const notificationStore = useNotificationStore();
     const modalStore = useModalStore();
+
+    const ticker = market.categories?.[getIndexOf(assetId)].ticker;
 
     const { data: disputes } = useMarketDisputes(market);
 
@@ -77,15 +78,13 @@ const DisputeButton = observer(
       }
     };
     return (
-      <div className="w-full flex items-center justify-center">
-        <button
-          onClick={handleClick}
-          disabled={disputeDisabled}
-          className="rounded-full h-ztg-20  text-ztg-10-150 focus:outline-none px-ztg-15 py-ztg-2 ml-auto bg-dark-yellow text-white disabled:opacity-20 disabled:cursor-default"
-        >
-          Dispute Outcome
-        </button>
-      </div>
+      <button
+        onClick={handleClick}
+        disabled={disputeDisabled}
+        className="text-blue-600 font-bold"
+      >
+        Dispute Outcome
+      </button>
     );
   },
 );

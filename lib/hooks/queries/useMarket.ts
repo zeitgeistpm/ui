@@ -7,18 +7,26 @@ import { useSdkv2 } from "../useSdkv2";
 
 export const marketsRootQuery = "markets";
 
-export const useMarket = (marketId: number) => {
+export type UseMarketFilter = { marketId: number } | { poolId: number };
+
+export const useMarket = (filter?: UseMarketFilter) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, marketsRootQuery, marketId],
+    [id, marketsRootQuery, filter],
     async () => {
       if (isIndexedSdk(sdk)) {
-        return batcher(sdk).fetch(marketId);
+        return batcher(sdk).fetch(filter);
       }
+      return null;
     },
     {
-      enabled: Boolean(sdk && isIndexedSdk(sdk)),
+      enabled: Boolean(
+        sdk &&
+          isIndexedSdk(sdk) &&
+          filter &&
+          ("marketId" in filter || "poolId" in filter),
+      ),
     },
   );
 
@@ -26,17 +34,37 @@ export const useMarket = (marketId: number) => {
 };
 
 const batcher = memoize((sdk: Sdk<IndexerContext>) => {
-  return batshit.create<FullMarketFragment, number>({
+  return batshit.create<FullMarketFragment, UseMarketFilter>({
     name: marketsRootQuery,
     fetcher: async (ids) => {
       const { markets } = await sdk.context.indexer.markets({
         where: {
-          marketId_in: ids,
+          OR: [
+            {
+              marketId_in: ids
+                .filter((id): id is { marketId: number } => "marketId" in id)
+                .map((id) => id.marketId),
+            },
+            {
+              pool: {
+                poolId_in: ids
+                  .filter((id): id is { poolId: number } => "poolId" in id)
+                  .map((id) => id.poolId),
+              },
+            },
+          ],
         },
       });
       return markets;
     },
     scheduler: batshit.windowScheduler(10),
-    resolver: batshit.keyResolver("marketId"),
+    resolver: (data, query) => {
+      if ("marketId" in query) {
+        return data.find((m) => m.marketId === query.marketId);
+      }
+      if ("poolId" in query) {
+        return data.find((m) => m.pool?.poolId === query.poolId);
+      }
+    },
   });
 });

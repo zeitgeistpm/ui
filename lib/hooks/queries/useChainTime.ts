@@ -12,6 +12,7 @@ export const useChainTimeNow = () => {
     [rootKey, id],
     async () => sdk.model.time.now(),
     {
+      keepPreviousData: true,
       enabled: Boolean(sdk) && isRpcSdk(sdk),
       refetchInterval: 12 * 1000,
     },

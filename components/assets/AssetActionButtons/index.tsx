@@ -11,13 +11,12 @@ import ReportButton from "./ReportButton";
 interface AssetActionButtonsProps {
   marketId: number;
   assetId?: ScalarAssetId | CategoricalAssetId;
-  assetTicker: string;
 }
 
 const AssetActionButtons = observer(
-  ({ marketId, assetId, assetTicker }: AssetActionButtonsProps) => {
+  ({ marketId, assetId }: AssetActionButtonsProps) => {
     const store = useStore();
-    const { data: market } = useMarket(marketId);
+    const { data: market } = useMarket({ marketId });
     const { data: marketStage } = useMarketStage(market);
 
     const userAddress = store.wallets?.getActiveSigner()?.address;
@@ -31,9 +30,7 @@ const AssetActionButtons = observer(
       marketStage.type === "OpenReportingPeriod" ||
       (marketStage.type === "OracleReportingPeriod" && isOracle)
     ) {
-      return (
-        <ReportButton market={market} assetId={assetId} ticker={assetTicker} />
-      );
+      return <ReportButton market={market} assetId={assetId} />;
     }
 
     if (marketStage.type === "Disputed") {
@@ -41,9 +38,7 @@ const AssetActionButtons = observer(
     }
 
     if (marketStage.type === "Reported") {
-      return (
-        <DisputeButton market={market} assetId={assetId} ticker={assetTicker} />
-      );
+      return <DisputeButton market={market} assetId={assetId} />;
     }
 
     if (marketStage.type === "Resolved") {
