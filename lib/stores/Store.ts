@@ -31,11 +31,9 @@ interface Config {
   ss58Prefix: number;
   blockTimeSec: number;
   markets: {
-    reportingPeriodSec: number;
     maxDisputes: number;
     disputeBond: number; // initial dispute amount
     disputeFactor: number; // increase in bond per dispute
-    disputePeriodSec: number;
     oracleBond: number;
     advisoryBond: number;
     validityBond: number;
@@ -147,11 +145,11 @@ export default class Store {
       "Enter amount greater than zero.",
     );
 
-    validatorjs.register("timestamp_gt_now", (val: number) => {
-      if (typeof val !== "number") {
+    validatorjs.register("timestamp_gt_now", (val: string) => {
+      if (typeof val !== "string") {
         return false;
       }
-      return new Date().valueOf() < val;
+      return new Date().valueOf() < Number(val);
     });
 
     validatorjs.register("gt_current_blocknum", (val: number | string) => {
@@ -194,7 +192,8 @@ export default class Store {
       runInAction(() => {
         this.initialized = true;
       });
-    } catch {
+    } catch (err) {
+      console.warn("Can't initialize Store with error: ", err);
       this.userStore.setNextBestEndpoints(
         this.userStore.endpoint,
         this.userStore.gqlEndpoint,
@@ -289,17 +288,11 @@ export default class Store {
       ss58Prefix: this.codecToNumber(consts.system.ss58Prefix),
       blockTimeSec: blockTimeSec,
       markets: {
-        reportingPeriodSec:
-          this.codecToNumber(consts.predictionMarkets.reportingPeriod) *
-          blockTimeSec,
         maxDisputes: this.codecToNumber(consts.predictionMarkets.maxDisputes),
         disputeBond:
           this.codecToNumber(consts.predictionMarkets.disputeBond) / ZTG,
         disputeFactor:
           this.codecToNumber(consts.predictionMarkets.disputeFactor) / ZTG,
-        disputePeriodSec:
-          this.codecToNumber(consts.predictionMarkets.disputePeriod) *
-          blockTimeSec,
         oracleBond:
           this.codecToNumber(consts.predictionMarkets.oracleBond) / ZTG,
         advisoryBond:
