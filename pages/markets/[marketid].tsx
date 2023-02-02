@@ -120,9 +120,9 @@ const Market: NextPage<{
   const poolStore = usePoolsStore();
   const marketImageUrl = useMarketImageUrl(indexedMarket.img);
 
-  const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket(
-    Number(marketid),
-  );
+  const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
+    marketId: Number(marketid),
+  });
   const { data: marketStage } = useMarketStage(marketSdkv2);
 
   const { data: spotPrices } = useMarketSpotPrices(Number(marketid));

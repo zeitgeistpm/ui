@@ -1,7 +1,7 @@
-import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import { OrmlTokensAccountData } from "@polkadot/types/lookup";
+import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import { AssetId, isRpcSdk, NA } from "@zeitgeistpm/sdk-next";
-import objectHash from "object-hash";
+import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
 
 export type UseAccountAssetBalances = {
@@ -48,21 +48,29 @@ export const accountAssetBalanceRootKey = "account-asset-balance";
  */
 export const useAccountAssetBalances = (
   pairs: AccountAssetIdPair[],
+  blockNumber?: number,
+  opts?: {
+    enabled?: boolean;
+  },
 ): UseAccountAssetBalances => {
   const [sdk, id] = useSdkv2();
 
   const queries = useQueries({
     queries: pairs.map((pair) => {
       return {
-        queryKey: [id, accountAssetBalanceRootKey, pair.account, pair.assetId],
+        queryKey: [
+          id,
+          accountAssetBalanceRootKey,
+          pair.account,
+          pair.assetId,
+          blockNumber,
+        ],
         queryFn: async () => {
           if (sdk && isRpcSdk(sdk)) {
+            const api = await getApiAtBlock(sdk.context.api, blockNumber);
             const balance = !pair.account
               ? NA
-              : await sdk.context.api.query.tokens.accounts(
-                  pair.account,
-                  pair.assetId,
-                );
+              : await api.query.tokens.accounts(pair.account, pair.assetId);
 
             return {
               pair,
@@ -70,7 +78,10 @@ export const useAccountAssetBalances = (
             };
           }
         },
-        enabled: Boolean(sdk) && isRpcSdk(sdk),
+        enabled:
+          Boolean(sdk) &&
+          isRpcSdk(sdk) &&
+          (typeof opts?.enabled === "undefined" ? true : opts?.enabled),
         keepPreviousData: true,
       };
     }),
@@ -81,7 +92,7 @@ export const useAccountAssetBalances = (
       (q) =>
         q.data &&
         q.data.pair.account === account &&
-        objectHash(q.data.pair.assetId) === objectHash(assetId),
+        JSON.stringify(q.data.pair.assetId) === JSON.stringify(assetId),
     );
     return query;
   };
