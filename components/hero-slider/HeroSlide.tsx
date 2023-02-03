@@ -6,7 +6,7 @@ export const HeroSlide: FC<HeroSlideProps> = ({ slide }) => {
   return (
     <>
       <div className="flex items-center h-full w-full">
-        <div className="max-w-[540px] pb-8">
+        <div className="w-full md:max-w-[540px] pb-8">
           <h2
             className={`font-kanit text-center sm:text-left mb-6 leading-tight ${slide.title.styles}`}
           >
