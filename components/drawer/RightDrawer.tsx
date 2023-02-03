@@ -111,8 +111,8 @@ const RightDrawer = observer(() => {
   }, [tradeslipItems.items.length]);
 
   return (
-    <Drawer side="right" className="bg-sky-100 dark:bg-black">
-      <div className="h-full dark:bg-black">
+    <Drawer side="right" className="bg-sky-100 !fixed right-0 z-ztg-10">
+      <div className="h-full">
         <div className="mt-ztg-10 h-full flex flex-col">
           <ZTGSummary />
           {tabLabels ? (
