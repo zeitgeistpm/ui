@@ -16,7 +16,7 @@ const MobileTopBar: FC<{ navbar: boolean }> = observer(({ navbar }) => {
 
   return (
     <div className="flex items-center w-full">
-      <Logo color={navbar} />
+      <Logo dark={navbar} />
       <h1
         className={`text-ztg-19-120 ml-ztg-10 font-bold font-kanit ${
           navbar ? "text-black" : "text-white"
