@@ -1,5 +1,5 @@
 import { Tab } from "@headlessui/react";
-import { getIndexOf } from "@zeitgeistpm/sdk-next";
+import { getIndexOf, ZTG } from "@zeitgeistpm/sdk-next";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
 import {
   MarketPositions,
@@ -7,6 +7,8 @@ import {
 } from "components/portfolio/MarketPositions";
 import TransactionHistoryTable from "components/portfolio/TransactionHistoryTable";
 import InfoBoxes from "components/ui/InfoBoxes";
+import Decimal from "decimal.js";
+import { useAccountBonds } from "lib/hooks/queries/useAccountBonds";
 import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { groupBy, range } from "lodash-es";
@@ -33,6 +35,14 @@ const Portfolio: NextPage = observer(() => {
   const subsidyPositionsByMarket = useMemo(
     () => subsidy && groupBy(subsidy, (position) => position.market.marketId),
     [subsidy],
+  );
+
+  const { data: bonds } = useAccountBonds(address);
+  const bondTotal = bonds?.reduce(
+    (total, bond) =>
+      bond.isSettled === false ? total.plus(bond.value) : total,
+
+    new Decimal(0),
   );
 
   return (
