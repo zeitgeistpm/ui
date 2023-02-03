@@ -91,6 +91,12 @@ const IndexPage: NextPage<{
             />
           </div>
         )}
+        <div className="mb-[60px]">
+          <PopularCategories
+            counts={categoryCounts}
+            imagePlaceholders={categoryPlaceholders}
+          />
+        </div>
         {trendingMarkets.length > 0 && (
           <div className="my-[60px]">
             <MarketScroll
@@ -101,12 +107,6 @@ const IndexPage: NextPage<{
             />
           </div>
         )}
-        <div className="mb-[60px]">
-          <PopularCategories
-            counts={categoryCounts}
-            imagePlaceholders={categoryPlaceholders}
-          />
-        </div>
       </div>
     );
   },

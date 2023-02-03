@@ -205,6 +205,10 @@ body {
   @apply mx-4 sm:mx-10 md:mx-24 lg:mx-32;
 }
 
+.container-fluid {
+  @apply mx-4 sm:mx-10 md:mx-24 lg:mx-32;
+}
+
 .carousel__slide--visible {
   overflow: hidden;
 }

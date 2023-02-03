@@ -33,7 +33,7 @@ const HeroSlider: FC<HeroSliderProps> = () => {
       style={{ backgroundImage: `url(${slidesData[currentSlide].bg})` }}
       onAnimationEnd={() => setAnimate(false)}
     >
-      <div className="h-full relative mx-4 sm:mx-10 md:mx-24 lg:mx-32">
+      <div className="h-full relative container-fluid">
         <HeroSlide
           slide={slidesData[currentSlide]}
           animate={animate}

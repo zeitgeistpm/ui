@@ -75,11 +75,11 @@ const DefaultLayout: FC = observer(({ children }) => {
       <LeftDrawer />
       <div
         ref={contentRef}
-        className="overflow-y-auto overflow-x-hidden flex-grow"
+        className="overflow-y-a1uto overflow-x-hidden flex-grow"
       >
         <TopBar />
         {NOTIFICATION_MESSAGE && (
-          <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38">
+          <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38 hidden">
             <div className="text-ztg-12-150 font-semibold">
               {NOTIFICATION_MESSAGE}
             </div>

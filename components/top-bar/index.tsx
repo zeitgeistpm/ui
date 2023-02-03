@@ -37,7 +37,11 @@ const MobileTopBar = observer(() => {
 
 const TopBar = observer(() => {
   return (
-    <div className="topbar flex w-full px-ztg-32 py-ztg-18 bg-white dark:bg-sky-1000 sticky top-0 z-ztg-5 shadow-md dark:shadow-2xl">
+    //inline style is temporary until we make right drawer a modal
+    <div
+      className="topbar flex w-full py-ztg-18 bg-transparent fixed z-ztg-5 container-fluid"
+      style={{ width: "-webkit-fill-available" }}
+    >
       <div className="hidden sm:flex justify-between h-full w-full">
         <MarketSearch />
         <div className="flex h-full items-center">
