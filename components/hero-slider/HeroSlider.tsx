@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { HeroControls } from "./HeroControls";
 import { HeroSlide } from "./HeroSlide";
 import { slidesData } from "./slides-data";
+import styles from "./HeroSlider.module.css";
 
 //hero controls
 import { moveSlider } from "./slider-controls";
@@ -25,8 +26,14 @@ const HeroSlider: FC<HeroSliderProps> = () => {
   }, [currentSlide]);
 
   return (
-    <section className="w-full h-[527px] mx-auto">
-      <div className="h-full relative">
+    <section
+      className={`w-full h-[527px] mx-auto  bg-cover bg-center ${
+        animate && styles.fadeIn
+      }`}
+      style={{ backgroundImage: `url(${slidesData[currentSlide].bg})` }}
+      onAnimationEnd={() => setAnimate(false)}
+    >
+      <div className="h-full relative mx-4 sm:mx-10 md:mx-24 lg:mx-32">
         <HeroSlide
           slide={slidesData[currentSlide]}
           animate={animate}

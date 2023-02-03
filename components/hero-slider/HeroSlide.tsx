@@ -1,22 +1,11 @@
 import { FC } from "react";
 
 import { HeroSlideProps } from "./slider-types";
-import styles from "./HeroSlider.module.css";
 
-export const HeroSlide: FC<HeroSlideProps> = ({
-  slide,
-  animate,
-  setAnimate,
-}) => {
+export const HeroSlide: FC<HeroSlideProps> = ({ slide }) => {
   return (
     <>
-      <div
-        className={`flex items-center bg-cover bg-center h-full w-full p-5 md:p-10 ${
-          animate && styles.fadeIn
-        }`}
-        style={{ backgroundImage: `url(${slide.bg})` }}
-        onAnimationEnd={() => setAnimate(false)}
-      >
+      <div className="flex items-center h-full w-full">
         <div className="max-w-[540px] pb-8">
           <h2
             className={`font-kanit text-center sm:text-left mb-6 leading-tight ${slide.title.styles}`}

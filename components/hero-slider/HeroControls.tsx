@@ -11,7 +11,7 @@ export const HeroControls: FC<HeroControlsProps> = ({
   setCurrentSlide,
 }) => {
   return (
-    <div className="flex items-center justify-center md:justify-end w-full mx-auto gap-1 p-12 pb-16 absolute bottom-0">
+    <div className="flex items-center justify-center md:justify-end w-full mx-auto gap-1 pb-16 absolute bottom-0">
       <button
         onClick={() => {
           setAnimate(true);

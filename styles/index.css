@@ -200,10 +200,9 @@ body {
   height: var(--topbar-height);
 }
 
-/* TODO: add lg:px-32 once left/rigth drawers are removed */
 .main-container {
-  /* height: calc(calc(100vh - var(--topbar-height)) - 38px); */
-  @apply px-4 sm:px-10 md:px-24;
+  min-height: calc(calc(100vh - var(--topbar-height)) - 38px);
+  @apply mx-4 sm:mx-10 md:mx-24 lg:mx-32;
 }
 
 .carousel__slide--visible {
