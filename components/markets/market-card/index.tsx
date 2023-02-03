@@ -1,6 +1,5 @@
 import Link from "next/link";
 import React from "react";
-import { Skeleton } from "@material-ui/lab";
 import MarketImage from "components/ui/MarketImage";
 import { MarketOutcomes } from "lib/types/markets";
 import MarketCardContext from "./context";

@@ -57,7 +57,6 @@ const MarketCardOverlayCategories = ({
   outcomes: MarketOutcomes;
 }) => {
   const numCategories = outcomes.length;
-  console.log(outcomes);
   return (
     <div className="flex flex-col overflow-y-scroll">
       {outcomes.map((cat, idx) => {
