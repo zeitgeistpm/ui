@@ -1,4 +1,4 @@
-import { PalletBalancesAccountData } from "@polkadot/types/lookup";
+import type { PalletBalancesAccountData } from "@polkadot/types/lookup";
 import { useQueries } from "@tanstack/react-query";
 import { Context, isRpcSdk, PoolList } from "@zeitgeistpm/sdk-next";
 import { getApiAtBlock } from "lib/util/get-api-at";

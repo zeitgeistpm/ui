@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
+import type { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import { observer } from "mobx-react";
 import InfoBoxes from "components/ui/InfoBoxes";
 import TimeSeriesChart, { ChartData } from "components/ui/TimeSeriesChart";

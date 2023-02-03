@@ -1,4 +1,4 @@
-import { MarketDeadlines } from "@zeitgeistpm/sdk/dist/types";
+import type { MarketDeadlines } from "@zeitgeistpm/sdk/dist/types";
 import Decimal from "decimal.js";
 import resolveTailwindConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../../tailwind.config";

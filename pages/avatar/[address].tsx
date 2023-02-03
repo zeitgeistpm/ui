@@ -30,7 +30,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { shortenAddress } from "lib/util";
 import { PendingInventoryItem } from "@zeitgeistpm/avatara-nft-sdk/dist/core/inventory";
 import { ZTG } from "lib/constants";
-import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import type { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { delay } from "lib/util/delay";
 import { useIdentity } from "lib/hooks/queries/useIdentity";

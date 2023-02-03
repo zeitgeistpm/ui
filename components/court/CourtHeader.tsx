@@ -1,4 +1,4 @@
-import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import type { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import TransactionButton from "components/ui/TransactionButton";
 import { useCourtStore } from "lib/stores/CourtStore";
 import { useModalStore } from "lib/stores/ModalStore";

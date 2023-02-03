@@ -1,6 +1,6 @@
-import { ISubmittableResult, IEventRecord } from "@polkadot/types/types";
-import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import { SubmittableExtrinsic } from "@polkadot/api/types";
+import type { ISubmittableResult, IEventRecord } from "@polkadot/types/types";
+import type { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import type { SubmittableExtrinsic } from "@polkadot/api/types";
 import NotificationStore from "lib/stores/NotificationStore";
 import { isExtSigner, unsubOrWarns } from "@zeitgeistpm/sdk/dist/util";
 

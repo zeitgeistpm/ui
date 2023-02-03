@@ -1,5 +1,5 @@
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
-import { Asset } from "@zeitgeistpm/types/dist/interfaces";
+import type { AssetId } from "@zeitgeistpm/sdk/dist/types";
+import type { Asset } from "@zeitgeistpm/types/dist/interfaces";
 import Decimal from "decimal.js";
 import { NextPage } from "next";
 import { FC } from "react";

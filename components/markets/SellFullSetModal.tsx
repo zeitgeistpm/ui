@@ -1,4 +1,4 @@
-import { Market } from "@zeitgeistpm/sdk/dist/models";
+import type { Market } from "@zeitgeistpm/sdk/dist/models";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";

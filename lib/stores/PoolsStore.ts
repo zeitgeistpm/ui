@@ -1,5 +1,8 @@
-import { Swap } from "@zeitgeistpm/sdk/dist/models";
-import { AssetId, FilteredPoolsListItem } from "@zeitgeistpm/sdk/dist/types";
+import type { Swap } from "@zeitgeistpm/sdk/dist/models";
+import type {
+  AssetId,
+  FilteredPoolsListItem,
+} from "@zeitgeistpm/sdk/dist/types";
 import { ZTG_BLUE_COLOR } from "lib/constants";
 import { calcSpotPrice } from "lib/math";
 import { isAssetZTG, PoolsListQuery } from "lib/types";

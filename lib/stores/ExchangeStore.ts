@@ -1,4 +1,4 @@
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
+import type { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import {

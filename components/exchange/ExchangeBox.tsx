@@ -5,7 +5,7 @@ import { debounceTime } from "rxjs/operators";
 import { Decimal } from "decimal.js";
 import MobxReactForm from "mobx-react-form";
 import React, { FC, useEffect, useMemo, useRef, useState } from "react";
-import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import type { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useStore } from "lib/stores/Store";
 import { useNotificationStore } from "lib/stores/NotificationStore";

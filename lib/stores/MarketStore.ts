@@ -1,5 +1,5 @@
-import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
-import {
+import type { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
+import type {
   AssetId,
   CategoryMetadata,
   MarketCreation,

@@ -1,7 +1,7 @@
 import keyring from "@polkadot/ui-keyring";
 import Decimal from "decimal.js";
-import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import { KeyringPair } from "@polkadot/keyring/types";
+import type { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import type { KeyringPair } from "@polkadot/keyring/types";
 import { makeAutoObservable, reaction, runInAction } from "mobx";
 import { decodeAddress, encodeAddress } from "@polkadot/util-crypto";
 import { cryptoWaitReady } from "@polkadot/util-crypto";

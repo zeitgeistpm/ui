@@ -6,12 +6,12 @@ import Decimal from "decimal.js";
 import React, { useEffect, useRef, useState } from "react";
 import { from } from "rxjs";
 import { AlertTriangle } from "react-feather";
-import {
+import type {
   CreateMarketParams,
   CreateCpmmMarketAndDeployAssetsParams,
 } from "@zeitgeistpm/sdk/dist/types/market";
 import { ISubmittableResult } from "@polkadot/types/types";
-import {
+import type {
   DecodedMarketMetadata,
   MarketPeriod,
 } from "@zeitgeistpm/sdk/dist/types";

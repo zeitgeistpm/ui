@@ -1,5 +1,5 @@
-import { Swap } from "@zeitgeistpm/sdk/dist/models";
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
+import type { Swap } from "@zeitgeistpm/sdk/dist/models";
+import type { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import Decimal from "decimal.js";
 import { calcInGivenOut, calcOutGivenIn } from "lib/math";
 import { CPool } from "lib/stores/PoolsStore";

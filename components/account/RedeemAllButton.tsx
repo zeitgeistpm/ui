@@ -1,4 +1,4 @@
-import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import type { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import Decimal from "decimal.js";
 import MarketStore from "lib/stores/MarketStore";
 import { useNotificationStore } from "lib/stores/NotificationStore";

@@ -7,7 +7,7 @@ import { useAccountPoolAssetBalances } from "./useAccountPoolAssetBalances";
 import { useMarket } from "./useMarket";
 import { useZtgBalance } from "./useZtgBalance";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { OrmlTokensAccountData } from "@polkadot/types/lookup";
+import type { OrmlTokensAccountData } from "@polkadot/types/lookup";
 import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 
 export const marketSpotPricesKey = "market-spot-prices";

@@ -1,4 +1,4 @@
-import { AssetId, ExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import type { AssetId, ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import { Case, useCourtStore } from "lib/stores/CourtStore";
 import MarketStore from "lib/stores/MarketStore";

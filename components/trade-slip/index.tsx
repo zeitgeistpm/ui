@@ -1,5 +1,4 @@
-import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import Decimal from "decimal.js";
+import type { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { useAtom } from "jotai";
 import { ZTG } from "lib/constants";
 import { useTradeslipItems } from "lib/state/tradeslip/items";

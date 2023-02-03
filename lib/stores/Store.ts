@@ -1,8 +1,8 @@
-import { Compact } from "@polkadot/types";
-import { BlockNumber } from "@polkadot/types/interfaces";
-import { Swap } from "@zeitgeistpm/sdk/dist/models";
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
-import SDK from "@zeitgeistpm/sdk";
+import type { Compact } from "@polkadot/types";
+import type { BlockNumber } from "@polkadot/types/interfaces";
+import type { Swap } from "@zeitgeistpm/sdk/dist/models";
+import type { AssetId } from "@zeitgeistpm/sdk/dist/types";
+import type SDK from "@zeitgeistpm/sdk";
 import { useContext } from "react";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 import Decimal from "decimal.js";
@@ -85,7 +85,7 @@ export default class Store {
     return new RegExp(`^[0-9]+(\\.[0-9]{0,10})?`);
   }
 
-  sdk: SDK | null;
+  sdk: SDK | null = null;
   sdkV2?: Sdk<Context> = undefined;
 
   blockNumber: Compact<BlockNumber> | null = null;
@@ -226,6 +226,7 @@ export default class Store {
   }
 
   async initSDK(endpoint: string, graphQlEndpoint: string) {
+    const SDK = (await import("@zeitgeistpm/sdk")).default;
     const isLocalEndpoint =
       endpoint.includes("localhost") || endpoint.includes("127.0.0.1");
     const ipfsClientUrl =

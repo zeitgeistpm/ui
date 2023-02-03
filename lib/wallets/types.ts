@@ -1,5 +1,5 @@
 import { WalletError } from "./errors/BaseWalletError";
-import {
+import type {
   InjectedMetadata,
   InjectedProvider,
   Unsubcall,
