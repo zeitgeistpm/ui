@@ -260,10 +260,10 @@ const Market: NextPage<{
               />
             </Tab.Panel>
             <Tab.Panel>
-              {marketSdkv2 && (
+              {marketSdkv2?.pool && (
                 <div className="flex flex-col">
                   <Link
-                    href={`/liquidity/${marketStore.pool.poolId}`}
+                    href={`/liquidity/${marketSdkv2.pool.poolId}`}
                     className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 mb-[10px] "
                   >
                     View Pool
