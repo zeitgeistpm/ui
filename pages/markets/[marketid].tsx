@@ -39,6 +39,7 @@ import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
+import Link from "next/link";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -259,7 +260,17 @@ const Market: NextPage<{
               />
             </Tab.Panel>
             <Tab.Panel>
-              {marketSdkv2 && <PoolTable poolId={marketSdkv2.pool.poolId} />}
+              {marketSdkv2 && (
+                <div className="flex flex-col">
+                  <Link
+                    href={`/liquidity/${marketStore.pool.poolId}`}
+                    className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 mb-[10px] "
+                  >
+                    View Pool
+                  </Link>
+                  <PoolTable poolId={marketSdkv2.pool.poolId} />
+                </div>
+              )}
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
