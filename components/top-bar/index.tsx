@@ -60,13 +60,13 @@ const TopBar = observer(() => {
   return (
     //inline style is temporary until we make right drawer a modal
     <div
-      className={`topbar flex w-full py-ztg-18 bg-transparent fixed z-ztg-10`}
+      className={`flex w-full py-ztg-18 bg-transparent fixed z-ztg-10`}
       style={{
         width: "-webkit-fill-available",
         backgroundColor: `${navbar ? "white" : "transparent"}`,
       }}
     >
-      <div className="hidden sm:flex justify-between h-full w-full container-fluid">
+      <div className="hidden sm:flex justify-between items-center h-full w-full topbar container-fluid mr-0">
         <MarketSearch />
         <div className="flex h-full items-center">
           <AccountButton />
