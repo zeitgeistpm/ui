@@ -78,6 +78,7 @@ const DefaultLayout: FC = observer(({ children }) => {
         className="overflow-y-a1uto overflow-x-hidden flex-grow"
       >
         <TopBar />
+        {/* //hide navbar until designs are ready */}
         {NOTIFICATION_MESSAGE && (
           <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38 hidden">
             <div className="text-ztg-12-150 font-semibold">
@@ -87,12 +88,12 @@ const DefaultLayout: FC = observer(({ children }) => {
         )}
         {router.pathname === "/" && <HeroSlider />}
         <main
-          className="main-container flex flex-col dark:text-white"
+          className={`main-container flex flex-col dark:text-white ${
+            router.pathname !== "/" && "pt-20"
+          }`}
           ref={mainRef}
         >
           <div>
-            {/* <div className="max-w-ztg-1100 mx-auto py-0 px-ztg-32 pt-ztg-14 w-full"> */}
-            {/* {router.pathname === "/" && <HeroSlider />} */}
             <ContentDimensionsProvider
               scrollTop={scrollTop}
               scrollTo={scrollTo}

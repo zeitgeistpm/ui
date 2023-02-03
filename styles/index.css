@@ -201,8 +201,7 @@ body {
 }
 
 .main-container {
-  min-height: calc(calc(100vh - var(--topbar-height)) - 38px);
-  @apply mx-4 sm:mx-10 md:mx-24 lg:mx-32;
+  @apply mx-4 sm:mx-10 md:mx-24 lg:mx-32 min-h-screen;
 }
 
 .container-fluid {

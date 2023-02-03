@@ -110,7 +110,7 @@ const FooterMenu: FC<FooterMenuProps> = observer(
 
 const Footer = observer(() => {
   return (
-    <div className="mx-auto max-w-screen-2xl flex flex-col pb-28">
+    <div className="mx-auto mt-auto max-w-screen-2xl flex flex-col pb-24">
       <div className="flex justify-between gap-10 mb-8 md:mb-16">
         <FooterNewsletterSub title="Subscribe to Newsletter" />
         <div className="hidden md:flex justify-between gap-5 w-full ">

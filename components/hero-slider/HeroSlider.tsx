@@ -16,13 +16,15 @@ const HeroSlider: FC<HeroSliderProps> = () => {
 
   //autoplay
   useEffect(() => {
-    const ref = setTimeout(() => {
-      setAnimate(true);
-      moveSlider("next", currentSlide, setCurrentSlide, slidesLength);
-    }, 5000);
-    return () => {
-      clearTimeout(ref);
-    };
+    if (slidesData.length > 1) {
+      const ref = setTimeout(() => {
+        setAnimate(true);
+        moveSlider("next", currentSlide, setCurrentSlide, slidesLength);
+      }, 5000);
+      return () => {
+        clearTimeout(ref);
+      };
+    }
   }, [currentSlide]);
 
   return (
@@ -39,13 +41,15 @@ const HeroSlider: FC<HeroSliderProps> = () => {
           animate={animate}
           setAnimate={setAnimate}
         />
-        <HeroControls
-          slides={slidesData}
-          slidesLength={slidesLength}
-          currentSlide={currentSlide}
-          setCurrentSlide={setCurrentSlide}
-          setAnimate={setAnimate}
-        />
+        {slidesData.length > 1 && (
+          <HeroControls
+            slides={slidesData}
+            slidesLength={slidesLength}
+            currentSlide={currentSlide}
+            setCurrentSlide={setCurrentSlide}
+            setAnimate={setAnimate}
+          />
+        )}
       </div>
     </section>
   );
