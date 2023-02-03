@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ExternalLink, X } from "react-feather";
 import MarketCardOverlayOutcomes from "./overlay-categories";
 
+// TODO: check if this file can be removed
+
 export type MarketCardOverlayProps = {
   marketId: number;
   outcomes: MarketOutcomes;
