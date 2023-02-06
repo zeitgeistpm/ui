@@ -30,9 +30,10 @@ export default async function (
     });
   }
 
-  let prediction: { outcome: string; percentage: number } = {
-    outcome: "No Prediction",
+  let prediction: { name: string; price: number; percentage: number } = {
+    name: "No Prediction",
     percentage: 0,
+    price: 0,
   };
 
   if (market.pool) {

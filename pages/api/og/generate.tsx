@@ -95,8 +95,8 @@ export default async function GenerateOgImage(request: NextApiRequest) {
           </h2>
           <div tw="text-3xl -mt-3" style={{ color: "#ABC1F9" }}>
             {market.marketType.categorical
-              ? `${prediction.percentage}% — ${prediction.outcome}`
-              : `${prediction.outcome}`}
+              ? `${prediction.percentage}% — ${prediction.name}`
+              : `${prediction.name}`}
           </div>
         </div>
 
