@@ -1,19 +1,11 @@
 import { ImageResponse } from "@vercel/og";
-import { create } from "@zeitgeistpm/indexer";
+import absoluteUrl from "next-absolute-url";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import type { NextApiRequest, NextConfig, PageConfig } from "next";
-import { getCurrentPrediction } from "lib/util/assets";
-import Decimal from "decimal.js";
-import moment from "moment";
-import { ZTG } from "lib/constants";
 
 export const config: PageConfig = {
   runtime: "edge",
 };
-
-const sdkPromise = create({
-  uri: process.env.NEXT_PUBLIC_SSR_INDEXER_URL,
-});
 
 export default async function GenerateOgImage(request: NextApiRequest) {
   const { searchParams } = new URL(request.url);
@@ -26,41 +18,9 @@ export default async function GenerateOgImage(request: NextApiRequest) {
 
   const marketId = searchParams.get("marketId");
 
-  const sdk = await sdkPromise;
-
-  const { markets } = await sdk.markets({
-    where: {
-      marketId_eq: Number(marketId),
-    },
-  });
-
-  const market = markets[0];
-
-  if (!market) {
-    return new Response(`no market found by id ${marketId}`, {
-      status: 404,
-    });
-  }
-
-  let prediction: { name: string; price: number; percentage: number } = {
-    name: "No Prediction",
-    percentage: 0,
-    price: 0,
-  };
-
-  if (market.pool) {
-    const { assets } = await sdk.assets({
-      where: {
-        poolId_eq: market.pool.poolId,
-      },
-    });
-
-    prediction = getCurrentPrediction(assets as any, market as any);
-  }
-
-  const volume = new Decimal(market.pool?.volume).div(ZTG).toFixed(2);
-
-  const ends = moment(Number(market.period.end)).format("MMM Do, YYYY");
+  const { market, volume, prediction, ends } = await fetch(
+    `${absoluteUrl(request, "localhost:3000").origin}/api/og/${marketId}`,
+  ).then((r) => r.json());
 
   const marketImage = !market.img
     ? new URL("../../../public/icons/default-market.png", import.meta.url).href
