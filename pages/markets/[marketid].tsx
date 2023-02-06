@@ -124,7 +124,6 @@ const Market: NextPage<{
     marketId: Number(marketid),
   });
   const { data: marketStage } = useMarketStage(marketSdkv2);
-
   const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
 
   if (indexedMarket == null) {
@@ -206,6 +205,11 @@ const Market: NextPage<{
             <></>
           )}
         </div>
+        {marketSdkv2?.rejectReason && marketSdkv2.rejectReason.length > 0 && (
+          <div className="mt-[10px] text-ztg-14-150">
+            Market rejected: {marketSdkv2.rejectReason}
+          </div>
+        )}
         <div className="py-ztg-20 mb-10 h-32">
           {marketStore && marketStage ? (
             <MarketTimer stage={marketStage} />

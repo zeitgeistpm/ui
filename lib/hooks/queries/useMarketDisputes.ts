@@ -13,7 +13,7 @@ export const useMarketDisputes = (market: Market<Context> | number) => {
     [id, rootKey, marketId],
     async () => {
       if (isRpcSdk(sdk)) {
-        return await sdk.context.api.query.predictionMarkets.disputes(marketId);
+        return await sdk.api.query.predictionMarkets.disputes(marketId);
       }
     },
     {

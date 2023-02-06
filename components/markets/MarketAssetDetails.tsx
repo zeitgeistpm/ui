@@ -1,4 +1,4 @@
-import { fromCompositeIndexerAssetId } from "@zeitgeistpm/sdk-next";
+import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
@@ -146,7 +146,7 @@ const MarketAssetDetails = observer(
                 <AssetActionButtons
                   marketId={marketId}
                   assetId={
-                    fromCompositeIndexerAssetId(
+                    parseAssetId(
                       market.pool.weights[index].assetId,
                     ).unwrap() as any
                   }

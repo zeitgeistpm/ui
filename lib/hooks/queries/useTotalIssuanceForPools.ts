@@ -44,7 +44,7 @@ const batcher = memoize((sdk: Sdk<RpcContext>) => {
   return batshit.create<PoolTotalIssuance, number>({
     name: poolTotalIssuanceRootQuery,
     fetcher: async (ids) => {
-      const data = await sdk.context.api.query.tokens.totalIssuance.multi(
+      const data = await sdk.api.query.tokens.totalIssuance.multi(
         ids.map((id) => ({ PoolShare: id })),
       );
 

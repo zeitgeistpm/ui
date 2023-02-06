@@ -22,7 +22,7 @@ export const useAccountPoolAssetBalances = (
               .map((weight) => JSON.parse(weight.assetId))
           : pool.assets;
 
-        const api = await getApiAtBlock(sdk.context.api, blockNumber);
+        const api = await getApiAtBlock(sdk.api, blockNumber);
 
         const balances = await api.query.tokens.accounts.multi(
           assets.map((assets) => [address, assets]),

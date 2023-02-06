@@ -64,7 +64,7 @@ const ScalarReportBox = observer(
       });
 
       if (isRpcSdk(sdk)) {
-        const tx = sdk.context.api.tx.predictionMarkets.report(
+        const tx = sdk.api.tx.predictionMarkets.report(
           market.marketId,
           outcomeReport,
         );
