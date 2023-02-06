@@ -18,6 +18,11 @@ export default async function GenerateOgImage(request: NextApiRequest) {
 
   const marketId = searchParams.get("marketId");
 
+  console.log("URL");
+  console.log(
+    `${absoluteUrl(request, "localhost:3000").origin}/api/og/${marketId}`,
+  );
+
   const { market, volume, prediction, ends } = await fetch(
     `${absoluteUrl(request, "localhost:3000").origin}/api/og/${marketId}`,
   ).then((r) => r.json());
