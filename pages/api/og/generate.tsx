@@ -90,9 +90,9 @@ export default async function GenerateOgImage(request: NextRequest) {
         </div>
       </div>
 
-      <div tw="flex flex-1 pr-30 flex-col h-full">
+      <div tw="flex flex-1 flex-col h-full">
         <h1
-          tw={`${isTwitter ? "text-3xl mb-10" : "text-5xl mb-66"}`}
+          tw={`${isTwitter ? "text-3xl mb-10" : "text-5xl mb-48"}`}
           style={{ lineHeight: "1.3em" }}
         >
           {market.question}
