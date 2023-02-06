@@ -3,12 +3,13 @@ import absoluteUrl from "next-absolute-url";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import type { NextApiRequest, NextConfig, PageConfig } from "next";
 import type { MarketImageData } from "./[marketId]";
+import { NextRequest } from "next/server";
 
 export const config: PageConfig = {
   runtime: "edge",
 };
 
-export default async function GenerateOgImage(request: NextApiRequest) {
+export default async function GenerateOgImage(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
   if (!searchParams.has("marketId")) {
@@ -19,13 +20,11 @@ export default async function GenerateOgImage(request: NextApiRequest) {
 
   const marketId = searchParams.get("marketId");
 
-  console.log("URL");
-  console.log(
-    `${absoluteUrl(request, "localhost:3000").origin}/api/og/${marketId}`,
-  );
+  const url = request.nextUrl.clone();
+  url.pathname = `/api/og/${marketId}`;
 
   const { market, volume, prediction, ends }: MarketImageData = await fetch(
-    `${absoluteUrl(request, "localhost:3000").origin}/api/og/${marketId}`,
+    url.href,
   ).then((r) => r.json());
 
   const marketImage = !market.img
