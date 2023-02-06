@@ -5,6 +5,8 @@ import { ZTG } from "lib/constants";
 import { IndexedMarketCardData } from "components/markets/market-card/index";
 import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
 import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
+import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
+
 import { getCurrentPrediction } from "lib/util/assets";
 
 const getMarketIdsFromEnvVar = () => {
@@ -44,6 +46,12 @@ const marketQuery = gql`
         ticker
       }
       outcomeAssets
+      tags
+      period {
+        end
+      }
+      status
+      scalarType
     }
   }
 `;
@@ -62,6 +70,7 @@ const getFeaturedMarkets = async (
   client: GraphQLClient,
 ): Promise<IndexedMarketCardData[]> => {
   // handles if we don't have any markets set
+
   if (marketIds.length === 0) return null;
 
   const featuredMarkets = await Promise.all(
@@ -78,8 +87,12 @@ const getFeaturedMarkets = async (
           question: string;
           creation: MarketCreation;
           marketType: { [key: string]: string };
+          scalarType: ScalarRangeType | null;
           categories: { color: string; name: string; ticker: string }[];
           outcomeAssets: string[];
+          tags: [];
+          status: string;
+          period: { end: string };
         }[];
       }>(marketQuery, {
         marketId: id,
@@ -94,10 +107,15 @@ const getFeaturedMarkets = async (
           question: market.question,
           creation: market.creation,
           img: market.img,
-          prediction: "None",
+          prediction: { name: "None", price: 0 },
+          marketType: market.marketType,
+          scalarType: market.scalarType,
           volume: 0,
           baseAsset: "",
           outcomes: [],
+          tags: [],
+          status: market.status,
+          endDate: market.period.end,
         };
 
         return noPoolMarket;
@@ -127,7 +145,6 @@ const getFeaturedMarkets = async (
           return marketCategory;
         },
       );
-
       const featuredMarket: IndexedMarketCardData = {
         marketId: market.marketId,
         question: market.question,
@@ -137,6 +154,11 @@ const getFeaturedMarkets = async (
         volume: new Decimal(pool.volume).div(ZTG).toNumber(),
         baseAsset: pool.baseAsset,
         outcomes: marketCategories,
+        marketType: market.marketType,
+        scalarType: market.scalarType,
+        tags: market.tags,
+        status: market.status,
+        endDate: market.period.end,
       };
 
       return featuredMarket;
