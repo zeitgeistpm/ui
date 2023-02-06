@@ -2,6 +2,7 @@ import { ImageResponse } from "@vercel/og";
 import absoluteUrl from "next-absolute-url";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
 import type { NextApiRequest, NextConfig, PageConfig } from "next";
+import type { MarketImageData } from "./[marketId]";
 
 export const config: PageConfig = {
   runtime: "edge",
@@ -23,7 +24,7 @@ export default async function GenerateOgImage(request: NextApiRequest) {
     `${absoluteUrl(request, "localhost:3000").origin}/api/og/${marketId}`,
   );
 
-  const { market, volume, prediction, ends } = await fetch(
+  const { market, volume, prediction, ends }: MarketImageData = await fetch(
     `${absoluteUrl(request, "localhost:3000").origin}/api/og/${marketId}`,
   ).then((r) => r.json());
 
