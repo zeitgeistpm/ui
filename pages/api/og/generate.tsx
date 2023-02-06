@@ -28,19 +28,19 @@ export default async function GenerateOgImage(request: NextApiRequest) {
     ? market.img
     : `https://ipfs-gateway.zeitgeist.pm/ipfs/${market.img}`;
 
-  const boldFont = await fetch(
-    new URL(
-      "../../../public/fonts/inter/static/Inter-Bold.ttf",
-      import.meta.url,
-    ).href,
-  ).then((res) => res.arrayBuffer());
+  // const boldFont = await fetch(
+  //   new URL(
+  //     "../../../public/fonts/inter/static/Inter-Bold.ttf",
+  //     import.meta.url,
+  //   ).href,
+  // ).then((res) => res.arrayBuffer());
 
-  const regularFont = await fetch(
-    new URL(
-      "../../../public/fonts/inter/static/Inter-Regular.ttf",
-      import.meta.url,
-    ).href,
-  ).then((res) => res.arrayBuffer());
+  // const regularFont = await fetch(
+  //   new URL(
+  //     "../../../public/fonts/inter/static/Inter-Regular.ttf",
+  //     import.meta.url,
+  //   ).href,
+  // ).then((res) => res.arrayBuffer());
 
   const image = (
     <div
@@ -126,18 +126,18 @@ export default async function GenerateOgImage(request: NextApiRequest) {
     width: 1200,
     height: 675,
     fonts: [
-      {
-        name: "Inter",
-        data: regularFont,
-        weight: 400,
-        style: "normal",
-      },
-      {
-        name: "Inter",
-        data: boldFont,
-        weight: 700,
-        style: "normal",
-      },
+      // {
+      //   name: "Inter",
+      //   data: regularFont,
+      //   weight: 400,
+      //   style: "normal",
+      // },
+      // {
+      //   name: "Inter",
+      //   data: boldFont,
+      //   weight: 700,
+      //   style: "normal",
+      // },
     ],
   });
 }
