@@ -5,20 +5,7 @@ import type { NextApiRequest, NextConfig, PageConfig } from "next";
 
 export const config: PageConfig = {
   runtime: "edge",
-  unstable_JsPreload: false,
 };
-
-const boldFont = fetch(
-  new URL("../../../public/fonts/inter/static/Inter-Bold.ttf", import.meta.url)
-    .href,
-).then((res) => res.arrayBuffer());
-
-const regularFont = fetch(
-  new URL(
-    "../../../public/fonts/inter/static/Inter-Regular.ttf",
-    import.meta.url,
-  ).href,
-).then((res) => res.arrayBuffer());
 
 export default async function GenerateOgImage(request: NextApiRequest) {
   const { searchParams } = new URL(request.url);
@@ -41,8 +28,19 @@ export default async function GenerateOgImage(request: NextApiRequest) {
     ? market.img
     : `https://ipfs-gateway.zeitgeist.pm/ipfs/${market.img}`;
 
-  const boldFontData = await boldFont;
-  const regularFontData = await regularFont;
+  const boldFont = await fetch(
+    new URL(
+      "../../../public/fonts/inter/static/Inter-Bold.ttf",
+      import.meta.url,
+    ).href,
+  ).then((res) => res.arrayBuffer());
+
+  const regularFont = await fetch(
+    new URL(
+      "../../../public/fonts/inter/static/Inter-Regular.ttf",
+      import.meta.url,
+    ).href,
+  ).then((res) => res.arrayBuffer());
 
   const image = (
     <div
@@ -130,13 +128,13 @@ export default async function GenerateOgImage(request: NextApiRequest) {
     fonts: [
       {
         name: "Inter",
-        data: regularFontData,
+        data: regularFont,
         weight: 400,
         style: "normal",
       },
       {
         name: "Inter",
-        data: boldFontData,
+        data: boldFont,
         weight: 700,
         style: "normal",
       },
