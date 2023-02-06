@@ -21,15 +21,15 @@ export const useMarketDeadlineConstants = () => {
       if (isRpcSdk(sdk)) {
         return {
           minDisputeDuration:
-            sdk.context.api.consts.predictionMarkets.minDisputeDuration.toNumber(),
+            sdk.api.consts.predictionMarkets.minDisputeDuration.toNumber(),
           minOracleDuration:
-            sdk.context.api.consts.predictionMarkets.minOracleDuration.toNumber(),
+            sdk.api.consts.predictionMarkets.minOracleDuration.toNumber(),
           maxDisputeDuration:
-            sdk.context.api.consts.predictionMarkets.maxDisputeDuration.toNumber(),
+            sdk.api.consts.predictionMarkets.maxDisputeDuration.toNumber(),
           maxOracleDuration:
-            sdk.context.api.consts.predictionMarkets.maxOracleDuration.toNumber(),
+            sdk.api.consts.predictionMarkets.maxOracleDuration.toNumber(),
           maxGracePeriod:
-            sdk.context.api.consts.predictionMarkets.maxGracePeriod.toNumber(),
+            sdk.api.consts.predictionMarkets.maxGracePeriod.toNumber(),
         };
       }
       return {

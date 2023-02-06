@@ -21,9 +21,7 @@ export const useAccountTokenPositions = (filter?: {
     [id, rootKey, filter],
     async () => {
       if (sdk && isIndexedSdk(sdk) && filter) {
-        const { accountBalances } = await sdk.context.indexer.accountBalances(
-          filter,
-        );
+        const { accountBalances } = await sdk.indexer.accountBalances(filter);
 
         return accountBalances;
       }

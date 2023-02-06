@@ -70,10 +70,9 @@ const DisputeButton = observer(
           },
         });
 
-        const tx = sdk.context.api.tx.predictionMarkets.dispute(
-          market.marketId,
-          { Categorical: ID },
-        );
+        const tx = sdk.api.tx.predictionMarkets.dispute(market.marketId, {
+          Categorical: ID,
+        });
         await signAndSend(tx, signer, callback);
       }
     };

@@ -11,8 +11,7 @@ export const useMarketStatusCount = (status: string) => {
 
   const query = useQuery([id, isIndexed, rootKey, status], async () => {
     if (isIndexed) {
-      return (await sdk.context.indexer.marketStatusCount({ status })).markets
-        .length;
+      return (await sdk.indexer.marketStatusCount({ status })).markets.length;
     }
     return 0;
   });

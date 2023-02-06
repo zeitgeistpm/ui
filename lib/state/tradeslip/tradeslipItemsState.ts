@@ -336,7 +336,7 @@ export const useTradeslipItemsState = (
                 ).mul(new Decimal(slippage / 100 + 1));
 
                 if (!maxAmountIn.isNaN()) {
-                  transaction = sdk.context.api.tx.swaps.swapExactAmountOut(
+                  transaction = sdk.api.tx.swaps.swapExactAmountOut(
                     pool.poolId,
                     { Ztg: null },
                     maxAmountIn.toFixed(0),
@@ -356,7 +356,7 @@ export const useTradeslipItemsState = (
                 ).mul(new Decimal(1 - slippage / 100));
 
                 if (!minAmountOut.isNaN()) {
-                  transaction = sdk.context.api.tx.swaps.swapExactAmountIn(
+                  transaction = sdk.api.tx.swaps.swapExactAmountIn(
                     pool.poolId,
                     asset.assetId,
                     amount.toFixed(0),

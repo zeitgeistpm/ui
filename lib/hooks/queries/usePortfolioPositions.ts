@@ -3,7 +3,7 @@ import {
   AssetId,
   CategoricalAssetId,
   Context,
-  fromCompositeIndexerAssetId,
+  parseAssetId,
   getAssetWeight,
   getIndexOf,
   getMarketIdOf,
@@ -159,7 +159,7 @@ export const usePortfolioPositions = (
 
   const filter = rawPositions.data
     ?.map((position) => {
-      const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
+      const assetId = parseAssetId(position.assetId).unwrap();
       if (IOMarketOutcomeAssetId.is(assetId)) {
         return {
           marketId: getMarketIdOf(assetId),
@@ -194,7 +194,7 @@ export const usePortfolioPositions = (
   const poolAssetBalancesFilter =
     rawPositions.data
       ?.flatMap((position) => {
-        const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
+        const assetId = parseAssetId(position.assetId).unwrap();
         const pool = pools.data?.find((pool) => {
           if (IOPoolShareAssetId.is(assetId)) {
             return pool.poolId === assetId.PoolShare;
@@ -207,7 +207,7 @@ export const usePortfolioPositions = (
         if (!pool) return null;
 
         const assetIds = pool.weights
-          .map((w) => fromCompositeIndexerAssetId(w.assetId).unwrap())
+          .map((w) => parseAssetId(w.assetId).unwrap())
           .filter(IOMarketOutcomeAssetId.is.bind(IOMarketOutcomeAssetId));
 
         return assetIds.map((assetId) => ({
@@ -227,7 +227,7 @@ export const usePortfolioPositions = (
 
   const userAssetBalances = useAccountAssetBalances(
     rawPositions.data?.map((position) => ({
-      assetId: fromCompositeIndexerAssetId(position.assetId).unwrap(),
+      assetId: parseAssetId(position.assetId).unwrap(),
       account: address,
     })) ?? [],
   );
@@ -275,7 +275,7 @@ export const usePortfolioPositions = (
     let stillLoading = false;
 
     for (const position of rawPositions.data) {
-      const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
+      const assetId = parseAssetId(position.assetId).unwrap();
 
       let pool: IndexedPool<Context>;
       let marketId: number;
@@ -346,7 +346,7 @@ export const usePortfolioPositions = (
         }
       } else if (IOPoolShareAssetId.is(assetId)) {
         const poolAssetIds = pool.weights
-          .map((w) => fromCompositeIndexerAssetId(w.assetId).unwrap())
+          .map((w) => parseAssetId(w.assetId).unwrap())
           .filter(IOMarketOutcomeAssetId.is.bind(IOMarketOutcomeAssetId));
 
         const poolTotalValue = poolAssetIds.reduce(
