@@ -5,6 +5,7 @@ import type { NextApiRequest, NextConfig, PageConfig } from "next";
 
 export const config: PageConfig = {
   runtime: "edge",
+  unstable_JsPreload: false,
 };
 
 const boldFont = fetch(
