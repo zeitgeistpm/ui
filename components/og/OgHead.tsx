@@ -7,6 +7,9 @@ export type OgProps = {
 };
 
 export const OgHead = (props: OgProps) => {
+  let twitterImage = new URL(props.image);
+  twitterImage.searchParams.set("twitter", "true");
+
   return (
     <Head>
       {props.title && (
@@ -45,7 +48,7 @@ export const OgHead = (props: OgProps) => {
           <meta
             key="twitter:image"
             property="twitter:image"
-            content={props.image}
+            content={twitterImage.href}
           />
         </>
       )}
