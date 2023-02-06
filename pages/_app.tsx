@@ -5,14 +5,16 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import BatsthitDevtools from "@yornaath/batshit-devtools-react";
 import * as Fathom from "fathom-client";
+import DefaultLayout from "../layouts/DefaultLayout";
+import StoreComponent from "../components/_app/Store";
+import MobileMenuComponent from "../components/_app/MobileMenu";
+import AvataraContextComponents from "../components/_app/AvataraContext";
 
 import { observer } from "mobx-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { Suspense, useEffect } from "react";
 import { hotjar } from "react-hotjar";
-
-import dynamic from "next/dynamic";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -22,24 +24,6 @@ const environment = process.env.NEXT_PUBLIC_ENVIRONMENT_NAME;
 const isProduction = environment === "production" || environment == null;
 
 const queryClient = new QueryClient();
-
-const DefaultLayout = dynamic(import("../layouts/DefaultLayout"), {
-  ssr: false,
-});
-
-const StoreComponent = dynamic(import("../components/_app/Store"), {
-  ssr: false,
-});
-
-const MobileMenuComponent = dynamic(import("../components/_app/MobileMenu"), {
-  ssr: false,
-});
-const AvataraContextComponents = dynamic(
-  import("../components/_app/AvataraContext"),
-  {
-    ssr: false,
-  },
-);
 
 const MyApp = observer(({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
