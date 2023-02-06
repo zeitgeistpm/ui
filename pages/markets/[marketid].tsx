@@ -205,7 +205,7 @@ const Market: NextPage<{
             <></>
           )}
         </div>
-        {marketSdkv2.rejectReason && (
+        {marketSdkv2?.rejectReason && marketSdkv2.rejectReason.length > 0 && (
           <div className="mt-[10px] text-ztg-14-150">
             Market rejected: {marketSdkv2.rejectReason}
           </div>
