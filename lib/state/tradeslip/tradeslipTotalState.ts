@@ -59,7 +59,7 @@ export const useTradeslipTotalState = (): TradeslipTotalState => {
     if (transactions.length !== items.length) return null;
 
     if (sdk && isRpcSdk(sdk) && transactions.length) {
-      return sdk.context.api.tx.utility.batch(transactions);
+      return sdk.api.tx.utility.batch(transactions);
     }
 
     return null;

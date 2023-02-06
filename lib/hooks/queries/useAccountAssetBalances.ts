@@ -67,7 +67,7 @@ export const useAccountAssetBalances = (
         ],
         queryFn: async () => {
           if (sdk && isRpcSdk(sdk)) {
-            const api = await getApiAtBlock(sdk.context.api, blockNumber);
+            const api = await getApiAtBlock(sdk.api, blockNumber);
             const balance = !pair.account
               ? NA
               : await api.query.tokens.accounts(pair.account, pair.assetId);

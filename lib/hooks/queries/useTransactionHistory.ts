@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import {
-  fromCompositeIndexerAssetId,
+  parseAssetId,
   getMarketIdOf,
   isIndexedSdk,
   IOMarketOutcomeAssetId,
@@ -65,7 +65,7 @@ export const useTransactionHistory = (address: string) => {
     [id, transactionHistoryKey, address],
     async () => {
       if (isIndexedSdk(sdk) && address) {
-        const { historicalAssets } = await sdk.context.indexer.client.request<{
+        const { historicalAssets } = await sdk.indexer.client.request<{
           historicalAssets: {
             assetId: string;
             dAmountInPool: string;
@@ -87,7 +87,7 @@ export const useTransactionHistory = (address: string) => {
 
         const marketIds = new Set<number>(
           eventsToDisplay.map((event) => {
-            const assetId = fromCompositeIndexerAssetId(event.assetId).unwrap();
+            const assetId = parseAssetId(event.assetId).unwrap();
 
             return IOMarketOutcomeAssetId.is(assetId)
               ? getMarketIdOf(assetId)
@@ -97,7 +97,7 @@ export const useTransactionHistory = (address: string) => {
 
         const marketIdsArray = Array.from(marketIds);
 
-        const { markets } = await sdk.context.indexer.client.request<{
+        const { markets } = await sdk.indexer.client.request<{
           markets: MarketHeader[];
         }>(marketHeaderQuery, {
           marketIds: marketIdsArray,
@@ -110,7 +110,7 @@ export const useTransactionHistory = (address: string) => {
 
         const transactions: TradeEvent[] = eventsToDisplay.map((asset) => {
           const action: Action = humanReadableEventMap[asset.event];
-          const assetId = fromCompositeIndexerAssetId(asset.assetId).unwrap();
+          const assetId = parseAssetId(asset.assetId).unwrap();
           const marketId = IOMarketOutcomeAssetId.is(assetId)
             ? getMarketIdOf(assetId)
             : null;

@@ -107,7 +107,7 @@ const PoolDetails: NextPage = observer(() => {
 
   const { data: ends } = useQuery<number | NA>(
     [id, "market-ends", saturatedPoolData?.market.marketId],
-    async () => projectEndTimestamp(sdk.context, saturatedPoolData.market),
+    async () => projectEndTimestamp(sdk, saturatedPoolData.market),
     {
       enabled: Boolean(sdk && saturatedPoolData?.market),
     },

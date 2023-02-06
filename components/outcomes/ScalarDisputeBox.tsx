@@ -70,7 +70,7 @@ const ScalarDisputeBox = observer(
       });
 
       console.log(outcomeReport);
-      const tx = sdk.context.api.tx.predictionMarkets.dispute(
+      const tx = sdk.api.tx.predictionMarkets.dispute(
         market.marketId,
         outcomeReport,
       );
