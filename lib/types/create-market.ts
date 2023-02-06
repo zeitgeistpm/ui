@@ -9,8 +9,8 @@ export interface MultipleOutcomeEntry {
 }
 
 export interface RangeOutcomeEntry {
-  minimum: number | typeof NaN;
-  maximum: number | typeof NaN;
+  minimum: string;
+  maximum: string;
   ticker: string;
   type: RangeType;
 }
