@@ -26,6 +26,7 @@ import CourtStore from "./CourtStore";
 import Wallets from "../wallets";
 
 import { Context, Sdk } from "@zeitgeistpm/sdk-next";
+
 interface Config {
   tokenSymbol: string;
   ss58Prefix: number;
@@ -69,7 +70,6 @@ export default class Store {
   exchangeStore = new ExchangeStore(this);
   courtStore: CourtStore;
   wallets = new Wallets(this);
-  ztgInfo: ZTGInfo;
 
   markets = new MarketsStore(this);
 
@@ -174,7 +174,6 @@ export default class Store {
     this.initGraphQlClient();
 
     this.userStore.checkIP();
-    this.fetchZTGPrice();
     try {
       await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
       await this.loadConfig();
@@ -254,20 +253,6 @@ export default class Store {
     if (this.userStore.gqlEndpoint && this.userStore.gqlEndpoint.length > 0) {
       this.graphQLClient = new GraphQLClient(this.userStore.gqlEndpoint, {});
     }
-  }
-
-  private async fetchZTGPrice(): Promise<void> {
-    const res = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=zeitgeist&vs_currencies=usd&include_24hr_change=true",
-    );
-    const json = await res.json();
-
-    runInAction(() => {
-      this.ztgInfo = {
-        price: new Decimal(json.zeitgeist.usd),
-        change: new Decimal(json.zeitgeist.usd_24h_change),
-      };
-    });
   }
 
   private async loadConfig() {
