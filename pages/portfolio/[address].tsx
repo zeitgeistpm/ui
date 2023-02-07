@@ -38,10 +38,21 @@ const Portfolio: NextPage = observer(() => {
     [subsidy],
   );
 
-  const { data: bonds } = useAccountBonds(address);
-  const bondTotal = bonds?.reduce(
-    (total, bond) =>
-      bond.isSettled === false ? total.plus(bond.value) : total,
+  const { data: marketBonds } = useAccountBonds(address);
+  const bondTotal = marketBonds?.reduce(
+    (total, marketBond) => {
+      const creationBond = marketBond.bonds.creation;
+      if (creationBond.isSettled === false) {
+        total.plus(creationBond.value);
+      }
+
+      const oracleBond = marketBond.bonds.oracle;
+      if (oracleBond.isSettled === false) {
+        total.plus(oracleBond.value);
+      }
+
+      return total;
+    },
 
     new Decimal(0),
   );
