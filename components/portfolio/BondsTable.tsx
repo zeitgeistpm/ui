@@ -8,12 +8,12 @@ const columns: TableColumn[] = [
   {
     header: "Bond type",
     accessor: "type",
-    type: "text",
+    type: "paragraph",
   },
   {
     header: "Responsible",
     accessor: "responsible",
-    type: "text",
+    type: "address",
   },
   {
     header: "Value(ZTG)",

@@ -60,7 +60,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
           />
         )}
       </div>
-      {/* <div className="flex-1 py-4 pl-4">
+      <div className="flex-1 border-gray-200 h-32 py-4 pl-4">
         {"loading" in props ? (
           <BreakdownSlotSkeleton />
         ) : (
@@ -71,7 +71,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
             changePercentage={props.bonded.changePercentage}
           />
         )}
-      </div> */}
+      </div>
     </div>
   );
 };

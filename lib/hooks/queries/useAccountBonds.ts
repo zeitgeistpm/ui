@@ -33,16 +33,16 @@ const accountBondsQuery = gql`
   }
 `;
 
-type MarketBond = {
+type Bond = {
   isSettled: boolean;
   value: string;
   who: string;
 };
 
-type Market = {
+export type MarketBond = {
   bonds: {
-    creation: MarketBond;
-    oracle: MarketBond;
+    creation: Bond;
+    oracle: Bond;
   };
   creator: string;
   question: string;
@@ -60,7 +60,7 @@ export const useAccountBonds = (address: string) => {
     async () => {
       if (isIndexedSdk(sdk) && address) {
         const { markets } = await sdk.indexer.client.request<{
-          markets: Market[];
+          markets: MarketBond[];
         }>(accountBondsQuery, {
           address: address,
         });
