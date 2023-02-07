@@ -1,3 +1,4 @@
+import { FC } from "react";
 import LiquidityPill from "components/markets/LiquidityPill";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
@@ -158,6 +159,24 @@ const Market: NextPage<{
   //required to fix title element warning
   const question = indexedMarket.question;
 
+  const MarketHeader: FC<{ img: string; question: string; status: string }> = ({
+    img,
+    question,
+    status,
+  }) => {
+    return (
+      <header>
+        <MarketImage
+          image={img}
+          alt={`Image depicting ${question}`}
+          size="120px"
+          status={status}
+        />
+        <h1 className="font-bold text-4xl">{question}</h1>
+      </header>
+    );
+  };
+  console.log(indexedMarket.status);
   return (
     <>
       <Head>
@@ -169,13 +188,15 @@ const Market: NextPage<{
         )}
       </Head>
       <div>
-        <div className="flex mb-ztg-33">
-          <MarketImage
+        <MarketHeader
+          img={indexedMarket.img}
+          question={question}
+          status={indexedMarket.status}
+        />
+        {/* <MarketImage
             image={indexedMarket.img}
             alt={`Image depicting ${question}`}
-          />
-          <div className="sub-header ml-ztg-20">{indexedMarket?.question}</div>
-        </div>
+          /> */}
         <div
           className="grid grid-flow-row-dense gap-4 w-full "
           style={{
