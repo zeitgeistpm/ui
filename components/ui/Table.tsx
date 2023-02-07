@@ -446,7 +446,11 @@ const Table = observer(
                     {columns.map((column, index) => (
                       <th
                         key={index}
-                        className={getHeaderClass(column)}
+                        className={`${getHeaderClass(column)} ${
+                          index == 0 ? "rounded-tl-md" : ""
+                        } ${
+                          index == columns.length - 1 ? "rounded-tr-md" : ""
+                        }`}
                         style={column.width ? { width: column.width } : {}}
                       >
                         <div

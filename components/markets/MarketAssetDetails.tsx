@@ -1,4 +1,4 @@
-import { fromCompositeIndexerAssetId } from "@zeitgeistpm/sdk-next";
+import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
@@ -51,7 +51,7 @@ const MarketAssetDetails = observer(
     const navigationStore = useNavigationStore();
     const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
-    const { data: market } = useMarket(marketId);
+    const { data: market } = useMarket({ marketId });
     const { data: spotPrices } = useMarketSpotPrices(marketId);
     const { data: priceChanges } = useMarket24hrPriceChanges(marketId);
 
@@ -146,11 +146,10 @@ const MarketAssetDetails = observer(
                 <AssetActionButtons
                   marketId={marketId}
                   assetId={
-                    fromCompositeIndexerAssetId(
+                    parseAssetId(
                       market.pool.weights[index].assetId,
                     ).unwrap() as any
                   }
-                  assetTicker={ticker}
                 />
               ),
             },

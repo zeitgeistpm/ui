@@ -472,14 +472,18 @@ const CreatePage: NextPage = observer(() => {
         }
       : {
           Scalar: [
-            new Decimal(outcomes.minimum)
-              .mul(ZTG)
-              .toDecimalPlaces(0)
-              .toNumber(),
-            new Decimal(outcomes.maximum)
-              .mul(ZTG)
-              .toDecimalPlaces(0)
-              .toNumber(),
+            BigInt(
+              new Decimal(outcomes.minimum)
+                .mul(ZTG)
+                .toDecimalPlaces(0)
+                .toFixed(0),
+            ) as any,
+            BigInt(
+              new Decimal(outcomes.maximum)
+                .mul(ZTG)
+                .toDecimalPlaces(0)
+                .toFixed(0),
+            ) as any,
           ],
         };
   };

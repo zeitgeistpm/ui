@@ -88,7 +88,7 @@ const DefaultLayout: FC = observer(({ children }) => {
           className="main-container flex flex-col dark:text-white"
           ref={mainRef}
         >
-          <div className="max-w-ztg-1100 mx-auto py-0 px-ztg-32 pt-ztg-14 w-full ">
+          <div className="max-w-ztg-1100 mx-auto py-0 px-ztg-32 pt-ztg-14 w-full">
             <ContentDimensionsProvider
               scrollTop={scrollTop}
               scrollTo={scrollTo}
@@ -98,6 +98,7 @@ const DefaultLayout: FC = observer(({ children }) => {
               {store.initialized ||
               router.pathname === "/" ||
               router.pathname.split("/")[1] === "markets" ||
+              router.pathname.split("/")[1] === "portfolio" ||
               router.pathname.split("/")[1] === "liquidity" ? (
                 children
               ) : (

@@ -13,7 +13,7 @@ export const useZtgBalance = (address: string, blockNumber?: number) => {
     [id, ztgBalanceRootKey, address, blockNumber],
     async () => {
       if (address && isRpcSdk(sdk)) {
-        const api = await getApiAtBlock(sdk.context.api, blockNumber);
+        const api = await getApiAtBlock(sdk.api, blockNumber);
 
         const balance = await api.query.system.account(address);
         return new Decimal(balance.data.free.toString());

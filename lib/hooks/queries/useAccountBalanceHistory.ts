@@ -16,7 +16,7 @@ export const useAccountBalanceHistory = (
     [id, rootKey, account, filter],
     async () => {
       if (sdk && isIndexedSdk(sdk) && account && filter) {
-        const history = await sdk.context.indexer.historicalAccountBalances({
+        const history = await sdk.indexer.historicalAccountBalances({
           where: {
             accountId_eq: account,
             timestamp_gt: filter.time,
@@ -28,14 +28,13 @@ export const useAccountBalanceHistory = (
           return history.historicalAccountBalances;
         }
 
-        const lastBalanceRecord =
-          await sdk.context.indexer.historicalAccountBalances({
-            where: {
-              accountId_eq: account,
-            },
-            order: HistoricalAccountBalanceOrderByInput.TimestampDesc,
-            limit: 1,
-          });
+        const lastBalanceRecord = await sdk.indexer.historicalAccountBalances({
+          where: {
+            accountId_eq: account,
+          },
+          order: HistoricalAccountBalanceOrderByInput.TimestampDesc,
+          limit: 1,
+        });
 
         return lastBalanceRecord.historicalAccountBalances;
       }
