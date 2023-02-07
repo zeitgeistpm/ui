@@ -13,6 +13,7 @@ import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
+import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
@@ -91,7 +92,7 @@ const PoolDetails: NextPage = observer(() => {
   const router = useRouter();
   const store = useStore();
 
-  const { ztgInfo } = store;
+  const { data: ztgInfo } = useZtgInfo();
   const [tableData, setTableData] = useState<TableData[]>();
 
   const poolId = Number(router.query.poolid);

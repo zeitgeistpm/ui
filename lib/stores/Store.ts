@@ -26,7 +26,7 @@ import CourtStore from "./CourtStore";
 import Wallets from "../wallets";
 
 import { Context, Sdk } from "@zeitgeistpm/sdk-next";
-import { fetchZTGPrice } from "lib/util/fetch-ztg-price";
+
 interface Config {
   tokenSymbol: string;
   ss58Prefix: number;
@@ -70,7 +70,6 @@ export default class Store {
   exchangeStore = new ExchangeStore(this);
   courtStore: CourtStore;
   wallets = new Wallets(this);
-  ztgInfo: ZTGInfo;
 
   markets = new MarketsStore(this);
 
@@ -175,7 +174,6 @@ export default class Store {
     this.initGraphQlClient();
 
     this.userStore.checkIP();
-    this.fetchZTGPrice();
     try {
       await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
       await this.loadConfig();
@@ -254,19 +252,6 @@ export default class Store {
   private initGraphQlClient() {
     if (this.userStore.gqlEndpoint && this.userStore.gqlEndpoint.length > 0) {
       this.graphQLClient = new GraphQLClient(this.userStore.gqlEndpoint, {});
-    }
-  }
-
-  private async fetchZTGPrice(): Promise<void> {
-    try {
-      const res = await fetchZTGPrice();
-      runInAction(() => {
-        this.ztgInfo = res;
-      });
-    } catch (err) {
-      runInAction(() => {
-        this.ztgInfo = { change: new Decimal(0), price: new Decimal(0) };
-      });
     }
   }
 
