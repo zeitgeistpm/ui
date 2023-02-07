@@ -48,7 +48,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
           />
         )}
       </div>
-      <div className="flex-1  border-gray-200 h-32 py-4 pl-4">
+      <div className="flex-1 border-r-2 border-gray-200 h-32 py-4 pl-4">
         {"loading" in props ? (
           <BreakdownSlotSkeleton />
         ) : (
