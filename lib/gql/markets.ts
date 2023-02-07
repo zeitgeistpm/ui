@@ -17,6 +17,7 @@ const marketQuery = gql`
       description
       pool {
         poolId
+        volume
       }
       question
       slug
@@ -53,7 +54,7 @@ export interface MarketPageIndexedData {
   };
   categories: { ticker: string; color: string }[];
   outcomeAssets: string[];
-  pool: { poolId: number };
+  pool: { poolId: number; volume: string };
   scalarType: ScalarRangeType | null;
   creator: string;
   oracle: string;

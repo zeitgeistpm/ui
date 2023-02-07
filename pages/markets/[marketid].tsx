@@ -159,24 +159,69 @@ const Market: NextPage<{
   //required to fix title element warning
   const question = indexedMarket.question;
 
-  const MarketHeader: FC<{ img: string; question: string; status: string }> = ({
-    img,
-    question,
-    status,
-  }) => {
+  const MarketHeader: FC<{
+    img: string;
+    question: string;
+    status: string;
+    getHeaderDetails: {
+      Created: string;
+      Ends: string;
+      Volume: string;
+      "Prize Pool": string;
+      Subsidy: number;
+    };
+  }> = ({ img, question, status }) => {
     return (
-      <header>
+      <header className="text-center">
         <MarketImage
           image={img}
           alt={`Image depicting ${question}`}
           size="120px"
           status={status}
+          className="mx-auto"
         />
         <h1 className="font-bold text-4xl">{question}</h1>
+        <div>
+          <div>
+            <span>Created: </span>
+            <span></span>
+          </div>
+        </div>
       </header>
     );
   };
-  console.log(indexedMarket.status);
+  console.log(indexedMarket);
+
+  const getHeaderDetails: {
+    Created: string;
+    Ends: string;
+    Volume: string;
+    "Prize Pool": string;
+    Subsidy: number;
+  } = () => {
+    if (prizePool && pool?.liquidity != null) {
+      const headerInfo = {
+        Created: new Intl.DateTimeFormat("en-US", {
+          dateStyle: "medium",
+        }).format(Number(indexedMarket.period.start)),
+        Ends: new Intl.DateTimeFormat("en-US", {
+          dateStyle: "medium",
+        }).format(Number(indexedMarket.period.end)),
+        Volume: indexedMarket?.pool?.volume
+          ? `${Number(indexedMarket?.pool?.volume)} ${
+              store?.config.tokenSymbol
+            }`
+          : 0,
+        "Prize Pool": `${prizePool} ${store?.config.tokenSymbol}`,
+        Subsidy: `${Number.isNaN(pool.liquidity) ? 0 : pool.liquidity} ${
+          store?.config.tokenSymbol
+        }`,
+      };
+      return headerInfo;
+    }
+  };
+
+  console.log(getHeaderDetails());
   return (
     <>
       <Head>
@@ -192,6 +237,7 @@ const Market: NextPage<{
           img={indexedMarket.img}
           question={question}
           status={indexedMarket.status}
+          getHeaderDetails={getHeaderDetails()}
         />
         {/* <MarketImage
             image={indexedMarket.img}
