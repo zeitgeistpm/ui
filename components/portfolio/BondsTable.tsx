@@ -1,10 +1,17 @@
 import Table, { TableColumn, TableData } from "components/ui/Table";
+import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
 import { useAccountBonds } from "lib/hooks/queries/useAccountBonds";
 
 const columns: TableColumn[] = [
   {
     header: "Bond type",
     accessor: "type",
+    type: "text",
+  },
+  {
+    header: "Responsible",
+    accessor: "responsible",
     type: "text",
   },
   {
@@ -20,21 +27,41 @@ const columns: TableColumn[] = [
 ];
 
 const BondsTable = ({ address }: { address: string }) => {
-  const { data: bonds } = useAccountBonds(address);
+  const { data: marketBonds } = useAccountBonds(address);
 
-  const tableData: TableData[] = bonds?.map((bond) => {
-    return {
-      question: bond.question,
-      action: bond.type,
-      value: {
-        value: bond.value,
-        usdValue: 0,
-      },
-      settled: bond.isSettled === true ? "Yes" : "No",
-    };
-  });
-
-  return <Table columns={columns} data={tableData} />;
+  return (
+    <div>
+      {marketBonds?.map((market) => (
+        <div key={market.marketId}>
+          <div>{market.question}</div>
+          <Table
+            columns={columns}
+            data={[
+              {
+                type: "Creation",
+                responsible: market.bonds.creation.who,
+                value: {
+                  value: new Decimal(market.bonds.creation.value).div(ZTG),
+                  usdValue: 0,
+                },
+                settled:
+                  market.bonds.creation.isSettled === true ? "Yes" : "No",
+              },
+              {
+                type: "Oracle",
+                responsible: market.bonds.oracle.who,
+                value: {
+                  value: new Decimal(market.bonds.oracle.value).div(ZTG),
+                  usdValue: 0,
+                },
+                settled: market.bonds.oracle.isSettled === true ? "Yes" : "No",
+              },
+            ]}
+          />
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export default BondsTable;
