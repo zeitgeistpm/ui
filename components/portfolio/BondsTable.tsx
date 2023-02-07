@@ -2,6 +2,7 @@ import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useAccountBonds } from "lib/hooks/queries/useAccountBonds";
+import MarketPositionHeader from "./MarketPositionHeader";
 
 const columns: TableColumn[] = [
   {
@@ -33,7 +34,10 @@ const BondsTable = ({ address }: { address: string }) => {
     <div>
       {marketBonds?.map((market) => (
         <div key={market.marketId}>
-          <div>{market.question}</div>
+          <MarketPositionHeader
+            marketId={market.marketId}
+            question={market.question}
+          />
           <Table
             columns={columns}
             data={[
