@@ -6,6 +6,7 @@ import {
   MarketTimer,
   MarketTimerSkeleton,
 } from "components/markets/MarketTimer";
+import { Skeleton } from "@material-ui/lab";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketImage from "components/ui/MarketImage";
@@ -163,14 +164,21 @@ const Market: NextPage<{
     img: string;
     question: string;
     status: string;
-    getHeaderDetails: {
-      Created: string;
-      Ends: string;
-      Volume: string;
-      "Prize Pool": string;
-      Subsidy: number;
-    };
-  }> = ({ img, question, status }) => {
+    starts: string;
+    ends: string;
+    prizePool: string;
+    subsidy: string;
+    volume: string;
+  }> = ({
+    img,
+    question,
+    status,
+    starts,
+    ends,
+    prizePool,
+    subsidy,
+    volume,
+  }) => {
     return (
       <header className="text-center">
         <MarketImage
@@ -182,46 +190,89 @@ const Market: NextPage<{
         />
         <h1 className="font-bold text-4xl">{question}</h1>
         <div>
-          <div>
-            <span>Created: </span>
-            <span></span>
-          </div>
+          {starts ? (
+            <div>
+              <span>Created: </span>
+              <span>{starts}</span>
+            </div>
+          ) : (
+            <Skeleton width="200px" height="50px" />
+          )}
+          {ends ? (
+            <div>
+              <span>Ends: </span>
+              <span>{ends}</span>
+            </div>
+          ) : (
+            <Skeleton width="200px" height="50px" />
+          )}
+          {volume ? (
+            <div>
+              <span>Volumes: </span>
+              <span>{volume}</span>
+            </div>
+          ) : (
+            <Skeleton width="200px" height="50px" />
+          )}
+          {prizePool ? (
+            <div>
+              <span>Prize Pool: </span>
+              <span>{prizePool}</span>
+            </div>
+          ) : (
+            <Skeleton width="200px" height="50px" />
+          )}
+          {subsidy ? (
+            <div>
+              <span>Subsidy: </span>
+              <span>{subsidy}</span>
+            </div>
+          ) : (
+            <Skeleton width="200px" height="50px" />
+          )}
         </div>
       </header>
     );
   };
-  console.log(indexedMarket);
 
-  const getHeaderDetails: {
-    Created: string;
-    Ends: string;
-    Volume: string;
-    "Prize Pool": string;
-    Subsidy: number;
-  } = () => {
-    if (prizePool && pool?.liquidity != null) {
-      const headerInfo = {
-        Created: new Intl.DateTimeFormat("en-US", {
-          dateStyle: "medium",
-        }).format(Number(indexedMarket.period.start)),
-        Ends: new Intl.DateTimeFormat("en-US", {
-          dateStyle: "medium",
-        }).format(Number(indexedMarket.period.end)),
-        Volume: indexedMarket?.pool?.volume
-          ? `${Number(indexedMarket?.pool?.volume)} ${
-              store?.config.tokenSymbol
-            }`
-          : 0,
-        "Prize Pool": `${prizePool} ${store?.config.tokenSymbol}`,
-        Subsidy: `${Number.isNaN(pool.liquidity) ? 0 : pool.liquidity} ${
-          store?.config.tokenSymbol
-        }`,
-      };
-      return headerInfo;
-    }
-  };
+  // const getHeaderDetails = () => {
+  //     const headerInfo = {
+  //       Created: new Intl.DateTimeFormat("en-US", {
+  //         dateStyle: "medium",
+  //       }).format(Number(indexedMarket.period.start)),
+  //       Ends: new Intl.DateTimeFormat("en-US", {
+  //         dateStyle: "medium",
+  //       }).format(Number(indexedMarket.period.end)),
+  //       Volume: indexedMarket?.pool?.volume
+  //         ? `${Number(indexedMarket?.pool?.volume)} ${
+  //             store?.config.tokenSymbol
+  //           }`
+  //         : "0",
+  //       "Prize Pool": `${prizePool} ${store?.config.tokenSymbol}`,
+  //       Subsidy: `${Number.isNaN(pool.liquidity) ? "0" : pool.liquidity} ${
+  //         store?.config.tokenSymbol
+  //       }`,
+  //     };
+  //     return headerInfo;
+  // };
 
-  console.log(getHeaderDetails());
+  const starts = new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+  }).format(Number(indexedMarket.period.start));
+  const ends = new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+  }).format(Number(indexedMarket.period.end));
+  const prize = prizePool && `${prizePool} ${store?.config.tokenSymbol}`;
+  const subsidy =
+    pool?.liquidity != null &&
+    `${Number.isNaN(pool.liquidity) ? "0" : pool.liquidity} ${
+      store?.config.tokenSymbol
+    }`;
+  const volume =
+    store?.config.tokenSymbol && indexedMarket?.pool?.volume
+      ? `${Number(indexedMarket?.pool?.volume)} ${store?.config.tokenSymbol}`
+      : "0";
+
   return (
     <>
       <Head>
@@ -237,7 +288,11 @@ const Market: NextPage<{
           img={indexedMarket.img}
           question={question}
           status={indexedMarket.status}
-          getHeaderDetails={getHeaderDetails()}
+          starts={starts}
+          ends={ends}
+          prizePool={prize}
+          volume={volume}
+          subsidy={subsidy}
         />
         {/* <MarketImage
             image={indexedMarket.img}
