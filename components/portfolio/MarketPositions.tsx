@@ -15,8 +15,8 @@ import Decimal from "decimal.js";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { Position } from "lib/hooks/queries/usePortfolioPositions";
 import { useStore } from "lib/stores/Store";
-import { formatNumberLocalized } from "lib/util";
 import Link from "next/link";
+import MarketPositionHeader from "./MarketPositionHeader";
 
 export type MarketPositionsProps = {
   usdZtgPrice: Decimal;
@@ -48,11 +48,10 @@ export const MarketPositions = ({
 
   return (
     <div className={`${className}`}>
-      <h2 className="text-xl text-center font-light mb-6">
-        <Link href={`/markets/${market.marketId}`}>
-          <span className="hover:text-blue-600">{market.question}</span>
-        </Link>
-      </h2>
+      <MarketPositionHeader
+        marketId={market.marketId}
+        question={market.question}
+      />
       <Table
         columns={[
           {
