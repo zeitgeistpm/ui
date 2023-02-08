@@ -22,7 +22,7 @@ import {
 import React from "react";
 import HeroSlider from "components/hero-slider/HeroSlider";
 
-const MAIN_IMAGE_PATH = "/carousel/intro_zeitgeist_avatar.png";
+const MAIN_IMAGE_PATH = "/carousel/superbowl.png";
 
 const getPlaiceholders = (
   paths: string[],
@@ -80,7 +80,8 @@ const IndexPage: NextPage<{
     return (
       <div data-testid="indexPage">
         <a
-          href="https://blog.zeitgeist.pm/announcing-zeitgeist-launch-nfts/"
+          // href="https://blog.zeitgeist.pm/announcing-zeitgeist-launch-nfts/"
+          href="https://app.zeitgeist.pm/markets/87"
           target="_blank"
           rel="noreferrer"
         >
