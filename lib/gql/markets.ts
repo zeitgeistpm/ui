@@ -15,6 +15,7 @@ const marketQuery = gql`
     markets(where: { marketId_eq: $marketId }) {
       marketId
       description
+      baseAsset
       pool {
         poolId
         volume

@@ -166,9 +166,10 @@ const Market: NextPage<{
     status: string;
     starts: string;
     ends: string;
-    prizePool: string;
-    subsidy: string;
-    volume: string;
+    prizePool: string | number;
+    subsidy: string | number;
+    volume: number;
+    token: string;
   }> = ({
     img,
     question,
@@ -178,6 +179,7 @@ const Market: NextPage<{
     prizePool,
     subsidy,
     volume,
+    token,
   }) => {
     return (
       <header className="text-center">
@@ -196,7 +198,7 @@ const Market: NextPage<{
               <span>{starts}</span>
             </div>
           ) : (
-            <Skeleton width="200px" height="50px" />
+            <Skeleton width="50px" height="auto" />
           )}
           {ends ? (
             <div>
@@ -204,74 +206,62 @@ const Market: NextPage<{
               <span>{ends}</span>
             </div>
           ) : (
-            <Skeleton width="200px" height="50px" />
+            <Skeleton width="50px" height="auto" />
           )}
-          {volume ? (
+          {token ? (
             <div>
-              <span>Volumes: </span>
-              <span>{volume}</span>
+              <span>Volume: </span>
+              <span>
+                {new Intl.NumberFormat("default", {
+                  maximumSignificantDigits: 3,
+                  notation: "compact",
+                }).format(volume)}
+                {token}
+              </span>
             </div>
           ) : (
-            <Skeleton width="200px" height="50px" />
+            <Skeleton width="50px" height="auto" />
           )}
-          {prizePool ? (
+          {prizePool >= 0 && token ? (
             <div>
               <span>Prize Pool: </span>
-              <span>{prizePool}</span>
+              <span>
+                {prizePool} {token}
+              </span>
             </div>
           ) : (
-            <Skeleton width="200px" height="50px" />
+            <Skeleton width="50px" height="auto" />
           )}
-          {subsidy ? (
+          {subsidy >= 0 && token ? (
             <div>
               <span>Subsidy: </span>
-              <span>{subsidy}</span>
+              <span>
+                {subsidy} {token}
+              </span>
             </div>
           ) : (
-            <Skeleton width="200px" height="50px" />
+            <Skeleton width="50px" height="auto" />
           )}
         </div>
       </header>
     );
   };
 
-  // const getHeaderDetails = () => {
-  //     const headerInfo = {
-  //       Created: new Intl.DateTimeFormat("en-US", {
-  //         dateStyle: "medium",
-  //       }).format(Number(indexedMarket.period.start)),
-  //       Ends: new Intl.DateTimeFormat("en-US", {
-  //         dateStyle: "medium",
-  //       }).format(Number(indexedMarket.period.end)),
-  //       Volume: indexedMarket?.pool?.volume
-  //         ? `${Number(indexedMarket?.pool?.volume)} ${
-  //             store?.config.tokenSymbol
-  //           }`
-  //         : "0",
-  //       "Prize Pool": `${prizePool} ${store?.config.tokenSymbol}`,
-  //       Subsidy: `${Number.isNaN(pool.liquidity) ? "0" : pool.liquidity} ${
-  //         store?.config.tokenSymbol
-  //       }`,
-  //     };
-  //     return headerInfo;
-  // };
-
+  const token = store?.config?.tokenSymbol && store.config.tokenSymbol;
+  console.log(pool?.liquidity);
   const starts = new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
   }).format(Number(indexedMarket.period.start));
   const ends = new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
   }).format(Number(indexedMarket.period.end));
-  const prize = prizePool && `${prizePool} ${store?.config.tokenSymbol}`;
+  const volume = indexedMarket?.pool?.volume
+    ? Number(indexedMarket?.pool?.volume)
+    : 0;
+  // -1 to indicate loading state since type is number
+  const prize = prizePool === undefined ? -1 : prizePool ? prizePool : 0;
   const subsidy =
-    pool?.liquidity != null &&
-    `${Number.isNaN(pool.liquidity) ? "0" : pool.liquidity} ${
-      store?.config.tokenSymbol
-    }`;
-  const volume =
-    store?.config.tokenSymbol && indexedMarket?.pool?.volume
-      ? `${Number(indexedMarket?.pool?.volume)} ${store?.config.tokenSymbol}`
-      : "0";
+    pool === undefined ? -1 : pool?.liquidity ? Number(pool?.liquidity) : 0;
 
   return (
     <>
@@ -290,14 +280,11 @@ const Market: NextPage<{
           status={indexedMarket.status}
           starts={starts}
           ends={ends}
+          token={token}
           prizePool={prize}
           volume={volume}
           subsidy={subsidy}
         />
-        {/* <MarketImage
-            image={indexedMarket.img}
-            alt={`Image depicting ${question}`}
-          /> */}
         <div
           className="grid grid-flow-row-dense gap-4 w-full "
           style={{
