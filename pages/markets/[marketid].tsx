@@ -166,8 +166,8 @@ const Market: NextPage<{
     status: string;
     starts: string;
     ends: string;
-    prizePool: string | number;
-    subsidy: string | number;
+    prizePool: number;
+    subsidy: number;
     volume: number;
     token: string;
   }> = ({
@@ -216,6 +216,7 @@ const Market: NextPage<{
                   maximumSignificantDigits: 3,
                   notation: "compact",
                 }).format(volume)}
+                &nbsp;
                 {token}
               </span>
             </div>
@@ -226,7 +227,12 @@ const Market: NextPage<{
             <div>
               <span>Prize Pool: </span>
               <span>
-                {prizePool} {token}
+                {new Intl.NumberFormat("default", {
+                  maximumSignificantDigits: 3,
+                  notation: "compact",
+                }).format(prizePool)}
+                &nbsp;
+                {token}
               </span>
             </div>
           ) : (
@@ -236,7 +242,12 @@ const Market: NextPage<{
             <div>
               <span>Subsidy: </span>
               <span>
-                {subsidy} {token}
+                {new Intl.NumberFormat("default", {
+                  maximumSignificantDigits: 3,
+                  notation: "compact",
+                }).format(subsidy)}
+                &nbsp;
+                {token}
               </span>
             </div>
           ) : (
