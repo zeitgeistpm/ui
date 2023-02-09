@@ -6,7 +6,7 @@ import {
   projectEndTimestamp,
 } from "@zeitgeistpm/sdk-next";
 import FullSetButtons from "components/markets/FullSetButtons";
-import { OgHead } from "components/og/OgHead";
+import MarketMeta from "components/meta/MarketMeta";
 import InfoBoxes from "components/ui/InfoBoxes";
 import Pill from "components/ui/Pill";
 import Table, { TableColumn, TableData } from "components/ui/Table";
@@ -177,11 +177,7 @@ const PoolDetails: NextPage = observer(() => {
 
   return (
     <>
-      <OgHead
-        title={saturatedPoolData?.market.question}
-        description={saturatedPoolData?.market.description}
-        image={`/api/og/generate?marketId=${saturatedPoolData?.market.marketId}`}
-      />
+      <MarketMeta market={saturatedPoolData?.market} />
       <div>
         <InfoBoxes />
         <div className="flex items-center mb-ztg-33">

@@ -45,7 +45,7 @@ export const OgHead = (props: OgProps) => {
           <meta
             key="twitter:image"
             property="twitter:image"
-            content={`${props.image}&twitter`}
+            content={`${props.image}`}
           />
         </>
       )}
