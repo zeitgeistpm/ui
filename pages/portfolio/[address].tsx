@@ -1,5 +1,6 @@
 import { Tab } from "@headlessui/react";
-import { getIndexOf } from "@zeitgeistpm/sdk-next";
+import { getIndexOf, ZTG } from "@zeitgeistpm/sdk-next";
+import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
 import {
   MarketPositions,
@@ -7,6 +8,8 @@ import {
 } from "components/portfolio/MarketPositions";
 import TransactionHistoryTable from "components/portfolio/TransactionHistoryTable";
 import InfoBoxes from "components/ui/InfoBoxes";
+import Decimal from "decimal.js";
+import { useAccountBonds } from "lib/hooks/queries/useAccountBonds";
 import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { groupBy, range } from "lodash-es";
@@ -62,35 +65,24 @@ const Portfolio: NextPage = observer(() => {
               <h3 className="font-bold text-xl mb-4 text-center">
                 Predictions
               </h3>
-
               <Tab.Group>
                 <Tab.List className="flex center mb-14">
-                  <Tab className="text-lg px-4">
-                    {({ selected }) => (
-                      <div
-                        className={
-                          selected
-                            ? "font-bold text-gray-800 transition-all"
-                            : "text-gray-500 transition-all"
-                        }
-                      >
-                        By Markets
-                      </div>
-                    )}
-                  </Tab>
-                  <Tab className="text-lg px-4">
-                    {({ selected }) => (
-                      <div
-                        className={
-                          selected
-                            ? "font-bold text-gray-800 transition-all"
-                            : "text-gray-500 transition-all"
-                        }
-                      >
-                        Subsidy
-                      </div>
-                    )}
-                  </Tab>
+                  {["By Markets", "Subsidy", "Bonds"].map((title, index) => (
+                    <Tab className="text-lg px-4">
+                      {({ selected }) => (
+                        <div
+                          key={index}
+                          className={
+                            selected
+                              ? "font-bold text-gray-800 transition-all"
+                              : "text-gray-500 transition-all"
+                          }
+                        >
+                          {title}
+                        </div>
+                      )}
+                    </Tab>
+                  ))}
                 </Tab.List>
 
                 <Tab.Panels>
@@ -156,6 +148,9 @@ const Portfolio: NextPage = observer(() => {
                             );
                           },
                         )}
+                  </Tab.Panel>
+                  <Tab.Panel>
+                    <BondsTable address={address} />
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>

@@ -19,7 +19,7 @@ export const usePoolAccountIds = (pools?: Pool<Context>[]) => {
               return {
                 poolId: pool.poolId,
                 accountId: (
-                  await sdk.context.api.rpc.swaps.poolAccountId(pool.poolId)
+                  await sdk.api.rpc.swaps.poolAccountId(pool.poolId)
                 ).toString(),
               };
             }

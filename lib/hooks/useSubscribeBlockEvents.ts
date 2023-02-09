@@ -12,7 +12,7 @@ export const useSubscribeBlockEvents = () => {
 
   useEffect(() => {
     if (sdk && isRpcSdk(sdk)) {
-      sdk.context.api.query.system.events((events) => {
+      sdk.api.query.system.events((events) => {
         const accounts = new Set<string>();
 
         events.forEach((record) => {

@@ -43,7 +43,7 @@ export const defaultMarketsQueryState: MarketsListQuery = {
     tag: [],
     currency: [],
   },
-  ordering: MarketsOrderBy.Newest,
+  ordering: MarketsOrderBy.MostVolume,
   liquidityOnly: true,
 };
 

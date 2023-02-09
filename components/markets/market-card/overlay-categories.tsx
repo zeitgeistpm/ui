@@ -1,4 +1,4 @@
-import { fromCompositeIndexerAssetId } from "@zeitgeistpm/sdk-next";
+import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import BuySellButtons from "components/trade-slip/BuySellButtons";
 import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
 import { useMarketCardContext } from "./context";
@@ -40,7 +40,7 @@ const MarketCardOverlayOutcome = ({
       <div className="ml-auto">
         {outcome.assetId && (
           <BuySellButtons
-            assetId={fromCompositeIndexerAssetId(outcome.assetId).unwrap()}
+            assetId={parseAssetId(outcome.assetId).unwrap()}
             disabled={outcome.assetId == null}
           />
         )}

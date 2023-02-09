@@ -1,6 +1,6 @@
 import {
   AssetId,
-  fromCompositeIndexerAssetId,
+  parseAssetId,
   getScalarBounds,
   IndexerContext,
   isNA,
@@ -72,9 +72,7 @@ export const RedeemButtonByAssetId = observer(
         const resolvedAssetIdString =
           market.outcomeAssets[Number(market.resolvedOutcome)];
 
-        const resolvedAssetId = fromCompositeIndexerAssetId(
-          resolvedAssetIdString,
-        ).unwrap();
+        const resolvedAssetId = parseAssetId(resolvedAssetIdString).unwrap();
 
         const balance = assetBalances?.get(signer?.address, resolvedAssetId)
           ?.data.balance;
@@ -157,9 +155,7 @@ export const RedeemButtonByValue = observer(
         },
       });
 
-      const tx = sdk.context.api.tx.predictionMarkets.redeemShares(
-        market.marketId,
-      );
+      const tx = sdk.api.tx.predictionMarkets.redeemShares(market.marketId);
 
       await AE.from(() => signAndSend(tx, signer, callback));
 

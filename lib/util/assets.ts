@@ -1,8 +1,4 @@
-import {
-  fromCompositeIndexerAssetId,
-  getIndexOf,
-  ZTG,
-} from "@zeitgeistpm/sdk-next";
+import { parseAssetId, getIndexOf, ZTG } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 
 export const getCurrentPrediction = (
@@ -19,8 +15,8 @@ export const getCurrentPrediction = (
 
     assets.sort(
       (a, b) =>
-        getIndexOf(fromCompositeIndexerAssetId(a.assetId).unwrap()) -
-        getIndexOf(fromCompositeIndexerAssetId(b.assetId).unwrap()),
+        getIndexOf(parseAssetId(a.assetId).unwrap()) -
+        getIndexOf(parseAssetId(b.assetId).unwrap()),
     );
 
     assets.forEach((asset, index) => {

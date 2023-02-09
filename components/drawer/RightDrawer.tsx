@@ -7,6 +7,8 @@ import { observer } from "mobx-react";
 import { useRouter } from "next/router";
 import { ReactFragment, useEffect, useMemo, useState } from "react";
 import { useTradeslipItems } from "lib/state/tradeslip/items";
+import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
+
 import ExchangeBox from "../exchange/ExchangeBox";
 import LiquidityPoolsBox from "../liquidity/LiquidityPoolsBox";
 import TradeSlip from "../trade-slip";
@@ -14,7 +16,7 @@ import Tabs from "../ui/Tabs";
 import Drawer from "./Drawer";
 
 const ZTGSummary = observer(() => {
-  const { ztgInfo } = useStore();
+  const { data: ztgInfo } = useZtgInfo();
 
   return (
     <div className="flex px-ztg-28 items-center ">
@@ -111,8 +113,8 @@ const RightDrawer = observer(() => {
   }, [tradeslipItems.items.length]);
 
   return (
-    <Drawer side="right" className="bg-sky-100 dark:bg-black">
-      <div className="h-full dark:bg-black">
+    <Drawer side="right" className="bg-sky-100 !fixed right-0 z-ztg-10">
+      <div className="h-full">
         <div className="mt-ztg-10 h-full flex flex-col">
           <ZTGSummary />
           {tabLabels ? (
