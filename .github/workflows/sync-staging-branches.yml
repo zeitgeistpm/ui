@@ -20,7 +20,7 @@ jobs:
           pr_label: "automerge"
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: automerge
-        uses: pascakgn/automerge-action@v0.15.5
+        uses: pascalgn/automerge-action@v0.15.5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PULL_REQUEST: ${{ steps.open-pr.outputs.pr_number }}
