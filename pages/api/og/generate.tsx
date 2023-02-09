@@ -92,38 +92,44 @@ export default async function GenerateOgImage(request: NextRequest) {
 
       <div tw="flex flex-1 flex-col h-full">
         <h1
-          tw={`${isTwitter ? "text-3xl mb-14" : "text-5xl mb-48"}`}
+          tw={`${isTwitter ? "text-3xl mb-14" : "text-5xl"}`}
           style={{ lineHeight: "1.3em" }}
         >
           {market.question}
         </h1>
 
-        <div tw="flex flex-col flex-1">
-          <h2 tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}>
-            {market.status === "Reported" || market.status === "Resolved"
-              ? "Winning Outcome:"
-              : "Prediction:"}
-          </h2>
-          <div
-            tw={`flex ${isTwitter ? "text-1xl" : "text-2xl"} -mt-3`}
-            style={{ color: "#ABC1F9" }}
-          >
-            {market.marketType.categorical
-              ? `${prediction.percentage}% — ${prediction.name}`
-              : `${prediction.name}`}
+        <div tw="flex flex-1 flex-col just h-full justify-end">
+          <div tw="flex flex-col mb-4">
+            <h2
+              tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}
+            >
+              {market.status === "Reported" || market.status === "Resolved"
+                ? "Winning Outcome:"
+                : "Prediction:"}
+            </h2>
+            <div
+              tw={`flex ${isTwitter ? "text-1xl" : "text-2xl"} -mt-3`}
+              style={{ color: "#ABC1F9" }}
+            >
+              {market.marketType.categorical
+                ? `${prediction.percentage}% — ${prediction.name}`
+                : `${prediction.name}`}
+            </div>
           </div>
-        </div>
 
-        <div tw="flex flex-col">
-          <h2 tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}>
-            Volume:
-          </h2>
-          <div
-            tw={`flex ${isTwitter ? "text-1xl" : "text-2xl"}  -mt-3`}
-            style={{ color: "#ABC1F9" }}
-          >
-            {volume}
-            {" ZTG"}
+          <div tw="flex flex-col">
+            <h2
+              tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}
+            >
+              Volume:
+            </h2>
+            <div
+              tw={`flex ${isTwitter ? "text-1xl" : "text-2xl"}  -mt-3`}
+              style={{ color: "#ABC1F9" }}
+            >
+              {volume}
+              {" ZTG"}
+            </div>
           </div>
         </div>
       </div>
