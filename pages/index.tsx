@@ -79,12 +79,7 @@ const IndexPage: NextPage<{
   }) => {
     return (
       <div data-testid="indexPage">
-        <a
-          // href="https://blog.zeitgeist.pm/announcing-zeitgeist-launch-nfts/"
-          href="https://app.zeitgeist.pm/markets/87"
-          target="_blank"
-          rel="noreferrer"
-        >
+        <Link href="/markets/87">
           <Image
             className="bg-black rounded-ztg-10 max-w-[1036px] w-full"
             src={MAIN_IMAGE_PATH}
@@ -96,7 +91,7 @@ const IndexPage: NextPage<{
             placeholder="blur"
             priority
           />
-        </a>
+        </Link>
         <div className="flex items-center w-full justify-center relative bottom-[29px]">
           <motion.div
             whileHover={{ scale: 1.03 }}
