@@ -160,6 +160,27 @@ const Market: NextPage<{
   //required to fix title element warning
   const question = indexedMarket.question;
 
+  const HeaderStat: FC<{ label: string; border?: boolean }> = ({
+    label,
+    border = true,
+    children,
+  }) => {
+    return (
+      <div className={border && "sm:border-r sm:border-ztg-blue pr-2"}>
+        <span>{label}: </span>
+        <span className="font-medium">{children}</span>
+      </div>
+    );
+  };
+
+  const Tag: FC<{ className?: string }> = ({ className, children }) => {
+    return (
+      <span className={`px-2.5 py-1 rounded bg-gray-300 ${className}`}>
+        {children}
+      </span>
+    );
+  };
+
   const MarketHeader: FC<{
     img: string;
     question: string;
@@ -194,84 +215,68 @@ const Market: NextPage<{
         />
         <h1 className="font-bold text-4xl my-5">{question}</h1>
         <div className="flex flex-col sm:flex-row sm:flex-wrap justify-center gap-2 mb-5">
-          <div className="sm:border-r sm:border-ztg-blue pr-2">
-            <span>Created: </span>
-            <span className="font-medium">{createdAt}</span>
-          </div>
-          <div className="sm:border-r sm:border-ztg-blue pr-2">
-            <span>Ends: </span>
-            <span className="font-medium">{ends}</span>
-          </div>
+          <HeaderStat label="Created">{createdAt}</HeaderStat>
+          <HeaderStat label="Ends">{ends}</HeaderStat>
           {token ? (
-            <div className="sm:border-r sm:border-ztg-blue pr-2">
-              <span>Volume: </span>
-              <span className="font-medium">
-                {new Intl.NumberFormat("default", {
-                  maximumSignificantDigits: 3,
-                  notation: "compact",
-                }).format(volume)}
-                &nbsp;
-                {token}
-              </span>
-            </div>
+            <HeaderStat label="Volume">
+              {/* TODO: replace num formatting with util function */}
+              {new Intl.NumberFormat("default", {
+                maximumSignificantDigits: 3,
+                notation: "compact",
+              }).format(volume)}
+              &nbsp;
+              {token}
+            </HeaderStat>
           ) : (
             <Skeleton width="150px" height="24px" />
           )}
           {prizePool >= 0 && token ? (
-            <div className="sm:border-r sm:border-ztg-blue pr-2">
-              <span>Prize Pool: </span>
-              <span className="font-medium">
-                {new Intl.NumberFormat("default", {
-                  maximumSignificantDigits: 3,
-                  notation: "compact",
-                }).format(prizePool)}
-                &nbsp;
-                {token}
-              </span>
-            </div>
+            <HeaderStat label="Prize Pool">
+              {/* TODO: replace num formatting with util function */}
+              {new Intl.NumberFormat("default", {
+                maximumSignificantDigits: 3,
+                notation: "compact",
+              }).format(prizePool)}
+              &nbsp;
+              {token}
+            </HeaderStat>
           ) : (
             <Skeleton width="150px" height="24px" />
           )}
           {subsidy >= 0 && token ? (
-            <div>
-              <span>Subsidy: </span>
-              <span className="font-medium">
-                {new Intl.NumberFormat("default", {
-                  maximumSignificantDigits: 3,
-                  notation: "compact",
-                }).format(subsidy)}
-                &nbsp;
-                {token}
-              </span>
-            </div>
+            <HeaderStat label="Subsidy" border={false}>
+              {/* TODO: replace num formatting with util function */}
+              {new Intl.NumberFormat("default", {
+                maximumSignificantDigits: 3,
+                notation: "compact",
+              }).format(subsidy)}
+              &nbsp;
+              {token}
+            </HeaderStat>
           ) : (
             <Skeleton width="150px" height="24px" />
           )}
         </div>
         <div className="flex flex-wrap justify-center gap-2.5">
-          {status === "Active" ? (
-            <span className="px-2.5 py-1 rounded bg-green-lighter">
+          <Tag className={`${status === "Active" && "!bg-green-lighter"}`}>
+            {status === "Active" && (
               <span className="text-green">&#x2713; </span>
-              {status}
-            </span>
-          ) : (
-            <span className="px-2.5 py-1 rounded bg-gray-300">{status}</span>
-          )}
+            )}
+            {status}
+          </Tag>
           {tags.map((tag, index) => {
-            return (
-              <span key={index} className="px-2.5 py-1 rounded bg-gray-300">
-                {tag}
-              </span>
-            );
+            return <Tag key={index}>{tag}</Tag>;
           })}
         </div>
       </header>
     );
   };
 
-  //data for market header
+  //data for MarketHeader
   const token = store?.config?.tokenSymbol && store.config.tokenSymbol;
-  const createdAtTime = new Date(indexedMarket.pool.createdAt).getTime();
+  const createdAtTime = indexedMarket?.pool?.createdAt
+    ? new Date(indexedMarket.pool.createdAt).getTime()
+    : indexedMarket.period.start;
   const createdAt = new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
   }).format(Number(createdAtTime));

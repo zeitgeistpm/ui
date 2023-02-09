@@ -20,7 +20,7 @@ const MarketImage = observer(
     const imageUrl = useMarketImageUrl(image);
     return (
       <div
-        className={`rounded-full flex-shrink-0 relative overflow-hidden ${
+        className={`relative rounded-full flex-shrink-0 overflow-hidden ${
           status === "Active" && "border-[15px] border-green-lighter"
         } ${className} `}
         style={{ width: size, height: size }}
@@ -30,7 +30,10 @@ const MarketImage = observer(
           src={imageUrl}
           fill
           className="rounded-full"
-          style={{ objectFit: "cover", objectPosition: "50% 50%" }}
+          style={{
+            objectFit: "cover",
+            objectPosition: "50% 50%",
+          }}
           sizes={size}
         />
       </div>
