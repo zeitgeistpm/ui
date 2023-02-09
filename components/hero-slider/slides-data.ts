@@ -7,7 +7,7 @@ export const slidesData = [
     },
     bg: "/carousel/superbowl.png",
     cta1: "",
-    link1: "https://blog.zeitgeist.pm/",
+    link1: "https://staging.zeitgeist.pm/markets/87",
     color1: {
       primary: "#E90303",
       secondary: "#FFF",
