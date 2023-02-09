@@ -21,7 +21,7 @@ import {
 } from "plaiceholder";
 import React from "react";
 
-const MAIN_IMAGE_PATH = "/carousel/intro_zeitgeist_avatar.png";
+const MAIN_IMAGE_PATH = "/carousel/superbowl.png";
 
 const getPlaiceholders = (
   paths: string[],

@@ -62,7 +62,6 @@ const TopBar = observer(() => {
     <div
       className={`flex w-full py-ztg-18 bg-transparent fixed z-ztg-10`}
       style={{
-        width: "-webkit-fill-available",
         backgroundColor: `${navbar ? "white" : "transparent"}`,
       }}
     >

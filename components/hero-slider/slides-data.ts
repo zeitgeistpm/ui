@@ -2,18 +2,18 @@ export const slidesData = [
   {
     id: 1,
     title: {
-      text: "Introducing Zeitgeist Avatar",
+      text: "",
       styles: "text-white text-3xl sm:text-4xl md:text-6xl",
     },
-    bg: "/carousel/slide-1.jpeg",
-    cta1: "Protocol Exclusive",
+    bg: "/carousel/superbowl.png",
+    cta1: "",
     link1: "https://blog.zeitgeist.pm/",
     color1: {
       primary: "#E90303",
       secondary: "#FFF",
       border: "#E90303",
     },
-    cta2: "Read Post",
+    cta2: "",
     link2: "https://blog.zeitgeist.pm/zeitgeist-newsletter-002/",
     color2: {
       primary: "transparent",

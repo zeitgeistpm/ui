@@ -1,3 +1,4 @@
+import PoolTable from "components/liquidity/PoolTable";
 import LiquidityPill from "components/markets/LiquidityPill";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
@@ -37,6 +38,8 @@ import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
+import { Tab } from "@headlessui/react";
+import Link from "next/link";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -124,7 +127,6 @@ const Market: NextPage<{
     marketId: Number(marketid),
   });
   const { data: marketStage } = useMarketStage(marketSdkv2);
-
   const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
 
   if (indexedMarket == null) {
@@ -206,6 +208,11 @@ const Market: NextPage<{
             <></>
           )}
         </div>
+        {marketSdkv2?.rejectReason && marketSdkv2.rejectReason.length > 0 && (
+          <div className="mt-[10px] text-ztg-14-150">
+            Market rejected: {marketSdkv2.rejectReason}
+          </div>
+        )}
         <div className="py-ztg-20 mb-10 h-32">
           {marketStore && marketStage ? (
             <MarketTimer stage={marketStage} />
@@ -239,10 +246,39 @@ const Market: NextPage<{
             </div>
           </div>
         )}
-        <MarketAssetDetails
-          marketId={Number(marketid)}
-          marketStore={marketStore}
-        />
+        <Tab.Group>
+          <Tab.List className="flex center my-6">
+            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+              Predictions
+            </Tab>
+            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+              Subsidy
+            </Tab>
+          </Tab.List>
+
+          <Tab.Panels>
+            <Tab.Panel>
+              <MarketAssetDetails
+                marketId={Number(marketid)}
+                marketStore={marketStore}
+              />
+            </Tab.Panel>
+            <Tab.Panel>
+              {marketSdkv2?.pool && (
+                <div className="flex flex-col">
+                  <Link
+                    href={`/liquidity/${marketSdkv2.pool.poolId}`}
+                    className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 mb-[10px] "
+                  >
+                    View Pool
+                  </Link>
+                  <PoolTable poolId={marketSdkv2.pool.poolId} />
+                </div>
+              )}
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
+
         {marketStore?.type === "scalar" && spotPrices && (
           <div className="mt-ztg-20 mb-ztg-30">
             <ScalarPriceRange

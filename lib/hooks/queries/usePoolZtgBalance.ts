@@ -39,7 +39,7 @@ export const usePoolZtgBalance = (
           queryKey: [id, rootKey, pool.poolId, blockNumber],
           queryFn: async () => {
             if (sdk && isRpcSdk(sdk) && pools && accountId) {
-              const api = await getApiAtBlock(sdk.context.api, blockNumber);
+              const api = await getApiAtBlock(sdk.api, blockNumber);
               return {
                 pool,
                 balance: await api.query.system.account(accountId),

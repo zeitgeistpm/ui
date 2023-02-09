@@ -3,7 +3,7 @@ import {
   AssetId,
   CategoricalAssetId,
   Context,
-  fromCompositeIndexerAssetId,
+  parseAssetId,
   getAssetWeight,
   getIndexOf,
   getMarketIdOf,
@@ -35,6 +35,7 @@ import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { calcSpotPrice } from "lib/math";
 import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { useMemo } from "react";
+import { MarketBond, useAccountBonds } from "./useAccountBonds";
 
 export type UsePortfolioPositions = {
   /**
@@ -147,6 +148,8 @@ export const usePortfolioPositions = (
 
   const { data: ztgPrice } = useZtgInfo();
   const block24HoursAgo = Math.floor(now?.block - 7200);
+  const { data: marketBonds, isLoading: isBondsLoading } =
+    useAccountBonds(address);
 
   const rawPositions = useAccountTokenPositions({
     where: {
@@ -159,7 +162,7 @@ export const usePortfolioPositions = (
 
   const filter = rawPositions.data
     ?.map((position) => {
-      const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
+      const assetId = parseAssetId(position.assetId).unwrap();
       if (IOMarketOutcomeAssetId.is(assetId)) {
         return {
           marketId: getMarketIdOf(assetId),
@@ -194,7 +197,7 @@ export const usePortfolioPositions = (
   const poolAssetBalancesFilter =
     rawPositions.data
       ?.flatMap((position) => {
-        const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
+        const assetId = parseAssetId(position.assetId).unwrap();
         const pool = pools.data?.find((pool) => {
           if (IOPoolShareAssetId.is(assetId)) {
             return pool.poolId === assetId.PoolShare;
@@ -207,7 +210,7 @@ export const usePortfolioPositions = (
         if (!pool) return null;
 
         const assetIds = pool.weights
-          .map((w) => fromCompositeIndexerAssetId(w.assetId).unwrap())
+          .map((w) => parseAssetId(w.assetId).unwrap())
           .filter(IOMarketOutcomeAssetId.is.bind(IOMarketOutcomeAssetId));
 
         return assetIds.map((assetId) => ({
@@ -227,7 +230,7 @@ export const usePortfolioPositions = (
 
   const userAssetBalances = useAccountAssetBalances(
     rawPositions.data?.map((position) => ({
-      assetId: fromCompositeIndexerAssetId(position.assetId).unwrap(),
+      assetId: parseAssetId(position.assetId).unwrap(),
       account: address,
     })) ?? [],
   );
@@ -275,7 +278,7 @@ export const usePortfolioPositions = (
     let stillLoading = false;
 
     for (const position of rawPositions.data) {
-      const assetId = fromCompositeIndexerAssetId(position.assetId).unwrap();
+      const assetId = parseAssetId(position.assetId).unwrap();
 
       let pool: IndexedPool<Context>;
       let marketId: number;
@@ -346,7 +349,7 @@ export const usePortfolioPositions = (
         }
       } else if (IOPoolShareAssetId.is(assetId)) {
         const poolAssetIds = pool.weights
-          .map((w) => fromCompositeIndexerAssetId(w.assetId).unwrap())
+          .map((w) => parseAssetId(w.assetId).unwrap())
           .filter(IOMarketOutcomeAssetId.is.bind(IOMarketOutcomeAssetId));
 
         const poolTotalValue = poolAssetIds.reduce(
@@ -484,7 +487,7 @@ export const usePortfolioPositions = (
   );
 
   const breakdown = useMemo<PorfolioBreakdown>(() => {
-    if (!ztgPrice || !marketPositions || !subsidyPositions) {
+    if (!ztgPrice || !marketPositions || !subsidyPositions || isBondsLoading) {
       return null;
     }
 
@@ -513,10 +516,17 @@ export const usePortfolioPositions = (
       subsidyPositionsTotal24HoursAgo,
     );
 
-    const positionsTotal = tradingPositionsTotal.plus(subsidyPositionsTotal);
-    const positionsTotal24HoursAgo = tradingPositionsTotal24HoursAgo.plus(
-      subsidyPositionsTotal24HoursAgo,
-    );
+    const bondsTotal =
+      marketBonds?.length > 0
+        ? calcTotalBondsValue(marketBonds)
+        : new Decimal(0);
+
+    const positionsTotal = tradingPositionsTotal
+      .plus(subsidyPositionsTotal)
+      .plus(bondsTotal);
+    const positionsTotal24HoursAgo = tradingPositionsTotal24HoursAgo
+      .plus(subsidyPositionsTotal24HoursAgo)
+      .plus(bondsTotal);
 
     const totalChange = diffChange(positionsTotal, positionsTotal24HoursAgo);
 
@@ -535,12 +545,18 @@ export const usePortfolioPositions = (
         changePercentage: subsidyPositionsChange,
       },
       bonded: {
-        // TODO: load bonded positions data
-        value: new Decimal(234422344),
-        changePercentage: 30,
+        value: bondsTotal,
+        // TODO: load change
+        changePercentage: 0,
       },
     };
-  }, [ztgPrice, subsidyPositions, marketPositions]);
+  }, [
+    ztgPrice,
+    subsidyPositions,
+    marketPositions,
+    isBondsLoading,
+    marketBonds,
+  ]);
 
   return {
     all: positions,
@@ -583,4 +599,22 @@ const diffChange = (a: Decimal, b: Decimal) => {
   const priceDiff = a.minus(b);
   const priceChange = priceDiff.div(b);
   return priceChange.mul(100).toNumber();
+};
+
+const calcTotalBondsValue = (marketBonds: MarketBond[]) => {
+  const bondTotal = marketBonds?.reduce((total, marketBond) => {
+    const creationBond = marketBond.bonds.creation;
+    if (creationBond.isSettled === false) {
+      total = total.plus(creationBond.value);
+    }
+
+    const oracleBond = marketBond.bonds.oracle;
+    if (oracleBond.isSettled === false) {
+      total = total.plus(oracleBond.value);
+    }
+
+    return total;
+  }, new Decimal(0));
+
+  return bondTotal;
 };

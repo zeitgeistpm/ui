@@ -144,4 +144,9 @@ const copy: Record<
     description: "Consensus reached on the outcome",
     color: "bg-green-400",
   },
+  Destroyed: {
+    title: "Market Destroyed",
+    description: "Market has been removed",
+    color: "bg-black",
+  },
 };

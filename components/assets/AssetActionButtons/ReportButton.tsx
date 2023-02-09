@@ -70,10 +70,9 @@ const ReportButton = observer(
         });
 
         if (isRpcSdk(sdk)) {
-          const tx = sdk.context.api.tx.predictionMarkets.report(
-            market.marketId,
-            { Categorical: ID },
-          );
+          const tx = sdk.api.tx.predictionMarkets.report(market.marketId, {
+            Categorical: ID,
+          });
           signAndSend(tx, signer, callback);
         }
       }

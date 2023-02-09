@@ -37,7 +37,7 @@ const batcher = memoize((sdk: Sdk<IndexerContext>) => {
   return batshit.create<FullMarketFragment, UseMarketFilter>({
     name: marketsRootQuery,
     fetcher: async (ids) => {
-      const { markets } = await sdk.context.indexer.markets({
+      const { markets } = await sdk.indexer.markets({
         where: {
           OR: [
             {
