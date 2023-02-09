@@ -5,7 +5,7 @@ import { HeroSlideProps } from "./slider-types";
 
 export const HeroSlide: FC<HeroSlideProps> = ({ slide }) => {
   return (
-    <a href={!slide.title.text && slide.link1}>
+    <Link href={!slide.title.text && slide.link1}>
       <div className="flex items-center h-full w-full">
         <div className="w-full md:max-w-[540px] pb-8">
           <h2
@@ -43,6 +43,6 @@ export const HeroSlide: FC<HeroSlideProps> = ({ slide }) => {
           </div>
         </div>
       </div>
-    </a>
+    </Link>
   );
 };
