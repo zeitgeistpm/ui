@@ -10,7 +10,6 @@ import { Skeleton } from "@material-ui/lab";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketImage from "components/ui/MarketImage";
-import Pill from "components/ui/Pill";
 import TimeSeriesChart, {
   ChartData,
   ChartSeries,
@@ -266,7 +265,7 @@ const Market: NextPage<{
             )}
             {status}
           </Tag>
-          {tags.map((tag, index) => {
+          {tags?.map((tag, index) => {
             return <Tag key={index}>{tag}</Tag>;
           })}
         </div>
