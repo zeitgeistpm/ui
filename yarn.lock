@@ -3373,14 +3373,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/indexer@npm:^2.10.1":
-  version: 2.10.1
-  resolution: "@zeitgeistpm/indexer@npm:2.10.1"
+"@zeitgeistpm/indexer@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "@zeitgeistpm/indexer@npm:2.11.0"
   dependencies:
     graphql: ^16.6.0
     graphql-request: ^5.0.0
     graphql-tag: ^2.12.6
-  checksum: 241e9873d4871ad7e5330ec408792716598634667e416023c67d96c7c580e9234ee56f7680a3b8c93cffab3e698ffb92cbb0a203759643386e3655f99edc076a
+  checksum: c1aff2448e82e6774fa825989a5f68eb8e9263767f620b413f8114191c2591f34cff95776126dc4ef20d2733a0c47bb2086092fd63c0ba17c5ebb6f1e6a5aa94
   languageName: node
   linkType: hard
 
@@ -3398,12 +3398,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.16.1":
-  version: 2.16.1
-  resolution: "@zeitgeistpm/sdk@npm:2.16.1"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.17.0":
+  version: 2.17.0
+  resolution: "@zeitgeistpm/sdk@npm:2.17.0"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.8.1
-    "@zeitgeistpm/indexer": ^2.10.1
+    "@zeitgeistpm/indexer": ^2.11.0
     "@zeitgeistpm/rpc": ^2.5.1
     "@zeitgeistpm/utility": ^2.9.1
     "@zeitgeistpm/web3.storage": ^2.5.0
@@ -3419,7 +3419,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: b1b038e372ab7f04060a77b8cca22a096dbfc43bf3e61b848360b784f149ce30ea336e972bb24b543577b6400f512a915270f68c18ac1582c7fa4fa47f8ca676
+  checksum: 2bf7dc8fddda066df160ac861710be6bc591ef942ee01bf0d75b87b9984b8859cfa5b8cda4200a816222b7abff88cf2d3caaa6a003d47a72869e22426f30e599
   languageName: node
   linkType: hard
 
@@ -3512,7 +3512,7 @@ __metadata:
     "@zeitgeistpm/avatara-react": ^1.3.0
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^1.0.3
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.16.1"
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.17.0"
     "@zeitgeistpm/utility": ^2.9.1
     autoprefixer: 10.2.5
     axios: ^0.21.4
