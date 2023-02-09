@@ -18,6 +18,7 @@ const marketQuery = gql`
       baseAsset
       pool {
         poolId
+        createdAt
         volume
       }
       question
@@ -55,7 +56,7 @@ export interface MarketPageIndexedData {
   };
   categories: { ticker: string; color: string }[];
   outcomeAssets: string[];
-  pool: { poolId: number; volume: string };
+  pool: { poolId: number; volume: string; createdAt: string };
   scalarType: ScalarRangeType | null;
   creator: string;
   oracle: string;

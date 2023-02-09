@@ -116,7 +116,7 @@ const Market: NextPage<{
   const router = useRouter();
   const { marketid } = router.query;
   const [marketStore, setMarketStore] = useState<MarketStore>();
-  const [prizePool, setPrizePool] = useState<string>();
+  const [prizePool, setPrizePool] = useState<number>();
   const store = useStore();
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
@@ -137,7 +137,7 @@ const Market: NextPage<{
     if (market != null) {
       setMarketStore(market);
       const prizePool = await market.getPrizePool();
-      setPrizePool(prizePool);
+      setPrizePool(Number(prizePool));
 
       if (market.poolExists) {
         const { poolId } = market.pool;
@@ -164,7 +164,7 @@ const Market: NextPage<{
     img: string;
     question: string;
     status: string;
-    starts: string;
+    createdAt: string;
     ends: string;
     prizePool: number;
     subsidy: number;
@@ -174,7 +174,7 @@ const Market: NextPage<{
     img,
     question,
     status,
-    starts,
+    createdAt,
     ends,
     prizePool,
     subsidy,
@@ -190,28 +190,30 @@ const Market: NextPage<{
           status={status}
           className="mx-auto"
         />
-        <h1 className="font-bold text-4xl">{question}</h1>
-        <div>
-          {starts ? (
+        <h1 className="font-bold text-4xl my-5">{question}</h1>
+        <div className="flex justify-center mb-5">
+          {createdAt ? (
             <div>
               <span>Created: </span>
-              <span>{starts}</span>
+              <span className="font-medium">{createdAt}</span>
             </div>
           ) : (
             <Skeleton width="50px" height="auto" />
           )}
           {ends ? (
             <div>
+              <span className="text-ztg-blue mx-2">|</span>
               <span>Ends: </span>
-              <span>{ends}</span>
+              <span className="font-medium">{ends}</span>
             </div>
           ) : (
             <Skeleton width="50px" height="auto" />
           )}
           {token ? (
             <div>
+              <span className="text-ztg-blue mx-2">|</span>
               <span>Volume: </span>
-              <span>
+              <span className="font-medium">
                 {new Intl.NumberFormat("default", {
                   maximumSignificantDigits: 3,
                   notation: "compact",
@@ -225,8 +227,9 @@ const Market: NextPage<{
           )}
           {prizePool >= 0 && token ? (
             <div>
+              <span className="text-ztg-blue mx-2">|</span>
               <span>Prize Pool: </span>
-              <span>
+              <span className="font-medium">
                 {new Intl.NumberFormat("default", {
                   maximumSignificantDigits: 3,
                   notation: "compact",
@@ -240,8 +243,9 @@ const Market: NextPage<{
           )}
           {subsidy >= 0 && token ? (
             <div>
+              <span className="text-ztg-blue mx-2">|</span>
               <span>Subsidy: </span>
-              <span>
+              <span className="font-medium">
                 {new Intl.NumberFormat("default", {
                   maximumSignificantDigits: 3,
                   notation: "compact",
@@ -259,10 +263,10 @@ const Market: NextPage<{
   };
 
   const token = store?.config?.tokenSymbol && store.config.tokenSymbol;
-  console.log(pool?.liquidity);
-  const starts = new Intl.DateTimeFormat("en-US", {
+  const createdAtTime = new Date(indexedMarket.pool.createdAt).getTime();
+  const createdAt = new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
-  }).format(Number(indexedMarket.period.start));
+  }).format(Number(createdAtTime));
   const ends = new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
   }).format(Number(indexedMarket.period.end));
@@ -289,7 +293,7 @@ const Market: NextPage<{
           img={indexedMarket.img}
           question={question}
           status={indexedMarket.status}
-          starts={starts}
+          createdAt={createdAt}
           ends={ends}
           token={token}
           prizePool={prize}
