@@ -1,20 +1,27 @@
 import "react-datetime/css/react-datetime.css";
 import "styles/index.css";
 
+import BatsthitDevtools from "@yornaath/batshit-devtools-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import BatsthitDevtools from "@yornaath/batshit-devtools-react";
 import * as Fathom from "fathom-client";
-import DefaultLayout from "../layouts/DefaultLayout";
-import StoreComponent from "../components/_app/Store";
-import MobileMenuComponent from "../components/_app/MobileMenu";
-import AvataraContextComponents from "../components/_app/AvataraContext";
 
 import { observer } from "mobx-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { hotjar } from "react-hotjar";
+
+import { AvatarContext } from "@zeitgeistpm/avatara-react";
+import { ModalStoreContext } from "components/context/ModalStoreContext";
+import { StoreProvider } from "components/context/StoreContext";
+import MobileMenu from "components/menu/MobileMenu";
+import ModalContainer from "components/modal/ModalContainer";
+import { AnimatePresence } from "framer-motion";
+import DefaultLayout from "layouts/DefaultLayout";
+import DemoLayout from "layouts/DemoLayout";
+import ModalStore from "lib/stores/ModalStore";
+import Store from "lib/stores/Store";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -28,6 +35,8 @@ const queryClient = new QueryClient();
 const MyApp = observer(({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
   const router = useRouter();
+  const [modalStore] = useState(() => new ModalStore());
+  const [store] = useState(() => new Store());
 
   useEffect(() => {
     if (!isProduction) {
@@ -56,30 +65,60 @@ const MyApp = observer(({ Component, pageProps }) => {
       router.events.off("routeChangeComplete", onRouteChangeComplete);
   }, []);
 
+  useEffect(() => {
+    const clientWidth = window.innerWidth;
+    if (clientWidth < 1300) {
+      store.toggleDrawer("right");
+    } else {
+      store.navigationStore.toggleGroupOpen("markets");
+    }
+    if (clientWidth < 900) {
+      store.toggleDrawer("left");
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <StoreComponent>
-        <AvataraContextComponents>
-          <Head>
-            <title>Zeitgeist - Prediction Markets</title>
-          </Head>
-          <DefaultLayout>
-            {/* <DemoLayout> */}
-            <MobileMenuComponent />
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-            {/* </DemoLayout> */}
-          </DefaultLayout>
-          {process.env.NEXT_PUBLIC_REACT_QUERY_DEVTOOLS === "true" &&
-          typeof window === "object" ? (
-            <Suspense fallback={<></>}>
-              <ReactQueryDevtools />
-              <BatsthitDevtools />
-            </Suspense>
-          ) : null}
-        </AvataraContextComponents>
-      </StoreComponent>
+      <StoreProvider store={store}>
+        <AvatarContext.Provider
+          value={{
+            api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
+            ipfs: { node: { url: process.env.NEXT_PUBLIC_IPFS_NODE } },
+            rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
+            indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
+            avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,
+            badgeCollectionId: process.env.NEXT_PUBLIC_BADGE_COLLECTION_ID,
+            avatarBaseId: process.env.NEXT_PUBLIC_AVATAR_BASE_ID,
+            prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
+          }}
+        >
+          <ModalStoreContext.Provider value={modalStore}>
+            {modalStore.modal && (
+              <ModalContainer>{modalStore.modal}</ModalContainer>
+            )}
+            <Head>
+              <title>Zeitgeist - Prediction Markets</title>
+            </Head>
+            <DefaultLayout>
+              {/* <DemoLayout> */}
+              <AnimatePresence>
+                {store.showMobileMenu && <MobileMenu />}
+              </AnimatePresence>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+              {/* </DemoLayout> */}
+            </DefaultLayout>
+            {process.env.NEXT_PUBLIC_REACT_QUERY_DEVTOOLS === "true" &&
+            typeof window === "object" ? (
+              <Suspense fallback={<></>}>
+                <ReactQueryDevtools />
+                <BatsthitDevtools />
+              </Suspense>
+            ) : null}
+          </ModalStoreContext.Provider>
+        </AvatarContext.Provider>
+      </StoreProvider>
     </QueryClientProvider>
   );
 });
