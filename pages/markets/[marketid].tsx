@@ -39,6 +39,7 @@ import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
+import { hasEnded } from "lib/util/hasEnded";
 import Link from "next/link";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
@@ -167,7 +168,7 @@ const Market: NextPage<{
     children,
   }) => {
     return (
-      <div className={border && "sm:border-r sm:border-ztg-blue pr-2"}>
+      <div className={border ? "sm:border-r sm:border-ztg-blue pr-2" : ""}>
         <span>{label}: </span>
         <span className="font-medium">{children}</span>
       </div>
@@ -183,18 +184,16 @@ const Market: NextPage<{
   };
 
   const MarketHeader: FC<{
-    img: string;
     question: string;
     status: string;
     tags: string[];
-    createdAt: string;
-    ends: string;
+    createdAt: number;
+    ends: number;
     prizePool: number;
     subsidy: number;
     volume: number;
     token: string;
   }> = ({
-    img,
     question,
     status,
     tags,
@@ -207,17 +206,18 @@ const Market: NextPage<{
   }) => {
     return (
       <header className="text-center">
-        <MarketImage
-          image={img}
-          alt={`Image depicting ${question}`}
-          size="120px"
-          status={status}
-          className="mx-auto"
-        />
         <h1 className="font-bold text-4xl my-5">{question}</h1>
         <div className="flex flex-col sm:flex-row sm:flex-wrap justify-center gap-2 mb-5">
-          <HeaderStat label="Created">{createdAt}</HeaderStat>
-          <HeaderStat label="Ends">{ends}</HeaderStat>
+          <HeaderStat label="Created">
+            {new Intl.DateTimeFormat("en-US", {
+              dateStyle: "medium",
+            }).format(createdAt)}
+          </HeaderStat>
+          <HeaderStat label={hasEnded(ends) ? "Ended" : "Ends"}>
+            {new Intl.DateTimeFormat("en-US", {
+              dateStyle: "medium",
+            }).format(ends)}
+          </HeaderStat>
           {token ? (
             <HeaderStat label="Volume">
               {/* TODO: replace num formatting with util function */}
@@ -275,15 +275,10 @@ const Market: NextPage<{
 
   //data for MarketHeader
   const token = store?.config?.tokenSymbol && store.config.tokenSymbol;
-  const createdAtTime = indexedMarket?.pool?.createdAt
+  const createdAt = indexedMarket?.pool?.createdAt
     ? new Date(indexedMarket.pool.createdAt).getTime()
-    : indexedMarket.period.start;
-  const createdAt = new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-  }).format(Number(createdAtTime));
-  const ends = new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-  }).format(Number(indexedMarket.period.end));
+    : Number(indexedMarket.period.start);
+  const ends = Number(indexedMarket.period.end);
   const volume = indexedMarket?.pool?.volume
     ? Number(indexedMarket?.pool?.volume)
     : 0;
@@ -303,8 +298,14 @@ const Market: NextPage<{
         )}
       </Head>
       <div>
+        <MarketImage
+          image={indexedMarket.img}
+          alt={`Image depicting ${question}`}
+          size="120px"
+          status={indexedMarket.status}
+          className="mx-auto"
+        />
         <MarketHeader
-          img={indexedMarket.img}
           question={question}
           status={indexedMarket.status}
           tags={indexedMarket.tags}
