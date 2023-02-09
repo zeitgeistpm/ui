@@ -7,17 +7,20 @@ export const MarketMeta = ({
 }: {
   market: Market<IndexerContext> | MarketPageIndexedData;
 }) => {
-  const imageUrl = new URL(
-    `/api/og/generate?marketId=${market.marketId}`,
-    `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`,
-  );
-
   return (
     <>
       <OgHead
         title={market.question}
-        description={market.description || market.question}
-        image={imageUrl.href}
+        description={
+          market.description ??
+          "The application interface for Zeitgeist Prediction Markets. Built on Polkadot, Zeitgeist is the leader in decentralized prediction markets."
+        }
+        image={
+          new URL(
+            `/api/og/generate?marketId=${market.marketId}`,
+            `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`,
+          )
+        }
       />
     </>
   );

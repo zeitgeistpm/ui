@@ -3,7 +3,7 @@ import Head from "next/head";
 export type OgProps = {
   title?: string;
   description?: string;
-  image?: string;
+  image?: URL;
 };
 
 export const OgHead = (props: OgProps) => {
@@ -41,10 +41,15 @@ export const OgHead = (props: OgProps) => {
       )}
       {props.image && (
         <>
-          <meta key="og:image" property="og:image" content={props.image} />
+          <meta key="og:image" property="og:image" content={props.image.href} />
           <meta
             key="twitter:image"
             property="twitter:image"
+            content={`${props.image}`}
+          />
+          <meta
+            key="twitter:image:src"
+            property="twitter:image:src"
             content={`${props.image}`}
           />
         </>
