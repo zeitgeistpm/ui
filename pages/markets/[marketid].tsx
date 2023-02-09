@@ -164,6 +164,7 @@ const Market: NextPage<{
     img: string;
     question: string;
     status: string;
+    tags: string[];
     createdAt: string;
     ends: string;
     prizePool: number;
@@ -174,6 +175,7 @@ const Market: NextPage<{
     img,
     question,
     status,
+    tags,
     createdAt,
     ends,
     prizePool,
@@ -191,27 +193,17 @@ const Market: NextPage<{
           className="mx-auto"
         />
         <h1 className="font-bold text-4xl my-5">{question}</h1>
-        <div className="flex justify-center mb-5">
-          {createdAt ? (
-            <div>
-              <span>Created: </span>
-              <span className="font-medium">{createdAt}</span>
-            </div>
-          ) : (
-            <Skeleton width="50px" height="auto" />
-          )}
-          {ends ? (
-            <div>
-              <span className="text-ztg-blue mx-2">|</span>
-              <span>Ends: </span>
-              <span className="font-medium">{ends}</span>
-            </div>
-          ) : (
-            <Skeleton width="50px" height="auto" />
-          )}
+        <div className="flex flex-col sm:flex-row sm:flex-wrap justify-center gap-2 mb-5">
+          <div className="sm:border-r sm:border-ztg-blue pr-2">
+            <span>Created: </span>
+            <span className="font-medium">{createdAt}</span>
+          </div>
+          <div className="sm:border-r sm:border-ztg-blue pr-2">
+            <span>Ends: </span>
+            <span className="font-medium">{ends}</span>
+          </div>
           {token ? (
-            <div>
-              <span className="text-ztg-blue mx-2">|</span>
+            <div className="sm:border-r sm:border-ztg-blue pr-2">
               <span>Volume: </span>
               <span className="font-medium">
                 {new Intl.NumberFormat("default", {
@@ -223,11 +215,10 @@ const Market: NextPage<{
               </span>
             </div>
           ) : (
-            <Skeleton width="50px" height="auto" />
+            <Skeleton width="150px" height="24px" />
           )}
           {prizePool >= 0 && token ? (
-            <div>
-              <span className="text-ztg-blue mx-2">|</span>
+            <div className="sm:border-r sm:border-ztg-blue pr-2">
               <span>Prize Pool: </span>
               <span className="font-medium">
                 {new Intl.NumberFormat("default", {
@@ -239,11 +230,10 @@ const Market: NextPage<{
               </span>
             </div>
           ) : (
-            <Skeleton width="50px" height="auto" />
+            <Skeleton width="150px" height="24px" />
           )}
           {subsidy >= 0 && token ? (
             <div>
-              <span className="text-ztg-blue mx-2">|</span>
               <span>Subsidy: </span>
               <span className="font-medium">
                 {new Intl.NumberFormat("default", {
@@ -255,13 +245,31 @@ const Market: NextPage<{
               </span>
             </div>
           ) : (
-            <Skeleton width="50px" height="auto" />
+            <Skeleton width="150px" height="24px" />
           )}
+        </div>
+        <div className="flex flex-wrap justify-center gap-2.5">
+          {status === "Active" ? (
+            <span className="px-2.5 py-1 rounded bg-green-lighter">
+              <span className="text-green">&#x2713; </span>
+              {status}
+            </span>
+          ) : (
+            <span className="px-2.5 py-1 rounded bg-gray-300">{status}</span>
+          )}
+          {tags.map((tag, index) => {
+            return (
+              <span key={index} className="px-2.5 py-1 rounded bg-gray-300">
+                {tag}
+              </span>
+            );
+          })}
         </div>
       </header>
     );
   };
 
+  //data for market header
   const token = store?.config?.tokenSymbol && store.config.tokenSymbol;
   const createdAtTime = new Date(indexedMarket.pool.createdAt).getTime();
   const createdAt = new Intl.DateTimeFormat("en-US", {
@@ -293,6 +301,7 @@ const Market: NextPage<{
           img={indexedMarket.img}
           question={question}
           status={indexedMarket.status}
+          tags={indexedMarket.tags}
           createdAt={createdAt}
           ends={ends}
           token={token}
@@ -300,35 +309,6 @@ const Market: NextPage<{
           volume={volume}
           subsidy={subsidy}
         />
-        <div
-          className="grid grid-flow-row-dense gap-4 w-full "
-          style={{
-            gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-          }}
-        >
-          <Pill
-            title="Ends"
-            value={new Intl.DateTimeFormat("en-US", {
-              dateStyle: "medium",
-            }).format(Number(indexedMarket.period.end))}
-          />
-          <Pill title="Status" value={indexedMarket.status} />
-          {prizePool ? (
-            <Pill
-              title="Prize Pool"
-              value={`${prizePool} ${store?.config.tokenSymbol}`}
-            />
-          ) : (
-            <></>
-          )}
-          {pool?.liquidity != null ? (
-            <LiquidityPill
-              liquidity={Number.isNaN(pool.liquidity) ? 0 : pool.liquidity}
-            />
-          ) : (
-            <></>
-          )}
-        </div>
         {marketSdkv2?.rejectReason && marketSdkv2.rejectReason.length > 0 && (
           <div className="mt-[10px] text-ztg-14-150">
             Market rejected: {marketSdkv2.rejectReason}
