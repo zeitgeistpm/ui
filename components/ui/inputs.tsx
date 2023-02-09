@@ -142,33 +142,37 @@ export const DateTimeInput: FC<{
   timestamp?: string;
   className?: string;
   onChange: (timestamp: string) => void;
-  name: string;
+  name?: string;
+  isValidDate?: (currentDate: Moment) => boolean;
   form?: Form;
-}> = observer(({ className = "", onChange, timestamp, name, form }) => {
-  const ref = useRef();
-  const date = useMemo<Date>(() => {
-    return getDateFromTimestamp(timestamp);
-  }, [timestamp]);
-  const { invalid } = useFormField(form, name, timestamp);
+}> = observer(
+  ({ className = "", onChange, timestamp, name, form, isValidDate }) => {
+    const ref = useRef();
+    const date = useMemo<Date>(() => {
+      return getDateFromTimestamp(timestamp);
+    }, [timestamp]);
+    const { invalid } = useFormField(form, name, timestamp);
 
-  const dateChange = (v: Moment | string) => {
-    if (isMoment(v)) {
-      onChange(`${v.valueOf()}`);
-    }
-  };
-  const localDateFormat = getLocalDateFormat();
+    const dateChange = (v: Moment | string) => {
+      if (isMoment(v)) {
+        onChange(`${v.valueOf()}`);
+      }
+    };
+    const localDateFormat = getLocalDateFormat();
 
-  return (
-    <DateTime
-      value={date}
-      renderInput={rdtpInput}
-      inputProps={{ ref, className: `${invalid ? invalidClasses : ""}` }}
-      onChange={dateChange}
-      dateFormat={localDateFormat}
-      className={className}
-    />
-  );
-});
+    return (
+      <DateTime
+        value={date}
+        renderInput={rdtpInput}
+        inputProps={{ ref, className: `${invalid ? invalidClasses : ""}` }}
+        onChange={dateChange}
+        dateFormat={localDateFormat}
+        className={className}
+        isValidDate={isValidDate}
+      />
+    );
+  },
+);
 
 export interface AmountInputProps {
   value?: string;
