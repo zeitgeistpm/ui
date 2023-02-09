@@ -141,9 +141,9 @@ export const BreakdownSlot = ({
 const BreakdownSlotSkeleton = () => {
   const { title, value, conversion } = useMemo(() => {
     return {
-      title: random(120, 165),
-      value: random(160, 210),
-      conversion: random(120, 135),
+      title: 150,
+      value: 160,
+      conversion: 125,
     };
   }, []);
 
