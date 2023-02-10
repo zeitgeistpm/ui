@@ -282,7 +282,7 @@ const Market: NextPage<{
   const volume = indexedMarket?.pool?.volume
     ? Number(indexedMarket?.pool?.volume)
     : 0;
-  const subsidy = pool?.liquidity;
+  const subsidy = marketSdkv2?.pool?.poolId == null ? 0 : pool?.liquidity;
 
   return (
     <>
