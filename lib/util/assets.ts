@@ -7,7 +7,9 @@ export const getCurrentPrediction = (
     marketType: { categorical?: string; scalar?: string[] };
     categories: { color: string; name: string; ticker: string }[];
   },
-): { name: string; price: number } => {
+): { name: string; price: number; percentage: number } => {
+  const totalPrice = assets.reduce((acc, asset) => acc + asset.price, 0);
+
   if (market.marketType.categorical) {
     let [highestPrice, highestPriceIndex] = [0, 0];
 
@@ -24,9 +26,12 @@ export const getCurrentPrediction = (
       }
     });
 
+    const percentage = Math.round((highestPrice / totalPrice) * 100);
+
     return {
       name: market.categories[highestPriceIndex].name,
       price: highestPrice,
+      percentage,
     };
   } else {
     const bounds: number[] = market.marketType.scalar.map((b) => Number(b));
@@ -40,9 +45,12 @@ export const getCurrentPrediction = (
     const averagePricePrediction =
       (longPricePrediction + shortPricePrediction) / 2;
 
+    const percentage = Math.round((averagePricePrediction / totalPrice) * 100);
+
     return {
       name: new Decimal(averagePricePrediction).div(ZTG).toString(),
       price: averagePricePrediction,
+      percentage,
     };
   }
 };

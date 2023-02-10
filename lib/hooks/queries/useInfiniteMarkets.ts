@@ -107,6 +107,7 @@ export const useInfiniteMarkets = (
         m.pool != null
           ? getCurrentPrediction(marketOutcomes, m as any)
           : { name: "None", price: 0 };
+
       resMarkets = [
         ...resMarkets,
         { ...m, outcomes: marketOutcomes, prediction },
