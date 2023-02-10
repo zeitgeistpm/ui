@@ -41,6 +41,13 @@ const Drawer: FC<DrawerProps> = observer(
         return isClosed === false ? 360 : 0;
       }
     };
+    const getTopMargin = () => {
+      if (side === "right") {
+        return "mt-[76px]";
+      } else {
+        return "";
+      }
+    };
 
     return (
       <motion.div
@@ -53,7 +60,7 @@ const Drawer: FC<DrawerProps> = observer(
         animate={{ width: getWidth() }}
         transition={{ type: "tween" }}
         className={`
-        !hidden sm:!block drawer relative h-ztg-full-vh flex-shrink-0 ${side} ${
+        !hidden sm:!block drawer relative h-ztg-full-vh flex-shrink-0 ${getTopMargin()} ${side} ${
           isClosed ? "closed" : ""
         } ${className}`}
       >
