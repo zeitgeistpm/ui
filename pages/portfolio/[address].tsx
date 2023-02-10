@@ -1,5 +1,5 @@
 import { Tab } from "@headlessui/react";
-import { getIndexOf, ZTG } from "@zeitgeistpm/sdk-next";
+import { getIndexOf } from "@zeitgeistpm/sdk-next";
 import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
 import {
@@ -8,8 +8,6 @@ import {
 } from "components/portfolio/MarketPositions";
 import TransactionHistoryTable from "components/portfolio/TransactionHistoryTable";
 import InfoBoxes from "components/ui/InfoBoxes";
-import Decimal from "decimal.js";
-import { useAccountBonds } from "lib/hooks/queries/useAccountBonds";
 import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { groupBy, range } from "lodash-es";
@@ -68,10 +66,9 @@ const Portfolio: NextPage = observer(() => {
               <Tab.Group>
                 <Tab.List className="flex center mb-14">
                   {["By Markets", "Subsidy", "Bonds"].map((title, index) => (
-                    <Tab className="text-lg px-4">
+                    <Tab className="text-lg px-4" key={index}>
                       {({ selected }) => (
                         <div
-                          key={index}
                           className={
                             selected
                               ? "font-bold text-gray-800 transition-all"
