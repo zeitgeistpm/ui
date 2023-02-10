@@ -39,7 +39,7 @@ import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
-import { hasEnded } from "lib/util/hasEnded";
+import { hasDatePassed } from "lib/util/hasDatePassed";
 import Link from "next/link";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
@@ -213,7 +213,7 @@ const Market: NextPage<{
               dateStyle: "medium",
             }).format(createdAt)}
           </HeaderStat>
-          <HeaderStat label={hasEnded(ends) ? "Ended" : "Ends"}>
+          <HeaderStat label={hasDatePassed(ends) ? "Ended" : "Ends"}>
             {new Intl.DateTimeFormat("en-US", {
               dateStyle: "medium",
             }).format(ends)}
