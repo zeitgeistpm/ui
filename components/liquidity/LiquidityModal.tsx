@@ -6,12 +6,7 @@ import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForP
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useStore } from "lib/stores/Store";
 import { useEffect } from "react";
-import {
-  SubmitHandler,
-  useFieldArray,
-  useForm,
-  useWatch,
-} from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 const LiquidityModal = ({ poolId }: { poolId: number }) => {
   const store = useStore();
@@ -24,12 +19,20 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
   );
   const { data: poolBaseBalance } = useZtgBalance(pool?.accountId);
 
-  const totalPoolIssuance = useTotalIssuanceForPools([poolId]);
+  const data = useTotalIssuanceForPools([poolId]);
+  const totalPoolIssuance = data?.[pool.poolId]?.data.totalIssuance;
   const userPoolTokens = useAccountAssetBalances(
     connectedAddress && pool != null
       ? [{ account: connectedAddress, assetId: { PoolShare: poolId } }]
       : [],
   );
+
+  console.log("total", totalPoolIssuance.toNumber());
+  console.log(
+    "poolAssets",
+    poolAssetBalances.map((a) => a.free.toString()),
+  );
+  console.log("poolBase", poolBaseBalance.toString());
 
   //user balances outside of pool
   const { data: userBaseBalance } = useZtgBalance(pool?.accountId);
@@ -48,33 +51,21 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
 
   const { register, control, handleSubmit, watch, setValue } = useForm<any>();
 
-  const { fields, append, replace } = useFieldArray<any>({
-    name: "assets",
-    control,
-  });
-
-  useEffect(() => {
-    if (fields?.length > 0) return;
-    if (pool != null) {
-      console.log("set amounts");
-
-      pool.weights.map((weight) => {
-        append({ assetId: weight.assetId, amount: 0 });
-      });
-    }
-  }, [pool]);
-
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       console.log("watch", value, name, type);
-      const changedAssetIndex = name.split(".")[1];
+      const changedAssetIndex = name;
+      const assetAmount = value;
+      const poolAssetAmount;
 
-      console.log("changed", changedAssetIndex);
+      // const poolToUserRatio =
 
-      if (changedAssetIndex != null) {
-        // setValue("assets.2.amount", 5);
+      // console.log("changed", changedAssetIndex);
+
+      if (changedAssetIndex != null && type != null) {
+        setValue("1", 5);
         // const newAssets = a
-        replace(value.assets);
+        // replace(value.assets);
       }
     });
     return () => subscription.unsubscribe();
@@ -84,23 +75,12 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
   return (
     <div>
       <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-        {/* {pool?.weights.map((asset, index) => (
+        {pool?.weights.map((asset, index) => (
           <input
-            // className="bg-blue-500 border border-black"
-            // key={index}
-            {...register(index.toString())}
-          />
-        ))} */}
-        {fields.map((field, index) => (
-          <input
-            key={field.id}
             className="bg-blue-500 border border-black"
+            key={index}
             type="number"
-            {...register(`assets.${index}.amount` as const, {
-              valueAsNumber: true,
-              required: true,
-            })}
-            // autoFocus
+            {...(register(index.toString()), { defaultValue: 0 })}
           />
         ))}
       </form>
