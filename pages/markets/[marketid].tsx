@@ -207,14 +207,14 @@ const Market: NextPage<{
     return (
       <header className="text-center">
         <h1 className="font-bold text-4xl my-5">{question}</h1>
-        <div className="flex flex-col sm:flex-row sm:flex-wrap justify-center gap-2 mb-5">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-2 mb-5">
           <HeaderStat label="Created">
-            {new Intl.DateTimeFormat("en-US", {
+            {new Intl.DateTimeFormat("default", {
               dateStyle: "medium",
             }).format(createdAt)}
           </HeaderStat>
           <HeaderStat label={hasDatePassed(ends) ? "Ended" : "Ends"}>
-            {new Intl.DateTimeFormat("en-US", {
+            {new Intl.DateTimeFormat("default", {
               dateStyle: "medium",
             }).format(ends)}
           </HeaderStat>
@@ -274,7 +274,7 @@ const Market: NextPage<{
   };
 
   //data for MarketHeader
-  const token = store?.config?.tokenSymbol && store.config.tokenSymbol;
+  const token = store?.config?.tokenSymbol;
   const createdAt = indexedMarket?.pool?.createdAt
     ? new Date(indexedMarket.pool.createdAt).getTime()
     : Number(indexedMarket.period.start);
@@ -282,10 +282,7 @@ const Market: NextPage<{
   const volume = indexedMarket?.pool?.volume
     ? Number(indexedMarket?.pool?.volume)
     : 0;
-  // -1 to indicate loading state since type is number
-  const prize = prizePool === undefined ? -1 : prizePool ? prizePool : 0;
-  const subsidy =
-    pool === undefined ? -1 : pool?.liquidity ? Number(pool?.liquidity) : 0;
+  const subsidy = pool?.liquidity;
 
   return (
     <>
@@ -312,7 +309,7 @@ const Market: NextPage<{
           createdAt={createdAt}
           ends={ends}
           token={token}
-          prizePool={prize}
+          prizePool={prizePool}
           volume={volume}
           subsidy={subsidy}
         />
