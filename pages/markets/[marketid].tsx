@@ -8,6 +8,7 @@ import {
 } from "components/markets/MarketTimer";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
+import MarketMeta from "components/meta/MarketMeta";
 import MarketImage from "components/ui/MarketImage";
 import Pill from "components/ui/Pill";
 import TimeSeriesChart, {
@@ -33,7 +34,6 @@ import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
-import Head from "next/head";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
@@ -163,14 +163,7 @@ const Market: NextPage<{
 
   return (
     <>
-      <Head>
-        <title>{question}</title>
-        <meta name="description" content={indexedMarket.description} />
-        <meta property="og:description" content={indexedMarket.question} />
-        {marketImageUrl && (
-          <meta property="og:image" content={marketImageUrl} />
-        )}
-      </Head>
+      <MarketMeta market={indexedMarket} />
       <div>
         <div className="flex mb-ztg-33">
           <MarketImage
