@@ -198,7 +198,7 @@ body {
 
 .topbar {
   /* width: calc(100% - (360px + 156px)); */
-  height: var(--topbar-height);
+  /* height: var(--topbar-height); */
 }
 
 /* workaround for Safari */
