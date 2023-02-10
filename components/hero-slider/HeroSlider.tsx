@@ -3,6 +3,7 @@ import { HeroControls } from "./HeroControls";
 import { HeroSlide } from "./HeroSlide";
 import { slidesData } from "./slides-data";
 import styles from "./HeroSlider.module.css";
+import Image from "next/image";
 
 //hero controls
 import { moveSlider } from "./slider-controls";
@@ -29,12 +30,19 @@ const HeroSlider: FC<HeroSliderProps> = () => {
 
   return (
     <section
-      className={`w-full h-[527px] mx-auto  bg-cover bg-center ${
+      className={`relative w-full h-[527px] mx-auto ${
         animate && styles.fadeIn
       }`}
-      style={{ backgroundImage: `url(${slidesData[currentSlide].bg})` }}
-      onAnimationEnd={() => setAnimate(false)}
     >
+      <Image
+        src={slidesData[currentSlide].bg}
+        alt={`Image depicting ${slidesData[currentSlide].title.text}`}
+        placeholder="blur"
+        sizes="100%"
+        fill
+        style={{ objectFit: "cover" }}
+        onAnimationEnd={() => setAnimate(false)}
+      />
       <div className="h-full relative container-fluid">
         <HeroSlide
           slide={slidesData[currentSlide]}
