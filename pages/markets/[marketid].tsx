@@ -40,6 +40,7 @@ import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
 import Link from "next/link";
+import LiquidityModal from "components/liquidity/LiquidityModal";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -172,6 +173,8 @@ const Market: NextPage<{
         )}
       </Head>
       <div>
+        <LiquidityModal poolId={66} />
+
         <div className="flex mb-ztg-33">
           <MarketImage
             image={indexedMarket.img}
