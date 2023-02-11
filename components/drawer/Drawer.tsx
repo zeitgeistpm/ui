@@ -38,7 +38,6 @@ const Drawer: FC<DrawerProps> = observer(
       if (side === "left") {
         return isClosed === false ? 256 : 96;
       } else {
-        console.log(isClosed);
         return isClosed === false ? 360 : 0;
       }
     };
