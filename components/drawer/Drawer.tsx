@@ -42,11 +42,7 @@ const Drawer: FC<DrawerProps> = observer(
       }
     };
     const getTopMargin = () => {
-      if (side === "right") {
-        return "mt-[76px]";
-      } else {
-        return "";
-      }
+      return side === "right" ? "mt-[76px]" : "";
     };
 
     return (
