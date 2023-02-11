@@ -5,7 +5,6 @@ import { useResizeDetector } from "react-resize-detector";
 import { debounce } from "lodash";
 
 import { useStore } from "lib/stores/Store";
-import HeroSlider from "components/hero-slider/HeroSlider";
 import TopBar from "components/top-bar";
 import Footer from "components/ui/Footer";
 import NotificationCenter from "components/ui/NotificationCenter";
@@ -86,10 +85,9 @@ const DefaultLayout: FC = observer(({ children }) => {
             </div>
           </div>
         )}
-        {router.pathname === "/" && <HeroSlider />}
         <main
-          className={`main-container flex flex-col dark:text-white ${
-            router.pathname !== "/" && "pt-20"
+          className={`flex flex-col dark:text-white ${
+            router.pathname !== "/" && "main-container pt-20"
           }`}
           ref={mainRef}
         >
@@ -114,8 +112,8 @@ const DefaultLayout: FC = observer(({ children }) => {
               )}
             </ContentDimensionsProvider>
           </div>
-          <Footer />
         </main>
+        <Footer />
       </div>
       <RightDrawer />
       <NotificationCenter />

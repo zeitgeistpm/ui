@@ -4,59 +4,47 @@ import { HeroSlide } from "./HeroSlide";
 import { slidesData } from "./slides-data";
 import styles from "./HeroSlider.module.css";
 import Image from "next/image";
-import type { InferGetStaticPropsType } from "next";
-import { getPlaiceholder } from "plaiceholder";
+import { IGetPlaiceholderReturn } from "plaiceholder";
 
-//hero controls
 import { moveSlider } from "./slider-controls";
 
-export const getStaticProps = async () => {
-  const { css, img } = await getPlaiceholder("/path-to-your-image.jpg");
-
-  return {
-    props: {
-      img,
-      css,
-    },
-  };
-};
-
-const HeroSlider: FC<InferGetStaticPropsType<typeof getStaticProps>> = ({
-  img,
-  css,
+const HeroSlider = ({
+  imagePlaceholders,
+}: {
+  imagePlaceholders: IGetPlaiceholderReturn[];
 }) => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
   const [animate, setAnimate] = useState<boolean>(false);
   const slidesLength = slidesData.length;
 
-  //autoplay
-  // useEffect(() => {
-  //   if (slidesData.length > 1) {
-  //     const ref = setTimeout(() => {
-  //       setAnimate(true);
-  //       moveSlider("next", currentSlide, setCurrentSlide, slidesLength);
-  //     }, 5000);
-  //     return () => {
-  //       clearTimeout(ref);
-  //     };
-  //   }
-  // }, [currentSlide]);
+  // autoplay
+  useEffect(() => {
+    if (slidesData.length > 1) {
+      const ref = setTimeout(() => {
+        setAnimate(true);
+        moveSlider("next", currentSlide, setCurrentSlide, slidesLength);
+      }, 5000);
+      return () => {
+        clearTimeout(ref);
+      };
+    }
+  }, [currentSlide]);
 
   return (
     <section
       className={`relative w-full h-[527px] mx-auto ${
         animate && styles.fadeIn
       }`}
+      onAnimationEnd={() => setAnimate(false)}
     >
       <Image
         src={slidesData[currentSlide].bg}
         alt={`Image depicting ${slidesData[currentSlide].title.text}`}
         placeholder="blur"
-        // blurDataURL={img}
+        blurDataURL={imagePlaceholders[currentSlide].base64}
         sizes="100%"
         fill
         style={{ objectFit: "cover" }}
-        onAnimationEnd={() => setAnimate(false)}
       />
       <div className="h-full relative container-fluid">
         <HeroSlide

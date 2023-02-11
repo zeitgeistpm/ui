@@ -2,6 +2,7 @@ import LearnSection from "components/front-page/LearnSection";
 import PopularCategories, {
   CATEGORIES,
 } from "components/front-page/PopularCategories";
+import { FC, useEffect, useState } from "react";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import { motion } from "framer-motion";
@@ -12,8 +13,12 @@ import getTrendingMarkets from "lib/gql/trending-markets";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
+import HeroSlider from "components/hero-slider/HeroSlider";
 import Image from "next/image";
 import Link from "next/link";
+import { slidesData } from "components/hero-slider/slides-data";
+import { moveSlider } from "components/hero-slider/slider-controls";
+
 import {
   getPlaiceholder,
   IGetPlaiceholderOptions,
@@ -38,12 +43,14 @@ export async function getStaticProps() {
     trendingMarkets,
     img,
     categoryPlaceholders,
+    sliderPlaceholders,
     categoryCounts,
   ] = await Promise.all([
     getFeaturedMarkets(client),
     getTrendingMarkets(client),
     getPlaiceholder(MAIN_IMAGE_PATH, { size: 32 }),
     getPlaiceholders(CATEGORIES.map((cat) => cat.imagePath)),
+    getPlaiceholders(slidesData.map((slide) => slide.bg)),
     getCategoryCounts(
       client,
       CATEGORIES.map((cat) => cat.name),
@@ -57,6 +64,7 @@ export async function getStaticProps() {
       categoryCounts: categoryCounts,
       img,
       categoryPlaceholders,
+      sliderPlaceholders,
     },
     revalidate: 10 * 60, //10min
   };
@@ -68,46 +76,50 @@ const IndexPage: NextPage<{
   categoryCounts: number[];
   img: IGetPlaiceholderReturn;
   categoryPlaceholders: IGetPlaiceholderReturn[];
+  sliderPlaceholders: IGetPlaiceholderReturn[];
 }> = observer(
   ({
     trendingMarkets,
     featuredMarkets,
     categoryCounts,
     categoryPlaceholders,
-    img,
+    sliderPlaceholders,
   }) => {
     return (
-      <div data-testid="indexPage">
-        <div className="flex items-center w-full justify-center relative bottom-[60px]">
-          <LearnSection />
-        </div>
-        {featuredMarkets.length > 0 && (
+      <>
+        <HeroSlider imagePlaceholders={sliderPlaceholders} />
+        <div data-testid="indexPage" className="main-container">
+          <div className="flex items-center w-full justify-center relative bottom-[60px]">
+            <LearnSection />
+          </div>
+          {featuredMarkets.length > 0 && (
+            <div className="mb-[60px]">
+              <MarketScroll
+                title="Featured Markets"
+                cta="Go to Markets"
+                markets={featuredMarkets}
+                link="markets"
+              />
+            </div>
+          )}
           <div className="mb-[60px]">
-            <MarketScroll
-              title="Featured Markets"
-              cta="Go to Markets"
-              markets={featuredMarkets}
-              link="markets"
+            <PopularCategories
+              counts={categoryCounts}
+              imagePlaceholders={categoryPlaceholders}
             />
           </div>
-        )}
-        <div className="mb-[60px]">
-          <PopularCategories
-            counts={categoryCounts}
-            imagePlaceholders={categoryPlaceholders}
-          />
+          {trendingMarkets.length > 0 && (
+            <div className="my-[60px]">
+              <MarketScroll
+                title="Trending Markets"
+                cta="Go to Markets"
+                markets={trendingMarkets}
+                link="markets"
+              />
+            </div>
+          )}
         </div>
-        {trendingMarkets.length > 0 && (
-          <div className="my-[60px]">
-            <MarketScroll
-              title="Trending Markets"
-              cta="Go to Markets"
-              markets={trendingMarkets}
-              link="markets"
-            />
-          </div>
-        )}
-      </div>
+      </>
     );
   },
 );
