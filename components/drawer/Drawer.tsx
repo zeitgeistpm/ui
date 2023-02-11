@@ -38,6 +38,7 @@ const Drawer: FC<DrawerProps> = observer(
       if (side === "left") {
         return isClosed === false ? 256 : 96;
       } else {
+        console.log(isClosed);
         return isClosed === false ? 360 : 0;
       }
     };
@@ -53,7 +54,7 @@ const Drawer: FC<DrawerProps> = observer(
         animate={{ width: getWidth() }}
         transition={{ type: "tween" }}
         className={`
-        !hidden sm:!block drawer relative h-ztg-full-vh flex-shrink-0 ${side} ${
+        !hidden drawer relative h-ztg-full-vh flex-shrink-0 ${side} ${
           isClosed ? "closed" : ""
         } ${className}`}
       >
