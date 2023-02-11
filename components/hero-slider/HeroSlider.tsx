@@ -4,13 +4,27 @@ import { HeroSlide } from "./HeroSlide";
 import { slidesData } from "./slides-data";
 import styles from "./HeroSlider.module.css";
 import Image from "next/image";
+import type { InferGetStaticPropsType } from "next";
+import { getPlaiceholder } from "plaiceholder";
 
 //hero controls
 import { moveSlider } from "./slider-controls";
 
-export interface HeroSliderProps {}
+export const getStaticProps = async () => {
+  const { css, img } = await getPlaiceholder("/path-to-your-image.jpg");
 
-const HeroSlider: FC<HeroSliderProps> = () => {
+  return {
+    props: {
+      img,
+      css,
+    },
+  };
+};
+
+const HeroSlider: FC<InferGetStaticPropsType<typeof getStaticProps>> = ({
+  img,
+  css,
+}) => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
   const [animate, setAnimate] = useState<boolean>(false);
   const slidesLength = slidesData.length;
@@ -38,6 +52,7 @@ const HeroSlider: FC<HeroSliderProps> = () => {
         src={slidesData[currentSlide].bg}
         alt={`Image depicting ${slidesData[currentSlide].title.text}`}
         placeholder="blur"
+        // blurDataURL={img}
         sizes="100%"
         fill
         style={{ objectFit: "cover" }}
@@ -62,5 +77,4 @@ const HeroSlider: FC<HeroSliderProps> = () => {
     </section>
   );
 };
-
 export default HeroSlider;
