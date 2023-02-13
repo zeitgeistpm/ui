@@ -1,7 +1,6 @@
 interface Title {
   text: string;
-  size: string;
-  color: string;
+  styles: string;
 }
 interface Color {
   primary: string;
