@@ -280,7 +280,7 @@ const Market: NextPage<{
     : Number(indexedMarket.period.start);
   const ends = Number(indexedMarket.period.end);
   const volume = indexedMarket?.pool?.volume
-    ? Number(indexedMarket?.pool?.volume)
+    ? Number(indexedMarket?.pool?.volume) / 10 ** 10
     : 0;
   const subsidy = marketSdkv2?.pool?.poolId == null ? 0 : pool?.liquidity;
 
