@@ -10,30 +10,21 @@ import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useStore } from "lib/stores/Store";
 import { useEffect, useMemo } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import JoinPoolForm from "./JoinPoolForm";
 
-type AssetBalances = { [key: string]: Decimal };
-type PoolBalances = {
+export type PoolBalances = {
   [key: string]: {
     pool: Decimal;
     user: Decimal;
   };
 };
 
-type Balances = {
-  pool: AssetBalances;
-  user: AssetBalances;
-};
-
-const assetObjStringToId = (assetId: string) => {
+export const assetObjStringToId = (assetId: string) => {
   const asset = parseAssetId(assetId).unwrap();
   const id = getIndexOf(asset) ?? assetId;
   return id;
 };
 
-const b: Balances = {
-  pool: { a: new Decimal(0), b: new Decimal(0) },
-  user: { a: new Decimal(0) },
-};
 const LiquidityModal = ({ poolId }: { poolId: number }) => {
   const store = useStore();
 
@@ -106,81 +97,9 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
 
   console.log(allBalances);
 
-  const { register, watch, handleSubmit, setValue } = useForm();
-
-  useEffect(() => {
-    const subscription = watch((value, { name, type }) => {
-      console.log("watch", value, name, type);
-      const changedAsset = name;
-      const assetAmount = value;
-      const changedByUser = type != null;
-
-      // console.log(allBalances[name].pool);
-      // console.log(allBalances[name].user);
-      // const poolAssetAmount;
-
-      // const poolToUserRatio =
-
-      // console.log("changed", changedAssetIndex);
-
-      const userInput = value[changedAsset];
-      if (
-        changedAsset != null &&
-        userInput != null &&
-        userInput !== "" &&
-        changedByUser &&
-        allBalances
-      ) {
-        const changedAssetBalances = allBalances[changedAsset];
-
-        console.log(
-          "poolAmount",
-          changedAssetBalances.pool.div(ZTG).toString(),
-        );
-        console.log(userInput);
-
-        const poolToInputRatio = changedAssetBalances.pool
-          .div(ZTG)
-          .div(userInput);
-        console.log(poolToInputRatio.toString());
-
-        // recalculate asset amounts to keep ratio with user input
-        for (const assetKey in allBalances) {
-          console.log(assetKey);
-          console.log(allBalances[assetKey].pool.div(ZTG).toString());
-
-          if (assetKey !== changedAsset) {
-            setValue(
-              assetKey,
-              allBalances[assetKey].pool
-                .div(poolToInputRatio)
-                .div(ZTG)
-                .toNumber(),
-            );
-          }
-        }
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [watch, allBalances]);
-
-  const onSubmit: SubmitHandler<any> = (data) => console.log(data);
   return (
     <div>
-      <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-        {pool?.weights.map((asset, index) => {
-          const id = assetObjStringToId(asset.assetId);
-
-          return (
-            <input
-              className="bg-blue-500 border border-black"
-              key={index}
-              type="number"
-              {...register(id.toString(), { min: 0 })}
-            />
-          );
-        })}
-      </form>
+      <JoinPoolForm poolId={poolId} poolBalances={allBalances} />
     </div>
   );
 };
