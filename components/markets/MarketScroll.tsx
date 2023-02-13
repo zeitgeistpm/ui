@@ -24,11 +24,11 @@ const MarketScroll = observer(
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
     const gap = 16;
     //calculate cards shown and width based on container width
-    const cardsShown = containerWidth >= 716 && containerWidth < 1183 ? 2 : 3;
+    const cardsShown = containerWidth >= 716 && containerWidth < 983 ? 2 : 3;
     const cardWidth =
       containerWidth < 716
         ? containerWidth
-        : containerWidth >= 1183
+        : containerWidth >= 983
         ? (containerWidth - gap * 2) / cardsShown
         : (containerWidth - gap) / cardsShown;
     const scrollMin = 0;
