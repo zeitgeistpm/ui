@@ -49,7 +49,6 @@ const ScalarPriceRange = observer(
           : moment(upperBound).format(dateFormat),
       [upperBound],
     );
-
     // new Intl.DateTimeFormat("en-US", {
     //   dateStyle: "medium",
     // }).format(Number(indexedMarket.period.end))
@@ -63,6 +62,7 @@ const ScalarPriceRange = observer(
         ? pos.toFixed(decimals)
         : moment(pos).format(dateFormat);
     }, [upperBound, lowerBound, shortPrice, longPrice]);
+    console.log(lower, averagePosition, upper);
 
     return (
       <div ref={ref}>
@@ -108,7 +108,7 @@ const ScalarPriceRange = observer(
                   notation: "compact",
                 }).format(Number(position))}
               </div>
-              <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full"></div>
+              <div className="bg-blue h-ztg-6 w-ztg-6 rounded-full"></div>
             </div>
           </div>
 
@@ -120,8 +120,8 @@ const ScalarPriceRange = observer(
             ></motion.div>
           )}
         </div>
-        <div className="h-ztg-5 flex items-center">
-          <div className="h-ztg-2 w-full bg-sky-600"></div>
+        <div className="h-ztg-6 flex items-center">
+          <div className="h-ztg-6 w-full bg-blue"></div>
         </div>
       </div>
     );
