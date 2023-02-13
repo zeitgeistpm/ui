@@ -1,5 +1,6 @@
-import { isNA } from "@zeitgeistpm/sdk-next";
+import { getIndexOf, isNA, parseAssetId } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
 import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalances";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { useMarket } from "lib/hooks/queries/useMarket";
@@ -23,6 +24,12 @@ type Balances = {
   user: AssetBalances;
 };
 
+const assetObjStringToId = (assetId: string) => {
+  const asset = parseAssetId(assetId).unwrap();
+  const id = getIndexOf(asset) ?? assetId;
+  return id;
+};
+
 const b: Balances = {
   pool: { a: new Decimal(0), b: new Decimal(0) },
   user: { a: new Decimal(0) },
@@ -39,6 +46,7 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
     pool?.accountId,
     pool,
   );
+
   const { data: poolBaseBalance } = useZtgBalance(pool?.accountId);
 
   const data = useTotalIssuanceForPools([poolId]);
@@ -75,7 +83,9 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
             ? new Decimal(poolBaseBalance.toString())
             : new Decimal(poolAssetBalances[index].free.toString());
 
-          balances[weight.assetId] = {
+          const id = assetObjStringToId(weight.assetId);
+
+          balances[id] = {
             pool: poolBalance,
             user: userBalance,
           };
@@ -94,12 +104,14 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
     poolBaseBalance,
   ]);
 
+  console.log(allBalances);
+
   const { register, watch, handleSubmit, setValue } = useForm();
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       console.log("watch", value, name, type);
-      const changedAssetIndex = name;
+      const changedAsset = name;
       const assetAmount = value;
       const changedByUser = type != null;
 
@@ -111,27 +123,63 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
 
       // console.log("changed", changedAssetIndex);
 
-      if (changedAssetIndex != null && changedByUser) {
-        setValue("1", 5);
-        // const newAssets = a
-        // replace(value.assets);
+      const userInput = value[changedAsset];
+      if (
+        changedAsset != null &&
+        userInput != null &&
+        userInput !== "" &&
+        changedByUser &&
+        allBalances
+      ) {
+        const changedAssetBalances = allBalances[changedAsset];
+
+        console.log(
+          "poolAmount",
+          changedAssetBalances.pool.div(ZTG).toString(),
+        );
+        console.log(userInput);
+
+        const poolToInputRatio = changedAssetBalances.pool
+          .div(ZTG)
+          .div(userInput);
+        console.log(poolToInputRatio.toString());
+
+        // recalculate asset amounts to keep ratio with user input
+        for (const assetKey in allBalances) {
+          console.log(assetKey);
+          console.log(allBalances[assetKey].pool.div(ZTG).toString());
+
+          if (assetKey !== changedAsset) {
+            setValue(
+              assetKey,
+              allBalances[assetKey].pool
+                .div(poolToInputRatio)
+                .div(ZTG)
+                .toNumber(),
+            );
+          }
+        }
       }
     });
     return () => subscription.unsubscribe();
-  }, [watch]);
+  }, [watch, allBalances]);
 
   const onSubmit: SubmitHandler<any> = (data) => console.log(data);
   return (
     <div>
       <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
-        {pool?.weights.map((asset, index) => (
-          <input
-            className="bg-blue-500 border border-black"
-            key={index}
-            type="number"
-            {...register(index.toString(), { min: 0 })}
-          />
-        ))}
+        {pool?.weights.map((asset, index) => {
+          const id = assetObjStringToId(asset.assetId);
+
+          return (
+            <input
+              className="bg-blue-500 border border-black"
+              key={index}
+              type="number"
+              {...register(id.toString(), { min: 0 })}
+            />
+          );
+        })}
       </form>
     </div>
   );
