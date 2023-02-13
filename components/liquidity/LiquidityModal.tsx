@@ -94,13 +94,14 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
     poolBaseBalance,
   ]);
 
-  const { register, control, handleSubmit, watch, setValue } = useForm<any>();
+  const { register, watch, handleSubmit, setValue } = useForm();
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       console.log("watch", value, name, type);
       const changedAssetIndex = name;
       const assetAmount = value;
+      const changedByUser = type != null;
 
       // console.log(allBalances[name].pool);
       // console.log(allBalances[name].user);
@@ -110,7 +111,7 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
 
       // console.log("changed", changedAssetIndex);
 
-      if (changedAssetIndex != null && type != null) {
+      if (changedAssetIndex != null && changedByUser) {
         setValue("1", 5);
         // const newAssets = a
         // replace(value.assets);
@@ -128,9 +129,7 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
             className="bg-blue-500 border border-black"
             key={index}
             type="number"
-            {...(register("assets" + index.toString()), { defaultValue: 0 })}
-
-            // {...(register(asset.assetId), { defaultValue: 0 })}
+            {...register(index.toString(), { min: 0 })}
           />
         ))}
       </form>
