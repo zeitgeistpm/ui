@@ -6,7 +6,7 @@ import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import moment from "moment";
 
 interface ScalarPriceRangeProps {
-  scalarType: ScalarRangeType;
+  scalarType: string | ScalarRangeType;
   lowerBound: number;
   upperBound: number;
   shortPrice: number; //between 0 and 1
@@ -31,7 +31,7 @@ const ScalarPriceRange = observer(
     const longPosition = width * longPercentage;
 
     const showShortAndLongPrices = Math.abs(1 - shortPrice - longPrice) > 0.03;
-    const inferedType: ScalarRangeType = scalarType ?? "number";
+    const inferedType: string | ScalarRangeType = scalarType ?? "number";
 
     const dateFormat = "d/MM/D/YY, h:mm a";
 
@@ -50,6 +50,10 @@ const ScalarPriceRange = observer(
       [upperBound],
     );
 
+    // new Intl.DateTimeFormat("en-US", {
+    //   dateStyle: "medium",
+    // }).format(Number(indexedMarket.period.end))
+
     const position = useMemo(() => {
       const pos =
         (upperBound - lowerBound) * ((1 - shortPrice + longPrice) / 2) +
@@ -65,11 +69,21 @@ const ScalarPriceRange = observer(
         <div className="relative top-ztg-6 ">
           <div className="flex justify-between font-mono">
             <div className="flex flex-col justify-start">
-              <div className="mb-ztg-8">{lower}</div>
+              <div className="mb-ztg-8">
+                {new Intl.NumberFormat("default", {
+                  maximumSignificantDigits: 3,
+                  notation: "compact",
+                }).format(Number(lower))}
+              </div>
               <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full mt-auto"></div>
             </div>
             <div className="flex flex-col justify-end items-end">
-              <div className="mb-ztg-8">{upper}</div>
+              <div className="mb-ztg-8">
+                {new Intl.NumberFormat("default", {
+                  maximumSignificantDigits: 3,
+                  notation: "compact",
+                }).format(Number(upper))}
+              </div>
               <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full"></div>
             </div>
           </div>
@@ -88,7 +102,12 @@ const ScalarPriceRange = observer(
             }}
           >
             <div className="flex flex-col items-center font-mono">
-              <div className="mb-ztg-8">{position}</div>
+              <div className="mb-ztg-8">
+                {new Intl.NumberFormat("default", {
+                  maximumSignificantDigits: 3,
+                  notation: "compact",
+                }).format(Number(position))}
+              </div>
               <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full"></div>
             </div>
           </div>

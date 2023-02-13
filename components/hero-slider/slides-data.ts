@@ -5,7 +5,7 @@ export const slidesData = [
       text: "",
       styles: "text-white text-3xl sm:text-4xl md:text-6xl",
     },
-    bg: "/carousel/superbowl.png",
+    bg: "/carousel/slide-1.jpeg",
     cta1: "",
     link1: "/markets/87",
     color1: {
