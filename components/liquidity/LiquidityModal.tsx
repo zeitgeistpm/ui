@@ -51,33 +51,10 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
 
   //user balances outside of pool
   const { data: userBaseBalance } = useZtgBalance(pool?.accountId);
-  //useAccountPoolAssetBalances ??
-
-  // const userAssetBalances = useAccountAssetBalances(
-  //   pool && connectedAddress
-  //     ? pool?.weights.map((weight) => {
-  //         return {
-  //           account: connectedAddress,
-  //           assetId: parseAssetId(weight.assetId).unwrap(),
-  //         };
-  //       })
-  //     : [],
-  // );
   const { data: userAssetBalances } = useAccountPoolAssetBalances(
     connectedAddress,
     pool,
   );
-
-  // const userBalances = [
-  //   ...(pool?.weights.map((weight) => {
-  //     return userAssetBalances
-  //       .get(connectedAddress, parseAssetId(weight.assetId).unwrap())
-  //       ?.data?.balance.free.toString(); //isna check
-  //   }) ?? []),
-  //   userBaseBalance.toString(),
-  // ];
-
-  // console.log(userBalances);
 
   const allBalances: PoolBalances = useMemo(() => {
     if (
@@ -117,15 +94,6 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
     poolBaseBalance,
   ]);
 
-  console.log(allBalances);
-
-  // const userBalances = [
-  //   ...userAssetBalances.map((a) => a.free.toString()),
-  //   poolBaseBalance?.toString(),
-  // ]
-
-  //   console.log(pool?.weights);
-
   const { register, control, handleSubmit, watch, setValue } = useForm<any>();
 
   useEffect(() => {
@@ -160,7 +128,7 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
             className="bg-blue-500 border border-black"
             key={index}
             type="number"
-            {...(register(index.toString()), { defaultValue: 0 })}
+            {...(register("assets" + index.toString()), { defaultValue: 0 })}
 
             // {...(register(asset.assetId), { defaultValue: 0 })}
           />
