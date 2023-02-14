@@ -66,37 +66,37 @@ const ScalarPriceRange = observer(
 
     return (
       <div ref={ref}>
-        <div className="relative top-ztg-6 ">
+        <div className="relative top-1.5 ">
           <div className="flex justify-between">
             <div className="flex flex-col justify-start">
-              <span className="mb-ztg-8 text-sm text-blue">
+              <span className="mb-2 text-sm text-blue">
                 {new Intl.NumberFormat("default", {
                   maximumSignificantDigits: 3,
                   notation: "compact",
                 }).format(Number(lower))}
               </span>
-              {/* <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full mt-auto"></div> */}
+              {/* <div className="bg-sky-500 h-1.5 w-1.5 rounded-full mt-auto"></div> */}
             </div>
             <div className="flex flex-col justify-end items-end">
-              <span className="mb-ztg-8 text-sm text-red">
+              <span className="mb-2 text-sm text-red">
                 {new Intl.NumberFormat("default", {
                   maximumSignificantDigits: 3,
                   notation: "compact",
                 }).format(Number(upper))}
               </span>
-              {/* <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full"></div> */}
+              {/* <div className="bg-sky-500 h-1.5 w-1.5 rounded-full"></div> */}
             </div>
           </div>
           {showShortAndLongPrices && (
             <motion.div
               layout
-              className="bg-vermilion h-ztg-6 w-ztg-6 rounded-full absolute bottom-ztg-0"
+              className="bg-vermilion h-1.5 w-1.5 rounded-full absolute bottom-ztg-0"
               style={{ left: `${shortPosition}px` }}
             ></motion.div>
           )}
           <div
             style={{ width: averagePosition }}
-            className="bg-blue h-ztg-6 absolute left-0 bottom-0 rounded-l"
+            className="bg-blue h-1.5 absolute left-0 bottom-0 rounded-l"
           ></div>
           <div
             className="absolute bottom-ztg-0"
@@ -106,26 +106,26 @@ const ScalarPriceRange = observer(
             }}
           >
             <div className="flex flex-col items-center">
-              <span className="mb-ztg-8 text-sm">
+              <span className="mb-2 text-sm">
                 {new Intl.NumberFormat("default", {
                   maximumSignificantDigits: 3,
                   notation: "compact",
                 }).format(Number(position))}
               </span>
-              {/* <div className="bg-blue h-ztg-6 w-ztg-6 rounded-full"></div> */}
+              {/* <div className="bg-blue h-1.5 w-1.5 rounded-full"></div> */}
             </div>
           </div>
 
           {showShortAndLongPrices && (
             <motion.div
               layout
-              className="bg-sheen-green h-ztg-6 w-ztg-6 rounded-full absolute bottom-ztg-0"
+              className="bg-sheen-green h-1.5 w-1.5 rounded-full absolute bottom-ztg-0"
               style={{ left: `${longPosition}px` }}
             ></motion.div>
           )}
         </div>
-        <div className="h-ztg-6 flex items-center">
-          <div className="h-ztg-6 w-full bg-red rounded"></div>
+        <div className="h-1.5 flex items-center">
+          <div className="h-1.5 w-full bg-red rounded"></div>
         </div>
       </div>
     );
