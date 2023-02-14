@@ -191,6 +191,7 @@ input[type="number"] {
 @import "./card.css";
 @import "./date-picker.css";
 @import "./quill.css";
+@import "./range-component.css";
 
 body {
   --topbar-height: 76px;
