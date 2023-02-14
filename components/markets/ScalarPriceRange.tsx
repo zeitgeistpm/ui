@@ -67,24 +67,24 @@ const ScalarPriceRange = observer(
     return (
       <div ref={ref}>
         <div className="relative top-ztg-6 ">
-          <div className="flex justify-between font-mono">
+          <div className="flex justify-between">
             <div className="flex flex-col justify-start">
-              <div className="mb-ztg-8">
+              <span className="mb-ztg-8 text-sm text-blue">
                 {new Intl.NumberFormat("default", {
                   maximumSignificantDigits: 3,
                   notation: "compact",
                 }).format(Number(lower))}
-              </div>
-              <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full mt-auto"></div>
+              </span>
+              {/* <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full mt-auto"></div> */}
             </div>
             <div className="flex flex-col justify-end items-end">
-              <div className="mb-ztg-8">
+              <span className="mb-ztg-8 text-sm text-red">
                 {new Intl.NumberFormat("default", {
                   maximumSignificantDigits: 3,
                   notation: "compact",
                 }).format(Number(upper))}
-              </div>
-              <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full"></div>
+              </span>
+              {/* <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full"></div> */}
             </div>
           </div>
           {showShortAndLongPrices && (
@@ -95,20 +95,24 @@ const ScalarPriceRange = observer(
             ></motion.div>
           )}
           <div
+            style={{ width: averagePosition }}
+            className="bg-blue h-ztg-6 absolute left-0 bottom-0 rounded-l"
+          ></div>
+          <div
             className="absolute bottom-ztg-0"
             style={{
               left: `${averagePosition}px`,
               transform: "translateX(calc(-50% + 2px))",
             }}
           >
-            <div className="flex flex-col items-center font-mono">
-              <div className="mb-ztg-8">
+            <div className="flex flex-col items-center">
+              <span className="mb-ztg-8 text-sm">
                 {new Intl.NumberFormat("default", {
                   maximumSignificantDigits: 3,
                   notation: "compact",
                 }).format(Number(position))}
-              </div>
-              <div className="bg-blue h-ztg-6 w-ztg-6 rounded-full"></div>
+              </span>
+              {/* <div className="bg-blue h-ztg-6 w-ztg-6 rounded-full"></div> */}
             </div>
           </div>
 
@@ -121,7 +125,7 @@ const ScalarPriceRange = observer(
           )}
         </div>
         <div className="h-ztg-6 flex items-center">
-          <div className="h-ztg-6 w-full bg-blue"></div>
+          <div className="h-ztg-6 w-full bg-red rounded"></div>
         </div>
       </div>
     );
