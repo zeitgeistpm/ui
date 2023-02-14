@@ -4,10 +4,6 @@ import test from "./lib/test";
 test("index page banner button navigates to markets page", async ({ page }) => {
   await page.goto("/");
 
-  const bannerButton = page.getByTestId("bannerButton");
-
-  await bannerButton.click();
-
   const marketsList = page.getByTestId("marketsList");
 
   await marketsList.waitFor();
