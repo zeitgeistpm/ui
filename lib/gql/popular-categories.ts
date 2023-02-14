@@ -2,7 +2,7 @@ import { gql, GraphQLClient } from "graphql-request";
 
 const tagsQuery = gql`
   query MarketTags($tag: [String!]) {
-    markets(where: { tags_containsAny: $tag, status_eq: "Active" }) {
+    markets(where: { tags_containsAny: $tag, status_eq: Active }) {
       marketId
     }
   }
