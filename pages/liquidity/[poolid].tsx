@@ -138,7 +138,7 @@ const PoolDetails: NextPage = observer(() => {
 
   return (
     <>
-      <MarketMeta market={saturatedPoolData?.market} />
+      {/* <MarketMeta market={saturatedPoolData?.market} /> */}
       <div>
         <InfoBoxes />
         <div className="flex items-center mb-ztg-33">
