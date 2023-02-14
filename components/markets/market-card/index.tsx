@@ -196,6 +196,9 @@ const MarketCard = ({
     baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
   };
 
+  const lower = Number(marketType?.scalar?.[0]) / 10 ** 10;
+  const upper = Number(marketType?.scalar?.[1]) / 10 ** 10;
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <motion.div
@@ -235,8 +238,8 @@ const MarketCard = ({
               {scalarType ? (
                 <ScalarPriceRange
                   scalarType={scalarType}
-                  lowerBound={Number(marketType?.scalar?.[1])}
-                  upperBound={Number(marketType?.scalar?.[0])}
+                  lowerBound={lower}
+                  upperBound={upper}
                   shortPrice={outcomes[1].price}
                   longPrice={outcomes[0].price}
                 />

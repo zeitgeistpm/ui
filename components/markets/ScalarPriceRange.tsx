@@ -33,19 +33,26 @@ const ScalarPriceRange = observer(
     const showShortAndLongPrices = Math.abs(1 - shortPrice - longPrice) > 0.03;
     const inferedType: string | ScalarRangeType = scalarType ?? "number";
 
-    const dateFormat = "d/MM/D/YY, h:mm a";
+    const dateFormat = "MM.DD.YYYY";
 
     const lower = useMemo(
       () =>
         inferedType === "number"
-          ? lowerBound
+          ? new Intl.NumberFormat("default", {
+              maximumSignificantDigits: 3,
+              notation: "compact",
+            }).format(Number(lowerBound))
           : moment(lowerBound).format(dateFormat),
       [lowerBound],
     );
+
     const upper = useMemo(
       () =>
         inferedType === "number"
-          ? upperBound
+          ? new Intl.NumberFormat("default", {
+              maximumSignificantDigits: 3,
+              notation: "compact",
+            }).format(Number(upperBound))
           : moment(upperBound).format(dateFormat),
       [upperBound],
     );
@@ -62,29 +69,18 @@ const ScalarPriceRange = observer(
         ? pos.toFixed(decimals)
         : moment(pos).format(dateFormat);
     }, [upperBound, lowerBound, shortPrice, longPrice]);
-    console.log(lower, averagePosition, upper);
+
+    console.log(scalarType, averagePosition);
 
     return (
       <div ref={ref}>
         <div className="relative top-1.5 ">
           <div className="flex justify-between">
             <div className="flex flex-col justify-start">
-              <span className="mb-2 text-sm text-blue">
-                {new Intl.NumberFormat("default", {
-                  maximumSignificantDigits: 3,
-                  notation: "compact",
-                }).format(Number(lower))}
-              </span>
-              {/* <div className="bg-sky-500 h-1.5 w-1.5 rounded-full mt-auto"></div> */}
+              <span className="mb-2.5 text-sm text-blue">{lower}</span>
             </div>
             <div className="flex flex-col justify-end items-end">
-              <span className="mb-2 text-sm text-red">
-                {new Intl.NumberFormat("default", {
-                  maximumSignificantDigits: 3,
-                  notation: "compact",
-                }).format(Number(upper))}
-              </span>
-              {/* <div className="bg-sky-500 h-1.5 w-1.5 rounded-full"></div> */}
+              <span className="mb-2.5 text-sm text-red">{upper}</span>
             </div>
           </div>
           {showShortAndLongPrices && (
@@ -106,13 +102,9 @@ const ScalarPriceRange = observer(
             }}
           >
             <div className="flex flex-col items-center">
-              <span className="mb-2 text-sm">
-                {new Intl.NumberFormat("default", {
-                  maximumSignificantDigits: 3,
-                  notation: "compact",
-                }).format(Number(position))}
+              <span className="mb-2.5 px-1 bg-white rounded text-sm">
+                {position}
               </span>
-              {/* <div className="bg-blue h-1.5 w-1.5 rounded-full"></div> */}
             </div>
           </div>
 
