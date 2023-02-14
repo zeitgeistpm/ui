@@ -1,17 +1,14 @@
 import PercentageChange from "components/ui/PercentageChange";
 import { useExchangeStore } from "lib/stores/ExchangeStore";
-import MarketStore from "lib/stores/MarketStore";
-import { useNavigationStore } from "lib/stores/NavigationStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
-import { ReactFragment, useEffect, useMemo, useState } from "react";
-import { useTradeslipItems } from "lib/state/tradeslip/items";
+import { ReactFragment, useMemo, useState } from "react";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 
+import TradeForm from "../trade-form";
 import ExchangeBox from "../exchange/ExchangeBox";
 import LiquidityPoolsBox from "../liquidity/LiquidityPoolsBox";
-import TradeSlip from "../trade-slip";
 import Tabs from "../ui/Tabs";
 import Drawer from "./Drawer";
 
@@ -58,7 +55,7 @@ const Box = observer(
     switch (mode) {
       case "default":
         return tabIndex === 0 ? (
-          <TradeSlip />
+          <TradeForm />
         ) : (
           withSpacing(<ExchangeBox exchangeStore={exchangeStore} />)
         );
@@ -72,7 +69,7 @@ const Box = observer(
         );
       default:
         return tabIndex === 0 ? (
-          <TradeSlip />
+          <TradeForm />
         ) : (
           withSpacing(<ExchangeBox exchangeStore={exchangeStore} />)
         );
@@ -81,13 +78,10 @@ const Box = observer(
 );
 
 const RightDrawer = observer(() => {
-  const navigationStore = useNavigationStore();
-  const tradeslipItems = useTradeslipItems();
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const router = useRouter();
-  const { marketid } = router.query;
   const store = useStore();
-  const { markets, wallets } = store;
+  const { wallets } = store;
 
   const displayMode: DisplayMode = useMemo<DisplayMode>(() => {
     if (router.query.poolid !== undefined) {
@@ -107,10 +101,6 @@ const RightDrawer = observer(() => {
         return ["Trade Slip", "Exchange"];
     }
   }, [displayMode]);
-
-  useEffect(() => {
-    setActiveTabIndex(0);
-  }, [tradeslipItems.items.length]);
 
   return (
     <Drawer

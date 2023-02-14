@@ -1,9 +1,9 @@
 import { CategoricalAssetId, ScalarAssetId } from "@zeitgeistpm/sdk-next";
-import BuySellButtons from "components/trade-slip/BuySellButtons";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
+import BuySellButtons from "./BuySellButtons";
 import DisputeButton from "./DisputeButton";
 import RedeemButton from "./RedeemButton";
 import ReportButton from "./ReportButton";

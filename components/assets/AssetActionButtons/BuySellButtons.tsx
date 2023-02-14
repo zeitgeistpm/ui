@@ -3,7 +3,6 @@ import {
   IOCategoricalAssetId,
   IOScalarAssetId,
 } from "@zeitgeistpm/sdk-next";
-import { useTradeslipItems } from "lib/state/tradeslip/items";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { FC, useMemo } from "react";
@@ -16,7 +15,6 @@ interface BuySellButtonsProps {
 const BuySellButtons = observer(
   ({ assetId, disabled }: BuySellButtonsProps) => {
     const store = useStore();
-    const tradeslip = useTradeslipItems();
     const isDisabled = false;
 
     if (!IOCategoricalAssetId.is(assetId) && !IOScalarAssetId.is(assetId)) {
@@ -31,33 +29,33 @@ const BuySellButtons = observer(
     };
 
     const onClickBuy = () => {
-      if (tradeslip.getByAsset(assetId)?.action === "buy") {
-        return tradeslip.removeAsset(assetId);
-      }
-      tradeslip.put({
-        assetId: assetId,
-        action: "buy",
-        amount: 0,
-      });
-      openDrawer();
+      // if (tradeslip.getByAsset(assetId)?.action === "buy") {
+      //   return tradeslip.removeAsset(assetId);
+      // }
+      // tradeslip.put({
+      //   assetId: assetId,
+      //   action: "buy",
+      //   amount: 0,
+      // });
+      // openDrawer();
     };
 
     const onClickSell = () => {
-      if (tradeslip.getByAsset(assetId)?.action === "sell") {
-        return tradeslip.removeAsset(assetId);
-      }
-      tradeslip.put({
-        assetId: assetId,
-        action: "sell",
-        amount: 0,
-      });
-      openDrawer();
+      // if (tradeslip.getByAsset(assetId)?.action === "sell") {
+      //   return tradeslip.removeAsset(assetId);
+      // }
+      // tradeslip.put({
+      //   assetId: assetId,
+      //   action: "sell",
+      //   amount: 0,
+      // });
+      // openDrawer();
     };
 
     return (
       <div className="card-exp-col-6 flex items-center justify-evenly gap-x-[6px]">
         <TradeButton
-          active={tradeslip.getByAsset(assetId)?.action === "buy"}
+          active={false} // TODO: change active status
           type="buy"
           disabled={isDisabled}
           onClick={onClickBuy}
@@ -65,7 +63,7 @@ const BuySellButtons = observer(
           Buy
         </TradeButton>
         <TradeButton
-          active={tradeslip.getByAsset(assetId)?.action === "sell"}
+          active={false} // TODO: change active status
           disabled={isDisabled}
           type="sell"
           onClick={onClickSell}
