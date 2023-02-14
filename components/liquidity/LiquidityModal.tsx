@@ -100,8 +100,12 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
 
   return (
     <div>
-      <JoinPoolForm poolId={poolId} poolBalances={allBalances} />
-      <ExitPoolForm poolId={poolId} poolBalances={allBalances} />
+      <JoinPoolForm
+        poolId={poolId}
+        poolBalances={allBalances}
+        totalPoolShares={new Decimal(totalPoolIssuance?.toString() ?? 0)}
+      />
+      {/* <ExitPoolForm poolId={poolId} poolBalances={allBalances} /> */}
     </div>
   );
 };

@@ -1,28 +1,50 @@
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
+import Decimal from "decimal.js";
+import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotificationStore } from "lib/stores/NotificationStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
 
 const JoinPoolForm = ({
   poolBalances,
   poolId,
+  totalPoolShares,
 }: {
   poolBalances: PoolBalances;
   poolId: number;
+  totalPoolShares: Decimal;
 }) => {
-  const { register, watch, handleSubmit, setValue } = useForm();
+  console.log("id", poolId);
+
+  const { register, watch, handleSubmit, setValue, getValues } = useForm();
   const { data: pool } = usePool({ poolId });
   const [sdk, id] = useSdkv2();
   const notificationStore = useNotificationStore();
+  const [poolSharesToReceive, setPoolSharesToReceive] = useState<Decimal>();
 
   const { send: joinPool, isLoading: isUpdating } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk)) {
-        return sdk.api.tx.identity.setIdentity({});
+      if (isRpcSdk(sdk) && pool) {
+        const formValue = getValues();
+        const amounts = pool?.weights.map((asset, index) => {
+          const id = assetObjStringToId(asset.assetId);
+          const assetAmount = formValue[id] ?? 0;
+          return assetAmount === ""
+            ? "0"
+            : new Decimal(assetAmount).mul(ZTG).toFixed(0);
+        });
+
+        return sdk.api.tx.swaps.poolJoin(
+          poolId,
+          poolSharesToReceive
+            .mul((100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100)
+            .toFixed(0),
+          amounts,
+        );
       }
     },
     {
@@ -61,16 +83,20 @@ const JoinPoolForm = ({
               poolBalances[assetKey].pool
                 .div(poolToInputRatio)
                 .div(ZTG)
-                .toNumber(),
+                .toString(),
             );
           }
         }
+
+        setPoolSharesToReceive(totalPoolShares.div(poolToInputRatio));
       }
     });
     return () => subscription.unsubscribe();
   }, [watch, poolBalances]);
 
-  const onSubmit: SubmitHandler<any> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<any> = (data) => {
+    joinPool();
+  };
 
   return (
     <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
@@ -81,11 +107,12 @@ const JoinPoolForm = ({
           <input
             className="bg-blue-500 border border-black"
             key={index}
-            type="number"
+            type="string"
             {...register(id.toString(), { min: 0 })}
           />
         );
       })}
+      <button type="submit">Submit</button>
     </form>
   );
 };
