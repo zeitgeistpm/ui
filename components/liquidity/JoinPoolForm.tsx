@@ -1,5 +1,8 @@
-import { ZTG } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
 import { usePool } from "lib/hooks/queries/usePool";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
@@ -13,6 +16,23 @@ const JoinPoolForm = ({
 }) => {
   const { register, watch, handleSubmit, setValue } = useForm();
   const { data: pool } = usePool({ poolId });
+  const [sdk, id] = useSdkv2();
+  const notificationStore = useNotificationStore();
+
+  const { send: joinPool, isLoading: isUpdating } = useExtrinsic(
+    () => {
+      if (isRpcSdk(sdk)) {
+        return sdk.api.tx.identity.setIdentity({});
+      }
+    },
+    {
+      onSuccess: () => {
+        notificationStore.pushNotification("Joined pool", {
+          type: "Success",
+        });
+      },
+    },
+  );
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {

@@ -10,6 +10,7 @@ import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useStore } from "lib/stores/Store";
 import { useEffect, useMemo } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import ExitPoolForm from "./ExitPoolForm";
 import JoinPoolForm from "./JoinPoolForm";
 
 export type PoolBalances = {
@@ -100,6 +101,7 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
   return (
     <div>
       <JoinPoolForm poolId={poolId} poolBalances={allBalances} />
+      <ExitPoolForm poolId={poolId} poolBalances={allBalances} />
     </div>
   );
 };
