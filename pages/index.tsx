@@ -25,6 +25,8 @@ import {
   IGetPlaiceholderReturn,
 } from "plaiceholder";
 import React from "react";
+import RangeInput from "components/ui/inputs";
+import { useForm } from "react-hook-form";
 
 const MAIN_IMAGE_PATH = "/carousel/superbowl.png";
 
@@ -85,6 +87,16 @@ const IndexPage: NextPage<{
     categoryPlaceholders,
     sliderPlaceholders,
   }) => {
+    const [rangeVal, setRangeVal] = useState("0");
+    const { register, handleSubmit } = useForm();
+    const onSubmit = (data) => {
+      alert(JSON.stringify(data));
+    };
+
+    useEffect(() => {
+      console.log(rangeVal);
+    }, [rangeVal]);
+
     return (
       <>
         <HeroSlider imagePlaceholders={sliderPlaceholders} />
@@ -92,6 +104,19 @@ const IndexPage: NextPage<{
           <div className="flex items-center w-full justify-center relative bottom-[60px]">
             <LearnSection />
           </div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <RangeInput
+              min={"0"}
+              max={"100"}
+              minLabel={"0 %"}
+              maxLabel={"100 %"}
+              value={rangeVal}
+              step={"0.01"}
+              valueSuffix={"%"}
+              {...register("rangeInput")}
+              onValueChange={setRangeVal}
+            />
+          </form>
           {featuredMarkets.length > 0 && (
             <div className="mb-[60px]">
               <MarketScroll

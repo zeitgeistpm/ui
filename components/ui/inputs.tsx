@@ -413,3 +413,88 @@ export const TextArea: FC<TextAreaProps> = observer(
     },
   ),
 );
+
+export type RangeInputProps = {
+  min?: string | number;
+  max?: string | number;
+  minLabel?: string;
+  maxLabel?: string;
+  step?: string;
+  value?: string;
+  valueSuffix?: string;
+  className?: string;
+  onValueChange?: (val: string) => void;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
+};
+
+const RangeInput = React.forwardRef(
+  (
+    {
+      min,
+      max,
+      maxLabel,
+      minLabel,
+      value,
+      valueSuffix = "",
+      step,
+      className = "",
+      onValueChange,
+      onChange,
+    }: RangeInputProps,
+    ref: React.Ref<HTMLInputElement>,
+  ) => {
+    const componentRef = useRef<HTMLDivElement>(null);
+
+    const change: ChangeEventHandler<HTMLInputElement> = (e) => {
+      onValueChange && onValueChange(e.target.value);
+      onChange && onChange(e);
+    };
+
+    const percentage = (+value - +min) / (+max - +min);
+
+    const width = componentRef?.current?.clientWidth ?? 0;
+
+    const minVisible = !(percentage < 0.1);
+    const maxVisible = percentage < 0.9;
+
+    console.log(value, percentage, minVisible);
+
+    return (
+      <div className={`relative ${className}`} ref={componentRef}>
+        <input
+          ref={ref}
+          type="range"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={change}
+          className={`w-full`}
+        />
+        <div className="w-full justify-between">
+          <div
+            className="text-ztg-14-150 text-black"
+            style={{
+              left: `${percentage * (width - 40)}px`,
+              width: "100px",
+              position: "absolute",
+              overflow: "hidden",
+            }}
+          >
+            {value} {valueSuffix}
+          </div>
+          <div className="flex w-full justify-between mt-[8px]">
+            <div className="text-ztg-14-150 text-black">
+              {minVisible ? minLabel : ""}
+            </div>
+            <div className="text-ztg-14-150 text-black">
+              {maxVisible ? maxLabel : ""}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  },
+);
+
+export default RangeInput;
