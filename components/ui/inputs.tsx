@@ -456,10 +456,8 @@ const RangeInput = React.forwardRef(
 
     const width = componentRef?.current?.clientWidth ?? 0;
 
-    const minVisible = !(percentage < 0.1);
+    const minVisible = percentage > 0.1;
     const maxVisible = percentage < 0.9;
-
-    console.log(value, percentage, minVisible);
 
     return (
       <div className={`relative ${className}`} ref={componentRef}>
