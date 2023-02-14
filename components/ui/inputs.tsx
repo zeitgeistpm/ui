@@ -423,6 +423,7 @@ export type RangeInputProps = {
   value?: string;
   valueSuffix?: string;
   className?: string;
+  name?: string;
   onValueChange?: (val: string) => void;
   onChange?: ChangeEventHandler<HTMLInputElement>;
 };
@@ -437,6 +438,7 @@ const RangeInput = React.forwardRef(
       value,
       valueSuffix = "",
       step,
+      name,
       className = "",
       onValueChange,
       onChange,
@@ -469,6 +471,7 @@ const RangeInput = React.forwardRef(
           step={step}
           value={value}
           onChange={change}
+          name={name}
           className={`w-full`}
         />
         <div className="w-full justify-between">
