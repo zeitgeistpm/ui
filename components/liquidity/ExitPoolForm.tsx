@@ -61,8 +61,8 @@ const ExitPoolForm = ({
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
-      if (name === "poolShares") {
-      } else if (name === "poolSharesPercentage") {
+      const changedByUser = type != null;
+      if (name === "poolSharesPercentage" && changedByUser) {
         const percentage = Number(value["poolSharesPercentage"]);
         for (const assetKey in poolBalances) {
           setValue(
@@ -76,7 +76,6 @@ const ExitPoolForm = ({
         }
       } else {
         const changedAsset = name;
-        const changedByUser = type != null;
 
         const userInput = value[changedAsset];
         if (
@@ -91,8 +90,6 @@ const ExitPoolForm = ({
             .div(ZTG)
             .div(userInput);
 
-          console.log(poolToInputRatio.toString());
-
           // recalculate asset amounts to keep ratio with user input
           for (const assetKey in poolBalances) {
             if (assetKey !== changedAsset) {
@@ -105,6 +102,19 @@ const ExitPoolForm = ({
               );
             }
           }
+
+          const userPoolBalance = changedAssetBalances.pool.mul(
+            userPercentageOwnership,
+          );
+
+          const userPoolBalancePercentage = new Decimal(userInput)
+            .mul(ZTG)
+            .div(userPoolBalance);
+
+          setValue(
+            "poolSharesPercentage",
+            userPoolBalancePercentage.mul(100).toString(),
+          );
         }
       }
     });
