@@ -56,9 +56,6 @@ const ScalarPriceRange = observer(
           : moment(upperBound).format(dateFormat),
       [upperBound],
     );
-    // new Intl.DateTimeFormat("en-US", {
-    //   dateStyle: "medium",
-    // }).format(Number(indexedMarket.period.end))
 
     const position = useMemo(() => {
       const pos =
@@ -69,8 +66,6 @@ const ScalarPriceRange = observer(
         ? pos.toFixed(decimals)
         : moment(pos).format(dateFormat);
     }, [upperBound, lowerBound, shortPrice, longPrice]);
-
-    console.log(scalarType, averagePosition);
 
     return (
       <div ref={ref}>

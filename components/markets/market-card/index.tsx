@@ -202,17 +202,19 @@ const MarketCard = ({
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <motion.div
-        whileHover={{ opacity: 0.7 }}
-        whileFocus={{ opacity: 0.5 }}
-        whileTap={{ opacity: 0.7 }}
+        whileHover={{ backgroundColor: "#B5C1CA" }}
+        whileFocus={{ backgroundColor: "#B5C1CA" }}
+        whileTap={{ backgroundColor: "#B5C1CA" }}
         data-testid={`marketCard-${marketId}`}
         style={{
+          borderRadius: "10px",
+          backgroundColor: "#F0F2F5",
           minWidth: width ? width : "100%",
           maxWidth: width ? width : "100%",
         }}
       >
         <div
-          className={`flex flex-col w-full h-full bg-anti-flash-white rounded-[10px] p-[15px] relative ${className}`}
+          className={`flex flex-col w-full h-full rounded-[10px] p-[15px] relative ${className}`}
         >
           <Link
             href={`/markets/${marketId}`}
