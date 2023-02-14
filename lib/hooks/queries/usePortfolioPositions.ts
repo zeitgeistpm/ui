@@ -35,6 +35,7 @@ import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { calcSpotPrice } from "lib/math";
 import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { useMemo } from "react";
+import { MarketBond, useAccountBonds } from "./useAccountBonds";
 
 export type UsePortfolioPositions = {
   /**
@@ -147,6 +148,8 @@ export const usePortfolioPositions = (
 
   const { data: ztgPrice } = useZtgInfo();
   const block24HoursAgo = Math.floor(now?.block - 7200);
+  const { data: marketBonds, isLoading: isBondsLoading } =
+    useAccountBonds(address);
 
   const rawPositions = useAccountTokenPositions({
     where: {
@@ -484,7 +487,7 @@ export const usePortfolioPositions = (
   );
 
   const breakdown = useMemo<PorfolioBreakdown>(() => {
-    if (!ztgPrice || !marketPositions || !subsidyPositions) {
+    if (!ztgPrice || !marketPositions || !subsidyPositions || isBondsLoading) {
       return null;
     }
 
@@ -513,10 +516,17 @@ export const usePortfolioPositions = (
       subsidyPositionsTotal24HoursAgo,
     );
 
-    const positionsTotal = tradingPositionsTotal.plus(subsidyPositionsTotal);
-    const positionsTotal24HoursAgo = tradingPositionsTotal24HoursAgo.plus(
-      subsidyPositionsTotal24HoursAgo,
-    );
+    const bondsTotal =
+      marketBonds?.length > 0
+        ? calcTotalBondsValue(marketBonds)
+        : new Decimal(0);
+
+    const positionsTotal = tradingPositionsTotal
+      .plus(subsidyPositionsTotal)
+      .plus(bondsTotal);
+    const positionsTotal24HoursAgo = tradingPositionsTotal24HoursAgo
+      .plus(subsidyPositionsTotal24HoursAgo)
+      .plus(bondsTotal);
 
     const totalChange = diffChange(positionsTotal, positionsTotal24HoursAgo);
 
@@ -535,12 +545,18 @@ export const usePortfolioPositions = (
         changePercentage: subsidyPositionsChange,
       },
       bonded: {
-        // TODO: load bonded positions data
-        value: new Decimal(234422344),
-        changePercentage: 30,
+        value: bondsTotal,
+        // TODO: load change
+        changePercentage: 0,
       },
     };
-  }, [ztgPrice, subsidyPositions, marketPositions]);
+  }, [
+    ztgPrice,
+    subsidyPositions,
+    marketPositions,
+    isBondsLoading,
+    marketBonds,
+  ]);
 
   return {
     all: positions,
@@ -583,4 +599,22 @@ const diffChange = (a: Decimal, b: Decimal) => {
   const priceDiff = a.minus(b);
   const priceChange = priceDiff.div(b);
   return priceChange.mul(100).toNumber();
+};
+
+const calcTotalBondsValue = (marketBonds: MarketBond[]) => {
+  const bondTotal = marketBonds?.reduce((total, marketBond) => {
+    const creationBond = marketBond.bonds.creation;
+    if (creationBond.isSettled === false) {
+      total = total.plus(creationBond.value);
+    }
+
+    const oracleBond = marketBond.bonds.oracle;
+    if (oracleBond.isSettled === false) {
+      total = total.plus(oracleBond.value);
+    }
+
+    return total;
+  }, new Decimal(0));
+
+  return bondTotal;
 };

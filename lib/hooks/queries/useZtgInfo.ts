@@ -27,6 +27,7 @@ export const useZtgInfo = (): UseQueryResult<ZTGPriceInfo> => {
     {
       refetchInterval: 1000 * 60,
       keepPreviousData: true,
+      staleTime: Infinity,
     },
   );
 };
