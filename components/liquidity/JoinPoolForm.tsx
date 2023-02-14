@@ -107,7 +107,7 @@ const JoinPoolForm = ({
           <input
             className="bg-blue-500 border border-black"
             key={index}
-            type="string"
+            type="text"
             {...register(id.toString(), { min: 0 })}
           />
         );

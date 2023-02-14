@@ -15,8 +15,8 @@ import JoinPoolForm from "./JoinPoolForm";
 
 export type PoolBalances = {
   [key: string]: {
-    pool: Decimal;
-    user: Decimal;
+    pool: Decimal; // pool total balance
+    user: Decimal; // user balance outside pool
   };
 };
 
@@ -43,11 +43,19 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
 
   const data = useTotalIssuanceForPools([poolId]);
   const totalPoolIssuance = data?.[poolId]?.data?.totalIssuance;
-  const userPoolTokens = useAccountAssetBalances(
+  const userPoolTokensQuery = useAccountAssetBalances(
     connectedAddress && pool != null
       ? [{ account: connectedAddress, assetId: { PoolShare: poolId } }]
       : [],
   );
+
+  const userPoolTokens: string = userPoolTokensQuery
+    ?.get(connectedAddress, {
+      PoolShare: poolId,
+    })
+    //@ts-ignore todo waiting for sdk update
+    ?.data.balance.free.toString();
+  console.log("pooltokens", userPoolTokens);
 
   //user balances outside of pool
   const { data: userBaseBalance } = useZtgBalance(pool?.accountId);
@@ -100,12 +108,18 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
 
   return (
     <div>
-      <JoinPoolForm
+      {/* <JoinPoolForm
         poolId={poolId}
         poolBalances={allBalances}
         totalPoolShares={new Decimal(totalPoolIssuance?.toString() ?? 0)}
+      /> */}
+      <ExitPoolForm
+        poolId={poolId}
+        poolBalances={allBalances}
+        totalPoolShares={new Decimal(totalPoolIssuance?.toString() ?? 0)}
+        userPoolShares={new Decimal(userPoolTokens?.toString() ?? 0)}
+        // totalPoolShares={new Decimal(userPoolTokens?.toString() ?? 0)
       />
-      {/* <ExitPoolForm poolId={poolId} poolBalances={allBalances} /> */}
     </div>
   );
 };
