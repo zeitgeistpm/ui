@@ -25,7 +25,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const notificationStore = useNotificationStore();
   const modalStore = useModalStore();
 
-  const { data: market } = useMarket(marketId);
+  const { data: market } = useMarket({ marketId });
   const { data: saturatedMarket } = useSaturatedMarket(market);
   const { data: pool } = usePool({ marketId: marketId });
   const [sdkMarket, setSdkMarket] = useState<Market>();

@@ -1,5 +1,6 @@
 import {
   CategoricalAssetId,
+  getIndexOf,
   IndexerContext,
   isRpcSdk,
   Market,
@@ -17,11 +18,9 @@ const ReportButton = observer(
   ({
     market,
     assetId,
-    ticker,
   }: {
     market: Market<IndexerContext>;
     assetId: ScalarAssetId | CategoricalAssetId;
-    ticker: string;
   }) => {
     const [sdk] = useSdkv2();
     const store = useStore();
@@ -30,6 +29,8 @@ const ReportButton = observer(
     const modalStore = useModalStore();
 
     if (!market) return null;
+
+    const ticker = market.categories?.[getIndexOf(assetId)].ticker;
 
     const reportDisabled = !sdk || !isRpcSdk(sdk);
 
@@ -69,25 +70,22 @@ const ReportButton = observer(
         });
 
         if (isRpcSdk(sdk)) {
-          const tx = sdk.context.api.tx.predictionMarkets.report(
-            market.marketId,
-            { Categorical: ID },
-          );
+          const tx = sdk.api.tx.predictionMarkets.report(market.marketId, {
+            Categorical: ID,
+          });
           signAndSend(tx, signer, callback);
         }
       }
     };
 
     return (
-      <div className="w-full flex items-center justify-center">
-        <button
-          onClick={handleClick}
-          disabled={reportDisabled}
-          className="rounded-full h-ztg-20  text-ztg-10-150 focus:outline-none border-2 px-ztg-15 ml-auto disabled:opacity-20 disabled:cursor-default"
-        >
-          Report Outcome
-        </button>
-      </div>
+      <button
+        onClick={handleClick}
+        disabled={reportDisabled}
+        className="text-blue-600 font-bold"
+      >
+        Report Outcome
+      </button>
     );
   },
 );

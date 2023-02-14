@@ -12,7 +12,7 @@ export const useIdentity = (address: string) => {
     [id, identityRootKey, address],
     async () => {
       if (address && isRpcSdk(sdk)) {
-        const identity = (await sdk.context.api.query.identity.identityOf(
+        const identity = (await sdk.api.query.identity.identityOf(
           address,
         )) as any;
 

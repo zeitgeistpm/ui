@@ -1,6 +1,7 @@
 import { PalletBalancesAccountData } from "@polkadot/types/lookup";
 import { useQueries } from "@tanstack/react-query";
 import { Context, isRpcSdk, PoolList } from "@zeitgeistpm/sdk-next";
+import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
 import { usePoolAccountIds } from "./usePoolAccountIds";
 
@@ -21,6 +22,10 @@ export type PoolZtgBalanceLookup = {
  */
 export const usePoolZtgBalance = (
   pools?: PoolList<Context>,
+  blockNumber?: number,
+  opts?: {
+    enabled?: boolean;
+  },
 ): PoolZtgBalanceLookup => {
   const [sdk, id] = useSdkv2();
 
@@ -31,17 +36,23 @@ export const usePoolZtgBalance = (
       pools?.map((pool) => {
         const accountId = poolAccountIds[pool.poolId];
         return {
-          queryKey: [id, rootKey, pool.poolId],
+          queryKey: [id, rootKey, pool.poolId, blockNumber],
           queryFn: async () => {
             if (sdk && isRpcSdk(sdk) && pools && accountId) {
+              const api = await getApiAtBlock(sdk.api, blockNumber);
               return {
                 pool,
-                balance: await sdk.context.api.query.system.account(accountId),
+                balance: await api.query.system.account(accountId),
               };
             }
             return null;
           },
-          enabled: Boolean(sdk) && isRpcSdk(sdk) && Boolean(accountId),
+          keepPreviousData: true,
+          enabled:
+            Boolean(sdk) &&
+            isRpcSdk(sdk) &&
+            Boolean(accountId) &&
+            (typeof opts?.enabled === "undefined" ? true : opts?.enabled),
         };
       }) ?? [],
   });

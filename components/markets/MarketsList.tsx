@@ -9,7 +9,7 @@ import { X } from "react-feather";
 import { useRouter } from "next/router";
 import { debounce } from "lodash";
 import { useStore } from "lib/stores/Store";
-import { useMarkets } from "lib/hooks/queries/useMarkets";
+import { useInfiniteMarkets } from "lib/hooks/queries/useInfiniteMarkets";
 import { MarketOutcomes } from "lib/types/markets";
 import { useContentScrollTop } from "components/context/ContentDimensionsContext";
 import { useContentWidth } from "components/context/ContentDimensionsContext";
@@ -89,7 +89,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     isLoading,
     hasNextPage,
     fetchNextPage,
-  } = useMarkets(orderBy, withLiquidityOnly, filters);
+  } = useInfiniteMarkets(orderBy, withLiquidityOnly, filters);
 
   useEffect(
     debounce(() => {
@@ -109,7 +109,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const [markets, setMarkets] = useState<
     (IndexedMarket<Context> & {
       outcomes: MarketOutcomes;
-      prediction: string;
+      prediction: { name: string; price: number };
     })[]
   >();
 
@@ -160,6 +160,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       <div className={`grid grid-cols-3 gap-[30px] ${gridColsClass}`}>
         {markets?.map((market) => {
           const volume = market.pool?.volume ?? 0;
+
           return (
             <MarketCard
               marketId={market.marketId}
@@ -168,8 +169,13 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
               creation={market.creation}
               img={market.img}
               prediction={market.prediction}
+              endDate={market.period.end}
+              marketType={market.marketType}
+              scalarType={market.scalarType}
+              status={market.status}
               baseAsset={market.pool?.baseAsset}
               volume={new Decimal(volume).div(ZTG).toNumber()}
+              tags={market.tags}
               key={`market-${market.marketId}`}
             />
           );

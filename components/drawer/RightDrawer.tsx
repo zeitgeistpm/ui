@@ -1,6 +1,3 @@
-import DisputeBox from "components/outcomes/DisputeBox";
-import RedeemBox from "components/outcomes/RedeemBox";
-import ReportBox from "components/outcomes/ReportBox";
 import PercentageChange from "components/ui/PercentageChange";
 import { useExchangeStore } from "lib/stores/ExchangeStore";
 import MarketStore from "lib/stores/MarketStore";
@@ -10,6 +7,8 @@ import { observer } from "mobx-react";
 import { useRouter } from "next/router";
 import { ReactFragment, useEffect, useMemo, useState } from "react";
 import { useTradeslipItems } from "lib/state/tradeslip/items";
+import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
+
 import ExchangeBox from "../exchange/ExchangeBox";
 import LiquidityPoolsBox from "../liquidity/LiquidityPoolsBox";
 import TradeSlip from "../trade-slip";
@@ -17,7 +16,7 @@ import Tabs from "../ui/Tabs";
 import Drawer from "./Drawer";
 
 const ZTGSummary = observer(() => {
-  const { ztgInfo } = useStore();
+  const { data: ztgInfo } = useZtgInfo();
 
   return (
     <div className="flex px-ztg-28 items-center ">
@@ -45,20 +44,10 @@ const ZTGSummary = observer(() => {
   );
 });
 
-type DisplayMode = "default" | "liquidity" | "report" | "dispute" | "redeem";
+type DisplayMode = "default" | "liquidity";
 
 const Box = observer(
-  ({
-    mode,
-    tabIndex,
-    market,
-    onAction,
-  }: {
-    mode: DisplayMode;
-    tabIndex: number;
-    market: MarketStore;
-    onAction: () => void;
-  }) => {
+  ({ mode, tabIndex }: { mode: DisplayMode; tabIndex: number }) => {
     const withSpacing = (children: ReactFragment) => {
       return (
         <div className="px-ztg-28 mt-ztg-20 overflow-auto">{children}</div>
@@ -81,24 +70,6 @@ const Box = observer(
             <ExchangeBox exchangeStore={exchangeStore} />
           ),
         );
-      case "report":
-        return tabIndex === 0 ? (
-          <TradeSlip />
-        ) : (
-          withSpacing(<ReportBox marketStore={market} onReport={onAction} />)
-        );
-      case "dispute":
-        return tabIndex === 0 ? (
-          <TradeSlip />
-        ) : (
-          withSpacing(<DisputeBox marketStore={market} onDispute={onAction} />)
-        );
-      case "redeem":
-        return tabIndex === 0 ? (
-          <TradeSlip />
-        ) : (
-          withSpacing(<RedeemBox marketStore={market} onRedeem={onAction} />)
-        );
       default:
         return tabIndex === 0 ? (
           <TradeSlip />
@@ -111,10 +82,8 @@ const Box = observer(
 
 const RightDrawer = observer(() => {
   const navigationStore = useNavigationStore();
-  const { currentPage } = navigationStore;
   const tradeslipItems = useTradeslipItems();
   const [activeTabIndex, setActiveTabIndex] = useState(0);
-  const [market, setMarket] = useState<MarketStore | null>();
   const router = useRouter();
   const { marketid } = router.query;
   const store = useStore();
@@ -123,26 +92,10 @@ const RightDrawer = observer(() => {
   const displayMode: DisplayMode = useMemo<DisplayMode>(() => {
     if (router.query.poolid !== undefined) {
       return "liquidity";
-    } else if (!navigationStore.checkPage("marketDetails")) {
-      return "default";
-    } else if (market) {
-      if (
-        market.status === "Closed" ||
-        (market.status === "Disputed" &&
-          market.disputeMechanism === "authorized")
-      ) {
-        return "report";
-      } else if (market.status === "Reported") {
-        return "dispute";
-      } else if (market.status === "Resolved") {
-        return "redeem";
-      } else {
-        return "default";
-      }
     } else {
       return "default";
     }
-  }, [router, wallets.activeAccount, market?.status, currentPage]);
+  }, [router, wallets.activeAccount]);
 
   const tabLabels = useMemo(() => {
     switch (displayMode) {
@@ -150,38 +103,21 @@ const RightDrawer = observer(() => {
         return ["Trade Slip", "Exchange"];
       case "liquidity":
         return ["Liquidity Pools", "Exchange"];
-      case "report":
-        return ["Trade Slip", "Report Outcome"];
-      case "dispute":
-        return ["Trade Slip", "Dispute Outcome"];
-      case "redeem":
-        return ["Trade Slip", "Redeem"];
       default:
         return ["Trade Slip", "Exchange"];
     }
   }, [displayMode]);
 
   useEffect(() => {
-    (async () => {
-      if (marketid && markets) {
-        const market = await markets.getMarket(Number(marketid));
-        setMarket(market);
-      }
-    })();
-  }, [marketid, markets]);
-
-  useEffect(() => {
     setActiveTabIndex(0);
   }, [tradeslipItems.items.length]);
 
-  const handleMarketChange = async () => {
-    const market = await markets.getMarket(Number(marketid));
-    setMarket(market);
-  };
-
   return (
-    <Drawer side="right" className="bg-sky-100 dark:bg-black">
-      <div className="h-full dark:bg-black">
+    <Drawer
+      side="right"
+      className="bg-sky-100 !fixed sm:!block right-0 z-ztg-10 w-0"
+    >
+      <div className="h-full">
         <div className="mt-ztg-10 h-full flex flex-col">
           <ZTGSummary />
           {tabLabels ? (
@@ -194,12 +130,7 @@ const RightDrawer = observer(() => {
           ) : (
             <></>
           )}
-          <Box
-            tabIndex={activeTabIndex}
-            mode={displayMode}
-            market={market}
-            onAction={handleMarketChange}
-          />
+          <Box tabIndex={activeTabIndex} mode={displayMode} />
           <div className="mt-auto" />
           <div className="p-ztg-28 pt-0">
             <button

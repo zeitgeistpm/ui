@@ -1,4 +1,4 @@
-import { fromCompositeIndexerAssetId } from "@zeitgeistpm/sdk-next";
+import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
@@ -9,21 +9,15 @@ import { useStore } from "lib/stores/Store";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { observer } from "mobx-react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { from } from "rxjs";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarket24hrPriceChanges } from "lib/hooks/queries/useMarket24hrPriceChanges";
 
 const columns: TableColumn[] = [
-  {
-    header: "Token",
-    accessor: "token",
-    type: "token",
-  },
+  { header: "Outcome", accessor: "outcome", type: "paragraph" },
   { header: "Implied %", accessor: "pre", type: "percentage" },
   { header: "Price", accessor: "totalValue", type: "currency" },
-  { header: "Outcome", accessor: "outcome", type: "text" },
   {
     header: "24Hr Change",
     accessor: "change",
@@ -51,7 +45,7 @@ const MarketAssetDetails = observer(
     const navigationStore = useNavigationStore();
     const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
-    const { data: market } = useMarket(marketId);
+    const { data: market } = useMarket({ marketId });
     const { data: spotPrices } = useMarketSpotPrices(marketId);
     const { data: priceChanges } = useMarket24hrPriceChanges(marketId);
 
@@ -82,20 +76,23 @@ const MarketAssetDetails = observer(
           await store.sdk.api.query.authorized.authorizedOutcomeReports(
             marketId,
           );
+
         if (report.isEmpty === true) {
-          setAuthReportNumberOrId(null);
+          return null;
         } else {
           const reportJSON: any = report.toJSON();
-          if (reportJSON.scalar) {
-            return reportJSON.scalar;
+          if (reportJSON.outcome.scalar) {
+            return reportJSON.outcome.scalar;
           } else {
-            return reportJSON.categorical;
+            return reportJSON.outcome.categorical;
           }
         }
       };
 
-      const sub = from(fetchAuthorizedReport(marketStore.id)).subscribe((res) =>
-        setAuthReportNumberOrId(res),
+      const sub = from(fetchAuthorizedReport(marketStore.id)).subscribe(
+        (res) => {
+          setAuthReportNumberOrId(res);
+        },
       );
       return () => sub.unsubscribe();
     }, [store.sdk?.api, marketStore?.id, marketStore?.status]);
@@ -112,8 +109,6 @@ const MarketAssetDetails = observer(
           : new Decimal(0);
 
         for (const [index, category] of market.categories.entries()) {
-          const ticker = category.ticker;
-          const color = category.color || "#ffffff";
           const outcomeName = category.name;
           const currentPrice = spotPrices?.get(index).toNumber();
 
@@ -123,10 +118,6 @@ const MarketAssetDetails = observer(
             {
               assetId: market.pool.weights[index].assetId,
               id: index,
-              token: {
-                color,
-                label: ticker,
-              },
               outcome: outcomeName,
               totalValue: {
                 value: currentPrice,
@@ -143,11 +134,10 @@ const MarketAssetDetails = observer(
                 <AssetActionButtons
                   marketId={marketId}
                   assetId={
-                    fromCompositeIndexerAssetId(
+                    parseAssetId(
                       market.pool.weights[index].assetId,
                     ).unwrap() as any
                   }
-                  assetTicker={ticker}
                 />
               ),
             },
@@ -156,10 +146,6 @@ const MarketAssetDetails = observer(
         setTableData(tblData);
       } else {
         tblData = market.categories.map((category) => ({
-          token: {
-            color: category.color || "#ffffff",
-            label: category.ticker,
-          },
           outcome: category.name,
         }));
         setTableData(tblData);
@@ -183,7 +169,7 @@ const MarketAssetDetails = observer(
       const reportedOutcome = marketStore.resolvedCategoricalOutcome;
 
       const outcome = tableData?.find(
-        (data) => data.assetId === JSON.stringify(reportedOutcome.asset),
+        (data) => data.assetId === JSON.stringify(reportedOutcome?.asset),
       );
 
       return outcome ? [outcome] : undefined;
@@ -279,19 +265,6 @@ const MarketAssetDetails = observer(
         ) : (
           <></>
         )}
-        <div className="flex mt-ztg-40 mb-ztg-30 items-center">
-          <span className="sub-header">Outcomes</span>
-          {marketStore?.pool ? (
-            <Link
-              href={`/liquidity/${marketStore.pool.poolId}`}
-              className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 "
-            >
-              Liquidity Pool
-            </Link>
-          ) : (
-            <></>
-          )}
-        </div>
         <Table columns={columns} data={tableData} />
       </div>
     );

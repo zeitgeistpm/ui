@@ -14,6 +14,7 @@ import { ChartData } from "./TimeSeriesChart";
 import Avatar from "./Avatar";
 import { range } from "lodash";
 import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
+import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 
 interface TableProps {
   data: TableData[];
@@ -120,7 +121,7 @@ const Cell = observer(
     value: string | number | CurrencyData;
     onClick?: () => void;
   }) => {
-    const { ztgInfo } = useStore();
+    const { data: ztgInfo } = useZtgInfo();
 
     const base = `dark:text-white px-ztg-10 h-ztg-72 ${
       onClick ? "cursor-pointer" : ""
@@ -445,7 +446,11 @@ const Table = observer(
                     {columns.map((column, index) => (
                       <th
                         key={index}
-                        className={getHeaderClass(column)}
+                        className={`${getHeaderClass(column)} ${
+                          index == 0 ? "rounded-tl-md" : ""
+                        } ${
+                          index == columns.length - 1 ? "rounded-tr-md" : ""
+                        }`}
                         style={column.width ? { width: column.width } : {}}
                       >
                         <div

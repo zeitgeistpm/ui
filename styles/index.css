@@ -11,21 +11,7 @@ body {
 }
 
 html {
-  font-size: 16px;
-}
-
-/* tailwind sm breakpoint */
-@media only screen and (max-width: 640px) {
-  html {
-    font-size: 12px;
-  }
-}
-
-/* tailwind md breakpoint */
-@media only screen and (max-width: 768px) {
-  html {
-    font-size: 14px;
-  }
+  font-size: 100%;
 }
 
 /* hide number input arrows */
@@ -211,11 +197,23 @@ body {
 }
 
 .topbar {
-  height: var(--topbar-height);
+  /* width: calc(100% - (360px + 156px)); */
+  /* height: var(--topbar-height); */
+}
+
+/* workaround for Safari */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .topbar {
+    width: calc(100% - (360px + 156px));
+  }
 }
 
 .main-container {
-  height: calc(calc(100vh - var(--topbar-height)) - 38px);
+  @apply mx-4 sm:mx-10 md:mx-24 lg:mx-32 min-h-screen;
+}
+
+.container-fluid {
+  @apply mx-4 sm:mx-10 md:mx-24 lg:mx-32;
 }
 
 .carousel__slide--visible {
@@ -268,7 +266,7 @@ tr {
 
 .header {
   @apply font-bold;
-  @apply text-ztg-20-150;
+  @apply text-3xl;
 }
 
 .sub-header {
