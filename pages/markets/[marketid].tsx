@@ -1,16 +1,16 @@
+import { FC } from "react";
 import PoolTable from "components/liquidity/PoolTable";
-import LiquidityPill from "components/markets/LiquidityPill";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import {
   MarketTimer,
   MarketTimerSkeleton,
 } from "components/markets/MarketTimer";
+import { Skeleton } from "@material-ui/lab";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
 import MarketImage from "components/ui/MarketImage";
-import Pill from "components/ui/Pill";
 import TimeSeriesChart, {
   ChartData,
   ChartSeries,
@@ -39,6 +39,7 @@ import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
+import { hasDatePassed } from "lib/util/hasDatePassed";
 import Link from "next/link";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
@@ -117,7 +118,7 @@ const Market: NextPage<{
   const router = useRouter();
   const { marketid } = router.query;
   const [marketStore, setMarketStore] = useState<MarketStore>();
-  const [prizePool, setPrizePool] = useState<string>();
+  const [prizePool, setPrizePool] = useState<number>();
   const store = useStore();
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
@@ -138,7 +139,7 @@ const Market: NextPage<{
     if (market != null) {
       setMarketStore(market);
       const prizePool = await market.getPrizePool();
-      setPrizePool(prizePool);
+      setPrizePool(Number(prizePool));
 
       if (market.poolExists) {
         const { poolId } = market.pool;
@@ -161,46 +162,150 @@ const Market: NextPage<{
   //required to fix title element warning
   const question = indexedMarket.question;
 
+  const HeaderStat: FC<{ label: string; border?: boolean }> = ({
+    label,
+    border = true,
+    children,
+  }) => {
+    return (
+      <div className={border ? "sm:border-r sm:border-ztg-blue pr-2" : ""}>
+        <span>{label}: </span>
+        <span className="font-medium">{children}</span>
+      </div>
+    );
+  };
+
+  const Tag: FC<{ className?: string }> = ({ className, children }) => {
+    return (
+      <span className={`px-2.5 py-1 rounded bg-gray-300 ${className}`}>
+        {children}
+      </span>
+    );
+  };
+
+  const MarketHeader: FC<{
+    question: string;
+    status: string;
+    tags: string[];
+    createdAt: number;
+    ends: number;
+    prizePool: number;
+    subsidy: number;
+    volume: number;
+    token: string;
+  }> = ({
+    question,
+    status,
+    tags,
+    createdAt,
+    ends,
+    prizePool,
+    subsidy,
+    volume,
+    token,
+  }) => {
+    return (
+      <header className="text-center">
+        <h1 className="font-bold text-4xl my-5">{question}</h1>
+        <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-2 mb-5">
+          <HeaderStat label="Created">
+            {new Intl.DateTimeFormat("default", {
+              dateStyle: "medium",
+            }).format(createdAt)}
+          </HeaderStat>
+          <HeaderStat label={hasDatePassed(ends) ? "Ended" : "Ends"}>
+            {new Intl.DateTimeFormat("default", {
+              dateStyle: "medium",
+            }).format(ends)}
+          </HeaderStat>
+          {token ? (
+            <HeaderStat label="Volume">
+              {/* TODO: replace num formatting with util function */}
+              {new Intl.NumberFormat("default", {
+                maximumSignificantDigits: 3,
+                notation: "compact",
+              }).format(volume)}
+              &nbsp;
+              {token}
+            </HeaderStat>
+          ) : (
+            <Skeleton width="150px" height="24px" />
+          )}
+          {prizePool >= 0 && token ? (
+            <HeaderStat label="Prize Pool">
+              {/* TODO: replace num formatting with util function */}
+              {new Intl.NumberFormat("default", {
+                maximumSignificantDigits: 3,
+                notation: "compact",
+              }).format(prizePool)}
+              &nbsp;
+              {token}
+            </HeaderStat>
+          ) : (
+            <Skeleton width="150px" height="24px" />
+          )}
+          {subsidy >= 0 && token ? (
+            <HeaderStat label="Subsidy" border={false}>
+              {/* TODO: replace num formatting with util function */}
+              {new Intl.NumberFormat("default", {
+                maximumSignificantDigits: 3,
+                notation: "compact",
+              }).format(subsidy)}
+              &nbsp;
+              {token}
+            </HeaderStat>
+          ) : (
+            <Skeleton width="150px" height="24px" />
+          )}
+        </div>
+        <div className="flex flex-wrap justify-center gap-2.5">
+          <Tag className={`${status === "Active" && "!bg-green-lighter"}`}>
+            {status === "Active" && (
+              <span className="text-green">&#x2713; </span>
+            )}
+            {status}
+          </Tag>
+          {tags?.map((tag, index) => {
+            return <Tag key={index}>{tag}</Tag>;
+          })}
+        </div>
+      </header>
+    );
+  };
+
+  //data for MarketHeader
+  const token = store?.config?.tokenSymbol;
+  const createdAt = indexedMarket?.pool?.createdAt
+    ? new Date(indexedMarket.pool.createdAt).getTime()
+    : Number(indexedMarket.period.start);
+  const ends = Number(indexedMarket.period.end);
+  const volume = indexedMarket?.pool?.volume
+    ? Number(indexedMarket?.pool?.volume) / 10 ** 10
+    : 0;
+  const subsidy = marketSdkv2?.pool?.poolId == null ? 0 : pool?.liquidity;
+
   return (
     <>
       <MarketMeta market={indexedMarket} />
       <div>
-        <div className="flex mb-ztg-33">
-          <MarketImage
-            image={indexedMarket.img}
-            alt={`Image depicting ${question}`}
-          />
-          <div className="sub-header ml-ztg-20">{indexedMarket?.question}</div>
-        </div>
-        <div
-          className="grid grid-flow-row-dense gap-4 w-full "
-          style={{
-            gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-          }}
-        >
-          <Pill
-            title="Ends"
-            value={new Intl.DateTimeFormat("en-US", {
-              dateStyle: "medium",
-            }).format(Number(indexedMarket.period.end))}
-          />
-          <Pill title="Status" value={indexedMarket.status} />
-          {prizePool ? (
-            <Pill
-              title="Prize Pool"
-              value={`${prizePool} ${store?.config.tokenSymbol}`}
-            />
-          ) : (
-            <></>
-          )}
-          {pool?.liquidity != null ? (
-            <LiquidityPill
-              liquidity={Number.isNaN(pool.liquidity) ? 0 : pool.liquidity}
-            />
-          ) : (
-            <></>
-          )}
-        </div>
+        <MarketImage
+          image={indexedMarket.img}
+          alt={`Image depicting ${question}`}
+          size="120px"
+          status={indexedMarket.status}
+          className="mx-auto"
+        />
+        <MarketHeader
+          question={question}
+          status={indexedMarket.status}
+          tags={indexedMarket.tags}
+          createdAt={createdAt}
+          ends={ends}
+          token={token}
+          prizePool={prizePool}
+          volume={volume}
+          subsidy={subsidy}
+        />
         {marketSdkv2?.rejectReason && marketSdkv2.rejectReason.length > 0 && (
           <div className="mt-[10px] text-ztg-14-150">
             Market rejected: {marketSdkv2.rejectReason}
