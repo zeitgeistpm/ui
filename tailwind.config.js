@@ -245,6 +245,7 @@ module.exports = {
           DEFAULT: "#E90303",
         },
         green: {
+          lighter: "#EAF8DF",
           light: "#DEF7EC",
           DEFAULT: "#03543F",
         },
