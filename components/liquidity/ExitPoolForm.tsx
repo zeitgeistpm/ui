@@ -133,20 +133,24 @@ const ExitPoolForm = ({
     exitPool();
   };
   return (
-    <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
+    <form className="flex flex-col gap-y-3" onSubmit={handleSubmit(onSubmit)}>
       {pool?.weights.map((asset, index) => {
         const id = assetObjStringToId(asset.assetId);
 
         return (
-          <input
-            className="bg-blue-500 border border-black text-right"
-            key={index}
-            type="text"
-            {...register(id.toString(), { min: 0 })}
-          />
+          <div className="w-full h-[56px] relative">
+            <div className="absolute h-full font-medium text-ztg-18-150 left-[15px] top-[14px]">
+              ZTG
+            </div>
+            <input
+              className="bg-anti-flash-white text-right rounded-[5px] h-full px-[15px] w-full"
+              key={index}
+              type="number"
+              {...register(id.toString(), { min: 0 })}
+            />
+          </div>
         );
       })}
-      {/* <input type="text" {...register("poolShares", { min: 0 })} /> */}
       <input type="range" {...register("poolSharesPercentage", { min: 0 })} />
       <button type="submit">Submit</button>
     </form>
