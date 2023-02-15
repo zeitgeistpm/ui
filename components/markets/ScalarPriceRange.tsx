@@ -86,13 +86,15 @@ const ScalarPriceRange = observer(
             ></motion.div>
           )}
           <div
-            style={{ width: averagePosition }}
+            style={{
+              width: `${isNaN(averagePosition) ? 0 : averagePosition}px`,
+            }}
             className="bg-blue h-1.5 absolute left-0 bottom-0 rounded-l"
           ></div>
           <div
             className="absolute bottom-ztg-0"
             style={{
-              left: `${averagePosition}px`,
+              left: `${isNaN(averagePosition) ? 0 : averagePosition}px`,
               transform: "translateX(calc(-50% + 2px))",
             }}
           >
