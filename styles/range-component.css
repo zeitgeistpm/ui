@@ -7,7 +7,8 @@ input[type="range"] {
   background-repeat: no-repeat;
 }
 
-input[type="range"]::-webkit-slider-thumb {
+input[type="range"]::-webkit-slider-thumb,
+input[type="range"]::-moz-range-thumb {
   -webkit-appearance: none;
   display: block;
   height: 20px;
@@ -19,7 +20,8 @@ input[type="range"]::-webkit-slider-thumb {
   box-shadow: 0 0 2px 0 #555;
 }
 
-input[type="range"]::-webkit-slider-runnable-track {
+input[type="range"]::-webkit-slider-runnable-track,
+input[type="range"]::-moz-range-track {
   -webkit-appearance: none;
   box-shadow: none;
   border: none;
