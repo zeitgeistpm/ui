@@ -25,6 +25,8 @@ import {
   IGetPlaiceholderReturn,
 } from "plaiceholder";
 import React from "react";
+import RangeInput from "components/ui/inputs";
+import { useForm } from "react-hook-form";
 
 const MAIN_IMAGE_PATH = "/carousel/superbowl.png";
 
