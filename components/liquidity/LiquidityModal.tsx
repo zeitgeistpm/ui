@@ -1,15 +1,12 @@
 import { getIndexOf, isNA, parseAssetId } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
 import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalances";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
-import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useStore } from "lib/stores/Store";
-import { useEffect, useMemo } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useMemo } from "react";
 import ExitPoolForm from "./ExitPoolForm";
 import JoinPoolForm from "./JoinPoolForm";
 
@@ -56,7 +53,7 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
     ?.data.balance.free.toString();
 
   //user balances outside of pool
-  const { data: userBaseBalance } = useZtgBalance(pool?.accountId);
+  const { data: userBaseBalance } = useZtgBalance(connectedAddress);
   const { data: userAssetBalances } = useAccountPoolAssetBalances(
     connectedAddress,
     pool,
