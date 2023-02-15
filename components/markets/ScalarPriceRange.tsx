@@ -63,7 +63,10 @@ const ScalarPriceRange = observer(
         lowerBound;
       const decimals = pos > 10 ? 0 : 3;
       return inferedType === "number"
-        ? pos.toFixed(decimals)
+        ? new Intl.NumberFormat("default", {
+            maximumSignificantDigits: 3,
+            notation: "compact",
+          }).format(Number(pos))
         : moment(pos).format(dateFormat);
     }, [upperBound, lowerBound, shortPrice, longPrice]);
 
