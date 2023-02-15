@@ -2,11 +2,12 @@ export const slidesData = [
   {
     id: 1,
     title: {
-      text: "",
-      styles: "text-white text-3xl sm:text-4xl md:text-6xl",
+      text: `<h2 onmouseover="alert('mouseover');">Zeitgeist</br> is moving to Polkadot</h2>`,
+      styles:
+        "md:max-w-[660px] text-white font-sans font-semibold text-5xl md:text-6xl",
     },
-    bg: "/carousel/superbowl.png",
-    cta1: "",
+    bg: "/carousel/slide-1.png",
+    cta1: "Read More",
     link1: "/markets/87",
     color1: {
       primary: "#E90303",
