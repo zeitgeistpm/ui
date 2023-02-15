@@ -31,7 +31,6 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
 
   const connectedAddress = store.wallets.activeAccount?.address;
   const { data: pool } = usePool({ poolId });
-  const { data: market } = useMarket({ poolId });
 
   // pool balances
   const { data: poolAssetBalances } = useAccountPoolAssetBalances(
@@ -103,21 +102,18 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
     poolBaseBalance,
   ]);
 
-  console.log(allBalances);
-
   return (
     <div>
-      {/* <JoinPoolForm
+      <JoinPoolForm
         poolId={poolId}
         poolBalances={allBalances}
         totalPoolShares={new Decimal(totalPoolIssuance?.toString() ?? 0)}
-      /> */}
+      />
       <ExitPoolForm
         poolId={poolId}
         poolBalances={allBalances}
         totalPoolShares={new Decimal(totalPoolIssuance?.toString() ?? 0)}
         userPoolShares={new Decimal(userPoolTokens?.toString() ?? 0)}
-        // totalPoolShares={new Decimal(userPoolTokens?.toString() ?? 0)
       />
     </div>
   );

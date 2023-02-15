@@ -1,6 +1,7 @@
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -27,6 +28,7 @@ const ExitPoolForm = ({
   const [sdk, id] = useSdkv2();
   const notificationStore = useNotificationStore();
   const userPercentageOwnership = userPoolShares.div(totalPoolShares);
+  const { data: market } = useMarket({ poolId });
 
   const { send: exitPool, isLoading: isUpdating } = useExtrinsic(
     () => {
@@ -136,11 +138,13 @@ const ExitPoolForm = ({
     <form className="flex flex-col gap-y-3" onSubmit={handleSubmit(onSubmit)}>
       {pool?.weights.map((asset, index) => {
         const id = assetObjStringToId(asset.assetId);
+        const assetName =
+          market?.categories[index]?.name ?? pool.baseAsset.toUpperCase();
 
         return (
-          <div className="w-full h-[56px] relative">
-            <div className="absolute h-full font-medium text-ztg-18-150 left-[15px] top-[14px]">
-              ZTG
+          <div className="w-full h-[56px] relative font-medium text-ztg-18-150">
+            <div className="absolute h-full left-[15px] top-[14px]">
+              {assetName}
             </div>
             <input
               className="bg-anti-flash-white text-right rounded-[5px] h-full px-[15px] w-full"
