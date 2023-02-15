@@ -20,6 +20,7 @@ const JoinPoolForm = ({
   totalPoolShares: Decimal;
 }) => {
   console.log("id", poolId);
+  console.log(poolBalances);
 
   const { register, watch, handleSubmit, setValue, getValues } = useForm();
   const { data: pool } = usePool({ poolId });
@@ -61,11 +62,29 @@ const JoinPoolForm = ({
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       console.log("watch", value, name, type);
-      const changedAsset = name;
       const changedByUser = type != null;
 
+      const changedAsset = name;
       const userInput = value[changedAsset];
-      if (
+
+      if (name === "baseAssetPercentage" && changedByUser) {
+        const percentage = Number(value["baseAssetPercentage"]);
+        const userBaseAssetBalance = poolBalances[pool.baseAsset].user;
+
+        const newBaseAssetAmount = userBaseAssetBalance.mul(percentage / 100);
+        const changedAssetBalances = poolBalances[pool.baseAsset];
+        const poolToInputRatio =
+          changedAssetBalances.pool.div(newBaseAssetAmount);
+        for (const assetKey in poolBalances) {
+          setValue(
+            assetKey,
+            poolBalances[assetKey].pool
+              .div(poolToInputRatio)
+              .div(ZTG)
+              .toFixed(3),
+          );
+        }
+      } else if (
         changedAsset != null &&
         userInput != null &&
         userInput !== "" &&
@@ -85,7 +104,7 @@ const JoinPoolForm = ({
               poolBalances[assetKey].pool
                 .div(poolToInputRatio)
                 .div(ZTG)
-                .toString(),
+                .toFixed(3),
             );
           }
         }
@@ -116,11 +135,13 @@ const JoinPoolForm = ({
               className="bg-anti-flash-white text-right rounded-[5px] h-full px-[15px] w-full"
               key={index}
               type="number"
+              step="any"
               {...register(id.toString(), { min: 0 })}
             />
           </div>
         );
       })}
+      <input type="range" {...register("baseAssetPercentage", { min: 0 })} />
       <button type="submit">Submit</button>
     </form>
   );

@@ -81,7 +81,7 @@ const ExitPoolForm = ({
               .mul(userPercentageOwnership)
               .mul(percentage / 100)
               .div(ZTG)
-              .toNumber(),
+              .toFixed(3, Decimal.ROUND_DOWN),
           );
         }
       } else {
@@ -108,7 +108,7 @@ const ExitPoolForm = ({
                 poolBalances[assetKey].pool
                   .div(poolToInputRatio)
                   .div(ZTG)
-                  .toNumber(),
+                  .toFixed(3, Decimal.ROUND_DOWN),
               );
             }
           }
@@ -150,6 +150,7 @@ const ExitPoolForm = ({
               className="bg-anti-flash-white text-right rounded-[5px] h-full px-[15px] w-full"
               key={index}
               type="number"
+              step="any"
               {...register(id.toString(), { min: 0 })}
             />
           </div>
