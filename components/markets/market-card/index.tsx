@@ -255,19 +255,19 @@ const MarketCard = ({
           </div>
           <MarketCardInfo question={question} />
           <div className="w-full">
-            {scalarType ? (
+            {marketType.scalar === null ? (
+              <MarketCardPredictionBar
+                isHovered={isHovered}
+                volume={volume}
+                prediction={prediction}
+              />
+            ) : (
               <ScalarPriceRange
                 scalarType={scalarType}
                 lowerBound={lower}
                 upperBound={upper}
                 shortPrice={outcomes[1].price}
                 longPrice={outcomes[0].price}
-              />
-            ) : (
-              <MarketCardPredictionBar
-                isHovered={isHovered}
-                volume={volume}
-                prediction={prediction}
               />
             )}
           </div>
