@@ -5,6 +5,7 @@ import { usePool } from "lib/hooks/queries/usePool";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useStore } from "lib/stores/Store";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
@@ -20,18 +21,19 @@ const ExitPoolForm = ({
   totalPoolShares: Decimal;
   userPoolShares: Decimal;
 }) => {
+  const { config } = useStore();
   const { register, watch, handleSubmit, setValue, getValues } = useForm();
   const { data: pool } = usePool({ poolId });
   const [sdk, id] = useSdkv2();
   const notificationStore = useNotificationStore();
   const userPercentageOwnership = userPoolShares.div(totalPoolShares);
-  console.log("ownership", userPercentageOwnership.toString());
 
   const { send: exitPool, isLoading: isUpdating } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && pool) {
         const formValue = getValues();
         const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
+        const feeMultiplier = 1 - config.swaps.exitFee;
         const amounts = pool?.weights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
 
@@ -41,18 +43,24 @@ const ExitPoolForm = ({
             : new Decimal(assetAmount)
                 .mul(ZTG)
                 .mul(slippageMultiplier)
+                .mul(feeMultiplier)
                 .toFixed(0);
         });
+
+        const poolSharesAmount = userPoolShares.mul(
+          Number(formValue["poolSharesPercentage"]) / 100,
+        );
+
         return sdk.api.tx.swaps.poolExit(
           poolId,
-          new Decimal(formValue["poolShares"]).mul(ZTG).toFixed(0),
+          poolSharesAmount.toFixed(0),
           amounts,
         );
       }
     },
     {
       onSuccess: () => {
-        notificationStore.pushNotification("Joined pool", {
+        notificationStore.pushNotification("Exited pool", {
           type: "Success",
         });
       },
@@ -121,8 +129,9 @@ const ExitPoolForm = ({
     return () => subscription.unsubscribe();
   }, [watch, poolBalances]);
 
-  const onSubmit: SubmitHandler<any> = (data) => console.log(data);
-
+  const onSubmit: SubmitHandler<any> = (data) => {
+    exitPool();
+  };
   return (
     <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
       {pool?.weights.map((asset, index) => {
@@ -130,7 +139,7 @@ const ExitPoolForm = ({
 
         return (
           <input
-            className="bg-blue-500 border border-black"
+            className="bg-blue-500 border border-black text-right"
             key={index}
             type="text"
             {...register(id.toString(), { min: 0 })}
@@ -139,6 +148,7 @@ const ExitPoolForm = ({
       })}
       {/* <input type="text" {...register("poolShares", { min: 0 })} /> */}
       <input type="range" {...register("poolSharesPercentage", { min: 0 })} />
+      <button type="submit">Submit</button>
     </form>
   );
 };

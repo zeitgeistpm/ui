@@ -55,7 +55,6 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
     })
     //@ts-ignore todo waiting for sdk update
     ?.data.balance.free.toString();
-  console.log("pooltokens", userPoolTokens);
 
   //user balances outside of pool
   const { data: userBaseBalance } = useZtgBalance(pool?.accountId);
