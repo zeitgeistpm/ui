@@ -228,21 +228,19 @@ const MarketCard = ({
             </div>
             <MarketCardInfo question={question} />
             <div className="w-full">
-              {scalarType ? null : (
-                // (
-                //   <ScalarPriceRange
-                //     scalarType={scalarType}
-                //     lowerBound={Number(marketType?.scalar?.[1])}
-                //     upperBound={Number(marketType?.scalar?.[0])}
-                //     shortPrice={outcomes[1].price}
-                //     longPrice={outcomes[0].price}
-                //   />
-                // )
+              {marketType.scalar === null ? (
                 <MarketCardPredictionBar
                   volume={volume}
                   prediction={prediction}
                 />
-              )}
+              ) : null}
+              {/* <ScalarPriceRange
+                  scalarType={scalarType}
+                  lowerBound={Number(marketType?.scalar?.[1])}
+                  upperBound={Number(marketType?.scalar?.[0])}
+                  shortPrice={outcomes[1].price}
+                  longPrice={outcomes[0].price}
+                /> */}
             </div>
             <MarketCardDetails rows={infoRows} />
           </Link>
