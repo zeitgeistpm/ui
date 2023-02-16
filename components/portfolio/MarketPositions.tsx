@@ -57,8 +57,7 @@ export const MarketPositions = ({
           {
             header: "Outcomes",
             accessor: "outcome",
-            type: "paragraph",
-            width: "130px",
+            type: "text",
           },
           {
             header: "Balance",
@@ -84,7 +83,6 @@ export const MarketPositions = ({
             header: "",
             accessor: "actions",
             type: "component",
-            width: "210px",
           },
         ]}
         data={positions.map<TableData>(
