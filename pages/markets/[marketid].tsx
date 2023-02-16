@@ -41,6 +41,7 @@ import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import Link from "next/link";
+import { formatCompact } from "lib/util/format-compact";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -220,11 +221,7 @@ const Market: NextPage<{
           </HeaderStat>
           {token ? (
             <HeaderStat label="Volume">
-              {/* TODO: replace num formatting with util function */}
-              {new Intl.NumberFormat("default", {
-                maximumSignificantDigits: 3,
-                notation: "compact",
-              }).format(volume)}
+              {formatCompact(volume)}
               &nbsp;
               {token}
             </HeaderStat>
@@ -233,11 +230,7 @@ const Market: NextPage<{
           )}
           {prizePool >= 0 && token ? (
             <HeaderStat label="Prize Pool">
-              {/* TODO: replace num formatting with util function */}
-              {new Intl.NumberFormat("default", {
-                maximumSignificantDigits: 3,
-                notation: "compact",
-              }).format(prizePool)}
+              {formatCompact(prizePool)}
               &nbsp;
               {token}
             </HeaderStat>
@@ -246,11 +239,7 @@ const Market: NextPage<{
           )}
           {subsidy >= 0 && token ? (
             <HeaderStat label="Subsidy" border={false}>
-              {/* TODO: replace num formatting with util function */}
-              {new Intl.NumberFormat("default", {
-                maximumSignificantDigits: 3,
-                notation: "compact",
-              }).format(subsidy)}
+              {formatCompact(subsidy)}
               &nbsp;
               {token}
             </HeaderStat>

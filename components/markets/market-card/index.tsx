@@ -6,6 +6,7 @@ import MarketCardContext from "./context";
 import { motion } from "framer-motion";
 import ScalarPriceRange from "../ScalarPriceRange";
 import { Users, BarChart2, Droplet } from "react-feather";
+import { formatCompact } from "lib/util/format-compact";
 export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
@@ -133,11 +134,7 @@ const MarketCardDetails = ({
         <div className="flex items-center gap-2">
           <BarChart2 size={18} />
           <span>
-            {new Intl.NumberFormat("default", {
-              maximumSignificantDigits: 3,
-              notation: "compact",
-            }).format(Number(rows.volume))}{" "}
-            {rows.baseAsset}
+            {formatCompact(rows.volume)} {rows.baseAsset}
           </span>
         </div>
         {/* <div className="flex items-center gap-2">
