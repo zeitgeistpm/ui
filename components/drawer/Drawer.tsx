@@ -53,7 +53,7 @@ const Drawer: FC<DrawerProps> = observer(
         animate={{ width: getWidth() }}
         transition={{ type: "tween" }}
         className={`
-        !hidden sm:!block drawer relative h-ztg-full-vh flex-shrink-0 ${side} ${
+        !hidden drawer relative h-ztg-full-vh flex-shrink-0 ${side} ${
           isClosed ? "closed" : ""
         } ${className}`}
       >

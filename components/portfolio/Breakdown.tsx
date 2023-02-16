@@ -48,7 +48,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
           />
         )}
       </div>
-      <div className="flex-1  border-gray-200 h-32 py-4 pl-4">
+      <div className="flex-1 border-r-2 border-gray-200 h-32 py-4 pl-4">
         {"loading" in props ? (
           <BreakdownSlotSkeleton />
         ) : (
@@ -60,7 +60,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
           />
         )}
       </div>
-      {/* <div className="flex-1 py-4 pl-4">
+      <div className="flex-1 border-gray-200 h-32 py-4 pl-4">
         {"loading" in props ? (
           <BreakdownSlotSkeleton />
         ) : (
@@ -71,7 +71,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
             changePercentage={props.bonded.changePercentage}
           />
         )}
-      </div> */}
+      </div>
     </div>
   );
 };
@@ -141,9 +141,9 @@ export const BreakdownSlot = ({
 const BreakdownSlotSkeleton = () => {
   const { title, value, conversion } = useMemo(() => {
     return {
-      title: random(120, 165),
-      value: random(160, 210),
-      conversion: random(120, 135),
+      title: 150,
+      value: 160,
+      conversion: 125,
     };
   }, []);
 

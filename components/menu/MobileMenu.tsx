@@ -43,7 +43,7 @@ const MobileMenu = observer(() => {
       exit={{ y: -600 }}
       animate={{ y: 0 }}
       transition={{ type: "tween", duration: 0.2 }}
-      className="fixed w-full h-full z-ztg-1 bg-white dark:bg-sky-1000 flex flex-col items-center pt-[150px]"
+      className="fixed top-0 left-0 w-full h-full z-ztg-1 bg-white dark:bg-sky-1000 flex flex-col items-center pt-[150px]"
     >
       <div className="flex flex-col items-center gap-14">
         {mobileItems?.map((item) => (

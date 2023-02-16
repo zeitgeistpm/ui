@@ -2,10 +2,9 @@ import { useAvatarContext } from "@zeitgeistpm/avatara-react";
 import { Badge } from "@zeitgeistpm/avatara-nft-sdk";
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 import { partial } from "lodash";
-import { useStore } from "lib/stores/Store";
+
 import { useUserStore } from "lib/stores/UserStore";
 import { observer } from "mobx-react";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { AiFillInfoCircle } from "react-icons/ai";
