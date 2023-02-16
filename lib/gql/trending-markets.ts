@@ -103,7 +103,7 @@ const getTrendingMarkets = async (
           };
           tags: [];
           status: string;
-          scalarType: ScalarRangeType | null;
+          scalarType: ScalarRangeType;
           period: { end: string };
         }[];
       }>(marketQuery, {

@@ -5,9 +5,11 @@ import { MarketOutcomes } from "lib/types/markets";
 import MarketCardContext from "./context";
 import { motion } from "framer-motion";
 import ScalarPriceRange from "../ScalarPriceRange";
+import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { Users, BarChart2, Droplet } from "react-feather";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+
 export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
@@ -15,7 +17,7 @@ export interface IndexedMarketCardData {
   creation: string;
   outcomes: MarketOutcomes;
   marketType: { categorical?: string; scalar?: string[] };
-  scalarType: string | null;
+  scalarType: ScalarRangeType;
   prediction: { name: string; price: number };
   volume: number;
   baseAsset: string;
