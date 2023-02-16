@@ -534,15 +534,19 @@ export const usePortfolioPositions = (
       usdZtgPrice: ztgPrice.price,
       total: {
         value: positionsTotal,
-        changePercentage: totalChange,
+        changePercentage: isNaN(totalChange) ? 0 : totalChange,
       },
       tradingPositions: {
         value: tradingPositionsTotal,
-        changePercentage: tradingPositionsChange,
+        changePercentage: isNaN(tradingPositionsChange)
+          ? 0
+          : tradingPositionsChange,
       },
       subsidy: {
         value: subsidyPositionsTotal,
-        changePercentage: subsidyPositionsChange,
+        changePercentage: isNaN(subsidyPositionsChange)
+          ? 0
+          : subsidyPositionsChange,
       },
       bonded: {
         value: bondsTotal,

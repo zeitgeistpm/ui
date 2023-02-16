@@ -8,19 +8,16 @@ const columns: TableColumn[] = [
     header: "Token",
     accessor: "token",
     type: "token",
-    width: "29%",
   },
   {
     header: "Weights",
     accessor: "weights",
     type: "percentage",
-    width: "8%",
   },
   {
     header: "Pool Balance",
     accessor: "poolBalance",
     type: "currency",
-    width: "33%",
   },
 ];
 
