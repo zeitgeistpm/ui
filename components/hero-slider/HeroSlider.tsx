@@ -42,7 +42,7 @@ const HeroSlider = ({
         alt={`Image depicting ${slidesData[currentSlide].title.text}`}
         placeholder="blur"
         blurDataURL={imagePlaceholders[currentSlide].base64}
-        sizes="100%"
+        sizes="100vw"
         fill
         style={{ objectFit: "cover" }}
       />
