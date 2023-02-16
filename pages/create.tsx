@@ -14,6 +14,7 @@ import { ISubmittableResult } from "@polkadot/types/types";
 import {
   DecodedMarketMetadata,
   MarketPeriod,
+  MarketTypeOf,
 } from "@zeitgeistpm/sdk/dist/types";
 import Moment from "moment";
 
@@ -465,25 +466,21 @@ const CreatePage: NextPage = observer(() => {
     };
   };
 
-  const getMarketType = (outcomes: Outcomes) => {
+  const getMarketType = (outcomes: Outcomes): MarketTypeOf => {
     return isMultipleOutcomeEntries(outcomes)
       ? {
-          Categorical: outcomes.length,
+          categorical: outcomes.length,
         }
       : {
-          Scalar: [
-            BigInt(
-              new Decimal(outcomes.minimum)
-                .mul(ZTG)
-                .toDecimalPlaces(0)
-                .toFixed(0),
-            ) as any,
-            BigInt(
-              new Decimal(outcomes.maximum)
-                .mul(ZTG)
-                .toDecimalPlaces(0)
-                .toFixed(0),
-            ) as any,
+          scalar: [
+            new Decimal(outcomes.minimum)
+              .mul(ZTG)
+              .toDecimalPlaces(0)
+              .toFixed(0),
+            new Decimal(outcomes.maximum)
+              .mul(ZTG)
+              .toDecimalPlaces(0)
+              .toFixed(0),
           ],
         };
   };
