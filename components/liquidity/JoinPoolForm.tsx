@@ -19,10 +19,10 @@ const JoinPoolForm = ({
   poolId: number;
   totalPoolShares: Decimal;
 }) => {
-  console.log("id", poolId);
-  console.log(poolBalances);
+  const { register, watch, handleSubmit, setValue, getValues, formState } =
+    useForm({ reValidateMode: "onChange", mode: "all" });
+  // console.log("errors", formState.errors);
 
-  const { register, watch, handleSubmit, setValue, getValues } = useForm();
   const { data: pool } = usePool({ poolId });
   const [sdk, id] = useSdkv2();
   const notificationStore = useNotificationStore();
@@ -33,25 +33,36 @@ const JoinPoolForm = ({
     () => {
       if (isRpcSdk(sdk) && pool) {
         const formValue = getValues();
-        const amounts = pool?.weights.map((asset, index) => {
+        const maxAmountsIn = pool?.weights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
+          console.log(formValue[id]);
           const assetAmount = formValue[id] ?? 0;
           return assetAmount === ""
             ? "0"
-            : new Decimal(assetAmount).mul(ZTG).toFixed(0);
+            : new Decimal(assetAmount)
+                .mul(ZTG)
+                .mul((100 + DEFAULT_SLIPPAGE_PERCENTAGE) / 100)
+                .toFixed(0);
         });
+        console.log(maxAmountsIn);
+        console.log(
+          poolSharesToReceive
+            .mul((100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100)
+            .toFixed(0),
+        );
 
         return sdk.api.tx.swaps.poolJoin(
           poolId,
           poolSharesToReceive
-            .mul((100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100)
+            // .mul((100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100)
             .toFixed(0),
-          amounts,
+          maxAmountsIn,
         );
       }
     },
     {
       onSuccess: () => {
+        //todo invalidate total issuance?
         notificationStore.pushNotification("Joined pool", {
           type: "Success",
         });
@@ -61,7 +72,6 @@ const JoinPoolForm = ({
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
-      console.log("watch", value, name, type);
       const changedByUser = type != null;
 
       const changedAsset = name;
@@ -84,6 +94,7 @@ const JoinPoolForm = ({
               .toFixed(3),
           );
         }
+        setPoolSharesToReceive(totalPoolShares.div(poolToInputRatio));
       } else if (
         changedAsset != null &&
         userInput != null &&
@@ -110,6 +121,13 @@ const JoinPoolForm = ({
         }
 
         setPoolSharesToReceive(totalPoolShares.div(poolToInputRatio));
+        //todo: update slider
+        // ztg input div ztg user balance
+
+        setValue(
+          "poolSharesPercentage",
+          userPoolBalancePercentage.mul(100).toString(),
+        );
       }
     });
     return () => subscription.unsubscribe();
@@ -127,7 +145,10 @@ const JoinPoolForm = ({
           market?.categories[index]?.name ?? pool.baseAsset.toUpperCase();
 
         return (
-          <div className="w-full h-[56px] relative font-medium text-ztg-18-150">
+          <div
+            key={index}
+            className="w-full h-[56px] relative font-medium text-ztg-18-150"
+          >
             <div className="absolute h-full left-[15px] top-[14px]">
               {assetName}
             </div>
@@ -138,6 +159,9 @@ const JoinPoolForm = ({
               step="any"
               {...register(id.toString(), { min: 0 })}
             />
+            <div className="text-red-500 text-ztg-12-120">
+              {formState.errors[id.toString()]?.type}
+            </div>
           </div>
         );
       })}

@@ -36,7 +36,11 @@ const ExitPoolForm = ({
         const formValue = getValues();
         const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
         const feeMultiplier = 1 - config.swaps.exitFee;
-        const amounts = pool?.weights.map((asset, index) => {
+        console.log(
+          new Decimal(1).mul(slippageMultiplier).mul(feeMultiplier).toString(),
+        );
+
+        const minAssetsOut = pool?.weights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
 
           const assetAmount = formValue[id] ?? 0;
@@ -46,17 +50,18 @@ const ExitPoolForm = ({
                 .mul(ZTG)
                 .mul(slippageMultiplier)
                 .mul(feeMultiplier)
-                .toFixed(0);
+                .toFixed(0, Decimal.ROUND_DOWN);
         });
 
         const poolSharesAmount = userPoolShares.mul(
           Number(formValue["poolSharesPercentage"]) / 100,
         );
+        console.log(poolSharesAmount.toFixed(0), minAssetsOut);
 
         return sdk.api.tx.swaps.poolExit(
           poolId,
           poolSharesAmount.toFixed(0),
-          amounts,
+          minAssetsOut,
         );
       }
     },
@@ -142,7 +147,10 @@ const ExitPoolForm = ({
           market?.categories[index]?.name ?? pool.baseAsset.toUpperCase();
 
         return (
-          <div className="w-full h-[56px] relative font-medium text-ztg-18-150">
+          <div
+            key={index}
+            className="w-full h-[56px] relative font-medium text-ztg-18-150"
+          >
             <div className="absolute h-full left-[15px] top-[14px]">
               {assetName}
             </div>
