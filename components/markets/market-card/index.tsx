@@ -6,6 +6,8 @@ import MarketCardContext from "./context";
 import { motion } from "framer-motion";
 import ScalarPriceRange from "../ScalarPriceRange";
 import { Users, BarChart2, Droplet } from "react-feather";
+import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
 export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
@@ -216,8 +218,12 @@ const MarketCard = ({
     baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
   };
 
-  const lower = Number(marketType?.scalar?.[0]) / 10 ** 10;
-  const upper = Number(marketType?.scalar?.[1]) / 10 ** 10;
+  const lower = marketType?.scalar?.[0]
+    ? new Decimal(marketType?.scalar?.[0]).div(ZTG).toNumber()
+    : 0;
+  const upper = marketType?.scalar?.[1]
+    ? new Decimal(marketType?.scalar?.[1]).div(ZTG).toNumber()
+    : 0;
 
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
