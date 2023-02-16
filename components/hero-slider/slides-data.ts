@@ -2,11 +2,11 @@ export const slidesData = [
   {
     id: 1,
     title: {
-      text: `<h2 onmouseover="alert('mouseover');">Zeitgeist</br> is moving to Polkadot</h2>`,
+      text: `Zeitgeist\nis moving to Polkadot`,
       styles:
-        "md:max-w-[660px] text-white font-sans font-semibold text-5xl md:text-6xl",
+        "md:max-w-[660px] text-white font-sans whitespace-pre font-semibold text-5xl md:text-6xl",
     },
-    bg: "/carousel/slide-1.png",
+    bg: "/carousel/slide-1.jpeg",
     cta1: "Read More",
     link1:
       "https://blog.zeitgeist.pm/zeitgeist-will-migrate-to-the-polkadot-relay-chain/",

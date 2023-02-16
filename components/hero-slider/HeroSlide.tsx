@@ -1,21 +1,14 @@
-import DOMPurify from "isomorphic-dompurify";
-
 import { FC } from "react";
 
 import { HeroSlideProps } from "./slider-types";
 
 export const HeroSlide: FC<HeroSlideProps> = ({ slide }) => {
-  const sanitizedData = () => ({
-    __html: DOMPurify.sanitize(slide.title.text),
-  });
-
   return (
     <div className="flex items-center h-full w-full">
       <div className="w-full pb-8">
-        <div
-          className={`text-center sm:text-left mb-6 ${slide.title.styles}`}
-          dangerouslySetInnerHTML={sanitizedData()}
-        />
+        <h2 className={`text-center sm:text-left mb-6 ${slide.title.styles}`}>
+          {slide.title.text}
+        </h2>
         <div className="flex flex-col sm:flex-row">
           <a
             style={{
