@@ -31,7 +31,7 @@ const LearnCard = ({
         <span className="bg-white p-[6px] rounded-[50px] w-fit text-ztg-12-120">
           {tag}
         </span>
-        <div className="flex justify-between gap-[30px]">
+        <div className="flex items-start justify-between gap-[30px]">
           <div>
             <h6 className="font-semibold text-ztg-16-150 mt-[8px]">{title}</h6>
             <p className="hidden md:block text-ztg-14-150">{description}</p>

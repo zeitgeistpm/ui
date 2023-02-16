@@ -201,9 +201,9 @@ class MarketStore {
     });
   }
 
-  get reportedScalarOutcome(): number {
+  get reportedScalarOutcome(): string {
     //@ts-ignore
-    return this.market.report.outcome.asScalar.toNumber();
+    return this.market.report.outcome.asScalar.toString();
   }
 
   get reportedOutcomeIndex(): number | null {

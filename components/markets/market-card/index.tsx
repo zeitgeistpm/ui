@@ -133,7 +133,11 @@ const MarketCardDetails = ({
         <div className="flex items-center gap-2">
           <BarChart2 size={18} />
           <span>
-            {rows.volume} {rows.baseAsset}
+            {new Intl.NumberFormat("default", {
+              maximumSignificantDigits: 3,
+              notation: "compact",
+            }).format(Number(rows.volume))}{" "}
+            {rows.baseAsset}
           </span>
         </div>
         {/* <div className="flex items-center gap-2">
@@ -228,21 +232,19 @@ const MarketCard = ({
             </div>
             <MarketCardInfo question={question} />
             <div className="w-full">
-              {scalarType ? null : (
-                // (
-                //   <ScalarPriceRange
-                //     scalarType={scalarType}
-                //     lowerBound={Number(marketType?.scalar?.[1])}
-                //     upperBound={Number(marketType?.scalar?.[0])}
-                //     shortPrice={outcomes[1].price}
-                //     longPrice={outcomes[0].price}
-                //   />
-                // )
+              {marketType.scalar === null ? (
                 <MarketCardPredictionBar
                   volume={volume}
                   prediction={prediction}
                 />
-              )}
+              ) : null}
+              {/* <ScalarPriceRange
+                  scalarType={scalarType}
+                  lowerBound={Number(marketType?.scalar?.[1])}
+                  upperBound={Number(marketType?.scalar?.[0])}
+                  shortPrice={outcomes[1].price}
+                  longPrice={outcomes[0].price}
+                /> */}
             </div>
             <MarketCardDetails rows={infoRows} />
           </Link>
