@@ -105,11 +105,15 @@ export const MarketPositions = ({
                 <div className="text-right">
                   {IOPoolShareAssetId.is(assetId) ? (
                     <Link href={`/liquidity/${market.pool?.poolId}`}>
-                      <span className="text-blue-600 font-bold">View Pool</span>
+                      <span className="text-mariner font-semibold text-ztg-14-120">
+                        View Pool
+                      </span>
                     </Link>
                   ) : marketStage?.type === "Trading" ? (
                     <Link href={`/markets/${market.marketId}`}>
-                      <span className="text-blue-600 font-bold">Trade</span>
+                      <span className="text-mariner font-semibold text-ztg-14-120">
+                        Trade
+                      </span>
                     </Link>
                   ) : marketStage?.type === "Resolved" ? (
                     <RedeemButton
