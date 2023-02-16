@@ -8,7 +8,8 @@ export const slidesData = [
     },
     bg: "/carousel/slide-1.png",
     cta1: "Read More",
-    link1: "/markets/87",
+    link1:
+      "https://blog.zeitgeist.pm/zeitgeist-will-migrate-to-the-polkadot-relay-chain/",
     color1: {
       primary: "#E90303",
       secondary: "#FFF",
