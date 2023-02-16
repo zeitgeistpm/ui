@@ -24,7 +24,7 @@ export type PortfolioBreakdownProps =
 export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
   return (
     <div className="flex">
-      <div className="flex-1 border-r-2 border-gray-200 h-32 py-4 p">
+      <div className="flex-1 border-r-2 border-gray-200">
         {"loading" in props ? (
           <BreakdownSlotSkeleton />
         ) : (
@@ -36,7 +36,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
           />
         )}
       </div>
-      <div className="flex-1 border-r-2 border-gray-200 h-32 py-4 pl-4">
+      <div className="flex-1 border-r-2 border-gray-200 pl-4">
         {"loading" in props ? (
           <BreakdownSlotSkeleton />
         ) : (
@@ -48,7 +48,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
           />
         )}
       </div>
-      <div className="flex-1 border-r-2 border-gray-200 h-32 py-4 pl-4">
+      <div className="flex-1 border-r-2 border-gray-200 pl-4">
         {"loading" in props ? (
           <BreakdownSlotSkeleton />
         ) : (
@@ -60,7 +60,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
           />
         )}
       </div>
-      <div className="flex-1 border-gray-200 h-32 py-4 pl-4">
+      <div className="flex-1 border-gray-200 pl-4">
         {"loading" in props ? (
           <BreakdownSlotSkeleton />
         ) : (
@@ -109,13 +109,13 @@ export const BreakdownSlot = ({
 }: BreakdownSlotProps) => {
   return (
     <>
-      <h4 className="text-gray-500 mb-1">{title}</h4>
+      <h4 className="font-medium text-sky-600 text-ztg-12-150 mb-1">{title}</h4>
       <div className="flex text-lg mb-1">
-        <div className="font-bold w-2/3">
+        <div className="w-2/3 font-semibold text-ztg-16-150">
           {formatNumberLocalized(value.div(ZTG).toNumber())} ZTG
         </div>
         <div
-          className={`flex-1 w-1/3 ${
+          className={`flex-1 w-1/3 text-ztg-14-120 ${
             changePercentage < 0.01
               ? "text-gray-800"
               : changePercentage < 0
@@ -126,7 +126,7 @@ export const BreakdownSlot = ({
           {changePercentage.toFixed(1)}%
         </div>
       </div>
-      <div className="text-gray-500 mb-1 font-light">
+      <div className="text-sky-600 mb-1 text-ztg-14-150">
         ${formatNumberLocalized(usdZtgPrice.mul(value.div(ZTG)).toNumber())}
       </div>
     </>
