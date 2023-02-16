@@ -197,7 +197,7 @@ const MarketCard = ({
     volume: volume,
     baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
   };
-  console.log(pool);
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <motion.div
