@@ -144,7 +144,7 @@ const Cell = observer(
       case "text":
         return (
           <td
-            className={`font-semibold text-ztg-14-150 ${base}`}
+            className={`text-ztg-14-150 ${base}`}
             data-test="outcomeText"
             onClick={onClick}
             style={style}
@@ -155,7 +155,7 @@ const Cell = observer(
       case "number":
         return (
           <td
-            className={`font-mono font-semibold text-ztg-12-150 ${base}`}
+            className={`font-semibold text-ztg-12-150 ${base}`}
             onClick={onClick}
             style={style}
           >
@@ -199,12 +199,8 @@ const Cell = observer(
       case "currency":
         if (isCurrencyData(value)) {
           return (
-            <td
-              className={`font-mono ${base} `}
-              onClick={onClick}
-              style={style}
-            >
-              <div className="text-ztg-14-150 font-mediun">
+            <td className={`${base} `} onClick={onClick} style={style}>
+              <div className="text-ztg-14-150 font-mediun mb-[2px]">
                 {formatNumberLocalized(value.value)}
               </div>
               <div className="text-ztg-12-150 font-light text-sky-600">
@@ -221,7 +217,7 @@ const Cell = observer(
           <td className={` ${base}`} onClick={onClick} style={style}>
             <div className="flex items-center">
               <Avatar address={typeof value === "string" ? value : ""} />
-              <div className="font-mono font-semibold text-ztg-12-150 ml-ztg-10">
+              <div className="font-semibold text-ztg-12-150 ml-ztg-10">
                 {typeof value === "string" ? value : ""}
               </div>
             </div>
@@ -266,7 +262,7 @@ const Cell = observer(
       case "percentage":
         return (
           <td
-            className={`font-mono text-ztg-14-150 font-semibold ${base}`}
+            className={`text-ztg-14-150 ${base}`}
             onClick={onClick}
             style={style}
           >

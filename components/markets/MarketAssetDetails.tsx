@@ -15,7 +15,7 @@ import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarket24hrPriceChanges } from "lib/hooks/queries/useMarket24hrPriceChanges";
 
 const columns: TableColumn[] = [
-  { header: "Outcome", accessor: "outcome", type: "paragraph" },
+  { header: "Outcome", accessor: "outcome", type: "text" },
   { header: "Implied %", accessor: "pre", type: "percentage" },
   { header: "Price", accessor: "totalValue", type: "currency" },
   {
