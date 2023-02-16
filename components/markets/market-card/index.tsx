@@ -28,7 +28,7 @@ export interface MarketCardProps extends IndexedMarketCardData {
 
 const Pill = ({ value, classes }: { value: string; classes: string }) => {
   return (
-    <span className={`px-2.5 ml-2.5 py-0.5 h-fit text-xs rounded ${classes}`}>
+    <span className={`px-2.5 py-0.5 h-fit text-xs rounded ${classes}`}>
       {value}
     </span>
   );
@@ -213,7 +213,7 @@ const MarketCard = ({
           >
             <div className="flex gap-2.5">
               <MarketImage image={img} alt={question} />
-              <div className="flex flex-wrap font-medium">
+              <div className="flex flex-wrap gap-2.5 font-medium h-fit">
                 <MarketCardTags tags={tags} />
                 {isEnding() && (
                   <Pill value="Ends Soon" classes="bg-red-light text-red" />
@@ -228,21 +228,19 @@ const MarketCard = ({
             </div>
             <MarketCardInfo question={question} />
             <div className="w-full">
-              {scalarType ? null : (
-                // (
-                //   <ScalarPriceRange
-                //     scalarType={scalarType}
-                //     lowerBound={Number(marketType?.scalar?.[1])}
-                //     upperBound={Number(marketType?.scalar?.[0])}
-                //     shortPrice={outcomes[1].price}
-                //     longPrice={outcomes[0].price}
-                //   />
-                // )
+              {marketType.scalar === null ? (
                 <MarketCardPredictionBar
                   volume={volume}
                   prediction={prediction}
                 />
-              )}
+              ) : null}
+              {/* <ScalarPriceRange
+                  scalarType={scalarType}
+                  lowerBound={Number(marketType?.scalar?.[1])}
+                  upperBound={Number(marketType?.scalar?.[0])}
+                  shortPrice={outcomes[1].price}
+                  longPrice={outcomes[0].price}
+                /> */}
             </div>
             <MarketCardDetails rows={infoRows} />
           </Link>

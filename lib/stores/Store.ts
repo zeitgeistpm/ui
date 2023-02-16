@@ -96,7 +96,7 @@ export default class Store {
 
   leftDrawerClosed = false;
 
-  rightDrawerClosed = false;
+  rightDrawerClosed = true;
 
   leftDrawerAnimating = false;
 
