@@ -133,7 +133,11 @@ const MarketCardDetails = ({
         <div className="flex items-center gap-2">
           <BarChart2 size={18} />
           <span>
-            {rows.volume} {rows.baseAsset}
+            {new Intl.NumberFormat("default", {
+              maximumSignificantDigits: 3,
+              notation: "compact",
+            }).format(Number(rows.volume))}{" "}
+            {rows.baseAsset}
           </span>
         </div>
         {/* <div className="flex items-center gap-2">
