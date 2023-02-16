@@ -17,7 +17,7 @@ import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import moment from "moment";
 
 const columns: TableColumn[] = [
-  { header: "Outcome", accessor: "outcome", type: "paragraph" },
+  { header: "Outcome", accessor: "outcome", type: "text" },
   { header: "Implied %", accessor: "pre", type: "percentage" },
   { header: "Price", accessor: "totalValue", type: "currency" },
   {

@@ -41,10 +41,10 @@ const Portfolio: NextPage = observer(() => {
       <InfoBoxes />
       <Tab.Group>
         <Tab.List className="flex center my-14">
-          <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+          <Tab className="px-4 ui-selected:font-bold ui-selected:text-black text-sky-600 transition-all">
             Portfolio
           </Tab>
-          <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+          <Tab className="px-4 ui-selected:font-bold ui-selected:text-black text-sky-600 transition-all">
             Activity
           </Tab>
         </Tab.List>
@@ -52,7 +52,9 @@ const Portfolio: NextPage = observer(() => {
           <Tab.Panel>
             {" "}
             <div className="mb-12">
-              <h3 className="font-bold text-xl mb-4 text-center">Breakdown</h3>
+              <h3 className="font-bold text-ztg-22-120 mb-6 text-center">
+                Breakdown
+              </h3>
               <PortfolioBreakdown
                 {...(breakdown ?? {
                   loading: true,
@@ -60,19 +62,19 @@ const Portfolio: NextPage = observer(() => {
               />
             </div>
             <div className="mb-12">
-              <h3 className="font-bold text-xl mb-4 text-center">
+              <h3 className="font-bold text-ztg-22-120 mb-6 text-center">
                 Predictions
               </h3>
               <Tab.Group>
                 <Tab.List className="flex center mb-14">
                   {["By Markets", "Subsidy", "Bonds"].map((title, index) => (
-                    <Tab className="text-lg px-4" key={index}>
+                    <Tab className="px-4" key={index}>
                       {({ selected }) => (
                         <div
                           className={
                             selected
-                              ? "font-bold text-gray-800 transition-all"
-                              : "text-gray-500 transition-all"
+                              ? "font-semibold text-black transition-all"
+                              : "text-sky-600 transition-all"
                           }
                         >
                           {title}
