@@ -9,7 +9,11 @@ import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
 
 const marketsQuery = gql`
   query Market {
-    markets(orderBy: id_DESC, limit: 8, where: { pool_isNull: false }) {
+    markets(
+      orderBy: id_DESC
+      limit: 8
+      where: { pool_isNull: false, status_in: [Active, Proposed] }
+    ) {
       marketId
       outcomeAssets
       question
