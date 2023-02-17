@@ -107,6 +107,7 @@ const getNewestMarkets = async (
         volume: new Decimal(market.pool.volume).div(ZTG).toNumber(),
         baseAsset: market.pool.baseAsset,
         outcomes: marketCategories,
+        pool: market.pool,
         marketType: market.marketType,
         scalarType: market.scalarType,
         tags: market.tags,
