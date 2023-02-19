@@ -20,6 +20,7 @@ export interface IndexedMarketCardData {
   scalarType: ScalarRangeType;
   prediction: { name: string; price: number };
   volume: number;
+  pool: null | {};
   baseAsset: string;
   tags: string[];
   status: string;
@@ -66,15 +67,15 @@ const MarketCardTags = ({ tags }: { tags: string[] }) => {
 
 const MarketCardPredictionBar = ({
   prediction: { name, price },
-  volume,
+  pool,
   isHovered,
 }: {
   prediction: { name: string; price: number };
-  volume: number;
+  pool: null | {};
   isHovered: boolean;
 }) => {
   // check if market has liquidity
-  if (volume > 0) {
+  if (pool !== null) {
     const impliedPercentage = Math.round(Number(price) * 100);
 
     return (
@@ -179,6 +180,7 @@ const MarketCard = ({
   outcomes,
   marketType,
   prediction,
+  pool,
   scalarType,
   volume,
   baseAsset,
@@ -266,7 +268,7 @@ const MarketCard = ({
             {marketType.scalar === null ? (
               <MarketCardPredictionBar
                 isHovered={isHovered}
-                volume={volume}
+                pool={pool}
                 prediction={prediction}
               />
             ) : (
