@@ -65,7 +65,6 @@ const JoinPoolForm = ({
     },
     {
       onSuccess: () => {
-        //todo invalidate total issuance?
         notificationStore.pushNotification("Joined pool", {
           type: "Success",
         });
@@ -90,9 +89,8 @@ const JoinPoolForm = ({
         const userBaseAssetBalance = poolBalances[pool.baseAsset].user;
 
         const newBaseAssetAmount = userBaseAssetBalance.mul(percentage / 100);
-        const changedAssetBalances = poolBalances[pool.baseAsset];
-        const poolToInputRatio =
-          changedAssetBalances.pool.div(newBaseAssetAmount);
+        const baseBalances = poolBalances[pool.baseAsset];
+        const poolToInputRatio = baseBalances.pool.div(newBaseAssetAmount);
         for (const assetKey in poolBalances) {
           setValue(
             assetKey,
@@ -129,13 +127,17 @@ const JoinPoolForm = ({
         }
 
         setPoolSharesToReceive(totalPoolShares.div(poolToInputRatio));
-        //todo: update slider
-        // ztg input div ztg user balance
 
-        // setValue(
-        //   "poolSharesPercentage",
-        //   userPoolBalancePercentage.mul(100).toString(),
-        // );
+        const userBaseAssetBalance = poolBalances[pool.baseAsset].user;
+        const baseInputAmount = getValues(pool.baseAsset);
+
+        setValue(
+          "baseAssetPercentage",
+          new Decimal(baseInputAmount)
+            .div(userBaseAssetBalance.div(ZTG))
+            .mul(100)
+            .toString(),
+        );
       }
     });
     return () => subscription.unsubscribe();
