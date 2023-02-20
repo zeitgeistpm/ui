@@ -56,15 +56,17 @@ const Box = observer(
     const exchangeStore = useExchangeStore();
     const trade = useTrade();
 
-    useEffect(() => {
-      if (trade?.data != null) {
-        return;
-      }
-      trade.set({
-        action: "buy",
-        assetId: { CategoricalOutcome: [372 as MarketId, 0] },
-      });
-    }, [trade]);
+    console.log("trade", trade);
+
+    // useEffect(() => {
+    //   if (trade?.data != null) {
+    //     return;
+    //   }
+    //   trade.set({
+    //     action: "buy",
+    //     assetId: { CategoricalOutcome: [372 as MarketId, 0] },
+    //   });
+    // }, [trade]);
 
     switch (mode) {
       case "default":
@@ -92,7 +94,6 @@ const RightDrawer = observer(() => {
   const router = useRouter();
   const store = useStore();
   const { wallets } = store;
-  const [trade, setTrade] = useState<TradeItem | null>(null);
 
   const displayMode: DisplayMode = useMemo<DisplayMode>(() => {
     if (router.query.poolid !== undefined) {
@@ -131,9 +132,7 @@ const RightDrawer = observer(() => {
           ) : (
             <></>
           )}
-          <TradeItemContext.Provider value={{ data: trade, set: setTrade }}>
-            <Box tabIndex={activeTabIndex} mode={displayMode} />
-          </TradeItemContext.Provider>
+          <Box tabIndex={activeTabIndex} mode={displayMode} />
           <div className="mt-auto" />
           <div className="p-ztg-28 pt-0">
             <button
