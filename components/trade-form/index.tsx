@@ -12,7 +12,7 @@ import React, { useEffect, useState } from "react";
 import { capitalize } from "lodash";
 import { from } from "rxjs";
 import { useDebounce } from "use-debounce";
-import RangeInput, { AmountInput } from "../ui/inputs";
+import RangeInput from "../ui/RangeInput";
 import TransactionButton from "../ui/TransactionButton";
 import TradeTab, { TradeTabType } from "./TradeTab";
 
