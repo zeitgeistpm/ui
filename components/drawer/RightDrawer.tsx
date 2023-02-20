@@ -1,19 +1,19 @@
 import PercentageChange from "components/ui/PercentageChange";
 import { useExchangeStore } from "lib/stores/ExchangeStore";
-import MarketStore from "lib/stores/MarketStore";
 import { useNavigationStore } from "lib/stores/NavigationStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
 import { ReactFragment, useEffect, useMemo, useState } from "react";
-import { useTradeslipItems } from "lib/state/tradeslip/items";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 
 import ExchangeBox from "../exchange/ExchangeBox";
 import LiquidityPoolsBox from "../liquidity/LiquidityPoolsBox";
-import TradeSlip from "../trade-slip";
+import TradeForm from "../trade-form";
 import Tabs from "../ui/Tabs";
 import Drawer from "./Drawer";
+import { TradeItem, TradeItemContext, useTrade } from "lib/hooks/trade";
+import { MarketId } from "@zeitgeistpm/sdk-next";
 
 const ZTGSummary = observer(() => {
   const { data: ztgInfo } = useZtgInfo();
@@ -54,14 +54,23 @@ const Box = observer(
       );
     };
     const exchangeStore = useExchangeStore();
+    const trade = useTrade();
+
+    useEffect(() => {
+      if (trade?.data != null) {
+        return;
+      }
+      trade.set({
+        action: "buy",
+        assetId: { CategoricalOutcome: [372 as MarketId, 0] },
+      });
+    }, [trade]);
 
     switch (mode) {
       case "default":
-        return tabIndex === 0 ? (
-          <TradeSlip />
-        ) : (
-          withSpacing(<ExchangeBox exchangeStore={exchangeStore} />)
-        );
+        return tabIndex === 0
+          ? withSpacing(trade?.data && <TradeForm />)
+          : withSpacing(<ExchangeBox exchangeStore={exchangeStore} />);
       case "liquidity":
         return withSpacing(
           tabIndex === 0 ? (
@@ -71,23 +80,19 @@ const Box = observer(
           ),
         );
       default:
-        return tabIndex === 0 ? (
-          <TradeSlip />
-        ) : (
-          withSpacing(<ExchangeBox exchangeStore={exchangeStore} />)
-        );
+        return tabIndex === 0
+          ? withSpacing(trade?.data && <TradeForm />)
+          : withSpacing(<ExchangeBox exchangeStore={exchangeStore} />);
     }
   },
 );
 
 const RightDrawer = observer(() => {
-  const navigationStore = useNavigationStore();
-  const tradeslipItems = useTradeslipItems();
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const router = useRouter();
-  const { marketid } = router.query;
   const store = useStore();
-  const { markets, wallets } = store;
+  const { wallets } = store;
+  const [trade, setTrade] = useState<TradeItem | null>(null);
 
   const displayMode: DisplayMode = useMemo<DisplayMode>(() => {
     if (router.query.poolid !== undefined) {
@@ -108,10 +113,6 @@ const RightDrawer = observer(() => {
     }
   }, [displayMode]);
 
-  useEffect(() => {
-    setActiveTabIndex(0);
-  }, [tradeslipItems.items.length]);
-
   return (
     <Drawer
       side="right"
@@ -130,7 +131,9 @@ const RightDrawer = observer(() => {
           ) : (
             <></>
           )}
-          <Box tabIndex={activeTabIndex} mode={displayMode} />
+          <TradeItemContext.Provider value={{ data: trade, set: setTrade }}>
+            <Box tabIndex={activeTabIndex} mode={displayMode} />
+          </TradeItemContext.Provider>
           <div className="mt-auto" />
           <div className="p-ztg-28 pt-0">
             <button
