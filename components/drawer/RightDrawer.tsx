@@ -3,7 +3,7 @@ import { useExchangeStore } from "lib/stores/ExchangeStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
-import { ReactFragment, useMemo, useState } from "react";
+import { ReactFragment, useEffect, useMemo, useState } from "react";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 
 import TradeForm from "../trade-form";
@@ -11,6 +11,8 @@ import ExchangeBox from "../exchange/ExchangeBox";
 import LiquidityPoolsBox from "../liquidity/LiquidityPoolsBox";
 import Tabs from "../ui/Tabs";
 import Drawer from "./Drawer";
+import { TradeItem, TradeItemContext, useTrade } from "lib/hooks/trade";
+import { MarketId } from "@zeitgeistpm/sdk-next";
 
 const ZTGSummary = observer(() => {
   const { data: ztgInfo } = useZtgInfo();
@@ -51,14 +53,23 @@ const Box = observer(
       );
     };
     const exchangeStore = useExchangeStore();
+    const trade = useTrade();
+
+    useEffect(() => {
+      if (trade?.data != null) {
+        return;
+      }
+      trade.set({
+        action: "buy",
+        assetId: { CategoricalOutcome: [372 as MarketId, 0] },
+      });
+    }, [trade]);
 
     switch (mode) {
       case "default":
-        return tabIndex === 0 ? (
-          <TradeForm />
-        ) : (
-          withSpacing(<ExchangeBox exchangeStore={exchangeStore} />)
-        );
+        return tabIndex === 0
+          ? withSpacing(trade?.data && <TradeForm />)
+          : withSpacing(<ExchangeBox exchangeStore={exchangeStore} />);
       case "liquidity":
         return withSpacing(
           tabIndex === 0 ? (
@@ -68,11 +79,9 @@ const Box = observer(
           ),
         );
       default:
-        return tabIndex === 0 ? (
-          <TradeForm />
-        ) : (
-          withSpacing(<ExchangeBox exchangeStore={exchangeStore} />)
-        );
+        return tabIndex === 0
+          ? withSpacing(trade?.data && <TradeForm />)
+          : withSpacing(<ExchangeBox exchangeStore={exchangeStore} />);
     }
   },
 );
@@ -82,6 +91,7 @@ const RightDrawer = observer(() => {
   const router = useRouter();
   const store = useStore();
   const { wallets } = store;
+  const [trade, setTrade] = useState<TradeItem | null>(null);
 
   const displayMode: DisplayMode = useMemo<DisplayMode>(() => {
     if (router.query.poolid !== undefined) {
@@ -120,7 +130,9 @@ const RightDrawer = observer(() => {
           ) : (
             <></>
           )}
-          <Box tabIndex={activeTabIndex} mode={displayMode} />
+          <TradeItemContext.Provider value={{ data: trade, set: setTrade }}>
+            <Box tabIndex={activeTabIndex} mode={displayMode} />
+          </TradeItemContext.Provider>
           <div className="mt-auto" />
           <div className="p-ztg-28 pt-0">
             <button

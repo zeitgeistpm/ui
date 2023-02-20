@@ -327,12 +327,12 @@ export const AmountInput: FC<AmountInputProps> = observer(
           let calcVal = val.replace(/(\.[0-9]*[1-9])0+$|\.0*$/, "$1");
           const checked = checkVal(calcVal, amountRegex);
           if (+checked > +max) {
-            return setVal(max);
+            setVal(max);
+          } else if (+checked < +min) {
+            setVal(min);
+          } else {
+            setVal(checkVal(calcVal, amountRegex));
           }
-          if (+checked < +min) {
-            return setVal(min);
-          }
-          setVal(checkVal(calcVal, amountRegex));
         }
         setFocused(false);
         !initialBlur && setInitialBlur(true);
@@ -415,37 +415,28 @@ export const TextArea: FC<TextAreaProps> = observer(
 );
 
 export type RangeInputProps = {
-  min?: string | number;
-  max?: string | number;
   minLabel?: string;
   maxLabel?: string;
-  step?: string;
-  value?: string;
   valueSuffix?: string;
-  className?: string;
-  name?: string;
   onValueChange?: (val: string) => void;
-  onChange?: ChangeEventHandler<HTMLInputElement>;
-};
+} & React.HTMLProps<HTMLInputElement>;
 
 const RangeInput = React.forwardRef(
   (
     {
-      min,
-      max,
       maxLabel,
       minLabel,
-      value,
       valueSuffix = "",
-      step,
-      name,
-      className = "",
       onValueChange,
-      onChange,
+      ...rest
     }: RangeInputProps,
     ref: React.Ref<HTMLInputElement>,
   ) => {
     const componentRef = useRef<HTMLDivElement>(null);
+    const { value, onChange, min, max } = rest;
+
+    rest.onChange = undefined;
+    const className = rest.className ?? "";
 
     const change: ChangeEventHandler<HTMLInputElement> = (e) => {
       onValueChange && onValueChange(e.target.value);
@@ -460,16 +451,15 @@ const RangeInput = React.forwardRef(
     const maxVisible = percentage < 0.9;
 
     return (
-      <div className={`relative ${className}`} ref={componentRef}>
+      <div
+        className={`relative overflow-hidden ${className}`}
+        ref={componentRef}
+      >
         <input
           ref={ref}
           type="range"
-          min={min}
-          max={max}
-          step={step}
-          value={value}
+          {...rest}
           onChange={change}
-          name={name}
           className={`w-full`}
         />
         <div className="w-full justify-between">
