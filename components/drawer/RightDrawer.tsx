@@ -55,18 +55,6 @@ const Box = observer(
     const exchangeStore = useExchangeStore();
     const trade = useTrade();
 
-    console.log("trade", trade);
-
-    // useEffect(() => {
-    //   if (trade?.data != null) {
-    //     return;
-    //   }
-    //   trade.set({
-    //     action: "buy",
-    //     assetId: { CategoricalOutcome: [372 as MarketId, 0] },
-    //   });
-    // }, [trade]);
-
     switch (mode) {
       case "default":
         return tabIndex === 0
