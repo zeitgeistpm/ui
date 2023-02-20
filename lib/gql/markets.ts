@@ -57,7 +57,7 @@ export interface MarketPageIndexedData {
   categories: { ticker: string; color: string }[];
   outcomeAssets: string[];
   pool: { poolId: number; volume: string; createdAt: string };
-  scalarType: ScalarRangeType | null;
+  scalarType: ScalarRangeType;
   creator: string;
   oracle: string;
   tags: [];

@@ -87,7 +87,7 @@ const getFeaturedMarkets = async (
           question: string;
           creation: MarketCreation;
           marketType: { [key: string]: string };
-          scalarType: ScalarRangeType | null;
+          scalarType: ScalarRangeType;
           categories: { color: string; name: string; ticker: string }[];
           outcomeAssets: string[];
           tags: [];

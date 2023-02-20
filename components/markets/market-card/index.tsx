@@ -1,11 +1,15 @@
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import MarketImage from "components/ui/MarketImage";
 import { MarketOutcomes } from "lib/types/markets";
 import MarketCardContext from "./context";
 import { motion } from "framer-motion";
 import ScalarPriceRange from "../ScalarPriceRange";
+import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { Users, BarChart2, Droplet } from "react-feather";
+import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
+
 export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
@@ -13,10 +17,10 @@ export interface IndexedMarketCardData {
   creation: string;
   outcomes: MarketOutcomes;
   marketType: { categorical?: string; scalar?: string[] };
-  pool: null | {};
-  scalarType: string | null;
+  scalarType: ScalarRangeType;
   prediction: { name: string; price: number };
   volume: number;
+  pool: null | {};
   baseAsset: string;
   tags: string[];
   status: string;
@@ -64,23 +68,41 @@ const MarketCardTags = ({ tags }: { tags: string[] }) => {
 const MarketCardPredictionBar = ({
   prediction: { name, price },
   pool,
+  isHovered,
 }: {
   prediction: { name: string; price: number };
   pool: null | {};
+  isHovered: boolean;
 }) => {
   // check if market has liquidity
   if (pool !== null) {
     const impliedPercentage = Math.round(Number(price) * 100);
+
     return (
       <>
         <div className="text-sm flex justify-between mb-1">
           <span className="text-blue">{name}</span>
-          <span className="text-gray-500">{impliedPercentage}%</span>
+          <span
+            style={{
+              color: `${isHovered ? "#FFFFFF" : "#6b7280"}`,
+              transition: "color 500ms ease",
+            }}
+          >
+            {impliedPercentage}%
+          </span>
         </div>
-        <div className="w-full rounded-lg h-1.5 bg-gray-200">
+        <div
+          className={`w-full rounded-lg h-1.5`}
+          style={{
+            backgroundColor: `${isHovered ? "#FFFFFF" : "#E5E7EB"}`,
+            transition: "background-color 500ms ease",
+          }}
+        >
           <div
             className={`rounded-lg h-full transition-all bg-blue`}
-            style={{ width: `${impliedPercentage}%` }}
+            style={{
+              width: `${isNaN(impliedPercentage) ? 0 : impliedPercentage}%`,
+            }}
           />
         </div>
       </>
@@ -168,6 +190,8 @@ const MarketCard = ({
   status,
   className = "",
 }: MarketCardProps) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   const hasEnded = () => {
     const currentTime = new Date();
     const endTime = Number(endDate);
@@ -198,57 +222,68 @@ const MarketCard = ({
     baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
   };
 
+  const lower = marketType?.scalar?.[0]
+    ? new Decimal(marketType?.scalar?.[0]).div(ZTG).toNumber()
+    : 0;
+  const upper = marketType?.scalar?.[1]
+    ? new Decimal(marketType?.scalar?.[1]).div(ZTG).toNumber()
+    : 0;
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
-      <motion.div
-        whileHover={{ opacity: 0.7 }}
-        whileFocus={{ opacity: 0.5 }}
-        whileTap={{ opacity: 0.7 }}
+      <div
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         data-testid={`marketCard-${marketId}`}
+        className={`flex flex-col w-full h-auto rounded-[10px] p-[15px] relative ${className}`}
         style={{
-          minWidth: width ? width : "100%",
-          maxWidth: width ? width : "100%",
+          borderRadius: "10px",
+          backgroundColor: isHovered ? "#B5C1CA" : "#F0F2F5",
+          transition: "background-color 500ms ease",
+          minWidth: isNaN(width) ? "100%" : width,
+          maxWidth: isNaN(width) ? "100%" : width,
         }}
       >
-        <div
-          className={`flex flex-col w-full h-full bg-anti-flash-white rounded-[10px] p-[15px] relative ${className}`}
+        <Link
+          href={`/markets/${marketId}`}
+          className="flex flex-col flex-1 gap-2.5"
         >
-          <Link
-            href={`/markets/${marketId}`}
-            className="flex flex-col flex-1 gap-2.5"
-          >
-            <div className="flex gap-2.5">
-              <MarketImage image={img} alt={question} />
-              <div className="flex flex-wrap gap-2.5 font-medium h-fit">
-                <MarketCardTags tags={tags} />
-                {isEnding() && (
-                  <Pill value="Ends Soon" classes="bg-red-light text-red" />
-                )}
-                {isVerified() && (
-                  <Pill
-                    value="&#x2713; Verified"
-                    classes="bg-green-light text-green"
-                  />
-                )}
-              </div>
+          <div className="flex gap-2.5">
+            <MarketImage image={img} alt={question} />
+            <div className="flex flex-wrap gap-2.5 font-medium h-fit">
+              <MarketCardTags tags={tags} />
+              {isEnding() && (
+                <Pill value="Ends Soon" classes="bg-red-light text-red" />
+              )}
+              {isVerified() && (
+                <Pill
+                  value="&#x2713; Verified"
+                  classes="bg-green-light text-green"
+                />
+              )}
             </div>
-            <MarketCardInfo question={question} />
-            <div className="w-full">
-              {marketType.scalar === null ? (
-                <MarketCardPredictionBar pool={pool} prediction={prediction} />
-              ) : null}
-              {/* <ScalarPriceRange
-                  scalarType={scalarType}
-                  lowerBound={Number(marketType?.scalar?.[1])}
-                  upperBound={Number(marketType?.scalar?.[0])}
-                  shortPrice={outcomes[1].price}
-                  longPrice={outcomes[0].price}
-                /> */}
-            </div>
-            <MarketCardDetails rows={infoRows} />
-          </Link>
-        </div>
-      </motion.div>
+          </div>
+          <MarketCardInfo question={question} />
+          <div className="w-full">
+            {marketType.scalar === null ? (
+              <MarketCardPredictionBar
+                isHovered={isHovered}
+                pool={pool}
+                prediction={prediction}
+              />
+            ) : (
+              <ScalarPriceRange
+                scalarType={scalarType}
+                lowerBound={lower}
+                upperBound={upper}
+                shortPrice={outcomes[1].price}
+                longPrice={outcomes[0].price}
+              />
+            )}
+          </div>
+          <MarketCardDetails rows={infoRows} />
+        </Link>
+      </div>
     </MarketCardContext.Provider>
   );
 };
