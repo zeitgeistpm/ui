@@ -3,7 +3,9 @@ import {
   IOCategoricalAssetId,
   IOScalarAssetId,
 } from "@zeitgeistpm/sdk-next";
+import { useTrade } from "lib/hooks/trade";
 import { useStore } from "lib/stores/Store";
+import { compareJSON } from "lib/util";
 import { observer } from "mobx-react";
 import { FC, useMemo } from "react";
 
@@ -16,6 +18,7 @@ const BuySellButtons = observer(
   ({ assetId, disabled }: BuySellButtonsProps) => {
     const store = useStore();
     const isDisabled = false;
+    const trade = useTrade();
 
     if (!IOCategoricalAssetId.is(assetId) && !IOScalarAssetId.is(assetId)) {
       return null;
@@ -29,33 +32,28 @@ const BuySellButtons = observer(
     };
 
     const onClickBuy = () => {
-      // if (tradeslip.getByAsset(assetId)?.action === "buy") {
-      //   return tradeslip.removeAsset(assetId);
-      // }
-      // tradeslip.put({
-      //   assetId: assetId,
-      //   action: "buy",
-      //   amount: 0,
-      // });
-      // openDrawer();
+      trade.set({
+        assetId: assetId,
+        action: "buy",
+      });
+      openDrawer();
     };
 
     const onClickSell = () => {
-      // if (tradeslip.getByAsset(assetId)?.action === "sell") {
-      //   return tradeslip.removeAsset(assetId);
-      // }
-      // tradeslip.put({
-      //   assetId: assetId,
-      //   action: "sell",
-      //   amount: 0,
-      // });
-      // openDrawer();
+      trade.set({
+        assetId: assetId,
+        action: "sell",
+      });
+      openDrawer();
     };
 
     return (
       <div className="card-exp-col-6 flex items-center justify-evenly gap-x-[6px]">
         <TradeButton
-          active={false} // TODO: change active status
+          active={
+            trade?.data.action === "buy" &&
+            compareJSON(trade?.data.assetId, assetId)
+          }
           type="buy"
           disabled={isDisabled}
           onClick={onClickBuy}
@@ -63,7 +61,10 @@ const BuySellButtons = observer(
           Buy
         </TradeButton>
         <TradeButton
-          active={false} // TODO: change active status
+          active={
+            trade?.data.action === "sell" &&
+            compareJSON(trade?.data.assetId, assetId)
+          }
           disabled={isDisabled}
           type="sell"
           onClick={onClickSell}
