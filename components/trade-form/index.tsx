@@ -8,33 +8,13 @@ import { TradeType } from "lib/types";
 import { extractIndexFromErrorHex } from "lib/util/error-table";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
-import React, { FC, PropsWithChildren, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { capitalize } from "lodash";
 import { from } from "rxjs";
 import { useDebounce } from "use-debounce";
 import RangeInput, { AmountInput } from "../ui/inputs";
 import TransactionButton from "../ui/TransactionButton";
-
-const TradeTab: FC<PropsWithChildren<{ selected: boolean }>> = React.forwardRef(
-  (
-    { children, selected, ...rest },
-    ref: React.ForwardedRef<HTMLDivElement>,
-  ) => {
-    const classes = `block cursor-pointer h-full center w-1/2 outline-0 text-ztg-18-150 ${
-      selected ? "bg-white font-bold" : "bg-anti-flash-white"
-    }`;
-    return (
-      <div ref={ref} className={classes} {...rest}>
-        {children}
-      </div>
-    );
-  },
-);
-
-enum TradeTabType {
-  Buy = 0,
-  Sell = 1,
-}
+import TradeTab, { TradeTabType } from "./TradeTab";
 
 const TradeForm = observer(() => {
   const notificationStore = useNotificationStore();
