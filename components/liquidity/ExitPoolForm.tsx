@@ -1,8 +1,10 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
+import { poolTotalIssuanceRootQueryKey } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotificationStore } from "lib/stores/NotificationStore";
@@ -29,6 +31,7 @@ const ExitPoolForm = ({
   const notificationStore = useNotificationStore();
   const userPercentageOwnership = userPoolShares.div(totalPoolShares);
   const { data: market } = useMarket({ poolId });
+  const queryClient = useQueryClient();
 
   const { send: exitPool, isLoading: isUpdating } = useExtrinsic(
     () => {
@@ -70,6 +73,11 @@ const ExitPoolForm = ({
         notificationStore.pushNotification("Exited pool", {
           type: "Success",
         });
+        queryClient.invalidateQueries([
+          id,
+          poolTotalIssuanceRootQueryKey,
+          poolId,
+        ]);
       },
     },
   );

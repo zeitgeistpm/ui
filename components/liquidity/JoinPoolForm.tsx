@@ -1,8 +1,10 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
+import { poolTotalIssuanceRootQueryKey } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotificationStore } from "lib/stores/NotificationStore";
@@ -28,6 +30,7 @@ const JoinPoolForm = ({
   const notificationStore = useNotificationStore();
   const [poolSharesToReceive, setPoolSharesToReceive] = useState<Decimal>();
   const { data: market } = useMarket({ poolId });
+  const queryClient = useQueryClient();
 
   const { send: joinPool, isLoading: isUpdating } = useExtrinsic(
     () => {
@@ -66,6 +69,11 @@ const JoinPoolForm = ({
         notificationStore.pushNotification("Joined pool", {
           type: "Success",
         });
+        queryClient.invalidateQueries([
+          id,
+          poolTotalIssuanceRootQueryKey,
+          poolId,
+        ]);
       },
     },
   );
@@ -124,10 +132,10 @@ const JoinPoolForm = ({
         //todo: update slider
         // ztg input div ztg user balance
 
-        setValue(
-          "poolSharesPercentage",
-          userPoolBalancePercentage.mul(100).toString(),
-        );
+        // setValue(
+        //   "poolSharesPercentage",
+        //   userPoolBalancePercentage.mul(100).toString(),
+        // );
       }
     });
     return () => subscription.unsubscribe();

@@ -15,14 +15,14 @@ export type PoolTotalIssuance = {
   totalIssuance: u128;
 };
 
-export const poolTotalIssuanceRootQuery = "pools-total-issuance";
+export const poolTotalIssuanceRootQueryKey = "pools-total-issuance";
 
 export const useTotalIssuanceForPools = (poolIds: number[]) => {
   const [sdk, id] = useSdkv2();
 
   const queries = useQueries({
     queries: poolIds.map((poolId) => ({
-      queryKey: [id, poolTotalIssuanceRootQuery, poolId],
+      queryKey: [id, poolTotalIssuanceRootQueryKey, poolId],
       queryFn: async () => {
         if (isRpcSdk(sdk)) return batcher(sdk).fetch(poolId);
         return null;
@@ -42,7 +42,7 @@ export const useTotalIssuanceForPools = (poolIds: number[]) => {
 
 const batcher = memoize((sdk: Sdk<RpcContext>) => {
   return batshit.create<PoolTotalIssuance, number>({
-    name: poolTotalIssuanceRootQuery,
+    name: poolTotalIssuanceRootQueryKey,
     fetcher: async (ids) => {
       const data = await sdk.api.query.tokens.totalIssuance.multi(
         ids.map((id) => ({ PoolShare: id })),
