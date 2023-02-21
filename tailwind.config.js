@@ -235,6 +235,7 @@ module.exports = {
         mystic: "#E5EAF1",
         "pastel-blue": "#B5C1CA",
         "fog-of-war": "#0F1A2D",
+        mariner: "#3056D3",
         blue: {
           light: "#E1EFFE",
           DEFAULT: "#1C64F2",
@@ -245,6 +246,7 @@ module.exports = {
           DEFAULT: "#E90303",
         },
         green: {
+          lighter: "#EAF8DF",
           light: "#DEF7EC",
           DEFAULT: "#03543F",
         },

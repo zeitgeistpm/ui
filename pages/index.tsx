@@ -2,22 +2,16 @@ import LearnSection from "components/front-page/LearnSection";
 import PopularCategories, {
   CATEGORIES,
 } from "components/front-page/PopularCategories";
-import { FC, useEffect, useState } from "react";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
-import { motion } from "framer-motion";
 import { GraphQLClient } from "graphql-request";
 import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import HeroSlider from "components/hero-slider/HeroSlider";
-import Image from "next/image";
-import Link from "next/link";
 import { slidesData } from "components/hero-slider/slides-data";
-import { moveSlider } from "components/hero-slider/slider-controls";
 
 import {
   getPlaiceholder,

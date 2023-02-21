@@ -2,12 +2,14 @@ export const slidesData = [
   {
     id: 1,
     title: {
-      text: "",
-      styles: "text-white text-3xl sm:text-4xl md:text-6xl",
+      text: `Zeitgeist\nis moving to Polkadot`,
+      styles:
+        "md:max-w-[660px] text-white font-sans whitespace-pre font-semibold text-5xl md:text-6xl",
     },
-    bg: "/carousel/superbowl.png",
-    cta1: "",
-    link1: "/markets/87",
+    bg: "/carousel/slide-1.jpeg",
+    cta1: "Read More",
+    link1:
+      "https://blog.zeitgeist.pm/zeitgeist-will-migrate-to-the-polkadot-relay-chain/",
     color1: {
       primary: "#E90303",
       secondary: "#FFF",
