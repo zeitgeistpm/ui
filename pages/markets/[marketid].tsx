@@ -41,6 +41,9 @@ import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import Link from "next/link";
+import { formatNumberCompact } from "lib/util/format-compact";
+import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -219,11 +222,7 @@ const Market: NextPage<{
           </HeaderStat>
           {token ? (
             <HeaderStat label="Volume">
-              {/* TODO: replace num formatting with util function */}
-              {new Intl.NumberFormat("default", {
-                maximumSignificantDigits: 3,
-                notation: "compact",
-              }).format(volume)}
+              {formatNumberCompact(volume)}
               &nbsp;
               {token}
             </HeaderStat>
@@ -232,11 +231,7 @@ const Market: NextPage<{
           )}
           {prizePool >= 0 && token ? (
             <HeaderStat label="Prize Pool">
-              {/* TODO: replace num formatting with util function */}
-              {new Intl.NumberFormat("default", {
-                maximumSignificantDigits: 3,
-                notation: "compact",
-              }).format(prizePool)}
+              {formatNumberCompact(prizePool)}
               &nbsp;
               {token}
             </HeaderStat>
@@ -245,11 +240,7 @@ const Market: NextPage<{
           )}
           {subsidy >= 0 && token ? (
             <HeaderStat label="Subsidy" border={false}>
-              {/* TODO: replace num formatting with util function */}
-              {new Intl.NumberFormat("default", {
-                maximumSignificantDigits: 3,
-                notation: "compact",
-              }).format(subsidy)}
+              {formatNumberCompact(subsidy)}
               &nbsp;
               {token}
             </HeaderStat>
@@ -279,7 +270,7 @@ const Market: NextPage<{
     : Number(indexedMarket.period.start);
   const ends = Number(indexedMarket.period.end);
   const volume = indexedMarket?.pool?.volume
-    ? Number(indexedMarket?.pool?.volume) / 10 ** 10
+    ? new Decimal(indexedMarket?.pool?.volume).div(ZTG).toNumber()
     : 0;
   const subsidy = marketSdkv2?.pool?.poolId == null ? 0 : pool?.liquidity;
 
@@ -310,7 +301,7 @@ const Market: NextPage<{
             Market rejected: {marketSdkv2.rejectReason}
           </div>
         )}
-        <div className="py-ztg-20 mb-10 h-32">
+        <div className="flex justify-center py-ztg-50 mb-10 h-32">
           {marketStore && marketStage ? (
             <MarketTimer stage={marketStage} />
           ) : (

@@ -76,7 +76,6 @@ const MarketScroll = observer(
           rightDisabled={rightDisabled}
           leftDisabled={leftDisabled}
         />
-        {/* <div className="flex items-center mb-ztg-30"></div> */}
         <div className="sm:col-span-2 relative">
           {(scrollDirection === "left" && scrollLeft !== 0) ||
           (scrollDirection === "right" && hasReachedEnd) ? (
@@ -94,7 +93,7 @@ const MarketScroll = observer(
                 key={market.marketId}
                 {...market}
                 width={cardWidth}
-                className="market-card bg-anti-flash-white rounded-ztg-10 transition duration-500 ease-in-out"
+                className="market-card rounded-ztg-10 transition duration-500 ease-in-out"
               />
             ))}
           </div>
