@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
+import FormTransactionButton from "components/ui/FormTransactionButton";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
 import { useMarket } from "lib/hooks/queries/useMarket";
@@ -9,7 +10,7 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm, useFormState } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
 
 const JoinPoolForm = ({
@@ -21,9 +22,15 @@ const JoinPoolForm = ({
   poolId: number;
   totalPoolShares: Decimal;
 }) => {
-  const { register, watch, handleSubmit, setValue, getValues, formState } =
-    useForm({ reValidateMode: "onChange", mode: "all" });
-  // console.log("errors", formState.errors);
+  const {
+    register,
+    watch,
+    handleSubmit,
+    setValue,
+    getValues,
+    formState,
+    control,
+  } = useForm({ reValidateMode: "onChange", mode: "all" });
 
   const { data: pool } = usePool({ poolId });
   const [sdk, id] = useSdkv2();
@@ -97,7 +104,8 @@ const JoinPoolForm = ({
             poolBalances[assetKey].pool
               .div(poolToInputRatio)
               .div(ZTG)
-              .toFixed(3),
+              .toFixed(3, Decimal.ROUND_DOWN),
+            { shouldValidate: true },
           );
         }
         setPoolSharesToReceive(totalPoolShares.div(poolToInputRatio));
@@ -122,6 +130,7 @@ const JoinPoolForm = ({
                 .div(poolToInputRatio)
                 .div(ZTG)
                 .toFixed(3),
+              { shouldValidate: true },
             );
           }
         }
@@ -148,11 +157,13 @@ const JoinPoolForm = ({
   };
 
   return (
-    <form className="flex flex-col gap-y-3" onSubmit={handleSubmit(onSubmit)}>
+    <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
       {pool?.weights.map((asset, index) => {
         const id = assetObjStringToId(asset.assetId);
         const assetName =
           market?.categories[index]?.name ?? pool.baseAsset.toUpperCase();
+        const userAssetBalance =
+          poolBalances?.[id]?.user.div(ZTG).toNumber() ?? 0;
 
         return (
           <div
@@ -167,16 +178,37 @@ const JoinPoolForm = ({
               key={index}
               type="number"
               step="any"
-              {...register(id.toString(), { min: 0 })}
+              {...register(id.toString(), {
+                value: 0,
+                required: {
+                  value: true,
+                  message: "Value is required",
+                },
+                validate: (value) => {
+                  if (value > userAssetBalance) {
+                    return `Insufficient balance. Current asset balance is ${userAssetBalance.toFixed(
+                      3,
+                    )}`;
+                  } else if (value <= 0) {
+                    return "Value cannot be zero or less";
+                  }
+                },
+              })}
             />
-            <div className="text-red-500 text-ztg-12-120">
-              {formState.errors[id.toString()]?.type}
+            <div className="text-red-500 text-ztg-12-120 mt-[4px]">
+              {formState.errors[id.toString()]?.message}
             </div>
           </div>
         );
       })}
-      <input type="range" {...register("baseAssetPercentage", { min: 0 })} />
-      <button type="submit">Submit</button>
+      <input
+        className="my-[20px]"
+        type="range"
+        {...register("baseAssetPercentage", { min: 0, value: "0" })}
+      />
+      <FormTransactionButton disabled={formState.isValid === false}>
+        Join Pool
+      </FormTransactionButton>
     </form>
   );
 };
