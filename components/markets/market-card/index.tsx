@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import ScalarPriceRange from "../ScalarPriceRange";
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { Users, BarChart2, Droplet } from "react-feather";
+import { formatNumberCompact } from "lib/util/format-compact";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 
@@ -156,11 +157,7 @@ const MarketCardDetails = ({
         <div className="flex items-center gap-2">
           <BarChart2 size={18} />
           <span>
-            {new Intl.NumberFormat("default", {
-              maximumSignificantDigits: 3,
-              notation: "compact",
-            }).format(Number(rows.volume))}{" "}
-            {rows.baseAsset}
+            {formatNumberCompact(rows.volume)} {rows.baseAsset}
           </span>
         </div>
         {/* <div className="flex items-center gap-2">
