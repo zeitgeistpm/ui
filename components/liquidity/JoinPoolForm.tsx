@@ -22,15 +22,8 @@ const JoinPoolForm = ({
   poolId: number;
   totalPoolShares: Decimal;
 }) => {
-  const {
-    register,
-    watch,
-    handleSubmit,
-    setValue,
-    getValues,
-    formState,
-    control,
-  } = useForm({ reValidateMode: "onChange", mode: "all" });
+  const { register, watch, handleSubmit, setValue, getValues, formState } =
+    useForm({ reValidateMode: "onChange", mode: "all" });
 
   const { data: pool } = usePool({ poolId });
   const [sdk, id] = useSdkv2();

@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
+import FormTransactionButton from "components/ui/FormTransactionButton";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
 import { useMarket } from "lib/hooks/queries/useMarket";
@@ -25,7 +26,18 @@ const ExitPoolForm = ({
   userPoolShares: Decimal;
 }) => {
   const { config } = useStore();
-  const { register, watch, handleSubmit, setValue, getValues } = useForm();
+  const {
+    register,
+    watch,
+    handleSubmit,
+    setValue,
+    getValues,
+
+    formState,
+  } = useForm({
+    reValidateMode: "onChange",
+    mode: "all",
+  });
   const { data: pool } = usePool({ poolId });
   const [sdk, id] = useSdkv2();
   const notificationStore = useNotificationStore();
@@ -95,6 +107,7 @@ const ExitPoolForm = ({
               .mul(percentage / 100)
               .div(ZTG)
               .toFixed(3, Decimal.ROUND_DOWN),
+            { shouldValidate: true },
           );
         }
       } else {
@@ -122,6 +135,7 @@ const ExitPoolForm = ({
                   .div(poolToInputRatio)
                   .div(ZTG)
                   .toFixed(3, Decimal.ROUND_DOWN),
+                { shouldValidate: true },
               );
             }
           }
@@ -144,15 +158,22 @@ const ExitPoolForm = ({
     return () => subscription.unsubscribe();
   }, [watch, poolBalances]);
 
-  const onSubmit: SubmitHandler<any> = (data) => {
+  const onSubmit: SubmitHandler<any> = () => {
     exitPool();
   };
   return (
-    <form className="flex flex-col gap-y-3" onSubmit={handleSubmit(onSubmit)}>
+    <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
       {pool?.weights.map((asset, index) => {
         const id = assetObjStringToId(asset.assetId);
         const assetName =
           market?.categories[index]?.name ?? pool.baseAsset.toUpperCase();
+
+        if (!userPercentageOwnership || userPercentageOwnership.isNaN())
+          return null;
+        const poolBalance = poolBalances?.[id]?.pool.div(ZTG) ?? new Decimal(0);
+        const userBalanceInPool = poolBalance
+          .mul(userPercentageOwnership)
+          .toNumber();
 
         return (
           <div
@@ -167,13 +188,37 @@ const ExitPoolForm = ({
               key={index}
               type="number"
               step="any"
-              {...register(id.toString(), { min: 0 })}
+              {...register(id.toString(), {
+                value: 0,
+                required: {
+                  value: true,
+                  message: "Value is required",
+                },
+                validate: (value) => {
+                  if (value > userBalanceInPool) {
+                    return `Insufficient pool shares. Max amount to withdraw is ${userBalanceInPool.toFixed(
+                      3,
+                    )}`;
+                  } else if (value <= 0) {
+                    return "Value cannot be zero or less";
+                  }
+                },
+              })}
             />
+            <div className="text-red-500 text-ztg-12-120 mt-[4px]">
+              {formState.errors[id.toString()]?.message}
+            </div>
           </div>
         );
       })}
-      <input type="range" {...register("poolSharesPercentage", { min: 0 })} />
-      <button type="submit">Submit</button>
+      <input
+        className="my-[20px]"
+        type="range"
+        {...register("poolSharesPercentage", { min: 0, value: "0" })}
+      />
+      <FormTransactionButton disabled={formState.isValid === false}>
+        Exit Pool
+      </FormTransactionButton>
     </form>
   );
 };
