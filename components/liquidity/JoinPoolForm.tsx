@@ -159,7 +159,7 @@ const JoinPoolForm = ({
             key={index}
             className="w-full h-[56px] relative font-medium text-ztg-18-150"
           >
-            <div className="absolute h-full left-[15px] top-[14px]">
+            <div className="absolute h-full left-[15px] top-[14px] truncate w-[40%]">
               {assetName}
             </div>
             <input
