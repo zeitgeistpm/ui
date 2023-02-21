@@ -184,7 +184,13 @@ const ExitPoolForm = ({
               {assetName}
             </div>
             <input
-              className="bg-anti-flash-white text-right rounded-[5px] h-full px-[15px] w-full"
+              className={`bg-anti-flash-white text-right rounded-[5px] h-full px-[15px] w-full
+              ${
+                formState.errors[id.toString()]?.message
+                  ? "border-2 border-vermilion"
+                  : ""
+              }
+              `}
               key={index}
               type="number"
               step="any"

@@ -10,7 +10,7 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useEffect, useState } from "react";
-import { SubmitHandler, useForm, useFormState } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
 
 const JoinPoolForm = ({
@@ -32,7 +32,7 @@ const JoinPoolForm = ({
   const { data: market } = useMarket({ poolId });
   const queryClient = useQueryClient();
 
-  const { send: joinPool, isLoading: isUpdating } = useExtrinsic(
+  const { send: joinPool, isLoading: isLoading } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && pool) {
         const formValue = getValues();
@@ -167,7 +167,13 @@ const JoinPoolForm = ({
               {assetName}
             </div>
             <input
-              className="bg-anti-flash-white text-right rounded-[5px] h-full px-[15px] w-full"
+              className={`bg-anti-flash-white text-right rounded-[5px] h-full px-[15px] w-full
+                            ${
+                              formState.errors[id.toString()]?.message
+                                ? "border-2 border-vermilion"
+                                : ""
+                            }
+              `}
               key={index}
               type="number"
               step="any"
@@ -188,7 +194,7 @@ const JoinPoolForm = ({
                 },
               })}
             />
-            <div className="text-red-500 text-ztg-12-120 mt-[4px]">
+            <div className="text-vermilion text-ztg-12-120 mt-[4px]">
               {formState.errors[id.toString()]?.message}
             </div>
           </div>
@@ -199,7 +205,9 @@ const JoinPoolForm = ({
         type="range"
         {...register("baseAssetPercentage", { min: 0, value: "0" })}
       />
-      <FormTransactionButton disabled={formState.isValid === false}>
+      <FormTransactionButton
+        disabled={formState.isValid === false || isLoading}
+      >
         Join Pool
       </FormTransactionButton>
     </form>
