@@ -42,6 +42,8 @@ import { Tab } from "@headlessui/react";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import Link from "next/link";
 import { formatCompact } from "lib/util/format-compact";
+import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -269,7 +271,7 @@ const Market: NextPage<{
     : Number(indexedMarket.period.start);
   const ends = Number(indexedMarket.period.end);
   const volume = indexedMarket?.pool?.volume
-    ? Number(indexedMarket?.pool?.volume) / 10 ** 10
+    ? new Decimal(indexedMarket?.pool?.volume).div(ZTG).toNumber()
     : 0;
   const subsidy = marketSdkv2?.pool?.poolId == null ? 0 : pool?.liquidity;
 
@@ -300,7 +302,7 @@ const Market: NextPage<{
             Market rejected: {marketSdkv2.rejectReason}
           </div>
         )}
-        <div className="py-ztg-20 mb-10 h-32">
+        <div className="flex justify-center py-ztg-50 mb-10 h-32">
           {marketStore && marketStage ? (
             <MarketTimer stage={marketStage} />
           ) : (

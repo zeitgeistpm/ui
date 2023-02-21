@@ -13,9 +13,11 @@ import { useEffect, useState } from "react";
 import { from } from "rxjs";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarket24hrPriceChanges } from "lib/hooks/queries/useMarket24hrPriceChanges";
+import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
+import moment from "moment";
 
 const columns: TableColumn[] = [
-  { header: "Outcome", accessor: "outcome", type: "paragraph" },
+  { header: "Outcome", accessor: "outcome", type: "text" },
   { header: "Implied %", accessor: "pre", type: "percentage" },
   { header: "Price", accessor: "totalValue", type: "currency" },
   {
@@ -48,6 +50,8 @@ const MarketAssetDetails = observer(
     const { data: market } = useMarket({ marketId });
     const { data: spotPrices } = useMarketSpotPrices(marketId);
     const { data: priceChanges } = useMarket24hrPriceChanges(marketId);
+
+    const { data: disputes } = useMarketDisputes(marketId);
 
     const poolAlreadyDeployed = market?.pool?.poolId != null;
 
@@ -165,6 +169,21 @@ const MarketAssetDetails = observer(
       return outcome ? [outcome] : undefined;
     };
 
+    const getReportedScalarOutcome = () => {
+      const lastDispute = disputes?.[disputes.length - 1];
+      const reportVal = new Decimal(
+        lastDispute?.outcome.asScalar.toString() ??
+          market.report?.outcome.scalar,
+      )
+        .div(ZTG)
+        .toString();
+      if (market.scalarType === "date") {
+        return moment(Number(reportVal)).format("YYYY-MM-DD HH:mm");
+      } else {
+        return reportVal;
+      }
+    };
+
     const getWinningCategoricalOutcome = () => {
       const reportedOutcome = marketStore.resolvedCategoricalOutcome;
 
@@ -211,14 +230,8 @@ const MarketAssetDetails = observer(
                 loadingNumber={1}
               />
             ) : (
-              <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-                {new Decimal(
-                  //@ts-ignore
-                  marketStore.lastDispute?.outcome.scalar ??
-                    marketStore.reportedScalarOutcome,
-                )
-                  .div(ZTG)
-                  .toString()}
+              <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10 mb-[10px]">
+                {getReportedScalarOutcome()}
               </div>
             )}
           </>
@@ -233,14 +246,8 @@ const MarketAssetDetails = observer(
                 loadingNumber={1}
               />
             ) : (
-              <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10">
-                {new Decimal(
-                  //@ts-ignore
-                  marketStore.lastDispute?.outcome.scalar ??
-                    marketStore.reportedScalarOutcome,
-                )
-                  .div(ZTG)
-                  .toString()}
+              <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10 mb-[10px]">
+                {getReportedScalarOutcome()}
               </div>
             )}
           </>

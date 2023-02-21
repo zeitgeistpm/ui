@@ -9,7 +9,11 @@ import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
 
 const marketsQuery = gql`
   query Market {
-    markets(orderBy: id_DESC, limit: 8, where: { pool_isNull: false }) {
+    markets(
+      orderBy: id_DESC
+      limit: 8
+      where: { pool_isNull: false, status_in: [Active, Proposed] }
+    ) {
       marketId
       outcomeAssets
       question
@@ -65,7 +69,7 @@ const getNewestMarkets = async (
       pool: { baseAsset: string; volume: string; poolId: number };
       tags: [];
       status: string;
-      scalarType: ScalarRangeType | null;
+      scalarType: ScalarRangeType;
       period: { end: string };
     }[];
   }>(marketsQuery);
@@ -107,6 +111,7 @@ const getNewestMarkets = async (
         volume: new Decimal(market.pool.volume).div(ZTG).toNumber(),
         baseAsset: market.pool.baseAsset,
         outcomes: marketCategories,
+        pool: market.pool,
         marketType: market.marketType,
         scalarType: market.scalarType,
         tags: market.tags,

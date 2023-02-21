@@ -1,4 +1,4 @@
-import { Context, IndexedMarket } from "@zeitgeistpm/sdk-next";
+import { Context, IndexedMarket, ScalarRangeType } from "@zeitgeistpm/sdk-next";
 import React, { useEffect, useState } from "react";
 import Decimal from "decimal.js";
 import { useInView } from "react-intersection-observer";
@@ -160,7 +160,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       <div className={`grid grid-cols-3 gap-[30px] ${gridColsClass}`}>
         {markets?.map((market) => {
           const volume = market.pool?.volume ?? 0;
-
+          const scalarType = market.scalarType as ScalarRangeType;
           return (
             <MarketCard
               marketId={market.marketId}
@@ -171,7 +171,8 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
               prediction={market.prediction}
               endDate={market.period.end}
               marketType={market.marketType}
-              scalarType={market.scalarType}
+              scalarType={scalarType}
+              pool={market.pool}
               status={market.status}
               baseAsset={market.pool?.baseAsset}
               volume={new Decimal(volume).div(ZTG).toNumber()}

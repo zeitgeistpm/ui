@@ -33,19 +33,26 @@ const ScalarPriceRange = observer(
     const showShortAndLongPrices = Math.abs(1 - shortPrice - longPrice) > 0.03;
     const inferedType: ScalarRangeType = scalarType ?? "number";
 
-    const dateFormat = "d/MM/D/YY, h:mm a";
+    const dateFormat = "MM.DD.YYYY";
 
     const lower = useMemo(
       () =>
         inferedType === "number"
-          ? lowerBound
+          ? new Intl.NumberFormat("default", {
+              maximumSignificantDigits: 3,
+              notation: "compact",
+            }).format(Number(lowerBound))
           : moment(lowerBound).format(dateFormat),
       [lowerBound],
     );
+
     const upper = useMemo(
       () =>
         inferedType === "number"
-          ? upperBound
+          ? new Intl.NumberFormat("default", {
+              maximumSignificantDigits: 3,
+              notation: "compact",
+            }).format(Number(upperBound))
           : moment(upperBound).format(dateFormat),
       [upperBound],
     );
@@ -56,53 +63,61 @@ const ScalarPriceRange = observer(
         lowerBound;
       const decimals = pos > 10 ? 0 : 3;
       return inferedType === "number"
-        ? pos.toFixed(decimals)
+        ? new Intl.NumberFormat("default", {
+            maximumSignificantDigits: 3,
+            notation: "compact",
+          }).format(Number(pos))
         : moment(pos).format(dateFormat);
     }, [upperBound, lowerBound, shortPrice, longPrice]);
 
     return (
       <div ref={ref}>
-        <div className="relative top-ztg-6 ">
-          <div className="flex justify-between font-mono">
+        <div className="relative top-1.5 ">
+          <div className="flex justify-between">
             <div className="flex flex-col justify-start">
-              <div className="mb-ztg-8">{lower}</div>
-              <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full mt-auto"></div>
+              <span className="mb-2.5 text-sm text-blue">{lower}</span>
             </div>
             <div className="flex flex-col justify-end items-end">
-              <div className="mb-ztg-8">{upper}</div>
-              <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full"></div>
+              <span className="mb-2.5 text-sm text-red">{upper}</span>
             </div>
           </div>
           {showShortAndLongPrices && (
             <motion.div
               layout
-              className="bg-vermilion h-ztg-6 w-ztg-6 rounded-full absolute bottom-ztg-0"
+              className="bg-vermilion h-1.5 w-1.5 rounded-full absolute bottom-ztg-0"
               style={{ left: `${shortPosition}px` }}
             ></motion.div>
           )}
           <div
+            style={{
+              width: `${isNaN(averagePosition) ? 0 : averagePosition}px`,
+            }}
+            className="bg-blue h-1.5 absolute left-0 bottom-0 rounded-l"
+          ></div>
+          <div
             className="absolute bottom-ztg-0"
             style={{
-              left: `${averagePosition}px`,
+              left: `${isNaN(averagePosition) ? 0 : averagePosition}px`,
               transform: "translateX(calc(-50% + 2px))",
             }}
           >
-            <div className="flex flex-col items-center font-mono">
-              <div className="mb-ztg-8">{position}</div>
-              <div className="bg-sky-500 h-ztg-6 w-ztg-6 rounded-full"></div>
+            <div className="flex flex-col items-center">
+              <span className="mb-2.5 px-1 bg-white rounded text-sm">
+                {position}
+              </span>
             </div>
           </div>
 
           {showShortAndLongPrices && (
             <motion.div
               layout
-              className="bg-sheen-green h-ztg-6 w-ztg-6 rounded-full absolute bottom-ztg-0"
+              className="bg-sheen-green h-1.5 w-1.5 rounded-full absolute bottom-ztg-0"
               style={{ left: `${longPosition}px` }}
             ></motion.div>
           )}
         </div>
-        <div className="h-ztg-5 flex items-center">
-          <div className="h-ztg-2 w-full bg-sky-600"></div>
+        <div className="h-1.5 flex items-center">
+          <div className="h-1.5 w-full bg-red rounded"></div>
         </div>
       </div>
     );

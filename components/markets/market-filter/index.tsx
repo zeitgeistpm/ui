@@ -152,7 +152,7 @@ const MarketFilterOptions = ({
   onWithLiquidityOnlyChange,
 }: MarketFilterOptionsProps) => {
   return (
-    <div className="w-full flex justify-end items-center gap-ztg-5">
+    <div className="flex items-center gap-ztg-5 mb-[10px]">
       <label className="text-sky-600 font-medium">
         Liquidity only
         <input
@@ -183,7 +183,16 @@ const MarketFilterOptions = ({
 };
 
 const MarketFilterContainer = observer(({ children }) => {
-  return <div className="w-full flex flex-col mb-[30px]">{children}</div>;
+  return (
+    <>
+      <div className="font-bold text-[28px] text-center mb-[15px]">
+        All Markets
+      </div>
+      <div className="w-full flex flex-col items-center justify-center mb-[30px]">
+        {children}
+      </div>
+    </>
+  );
 });
 
 const getFiltersFromQueryState = (

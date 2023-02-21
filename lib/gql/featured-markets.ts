@@ -87,7 +87,7 @@ const getFeaturedMarkets = async (
           question: string;
           creation: MarketCreation;
           marketType: { [key: string]: string };
-          scalarType: ScalarRangeType | null;
+          scalarType: ScalarRangeType;
           categories: { color: string; name: string; ticker: string }[];
           outcomeAssets: string[];
           tags: [];
@@ -106,6 +106,7 @@ const getFeaturedMarkets = async (
           marketId: market.marketId,
           question: market.question,
           creation: market.creation,
+          pool: market.pool,
           img: market.img,
           prediction: { name: "None", price: 0 },
           marketType: market.marketType,
@@ -154,6 +155,7 @@ const getFeaturedMarkets = async (
         volume: new Decimal(pool.volume).div(ZTG).toNumber(),
         baseAsset: pool.baseAsset,
         outcomes: marketCategories,
+        pool: market.pool,
         marketType: market.marketType,
         scalarType: market.scalarType,
         tags: market.tags,
