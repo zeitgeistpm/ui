@@ -51,8 +51,8 @@ const BuySellButtons = observer(
       <div className="card-exp-col-6 flex items-center justify-evenly gap-x-[6px]">
         <TradeButton
           active={
-            trade?.data.action === "buy" &&
-            compareJSON(trade?.data.assetId, assetId)
+            trade?.data?.action === "buy" &&
+            compareJSON(trade?.data?.assetId, assetId)
           }
           type="buy"
           disabled={isDisabled}
@@ -62,8 +62,8 @@ const BuySellButtons = observer(
         </TradeButton>
         <TradeButton
           active={
-            trade?.data.action === "sell" &&
-            compareJSON(trade?.data.assetId, assetId)
+            trade?.data?.action === "sell" &&
+            compareJSON(trade?.data?.assetId, assetId)
           }
           disabled={isDisabled}
           type="sell"
