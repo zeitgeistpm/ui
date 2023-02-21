@@ -169,7 +169,9 @@ export const formatNumberLocalized = (
   num: number,
   locale: string = "en-US",
 ) => {
-  return new Intl.NumberFormat(locale).format(num);
+  return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(
+    num,
+  );
 };
 
 export const paramsForBlocksArray = (

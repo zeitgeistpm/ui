@@ -17,7 +17,7 @@ export type MarketPrices = Map<number, Decimal>;
 export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
   const [sdk, id] = useSdkv2();
 
-  const { data: market } = useMarket(marketId);
+  const { data: market } = useMarket({ marketId });
   const pool = market?.pool;
   const { data: balances } = useAccountPoolAssetBalances(
     pool?.accountId,
@@ -27,7 +27,7 @@ export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
   const { data: basePoolBalance } = useZtgBalance(pool?.accountId, blockNumber);
 
   const query = useQuery(
-    [id, marketSpotPricesKey, pool, blockNumber],
+    [id, marketSpotPricesKey, pool, blockNumber, balances, basePoolBalance],
     async () => {
       if (isRpcSdk(sdk) && !isNA(basePoolBalance)) {
         const spotPrices: MarketPrices =

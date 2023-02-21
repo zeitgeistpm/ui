@@ -1,6 +1,6 @@
 import {
   AssetId,
-  fromCompositeIndexerAssetId,
+  parseAssetId,
   getScalarBounds,
   IndexerContext,
   isNA,
@@ -8,6 +8,7 @@ import {
   Market,
   MarketId,
 } from "@zeitgeistpm/sdk-next";
+import * as AE from "@zeitgeistpm/utility/dist/aeither";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import {
@@ -20,9 +21,24 @@ import { useStore } from "lib/stores/Store";
 import { calcScalarWinnings } from "lib/util/calc-scalar-winnings";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
-const RedeemButton = observer(
+export type RedeemButtonProps = { market: Market<IndexerContext> } & (
+  | { assetId: AssetId }
+  | { value: Decimal }
+);
+
+export const RedeemButton = (props: RedeemButtonProps) => {
+  if ("assetId" in props) {
+    return <RedeemButtonByAssetId {...props} />;
+  } else {
+    return <RedeemButtonByValue {...props} />;
+  }
+};
+
+export default RedeemButton;
+
+export const RedeemButtonByAssetId = observer(
   ({
     market,
     assetId,
@@ -30,11 +46,9 @@ const RedeemButton = observer(
     market: Market<IndexerContext>;
     assetId: AssetId;
   }) => {
-    const [sdk] = useSdkv2();
     const store = useStore();
     const { wallets } = store;
     const signer = wallets?.getActiveSigner();
-    const notificationStore = useNotificationStore();
 
     const scalarBounds = getScalarBounds(market);
 
@@ -53,14 +67,12 @@ const RedeemButton = observer(
 
     const assetBalances = useAccountAssetBalances(balanceQueries);
 
-    const ztgToReceive = useMemo(() => {
+    const value = useMemo(() => {
       if (market.marketType.categorical) {
         const resolvedAssetIdString =
           market.outcomeAssets[Number(market.resolvedOutcome)];
 
-        const resolvedAssetId = fromCompositeIndexerAssetId(
-          resolvedAssetIdString,
-        ).unwrap();
+        const resolvedAssetId = parseAssetId(resolvedAssetIdString).unwrap();
 
         const balance = assetBalances?.get(signer?.address, resolvedAssetId)
           ?.data.balance;
@@ -99,19 +111,38 @@ const RedeemButton = observer(
       }
     }, [market, assetId, ...assetBalances.query.map((q) => q.data)]);
 
+    return <RedeemButtonByValue market={market} value={value} />;
+  },
+);
+
+export const RedeemButtonByValue = observer(
+  ({ market, value }: { market: Market<IndexerContext>; value: Decimal }) => {
+    const [sdk] = useSdkv2();
+
+    const store = useStore();
+    const { wallets } = store;
+    const signer = wallets?.getActiveSigner();
+    const notificationStore = useNotificationStore();
+
+    const [isRedeeming, setIsRedeeming] = useState(false);
+    const [isRedeemed, setIsRedeemed] = useState(false);
+
     const handleClick = async () => {
       if (!isRpcSdk(sdk)) return;
+
+      setIsRedeeming(true);
 
       const callback = extrinsicCallback({
         notificationStore,
         successCallback: async () => {
           notificationStore.pushNotification(
-            `Redeemed ${ztgToReceive.toFixed(2)}${store.config.tokenSymbol}`,
+            `Redeemed ${value.toFixed(2)} ZTG`,
             {
               type: "Success",
             },
           );
-          assetBalances?.query.forEach((q) => q.refetch());
+          setIsRedeeming(false);
+          setIsRedeemed(true);
         },
         failCallback: ({ index, error }) => {
           notificationStore.pushNotification(
@@ -120,32 +151,33 @@ const RedeemButton = observer(
               type: "Error",
             },
           );
+          setIsRedeeming(false);
         },
       });
 
-      const tx = sdk.context.api.tx.predictionMarkets.redeemShares(
-        market.marketId,
-      );
+      const tx = sdk.api.tx.predictionMarkets.redeemShares(market.marketId);
 
-      await signAndSend(tx, signer, callback);
+      await AE.from(() => signAndSend(tx, signer, callback));
+
+      setIsRedeeming(false);
     };
+
     return (
-      <div className="w-full flex items-center justify-center">
-        <button
-          onClick={handleClick}
-          disabled={
-            ztgToReceive == null ||
-            ztgToReceive.equals(0) ||
-            wallets.activeAccount == null
-          }
-          className="rounded-full h-ztg-20  text-ztg-10-150 focus:outline-none px-ztg-15 
-              py-ztg-2 ml-auto bg-ztg-blue text-white disabled:opacity-20 disabled:cursor-default"
-        >
-          Redeem Tokens
-        </button>
-      </div>
+      <>
+        {isRedeemed ? (
+          <span className="text-green-500 font-bold">Redeemed Tokens!</span>
+        ) : (
+          <button
+            onClick={handleClick}
+            className={`text-mariner font-semibold text-ztg-14-120 ${
+              isRedeeming && "animate-pulse"
+            }`}
+            disabled={isRedeeming}
+          >
+            Redeem Tokens
+          </button>
+        )}
+      </>
     );
   },
 );
-
-export default RedeemButton;

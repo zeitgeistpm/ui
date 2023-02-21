@@ -235,6 +235,21 @@ module.exports = {
         mystic: "#E5EAF1",
         "pastel-blue": "#B5C1CA",
         "fog-of-war": "#0F1A2D",
+        mariner: "#3056D3",
+        blue: {
+          light: "#E1EFFE",
+          DEFAULT: "#1C64F2",
+          dark: "#1E429F",
+        },
+        red: {
+          light: "#FEE1E1",
+          DEFAULT: "#E90303",
+        },
+        green: {
+          lighter: "#EAF8DF",
+          light: "#DEF7EC",
+          DEFAULT: "#03543F",
+        },
       },
       inset: {
         "42%": "42%",
@@ -363,5 +378,8 @@ module.exports = {
       borderWidth: ["first"],
     },
   },
-  plugins: [require("@tailwindcss/line-clamp")],
+  plugins: [
+    require("@tailwindcss/line-clamp"),
+    require("@headlessui/tailwindcss"),
+  ],
 };

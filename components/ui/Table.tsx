@@ -14,6 +14,7 @@ import { ChartData } from "./TimeSeriesChart";
 import Avatar from "./Avatar";
 import { range } from "lodash";
 import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
+import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 
 interface TableProps {
   data: TableData[];
@@ -120,20 +121,20 @@ const Cell = observer(
     value: string | number | CurrencyData;
     onClick?: () => void;
   }) => {
-    const { ztgInfo } = useStore();
+    const { data: ztgInfo } = useZtgInfo();
 
-    const base = `dark:text-white px-ztg-10 h-ztg-72 ${
+    const base = `dark:text-white px-ztg-15 h-ztg-72 ${
       onClick ? "cursor-pointer" : ""
     }`;
     const style = { height: `${rowHeight}px` };
     if (value == null) {
       return (
         <td
-          className={`font-semibold text-ztg-12-150 text-center ${base}`}
+          className={`font-semibold text-ztg-12-150 ${base}`}
           onClick={onClick}
           style={style}
         >
-          <div className="flex justify-end">
+          <div className="">
             <Skeleton className="!transform-none !w-[25px] !h-[25px]" />
           </div>
         </td>
@@ -143,7 +144,7 @@ const Cell = observer(
       case "text":
         return (
           <td
-            className={`font-semibold text-ztg-14-150 text-center ${base}`}
+            className={`text-ztg-14-150 ${base}`}
             data-test="outcomeText"
             onClick={onClick}
             style={style}
@@ -154,7 +155,7 @@ const Cell = observer(
       case "number":
         return (
           <td
-            className={`font-mono font-semibold text-ztg-12-150 text-right ${base}`}
+            className={`font-semibold text-ztg-12-150 ${base}`}
             onClick={onClick}
             style={style}
           >
@@ -164,7 +165,7 @@ const Cell = observer(
       case "change":
         return (
           <td className={`${base}`} onClick={onClick} style={style}>
-            <div className="flex justify-end">
+            <div className="">
               <PercentageChange change={value.toString()} />
             </div>
           </td>
@@ -179,7 +180,7 @@ const Cell = observer(
         if (Array.isArray(value)) {
           return (
             <td className={`${base}`} onClick={onClick} style={style}>
-              <div className="flex justify-end items-center h-full">
+              <div className="flex-end items-center h-full">
                 <TableChart data={value} />
               </div>
             </td>
@@ -198,12 +199,8 @@ const Cell = observer(
       case "currency":
         if (isCurrencyData(value)) {
           return (
-            <td
-              className={`font-mono text-right ${base} `}
-              onClick={onClick}
-              style={style}
-            >
-              <div className="text-ztg-14-150 font-mediun">
+            <td className={`${base} `} onClick={onClick} style={style}>
+              <div className="text-ztg-14-150 font-mediun mb-[2px]">
                 {formatNumberLocalized(value.value)}
               </div>
               <div className="text-ztg-12-150 font-light text-sky-600">
@@ -220,7 +217,7 @@ const Cell = observer(
           <td className={` ${base}`} onClick={onClick} style={style}>
             <div className="flex items-center">
               <Avatar address={typeof value === "string" ? value : ""} />
-              <div className="font-mono font-semibold text-ztg-12-150 ml-ztg-10">
+              <div className="font-semibold text-ztg-12-150 ml-ztg-10">
                 {typeof value === "string" ? value : ""}
               </div>
             </div>
@@ -265,7 +262,7 @@ const Cell = observer(
       case "percentage":
         return (
           <td
-            className={`font-mono text-ztg-14-150 text-right font-semibold ${base}`}
+            className={`text-ztg-14-150 ${base}`}
             onClick={onClick}
             style={style}
           >
@@ -276,12 +273,12 @@ const Cell = observer(
         if (isAmountInput(value)) {
           return (
             <td
-              className={`font-mono text-ztg-14-150 text-right font-semibold ${base}`}
+              className={`font-mono text-ztg-14-150 font-semibold ${base}`}
               onClick={onClick}
               style={style}
             >
               <AmountInput
-                className="h-ztg-40 w-full rounded-ztg-5 bg-sky-200 text-right !pr-ztg-8 dark:bg-sky-800"
+                className="h-ztg-40 w-full rounded-ztg-5 bg-sky-200 !pr-ztg-8 dark:bg-sky-800"
                 value={value.value}
                 onChange={value.onChange}
                 min={value.min}
@@ -337,38 +334,14 @@ const Table = observer(
     }, [loadMoreRef, loadMoreInView, loadMoreThresholdIndex, data]);
 
     const getHeaderClass = (column: TableColumn) => {
-      const base = "px-ztg-15 text-sky-600 font-semibold text-ztg-12-150";
+      const base =
+        "px-ztg-15 text-sky-600 font-semibold text-ztg-12-150 text-left";
 
       if (column.alignment) {
         return `${column.alignment} ${base}`;
       }
 
-      switch (column.type) {
-        case "text":
-          return `text-center ${base}`;
-        case "paragraph":
-          return `text-left ${base}`;
-        case "currency":
-          return `text-right ${base}`;
-        case "percentage":
-          return `text-right ${base}`;
-        case "token":
-          return `text-left ${base}`;
-        case "address":
-          return `text-left ${base}`;
-        case "market":
-          return `text-left ${base}`;
-        case "number":
-          return `text-right ${base}`;
-        case "change":
-          return `text-right ${base}`;
-        case "graph":
-          return `text-right ${base}`;
-        case "amountInput":
-          return `text-right ${base}`;
-        default:
-          return base;
-      }
+      return base;
     };
 
     const handleRowClick = (row) => {
@@ -445,7 +418,11 @@ const Table = observer(
                     {columns.map((column, index) => (
                       <th
                         key={index}
-                        className={getHeaderClass(column)}
+                        className={`${getHeaderClass(column)} ${
+                          index == 0 ? "rounded-tl-md" : ""
+                        } ${
+                          index == columns.length - 1 ? "rounded-tr-md" : ""
+                        }`}
                         style={column.width ? { width: column.width } : {}}
                       >
                         <div

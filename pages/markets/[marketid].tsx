@@ -1,20 +1,23 @@
-import { Skeleton } from "@material-ui/lab";
 import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { GraphQLClient } from "graphql-request";
 
 import MarketChart from "components/chart/marketChart";
 
 import LiquidityPill from "components/markets/LiquidityPill";
+
+import { FC } from "react";
+import PoolTable from "components/liquidity/PoolTable";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import {
   MarketTimer,
   MarketTimerSkeleton,
 } from "components/markets/MarketTimer";
+import { Skeleton } from "@material-ui/lab";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
+import MarketMeta from "components/meta/MarketMeta";
 import MarketImage from "components/ui/MarketImage";
-import Pill from "components/ui/Pill";
 import TimeSeriesChart, {
   ChartData,
   ChartSeries,
@@ -38,11 +41,16 @@ import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
-import Head from "next/head";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
+import { Tab } from "@headlessui/react";
+import { hasDatePassed } from "lib/util/hasDatePassed";
+import Link from "next/link";
+import { formatNumberCompact } from "lib/util/format-compact";
+import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -120,17 +128,16 @@ const Market: NextPage<{
   const router = useRouter();
   const { marketid } = router.query;
   const [marketStore, setMarketStore] = useState<MarketStore>();
-  const [prizePool, setPrizePool] = useState<string>();
+  const [prizePool, setPrizePool] = useState<number>();
   const store = useStore();
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
   const marketImageUrl = useMarketImageUrl(indexedMarket.img);
 
-  const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket(
-    Number(marketid),
-  );
+  const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
+    marketId: Number(marketid),
+  });
   const { data: marketStage } = useMarketStage(marketSdkv2);
-
   const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
 
   if (indexedMarket == null) {
@@ -142,7 +149,7 @@ const Market: NextPage<{
     if (market != null) {
       setMarketStore(market);
       const prizePool = await market.getPrizePool();
-      setPrizePool(prizePool);
+      setPrizePool(Number(prizePool));
 
       if (market.poolExists) {
         const { poolId } = market.pool;
@@ -165,54 +172,144 @@ const Market: NextPage<{
   //required to fix title element warning
   const question = indexedMarket.question;
 
+  const HeaderStat: FC<{ label: string; border?: boolean }> = ({
+    label,
+    border = true,
+    children,
+  }) => {
+    return (
+      <div className={border ? "sm:border-r sm:border-ztg-blue pr-2" : ""}>
+        <span>{label}: </span>
+        <span className="font-medium">{children}</span>
+      </div>
+    );
+  };
+
+  const Tag: FC<{ className?: string }> = ({ className, children }) => {
+    return (
+      <span className={`px-2.5 py-1 rounded bg-gray-300 ${className}`}>
+        {children}
+      </span>
+    );
+  };
+
+  const MarketHeader: FC<{
+    question: string;
+    status: string;
+    tags: string[];
+    createdAt: number;
+    ends: number;
+    prizePool: number;
+    subsidy: number;
+    volume: number;
+    token: string;
+  }> = ({
+    question,
+    status,
+    tags,
+    createdAt,
+    ends,
+    prizePool,
+    subsidy,
+    volume,
+    token,
+  }) => {
+    return (
+      <header className="text-center">
+        <h1 className="font-bold text-4xl my-5">{question}</h1>
+        <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-2 mb-5">
+          <HeaderStat label="Created">
+            {new Intl.DateTimeFormat("default", {
+              dateStyle: "medium",
+            }).format(createdAt)}
+          </HeaderStat>
+          <HeaderStat label={hasDatePassed(ends) ? "Ended" : "Ends"}>
+            {new Intl.DateTimeFormat("default", {
+              dateStyle: "medium",
+            }).format(ends)}
+          </HeaderStat>
+          {token ? (
+            <HeaderStat label="Volume">
+              {formatNumberCompact(volume)}
+              &nbsp;
+              {token}
+            </HeaderStat>
+          ) : (
+            <Skeleton width="150px" height="24px" />
+          )}
+          {prizePool >= 0 && token ? (
+            <HeaderStat label="Prize Pool">
+              {formatNumberCompact(prizePool)}
+              &nbsp;
+              {token}
+            </HeaderStat>
+          ) : (
+            <Skeleton width="150px" height="24px" />
+          )}
+          {subsidy >= 0 && token ? (
+            <HeaderStat label="Subsidy" border={false}>
+              {formatNumberCompact(subsidy)}
+              &nbsp;
+              {token}
+            </HeaderStat>
+          ) : (
+            <Skeleton width="150px" height="24px" />
+          )}
+        </div>
+        <div className="flex flex-wrap justify-center gap-2.5">
+          <Tag className={`${status === "Active" && "!bg-green-lighter"}`}>
+            {status === "Active" && (
+              <span className="text-green">&#x2713; </span>
+            )}
+            {status}
+          </Tag>
+          {tags?.map((tag, index) => {
+            return <Tag key={index}>{tag}</Tag>;
+          })}
+        </div>
+      </header>
+    );
+  };
+
+  //data for MarketHeader
+  const token = store?.config?.tokenSymbol;
+  const createdAt = indexedMarket?.pool?.createdAt
+    ? new Date(indexedMarket.pool.createdAt).getTime()
+    : Number(indexedMarket.period.start);
+  const ends = Number(indexedMarket.period.end);
+  const volume = indexedMarket?.pool?.volume
+    ? new Decimal(indexedMarket?.pool?.volume).div(ZTG).toNumber()
+    : 0;
+  const subsidy = marketSdkv2?.pool?.poolId == null ? 0 : pool?.liquidity;
+
   return (
     <>
-      <Head>
-        <title>{question}</title>
-        <meta name="description" content={indexedMarket.description} />
-        <meta property="og:description" content={indexedMarket.question} />
-        {marketImageUrl && (
-          <meta property="og:image" content={marketImageUrl} />
-        )}
-      </Head>
+      <MarketMeta market={indexedMarket} />
       <div>
-        <div className="flex mb-ztg-33">
-          <MarketImage
-            image={indexedMarket.img}
-            alt={`Image depicting ${question}`}
-          />
-          <div className="sub-header ml-ztg-20">{indexedMarket?.question}</div>
-        </div>
-        <div
-          className="grid grid-flow-row-dense gap-4 w-full "
-          style={{
-            gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-          }}
-        >
-          <Pill
-            title="Ends"
-            value={new Intl.DateTimeFormat("en-US", {
-              dateStyle: "medium",
-            }).format(Number(indexedMarket.period.end))}
-          />
-          <Pill title="Status" value={indexedMarket.status} />
-          {prizePool ? (
-            <Pill
-              title="Prize Pool"
-              value={`${prizePool} ${store?.config.tokenSymbol}`}
-            />
-          ) : (
-            <></>
-          )}
-          {pool?.liquidity != null ? (
-            <LiquidityPill
-              liquidity={Number.isNaN(pool.liquidity) ? 0 : pool.liquidity}
-            />
-          ) : (
-            <></>
-          )}
-        </div>
-        <div className="py-ztg-20 mb-10 h-32">
+        <MarketImage
+          image={indexedMarket.img}
+          alt={`Image depicting ${question}`}
+          size="120px"
+          status={indexedMarket.status}
+          className="mx-auto"
+        />
+        <MarketHeader
+          question={question}
+          status={indexedMarket.status}
+          tags={indexedMarket.tags}
+          createdAt={createdAt}
+          ends={ends}
+          token={token}
+          prizePool={prizePool}
+          volume={volume}
+          subsidy={subsidy}
+        />
+        {marketSdkv2?.rejectReason && marketSdkv2.rejectReason.length > 0 && (
+          <div className="mt-[10px] text-ztg-14-150">
+            Market rejected: {marketSdkv2.rejectReason}
+          </div>
+        )}
+        <div className="flex justify-center py-ztg-50 mb-10 h-32">
           {marketStore && marketStage ? (
             <MarketTimer stage={marketStage} />
           ) : (
@@ -246,10 +343,39 @@ const Market: NextPage<{
             </div>
           </div>
         )}
-        <MarketAssetDetails
-          marketId={Number(marketid)}
-          marketStore={marketStore}
-        />
+        <Tab.Group>
+          <Tab.List className="flex center my-6">
+            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+              Predictions
+            </Tab>
+            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+              Subsidy
+            </Tab>
+          </Tab.List>
+
+          <Tab.Panels>
+            <Tab.Panel>
+              <MarketAssetDetails
+                marketId={Number(marketid)}
+                marketStore={marketStore}
+              />
+            </Tab.Panel>
+            <Tab.Panel>
+              {marketSdkv2?.pool && (
+                <div className="flex flex-col">
+                  <Link
+                    href={`/liquidity/${marketSdkv2.pool.poolId}`}
+                    className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 mb-[10px] "
+                  >
+                    View Pool
+                  </Link>
+                  <PoolTable poolId={marketSdkv2.pool.poolId} />
+                </div>
+              )}
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
+
         {marketStore?.type === "scalar" && spotPrices && (
           <div className="mt-ztg-20 mb-ztg-30">
             <ScalarPriceRange
@@ -261,12 +387,17 @@ const Market: NextPage<{
             />
           </div>
         )}
-        <div className="sub-header mt-ztg-40 mb-ztg-15">About Market</div>
-        {<QuillViewer value={indexedMarket.description} />}
+        {indexedMarket.description?.length > 0 && (
+          <>
+            <div className="sub-header mt-ztg-40 mb-ztg-15">About Market</div>
+            <QuillViewer value={indexedMarket.description} />
+          </>
+        )}
         <PoolDeployer
           marketStore={marketStore}
           onPoolDeployed={handlePoolDeployed}
         />
+        <div className="sub-header my-ztg-40 text-center">Market Cast</div>
         <MarketAddresses
           oracleAddress={indexedMarket.oracle}
           creatorAddress={indexedMarket.creator}

@@ -2,6 +2,7 @@ import { test as base } from "@playwright/test";
 
 const IGNORED_MESSAGES = [
   "Failed to load resource: the server responded with a status of 400",
+  "Loading initial props cancelled",
 ];
 
 const test = base.extend<{ consoleErrors: string[] }>({

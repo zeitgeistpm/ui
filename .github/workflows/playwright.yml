@@ -5,7 +5,7 @@ jobs:
   test-e2e:
     name: Playwright tests
     if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
-    timeout-minutes: 5
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

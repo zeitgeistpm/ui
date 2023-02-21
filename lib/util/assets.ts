@@ -1,8 +1,4 @@
-import {
-  fromCompositeIndexerAssetId,
-  getIndexOf,
-  ZTG,
-} from "@zeitgeistpm/sdk-next";
+import { parseAssetId, getIndexOf, ZTG } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 
 export const getCurrentPrediction = (
@@ -11,14 +7,16 @@ export const getCurrentPrediction = (
     marketType: { categorical?: string; scalar?: string[] };
     categories: { color: string; name: string; ticker: string }[];
   },
-): string => {
+): { name: string; price: number; percentage: number } => {
+  const totalPrice = assets.reduce((acc, asset) => acc + asset.price, 0);
+
   if (market.marketType.categorical) {
     let [highestPrice, highestPriceIndex] = [0, 0];
 
     assets.sort(
       (a, b) =>
-        getIndexOf(fromCompositeIndexerAssetId(a.assetId).unwrap()) -
-        getIndexOf(fromCompositeIndexerAssetId(b.assetId).unwrap()),
+        getIndexOf(parseAssetId(a.assetId).unwrap()) -
+        getIndexOf(parseAssetId(b.assetId).unwrap()),
     );
 
     assets.forEach((asset, index) => {
@@ -28,7 +26,13 @@ export const getCurrentPrediction = (
       }
     });
 
-    return market.categories[highestPriceIndex].name;
+    const percentage = Math.round((highestPrice / totalPrice) * 100);
+
+    return {
+      name: market.categories[highestPriceIndex].name,
+      price: highestPrice,
+      percentage,
+    };
   } else {
     const bounds: number[] = market.marketType.scalar.map((b) => Number(b));
 
@@ -41,6 +45,12 @@ export const getCurrentPrediction = (
     const averagePricePrediction =
       (longPricePrediction + shortPricePrediction) / 2;
 
-    return new Decimal(averagePricePrediction).div(ZTG).toString();
+    const percentage = Math.round((averagePricePrediction / totalPrice) * 100);
+
+    return {
+      name: new Decimal(averagePricePrediction).div(ZTG).toString(),
+      price: averagePricePrediction,
+      percentage,
+    };
   }
 };
