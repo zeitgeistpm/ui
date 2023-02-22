@@ -85,6 +85,7 @@ const WalletSelection = () => {
             alt={wallet.name}
             width={30}
             height={30}
+            quality={100}
           />
           <div className="font-medium text-ztg-18-150 ml-[15px]">
             {wallet.name}
