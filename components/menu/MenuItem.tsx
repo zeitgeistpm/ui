@@ -1,4 +1,4 @@
-import { motion, Variants } from "framer-motion";
+import { useState } from "react";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import Link from "next/link";
@@ -37,18 +37,40 @@ export const MenuItem: FC<MenuItemProps> = observer(
     open,
     onClick,
   }) => {
-    const store = useStore();
+    const [isHovered, setIsHovered] = useState(false);
 
     return (
       <WrapComponent href={href}>
         <div
           className={`flex bg-black rounded-full p-5 ${className}`}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           onClick={onClick}
+          style={{
+            width: isHovered ? "100%" : "68px",
+            border:
+              isHovered || active ? "solid 2px #FAB400" : "solid 2px #000",
+            transition: "all 250ms ease",
+          }}
         >
           <div className="center">
-            <IconComponent size={24} className="text-white" />
+            <IconComponent
+              size={24}
+              style={{ color: isHovered || active ? "#FAB400" : "#FFF" }}
+              className=""
+            />
           </div>
-          <div className="text-white pl-5">{textLabel}</div>
+          <div
+            className={`whitespace-nowrap	pl-5`}
+            style={{
+              visibility: isHovered ? "visible" : "hidden",
+              color: isHovered ? "#FAB400" : "#FFF",
+              opacity: isHovered ? 1 : 0,
+              transition: "all 250ms ease",
+            }}
+          >
+            {textLabel}
+          </div>
         </div>
       </WrapComponent>
     );
