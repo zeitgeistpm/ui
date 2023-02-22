@@ -44,6 +44,7 @@ const MobileTopBar: FC<{ navbar: boolean }> = observer(({ navbar }) => {
 });
 
 const TopBar = observer(() => {
+  const { blockNumber } = useStore();
   const [navbar, setNavbar] = useState(false);
 
   const changeNavBG = () => {
@@ -61,21 +62,27 @@ const TopBar = observer(() => {
 
   return (
     <div
-      className={`flex w-full py-ztg-18 bg-transparent fixed z-ztg-10`}
+      className={`flex w-full py-7 bg-transparent fixed z-ztg-10`}
       style={{
         backgroundColor: `${navbar ? "white" : "transparent"}`,
       }}
     >
-      <div className="hidden sm:flex justify-between items-center h-full min-w-full topbar container-fluid mx-4">
-        <Link
-          className="flex mx-ztg-30 mt-ztg-20 h-ztg-35 mb-ztg-36"
-          href="/"
-          role="button"
-        >
+      <div className="hidden sm:flex justify-between items-center min-w-full topbar container-fluid mx-4">
+        <Link className="flex items-center gap-4" href="/" role="button">
           <Logo />
+          <>
+            <div className="flex flex-col items-center">
+              <h1 className="font-bold font-kanit text-white text-xl">
+                Zeitgeist
+              </h1>
+              <span className="w-full text-start text-xs font-mono text-sky-600">
+                {blockNumber ? blockNumber.toHuman() : 0}
+              </span>
+            </div>
+          </>
         </Link>
         <MarketSearch />
-        <div className="flex h-full items-center">
+        <div className="flex items-center">
           <AccountButton />
         </div>
       </div>

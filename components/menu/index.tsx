@@ -32,7 +32,7 @@ const Menu: FC = observer(() => {
 
   return (
     <>
-      <div className="fixed left-4 top-0 flex flex-col gap-5 z-ztg-11 mt-[76px]">
+      <div className="fixed left-4 top-32 flex flex-col gap-5 z-ztg-11">
         {Object.keys(navigationStore.items)
           .filter((itemKey) => {
             // Skip court page for now...

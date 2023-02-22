@@ -59,7 +59,7 @@ const DefaultLayout: FC = observer(({ children }) => {
   return (
     <div
       onScrollCapture={onScrollCapture}
-      className="relative flex min-h-screen justify-evenly bg-white dark:bg-sky-1000 overflow-hidden"
+      className="relative flex min-h-screen justify-evenly overflow-hidden"
     >
       {/* loads optimized fonts for global access */}
       <style jsx global>
