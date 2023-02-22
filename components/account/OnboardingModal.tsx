@@ -76,7 +76,7 @@ const WalletSelection = () => {
   return (
     <>
       {wallets.map((wallet, index) => (
-        <div
+        <button
           key={index}
           className="flex items-center justify-center h-[56px] border border-pastel-blue rounded-ztg-10 text-center w-full"
         >
@@ -89,7 +89,7 @@ const WalletSelection = () => {
           <div className="font-medium text-ztg-18-150 ml-[15px]">
             {wallet.name}
           </div>
-        </div>
+        </button>
       ))}
     </>
   );
@@ -113,8 +113,9 @@ const ExchangeTypeSelection = () => {
   return (
     <>
       {exchangeTypes.map((exchangeType, index) => (
-        <div
+        <button
           key={index}
+          disabled={exchangeType.disabled}
           className={`flex items-center justify-center h-[56px] rounded-ztg-10 text-center w-full ${
             exchangeType.disabled === true
               ? "bg-gray-light-2"
@@ -124,7 +125,7 @@ const ExchangeTypeSelection = () => {
           <div className="font-medium text-ztg-18-150 ml-[15px]">
             {exchangeType.name}
           </div>
-        </div>
+        </button>
       ))}
     </>
   );
@@ -144,7 +145,8 @@ const OnBoardingModal = () => {
           height={120}
         />
       </div>
-      <ExchangeTypeSelection />
+      {/* <ExchangeTypeSelection /> */}
+      <WalletSelection />
       <Stepper steps={5} currentStep={1} />
     </div>
   );
