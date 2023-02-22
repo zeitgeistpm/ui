@@ -78,7 +78,7 @@ const WalletSelection = () => {
       {wallets.map((wallet, index) => (
         <div
           key={index}
-          className="flex items-center justify-center h-[56px] border-2 border-pastel-blue rounded-ztg-10 text-center w-full"
+          className="flex items-center justify-center h-[56px] border border-pastel-blue rounded-ztg-10 text-center w-full"
         >
           <Image
             src={`/icons/${wallet.image}`}
@@ -94,7 +94,41 @@ const WalletSelection = () => {
     </>
   );
 };
-const ExchangeSelection = () => {};
+const ExchangeTypeSelection = () => {
+  const exchangeTypes = [
+    {
+      name: "With Crypto or Fiat (CEX)",
+      disabled: false,
+    },
+    {
+      name: "Credit Card (Coming Soon)",
+      disabled: true,
+    },
+    {
+      name: "With Crypto (DEX) (Coming Soon)",
+      disabled: true,
+    },
+  ];
+
+  return (
+    <>
+      {exchangeTypes.map((exchangeType, index) => (
+        <div
+          key={index}
+          className={`flex items-center justify-center h-[56px] rounded-ztg-10 text-center w-full ${
+            exchangeType.disabled === true
+              ? "bg-gray-light-2"
+              : "border border-pastel-blue"
+          }`}
+        >
+          <div className="font-medium text-ztg-18-150 ml-[15px]">
+            {exchangeType.name}
+          </div>
+        </div>
+      ))}
+    </>
+  );
+};
 
 const OnBoardingModal = () => {
   return (
@@ -114,7 +148,7 @@ const OnBoardingModal = () => {
             }}
             sizes={size}
           /> */}
-      <WalletSelection />
+      <ExchangeTypeSelection />
       <Stepper steps={5} currentStep={1} />
     </div>
   );
