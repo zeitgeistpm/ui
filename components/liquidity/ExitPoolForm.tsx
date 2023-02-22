@@ -19,11 +19,13 @@ const ExitPoolForm = ({
   poolId,
   totalPoolShares,
   userPoolShares,
+  poolStatus,
 }: {
   poolBalances: PoolBalances;
   poolId: number;
   totalPoolShares: Decimal;
   userPoolShares: Decimal;
+  poolStatus: string;
 }) => {
   const { config } = useStore();
   const {
@@ -166,8 +168,9 @@ const ExitPoolForm = ({
 
         if (!userPercentageOwnership || userPercentageOwnership.isNaN())
           return null;
-        const poolBalance = poolBalances?.[id]?.pool.div(ZTG) ?? new Decimal(0);
-        const userBalanceInPool = poolBalance
+        const poolAssetBalance =
+          poolBalances?.[id]?.pool.div(ZTG) ?? new Decimal(0);
+        const userBalanceInPool = poolAssetBalance
           .mul(userPercentageOwnership)
           .toNumber();
 
@@ -196,13 +199,18 @@ const ExitPoolForm = ({
                   value: true,
                   message: "Value is required",
                 },
-                validate: (value) => {
+                validate: (value: number) => {
                   if (value > userBalanceInPool) {
                     return `Insufficient pool shares. Max amount to withdraw is ${userBalanceInPool.toFixed(
                       3,
                     )}`;
                   } else if (value <= 0) {
                     return "Value cannot be zero or less";
+                  } else if (
+                    poolStatus.toLowerCase() === "active" &&
+                    poolAssetBalance.minus(value).lessThanOrEqualTo(0.01)
+                  ) {
+                    return "Pool cannot be emptied completely whilst it's active";
                   }
                 },
               })}

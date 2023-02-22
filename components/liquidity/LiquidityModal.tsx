@@ -108,6 +108,7 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
       />
       <ExitPoolForm
         poolId={poolId}
+        poolStatus={pool?.poolStatus}
         poolBalances={allBalances}
         totalPoolShares={new Decimal(totalPoolIssuance?.toString() ?? 0)}
         userPoolShares={new Decimal(userPoolTokens?.toString() ?? 0)}
