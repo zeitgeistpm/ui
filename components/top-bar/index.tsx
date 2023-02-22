@@ -5,7 +5,9 @@ import AccountButton from "../account/AccountButton";
 import MarketSearch from "./MarketSearch";
 import Logo from "../icons/ZeitgeistIcon";
 import { Menu, X } from "react-feather";
+import Link from "next/link";
 import { useStore } from "lib/stores/Store";
+import { useRouter } from "next/router";
 
 const MobileTopBar: FC<{ navbar: boolean }> = observer(({ navbar }) => {
   const store = useStore();
@@ -58,14 +60,20 @@ const TopBar = observer(() => {
   });
 
   return (
-    //inline style is temporary until we make right drawer a modal
     <div
       className={`flex w-full py-ztg-18 bg-transparent fixed z-ztg-10`}
       style={{
         backgroundColor: `${navbar ? "white" : "transparent"}`,
       }}
     >
-      <div className="hidden sm:flex justify-between items-center h-full w-full topbar container-fluid mr-0">
+      <div className="hidden sm:flex justify-between items-center h-full min-w-full topbar container-fluid mx-4">
+        <Link
+          className="flex mx-ztg-30 mt-ztg-20 h-ztg-35 mb-ztg-36"
+          href="/"
+          role="button"
+        >
+          <Logo />
+        </Link>
         <MarketSearch />
         <div className="flex h-full items-center">
           <AccountButton />
