@@ -136,18 +136,14 @@ const OnBoardingModal = () => {
       className="flex flex-col gap-y-[20px] justify-center items-center bg-white border 
                 border-black h-[438px] w-full max-w-[526px] p-[30px] rounded-ztg-10"
     >
-      <div className="bg-ztg-blue rounded-full w-[120px] h-[120px]"></div>
-      {/* <Image
-            alt=
-            src={imageUrl}
-            fill
-            className="rounded-full"
-            style={{
-              objectFit: "cover",
-              objectPosition: "50% 50%",
-            }}
-            sizes={size}
-          /> */}
+      <div className="rounded-full w-[120px] h-[120px]">
+        <Image
+          alt="AI Logan?"
+          src={"/misc/face.png"}
+          width={120}
+          height={120}
+        />
+      </div>
       <ExchangeTypeSelection />
       <Stepper steps={5} currentStep={1} />
     </div>
