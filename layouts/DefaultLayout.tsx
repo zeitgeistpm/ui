@@ -8,7 +8,6 @@ import { useStore } from "lib/stores/Store";
 import TopBar from "components/top-bar";
 import Footer from "components/ui/Footer";
 import NotificationCenter from "components/ui/NotificationCenter";
-import LeftDrawer from "components/drawer/LeftDrawer";
 import Menu from "components/menu";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";

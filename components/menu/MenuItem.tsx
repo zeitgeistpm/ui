@@ -47,10 +47,10 @@ export const MenuItem: FC<MenuItemProps> = observer(
           onMouseLeave={() => setIsHovered(false)}
           onClick={onClick}
           style={{
-            width: isHovered ? "100%" : "68px",
+            maxWidth: isHovered ? "250px" : "68px",
             border:
               isHovered || active ? "solid 2px #FAB400" : "solid 2px #000",
-            transition: "all 250ms ease",
+            transition: "all 500ms ease",
           }}
         >
           <div className="center">
