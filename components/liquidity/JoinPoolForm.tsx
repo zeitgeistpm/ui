@@ -49,9 +49,7 @@ const JoinPoolForm = ({
 
         return sdk.api.tx.swaps.poolJoin(
           poolId,
-          poolSharesToReceive
-            // .mul((100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100)
-            .toFixed(0),
+          poolSharesToReceive.toFixed(0),
           maxAmountsIn,
         );
       }
