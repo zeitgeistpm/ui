@@ -45,6 +45,7 @@ import LiquidityModal from "components/liquidity/LiquidityModal";
 import { formatNumberCompact } from "lib/util/format-compact";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import ManageLiquidityButton from "components/liquidity/ManageLiquidityButton";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -280,6 +281,8 @@ const Market: NextPage<{
     <>
       <MarketMeta market={indexedMarket} />
       <div>
+        {/* todo: remove before merging */}
+        <LiquidityModal poolId={64} />
         <MarketImage
           image={indexedMarket.img}
           alt={`Image depicting ${question}`}

@@ -51,9 +51,6 @@ const ExitPoolForm = ({
         const formValue = getValues();
         const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
         const feeMultiplier = 1 - config.swaps.exitFee;
-        console.log(
-          new Decimal(1).mul(slippageMultiplier).mul(feeMultiplier).toString(),
-        );
 
         const minAssetsOut = pool?.weights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
@@ -71,7 +68,6 @@ const ExitPoolForm = ({
         const poolSharesAmount = userPoolShares.mul(
           Number(formValue["poolSharesPercentage"]) / 100,
         );
-        console.log(poolSharesAmount.toFixed(0), minAssetsOut);
 
         return sdk.api.tx.swaps.poolExit(
           poolId,

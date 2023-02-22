@@ -38,7 +38,6 @@ const JoinPoolForm = ({
         const formValue = getValues();
         const maxAmountsIn = pool?.weights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
-          console.log(formValue[id]);
           const assetAmount = formValue[id] ?? 0;
           return assetAmount === ""
             ? "0"
@@ -47,12 +46,6 @@ const JoinPoolForm = ({
                 .mul((100 + DEFAULT_SLIPPAGE_PERCENTAGE) / 100)
                 .toFixed(0);
         });
-        console.log(maxAmountsIn);
-        console.log(
-          poolSharesToReceive
-            .mul((100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100)
-            .toFixed(0),
-        );
 
         return sdk.api.tx.swaps.poolJoin(
           poolId,
