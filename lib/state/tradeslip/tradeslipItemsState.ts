@@ -176,7 +176,7 @@ export const useTradeslipItemsState = (
   );
 
   const balancesKey = {
-    traderZtgBalance: traderZtgBalance.toString(),
+    traderZtgBalance: traderZtgBalance?.toString(),
     traderAssets: traderAssets?.query.map((a) => a?.toString()),
   };
 
