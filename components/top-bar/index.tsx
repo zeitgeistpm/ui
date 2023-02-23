@@ -17,13 +17,13 @@ const MobileTopBar: FC<{ navbar: NavbarColor }> = observer(({ navbar }) => {
   const handleMenuClick = () => {
     store.toggleShowMobileMenu();
   };
-
+  console.log(navbar);
   return (
     <div className="flex items-center w-full">
-      <Logo dark={navbar === "black" ? true : false} />
+      <Logo dark={navbar === "white" ? true : false} />
       <h1
-        className={`font-bold font-kanit ${
-          navbar ? "text-black" : "text-white"
+        className={`font-bold font-kanit pl-4 ${
+          navbar === "white" ? "text-black" : "text-white"
         }`}
       >
         Zeitgeist
@@ -31,12 +31,12 @@ const MobileTopBar: FC<{ navbar: NavbarColor }> = observer(({ navbar }) => {
       {store.showMobileMenu ? (
         <X
           className="ml-auto cursor-pointer text-white"
-          color={`${navbar ? "white" : "black"}`}
+          color={`${navbar === "white" ? "black" : "white"}`}
           onClick={handleMenuClick}
         />
       ) : (
         <Menu
-          color={`${navbar ? "black" : "white"}`}
+          color={`${navbar === "white" ? "black" : "white"}`}
           className="ml-auto cursor-pointer"
           onClick={handleMenuClick}
         />
@@ -69,13 +69,13 @@ const TopBar = observer(() => {
 
   return (
     <div
-      className={`flex w-full py-7 bg-transparent fixed z-40`}
+      className={`flex w-full py-7 fixed z-40`}
       style={{
         backgroundColor: navbarBGColor,
         borderBottom: `${pathname === "/" ? "none" : "solid 1px #D8E1E7"}`,
       }}
     >
-      <div className="hidden sm:flex justify-between items-center w-full max-w-screen-2xl h-[44px] mx-auto px-8">
+      <div className="hidden md:flex justify-between items-center w-full max-w-screen-2xl h-[44px] mx-auto px-8">
         <Link className="flex flex-1 items-center gap-4" href="/" role="button">
           <Logo dark={pathname === "/" ? false : true} />
           <>
@@ -96,7 +96,7 @@ const TopBar = observer(() => {
         <MarketSearch />
         <AccountButton />
       </div>
-      <div className="sm:hidden w-full container-fluid">
+      <div className="md:hidden w-full container-fluid">
         <MobileTopBar navbar={navbarBGColor} />
       </div>
     </div>

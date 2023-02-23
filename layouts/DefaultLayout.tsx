@@ -58,7 +58,7 @@ const DefaultLayout: FC = observer(({ children }) => {
 
   return (
     <div
-      onScrollCapture={onScrollCapture}
+      // onScrollCapture={onScrollCapture}
       className="relative flex min-h-screen justify-evenly overflow-hidden"
     >
       {/* loads optimized fonts for global access */}

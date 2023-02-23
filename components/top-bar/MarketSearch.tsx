@@ -18,7 +18,7 @@ const MarketSearch: FC = observer(() => {
 
   return (
     <div
-      className="flex rounded items-center justify-between w-full bg-anti-flash-white max-w-[520px] h-full px-4 mx-4"
+      className="hidden md:flex rounded items-center justify-between w-full bg-anti-flash-white max-w-[520px] h-full px-4 mx-4"
       onClick={() => focusInput()}
     >
       <div className="flex items-center text-sky-600">

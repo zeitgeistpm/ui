@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useStore } from "lib/stores/Store";
+import { useRouter } from "next/router";
 import { observer } from "mobx-react";
 import Link from "next/link";
 import React, { FC, useMemo } from "react";
@@ -37,39 +38,46 @@ export const MenuItem: FC<MenuItemProps> = observer(
     open,
     onClick,
   }) => {
+    const { pathname } = useRouter();
     const [isHovered, setIsHovered] = useState(false);
+    active = pathname === "/" ? false : active;
 
     return (
       <WrapComponent href={href}>
         <div
-          className={`flex bg-black rounded-full p-5 ${className}`}
+          className={`flex rounded-full p-5 w-[68px] ${className}`}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           onClick={onClick}
           style={{
-            maxWidth: isHovered ? "250px" : "68px",
-            border:
-              isHovered || active ? "solid 2px #FAB400" : "solid 2px #000",
-            transition: "all 500ms ease",
+            border: isHovered
+              ? "solid 2px #FAB400"
+              : active
+              ? "solid 2px #0001FE"
+              : "solid 2px #000",
+            transition: "all 250ms ease",
+            backgroundColor: isHovered ? "#000" : active ? "#0001FE" : "#000",
           }}
         >
-          <div className="center">
+          <div className="relative center">
             <IconComponent
               size={24}
-              style={{ color: isHovered || active ? "#FAB400" : "#FFF" }}
+              style={{
+                color: isHovered ? "#FAB400" : "#FFF",
+                transition: "all 250ms ease",
+              }}
               className=""
             />
-          </div>
-          <div
-            className={`whitespace-nowrap	pl-5`}
-            style={{
-              visibility: isHovered ? "visible" : "hidden",
-              color: isHovered ? "#FAB400" : "#FFF",
-              opacity: isHovered ? 1 : 0,
-              transition: "all 250ms ease",
-            }}
-          >
-            {textLabel}
+            <div
+              className={`absolute left-14 whitespace-nowrap px-2.5 py-1 rounded bg-sunglow-2 text-black text-lg `}
+              style={{
+                visibility: isHovered ? "visible" : "hidden",
+                opacity: isHovered ? 1 : 0,
+                transition: "all 250ms ease",
+              }}
+            >
+              {textLabel}
+            </div>
           </div>
         </div>
       </WrapComponent>

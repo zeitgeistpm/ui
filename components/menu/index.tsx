@@ -32,7 +32,7 @@ const Menu: FC = observer(() => {
 
   return (
     <>
-      <div className="fixed left-4 top-32 flex flex-col gap-5 z-50">
+      <div className="hidden fixed left-4 top-32 md:flex flex-col gap-5 z-50">
         {Object.keys(navigationStore.items)
           .filter((itemKey) => {
             // Skip court page for now...
@@ -50,7 +50,7 @@ const Menu: FC = observer(() => {
           })
           .map((itemKey, idx) => {
             const item = navigationStore.items[itemKey];
-
+            console.log(navigationStore.checkPage(itemKey as any));
             return (
               <MenuItem
                 href={item.href}
