@@ -115,7 +115,7 @@ const RightDrawer = observer(() => {
   return (
     <Drawer
       side="right"
-      className="bg-sky-100 !fixed sm:!block right-0 z-ztg-10 w-0"
+      className="bg-sky-100 !fixed sm:!block right-0 z-50 w-0"
     >
       <div className="h-full">
         <div className="mt-ztg-10 h-full flex flex-col">

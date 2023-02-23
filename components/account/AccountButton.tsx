@@ -77,7 +77,7 @@ const AccountButton: FC<{
           </div>
         ) : (
           <div
-            className={`flex items-center h-full rounded-full cursor-pointer ${
+            className={`flex flex-1	items-center justify-end h-full rounded-full cursor-pointer ${
               pathname === "/"
                 ? "bg-transparent border-white"
                 : "bg-white border-black"
@@ -87,7 +87,7 @@ const AccountButton: FC<{
             }}
           >
             <span
-              className={`relative text-white left-5 pr-8 pl-6 font-medium text-sm rounded-l-full h-full border-2 border-r-0 leading-[40px] ${
+              className={`relative whitespace-nowrap text-white left-5 pr-8 pl-6 font-medium text-sm rounded-l-full h-full border-2 border-r-0 leading-[40px] ${
                 pathname === "/" ? "bg-transparent border-white" : "bg-white"
               }`}
             >

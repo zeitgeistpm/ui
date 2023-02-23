@@ -62,13 +62,13 @@ const TopBar = observer(() => {
 
   return (
     <div
-      className={`flex w-full py-7 bg-transparent fixed z-ztg-10`}
+      className={`flex w-full py-7 bg-transparent fixed z-40`}
       style={{
-        backgroundColor: `${navbar ? "white" : "transparent"}`,
+        backgroundColor: `${navbar ? "black" : "transparent"}`,
       }}
     >
-      <div className="hidden sm:flex justify-between items-center min-w-full max-w-screen-2xl h-[44px] px-8">
-        <Link className="flex items-center gap-4" href="/" role="button">
+      <div className="hidden sm:flex justify-between items-center w-full max-w-screen-2xl h-[44px] mx-auto px-8">
+        <Link className="flex flex-1 items-center gap-4" href="/" role="button">
           <Logo />
           <>
             <div className="flex flex-col items-center">
