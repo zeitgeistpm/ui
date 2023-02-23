@@ -3477,15 +3477,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.20.0":
-  version: 2.20.0
-  resolution: "@zeitgeistpm/sdk@npm:2.20.0"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.21.1":
+  version: 2.21.1
+  resolution: "@zeitgeistpm/sdk@npm:2.21.1"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.10.0
     "@zeitgeistpm/indexer": ^2.13.0
     "@zeitgeistpm/rpc": ^2.7.0
     "@zeitgeistpm/utility": ^2.12.0
-    "@zeitgeistpm/web3.storage": ^2.7.0
+    "@zeitgeistpm/web3.storage": ^2.7.1
     cids: ^1.1.9
     decimal.js: ^10.4.3
     lodash-es: ^4.17.21
@@ -3498,7 +3498,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: d75feff1b4e245dbdc40a0abe31be84b008d678f471f5118a16625c2b4c45218c7c86bb64199f76332a4e33f01fb97bde0d02d65aa55b177fd6ea0e6646d52df
+  checksum: 5e7efb18314b6c960c86f6f3908e0c89bd48059f5bfdc93b30a327454c7e831044a1af88054884d84cec2cecfb7a921a02f3e69c725792b46efe8755c4811487
   languageName: node
   linkType: hard
 
@@ -3592,7 +3592,7 @@ __metadata:
     "@zeitgeistpm/avatara-react": ^1.3.0
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^1.0.3
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.20.0"
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.21.1"
     "@zeitgeistpm/utility": ^2.12.0
     autoprefixer: 10.2.5
     axios: ^0.21.4
@@ -3667,9 +3667,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/web3.storage@npm:^2.7.0":
-  version: 2.7.0
-  resolution: "@zeitgeistpm/web3.storage@npm:2.7.0"
+"@zeitgeistpm/web3.storage@npm:^2.7.1":
+  version: 2.7.1
+  resolution: "@zeitgeistpm/web3.storage@npm:2.7.1"
   dependencies:
     "@zeitgeistpm/utility": ^2.11.0
     cids: ^1.1.9
@@ -3680,7 +3680,7 @@ __metadata:
     up: ^1.0.2
   peerDependencies:
     "@polkadot/util": "*"
-  checksum: fc531a2d8f81558f867a0600b678fe296045e7ee016f099d595d8625d83ebcbd0062250fcf16aedd41943a7a5160301b894fdc604897d644c1178240199f971a
+  checksum: f020bb9fb8a482cf81ab304a1dcdcffa5d5671353084e7b58cd5f19648ba9e8e0eafcaf6e90dbd37f01a36c1b465033a7a16d9861b068af1c2ce0338e34d7348
   languageName: node
   linkType: hard
 
