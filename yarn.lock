@@ -3599,7 +3599,7 @@ __metadata:
     boring-avatars: ^1.6.1
     commander: ^8.3.0
     cross-env: ^7.0.3
-    decimal.js: ^10.4.2
+    decimal.js: ^10.4.3
     dotenv: ^9.0.2
     fathom-client: ^3.2.0
     flexsearch: ^0.7.21
@@ -5175,13 +5175,6 @@ __metadata:
   version: 10.3.1
   resolution: "decimal.js@npm:10.3.1"
   checksum: 0351ac9f05fe050f23227aa6a4573bee2d58fa7378fcf28d969a8c789525032effb488a90320fd3fe86a66e17b4bc507d811b15eada5b7f0e7ec5d2af4c24a59
-  languageName: node
-  linkType: hard
-
-"decimal.js@npm:^10.4.2":
-  version: 10.4.2
-  resolution: "decimal.js@npm:10.4.2"
-  checksum: 536cd6816a3197f2e1aa3da4860856cb5a2db73f6fafe8cb3b924ccc63f9b7d78296acc13dccbd419bd958ccc6357921fb15467f883b37cab04bfba7044cada2
   languageName: node
   linkType: hard
 

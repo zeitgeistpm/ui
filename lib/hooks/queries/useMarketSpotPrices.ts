@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { isNA, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { calcSpotPrice } from "lib/math";
 import { useSdkv2 } from "../useSdkv2";
@@ -29,7 +29,7 @@ export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
   const query = useQuery(
     [id, marketSpotPricesKey, pool, blockNumber, balances, basePoolBalance],
     async () => {
-      if (isRpcSdk(sdk) && !isNA(basePoolBalance)) {
+      if (isRpcSdk(sdk) && basePoolBalance) {
         const spotPrices: MarketPrices =
           market.status !== "Resolved"
             ? calcMarketPrices(market, basePoolBalance, balances)
@@ -44,7 +44,7 @@ export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
           isRpcSdk(sdk) &&
           marketId != null &&
           pool &&
-          isNA(basePoolBalance) === false &&
+          basePoolBalance &&
           balances?.length > 0,
       ),
     },

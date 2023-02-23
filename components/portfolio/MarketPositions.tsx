@@ -118,7 +118,8 @@ export const MarketPositions = ({
                       market={market}
                       value={userBalance.mul(price).div(ZTG)}
                     />
-                  ) : marketStage?.type === "Reported" ? (
+                  ) : IOMarketOutcomeAssetId.is(assetId) &&
+                    marketStage?.type === "Reported" ? (
                     <DisputeButton market={market} assetId={assetId} />
                   ) : IOMarketOutcomeAssetId.is(assetId) &&
                     (marketStage?.type === "OpenReportingPeriod" ||

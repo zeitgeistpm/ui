@@ -11,7 +11,6 @@ import {
   IOMarketOutcomeAssetId,
   IOPoolShareAssetId,
   IOZtgAssetId,
-  isNA,
   PoolShareAssetId,
   ScalarAssetId,
 } from "@zeitgeistpm/sdk-next";
@@ -259,7 +258,7 @@ export const usePortfolioPositions = (
         assetId,
       )?.data.balance;
 
-      if (!poolAssetBalance || isNA(poolAssetBalance)) return null;
+      if (!poolAssetBalance) return null;
 
       const ztgWeight = new Decimal(pool.totalWeight).div(2);
       const assetWeight = getAssetWeight(pool, assetId).unwrap();
@@ -309,12 +308,7 @@ export const usePortfolioPositions = (
       const totalIssuanceForPoolQuery = poolsTotalIssuance[pool.poolId];
       const totalIssuanceData = poolsTotalIssuance[pool.poolId]?.data;
 
-      if (
-        !balance ||
-        isNA(balance) ||
-        !totalIssuanceForPoolQuery.data ||
-        !totalIssuanceData
-      ) {
+      if (!balance || !totalIssuanceForPoolQuery.data || !totalIssuanceData) {
         stillLoading = true;
         continue;
       }
@@ -359,9 +353,7 @@ export const usePortfolioPositions = (
               assetId,
             )?.data?.balance;
 
-            if (!balance || isNA(balance)) {
-              return;
-            }
+            if (!balance) return;
 
             const price = calculatePrice(
               pool,
