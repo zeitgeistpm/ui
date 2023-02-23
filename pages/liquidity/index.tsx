@@ -12,6 +12,7 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { AiOutlineRead } from "react-icons/ai";
+import { MarketStatus } from "@zeitgeistpm/indexer";
 
 const columns: TableColumn[] = [
   {
@@ -62,7 +63,7 @@ const LiquidityPools: NextPage = observer(() => {
     return new Decimal(0);
   }, [ztgInfo, totalLiquidity]);
 
-  const { data: activeMarketCount } = useMarketStatusCount("Active");
+  const { data: activeMarketCount } = useMarketStatusCount(MarketStatus.Active);
 
   const tableData = useMemo<TableData[]>(() => {
     return (

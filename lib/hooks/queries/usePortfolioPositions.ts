@@ -404,12 +404,12 @@ export const usePortfolioPositions = (
         continue;
       }
 
-      const assetIndex = getIndexOf(assetId);
-
       let outcome: string;
       let color: string;
 
       if (IOMarketOutcomeAssetId.is(assetId)) {
+        const assetIndex = getIndexOf(assetId);
+
         outcome = market.marketType.categorical
           ? market.categories[assetIndex].name
           : assetIndex == 1
