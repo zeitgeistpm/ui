@@ -1,6 +1,5 @@
 import { observer } from "mobx-react";
-// import { Bell } from "react-feather";
-import React, { Component, FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import { useStore } from "lib/stores/Store";
@@ -9,6 +8,7 @@ import { useUserStore } from "lib/stores/UserStore";
 import { useAccountModals } from "lib/hooks/account";
 import { useModalStore } from "lib/stores/ModalStore";
 import { usePrevious } from "lib/hooks/usePrevious";
+import { useRouter } from "next/router";
 
 const AccountButton: FC<{
   connectButtonClassname?: string;
@@ -39,6 +39,8 @@ const AccountButton: FC<{
 
     const prevactiveAccount = usePrevious(activeAccount);
 
+    const { pathname } = useRouter();
+
     useEffect(() => {
       if (autoClose && activeAccount !== prevactiveAccount) {
         modalStore.closeModal();
@@ -52,7 +54,7 @@ const AccountButton: FC<{
             <button
               className={
                 connectButtonClassname ||
-                "flex w-ztg-168 h-ztg-40 bg-sky-400 dark:bg-sky-700 text-black dark:text-white rounded-full text-ztg-14-150 font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-20"
+                "flex text-black rounded-full font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-20"
               }
               onClick={() => connect()}
               disabled={
@@ -64,10 +66,7 @@ const AccountButton: FC<{
 
             {hovering === true &&
             (locationAllowed !== true || isUsingVPN === true) ? (
-              <div
-                className="bg-white dark:bg-sky-1100 absolute rounded-ztg-10 font-bold text-black dark:text-white 
-            px-ztg-10 py-ztg-14  text-ztg-12-150 top-ztg-50 z-20 right-10"
-              >
+              <div className="bg-white absolute rounded font-bold text-black">
                 {locationAllowed !== true
                   ? "Your jurisdiction is not authorised to trade"
                   : "Trading over a VPN is not allowed due to legal restrictions"}
@@ -77,34 +76,48 @@ const AccountButton: FC<{
             )}
           </div>
         ) : (
-          <div className="flex h-ztg-40">
-            <div
-              className="w-ztg-240 xl:w-ztg-360 flex pl-ztg-25 h-full font-mono text-ztg-14-150 rounded-full cursor-pointer bg-sky-200 dark:bg-sky-700 dark:text-white"
-              onClick={() => {
-                accountModals.openAccontSelect();
-              }}
+          <div
+            className={`flex items-center h-full rounded-full cursor-pointer ${
+              pathname === "/"
+                ? "bg-transparent border-white"
+                : "bg-white border-black"
+            }`}
+            onClick={() => {
+              accountModals.openAccontSelect();
+            }}
+          >
+            <span
+              className={`relative text-white left-5 pr-8 pl-6 font-medium text-sm rounded-l-full h-full border-2 border-r-0 leading-[40px] ${
+                pathname === "/" ? "bg-transparent border-white" : "bg-white"
+              }`}
             >
-              <div className="font-bold mr-ztg-16 center w-ztg-176 ">
-                {`${formatNumberLocalized(activeBalance?.toNumber())} ${
-                  store.config.tokenSymbol
+              {`${formatNumberLocalized(activeBalance?.toNumber())} ${
+                store.config.tokenSymbol
+              }`}
+            </span>
+            <div
+              className={`flex items-center rounded-full h-full border-2 pl-1.5 pr-4 ${
+                pathname === "/" ? "text-white border-white" : "text-black"
+              }`}
+            >
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                <Avatar
+                  zoomed
+                  address={activeAccount.address}
+                  deps={avatarDeps}
+                />
+              </div>
+              <span
+                className={`font-medium pl-4 text-sm h-full leading-[40px] ${
+                  pathname === "/" ? "text-white" : "text-black"
                 }`}
-              </div>
-              <div className="center bg-sky-500 dark:bg-black rounded-full h-full w-ztg-164 flex-grow text-white pl-ztg-6 pr-ztg-10">
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <Avatar
-                    zoomed
-                    address={activeAccount.address}
-                    deps={avatarDeps}
-                  />
-                </div>
-                <div className="mr-auto text-black dark:text-white ml-ztg-10">
-                  {shortenAddress(activeAccount.address, 6, 4)}
-                </div>
-              </div>
+              >
+                {shortenAddress(activeAccount.address, 6, 4)}
+              </span>
             </div>
             {/* TODO */}
             {/* <div className="ml-ztg-18 center cursor-pointer dark:text-sky-600">

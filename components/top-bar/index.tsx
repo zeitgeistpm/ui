@@ -20,7 +20,7 @@ const MobileTopBar: FC<{ navbar: boolean }> = observer(({ navbar }) => {
     <div className="flex items-center w-full">
       <Logo dark={navbar} />
       <h1
-        className={`text-ztg-19-120 ml-ztg-10 font-bold font-kanit ${
+        className={`font-bold font-kanit ${
           navbar ? "text-black" : "text-white"
         }`}
       >
@@ -67,7 +67,7 @@ const TopBar = observer(() => {
         backgroundColor: `${navbar ? "white" : "transparent"}`,
       }}
     >
-      <div className="hidden sm:flex justify-between items-center min-w-full topbar container-fluid mx-4">
+      <div className="hidden sm:flex justify-between items-center min-w-full max-w-screen-2xl h-[44px] px-8">
         <Link className="flex items-center gap-4" href="/" role="button">
           <Logo />
           <>
@@ -82,9 +82,7 @@ const TopBar = observer(() => {
           </>
         </Link>
         <MarketSearch />
-        <div className="flex items-center">
-          <AccountButton />
-        </div>
+        <AccountButton />
       </div>
       <div className="sm:hidden w-full container-fluid">
         <MobileTopBar navbar={navbar} />
