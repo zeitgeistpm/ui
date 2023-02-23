@@ -86,8 +86,8 @@ const DefaultLayout: FC = observer(({ children }) => {
           </div>
         )}
         <main
-          className={`relative top-32 flex flex-col dark:text-white ${
-            router.pathname !== "/" && "main-container"
+          className={`flex flex-col dark:text-white mb-12 ${
+            router.pathname !== "/" && "main-container mt-32"
           }`}
           ref={mainRef}
         >
