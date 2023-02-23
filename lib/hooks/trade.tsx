@@ -18,7 +18,7 @@ import { MAX_IN_OUT_RATIO } from "lib/constants";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import { useStore } from "lib/stores/Store";
 import { TradeType } from "lib/types";
-import { createContext, useState } from "react";
+import { createContext } from "react";
 import { useAccountAssetBalances } from "./queries/useAccountAssetBalances";
 import { usePoolAccountIds } from "./queries/usePoolAccountIds";
 import { usePoolsByIds } from "./queries/usePoolsByIds";
@@ -111,7 +111,10 @@ export const useTradeItemState = (item: TradeItem) => {
       const assetIndex = getIndexOf(item.assetId);
       const asset = saturatedData.assets[assetIndex];
       const market = saturatedData.market;
-      const swapFee = new Decimal(pool.swapFee === "" ? "0" : pool.swapFee);
+      const swapFee = new Decimal(pool.swapFee === "" ? "0" : pool.swapFee).div(
+        ZTG,
+      );
+      const tradeablePoolAssetBalance = poolAssetBalance.mul(MAX_IN_OUT_RATIO);
 
       const price = calcSpotPrice(
         poolBaseBalance,
@@ -121,24 +124,31 @@ export const useTradeItemState = (item: TradeItem) => {
         swapFee,
       );
 
-      let maxAmountBase =
-        item.action === "buy"
-          ? calcInGivenOut(
-              poolBaseBalance,
-              baseWeight,
-              poolAssetBalance,
-              assetWeight,
-              poolAssetBalance.mul(MAX_IN_OUT_RATIO),
-              swapFee,
-            )
-          : calcOutGivenIn(
-              poolAssetBalance,
-              assetWeight,
-              poolBaseBalance,
-              baseWeight,
-              traderAssetBalance,
-              swapFee,
-            );
+      let maxAmountBase: Decimal;
+
+      if (item.action === "buy") {
+        maxAmountBase = calcInGivenOut(
+          poolBaseBalance,
+          baseWeight,
+          poolAssetBalance,
+          assetWeight,
+          tradeablePoolAssetBalance,
+          swapFee,
+        );
+      }
+      if (item.action === "sell") {
+        const assetBalance = traderAssetBalance.gt(tradeablePoolAssetBalance)
+          ? tradeablePoolAssetBalance
+          : traderAssetBalance;
+        maxAmountBase = calcOutGivenIn(
+          poolAssetBalance,
+          assetWeight,
+          poolBaseBalance,
+          baseWeight,
+          assetBalance,
+          swapFee,
+        );
+      }
 
       maxAmountBase = isNA(traderBaseBalance)
         ? new Decimal(0)
@@ -146,7 +156,7 @@ export const useTradeItemState = (item: TradeItem) => {
         ? traderBaseBalance
         : maxAmountBase;
 
-      let amountAsset =
+      const amountAsset =
         item.action === "buy"
           ? calcOutGivenIn(
               poolBaseBalance,
@@ -182,6 +192,15 @@ export const useTradeItemState = (item: TradeItem) => {
               swapFee,
             );
 
+      const averagePrice =
+        item.baseAmount == null ||
+        amountAsset.isZero() ||
+        item.baseAmount.isZero()
+          ? new Decimal(0)
+          : amountAsset.div(item.baseAmount);
+
+      const priceImpact = priceAfterTrade.div(price).sub(1).mul(100);
+
       let transaction: SubmittableExtrinsic<
         "promise",
         ISubmittableResult
@@ -203,7 +222,7 @@ export const useTradeItemState = (item: TradeItem) => {
               transaction = sdk.api.tx.swaps.swapExactAmountOut(
                 pool.poolId,
                 { Ztg: null },
-                maxAmountIn.floor().toFixed(0),
+                maxAmountIn.round().toFixed(0),
                 item.assetId,
                 amountAsset.toFixed(0),
                 null,
@@ -242,7 +261,8 @@ export const useTradeItemState = (item: TradeItem) => {
         assetAmount: amountAsset,
         maxBaseAmount: maxAmountBase.toDecimalPlaces(0),
         priceAfterTrade,
-        price,
+        averagePrice,
+        priceImpact,
         transaction,
       };
     },

@@ -66,6 +66,15 @@ const TradeForm = observer(() => {
     setPercentageDisplay(percDecimal.mul(100).toFixed(0));
   }, [trade, inputFocused, inputAmount]);
 
+  useEffect(() => {
+    if (tradeItem == null) {
+      return;
+    }
+    setTabIndex(
+      tradeItem.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell,
+    );
+  }, [tradeItem?.action]);
+
   const type: TradeType = tabIndex === 0 ? "buy" : "sell";
 
   const processTransaction = async () => {
@@ -211,12 +220,17 @@ const TradeForm = observer(() => {
             <div className="text-ztg-14-150">
               <div className="mb-[10px]">
                 <span className="text-sky-600">Average Price: </span>
-                {trade?.price.toFixed(2)} {baseSymbol}
+                {trade?.averagePrice.toFixed(2)} {baseSymbol}
               </div>
-              <div>
-                <span className="text-sky-600">Prediction After Buy: </span>
+              <div className="mb-[10px]">
+                <span className="text-sky-600">Prediction After Trade: </span>
+                {trade?.priceAfterTrade.toFixed(2)} {baseSymbol} (
+                {trade?.priceAfterTrade.mul(100).toFixed(0)}%)
               </div>
-              {trade?.priceAfterTrade.toFixed(2)} {baseSymbol}
+              <div className="mb-[10px]">
+                <span className="text-sky-600">Price impact: </span>
+                {trade?.priceImpact.toFixed(2)}%
+              </div>
             </div>
           </div>
           <TransactionButton
