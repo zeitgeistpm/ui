@@ -78,17 +78,17 @@ const AccountButton: FC<{
         ) : (
           <div
             className={`flex flex-1	items-center justify-end h-full rounded-full cursor-pointer ${
-              pathname === "/"
-                ? "bg-transparent border-white"
-                : "bg-white border-black"
+              pathname === "/" ? "bg-transparent border-white" : "border-black"
             }`}
             onClick={() => {
               accountModals.openAccontSelect();
             }}
           >
             <span
-              className={`relative whitespace-nowrap text-white left-5 pr-8 pl-6 font-medium text-sm rounded-l-full h-full border-2 border-r-0 leading-[40px] ${
-                pathname === "/" ? "bg-transparent border-white" : "bg-white"
+              className={`relative whitespace-nowrap left-5 pr-8 pl-6 font-medium text-sm rounded-l-full h-full border-2 border-r-0 leading-[40px] ${
+                pathname === "/"
+                  ? "bg-transparent border-white text-white"
+                  : "border-black text-black"
               }`}
             >
               {`${formatNumberLocalized(activeBalance?.toNumber())} ${
@@ -97,7 +97,9 @@ const AccountButton: FC<{
             </span>
             <div
               className={`flex items-center rounded-full h-full border-2 pl-1.5 pr-4 ${
-                pathname === "/" ? "text-white border-white" : "text-black"
+                pathname === "/"
+                  ? "text-white border-white"
+                  : "text-black border-black"
               }`}
             >
               <div
