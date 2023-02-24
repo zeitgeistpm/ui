@@ -18,6 +18,7 @@ import {
 import { marketsRootQuery } from "./useMarket";
 import { useSdkv2 } from "../useSdkv2";
 import { MarketOutcomes } from "lib/types/markets";
+import { MarketStatus } from "@zeitgeistpm/indexer";
 
 export const rootKey = "markets-filtered";
 
@@ -74,14 +75,14 @@ export const useInfiniteMarkets = (
       };
     }
 
-    const statuses = getFilterValuesByType(filters, "status");
+    const statuses = getFilterValuesByType(filters, "status") as MarketStatus[];
     const tags = getFilterValuesByType(filters, "tag");
     const currencies = getFilterValuesByType(filters, "currency");
 
     const markets: Market<IndexerContext>[] = await sdk.model.markets.list({
       where: {
         categories_isNull: false,
-        status_not_in: ["Destroyed"],
+        status_not_in: [MarketStatus.Destroyed],
         status_in: statuses.length === 0 ? undefined : statuses,
         tags_containsAny: tags.length === 0 ? undefined : tags,
         pool_isNull: withLiquidityOnly ? false : undefined,
