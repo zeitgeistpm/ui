@@ -1,5 +1,11 @@
+import { BaseDotsamaWallet } from "lib/wallets/base-dotsama-wallet";
+import { PolkadotjsWallet } from "lib/wallets/polkadotjs-wallet";
+import { SubWallet } from "lib/wallets/subwallet";
+import { TalismanWallet } from "lib/wallets/talisman-wallet";
+import { observer } from "mobx-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getWallets } from "@talismn/connect-wallets";
 
 interface StepperProps {
   steps: number;
@@ -67,47 +73,59 @@ const TextSection = ({
   );
 };
 
-const WalletSelection = () => {
-  const wallets = [
-    {
-      name: "Talisman",
-      image: "talisman.png",
-      recommended: true,
-    },
-    {
-      name: "Polkadot.js",
-      image: "Polkadot-js.png",
-      recommended: false,
-    },
-    {
-      name: "Subwallet",
-      image: "subwallet.png",
-      recommended: false,
-    },
-  ];
+const walletsConfig = [
+  new TalismanWallet(),
+  new PolkadotjsWallet(),
+  new SubWallet(),
+];
+
+const WalletSelection = observer(() => {
+  const [selectedWallet, setSelectedWallet] = useState<string>();
+
+  useEffect(() => {
+    const ref = setInterval(() => {
+      const wallets = getWallets();
+      const wallet = wallets.find(
+        (wallet) => wallet.extensionName === selectedWallet,
+      );
+
+      console.log("selectedinstalled", wallet?.installed);
+    }, 500);
+
+    return () => {
+      clearInterval(ref);
+    };
+  }, [selectedWallet]);
+
+  const handleWalletSelect = async (wallet: BaseDotsamaWallet) => {
+    window.open(wallet.installUrl);
+    setSelectedWallet(wallet.extensionName);
+  };
 
   return (
     <>
-      {wallets.map((wallet, index) => (
+      {walletsConfig.map((wallet, index) => (
         <button
           key={index}
           className="flex items-center justify-center h-[56px] border border-pastel-blue rounded-ztg-10 text-center w-full"
+          onClick={() => handleWalletSelect(wallet)}
         >
           <Image
-            src={`/icons/${wallet.image}`}
-            alt={wallet.name}
+            src={wallet.logo.src}
+            alt={wallet.logo.alt}
             width={30}
             height={30}
             quality={100}
           />
           <div className="font-medium text-ztg-18-150 ml-[15px]">
-            {wallet.name}
+            {wallet.title}
           </div>
         </button>
       ))}
     </>
   );
-};
+});
+
 const ExchangeTypeSelection = () => {
   const exchangeTypes = [
     {
