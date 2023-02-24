@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
+import { MarketStatus } from "@zeitgeistpm/indexer";
 
 export const rootKey = "market-status-count";
 
-export const useMarketStatusCount = (status: string) => {
+export const useMarketStatusCount = (status: MarketStatus) => {
   const [sdk, id] = useSdkv2();
 
   const isIndexed = sdk && isIndexedSdk(sdk);

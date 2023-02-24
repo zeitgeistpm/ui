@@ -3,7 +3,6 @@ import {
   parseAssetId,
   getScalarBounds,
   IndexerContext,
-  isNA,
   isRpcSdk,
   Market,
   MarketId,
@@ -76,7 +75,7 @@ export const RedeemButtonByAssetId = observer(
 
         const balance = assetBalances?.get(signer?.address, resolvedAssetId)
           ?.data.balance;
-        if (!balance || isNA(balance)) return new Decimal(0);
+        if (!balance) return new Decimal(0);
 
         return new Decimal(balance?.free.toString()).div(ZTG);
       } else {
@@ -88,13 +87,7 @@ export const RedeemButtonByAssetId = observer(
           ScalarOutcome: [market.marketId as MarketId, "Long"],
         })?.data?.balance;
 
-        if (
-          !shortBalance ||
-          isNA(shortBalance) ||
-          !longBalance ||
-          isNA(longBalance)
-        )
-          return new Decimal(0);
+        if (!shortBalance || !longBalance) return new Decimal(0);
 
         const bounds = scalarBounds.unwrap();
         const lowerBound = bounds[0].toNumber();
