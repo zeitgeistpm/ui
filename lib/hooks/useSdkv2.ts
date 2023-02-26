@@ -53,6 +53,7 @@ export const useSdkv2 = (): UseSdkv2 => {
       }
 
       const sdk$ = init(store);
+      //@ts-ignore todo: adjust type in sdk
       const nextSub = sdk$.subscribe(setSdk);
 
       setSub(nextSub);

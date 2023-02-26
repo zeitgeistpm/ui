@@ -6,7 +6,6 @@ import {
   getAssetWeight,
   getIndexOf,
   getMarketIdOf,
-  isNA,
   isRpcSdk,
   SaturatedPoolEntryAsset,
   ScalarAssetId,
@@ -97,11 +96,12 @@ export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
     );
   }
 
-  maxAmountBase = isNA(traderBaseBalance)
-    ? new Decimal(0)
-    : maxAmountBase.gt(traderBaseBalance)
-    ? traderBaseBalance
-    : maxAmountBase;
+  maxAmountBase =
+    traderBaseBalance == null
+      ? new Decimal(0)
+      : maxAmountBase.gt(traderBaseBalance)
+      ? traderBaseBalance
+      : maxAmountBase;
 
   return maxAmountBase;
 };
@@ -148,11 +148,12 @@ export const useTradeMaxAssetAmount = (item: TradeItem): Decimal => {
     );
   }
 
-  maxAmountAsset = isNA(traderBaseBalance)
-    ? new Decimal(0)
-    : maxAmountAsset.gt(tradeablePoolAssetBalance)
-    ? tradeablePoolAssetBalance
-    : maxAmountAsset;
+  maxAmountAsset =
+    traderBaseBalance == null
+      ? new Decimal(0)
+      : maxAmountAsset.gt(tradeablePoolAssetBalance)
+      ? tradeablePoolAssetBalance
+      : maxAmountAsset;
 
   return maxAmountAsset;
 };

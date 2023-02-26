@@ -41,6 +41,7 @@ import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import Link from "next/link";
+import { formatNumberCompact } from "lib/util/format-compact";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 
@@ -222,11 +223,7 @@ const Market: NextPage<{
           </HeaderStat>
           {token ? (
             <HeaderStat label="Volume">
-              {/* TODO: replace num formatting with util function */}
-              {new Intl.NumberFormat("default", {
-                maximumSignificantDigits: 3,
-                notation: "compact",
-              }).format(volume)}
+              {formatNumberCompact(volume)}
               &nbsp;
               {token}
             </HeaderStat>
@@ -235,11 +232,7 @@ const Market: NextPage<{
           )}
           {prizePool >= 0 && token ? (
             <HeaderStat label="Prize Pool">
-              {/* TODO: replace num formatting with util function */}
-              {new Intl.NumberFormat("default", {
-                maximumSignificantDigits: 3,
-                notation: "compact",
-              }).format(prizePool)}
+              {formatNumberCompact(prizePool)}
               &nbsp;
               {token}
             </HeaderStat>
@@ -248,11 +241,7 @@ const Market: NextPage<{
           )}
           {subsidy >= 0 && token ? (
             <HeaderStat label="Subsidy" border={false}>
-              {/* TODO: replace num formatting with util function */}
-              {new Intl.NumberFormat("default", {
-                maximumSignificantDigits: 3,
-                notation: "compact",
-              }).format(subsidy)}
+              {formatNumberCompact(subsidy)}
               &nbsp;
               {token}
             </HeaderStat>
