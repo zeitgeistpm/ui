@@ -12,7 +12,7 @@ import LiquidityPoolsBox from "../liquidity/LiquidityPoolsBox";
 import TradeForm from "../trade-form";
 import Tabs from "../ui/Tabs";
 import Drawer from "./Drawer";
-import { TradeItem, TradeItemContext, useTrade } from "lib/hooks/trade";
+import { TradeItem, TradeItemContext, useTradeItem } from "lib/hooks/trade";
 import { MarketId } from "@zeitgeistpm/sdk-next";
 
 const ZTGSummary = observer(() => {
@@ -54,7 +54,7 @@ const Box = observer(
       );
     };
     const exchangeStore = useExchangeStore();
-    const trade = useTrade();
+    const trade = useTradeItem();
 
     switch (mode) {
       case "default":

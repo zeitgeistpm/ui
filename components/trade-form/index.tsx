@@ -1,10 +1,15 @@
 import { Tab } from "@headlessui/react";
 import { ZTG } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
-import { useTrade, useTradeItemState } from "lib/hooks/trade";
+import {
+  useTradeItem,
+  useTradeItemState,
+  useTradeMaxAssetAmount,
+  useTradeMaxBaseAmount,
+  useTradeTransaction,
+} from "lib/hooks/trade";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
-import { TradeType } from "lib/types";
 import { extractIndexFromErrorHex } from "lib/util/error-table";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
@@ -15,72 +20,46 @@ import { useDebounce } from "use-debounce";
 import RangeInput from "../ui/RangeInput";
 import TransactionButton from "../ui/TransactionButton";
 import TradeTab, { TradeTabType } from "./TradeTab";
+import { useForm } from "react-hook-form";
 
 const TradeForm = observer(() => {
   const notificationStore = useNotificationStore();
   const [tabIndex, setTabIndex] = useState<number>(0);
-  const [percentage, setPercentage] = useState<string>("0");
-  const [percentageDisplay, setPercentageDisplay] = useState<string>("0");
+  const { register, formState, watch, setValue, reset } = useForm<{
+    percentage: string;
+    assetAmount: string;
+    baseAmount: string;
+  }>({
+    defaultValues: { percentage: "0", assetAmount: "0", baseAmount: "0" },
+  });
+
   const store = useStore();
   const { wallets } = store;
   const signer = wallets.getActiveSigner();
-  const [fee, setFee] = useState<string>("0");
-  const [inputFocused, setInputFocused] = useState<boolean>(false);
 
-  const { data: tradeItem, set: setTradeItem } = useTrade();
-  const [inputAmount, setInputAmount] = useState<string>(
-    () => tradeItem.baseAmount?.toFixed(4) ?? "0.00",
-  );
+  const { data: tradeItem, set: setTradeItem } = useTradeItem();
+  const { data: tradeItemState } = useTradeItemState(tradeItem);
+  const maxBaseAmount = useTradeMaxBaseAmount(tradeItem);
+  const maxAssetAmount = useTradeMaxAssetAmount(tradeItem);
 
-  const { data: trade } = useTradeItemState(tradeItem);
+  const maxBaseAmountDecimal = new Decimal(maxBaseAmount ?? 0).div(ZTG);
+  const maxAssetAmountDecimal = new Decimal(maxAssetAmount ?? 0).div(ZTG);
 
-  const baseSymbol = trade?.market.pool.baseAsset.toUpperCase();
+  const [fee, setFee] = useState<string>("0.00");
+  const [percentageDisplay, setPercentageDisplay] = useState<string>("0");
+  const baseSymbol = tradeItemState?.pool.baseAsset.toUpperCase() ?? "ZTG";
 
-  useEffect(() => {
-    if (trade == null) {
-      return;
-    }
-    const percDecimal = new Decimal(percentage).div(100);
-    const baseAmount = percDecimal
-      .mul(trade.maxBaseAmount)
-      .div(ZTG)
-      .toDecimalPlaces(4, Decimal.ROUND_DOWN);
-    setInputAmount(baseAmount.toString());
-    setTradeItem({ ...tradeItem, baseAmount: baseAmount.mul(ZTG) });
-  }, [percentage]);
+  const type = tradeItem?.action ?? "buy";
 
-  useEffect(() => {
-    if (inputFocused || trade == null || inputAmount === "") {
-      return;
-    }
-    let percDecimal = new Decimal(tradeItem.baseAmount ?? 0).div(
-      trade.maxBaseAmount ?? 0,
-    );
-    if (percDecimal.isNaN()) {
-      percDecimal = new Decimal(0);
-    }
-    setTradeItem({
-      ...tradeItem,
-      baseAmount: new Decimal(inputAmount).mul(ZTG),
-    });
-    setPercentageDisplay(percDecimal.mul(100).toFixed(0));
-  }, [trade, inputFocused, inputAmount]);
+  const assetAmount = watch("assetAmount");
+  const baseAmount = watch("baseAmount");
 
-  useEffect(() => {
-    if (tradeItem == null) {
-      return;
-    }
-    setTabIndex(
-      tradeItem.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell,
-    );
-  }, [tradeItem?.action]);
-
-  const type: TradeType = tabIndex === 0 ? "buy" : "sell";
+  const transaction = useTradeTransaction(tradeItem, assetAmount);
 
   const processTransaction = async () => {
     try {
       await signAndSend(
-        trade.transaction,
+        transaction,
         signer,
         extrinsicCallback({
           notificationStore,
@@ -88,12 +67,13 @@ const TradeForm = observer(() => {
             notificationStore.pushNotification(
               `Successfully ${
                 tradeItem.action === "buy" ? "bought" : "sold"
-              } ${trade.assetAmount.div(ZTG).toFixed(2)} ${
-                trade.asset.category.ticker
-              } for ${trade.baseAmount.div(ZTG).toFixed(2)} ${baseSymbol}`,
+              } ${assetAmount} ${
+                tradeItemState.asset.category.ticker
+              } for ${baseAmount} ${baseSymbol}`,
               { type: "Success" },
             );
-            setInputAmount("0.00");
+            reset();
+            setPercentageDisplay("0");
           },
           failCallback: ({ index, error }) => {
             const { errorName } = store.sdk.errorTable.getEntry(
@@ -101,7 +81,7 @@ const TradeForm = observer(() => {
               extractIndexFromErrorHex(error),
             );
             notificationStore.pushNotification(
-              `Trade failed: ${errorName} - ${trade.asset.category.ticker}`,
+              `Trade failed: ${errorName} - ${tradeItemState.asset.category.ticker}`,
               {
                 type: "Error",
               },
@@ -117,23 +97,79 @@ const TradeForm = observer(() => {
     }
   };
 
-  const [debouncedTrade] = useDebounce(JSON.stringify(trade), 500);
+  const [debouncedTransactionHash] = useDebounce(
+    transaction?.hash.toString(),
+    150,
+  );
 
   useEffect(() => {
-    if (trade == null || trade.transaction == null) {
+    if (debouncedTransactionHash == null) {
       return;
     }
-    const sub = from(trade.transaction.paymentInfo(signer.address)).subscribe(
+    const sub = from(transaction.paymentInfo(signer.address)).subscribe(
       (fee) => {
         setFee(new Decimal(fee.partialFee.toString()).div(ZTG).toFixed(3));
       },
     );
     return () => sub.unsubscribe();
-  }, [debouncedTrade]);
+  }, [debouncedTransactionHash]);
+
+  useEffect(() => {
+    const sub = watch((value, { name, type }) => {
+      const changedByUser = type != null;
+      if (name === "percentage" && changedByUser) {
+        const percentage = new Decimal(value.percentage).div(100);
+        const baseAmount = maxBaseAmountDecimal
+          .mul(percentage)
+          .toDecimalPlaces(4, Decimal.ROUND_DOWN);
+        const assetAmount = maxAssetAmountDecimal
+          .mul(percentage)
+          .toDecimalPlaces(4, Decimal.ROUND_DOWN);
+        setValue("baseAmount", baseAmount.toString());
+        setValue("assetAmount", assetAmount.toString());
+      }
+      if (name === "assetAmount" && changedByUser) {
+        const assetAmount = value.assetAmount === "" ? "0" : value.assetAmount;
+        const assetAmountDecimal = new Decimal(assetAmount);
+        const percentage = assetAmountDecimal
+          .div(maxAssetAmountDecimal)
+          .mul(100)
+          .toDecimalPlaces(0, Decimal.ROUND_DOWN);
+        const baseAmount = percentage
+          .mul(maxBaseAmountDecimal)
+          .div(100)
+          .toDecimalPlaces(4, Decimal.ROUND_DOWN);
+        setPercentageDisplay(percentage.toString());
+        setValue("baseAmount", baseAmount.toString());
+      }
+      if (name === "baseAmount" && changedByUser) {
+        const baseAmount = value.baseAmount === "" ? "0" : value.baseAmount;
+        const baseAmountDecimal = new Decimal(baseAmount);
+        const percentage = baseAmountDecimal
+          .div(maxBaseAmountDecimal)
+          .mul(100)
+          .toDecimalPlaces(0, Decimal.ROUND_DOWN);
+        const assetAmount = percentage
+          .mul(maxAssetAmountDecimal)
+          .div(100)
+          .toDecimalPlaces(4, Decimal.ROUND_DOWN);
+        setPercentageDisplay(percentage.toString());
+        setValue("assetAmount", assetAmount.toString());
+      }
+    });
+
+    return () => sub.unsubscribe();
+  }, [watch, maxAssetAmountDecimal, maxBaseAmountDecimal, setValue]);
 
   return (
     <>
-      <div className={`bg-white`}>
+      <form
+        className={`bg-white`}
+        onSubmit={(e) => {
+          e.preventDefault();
+          processTransaction();
+        }}
+      >
         <Tab.Group
           defaultIndex={0}
           onChange={(index: TradeTabType) => {
@@ -150,7 +186,8 @@ const TradeForm = observer(() => {
                 action: "sell",
               });
             }
-            setInputAmount("0.00");
+            reset();
+            setPercentageDisplay("0");
           }}
           selectedIndex={tabIndex}
         >
@@ -165,80 +202,50 @@ const TradeForm = observer(() => {
         </Tab.Group>
         <div className="flex flex-col mx-[30px]">
           <div className="center h-[87px]" style={{ fontSize: "58px" }}>
-            {trade?.assetAmount?.div(ZTG).toFixed(2) ?? "0.00"}
+            <input
+              type="number"
+              {...register("assetAmount", {
+                required: true,
+                min: "0",
+                max: maxAssetAmount?.div(ZTG).toFixed(4),
+              })}
+              step="any"
+              className="w-full bg-transparent outline-none !text-center text-[58px]"
+            />
           </div>
           <div
             className="center h-[48px] font-semibold"
             style={{ fontSize: "28px" }}
           >
-            {trade?.asset.category.name}
+            {tradeItemState?.asset.category.name}
           </div>
           <div className="font-semibold text-center mb-[20px]">For</div>
           <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px]">
             <input
               type="number"
-              value={inputAmount}
-              max={trade?.maxBaseAmount?.div(ZTG).toFixed(4)}
-              min="0"
+              {...register("baseAmount", {
+                required: true,
+                min: "0",
+                max: maxBaseAmount?.div(ZTG).toFixed(4),
+              })}
+              step="any"
               className="w-full bg-transparent outline-none !text-center"
-              onFocus={() => setInputFocused(true)}
-              onBlur={() => {
-                const maxBaseDecimal = new Decimal(
-                  trade?.maxBaseAmount ?? 0,
-                ).div(ZTG);
-                const val = inputAmount === "" ? "0" : inputAmount;
-                if (maxBaseDecimal.lte(val)) {
-                  setInputAmount(
-                    maxBaseDecimal
-                      .toDecimalPlaces(4, Decimal.ROUND_DOWN)
-                      .toString(),
-                  );
-                } else if (inputAmount === "") {
-                  setInputAmount("0");
-                }
-                setInputFocused(false);
-              }}
-              onChange={(e) => {
-                if (inputFocused) {
-                  setInputAmount(e.target.value);
-                }
-              }}
             />
             <div className="mr-[10px]">{baseSymbol}</div>
           </div>
           <RangeInput
-            max="100"
             min="0"
-            minLabel="0 %"
-            maxLabel="100 %"
+            max="100"
             value={percentageDisplay}
-            onValueChange={setPercentage}
+            onValueChange={setPercentageDisplay}
+            minLabel="0 %"
+            step="0.1"
             valueSuffix="%"
+            maxLabel="100 %"
             className="mb-[20px]"
+            {...register("percentage")}
           />
-          <div className="text-center mb-[20px]">
-            <div className="text-ztg-14-150">
-              <div className="mb-[10px]">
-                <span className="text-sky-600">Average Price: </span>
-                {trade?.averagePrice.toFixed(2)} {baseSymbol}
-              </div>
-              <div className="mb-[10px]">
-                <span className="text-sky-600">Prediction After Trade: </span>
-                {trade?.priceAfterTrade.toFixed(2)} {baseSymbol} (
-                {trade?.priceAfterTrade.mul(100).toFixed(0)}%)
-              </div>
-              <div className="mb-[10px]">
-                <span className="text-sky-600">Price impact: </span>
-                {trade?.priceImpact.toFixed(2)}%
-              </div>
-            </div>
-          </div>
-          <TransactionButton
-            onClick={() => {
-              processTransaction();
-            }}
-            className="h-[56px]"
-          >
+          <TransactionButton disabled={!formState.isValid} className="h-[56px]">
             <div className="center font-normal h-[20px]">
               Confirm {`${capitalize(tradeItem.action)}`}
             </div>
@@ -247,8 +254,9 @@ const TradeForm = observer(() => {
             </div>
           </TransactionButton>
         </div>
-      </div>
+      </form>
     </>
   );
 });
+
 export default TradeForm;

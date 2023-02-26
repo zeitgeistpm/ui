@@ -8,6 +8,7 @@ import {
   getMarketIdOf,
   isNA,
   isRpcSdk,
+  SaturatedPoolEntryAsset,
   ScalarAssetId,
   ZTG,
 } from "@zeitgeistpm/sdk-next";
@@ -31,7 +32,6 @@ import { useContext } from "react";
 export type TradeItem = {
   action: TradeType;
   assetId: CategoricalAssetId | ScalarAssetId;
-  baseAmount?: Decimal;
 };
 
 export const TradeItemContext = createContext<{
@@ -39,7 +39,7 @@ export const TradeItemContext = createContext<{
   set: (trade: TradeItem) => void;
 }>(null);
 
-export const useTrade = () => {
+export const useTradeItem = () => {
   return useContext(TradeItemContext);
 };
 
@@ -52,10 +52,188 @@ export const slippagePercentageAtom = atomWithStorage<number>(
   1,
 );
 
-export type UseTradeItemState = {
-  readonly item: TradeItem | null;
+export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
+  const { data: itemState } = useTradeItemState(item);
+
+  if (!itemState) {
+    return new Decimal(0);
+  }
+
+  const {
+    poolAssetBalance,
+    baseWeight,
+    poolBaseBalance,
+    assetWeight,
+    tradeablePoolAssetBalance,
+    swapFee,
+    traderAssetBalance,
+    traderBaseBalance,
+  } = itemState;
+
+  let maxAmountBase: Decimal;
+
+  if (item.action === "buy") {
+    maxAmountBase = calcInGivenOut(
+      poolBaseBalance,
+      baseWeight,
+      poolAssetBalance,
+      assetWeight,
+      tradeablePoolAssetBalance,
+      swapFee,
+    );
+  }
+  if (item.action === "sell") {
+    const assetBalance = traderAssetBalance.gt(tradeablePoolAssetBalance)
+      ? tradeablePoolAssetBalance
+      : traderAssetBalance;
+
+    maxAmountBase = calcOutGivenIn(
+      poolAssetBalance,
+      assetWeight,
+      poolBaseBalance,
+      baseWeight,
+      assetBalance,
+      swapFee,
+    );
+  }
+
+  maxAmountBase = isNA(traderBaseBalance)
+    ? new Decimal(0)
+    : maxAmountBase.gt(traderBaseBalance)
+    ? traderBaseBalance
+    : maxAmountBase;
+
+  return maxAmountBase;
 };
 
+export const useTradeMaxAssetAmount = (item: TradeItem): Decimal => {
+  const { data: itemState } = useTradeItemState(item);
+
+  const maxBaseAmount = useTradeMaxBaseAmount(item);
+
+  if (!itemState) {
+    return new Decimal(0);
+  }
+
+  const {
+    poolAssetBalance,
+    baseWeight,
+    poolBaseBalance,
+    assetWeight,
+    tradeablePoolAssetBalance,
+    swapFee,
+    traderBaseBalance,
+  } = itemState;
+
+  let maxAmountAsset: Decimal;
+
+  if (item.action === "buy") {
+    maxAmountAsset = calcOutGivenIn(
+      poolBaseBalance,
+      baseWeight,
+      poolAssetBalance,
+      assetWeight,
+      maxBaseAmount,
+      swapFee,
+    );
+  }
+  if (item.action === "sell") {
+    maxAmountAsset = calcInGivenOut(
+      poolAssetBalance,
+      assetWeight,
+      poolBaseBalance,
+      baseWeight,
+      maxBaseAmount,
+      swapFee,
+    );
+  }
+
+  maxAmountAsset = isNA(traderBaseBalance)
+    ? new Decimal(0)
+    : maxAmountAsset.gt(tradeablePoolAssetBalance)
+    ? tradeablePoolAssetBalance
+    : maxAmountAsset;
+
+  return maxAmountAsset;
+};
+
+export const useTradeTransaction = (
+  item: TradeItem,
+  amountAsset?: string,
+): SubmittableExtrinsic<"promise", ISubmittableResult> | undefined => {
+  amountAsset = !amountAsset ? "0" : amountAsset;
+  const amountAssetDecimal = new Decimal(amountAsset).mul(ZTG);
+  const [sdk] = useSdkv2();
+  const { data: itemState } = useTradeItemState(item);
+
+  if (itemState == null || sdk == null) {
+    return undefined;
+  }
+
+  const {
+    pool,
+    poolAssetBalance,
+    baseWeight,
+    poolBaseBalance,
+    assetWeight,
+    swapFee,
+    slippage,
+  } = itemState;
+
+  let transaction: SubmittableExtrinsic<"promise", ISubmittableResult> | null;
+
+  if (isRpcSdk(sdk)) {
+    try {
+      if (item.action == "buy") {
+        const maxAmountIn = calcInGivenOut(
+          poolBaseBalance,
+          baseWeight,
+          poolAssetBalance,
+          assetWeight,
+          amountAsset,
+          swapFee,
+        ).mul(new Decimal(slippage / 100 + 1));
+
+        if (!maxAmountIn.isNaN()) {
+          transaction = sdk.api.tx.swaps.swapExactAmountOut(
+            pool.poolId,
+            { Ztg: null },
+            maxAmountIn.round().toFixed(0),
+            item.assetId,
+            amountAssetDecimal.toFixed(0),
+            null,
+          );
+        }
+      } else {
+        const minAmountOut = calcOutGivenIn(
+          poolAssetBalance,
+          assetWeight,
+          poolBaseBalance,
+          baseWeight,
+          amountAsset,
+          swapFee,
+        ).mul(new Decimal(1 - slippage / 100));
+
+        if (!minAmountOut.isNaN()) {
+          transaction = sdk.api.tx.swaps.swapExactAmountIn(
+            pool.poolId,
+            item.assetId,
+            amountAssetDecimal.toFixed(0),
+            { Ztg: null },
+            minAmountOut.round().toFixed(0),
+            null,
+          );
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  return transaction;
+};
+
+// returns all teh necessary data needed for trade
 export const useTradeItemState = (item: TradeItem) => {
   const [sdk, id] = useSdkv2();
   const { wallets } = useStore();
@@ -104,7 +282,7 @@ export const useTradeItemState = (item: TradeItem) => {
   );
 
   const query = useQuery(
-    [id, "trade", item, wallets.activeAccount?.address],
+    [id, "trade-item-state", item, wallets.activeAccount?.address],
     () => {
       const baseWeight = getAssetWeight(pool, { Ztg: null }).unwrap();
       const assetWeight = getAssetWeight(pool, item.assetId).unwrap();
@@ -116,7 +294,7 @@ export const useTradeItemState = (item: TradeItem) => {
       );
       const tradeablePoolAssetBalance = poolAssetBalance.mul(MAX_IN_OUT_RATIO);
 
-      const price = calcSpotPrice(
+      const spotPrice = calcSpotPrice(
         poolBaseBalance,
         baseWeight,
         poolAssetBalance,
@@ -124,151 +302,26 @@ export const useTradeItemState = (item: TradeItem) => {
         swapFee,
       );
 
-      let maxAmountBase: Decimal;
-
-      if (item.action === "buy") {
-        maxAmountBase = calcInGivenOut(
-          poolBaseBalance,
-          baseWeight,
-          poolAssetBalance,
-          assetWeight,
-          tradeablePoolAssetBalance,
-          swapFee,
-        );
-      }
-      if (item.action === "sell") {
-        const assetBalance = traderAssetBalance.gt(tradeablePoolAssetBalance)
-          ? tradeablePoolAssetBalance
-          : traderAssetBalance;
-        maxAmountBase = calcOutGivenIn(
-          poolAssetBalance,
-          assetWeight,
-          poolBaseBalance,
-          baseWeight,
-          assetBalance,
-          swapFee,
-        );
-      }
-
-      maxAmountBase = isNA(traderBaseBalance)
-        ? new Decimal(0)
-        : maxAmountBase.gt(traderBaseBalance)
-        ? traderBaseBalance
-        : maxAmountBase;
-
-      const amountAsset =
-        item.action === "buy"
-          ? calcOutGivenIn(
-              poolBaseBalance,
-              baseWeight,
-              poolAssetBalance,
-              assetWeight,
-              item.baseAmount ?? 0,
-              swapFee,
-            )
-          : calcInGivenOut(
-              poolAssetBalance,
-              assetWeight,
-              poolBaseBalance,
-              baseWeight,
-              item.baseAmount ?? 0,
-              swapFee,
-            );
-
-      const priceAfterTrade =
-        item.action === "buy"
-          ? calcSpotPrice(
-              poolBaseBalance.add(item.baseAmount ?? 0),
-              baseWeight,
-              poolAssetBalance.sub(amountAsset),
-              assetWeight,
-              swapFee,
-            )
-          : calcSpotPrice(
-              poolBaseBalance.sub(item.baseAmount ?? 0),
-              baseWeight,
-              poolAssetBalance.add(amountAsset),
-              assetWeight,
-              swapFee,
-            );
-
-      const averagePrice =
-        item.baseAmount == null ||
-        amountAsset.isZero() ||
-        item.baseAmount.isZero()
-          ? new Decimal(0)
-          : amountAsset.div(item.baseAmount);
-
-      const priceImpact = priceAfterTrade.div(price).sub(1).mul(100);
-
-      let transaction: SubmittableExtrinsic<
-        "promise",
-        ISubmittableResult
-      > | null;
-
-      if (isRpcSdk(sdk)) {
-        try {
-          if (item.action == "buy") {
-            const maxAmountIn = calcInGivenOut(
-              poolBaseBalance,
-              baseWeight,
-              poolAssetBalance,
-              assetWeight,
-              amountAsset,
-              swapFee,
-            ).mul(new Decimal(slippage / 100 + 1));
-
-            if (!maxAmountIn.isNaN()) {
-              transaction = sdk.api.tx.swaps.swapExactAmountOut(
-                pool.poolId,
-                { Ztg: null },
-                maxAmountIn.round().toFixed(0),
-                item.assetId,
-                amountAsset.toFixed(0),
-                null,
-              );
-            }
-          } else {
-            const minAmountOut = calcOutGivenIn(
-              poolAssetBalance,
-              assetWeight,
-              poolBaseBalance,
-              baseWeight,
-              amountAsset,
-              swapFee,
-            ).mul(new Decimal(1 - slippage / 100));
-
-            if (!minAmountOut.isNaN()) {
-              transaction = sdk.api.tx.swaps.swapExactAmountIn(
-                pool.poolId,
-                item.assetId,
-                amountAsset.toFixed(0),
-                { Ztg: null },
-                minAmountOut.round().toFixed(0),
-                null,
-              );
-            }
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
       return {
-        item,
         asset,
         market,
-        baseAmount: item.baseAmount,
-        assetAmount: amountAsset,
-        maxBaseAmount: maxAmountBase.toDecimalPlaces(0),
-        priceAfterTrade,
-        averagePrice,
-        priceImpact,
-        transaction,
+        pool,
+        spotPrice,
+        poolBaseBalance,
+        poolAssetBalance,
+        tradeablePoolAssetBalance,
+        traderBaseBalance,
+        traderAssetBalance,
+        baseWeight,
+        assetWeight,
+        swapFee,
+        slippage,
       };
     },
     {
       enabled:
         !!sdk &&
+        !!item &&
         !!pool &&
         !!poolBaseBalance &&
         !!saturatedData &&

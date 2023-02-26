@@ -3,7 +3,7 @@ import {
   IOCategoricalAssetId,
   IOScalarAssetId,
 } from "@zeitgeistpm/sdk-next";
-import { useTrade } from "lib/hooks/trade";
+import { useTradeItem } from "lib/hooks/trade";
 import { useStore } from "lib/stores/Store";
 import { compareJSON } from "lib/util";
 import { observer } from "mobx-react";
@@ -18,7 +18,7 @@ const BuySellButtons = observer(
   ({ assetId, disabled }: BuySellButtonsProps) => {
     const store = useStore();
     const isDisabled = false;
-    const trade = useTrade();
+    const trade = useTradeItem();
 
     if (!IOCategoricalAssetId.is(assetId) && !IOScalarAssetId.is(assetId)) {
       return null;
