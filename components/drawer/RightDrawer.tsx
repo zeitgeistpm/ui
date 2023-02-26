@@ -94,11 +94,11 @@ const RightDrawer = observer(() => {
   const tabLabels = useMemo(() => {
     switch (displayMode) {
       case "default":
-        return ["Trade Slip", "Exchange"];
+        return ["Trade", "Exchange"];
       case "liquidity":
         return ["Liquidity Pools", "Exchange"];
       default:
-        return ["Trade Slip", "Exchange"];
+        return ["Trade", "Exchange"];
     }
   }, [displayMode]);
 

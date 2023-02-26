@@ -9,8 +9,6 @@ import {
 } from "lib/hooks/trade";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
-import { extractIndexFromErrorHex } from "lib/util/error-table";
-import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import { capitalize } from "lodash";
