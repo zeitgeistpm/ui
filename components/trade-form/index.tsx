@@ -3,7 +3,6 @@ import { ZTG } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import {
   useTradeItem,
-  useTradeItemState,
   useTradeMaxAssetAmount,
   useTradeMaxBaseAmount,
   useTradeTransaction,
@@ -21,10 +20,18 @@ import RangeInput from "../ui/RangeInput";
 import TransactionButton from "../ui/TransactionButton";
 import TradeTab, { TradeTabType } from "./TradeTab";
 import { useForm } from "react-hook-form";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import {
+  tradeItemStateRootQueryKey,
+  useTradeItemState,
+} from "lib/hooks/queries/useTradeItemState";
 
 const TradeForm = observer(() => {
   const notificationStore = useNotificationStore();
   const [tabIndex, setTabIndex] = useState<number>(0);
+  const [sdk, id] = useSdkv2();
   const { register, formState, watch, setValue, reset } = useForm<{
     percentage: string;
     assetAmount: string;
@@ -47,6 +54,7 @@ const TradeForm = observer(() => {
 
   const [fee, setFee] = useState<string>("0.00");
   const [percentageDisplay, setPercentageDisplay] = useState<string>("0");
+  const queryClient = useQueryClient();
   const baseSymbol = tradeItemState?.pool.baseAsset.toUpperCase() ?? "ZTG";
 
   const type = tradeItem?.action ?? "buy";
@@ -56,46 +64,27 @@ const TradeForm = observer(() => {
 
   const transaction = useTradeTransaction(tradeItem, assetAmount);
 
-  const processTransaction = async () => {
-    try {
-      await signAndSend(
-        transaction,
-        signer,
-        extrinsicCallback({
-          notificationStore,
-          successCallback: () => {
-            notificationStore.pushNotification(
-              `Successfully ${
-                tradeItem.action === "buy" ? "bought" : "sold"
-              } ${assetAmount} ${
-                tradeItemState.asset.category.ticker
-              } for ${baseAmount} ${baseSymbol}`,
-              { type: "Success" },
-            );
-            reset();
-            setPercentageDisplay("0");
-          },
-          failCallback: ({ index, error }) => {
-            const { errorName } = store.sdk.errorTable.getEntry(
-              index,
-              extractIndexFromErrorHex(error),
-            );
-            notificationStore.pushNotification(
-              `Trade failed: ${errorName} - ${tradeItemState.asset.category.ticker}`,
-              {
-                type: "Error",
-              },
-            );
-          },
-        }),
+  const { send: swapTx } = useExtrinsic(() => transaction, {
+    onSuccess: () => {
+      notificationStore.pushNotification(
+        `Successfully ${
+          tradeItem.action === "buy" ? "bought" : "sold"
+        } ${assetAmount} ${
+          tradeItemState.asset.category.ticker
+        } for ${baseAmount} ${baseSymbol}`,
+        { type: "Success" },
       );
-    } catch (err) {
-      console.warn(err);
-      notificationStore.pushNotification("Transaction canceled", {
-        type: "Info",
-      });
-    }
-  };
+      reset();
+      setPercentageDisplay("0");
+      queryClient.invalidateQueries([
+        id,
+        tradeItemStateRootQueryKey,
+        tradeItem.action,
+        JSON.stringify(tradeItem.assetId),
+        wallets?.activeAccount?.address,
+      ]);
+    },
+  });
 
   const [debouncedTransactionHash] = useDebounce(
     transaction?.hash.toString(),
@@ -167,7 +156,7 @@ const TradeForm = observer(() => {
         className={`bg-white`}
         onSubmit={(e) => {
           e.preventDefault();
-          processTransaction();
+          swapTx();
         }}
       >
         <Tab.Group
