@@ -18,17 +18,17 @@ const HeroSlider = ({
   const slidesLength = slidesData.length;
 
   // autoplay
-  // useEffect(() => {
-  //   if (slidesData.length > 1) {
-  //     const ref = setTimeout(() => {
-  //       setAnimate(true);
-  //       moveSlider("next", currentSlide, setCurrentSlide, slidesLength);
-  //     }, 5000);
-  //     return () => {
-  //       clearTimeout(ref);
-  //     };
-  //   }
-  // }, [currentSlide]);
+  useEffect(() => {
+    if (slidesData.length > 1) {
+      const ref = setTimeout(() => {
+        setAnimate(true);
+        moveSlider("next", currentSlide, setCurrentSlide, slidesLength);
+      }, 10000);
+      return () => {
+        clearTimeout(ref);
+      };
+    }
+  }, [currentSlide]);
 
   return (
     <section
