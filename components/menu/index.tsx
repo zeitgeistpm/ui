@@ -50,7 +50,6 @@ const Menu: FC = observer(() => {
           })
           .map((itemKey, idx) => {
             const item = navigationStore.items[itemKey];
-            console.log(navigationStore.checkPage(itemKey as any));
             return (
               <MenuItem
                 href={item.href}

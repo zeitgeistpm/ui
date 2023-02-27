@@ -1,10 +1,8 @@
-import { useState } from "react";
-import { useStore } from "lib/stores/Store";
 import { useRouter } from "next/router";
 import { observer } from "mobx-react";
 import Link from "next/link";
-import React, { FC, useMemo } from "react";
-import { Icon, ChevronUp } from "react-feather";
+import React, { FC } from "react";
+import { Icon } from "react-feather";
 
 export interface MenuItemProps {
   hideLabel: boolean;
@@ -32,54 +30,28 @@ export const MenuItem: FC<MenuItemProps> = observer(
     IconComponent,
     textLabel,
     className = "",
-    hideLabel,
     href,
     active = false,
-    open,
     onClick,
   }) => {
     const { pathname } = useRouter();
-    const [isHovered, setIsHovered] = useState(false);
     active = pathname === "/" ? false : active;
 
     return (
       <WrapComponent href={href}>
-        <div
-          className={`flex rounded-full p-5 w-[68px] ${className}`}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+        <button
+          className={`group flex rounded-full p-5 w-[68px] bg-black border-2 border-black text-white hover:border-sunglow-2 hover:text-sunglow-2 hover:bg-black transition-all duration-300 focus:bg-ztg-blue focus:text-white focus:border-ztg-blue ${
+            active && "bg-ztg-blue border-ztg-blue"
+          } ${className}`}
           onClick={onClick}
-          style={{
-            border: isHovered
-              ? "solid 2px #FAB400"
-              : active
-              ? "solid 2px #0001FE"
-              : "solid 2px #000",
-            transition: "all 250ms ease",
-            backgroundColor: isHovered ? "#000" : active ? "#0001FE" : "#000",
-          }}
         >
           <div className="relative center">
-            <IconComponent
-              size={24}
-              style={{
-                color: isHovered ? "#FAB400" : "#FFF",
-                transition: "all 250ms ease",
-              }}
-              className=""
-            />
-            <div
-              className={`absolute left-14 whitespace-nowrap px-2.5 py-1 rounded bg-sunglow-2 text-black text-lg `}
-              style={{
-                visibility: isHovered ? "visible" : "hidden",
-                opacity: isHovered ? 1 : 0,
-                transition: "all 250ms ease",
-              }}
-            >
+            <IconComponent size={24} />
+            <div className="invisible opacity-0 absolute left-14 whitespace-nowrap px-2.5 py-1 rounded bg-sunglow-2 text-black text-lg group-hover:visible group-hover:opacity-100 group-focus:bg-ztg-blue group-focus:text-white transition-all duration-300">
               {textLabel}
             </div>
           </div>
-        </div>
+        </button>
       </WrapComponent>
     );
   },
