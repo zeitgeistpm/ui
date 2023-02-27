@@ -32,7 +32,7 @@ const HeroSlider = ({
 
   return (
     <section
-      className={`relative w-full h-[527px] -z-10 mx-auto ${
+      className={`relative w-full h-[527px] mx-auto ${
         animate && styles.fadeIn
       }`}
       onAnimationEnd={() => setAnimate(false)}
