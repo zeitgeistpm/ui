@@ -50,11 +50,19 @@ const AccountButton: FC<{
     return (
       <>
         {!connected ? (
-          <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+          <div
+            className="flex-1"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
             <button
               className={
                 connectButtonClassname ||
-                "flex text-black rounded-full font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-20"
+                `flex border-2 rounded-full px-6 leading-[40px] ml-auto ${
+                  pathname === "/"
+                    ? "text-white bg-transparent border-white"
+                    : "text-black border-black"
+                } rounded-full font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-30`
               }
               onClick={() => connect()}
               disabled={
@@ -66,7 +74,7 @@ const AccountButton: FC<{
 
             {hovering === true &&
             (locationAllowed !== true || isUsingVPN === true) ? (
-              <div className="bg-white absolute rounded font-bold text-black">
+              <div className="bg-white absolute text-sm rounded font-bold text-black right-0 bottom-0">
                 {locationAllowed !== true
                   ? "Your jurisdiction is not authorised to trade"
                   : "Trading over a VPN is not allowed due to legal restrictions"}

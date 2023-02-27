@@ -69,10 +69,11 @@ const TopBar = observer(() => {
 
   return (
     <div
-      className={`flex w-full py-7 fixed z-40`}
+      className={`flex w-full py-7 fixed z-40 transition-[background] duration-500 ${
+        pathname === "/" ? "none" : "border-b border-gray-200"
+      }`}
       style={{
         backgroundColor: navbarBGColor,
-        borderBottom: `${pathname === "/" ? "none" : "solid 1px #D8E1E7"}`,
       }}
     >
       <div className="hidden md:flex justify-between items-center w-full max-w-screen-2xl h-[44px] mx-auto px-8">
