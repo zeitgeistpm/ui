@@ -10,7 +10,7 @@ import {
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { capitalize } from "lodash";
 import { from } from "rxjs";
 import { useDebounce } from "use-debounce";
@@ -25,6 +25,7 @@ import {
   tradeItemStateRootQueryKey,
   useTradeItemState,
 } from "lib/hooks/queries/useTradeItemState";
+import { calcSpotPrice } from "lib/math";
 
 const TradeForm = observer(() => {
   const notificationStore = useNotificationStore();
@@ -59,6 +60,52 @@ const TradeForm = observer(() => {
 
   const assetAmount = watch("assetAmount");
   const baseAmount = watch("baseAmount");
+
+  const averagePrice = useMemo<string>(() => {
+    if (!Number(assetAmount) || !Number(baseAmount)) {
+      return "0";
+    } else return new Decimal(baseAmount).div(assetAmount).toFixed(2);
+  }, [assetAmount, baseAmount]);
+
+  const predictionAfterTrade = useMemo<Decimal>(() => {
+    if (!Number(assetAmount) || !Number(baseAmount) || tradeItemState == null) {
+      return new Decimal(0);
+    } else {
+      if (tradeItem.action === "buy") {
+        return calcSpotPrice(
+          tradeItemState.poolBaseBalance.add(new Decimal(baseAmount).mul(ZTG)),
+          tradeItemState.baseWeight,
+          tradeItemState.poolAssetBalance.sub(
+            new Decimal(assetAmount).mul(ZTG),
+          ),
+          tradeItemState.assetWeight,
+          tradeItemState.swapFee,
+        );
+      } else {
+        return calcSpotPrice(
+          tradeItemState.poolBaseBalance.sub(new Decimal(baseAmount).mul(ZTG)),
+          tradeItemState.baseWeight,
+          tradeItemState.poolAssetBalance.add(
+            new Decimal(assetAmount).mul(ZTG),
+          ),
+          tradeItemState.assetWeight,
+          tradeItemState.swapFee,
+        );
+      }
+    }
+  }, [assetAmount, baseAmount, tradeItemState]);
+
+  const priceImpact = useMemo<string>(() => {
+    if (tradeItemState == null || predictionAfterTrade.eq(0)) {
+      return "0";
+    } else {
+      return predictionAfterTrade
+        .div(tradeItemState.spotPrice)
+        .sub(1)
+        .mul(100)
+        .toFixed(2);
+    }
+  }, [tradeItemState, predictionAfterTrade]);
 
   const transaction = useTradeTransaction(tradeItem, assetAmount);
 
@@ -118,10 +165,12 @@ const TradeForm = observer(() => {
       if (name === "assetAmount" && changedByUser) {
         const assetAmount = value.assetAmount === "" ? "0" : value.assetAmount;
         const assetAmountDecimal = new Decimal(assetAmount);
-        const percentage = assetAmountDecimal
-          .div(maxAssetAmountDecimal)
-          .mul(100)
-          .toDecimalPlaces(0, Decimal.ROUND_DOWN);
+        const percentage = maxAssetAmountDecimal.gt(0)
+          ? assetAmountDecimal
+              .div(maxAssetAmountDecimal)
+              .mul(100)
+              .toDecimalPlaces(0, Decimal.ROUND_DOWN)
+          : new Decimal(0);
         const baseAmount = percentage
           .mul(maxBaseAmountDecimal)
           .div(100)
@@ -132,10 +181,12 @@ const TradeForm = observer(() => {
       if (name === "baseAmount" && changedByUser) {
         const baseAmount = value.baseAmount === "" ? "0" : value.baseAmount;
         const baseAmountDecimal = new Decimal(baseAmount);
-        const percentage = baseAmountDecimal
-          .div(maxBaseAmountDecimal)
-          .mul(100)
-          .toDecimalPlaces(0, Decimal.ROUND_DOWN);
+        const percentage = maxBaseAmountDecimal.gt(0)
+          ? baseAmountDecimal
+              .div(maxBaseAmountDecimal)
+              .mul(100)
+              .toDecimalPlaces(0, Decimal.ROUND_DOWN)
+          : new Decimal(0);
         const assetAmount = percentage
           .mul(maxAssetAmountDecimal)
           .div(100)
@@ -232,6 +283,23 @@ const TradeForm = observer(() => {
             className="mb-[20px]"
             {...register("percentage")}
           />
+          <div className="text-center mb-[20px]">
+            <div className="text-ztg-14-150">
+              <div className="mb-[10px]">
+                <span className="text-sky-600">Average Price: </span>
+                {averagePrice} {baseSymbol}
+              </div>
+              <div className="mb-[10px]">
+                <span className="text-sky-600">Prediction After Trade: </span>
+                {predictionAfterTrade.toFixed(2)} {baseSymbol} (
+                {predictionAfterTrade.mul(100).toFixed(0)}%)
+              </div>
+              <div className="mb-[10px]">
+                <span className="text-sky-600">Price impact: </span>
+                {priceImpact}%
+              </div>
+            </div>
+          </div>
           <TransactionButton disabled={!formState.isValid} className="h-[56px]">
             <div className="center font-normal h-[20px]">
               Confirm {`${capitalize(tradeItem.action)}`}

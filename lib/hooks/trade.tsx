@@ -1,30 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import {
   CategoricalAssetId,
-  getAssetWeight,
-  getIndexOf,
-  getMarketIdOf,
   isRpcSdk,
-  SaturatedPoolEntryAsset,
   ScalarAssetId,
   ZTG,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
-import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import { MAX_IN_OUT_RATIO } from "lib/constants";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
-import { useStore } from "lib/stores/Store";
 import { TradeType } from "lib/types";
 import { createContext } from "react";
-import { useAccountAssetBalances } from "./queries/useAccountAssetBalances";
-import { usePoolAccountIds } from "./queries/usePoolAccountIds";
-import { usePoolsByIds } from "./queries/usePoolsByIds";
-import { usePoolZtgBalance } from "./queries/usePoolZtgBalance";
-import { useSaturatedPoolsIndex } from "./queries/useSaturatedPoolsIndex";
-import { useZtgBalance } from "./queries/useZtgBalance";
 import { useSdkv2 } from "./useSdkv2";
 import { useContext } from "react";
 import { useTradeItemState } from "./queries/useTradeItemState";
@@ -187,50 +173,46 @@ export const useTradeTransaction = (
     | undefined;
 
   if (isRpcSdk(sdk)) {
-    try {
-      if (item.action == "buy") {
-        const maxAmountIn = calcInGivenOut(
-          poolBaseBalance,
-          baseWeight,
-          poolAssetBalance,
-          assetWeight,
-          amountAssetDecimal,
-          swapFee,
-        ).mul(new Decimal(slippage / 100 + 1));
+    if (item.action == "buy") {
+      const maxAmountIn = calcInGivenOut(
+        poolBaseBalance,
+        baseWeight,
+        poolAssetBalance,
+        assetWeight,
+        amountAssetDecimal,
+        swapFee,
+      ).mul(new Decimal(slippage / 100 + 1));
 
-        if (!maxAmountIn.isNaN()) {
-          transaction = sdk.api.tx.swaps.swapExactAmountOut(
-            pool.poolId,
-            { Ztg: null },
-            maxAmountIn.toFixed(0),
-            item.assetId,
-            amountAssetDecimal.toFixed(0),
-            null,
-          );
-        }
-      } else {
-        const minAmountOut = calcOutGivenIn(
-          poolAssetBalance,
-          assetWeight,
-          poolBaseBalance,
-          baseWeight,
-          amountAssetDecimal,
-          swapFee,
-        ).mul(new Decimal(1 - slippage / 100));
-
-        if (!minAmountOut.isNaN()) {
-          transaction = sdk.api.tx.swaps.swapExactAmountIn(
-            pool.poolId,
-            item.assetId,
-            amountAssetDecimal.toFixed(0),
-            { Ztg: null },
-            minAmountOut.toFixed(0),
-            null,
-          );
-        }
+      if (!maxAmountIn.isNaN()) {
+        transaction = sdk.api.tx.swaps.swapExactAmountOut(
+          pool.poolId,
+          { Ztg: null },
+          maxAmountIn.toFixed(0),
+          item.assetId,
+          amountAssetDecimal.toFixed(0),
+          null,
+        );
       }
-    } catch (error) {
-      console.log(error);
+    } else {
+      const minAmountOut = calcOutGivenIn(
+        poolAssetBalance,
+        assetWeight,
+        poolBaseBalance,
+        baseWeight,
+        amountAssetDecimal,
+        swapFee,
+      ).mul(new Decimal(1 - slippage / 100));
+
+      if (!minAmountOut.isNaN()) {
+        transaction = sdk.api.tx.swaps.swapExactAmountIn(
+          pool.poolId,
+          item.assetId,
+          amountAssetDecimal.toFixed(0),
+          { Ztg: null },
+          minAmountOut.toFixed(0),
+          null,
+        );
+      }
     }
   }
 
