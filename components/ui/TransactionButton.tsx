@@ -54,7 +54,6 @@ const TransactionButton: FC<TransactionButtonProps> = observer(
         onClick={(e) => click(e)}
         disabled={isDisabled()}
         data-test={dataTest}
-        type="submit"
       >
         {connected ? children : "Connect Wallet"}
       </button>
