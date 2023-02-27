@@ -2,12 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { Context, isIndexedData, isRpcSdk, Pool } from "@zeitgeistpm/sdk-next";
 import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
+import { FullPoolFragment } from "@zeitgeistpm/indexer";
 
 export const accountPoolAssetBalancesRootKey = "account-pool-asset-balances";
 
 export const useAccountPoolAssetBalances = (
   address?: string,
-  pool?: Pool<Context>,
+  pool?: Pool<Context> | FullPoolFragment,
   blockNumber?: number,
 ) => {
   const [sdk, id] = useSdkv2();
