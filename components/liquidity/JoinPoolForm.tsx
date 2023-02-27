@@ -77,10 +77,10 @@ const JoinPoolForm = ({
 
       if (name === "baseAssetPercentage" && changedByUser) {
         const percentage = Number(value["baseAssetPercentage"]);
-        const userBaseAssetBalance = poolBalances[pool.baseAsset].user;
+        const baseBalances = poolBalances["base"];
+        const userBaseAssetBalance = baseBalances.user;
 
         const newBaseAssetAmount = userBaseAssetBalance.mul(percentage / 100);
-        const baseBalances = poolBalances[pool.baseAsset];
         const poolToInputRatio = baseBalances.pool.div(newBaseAssetAmount);
         for (const assetKey in poolBalances) {
           setValue(
@@ -121,8 +121,8 @@ const JoinPoolForm = ({
 
         setPoolSharesToReceive(totalPoolShares.div(poolToInputRatio));
 
-        const userBaseAssetBalance = poolBalances[pool.baseAsset].user;
-        const baseInputAmount = getValues(pool.baseAsset);
+        const userBaseAssetBalance = poolBalances["base"].user;
+        const baseInputAmount = getValues("base");
 
         setValue(
           "baseAssetPercentage",

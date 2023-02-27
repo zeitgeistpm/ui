@@ -1,4 +1,8 @@
-import { getIndexOf, isNA, parseAssetId } from "@zeitgeistpm/sdk-next";
+import {
+  getIndexOf,
+  IOMarketOutcomeAssetId,
+  parseAssetId,
+} from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalances";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
@@ -19,8 +23,7 @@ export type PoolBalances = {
 
 export const assetObjStringToId = (assetId: string) => {
   const asset = parseAssetId(assetId).unwrap();
-  const id = getIndexOf(asset) ?? assetId;
-  return id;
+  return IOMarketOutcomeAssetId.is(asset) ? getIndexOf(asset) : "base";
 };
 
 const LiquidityModal = ({ poolId }: { poolId: number }) => {
@@ -49,7 +52,6 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
     ?.get(connectedAddress, {
       PoolShare: poolId,
     })
-    //@ts-ignore todo waiting for sdk update
     ?.data.balance.free.toString();
 
   //user balances outside of pool
@@ -62,10 +64,10 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
   const allBalances: PoolBalances = useMemo(() => {
     if (
       pool?.weights &&
-      !isNA(userBaseBalance) &&
+      userBaseBalance &&
       userAssetBalances?.length > 0 &&
       poolAssetBalances?.length > 0 &&
-      !isNA(poolBaseBalance)
+      poolBaseBalance
     ) {
       const allBalances: PoolBalances = pool.weights.reduce(
         (balances, weight, index) => {
