@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { isRpcSdk, NA } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
@@ -18,10 +18,10 @@ export const useZtgBalance = (address: string, blockNumber?: number) => {
         const balance = await api.query.system.account(address);
         return new Decimal(balance.data.free.toString());
       }
-      return NA;
+      return null;
     },
     {
-      initialData: NA,
+      initialData: null,
       keepPreviousData: true,
       enabled: Boolean(sdk && address && isRpcSdk(sdk)),
     },

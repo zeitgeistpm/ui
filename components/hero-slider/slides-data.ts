@@ -2,9 +2,35 @@ export const slidesData = [
   {
     id: 1,
     title: {
+      text: "Starship\nIn Outer Space?",
+      secondary: "WIN 1000 ZTG",
+      styles:
+        "text-white font-sans whitespace-pre font-extrabold text-6xl md:text-8xl mb-4",
+      stylesSecondary:
+        "text-center sm:text-start text-white font-sans whitespace-pre font-extrabold text-3xl md:text-4xl mb-6",
+    },
+    bg: "/carousel/spaceship_banner_ai.png",
+    cta1: "Trade Now",
+    link1: "https://app.zeitgeist.pm/markets/125",
+    color1: {
+      primary: "#3679E1",
+      secondary: "#FFF",
+      border: "#3679E1",
+    },
+    cta2: "",
+    link2: "",
+    color2: {
+      primary: "",
+      secondary: "",
+      border: "",
+    },
+  },
+  {
+    id: 2,
+    title: {
       text: `Zeitgeist\nis moving to Polkadot`,
       styles:
-        "md:max-w-[660px] text-white font-sans whitespace-pre font-semibold text-5xl md:text-6xl",
+        "md:max-w-[660px] text-white font-sans whitespace-pre font-semibold text-5xl md:text-7xl mb-6 ",
     },
     bg: "/carousel/slide-1.jpeg",
     cta1: "Read More",
@@ -23,28 +49,7 @@ export const slidesData = [
       border: "#FFF",
     },
   },
-  // {
-  //   id: 2,
-  //   title: {
-  //     text: "Exiled Racers",
-  //     styles: "text-white text-3xl sm:text-4xl md:text-6xl",
-  //   },
-  //   bg: "/carousel/slide-2.jpeg",
-  //   cta1: "New Markets",
-  //   link1: "https://shapethefuture.zeitgeist.pm",
-  //   color1: {
-  //     primary: "#000",
-  //     secondary: "#E90303",
-  //     border: "#E90303",
-  //   },
-  //   cta2: "",
-  //   link2: "",
-  //   color2: {
-  //     primary: "",
-  //     secondary: "",
-  //     border: "",
-  //   },
-  // },
+
   // {
   //   id: 3,
   //   title: {

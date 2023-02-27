@@ -1,10 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  isAvailable,
-  isIndexedData,
-  NA,
-  projectEndTimestamp,
-} from "@zeitgeistpm/sdk-next";
+import { isIndexedData, projectEndTimestamp } from "@zeitgeistpm/sdk-next";
 import PoolTable from "components/liquidity/PoolTable";
 import FullSetButtons from "components/markets/FullSetButtons";
 import MarketMeta from "components/meta/MarketMeta";
@@ -106,7 +101,7 @@ const PoolDetails: NextPage = observer(() => {
 
   const saturatedPoolData = saturatedPoolIndex?.[poolId];
 
-  const { data: ends } = useQuery<number | NA>(
+  const { data: ends } = useQuery<number>(
     [id, "market-ends", saturatedPoolData?.market.marketId],
     async () => projectEndTimestamp(sdk, saturatedPoolData.market),
     {
@@ -116,7 +111,7 @@ const PoolDetails: NextPage = observer(() => {
 
   const volume = isIndexedData(pool)
     ? new Decimal(pool.volume).div(ZTG).toFixed(2)
-    : NA;
+    : null;
 
   const swapFee = Number(pool?.swapFee);
 
@@ -154,17 +149,14 @@ const PoolDetails: NextPage = observer(() => {
           <Pill
             title="Ends"
             value={
-              ends && isAvailable(ends)
+              ends
                 ? new Intl.DateTimeFormat("en-US", {
                     dateStyle: "medium",
                   }).format(new Date(ends))
                 : ""
             }
           />
-          <Pill
-            title="Volume"
-            value={`${isAvailable(volume) ? volume : "NA"} ZTG`}
-          />
+          <Pill title="Volume" value={`${volume ? volume : "0"} ZTG`} />
           <Pill title="Status" value={saturatedPoolData?.market.status} />
         </div>
         <div className="flex flex-row mt-ztg-53 mb-ztg-38">

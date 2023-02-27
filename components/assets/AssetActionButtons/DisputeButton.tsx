@@ -1,9 +1,9 @@
 import {
-  AssetId,
   getIndexOf,
   IndexerContext,
   isRpcSdk,
   Market,
+  MarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk-next";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
@@ -21,7 +21,7 @@ const DisputeButton = observer(
     assetId,
   }: {
     market: Market<IndexerContext>;
-    assetId: AssetId;
+    assetId: MarketOutcomeAssetId;
   }) => {
     const [sdk, id] = useSdkv2();
     const store = useStore();
@@ -46,8 +46,7 @@ const DisputeButton = observer(
           "Dispute outcome",
         );
       } else if (isRpcSdk(sdk)) {
-        //@ts-ignore
-        const ID = assetId.CategoricalOutcome[1];
+        const ID = getIndexOf(assetId);
         const signer = wallets.getActiveSigner();
 
         const callback = extrinsicCallback({

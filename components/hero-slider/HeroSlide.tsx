@@ -6,9 +6,10 @@ export const HeroSlide: FC<HeroSlideProps> = ({ slide }) => {
   return (
     <div className="flex items-center h-full w-full">
       <div className="w-full pb-8">
-        <h2 className={`text-center sm:text-left mb-6 ${slide.title.styles}`}>
+        <h2 className={`text-center sm:text-left ${slide.title.styles}`}>
           {slide.title.text}
         </h2>
+        <p className={slide.title?.stylesSecondary}>{slide.title?.secondary}</p>
         <div className="flex flex-col sm:flex-row">
           <a
             style={{

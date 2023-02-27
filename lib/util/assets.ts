@@ -1,4 +1,9 @@
-import { parseAssetId, getIndexOf, ZTG } from "@zeitgeistpm/sdk-next";
+import {
+  parseAssetId,
+  getIndexOf,
+  ZTG,
+  MarketOutcomeAssetId,
+} from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 
 export const getCurrentPrediction = (
@@ -15,8 +20,8 @@ export const getCurrentPrediction = (
 
     assets.sort(
       (a, b) =>
-        getIndexOf(parseAssetId(a.assetId).unwrap()) -
-        getIndexOf(parseAssetId(b.assetId).unwrap()),
+        getIndexOf(parseAssetId(a.assetId).unwrap() as MarketOutcomeAssetId) -
+        getIndexOf(parseAssetId(b.assetId).unwrap() as MarketOutcomeAssetId),
     );
 
     assets.forEach((asset, index) => {
