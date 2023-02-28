@@ -50,8 +50,8 @@ export const createInitialMultipleOutcomeEntries =
 
 export const createYesNoOutcomeEntries = (): YesNoOutcome => {
   return [
-    { name: "yes", ticker: "YES", color: "#0E992D" },
-    { name: "no", ticker: "NO", color: "#00A3FF" },
+    { name: "Yes", ticker: "YES", color: "#0E992D" },
+    { name: "No", ticker: "NO", color: "#00A3FF" },
   ];
 };
 
