@@ -110,7 +110,6 @@ const DefaultLayout: FC = observer(({ children }) => {
           </main>
           <Footer />
         </div>
-        <RightDrawer />
         <NotificationCenter />
       </TradeItemContext.Provider>
     </div>
