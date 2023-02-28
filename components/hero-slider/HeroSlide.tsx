@@ -1,4 +1,5 @@
 import { FC } from "react";
+import Link from "next/link";
 
 import { HeroSlideProps } from "./slider-types";
 
@@ -11,7 +12,7 @@ export const HeroSlide: FC<HeroSlideProps> = ({ slide }) => {
         </h2>
         <p className={slide.title?.stylesSecondary}>{slide.title?.secondary}</p>
         <div className="flex flex-col sm:flex-row">
-          <a
+          <Link
             style={{
               borderColor: `${slide.color1.border}`,
               backgroundColor: `${slide.color1.primary}`,
@@ -19,12 +20,11 @@ export const HeroSlide: FC<HeroSlideProps> = ({ slide }) => {
             }}
             className="leading-[42px] w-full sm:w-fit text-center sm:text-start border rounded px-5 mb-5 mr-5 font-bold"
             href={slide.link1}
-            target="_blank"
           >
             {slide.cta1}
-          </a>
+          </Link>
           {slide.cta2 && (
-            <a
+            <Link
               style={{
                 borderColor: `${slide.color2.border}`,
                 backgroundColor: `${slide.color2.primary}`,
@@ -35,7 +35,7 @@ export const HeroSlide: FC<HeroSlideProps> = ({ slide }) => {
               target="_blank"
             >
               {slide.cta2}
-            </a>
+            </Link>
           )}
         </div>
       </div>

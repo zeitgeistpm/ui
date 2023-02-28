@@ -5,21 +5,24 @@ import AccountButton from "../account/AccountButton";
 import MarketSearch from "./MarketSearch";
 import Logo from "../icons/ZeitgeistIcon";
 import { Menu, X } from "react-feather";
+import Link from "next/link";
 import { useStore } from "lib/stores/Store";
+import { useRouter } from "next/router";
 
-const MobileTopBar: FC<{ navbar: boolean }> = observer(({ navbar }) => {
+type NavbarColor = "black" | "white" | "transparent";
+
+const MobileTopBar: FC<{ navbar: NavbarColor }> = observer(({ navbar }) => {
   const store = useStore();
 
   const handleMenuClick = () => {
     store.toggleShowMobileMenu();
   };
-
   return (
     <div className="flex items-center w-full">
-      <Logo dark={navbar} />
+      <Logo dark={navbar === "white" ? true : false} />
       <h1
-        className={`text-ztg-19-120 ml-ztg-10 font-bold font-kanit ${
-          navbar ? "text-black" : "text-white"
+        className={`font-bold font-kanit pl-4 ${
+          navbar === "white" ? "text-black" : "text-white"
         }`}
       >
         Zeitgeist
@@ -27,12 +30,12 @@ const MobileTopBar: FC<{ navbar: boolean }> = observer(({ navbar }) => {
       {store.showMobileMenu ? (
         <X
           className="ml-auto cursor-pointer text-white"
-          color={`${navbar ? "white" : "black"}`}
+          color={`${navbar === "white" ? "black" : "white"}`}
           onClick={handleMenuClick}
         />
       ) : (
         <Menu
-          color={`${navbar ? "black" : "white"}`}
+          color={`${navbar === "white" ? "black" : "white"}`}
           className="ml-auto cursor-pointer"
           onClick={handleMenuClick}
         />
@@ -42,13 +45,17 @@ const MobileTopBar: FC<{ navbar: boolean }> = observer(({ navbar }) => {
 });
 
 const TopBar = observer(() => {
-  const [navbar, setNavbar] = useState(false);
+  const { blockNumber } = useStore();
+  const [navbarBGColor, setNavbarBGColor] =
+    useState<NavbarColor>("transparent");
 
   const changeNavBG = () => {
-    if (window.scrollY >= 60) {
-      setNavbar(true);
+    if (window.scrollY >= 60 && pathname === "/") {
+      setNavbarBGColor("black");
+    } else if (pathname === "/") {
+      setNavbarBGColor("transparent");
     } else {
-      setNavbar(false);
+      setNavbarBGColor("white");
     }
   };
 
@@ -57,22 +64,40 @@ const TopBar = observer(() => {
     window.addEventListener("scroll", changeNavBG);
   });
 
+  const { pathname } = useRouter();
+
   return (
-    //inline style is temporary until we make right drawer a modal
     <div
-      className={`flex w-full py-ztg-18 bg-transparent fixed z-ztg-10`}
+      className={`flex w-full py-7 fixed z-40 transition-[background] duration-500 ${
+        pathname === "/" ? "none" : "border-b border-gray-200"
+      }`}
       style={{
-        backgroundColor: `${navbar ? "white" : "transparent"}`,
+        backgroundColor: navbarBGColor,
       }}
     >
-      <div className="hidden sm:flex justify-between items-center h-full w-full topbar container-fluid mr-0">
+      <div className="hidden md:flex justify-between items-center w-full max-w-screen-2xl h-[44px] mx-auto px-8">
+        <Link className="flex flex-1 items-center gap-4" href="/" role="button">
+          <Logo dark={pathname === "/" ? false : true} />
+          <>
+            <div className="flex flex-col items-center">
+              <h1
+                className={`font-bold font-kanit text-xl ${
+                  pathname === "/" ? "text-white" : "text-black"
+                }`}
+              >
+                Zeitgeist
+              </h1>
+              <span className="w-full text-start text-xs font-mono text-sky-600">
+                {blockNumber ? blockNumber.toHuman() : 0}
+              </span>
+            </div>
+          </>
+        </Link>
         <MarketSearch />
-        <div className="flex h-full items-center">
-          <AccountButton />
-        </div>
+        <AccountButton />
       </div>
-      <div className="sm:hidden w-full container-fluid">
-        <MobileTopBar navbar={navbar} />
+      <div className="md:hidden w-full container-fluid">
+        <MobileTopBar navbar={navbarBGColor} />
       </div>
     </div>
   );
