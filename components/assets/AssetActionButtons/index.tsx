@@ -1,5 +1,5 @@
 import { CategoricalAssetId, ScalarAssetId } from "@zeitgeistpm/sdk-next";
-import BuySellButtons from "components/trade-slip/BuySellButtons";
+import BuySellButtons from "./BuySellButtons";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useStore } from "lib/stores/Store";
