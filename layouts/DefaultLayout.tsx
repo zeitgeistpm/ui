@@ -2,13 +2,12 @@ import { observer } from "mobx-react";
 import { Skeleton } from "@material-ui/lab";
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
-import { debounce } from "lodash";
 
 import { useStore } from "lib/stores/Store";
 import TopBar from "components/top-bar";
 import Footer from "components/ui/Footer";
 import NotificationCenter from "components/ui/NotificationCenter";
-import LeftDrawer from "components/drawer/LeftDrawer";
+import Menu from "components/menu";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";
 import { usePrevious } from "lib/hooks/usePrevious";
@@ -42,10 +41,6 @@ const DefaultLayout: FC = observer(({ children }) => {
   const [scrollTop, setScrollTop] = useState(0);
   const prevPathname = usePrevious(router.pathname);
 
-  const onScrollCapture: React.UIEventHandler<HTMLDivElement> = debounce(() => {
-    setScrollTop(contentRef.current?.scrollTop);
-  }, 66);
-
   const scrollTo = (scrollTop: number) => {
     if (contentRef.current) {
       contentRef.current.scrollTop = scrollTop;
@@ -59,10 +54,7 @@ const DefaultLayout: FC = observer(({ children }) => {
   }, [router.pathname, prevPathname]);
 
   return (
-    <div
-      onScrollCapture={onScrollCapture}
-      className="relative flex min-h-screen justify-evenly bg-white dark:bg-sky-1000 overflow-hidden"
-    >
+    <div className="relative flex min-h-screen justify-evenly overflow-hidden">
       <TradeItemContext.Provider value={{ data: trade, set: setTrade }}>
         {/* loads optimized fonts for global access */}
         <style jsx global>
@@ -74,12 +66,13 @@ const DefaultLayout: FC = observer(({ children }) => {
             }
           `}
         </style>
-        <LeftDrawer />
+        <Menu />
         <div
           ref={contentRef}
           className="overflow-y-a1uto overflow-x-hidden flex-grow"
         >
           <TopBar />
+          {/* //hide navbar until designs are ready */}
           {NOTIFICATION_MESSAGE && (
             <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38 hidden">
               <div className="text-ztg-12-150 font-semibold">
@@ -88,8 +81,8 @@ const DefaultLayout: FC = observer(({ children }) => {
             </div>
           )}
           <main
-            className={`flex flex-col dark:text-white ${
-              router.pathname !== "/" && "main-container pt-20"
+            className={`flex flex-col dark:text-white mb-12 ${
+              router.pathname !== "/" && "main-container mt-32"
             }`}
             ref={mainRef}
           >

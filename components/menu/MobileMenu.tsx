@@ -39,11 +39,11 @@ const MobileMenu = observer(() => {
 
   return (
     <motion.div
-      initial={{ y: -600 }}
-      exit={{ y: -600 }}
+      initial={{ height: -760 }}
+      exit={{ y: -760 }}
       animate={{ y: 0 }}
       transition={{ type: "tween", duration: 0.2 }}
-      className="fixed top-0 left-0 w-full h-full z-ztg-1 bg-white dark:bg-sky-1000 flex flex-col items-center pt-[150px]"
+      className="fixed top-0 left-0 w-full h-full z-30 bg-whiteflex flex-col items-center pt-[150px] bg-black text-white"
     >
       <div className="flex flex-col items-center gap-14">
         {mobileItems?.map((item) => (
@@ -57,7 +57,7 @@ const MobileMenu = observer(() => {
           />
         ))}
       </div>
-      <ThemeSwitch className="mt-auto mb-ztg-24" />
+      {/* <ThemeSwitch className="mt-auto mb-ztg-24" /> */}
       <div className="text-ztg-14-150 mb-ztg-20 mx-ztg-20 text-center dark:text-white">
         Trading is only available on the desktop version of the application.
       </div>
