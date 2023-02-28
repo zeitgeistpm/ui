@@ -168,32 +168,22 @@ const OnBoardingModal = () => {
       {step === 0 && (
         <TextSection
           headerText="Welcome to Zeitgeist"
-          bodyText="Hey, it looks like you don’t have any wallets installed. Let me be your Guide and help you get one to start using the App to its full extent"
+          bodyText="Hey, it looks like you don’t have a wallet installed. Let me be your Guide and help you get one, so you can get started making predictions."
           rightButtonText="Continue"
           onRightButtonClick={() => setStep(1)}
         />
       )}
       {step === 1 && (
         <TextSection
-          headerText="Getting Started"
-          bodyText="First thing you need to do is to Install the right extension for your account. To do that, you need to click the wallet icon to go to its download page (e.g. Talisman)."
+          headerText="Choose A Browser Extension"
+          bodyText="First thing you need to do is install a browser-based wallet (known as a “browser extension”). To do that, simply click the wallet icon to go to its official download page."
           leftButtonText="Back"
           rightButtonText="Continue"
           onLeftButtonClick={() => setStep(0)}
           onRightButtonClick={() => setStep(2)}
         />
       )}
-      {step === 2 && (
-        <TextSection
-          headerText="Getting Your Wallet"
-          bodyText="Finally, you’re just about to become a proud member of Zeitgeist. And we hope you’ll have a nice ride and unforgettable experience with Prediction Markets."
-          leftButtonText="Back"
-          rightButtonText="Continue"
-          onLeftButtonClick={() => setStep(1)}
-          onRightButtonClick={() => setStep(3)}
-        />
-      )}
-      {step === 3 && <WalletSelection />}
+      {step === 2 && <WalletSelection />}
       {/* TODO: Add if we can detect wallet installation */}
       {/* {step === 4 && (
         <TextSection
@@ -206,7 +196,7 @@ const OnBoardingModal = () => {
         />
       )}
       {step === 5 && <ExchangeTypeSelection />} */}
-      <Stepper steps={4} currentStep={step} onStepClick={setStep} />
+      <Stepper steps={3} currentStep={step} onStepClick={setStep} />
     </div>
   );
 };
