@@ -5,22 +5,13 @@ import { useUserStore } from "lib/stores/UserStore";
 import { useAccountModals } from "lib/hooks/account";
 
 interface TransactionButtonProps {
-  preventDefault?: boolean;
-  onClick?: (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   disabled?: boolean;
   className?: string;
   dataTest?: string;
 }
 
-const TransactionButton: FC<TransactionButtonProps> = observer(
-  ({
-    onClick,
-    disabled = false,
-    className = "",
-    dataTest = "",
-    children,
-    preventDefault,
-  }) => {
+const FormTransactionButton: FC<TransactionButtonProps> = observer(
+  ({ disabled = false, className = "", dataTest = "", children }) => {
     const store = useStore();
     const { wallets } = store;
     const { connected } = wallets;
@@ -28,13 +19,9 @@ const TransactionButton: FC<TransactionButtonProps> = observer(
     const { locationAllowed, isUsingVPN } = useUserStore();
 
     const click = (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      if (preventDefault) {
-        event.preventDefault();
-      }
       if (!connected) {
+        event.preventDefault();
         accountModals.openWalletSelect();
-      } else {
-        onClick && onClick(event);
       }
     };
 
@@ -49,10 +36,11 @@ const TransactionButton: FC<TransactionButtonProps> = observer(
 
     return (
       <button
+        type="submit"
         className={`ztg-transition bg-ztg-blue text-white focus:outline-none disabled:opacity-20 disabled:cursor-default 
         rounded-full w-full  font-bold text-ztg-16-150 h-ztg-40 ${className}`}
         onClick={(e) => click(e)}
-        disabled={isDisabled()}
+        disabled={isDisabled() || disabled}
         data-test={dataTest}
       >
         {connected ? children : "Connect Wallet"}
@@ -61,4 +49,4 @@ const TransactionButton: FC<TransactionButtonProps> = observer(
   },
 );
 
-export default TransactionButton;
+export default FormTransactionButton;

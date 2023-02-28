@@ -2,7 +2,6 @@ import { observer } from "mobx-react";
 import { Skeleton } from "@material-ui/lab";
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
-import { debounce } from "lodash";
 
 import { useStore } from "lib/stores/Store";
 import TopBar from "components/top-bar";
@@ -15,6 +14,7 @@ import { usePrevious } from "lib/hooks/usePrevious";
 import { shouldScrollTop } from "lib/util/should-scroll";
 import dynamic from "next/dynamic";
 import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
+import { TradeItem, TradeItemContext } from "lib/hooks/trade";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
@@ -29,6 +29,7 @@ const DefaultLayout: FC = observer(({ children }) => {
   const store = useStore();
   const router = useRouter();
   useSubscribeBlockEvents();
+  const [trade, setTrade] = useState<TradeItem | null>(null);
 
   const {
     width,
@@ -39,10 +40,6 @@ const DefaultLayout: FC = observer(({ children }) => {
   const contentRef = useRef<HTMLDivElement>();
   const [scrollTop, setScrollTop] = useState(0);
   const prevPathname = usePrevious(router.pathname);
-
-  const onScrollCapture: React.UIEventHandler<HTMLDivElement> = debounce(() => {
-    setScrollTop(contentRef.current?.scrollTop);
-  }, 66);
 
   const scrollTo = (scrollTop: number) => {
     if (contentRef.current) {
@@ -57,66 +54,65 @@ const DefaultLayout: FC = observer(({ children }) => {
   }, [router.pathname, prevPathname]);
 
   return (
-    <div
-      // onScrollCapture={onScrollCapture}
-      className="relative flex min-h-screen justify-evenly overflow-hidden"
-    >
-      {/* loads optimized fonts for global access */}
-      <style jsx global>
-        {`
-          :root {
-            --font-inter: ${inter.style.fontFamily};
-            --font-kanit: ${kanit.style.fontFamily};
-            --font-roboto-mono: ${roboto_mono.style.fontFamily};
-          }
-        `}
-      </style>
-      <Menu />
-      <div
-        ref={contentRef}
-        className="overflow-y-a1uto overflow-x-hidden flex-grow"
-      >
-        <TopBar />
-        {/* //hide navbar until designs are ready */}
-        {NOTIFICATION_MESSAGE && (
-          <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38 hidden">
-            <div className="text-ztg-12-150 font-semibold">
-              {NOTIFICATION_MESSAGE}
-            </div>
-          </div>
-        )}
-        <main
-          className={`flex flex-col dark:text-white mb-12 ${
-            router.pathname !== "/" && "main-container mt-32"
-          }`}
-          ref={mainRef}
+    <div className="relative flex min-h-screen justify-evenly overflow-hidden">
+      <TradeItemContext.Provider value={{ data: trade, set: setTrade }}>
+        {/* loads optimized fonts for global access */}
+        <style jsx global>
+          {`
+            :root {
+              --font-inter: ${inter.style.fontFamily};
+              --font-kanit: ${kanit.style.fontFamily};
+              --font-roboto-mono: ${roboto_mono.style.fontFamily};
+            }
+          `}
+        </style>
+        <Menu />
+        <div
+          ref={contentRef}
+          className="overflow-y-a1uto overflow-x-hidden flex-grow"
         >
-          <div>
-            <ContentDimensionsProvider
-              scrollTop={scrollTop}
-              scrollTo={scrollTo}
-              height={height}
-              width={width}
-            >
-              {store.initialized ||
-              router.pathname === "/" ||
-              router.pathname.split("/")[1] === "markets" ||
-              router.pathname.split("/")[1] === "portfolio" ||
-              router.pathname.split("/")[1] === "liquidity" ? (
-                children
-              ) : (
-                <Skeleton
-                  className="!transform-none !mt-ztg-30"
-                  style={{ height: "550px" }}
-                />
-              )}
-            </ContentDimensionsProvider>
-          </div>
-        </main>
-        <Footer />
-      </div>
-      <RightDrawer />
-      <NotificationCenter />
+          <TopBar />
+          {/* hide notification bar */}
+          {NOTIFICATION_MESSAGE && (
+            <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38 hidden">
+              <div className="text-ztg-12-150 font-semibold">
+                {NOTIFICATION_MESSAGE}
+              </div>
+            </div>
+          )}
+          <main
+            className={`flex flex-col dark:text-white ${
+              router.pathname !== "/" && "main-container pt-20"
+            }`}
+            ref={mainRef}
+          >
+            <div>
+              <ContentDimensionsProvider
+                scrollTop={scrollTop}
+                scrollTo={scrollTo}
+                height={height}
+                width={width}
+              >
+                {store.initialized ||
+                router.pathname === "/" ||
+                router.pathname.split("/")[1] === "markets" ||
+                router.pathname.split("/")[1] === "portfolio" ||
+                router.pathname.split("/")[1] === "liquidity" ? (
+                  children
+                ) : (
+                  <Skeleton
+                    className="!transform-none !mt-ztg-30"
+                    style={{ height: "550px" }}
+                  />
+                )}
+              </ContentDimensionsProvider>
+            </div>
+          </main>
+          <Footer />
+        </div>
+        <RightDrawer />
+        <NotificationCenter />
+      </TradeItemContext.Provider>
     </div>
   );
 });

@@ -17,7 +17,6 @@ const MobileTopBar: FC<{ navbar: NavbarColor }> = observer(({ navbar }) => {
   const handleMenuClick = () => {
     store.toggleShowMobileMenu();
   };
-  console.log(navbar);
   return (
     <div className="flex items-center w-full">
       <Logo dark={navbar === "white" ? true : false} />
