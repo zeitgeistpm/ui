@@ -31,9 +31,7 @@ const MarketsPage: NextPage<{
   return (
     <>
       {newestMarkets?.length > 0 && (
-        <div className="mt-[30px]">
-          <MarketScroll title="Newest Markets" markets={newestMarkets} />
-        </div>
+        <MarketScroll title="Newest Markets" markets={newestMarkets} />
       )}
       <DynamicMarketList />
     </>

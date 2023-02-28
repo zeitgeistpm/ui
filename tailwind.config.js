@@ -27,9 +27,6 @@ module.exports = {
   ],
   darkMode: "class",
   theme: {
-    zIndex: {
-      ...zIndexes,
-    },
     fontFamily: {
       mono: [
         "var(--font-roboto-mono)",
@@ -84,6 +81,9 @@ module.exports = {
       },
     },
     extend: {
+      zIndex: {
+        ...zIndexes,
+      },
       borderWidth: {
         1: "1px",
       },
