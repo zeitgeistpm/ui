@@ -176,8 +176,6 @@ const Market: NextPage<{
     <>
       <MarketMeta market={indexedMarket} />
       <div>
-        {/* todo: remove before merging */}
-        <LiquidityModal poolId={64} />
         <MarketImage
           image={indexedMarket.img}
           alt={`Image depicting ${question}`}
