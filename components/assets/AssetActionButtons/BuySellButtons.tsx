@@ -3,8 +3,9 @@ import {
   IOCategoricalAssetId,
   IOScalarAssetId,
 } from "@zeitgeistpm/sdk-next";
-import { useTradeslipItems } from "lib/state/tradeslip/items";
+import { useTradeItem } from "lib/hooks/trade";
 import { useStore } from "lib/stores/Store";
+import { compareJSON } from "lib/util";
 import { observer } from "mobx-react";
 import { FC, useMemo } from "react";
 
@@ -16,8 +17,8 @@ interface BuySellButtonsProps {
 const BuySellButtons = observer(
   ({ assetId, disabled }: BuySellButtonsProps) => {
     const store = useStore();
-    const tradeslip = useTradeslipItems();
     const isDisabled = false;
+    const trade = useTradeItem();
 
     if (!IOCategoricalAssetId.is(assetId) && !IOScalarAssetId.is(assetId)) {
       return null;
@@ -31,25 +32,17 @@ const BuySellButtons = observer(
     };
 
     const onClickBuy = () => {
-      if (tradeslip.getByAsset(assetId)?.action === "buy") {
-        return tradeslip.removeAsset(assetId);
-      }
-      tradeslip.put({
+      trade.set({
         assetId: assetId,
         action: "buy",
-        amount: 0,
       });
       openDrawer();
     };
 
     const onClickSell = () => {
-      if (tradeslip.getByAsset(assetId)?.action === "sell") {
-        return tradeslip.removeAsset(assetId);
-      }
-      tradeslip.put({
+      trade.set({
         assetId: assetId,
         action: "sell",
-        amount: 0,
       });
       openDrawer();
     };
@@ -57,7 +50,10 @@ const BuySellButtons = observer(
     return (
       <div className="card-exp-col-6 flex items-center justify-evenly gap-x-[6px]">
         <TradeButton
-          active={tradeslip.getByAsset(assetId)?.action === "buy"}
+          active={
+            trade?.data?.action === "buy" &&
+            compareJSON(trade?.data?.assetId, assetId)
+          }
           type="buy"
           disabled={isDisabled}
           onClick={onClickBuy}
@@ -65,7 +61,10 @@ const BuySellButtons = observer(
           Buy
         </TradeButton>
         <TradeButton
-          active={tradeslip.getByAsset(assetId)?.action === "sell"}
+          active={
+            trade?.data?.action === "sell" &&
+            compareJSON(trade?.data?.assetId, assetId)
+          }
           disabled={isDisabled}
           type="sell"
           onClick={onClickSell}

@@ -1,5 +1,5 @@
 import { parseAssetId } from "@zeitgeistpm/sdk-next";
-import BuySellButtons from "components/trade-slip/BuySellButtons";
+import BuySellButtons from "components/assets/AssetActionButtons/BuySellButtons";
 import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
 import { useMarketCardContext } from "./context";
 
