@@ -4,8 +4,7 @@ import { SubWallet } from "lib/wallets/subwallet";
 import { TalismanWallet } from "lib/wallets/talisman-wallet";
 import { observer } from "mobx-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { getWallets } from "@talismn/connect-wallets";
+import { useState } from "react";
 
 interface StepperProps {
   steps: number;
@@ -39,6 +38,7 @@ interface TextSectionProps {
   onLeftButtonClick?: () => void;
   onRightButtonClick?: () => void;
 }
+
 const TextSection = ({
   headerText,
   bodyText,
@@ -80,26 +80,8 @@ const walletsConfig = [
 ];
 
 const WalletSelection = observer(() => {
-  const [selectedWallet, setSelectedWallet] = useState<string>();
-
-  useEffect(() => {
-    const ref = setInterval(() => {
-      const wallets = getWallets();
-      const wallet = wallets.find(
-        (wallet) => wallet.extensionName === selectedWallet,
-      );
-
-      console.log("selectedinstalled", wallet?.installed);
-    }, 500);
-
-    return () => {
-      clearInterval(ref);
-    };
-  }, [selectedWallet]);
-
   const handleWalletSelect = async (wallet: BaseDotsamaWallet) => {
     window.open(wallet.installUrl);
-    setSelectedWallet(wallet.extensionName);
   };
 
   return (
@@ -207,7 +189,8 @@ const OnBoardingModal = () => {
         />
       )}
       {step === 3 && <WalletSelection />}
-      {step === 4 && (
+      {/* TODO: Add if we can detect wallet installation */}
+      {/* {step === 4 && (
         <TextSection
           headerText="Success on getting a wallet!"
           bodyText="Now to get ZTG."
@@ -217,8 +200,8 @@ const OnBoardingModal = () => {
           onRightButtonClick={() => setStep(5)}
         />
       )}
-      {step === 5 && <ExchangeTypeSelection />}
-      <Stepper steps={6} currentStep={step} onStepClick={setStep} />
+      {step === 5 && <ExchangeTypeSelection />} */}
+      <Stepper steps={4} currentStep={step} onStepClick={setStep} />
     </div>
   );
 };
