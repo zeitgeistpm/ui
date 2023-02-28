@@ -41,7 +41,7 @@ export const useExtrinsic = <T>(
           setIsLoading(false);
           setIsError(true);
 
-          callbacks?.onError();
+          if (callbacks?.onError) callbacks.onError();
           notificationStore.pushNotification(
             store.getTransactionError(index, error),
             { type: "Error" },
