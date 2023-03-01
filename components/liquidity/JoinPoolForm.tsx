@@ -142,55 +142,57 @@ const JoinPoolForm = ({
 
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
-      {pool?.weights.map((asset, index) => {
-        const id = assetObjStringToId(asset.assetId);
-        const assetName =
-          market?.categories[index]?.name ?? pool.baseAsset.toUpperCase();
-        const userAssetBalance =
-          poolBalances?.[id]?.user.div(ZTG).toNumber() ?? 0;
+      <div className="flex flex-col gap-y-6 max-h-[250px] md:max-h-[400px] overflow-y-auto">
+        {pool?.weights.map((asset, index) => {
+          const id = assetObjStringToId(asset.assetId);
+          const assetName =
+            market?.categories[index]?.name ?? pool.baseAsset.toUpperCase();
+          const userAssetBalance =
+            poolBalances?.[id]?.user.div(ZTG).toNumber() ?? 0;
 
-        return (
-          <div
-            key={index}
-            className="w-full h-[56px] relative font-medium text-ztg-18-150"
-          >
-            <div className="absolute h-full left-[15px] top-[14px] truncate w-[40%] capitalize">
-              {assetName}
-            </div>
-            <input
-              className={`bg-anti-flash-white text-right rounded-[5px] h-full px-[15px] w-full
+          return (
+            <div
+              key={index}
+              className="w-full h-[56px] relative font-medium text-ztg-18-150 "
+            >
+              <div className="absolute h-full left-[15px] top-[14px] truncate w-[40%] capitalize">
+                {assetName}
+              </div>
+              <input
+                className={`bg-anti-flash-white text-right rounded-[5px] h-[56px] px-[15px] w-full
                             ${
                               formState.errors[id.toString()]?.message
                                 ? "border-2 border-vermilion"
                                 : ""
                             }
               `}
-              key={index}
-              type="number"
-              step="any"
-              {...register(id.toString(), {
-                value: 0,
-                required: {
-                  value: true,
-                  message: "Value is required",
-                },
-                validate: (value) => {
-                  if (value > userAssetBalance) {
-                    return `Insufficient balance. Current asset balance is ${userAssetBalance.toFixed(
-                      3,
-                    )}`;
-                  } else if (value <= 0) {
-                    return "Value cannot be zero or less";
-                  }
-                },
-              })}
-            />
-            <div className="text-vermilion text-ztg-12-120 mt-[4px]">
-              {formState.errors[id.toString()]?.message}
+                key={index}
+                type="number"
+                step="any"
+                {...register(id.toString(), {
+                  value: 0,
+                  required: {
+                    value: true,
+                    message: "Value is required",
+                  },
+                  validate: (value) => {
+                    if (value > userAssetBalance) {
+                      return `Insufficient balance. Current balance: ${userAssetBalance.toFixed(
+                        3,
+                      )}`;
+                    } else if (value <= 0) {
+                      return "Value cannot be zero or less";
+                    }
+                  },
+                })}
+              />
+              <div className="text-vermilion text-ztg-12-120 mt-[4px]">
+                {formState.errors[id.toString()]?.message}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
       <input
         className="my-[20px]"
         type="range"

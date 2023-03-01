@@ -161,66 +161,68 @@ const ExitPoolForm = ({
   };
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
-      {pool?.weights.map((asset, index) => {
-        const id = assetObjStringToId(asset.assetId);
-        const assetName =
-          market?.categories[index]?.name ?? pool.baseAsset.toUpperCase();
+      <div className="flex flex-col gap-y-6 max-h-[200px] md:max-h-[400px] overflow-y-auto">
+        {pool?.weights.map((asset, index) => {
+          const id = assetObjStringToId(asset.assetId);
+          const assetName =
+            market?.categories[index]?.name ?? pool.baseAsset.toUpperCase();
 
-        if (!userPercentageOwnership || userPercentageOwnership.isNaN())
-          return null;
-        const poolAssetBalance =
-          poolBalances?.[id]?.pool.div(ZTG) ?? new Decimal(0);
-        const userBalanceInPool = poolAssetBalance
-          .mul(userPercentageOwnership)
-          .toNumber();
+          if (!userPercentageOwnership || userPercentageOwnership.isNaN())
+            return null;
+          const poolAssetBalance =
+            poolBalances?.[id]?.pool.div(ZTG) ?? new Decimal(0);
+          const userBalanceInPool = poolAssetBalance
+            .mul(userPercentageOwnership)
+            .toNumber();
 
-        return (
-          <div
-            key={index}
-            className="w-full h-[56px] relative font-medium text-ztg-18-150"
-          >
-            <div className="absolute h-full left-[15px] top-[14px] truncate w-[40%] capitalize">
-              {assetName}
-            </div>
-            <input
-              className={`bg-anti-flash-white text-right rounded-[5px] h-full px-[15px] w-full
+          return (
+            <div
+              key={index}
+              className="w-full h-[56px] relative font-medium text-ztg-18-150"
+            >
+              <div className="absolute h-full left-[15px] top-[14px] truncate w-[40%] capitalize">
+                {assetName}
+              </div>
+              <input
+                className={`bg-anti-flash-white text-right rounded-[5px] h-[56px] px-[15px] w-full
               ${
                 formState.errors[id.toString()]?.message
                   ? "border-2 border-vermilion"
                   : ""
               }
               `}
-              key={index}
-              type="number"
-              step="any"
-              {...register(id.toString(), {
-                value: 0,
-                required: {
-                  value: true,
-                  message: "Value is required",
-                },
-                validate: (value: number) => {
-                  if (value > userBalanceInPool) {
-                    return `Insufficient pool shares. Max amount to withdraw is ${userBalanceInPool.toFixed(
-                      3,
-                    )}`;
-                  } else if (value <= 0) {
-                    return "Value cannot be zero or less";
-                  } else if (
-                    poolStatus.toLowerCase() === "active" &&
-                    poolAssetBalance.minus(value).lessThanOrEqualTo(0.01)
-                  ) {
-                    return "Pool cannot be emptied completely whilst it's active";
-                  }
-                },
-              })}
-            />
-            <div className="text-red-500 text-ztg-12-120 mt-[4px]">
-              {formState.errors[id.toString()]?.message}
+                key={index}
+                type="number"
+                step="any"
+                {...register(id.toString(), {
+                  value: 0,
+                  required: {
+                    value: true,
+                    message: "Value is required",
+                  },
+                  validate: (value: number) => {
+                    if (value > userBalanceInPool) {
+                      return `Insufficient pool shares. Max amount to withdraw is ${userBalanceInPool.toFixed(
+                        3,
+                      )}`;
+                    } else if (value <= 0) {
+                      return "Value cannot be zero or less";
+                    } else if (
+                      poolStatus.toLowerCase() === "active" &&
+                      poolAssetBalance.minus(value).lessThanOrEqualTo(0.01)
+                    ) {
+                      return "Pool cannot be emptied completely whilst it's active";
+                    }
+                  },
+                })}
+              />
+              <div className="text-red-500 text-ztg-12-120 mt-[4px]">
+                {formState.errors[id.toString()]?.message}
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
       <input
         className="my-[20px]"
         type="range"
