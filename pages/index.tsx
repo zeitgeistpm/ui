@@ -97,7 +97,6 @@ const IndexPage: NextPage<{
               />
             </div>
           )}
-          <ManageLiquidityButton poolId={10} />
           <div className="mb-[60px]">
             <PopularCategories
               counts={categoryCounts}
