@@ -1,5 +1,6 @@
 import { Dialog } from "@headlessui/react";
 import { useState } from "react";
+import LiquidityModal from "./LiquidityModal";
 
 const ManageLiquidityButton = ({ poolId }: { poolId: number }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,11 +17,7 @@ const ManageLiquidityButton = ({ poolId }: { poolId: number }) => {
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
 
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="w-full max-w-sm rounded bg-black">
-            <Dialog.Title>Complete your order</Dialog.Title>
-
-            {/* ... */}
-          </Dialog.Panel>
+          <LiquidityModal poolId={poolId} />
         </div>
       </Dialog>
     </div>

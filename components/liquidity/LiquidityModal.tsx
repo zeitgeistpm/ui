@@ -1,3 +1,4 @@
+import { Dialog, Tab } from "@headlessui/react";
 import {
   getIndexOf,
   IOMarketOutcomeAssetId,
@@ -102,20 +103,37 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
   ]);
 
   return (
-    <div>
-      <JoinPoolForm
-        poolId={poolId}
-        poolBalances={allBalances}
-        totalPoolShares={new Decimal(totalPoolIssuance?.toString() ?? 0)}
-      />
-      <ExitPoolForm
-        poolId={poolId}
-        poolStatus={pool?.poolStatus}
-        poolBalances={allBalances}
-        totalPoolShares={new Decimal(totalPoolIssuance?.toString() ?? 0)}
-        userPoolShares={new Decimal(userPoolTokens?.toString() ?? 0)}
-      />
-    </div>
+    <Dialog.Panel className="w-full max-w-[462px] rounded bg-white">
+      <Tab.Group>
+        <Tab.List className="flex h-[71px] text-center font-medium text-ztg-18-150">
+          <Tab className="ui-selected:font-bold ui-selected:bg-white bg-anti-flash-white transition-all w-1/2 rounded-tl">
+            Join
+          </Tab>
+          <Tab className="ui-selected:font-bold ui-selected:bg-white bg-anti-flash-white transition-all w-1/2 rounded-tr">
+            Exit
+          </Tab>
+        </Tab.List>
+
+        <Tab.Panels className="p-[30px]">
+          <Tab.Panel>
+            <JoinPoolForm
+              poolId={poolId}
+              poolBalances={allBalances}
+              totalPoolShares={new Decimal(totalPoolIssuance?.toString() ?? 0)}
+            />
+          </Tab.Panel>
+          <Tab.Panel>
+            <ExitPoolForm
+              poolId={poolId}
+              poolStatus={pool?.poolStatus}
+              poolBalances={allBalances}
+              totalPoolShares={new Decimal(totalPoolIssuance?.toString() ?? 0)}
+              userPoolShares={new Decimal(userPoolTokens?.toString() ?? 0)}
+            />
+          </Tab.Panel>
+        </Tab.Panels>
+      </Tab.Group>
+    </Dialog.Panel>
   );
 };
 
