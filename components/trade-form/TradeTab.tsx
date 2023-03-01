@@ -5,7 +5,7 @@ const TradeTab: FC<PropsWithChildren<{ selected: boolean }>> = React.forwardRef(
     { children, selected, ...rest },
     ref: React.ForwardedRef<HTMLDivElement>,
   ) => {
-    const classes = `block cursor-pointer h-full center w-1/2 outline-0 text-ztg-18-150 ${
+    const classes = `block font-medium cursor-pointer h-full center w-1/2 outline-0 text-ztg-18-150 rounded ${
       selected ? "bg-white font-bold" : "bg-anti-flash-white"
     }`;
     return (
