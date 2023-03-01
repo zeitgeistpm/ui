@@ -226,26 +226,6 @@ tr {
   height: 0;
 }
 
-/* ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-white;
-  @apply dark:bg-sky-1000;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #d9e3ee;
-  border-radius: 8px;
-  background-clip: padding-box;
-}
-
-.dark > * ::-webkit-scrollbar-thumb {
-  background: #1d2533;
-} */
-
 .header {
   @apply font-bold;
   @apply text-3xl;
