@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import MarketImage from "components/ui/MarketImage";
 import { MarketOutcomes } from "lib/types/markets";
 import MarketCardContext from "./context";
-import { motion } from "framer-motion";
 import ScalarPriceRange from "../ScalarPriceRange";
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { Users, BarChart2, Droplet } from "react-feather";
@@ -207,6 +206,10 @@ const MarketCard = ({
   };
 
   const isVerified = () => {
+    return creation === "Advised" && status === "Active" ? true : false;
+  };
+
+  const isProposed = () => {
     return creation === "Advised" && status === "Proposed" ? true : false;
   };
 
@@ -251,6 +254,9 @@ const MarketCard = ({
               <MarketCardTags tags={tags} />
               {isEnding() && (
                 <Pill value="Ends Soon" classes="bg-red-light text-red" />
+              )}
+              {isProposed() && (
+                <Pill value="Proposed" classes="bg-purple-light text-purple" />
               )}
               {isVerified() && (
                 <Pill
