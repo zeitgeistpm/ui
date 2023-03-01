@@ -248,6 +248,7 @@ const TradeForm = observer(() => {
             })}
             step="any"
             className="w-full bg-transparent outline-none !text-center text-[58px]"
+            autoFocus
           />
         </div>
         <div className="center h-[48px] font-semibold capitalize text-[28px]">
