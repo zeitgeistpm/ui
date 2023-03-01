@@ -5,10 +5,14 @@ import LiquidityModal from "./LiquidityModal";
 const ManageLiquidityButton = ({ poolId }: { poolId: number }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  //todo
   return (
-    <div>
-      <button onClick={() => setIsOpen(true)}>Manage</button>
+    <>
+      <button
+        className="text-mariner font-semibold text-ztg-14-120"
+        onClick={() => setIsOpen(true)}
+      >
+        Manage
+      </button>
       <Dialog
         open={isOpen}
         onClose={() => setIsOpen(false)}
@@ -20,7 +24,7 @@ const ManageLiquidityButton = ({ poolId }: { poolId: number }) => {
           <LiquidityModal poolId={poolId} />
         </div>
       </Dialog>
-    </div>
+    </>
   );
 };
 
