@@ -235,9 +235,8 @@ const MarketCard = ({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         data-testid={`marketCard-${marketId}`}
-        className={`flex flex-col w-full h-auto rounded-[10px] p-[15px] relative ${className}`}
+        className={`group flex flex-col w-full h-auto rounded-xl p-[15px] relative ${className}`}
         style={{
-          borderRadius: "10px",
           backgroundColor: isHovered ? "#B5C1CA" : "#F0F2F5",
           transition: "background-color 500ms ease",
           minWidth: isNaN(width) ? "100%" : width,
