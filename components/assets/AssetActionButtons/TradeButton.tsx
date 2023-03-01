@@ -28,7 +28,7 @@ const TradeButton = ({
         Trade
       </button>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
-        <Dialog.Panel className="w-full max-w-[462px] rounded bg-white">
+        <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
           <TradeForm />
         </Dialog.Panel>
       </Modal>

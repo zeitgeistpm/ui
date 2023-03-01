@@ -201,7 +201,7 @@ const TradeForm = observer(() => {
 
   return (
     <form
-      className="bg-white rounded"
+      className="bg-white rounded-[10px]"
       onSubmit={(e) => {
         e.preventDefault();
         swapTx();
@@ -228,11 +228,19 @@ const TradeForm = observer(() => {
         }}
         selectedIndex={tabIndex}
       >
-        <Tab.List className="flex justify-between h-[71px] text-center rounded">
-          <Tab as={TradeTab} selected={type === "buy"}>
+        <Tab.List className="flex justify-between h-[71px] text-center rounded-[10px]">
+          <Tab
+            as={TradeTab}
+            selected={type === "buy"}
+            className="rounded-tl-[10px]"
+          >
             Buy
           </Tab>
-          <Tab as={TradeTab} selected={type === "sell"}>
+          <Tab
+            as={TradeTab}
+            selected={type === "sell"}
+            className="rounded-tr-[10px]"
+          >
             Sell
           </Tab>
         </Tab.List>
