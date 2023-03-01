@@ -236,6 +236,7 @@ module.exports = {
         "pastel-blue": "#B5C1CA",
         "fog-of-war": "#0F1A2D",
         mariner: "#3056D3",
+        platinum: "#DFE0E6",
         blue: {
           light: "#E1EFFE",
           DEFAULT: "#1C64F2",

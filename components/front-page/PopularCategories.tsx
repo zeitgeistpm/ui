@@ -7,10 +7,10 @@ import { IGetPlaiceholderReturn } from "plaiceholder";
 export const CATEGORIES = [
   { name: "Sports", imagePath: "/category/sports.png" },
   { name: "Politics", imagePath: "/category/politics.png" },
-  { name: "Technology", imagePath: "/category/tech.png" },
+  { name: "Technology", imagePath: "/category/technology.png" },
   { name: "Crypto", imagePath: "/category/crypto.png" },
   { name: "Science", imagePath: "/category/science.png" },
-  { name: "E-Sports", imagePath: "/category/esports.png" },
+  { name: "E-Sports", imagePath: "/category/e-sports.png" },
 ] as const;
 
 const Category = ({

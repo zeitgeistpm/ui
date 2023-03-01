@@ -1,7 +1,13 @@
 import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
-import { ChevronDown } from "react-feather";
-import ReactSelect from "react-select";
+import Image from "next/image";
+import { useContext, useEffect, useState } from "react";
+import { ChevronDown, ChevronUp } from "react-feather";
+import ReactSelect, {
+  components,
+  ControlProps,
+  MenuListProps,
+  OptionProps,
+} from "react-select";
 import {
   MarketFilter,
   MarketsListQuery,
@@ -9,6 +15,8 @@ import {
 } from "lib/types/market-filter";
 import { findFilterIndex } from "lib/util/market-filter";
 import {
+  categoryImages,
+  currencyImages,
   filterTypes,
   marketCurrencyFilterOptions,
   marketsOrderByOptions,
@@ -16,20 +24,30 @@ import {
   marketTagFilterOptions,
 } from "lib/constants/market-filter";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
-import { MarketActiveFilters } from "./active-filters";
+import MarketActiveFilters from "./MarketActiveFilters";
+import MarketFiltersContainer, {
+  ActiveFiltersContext,
+} from "./MarketFiltersContainer";
 
-const Control = ({ children, label, ...rest }) => {
-  const { innerProps } = rest;
+const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
+  const { innerProps, menuIsOpen, selectProps } = props;
   const { onMouseDown } = innerProps;
+
+  const Chevron = menuIsOpen ? ChevronUp : ChevronDown;
   return (
-    <div
-      className="flex justify-center items-center pl-ztg-20  font-medium text-ztg-16-150 text-sky-600 h-ztg-44"
-      onMouseDown={onMouseDown}
-    >
-      {label}
-      <ChevronDown size={18} className="text-sky-600 ml-ztg-8 font-bold" />
-      {children}
-    </div>
+    <components.Control {...props}>
+      <div
+        className={
+          "flex justify-center items-center pl-ztg-20 font-medium text-ztg-16-150 h-ztg-44 " +
+          (menuIsOpen ? "text-black" : "text-sky-600")
+        }
+        onMouseDown={onMouseDown}
+      >
+        <span className="cursor-pointer">{selectProps.placeholder}</span>
+        <Chevron size={18} className="ml-ztg-8 font-bold cursor-pointer" />
+        {children}
+      </div>
+    </components.Control>
   );
 };
 
@@ -49,14 +67,93 @@ const Placeholder = () => {
   return <></>;
 };
 
+const Option = ({ children, ...props }: OptionProps<MarketFilter>) => {
+  const { data } = props;
+
+  const activeFilters = useContext(ActiveFiltersContext);
+
+  const isActive = findFilterIndex(activeFilters, data) !== -1;
+
+  const imageUrl = (() => {
+    if (data.type === "tag") {
+      const item = categoryImages.find((cat) => cat.name === data.value);
+      return item?.imagePath;
+    } else if (data.type === "currency") {
+      const item = currencyImages.find(
+        (cat) => cat.name.toLowerCase() === data.value.toLowerCase(),
+      );
+      return item?.imagePath;
+    }
+  })();
+
+  const showIcon = data.type === "tag" || data.type === "currency";
+
+  return (
+    <components.Option {...props}>
+      <div
+        className={
+          "center h-full cursor-pointer rounded-full px-[5px] " +
+          (isActive ? "bg-fog-of-war" : "bg-platinum")
+        }
+      >
+        {showIcon && (
+          <div className="h-[47px] w-[47px] rounded-full mr-[6px] bg-border-dark overflow-hidden center">
+            {imageUrl && (
+              <Image
+                className="rounded-full"
+                src={imageUrl}
+                alt={`icon-${data.value.toLowerCase()}`}
+                width={48}
+                height={48}
+              />
+            )}
+          </div>
+        )}
+        <div
+          className={
+            "pr-[10px] pl-[10px] " + (isActive ? "text-white" : "text-black")
+          }
+        >
+          {children}
+        </div>
+      </div>
+    </components.Option>
+  );
+};
+
+const MenuList = ({ children, ...props }: MenuListProps) => {
+  return (
+    <components.MenuList {...props}>
+      <div className="flex flex-row flex-wrap mx-auto gap-[12px] justify-center mb-[30px]">
+        {children}
+      </div>
+    </components.MenuList>
+  );
+};
+
 const customStyles = {
   menu: (provided) => {
     return {
-      ...provided,
-      backgroundColor: "white",
+      backgroundColor: "transparent",
       color: "black",
-      zIndex: 100,
     };
+  },
+  menuList: (provided) => {
+    return {};
+  },
+  option: (provided) => {
+    return {
+      display: "inline-block",
+      height: "56px",
+    };
+  },
+  control: () => {
+    return {
+      height: "100%",
+    };
+  },
+  menuPortal: () => {
+    return { width: "100%" };
   },
 };
 
@@ -70,25 +167,27 @@ const DropDownSelect = observer(
     options: MarketFilter[];
     add: (val: MarketFilter) => void;
   }) => {
+    const portal = document.getElementById("marketsFiltersMenuPortal");
+
     return (
       <ReactSelect
+        placeholder={label}
         options={options}
         styles={customStyles}
         isMulti={false}
         isSearchable={false}
+        menuPortalTarget={portal}
         onChange={(val: MarketFilter) => {
           add(val);
         }}
         components={{
-          Control: ({ children, ...rest }) => (
-            <Control label={label} {...rest}>
-              {children}
-            </Control>
-          ),
+          Control,
           SingleValue,
           IndicatorSeparator,
           DropdownIndicator,
           Placeholder,
+          Option,
+          MenuList,
         }}
       />
     );
@@ -99,7 +198,34 @@ const sortBySelectStyles = {
   control: (provided) => {
     return {
       ...provided,
-      width: "220px",
+      width: "130px",
+      height: "32px",
+      minHeight: "32px",
+      fontSize: "14px",
+    };
+  },
+  dropdownIndicator: (provided) => {
+    return {
+      ...provided,
+      padding: "0px",
+      paddingRight: "10px",
+    };
+  },
+  singleValue: (provided) => {
+    return {
+      ...provided,
+      // lineHeight: "32px",
+    };
+  },
+  valueContainer: (provided) => {
+    return {
+      ...provided,
+      paddingLeft: "10px",
+    };
+  },
+  input: (provided) => {
+    return {
+      ...provided,
     };
   },
   menu: (provided) => {
@@ -152,16 +278,7 @@ const MarketFilterOptions = ({
   onWithLiquidityOnlyChange,
 }: MarketFilterOptionsProps) => {
   return (
-    <div className="flex items-center gap-ztg-5 mb-[10px]">
-      <label className="text-sky-600 font-medium">
-        Liquidity only
-        <input
-          className="ml-[10px]"
-          type="checkbox"
-          checked={withLiquidityOnly}
-          onChange={(e) => onWithLiquidityOnlyChange(e.target.checked)}
-        />
-      </label>
+    <div className="flex items-center gap-ztg-5 mb-[25px]">
       <DropDownSelect
         label="Category"
         options={marketTagFilterOptions}
@@ -177,23 +294,19 @@ const MarketFilterOptions = ({
         options={marketStatusFilterOptions}
         add={add}
       />
+      <label className="text-black font-medium mr-[25px]">
+        <input
+          className="mr-[10px]"
+          type="checkbox"
+          checked={withLiquidityOnly}
+          onChange={(e) => onWithLiquidityOnlyChange(e.target.checked)}
+        />
+        Liquidity only
+      </label>
       <SortBySelect ordering={ordering} onOrderingChange={onOrderingChange} />
     </div>
   );
 };
-
-const MarketFilterContainer = observer(({ children }) => {
-  return (
-    <>
-      <div className="font-bold text-[28px] text-center mb-[15px]">
-        All Markets
-      </div>
-      <div className="w-full flex flex-col items-center justify-center mb-[30px]">
-        {children}
-      </div>
-    </>
-  );
-});
 
 const getFiltersFromQueryState = (
   queryState: MarketsListQuery,
@@ -298,7 +411,7 @@ const MarketFilterSelection = ({
   }, [queryState]);
 
   return (
-    <MarketFilterContainer>
+    <MarketFiltersContainer activeFilters={activeFilters}>
       <MarketFilterOptions
         add={add}
         onOrderingChange={setActiveOrdering}
@@ -306,12 +419,13 @@ const MarketFilterSelection = ({
         withLiquidityOnly={withLiquidityOnly}
         onWithLiquidityOnlyChange={setWithLiquidityOnly}
       />
+      <div id="marketsFiltersMenuPortal"></div>
       <MarketActiveFilters
         filters={activeFilters}
         onClear={clear}
         onFilterRemove={remove}
       />
-    </MarketFilterContainer>
+    </MarketFiltersContainer>
   );
 };
 
