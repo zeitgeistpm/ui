@@ -38,7 +38,7 @@ const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
     <components.Control {...props}>
       <div
         className={
-          "flex justify-center items-center pl-ztg-20 font-medium text-ztg-16-150 h-ztg-44 " +
+          "flex justify-center items-center ml-[10px] font-medium text-ztg-16-150 h-[44px] " +
           (menuIsOpen ? "text-black" : "text-sky-600")
         }
         onMouseDown={onMouseDown}
@@ -49,22 +49,6 @@ const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
       </div>
     </components.Control>
   );
-};
-
-const SingleValue = (props) => {
-  return <></>;
-};
-
-const IndicatorSeparator = () => {
-  return <></>;
-};
-
-const DropdownIndicator = () => {
-  return <></>;
-};
-
-const Placeholder = () => {
-  return <></>;
 };
 
 const Option = ({ children, ...props }: OptionProps<MarketFilter>) => {
@@ -131,6 +115,22 @@ const MenuList = ({ children, ...props }: MenuListProps) => {
   );
 };
 
+const SingleValue = (props) => {
+  return <></>;
+};
+
+const IndicatorSeparator = () => {
+  return <></>;
+};
+
+const DropdownIndicator = () => {
+  return <></>;
+};
+
+const Placeholder = () => {
+  return <></>;
+};
+
 const customStyles = {
   menu: (provided) => {
     return {
@@ -155,6 +155,9 @@ const customStyles = {
   menuPortal: () => {
     return { width: "100%" };
   },
+  valueContainer: () => {
+    return {};
+  },
 };
 
 const DropDownSelect = observer(
@@ -171,6 +174,7 @@ const DropDownSelect = observer(
 
     return (
       <ReactSelect
+        className="mr-[10px]"
         placeholder={label}
         options={options}
         styles={customStyles}
@@ -198,7 +202,7 @@ const sortBySelectStyles = {
   control: (provided) => {
     return {
       ...provided,
-      width: "130px",
+      width: "180px",
       height: "32px",
       minHeight: "32px",
       fontSize: "14px",
@@ -214,7 +218,6 @@ const sortBySelectStyles = {
   singleValue: (provided) => {
     return {
       ...provided,
-      // lineHeight: "32px",
     };
   },
   valueContainer: (provided) => {
@@ -284,17 +287,20 @@ const MarketFilterOptions = ({
         options={marketTagFilterOptions}
         add={add}
       />
+      <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
       <DropDownSelect
         label="Currency"
         options={marketCurrencyFilterOptions}
         add={add}
       />
+      <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
       <DropDownSelect
         label="Status"
         options={marketStatusFilterOptions}
         add={add}
       />
-      <label className="text-black font-medium mr-[25px]">
+      <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
+      <label className="text-black font-medium mr-[20px] ml-[20px]">
         <input
           className="mr-[10px]"
           type="checkbox"
