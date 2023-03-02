@@ -26,14 +26,22 @@ import {
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import MarketActiveFilters from "./MarketActiveFilters";
 import MarketFiltersContainer, {
-  ActiveFiltersContext,
+  MarketFiltersContext,
 } from "./MarketFiltersContainer";
 
 const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
-  const { innerProps, menuIsOpen, selectProps } = props;
-  const { onMouseDown } = innerProps;
-
+  const { setSelectedMenu, selectedMenu } = useContext(MarketFiltersContext);
+  const { menuIsOpen, selectProps } = props;
   const Chevron = menuIsOpen ? ChevronUp : ChevronDown;
+
+  const onClick = () => {
+    if (selectedMenu === selectProps.placeholder) {
+      setSelectedMenu("None");
+    } else {
+      setSelectedMenu(selectProps.placeholder as any);
+    }
+  };
+
   return (
     <components.Control {...props}>
       <div
@@ -41,7 +49,7 @@ const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
           "flex justify-center items-center ml-[10px] font-medium text-ztg-16-150 h-[44px] " +
           (menuIsOpen ? "text-black" : "text-sky-600")
         }
-        onMouseDown={onMouseDown}
+        onClick={onClick}
       >
         <span className="cursor-pointer">{selectProps.placeholder}</span>
         <Chevron size={18} className="ml-ztg-8 font-bold cursor-pointer" />
@@ -54,7 +62,7 @@ const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
 const Option = ({ children, ...props }: OptionProps<MarketFilter>) => {
   const { data } = props;
 
-  const activeFilters = useContext(ActiveFiltersContext);
+  const { activeFilters } = useContext(MarketFiltersContext);
 
   const isActive = findFilterIndex(activeFilters, data) !== -1;
 
@@ -89,6 +97,7 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter>) => {
                 alt={`icon-${data.value.toLowerCase()}`}
                 width={48}
                 height={48}
+                quality={100}
               />
             )}
           </div>
@@ -165,9 +174,11 @@ const DropDownSelect = observer(
     label,
     options,
     add,
+    isOpen = false,
   }: {
     label: string;
     options: MarketFilter[];
+    isOpen?: boolean;
     add: (val: MarketFilter) => void;
   }) => {
     const portal = document.getElementById("marketsFiltersMenuPortal");
@@ -181,6 +192,7 @@ const DropDownSelect = observer(
         isMulti={false}
         isSearchable={false}
         menuPortalTarget={portal}
+        menuIsOpen={isOpen}
         onChange={(val: MarketFilter) => {
           add(val);
         }}
@@ -266,7 +278,7 @@ const SortBySelect = observer(
 );
 
 type MarketFilterOptionsProps = {
-  add: (filter: MarketFilter) => void;
+  addFilter: (filter: MarketFilter) => void;
   ordering: MarketsOrderBy;
   onOrderingChange: (ordering: MarketsOrderBy) => void;
   withLiquidityOnly: boolean;
@@ -274,30 +286,34 @@ type MarketFilterOptionsProps = {
 };
 
 const MarketFilterOptions = ({
-  add,
+  addFilter,
   ordering,
   onOrderingChange,
   withLiquidityOnly,
   onWithLiquidityOnlyChange,
 }: MarketFilterOptionsProps) => {
+  const { selectedMenu } = useContext(MarketFiltersContext);
   return (
     <div className="flex items-center gap-ztg-5 mb-[25px]">
       <DropDownSelect
         label="Category"
         options={marketTagFilterOptions}
-        add={add}
+        add={addFilter}
+        isOpen={selectedMenu === "Category"}
       />
       <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
       <DropDownSelect
         label="Currency"
         options={marketCurrencyFilterOptions}
-        add={add}
+        add={addFilter}
+        isOpen={selectedMenu === "Currency"}
       />
       <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
       <DropDownSelect
         label="Status"
         options={marketStatusFilterOptions}
-        add={add}
+        add={addFilter}
+        isOpen={selectedMenu === "Status"}
       />
       <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
       <label className="text-black font-medium mr-[20px] ml-[20px]">
@@ -419,7 +435,7 @@ const MarketFilterSelection = ({
   return (
     <MarketFiltersContainer activeFilters={activeFilters}>
       <MarketFilterOptions
-        add={add}
+        addFilter={add}
         onOrderingChange={setActiveOrdering}
         ordering={activeOrdering}
         withLiquidityOnly={withLiquidityOnly}
