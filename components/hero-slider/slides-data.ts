@@ -2,16 +2,16 @@ export const slidesData = [
   {
     id: 1,
     title: {
-      text: "Starship\nIn Outer Space?",
+      text: "Predict the\nprice of ASTR",
       secondary: "WIN 1000 ZTG",
       styles:
         "text-white font-sans sm:whitespace-pre font-extrabold text-6xl md:text-8xl mb-4",
       stylesSecondary:
         "text-center sm:text-start text-white font-sans whitespace-pre font-extrabold text-3xl md:text-4xl mb-6",
     },
-    bg: "/carousel/spaceship_banner_ai.png",
+    bg: "/carousel/astar.png",
     cta1: "Trade Now",
-    link1: "https://app.zeitgeist.pm/markets/125",
+    link1: "https://app.zeitgeist.pm/markets/129",
     color1: {
       primary: "#3679E1",
       secondary: "#FFF",
