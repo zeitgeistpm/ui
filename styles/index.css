@@ -6,10 +6,6 @@
 @tailwind components;
 /* Stop purging. */
 
-body {
-  @apply bg-gray-50;
-}
-
 html {
   font-size: 100%;
 }
@@ -211,11 +207,11 @@ body {
 
 /* TODO: change to padding and add mx-auto after removing left drawer */
 .main-container {
-  @apply mx-4 sm:mx-10 md:mx-24 lg:mx-32 min-h-screen max-w-screen-2xl;
+  @apply px-4 sm:px-10 md:px-24 lg:px-32 max-w-screen-2xl mx-auto;
 }
 
 .container-fluid {
-  @apply mx-4 sm:mx-10 md:mx-24 lg:mx-32 max-w-screen-2xl;
+  @apply px-4 sm:px-10 md:px-24 lg:px-32 max-w-screen-2xl mx-auto;
 }
 
 .carousel__slide--visible {

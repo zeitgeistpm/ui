@@ -54,7 +54,7 @@ const MarketHeader: FC<{
             dateStyle: "medium",
           }).format(starts)}
         </HeaderStat>
-        <HeaderStat label={hasDatePassed(starts) ? "Ended" : "Ends"}>
+        <HeaderStat label={hasDatePassed(ends) ? "Ended" : "Ends"}>
           {new Intl.DateTimeFormat("default", {
             dateStyle: "medium",
           }).format(ends)}
