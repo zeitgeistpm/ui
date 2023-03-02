@@ -12,7 +12,6 @@ import { useStore } from "lib/stores/Store";
 import { useInfiniteMarkets } from "lib/hooks/queries/useInfiniteMarkets";
 import { MarketOutcomes } from "lib/types/markets";
 import { useContentScrollTop } from "components/context/ContentDimensionsContext";
-import { useContentWidth } from "components/context/ContentDimensionsContext";
 import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
 import MarketFilterSelection from "./market-filter";
 import MarketCard from "./market-card/index";
@@ -80,8 +79,6 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const [scrollingRestored, setScrollingRestored] = useState(false);
 
   useChangeQuery(filters, orderBy, withLiquidityOnly);
-  const [gridColsClass, setGridColsClass] = useState<string>("grid-cols-3");
-  const contentWidth = useContentWidth();
 
   const {
     data: marketsPages,
@@ -137,16 +134,6 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     }
   }, [marketsPages]);
 
-  useEffect(() => {
-    if (contentWidth <= 620) {
-      return setGridColsClass("grid-cols-1");
-    }
-    if (contentWidth <= 915) {
-      return setGridColsClass("grid-cols-2");
-    }
-    setGridColsClass("grid-cols-3");
-  }, [contentWidth]);
-
   return (
     <div
       className={"pt-ztg-46 mb-[38px]" + className}
@@ -157,7 +144,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
         onOrderingChange={setOrderBy}
         onWithLiquidityOnlyChange={setWithLiquidityOnly}
       />
-      <div className={`grid grid-cols-3 gap-[30px] ${gridColsClass}`}>
+      <div className="grid gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {markets?.map((market) => {
           const volume = market.pool?.volume ?? 0;
           const scalarType = market.scalarType as ScalarRangeType;
