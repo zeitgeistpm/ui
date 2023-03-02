@@ -35,15 +35,16 @@ export async function getStaticProps() {
   const [
     featuredMarkets,
     trendingMarkets,
-    img,
     categoryPlaceholders,
     sliderPlaceholders,
     categoryCounts,
   ] = await Promise.all([
     getFeaturedMarkets(client),
     getTrendingMarkets(client),
-    getPlaiceholder(MAIN_IMAGE_PATH, { size: 32 }),
-    getPlaiceholders(CATEGORIES.map((cat) => cat.imagePath)),
+    getPlaiceholders(
+      CATEGORIES.map((cat) => cat.imagePath),
+      { size: 32 },
+    ),
     getPlaiceholders(slidesData.map((slide) => slide.bg)),
     getCategoryCounts(
       client,
@@ -56,7 +57,6 @@ export async function getStaticProps() {
       featuredMarkets: featuredMarkets ?? [],
       trendingMarkets: trendingMarkets ?? [],
       categoryCounts: categoryCounts,
-      img,
       categoryPlaceholders,
       sliderPlaceholders,
     },
@@ -68,7 +68,6 @@ const IndexPage: NextPage<{
   featuredMarkets: IndexedMarketCardData[];
   trendingMarkets: IndexedMarketCardData[];
   categoryCounts: number[];
-  img: IGetPlaiceholderReturn;
   categoryPlaceholders: IGetPlaiceholderReturn[];
   sliderPlaceholders: IGetPlaiceholderReturn[];
 }> = observer(
