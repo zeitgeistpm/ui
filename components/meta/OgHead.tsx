@@ -6,6 +6,9 @@ export type OgProps = {
   image?: URL;
 };
 
+const defaultDescription =
+  "The application interface for Zeitgeist Prediction Markets. Built on Polkadot, Zeitgeist is the leader in decentralized prediction markets.";
+
 export const OgHead = (props: OgProps) => {
   return (
     <Head>
@@ -20,25 +23,23 @@ export const OgHead = (props: OgProps) => {
           />
         </>
       )}
-      {props.description && (
-        <>
-          <meta
-            key="description"
-            name="description"
-            content={props.description}
-          />
-          <meta
-            key="og:description"
-            property="og:description"
-            content={props.description}
-          />
-          <meta
-            key="twitter:description"
-            property="twitter:description"
-            content={props.description}
-          />
-        </>
-      )}
+      <>
+        <meta
+          key="description"
+          name="description"
+          content={defaultDescription}
+        />
+        <meta
+          key="og:description"
+          property="og:description"
+          content={defaultDescription}
+        />
+        <meta
+          key="twitter:description"
+          property="twitter:description"
+          content={defaultDescription}
+        />
+      </>
       {props.image && (
         <>
           <meta key="og:image" property="og:image" content={props.image.href} />
