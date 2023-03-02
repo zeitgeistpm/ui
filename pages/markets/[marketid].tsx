@@ -266,7 +266,7 @@ const Market: NextPage<{
         </Tab.Group>
         <div className="lg:px-36">
           {marketStore?.type === "scalar" && spotPrices && (
-            <div className="mt-ztg-20 mb-ztg-30">
+            <div className="my-12">
               <ScalarPriceRange
                 scalarType={marketStore.scalarType}
                 lowerBound={marketStore.bounds[0]}
@@ -278,7 +278,9 @@ const Market: NextPage<{
           )}
           {indexedMarket.description?.length > 0 && (
             <>
-              <div className="sub-header mt-ztg-40 mb-ztg-15">About Market</div>
+              <h3 className="text-center text-2xl font-semibold mb-5">
+                About Market
+              </h3>
               <QuillViewer value={indexedMarket.description} />
             </>
           )}
@@ -286,7 +288,9 @@ const Market: NextPage<{
             marketStore={marketStore}
             onPoolDeployed={handlePoolDeployed}
           />
-          <div className="sub-header my-ztg-40 text-center">Market Cast</div>
+          <h3 className="text-center text-2xl font-semibold mt-10">
+            Market Cast
+          </h3>
           <MarketAddresses
             oracleAddress={indexedMarket.oracle}
             creatorAddress={indexedMarket.creator}
