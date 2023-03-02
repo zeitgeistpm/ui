@@ -32,7 +32,7 @@ const HeroSlider = ({
 
   return (
     <section
-      className={`relative w-full h-[527px] mx-auto ${
+      className={`relative w-3/4 rounded-xl h-[527px] mx-auto ${
         animate && styles.fadeIn
       }`}
       onAnimationEnd={() => setAnimate(false)}
@@ -42,8 +42,9 @@ const HeroSlider = ({
         alt={`Image depicting ${slidesData[currentSlide].title.text}`}
         placeholder="blur"
         blurDataURL={imagePlaceholders[currentSlide].base64}
-        sizes="100vw"
+        // sizes="100vw"
         fill
+        className="rounded-xl"
         style={{ objectFit: "cover" }}
       />
       <div className="h-full relative container-fluid">

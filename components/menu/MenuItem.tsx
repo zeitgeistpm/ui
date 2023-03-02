@@ -40,7 +40,7 @@ export const MenuItem: FC<MenuItemProps> = observer(
     return (
       <WrapComponent href={href}>
         <button
-          className={`group flex rounded-full p-5 w-[68px] bg-black border-2 border-black text-white hover:border-sunglow-2 hover:text-sunglow-2 hover:bg-black transition-all duration-300 focus:bg-ztg-blue focus:text-white focus:border-ztg-blue ${
+          className={`group flex rounded-full p-5 w-[68px] bg-fog-of-war border-2 border-black text-white hover:border-sunglow-2 hover:text-sunglow-2 hover:bg-black transition-all duration-300 focus:bg-ztg-blue focus:text-white focus:border-ztg-blue ${
             active && "bg-ztg-blue border-ztg-blue"
           } ${className}`}
           onClick={onClick}

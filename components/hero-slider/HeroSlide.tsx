@@ -6,11 +6,16 @@ import { HeroSlideProps } from "./slider-types";
 export const HeroSlide: FC<HeroSlideProps> = ({ slide }) => {
   return (
     <div className="flex items-center h-full w-full">
-      <div className="w-full pb-8">
-        <h2 className={`text-center sm:text-left ${slide.title.styles}`}>
+      <div className="w-full flex flex-col justify-between h-3/5 text-white ">
+        {/* <h2 className={`text-center sm:text-left ${slide.title.styles}`}>
           {slide.title.text}
-        </h2>
-        <p className={slide.title?.stylesSecondary}>{slide.title?.secondary}</p>
+        </h2> */}
+        <div className="flex flex-col text-6xl">
+          <h2 className="">Zeitgeist</h2>
+          <h2 className="mb-4">is Moving to Polkadot</h2>
+          <h4 className="text-3xl font-bold">Learn More</h4>
+        </div>
+        {/* <p className={slide.title?.stylesSecondary}>{slide.title?.secondary}</p> */}
         <div className="flex flex-col sm:flex-row">
           <Link
             style={{

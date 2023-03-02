@@ -54,65 +54,66 @@ const DefaultLayout: FC = observer(({ children }) => {
   }, [router.pathname, prevPathname]);
 
   return (
-    <div className="relative flex min-h-screen justify-evenly overflow-hidden">
-      <TradeItemContext.Provider value={{ data: trade, set: setTrade }}>
-        {/* loads optimized fonts for global access */}
-        <style jsx global>
-          {`
-            :root {
-              --font-inter: ${inter.style.fontFamily};
-              --font-kanit: ${kanit.style.fontFamily};
-              --font-roboto-mono: ${roboto_mono.style.fontFamily};
-            }
-          `}
-        </style>
-        <Menu />
-        <div
-          ref={contentRef}
-          className="overflow-y-a1uto overflow-x-hidden flex-grow"
-        >
-          <TopBar />
-          {/* //hide navbar until designs are ready */}
-          {NOTIFICATION_MESSAGE && (
-            <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38 hidden">
-              <div className="text-ztg-12-150 font-semibold">
-                {NOTIFICATION_MESSAGE}
+    <div className="w-full flex justify-center">
+      <div className="relative flex min-h-screen max-w-screen-xl bg-gray-50">
+        <TradeItemContext.Provider value={{ data: trade, set: setTrade }}>
+          {/* loads optimized fonts for global access */}
+          <style jsx global>
+            {`
+              :root {
+                --font-inter: ${inter.style.fontFamily};
+                --font-kanit: ${kanit.style.fontFamily};
+                --font-roboto-mono: ${roboto_mono.style.fontFamily};
+              }
+            `}
+          </style>
+          <div className="fixed z-50 max-w-screen-xl w-full pointer-events-none">
+            <TopBar />
+            <Menu />
+          </div>
+          <div ref={contentRef} className="flex-grow">
+            {/* //hide navbar until designs are ready */}
+            {NOTIFICATION_MESSAGE && (
+              <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38 hidden">
+                <div className="text-ztg-12-150 font-semibold">
+                  {NOTIFICATION_MESSAGE}
+                </div>
               </div>
-            </div>
-          )}
-          <main
-            className={`flex flex-col dark:text-white mb-12 ${
-              router.pathname !== "/" && "main-container mt-32"
-            }`}
-            ref={mainRef}
-          >
-            <div>
-              <ContentDimensionsProvider
-                scrollTop={scrollTop}
-                scrollTo={scrollTo}
-                height={height}
-                width={width}
-              >
-                {store.initialized ||
-                router.pathname === "/" ||
-                router.pathname.split("/")[1] === "markets" ||
-                router.pathname.split("/")[1] === "portfolio" ||
-                router.pathname.split("/")[1] === "liquidity" ? (
-                  children
-                ) : (
-                  <Skeleton
-                    className="!transform-none !mt-ztg-30"
-                    style={{ height: "550px" }}
-                  />
-                )}
-              </ContentDimensionsProvider>
-            </div>
-          </main>
-          <Footer />
-        </div>
-        <RightDrawer />
-        <NotificationCenter />
-      </TradeItemContext.Provider>
+            )}
+            <main
+              className={`flex flex-col dark:text-white mb-12 mt-32 ${
+                router.pathname !== "/" && "main-container mt-32"
+              }`}
+              ref={mainRef}
+            >
+              <div>
+                <ContentDimensionsProvider
+                  scrollTop={scrollTop}
+                  scrollTo={scrollTo}
+                  height={height}
+                  width={width}
+                >
+                  {store.initialized ||
+                  router.pathname === "/" ||
+                  router.pathname.split("/")[1] === "markets" ||
+                  router.pathname.split("/")[1] === "portfolio" ||
+                  router.pathname.split("/")[1] === "liquidity" ? (
+                    children
+                  ) : (
+                    <Skeleton
+                      className="!transform-none !mt-ztg-30"
+                      style={{ height: "550px" }}
+                    />
+                  )}
+                </ContentDimensionsProvider>
+              </div>
+            </main>
+            <Footer />
+          </div>
+          <RightDrawer />
+          <NotificationCenter />
+        </TradeItemContext.Provider>
+      </div>
     </div>
   );
 });

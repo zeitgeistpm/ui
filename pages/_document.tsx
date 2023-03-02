@@ -6,7 +6,7 @@ export default function Document() {
   const useAnalytics = environment === "production" || environment == null;
 
   return (
-    <Html className="overflow-x-hidden max-w-full">
+    <Html className="max-w-full">
       <Head>
         {useAnalytics && (
           <Script id="google-analytics" strategy="afterInteractive">

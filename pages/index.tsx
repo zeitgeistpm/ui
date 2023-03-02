@@ -83,11 +83,21 @@ const IndexPage: NextPage<{
       <>
         <HeroSlider imagePlaceholders={sliderPlaceholders} />
         <div data-testid="indexPage" className="main-container">
-          <div className="flex items-center w-full justify-center relative bottom-[60px]">
+          {/* <div className="flex items-center w-full justify-center mt-6 mb-[60px]">
             <LearnSection />
-          </div>
+          </div> */}
+          {trendingMarkets.length > 0 && (
+            <div className="my-[60px]">
+              <MarketScroll
+                title="Trending Markets 🔥"
+                cta="Go to Markets"
+                markets={trendingMarkets}
+                link="markets"
+              />
+            </div>
+          )}
           {featuredMarkets.length > 0 && (
-            <div className="mb-[60px]">
+            <div className="my-[60px]">
               <MarketScroll
                 title="Featured Markets"
                 cta="Go to Markets"
@@ -102,16 +112,6 @@ const IndexPage: NextPage<{
               imagePlaceholders={categoryPlaceholders}
             />
           </div>
-          {trendingMarkets.length > 0 && (
-            <div className="my-[60px]">
-              <MarketScroll
-                title="Trending Markets"
-                cta="Go to Markets"
-                markets={trendingMarkets}
-                link="markets"
-              />
-            </div>
-          )}
         </div>
       </>
     );

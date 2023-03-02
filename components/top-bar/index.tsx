@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useStore } from "lib/stores/Store";
 import { useRouter } from "next/router";
 
-type NavbarColor = "black" | "white" | "transparent";
+type NavbarColor = "black" | "white" | "transparent" | "fog-of-war" | any;
 
 const MobileTopBar: FC<{ navbar: NavbarColor }> = observer(({ navbar }) => {
   const store = useStore();
@@ -18,7 +18,7 @@ const MobileTopBar: FC<{ navbar: NavbarColor }> = observer(({ navbar }) => {
     store.toggleShowMobileMenu();
   };
   return (
-    <div className="flex items-center w-full">
+    <div className="flex items-center w-full bg-fog-of-war">
       <Logo dark={navbar === "white" ? true : false} />
       <h1
         className={`font-bold font-kanit pl-4 ${
@@ -51,9 +51,9 @@ const TopBar = observer(() => {
 
   const changeNavBG = () => {
     if (window.scrollY >= 60 && pathname === "/") {
-      setNavbarBGColor("black");
+      setNavbarBGColor("#0F1A2D");
     } else if (pathname === "/") {
-      setNavbarBGColor("transparent");
+      setNavbarBGColor("#0F1A2D");
     } else {
       setNavbarBGColor("white");
     }
@@ -68,7 +68,7 @@ const TopBar = observer(() => {
 
   return (
     <div
-      className={`flex w-full py-7 fixed z-40 transition-[background] duration-500 ${
+      className={`flex w-full py-7 pointer-events-auto z-40 transition-[background] duration-500 ${
         pathname === "/" ? "none" : "border-b border-gray-200"
       }`}
       style={{

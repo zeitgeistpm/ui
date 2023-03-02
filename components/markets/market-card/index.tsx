@@ -235,19 +235,18 @@ const MarketCard = ({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         data-testid={`marketCard-${marketId}`}
-        className={`group flex flex-col w-full h-auto rounded-xl p-[15px] relative ${className}`}
-        style={{
-          backgroundColor: isHovered ? "#B5C1CA" : "#F0F2F5",
-          transition: "background-color 500ms ease",
-          minWidth: isNaN(width) ? "100%" : width,
-          maxWidth: isNaN(width) ? "100%" : width,
-        }}
+        className={`group flex flex-col w-full h-auto rounded-xl p-[15px] relative bg-[#F0F2F5] hover:bg-[#B5C1CA] min-w-[360px] ${className}`}
+        // style={{
+        //   transition: "background-color 500ms ease",
+        //   minWidth: isNaN(width) ? "100%" : width,
+        //   maxWidth: isNaN(width) ? "100%" : width,
+        // }}
       >
         <Link
           href={`/markets/${marketId}`}
           className="flex flex-col flex-1 gap-2.5"
         >
-          <div className="flex gap-2.5">
+          {/* <div className="flex gap-2.5">
             <MarketImage image={img} alt={question} />
             <div className="flex flex-wrap gap-2.5 font-medium h-fit">
               <MarketCardTags tags={tags} />
@@ -264,7 +263,7 @@ const MarketCard = ({
                 />
               )}
             </div>
-          </div>
+          </div> */}
           <MarketCardInfo question={question} />
           <div className="w-full">
             {marketType.scalar === null ? (

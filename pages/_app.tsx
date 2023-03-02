@@ -96,7 +96,7 @@ const MyApp = observer(({ Component, pageProps }) => {
               <ModalContainer>{modalStore.modal}</ModalContainer>
             )}
             <Head>
-              <title>Zeitgeist - Prediction Markets</title>
+              <title>Zeitgeist | Decentralized Prediction Markets</title>
             </Head>
             <DefaultLayout>
               <AnimatePresence>

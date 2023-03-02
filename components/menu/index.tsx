@@ -5,13 +5,11 @@ import {
   useNavigationStore,
 } from "lib/stores/NavigationStore";
 import { NavigationSingleItem, PageName } from "lib/types/navigation";
-import ThemeSwitch from "./ThemeSwitch";
 import LocalizationSelect, {
   LocalizationOption,
   localizationOptions,
 } from "./LocalizationSelect";
 import { MenuItem } from "./MenuItem";
-import { MenuItemGroup } from "./MenuItemGroup";
 import { useStore } from "lib/stores/Store";
 
 const Menu: FC = observer(() => {
@@ -32,7 +30,7 @@ const Menu: FC = observer(() => {
 
   return (
     <>
-      <div className="hidden fixed left-4 top-32 md:flex flex-col gap-5 z-50">
+      <div className="hidden md:flex flex-col gap-5 z-50 md:mt-5 md:ml-4">
         {Object.keys(navigationStore.items)
           .filter((itemKey) => {
             // Skip court page for now...
@@ -57,29 +55,13 @@ const Menu: FC = observer(() => {
                 textLabel={item.label}
                 hideLabel={hideLabels}
                 active={navigationStore.checkPage(itemKey as any)}
-                className=""
+                className="pointer-events-auto"
                 onClick={() => navigate(itemKey as any)}
                 key={`meuItem-${idx}`}
               />
             );
           })}
       </div>
-      {/* TODO: check to see if code below can be deleted
-      <div className="mt-auto">
-        <LocalizationSelect
-          options={localizationOptions}
-          selectedLanguage={selectedLanguage}
-          className={`${
-            store.leftDrawerClosed === true ? "ml-ztg-33 " : "ml-ztg-39"
-          }  mb-ztg-20`}
-          hideLabel={hideLabels}
-          onLanguageChange={(option: LocalizationOption) =>
-            setSelectedLanguage(option)
-          }
-        />
-        <ThemeSwitch className="ml-ztg-33 mb-ztg-24" />
-        <div className="ml-ztg-42 mb-ztg-22 text-ztg-12-150">v.1.0.0</div>
-      </div> */}
     </>
   );
 });

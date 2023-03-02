@@ -112,8 +112,7 @@ const Footer = observer(() => {
   return (
     <div className="container-fluid mx-auto mt-auto max-w-screen-2xl flex flex-col pb-24">
       <div className="flex justify-between gap-10 mb-8 md:mb-16">
-        <FooterNewsletterSub title="Subscribe to Newsletter" />
-        <div className="hidden md:flex justify-between gap-5 w-full ">
+        <div className="hidden md:flex gap-20 w-full ">
           <FooterMenu
             title="General"
             links={[
@@ -149,6 +148,7 @@ const Footer = observer(() => {
             ]}
           />
         </div>
+        <FooterNewsletterSub title="Subscribe to Newsletter" />
       </div>
       <div className="flex flex-col md:flex-row gap-5">
         <span className="text-center md:text-start font-bold whitespace-nowrap text-ztg-12-150">

@@ -14,6 +14,7 @@ import {
   Box,
   Briefcase,
   Droplet,
+  Grid,
   PlusSquare,
   Settings,
   User,
@@ -29,7 +30,7 @@ export default class NavigationStore {
     markets: {
       label: "Markets",
       href: "/markets",
-      IconComponent: BarChart2,
+      IconComponent: Grid,
       pageName: "markets",
     },
     create: {
@@ -38,43 +39,43 @@ export default class NavigationStore {
       href: "/create",
       pageName: "create",
     },
-    portfolio: {
-      label: "Portfolio",
-      href: "/portfolio",
-      IconComponent: Briefcase,
-      pageName: "portfolio",
-    },
-    settings: {
-      label: "Settings",
-      href: "/settings",
-      IconComponent: Settings,
-      pageName: "settings",
-    },
-    avatar: {
-      label: "Avatar and Badges",
-      href: "/avatar",
-      IconComponent: User,
-      pageName: "avatar",
-    },
-    liquidity: {
-      label: "Liquidity Pools",
-      IconComponent: Droplet,
-      href: "/liquidity",
-      pageName: "liquidity",
-      mobile: true,
-    },
-    activity: {
-      label: "Activity Feed",
-      IconComponent: Box,
-      href: "/activity",
-      pageName: "activity",
-    },
-    court: {
-      label: "Court",
-      IconComponent: Users,
-      href: "/court",
-      pageName: "court",
-    },
+    // portfolio: {
+    //   label: "Account",
+    //   href: "/portfolio",
+    //   IconComponent: User,
+    //   pageName: "portfolio",
+    // },
+    // settings: {
+    //   label: "Settings",
+    //   href: "/settings",
+    //   IconComponent: Settings,
+    //   pageName: "settings",
+    // },
+    // avatar: {
+    //   label: "Avatar and Badges",
+    //   href: "/avatar",
+    //   IconComponent: User,
+    //   pageName: "avatar",
+    // },
+    //   liquidity: {
+    //     label: "Liquidity Pools",
+    //     IconComponent: Droplet,
+    //     href: "/liquidity",
+    //     pageName: "liquidity",
+    //     mobile: true,
+    //   },
+    //   activity: {
+    //     label: "Activity Feed",
+    //     IconComponent: Box,
+    //     href: "/activity",
+    //     pageName: "activity",
+    //   },
+    //   court: {
+    //     label: "Court",
+    //     IconComponent: Users,
+    //     href: "/court",
+    //     pageName: "court",
+    //   },
   };
 
   selectGroup(group: string) {
