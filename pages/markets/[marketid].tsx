@@ -264,33 +264,34 @@ const Market: NextPage<{
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
-
-        {marketStore?.type === "scalar" && spotPrices && (
-          <div className="mt-ztg-20 mb-ztg-30">
-            <ScalarPriceRange
-              scalarType={marketStore.scalarType}
-              lowerBound={marketStore.bounds[0]}
-              upperBound={marketStore.bounds[1]}
-              shortPrice={spotPrices?.get(1).toNumber()}
-              longPrice={spotPrices?.get(0).toNumber()}
-            />
-          </div>
-        )}
-        {indexedMarket.description?.length > 0 && (
-          <>
-            <div className="sub-header mt-ztg-40 mb-ztg-15">About Market</div>
-            <QuillViewer value={indexedMarket.description} />
-          </>
-        )}
-        <PoolDeployer
-          marketStore={marketStore}
-          onPoolDeployed={handlePoolDeployed}
-        />
-        <div className="sub-header my-ztg-40 text-center">Market Cast</div>
-        <MarketAddresses
-          oracleAddress={indexedMarket.oracle}
-          creatorAddress={indexedMarket.creator}
-        />
+        <div className="lg:px-36">
+          {marketStore?.type === "scalar" && spotPrices && (
+            <div className="mt-ztg-20 mb-ztg-30">
+              <ScalarPriceRange
+                scalarType={marketStore.scalarType}
+                lowerBound={marketStore.bounds[0]}
+                upperBound={marketStore.bounds[1]}
+                shortPrice={spotPrices?.get(1).toNumber()}
+                longPrice={spotPrices?.get(0).toNumber()}
+              />
+            </div>
+          )}
+          {indexedMarket.description?.length > 0 && (
+            <>
+              <div className="sub-header mt-ztg-40 mb-ztg-15">About Market</div>
+              <QuillViewer value={indexedMarket.description} />
+            </>
+          )}
+          <PoolDeployer
+            marketStore={marketStore}
+            onPoolDeployed={handlePoolDeployed}
+          />
+          <div className="sub-header my-ztg-40 text-center">Market Cast</div>
+          <MarketAddresses
+            oracleAddress={indexedMarket.oracle}
+            creatorAddress={indexedMarket.creator}
+          />
+        </div>
       </div>
     </>
   );
