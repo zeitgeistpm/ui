@@ -28,6 +28,17 @@ export const DEFAULT_DEADLINES: MarketDeadlines = {
   disputeDuration: "28800",
 };
 
+const allowedEndpointTypes: SupportedParachain[] =
+  process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
+    ? [SupportedParachain.KUSAMA]
+    : process.env.NEXT_PUBLIC_VERCEL_ENV === "preview"
+    ? [SupportedParachain.BSR]
+    : [
+        SupportedParachain.KUSAMA,
+        SupportedParachain.BSR,
+        SupportedParachain.CUSTOM,
+      ];
+
 export const endpoints: EndpointOption[] = [
   // {
   //   value: "wss://rpc-0.zeitgeist.pm/",
@@ -54,7 +65,9 @@ export const endpoints: EndpointOption[] = [
     label: "Custom",
     parachain: SupportedParachain.CUSTOM,
   },
-];
+].filter((endpoint) =>
+  allowedEndpointTypes.some((e) => e === endpoint.parachain),
+);
 
 export const gqlEndpoints: EndpointOption[] = [
   {
@@ -72,4 +85,6 @@ export const gqlEndpoints: EndpointOption[] = [
     label: "Custom",
     parachain: SupportedParachain.CUSTOM,
   },
-];
+].filter((endpoint) =>
+  allowedEndpointTypes.some((e) => e === endpoint.parachain),
+);
