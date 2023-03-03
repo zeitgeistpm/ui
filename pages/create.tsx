@@ -216,6 +216,7 @@ const CreatePage: NextPage = observer(() => {
         });
         router.push(`/markets/${newMarketId}`, undefined, {
           shallow: true,
+          scroll: true,
         });
       }
     }, 1000);
