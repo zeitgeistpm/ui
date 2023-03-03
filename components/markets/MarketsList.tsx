@@ -3,16 +3,11 @@ import React, { useEffect, useState } from "react";
 import Decimal from "decimal.js";
 import { useInView } from "react-intersection-observer";
 import { observer } from "mobx-react";
-import { makeAutoObservable } from "mobx";
 import Loader from "react-spinners/PulseLoader";
 import { X } from "react-feather";
 import { useRouter } from "next/router";
-import { debounce } from "lodash";
-import { useStore } from "lib/stores/Store";
 import { useInfiniteMarkets } from "lib/hooks/queries/useInfiniteMarkets";
 import { MarketOutcomes } from "lib/types/markets";
-import { useContentScrollTop } from "components/context/ContentDimensionsContext";
-import { useContentWidth } from "components/context/ContentDimensionsContext";
 import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
 import MarketFilterSelection from "./market-filter";
 import MarketCard from "./market-card/index";
@@ -23,13 +18,6 @@ import { ZTG } from "lib/constants";
 export type MarketsListProps = {
   className?: string;
 };
-
-const scrollRestoration = makeAutoObservable({
-  scrollTop: 0,
-  set(scrollTop: number) {
-    this.scrollTop = scrollTop;
-  },
-});
 
 const useChangeQuery = (
   filters?: MarketFilter[],
@@ -68,20 +56,13 @@ const useChangeQuery = (
 };
 
 const MarketsList = observer(({ className = "" }: MarketsListProps) => {
-  const store = useStore();
-  const { markets: marketsStore } = store;
   const [filters, setFilters] = useState<MarketFilter[]>();
   const [orderBy, setOrderBy] = useState<MarketsOrderBy>();
   const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
 
   const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
-  const [scrollTop, scrollTo] = useContentScrollTop();
-  const [scrollingRestored, setScrollingRestored] = useState(false);
-
   useChangeQuery(filters, orderBy, withLiquidityOnly);
-  const [gridColsClass, setGridColsClass] = useState<string>("grid-cols-3");
-  const contentWidth = useContentWidth();
 
   const {
     data: marketsPages,
@@ -90,15 +71,6 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     hasNextPage,
     fetchNextPage,
   } = useInfiniteMarkets(orderBy, withLiquidityOnly, filters);
-
-  useEffect(
-    debounce(() => {
-      if (scrollingRestored) {
-        scrollRestoration.set(scrollTop);
-      }
-    }, 50),
-    [scrollTop, scrollingRestored],
-  );
 
   useEffect(() => {
     if (isLoadMarkerInView === true && hasNextPage === true) {
@@ -121,32 +93,6 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
 
   const count = markets?.length ?? 0;
 
-  useEffect(() => {
-    if (!scrollingRestored && count > 0) {
-      scrollTo(scrollRestoration.scrollTop);
-      setScrollingRestored(true);
-    }
-  }, [scrollingRestored, scrollRestoration.scrollTop, count]);
-
-  useEffect(() => {
-    const pageNum = marketsPages?.pages.length ?? 0;
-    if (pageNum > 0) {
-      for (const market of marketsPages.pages[pageNum - 1].data) {
-        marketsStore.getMarket(market.marketId);
-      }
-    }
-  }, [marketsPages]);
-
-  useEffect(() => {
-    if (contentWidth <= 620) {
-      return setGridColsClass("grid-cols-1");
-    }
-    if (contentWidth <= 915) {
-      return setGridColsClass("grid-cols-2");
-    }
-    setGridColsClass("grid-cols-3");
-  }, [contentWidth]);
-
   return (
     <div
       className={"pt-ztg-46 mb-[38px]" + className}
@@ -157,7 +103,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
         onOrderingChange={setOrderBy}
         onWithLiquidityOnlyChange={setWithLiquidityOnly}
       />
-      <div className={`grid grid-cols-3 gap-[30px] ${gridColsClass}`}>
+      <div className="grid gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {markets?.map((market) => {
           const volume = market.pool?.volume ?? 0;
           const scalarType = market.scalarType as ScalarRangeType;

@@ -20,8 +20,6 @@ import {
 } from "plaiceholder";
 import React from "react";
 
-const MAIN_IMAGE_PATH = "/carousel/superbowl.png";
-
 const getPlaiceholders = (
   paths: string[],
   options?: IGetPlaiceholderOptions,
@@ -32,19 +30,21 @@ const getPlaiceholders = (
 export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
+
   const [
     featuredMarkets,
     trendingMarkets,
-    img,
     categoryPlaceholders,
     sliderPlaceholders,
     categoryCounts,
   ] = await Promise.all([
     getFeaturedMarkets(client),
     getTrendingMarkets(client),
-    getPlaiceholder(MAIN_IMAGE_PATH, { size: 32 }),
     getPlaiceholders(CATEGORIES.map((cat) => cat.imagePath)),
-    getPlaiceholders(slidesData.map((slide) => slide.bg)),
+    getPlaiceholders(
+      slidesData.map((slide) => slide.bg),
+      { size: 16 },
+    ),
     getCategoryCounts(
       client,
       CATEGORIES.map((cat) => cat.name),
@@ -56,9 +56,8 @@ export async function getStaticProps() {
       featuredMarkets: featuredMarkets ?? [],
       trendingMarkets: trendingMarkets ?? [],
       categoryCounts: categoryCounts,
-      img,
-      categoryPlaceholders,
-      sliderPlaceholders,
+      categoryPlaceholders: categoryPlaceholders.map((c) => c.base64),
+      sliderPlaceholders: sliderPlaceholders.map((c) => c.base64),
     },
     revalidate: 10 * 60, //10min
   };
@@ -68,9 +67,8 @@ const IndexPage: NextPage<{
   featuredMarkets: IndexedMarketCardData[];
   trendingMarkets: IndexedMarketCardData[];
   categoryCounts: number[];
-  img: IGetPlaiceholderReturn;
-  categoryPlaceholders: IGetPlaiceholderReturn[];
-  sliderPlaceholders: IGetPlaiceholderReturn[];
+  categoryPlaceholders: string[];
+  sliderPlaceholders: string[];
 }> = observer(
   ({
     trendingMarkets,

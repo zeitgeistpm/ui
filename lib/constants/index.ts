@@ -22,6 +22,12 @@ export const DAY_SECONDS = 86400;
 export const ZTG_BLUE_COLOR = resolveTailwindConfig(tailwindConfig as any).theme
   .colors["ztg-blue"];
 
+export const SUPPORTED_WALLET_NAMES = [
+  "talisman",
+  "subwallet-js",
+  "polkadot-js",
+];
+
 export const DEFAULT_DEADLINES: MarketDeadlines = {
   gracePeriod: "0",
   oracleDuration: "28800",

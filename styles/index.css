@@ -189,22 +189,6 @@ input[type="number"] {
 @import "./quill.css";
 @import "./range-component.css";
 
-body {
-  --topbar-height: 76px;
-}
-
-.topbar {
-  /* width: calc(100% - (360px + 156px)); */
-  /* height: var(--topbar-height); */
-}
-
-/* workaround for Safari */
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  .topbar {
-    width: calc(100% - (360px + 156px));
-  }
-}
-
 .main-container {
   @apply px-4 sm:px-10 md:px-24 lg:px-32 max-w-screen-2xl mx-auto;
 }
@@ -239,26 +223,6 @@ tr {
 .no-scroll-bar::-webkit-scrollbar {
   width: 0;
   height: 0;
-}
-
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-white;
-  @apply dark:bg-sky-1000;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #d9e3ee;
-  border-radius: 8px;
-  background-clip: padding-box;
-}
-
-.dark > * ::-webkit-scrollbar-thumb {
-  background: #1d2533;
 }
 
 .header {

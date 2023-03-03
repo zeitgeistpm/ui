@@ -1,15 +1,19 @@
 import { observer } from "mobx-react";
 import React, { useEffect, useState, FC } from "react";
 
-import AccountButton from "../account/AccountButton";
 import MarketSearch from "./MarketSearch";
 import Logo from "../icons/ZeitgeistIcon";
 import { Menu, X } from "react-feather";
 import Link from "next/link";
 import { useStore } from "lib/stores/Store";
 import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
 
 type NavbarColor = "black" | "white" | "transparent";
+
+const AccountButton = dynamic(() => import("../account/AccountButton"), {
+  ssr: false,
+});
 
 const MobileTopBar: FC<{ navbar: NavbarColor }> = observer(({ navbar }) => {
   const store = useStore();
@@ -93,7 +97,7 @@ const TopBar = observer(() => {
             </div>
           </>
         </Link>
-        <MarketSearch />
+        {/* <MarketSearch /> */}
         <AccountButton />
       </div>
       <div className="md:hidden w-full container-fluid">

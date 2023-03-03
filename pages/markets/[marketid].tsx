@@ -38,7 +38,6 @@ import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
 import Link from "next/link";
-import LiquidityModal from "components/liquidity/LiquidityModal";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import MarketHeader from "components/markets/MarketHeader";
@@ -200,7 +199,7 @@ const Market: NextPage<{
           </div>
         )}
         <div className="flex justify-center py-ztg-50 mb-10 h-32">
-          {marketStore && marketStage ? (
+          {marketStage ? (
             <MarketTimer stage={marketStage} />
           ) : (
             <MarketTimerSkeleton />
