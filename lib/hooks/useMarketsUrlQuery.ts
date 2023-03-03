@@ -65,9 +65,13 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
       const ordering = update.ordering ?? query.ordering;
       const liquidityOnly = update.liquidityOnly ?? query.liquidityOnly;
       const newQuery = { filters, ordering, liquidityOnly };
-      router.replace({
-        query: toString(newQuery),
-      });
+      router.replace(
+        {
+          query: toString(newQuery),
+        },
+        undefined,
+        { shallow: true, scroll: false },
+      );
     },
     [routerPath, query],
   );
