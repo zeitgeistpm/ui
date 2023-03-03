@@ -17,11 +17,29 @@ export const marketStatusFilterOptions: MarketStatusFilter[] =
     label: status,
   }));
 
+export const categoryImages: Record<typeof defaultTags[number], string> = {
+  Sports: "/category/sports.png",
+  Politics: "/category/politics.png",
+  Technology: "/category/technology.png",
+  Crypto: "/category/crypto.png",
+  Science: "/category/science.png",
+  "E-Sports": "/category/e-sports.png",
+  Zeitgeist: "/category/zeitgeist.png",
+  Dotsama: "/category/dotsama.png",
+  News: "/category/news.png",
+} as const;
+
+export const currencyImages: Record<"ZTG", string> = {
+  ZTG: "/currencies/ztg.jpg",
+  // "aUSD": "/currencies/ausd.jpg
+} as const;
+
 export const marketTagFilterOptions: MarketTagFilter[] = defaultTags.map(
   (tag) => ({
     type: "tag",
     value: tag,
     label: tag,
+    imageUrl: categoryImages[tag],
   }),
 );
 
@@ -30,6 +48,7 @@ export const marketCurrencyFilterOptions: MarketCurrencyFilter[] = [
     type: "currency",
     value: "Ztg",
     label: "ZTG",
+    imageUrl: currencyImages["ZTG"],
   },
 ];
 
@@ -52,20 +71,3 @@ export const marketsOrderByOptions: MarketOrderByOption[] = Object.values(
 ).map((value) => {
   return { value, label: value };
 });
-
-export const categoryImages = [
-  { name: "Sports", imagePath: "/category/sports.png" },
-  { name: "Politics", imagePath: "/category/politics.png" },
-  { name: "Technology", imagePath: "/category/technology.png" },
-  { name: "Crypto", imagePath: "/category/crypto.png" },
-  { name: "Science", imagePath: "/category/science.png" },
-  { name: "E-Sports", imagePath: "/category/e-sports.png" },
-  { name: "Zeitgeist", imagePath: "/category/zeitgeist.png" },
-  { name: "Dotsama", imagePath: "/category/dotsama.png" },
-  { name: "News", imagePath: "/category/news.png" },
-] as const;
-
-export const currencyImages = [
-  { name: "ZTG", imagePath: "/currencies/ztg.jpg" },
-  { name: "aUSD", imagePath: "/currenies/ausd.jpg" },
-];

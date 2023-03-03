@@ -66,20 +66,6 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter>) => {
 
   const isActive = findFilterIndex(activeFilters, data) !== -1;
 
-  const imageUrl = (() => {
-    if (data.type === "tag") {
-      const item = categoryImages.find((cat) => cat.name === data.value);
-      return item?.imagePath;
-    } else if (data.type === "currency") {
-      const item = currencyImages.find(
-        (cat) => cat.name.toLowerCase() === data.value.toLowerCase(),
-      );
-      return item?.imagePath;
-    }
-  })();
-
-  const showIcon = data.type === "tag" || data.type === "currency";
-
   return (
     <components.Option {...props}>
       <div
@@ -88,18 +74,16 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter>) => {
           (isActive ? "bg-fog-of-war" : "bg-platinum")
         }
       >
-        {showIcon && (
+        {data.imageUrl && (
           <div className="h-[47px] w-[47px] rounded-full mr-[6px] bg-border-dark overflow-hidden center">
-            {imageUrl && (
-              <Image
-                className="rounded-full"
-                src={imageUrl}
-                alt={`icon-${data.value.toLowerCase()}`}
-                width={48}
-                height={48}
-                quality={100}
-              />
-            )}
+            <Image
+              className="rounded-full"
+              src={data.imageUrl}
+              alt={`icon-${data.value.toLowerCase()}`}
+              width={48}
+              height={48}
+              quality={100}
+            />
           </div>
         )}
         <div
