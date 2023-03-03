@@ -15,8 +15,6 @@ import {
 } from "lib/types/market-filter";
 import { findFilterIndex } from "lib/util/market-filter";
 import {
-  categoryImages,
-  currencyImages,
   filterTypes,
   marketCurrencyFilterOptions,
   marketsOrderByOptions,
