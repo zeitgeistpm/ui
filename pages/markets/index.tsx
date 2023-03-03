@@ -22,9 +22,6 @@ export async function getStaticProps() {
   };
 }
 
-// const DynamicMarketList = dynamic(() => Promise.resolve(MarketsList), {
-//   ssr: false,
-// });
 const MarketsPage: NextPage<{
   newestMarkets: IndexedMarketCardData[];
 }> = observer(({ newestMarkets }) => {
