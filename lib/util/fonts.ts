@@ -1,7 +1,7 @@
 //font optimization from @next/font
-import { Inter } from "@next/font/google";
-import { Kanit } from "@next/font/google";
-import { Roboto_Mono } from "@next/font/google";
+import { Inter } from "next/font/google";
+import { Kanit } from "next/font/google";
+import { Roboto_Mono } from "next/font/google";
 
 export const inter = Inter({
   subsets: [
