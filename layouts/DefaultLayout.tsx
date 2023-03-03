@@ -12,16 +12,11 @@ import { ContentDimensionsProvider } from "components/context/ContentDimensionsC
 import { useRouter } from "next/router";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { shouldScrollTop } from "lib/util/should-scroll";
-import dynamic from "next/dynamic";
 import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
 import { TradeItem, TradeItemContext } from "lib/hooks/trade";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
-
-const RightDrawer = dynamic(() => import("components/drawer/RightDrawer"), {
-  ssr: false,
-});
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 
