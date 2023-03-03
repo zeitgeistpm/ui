@@ -284,7 +284,9 @@ const CreatePage: NextPage = observer(() => {
       changeEnd(`${store.blockNumber.toNumber() + NUM_BLOCKS_IN_DAY}`);
       form.$("end").set("rules", `gt_current_blocknum|required`);
     } else {
-      changeEnd(`${Moment().add(1, "day").valueOf()}`);
+      const date = Moment();
+      date.set({ hour: 23, minute: 59 });
+      changeEnd(`${date.add(1, "day").valueOf()}`);
       form.$("end").set("rules", "timestamp_gt_now");
     }
   }, [formData?.end?.type]);
