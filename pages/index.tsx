@@ -39,11 +39,11 @@ export async function getStaticProps() {
   ] = await Promise.all([
     getFeaturedMarkets(client),
     getTrendingMarkets(client),
+    getPlaiceholders(CATEGORIES.map((cat) => cat.imagePath)),
     getPlaiceholders(
-      CATEGORIES.map((cat) => cat.imagePath),
-      { size: 32 },
+      slidesData.map((slide) => slide.bg),
+      { size: 16 },
     ),
-    getPlaiceholders(slidesData.map((slide) => slide.bg)),
     getCategoryCounts(
       client,
       CATEGORIES.map((cat) => cat.name),
