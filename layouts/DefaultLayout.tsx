@@ -10,16 +10,11 @@ import NotificationCenter from "components/ui/NotificationCenter";
 import Menu from "components/menu";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";
-import dynamic from "next/dynamic";
 import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
 import { TradeItem, TradeItemContext } from "lib/hooks/trade";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
-
-const RightDrawer = dynamic(() => import("components/drawer/RightDrawer"), {
-  ssr: false,
-});
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 
@@ -89,7 +84,6 @@ const DefaultLayout: FC = observer(({ children }) => {
           </main>
           <Footer />
         </div>
-        <RightDrawer />
         <NotificationCenter />
       </TradeItemContext.Provider>
     </div>

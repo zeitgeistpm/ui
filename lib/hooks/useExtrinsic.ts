@@ -48,7 +48,9 @@ export const useExtrinsic = <T>(
           );
         },
       }),
-    );
+    ).catch(() => {
+      setIsLoading(false);
+    });
   };
 
   return { send, isError, isSuccess, isLoading };

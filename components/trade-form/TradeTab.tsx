@@ -1,13 +1,15 @@
 import React, { FC, PropsWithChildren } from "react";
 
-const TradeTab: FC<PropsWithChildren<{ selected: boolean }>> = React.forwardRef(
+const TradeTab: FC<
+  PropsWithChildren<{ selected: boolean; className: string }>
+> = React.forwardRef(
   (
-    { children, selected, ...rest },
+    { children, selected, className, ...rest },
     ref: React.ForwardedRef<HTMLDivElement>,
   ) => {
-    const classes = `block cursor-pointer h-full center w-1/2 outline-0 text-ztg-18-150 ${
-      selected ? "bg-white font-bold" : "bg-anti-flash-white"
-    }`;
+    const classes = `block font-medium cursor-pointer h-full center w-1/2 outline-0 text-ztg-18-150 ${
+      className ?? ""
+    } ${selected ? "bg-white font-bold" : "bg-anti-flash-white"}`;
     return (
       <div ref={ref} className={classes} {...rest}>
         {children}
