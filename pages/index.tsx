@@ -31,35 +31,33 @@ const getPlaiceholders = (
 export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
-  const [
-    featuredMarkets,
-    trendingMarkets,
-    categoryPlaceholders,
-    sliderPlaceholders,
-    categoryCounts,
-  ] = await Promise.all([
-    getFeaturedMarkets(client),
-    getTrendingMarkets(client),
-    getPlaiceholders(
-      CATEGORIES.map((cat) => path.join(process.cwd(), cat.imagePath)),
-      { size: 32 },
-    ),
-    getPlaiceholders(
-      slidesData.map((slide) => path.join(process.cwd(), slide.bg)),
-    ),
-    getCategoryCounts(
-      client,
-      CATEGORIES.map((cat) => cat.name),
-    ),
-  ]);
+
+  const sliderPlaceholders = getPlaiceholders(
+    CATEGORIES.map((cat) => cat.imagePath),
+    { size: 32 },
+  ).catch((e) => console.error(e));
+
+  const categoryCounts = getPlaiceholders(
+    slidesData.map((slide) => path.join(process.cwd(), slide.bg)),
+  ).catch((e) => console.error(e));
+
+  const [featuredMarkets, trendingMarkets, categoryPlaceholders] =
+    await Promise.all([
+      getFeaturedMarkets(client),
+      getTrendingMarkets(client),
+      getCategoryCounts(
+        client,
+        CATEGORIES.map((cat) => cat.name),
+      ),
+    ]);
 
   return {
     props: {
       featuredMarkets: featuredMarkets ?? [],
       trendingMarkets: trendingMarkets ?? [],
       categoryCounts: categoryCounts,
-      categoryPlaceholders,
-      sliderPlaceholders,
+      categoryPlaceholders: categoryPlaceholders ?? [],
+      sliderPlaceholders: sliderPlaceholders ?? [],
     },
     revalidate: 10 * 60, //10min
   };
