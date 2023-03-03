@@ -2,7 +2,6 @@ import { observer } from "mobx-react";
 import { FC } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { IGetPlaiceholderReturn } from "plaiceholder";
 
 export const CATEGORIES = [
   { name: "Sports", imagePath: "/category/sports.png" },
@@ -22,7 +21,7 @@ const Category = ({
 }: {
   title: string;
   imgURL: string;
-  blurImage: IGetPlaiceholderReturn;
+  blurImage: string;
   onClick: () => void;
   count: number;
   className?: string;
@@ -37,7 +36,7 @@ const Category = ({
           fill
           onClick={onClick}
           placeholder="blur"
-          blurDataURL={blurImage.base64}
+          blurDataURL={blurImage}
           sizes="(max-width: 1000px) 230px, 130px"
         />
       </div>
@@ -55,7 +54,7 @@ const Category = ({
 
 const PopularCategories: FC<{
   counts: number[];
-  imagePlaceholders: IGetPlaiceholderReturn[];
+  imagePlaceholders: string[];
 }> = observer(({ counts, imagePlaceholders }) => {
   const router = useRouter();
 

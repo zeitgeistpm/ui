@@ -30,6 +30,7 @@ const getPlaiceholders = (
 export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
+
   const [
     featuredMarkets,
     trendingMarkets,
@@ -55,8 +56,8 @@ export async function getStaticProps() {
       featuredMarkets: featuredMarkets ?? [],
       trendingMarkets: trendingMarkets ?? [],
       categoryCounts: categoryCounts,
-      categoryPlaceholders,
-      sliderPlaceholders,
+      categoryPlaceholders: categoryPlaceholders.map((c) => c.base64),
+      sliderPlaceholders: sliderPlaceholders.map((c) => c.base64),
     },
     revalidate: 10 * 60, //10min
   };
@@ -66,8 +67,8 @@ const IndexPage: NextPage<{
   featuredMarkets: IndexedMarketCardData[];
   trendingMarkets: IndexedMarketCardData[];
   categoryCounts: number[];
-  categoryPlaceholders: IGetPlaiceholderReturn[];
-  sliderPlaceholders: IGetPlaiceholderReturn[];
+  categoryPlaceholders: string[];
+  sliderPlaceholders: string[];
 }> = observer(
   ({
     trendingMarkets,

@@ -1,18 +1,13 @@
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { HeroControls } from "./HeroControls";
 import { HeroSlide } from "./HeroSlide";
 import { slidesData } from "./slides-data";
 import styles from "./HeroSlider.module.css";
 import Image from "next/image";
-import { IGetPlaiceholderReturn } from "plaiceholder";
 
 import { moveSlider } from "./slider-controls";
 
-const HeroSlider = ({
-  imagePlaceholders,
-}: {
-  imagePlaceholders: IGetPlaiceholderReturn[];
-}) => {
+const HeroSlider = ({ imagePlaceholders }: { imagePlaceholders: string[] }) => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
   const [animate, setAnimate] = useState<boolean>(false);
   const slidesLength = slidesData.length;
@@ -41,7 +36,7 @@ const HeroSlider = ({
         src={slidesData[currentSlide].bg}
         alt={`Image depicting ${slidesData[currentSlide].title.text}`}
         placeholder="blur"
-        blurDataURL={imagePlaceholders[currentSlide].base64}
+        blurDataURL={imagePlaceholders[currentSlide]}
         sizes="100vw"
         fill
         style={{ objectFit: "cover" }}
