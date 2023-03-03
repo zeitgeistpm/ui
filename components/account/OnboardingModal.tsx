@@ -154,8 +154,8 @@ const OnBoardingModal = () => {
   const [step, setStep] = useState(0);
   return (
     <div
-      className="flex flex-col gap-y-[20px] justify-center items-center bg-white border 
-                border-black h-[438px] w-full max-w-[526px] p-[30px] rounded-ztg-10"
+      className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
+            h-[438px] w-full max-w-[526px] p-[30px] rounded-ztg-10"
     >
       <div className="rounded-full w-[120px] h-[120px] mb-auto">
         <Image
@@ -176,7 +176,7 @@ const OnBoardingModal = () => {
       {step === 1 && (
         <TextSection
           headerText="Choose A Browser Extension"
-          bodyText="First thing you need to do is install a browser-based wallet (known as a “browser extension”). To do that, simply click the wallet icon to go to its official download page."
+          bodyText="First thing you need to do is install a browser-based wallet (known as a “browser extension”). To do that, simply click the wallet icon to go to its official download page. Once the extension is setup you'll need to refresh the page."
           leftButtonText="Back"
           rightButtonText="Continue"
           onLeftButtonClick={() => setStep(0)}
