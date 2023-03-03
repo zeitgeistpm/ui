@@ -6,7 +6,7 @@ export default function Document() {
   const useAnalytics = environment === "production" || environment == null;
 
   return (
-    <Html className="overflow-x-hidden max-w-full">
+    <Html>
       <Head>
         {useAnalytics && (
           <Script id="google-analytics" strategy="afterInteractive">
@@ -61,7 +61,7 @@ export default function Document() {
           content="@ZeitgeistPM"
         />
       </Head>
-      <body className="overflow-x-hidden max-w-full">
+      <body>
         <Main />
         <NextScript />
       </body>
