@@ -10,6 +10,7 @@ import {
 import DisputeButton from "components/assets/AssetActionButtons/DisputeButton";
 import RedeemButton from "components/assets/AssetActionButtons/RedeemButton";
 import ReportButton from "components/assets/AssetActionButtons/ReportButton";
+import TradeButton from "components/assets/AssetActionButtons/TradeButton";
 import Table, { TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
@@ -107,12 +108,9 @@ export const MarketPositions = ({
                         View Pool
                       </span>
                     </Link>
-                  ) : marketStage?.type === "Trading" ? (
-                    <Link href={`/markets/${market.marketId}`}>
-                      <span className="text-mariner font-semibold text-ztg-14-120">
-                        Trade
-                      </span>
-                    </Link>
+                  ) : marketStage?.type === "Trading" &&
+                    IOMarketOutcomeAssetId.is(assetId) ? (
+                    <TradeButton assetId={assetId} />
                   ) : marketStage?.type === "Resolved" ? (
                     <RedeemButton
                       market={market}
