@@ -12,6 +12,7 @@ import { observer } from "mobx-react";
 import { NextPage } from "next";
 import HeroSlider from "components/hero-slider/HeroSlider";
 import { slidesData } from "components/hero-slider/slides-data";
+import path from "path";
 
 import {
   getPlaiceholder,
@@ -40,10 +41,12 @@ export async function getStaticProps() {
     getFeaturedMarkets(client),
     getTrendingMarkets(client),
     getPlaiceholders(
-      CATEGORIES.map((cat) => cat.imagePath),
+      CATEGORIES.map((cat) => path.join(process.cwd(), cat.imagePath)),
       { size: 32 },
     ),
-    getPlaiceholders(slidesData.map((slide) => slide.bg)),
+    getPlaiceholders(
+      slidesData.map((slide) => path.join(process.cwd(), slide.bg)),
+    ),
     getCategoryCounts(
       client,
       CATEGORIES.map((cat) => cat.name),
