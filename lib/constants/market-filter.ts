@@ -17,11 +17,29 @@ export const marketStatusFilterOptions: MarketStatusFilter[] =
     label: status,
   }));
 
+export const categoryImages: Record<typeof defaultTags[number], string> = {
+  Sports: "/category/sports.png",
+  Politics: "/category/politics.png",
+  Technology: "/category/technology.png",
+  Crypto: "/category/crypto.png",
+  Science: "/category/science.png",
+  "E-Sports": "/category/e-sports.png",
+  Zeitgeist: "/category/zeitgeist.png",
+  Dotsama: "/category/dotsama.png",
+  News: "/category/news.png",
+} as const;
+
+export const currencyImages: Record<"ZTG", string> = {
+  ZTG: "/currencies/ztg.jpg",
+  // "aUSD": "/currencies/ausd.jpg
+} as const;
+
 export const marketTagFilterOptions: MarketTagFilter[] = defaultTags.map(
   (tag) => ({
     type: "tag",
     value: tag,
     label: tag,
+    imageUrl: categoryImages[tag],
   }),
 );
 
@@ -30,6 +48,7 @@ export const marketCurrencyFilterOptions: MarketCurrencyFilter[] = [
     type: "currency",
     value: "Ztg",
     label: "ZTG",
+    imageUrl: currencyImages["ZTG"],
   },
 ];
 
