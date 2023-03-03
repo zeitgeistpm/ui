@@ -102,7 +102,7 @@ const WalletSelection = observer(() => {
           <div className="relative font-medium text-ztg-18-150 ml-[15px]">
             <span>{wallet.title}</span>
             {wallet.title === "Talisman" && (
-              <span className="hidden md:inline absolute left-[90px] top-[4px] text-ztg-12-120 font-medium bg-green-light text-green py-[4px] px-[8px] rounded-md">
+              <span className="hidden sm:inline absolute left-[90px] top-[4px] text-ztg-12-120 font-medium bg-green-light text-green py-[4px] px-[8px] rounded-md">
                 Recommended
               </span>
             )}
