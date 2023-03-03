@@ -21,7 +21,7 @@ const TwitterBird = () => {
         height="54"
         rx="27"
         stroke="#B5C1CA"
-        stroke-width="2"
+        strokeWidth="2"
       />
     </svg>
   );
