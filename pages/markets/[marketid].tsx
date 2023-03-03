@@ -200,7 +200,7 @@ const Market: NextPage<{
           </div>
         )}
         <div className="flex justify-center py-ztg-50 mb-10 h-32">
-          {marketStore && marketStage ? (
+          {marketStage ? (
             <MarketTimer stage={marketStage} />
           ) : (
             <MarketTimerSkeleton />
