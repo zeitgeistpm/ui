@@ -27,13 +27,13 @@ export type MarketActiveFiltersProps = {
   onFilterRemove: (filter: MarketFilter) => void;
 };
 
-export const MarketActiveFilters = ({
+const MarketActiveFilters = ({
   filters,
   onClear,
   onFilterRemove,
 }: MarketActiveFiltersProps) => {
   return (
-    <div className="flex gap-[10px] mt-[10px]">
+    <div className="flex gap-[10px]">
       {filters?.length > 0 && <ClearAllBtn clear={onClear} />}
       {filters?.map((af, idx) => (
         <MarketActiveFilterItem
@@ -45,3 +45,5 @@ export const MarketActiveFilters = ({
     </div>
   );
 };
+
+export default MarketActiveFilters;

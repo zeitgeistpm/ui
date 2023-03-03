@@ -3216,7 +3216,7 @@ __metadata:
     react-intersection-observer: ^9.4.1
     react-quill: ^2.0.0
     react-resize-detector: ^7.0.0
-    react-select: ^5.4
+    react-select: ^5.7.0
     react-spinners: ^0.10.6
     react-table: ^7.7.0
     recharts: ^2.1.8
@@ -10173,7 +10173,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-select@npm:^5.4":
+"react-select@npm:^5.7.0":
   version: 5.7.0
   resolution: "react-select@npm:5.7.0"
   dependencies:

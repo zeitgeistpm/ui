@@ -24,6 +24,7 @@ export type MarketFilter = {
   type: MarketFilterType;
   value: string;
   label: string;
+  imageUrl?: string;
 };
 
 export interface MarketStatusFilter extends MarketFilter {
