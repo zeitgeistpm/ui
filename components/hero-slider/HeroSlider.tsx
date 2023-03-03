@@ -7,19 +7,22 @@ import Image from "next/image";
 import { IGetPlaiceholderReturn } from "plaiceholder";
 
 import { moveSlider } from "./slider-controls";
+import { Banner } from "lib/cms/get-banners";
 
 const HeroSlider = ({
+  banners,
   imagePlaceholders,
 }: {
+  banners: Banner[];
   imagePlaceholders: IGetPlaiceholderReturn[];
 }) => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
   const [animate, setAnimate] = useState<boolean>(false);
-  const slidesLength = slidesData.length;
+  const slidesLength = banners.length;
 
   // autoplay
   useEffect(() => {
-    if (slidesData.length > 1) {
+    if (banners.length > 1) {
       const ref = setTimeout(() => {
         setAnimate(true);
         moveSlider("next", currentSlide, setCurrentSlide, slidesLength);
@@ -38,8 +41,8 @@ const HeroSlider = ({
       onAnimationEnd={() => setAnimate(false)}
     >
       <Image
-        src={slidesData[currentSlide].bg}
-        alt={`Image depicting ${slidesData[currentSlide].title.text}`}
+        src={banners[currentSlide].imageUrl}
+        alt={`Image depicting ${banners[currentSlide].title}`}
         placeholder="blur"
         blurDataURL={imagePlaceholders[currentSlide].base64}
         sizes="100vw"
@@ -48,7 +51,7 @@ const HeroSlider = ({
       />
       <div className="h-full relative container-fluid">
         <HeroSlide
-          slide={slidesData[currentSlide]}
+          banner={banners[currentSlide]}
           animate={animate}
           setAnimate={setAnimate}
         />

@@ -8,6 +8,6 @@ module.exports = withPlaiceholder({
     esmExternals: true,
   },
   images: {
-    domains: ["ipfs-gateway.zeitgeist.pm"],
+    domains: ["ipfs-gateway.zeitgeist.pm", "s3.us-west-2.amazonaws.com"],
   },
 });

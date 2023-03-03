@@ -19,6 +19,7 @@ import {
   IGetPlaiceholderReturn,
 } from "plaiceholder";
 import React from "react";
+import { Banner, getBanners } from "lib/cms/get-banners";
 
 const getPlaiceholders = (
   paths: string[],
@@ -31,12 +32,14 @@ export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
   const [
+    banners,
     featuredMarkets,
     trendingMarkets,
     categoryPlaceholders,
     sliderPlaceholders,
     categoryCounts,
   ] = await Promise.all([
+    getBanners(),
     getFeaturedMarkets(client),
     getTrendingMarkets(client),
     getPlaiceholders(
@@ -52,6 +55,7 @@ export async function getStaticProps() {
 
   return {
     props: {
+      banners: banners,
       featuredMarkets: featuredMarkets ?? [],
       trendingMarkets: trendingMarkets ?? [],
       categoryCounts: categoryCounts,
@@ -63,6 +67,7 @@ export async function getStaticProps() {
 }
 
 const IndexPage: NextPage<{
+  banners: Banner[];
   featuredMarkets: IndexedMarketCardData[];
   trendingMarkets: IndexedMarketCardData[];
   categoryCounts: number[];
@@ -70,6 +75,7 @@ const IndexPage: NextPage<{
   sliderPlaceholders: IGetPlaiceholderReturn[];
 }> = observer(
   ({
+    banners,
     trendingMarkets,
     featuredMarkets,
     categoryCounts,
@@ -78,7 +84,7 @@ const IndexPage: NextPage<{
   }) => {
     return (
       <>
-        <HeroSlider imagePlaceholders={sliderPlaceholders} />
+        <HeroSlider banners={banners} imagePlaceholders={sliderPlaceholders} />
         <div data-testid="indexPage" className="main-container">
           <div className="flex items-center w-full justify-center relative bottom-[60px]">
             <LearnSection />

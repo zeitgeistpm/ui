@@ -3,40 +3,34 @@ import Link from "next/link";
 
 import { HeroSlideProps } from "./slider-types";
 
-export const HeroSlide: FC<HeroSlideProps> = ({ slide }) => {
+export const HeroSlide: FC<HeroSlideProps> = ({ banner }) => {
   return (
     <div className="flex items-center h-full w-full">
       <div className="w-full pb-8">
-        <h2 className={`text-center sm:text-left ${slide.title.styles}`}>
-          {slide.title.text}
+        <h2
+          className={`text-center sm:text-left text-white font-sans sm:whitespace-pre font-extrabold text-6xl md:text-8xl mb-4`}
+        >
+          {banner.title}
         </h2>
-        <p className={slide.title?.stylesSecondary}>{slide.title?.secondary}</p>
+        <p
+          className={
+            "text-center sm:text-start text-white font-sans whitespace-pre font-extrabold text-3xl md:text-4xl mb-6"
+          }
+        >
+          {banner.subtitle}
+        </p>
         <div className="flex flex-col sm:flex-row">
           <Link
             style={{
-              borderColor: `${slide.color1.border}`,
-              backgroundColor: `${slide.color1.primary}`,
-              color: `${slide.color1.secondary}`,
+              backgroundColor: `${banner.buttonColor}`,
+              borderColor: `${banner.buttonColor}`,
+              color: `white`,
             }}
             className="leading-[42px] w-full sm:w-fit text-center sm:text-start border rounded px-5 mb-5 mr-5 font-bold"
-            href={slide.link1}
+            href={banner.ctaLink}
           >
-            {slide.cta1}
+            {banner.ctaText}
           </Link>
-          {slide.cta2 && (
-            <Link
-              style={{
-                borderColor: `${slide.color2.border}`,
-                backgroundColor: `${slide.color2.primary}`,
-                color: `${slide.color2.secondary}`,
-              }}
-              className="leading-[42px] w-full sm:w-fit text-center sm:text-start border rounded px-5 mb-5 font-bold"
-              href={slide.link2}
-              target="_blank"
-            >
-              {slide.cta2}
-            </Link>
-          )}
         </div>
       </div>
     </div>

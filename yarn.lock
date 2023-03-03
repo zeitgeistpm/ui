@@ -1649,6 +1649,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@notionhq/client@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "@notionhq/client@npm:2.2.3"
+  dependencies:
+    "@types/node-fetch": ^2.5.10
+    node-fetch: ^2.6.1
+  checksum: 356e889012d36bf2045099d28c65fa2e41defa849f5bf34c6b82fbc7a028ce66a17aa2bd63b2451cfecc8378a49c2d179357896d211d3d92648c425157f628fe
+  languageName: node
+  linkType: hard
+
 "@npmcli/fs@npm:^2.1.0":
   version: 2.1.2
   resolution: "@npmcli/fs@npm:2.1.2"
@@ -3127,7 +3137,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-fetch@npm:^2.6.2":
+"@types/node-fetch@npm:^2.5.10, @types/node-fetch@npm:^2.6.2":
   version: 2.6.2
   resolution: "@types/node-fetch@npm:2.6.2"
   dependencies:
@@ -3567,6 +3577,7 @@ __metadata:
     "@material-ui/lab": ^4.0.0-alpha.60
     "@next/bundle-analyzer": ^12.3.1
     "@next/font": 13.0.3
+    "@notionhq/client": ^2.2.3
     "@plaiceholder/next": ^2.5.0
     "@playwright/test": ^1.28.1
     "@polkadot/extension-dapp": ^0.44.6
