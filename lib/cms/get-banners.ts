@@ -33,12 +33,8 @@ export const getBanners = async (): Promise<Banner[]> => {
       subtitle = page.properties.Subtitle.rich_text?.[0]?.plain_text ?? null;
     }
 
-    if (page.properties.Image.type === "files") {
-      if (page.properties.Image.files[0].type === "external") {
-        imageUrl = page.properties.Image.files[0].external.url;
-      } else {
-        imageUrl = page.properties.Image.files[0].file.url;
-      }
+    if (page.properties.Image.type === "url") {
+      imageUrl = page.properties.Image.url;
     }
 
     if (page.properties["CTA(button text)"].type === "rich_text") {
