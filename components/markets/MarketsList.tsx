@@ -6,7 +6,6 @@ import { observer } from "mobx-react";
 import Loader from "react-spinners/PulseLoader";
 import { X } from "react-feather";
 import { useRouter } from "next/router";
-import { useStore } from "lib/stores/Store";
 import { useInfiniteMarkets } from "lib/hooks/queries/useInfiniteMarkets";
 import { MarketOutcomes } from "lib/types/markets";
 import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
@@ -57,15 +56,13 @@ const useChangeQuery = (
 };
 
 const MarketsList = observer(({ className = "" }: MarketsListProps) => {
-  // const store = useStore();
-  // const { markets: marketsStore } = store;
   const [filters, setFilters] = useState<MarketFilter[]>();
   const [orderBy, setOrderBy] = useState<MarketsOrderBy>();
   const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
 
   const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
-  // useChangeQuery(filters, orderBy, withLiquidityOnly);
+  useChangeQuery(filters, orderBy, withLiquidityOnly);
 
   const {
     data: marketsPages,
@@ -95,15 +92,6 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   }, [marketsPages?.pages]);
 
   const count = markets?.length ?? 0;
-
-  // useEffect(() => {
-  //   const pageNum = marketsPages?.pages.length ?? 0;
-  //   if (pageNum > 0) {
-  //     for (const market of marketsPages.pages[pageNum - 1].data) {
-  //       marketsStore.getMarket(market.marketId);
-  //     }
-  //   }
-  // }, [marketsPages]);
 
   return (
     <div

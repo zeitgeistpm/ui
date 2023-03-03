@@ -22,9 +22,9 @@ export async function getStaticProps() {
   };
 }
 
-const DynamicMarketList = dynamic(() => Promise.resolve(MarketsList), {
-  ssr: false,
-});
+// const DynamicMarketList = dynamic(() => Promise.resolve(MarketsList), {
+//   ssr: false,
+// });
 const MarketsPage: NextPage<{
   newestMarkets: IndexedMarketCardData[];
 }> = observer(({ newestMarkets }) => {
@@ -33,7 +33,7 @@ const MarketsPage: NextPage<{
       {newestMarkets?.length > 0 && (
         <MarketScroll title="Newest Markets" markets={newestMarkets} />
       )}
-      <DynamicMarketList />
+      <MarketsList />
     </>
   );
 });
