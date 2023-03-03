@@ -10,8 +10,6 @@ import NotificationCenter from "components/ui/NotificationCenter";
 import Menu from "components/menu";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";
-import { usePrevious } from "lib/hooks/usePrevious";
-import { shouldScrollTop } from "lib/util/should-scroll";
 import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
 import { TradeItem, TradeItemContext } from "lib/hooks/trade";
 
@@ -33,20 +31,6 @@ const DefaultLayout: FC = observer(({ children }) => {
   } = useResizeDetector({ refreshMode: "debounce", refreshRate: 50 });
 
   const contentRef = useRef<HTMLDivElement>();
-  const [scrollTop, setScrollTop] = useState(0);
-  const prevPathname = usePrevious(router.pathname);
-
-  const scrollTo = (scrollTop: number) => {
-    if (contentRef.current) {
-      contentRef.current.scrollTop = scrollTop;
-    }
-  };
-
-  useEffect(() => {
-    if (shouldScrollTop(router.pathname, prevPathname)) {
-      scrollTo(0);
-    }
-  }, [router.pathname, prevPathname]);
 
   return (
     <div className="relative flex min-h-screen justify-evenly overflow-hidden">
@@ -82,12 +66,7 @@ const DefaultLayout: FC = observer(({ children }) => {
             ref={mainRef}
           >
             <div>
-              <ContentDimensionsProvider
-                scrollTop={scrollTop}
-                scrollTo={scrollTo}
-                height={height}
-                width={width}
-              >
+              <ContentDimensionsProvider height={height} width={width}>
                 {store.initialized ||
                 router.pathname === "/" ||
                 router.pathname.split("/")[1] === "markets" ||

@@ -1,8 +1,8 @@
 import React, { createContext, FC, useContext } from "react";
 
 export type ContentDimensions = {
-  scrollTop: number;
-  scrollTo: (scrollTop: number) => void;
+  scrollTop?: number;
+  scrollTo?: (scrollTop: number) => void;
   height: number;
   width: number;
 };
