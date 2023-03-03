@@ -38,7 +38,6 @@ import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
 import Link from "next/link";
-import LiquidityModal from "components/liquidity/LiquidityModal";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import MarketHeader from "components/markets/MarketHeader";
