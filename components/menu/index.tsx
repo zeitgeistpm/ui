@@ -22,8 +22,6 @@ const Menu: FC = observer(() => {
   const store = useStore();
   initializeNavigation();
 
-  const hideLabels = store.leftDrawerClosed;
-
   const navigate = (page: PageName) => {
     navigationStore.setPage(page);
     // We may add this back when there are more items in the left drawer
@@ -55,7 +53,6 @@ const Menu: FC = observer(() => {
                 href={item.href}
                 IconComponent={item.IconComponent}
                 textLabel={item.label}
-                hideLabel={hideLabels}
                 active={navigationStore.checkPage(itemKey as any)}
                 className=""
                 onClick={() => navigate(itemKey as any)}
