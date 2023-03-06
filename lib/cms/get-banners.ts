@@ -9,6 +9,7 @@ export type Banner = {
   ctaText: string;
   ctaLink: string;
   buttonColor: string;
+  imageAlignment: "left" | "right" | "center";
 };
 
 export const getBanners = async (): Promise<Banner[]> => {
@@ -32,6 +33,7 @@ export const getBanners = async (): Promise<Banner[]> => {
     let ctaText: string;
     let ctaLink: string;
     let buttonColor: string;
+    let imageAlignment: "left" | "right" | "center";
 
     if (page.properties.Title.type === "title") {
       title = page.properties.Title.title[0].plain_text;
@@ -53,8 +55,14 @@ export const getBanners = async (): Promise<Banner[]> => {
       ctaLink = page.properties["CTA(link)"].url;
     }
 
-    if (page.properties["Button Color"].type === "select") {
-      buttonColor = getColorPreset(page.properties["Button Color"].select.name);
+    if (page.properties["Button Color"].type === "rich_text") {
+      buttonColor = page.properties["Button Color"].rich_text[0].plain_text;
+    }
+
+    if (page.properties["Image Align"].type === "select") {
+      imageAlignment =
+        (page.properties["Image Align"].select
+          .name as Banner["imageAlignment"]) ?? "left";
     }
 
     return {
@@ -64,6 +72,7 @@ export const getBanners = async (): Promise<Banner[]> => {
       ctaText,
       ctaLink,
       buttonColor,
+      imageAlignment,
     };
   });
 };

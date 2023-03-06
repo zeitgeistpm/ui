@@ -3614,6 +3614,7 @@ __metadata:
     dotenv: ^9.0.2
     fathom-client: ^3.2.0
     flexsearch: ^0.7.21
+    font-color-contrast: ^11.1.0
     framer-motion: 4.1.17
     graphql-request: ^3.6.1
     ip-range-check: ^0.2.0
@@ -6000,6 +6001,13 @@ __metadata:
     debug:
       optional: true
   checksum: faa66059b66358ba65c234c2f2a37fcec029dc22775f35d9ad6abac56003268baf41e55f9ee645957b32c7d9f62baf1f0b906e68267276f54ec4b4c597c2b190
+  languageName: node
+  linkType: hard
+
+"font-color-contrast@npm:^11.1.0":
+  version: 11.1.0
+  resolution: "font-color-contrast@npm:11.1.0"
+  checksum: 7c8af0690adc8ddfd8f3030bbce6d3345851fe78c0076fb5b3ab23568b241559fd2925f8923dc5e907faa4d49d79a03e5c04321b1551d04dbdd662a29857a968
   languageName: node
   linkType: hard
 

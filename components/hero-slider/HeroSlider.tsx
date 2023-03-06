@@ -47,7 +47,10 @@ const HeroSlider = ({
         blurDataURL={imagePlaceholders[currentSlide].base64}
         sizes="100vw"
         fill
-        style={{ objectFit: "cover" }}
+        style={{
+          objectFit: "cover",
+          objectPosition: `${banners[currentSlide].imageAlignment} 50%`,
+        }}
       />
       <div className="h-full relative container-fluid">
         <HeroSlide

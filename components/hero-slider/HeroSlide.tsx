@@ -1,5 +1,6 @@
 import { FC } from "react";
 import Link from "next/link";
+import contrast from "font-color-contrast";
 
 import { HeroSlideProps } from "./slider-types";
 
@@ -24,7 +25,7 @@ export const HeroSlide: FC<HeroSlideProps> = ({ banner }) => {
             style={{
               backgroundColor: `${banner.buttonColor}`,
               borderColor: `${banner.buttonColor}`,
-              color: `white`,
+              color: contrast(banner.buttonColor),
             }}
             className="leading-[42px] w-full sm:w-fit text-center sm:text-start border rounded px-5 mb-5 mr-5 font-bold"
             href={banner.ctaLink}
