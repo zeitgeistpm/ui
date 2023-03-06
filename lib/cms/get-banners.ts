@@ -15,6 +15,15 @@ export type Banner = {
 export const getBanners = async (): Promise<Banner[]> => {
   const { results: bannersData } = await notion.databases.query({
     database_id: "7085702a851842adace1c9963e817446",
+    filter: {
+      property: "Environment",
+      multi_select: {
+        contains:
+          process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
+            ? "prod"
+            : "staging",
+      },
+    },
   });
 
   return bannersData.filter(isFullPage).map((page) => {
