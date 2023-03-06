@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { HeroControls } from "./HeroControls";
 import { HeroSlide } from "./HeroSlide";
-import { slidesData } from "./slides-data";
 import styles from "./HeroSlider.module.css";
 import Image from "next/image";
 
@@ -43,8 +42,6 @@ const HeroSlider = ({
       <Image
         src={banners[currentSlide].imageUrl}
         alt={`Image depicting ${banners[currentSlide].title}`}
-        placeholder="blur"
-        blurDataURL={imagePlaceholders[currentSlide]}
         sizes="100vw"
         fill
         style={{
@@ -58,9 +55,9 @@ const HeroSlider = ({
           animate={animate}
           setAnimate={setAnimate}
         />
-        {slidesData.length > 1 && (
+        {banners.length > 1 && (
           <HeroControls
-            slides={slidesData}
+            slides={banners}
             slidesLength={slidesLength}
             currentSlide={currentSlide}
             setCurrentSlide={setCurrentSlide}

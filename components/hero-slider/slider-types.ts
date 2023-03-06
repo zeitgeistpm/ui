@@ -30,7 +30,7 @@ export interface HeroSlideProps {
   setAnimate: Animate;
 }
 export interface HeroControlsProps {
-  slides: Slides[];
+  slides: Banner[];
   slidesLength: number;
   currentSlide: number;
   setCurrentSlide: (val: number) => void;
