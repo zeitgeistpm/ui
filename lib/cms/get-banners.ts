@@ -1,5 +1,4 @@
 import { Client, isFullPage } from "@notionhq/client";
-import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
