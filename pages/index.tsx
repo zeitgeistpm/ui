@@ -11,7 +11,6 @@ import getTrendingMarkets from "lib/gql/trending-markets";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import HeroSlider from "components/hero-slider/HeroSlider";
-import { slidesData } from "components/hero-slider/slides-data";
 
 import {
   getPlaiceholder,
@@ -37,17 +36,12 @@ export async function getStaticProps() {
     featuredMarkets,
     trendingMarkets,
     categoryPlaceholders,
-    sliderPlaceholders,
     categoryCounts,
   ] = await Promise.all([
     getBanners(),
     getFeaturedMarkets(client),
     getTrendingMarkets(client),
     getPlaiceholders(CATEGORIES.map((cat) => cat.imagePath)),
-    getPlaiceholders(
-      slidesData.map((slide) => slide.bg),
-      { size: 16 },
-    ),
     getCategoryCounts(
       client,
       CATEGORIES.map((cat) => cat.name),
@@ -61,7 +55,6 @@ export async function getStaticProps() {
       trendingMarkets: trendingMarkets ?? [],
       categoryCounts: categoryCounts,
       categoryPlaceholders: categoryPlaceholders.map((c) => c.base64),
-      sliderPlaceholders: sliderPlaceholders.map((c) => c.base64),
     },
     revalidate: 10 * 60, //10min
   };
@@ -73,7 +66,6 @@ const IndexPage: NextPage<{
   trendingMarkets: IndexedMarketCardData[];
   categoryCounts: number[];
   categoryPlaceholders: string[];
-  sliderPlaceholders: string[];
 }> = observer(
   ({
     banners,
@@ -81,7 +73,6 @@ const IndexPage: NextPage<{
     featuredMarkets,
     categoryCounts,
     categoryPlaceholders,
-    sliderPlaceholders,
   }) => {
     return (
       <>
