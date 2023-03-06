@@ -55,10 +55,12 @@ export async function getStaticProps() {
       featuredMarkets: featuredMarkets ?? [],
       trendingMarkets: trendingMarkets ?? [],
       categoryCounts: categoryCounts,
-      //@ts-ignore
-      categoryPlaceholders: (categoryPlaceholders ?? []).map((c) => c.base64),
-      //@ts-ignore
-      sliderPlaceholders: (sliderPlaceholders ?? []).map((c) => c.base64),
+      categoryPlaceholders: categoryPlaceholders
+        ? categoryPlaceholders.map((c) => c.base64)
+        : [],
+      sliderPlaceholders: sliderPlaceholders
+        ? sliderPlaceholders.map((c) => c.base64)
+        : [],
     },
     revalidate: 10 * 60, //10min
   };
