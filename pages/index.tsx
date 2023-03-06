@@ -32,24 +32,24 @@ export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
 
-  const sliderPlaceholders = getPlaiceholders(
+  const sliderPlaceholders = await getPlaiceholders(
     CATEGORIES.map((cat) => cat.imagePath),
     { size: 32 },
   ).catch((e) => console.error(e));
 
-  const categoryCounts = getPlaiceholders(
-    slidesData.map((slide) => path.join(process.cwd(), slide.bg)),
+  const categoryPlaceholders = await getPlaiceholders(
+    // slidesData.map((slide) => path.join(process.cwd(), slide.bg)),
+    slidesData.map((slide) => slide.bg),
   ).catch((e) => console.error(e));
 
-  const [featuredMarkets, trendingMarkets, categoryPlaceholders] =
-    await Promise.all([
-      getFeaturedMarkets(client),
-      getTrendingMarkets(client),
-      getCategoryCounts(
-        client,
-        CATEGORIES.map((cat) => cat.name),
-      ),
-    ]);
+  const [featuredMarkets, trendingMarkets, categoryCounts] = await Promise.all([
+    getFeaturedMarkets(client),
+    getTrendingMarkets(client),
+    getCategoryCounts(
+      client,
+      CATEGORIES.map((cat) => cat.name),
+    ),
+  ]);
 
   return {
     props: {
