@@ -85,7 +85,7 @@ const IndexPage: NextPage<{
   }) => {
     return (
       <>
-        <HeroSlider banners={banners} imagePlaceholders={sliderPlaceholders} />
+        <HeroSlider banners={banners} />
         <div data-testid="indexPage" className="main-container">
           <div className="flex items-center w-full justify-center relative bottom-[60px]">
             <LearnSection />

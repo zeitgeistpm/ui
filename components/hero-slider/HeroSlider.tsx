@@ -8,13 +8,7 @@ import { moveSlider } from "./slider-controls";
 import { Banner } from "lib/cms/get-banners";
 import { IGetPlaiceholderReturn } from "plaiceholder";
 
-const HeroSlider = ({
-  banners,
-  imagePlaceholders,
-}: {
-  banners: Banner[];
-  imagePlaceholders: IGetPlaiceholderReturn[];
-}) => {
+const HeroSlider = ({ banners }: { banners: Banner[] }) => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
   const [animate, setAnimate] = useState<boolean>(false);
   const slidesLength = banners.length;
