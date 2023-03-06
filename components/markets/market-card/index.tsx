@@ -273,7 +273,7 @@ const MarketCard = ({
                 pool={pool}
                 prediction={prediction}
               />
-            ) : (
+            ) : pool !== null ? (
               <ScalarPriceRange
                 scalarType={scalarType}
                 lowerBound={lower}
@@ -281,6 +281,18 @@ const MarketCard = ({
                 shortPrice={outcomes[1].price}
                 longPrice={outcomes[0].price}
               />
+            ) : (
+              <>
+                <div className="text-sm flex justify-between mb-1">
+                  <span className="text-gray-500">
+                    No liquidity in this market
+                  </span>
+                  <span className="text-gray-500">
+                    {lower} - {upper}
+                  </span>
+                </div>
+                <div className="w-full rounded-lg h-1.5 bg-gray-200"></div>
+              </>
             )}
           </div>
           <MarketCardDetails rows={infoRows} />

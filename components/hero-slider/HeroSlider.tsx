@@ -1,13 +1,13 @@
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { HeroControls } from "./HeroControls";
 import { HeroSlide } from "./HeroSlide";
 import { slidesData } from "./slides-data";
 import styles from "./HeroSlider.module.css";
 import Image from "next/image";
-import { IGetPlaiceholderReturn } from "plaiceholder";
 
 import { moveSlider } from "./slider-controls";
 import { Banner } from "lib/cms/get-banners";
+import { IGetPlaiceholderReturn } from "plaiceholder";
 
 const HeroSlider = ({
   banners,
@@ -44,7 +44,7 @@ const HeroSlider = ({
         src={banners[currentSlide].imageUrl}
         alt={`Image depicting ${banners[currentSlide].title}`}
         placeholder="blur"
-        blurDataURL={imagePlaceholders[currentSlide].base64}
+        blurDataURL={imagePlaceholders[currentSlide]}
         sizes="100vw"
         fill
         style={{

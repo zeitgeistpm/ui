@@ -16,13 +16,7 @@ export interface MenuItemProps {
 }
 
 const WrapComponent: FC<{ href: string }> = ({ children, href }) => {
-  return href == null ? (
-    <>{children}</>
-  ) : (
-    <Link href={href} scroll={true}>
-      {children}
-    </Link>
-  );
+  return href == null ? <>{children}</> : <Link href={href}>{children}</Link>;
 };
 
 export const MenuItem: FC<MenuItemProps> = observer(

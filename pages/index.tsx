@@ -31,6 +31,7 @@ const getPlaiceholders = (
 export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
+
   const [
     banners,
     featuredMarkets,
@@ -42,11 +43,11 @@ export async function getStaticProps() {
     getBanners(),
     getFeaturedMarkets(client),
     getTrendingMarkets(client),
+    getPlaiceholders(CATEGORIES.map((cat) => cat.imagePath)),
     getPlaiceholders(
-      CATEGORIES.map((cat) => cat.imagePath),
-      { size: 32 },
+      slidesData.map((slide) => slide.bg),
+      { size: 16 },
     ),
-    getPlaiceholders(slidesData.map((slide) => slide.bg)),
     getCategoryCounts(
       client,
       CATEGORIES.map((cat) => cat.name),
@@ -59,8 +60,8 @@ export async function getStaticProps() {
       featuredMarkets: featuredMarkets ?? [],
       trendingMarkets: trendingMarkets ?? [],
       categoryCounts: categoryCounts,
-      categoryPlaceholders,
-      sliderPlaceholders,
+      categoryPlaceholders: categoryPlaceholders.map((c) => c.base64),
+      sliderPlaceholders: sliderPlaceholders.map((c) => c.base64),
     },
     revalidate: 10 * 60, //10min
   };
@@ -71,8 +72,8 @@ const IndexPage: NextPage<{
   featuredMarkets: IndexedMarketCardData[];
   trendingMarkets: IndexedMarketCardData[];
   categoryCounts: number[];
-  categoryPlaceholders: IGetPlaiceholderReturn[];
-  sliderPlaceholders: IGetPlaiceholderReturn[];
+  categoryPlaceholders: string[];
+  sliderPlaceholders: string[];
 }> = observer(
   ({
     banners,

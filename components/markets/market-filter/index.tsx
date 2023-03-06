@@ -1,7 +1,14 @@
 import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
-import { ChevronDown } from "react-feather";
-import ReactSelect from "react-select";
+import Image from "next/image";
+import { useContext, useEffect, useState } from "react";
+import { ChevronDown, ChevronUp } from "react-feather";
+import dynamic from "next/dynamic";
+import ReactSelect, {
+  components,
+  ControlProps,
+  MenuListProps,
+  OptionProps,
+} from "react-select";
 import {
   MarketFilter,
   MarketsListQuery,
@@ -16,90 +23,46 @@ import {
   marketTagFilterOptions,
 } from "lib/constants/market-filter";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
-import { MarketActiveFilters } from "./active-filters";
+import MarketActiveFilters from "./MarketActiveFilters";
+import MarketFiltersContainer, {
+  MarketFiltersContext,
+} from "./MarketFiltersContainer";
 
-const Control = ({ children, label, ...rest }) => {
-  const { innerProps } = rest;
-  const { onMouseDown } = innerProps;
-  return (
-    <div
-      className="flex justify-center items-center pl-ztg-20  font-medium text-ztg-16-150 text-sky-600 h-ztg-44"
-      onMouseDown={onMouseDown}
-    >
-      {label}
-      <ChevronDown size={18} className="text-sky-600 ml-ztg-8 font-bold" />
-      {children}
-    </div>
-  );
-};
-
-const SingleValue = (props) => {
-  return <></>;
-};
-
-const IndicatorSeparator = () => {
-  return <></>;
-};
-
-const DropdownIndicator = () => {
-  return <></>;
-};
-
-const Placeholder = () => {
-  return <></>;
-};
-
-const customStyles = {
-  menu: (provided) => {
-    return {
-      ...provided,
-      backgroundColor: "white",
-      color: "black",
-      zIndex: 100,
-    };
-  },
-};
-
-const DropDownSelect = observer(
-  ({
-    label,
-    options,
-    add,
-  }: {
-    label: string;
-    options: MarketFilter[];
-    add: (val: MarketFilter) => void;
-  }) => {
-    return (
-      <ReactSelect
-        options={options}
-        styles={customStyles}
-        isMulti={false}
-        isSearchable={false}
-        onChange={(val: MarketFilter) => {
-          add(val);
-        }}
-        components={{
-          Control: ({ children, ...rest }) => (
-            <Control label={label} {...rest}>
-              {children}
-            </Control>
-          ),
-          SingleValue,
-          IndicatorSeparator,
-          DropdownIndicator,
-          Placeholder,
-        }}
-      />
-    );
-  },
-);
+const DynamicDropDownSelect = dynamic(() => import("./DropDownSelect"), {
+  ssr: false,
+});
 
 const sortBySelectStyles = {
   control: (provided) => {
     return {
       ...provided,
-      width: "220px",
+      width: "180px",
+      height: "32px",
+      minHeight: "32px",
+      fontSize: "14px",
+    };
+  },
+  dropdownIndicator: (provided) => {
+    return {
+      ...provided,
+      padding: "0px",
+      paddingRight: "10px",
+    };
+  },
+  singleValue: (provided) => {
+    return {
+      ...provided,
+    };
+  },
+  valueContainer: (provided) => {
+    return {
+      ...provided,
+      paddingLeft: "10px",
+    };
+  },
+  input: (provided) => {
+    return {
+      ...provided,
     };
   },
   menu: (provided) => {
@@ -110,6 +73,10 @@ const sortBySelectStyles = {
       zIndex: 100,
     };
   },
+};
+
+const IndicatorSeparator = () => {
+  return <></>;
 };
 
 const SortBySelect = observer(
@@ -137,7 +104,7 @@ const SortBySelect = observer(
 );
 
 type MarketFilterOptionsProps = {
-  add: (filter: MarketFilter) => void;
+  addFilter: (filter: MarketFilter) => void;
   ordering: MarketsOrderBy;
   onOrderingChange: (ordering: MarketsOrderBy) => void;
   withLiquidityOnly: boolean;
@@ -145,55 +112,49 @@ type MarketFilterOptionsProps = {
 };
 
 const MarketFilterOptions = ({
-  add,
+  addFilter,
   ordering,
   onOrderingChange,
   withLiquidityOnly,
   onWithLiquidityOnlyChange,
 }: MarketFilterOptionsProps) => {
+  const { selectedMenu } = useContext(MarketFiltersContext);
   return (
-    <div className="flex items-center gap-ztg-5 mb-[10px]">
-      <label className="text-sky-600 font-medium">
-        Liquidity only
+    <div className="flex items-center gap-ztg-5 mb-[25px]">
+      <DynamicDropDownSelect
+        label="Category"
+        options={marketTagFilterOptions}
+        add={addFilter}
+        isOpen={selectedMenu === "Category"}
+      />
+      <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
+      <DynamicDropDownSelect
+        label="Currency"
+        options={marketCurrencyFilterOptions}
+        add={addFilter}
+        isOpen={selectedMenu === "Currency"}
+      />
+      <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
+      <DynamicDropDownSelect
+        label="Status"
+        options={marketStatusFilterOptions}
+        add={addFilter}
+        isOpen={selectedMenu === "Status"}
+      />
+      <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
+      <label className="text-black font-medium mr-[20px] ml-[20px]">
         <input
-          className="ml-[10px]"
+          className="mr-[10px]"
           type="checkbox"
           checked={withLiquidityOnly}
           onChange={(e) => onWithLiquidityOnlyChange(e.target.checked)}
         />
+        Liquidity only
       </label>
-      <DropDownSelect
-        label="Category"
-        options={marketTagFilterOptions}
-        add={add}
-      />
-      <DropDownSelect
-        label="Currency"
-        options={marketCurrencyFilterOptions}
-        add={add}
-      />
-      <DropDownSelect
-        label="Status"
-        options={marketStatusFilterOptions}
-        add={add}
-      />
       <SortBySelect ordering={ordering} onOrderingChange={onOrderingChange} />
     </div>
   );
 };
-
-const MarketFilterContainer = observer(({ children }) => {
-  return (
-    <>
-      <div className="font-bold text-[28px] text-center mb-[15px]">
-        All Markets
-      </div>
-      <div className="w-full flex flex-col items-center justify-center mb-[30px]">
-        {children}
-      </div>
-    </>
-  );
-});
 
 const getFiltersFromQueryState = (
   queryState: MarketsListQuery,
@@ -298,20 +259,21 @@ const MarketFilterSelection = ({
   }, [queryState]);
 
   return (
-    <MarketFilterContainer>
+    <MarketFiltersContainer activeFilters={activeFilters}>
       <MarketFilterOptions
-        add={add}
+        addFilter={add}
         onOrderingChange={setActiveOrdering}
         ordering={activeOrdering}
         withLiquidityOnly={withLiquidityOnly}
         onWithLiquidityOnlyChange={setWithLiquidityOnly}
       />
+      <div id="marketsFiltersMenuPortal"></div>
       <MarketActiveFilters
         filters={activeFilters}
         onClear={clear}
         onFilterRemove={remove}
       />
-    </MarketFilterContainer>
+    </MarketFiltersContainer>
   );
 };
 

@@ -128,6 +128,7 @@ export const useInfiniteMarkets = (
     queryFn: fetcher,
     enabled: Boolean(sdk) && isIndexedSdk(sdk),
     getNextPageParam: (lastPage) => lastPage.next,
+    keepPreviousData: true,
     onSuccess(data) {
       data.pages
         .flatMap((p) => p.data)
