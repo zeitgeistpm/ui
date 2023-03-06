@@ -19,6 +19,7 @@ import {
   IGetPlaiceholderReturn,
 } from "plaiceholder";
 import React from "react";
+import path from "path";
 
 const getPlaiceholders = (
   paths: string[],
@@ -33,12 +34,12 @@ export async function getStaticProps() {
 
   const categoryPlaceholders = await getPlaiceholders(
     CATEGORIES.map((cat) => `${cat.imagePath}`),
-    { dir: `${process.cwd()}/public/` },
+    { dir: `${path.join(process.cwd())}/public/` },
   );
 
   const sliderPlaceholders = await getPlaiceholders(
     slidesData.map((slide) => `${slide.bg}`),
-    { size: 16, dir: `${process.cwd()}/public/` },
+    { size: 16, dir: `${path.join(process.cwd())}/public/` },
   );
 
   const [featuredMarkets, trendingMarkets, categoryCounts] = await Promise.all([
