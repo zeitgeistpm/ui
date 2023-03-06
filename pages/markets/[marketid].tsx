@@ -218,7 +218,7 @@ const Market: NextPage<{
           <></>
         )}
         {marketSdkv2?.pool?.poolId == null && marketIsLoading === false && (
-          <div className="flex h-ztg-22 items-center  bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
+          <div className="flex h-ztg-22 items-center bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
             <div className="w-ztg-20 h-ztg-20">
               <AlertTriangle size={20} />
             </div>
@@ -231,41 +231,43 @@ const Market: NextPage<{
             </div>
           </div>
         )}
-        <Tab.Group>
-          <Tab.List className="flex center my-6">
-            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
-              Predictions
-            </Tab>
-            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
-              Subsidy
-            </Tab>
-          </Tab.List>
+        <div className="mb-12">
+          <Tab.Group>
+            <Tab.List className="flex center my-6">
+              <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+                Predictions
+              </Tab>
+              <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+                Subsidy
+              </Tab>
+            </Tab.List>
 
-          <Tab.Panels>
-            <Tab.Panel>
-              <MarketAssetDetails
-                marketId={Number(marketid)}
-                marketStore={marketStore}
-              />
-            </Tab.Panel>
-            <Tab.Panel>
-              {marketSdkv2?.pool && (
-                <div className="flex flex-col">
-                  <Link
-                    href={`/liquidity/${marketSdkv2.pool.poolId}`}
-                    className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 mb-[10px] "
-                  >
-                    View Pool
-                  </Link>
-                  <PoolTable poolId={marketSdkv2.pool.poolId} />
-                </div>
-              )}
-            </Tab.Panel>
-          </Tab.Panels>
-        </Tab.Group>
+            <Tab.Panels>
+              <Tab.Panel>
+                <MarketAssetDetails
+                  marketId={Number(marketid)}
+                  marketStore={marketStore}
+                />
+              </Tab.Panel>
+              <Tab.Panel>
+                {marketSdkv2?.pool && (
+                  <div className="flex flex-col">
+                    <Link
+                      href={`/liquidity/${marketSdkv2.pool.poolId}`}
+                      className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 mb-[10px] "
+                    >
+                      View Pool
+                    </Link>
+                    <PoolTable poolId={marketSdkv2.pool.poolId} />
+                  </div>
+                )}
+              </Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+        </div>
         <div className="lg:px-36">
           {marketStore?.type === "scalar" && spotPrices && (
-            <div className="my-12">
+            <div className="mb-12">
               <ScalarPriceRange
                 scalarType={marketStore.scalarType}
                 lowerBound={marketStore.bounds[0]}
