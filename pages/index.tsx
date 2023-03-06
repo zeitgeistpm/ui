@@ -28,18 +28,24 @@ const getPlaiceholders = (
   return Promise.all(paths.map((path) => getPlaiceholder(path, options)));
 };
 
-export async function getStaticProps() {
+export async function getStaticProps(context) {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
 
   const categoryPlaceholders = await getPlaiceholders(
-    CATEGORIES.map((cat) => cat.imagePath),
-  ).catch((e) => console.error(e));
+    CATEGORIES.map(
+      (cat) => new URL(`../public${cat.imagePath}`, import.meta.url).href,
+    ),
+  );
+  // .catch((e) => console.error(e));
 
   const sliderPlaceholders = await getPlaiceholders(
-    slidesData.map((slide) => slide.bg),
+    slidesData.map(
+      (slide) => new URL(`../public${slide.bg}`, import.meta.url).href,
+    ),
     { size: 16 },
-  ).catch((e) => console.error(e));
+  );
+  // .catch((e) => console.error(e));
 
   const [featuredMarkets, trendingMarkets, categoryCounts] = await Promise.all([
     getFeaturedMarkets(client),
