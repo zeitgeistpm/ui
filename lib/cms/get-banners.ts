@@ -9,7 +9,7 @@ export type Banner = {
   ctaText: string;
   ctaLink: string;
   buttonColor: string;
-  textColor: string;
+  buttonTextColor: string;
   imageAlignment: "left" | "right" | "center";
 };
 
@@ -67,7 +67,7 @@ export const getBanners = async (): Promise<Banner[]> => {
           .name as Banner["imageAlignment"]) ?? "left";
     }
 
-    const textColor = contrast(buttonColor);
+    const buttonTextColor = contrast(buttonColor);
 
     return {
       title,
@@ -76,7 +76,7 @@ export const getBanners = async (): Promise<Banner[]> => {
       ctaText,
       ctaLink,
       buttonColor,
-      textColor,
+      buttonTextColor,
       imageAlignment,
     };
   });
