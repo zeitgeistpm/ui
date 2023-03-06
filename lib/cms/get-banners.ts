@@ -9,10 +9,12 @@ export type Banner = {
   ctaText: string;
   ctaLink: string;
   buttonColor: string;
+  textColor: string;
   imageAlignment: "left" | "right" | "center";
 };
 
 export const getBanners = async (): Promise<Banner[]> => {
+  const contrast = (await import("font-color-contrast")).default;
   const { results: bannersData } = await notion.databases.query({
     database_id: "7085702a851842adace1c9963e817446",
     filter: {
@@ -65,6 +67,8 @@ export const getBanners = async (): Promise<Banner[]> => {
           .name as Banner["imageAlignment"]) ?? "left";
     }
 
+    const textColor = contrast(buttonColor);
+
     return {
       title,
       subtitle,
@@ -72,14 +76,8 @@ export const getBanners = async (): Promise<Banner[]> => {
       ctaText,
       ctaLink,
       buttonColor,
+      textColor,
       imageAlignment,
     };
   });
-};
-
-const getColorPreset = (color: string) => {
-  if (color === "blue") return "rgb(54, 121, 225)";
-  if (color === "red") return "rgb(233, 3, 3)";
-  if (color === "purple") return "rgb(173, 71, 196)";
-  return "rgb(54, 121, 225)";
 };
