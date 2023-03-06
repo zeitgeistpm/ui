@@ -29,6 +29,8 @@ export interface IndexedMarketCardData {
 export interface MarketCardProps extends IndexedMarketCardData {
   className?: string;
   width?: number;
+  liquidity?: string;
+  numParticipants?: number;
 }
 
 const Pill = ({ value, classes }: { value: string; classes: string }) => {
@@ -129,6 +131,8 @@ const MarketCardDetails = ({
     outcomes: number;
     endDate: string;
     hasEnded: boolean;
+    numParticipants?: number;
+    liquidity?: string;
     marketType: { categorical?: string; scalar?: string[] };
   };
 }) => {
@@ -148,21 +152,26 @@ const MarketCardDetails = ({
         </span>
       </div>
       <div className="flex gap-2.5 text-sm">
-        {/* TODO: add market particpants and liquidity once added to indexer */}
-        {/* <div className="flex items-center gap-2">
+        {rows.numParticipants != null && (
+          <div className="flex items-center gap-2">
             <Users size={18} />
-            <span>223</span>
-          </div> */}
+            <span>{rows.numParticipants}</span>
+          </div>
+        )}
         <div className="flex items-center gap-2">
           <BarChart2 size={18} />
           <span>
             {formatNumberCompact(rows.volume)} {rows.baseAsset}
           </span>
         </div>
-        {/* <div className="flex items-center gap-2">
+        {rows.liquidity != null && (
+          <div className="flex items-center gap-2">
             <Droplet size={18} />
-            <span>223K ZTG</span>
-          </div> */}
+            <span>
+              {new Decimal(rows.liquidity).div(ZTG).toFixed(2)} {rows.baseAsset}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -185,6 +194,8 @@ const MarketCard = ({
   endDate,
   status,
   className = "",
+  liquidity,
+  numParticipants,
 }: MarketCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -220,6 +231,8 @@ const MarketCard = ({
     outcomes: outcomes.length,
     volume: volume,
     baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
+    liquidity,
+    numParticipants: numParticipants,
   };
 
   const lower = marketType?.scalar?.[0]
