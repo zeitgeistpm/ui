@@ -34,12 +34,11 @@ export async function getStaticProps() {
 
   const sliderPlaceholders = await getPlaiceholders(
     CATEGORIES.map((cat) => cat.imagePath),
-    { size: 32 },
   ).catch((e) => console.error(e));
 
   const categoryPlaceholders = await getPlaiceholders(
-    // slidesData.map((slide) => path.join(process.cwd(), slide.bg)),
     slidesData.map((slide) => slide.bg),
+    { size: 16 },
   ).catch((e) => console.error(e));
 
   const [featuredMarkets, trendingMarkets, categoryCounts] = await Promise.all([
@@ -56,8 +55,10 @@ export async function getStaticProps() {
       featuredMarkets: featuredMarkets ?? [],
       trendingMarkets: trendingMarkets ?? [],
       categoryCounts: categoryCounts,
-      categoryPlaceholders: categoryPlaceholders ?? [],
-      sliderPlaceholders: sliderPlaceholders ?? [],
+      //@ts-ignore
+      categoryPlaceholders: (categoryPlaceholders ?? []).map((c) => c.base64),
+      //@ts-ignore
+      sliderPlaceholders: (sliderPlaceholders ?? []).map((c) => c.base64),
     },
     revalidate: 10 * 60, //10min
   };
@@ -67,8 +68,8 @@ const IndexPage: NextPage<{
   featuredMarkets: IndexedMarketCardData[];
   trendingMarkets: IndexedMarketCardData[];
   categoryCounts: number[];
-  categoryPlaceholders: IGetPlaiceholderReturn[];
-  sliderPlaceholders: IGetPlaiceholderReturn[];
+  categoryPlaceholders: string[];
+  sliderPlaceholders: string[];
 }> = observer(
   ({
     trendingMarkets,
