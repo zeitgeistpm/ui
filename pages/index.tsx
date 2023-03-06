@@ -32,11 +32,11 @@ export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
 
-  const sliderPlaceholders = await getPlaiceholders(
+  const categoryPlaceholders = await getPlaiceholders(
     CATEGORIES.map((cat) => cat.imagePath),
   ).catch((e) => console.error(e));
 
-  const categoryPlaceholders = await getPlaiceholders(
+  const sliderPlaceholders = await getPlaiceholders(
     slidesData.map((slide) => slide.bg),
     { size: 16 },
   ).catch((e) => console.error(e));
@@ -80,8 +80,6 @@ const IndexPage: NextPage<{
     categoryPlaceholders,
     sliderPlaceholders,
   }) => {
-    console.log(categoryPlaceholders, sliderPlaceholders);
-
     return (
       <>
         <HeroSlider imagePlaceholders={sliderPlaceholders} />
