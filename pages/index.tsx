@@ -80,6 +80,8 @@ const IndexPage: NextPage<{
     categoryPlaceholders,
     sliderPlaceholders,
   }) => {
+    console.log(categoryPlaceholders, sliderPlaceholders);
+
     return (
       <>
         <HeroSlider imagePlaceholders={sliderPlaceholders} />
