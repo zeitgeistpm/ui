@@ -137,8 +137,6 @@ const MarketCardDetails = ({
     marketType: { categorical?: string; scalar?: string[] };
   };
 }) => {
-  // rows.numParticipants = undefined;
-  // rows.liquidity = undefined;
   return (
     <div>
       <div className="text-xs mb-2.5">
@@ -173,7 +171,7 @@ const MarketCardDetails = ({
           <div className="flex items-center gap-2 w-[120px]">
             <Droplet size={18} />
             <span>
-              {new Decimal(rows.liquidity).div(ZTG).toFixed(2)} {rows.baseAsset}
+              {formatNumberCompact(rows.liquidity)} {rows.baseAsset}
             </span>
           </div>
         ) : (
