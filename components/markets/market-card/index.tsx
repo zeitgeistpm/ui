@@ -171,7 +171,10 @@ const MarketCardDetails = ({
           <div className="flex items-center gap-2 w-[120px]">
             <Droplet size={18} />
             <span>
-              {formatNumberCompact(rows.liquidity)} {rows.baseAsset}
+              {formatNumberCompact(
+                new Decimal(rows.liquidity).div(ZTG).toString(),
+              )}{" "}
+              {rows.baseAsset}
             </span>
           </div>
         ) : (
