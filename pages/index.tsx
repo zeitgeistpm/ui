@@ -11,6 +11,7 @@ import getTrendingMarkets from "lib/gql/trending-markets";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import HeroSlider from "components/hero-slider/HeroSlider";
+import { slidesData } from "components/hero-slider/slides-data";
 
 import {
   getPlaiceholder,
@@ -31,17 +32,22 @@ export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
 
+  const banners = await getBanners();
+
   const [
-    banners,
     featuredMarkets,
     trendingMarkets,
     categoryPlaceholders,
+    bannerPlaceHolders,
     categoryCounts,
   ] = await Promise.all([
-    getBanners(),
     getFeaturedMarkets(client),
     getTrendingMarkets(client),
     getPlaiceholders(CATEGORIES.map((cat) => cat.imagePath)),
+    getPlaiceholders(
+      banners.map((slide) => slide.imageUrl),
+      { size: 16 },
+    ),
     getCategoryCounts(
       client,
       CATEGORIES.map((cat) => cat.name),
@@ -55,6 +61,7 @@ export async function getStaticProps() {
       trendingMarkets: trendingMarkets ?? [],
       categoryCounts: categoryCounts,
       categoryPlaceholders: categoryPlaceholders.map((c) => c.base64),
+      bannerPlaceHolders: bannerPlaceHolders.map((c) => c.base64),
     },
     revalidate: 10 * 60, //10min
   };
@@ -66,6 +73,7 @@ const IndexPage: NextPage<{
   trendingMarkets: IndexedMarketCardData[];
   categoryCounts: number[];
   categoryPlaceholders: string[];
+  bannerPlaceHolders: string[];
 }> = observer(
   ({
     banners,
@@ -73,10 +81,11 @@ const IndexPage: NextPage<{
     featuredMarkets,
     categoryCounts,
     categoryPlaceholders,
+    bannerPlaceHolders,
   }) => {
     return (
       <>
-        <HeroSlider banners={banners} />
+        <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
         <div data-testid="indexPage" className="main-container">
           <div className="flex items-center w-full justify-center relative bottom-[60px]">
             <LearnSection />

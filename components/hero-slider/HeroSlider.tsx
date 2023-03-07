@@ -8,7 +8,13 @@ import { moveSlider } from "./slider-controls";
 import { Banner } from "lib/cms/get-banners";
 import { IGetPlaiceholderReturn } from "plaiceholder";
 
-const HeroSlider = ({ banners }: { banners: Banner[] }) => {
+const HeroSlider = ({
+  banners,
+  bannerPlaceHolders,
+}: {
+  banners: Banner[];
+  bannerPlaceHolders: string[];
+}) => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
   const [animate, setAnimate] = useState<boolean>(false);
   const slidesLength = banners.length;
@@ -36,6 +42,8 @@ const HeroSlider = ({ banners }: { banners: Banner[] }) => {
       <Image
         src={banners[currentSlide].imageUrl}
         alt={`Image depicting ${banners[currentSlide].title}`}
+        placeholder="blur"
+        blurDataURL={bannerPlaceHolders[currentSlide]}
         sizes="100vw"
         fill
         style={{
