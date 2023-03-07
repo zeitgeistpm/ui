@@ -35,7 +35,7 @@ const Category = ({
           alt={title}
           fill
           onClick={onClick}
-          placeholder="blur"
+          placeholder={blurImage ? "blur" : "empty"}
           blurDataURL={blurImage}
           sizes="(max-width: 1000px) 230px, 130px"
         />

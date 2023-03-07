@@ -218,7 +218,7 @@ const Market: NextPage<{
           <></>
         )}
         {marketSdkv2?.pool?.poolId == null && marketIsLoading === false && (
-          <div className="flex h-ztg-22 items-center  bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
+          <div className="flex h-ztg-22 items-center bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
             <div className="w-ztg-20 h-ztg-20">
               <AlertTriangle size={20} />
             </div>
@@ -231,65 +231,72 @@ const Market: NextPage<{
             </div>
           </div>
         )}
-        <Tab.Group>
-          <Tab.List className="flex center my-6">
-            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
-              Predictions
-            </Tab>
-            <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
-              Subsidy
-            </Tab>
-          </Tab.List>
+        <div className="mb-12">
+          <Tab.Group>
+            <Tab.List className="flex center my-6">
+              <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+                Predictions
+              </Tab>
+              <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
+                Subsidy
+              </Tab>
+            </Tab.List>
 
-          <Tab.Panels>
-            <Tab.Panel>
-              <MarketAssetDetails
-                marketId={Number(marketid)}
-                marketStore={marketStore}
+            <Tab.Panels>
+              <Tab.Panel>
+                <MarketAssetDetails
+                  marketId={Number(marketid)}
+                  marketStore={marketStore}
+                />
+              </Tab.Panel>
+              <Tab.Panel>
+                {marketSdkv2?.pool && (
+                  <div className="flex flex-col">
+                    <Link
+                      href={`/liquidity/${marketSdkv2.pool.poolId}`}
+                      className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 mb-[10px] "
+                    >
+                      View Pool
+                    </Link>
+                    <PoolTable poolId={marketSdkv2.pool.poolId} />
+                  </div>
+                )}
+              </Tab.Panel>
+            </Tab.Panels>
+          </Tab.Group>
+        </div>
+        <div className="lg:px-36">
+          {marketStore?.type === "scalar" && spotPrices && (
+            <div className="mb-12">
+              <ScalarPriceRange
+                scalarType={marketStore.scalarType}
+                lowerBound={marketStore.bounds[0]}
+                upperBound={marketStore.bounds[1]}
+                shortPrice={spotPrices?.get(1).toNumber()}
+                longPrice={spotPrices?.get(0).toNumber()}
               />
-            </Tab.Panel>
-            <Tab.Panel>
-              {marketSdkv2?.pool && (
-                <div className="flex flex-col">
-                  <Link
-                    href={`/liquidity/${marketSdkv2.pool.poolId}`}
-                    className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 mb-[10px] "
-                  >
-                    View Pool
-                  </Link>
-                  <PoolTable poolId={marketSdkv2.pool.poolId} />
-                </div>
-              )}
-            </Tab.Panel>
-          </Tab.Panels>
-        </Tab.Group>
-
-        {marketStore?.type === "scalar" && spotPrices && (
-          <div className="mt-ztg-20 mb-ztg-30">
-            <ScalarPriceRange
-              scalarType={marketStore.scalarType}
-              lowerBound={marketStore.bounds[0]}
-              upperBound={marketStore.bounds[1]}
-              shortPrice={spotPrices?.get(1).toNumber()}
-              longPrice={spotPrices?.get(0).toNumber()}
-            />
-          </div>
-        )}
-        {indexedMarket.description?.length > 0 && (
-          <>
-            <div className="sub-header mt-ztg-40 mb-ztg-15">About Market</div>
-            <QuillViewer value={indexedMarket.description} />
-          </>
-        )}
-        <PoolDeployer
-          marketStore={marketStore}
-          onPoolDeployed={handlePoolDeployed}
-        />
-        <div className="sub-header my-ztg-40 text-center">Market Cast</div>
-        <MarketAddresses
-          oracleAddress={indexedMarket.oracle}
-          creatorAddress={indexedMarket.creator}
-        />
+            </div>
+          )}
+          {indexedMarket.description?.length > 0 && (
+            <>
+              <h3 className="text-center text-2xl font-semibold mb-5">
+                About Market
+              </h3>
+              <QuillViewer value={indexedMarket.description} />
+            </>
+          )}
+          <PoolDeployer
+            marketStore={marketStore}
+            onPoolDeployed={handlePoolDeployed}
+          />
+          <h3 className="text-center text-2xl font-semibold mt-10">
+            Market Cast
+          </h3>
+          <MarketAddresses
+            oracleAddress={indexedMarket.oracle}
+            creatorAddress={indexedMarket.creator}
+          />
+        </div>
       </div>
     </>
   );

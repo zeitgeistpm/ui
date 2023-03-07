@@ -19,6 +19,7 @@ import {
   IGetPlaiceholderReturn,
 } from "plaiceholder";
 import React from "react";
+import path from "path";
 
 const getPlaiceholders = (
   paths: string[],
@@ -31,20 +32,19 @@ export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
 
-  const [
-    featuredMarkets,
-    trendingMarkets,
-    categoryPlaceholders,
-    sliderPlaceholders,
-    categoryCounts,
-  ] = await Promise.all([
+  const categoryPlaceholders = await getPlaiceholders(
+    CATEGORIES.map((cat) => `${cat.imagePath}`),
+    { dir: `${path.join(process.cwd())}/public/` },
+  );
+
+  const sliderPlaceholders = await getPlaiceholders(
+    slidesData.map((slide) => `${slide.bg}`),
+    { size: 16, dir: `${path.join(process.cwd())}/public/` },
+  );
+
+  const [featuredMarkets, trendingMarkets, categoryCounts] = await Promise.all([
     getFeaturedMarkets(client),
     getTrendingMarkets(client),
-    getPlaiceholders(CATEGORIES.map((cat) => cat.imagePath)),
-    getPlaiceholders(
-      slidesData.map((slide) => slide.bg),
-      { size: 16 },
-    ),
     getCategoryCounts(
       client,
       CATEGORIES.map((cat) => cat.name),
@@ -56,8 +56,12 @@ export async function getStaticProps() {
       featuredMarkets: featuredMarkets ?? [],
       trendingMarkets: trendingMarkets ?? [],
       categoryCounts: categoryCounts,
-      categoryPlaceholders: categoryPlaceholders.map((c) => c.base64),
-      sliderPlaceholders: sliderPlaceholders.map((c) => c.base64),
+      categoryPlaceholders: categoryPlaceholders
+        ? categoryPlaceholders.map((c) => c.base64)
+        : [],
+      sliderPlaceholders: sliderPlaceholders
+        ? sliderPlaceholders.map((c) => c.base64)
+        : [],
     },
     revalidate: 10 * 60, //10min
   };
