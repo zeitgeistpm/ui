@@ -9,6 +9,7 @@ import { Users, BarChart2, Droplet } from "react-feather";
 import { formatNumberCompact } from "lib/util/format-compact";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { Skeleton } from "@material-ui/lab";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -25,12 +26,12 @@ export interface IndexedMarketCardData {
   tags: string[];
   status: string;
   endDate: string;
+  liquidity?: string;
+  numParticipants?: number;
 }
 export interface MarketCardProps extends IndexedMarketCardData {
   className?: string;
   width?: number;
-  liquidity?: string;
-  numParticipants?: number;
 }
 
 const Pill = ({ value, classes }: { value: string; classes: string }) => {
@@ -136,6 +137,8 @@ const MarketCardDetails = ({
     marketType: { categorical?: string; scalar?: string[] };
   };
 }) => {
+  // rows.numParticipants = undefined;
+  // rows.liquidity = undefined;
   return (
     <div>
       <div className="text-xs mb-2.5">
@@ -152,11 +155,13 @@ const MarketCardDetails = ({
         </span>
       </div>
       <div className="flex gap-2.5 text-sm">
-        {rows.numParticipants != null && (
-          <div className="flex items-center gap-2">
+        {rows.numParticipants != null ? (
+          <div className="flex items-center gap-2 w-[50px]">
             <Users size={18} />
             <span>{rows.numParticipants}</span>
           </div>
+        ) : (
+          <Skeleton width={50} />
         )}
         <div className="flex items-center gap-2">
           <BarChart2 size={18} />
@@ -164,13 +169,15 @@ const MarketCardDetails = ({
             {formatNumberCompact(rows.volume)} {rows.baseAsset}
           </span>
         </div>
-        {rows.liquidity != null && (
-          <div className="flex items-center gap-2">
+        {rows.liquidity != null ? (
+          <div className="flex items-center gap-2 w-[120px]">
             <Droplet size={18} />
             <span>
               {new Decimal(rows.liquidity).div(ZTG).toFixed(2)} {rows.baseAsset}
             </span>
           </div>
+        ) : (
+          <Skeleton width={120} />
         )}
       </div>
     </div>

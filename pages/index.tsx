@@ -19,6 +19,7 @@ import {
   IGetPlaiceholderReturn,
 } from "plaiceholder";
 import React from "react";
+import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
 
 const getPlaiceholders = (
   paths: string[],
