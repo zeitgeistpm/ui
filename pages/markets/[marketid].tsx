@@ -41,6 +41,7 @@ import Link from "next/link";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import MarketHeader from "components/markets/MarketHeader";
+import TimeFilters, { filters } from "components/ui/TimeFilters";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -77,7 +78,7 @@ export async function getStaticProps({ params }) {
     (category, index) => {
       return {
         accessor: `v${index}`,
-        label: category.ticker.toUpperCase(),
+        label: category.name,
         color: category.color,
       };
     },
@@ -207,10 +208,10 @@ const Market: NextPage<{
         </div>
         {chartData?.length > 0 && chartSeries ? (
           <div className="-ml-ztg-25">
+            {/* <TimeFilters onClick={() => {}} value={filters[0]} /> */}
             <TimeSeriesChart
               data={chartData}
               series={chartSeries}
-              yDomain={[0, 1]}
               yUnits={baseAsset}
             />
           </div>

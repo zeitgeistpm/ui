@@ -35,7 +35,7 @@ const marketQuery = gql`
         end
       }
       categories {
-        ticker
+        name
         color
       }
       tags
@@ -54,7 +54,7 @@ export interface MarketPageIndexedData {
     start: string;
     end: string;
   };
-  categories: { ticker: string; color: string }[];
+  categories: { name: string; color: string }[];
   outcomeAssets: string[];
   pool: { poolId: number; volume: string; createdAt: string };
   scalarType: ScalarRangeType;

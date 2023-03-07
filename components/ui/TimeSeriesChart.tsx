@@ -13,7 +13,6 @@ import {
   YAxis,
 } from "recharts";
 import { AxisDomain } from "recharts/types/util/types";
-import { useStore } from "lib/stores/Store";
 
 interface TimeSeriesChartProps {
   data: ChartData[];
@@ -46,13 +45,13 @@ const ChartToolTip = observer((props) => {
           className="px-ztg-9 py-ztg-12 bg-white dark:bg-black  rounded-ztg-10"
           style={{ boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)" }}
         >
-          <div className="font-bold text-ztg-14-150">
+          <div className="text-ztg-12-150">
             <span>
               {new Intl.DateTimeFormat("default", {
                 dateStyle: "short",
               }).format(new Date(props.label))}
             </span>
-            <span className="text-sky-600 ml-ztg-34">
+            <span className="ml-ztg-34">
               {new Intl.DateTimeFormat("default", {
                 hour: "numeric",
                 minute: "numeric",
@@ -60,9 +59,9 @@ const ChartToolTip = observer((props) => {
             </span>
             <div className="mt-ztg-13">
               {series && (
-                <div className="flex">
-                  <span style={{ color: series.color }}>{series.label}</span>
-                  <span className="ml-auto">
+                <div className="flex flex-col">
+                  <span className="font-semibold">{series.label}</span>
+                  <span className="">
                     {new Decimal(props.payload[0]?.value).toFixed(3) +
                       ` ${props.yUnits}`}
                   </span>
@@ -166,7 +165,7 @@ const TimeSeriesChart = observer(
                 dataKey="t"
                 domain={[leftX, rightX]}
                 tickCount={5}
-                tick={{ fontFamily: "Roboto Mono", fontSize: "10px" }}
+                tick={{ fontSize: "10px" }}
                 type="number"
                 stroke="#748296"
                 tickLine={false}
@@ -188,7 +187,7 @@ const TimeSeriesChart = observer(
                 }}
               />
               <YAxis
-                tick={{ fontFamily: "Roboto Mono", fontSize: "10px" }}
+                tick={{ fontSize: "10px" }}
                 tickLine={false}
                 domain={
                   yDomain ?? [0, (dataMax) => (dataMax === 0 ? 1 : dataMax)]
