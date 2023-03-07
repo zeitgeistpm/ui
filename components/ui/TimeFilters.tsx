@@ -10,10 +10,6 @@ export type FilterResolution = "All" | "Day" | "Week" | "Month";
 
 export const filters: TimeFilter[] = [
   {
-    label: "All",
-    time: new Date("Wed Dec 30 2020").toISOString(),
-  },
-  {
     label: "Day",
     time: new Date(new Date().getTime() - DAY_SECONDS * 1000).toISOString(),
   },
@@ -27,6 +23,10 @@ export const filters: TimeFilter[] = [
       new Date().getTime() - DAY_SECONDS * 1000 * 30,
     ).toISOString(),
   },
+  {
+    label: "All",
+    time: new Date("Wed Dec 30 2020").toISOString(),
+  },
 ];
 
 const TimeFilters = observer(
@@ -38,18 +38,16 @@ const TimeFilters = observer(
     onClick: (filter: TimeFilter) => void;
   }) => {
     return (
-      <div className="flex gap-x-2 mb-1">
+      <div className="flex items-center gap-x-2 mb-1 bg-sky-100 h-[35px] py-[8px] px-[12px] rounded-ztg-10 w-fit">
         {filters.map((filter, index) => (
           <span
             key={index}
-            className={`text-sky-600  text-ztg-10-150 rounded-ztg-100 w-[47px] flex justify-center ${
-              filter.label === value.label
-                ? "bg-sky-300 dark:bg-black"
-                : "bg-sky-100 dark:bg-sky-800"
+            className={`text-ztg-12-150 rounded-ztg-5 w-[47px] flex justify-center ${
+              filter.label === value.label ? "bg-white shadow-sm" : ""
             }`}
           >
             <button
-              className="focus:outline-none py-ztg-2 px-ztg-8 "
+              className="focus:outline-none py-ztg-2 px-ztg-4 "
               onClick={() => onClick(filter)}
             >
               {filter.label}

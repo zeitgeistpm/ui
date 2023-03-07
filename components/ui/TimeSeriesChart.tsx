@@ -206,7 +206,9 @@ const TimeSeriesChart = observer(
                 <Line
                   key={index}
                   strokeWidth={mouseInside ? 3 : 2}
-                  type="monotone"
+                  // type="linear"
+                  // type="stepAfter"
+                  type="monotoneX"
                   dataKey={s.accessor}
                   dot={false}
                   stroke={s.color ? s.color : "#0001FE"}

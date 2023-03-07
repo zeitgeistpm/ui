@@ -24,7 +24,6 @@ import { getAssetPriceHistory } from "lib/gql/prices";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
-import useMarketImageUrl from "lib/hooks/useMarketImageUrl";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
@@ -41,7 +40,7 @@ import Link from "next/link";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import MarketHeader from "components/markets/MarketHeader";
-import TimeFilters, { filters } from "components/ui/TimeFilters";
+import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -123,7 +122,7 @@ const Market: NextPage<{
   const store = useStore();
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
-  const marketImageUrl = useMarketImageUrl(indexedMarket.img);
+  const [chartFilter, setChartFilter] = useState<TimeFilter>(filters[0]);
 
   const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
     marketId: Number(marketid),
@@ -207,8 +206,10 @@ const Market: NextPage<{
           )}
         </div>
         {chartData?.length > 0 && chartSeries ? (
-          <div className="-ml-ztg-25">
-            {/* <TimeFilters onClick={() => {}} value={filters[0]} /> */}
+          <div className="flex flex-col -ml-ztg-25">
+            <div className="ml-auto">
+              <TimeFilters onClick={setChartFilter} value={chartFilter} />
+            </div>
             <TimeSeriesChart
               data={chartData}
               series={chartSeries}
