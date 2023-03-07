@@ -1,5 +1,6 @@
 import { ImageResponse } from "@vercel/og";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import { formatNumberCompact } from "lib/util/format-compact";
 import type { PageConfig } from "next";
 import { NextRequest } from "next/server";
 import type { MarketImageData } from "./[marketId]";
@@ -50,7 +51,7 @@ export default async function GenerateOgImage(request: NextRequest) {
 
   const image = (
     <div
-      tw="p-12 text-white"
+      tw="p-20 text-white"
       style={{
         width: "100%",
         height: "100%",
@@ -66,117 +67,20 @@ export default async function GenerateOgImage(request: NextRequest) {
           objectFit: "cover",
         }}
       />
-
-      <div tw="flex flex-col h-full mr-20">
-        <div tw="flex flex-1">
-          <img
-            style={{
-              width: 140,
-              height: 140,
-              objectFit: "cover",
-              borderRadius: "100%",
-            }}
-            src={marketImage}
-          />
-        </div>
-      </div>
-
-      <div tw="flex flex-1 flex-col h-full">
-        <h1
-          tw={`${isTwitter ? "text-3xl mb-14" : "text-5xl"}`}
-          style={{ lineHeight: "1.3em" }}
-        >
-          {market.question}
-        </h1>
-        <h2 tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}>
-          {market.status === "Reported" || market.status === "Resolved"
-            ? "Winning Outcome:"
-            : "Prediction:"}
-        </h2>
-      </div>
-
-      <div tw="flex flex-1 ">
-        <img
-          tw=""
-          style={{
-            transform: isTwitter ? "scale(0.4)" : "scale(0.5)",
-            transformOrigin: "bottom right",
-          }}
-          src={
-            new URL("../../../public/og/zeitgeist_badge.png", import.meta.url)
-              .href
-          }
-        />
-
-        <div tw="flex flex-col mb-4">
-          <div
-            tw={`flex ${isTwitter ? "text-1xl" : "text-2xl"} -mt-3`}
-            style={{ color: "#ABC1F9" }}
-          >
-            {market.marketType.categorical
-              ? `${prediction.percentage}% — ${prediction.name}`
-              : `${prediction.name}`}
-          </div>
-        </div>
-
-        <div tw="flex flex-col">
-          <h2 tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}>
-            Volume:
-          </h2>
-          <div
-            tw={`flex ${isTwitter ? "text-1xl" : "text-2xl"}  -mt-3`}
-            style={{ color: "#ABC1F9" }}
-          >
-            {volume}
-            {" ZTG"}
-          </div>
-          <div tw="flex flex-col">
-            <h2
-              tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}
-            >
-              Ends:
-            </h2>
-            <div tw="text-2xl -mt-3" style={{ color: "#ABC1F9" }}>
-              {ends}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const newImage = (
-    <div
-      tw="p-12 text-white"
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-      }}
-    >
-      <img
-        src={new URL("../../../public/og/bg1.png", import.meta.url).href}
-        tw="absolute top-0 left-0"
-        style={{
-          width: 1200,
-          height: 675,
-          objectFit: "cover",
-        }}
-      />
-      <div tw="flex h-full w-full bg-blue-500">
-        <div tw="flex flex-col justify-between h-full bg-green-500">
-          <div tw="flex bg-red-500">
+      <div tw="flex h-full w-full">
+        <div tw="flex flex-col justify-between h-full">
+          <div tw="flex">
             <img
               style={{
-                width: 140,
-                height: 140,
+                width: 160,
+                height: 160,
                 objectFit: "cover",
-                borderRadius: "100%",
               }}
               src={marketImage}
+              tw="rounded-[5px]"
             />
           </div>
-          <div tw="flex bg-red-500">
+          <div tw="flex">
             <img
               tw=""
               style={{
@@ -193,14 +97,14 @@ export default async function GenerateOgImage(request: NextRequest) {
             />
           </div>
         </div>
-        <div tw="flex flex-col h-full bg-purple-500 mx-5">
+        <div tw="flex flex-col h-full ml-[100px]" style={{ width: 800 }}>
           <h1
             tw={`${isTwitter ? "text-3xl mb-14" : "text-5xl"}`}
             style={{ lineHeight: "1.3em" }}
           >
             {market.question}
           </h1>
-          <div tw="flex flex-col">
+          <div tw="flex flex-col mt-auto">
             <h2
               tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}
             >
@@ -209,7 +113,7 @@ export default async function GenerateOgImage(request: NextRequest) {
                 : "Prediction:"}
             </h2>
             <div
-              tw={` ${isTwitter ? "text-1xl" : "text-2xl"} -mt-3`}
+              tw={`font-semibold ${isTwitter ? "text-4xl" : "text-6xl"} `}
               style={{ color: "#ABC1F9" }}
             >
               {market.marketType.categorical
@@ -217,7 +121,19 @@ export default async function GenerateOgImage(request: NextRequest) {
                 : `${prediction.name}`}
             </div>
           </div>
-          <div tw="flex">
+          <div tw="flex mt-[50px] w-full">
+            <div tw="flex flex-col mr-[200px]">
+              <h2
+                tw={`font-bold ${
+                  isTwitter ? "text-2xl" : "text-3xl"
+                } font-sans`}
+              >
+                Ends:
+              </h2>
+              <div tw="text-2xl -mt-3" style={{ color: "#ABC1F9" }}>
+                {ends}
+              </div>
+            </div>
             <div tw="flex flex-col">
               <h2
                 tw={`font-bold ${
@@ -230,20 +146,8 @@ export default async function GenerateOgImage(request: NextRequest) {
                 tw={`flex ${isTwitter ? "text-1xl" : "text-2xl"}  -mt-3`}
                 style={{ color: "#ABC1F9" }}
               >
-                {volume}
+                {formatNumberCompact(Number(volume))}
                 {" ZTG"}
-              </div>
-            </div>
-            <div tw="flex flex-col">
-              <h2
-                tw={`font-bold ${
-                  isTwitter ? "text-2xl" : "text-3xl"
-                } font-sans`}
-              >
-                Ends:
-              </h2>
-              <div tw="text-2xl -mt-3" style={{ color: "#ABC1F9" }}>
-                {ends}
               </div>
             </div>
           </div>
@@ -252,7 +156,7 @@ export default async function GenerateOgImage(request: NextRequest) {
     </div>
   );
 
-  return new ImageResponse(newImage, {
+  return new ImageResponse(image, {
     width: isTwitter ? 800 : 1200,
     height: isTwitter ? 418 : 675,
     fonts: [
