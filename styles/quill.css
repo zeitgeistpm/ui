@@ -47,5 +47,5 @@
 }
 
 .quill .ql-editor {
-  font-family: "lato";
+  @apply font-sans text-base leading-8;
 }
