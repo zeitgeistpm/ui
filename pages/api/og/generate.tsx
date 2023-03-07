@@ -79,14 +79,6 @@ export default async function GenerateOgImage(request: NextRequest) {
             src={marketImage}
           />
         </div>
-        <div tw="flex flex-col">
-          <h2 tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}>
-            Ends:
-          </h2>
-          <div tw="text-2xl -mt-3" style={{ color: "#ABC1F9" }}>
-            {ends}
-          </div>
-        </div>
       </div>
 
       <div tw="flex flex-1 flex-col h-full">
@@ -96,9 +88,119 @@ export default async function GenerateOgImage(request: NextRequest) {
         >
           {market.question}
         </h1>
+        <h2 tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}>
+          {market.status === "Reported" || market.status === "Resolved"
+            ? "Winning Outcome:"
+            : "Prediction:"}
+        </h2>
+      </div>
 
-        <div tw="flex flex-1 flex-col just h-full justify-end">
-          <div tw="flex flex-col mb-4">
+      <div tw="flex flex-1 ">
+        <img
+          tw=""
+          style={{
+            transform: isTwitter ? "scale(0.4)" : "scale(0.5)",
+            transformOrigin: "bottom right",
+          }}
+          src={
+            new URL("../../../public/og/zeitgeist_badge.png", import.meta.url)
+              .href
+          }
+        />
+
+        <div tw="flex flex-col mb-4">
+          <div
+            tw={`flex ${isTwitter ? "text-1xl" : "text-2xl"} -mt-3`}
+            style={{ color: "#ABC1F9" }}
+          >
+            {market.marketType.categorical
+              ? `${prediction.percentage}% — ${prediction.name}`
+              : `${prediction.name}`}
+          </div>
+        </div>
+
+        <div tw="flex flex-col">
+          <h2 tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}>
+            Volume:
+          </h2>
+          <div
+            tw={`flex ${isTwitter ? "text-1xl" : "text-2xl"}  -mt-3`}
+            style={{ color: "#ABC1F9" }}
+          >
+            {volume}
+            {" ZTG"}
+          </div>
+          <div tw="flex flex-col">
+            <h2
+              tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}
+            >
+              Ends:
+            </h2>
+            <div tw="text-2xl -mt-3" style={{ color: "#ABC1F9" }}>
+              {ends}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const newImage = (
+    <div
+      tw="p-12 text-white"
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+      }}
+    >
+      <img
+        src={new URL("../../../public/og/bg1.png", import.meta.url).href}
+        tw="absolute top-0 left-0"
+        style={{
+          width: 1200,
+          height: 675,
+          objectFit: "cover",
+        }}
+      />
+      <div tw="flex h-full w-full bg-blue-500">
+        <div tw="flex flex-col justify-between h-full bg-green-500">
+          <div tw="flex bg-red-500">
+            <img
+              style={{
+                width: 140,
+                height: 140,
+                objectFit: "cover",
+                borderRadius: "100%",
+              }}
+              src={marketImage}
+            />
+          </div>
+          <div tw="flex bg-red-500">
+            <img
+              tw=""
+              style={{
+                width: 200,
+                // transform: isTwitter ? "scale(0.4)" : "scale(0.5)",
+                // transformOrigin: "bottom right",
+              }}
+              src={
+                new URL(
+                  "../../../public/og/zeitgeist_badge.png",
+                  import.meta.url,
+                ).href
+              }
+            />
+          </div>
+        </div>
+        <div tw="flex flex-col h-full bg-purple-500 mx-5">
+          <h1
+            tw={`${isTwitter ? "text-3xl mb-14" : "text-5xl"}`}
+            style={{ lineHeight: "1.3em" }}
+          >
+            {market.question}
+          </h1>
+          <div tw="flex flex-col">
             <h2
               tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}
             >
@@ -107,47 +209,50 @@ export default async function GenerateOgImage(request: NextRequest) {
                 : "Prediction:"}
             </h2>
             <div
-              tw={`flex ${isTwitter ? "text-1xl" : "text-2xl"} -mt-3`}
+              tw={` ${isTwitter ? "text-1xl" : "text-2xl"} -mt-3`}
               style={{ color: "#ABC1F9" }}
             >
               {market.marketType.categorical
-                ? `${prediction.percentage}% — ${prediction.name}`
+                ? `${prediction.name} (${prediction.percentage}%)`
                 : `${prediction.name}`}
             </div>
           </div>
-
-          <div tw="flex flex-col">
-            <h2
-              tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}
-            >
-              Volume:
-            </h2>
-            <div
-              tw={`flex ${isTwitter ? "text-1xl" : "text-2xl"}  -mt-3`}
-              style={{ color: "#ABC1F9" }}
-            >
-              {volume}
-              {" ZTG"}
+          <div tw="flex">
+            <div tw="flex flex-col">
+              <h2
+                tw={`font-bold ${
+                  isTwitter ? "text-2xl" : "text-3xl"
+                } font-sans`}
+              >
+                Volume:
+              </h2>
+              <div
+                tw={`flex ${isTwitter ? "text-1xl" : "text-2xl"}  -mt-3`}
+                style={{ color: "#ABC1F9" }}
+              >
+                {volume}
+                {" ZTG"}
+              </div>
+            </div>
+            <div tw="flex flex-col">
+              <h2
+                tw={`font-bold ${
+                  isTwitter ? "text-2xl" : "text-3xl"
+                } font-sans`}
+              >
+                Ends:
+              </h2>
+              <div tw="text-2xl -mt-3" style={{ color: "#ABC1F9" }}>
+                {ends}
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      <img
-        tw="absolute bottom-12 right-12"
-        style={{
-          transform: isTwitter ? "scale(0.4)" : "scale(0.5)",
-          transformOrigin: "bottom right",
-        }}
-        src={
-          new URL("../../../public/og/zeitgeist_badge.png", import.meta.url)
-            .href
-        }
-      />
     </div>
   );
 
-  return new ImageResponse(image, {
+  return new ImageResponse(newImage, {
     width: isTwitter ? 800 : 1200,
     height: isTwitter ? 418 : 675,
     fonts: [
