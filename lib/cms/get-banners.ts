@@ -35,7 +35,6 @@ export const getBanners = async (): Promise<Banner[]> => {
   });
 
   return bannersData.filter(isFullPage).map((page) => {
-    console.log(page);
     let title: string;
     let subtitle: string | null;
     let imageUrl: string;
