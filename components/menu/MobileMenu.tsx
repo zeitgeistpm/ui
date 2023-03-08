@@ -19,7 +19,7 @@ const MobileMenu = observer(() => {
       exit={{ y: -760 }}
       animate={{ y: 0 }}
       transition={{ type: "tween", duration: 0.2 }}
-      className="fixed top-0 left-0 w-full h-full z-30 flex flex-col items-center pt-[125px] bg-white text-black"
+      className="fixed top-0 left-0 w-full h-full z-30 flex flex-col justify-between items-center pt-[125px] bg-white text-black"
     >
       <div className="flex flex-col justify-between items-center gap-7">
         {Object.keys(navigationStore.items)

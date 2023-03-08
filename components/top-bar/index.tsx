@@ -15,12 +15,39 @@ const AccountButton = dynamic(() => import("../account/AccountButton"), {
   ssr: false,
 });
 
-const MobileTopBar: FC<{ navbar: NavbarColor }> = observer(({ navbar }) => {
+const MobileTopBar: FC<{
+  navbar: NavbarColor;
+  setNavBarBG: (NavbarColor) => void;
+}> = observer(({ navbar, setNavBarBG }) => {
   const store = useStore();
+  const { pathname } = useRouter();
+  console.log(navbar);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const [scrollPosition, setScrollPosition] = useState<number>(0);
 
   const handleMenuClick = () => {
     store.toggleShowMobileMenu();
+    setMenuOpen(!menuOpen);
   };
+
+  useEffect(() => {
+    const scrollY = window.scrollY;
+    setScrollPosition(scrollY);
+    if (menuOpen) {
+      document.body.style.position = "fixed";
+    } else {
+      document.body.style.position = "static";
+      window.scrollBy(0, scrollPosition);
+    }
+
+    if (pathname === "/" && menuOpen) {
+      console.log("HP open");
+      setNavBarBG("white");
+    } else {
+      setNavBarBG("black");
+    }
+  }, [menuOpen]);
+  console.log(navbar);
   return (
     <div className="flex items-center w-full">
       <Logo dark={navbar === "white" ? true : false} />
@@ -66,7 +93,7 @@ const TopBar = observer(() => {
   useEffect(() => {
     changeNavBG();
     window.addEventListener("scroll", changeNavBG);
-  });
+  }, []);
 
   const { pathname } = useRouter();
 
@@ -101,7 +128,7 @@ const TopBar = observer(() => {
         <AccountButton />
       </div>
       <div className="md:hidden w-full container-fluid">
-        <MobileTopBar navbar={navbarBGColor} />
+        <MobileTopBar navbar={navbarBGColor} setNavBarBG={setNavbarBGColor} />
       </div>
     </div>
   );
