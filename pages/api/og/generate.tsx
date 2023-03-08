@@ -80,11 +80,8 @@ export default async function GenerateOgImage(request: NextRequest) {
           </div>
           <div tw="flex">
             <img
-              tw=""
               style={{
                 width: 200,
-                // transform: isTwitter ? "scale(0.4)" : "scale(0.5)",
-                // transformOrigin: "bottom right",
               }}
               src={
                 new URL(
