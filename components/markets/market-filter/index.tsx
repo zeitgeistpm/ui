@@ -1,14 +1,6 @@
 import { observer } from "mobx-react";
-import Image from "next/image";
-import { useContext, useEffect, useState } from "react";
-import { ChevronDown, ChevronUp } from "react-feather";
-import dynamic from "next/dynamic";
-import ReactSelect, {
-  components,
-  ControlProps,
-  MenuListProps,
-  OptionProps,
-} from "react-select";
+import { useContext, useEffect, useRef, useState } from "react";
+import ReactSelect from "react-select";
 import {
   MarketFilter,
   MarketsListQuery,
@@ -27,10 +19,8 @@ import MarketActiveFilters from "./MarketActiveFilters";
 import MarketFiltersContainer, {
   MarketFiltersContext,
 } from "./MarketFiltersContainer";
-
-const DynamicDropDownSelect = dynamic(() => import("./DropDownSelect"), {
-  ssr: false,
-});
+import DropDownSelect from "./DropDownSelect";
+import { Skeleton } from "@material-ui/lab";
 
 const sortBySelectStyles = {
   control: (provided) => {
@@ -118,27 +108,30 @@ const MarketFilterOptions = ({
   withLiquidityOnly,
   onWithLiquidityOnlyChange,
 }: MarketFilterOptionsProps) => {
-  const { selectedMenu } = useContext(MarketFiltersContext);
+  const { selectedMenu, portal } = useContext(MarketFiltersContext);
   return (
     <div className="flex items-center gap-ztg-5 mb-[25px]">
-      <DynamicDropDownSelect
+      <DropDownSelect
         label="Category"
         options={marketTagFilterOptions}
         add={addFilter}
+        portal={portal}
         isOpen={selectedMenu === "Category"}
       />
       <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
-      <DynamicDropDownSelect
+      <DropDownSelect
         label="Currency"
         options={marketCurrencyFilterOptions}
         add={addFilter}
+        portal={portal}
         isOpen={selectedMenu === "Currency"}
       />
       <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
-      <DynamicDropDownSelect
+      <DropDownSelect
         label="Status"
         options={marketStatusFilterOptions}
         add={addFilter}
+        portal={portal}
         isOpen={selectedMenu === "Status"}
       />
       <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
@@ -194,6 +187,8 @@ const MarketFilterSelection = ({
   const [activeFilters, setActiveFilters] = useState<MarketFilter[]>();
   const [activeOrdering, setActiveOrdering] = useState<MarketsOrderBy>();
   const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>(false);
+  const portalRef = useRef<HTMLDivElement>(null);
+
   const queryState = useMarketsUrlQuery();
 
   const add = (filter: MarketFilter) => {
@@ -259,15 +254,26 @@ const MarketFilterSelection = ({
   }, [queryState]);
 
   return (
-    <MarketFiltersContainer activeFilters={activeFilters}>
-      <MarketFilterOptions
-        addFilter={add}
-        onOrderingChange={setActiveOrdering}
-        ordering={activeOrdering}
-        withLiquidityOnly={withLiquidityOnly}
-        onWithLiquidityOnlyChange={setWithLiquidityOnly}
-      />
-      <div id="marketsFiltersMenuPortal"></div>
+    <MarketFiltersContainer
+      activeFilters={activeFilters}
+      portal={portalRef.current}
+    >
+      {portalRef.current ? (
+        <MarketFilterOptions
+          addFilter={add}
+          onOrderingChange={setActiveOrdering}
+          ordering={activeOrdering}
+          withLiquidityOnly={withLiquidityOnly}
+          onWithLiquidityOnlyChange={setWithLiquidityOnly}
+        />
+      ) : (
+        <Skeleton
+          width={"80%"}
+          height={"44px"}
+          className="!mb-[30px] !transform-none"
+        ></Skeleton>
+      )}
+      <div id="marketsFiltersMenuPortal" ref={portalRef}></div>
       <MarketActiveFilters
         filters={activeFilters}
         onClear={clear}
