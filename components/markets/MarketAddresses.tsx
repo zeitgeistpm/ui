@@ -189,7 +189,7 @@ const MarketAddresses = observer(
       modalStore.openModal(
         <AddressInspectContent address={address} identity={identity} />,
         <>
-          Address Details
+          "Address Details"
           <AddressModalHeader
             name={identity.displayName ?? ""}
             judgement={identity.judgement}

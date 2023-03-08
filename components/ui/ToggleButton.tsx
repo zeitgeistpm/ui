@@ -1,12 +1,14 @@
 import { useUserStore } from "lib/stores/UserStore";
 import { observer } from "mobx-react";
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 
-const ToggleButton: FC<{
-  isActive: boolean;
-  onChange: (isActive: boolean) => void;
-  className?: string;
-}> = observer(({ isActive = false, onChange, className = "", children }) => {
+const ToggleButton: FC<
+  PropsWithChildren<{
+    isActive: boolean;
+    onChange: (isActive: boolean) => void;
+    className?: string;
+  }>
+> = observer(({ isActive = false, onChange, className = "", children }) => {
   const userStore = useUserStore();
   const activeBackground = "black";
   const inactiveTextColor = userStore.theme === "light" ? "black" : "white";
