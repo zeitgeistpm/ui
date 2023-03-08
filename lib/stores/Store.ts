@@ -104,18 +104,6 @@ export default class Store {
 
   showMobileMenu = false;
 
-  toggleDrawer(side: "right" | "left") {
-    this[`${side}DrawerClosed`] = !this[`${side}DrawerClosed`];
-  }
-
-  toggleDrawerAnimation(side: "right" | "left", isAnimating: boolean) {
-    if (side === "left") {
-      this.leftDrawerAnimating = isAnimating;
-    } else {
-      this.rightDrawerAnimating = isAnimating;
-    }
-  }
-
   toggleShowMobileMenu() {
     this.showMobileMenu = !this.showMobileMenu;
   }
