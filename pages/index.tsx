@@ -12,7 +12,7 @@ import { observer } from "mobx-react";
 import { NextPage } from "next";
 import HeroSlider from "components/hero-slider/HeroSlider";
 import { slidesData } from "components/hero-slider/slides-data";
-
+import Image from "next/image";
 import {
   getPlaiceholder,
   IGetPlaiceholderOptions,
@@ -83,38 +83,55 @@ const IndexPage: NextPage<{
   }) => {
     return (
       <>
-        <HeroSlider imagePlaceholders={sliderPlaceholders} />
-        <div data-testid="indexPage" className="main-container">
-          <div className="flex items-center w-full justify-center relative bottom-[60px]">
-            <LearnSection />
-          </div>
-          {featuredMarkets.length > 0 && (
-            <div className="mb-[60px]">
-              <MarketScroll
-                title="Featured Markets"
-                cta="Go to Markets"
-                markets={featuredMarkets}
-                link="markets"
-              />
-            </div>
-          )}
-          <div className="mb-[60px]">
-            <PopularCategories
-              counts={categoryCounts}
-              imagePlaceholders={categoryPlaceholders}
+        {process.env.NEXT_PUBLIC_MIGRATION_IN_PROGRESS === "true" ? (
+          <div className="w-full h-[800px] flex flex-col items-center justify-center ">
+            <div className="text-[24px] font-bold">Migrating to Polkadot</div>
+            <Image
+              src="/polkadot_icon.png"
+              alt="Polkadot Logo"
+              width={300}
+              height={300}
+              style={{
+                animation: "rotation 2s infinite linear",
+              }}
             />
           </div>
-          {trendingMarkets.length > 0 && (
-            <div className="my-[60px]">
-              <MarketScroll
-                title="Trending Markets"
-                cta="Go to Markets"
-                markets={trendingMarkets}
-                link="markets"
-              />
+        ) : (
+          <>
+            <HeroSlider imagePlaceholders={sliderPlaceholders} />
+            <div data-testid="indexPage" className="main-container">
+              <div className="flex items-center w-full justify-center relative bottom-[60px]">
+                <LearnSection />
+              </div>
+              {featuredMarkets.length > 0 && (
+                <div className="mb-[60px]">
+                  <MarketScroll
+                    title="Featured Markets"
+                    cta="Go to Markets"
+                    markets={featuredMarkets}
+                    link="markets"
+                  />
+                </div>
+              )}
+              <div className="mb-[60px]">
+                <PopularCategories
+                  counts={categoryCounts}
+                  imagePlaceholders={categoryPlaceholders}
+                />
+              </div>
+              {trendingMarkets.length > 0 && (
+                <div className="my-[60px]">
+                  <MarketScroll
+                    title="Trending Markets"
+                    cta="Go to Markets"
+                    markets={trendingMarkets}
+                    link="markets"
+                  />
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </>
+        )}
       </>
     );
   },

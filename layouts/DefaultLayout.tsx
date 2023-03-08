@@ -45,7 +45,7 @@ const DefaultLayout: FC = observer(({ children }) => {
             }
           `}
         </style>
-        <Menu />
+        {process.env.NEXT_PUBLIC_MIGRATION_IN_PROGRESS !== "true" && <Menu />}
         <div
           ref={contentRef}
           className="overflow-y-a1uto overflow-x-hidden flex-grow"
