@@ -20,6 +20,7 @@ import {
 } from "plaiceholder";
 import React from "react";
 import { Banner, getBanners } from "lib/cms/get-banners";
+import path from "path";
 
 const getPlaiceholders = (
   paths: string[],
@@ -43,10 +44,13 @@ export async function getStaticProps() {
   ] = await Promise.all([
     getFeaturedMarkets(client),
     getTrendingMarkets(client),
-    getPlaiceholders(CATEGORIES.map((cat) => cat.imagePath)),
     getPlaiceholders(
-      banners.map((slide) => slide.imageUrl),
-      { size: 16 },
+      CATEGORIES.map((cat) => `${cat.imagePath}`),
+      { dir: `${path.join(process.cwd())}/public/` },
+    ),
+    getPlaiceholders(
+      banners.map((slide) => `${slide.imageUrl}`),
+      { size: 16, dir: `${path.join(process.cwd())}/public/` },
     ),
     getCategoryCounts(
       client,
@@ -60,8 +64,8 @@ export async function getStaticProps() {
       featuredMarkets: featuredMarkets ?? [],
       trendingMarkets: trendingMarkets ?? [],
       categoryCounts: categoryCounts,
-      categoryPlaceholders: categoryPlaceholders.map((c) => c.base64),
-      bannerPlaceHolders: bannerPlaceHolders.map((c) => c.base64),
+      categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
+      bannerPlaceHolders: bannerPlaceHolders.map((c) => c.base64) ?? [],
     },
     revalidate: 10 * 60, //10min
   };

@@ -70,6 +70,16 @@ const ScalarPriceRange = observer(
         : moment(pos).format(dateFormat);
     }, [upperBound, lowerBound, shortPrice, longPrice]);
 
+    const getMinMaxPosition = (position) => {
+      if (position <= 55) {
+        return 55;
+      } else if (position >= width - 55) {
+        return position - 55;
+      } else {
+        return position;
+      }
+    };
+
     return (
       <div ref={ref}>
         <div className="relative top-1.5 ">
@@ -92,12 +102,14 @@ const ScalarPriceRange = observer(
             style={{
               width: `${isNaN(averagePosition) ? 0 : averagePosition}px`,
             }}
-            className="bg-blue h-1.5 absolute left-0 bottom-0 rounded-l"
+            className="bg-blue h-1.5 absolute left-0 bottom-0 rounded"
           ></div>
           <div
             className="absolute bottom-ztg-0"
             style={{
-              left: `${isNaN(averagePosition) ? 0 : averagePosition}px`,
+              left: `${
+                isNaN(averagePosition) ? 0 : getMinMaxPosition(averagePosition)
+              }px`,
               transform: "translateX(calc(-50% + 2px))",
             }}
           >
