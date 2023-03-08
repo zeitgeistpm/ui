@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { useNavigationStore } from "lib/stores/NavigationStore";
 import { MenuItemMobile } from "./MenuItemMobile";
 import { PageName } from "lib/types/navigation";
@@ -14,13 +13,7 @@ const MobileMenu = observer(() => {
   };
 
   return (
-    <motion.div
-      initial={{ height: -760 }}
-      exit={{ y: -760 }}
-      animate={{ y: 0 }}
-      transition={{ type: "tween", duration: 0.2 }}
-      className="fixed top-0 left-0 w-full h-full z-30 flex flex-col justify-between items-center pt-[125px] bg-white text-black"
-    >
+    <div className="fixed top-0 left-0 w-full h-full z-30 flex flex-col justify-between items-center pt-[125px] bg-white text-black">
       <div className="flex flex-col justify-between items-center gap-7">
         {Object.keys(navigationStore.items)
           .filter((itemKey) => {
@@ -54,7 +47,7 @@ const MobileMenu = observer(() => {
       <div className="p-7 text-center text-xs">
         Trading is only available on the desktop version of the application.
       </div>
-    </motion.div>
+    </div>
   );
 });
 
