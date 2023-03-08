@@ -33,8 +33,6 @@ export default async function GenerateOgImage(request: NextRequest) {
     ? market.img
     : `https://ipfs-gateway.zeitgeist.pm/ipfs/${market.img}`;
 
-  const isTwitter = searchParams.has("twitter");
-
   const boldFont = await fetch(
     new URL(
       "../../../public/fonts/inter/static/Inter-Bold.ttf",
@@ -72,8 +70,8 @@ export default async function GenerateOgImage(request: NextRequest) {
           <div tw="flex">
             <img
               style={{
-                width: 160,
-                height: 160,
+                width: 180,
+                height: 180,
                 objectFit: "cover",
               }}
               src={marketImage}
@@ -98,22 +96,17 @@ export default async function GenerateOgImage(request: NextRequest) {
           </div>
         </div>
         <div tw="flex flex-col h-full ml-[100px]" style={{ width: 800 }}>
-          <h1
-            tw={`${isTwitter ? "text-3xl mb-14" : "text-5xl"}`}
-            style={{ lineHeight: "1.3em" }}
-          >
+          <h1 tw={`${"text-5xl"}`} style={{ lineHeight: "1.3em" }}>
             {market.question}
           </h1>
           <div tw="flex flex-col mt-auto">
-            <h2
-              tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}
-            >
+            <h2 tw={`font-bold ${"text-3xl"} font-sans`}>
               {market.status === "Reported" || market.status === "Resolved"
                 ? "Winning Outcome:"
                 : "Prediction:"}
             </h2>
             <div
-              tw={`font-semibold ${isTwitter ? "text-4xl" : "text-6xl"} `}
+              tw={`font-semibold ${"text-6xl"} `}
               style={{ color: "#ABC1F9" }}
             >
               {market.marketType.categorical
@@ -123,27 +116,15 @@ export default async function GenerateOgImage(request: NextRequest) {
           </div>
           <div tw="flex mt-[50px] w-full">
             <div tw="flex flex-col mr-[200px]">
-              <h2
-                tw={`font-bold ${
-                  isTwitter ? "text-2xl" : "text-3xl"
-                } font-sans`}
-              >
-                Ends:
-              </h2>
+              <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Ends:</h2>
               <div tw="text-2xl -mt-3" style={{ color: "#ABC1F9" }}>
                 {ends}
               </div>
             </div>
             <div tw="flex flex-col">
-              <h2
-                tw={`font-bold ${
-                  isTwitter ? "text-2xl" : "text-3xl"
-                } font-sans`}
-              >
-                Volume:
-              </h2>
+              <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Volume:</h2>
               <div
-                tw={`flex ${isTwitter ? "text-1xl" : "text-2xl"}  -mt-3`}
+                tw={`flex ${"text-2xl"}  -mt-3`}
                 style={{ color: "#ABC1F9" }}
               >
                 {formatNumberCompact(Number(volume))}
@@ -157,8 +138,8 @@ export default async function GenerateOgImage(request: NextRequest) {
   );
 
   return new ImageResponse(image, {
-    width: isTwitter ? 800 : 1200,
-    height: isTwitter ? 418 : 675,
+    width: 1200,
+    height: 630,
     fonts: [
       {
         name: "Inter",
