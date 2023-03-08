@@ -1,7 +1,6 @@
 import { observer } from "mobx-react";
 import React, { useEffect, useState, FC } from "react";
 
-import MarketSearch from "./MarketSearch";
 import Logo from "../icons/ZeitgeistIcon";
 import { Menu, X } from "react-feather";
 import Link from "next/link";
@@ -19,14 +18,12 @@ const MobileTopBar: FC<{
   navbar: NavbarColor;
   setNavBarBG: (NavbarColor) => void;
 }> = observer(({ navbar, setNavBarBG }) => {
-  const store = useStore();
   const { pathname } = useRouter();
   console.log(navbar);
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [scrollPosition, setScrollPosition] = useState<number>(0);
 
   const handleMenuClick = () => {
-    store.toggleShowMobileMenu();
     setMenuOpen(!menuOpen);
   };
 
@@ -58,7 +55,7 @@ const MobileTopBar: FC<{
       >
         Zeitgeist
       </h1>
-      {store.showMobileMenu ? (
+      {menuOpen ? (
         <X
           className="ml-auto cursor-pointer text-white"
           color={`${navbar === "white" ? "black" : "white"}`}

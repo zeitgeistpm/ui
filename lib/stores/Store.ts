@@ -94,20 +94,6 @@ export default class Store {
 
   blockTimestamp: number;
 
-  leftDrawerClosed = false;
-
-  rightDrawerClosed = true;
-
-  leftDrawerAnimating = false;
-
-  rightDrawerAnimating = false;
-
-  showMobileMenu = false;
-
-  toggleShowMobileMenu() {
-    this.showMobileMenu = !this.showMobileMenu;
-  }
-
   get isTestEnv() {
     return process.env.NEXT_PUBLIC_TESTING_ENV === "true";
   }
