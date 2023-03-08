@@ -49,7 +49,7 @@ export default async function GenerateOgImage(request: NextRequest) {
 
   const image = (
     <div
-      tw="p-20 text-white"
+      tw="p-16 text-white"
       style={{
         width: "100%",
         height: "100%",
@@ -95,7 +95,7 @@ export default async function GenerateOgImage(request: NextRequest) {
             />
           </div>
         </div>
-        <div tw="flex flex-col h-full ml-[100px]" style={{ width: 800 }}>
+        <div tw="flex flex-col h-full ml-[80px]" style={{ width: 750 }}>
           <h1 tw={`${"text-5xl"}`} style={{ lineHeight: "1.3em" }}>
             {market.question}
           </h1>
