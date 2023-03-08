@@ -40,7 +40,7 @@ import Link from "next/link";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import MarketHeader from "components/markets/MarketHeader";
-import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
+import MarketChart from "components/markets/MarketChart";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -122,7 +122,6 @@ const Market: NextPage<{
   const store = useStore();
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
-  const [chartFilter, setChartFilter] = useState<TimeFilter>(filters[0]);
 
   const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
     marketId: Number(marketid),
@@ -206,16 +205,11 @@ const Market: NextPage<{
           )}
         </div>
         {chartData?.length > 0 && chartSeries ? (
-          <div className="flex flex-col -ml-ztg-25">
-            <div className="ml-auto">
-              <TimeFilters onClick={setChartFilter} value={chartFilter} />
-            </div>
-            <TimeSeriesChart
-              data={chartData}
-              series={chartSeries}
-              yUnits={baseAsset}
-            />
-          </div>
+          <MarketChart
+            chartSeries={chartSeries}
+            chartData={chartData}
+            baseAsset={baseAsset}
+          />
         ) : (
           <></>
         )}

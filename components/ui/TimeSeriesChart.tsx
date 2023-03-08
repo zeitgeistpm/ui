@@ -158,18 +158,24 @@ const TimeSeriesChart = observer(
             >
               <CartesianGrid
                 strokeDasharray="3 3"
-                strokeWidth={0.2}
-                stroke="#748296"
+                strokeWidth={1}
+                stroke="#E8EAED"
+                vertical={false}
               />
               <XAxis
                 dataKey="t"
                 domain={[leftX, rightX]}
                 tickCount={5}
-                tick={{ fontSize: "10px" }}
+                tick={{
+                  fontSize: "10px",
+                  stroke: "black",
+                  strokeWidth: 1,
+                  fontWeight: 100,
+                }}
                 type="number"
-                stroke="#748296"
+                stroke="#E8EAED"
                 tickLine={false}
-                strokeWidth={0.7}
+                strokeWidth={2}
                 tickFormatter={(unixTime) => {
                   if (unixTime !== -Infinity && unixTime !== Infinity) {
                     if (lessThanTwoDays === true) {
@@ -187,14 +193,19 @@ const TimeSeriesChart = observer(
                 }}
               />
               <YAxis
-                tick={{ fontSize: "10px" }}
+                tick={{
+                  fontSize: "10px",
+                  stroke: "black",
+                  strokeWidth: 1,
+                  fontWeight: 100,
+                }}
                 tickLine={false}
                 domain={
                   yDomain ?? [0, (dataMax) => (dataMax === 0 ? 1 : dataMax)]
                 }
-                stroke="#748296"
-                strokeWidth={0.7}
-                tickFormatter={(val) => `${+val.toFixed(2)} ${yUnits}`}
+                stroke="#E8EAED"
+                strokeWidth={2}
+                tickFormatter={(val) => `${+val.toFixed(1)} ${yUnits}`}
               />
 
               <Tooltip
@@ -206,9 +217,9 @@ const TimeSeriesChart = observer(
                 <Line
                   key={index}
                   strokeWidth={mouseInside ? 3 : 2}
-                  // type="linear"
+                  type="linear"
                   // type="stepAfter"
-                  type="monotoneX"
+                  // type="monotoneX"
                   dataKey={s.accessor}
                   dot={false}
                   stroke={s.color ? s.color : "#0001FE"}
