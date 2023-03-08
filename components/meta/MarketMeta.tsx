@@ -15,7 +15,7 @@ export const MarketMeta = ({
         image={
           new URL(
             `/api/og/generate?marketId=${market.marketId}`,
-            `https://${process.env.NEXT_PUBLIC_SITE_URL}`,
+            process.env.NEXT_PUBLIC_SITE_URL,
           )
         }
       />
