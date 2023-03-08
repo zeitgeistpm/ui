@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 export interface TimeFilter {
   label: FilterResolution;
   time: string; // ISO string
+  interval: string;
 }
 
 export type FilterResolution = "All" | "Day" | "Week" | "Month";
@@ -12,20 +13,24 @@ export const filters: TimeFilter[] = [
   {
     label: "Day",
     time: new Date(new Date().getTime() - DAY_SECONDS * 1000).toISOString(),
+    interval: "1 HOUR",
   },
   {
     label: "Week",
     time: new Date(new Date().getTime() - DAY_SECONDS * 1000 * 7).toISOString(),
+    interval: "6 HOURS",
   },
   {
     label: "Month",
     time: new Date(
       new Date().getTime() - DAY_SECONDS * 1000 * 30,
     ).toISOString(),
+    interval: "1 DAY",
   },
   {
     label: "All",
     time: new Date("Wed Dec 30 2020").toISOString(),
+    interval: "3 DAYS",
   },
 ];
 
