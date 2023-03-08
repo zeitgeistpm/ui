@@ -17,6 +17,12 @@ export const getBanners = async (): Promise<Banner[]> => {
   const contrast = (await import("font-color-contrast")).default;
   const { results: bannersData } = await notion.databases.query({
     database_id: "7085702a851842adace1c9963e817446",
+    sorts: [
+      {
+        property: "Order",
+        direction: "ascending",
+      },
+    ],
     filter: {
       property: "Environment",
       multi_select: {
@@ -29,6 +35,7 @@ export const getBanners = async (): Promise<Banner[]> => {
   });
 
   return bannersData.filter(isFullPage).map((page) => {
+    console.log(page);
     let title: string;
     let subtitle: string | null;
     let imageUrl: string;

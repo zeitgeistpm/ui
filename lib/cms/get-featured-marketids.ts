@@ -6,6 +6,12 @@ const notion = new Client({ auth: process.env.NOTION_API_KEY });
 export const getFeaturedMarketIds = async () => {
   const { results: featuredMarketData } = await notion.databases.query({
     database_id: "ebcc6269f7414362997b615571d90764",
+    sorts: [
+      {
+        property: "Order",
+        direction: "ascending",
+      },
+    ],
     filter: {
       property: "Environment",
       select: {
