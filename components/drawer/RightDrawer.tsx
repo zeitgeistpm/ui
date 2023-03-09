@@ -4,7 +4,13 @@ import { useNavigationStore } from "lib/stores/NavigationStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
-import { ReactFragment, useEffect, useMemo, useState } from "react";
+import {
+  ReactElement,
+  ReactFragment,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 
 import ExchangeBox from "../exchange/ExchangeBox";
@@ -48,7 +54,7 @@ type DisplayMode = "default" | "liquidity";
 
 const Box = observer(
   ({ mode, tabIndex }: { mode: DisplayMode; tabIndex: number }) => {
-    const withSpacing = (children: ReactFragment) => {
+    const withSpacing = (children: ReactFragment | ReactElement) => {
       return (
         <div className="px-ztg-28 mt-ztg-20 overflow-auto">{children}</div>
       );

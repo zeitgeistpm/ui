@@ -121,7 +121,6 @@ const Market: NextPage<{
   const store = useStore();
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
-  const marketImageUrl = useMarketImageUrl(indexedMarket.img);
 
   const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
     marketId: Number(marketid),

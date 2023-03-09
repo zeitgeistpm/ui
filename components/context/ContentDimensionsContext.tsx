@@ -1,4 +1,4 @@
-import React, { createContext, FC, useContext } from "react";
+import React, { createContext, FC, PropsWithChildren, useContext } from "react";
 
 export type ContentDimensions = {
   scrollTop?: number;
@@ -9,13 +9,9 @@ export type ContentDimensions = {
 
 export const ContentDimensionsContext = createContext<ContentDimensions>(null);
 
-export const ContentDimensionsProvider: FC<ContentDimensions> = ({
-  width,
-  height,
-  scrollTop,
-  scrollTo,
-  children,
-}) => (
+export const ContentDimensionsProvider: FC<
+  PropsWithChildren<ContentDimensions>
+> = ({ width, height, scrollTop, scrollTo, children }) => (
   <ContentDimensionsContext.Provider
     value={{ height, width, scrollTop, scrollTo }}
   >

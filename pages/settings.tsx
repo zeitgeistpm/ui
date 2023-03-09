@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 import { NextPage } from "next";
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, PropsWithChildren, useEffect, useState } from "react";
 import { when } from "mobx";
 import Loader from "react-spinners/PulseLoader";
 import { Input } from "components/ui/inputs";
@@ -23,11 +23,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 
-const SubmitButton: FC<{ onClick?: () => void; disabled?: boolean }> = ({
-  onClick = () => {},
-  disabled = false,
-  children,
-}) => {
+const SubmitButton: FC<
+  PropsWithChildren<{ onClick?: () => void; disabled?: boolean }>
+> = ({ onClick = () => {}, disabled = false, children }) => {
   return (
     <button
       onClick={onClick}

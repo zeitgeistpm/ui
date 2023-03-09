@@ -14,6 +14,7 @@ import MarketCard from "./market-card/index";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import { filterTypes } from "lib/constants/market-filter";
 import { ZTG } from "lib/constants";
+import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
 
 export type MarketsListProps = {
   className?: string;
@@ -92,6 +93,9 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   }, [marketsPages?.pages]);
 
   const count = markets?.length ?? 0;
+  const marketIds = markets?.map((m) => m.marketId) ?? [];
+
+  const { data: stats } = useMarketsStats(marketIds);
 
   return (
     <div
@@ -107,6 +111,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
         {markets?.map((market) => {
           const volume = market.pool?.volume ?? 0;
           const scalarType = market.scalarType as ScalarRangeType;
+          const stat = stats?.find((s) => s.marketId === market.marketId);
           return (
             <MarketCard
               marketId={market.marketId}
@@ -123,6 +128,8 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
               baseAsset={market.pool?.baseAsset}
               volume={new Decimal(volume).div(ZTG).toNumber()}
               tags={market.tags}
+              numParticipants={stat?.participants}
+              liquidity={stat?.liquidity}
               key={`market-${market.marketId}`}
             />
           );

@@ -1,22 +1,22 @@
 import { Skeleton } from "@material-ui/lab";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { hasDatePassed } from "lib/util/hasDatePassed";
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 
-const HeaderStat: FC<{ label: string; border?: boolean }> = ({
-  label,
-  border = true,
+const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
+  ({ label, border = true, children }) => {
+    return (
+      <div className={border ? "sm:border-r sm:border-ztg-blue pr-2" : ""}>
+        <span>{label}: </span>
+        <span className="font-medium">{children}</span>
+      </div>
+    );
+  };
+
+const Tag: FC<PropsWithChildren<{ className?: string }>> = ({
+  className,
   children,
 }) => {
-  return (
-    <div className={border ? "sm:border-r sm:border-ztg-blue pr-2" : ""}>
-      <span>{label}: </span>
-      <span className="font-medium">{children}</span>
-    </div>
-  );
-};
-
-const Tag: FC<{ className?: string }> = ({ className, children }) => {
   return (
     <span className={`px-2.5 py-1 rounded bg-gray-300 ${className}`}>
       {children}

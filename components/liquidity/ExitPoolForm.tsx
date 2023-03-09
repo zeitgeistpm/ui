@@ -217,7 +217,7 @@ const ExitPoolForm = ({
                 })}
               />
               <div className="text-red-500 text-ztg-12-120 mt-[4px]">
-                {formState.errors[id.toString()]?.message}
+                {<>formState.errors[id.toString()]?.message</>}
               </div>
             </div>
           );
