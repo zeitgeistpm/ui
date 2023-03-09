@@ -1,3 +1,5 @@
+import { Banner } from "lib/cms/get-banners";
+
 interface Title {
   text: string;
   secondary?: string;
@@ -23,12 +25,12 @@ export interface Slides {
   color2: Color;
 }
 export interface HeroSlideProps {
-  slide: Slides;
+  banner: Banner;
   animate: boolean;
   setAnimate: Animate;
 }
 export interface HeroControlsProps {
-  slides: Slides[];
+  slides: Banner[];
   slidesLength: number;
   currentSlide: number;
   setCurrentSlide: (val: number) => void;
