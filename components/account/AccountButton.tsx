@@ -1,21 +1,21 @@
 import { observer } from "mobx-react";
 import React, { FC, useEffect, useState } from "react";
 
-import { formatNumberLocalized, shortenAddress } from "lib/util";
-import { DollarSign, User, Settings, Frown, X } from "react-feather";
-import { useStore } from "lib/stores/Store";
-import Avatar from "components/ui/Avatar";
-import { useUserStore } from "lib/stores/UserStore";
-import { useAccountModals } from "lib/hooks/account";
-import { useModalStore } from "lib/stores/ModalStore";
-import { usePrevious } from "lib/hooks/usePrevious";
-import { useRouter } from "next/router";
-import { getWallets } from "@talismn/connect-wallets";
-import { SUPPORTED_WALLET_NAMES } from "lib/constants";
 import { Menu, Transition } from "@headlessui/react";
+import { getWallets } from "@talismn/connect-wallets";
+import Avatar from "components/ui/Avatar";
 import Modal from "components/ui/Modal";
-import OnBoardingModal, { ExchangeTypeSelection } from "./OnboardingModal";
+import { SUPPORTED_WALLET_NAMES } from "lib/constants";
+import { useAccountModals } from "lib/hooks/account";
+import { usePrevious } from "lib/hooks/usePrevious";
+import { useModalStore } from "lib/stores/ModalStore";
+import { useStore } from "lib/stores/Store";
+import { useUserStore } from "lib/stores/UserStore";
+import { formatNumberLocalized, shortenAddress } from "lib/util";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { DollarSign, Frown, Settings, User } from "react-feather";
+import OnBoardingModal from "./OnboardingModal";
 
 const AccountButton: FC<{
   connectButtonClassname?: string;
@@ -184,7 +184,7 @@ const AccountButton: FC<{
                               height={"24px"}
                               width="24px"
                             />
-                            <div className="bg-orange-300 ml-2 text-black rounded-md py-1 px-2 text-xs">
+                            <div className="bg-green-200 ml-2 text-green-900 rounded-md py-1 px-2 text-xs">
                               USDT Coming Soon!
                             </div>
                           </div>
@@ -264,18 +264,6 @@ const AccountButton: FC<{
       </Modal>
       <Modal open={showGetZtgModal} onClose={() => setShowGetZtgModal(false)}>
         <OnBoardingModal step={4} />
-        {/* <div
-          className="relative flex flex-col gap-y-[20px] justify-center items-center bg-white 
-            w-full max-w-[526px] p-[30px] rounded-ztg-10"
-        >
-          <X
-            size={24}
-            className="cursor-pointer text-black absolute top-3 right-3"
-            onClick={() => setShowGetZtgModal(false)}
-          />
-          <h2 className="font-bold text-center text-2xl mb-2">Get ZTG</h2>
-          <ExchangeTypeSelection />
-        </div> */}
       </Modal>
     </>
   );
