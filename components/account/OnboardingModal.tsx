@@ -5,7 +5,6 @@ import { TalismanWallet } from "lib/wallets/talisman-wallet";
 import { range } from "lodash-es";
 import { observer } from "mobx-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useState } from "react";
 
