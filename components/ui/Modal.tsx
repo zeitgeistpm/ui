@@ -1,5 +1,5 @@
-import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, ReactNode, useState } from "react";
+import { Dialog } from "@headlessui/react";
+import { ReactNode } from "react";
 
 const Modal = ({
   open,

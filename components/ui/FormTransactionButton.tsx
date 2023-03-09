@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 import { useStore } from "lib/stores/Store";
 import { useUserStore } from "lib/stores/UserStore";
 import { useAccountModals } from "lib/hooks/account";
@@ -10,8 +10,8 @@ interface TransactionButtonProps {
   dataTest?: string;
 }
 
-const FormTransactionButton: FC<TransactionButtonProps> = observer(
-  ({ disabled = false, className = "", dataTest = "", children }) => {
+const FormTransactionButton: FC<PropsWithChildren<TransactionButtonProps>> =
+  observer(({ disabled = false, className = "", dataTest = "", children }) => {
     const store = useStore();
     const { wallets } = store;
     const { connected } = wallets;
@@ -46,7 +46,6 @@ const FormTransactionButton: FC<TransactionButtonProps> = observer(
         {connected ? children : "Connect Wallet"}
       </button>
     );
-  },
-);
+  });
 
 export default FormTransactionButton;

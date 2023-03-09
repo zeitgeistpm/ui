@@ -7,7 +7,7 @@ const defaultStyle: React.CSSProperties = {
   width: "320px",
 };
 
-const ModalContainer: FC = observer(({ children }) => {
+const ModalContainer = observer(({ children }) => {
   const modalRef = useRef<HTMLDivElement>();
   const modalStore = useModalStore();
 

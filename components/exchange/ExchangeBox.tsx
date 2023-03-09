@@ -347,7 +347,7 @@ const ExchangeBox: FC<{ exchangeStore: ExchangeStore }> = observer(
           txFee={txFee}
           type={type}
         />,
-        "Confirm and sign transaction",
+        <>"Confirm and sign transaction"</>,
         () => {
           processTransaction();
         },
