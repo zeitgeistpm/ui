@@ -5,7 +5,9 @@ import { TalismanWallet } from "lib/wallets/talisman-wallet";
 import { range } from "lodash-es";
 import { observer } from "mobx-react";
 import Image from "next/image";
-import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { Dispatch, SetStateAction, useState } from "react";
 
 interface StepperProps {
   start: number;
@@ -33,39 +35,51 @@ const Stepper = ({ start, end, currentStep, onStepClick }: StepperProps) => {
 interface TextSectionProps {
   headerText: string;
   bodyText: string;
-  leftButtonText?: string;
-  rightButtonText?: string;
-  onLeftButtonClick?: () => void;
-  onRightButtonClick?: () => void;
+  leftButton?: {
+    text: string;
+    onClick: () => void;
+    disabled?: boolean;
+  };
+  rightButton?: {
+    text: string;
+    onClick: () => void;
+    disabled?: boolean;
+  };
 }
 
 const TextSection = ({
   headerText,
   bodyText,
-  leftButtonText,
-  rightButtonText,
-  onLeftButtonClick,
-  onRightButtonClick,
+  leftButton,
+  rightButton,
 }: TextSectionProps) => {
   return (
     <>
       <div className="font-bold text-ztg-22-120">{headerText}</div>
       <div className="text-center mb-auto">{bodyText}</div>
       <div className="flex justify-center  gap-x-[20px] w-full px-[20px] h-[56px] font-medium">
-        {leftButtonText && (
+        {leftButton && (
           <button
-            className="rounded-[100px] border-2 border-pastel-blue w-full"
-            onClick={onLeftButtonClick}
+            className={`rounded-[100px] border-2 border-pastel-blue w-full ${
+              leftButton.disabled === true
+                ? "bg-gray-light-2 cursor-default"
+                : "border border-pastel-blue"
+            }`}
+            onClick={leftButton.onClick}
           >
-            {leftButtonText}
+            {leftButton.text}
           </button>
         )}
-        {rightButtonText && (
+        {rightButton && (
           <button
-            className="rounded-[100px] border-2 border-pastel-blue w-full"
-            onClick={onRightButtonClick}
+            className={`rounded-[100px] border-2 border-pastel-blue w-full ${
+              rightButton.disabled === true
+                ? "bg-gray-light-2 cursor-default"
+                : "border border-pastel-blue"
+            }`}
+            onClick={rightButton.onClick}
           >
-            {rightButtonText}
+            {rightButton.text}
           </button>
         )}
       </div>
@@ -113,11 +127,14 @@ const WalletSelection = observer(() => {
   );
 });
 
-export const ExchangeTypeSelection = () => {
+export const ExchangeTypeSelection = (props: {
+  setStep: Dispatch<SetStateAction<number>>;
+}) => {
   const exchangeTypes = [
     {
       name: "With Crypto or Fiat (CEX)",
       disabled: false,
+      onClick: () => props.setStep(5),
     },
     {
       name: "Credit Card (Coming Soon)",
@@ -135,6 +152,7 @@ export const ExchangeTypeSelection = () => {
         <button
           key={index}
           disabled={exchangeType.disabled}
+          onClick={exchangeType.onClick}
           className={`flex items-center justify-center h-[56px] rounded-ztg-10 text-center w-full ${
             exchangeType.disabled === true
               ? "bg-gray-light-2"
@@ -152,6 +170,7 @@ export const ExchangeTypeSelection = () => {
 
 const OnBoardingModal = (props: { step?: number }) => {
   const [step, setStep] = useState(props.step ?? 0);
+  const router = useRouter();
   return (
     <div
       className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
@@ -169,38 +188,70 @@ const OnBoardingModal = (props: { step?: number }) => {
         <TextSection
           headerText="Welcome to Zeitgeist"
           bodyText="Hey, it looks like you don’t have a wallet installed. Let me be your Guide and help you get one, so you can get started making predictions."
-          rightButtonText="Continue"
-          onRightButtonClick={() => setStep(1)}
+          rightButton={{
+            text: "Continue",
+            onClick: () => setStep(1),
+          }}
         />
       )}
+
       {step === 1 && (
         <TextSection
           headerText="Choose A Browser Extension"
           bodyText="First thing you need to do is install a browser-based wallet (known as a “browser extension”). To do that, simply click the wallet icon to go to its official download page. Once the extension is setup you'll need to refresh the page."
-          leftButtonText="Back"
-          rightButtonText="Continue"
-          onLeftButtonClick={() => setStep(0)}
-          onRightButtonClick={() => setStep(2)}
+          leftButton={{
+            text: "Back",
+            onClick: () => setStep(0),
+          }}
+          rightButton={{
+            text: "Continue",
+            onClick: () => setStep(2),
+          }}
         />
       )}
+
       {step === 2 && <WalletSelection />}
-      {/* TODO: Add if we can detect wallet installation */}
+
       {step === 3 && (
         <TextSection
           headerText="Success on getting a wallet!"
           bodyText="Now to get ZTG."
-          leftButtonText="Back"
-          rightButtonText="Continue"
-          onLeftButtonClick={() => setStep(3)}
-          onRightButtonClick={() => setStep(5)}
+          leftButton={{
+            text: "Back",
+            onClick: () => setStep(3),
+          }}
+          rightButton={{
+            text: "Continue",
+            onClick: () => setStep(4),
+          }}
         />
       )}
-      {step === 4 && <ExchangeTypeSelection />}
 
-      {5 - (props.step ?? 0) > 1 && (
+      {step === 4 && <ExchangeTypeSelection setStep={setStep} />}
+
+      {step === 5 && (
+        <TextSection
+          headerText=""
+          bodyText="After installing a wallet, you can now send and receive ZTG, our native
+          token. In the below tutorials, we show you how to get ZTG using one of
+          either the “MEXC” exchange or “GATE” exchange."
+          leftButton={{
+            text: "Use Gate.io",
+            onClick: () =>
+              router.push("https://www.gate.io/trade/ZTG_USDT", "_blank"),
+          }}
+          rightButton={{
+            text: "Use MEXC",
+            onClick: () => null,
+            disabled: true,
+          }}
+        />
+      )}
+
+      {6 - (props.step ?? 0) > 1 && (
         <Stepper
           start={props.step ?? 0}
-          end={5}
+          end={6}
           currentStep={step}
           onStepClick={setStep}
         />
