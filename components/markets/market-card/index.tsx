@@ -9,6 +9,7 @@ import { Users, BarChart2, Droplet } from "react-feather";
 import { formatNumberCompact } from "lib/util/format-compact";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { Skeleton } from "@material-ui/lab";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -25,6 +26,8 @@ export interface IndexedMarketCardData {
   tags: string[];
   status: string;
   endDate: string;
+  liquidity?: string;
+  numParticipants?: number;
 }
 export interface MarketCardProps extends IndexedMarketCardData {
   className?: string;
@@ -129,6 +132,8 @@ const MarketCardDetails = ({
     outcomes: number;
     endDate: string;
     hasEnded: boolean;
+    numParticipants?: number;
+    liquidity?: string;
     marketType: { categorical?: string; scalar?: string[] };
   };
 }) => {
@@ -148,21 +153,33 @@ const MarketCardDetails = ({
         </span>
       </div>
       <div className="flex gap-2.5 text-sm">
-        {/* TODO: add market particpants and liquidity once added to indexer */}
-        {/* <div className="flex items-center gap-2">
+        {rows.numParticipants != null ? (
+          <div className="flex items-center gap-2 w-[50px]">
             <Users size={18} />
-            <span>223</span>
-          </div> */}
+            <span>{rows.numParticipants}</span>
+          </div>
+        ) : (
+          <Skeleton width={50} />
+        )}
         <div className="flex items-center gap-2">
           <BarChart2 size={18} />
           <span>
             {formatNumberCompact(rows.volume)} {rows.baseAsset}
           </span>
         </div>
-        {/* <div className="flex items-center gap-2">
+        {rows.liquidity != null ? (
+          <div className="flex items-center gap-2 w-[120px]">
             <Droplet size={18} />
-            <span>223K ZTG</span>
-          </div> */}
+            <span>
+              {formatNumberCompact(
+                new Decimal(rows.liquidity).div(ZTG).toString(),
+              )}{" "}
+              {rows.baseAsset}
+            </span>
+          </div>
+        ) : (
+          <Skeleton width={120} />
+        )}
       </div>
     </div>
   );
@@ -185,6 +202,8 @@ const MarketCard = ({
   endDate,
   status,
   className = "",
+  liquidity,
+  numParticipants,
 }: MarketCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -220,6 +239,8 @@ const MarketCard = ({
     outcomes: outcomes.length,
     volume: volume,
     baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
+    liquidity,
+    numParticipants: numParticipants,
   };
 
   const lower = marketType?.scalar?.[0]
