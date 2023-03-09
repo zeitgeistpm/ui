@@ -1,7 +1,7 @@
 import { Skeleton } from "@material-ui/lab";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 
 const SectionTitle: FC<{ text: string; className?: string }> = ({
   text,
@@ -11,7 +11,7 @@ const SectionTitle: FC<{ text: string; className?: string }> = ({
   return <div className={classes}>{text}</div>;
 };
 
-const MarketFormCard: FC<{ header: string }> = observer(
+const MarketFormCard: FC<PropsWithChildren<{ header: string }>> = observer(
   ({ children, header }) => {
     const store = useStore();
 

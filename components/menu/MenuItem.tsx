@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { observer } from "mobx-react";
 import Link from "next/link";
-import React, { FC } from "react";
+import React, { FC, PropsWithChildren } from "react";
 import { Icon } from "react-feather";
 
 export interface MenuItemProps {
@@ -15,11 +15,14 @@ export interface MenuItemProps {
   onClick: () => void;
 }
 
-const WrapComponent: FC<{ href: string }> = ({ children, href }) => {
+const WrapComponent: FC<PropsWithChildren<{ href: string }>> = ({
+  children,
+  href,
+}) => {
   return href == null ? <>{children}</> : <Link href={href}>{children}</Link>;
 };
 
-export const MenuItem: FC<MenuItemProps> = observer(
+export const MenuItem: FC<PropsWithChildren<MenuItemProps>> = observer(
   ({
     IconComponent,
     textLabel,

@@ -7,7 +7,7 @@ interface TimelineContextProps {
 
 const TimeLineContext = createContext<Partial<TimelineContextProps>>({});
 
-export const TimeLineContextProvider: FC = ({ children }) => {
+export const TimeLineContextProvider = ({ children }) => {
   const [currentEventId, setCurrentEventId] = useState<string>();
 
   const setEventId = (id: string) => {
