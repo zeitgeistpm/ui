@@ -19,6 +19,7 @@ import {
   IGetPlaiceholderReturn,
 } from "plaiceholder";
 import React from "react";
+import { Banner, getBanners } from "lib/cms/get-banners";
 import path from "path";
 
 const getPlaiceholders = (
@@ -32,19 +33,25 @@ export async function getStaticProps() {
   const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
   const client = new GraphQLClient(url);
 
-  const categoryPlaceholders = await getPlaiceholders(
-    CATEGORIES.map((cat) => `${cat.imagePath}`),
-    { dir: `${path.join(process.cwd())}/public/` },
-  );
+  const banners = await getBanners();
 
-  const sliderPlaceholders = await getPlaiceholders(
-    slidesData.map((slide) => `${slide.bg}`),
-    { size: 16, dir: `${path.join(process.cwd())}/public/` },
-  );
-
-  const [featuredMarkets, trendingMarkets, categoryCounts] = await Promise.all([
+  const [
+    featuredMarkets,
+    trendingMarkets,
+    categoryPlaceholders,
+    bannerPlaceHolders,
+    categoryCounts,
+  ] = await Promise.all([
     getFeaturedMarkets(client),
     getTrendingMarkets(client),
+    getPlaiceholders(
+      CATEGORIES.map((cat) => `${cat.imagePath}`),
+      { dir: `${path.join(process.cwd())}/public/` },
+    ),
+    getPlaiceholders(
+      banners.map((slide) => `${slide.imageUrl}`),
+      { size: 16, dir: `${path.join(process.cwd())}/public/` },
+    ),
     getCategoryCounts(
       client,
       CATEGORIES.map((cat) => cat.name),
@@ -53,37 +60,36 @@ export async function getStaticProps() {
 
   return {
     props: {
+      banners: banners,
       featuredMarkets: featuredMarkets ?? [],
       trendingMarkets: trendingMarkets ?? [],
       categoryCounts: categoryCounts,
-      categoryPlaceholders: categoryPlaceholders
-        ? categoryPlaceholders.map((c) => c.base64)
-        : [],
-      sliderPlaceholders: sliderPlaceholders
-        ? sliderPlaceholders.map((c) => c.base64)
-        : [],
+      categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
+      bannerPlaceHolders: bannerPlaceHolders.map((c) => c.base64) ?? [],
     },
     revalidate: 10 * 60, //10min
   };
 }
 
 const IndexPage: NextPage<{
+  banners: Banner[];
   featuredMarkets: IndexedMarketCardData[];
   trendingMarkets: IndexedMarketCardData[];
   categoryCounts: number[];
   categoryPlaceholders: string[];
-  sliderPlaceholders: string[];
+  bannerPlaceHolders: string[];
 }> = observer(
   ({
+    banners,
     trendingMarkets,
     featuredMarkets,
     categoryCounts,
     categoryPlaceholders,
-    sliderPlaceholders,
+    bannerPlaceHolders,
   }) => {
     return (
       <>
-        <HeroSlider imagePlaceholders={sliderPlaceholders} />
+        <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
         <div data-testid="indexPage" className="main-container">
           <div className="flex items-center w-full justify-center relative bottom-[60px]">
             <LearnSection />
