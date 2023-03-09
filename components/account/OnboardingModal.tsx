@@ -197,12 +197,14 @@ const OnBoardingModal = (props: { step?: number }) => {
       )}
       {step === 4 && <ExchangeTypeSelection />}
 
-      <Stepper
-        start={props.step ?? 0}
-        end={5}
-        currentStep={step}
-        onStepClick={setStep}
-      />
+      {5 - (props.step ?? 0) > 1 && (
+        <Stepper
+          start={props.step ?? 0}
+          end={5}
+          currentStep={step}
+          onStepClick={setStep}
+        />
+      )}
     </div>
   );
 };
