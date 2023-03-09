@@ -22,7 +22,7 @@ const MarketScroll = observer(
       "right",
     );
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
-    const gap = 16;
+    const gap = 28;
     //calculate cards shown and width based on container width
     const cardsShown = containerWidth >= 716 && containerWidth < 983 ? 2 : 3;
     const cardWidth =
@@ -35,7 +35,6 @@ const MarketScroll = observer(
     const scrollMax = cardWidth * markets.length + gap * (markets.length - 1);
 
     const moveSize = cardsShown * (cardWidth + gap);
-
     useEffect(() => {
       scrollRef.current.scroll({ left: scrollLeft, behavior: "smooth" });
     }, [scrollRef, scrollLeft]);
@@ -65,8 +64,11 @@ const MarketScroll = observer(
       hasReachedEnd || cardWidth * markets.length < containerWidth;
 
     return (
-      <div ref={containerRef} className="grid sm:grid-cols-2 gap-4 md:gap-6">
-        <h3 className="sm:col-span-1 font-bold text-[28px]">{title}</h3>
+      <div
+        ref={containerRef}
+        className="grid gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+      >
+        <h3 className="sm:col-span-2 font-bold text-[28px]">{title}</h3>
         <HorizontalScroll
           classes="order-2 sm:order-none"
           link={link}
@@ -76,7 +78,7 @@ const MarketScroll = observer(
           rightDisabled={rightDisabled}
           leftDisabled={leftDisabled}
         />
-        <div className="sm:col-span-2 relative">
+        <div className="col-span-3 relative">
           {(scrollDirection === "left" && scrollLeft !== 0) ||
           (scrollDirection === "right" && hasReachedEnd) ? (
             <div className="bg-gradient-to-r from-white w-[20px] absolute z-ztg-10 -left-[5px] h-full"></div>
@@ -85,8 +87,7 @@ const MarketScroll = observer(
           )}
           <div
             ref={scrollRef}
-            className="flex flex-col md:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
-            style={{ gap: `${gap}px` }}
+            className="flex flex-col gap-7 md:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
           >
             {markets.map((market) => (
               <MarketCard

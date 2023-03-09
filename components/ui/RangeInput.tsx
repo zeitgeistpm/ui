@@ -21,7 +21,6 @@ const RangeInput = React.forwardRef(
     const componentRef = useRef<HTMLDivElement>(null);
     const { value, onChange, min, max } = rest;
 
-    rest.onChange = undefined;
     const className = rest.className ?? "";
 
     const change: ChangeEventHandler<HTMLInputElement> = (e) => {

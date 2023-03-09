@@ -1,5 +1,4 @@
 import { CategoricalAssetId, ScalarAssetId } from "@zeitgeistpm/sdk-next";
-import BuySellButtons from "components/trade-slip/BuySellButtons";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useStore } from "lib/stores/Store";
@@ -7,6 +6,11 @@ import { observer } from "mobx-react";
 import DisputeButton from "./DisputeButton";
 import RedeemButton from "./RedeemButton";
 import ReportButton from "./ReportButton";
+import { useState } from "react";
+import Modal from "components/ui/Modal";
+import TradeForm from "components/trade-form";
+import { useTradeItem } from "lib/hooks/trade";
+import TradeButton from "./TradeButton";
 
 interface AssetActionButtonsProps {
   marketId: number;
@@ -46,7 +50,7 @@ const AssetActionButtons = observer(
     }
 
     if (marketStage.type === "Trading") {
-      return <BuySellButtons assetId={assetId} disabled={assetId == null} />;
+      return <TradeButton assetId={assetId} />;
     }
   },
 );

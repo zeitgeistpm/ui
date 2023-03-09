@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import MarketImage from "components/ui/MarketImage";
 import { MarketOutcomes } from "lib/types/markets";
 import MarketCardContext from "./context";
-import { motion } from "framer-motion";
 import ScalarPriceRange from "../ScalarPriceRange";
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { Users, BarChart2, Droplet } from "react-feather";
@@ -207,6 +206,10 @@ const MarketCard = ({
   };
 
   const isVerified = () => {
+    return creation === "Advised" && status === "Active" ? true : false;
+  };
+
+  const isProposed = () => {
     return creation === "Advised" && status === "Proposed" ? true : false;
   };
 
@@ -232,9 +235,8 @@ const MarketCard = ({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         data-testid={`marketCard-${marketId}`}
-        className={`flex flex-col w-full h-auto rounded-[10px] p-[15px] relative ${className}`}
+        className={`group flex flex-col w-full h-auto rounded-xl p-[15px] relative ${className}`}
         style={{
-          borderRadius: "10px",
           backgroundColor: isHovered ? "#B5C1CA" : "#F0F2F5",
           transition: "background-color 500ms ease",
           minWidth: isNaN(width) ? "100%" : width,
@@ -252,6 +254,9 @@ const MarketCard = ({
               {isEnding() && (
                 <Pill value="Ends Soon" classes="bg-red-light text-red" />
               )}
+              {isProposed() && (
+                <Pill value="Proposed" classes="bg-purple-light text-purple" />
+              )}
               {isVerified() && (
                 <Pill
                   value="&#x2713; Verified"
@@ -268,7 +273,7 @@ const MarketCard = ({
                 pool={pool}
                 prediction={prediction}
               />
-            ) : (
+            ) : pool !== null ? (
               <ScalarPriceRange
                 scalarType={scalarType}
                 lowerBound={lower}
@@ -276,6 +281,18 @@ const MarketCard = ({
                 shortPrice={outcomes[1].price}
                 longPrice={outcomes[0].price}
               />
+            ) : (
+              <>
+                <div className="text-sm flex justify-between mb-1">
+                  <span className="text-gray-500">
+                    No liquidity in this market
+                  </span>
+                  <span className="text-gray-500">
+                    {lower} - {upper}
+                  </span>
+                </div>
+                <div className="w-full rounded-lg h-1.5 bg-gray-200"></div>
+              </>
             )}
           </div>
           <MarketCardDetails rows={infoRows} />

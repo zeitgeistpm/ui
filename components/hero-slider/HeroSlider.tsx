@@ -1,25 +1,27 @@
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { HeroControls } from "./HeroControls";
 import { HeroSlide } from "./HeroSlide";
-import { slidesData } from "./slides-data";
 import styles from "./HeroSlider.module.css";
 import Image from "next/image";
-import { IGetPlaiceholderReturn } from "plaiceholder";
 
 import { moveSlider } from "./slider-controls";
+import { Banner } from "lib/cms/get-banners";
+import { IGetPlaiceholderReturn } from "plaiceholder";
 
 const HeroSlider = ({
-  imagePlaceholders,
+  banners,
+  bannerPlaceHolders,
 }: {
-  imagePlaceholders: IGetPlaiceholderReturn[];
+  banners: Banner[];
+  bannerPlaceHolders: string[];
 }) => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
   const [animate, setAnimate] = useState<boolean>(false);
-  const slidesLength = slidesData.length;
+  const slidesLength = banners.length;
 
   // autoplay
   useEffect(() => {
-    if (slidesData.length > 1) {
+    if (banners.length > 1) {
       const ref = setTimeout(() => {
         setAnimate(true);
         moveSlider("next", currentSlide, setCurrentSlide, slidesLength);
@@ -38,23 +40,26 @@ const HeroSlider = ({
       onAnimationEnd={() => setAnimate(false)}
     >
       <Image
-        src={slidesData[currentSlide].bg}
-        alt={`Image depicting ${slidesData[currentSlide].title.text}`}
+        src={banners[currentSlide].imageUrl}
+        alt={`Image depicting ${banners[currentSlide].title}`}
         placeholder="blur"
-        blurDataURL={imagePlaceholders[currentSlide].base64}
+        blurDataURL={bannerPlaceHolders[currentSlide]}
         sizes="100vw"
         fill
-        style={{ objectFit: "cover" }}
+        style={{
+          objectFit: "cover",
+          objectPosition: `${banners[currentSlide].imageAlignment} 50%`,
+        }}
       />
       <div className="h-full relative container-fluid">
         <HeroSlide
-          slide={slidesData[currentSlide]}
+          banner={banners[currentSlide]}
           animate={animate}
           setAnimate={setAnimate}
         />
-        {slidesData.length > 1 && (
+        {banners.length > 1 && (
           <HeroControls
-            slides={slidesData}
+            slides={banners}
             slidesLength={slidesLength}
             currentSlide={currentSlide}
             setCurrentSlide={setCurrentSlide}

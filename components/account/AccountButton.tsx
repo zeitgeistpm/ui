@@ -1,6 +1,5 @@
 import { observer } from "mobx-react";
-// import { Bell } from "react-feather";
-import React, { Component, FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import { useStore } from "lib/stores/Store";
@@ -9,112 +8,155 @@ import { useUserStore } from "lib/stores/UserStore";
 import { useAccountModals } from "lib/hooks/account";
 import { useModalStore } from "lib/stores/ModalStore";
 import { usePrevious } from "lib/hooks/usePrevious";
+import { useRouter } from "next/router";
+import { getWallets } from "@talismn/connect-wallets";
+import { SUPPORTED_WALLET_NAMES } from "lib/constants";
+import Modal from "components/ui/Modal";
+import OnBoardingModal from "./OnboardingModal";
 
 const AccountButton: FC<{
   connectButtonClassname?: string;
-  connectButtonText?: string | JSX.Element;
   autoClose?: boolean;
   avatarDeps?: any[];
-}> = observer(
-  ({ connectButtonClassname, connectButtonText, autoClose, avatarDeps }) => {
-    const store = useStore();
-    const { wallets } = store;
-    const { connected, activeAccount, activeBalance } = wallets;
-    const modalStore = useModalStore();
-    const accountModals = useAccountModals();
-    const { locationAllowed, isUsingVPN } = useUserStore();
-    const [hovering, setHovering] = useState<boolean>(false);
+}> = observer(({ connectButtonClassname, autoClose, avatarDeps }) => {
+  const store = useStore();
+  const { wallets } = store;
+  const { connected, activeAccount, activeBalance } = wallets;
+  const modalStore = useModalStore();
+  const accountModals = useAccountModals();
+  const { locationAllowed, isUsingVPN } = useUserStore();
+  const [hovering, setHovering] = useState<boolean>(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
-    const connect = async () => {
-      accountModals.openWalletSelect();
-    };
+  const connect = async () => {
+    accountModals.openWalletSelect();
+  };
 
-    const handleMouseEnter = () => {
-      setHovering(true);
-    };
+  const handleMouseEnter = () => {
+    setHovering(true);
+  };
 
-    const handleMouseLeave = () => {
-      setHovering(false);
-    };
+  const handleMouseLeave = () => {
+    setHovering(false);
+  };
 
-    const prevactiveAccount = usePrevious(activeAccount);
+  const prevactiveAccount = usePrevious(activeAccount);
 
-    useEffect(() => {
-      if (autoClose && activeAccount !== prevactiveAccount) {
-        modalStore.closeModal();
-      }
-    }, [activeAccount]);
+  const { pathname } = useRouter();
 
-    return (
-      <>
-        {!connected ? (
-          <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-            <button
-              className={
-                connectButtonClassname ||
-                "flex w-ztg-168 h-ztg-40 bg-sky-400 dark:bg-sky-700 text-black dark:text-white rounded-full text-ztg-14-150 font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-20"
-              }
-              onClick={() => connect()}
-              disabled={
-                locationAllowed !== true || isUsingVPN || !store?.sdk?.api
-              }
-            >
-              {connectButtonText || "Connect Wallet"}
-            </button>
+  useEffect(() => {
+    if (autoClose && activeAccount !== prevactiveAccount) {
+      modalStore.closeModal();
+    }
+  }, [activeAccount]);
 
-            {hovering === true &&
-            (locationAllowed !== true || isUsingVPN === true) ? (
-              <div
-                className="bg-white dark:bg-sky-1100 absolute rounded-ztg-10 font-bold text-black dark:text-white 
-            px-ztg-10 py-ztg-14  text-ztg-12-150 top-ztg-50 z-20 right-10"
-              >
-                {locationAllowed !== true
-                  ? "Your jurisdiction is not authorised to trade"
-                  : "Trading over a VPN is not allowed due to legal restrictions"}
-              </div>
-            ) : (
-              <></>
-            )}
-          </div>
-        ) : (
-          <div className="flex h-ztg-40">
+  const hasWallet =
+    typeof window !== "undefined" &&
+    getWallets().some(
+      (wallet) =>
+        wallet?.installed &&
+        SUPPORTED_WALLET_NAMES.some(
+          (walletName) => walletName === wallet.extensionName,
+        ),
+    );
+
+  const handleClick = () => {
+    hasWallet ? connect() : setShowOnboarding(true);
+  };
+
+  return (
+    <>
+      {!connected ? (
+        <div
+          className="flex-1"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <button
+            className={
+              connectButtonClassname ||
+              `flex border-2 rounded-full px-6 leading-[40px] ml-auto ${
+                pathname === "/"
+                  ? "text-white bg-transparent border-white"
+                  : "text-black border-black"
+              } rounded-full font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-30`
+            }
+            onClick={() => handleClick()}
+            disabled={
+              locationAllowed !== true || isUsingVPN || !store?.sdk?.api
+            }
+          >
+            {hasWallet === true ? "Connect Wallet" : "Get Started"}
+          </button>
+
+          {hovering === true &&
+          (locationAllowed !== true || isUsingVPN === true) ? (
+            <div className="bg-white absolute text-sm rounded font-bold text-black right-0 bottom-0">
+              {locationAllowed !== true
+                ? "Your jurisdiction is not authorised to trade"
+                : "Trading over a VPN is not allowed due to legal restrictions"}
+            </div>
+          ) : (
+            <></>
+          )}
+        </div>
+      ) : (
+        <div
+          className={`flex flex-1	items-center justify-end h-full rounded-full cursor-pointer ${
+            pathname === "/" ? "bg-transparent border-white" : "border-black"
+          }`}
+          onClick={() => {
+            accountModals.openAccontSelect();
+          }}
+        >
+          <span
+            className={`relative whitespace-nowrap left-5 pr-8 pl-6 font-medium text-sm rounded-l-full h-full border-2 border-r-0 leading-[40px] ${
+              pathname === "/"
+                ? "bg-transparent border-white text-white"
+                : "border-black text-black"
+            }`}
+          >
+            {`${formatNumberLocalized(activeBalance?.toNumber())} ${
+              store.config.tokenSymbol
+            }`}
+          </span>
+          <div
+            className={`flex items-center rounded-full h-full border-2 pl-1.5 pr-4 ${
+              pathname === "/"
+                ? "text-white border-white"
+                : "text-black border-black"
+            }`}
+          >
             <div
-              className="w-ztg-240 xl:w-ztg-360 flex pl-ztg-25 h-full font-mono text-ztg-14-150 rounded-full cursor-pointer bg-sky-200 dark:bg-sky-700 dark:text-white"
-              onClick={() => {
-                accountModals.openAccontSelect();
+              onClick={(e) => {
+                e.stopPropagation();
               }}
             >
-              <div className="font-bold mr-ztg-16 center w-ztg-176 ">
-                {`${formatNumberLocalized(activeBalance?.toNumber())} ${
-                  store.config.tokenSymbol
-                }`}
-              </div>
-              <div className="center bg-sky-500 dark:bg-black rounded-full h-full w-ztg-164 flex-grow text-white pl-ztg-6 pr-ztg-10">
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <Avatar
-                    zoomed
-                    address={activeAccount.address}
-                    deps={avatarDeps}
-                  />
-                </div>
-                <div className="mr-auto text-black dark:text-white ml-ztg-10">
-                  {shortenAddress(activeAccount.address, 6, 4)}
-                </div>
-              </div>
+              <Avatar
+                zoomed
+                address={activeAccount.address}
+                deps={avatarDeps}
+              />
             </div>
-            {/* TODO */}
-            {/* <div className="ml-ztg-18 center cursor-pointer dark:text-sky-600">
+            <span
+              className={`font-medium pl-4 text-sm h-full leading-[40px] ${
+                pathname === "/" ? "text-white" : "text-black"
+              }`}
+            >
+              {shortenAddress(activeAccount.address, 6, 4)}
+            </span>
+          </div>
+          {/* TODO */}
+          {/* <div className="ml-ztg-18 center cursor-pointer dark:text-sky-600">
             <Bell size={24} />
           </div> */}
-          </div>
-        )}
-      </>
-    );
-  },
-);
+        </div>
+      )}
+      <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
+        <OnBoardingModal />
+      </Modal>
+    </>
+  );
+});
 
 export default AccountButton;

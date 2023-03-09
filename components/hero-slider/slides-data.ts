@@ -5,7 +5,7 @@ export const slidesData = [
       text: "Predict the\nprice of ASTR",
       secondary: "WIN 1000 ZTG",
       styles:
-        "text-white font-sans whitespace-pre font-extrabold text-6xl md:text-8xl mb-4",
+        "text-white font-sans sm:whitespace-pre font-extrabold text-6xl md:text-8xl mb-4",
       stylesSecondary:
         "text-center sm:text-start text-white font-sans whitespace-pre font-extrabold text-3xl md:text-4xl mb-6",
     },
@@ -30,7 +30,7 @@ export const slidesData = [
     title: {
       text: `Zeitgeist\nis moving to Polkadot`,
       styles:
-        "md:max-w-[660px] text-white font-sans whitespace-pre font-semibold text-5xl md:text-7xl mb-6 ",
+        "md:max-w-[660px] text-white font-sans sm:whitespace-pre font-semibold text-5xl md:text-7xl mb-6 ",
     },
     bg: "/carousel/slide-1.jpeg",
     cta1: "Read More",

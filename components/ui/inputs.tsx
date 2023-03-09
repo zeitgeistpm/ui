@@ -331,12 +331,12 @@ export const AmountInput: FC<AmountInputProps> = observer(
           let calcVal = val.replace(/(\.[0-9]*[1-9])0+$|\.0*$/, "$1");
           const checked = checkVal(calcVal, amountRegex);
           if (+checked > +max) {
-            return setVal(max);
+            setVal(max);
+          } else if (+checked < +min) {
+            setVal(min);
+          } else {
+            setVal(checkVal(calcVal, amountRegex));
           }
-          if (+checked < +min) {
-            return setVal(min);
-          }
-          setVal(checkVal(calcVal, amountRegex));
         }
         setFocused(false);
         !initialBlur && setInitialBlur(true);

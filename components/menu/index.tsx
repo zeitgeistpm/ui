@@ -32,7 +32,7 @@ const Menu: FC = observer(() => {
 
   return (
     <>
-      <div className="flex flex-col">
+      <div className="hidden fixed left-4 top-32 md:flex flex-col gap-5 z-50">
         {Object.keys(navigationStore.items)
           .filter((itemKey) => {
             // Skip court page for now...
@@ -50,7 +50,6 @@ const Menu: FC = observer(() => {
           })
           .map((itemKey, idx) => {
             const item = navigationStore.items[itemKey];
-
             return (
               <MenuItem
                 href={item.href}
@@ -58,15 +57,16 @@ const Menu: FC = observer(() => {
                 textLabel={item.label}
                 hideLabel={hideLabels}
                 active={navigationStore.checkPage(itemKey as any)}
-                className="mb-ztg-12"
+                className=""
                 onClick={() => navigate(itemKey as any)}
                 key={`meuItem-${idx}`}
               />
             );
           })}
       </div>
+      {/* TODO: check to see if code below can be deleted
       <div className="mt-auto">
-        {/* <LocalizationSelect
+        <LocalizationSelect
           options={localizationOptions}
           selectedLanguage={selectedLanguage}
           className={`${
@@ -76,10 +76,10 @@ const Menu: FC = observer(() => {
           onLanguageChange={(option: LocalizationOption) =>
             setSelectedLanguage(option)
           }
-        /> */}
-        {/* <ThemeSwitch className="ml-ztg-33 mb-ztg-24" /> */}
+        />
+        <ThemeSwitch className="ml-ztg-33 mb-ztg-24" />
         <div className="ml-ztg-42 mb-ztg-22 text-ztg-12-150">v.1.0.0</div>
-      </div>
+      </div> */}
     </>
   );
 });
