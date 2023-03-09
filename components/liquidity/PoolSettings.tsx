@@ -186,7 +186,7 @@ const PoolSettings: FC<{
         />
       ),
       total: {
-        value: d.value,
+        value: Number(d.value),
         usdValue: 0,
       },
       amount: {

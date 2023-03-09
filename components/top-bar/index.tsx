@@ -95,7 +95,7 @@ const TopBar = observer(() => {
                 Zeitgeist
               </h1>
               <span className="w-full text-start text-xs font-mono text-sky-600">
-                {blockNumber ? blockNumber.toHuman() : 0}
+                <>{blockNumber ? blockNumber.toHuman() : 0}</>
               </span>
             </div>
           </>

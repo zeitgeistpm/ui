@@ -45,7 +45,9 @@ const BondsTable = ({ address }: { address: string }) => {
                 type: "Creation",
                 responsible: market.bonds.creation.who,
                 value: {
-                  value: new Decimal(market.bonds.creation.value).div(ZTG),
+                  value: new Decimal(market.bonds.creation.value)
+                    .div(ZTG)
+                    .toNumber(),
                   usdValue: 0,
                 },
                 settled:
@@ -55,7 +57,9 @@ const BondsTable = ({ address }: { address: string }) => {
                 type: "Oracle",
                 responsible: market.bonds.oracle.who,
                 value: {
-                  value: new Decimal(market.bonds.oracle.value).div(ZTG),
+                  value: new Decimal(market.bonds.oracle.value)
+                    .div(ZTG)
+                    .toNumber(),
                   usdValue: 0,
                 },
                 settled: market.bonds.oracle.isSettled === true ? "Yes" : "No",

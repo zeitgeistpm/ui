@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 import { ArrowLeft, ArrowRight } from "react-feather";
-import { FC, useMemo } from "react";
+import { FC, PropsWithChildren, useMemo } from "react";
 import { useNavigationStore } from "lib/stores/NavigationStore";
 import { useStore } from "lib/stores/Store";
 import { motion } from "framer-motion";
@@ -10,7 +10,7 @@ export interface DrawerProps {
   className?: string;
 }
 
-const Drawer: FC<DrawerProps> = observer(
+const Drawer: FC<PropsWithChildren<DrawerProps>> = observer(
   ({ side, className = "", children }) => {
     const store = useStore();
     const navigationStore = useNavigationStore();

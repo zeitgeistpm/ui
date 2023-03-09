@@ -1565,6 +1565,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@notionhq/client@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "@notionhq/client@npm:2.2.3"
+  dependencies:
+    "@types/node-fetch": ^2.5.10
+    node-fetch: ^2.6.1
+  checksum: 356e889012d36bf2045099d28c65fa2e41defa849f5bf34c6b82fbc7a028ce66a17aa2bd63b2451cfecc8378a49c2d179357896d211d3d92648c425157f628fe
+  languageName: node
+  linkType: hard
+
 "@npmcli/fs@npm:^2.1.0":
   version: 2.1.2
   resolution: "@npmcli/fs@npm:2.1.2"
@@ -2709,7 +2719,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node-fetch@npm:^2.6.2":
+"@types/node-fetch@npm:^2.5.10, @types/node-fetch@npm:^2.6.2":
   version: 2.6.2
   resolution: "@types/node-fetch@npm:2.6.2"
   dependencies:
@@ -2787,12 +2797,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:17.0.2":
-  version: 17.0.2
-  resolution: "@types/react-dom@npm:17.0.2"
+"@types/react-dom@npm:^18.0.0, @types/react-dom@npm:^18.0.11":
+  version: 18.0.11
+  resolution: "@types/react-dom@npm:18.0.11"
   dependencies:
     "@types/react": "*"
-  checksum: 1725928a1c3a0026044e6401e6b53729e1a88849034fc67138d7784ec44a5132fe2e9056a19b741ccb462ff0ec0d8c2c01ef316bda19be0e31f2ead9346f600b
+  checksum: 579691e4d5ec09688087568037c35edf8cfb1ab3e07f6c60029280733ee7b5c06d66df6fcc90786702c93ac8cb13bc7ff16c79ddfc75d082938fbaa36e1cdbf4
   languageName: node
   linkType: hard
 
@@ -2805,13 +2815,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:17.0.2":
-  version: 17.0.2
-  resolution: "@types/react@npm:17.0.2"
+"@types/react@npm:*, @types/react@npm:^18.0.28":
+  version: 18.0.28
+  resolution: "@types/react@npm:18.0.28"
   dependencies:
     "@types/prop-types": "*"
+    "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: a5198857165feddcbfc7d33e3322460ac62b8894d702414496a825b0c82272911ec33a42ef7c9d623a59308070eef4dfee6ff834b0674aa3f87eeb644196ee3b
+  checksum: e752df961105e5127652460504785897ca6e77259e0da8f233f694f9e8f451cde7fa0709d4456ade0ff600c8ce909cfe29f9b08b9c247fa9b734e126ec53edd7
   languageName: node
   linkType: hard
 
@@ -2821,6 +2832,13 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: f4711d707a1af653178c8941080e989a945feb0c529d848fed36687ee5e8a462cda183383caadf8848497b5c03bec16e6cdf22fc70462913d8d706cabb597130
+  languageName: node
+  linkType: hard
+
+"@types/scheduler@npm:*":
+  version: 0.16.2
+  resolution: "@types/scheduler@npm:0.16.2"
+  checksum: b6b4dcfeae6deba2e06a70941860fb1435730576d3689225a421280b7742318d1548b3d22c1f66ab68e414f346a9542f29240bc955b6332c5b11e561077583bc
   languageName: node
   linkType: hard
 
@@ -3148,6 +3166,7 @@ __metadata:
     "@material-ui/core": ^4.12.3
     "@material-ui/lab": ^4.0.0-alpha.60
     "@next/bundle-analyzer": ^12.3.1
+    "@notionhq/client": ^2.2.3
     "@plaiceholder/next": ^2.5.0
     "@playwright/test": ^1.28.1
     "@polkadot/extension-dapp": ^0.44.6
@@ -3164,8 +3183,9 @@ __metadata:
     "@types/lodash-es": ^4.17.6
     "@types/lodash.merge": ^4.6.6
     "@types/object-hash": ^2.2.1
-    "@types/react": ^17.0.38
+    "@types/react": ^18.0.28
     "@types/react-color": ^3.0.6
+    "@types/react-dom": ^18.0.11
     "@vercel/og": ^0.0.27
     "@yornaath/batshit": ^0.7.1
     "@yornaath/batshit-devtools-react": ^0.5.4
@@ -3185,6 +3205,7 @@ __metadata:
     dotenv: ^9.0.2
     fathom-client: ^3.2.0
     flexsearch: ^0.7.21
+    font-color-contrast: ^11.1.0
     framer-motion: 4.1.17
     graphql-request: ^3.6.1
     ip-range-check: ^0.2.0
@@ -5577,6 +5598,13 @@ __metadata:
     debug:
       optional: true
   checksum: faa66059b66358ba65c234c2f2a37fcec029dc22775f35d9ad6abac56003268baf41e55f9ee645957b32c7d9f62baf1f0b906e68267276f54ec4b4c597c2b190
+  languageName: node
+  linkType: hard
+
+"font-color-contrast@npm:^11.1.0":
+  version: 11.1.0
+  resolution: "font-color-contrast@npm:11.1.0"
+  checksum: 7c8af0690adc8ddfd8f3030bbce6d3345851fe78c0076fb5b3ab23568b241559fd2925f8923dc5e907faa4d49d79a03e5c04321b1551d04dbdd662a29857a968
   languageName: node
   linkType: hard
 
