@@ -20,21 +20,26 @@ const MobileTopBar: FC<{
         pathname={pathname}
         blockNumber={blockNumber}
         menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
       />
       {menuOpen ? (
         <X
           className="ml-auto cursor-pointer text-white"
-          color={`${navbar === "white" ? "black" : "white"}`}
+          color={`${
+            pathname === "/" ? (menuOpen ? "black" : "white") : "black"
+          }`}
           onClick={() => setMenuOpen(false)}
         />
       ) : (
         <Menu
-          color={`${navbar === "white" ? "black" : "white"}`}
+          color={`${
+            pathname === "/" ? (menuOpen ? "black" : "white") : "black"
+          }`}
           className="ml-auto cursor-pointer"
           onClick={() => setMenuOpen(true)}
         />
       )}
-      <MobileMenu menuOpen={menuOpen} />
+      <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
     </div>
   );
 };

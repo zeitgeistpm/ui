@@ -8,9 +8,15 @@ const MenuLogo: FC<{
   pathname: string;
   blockNumber: Compact<BlockNumber>;
   menuOpen: boolean;
-}> = ({ pathname, blockNumber, menuOpen }) => {
+  setMenuOpen?: (boolean) => void;
+}> = ({ pathname, blockNumber, menuOpen, setMenuOpen }) => {
   return (
-    <Link className="flex flex-1 items-center gap-4" href="/" role="button">
+    <Link
+      onClick={() => setMenuOpen(false)}
+      className="flex flex-1 items-center gap-4"
+      href="/"
+      role="button"
+    >
       <Logo dark={pathname === "/" ? (menuOpen ? true : false) : true} />
       <>
         <div className="flex flex-col items-center">

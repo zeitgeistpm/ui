@@ -25,6 +25,7 @@ const TopBar = () => {
 
   const changeNavBG = (open = false) => {
     console.log("state: " + open);
+    console.log(pathname);
     if (menuOpen) {
       setNavbarBGColor("white");
     } else if (window.scrollY >= 60 && pathname === "/" && !menuOpen) {
@@ -41,7 +42,7 @@ const TopBar = () => {
     window.addEventListener("scroll", () => {
       changeNavBG();
     });
-  }, [menuOpen]);
+  }, ["", menuOpen]);
 
   useEffect(() => {
     const scrollY = window.scrollY;
@@ -53,7 +54,7 @@ const TopBar = () => {
       window.scrollBy(0, scrollPosition);
     }
     changeNavBG();
-  }, [menuOpen]);
+  }, ["", menuOpen]);
 
   return (
     <div

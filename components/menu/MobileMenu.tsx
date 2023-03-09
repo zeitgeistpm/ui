@@ -4,7 +4,10 @@ import { PageName } from "lib/types/navigation";
 import { observer } from "mobx-react";
 import { FC } from "react";
 
-const MobileMenu: FC<{ menuOpen: boolean }> = ({ menuOpen }) => {
+const MobileMenu: FC<{ menuOpen: boolean; setMenuOpen: (boolean) => void }> = ({
+  menuOpen,
+  setMenuOpen,
+}) => {
   const navigationStore = useNavigationStore();
 
   const navigate = (page: PageName) => {
@@ -43,7 +46,10 @@ const MobileMenu: FC<{ menuOpen: boolean }> = ({ menuOpen }) => {
                 textLabel={item.label}
                 active={navigationStore.checkPage(itemKey as any)}
                 className=""
-                onClick={() => navigate(itemKey as any)}
+                onClick={() => {
+                  navigate(itemKey as any);
+                  setMenuOpen(false);
+                }}
                 key={`meuItem-${idx}`}
               />
             );
