@@ -13,7 +13,7 @@ export const useAccountModals = () => {
       });
     },
     openWalletSelect: () => {
-      modalStore.openModal(<WalletSelect />, "Connect wallet", {
+      modalStore.openModal(<WalletSelect />, <>"Connect wallet"</>, {
         styles: { width: "500px" },
       });
     },

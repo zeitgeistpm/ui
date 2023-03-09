@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import React, { ReactFragment, useContext } from "react";
+import React, { ReactElement, ReactFragment, useContext } from "react";
 
 import { ModalStoreContext } from "components/context/ModalStoreContext";
 import ConfirmModal from "components/modal/ConfirmModal";
@@ -26,7 +26,7 @@ class ModalStore {
 
   openConfirmModal(
     el: JSX.Element,
-    heading: ReactFragment,
+    heading: ReactElement,
     action?: () => void,
     options?: ModalOptions,
   ) {
@@ -40,7 +40,7 @@ class ModalStore {
     );
   }
 
-  openModal(el: JSX.Element, heading: ReactFragment, options?: ModalOptions) {
+  openModal(el: ReactElement, heading: ReactElement, options?: ModalOptions) {
     if (options) {
       this.setOptions(options);
     }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { FC } from "react";
+import React, { FC, PropsWithChildren } from "react";
 
 export interface SubMenuItemProps {
   label: string;
@@ -10,7 +10,7 @@ export interface SubMenuItemProps {
   onClick: () => void;
 }
 
-const SubMenuItem: FC<SubMenuItemProps> = ({
+const SubMenuItem: FC<PropsWithChildren<SubMenuItemProps>> = ({
   label,
   active,
   href,
@@ -18,7 +18,7 @@ const SubMenuItem: FC<SubMenuItemProps> = ({
   showDot = true,
   onClick,
 }) => {
-  const Wrap: FC = ({ children }) =>
+  const Wrap = ({ children }: PropsWithChildren) =>
     href == null ? <div>{children}</div> : <Link href={href}>{children}</Link>;
 
   return (
