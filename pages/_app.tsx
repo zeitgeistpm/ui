@@ -64,18 +64,6 @@ const MyApp = observer(({ Component, pageProps }) => {
       router.events.off("routeChangeComplete", onRouteChangeComplete);
   }, []);
 
-  useEffect(() => {
-    const clientWidth = window.innerWidth;
-    if (clientWidth < 1300) {
-      store.toggleDrawer("right");
-    } else {
-      store.navigationStore.toggleGroupOpen("markets");
-    }
-    if (clientWidth < 900) {
-      store.toggleDrawer("left");
-    }
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider store={store}>
@@ -99,9 +87,6 @@ const MyApp = observer(({ Component, pageProps }) => {
               <title>Zeitgeist - Prediction Markets</title>
             </Head>
             <DefaultLayout>
-              <AnimatePresence>
-                {store.showMobileMenu && <MobileMenu />}
-              </AnimatePresence>
               <Layout>
                 <Component {...pageProps} />
               </Layout>

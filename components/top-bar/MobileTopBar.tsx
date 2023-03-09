@@ -5,54 +5,36 @@ import { useRouter } from "next/router";
 import { Compact } from "@polkadot/types";
 import { BlockNumber } from "@polkadot/types/interfaces";
 import { NavbarColor } from "./index";
+import MobileMenu from "components/menu/MobileMenu";
 
 const MobileTopBar: FC<{
+  pathname: string;
+  menuOpen: boolean;
+  setMenuOpen: (boolean) => void;
   navbar: NavbarColor;
-  setNavBarBG: (NavbarColor) => void;
   blockNumber: Compact<BlockNumber>;
-}> = ({ navbar, setNavBarBG, blockNumber }) => {
-  const { pathname } = useRouter();
-
-  const [menuOpen, setMenuOpen] = useState<boolean>(false);
-  const [scrollPosition, setScrollPosition] = useState<number>(0);
-
-  const handleMenuClick = () => {
-    setMenuOpen(!menuOpen);
-  };
-
-  useEffect(() => {
-    const scrollY = window.scrollY;
-    setScrollPosition(scrollY);
-    if (menuOpen) {
-      document.body.style.position = "fixed";
-    } else {
-      document.body.style.position = "static";
-      window.scrollBy(0, scrollPosition);
-    }
-
-    if (pathname === "/" && menuOpen) {
-      setNavBarBG("white");
-    } else {
-      setNavBarBG("black");
-    }
-  }, [menuOpen]);
-
+}> = ({ pathname, menuOpen, setMenuOpen, navbar, blockNumber }) => {
   return (
     <div className="flex items-center w-full">
-      <MenuLogo pathname={pathname} blockNumber={blockNumber} />
+      <MenuLogo
+        pathname={pathname}
+        blockNumber={blockNumber}
+        menuOpen={menuOpen}
+      />
       {menuOpen ? (
         <X
           className="ml-auto cursor-pointer text-white"
           color={`${navbar === "white" ? "black" : "white"}`}
-          onClick={handleMenuClick}
+          onClick={() => setMenuOpen(false)}
         />
       ) : (
         <Menu
           color={`${navbar === "white" ? "black" : "white"}`}
           className="ml-auto cursor-pointer"
-          onClick={handleMenuClick}
+          onClick={() => setMenuOpen(true)}
         />
       )}
+      <MobileMenu menuOpen={menuOpen} />
     </div>
   );
 };

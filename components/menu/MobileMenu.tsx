@@ -2,8 +2,9 @@ import { useNavigationStore } from "lib/stores/NavigationStore";
 import { MenuItemMobile } from "./MenuItemMobile";
 import { PageName } from "lib/types/navigation";
 import { observer } from "mobx-react";
+import { FC } from "react";
 
-const MobileMenu = observer(() => {
+const MobileMenu: FC<{ menuOpen: boolean }> = ({ menuOpen }) => {
   const navigationStore = useNavigationStore();
 
   const navigate = (page: PageName) => {
@@ -13,8 +14,12 @@ const MobileMenu = observer(() => {
   };
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full z-30 flex flex-col justify-between items-center pt-[125px] bg-white text-black">
-      <div className="flex flex-col justify-between items-center gap-7">
+    <div
+      className={`${
+        menuOpen ? "translate-y-[100px]" : "translate-y-[-860px]"
+      } transition-all duration-300 ease-in fixed top-0 left-0 w-full h-[calc(100vh-100px)] z-30 flex flex-col justify-between items-center bg-white text-black`}
+    >
+      <div className="flex flex-col justify-between items-center gap-7 pt-10">
         {Object.keys(navigationStore.items)
           .filter((itemKey) => {
             // Skip court page for now...
@@ -49,6 +54,6 @@ const MobileMenu = observer(() => {
       </div>
     </div>
   );
-});
+};
 
 export default MobileMenu;
