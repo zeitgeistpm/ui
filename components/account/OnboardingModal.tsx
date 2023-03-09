@@ -2,30 +2,30 @@ import { BaseDotsamaWallet } from "lib/wallets/base-dotsama-wallet";
 import { PolkadotjsWallet } from "lib/wallets/polkadotjs-wallet";
 import { SubWallet } from "lib/wallets/subwallet";
 import { TalismanWallet } from "lib/wallets/talisman-wallet";
+import { range } from "lodash-es";
 import { observer } from "mobx-react";
 import Image from "next/image";
 import { useState } from "react";
 
 interface StepperProps {
-  steps: number;
+  start: number;
+  end: number;
   currentStep: number;
   onStepClick?: (step: number) => void;
 }
 
-const Stepper = ({ steps, currentStep, onStepClick }: StepperProps) => {
+const Stepper = ({ start, end, currentStep, onStepClick }: StepperProps) => {
   return (
     <div className="flex gap-x-[18px]">
-      {Array(steps)
-        .fill(null)
-        .map((_, index) => (
-          <button
-            onClick={() => onStepClick(index)}
-            disabled={index === currentStep}
-            className={`rounded-full h-[7px] w-[7px] ${
-              index === currentStep ? "bg-black" : "bg-sky-600"
-            }`}
-          ></button>
-        ))}
+      {range(start, end).map((step) => (
+        <button
+          onClick={() => onStepClick(step)}
+          disabled={step === currentStep}
+          className={`rounded-full h-[7px] w-[7px] ${
+            step === currentStep ? "bg-black" : "bg-sky-600"
+          }`}
+        ></button>
+      ))}
     </div>
   );
 };
@@ -113,7 +113,7 @@ const WalletSelection = observer(() => {
   );
 });
 
-const ExchangeTypeSelection = () => {
+export const ExchangeTypeSelection = () => {
   const exchangeTypes = [
     {
       name: "With Crypto or Fiat (CEX)",
@@ -150,8 +150,8 @@ const ExchangeTypeSelection = () => {
   );
 };
 
-const OnBoardingModal = () => {
-  const [step, setStep] = useState(0);
+const OnBoardingModal = (props: { step?: number }) => {
+  const [step, setStep] = useState(props.step ?? 0);
   return (
     <div
       className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
@@ -185,7 +185,7 @@ const OnBoardingModal = () => {
       )}
       {step === 2 && <WalletSelection />}
       {/* TODO: Add if we can detect wallet installation */}
-      {/* {step === 4 && (
+      {step === 3 && (
         <TextSection
           headerText="Success on getting a wallet!"
           bodyText="Now to get ZTG."
@@ -195,8 +195,14 @@ const OnBoardingModal = () => {
           onRightButtonClick={() => setStep(5)}
         />
       )}
-      {step === 5 && <ExchangeTypeSelection />} */}
-      <Stepper steps={3} currentStep={step} onStepClick={setStep} />
+      {step === 4 && <ExchangeTypeSelection />}
+
+      <Stepper
+        start={props.step ?? 0}
+        end={5}
+        currentStep={step}
+        onStepClick={setStep}
+      />
     </div>
   );
 };
