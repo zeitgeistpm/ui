@@ -237,12 +237,14 @@ const OnBoardingModal = (props: { step?: number }) => {
           leftButton={{
             text: "Use Gate.io",
             onClick: () =>
-              router.push("https://www.gate.io/trade/ZTG_USDT", "_blank"),
+              window.open(
+                "https://blog.zeitgeist.pm/how-to-buy-ztg-on-gateio/",
+              ),
           }}
           rightButton={{
             text: "Use MEXC",
-            onClick: () => null,
-            disabled: true,
+            onClick: () =>
+              window.open("https://blog.zeitgeist.pm/how-to-buy-ztg-on-mexc/"),
           }}
         />
       )}
