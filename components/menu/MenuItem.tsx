@@ -12,6 +12,14 @@ export interface MenuItemProps {
   open?: boolean;
 }
 
+export interface MenuItemMobileProps {
+  textLabel?: string;
+  className?: string;
+  href?: string;
+  active?: boolean;
+  open?: boolean;
+}
+
 const WrapComponent: FC<{ href: string }> = ({ children, href }) => {
   return href == null ? <>{children}</> : <Link href={href}>{children}</Link>;
 };
@@ -36,6 +44,28 @@ export const MenuItem: FC<MenuItemProps> = ({
         <div className="relative center">
           <IconComponent size={24} />
           <div className="invisible opacity-0 absolute left-14 whitespace-nowrap px-2.5 py-1 rounded bg-sunglow-2 text-black text-lg group-hover:visible group-hover:opacity-100 group-focus:bg-ztg-blue group-focus:text-white transition-all duration-300">
+            {textLabel}
+          </div>
+        </div>
+      </button>
+    </WrapComponent>
+  );
+};
+
+export const MenuItemMobile: FC<MenuItemMobileProps> = ({
+  textLabel,
+  className = "",
+  href,
+  active = false,
+}) => {
+  const { pathname } = useRouter();
+  active = pathname === "/" ? false : active;
+
+  return (
+    <WrapComponent href={href}>
+      <button className={`${className}`}>
+        <div className="flex flex-col center">
+          <div className="whitespace-nowrap text-black text-lg">
             {textLabel}
           </div>
         </div>

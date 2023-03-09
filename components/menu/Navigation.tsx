@@ -1,8 +1,11 @@
 import React, { FC } from "react";
-import { MenuItem } from "./MenuItem";
+import { MenuItem, MenuItemMobile } from "./MenuItem";
 import { useRouter } from "next/router";
 
-const Navigation: FC<{ navigation: {} }> = ({ navigation }) => {
+const Navigation: FC<{ navigation: {}; mobile: boolean }> = ({
+  navigation,
+  mobile,
+}) => {
   const { pathname } = useRouter();
   return (
     <>
@@ -21,7 +24,15 @@ const Navigation: FC<{ navigation: {} }> = ({ navigation }) => {
         })
         .map((itemKey, idx) => {
           const item = navigation[itemKey];
-          return (
+          return mobile ? (
+            <MenuItemMobile
+              href={item.href}
+              textLabel={item.label}
+              active={pathname === item.href}
+              className=""
+              key={`meuItem-${idx}`}
+            />
+          ) : (
             <MenuItem
               href={item.href}
               IconComponent={item.IconComponent}

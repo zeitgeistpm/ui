@@ -4,10 +4,9 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 
 import { useStore } from "lib/stores/Store";
-import TopBar from "components/top-bar";
+import TopBar from "components/menu";
 import Footer from "components/ui/Footer";
 import NotificationCenter from "components/ui/NotificationCenter";
-import Menu from "components/menu";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";
 import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
@@ -45,7 +44,6 @@ const DefaultLayout: FC = observer(({ children }) => {
             }
           `}
         </style>
-        <Menu />
         <div
           ref={contentRef}
           className="overflow-y-a1uto overflow-x-hidden flex-grow"
