@@ -36,11 +36,7 @@ export const useMarketPriceHistory = (
   const query = useQuery(
     [id, marketPriceHistoryKey, marketId, interval, startTime],
     async () => {
-      console.log("a");
-
       if (isIndexedSdk(sdk)) {
-        console.log("b");
-
         const { priceHistory } = await sdk.indexer.client.request<{
           priceHistory: PricePoint[];
         }>(priceHistoyQuery, {

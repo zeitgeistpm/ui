@@ -206,6 +206,7 @@ const Market: NextPage<{
         </div>
         {chartData?.length > 0 && chartSeries && marketSdkv2?.pool ? (
           <MarketChart
+            marketId={marketSdkv2.marketId}
             chartSeries={chartSeries}
             weeklyChartData={chartData}
             baseAsset={baseAsset}

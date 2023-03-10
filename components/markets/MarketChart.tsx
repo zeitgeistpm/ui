@@ -4,14 +4,16 @@ import TimeSeriesChart, {
   ChartSeries,
 } from "components/ui/TimeSeriesChart";
 import { useMarketPriceHistory } from "lib/hooks/queries/useMarketPriceHistory";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 const MarketChart = ({
+  marketId,
   chartSeries,
   baseAsset,
   weeklyChartData,
   poolCreationDate,
 }: {
+  marketId: number;
   chartSeries: ChartSeries[];
   weeklyChartData: ChartData[];
   baseAsset: string;
@@ -20,10 +22,22 @@ const MarketChart = ({
   const [chartFilter, setChartFilter] = useState<TimeFilter>(
     filters[filters.length - 1],
   );
-  const startDate = poolCreationDate;
+  const startDate = useMemo(() => {
+    if (chartFilter.label === "All") {
+      return poolCreationDate;
+    } else {
+      const filterDate = new Date(chartFilter.time);
+      const poolDate = new Date(poolCreationDate);
+      if (filterDate.getTime() > poolDate.getTime()) {
+        return chartFilter.time;
+      } else {
+        return poolCreationDate;
+      }
+    }
+  }, [chartFilter.label]);
 
   const { data: prices, isLoading } = useMarketPriceHistory(
-    567,
+    marketId,
     chartFilter.interval,
     startDate,
   );
