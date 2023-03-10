@@ -1,3 +1,4 @@
+import { useOnboarding } from "lib/state/onboarding";
 import { BaseDotsamaWallet } from "lib/wallets/base-dotsama-wallet";
 import { PolkadotjsWallet } from "lib/wallets/polkadotjs-wallet";
 import { SubWallet } from "lib/wallets/subwallet";
@@ -7,6 +8,7 @@ import { observer } from "mobx-react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useState } from "react";
+import Loader from "react-spinners/PulseLoader";
 
 interface StepperProps {
   start: number;
@@ -93,8 +95,19 @@ const walletsConfig = [
 ];
 
 const WalletSelection = observer(() => {
+  const { setWalletInstallConfirmed } = useOnboarding();
+  const [isReloading, setIsReloading] = useState(false);
+
   const handleWalletSelect = async (wallet: BaseDotsamaWallet) => {
     window.open(wallet.installUrl);
+  };
+
+  const handleWalletInstalled = () => {
+    setIsReloading(true);
+    setWalletInstallConfirmed(true);
+    setTimeout(() => {
+      window.location.reload();
+    }, 66);
   };
 
   return (
@@ -122,6 +135,18 @@ const WalletSelection = observer(() => {
           </div>
         </button>
       ))}
+
+      <button
+        disabled={isReloading}
+        onClick={handleWalletInstalled}
+        className="leading-[42px] w-full sm:w-fit text-xl text-center sm:text-start bg-blue-600 text-white rounded px-5 py-2 mb-5 mr-5 font-bold"
+      >
+        {isReloading ? (
+          <Loader color="white" size={12} />
+        ) : (
+          "I have installed a wallet!"
+        )}
+      </button>
     </>
   );
 });
@@ -167,13 +192,67 @@ export const ExchangeTypeSelection = (props: {
   );
 };
 
-const OnBoardingModal = (props: { step?: number }) => {
+const OnBoardingModal = (props: { step?: number; notice?: string }) => {
   const [step, setStep] = useState(props.step ?? 0);
   const router = useRouter();
+
+  const screens = [
+    <TextSection
+      headerText="Welcome to Zeitgeist"
+      bodyText="Hey, it looks like you don’t have a wallet installed. Let me be your Guide and help you get one, so you can get started making predictions."
+      rightButton={{
+        text: "Continue",
+        onClick: () => setStep(1),
+      }}
+    />,
+    <TextSection
+      headerText="Choose A Browser Extension"
+      bodyText="First thing you need to do is install a browser-based wallet (known as a “browser extension”). To do that, simply click the wallet icon to go to its official download page. Once the extension is setup you'll need to refresh the page."
+      leftButton={{
+        text: "Back",
+        onClick: () => setStep(0),
+      }}
+      rightButton={{
+        text: "Continue",
+        onClick: () => setStep(2),
+      }}
+    />,
+    <WalletSelection />,
+    <TextSection
+      headerText="Success on getting a wallet!"
+      bodyText="Now to get ZTG."
+      leftButton={{
+        text: "Back",
+        onClick: () => setStep(3),
+      }}
+      rightButton={{
+        text: "Continue",
+        onClick: () => setStep(4),
+      }}
+    />,
+    <ExchangeTypeSelection setStep={setStep} />,
+    <TextSection
+      headerText=""
+      bodyText="After installing a wallet, you can now send and receive ZTG, our native
+          token. In the below tutorials, we show you how to get ZTG using one of
+          either the “MEXC” exchange or “GATE” exchange."
+      leftButton={{
+        text: "Use Gate.io",
+        onClick: () =>
+          window.open("https://blog.zeitgeist.pm/how-to-buy-ztg-on-gateio/"),
+      }}
+      rightButton={{
+        text: "Use MEXC",
+        onClick: () =>
+          window.open("https://blog.zeitgeist.pm/how-to-buy-ztg-on-mexc/"),
+      }}
+    />,
+  ];
+
   return (
     <div
       className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
-            h-[438px] w-full max-w-[526px] p-[30px] rounded-ztg-10"
+             w-full max-w-[526px] p-[30px] rounded-ztg-10"
     >
       <div className="rounded-full w-[120px] h-[120px] mb-auto">
         <Image
@@ -183,76 +262,19 @@ const OnBoardingModal = (props: { step?: number }) => {
           height={120}
         />
       </div>
-      {step === 0 && (
-        <TextSection
-          headerText="Welcome to Zeitgeist"
-          bodyText="Hey, it looks like you don’t have a wallet installed. Let me be your Guide and help you get one, so you can get started making predictions."
-          rightButton={{
-            text: "Continue",
-            onClick: () => setStep(1),
-          }}
-        />
+
+      {screens[step]}
+
+      {props.notice && (
+        <div className="text-center py-1 mb-3 text-orange-400 rounded-md">
+          {props.notice}
+        </div>
       )}
 
-      {step === 1 && (
-        <TextSection
-          headerText="Choose A Browser Extension"
-          bodyText="First thing you need to do is install a browser-based wallet (known as a “browser extension”). To do that, simply click the wallet icon to go to its official download page. Once the extension is setup you'll need to refresh the page."
-          leftButton={{
-            text: "Back",
-            onClick: () => setStep(0),
-          }}
-          rightButton={{
-            text: "Continue",
-            onClick: () => setStep(2),
-          }}
-        />
-      )}
-
-      {step === 2 && <WalletSelection />}
-
-      {step === 3 && (
-        <TextSection
-          headerText="Success on getting a wallet!"
-          bodyText="Now to get ZTG."
-          leftButton={{
-            text: "Back",
-            onClick: () => setStep(3),
-          }}
-          rightButton={{
-            text: "Continue",
-            onClick: () => setStep(4),
-          }}
-        />
-      )}
-
-      {step === 4 && <ExchangeTypeSelection setStep={setStep} />}
-
-      {step === 5 && (
-        <TextSection
-          headerText=""
-          bodyText="After installing a wallet, you can now send and receive ZTG, our native
-          token. In the below tutorials, we show you how to get ZTG using one of
-          either the “MEXC” exchange or “GATE” exchange."
-          leftButton={{
-            text: "Use Gate.io",
-            onClick: () =>
-              window.open(
-                "https://blog.zeitgeist.pm/how-to-buy-ztg-on-gateio/",
-              ),
-          }}
-          rightButton={{
-            text: "Use MEXC",
-            onClick: () =>
-              window.open("https://blog.zeitgeist.pm/how-to-buy-ztg-on-mexc/"),
-          }}
-        />
-      )}
-
-      {6 - (props.step ?? 0) > 1 && (
+      {screens.length - (props.step ?? 0) > 1 && (
         <Stepper
           start={props.step ?? 0}
-          end={6}
+          end={screens.length}
           currentStep={step}
           onStepClick={setStep}
         />
