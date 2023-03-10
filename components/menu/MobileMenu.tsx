@@ -2,7 +2,10 @@ import { FC } from "react";
 import Navigation from "./Navigation";
 import { NAVIGATION_ITEMS } from "./navigation-items";
 
-const MobileMenu: FC<{ menuOpen: boolean }> = ({ menuOpen }) => {
+const MobileMenu: FC<{ menuOpen: boolean; setMenuOpen: (boolean) => void }> = ({
+  menuOpen,
+  setMenuOpen,
+}) => {
   return (
     <div
       className={`${
@@ -10,7 +13,11 @@ const MobileMenu: FC<{ menuOpen: boolean }> = ({ menuOpen }) => {
       } md:hidden container-fluid transition-all duration-300 ease-in fixed top-0 left-0 w-full h-[calc(100vh-100px)] z-30 flex flex-col justify-between items-center bg-white text-black`}
     >
       <div className="flex flex-col justify-between items-center gap-7 pt-10">
-        <Navigation navigation={NAVIGATION_ITEMS} mobile={true} />
+        <Navigation
+          navigation={NAVIGATION_ITEMS}
+          mobile={true}
+          setMenuOpen={setMenuOpen}
+        />
       </div>
       <div className="p-7 text-center text-xs">
         Trading is only available on the desktop version of the application.

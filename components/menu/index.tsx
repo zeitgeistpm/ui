@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import SideMenu from "./SideMenu";
 import MobileMenu from "components/menu/MobileMenu";
 import { Menu, X } from "react-feather";
-
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import MenuLogo from "components/menu/MenuLogo";
@@ -22,9 +21,7 @@ const TopBar = () => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const [scrollPosition, setScrollPosition] = useState<number>(0);
 
-  const changeNavBG = (open = false) => {
-    console.log("state: " + open);
-    console.log(pathname);
+  const changeNavBG = () => {
     if (menuOpen) {
       setNavbarBGColor("white");
     } else if (window.scrollY >= 60 && pathname === "/" && !menuOpen) {
@@ -38,10 +35,12 @@ const TopBar = () => {
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", () => {
-      changeNavBG();
-    });
-  }, ["", menuOpen]);
+    changeNavBG();
+    window.addEventListener("scroll", changeNavBG);
+    return () => {
+      document.removeEventListener("scroll", changeNavBG);
+    };
+  }, [changeNavBG]);
 
   useEffect(() => {
     const scrollY = window.scrollY;
@@ -53,17 +52,17 @@ const TopBar = () => {
       window.scrollBy(0, scrollPosition);
     }
     changeNavBG();
-  }, ["", menuOpen]);
+  }, [menuOpen]);
 
   return (
     <div
       className={`w-full py-7 fixed z-40 transition-all duration-300 bg-${navbarBGColor} ${
-        pathname === "/" ? "border-0" : "border-b border-gray-200"
+        pathname === "/" ? "border-b-0" : "border-b border-gray-200"
       }`}
     >
       <div className="relative flex justify-between items-center w-full max-w-screen-2xl h-[44px] mx-auto px-8">
         <SideMenu />
-        <MenuLogo pathname={pathname} menuOpen={menuOpen} />
+        <MenuLogo menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
         {/* <MarketSearch /> */}
         <AccountButton />
         {menuOpen ? (
@@ -84,7 +83,7 @@ const TopBar = () => {
           />
         )}
       </div>
-      <MobileMenu menuOpen={menuOpen} />
+      <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
     </div>
   );
 };

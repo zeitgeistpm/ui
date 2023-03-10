@@ -2,10 +2,11 @@ import React, { FC } from "react";
 import { MenuItem, MenuItemMobile } from "./MenuItem";
 import { useRouter } from "next/router";
 
-const Navigation: FC<{ navigation: {}; mobile: boolean }> = ({
-  navigation,
-  mobile,
-}) => {
+const Navigation: FC<{
+  navigation: {};
+  mobile: boolean;
+  setMenuOpen?: (boolean) => void;
+}> = ({ navigation, mobile, setMenuOpen }) => {
   const { pathname } = useRouter();
   return (
     <>
@@ -29,7 +30,7 @@ const Navigation: FC<{ navigation: {}; mobile: boolean }> = ({
               href={item.href}
               textLabel={item.label}
               active={pathname === item.href}
-              className=""
+              setMenuOpen={setMenuOpen}
               key={`meuItem-${idx}`}
             />
           ) : (
@@ -38,7 +39,6 @@ const Navigation: FC<{ navigation: {}; mobile: boolean }> = ({
               IconComponent={item.IconComponent}
               textLabel={item.label}
               active={pathname === item.href}
-              className=""
               key={`meuItem-${idx}`}
             />
           );

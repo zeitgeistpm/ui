@@ -3,21 +3,16 @@ import Link from "next/link";
 import React, { FC, PropsWithChildren } from "react";
 import { Icon } from "react-feather";
 
-export interface MenuItemProps {
-  IconComponent: Icon;
-  textLabel?: string;
-  className?: string;
-  href?: string;
-  active?: boolean;
-  open?: boolean;
-}
-
 export interface MenuItemMobileProps {
   textLabel?: string;
-  className?: string;
   href?: string;
   active?: boolean;
   open?: boolean;
+  setMenuOpen?: (boolean) => void;
+}
+
+export interface MenuItemProps extends MenuItemMobileProps {
+  IconComponent: Icon;
 }
 
 const WrapComponent: FC<PropsWithChildren<{ href: string }>> = ({
@@ -30,7 +25,6 @@ const WrapComponent: FC<PropsWithChildren<{ href: string }>> = ({
 export const MenuItem: FC<PropsWithChildren<MenuItemProps>> = ({
   IconComponent,
   textLabel,
-  className = "",
   href,
   active = false,
 }) => {
@@ -42,7 +36,7 @@ export const MenuItem: FC<PropsWithChildren<MenuItemProps>> = ({
       <button
         className={`group flex rounded-full p-5 w-[68px] bg-black border-2 border-black text-white hover:border-sunglow-2 hover:text-sunglow-2 hover:bg-black transition-all duration-300 focus:bg-ztg-blue focus:text-white focus:border-ztg-blue ${
           active && "bg-ztg-blue border-ztg-blue"
-        } ${className}`}
+        }`}
       >
         <div className="relative center">
           <IconComponent size={24} />
@@ -57,21 +51,16 @@ export const MenuItem: FC<PropsWithChildren<MenuItemProps>> = ({
 
 export const MenuItemMobile: FC<MenuItemMobileProps> = ({
   textLabel,
-  className = "",
   href,
-  active = false,
+  setMenuOpen,
 }) => {
-  const { pathname } = useRouter();
-  active = pathname === "/" ? false : active;
-
   return (
     <WrapComponent href={href}>
-      <button className={`${className}`}>
-        <div className="flex flex-col center">
-          <div className="whitespace-nowrap text-black text-lg">
-            {textLabel}
-          </div>
-        </div>
+      <button
+        className="flex flex-col center"
+        onClick={() => setMenuOpen(false)}
+      >
+        <div className="whitespace-nowrap text-black text-lg">{textLabel}</div>
       </button>
     </WrapComponent>
   );

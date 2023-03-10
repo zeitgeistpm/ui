@@ -1,17 +1,16 @@
 import React, { FC } from "react";
 import Link from "next/link";
 import Logo from "../icons/ZeitgeistIcon";
-import { Compact } from "@polkadot/types";
-import { BlockNumber } from "@polkadot/types/interfaces";
 import { useStore } from "lib/stores/Store";
+import { useRouter } from "next/router";
 
 const MenuLogo: FC<{
-  pathname: string;
   menuOpen: boolean;
   setMenuOpen?: (boolean) => void;
-}> = ({ pathname, menuOpen, setMenuOpen }) => {
+}> = ({ menuOpen, setMenuOpen }) => {
+  const { pathname } = useRouter();
   const { blockNumber } = useStore();
-  console.log(blockNumber as Compact<BlockNumber>);
+
   return (
     <Link
       onClick={() => setMenuOpen(false)}
@@ -34,7 +33,7 @@ const MenuLogo: FC<{
             Zeitgeist
           </h1>
           <span className="w-full text-start text-xs font-mono text-sky-600">
-            {blockNumber ? blockNumber.toHuman() : 0}
+            <>{blockNumber ? blockNumber.toHuman() : 0}</>
           </span>
         </div>
       </>
