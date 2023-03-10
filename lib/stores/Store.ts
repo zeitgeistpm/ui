@@ -94,6 +94,32 @@ export default class Store {
 
   blockTimestamp: number;
 
+  leftDrawerClosed = false;
+
+  rightDrawerClosed = true;
+
+  leftDrawerAnimating = false;
+
+  rightDrawerAnimating = false;
+
+  showMobileMenu = false;
+
+  toggleDrawer(side: "right" | "left") {
+    this[`${side}DrawerClosed`] = !this[`${side}DrawerClosed`];
+  }
+
+  toggleDrawerAnimation(side: "right" | "left", isAnimating: boolean) {
+    if (side === "left") {
+      this.leftDrawerAnimating = isAnimating;
+    } else {
+      this.rightDrawerAnimating = isAnimating;
+    }
+  }
+
+  toggleShowMobileMenu() {
+    this.showMobileMenu = !this.showMobileMenu;
+  }
+
   get isTestEnv() {
     return process.env.NEXT_PUBLIC_TESTING_ENV === "true";
   }
