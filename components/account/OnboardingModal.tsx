@@ -22,6 +22,7 @@ const Stepper = ({ start, end, currentStep, onStepClick }: StepperProps) => {
     <div className="flex gap-x-[18px]">
       {range(start, end).map((step) => (
         <button
+          key={step}
           onClick={() => onStepClick(step)}
           disabled={step === currentStep}
           className={`rounded-full h-[7px] w-[7px] ${
