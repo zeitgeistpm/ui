@@ -58,8 +58,8 @@ const Drawer: FC<PropsWithChildren<DrawerProps>> = observer(
         } ${className}`}
       >
         <div
-          className="arrow-container border-2 border-sky-300 bg-white text-sky-600 dark:bg-black 
-          dark:border-border-dark absolute top-ztg-90 right-0 w-ztg-24 h-ztg-24 rounded-ztg-5 flex 
+          className="arrow-container border-2 border-sky-300 bg-white text-sky-600 dark:bg-black
+          dark:border-border-dark absolute top-ztg-90 right-0 w-ztg-24 h-ztg-24 rounded-ztg-5 flex
           items-center justify-center cursor-pointer z-ztg-3"
           onClick={() => toggle()}
         >
