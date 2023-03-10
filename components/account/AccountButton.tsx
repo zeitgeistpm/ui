@@ -158,11 +158,11 @@ const AccountButton: FC<{
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <Menu.Items className="absolute right-0 px-2 py-4 p mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <div className="px-1 py-1 ">
-                      <div className="border-b-2 mb-3">
-                        <div>
-                          <div className="flex items-center px-2 mb-3">
+                  <Menu.Items className="absolute right-0 py-3  mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <div className="">
+                      <div className="border-b-2 mb-3 py-2">
+                        <div className="px-4">
+                          <div className="flex items-center mb-3 ">
                             <img
                               src="/currencies/ztg.jpg"
                               height={"24px"}
@@ -177,8 +177,8 @@ const AccountButton: FC<{
                             </div>
                           </div>
                         </div>
-                        <div>
-                          <div className="flex items-center px-2 mb-3">
+                        <div className="px-4">
+                          <div className="flex items-center mb-3">
                             <img
                               src="/currencies/usdt.png"
                               height={"24px"}
@@ -193,7 +193,7 @@ const AccountButton: FC<{
                       <Menu.Item>
                         {({ active }) => (
                           <div
-                            className="flex items-center px-2 mb-3"
+                            className="flex items-center px-4 mb-3 hover:bg-slate-100"
                             onClick={() => setShowGetZtgModal(true)}
                           >
                             <DollarSign />
@@ -208,7 +208,7 @@ const AccountButton: FC<{
                       <Menu.Item>
                         {({ active }) => (
                           <div
-                            className="flex items-center px-2 mb-3"
+                            className="flex items-center px-4 mb-3 hover:bg-slate-100"
                             onClick={() => {
                               accountModals.openAccontSelect();
                             }}
@@ -225,7 +225,7 @@ const AccountButton: FC<{
                       <Menu.Item>
                         {({ active }) => (
                           <Link href="/settings">
-                            <div className="flex items-center px-2 mb-3">
+                            <div className="flex items-center px-4 mb-3 hover:bg-slate-100">
                               <Settings />
                               <button
                                 className={`group flex w-full items-center rounded-md px-2 py-2 text-sm`}
@@ -239,7 +239,7 @@ const AccountButton: FC<{
                       <Menu.Item>
                         {({ active }) => (
                           <div
-                            className="flex items-center px-2"
+                            className="flex items-center px-4 hover:bg-slate-100"
                             onClick={() => wallets.disconnectWallet()}
                           >
                             <Frown />
