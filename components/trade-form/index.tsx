@@ -1,5 +1,6 @@
 import { Tab } from "@headlessui/react";
-import { ZTG } from "@zeitgeistpm/sdk-next";
+import { ISubmittableResult } from "@polkadot/types/types";
+import { AssetId, ZTG, IOMarketOutcomeAssetId } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import {
   useTradeItem,
@@ -10,7 +11,7 @@ import {
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { capitalize } from "lodash";
 import { from } from "rxjs";
 import { useDebounce } from "use-debounce";
@@ -57,7 +58,7 @@ const TradeForm = observer(() => {
   const queryClient = useQueryClient();
   const baseSymbol = tradeItemState?.pool.baseAsset.toUpperCase() ?? "ZTG";
 
-  const type = tradeItem?.action ?? "buy";
+  const type = tradeItem.action;
 
   const assetAmount = watch("assetAmount");
   const baseAmount = watch("baseAmount");
@@ -108,14 +109,22 @@ const TradeForm = observer(() => {
     }
   }, [tradeItemState, predictionAfterTrade]);
 
-  const transaction = useTradeTransaction(tradeItem, assetAmount);
+  const [lastEditedAssetId, setLastEditedAssetId] = useState<AssetId>(
+    tradeItem.assetId,
+  );
+
+  const transaction = useTradeTransaction(
+    tradeItem,
+    lastEditedAssetId,
+    IOMarketOutcomeAssetId.is(lastEditedAssetId) ? assetAmount : baseAmount,
+  );
 
   const {
     send: swapTx,
     isSuccess,
     isLoading,
   } = useExtrinsic(() => transaction, {
-    onSuccess: () => {
+    onSuccess: (result: ISubmittableResult) => {
       notificationStore.pushNotification(
         `Successfully ${
           tradeItem.action === "buy" ? "bought" : "sold"
@@ -270,6 +279,9 @@ const TradeForm = observer(() => {
                   min: "0",
                   max: maxAssetAmount?.div(ZTG).toFixed(4),
                 })}
+                onFocus={() => {
+                  setLastEditedAssetId(tradeItemState?.assetId);
+                }}
                 step="any"
                 className="w-full bg-transparent outline-none !text-center text-[58px]"
                 autoFocus
@@ -287,6 +299,9 @@ const TradeForm = observer(() => {
                   min: "0",
                   max: maxBaseAmount?.div(ZTG).toFixed(4),
                 })}
+                onFocus={() =>
+                  setLastEditedAssetId(tradeItemState?.baseAssetId)
+                }
                 step="any"
                 className="w-full bg-transparent outline-none !text-center"
               />
@@ -297,6 +312,7 @@ const TradeForm = observer(() => {
               max="100"
               value={percentageDisplay}
               onValueChange={setPercentageDisplay}
+              onFocus={() => setLastEditedAssetId(tradeItemState?.assetId)}
               minLabel="0 %"
               step="0.1"
               valueSuffix="%"
