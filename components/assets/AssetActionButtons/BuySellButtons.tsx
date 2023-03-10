@@ -7,7 +7,7 @@ import { useTradeItem } from "lib/hooks/trade";
 import { useStore } from "lib/stores/Store";
 import { compareJSON } from "lib/util";
 import { observer } from "mobx-react";
-import { FC, useMemo } from "react";
+import { FC, PropsWithChildren, useMemo } from "react";
 
 interface BuySellButtonsProps {
   assetId: AssetId;
@@ -76,12 +76,14 @@ const BuySellButtons = observer(
   },
 );
 
-const TradeButton: FC<{
-  onClick: () => void;
-  active: boolean;
-  disabled?: boolean;
-  type: "buy" | "sell";
-}> = observer(({ onClick, active, type, children, disabled = false }) => {
+const TradeButton: FC<
+  PropsWithChildren<{
+    onClick: () => void;
+    active: boolean;
+    disabled?: boolean;
+    type: "buy" | "sell";
+  }>
+> = observer(({ onClick, active, type, children, disabled = false }) => {
   const defaultClass =
     "rounded-full h-ztg-20  text-ztg-10-150 w-ztg-47 font-normal flex items-center justify-center focus:outline-none border-2";
 

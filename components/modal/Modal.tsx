@@ -1,15 +1,15 @@
 import { observer } from "mobx-react";
-import React, { FC, ReactFragment } from "react";
+import React, { FC, PropsWithChildren, ReactElement } from "react";
 import { X } from "react-feather";
 import { useModalStore } from "lib/stores/ModalStore";
 
 export type ModalProps = {
-  heading: ReactFragment;
+  heading: ReactElement;
   centerHeadingText?: boolean;
   showCloseButton?: boolean;
 };
 
-const Modal: FC<ModalProps> = observer(
+const Modal: FC<PropsWithChildren<ModalProps>> = observer(
   ({
     children,
     heading,
