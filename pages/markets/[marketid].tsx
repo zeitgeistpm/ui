@@ -204,11 +204,12 @@ const Market: NextPage<{
             <MarketTimerSkeleton />
           )}
         </div>
-        {chartData?.length > 0 && chartSeries ? (
+        {chartData?.length > 0 && chartSeries && marketSdkv2?.pool ? (
           <MarketChart
             chartSeries={chartSeries}
-            chartData={chartData}
+            weeklyChartData={chartData}
             baseAsset={baseAsset}
+            poolCreationDate={marketSdkv2.pool.createdAt}
           />
         ) : (
           <></>

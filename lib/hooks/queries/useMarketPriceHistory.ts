@@ -7,8 +7,12 @@ import { useSdkv2 } from "../useSdkv2";
 export const marketPriceHistoryKey = "market-price-histroy";
 
 const priceHistoyQuery = gql`
-  query PriceHistory($marketId: Float!, $interval: String) {
-    priceHistory(marketId: $marketId, interval: $interval) {
+  query PriceHistory($marketId: Float!, $interval: String, $startTime: String) {
+    priceHistory(
+      marketId: $marketId
+      interval: $interval
+      startTime: $startTime
+    ) {
       prices {
         assetId
         price
@@ -24,31 +28,32 @@ interface PricePoint {
 }
 export const useMarketPriceHistory = (
   marketId: number,
-  timeFilter: TimeFilter,
+  interval: string,
+  startTime: string, //ISO timestamp
 ) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, marketPriceHistoryKey],
+    [id, marketPriceHistoryKey, marketId, interval, startTime],
     async () => {
       console.log("a");
 
       if (isIndexedSdk(sdk)) {
         console.log("b");
 
-        const a = await sdk.indexer.client.request<{
+        const { priceHistory } = await sdk.indexer.client.request<{
           priceHistory: PricePoint[];
         }>(priceHistoyQuery, {
           marketId: marketId,
-          interval: timeFilter.interval,
+          interval: interval,
+          startTime: startTime,
         });
-        console.log(a);
 
-        // return a!.priceHistory!;
+        return priceHistory;
       }
     },
     {
-      enabled: Boolean(sdk && marketId != null && timeFilter),
+      enabled: Boolean(sdk && marketId != null && interval && startTime),
     },
   );
 
