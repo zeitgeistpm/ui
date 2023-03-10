@@ -33,9 +33,6 @@ export interface ChartData {
 }
 
 const ChartToolTip = observer((props) => {
-  const series = props.series.find(
-    (s) => s.accessor === props.payload[0]?.name,
-  );
   return (
     <>
       {props.label !== undefined &&
@@ -58,15 +55,17 @@ const ChartToolTip = observer((props) => {
               }).format(new Date(props.label))}
             </span>
             <div className="mt-ztg-13">
-              {series && (
-                <div className="flex flex-col">
-                  <span className="font-semibold">{series.label}</span>
+              {props.series?.map((asset, index) => (
+                <div className="flex flex-col mt-1">
+                  <span className="font-semibold capitalize">
+                    {asset.label}
+                  </span>
                   <span className="">
-                    {new Decimal(props.payload[0]?.value).toFixed(3) +
+                    {new Decimal(props.payload[index]?.value ?? 0).toFixed(3) +
                       ` ${props.yUnits}`}
                   </span>
                 </div>
-              )}
+              ))}
             </div>
           </div>
         </div>
