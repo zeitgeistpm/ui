@@ -6,8 +6,8 @@ import { useSdkv2 } from "../useSdkv2";
 
 export const marketPriceHistoryKey = "market-price-histroy";
 
-const accountBondsQuery = gql`
-  query PriceHistory($marketId: Int, $interval: String) {
+const priceHistoyQuery = gql`
+  query PriceHistory($marketId: Float!, $interval: String) {
     priceHistory(marketId: $marketId, interval: $interval) {
       prices {
         assetId
@@ -22,7 +22,7 @@ interface PricePoint {
   timestamp: string;
   prices: { assetId: string; price: number }[];
 }
-export const useMarketSpotPrices = (
+export const useMarketPriceHistory = (
   marketId: number,
   timeFilter: TimeFilter,
 ) => {
@@ -31,14 +31,20 @@ export const useMarketSpotPrices = (
   const query = useQuery(
     [id, marketPriceHistoryKey],
     async () => {
+      console.log("a");
+
       if (isIndexedSdk(sdk)) {
-        const { priceHistory } = await sdk.indexer.client.request<{
+        console.log("b");
+
+        const a = await sdk.indexer.client.request<{
           priceHistory: PricePoint[];
-        }>(accountBondsQuery, {
+        }>(priceHistoyQuery, {
           marketId: marketId,
           interval: timeFilter.interval,
         });
-        return priceHistory;
+        console.log(a);
+
+        // return a!.priceHistory!;
       }
     },
     {
