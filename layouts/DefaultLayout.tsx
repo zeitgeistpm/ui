@@ -1,6 +1,12 @@
 import { observer } from "mobx-react";
 import { Skeleton } from "@material-ui/lab";
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, {
+  FC,
+  PropsWithChildren,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useResizeDetector } from "react-resize-detector";
 
 import { useStore } from "lib/stores/Store";
@@ -17,7 +23,7 @@ import { inter, kanit, roboto_mono } from "lib/util/fonts";
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 
-const DefaultLayout: FC = observer(({ children }) => {
+const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
   const store = useStore();
   const router = useRouter();
   useSubscribeBlockEvents();

@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import Link from "next/link";
-import React, { FC } from "react";
+import React, { FC, PropsWithChildren } from "react";
 import { Icon } from "react-feather";
 
 export interface MenuItemProps {
@@ -20,10 +20,14 @@ export interface MenuItemMobileProps {
   open?: boolean;
 }
 
-const WrapComponent: FC<{ href: string }> = ({ children, href }) => {
+const WrapComponent: FC<PropsWithChildren<{ href: string }>> = ({
+  children,
+  href,
+}) => {
   return href == null ? <>{children}</> : <Link href={href}>{children}</Link>;
 };
 
+<<<<<<< HEAD
 export const MenuItem: FC<MenuItemProps> = ({
   IconComponent,
   textLabel,
@@ -33,6 +37,19 @@ export const MenuItem: FC<MenuItemProps> = ({
 }) => {
   const { pathname } = useRouter();
   active = pathname === "/" ? false : active;
+=======
+export const MenuItem: FC<PropsWithChildren<MenuItemProps>> = observer(
+  ({
+    IconComponent,
+    textLabel,
+    className = "",
+    href,
+    active = false,
+    onClick,
+  }) => {
+    const { pathname } = useRouter();
+    active = pathname === "/" ? false : active;
+>>>>>>> staging
 
   return (
     <WrapComponent href={href}>

@@ -42,7 +42,7 @@ const PoolTable = ({ poolId }: { poolId: number }) => {
     },
     weights: asset.percentage,
     poolBalance: {
-      value: asset.amount.div(ZTG).toFixed(2),
+      value: asset.amount.div(ZTG).toDecimalPlaces(2).toNumber(),
       usdValue: 0,
     },
     manage: <ManageLiquidityButton poolId={poolId} />,

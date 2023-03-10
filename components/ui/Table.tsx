@@ -149,7 +149,7 @@ const Cell = observer(
             onClick={onClick}
             style={style}
           >
-            {value}
+            <>{value}</>
           </td>
         );
       case "number":
@@ -173,7 +173,7 @@ const Cell = observer(
       case "component":
         return (
           <td className={`${base}`} onClick={onClick} style={style}>
-            {value}
+            <>{value}</>
           </td>
         );
       case "graph":
@@ -193,7 +193,7 @@ const Cell = observer(
             onClick={onClick}
             style={style}
           >
-            {value}
+            <>{value}</>
           </td>
         );
       case "currency":
@@ -266,7 +266,7 @@ const Cell = observer(
             onClick={onClick}
             style={style}
           >
-            {value}%
+            <>{value}</>%
           </td>
         );
       case "amountInput":
