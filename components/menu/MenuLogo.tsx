@@ -3,13 +3,15 @@ import Link from "next/link";
 import Logo from "../icons/ZeitgeistIcon";
 import { Compact } from "@polkadot/types";
 import { BlockNumber } from "@polkadot/types/interfaces";
+import { useStore } from "lib/stores/Store";
 
 const MenuLogo: FC<{
   pathname: string;
-  blockNumber: Compact<BlockNumber>;
   menuOpen: boolean;
   setMenuOpen?: (boolean) => void;
-}> = ({ pathname, blockNumber, menuOpen, setMenuOpen }) => {
+}> = ({ pathname, menuOpen, setMenuOpen }) => {
+  const { blockNumber } = useStore();
+  console.log(blockNumber as Compact<BlockNumber>);
   return (
     <Link
       onClick={() => setMenuOpen(false)}

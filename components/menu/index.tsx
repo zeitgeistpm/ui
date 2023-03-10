@@ -3,7 +3,6 @@ import SideMenu from "./SideMenu";
 import MobileMenu from "components/menu/MobileMenu";
 import { Menu, X } from "react-feather";
 
-import { useStore } from "lib/stores/Store";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import MenuLogo from "components/menu/MenuLogo";
@@ -15,7 +14,6 @@ const AccountButton = dynamic(() => import("../account/AccountButton"), {
 });
 
 const TopBar = () => {
-  const { blockNumber } = useStore();
   const { pathname } = useRouter();
 
   const [navbarBGColor, setNavbarBGColor] =
@@ -65,38 +63,28 @@ const TopBar = () => {
     >
       <div className="relative flex justify-between items-center w-full max-w-screen-2xl h-[44px] mx-auto px-8">
         <SideMenu />
-        <MenuLogo
-          pathname={pathname}
-          blockNumber={blockNumber}
-          menuOpen={menuOpen}
-        />
+        <MenuLogo pathname={pathname} menuOpen={menuOpen} />
         {/* <MarketSearch /> */}
-        <div className="hidden md:block">
-          <AccountButton />
-        </div>
-        <div className="block md:hidden">
-          {menuOpen ? (
-            <X
-              className="ml-auto cursor-pointer text-white"
-              color={`${
-                pathname === "/" ? (menuOpen ? "black" : "white") : "black"
-              }`}
-              onClick={() => setMenuOpen(false)}
-            />
-          ) : (
-            <Menu
-              color={`${
-                pathname === "/" ? (menuOpen ? "black" : "white") : "black"
-              }`}
-              className="ml-auto cursor-pointer"
-              onClick={() => setMenuOpen(true)}
-            />
-          )}
-        </div>
+        <AccountButton />
+        {menuOpen ? (
+          <X
+            className="block md:hidden ml-auto cursor-pointer text-white"
+            color={`${
+              pathname === "/" ? (menuOpen ? "black" : "white") : "black"
+            }`}
+            onClick={() => setMenuOpen(false)}
+          />
+        ) : (
+          <Menu
+            color={`${
+              pathname === "/" ? (menuOpen ? "black" : "white") : "black"
+            }`}
+            className="block md:hidden ml-auto cursor-pointer"
+            onClick={() => setMenuOpen(true)}
+          />
+        )}
       </div>
-      <div className="md:hidden w-full container-fluid">
-        <MobileMenu menuOpen={menuOpen} />
-      </div>
+      <MobileMenu menuOpen={menuOpen} />
     </div>
   );
 };

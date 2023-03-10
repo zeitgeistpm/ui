@@ -68,7 +68,7 @@ const AccountButton: FC<{
     <>
       {!connected ? (
         <div
-          className="flex-1"
+          className="hidden md:block flex-1"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
@@ -102,7 +102,7 @@ const AccountButton: FC<{
         </div>
       ) : (
         <div
-          className={`flex flex-1	items-center justify-end h-full rounded-full cursor-pointer ${
+          className={`hidden md:flex flex-1	items-center justify-end h-full rounded-full cursor-pointer ${
             pathname === "/" ? "bg-transparent border-white" : "border-black"
           }`}
           onClick={() => {
