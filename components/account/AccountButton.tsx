@@ -113,15 +113,21 @@ const AccountButton: FC<{
                   <Menu.Button>
                     <div
                       className={`flex flex-1	items-center justify-end h-full rounded-full cursor-pointer ${
-                        pathname === "/" ? " border-white" : "border-black"
+                        open
+                          ? "border-orange-500"
+                          : pathname === "/"
+                          ? " border-white"
+                          : "border-black"
                       }`}
                     >
                       <div
                         className={`flex items-center rounded-full h-full border-2 pl-1.5 pr-4 ${
                           pathname === "/"
-                            ? "bg-black text-white border-white"
+                            ? `bg-black text-white ${
+                                open ? "border-orange-500" : "border-white"
+                              }`
                             : "text-black border-black"
-                        } ${open ? "border-orange-500" : ""}`}
+                        }`}
                       >
                         <div
                           className={`border-1 ${
