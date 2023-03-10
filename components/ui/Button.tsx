@@ -1,10 +1,12 @@
 import { observer } from "mobx-react";
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 
-const Button: FC<{
-  className?: string;
-  onClick?: () => void;
-}> = observer(({ className = "", onClick, children }) => {
+const Button: FC<
+  PropsWithChildren<{
+    className?: string;
+    onClick?: () => void;
+  }>
+> = observer(({ className = "", onClick, children }) => {
   return (
     <button
       onClick={onClick}

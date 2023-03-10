@@ -1,27 +1,14 @@
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 
-import { ZTG } from "lib/constants";
-import { IndexedMarketCardData } from "components/markets/market-card/index";
-import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
-import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
 import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
+import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
+import { IndexedMarketCardData } from "components/markets/market-card/index";
+import { ZTG } from "lib/constants";
+import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
 
+import { getFeaturedMarketIds } from "lib/cms/get-featured-marketids";
 import { getCurrentPrediction } from "lib/util/assets";
-
-const getMarketIdsFromEnvVar = () => {
-  try {
-    const mIds = JSON.parse(process.env.NEXT_PUBLIC_FEATURED_MARKET_IDS);
-    // this line *should not* be needed, but here just in case
-    const marketIds = mIds.map((id) => Number(id));
-    return marketIds;
-  } catch (err) {
-    console.error(err);
-    return [];
-  }
-};
-
-const marketIds = getMarketIdsFromEnvVar();
 
 const marketQuery = gql`
   query Market($marketId: Int) {
@@ -69,12 +56,10 @@ const assetsQuery = gql`
 const getFeaturedMarkets = async (
   client: GraphQLClient,
 ): Promise<IndexedMarketCardData[]> => {
-  // handles if we don't have any markets set
-
-  if (marketIds.length === 0) return null;
+  const ids = await getFeaturedMarketIds();
 
   const featuredMarkets = await Promise.all(
-    marketIds.map(async (id) => {
+    ids.map(async (id) => {
       const marketRes = await client.request<{
         markets: {
           pool: {

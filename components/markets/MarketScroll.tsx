@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import MarketCard, { IndexedMarketCardData } from "./market-card/index";
 import HorizontalScroll from "components/ui/HorizontalScroll";
+import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
 
 const MarketScroll = observer(
   ({
@@ -22,6 +23,9 @@ const MarketScroll = observer(
       "right",
     );
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
+    const { data: marketsStats } = useMarketsStats(
+      markets.map((m) => m.marketId),
+    );
     const gap = 28;
     //calculate cards shown and width based on container width
     const cardsShown = containerWidth >= 716 && containerWidth < 983 ? 2 : 3;
@@ -89,14 +93,24 @@ const MarketScroll = observer(
             ref={scrollRef}
             className="flex flex-col gap-7 md:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
           >
-            {markets.map((market) => (
-              <MarketCard
-                key={market.marketId}
-                {...market}
-                width={cardWidth}
-                className="market-card rounded-ztg-10 transition duration-500 ease-in-out"
-              />
-            ))}
+            {markets.map((market) => {
+              const stat = marketsStats?.find(
+                (s) => s.marketId === market.marketId,
+              );
+              market = {
+                ...market,
+                numParticipants: stat?.participants,
+                liquidity: stat?.liquidity,
+              };
+              return (
+                <MarketCard
+                  key={market.marketId}
+                  {...market}
+                  width={cardWidth}
+                  className="market-card rounded-ztg-10 transition duration-500 ease-in-out"
+                />
+              );
+            })}
           </div>
         </div>
       </div>

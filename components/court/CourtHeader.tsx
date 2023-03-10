@@ -206,13 +206,13 @@ const CourtHeader = observer(() => {
   const modalStore = useModalStore();
 
   const handleJoinCourtClick = () => {
-    modalStore.openModal(<JoinModalContent />, "Join Court", {
+    modalStore.openModal(<JoinModalContent />, <>"Join Court"</>, {
       styles: { width: "330px" },
     });
   };
 
   const handleExitCourtClick = () => {
-    modalStore.openModal(<ExitModalContent />, "Exit Court", {
+    modalStore.openModal(<ExitModalContent />, <>"Exit Court"</>, {
       styles: { width: "330px" },
     });
   };
