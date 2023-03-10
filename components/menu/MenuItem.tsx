@@ -27,8 +27,7 @@ const WrapComponent: FC<PropsWithChildren<{ href: string }>> = ({
   return href == null ? <>{children}</> : <Link href={href}>{children}</Link>;
 };
 
-<<<<<<< HEAD
-export const MenuItem: FC<MenuItemProps> = ({
+export const MenuItem: FC<PropsWithChildren<MenuItemProps>> = ({
   IconComponent,
   textLabel,
   className = "",
@@ -37,19 +36,6 @@ export const MenuItem: FC<MenuItemProps> = ({
 }) => {
   const { pathname } = useRouter();
   active = pathname === "/" ? false : active;
-=======
-export const MenuItem: FC<PropsWithChildren<MenuItemProps>> = observer(
-  ({
-    IconComponent,
-    textLabel,
-    className = "",
-    href,
-    active = false,
-    onClick,
-  }) => {
-    const { pathname } = useRouter();
-    active = pathname === "/" ? false : active;
->>>>>>> staging
 
   return (
     <WrapComponent href={href}>
