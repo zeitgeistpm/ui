@@ -21,6 +21,7 @@ import { TradeItem, TradeItemContext } from "lib/hooks/trade";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
+import Image from "next/image";
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 
@@ -51,7 +52,7 @@ const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
             }
           `}
         </style>
-        <Menu />
+        {process.env.NEXT_PUBLIC_MIGRATION_IN_PROGRESS !== "true" && <Menu />}
         <div
           ref={contentRef}
           className="overflow-y-a1uto overflow-x-hidden flex-grow"
@@ -72,20 +73,37 @@ const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
             ref={mainRef}
           >
             <div>
-              <ContentDimensionsProvider height={height} width={width}>
-                {store.initialized ||
-                router.pathname === "/" ||
-                router.pathname.split("/")[1] === "markets" ||
-                router.pathname.split("/")[1] === "portfolio" ||
-                router.pathname.split("/")[1] === "liquidity" ? (
-                  children
-                ) : (
-                  <Skeleton
-                    className="!transform-none !mt-ztg-30"
-                    style={{ height: "550px" }}
+              {process.env.NEXT_PUBLIC_MIGRATION_IN_PROGRESS === "true" ? (
+                <div className="w-full h-[800px] flex flex-col items-center justify-center ">
+                  <div className="text-[24px] font-bold">
+                    Migrating to Polkadot
+                  </div>
+                  <Image
+                    src="/polkadot_icon.png"
+                    alt="Polkadot Logo"
+                    width={300}
+                    height={300}
+                    style={{
+                      animation: "rotation 2s infinite linear",
+                    }}
                   />
-                )}
-              </ContentDimensionsProvider>
+                </div>
+              ) : (
+                <ContentDimensionsProvider height={height} width={width}>
+                  {store.initialized ||
+                  router.pathname === "/" ||
+                  router.pathname.split("/")[1] === "markets" ||
+                  router.pathname.split("/")[1] === "portfolio" ||
+                  router.pathname.split("/")[1] === "liquidity" ? (
+                    children
+                  ) : (
+                    <Skeleton
+                      className="!transform-none !mt-ztg-30"
+                      style={{ height: "550px" }}
+                    />
+                  )}
+                </ContentDimensionsProvider>
+              )}
             </div>
           </main>
           <Footer />

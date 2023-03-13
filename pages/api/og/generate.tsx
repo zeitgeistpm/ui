@@ -1,5 +1,6 @@
 import { ImageResponse } from "@vercel/og";
 import { isMarketImageBase64Encoded } from "lib/types/create-market";
+import { formatNumberCompact } from "lib/util/format-compact";
 import type { PageConfig } from "next";
 import { NextRequest } from "next/server";
 import type { MarketImageData } from "./[marketId]";
@@ -32,8 +33,6 @@ export default async function GenerateOgImage(request: NextRequest) {
     ? market.img
     : `https://ipfs-gateway.zeitgeist.pm/ipfs/${market.img}`;
 
-  const isTwitter = searchParams.has("twitter");
-
   const boldFont = await fetch(
     new URL(
       "../../../public/fonts/inter/static/Inter-Bold.ttf",
@@ -50,7 +49,7 @@ export default async function GenerateOgImage(request: NextRequest) {
 
   const image = (
     <div
-      tw="p-12 text-white"
+      tw="p-16 text-white"
       style={{
         width: "100%",
         height: "100%",
@@ -66,90 +65,78 @@ export default async function GenerateOgImage(request: NextRequest) {
           objectFit: "cover",
         }}
       />
-
-      <div tw="flex flex-col h-full mr-20">
-        <div tw="flex flex-1">
-          <img
-            style={{
-              width: 140,
-              height: 140,
-              objectFit: "cover",
-              borderRadius: "100%",
-            }}
-            src={marketImage}
-          />
-        </div>
-        <div tw="flex flex-col">
-          <h2 tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}>
-            Ends:
-          </h2>
-          <div tw="text-2xl -mt-3" style={{ color: "#ABC1F9" }}>
-            {ends}
+      <div tw="flex h-full w-full">
+        <div tw="flex flex-col justify-between h-full">
+          <div tw="flex">
+            <img
+              style={{
+                width: 180,
+                height: 180,
+                objectFit: "cover",
+              }}
+              src={marketImage}
+              tw="rounded-[5px]"
+            />
+          </div>
+          <div tw="flex">
+            <img
+              style={{
+                width: 200,
+              }}
+              src={
+                new URL(
+                  "../../../public/og/zeitgeist_badge.png",
+                  import.meta.url,
+                ).href
+              }
+            />
           </div>
         </div>
-      </div>
-
-      <div tw="flex flex-1 flex-col h-full">
-        <h1
-          tw={`${isTwitter ? "text-3xl mb-14" : "text-5xl"}`}
-          style={{ lineHeight: "1.3em" }}
-        >
-          {market.question}
-        </h1>
-
-        <div tw="flex flex-1 flex-col just h-full justify-end">
-          <div tw="flex flex-col mb-4">
-            <h2
-              tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}
-            >
+        <div tw="flex flex-col h-full ml-[80px]" style={{ width: 750 }}>
+          <h1 tw={`${"text-5xl"}`} style={{ lineHeight: "1.3em" }}>
+            {market.question}
+          </h1>
+          <div tw="flex flex-col mt-auto">
+            <h2 tw={`font-bold ${"text-3xl"} font-sans`}>
               {market.status === "Reported" || market.status === "Resolved"
                 ? "Winning Outcome:"
                 : "Prediction:"}
             </h2>
             <div
-              tw={`flex ${isTwitter ? "text-1xl" : "text-2xl"} -mt-3`}
+              tw={`font-semibold ${"text-6xl"} `}
               style={{ color: "#ABC1F9" }}
             >
               {market.marketType.categorical
-                ? `${prediction.percentage}% — ${prediction.name}`
+                ? `${prediction.name} (${prediction.percentage}%)`
                 : `${prediction.name}`}
             </div>
           </div>
-
-          <div tw="flex flex-col">
-            <h2
-              tw={`font-bold ${isTwitter ? "text-2xl" : "text-3xl"} font-sans`}
-            >
-              Volume:
-            </h2>
-            <div
-              tw={`flex ${isTwitter ? "text-1xl" : "text-2xl"}  -mt-3`}
-              style={{ color: "#ABC1F9" }}
-            >
-              {volume}
-              {" ZTG"}
+          <div tw="flex mt-[50px] w-full">
+            <div tw="flex flex-col mr-[200px]">
+              <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Ends:</h2>
+              <div tw="text-2xl -mt-3" style={{ color: "#ABC1F9" }}>
+                {ends}
+              </div>
+            </div>
+            <div tw="flex flex-col">
+              <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Volume:</h2>
+              <div
+                tw={`flex ${"text-2xl"}  -mt-3`}
+                style={{ color: "#ABC1F9" }}
+              >
+                {formatNumberCompact(Number(volume))}
+                {" ZTG"}
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      <img
-        tw="absolute bottom-12 right-12"
-        style={{
-          transform: isTwitter ? "scale(0.4)" : "scale(0.5)",
-          transformOrigin: "bottom right",
-        }}
-        src={
-          new URL("../../../public/og/zeitgeist_badge.png", import.meta.url)
-            .href
-        }
-      />
     </div>
   );
 
   return new ImageResponse(image, {
-    width: isTwitter ? 800 : 1200,
-    height: isTwitter ? 418 : 675,
+    width: 1200,
+    height: 630,
     fonts: [
       {
         name: "Inter",
