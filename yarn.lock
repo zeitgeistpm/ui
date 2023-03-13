@@ -3207,7 +3207,7 @@ __metadata:
     flexsearch: ^0.7.21
     font-color-contrast: ^11.1.0
     framer-motion: 4.1.17
-    graphql-request: ^3.6.1
+    graphql-request: ^5.0.0
     ip-range-check: ^0.2.0
     jest: ^28.1.0
     jest-environment-jsdom: ^28.1.0

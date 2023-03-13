@@ -47,7 +47,7 @@
     "flexsearch": "^0.7.21",
     "font-color-contrast": "^11.1.0",
     "framer-motion": "4.1.17",
-    "graphql-request": "^3.6.1",
+    "graphql-request": "^5.0.0",
     "ip-range-check": "^0.2.0",
     "lodash.merge": "^4.6.2",
     "mobx": "^6.3.12",
