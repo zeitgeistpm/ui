@@ -5,7 +5,7 @@ import { useSdkv2 } from "../useSdkv2";
 
 export const marketPriceHistoryKey = "market-price-histroy";
 
-const priceHistoyQuery = gql`
+const priceHistoryQuery = gql`
   query PriceHistory($marketId: Float!, $interval: String, $startTime: String) {
     priceHistory(
       marketId: $marketId
@@ -61,7 +61,7 @@ export async function getPriceHistory(
 ) {
   const { priceHistory } = await client.request<{
     priceHistory: PriceHistory[];
-  }>(priceHistoyQuery, {
+  }>(priceHistoryQuery, {
     marketId: marketId,
     interval: interval,
     startTime: startTime,
