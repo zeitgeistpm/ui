@@ -54,7 +54,10 @@ const TopBar = observer(() => {
     useState<NavbarColor>("transparent");
 
   const changeNavBG = () => {
-    if (window.scrollY >= 60 && pathname === "/") {
+    if (
+      (window.scrollY >= 60 && pathname === "/") ||
+      process.env.NEXT_PUBLIC_MIGRATION_IN_PROGRESS === "true"
+    ) {
       setNavbarBGColor("black");
     } else if (pathname === "/") {
       setNavbarBGColor("transparent");

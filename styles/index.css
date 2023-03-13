@@ -274,6 +274,15 @@ tr {
   @apply transition duration-200 ease-in-out;
 }
 
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
 @keyframes glitch-anim-1 {
   0%,
   100% {
