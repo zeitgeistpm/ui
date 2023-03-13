@@ -46,7 +46,6 @@ export const useMarketPriceHistory = (
     },
     {
       enabled: Boolean(sdk && marketId != null && interval && startTime),
-      keepPreviousData: true,
     },
   );
 
