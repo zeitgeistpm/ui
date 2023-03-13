@@ -8,16 +8,20 @@ export const MarketFiltersContext = createContext<{
   activeFilters: MarketFilter[];
   selectedMenu: SelectedMenu;
   setSelectedMenu: (menu: SelectedMenu) => void;
+  portal: HTMLDivElement;
 }>(null);
 
 const MarketFiltersContainer: FC<
-  PropsWithChildren<{ activeFilters: MarketFilter[] }>
-> = observer(({ children, activeFilters }) => {
+  PropsWithChildren<{
+    activeFilters: MarketFilter[];
+    portal: HTMLDivElement;
+  }>
+> = observer(({ children, activeFilters, portal }) => {
   const [selectedMenu, setSelectedMenu] = useState<SelectedMenu>("None");
 
   return (
     <MarketFiltersContext.Provider
-      value={{ activeFilters, selectedMenu, setSelectedMenu }}
+      value={{ activeFilters, selectedMenu, setSelectedMenu, portal }}
     >
       <div className="font-bold text-[28px] text-center mb-[15px]">
         All Markets
