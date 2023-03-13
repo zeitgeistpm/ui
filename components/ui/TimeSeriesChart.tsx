@@ -56,7 +56,7 @@ const ChartToolTip = observer((props) => {
             </span>
             <div className="mt-ztg-13">
               {props.series?.map((asset, index) => (
-                <div className="flex flex-col mt-1">
+                <div key={index} className="flex flex-col mt-1">
                   <span className="font-semibold capitalize">
                     {asset.label}
                   </span>
@@ -200,11 +200,14 @@ const TimeSeriesChart = observer(
                 }}
                 tickLine={false}
                 domain={
-                  yDomain ?? [0, (dataMax) => (dataMax === 0 ? 1 : dataMax)]
+                  yDomain ?? [
+                    (dataMin) => (dataMin < 0.3 ? 0 : dataMin),
+                    (dataMax) => (dataMax === 0 ? 1 : dataMax),
+                  ]
                 }
                 stroke="#E8EAED"
                 strokeWidth={2}
-                tickFormatter={(val) => `${+val.toFixed(1)} ${yUnits}`}
+                tickFormatter={(val) => `${+val.toFixed(2)}${yUnits}`}
               />
 
               <Tooltip

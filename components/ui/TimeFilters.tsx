@@ -30,7 +30,7 @@ export const filters: TimeFilter[] = [
   {
     label: "All",
     time: new Date("Wed Dec 30 2020").toISOString(),
-    interval: "3 DAYS",
+    interval: "1 DAY",
   },
 ];
 

@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
-import { TimeFilter } from "components/ui/TimeFilters";
 import { gql } from "graphql-request";
 import { useSdkv2 } from "../useSdkv2";
 

@@ -6,6 +6,14 @@ import TimeSeriesChart, {
 import { useMarketPriceHistory } from "lib/hooks/queries/useMarketPriceHistory";
 import { useMemo, useState } from "react";
 
+const setTimeToNow = (date: Date) => {
+  const now = new Date();
+  date.setHours(now.getHours());
+  date.setMinutes(now.getMinutes());
+
+  return date;
+};
+
 const MarketChart = ({
   marketId,
   chartSeries,
@@ -24,19 +32,20 @@ const MarketChart = ({
   );
   const startDate = useMemo(() => {
     if (chartFilter.label === "All") {
-      return poolCreationDate;
+      //hack to make data end on same time as now
+      return setTimeToNow(new Date(poolCreationDate)).toISOString();
     } else {
       const filterDate = new Date(chartFilter.time);
       const poolDate = new Date(poolCreationDate);
       if (filterDate.getTime() > poolDate.getTime()) {
         return chartFilter.time;
       } else {
-        return poolCreationDate;
+        return setTimeToNow(new Date(poolCreationDate)).toISOString();
       }
     }
   }, [chartFilter.label]);
 
-  const { data: prices, isLoading } = useMarketPriceHistory(
+  const { data: prices } = useMarketPriceHistory(
     marketId,
     chartFilter.interval,
     startDate,
@@ -45,7 +54,8 @@ const MarketChart = ({
   const chartData = prices?.map((price) => {
     const time = new Date(price.timestamp).getTime();
     const assetPrices = price.prices.reduce((obj, val, index) => {
-      return { ...obj, ["v" + index]: val.price ?? 0 };
+      // adjust prices over 1
+      return { ...obj, ["v" + index]: (val.price > 1 ? 1 : val.price) ?? 0 };
     }, {});
 
     return {
