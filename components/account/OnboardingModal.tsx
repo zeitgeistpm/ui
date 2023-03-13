@@ -252,37 +252,35 @@ const OnBoardingModal = (props: { step?: number; notice?: string }) => {
   ];
 
   return (
-    <Dialog.Panel>
-      <div
-        className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
-             w-full max-w-[526px] p-[30px] rounded-ztg-10"
-      >
-        <div className="rounded-full w-[120px] h-[120px] mb-auto">
-          <Image
-            alt="AI Logan?"
-            src={"/misc/face.png"}
-            width={120}
-            height={120}
-          />
-        </div>
-
-        {screens[step]}
-
-        {props.notice && (
-          <div className="text-center py-1 mb-3 text-orange-400 rounded-md">
-            {props.notice}
-          </div>
-        )}
-
-        {screens.length - (props.step ?? 0) > 1 && (
-          <Stepper
-            start={props.step ?? 0}
-            end={screens.length}
-            currentStep={step}
-            onStepClick={setStep}
-          />
-        )}
+    <Dialog.Panel
+      className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
+    w-full max-w-[526px] p-[30px] rounded-ztg-10"
+    >
+      <div className="rounded-full w-[120px] h-[120px] mb-auto">
+        <Image
+          alt="AI Logan?"
+          src={"/misc/face.png"}
+          width={120}
+          height={120}
+        />
       </div>
+
+      {screens[step]}
+
+      {props.notice && (
+        <div className="text-center py-1 mb-3 text-orange-400 rounded-md">
+          {props.notice}
+        </div>
+      )}
+
+      {screens.length - (props.step ?? 0) > 1 && (
+        <Stepper
+          start={props.step ?? 0}
+          end={screens.length}
+          currentStep={step}
+          onStepClick={setStep}
+        />
+      )}
     </Dialog.Panel>
   );
 };
