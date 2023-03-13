@@ -221,7 +221,7 @@ const OnBoardingModal = (props: { step?: number; notice?: string }) => {
     />,
     <WalletSelection />,
     <TextSection
-      headerText="Success on getting a wallet!"
+      headerText="Wallet Successfully Installed"
       bodyText="Now to get ZTG."
       leftButton={{
         text: "Back",
