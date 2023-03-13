@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
-import { gql } from "graphql-request";
+import { gql, GraphQLClient } from "graphql-request";
 import { useSdkv2 } from "../useSdkv2";
 
 export const marketPriceHistoryKey = "market-price-histroy";
@@ -21,7 +21,7 @@ const priceHistoyQuery = gql`
   }
 `;
 
-interface PricePoint {
+export interface PriceHistory {
   timestamp: string;
   prices: { assetId: string; price: number }[];
 }
@@ -36,15 +36,12 @@ export const useMarketPriceHistory = (
     [id, marketPriceHistoryKey, marketId, interval, startTime],
     async () => {
       if (isIndexedSdk(sdk)) {
-        const { priceHistory } = await sdk.indexer.client.request<{
-          priceHistory: PricePoint[];
-        }>(priceHistoyQuery, {
-          marketId: marketId,
-          interval: interval,
-          startTime: startTime,
-        });
-
-        return priceHistory;
+        return await getPriceHistory(
+          sdk.indexer.client,
+          marketId,
+          interval,
+          startTime,
+        );
       }
     },
     {
@@ -54,3 +51,20 @@ export const useMarketPriceHistory = (
 
   return query;
 };
+
+export async function getPriceHistory(
+  client: GraphQLClient,
+  marketId: number,
+  interval: string,
+  startTime: string,
+) {
+  const { priceHistory } = await client.request<{
+    priceHistory: PriceHistory[];
+  }>(priceHistoyQuery, {
+    marketId: marketId,
+    interval: interval,
+    startTime: startTime,
+  });
+
+  return priceHistory;
+}

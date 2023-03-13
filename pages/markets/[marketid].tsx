@@ -41,6 +41,12 @@ import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import MarketHeader from "components/markets/MarketHeader";
 import MarketChart from "components/markets/MarketChart";
+import {
+  getPriceHistory,
+  PriceHistory,
+  useMarketPriceHistory,
+} from "lib/hooks/queries/useMarketPriceHistory";
+import TimeFilters, { filters } from "components/ui/TimeFilters";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -64,15 +70,6 @@ export async function getStaticProps({ params }) {
 
   const market = await getMarket(client, params.marketid);
 
-  const startDate = new Date(Number(market?.period.start)).toISOString();
-  const assetPrices = market?.outcomeAssets
-    ? await Promise.all(
-        market?.outcomeAssets?.map((asset) =>
-          getAssetPriceHistory(client, asset, startDate),
-        ),
-      )
-    : undefined;
-
   const chartSeries: ChartSeries[] = market?.categories?.map(
     (category, index) => {
       return {
@@ -83,25 +80,23 @@ export async function getStaticProps({ params }) {
     },
   );
 
-  const chartData: ChartData[] = assetPrices?.flatMap((prices, index) => {
-    return prices.map((price) => {
-      return {
-        t: new Date(price.timestamp).getTime(),
-        ["v" + index]: price.newPrice,
-      };
-    });
-  });
-
   const baseAsset =
     market?.pool != null
       ? await getBaseAsset(client, market.pool.poolId)
       : null;
 
+  const priceHistory = await getPriceHistory(
+    client,
+    market.marketId,
+    filters[1].interval,
+    filters[1].time,
+  );
+
   return {
     props: {
       indexedMarket: market ?? null,
       chartSeries: chartSeries ?? null,
-      chartData: chartData ?? null,
+      priceHistory: priceHistory ?? null,
       baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
     },
     revalidate: 10 * 60, //10mins
@@ -111,9 +106,9 @@ export async function getStaticProps({ params }) {
 const Market: NextPage<{
   indexedMarket: MarketPageIndexedData;
   chartSeries: ChartSeries[];
-  chartData: ChartData[];
+  priceHistory: PriceHistory[];
   baseAsset: string;
-}> = observer(({ indexedMarket, chartSeries, chartData, baseAsset }) => {
+}> = observer(({ indexedMarket, chartSeries, priceHistory, baseAsset }) => {
   const marketsStore = useMarketsStore();
   const router = useRouter();
   const { marketid } = router.query;
@@ -204,13 +199,15 @@ const Market: NextPage<{
             <MarketTimerSkeleton />
           )}
         </div>
-        {chartData?.length > 0 && chartSeries && marketSdkv2?.pool ? (
+        {priceHistory?.length > 0 &&
+        chartSeries &&
+        indexedMarket?.pool?.poolId ? (
           <MarketChart
-            marketId={marketSdkv2.marketId}
+            marketId={indexedMarket.marketId}
             chartSeries={chartSeries}
-            weeklyChartData={chartData}
+            initialData={priceHistory}
             baseAsset={baseAsset}
-            poolCreationDate={marketSdkv2.pool.createdAt}
+            poolCreationDate={indexedMarket?.pool?.createdAt}
           />
         ) : (
           <></>
