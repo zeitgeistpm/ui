@@ -126,7 +126,9 @@ const AccountButton: FC<{
                             ? `bg-black text-white ${
                                 open ? "border-orange-500" : "border-white"
                               }`
-                            : "text-black border-black"
+                            : `text-black ${
+                                open ? "border-orange-500" : "border-black"
+                              }`
                         }`}
                       >
                         <div

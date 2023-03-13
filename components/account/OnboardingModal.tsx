@@ -1,3 +1,4 @@
+import { Dialog } from "@headlessui/react";
 import { useOnboarding } from "lib/state/onboarding";
 import { BaseDotsamaWallet } from "lib/wallets/base-dotsama-wallet";
 import { PolkadotjsWallet } from "lib/wallets/polkadotjs-wallet";
@@ -140,7 +141,7 @@ const WalletSelection = observer(() => {
       <button
         disabled={isReloading}
         onClick={handleWalletInstalled}
-        className="leading-[42px] w-full sm:w-fit text-xl text-center sm:text-start bg-blue-600 text-white rounded px-5 py-2 mb-5 mr-5 font-bold"
+        className="leading-[42px] w-full mt-6 sm:w-fit text-xl text-center sm:text-start bg-blue-600 text-white rounded px-5 py-2 mb-5 mr-5 font-bold"
       >
         {isReloading ? (
           <Loader color="white" size={12} />
@@ -251,36 +252,38 @@ const OnBoardingModal = (props: { step?: number; notice?: string }) => {
   ];
 
   return (
-    <div
-      className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
+    <Dialog.Panel>
+      <div
+        className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
              w-full max-w-[526px] p-[30px] rounded-ztg-10"
-    >
-      <div className="rounded-full w-[120px] h-[120px] mb-auto">
-        <Image
-          alt="AI Logan?"
-          src={"/misc/face.png"}
-          width={120}
-          height={120}
-        />
-      </div>
-
-      {screens[step]}
-
-      {props.notice && (
-        <div className="text-center py-1 mb-3 text-orange-400 rounded-md">
-          {props.notice}
+      >
+        <div className="rounded-full w-[120px] h-[120px] mb-auto">
+          <Image
+            alt="AI Logan?"
+            src={"/misc/face.png"}
+            width={120}
+            height={120}
+          />
         </div>
-      )}
 
-      {screens.length - (props.step ?? 0) > 1 && (
-        <Stepper
-          start={props.step ?? 0}
-          end={screens.length}
-          currentStep={step}
-          onStepClick={setStep}
-        />
-      )}
-    </div>
+        {screens[step]}
+
+        {props.notice && (
+          <div className="text-center py-1 mb-3 text-orange-400 rounded-md">
+            {props.notice}
+          </div>
+        )}
+
+        {screens.length - (props.step ?? 0) > 1 && (
+          <Stepper
+            start={props.step ?? 0}
+            end={screens.length}
+            currentStep={step}
+            onStepClick={setStep}
+          />
+        )}
+      </div>
+    </Dialog.Panel>
   );
 };
 
