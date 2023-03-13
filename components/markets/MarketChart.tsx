@@ -32,15 +32,14 @@ const MarketChart = ({
   );
   const startDate = useMemo(() => {
     if (chartFilter.label === "All") {
-      //hack to make data end on same time as now
-      return setTimeToNow(new Date(poolCreationDate)).toISOString();
+      return poolCreationDate;
     } else {
       const filterDate = new Date(chartFilter.time);
       const poolDate = new Date(poolCreationDate);
       if (filterDate.getTime() > poolDate.getTime()) {
         return chartFilter.time;
       } else {
-        return setTimeToNow(new Date(poolCreationDate)).toISOString();
+        return poolCreationDate;
       }
     }
   }, [chartFilter.label]);
@@ -48,7 +47,8 @@ const MarketChart = ({
   const { data: prices } = useMarketPriceHistory(
     marketId,
     chartFilter.interval,
-    startDate,
+    //hack to make data end on same time as now
+    setTimeToNow(new Date(startDate)).toISOString(),
   );
 
   const chartData = prices?.map((price) => {

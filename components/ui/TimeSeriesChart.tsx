@@ -201,13 +201,17 @@ const TimeSeriesChart = observer(
                 tickLine={false}
                 domain={
                   yDomain ?? [
-                    (dataMin) => (dataMin < 0.3 ? 0 : dataMin),
-                    (dataMax) => (dataMax === 0 ? 1 : dataMax),
+                    (dataMin: number) => {
+                      return dataMin < 0.3 ? 0 : Math.floor(dataMin * 10) / 10;
+                    },
+                    (dataMax) => {
+                      return dataMax === 0 ? 1 : Math.ceil(dataMax * 10) / 10;
+                    },
                   ]
                 }
                 stroke="#E8EAED"
                 strokeWidth={2}
-                tickFormatter={(val) => `${+val.toFixed(2)}${yUnits}`}
+                tickFormatter={(val) => `${+val.toFixed(2)} ${yUnits}`}
               />
 
               <Tooltip
