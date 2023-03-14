@@ -60,6 +60,11 @@ const TradeForm = observer(() => {
   const assetAmount = watch("assetAmount");
   const baseAmount = watch("baseAmount");
 
+  const [finalAmounts, setFinalAmounts] = useState<{
+    asset: string;
+    base: string;
+  }>({ asset: "0", base: "0" });
+
   const averagePrice = useMemo<string>(() => {
     if (!Number(assetAmount) || !Number(baseAmount)) {
       return "0";
@@ -130,6 +135,8 @@ const TradeForm = observer(() => {
         } for ${baseAmount} ${baseSymbol}`,
         { type: "Success" },
       );
+
+      setFinalAmounts({ asset: assetAmount, base: baseAmount });
       setPercentageDisplay("0");
     },
   });
@@ -389,9 +396,9 @@ const TradeForm = observer(() => {
       {isSuccess === true ? (
         <TradeResult
           type={tradeItem.action}
-          amount={new Decimal(assetAmount)}
+          amount={new Decimal(finalAmounts.asset)}
           tokenName={tradeItemState?.asset.category.name}
-          baseTokenAmount={new Decimal(baseAmount)}
+          baseTokenAmount={new Decimal(finalAmounts.base)}
           baseToken={baseSymbol}
           marketId={tradeItemState?.market.marketId}
           marketQuestion={tradeItemState?.market.question}
