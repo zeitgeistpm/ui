@@ -37,14 +37,14 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
   const timer = timeUntilStageEnds.as(format);
 
   return (
-    <div className="inline-block">
+    <div className="inline-block w-full max-w-[800px]">
       <div className="flex mb-4 items-center">
-        <h3 className="font-bold text-lg mr-4 text-black">
+        <h3 className="font-bold text-lg md:mr-4 text-black">
           {copy[stage.type].title}
         </h3>
-        <h4 className="mr-20 text-sky-600">{copy[stage.type].description}</h4>
+        <h4 className="text-sky-600">{copy[stage.type].description}</h4>
         {!isInfinite(stage) && (
-          <h4 className="text-black">
+          <h4 className="ml-auto text-black text-right">
             {timer.toFixed(0)}{" "}
             {upperFirst(format + (Math.floor(timer) > 1 ? "s" : ""))} left
           </h4>
@@ -69,16 +69,16 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
 
 export const MarketTimerSkeleton = () => {
   return (
-    <div className="inline-block">
+    <div className="inline-block w-full max-w-[800px]">
       <div className="flex mb-4 items-center">
-        <h3 className="font-bold text-lg mr-4 text-gray-500">
+        <h3 className="font-bold text-lg md:mr-4">
           <Skeleton width={150} />
         </h3>
-        <h4 className="mr-4 text-gray-500">
+        <h4 className="hidden sm:block">
           <Skeleton width={260} />
         </h4>
 
-        <h4 className="text-gray-500">
+        <h4 className="ml-auto">
           <Skeleton width={40} />
         </h4>
       </div>

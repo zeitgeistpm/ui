@@ -197,7 +197,7 @@ const Market: NextPage<{
             Market rejected: {marketSdkv2.rejectReason}
           </div>
         )}
-        <div className="flex justify-center my-10 h-32">
+        <div className="flex justify-center my-10">
           {marketStage ? (
             <MarketTimer stage={marketStage} />
           ) : (
