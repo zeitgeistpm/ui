@@ -105,7 +105,7 @@ const AccountButton: FC<{
           )}
         </div>
       ) : (
-        <div className="relative">
+        <div className="hidden md:block relative">
           <Menu>
             {({ open }) => (
               <>
