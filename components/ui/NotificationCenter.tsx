@@ -66,7 +66,7 @@ const NotificationCard: FC<{
       exit={{ x: 300, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ type: "spring", duration: 0.7 }}
-      className="mb-ztg-17 flex rounded-ztg-5 border-1 border-sky-600 p-ztg-14 pointer-events-auto"
+      className="flex rounded-ztg-5 border-1 border-sky-600 p-ztg-14 pointer-events-auto"
       style={{
         width: "304px",
         background: getGradient(type),
@@ -93,7 +93,7 @@ const NotificationCard: FC<{
       </span>
       <span className="w-full">
         <div
-          className="text-black dark:text-white  font-bold text-ztg-16-150 flex items-center w-full"
+          className="text-black dark:text-white font-bold text-ztg-16-150 flex items-center w-full"
           data-test={dataTest}
         >
           <span>{getMessage(type)}</span>
@@ -120,8 +120,8 @@ const NotificationCenter = observer(() => {
   const notificationStore = useNotificationStore();
 
   return (
-    <div className="fixed h-full w-full top-0 pointer-events-none z-ztg-50">
-      <div className="flex flex-row justify-end pr-ztg-27 pt-20">
+    <div className="fixed h-full w-full top-0 pointer-events-none z-50">
+      <div className="flex flex-row justify-end pr-ztg-27 pt-[120px]">
         <div className="flex flex-col">
           <AnimatePresence>
             {notificationStore.notifications.map((n, idx) => (
