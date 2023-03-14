@@ -39,7 +39,7 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
   return (
     <div className="inline-block w-full max-w-[800px]">
       <div className="flex mb-4 items-center">
-        <h3 className="font-bold text-lg md:mr-4 text-black">
+        <h3 className="font-bold text-lg mr-4 md:mr-4 text-black">
           {copy[stage.type].title}
         </h3>
         <h4 className="text-sky-600">{copy[stage.type].description}</h4>
@@ -71,7 +71,7 @@ export const MarketTimerSkeleton = () => {
   return (
     <div className="inline-block w-full max-w-[800px]">
       <div className="flex mb-4 items-center">
-        <h3 className="font-bold text-lg md:mr-4">
+        <h3 className="font-bold text-lg mr-2 md:mr-4">
           <Skeleton width={150} />
         </h3>
         <h4 className="hidden sm:block">
