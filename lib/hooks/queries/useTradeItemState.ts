@@ -69,13 +69,22 @@ export const useTradeItemState = (item: TradeItem) => {
       ?.data?.balance?.free.toString() ?? 0,
   );
 
+  const balances = {
+    poolBaseBalance: poolBaseBalance?.toString(),
+    poolAssetBalance: poolAssetBalance?.toString(),
+    traderBaseBalance: traderBaseBalance?.toString(),
+    traderAssetBalance: traderAssetBalance?.toString(),
+  };
+
   const query = useQuery(
     [
       id,
       tradeItemStateRootQueryKey,
+      poolAccountId,
+      wallets.activeAccount?.address,
+      balances,
       item.action,
       JSON.stringify(item.assetId),
-      wallets.activeAccount?.address,
     ],
     () => {
       const baseWeight = getAssetWeight(pool, { Ztg: null }).unwrap();
@@ -102,6 +111,7 @@ export const useTradeItemState = (item: TradeItem) => {
         pool,
         spotPrice,
         baseAssetId: { Ztg: null },
+        poolAccountId,
         poolBaseBalance,
         poolAssetBalance,
         assetId: item.assetId,
@@ -126,6 +136,8 @@ export const useTradeItemState = (item: TradeItem) => {
         !!poolAssetBalance &&
         !!wallets.activeAccount?.address,
       keepPreviousData: true,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
     },
   );
 

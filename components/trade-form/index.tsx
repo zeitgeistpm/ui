@@ -1,6 +1,10 @@
 import { Tab } from "@headlessui/react";
-import { ISubmittableResult } from "@polkadot/types/types";
-import { AssetId, ZTG, IOMarketOutcomeAssetId } from "@zeitgeistpm/sdk-next";
+import {
+  AssetId,
+  ZTG,
+  IOMarketOutcomeAssetId,
+  IOZtgAssetId,
+} from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import {
   useTradeItem,
@@ -11,7 +15,7 @@ import {
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { capitalize } from "lodash";
 import { from } from "rxjs";
 import { useDebounce } from "use-debounce";
@@ -20,19 +24,13 @@ import TransactionButton from "../ui/TransactionButton";
 import TradeTab, { TradeTabType } from "./TradeTab";
 import { useForm } from "react-hook-form";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
-import { useQueryClient } from "@tanstack/react-query";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
-import {
-  tradeItemStateRootQueryKey,
-  useTradeItemState,
-} from "lib/hooks/queries/useTradeItemState";
-import { calcSpotPrice } from "lib/math";
+import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
+import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import TradeResult from "components/markets/TradeResult";
 
 const TradeForm = observer(() => {
   const notificationStore = useNotificationStore();
   const [tabIndex, setTabIndex] = useState<number>(0);
-  const [sdk, id] = useSdkv2();
   const { register, formState, watch, setValue, reset } = useForm<{
     percentage: string;
     assetAmount: string;
@@ -55,7 +53,6 @@ const TradeForm = observer(() => {
 
   const [fee, setFee] = useState<string>("0.00");
   const [percentageDisplay, setPercentageDisplay] = useState<string>("0");
-  const queryClient = useQueryClient();
   const baseSymbol = tradeItemState?.pool.baseAsset.toUpperCase() ?? "ZTG";
 
   const type = tradeItem.action;
@@ -124,7 +121,7 @@ const TradeForm = observer(() => {
     isSuccess,
     isLoading,
   } = useExtrinsic(() => transaction, {
-    onSuccess: (result: ISubmittableResult) => {
+    onSuccess: () => {
       notificationStore.pushNotification(
         `Successfully ${
           tradeItem.action === "buy" ? "bought" : "sold"
@@ -134,13 +131,6 @@ const TradeForm = observer(() => {
         { type: "Success" },
       );
       setPercentageDisplay("0");
-      queryClient.invalidateQueries([
-        id,
-        tradeItemStateRootQueryKey,
-        tradeItem.action,
-        JSON.stringify(tradeItem.assetId),
-        wallets?.activeAccount?.address,
-      ]);
     },
   });
 
@@ -161,56 +151,238 @@ const TradeForm = observer(() => {
     return () => sub.unsubscribe();
   }, [debouncedTransactionHash]);
 
+  const changeByPercentage = useCallback(
+    (percentage: Decimal) => {
+      if (tradeItemState == null) {
+        return;
+      }
+      if (tradeItem.action === "buy") {
+        const amountOut = maxAssetAmountDecimal.mul(percentage);
+
+        const {
+          poolBaseBalance: balanceIn,
+          baseWeight: weightIn,
+          assetWeight: weightOut,
+          poolAssetBalance: balanceOut,
+        } = tradeItemState;
+
+        const amountIn = calcInGivenOut(
+          balanceIn,
+          weightIn,
+          balanceOut,
+          weightOut,
+          amountOut.mul(ZTG),
+          tradeItemState.swapFee,
+        );
+
+        setValue(
+          "baseAmount",
+          amountIn.div(ZTG).toFixed(4, Decimal.ROUND_DOWN),
+        );
+        setValue("assetAmount", amountOut.toFixed(4, Decimal.ROUND_DOWN));
+      } else if (tradeItem.action === "sell") {
+        const amountOut = maxBaseAmountDecimal.mul(percentage);
+
+        const {
+          poolAssetBalance,
+          poolBaseBalance: balanceIn,
+          baseWeight: weightIn,
+          assetWeight: weightOut,
+        } = tradeItemState;
+
+        const amountIn = calcInGivenOut(
+          poolAssetBalance,
+          weightOut,
+          balanceIn,
+          weightIn,
+          amountOut.mul(ZTG),
+          tradeItemState.swapFee,
+        );
+
+        setValue("baseAmount", amountOut.toFixed(4, Decimal.ROUND_DOWN));
+        setValue(
+          "assetAmount",
+          amountIn.div(ZTG).toFixed(4, Decimal.ROUND_DOWN),
+        );
+      }
+    },
+    [
+      tradeItem?.action,
+      maxBaseAmount.toString(),
+      maxAssetAmount.toString(),
+      tradeItemState,
+    ],
+  );
+
+  const changeByAssetAmount = useCallback(
+    (assetAmount: Decimal) => {
+      if (tradeItemState == null) {
+        return;
+      }
+      const {
+        poolBaseBalance,
+        baseWeight,
+        assetWeight,
+        poolAssetBalance,
+        swapFee,
+      } = tradeItemState;
+
+      const percentage = maxAssetAmountDecimal.gt(0)
+        ? assetAmount.div(maxAssetAmountDecimal).mul(100).toDecimalPlaces(0)
+        : new Decimal(0);
+
+      if (tradeItem.action === "buy") {
+        const [balanceIn, weightIn, balanceOut, weightOut] = [
+          poolBaseBalance,
+          baseWeight,
+          poolAssetBalance,
+          assetWeight,
+        ];
+        const amountIn = calcInGivenOut(
+          balanceIn,
+          weightIn,
+          balanceOut,
+          weightOut,
+          assetAmount.mul(ZTG),
+          swapFee,
+        );
+
+        setValue(
+          "baseAmount",
+          amountIn.div(ZTG).toFixed(4, Decimal.ROUND_DOWN),
+        );
+        setPercentageDisplay(percentage.toString());
+      } else if (tradeItem.action === "sell") {
+        const [balanceIn, weightIn, balanceOut, weightOut] = [
+          poolAssetBalance,
+          assetWeight,
+          poolBaseBalance,
+          baseWeight,
+        ];
+
+        const amountOut = calcOutGivenIn(
+          balanceIn,
+          weightIn,
+          balanceOut,
+          weightOut,
+          assetAmount.mul(ZTG),
+          swapFee,
+        );
+        setValue(
+          "baseAmount",
+          amountOut.div(ZTG).toFixed(4, Decimal.ROUND_DOWN),
+        );
+        setPercentageDisplay(percentage.toString());
+      }
+    },
+    [
+      maxBaseAmount.toString(),
+      maxAssetAmount.toString(),
+      tradeItem.action,
+      tradeItemState,
+    ],
+  );
+
+  const changeByBaseAmount = useCallback(
+    (baseAmount: Decimal) => {
+      if (tradeItemState == null) {
+        return;
+      }
+      const {
+        poolBaseBalance,
+        baseWeight,
+        assetWeight,
+        poolAssetBalance,
+        swapFee,
+      } = tradeItemState;
+
+      const percentage = maxBaseAmountDecimal.gt(0)
+        ? baseAmount.div(maxBaseAmountDecimal).mul(100).toDecimalPlaces(0)
+        : new Decimal(0);
+
+      if (tradeItem.action === "buy") {
+        const [balanceIn, weightIn, balanceOut, weightOut] = [
+          poolBaseBalance,
+          baseWeight,
+          poolAssetBalance,
+          assetWeight,
+        ];
+
+        const amountOut = calcOutGivenIn(
+          balanceIn,
+          weightIn,
+          balanceOut,
+          weightOut,
+          baseAmount.mul(ZTG),
+          swapFee,
+        );
+        setValue(
+          "assetAmount",
+          amountOut.div(ZTG).toFixed(4, Decimal.ROUND_DOWN),
+        );
+        setPercentageDisplay(percentage.toString());
+      } else if (tradeItem.action === "sell") {
+        const [balanceIn, weightIn, balanceOut, weightOut] = [
+          poolAssetBalance,
+          assetWeight,
+          poolBaseBalance,
+          baseWeight,
+        ];
+
+        const amountIn = calcInGivenOut(
+          balanceIn,
+          weightIn,
+          balanceOut,
+          weightOut,
+          baseAmount.mul(ZTG),
+          swapFee,
+        );
+
+        setValue(
+          "assetAmount",
+          amountIn.div(ZTG).toFixed(4, Decimal.ROUND_DOWN),
+        );
+        setPercentageDisplay(percentage.toString());
+      }
+    },
+    [
+      maxBaseAmount.toString(),
+      maxAssetAmount.toString(),
+      tradeItem.action,
+      tradeItemState,
+    ],
+  );
+
   useEffect(() => {
     const sub = watch((value, { name, type }) => {
       const changedByUser = type != null;
       if (name === "percentage" && changedByUser) {
         const percentage = new Decimal(value.percentage).div(100);
-        const baseAmount = maxBaseAmountDecimal
-          .mul(percentage)
-          .toDecimalPlaces(4, Decimal.ROUND_DOWN);
-        const assetAmount = maxAssetAmountDecimal
-          .mul(percentage)
-          .toDecimalPlaces(4, Decimal.ROUND_DOWN);
-        setValue("baseAmount", baseAmount.toString());
-        setValue("assetAmount", assetAmount.toString());
+        changeByPercentage(percentage);
       }
       if (name === "assetAmount" && changedByUser) {
         const assetAmount = value.assetAmount === "" ? "0" : value.assetAmount;
         const assetAmountDecimal = new Decimal(assetAmount);
-        const percentage = maxAssetAmountDecimal.gt(0)
-          ? assetAmountDecimal
-              .div(maxAssetAmountDecimal)
-              .mul(100)
-              .toDecimalPlaces(0, Decimal.ROUND_DOWN)
-          : new Decimal(0);
-        const baseAmount = percentage
-          .mul(maxBaseAmountDecimal)
-          .div(100)
-          .toDecimalPlaces(4, Decimal.ROUND_DOWN);
-        setPercentageDisplay(percentage.toString());
-        setValue("baseAmount", baseAmount.toString());
+        changeByAssetAmount(assetAmountDecimal);
       }
       if (name === "baseAmount" && changedByUser) {
         const baseAmount = value.baseAmount === "" ? "0" : value.baseAmount;
         const baseAmountDecimal = new Decimal(baseAmount);
-        const percentage = maxBaseAmountDecimal.gt(0)
-          ? baseAmountDecimal
-              .div(maxBaseAmountDecimal)
-              .mul(100)
-              .toDecimalPlaces(0, Decimal.ROUND_DOWN)
-          : new Decimal(0);
-        const assetAmount = percentage
-          .mul(maxAssetAmountDecimal)
-          .div(100)
-          .toDecimalPlaces(4, Decimal.ROUND_DOWN);
-        setPercentageDisplay(percentage.toString());
-        setValue("assetAmount", assetAmount.toString());
+        changeByBaseAmount(baseAmountDecimal);
       }
     });
-
     return () => sub.unsubscribe();
-  }, [watch, maxAssetAmountDecimal, maxBaseAmountDecimal, setValue]);
+  }, [watch, maxBaseAmount.toString(), maxAssetAmount.toString()]);
+
+  useEffect(() => {
+    if (IOZtgAssetId.is(lastEditedAssetId)) {
+      changeByBaseAmount(new Decimal(baseAmount));
+    } else if (IOMarketOutcomeAssetId.is(lastEditedAssetId)) {
+      changeByAssetAmount(new Decimal(assetAmount));
+    } else {
+      changeByPercentage(new Decimal(percentageDisplay).div(100));
+    }
+  }, [maxBaseAmount.toString(), maxAssetAmount.toString()]);
 
   return (
     <>

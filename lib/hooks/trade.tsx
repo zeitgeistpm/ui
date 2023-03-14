@@ -74,7 +74,7 @@ export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
     );
   }
   if (item.action === "sell") {
-    const assetBalance = traderAssetBalance.gt(tradeablePoolAssetBalance)
+    const maxAssetIn = traderAssetBalance.gt(tradeablePoolAssetBalance)
       ? tradeablePoolAssetBalance
       : traderAssetBalance;
 
@@ -83,7 +83,7 @@ export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
       assetWeight,
       poolBaseBalance,
       baseWeight,
-      assetBalance,
+      maxAssetIn,
       swapFee,
     );
   }
@@ -199,7 +199,7 @@ export const useTradeTransaction = (
           inAssetId,
           amountDecimal.toFixed(0),
           outAssetId,
-          minAmountOut.toFixed(0),
+          minAmountOut.toFixed(0, Decimal.ROUND_DOWN),
           null,
         );
       }
@@ -217,7 +217,7 @@ export const useTradeTransaction = (
         transaction = sdk.api.tx.swaps.swapExactAmountOut(
           pool.poolId,
           inAssetId,
-          maxAmountIn.toFixed(0),
+          maxAmountIn.toFixed(0, Decimal.ROUND_UP),
           outAssetId,
           amountDecimal.toFixed(0),
           null,
@@ -244,7 +244,7 @@ export const useTradeTransaction = (
           inAssetId,
           amountDecimal.toFixed(0),
           outAssetId,
-          maxAmountIn.toFixed(0),
+          maxAmountIn.toFixed(0, Decimal.ROUND_UP),
           null,
         );
       }
@@ -264,7 +264,7 @@ export const useTradeTransaction = (
           inAssetId,
           amountDecimal.toFixed(0),
           outAssetId,
-          minAmountOut.toFixed(0),
+          minAmountOut.toFixed(0, Decimal.ROUND_DOWN),
           null,
         );
       }
