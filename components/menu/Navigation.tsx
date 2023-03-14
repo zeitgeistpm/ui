@@ -3,13 +3,13 @@ import { Icon } from "react-feather";
 import { MenuItem, MenuItemMobile } from "./MenuItem";
 import { useRouter } from "next/router";
 
-type Navigation = {
+interface Navigation {
   [key: string]: {
     label: string;
     href: string;
     IconComponent: Icon;
   };
-};
+}
 
 const Navigation: FC<{
   navigation: Navigation;
