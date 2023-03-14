@@ -1,9 +1,18 @@
 import React, { FC } from "react";
+import { Icon } from "react-feather";
 import { MenuItem, MenuItemMobile } from "./MenuItem";
 import { useRouter } from "next/router";
 
+type Navigation = {
+  [key: string]: {
+    label: string;
+    href: string;
+    IconComponent: Icon;
+  };
+};
+
 const Navigation: FC<{
-  navigation: {};
+  navigation: Navigation;
   mobile: boolean;
   setMenuOpen?: (boolean) => void;
 }> = ({ navigation, mobile, setMenuOpen }) => {
