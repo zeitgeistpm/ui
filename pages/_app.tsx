@@ -21,6 +21,14 @@ import { AnimatePresence } from "framer-motion";
 import DefaultLayout from "layouts/DefaultLayout";
 import ModalStore from "lib/stores/ModalStore";
 import Store from "lib/stores/Store";
+import dynamic from "next/dynamic";
+
+const Onboarding = dynamic(
+  () => import("../components/onboarding/Onboarding"),
+  {
+    ssr: false,
+  },
+);
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -104,6 +112,7 @@ const MyApp = observer(({ Component, pageProps }) => {
               </AnimatePresence>
               <Layout>
                 <Component {...pageProps} />
+                <Onboarding />
               </Layout>
             </DefaultLayout>
             {process.env.NEXT_PUBLIC_REACT_QUERY_DEVTOOLS === "true" &&

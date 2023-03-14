@@ -1,4 +1,4 @@
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { isEqual } from "lodash-es";
 import { CategoricalAssetId, ScalarAssetId } from "@zeitgeistpm/sdk-next";
