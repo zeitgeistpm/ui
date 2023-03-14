@@ -56,7 +56,7 @@ const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
         subscribe(formField.value);
       }}
     >
-      <h3 className="text-center md:text-start text-ztg-16-150 font-bold mb-ztg-30">
+      <h3 className="text-center md:text-start text-ztg-16-150 font-semibold mb-ztg-30">
         {title}
       </h3>
       <div className="flex gap-3 items-center h-ztg-40 mb-auto w-full">
@@ -93,7 +93,7 @@ const FooterMenu: FC<FooterMenuProps> = observer(
         className={` ${className}
           `}
       >
-        <h3 className="font-bold">{title}</h3>
+        <h3 className="font-semibold">{title}</h3>
         <div className="text-ztg-14-150 flex flex-col text-sky-600">
           {links.map(({ text, href }, idx) => {
             return (
@@ -110,10 +110,10 @@ const FooterMenu: FC<FooterMenuProps> = observer(
 
 const Footer = observer(() => {
   return (
-    <div className="container-fluid mx-auto mt-auto max-w-screen-2xl flex flex-col pb-24">
-      <div className="flex justify-between gap-10 mb-8 md:mb-16">
+    <div className="container-fluid mx-auto mt-auto flex flex-col pb-24">
+      <div className="flex justify-between gap-5 lg:gap-12 mb-8 md:mb-16">
         <FooterNewsletterSub title="Subscribe to Newsletter" />
-        <div className="hidden md:flex justify-between gap-5 w-full ">
+        <div className="hidden md:flex justify-between gap-7 w-full ">
           <FooterMenu
             title="General"
             links={[
@@ -151,7 +151,7 @@ const Footer = observer(() => {
         </div>
       </div>
       <div className="flex flex-col md:flex-row gap-5">
-        <span className="text-center md:text-start font-bold whitespace-nowrap text-ztg-12-150">
+        <span className="text-center md:text-start whitespace-nowrap text-ztg-12-150">
           © 2022 Equipoise Corp.
         </span>
         <span className="text-sky-600 text-[11px] leading-relaxed">

@@ -23,7 +23,7 @@ export interface IndexedMarketCardData {
   volume: number;
   pool: null | {};
   baseAsset: string;
-  tags: string[];
+  tags?: string[];
   status: string;
   endDate: string;
   liquidity?: string;
@@ -198,7 +198,7 @@ const MarketCard = ({
   volume,
   baseAsset,
   width,
-  tags,
+  tags = [],
   endDate,
   status,
   className = "",

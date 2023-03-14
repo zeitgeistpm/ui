@@ -26,7 +26,7 @@ const MarketImage = observer(
         style={{ width: size, height: size }}
       >
         <Image
-          alt={alt}
+          alt={alt ?? "Market image"}
           src={imageUrl}
           fill
           className="rounded-full"
