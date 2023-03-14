@@ -1,11 +1,11 @@
 /* hero slider animation */
 .fadeIn {
-  animation: fadeIn 500ms;
+  animation: fadeIn 333ms;
 }
 
 @keyframes fadeIn {
   0% {
-    opacity: 0;
+    opacity: 0.7;
   }
   100% {
     opacity: 1;

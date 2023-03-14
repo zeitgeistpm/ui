@@ -1,7 +1,10 @@
 import { FC } from "react";
 import Link from "next/link";
+import { Banner } from "lib/cms/get-banners";
 
-import { HeroSlideProps } from "./slider-types";
+export interface HeroSlideProps {
+  banner: Banner;
+}
 
 export const HeroSlide: FC<HeroSlideProps> = ({ banner }) => {
   return (
