@@ -1,5 +1,6 @@
 import { MarketFilter } from "lib/types/market-filter";
 import { observer } from "mobx-react";
+import Heading from "components/ui/Heading";
 import { createContext, FC, PropsWithChildren, useState } from "react";
 
 export type SelectedMenu = "Category" | "Currency" | "Status" | "None";
@@ -23,9 +24,9 @@ const MarketFiltersContainer: FC<
     <MarketFiltersContext.Provider
       value={{ activeFilters, selectedMenu, setSelectedMenu, portal }}
     >
-      <div className="font-bold text-[28px] text-center mb-[15px]">
+      <Heading as="h1" className="text-center">
         All Markets
-      </div>
+      </Heading>
       <div className="w-full flex flex-col items-center justify-center mb-[30px]">
         {children}
       </div>

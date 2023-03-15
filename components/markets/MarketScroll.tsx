@@ -4,6 +4,7 @@ import { useResizeDetector } from "react-resize-detector";
 import MarketCard, { IndexedMarketCardData } from "./market-card/index";
 import HorizontalScroll from "components/ui/HorizontalScroll";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
+import Heading from "components/ui/Heading";
 
 const MarketScroll = observer(
   ({
@@ -72,7 +73,9 @@ const MarketScroll = observer(
         ref={containerRef}
         className="grid gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
       >
-        <h3 className="sm:col-span-2 font-bold text-[28px]">{title}</h3>
+        <Heading as="h1" className="sm:col-span-2 ">
+          {title}
+        </Heading>
         <HorizontalScroll
           classes="order-2 sm:order-none"
           link={link}
