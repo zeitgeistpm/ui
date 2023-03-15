@@ -23,6 +23,7 @@ import { Banner, getBanners } from "lib/cms/get-banners";
 import path from "path";
 import { useStore } from "lib/stores/Store";
 import { getWallets } from "@talismn/connect-wallets";
+import { flowResult } from "mobx";
 
 const getPlaiceholders = (
   paths: string[],
@@ -90,7 +91,7 @@ const IndexPage: NextPage<{
     bannerPlaceHolders,
   }) => {
     const store = useStore();
-    const { wallets } = store;
+    const { wallets, sdk } = store;
     console.log(wallets);
     console.log(wallets.connected);
     console.log(wallets.activeAccount);
@@ -114,12 +115,17 @@ const IndexPage: NextPage<{
         //@ts-ignore
         typeof window === "object" && window.walletExtension?.isNovaWallet;
 
-      if (isNovaWallet === true && wallets?.connected === false) {
-        getWallets()
-          .find((wallet) => wallet.extensionName === "polkadot-js")
-          .enable("Zeitgiest");
+      console.log(wallets?.connected);
+
+      if (wallets?.connected === false && sdk?.api && store) {
+        console.log("called");
+
+        // getWallets()
+        //   .find((wallet) => wallet.extensionName === "polkadot-js")
+        //   .enable("Zeitgiest");
+        flowResult(wallets.connectWallet("polkadot-js", true));
       }
-    }, [wallets.connected]);
+    }, [wallets.connected, sdk?.api, store]);
 
     return (
       <>
