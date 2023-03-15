@@ -1,87 +1,91 @@
-import { observer } from "mobx-react";
-import React, { FC, useState } from "react";
-import {
-  initializeNavigation,
-  useNavigationStore,
-} from "lib/stores/NavigationStore";
-import { NavigationSingleItem, PageName } from "lib/types/navigation";
-import ThemeSwitch from "./ThemeSwitch";
-import LocalizationSelect, {
-  LocalizationOption,
-  localizationOptions,
-} from "./LocalizationSelect";
-import { MenuItem } from "./MenuItem";
-import { MenuItemGroup } from "./MenuItemGroup";
-import { useStore } from "lib/stores/Store";
+import React, { useEffect, useState } from "react";
+import SideMenu from "./SideMenu";
+import MobileMenu from "components/menu/MobileMenu";
+import { Menu, X } from "react-feather";
+import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
+import MenuLogo from "components/menu/MenuLogo";
 
-const Menu: FC = observer(() => {
-  const [selectedLanguage, setSelectedLanguage] = useState<LocalizationOption>(
-    localizationOptions[0],
-  );
-  const navigationStore = useNavigationStore();
-  const store = useStore();
-  initializeNavigation();
+export type NavbarColor = "black" | "white" | "transparent";
 
-  const hideLabels = store.leftDrawerClosed;
-
-  const navigate = (page: PageName) => {
-    navigationStore.setPage(page);
-    // We may add this back when there are more items in the left drawer
-    // navigationStore.closeAndDeselectGroups();
-  };
-
-  return (
-    <>
-      <div className="hidden fixed left-4 top-32 md:flex flex-col gap-5 z-50">
-        {Object.keys(navigationStore.items)
-          .filter((itemKey) => {
-            // Skip court page for now...
-            if (
-              itemKey === "court" &&
-              process.env.NEXT_PUBLIC_SHOW_COURT === "false"
-            ) {
-              return false;
-            }
-
-            // Skip activity feed page for now...
-            if (itemKey === "activity") return false;
-
-            return true;
-          })
-          .map((itemKey, idx) => {
-            const item = navigationStore.items[itemKey];
-            return (
-              <MenuItem
-                href={item.href}
-                IconComponent={item.IconComponent}
-                textLabel={item.label}
-                hideLabel={hideLabels}
-                active={navigationStore.checkPage(itemKey as any)}
-                className=""
-                onClick={() => navigate(itemKey as any)}
-                key={`meuItem-${idx}`}
-              />
-            );
-          })}
-      </div>
-      {/* TODO: check to see if code below can be deleted
-      <div className="mt-auto">
-        <LocalizationSelect
-          options={localizationOptions}
-          selectedLanguage={selectedLanguage}
-          className={`${
-            store.leftDrawerClosed === true ? "ml-ztg-33 " : "ml-ztg-39"
-          }  mb-ztg-20`}
-          hideLabel={hideLabels}
-          onLanguageChange={(option: LocalizationOption) =>
-            setSelectedLanguage(option)
-          }
-        />
-        <ThemeSwitch className="ml-ztg-33 mb-ztg-24" />
-        <div className="ml-ztg-42 mb-ztg-22 text-ztg-12-150">v.1.0.0</div>
-      </div> */}
-    </>
-  );
+const AccountButton = dynamic(() => import("../account/AccountButton"), {
+  ssr: false,
 });
 
-export default Menu;
+const TopBar = () => {
+  const { pathname } = useRouter();
+
+  const [navbarBGColor, setNavbarBGColor] =
+    useState<NavbarColor>("transparent");
+
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const [scrollPosition, setScrollPosition] = useState<number>(0);
+
+  const changeNavBG = () => {
+    if (menuOpen) {
+      setNavbarBGColor("white");
+    } else if (window.scrollY >= 60 && pathname === "/" && !menuOpen) {
+      setNavbarBGColor("black");
+    } else if (pathname === "/" && !menuOpen) {
+      setNavbarBGColor("transparent");
+    } else {
+      setNavbarBGColor("white");
+    }
+    return;
+  };
+
+  useEffect(() => {
+    changeNavBG();
+    window.addEventListener("scroll", changeNavBG);
+    return () => {
+      document.removeEventListener("scroll", changeNavBG);
+    };
+  }, [changeNavBG]);
+
+  useEffect(() => {
+    const scrollY = window.scrollY;
+    setScrollPosition(scrollY);
+    if (menuOpen) {
+      document.body.style.position = "fixed";
+    } else {
+      document.body.style.position = "static";
+      window.scrollBy(0, scrollPosition);
+    }
+    changeNavBG();
+  }, [menuOpen]);
+
+  return (
+    <div
+      className={`w-full py-7 fixed z-40 transition-all duration-300 bg-${navbarBGColor} ${
+        pathname === "/" ? "border-b-0" : "border-b border-gray-200"
+      }`}
+    >
+      <div className="relative flex justify-between items-center w-full max-w-screen-2xl h-[44px] mx-auto px-8">
+        <SideMenu />
+        <MenuLogo menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+        {/* <MarketSearch /> */}
+        <AccountButton />
+        {menuOpen ? (
+          <X
+            className="block md:hidden ml-auto cursor-pointer text-white"
+            color={`${
+              pathname === "/" ? (menuOpen ? "black" : "white") : "black"
+            }`}
+            onClick={() => setMenuOpen(false)}
+          />
+        ) : (
+          <Menu
+            color={`${
+              pathname === "/" ? (menuOpen ? "black" : "white") : "black"
+            }`}
+            className="block md:hidden ml-auto cursor-pointer"
+            onClick={() => setMenuOpen(true)}
+          />
+        )}
+      </div>
+      <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+    </div>
+  );
+};
+
+export default TopBar;

@@ -28,7 +28,7 @@ const ThemeIcon: FC<{
 const ThemeSwitch: FC<HTMLProps<HTMLDivElement>> = observer(({ ...props }) => {
   const store = useStore();
   const userStore = useUserStore();
-  const compact = store.leftDrawerClosed && store.showMobileMenu === false;
+  // const compact = store.leftDrawerClosed && store.showMobileMenu === false;
 
   const { className, ...restProps } = props;
 
@@ -39,7 +39,7 @@ const ThemeSwitch: FC<HTMLProps<HTMLDivElement>> = observer(({ ...props }) => {
 
   return (
     <div className={`flex ${className || ""}`} {...restProps}>
-      {compact === true ? (
+      {/* {compact === true ? (
         <ThemeIcon
           theme={userStore.theme}
           onClick={() => {
@@ -47,26 +47,26 @@ const ThemeSwitch: FC<HTMLProps<HTMLDivElement>> = observer(({ ...props }) => {
           }}
           selected={true}
         />
-      ) : (
-        <div className="flex bg-sky-200 dark:bg-sky-700 rounded-ztg-100 py-ztg-4 px-ztg-6">
-          <motion.div
-            variants={variants}
-            animate={userStore.theme === "light" ? "light" : "dark"}
-            className={`rounded-full w-ztg-34 h-ztg-34 cursor-pointer center flex-shrink-0 absolute bg-white dark:bg-black`}
-          ></motion.div>
-          <ThemeIcon
-            theme="light"
-            onClick={() => userStore.toggleTheme("light")}
-            selected={userStore.theme === "light"}
-            className="mr-ztg-16 z-40"
-          />
-          <ThemeIcon
-            theme="dark"
-            onClick={() => userStore.toggleTheme("dark")}
-            selected={userStore.theme === "dark"}
-          />
-        </div>
-      )}
+      ) : ( */}
+      <div className="flex bg-sky-200 dark:bg-sky-700 rounded-ztg-100 py-ztg-4 px-ztg-6">
+        <motion.div
+          variants={variants}
+          animate={userStore.theme === "light" ? "light" : "dark"}
+          className={`rounded-full w-ztg-34 h-ztg-34 cursor-pointer center flex-shrink-0 absolute bg-white dark:bg-black`}
+        ></motion.div>
+        <ThemeIcon
+          theme="light"
+          onClick={() => userStore.toggleTheme("light")}
+          selected={userStore.theme === "light"}
+          className="mr-ztg-16 z-40"
+        />
+        <ThemeIcon
+          theme="dark"
+          onClick={() => userStore.toggleTheme("dark")}
+          selected={userStore.theme === "dark"}
+        />
+      </div>
+      {/* )} */}
     </div>
   );
 });
