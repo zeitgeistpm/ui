@@ -32,6 +32,7 @@ const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
   const [trade, setTrade] = useState<TradeItem | null>(null);
 
   const isNovaWallet =
+    //@ts-ignore
     typeof window === "object" && window.walletExtension?.isNovaWallet;
 
   console.log(isNovaWallet);
