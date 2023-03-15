@@ -11,19 +11,15 @@ import getTrendingMarkets from "lib/gql/trending-markets";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import HeroSlider from "components/hero-slider/HeroSlider";
-import { slidesData } from "components/hero-slider/slides-data";
 
 import {
   getPlaiceholder,
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
-import React, { useEffect } from "react";
+import React from "react";
 import { Banner, getBanners } from "lib/cms/get-banners";
 import path from "path";
-import { useStore } from "lib/stores/Store";
-import { getWallets } from "@talismn/connect-wallets";
-import { flowResult } from "mobx";
 
 const getPlaiceholders = (
   paths: string[],
