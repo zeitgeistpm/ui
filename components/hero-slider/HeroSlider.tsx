@@ -29,7 +29,7 @@ const HeroSlider = ({
     <section
       className={`relative w-full h-[527px] mx-auto ${
         animate && styles.fadeIn
-      } duration-75`}
+      }`}
       onAnimationEnd={() => setAnimate(false)}
     >
       <Image
