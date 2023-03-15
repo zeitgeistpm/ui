@@ -31,12 +31,11 @@ const AccountButton: FC<{
   const [hovering, setHovering] = useState<boolean>(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
+  const isNovaWallet: boolean =
+    //@ts-ignore
+    typeof window === "object" && window!.walletExtension?.isNovaWallet;
 
   const connect = async () => {
-    const isNovaWallet: boolean =
-      //@ts-ignore
-      typeof window === "object" && window!.walletExtension?.isNovaWallet;
-
     if (isNovaWallet) {
       wallets.connectWallet("polkadot-js", true);
     } else {
@@ -221,23 +220,25 @@ const AccountButton: FC<{
                           </div>
                         )}
                       </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="flex items-center px-4 mb-3 hover:bg-slate-100"
-                            onClick={() => {
-                              accountModals.openAccontSelect();
-                            }}
-                          >
-                            <User />
-                            <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                      {isNovaWallet !== true && (
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div
+                              className="flex items-center px-4 mb-3 hover:bg-slate-100"
+                              onClick={() => {
+                                accountModals.openAccontSelect();
+                              }}
                             >
-                              Select Account
-                            </button>
-                          </div>
-                        )}
-                      </Menu.Item>
+                              <User />
+                              <button
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                              >
+                                Select Account
+                              </button>
+                            </div>
+                          )}
+                        </Menu.Item>
+                      )}
                       <Menu.Item>
                         {({ active }) => (
                           <Link href="/settings">
