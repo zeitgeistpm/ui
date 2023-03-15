@@ -18,9 +18,11 @@ import {
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
-import React from "react";
+import React, { useEffect } from "react";
 import { Banner, getBanners } from "lib/cms/get-banners";
 import path from "path";
+import { useStore } from "lib/stores/Store";
+import { getWallets } from "@talismn/connect-wallets";
 
 const getPlaiceholders = (
   paths: string[],
@@ -87,6 +89,12 @@ const IndexPage: NextPage<{
     categoryPlaceholders,
     bannerPlaceHolders,
   }) => {
+    const store = useStore();
+    const { wallets } = store;
+    console.log(wallets);
+    console.log(wallets.connected);
+    console.log(wallets.activeAccount);
+
     const isNovaWallet =
       //@ts-ignore
       typeof window === "object" && window.walletExtension?.isNovaWallet;
@@ -99,6 +107,20 @@ const IndexPage: NextPage<{
       typeof window === "object" && window.injectedWeb3;
 
     console.log(isNovaWallet);
+    console.log();
+
+    useEffect(() => {
+      const isNovaWallet =
+        //@ts-ignore
+        typeof window === "object" && window.walletExtension?.isNovaWallet;
+
+      if (isNovaWallet === true && wallets?.connected === false) {
+        getWallets()
+          .find((wallet) => wallet.extensionName === "polkadot-js")
+          .enable("Zeitgiest");
+      }
+    }, [wallets.connected, window]);
+
     return (
       <>
         <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
