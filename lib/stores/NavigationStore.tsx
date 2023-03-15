@@ -140,27 +140,6 @@ export default class NavigationStore {
     this.currentGroup = null;
   }
 
-  getMobileItems(): NavigationSingleItem[] {
-    const mobileItems: NavigationSingleItem[] = [];
-    Object.values(this.items).forEach((item) => {
-      if (isNavigationGroup(item)) {
-        item.subItems.forEach((subItem) => {
-          if (subItem.mobile === true) {
-            mobileItems.push({
-              ...subItem,
-              IconComponent: item.IconComponent,
-            });
-          }
-        });
-      } else {
-        if (item.mobile === true) {
-          mobileItems.push(item);
-        }
-      }
-    });
-    return mobileItems;
-  }
-
   getGroup(name: string): NavigationGroup | null {
     const g = this.items[name];
     if (isNavigationGroup(g)) {

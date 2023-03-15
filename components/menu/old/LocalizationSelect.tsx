@@ -1,4 +1,3 @@
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import React, { FC, HTMLProps, useEffect, useState } from "react";
 import { ChevronDown } from "react-feather";
@@ -27,28 +26,10 @@ const LocalizationSelect: FC<LocalizationSelectProps> = observer(
   ({ hideLabel, options, selectedLanguage, onLanguageChange, ...props }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [subContainerClass, setSubContainerClass] = useState("");
-    const store = useStore();
     const { className, ...restProps } = props;
 
-    useEffect(() => {
-      if (store.leftDrawerClosed) {
-        setMenuOpen(false);
-      }
-
-      const base = "flex flex-col absolute z-ztg-2";
-      if (store.leftDrawerClosed) {
-        setSubContainerClass(
-          `${base} w-ztg-256 left-full bottom-0 w-ztg-200 left-28 bg-white dark:bg-black rounded-ztg-10 mb-ztg-10`,
-        );
-      } else {
-        setSubContainerClass(
-          `${base} w-full bottom-ztg-34 mb-ztg-10 ml-ztg-50`,
-        );
-      }
-    }, [store.leftDrawerClosed]);
-
     return (
-      <div className={`${store.leftDrawerClosed ? "" : "relative"}`}>
+      <div>
         {menuOpen && (
           <div className={subContainerClass}>
             {options.map((opt, idx) => {

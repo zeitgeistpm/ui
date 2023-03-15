@@ -72,7 +72,7 @@ const AccountButton: FC<{
     <>
       {!connected ? (
         <div
-          className="flex-1"
+          className="hidden md:block flex-1"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
@@ -105,7 +105,7 @@ const AccountButton: FC<{
           )}
         </div>
       ) : (
-        <div className="relative">
+        <div className="hidden md:block relative">
           <Menu>
             {({ open }) => (
               <>
