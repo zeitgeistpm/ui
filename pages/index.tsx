@@ -119,7 +119,7 @@ const IndexPage: NextPage<{
           .find((wallet) => wallet.extensionName === "polkadot-js")
           .enable("Zeitgiest");
       }
-    }, [wallets.connected, window]);
+    }, [wallets.connected]);
 
     return (
       <>
