@@ -122,7 +122,6 @@ const Cell = observer(
     onClick?: () => void;
   }) => {
     const { data: ztgInfo } = useZtgInfo();
-    console.log(ztgInfo);
 
     const base = `dark:text-white px-ztg-15 h-ztg-72 ${
       onClick ? "cursor-pointer" : ""

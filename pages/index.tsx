@@ -90,67 +90,12 @@ const IndexPage: NextPage<{
     categoryPlaceholders,
     bannerPlaceHolders,
   }) => {
-    const store = useStore();
-    const { wallets, sdk } = store;
-    console.log(wallets);
-    console.log(wallets.connected);
-    console.log(wallets.activeAccount);
-
-    const isNovaWallet =
-      //@ts-ignore
-      typeof window === "object" && window.walletExtension?.isNovaWallet;
-    const walletExtension =
-      //@ts-ignore
-      typeof window === "object" && window.walletExtension;
-
-    const injectedWeb3 =
-      //@ts-ignore
-      typeof window === "object" && window.injectedWeb3;
-
-    console.log(isNovaWallet);
-    console.log();
-
-    // useEffect(() => {
-    //   const isNovaWallet =
-    //     //@ts-ignore
-    //     typeof window === "object" && window.walletExtension?.isNovaWallet;
-
-    //   console.log(wallets?.connected);
-
-    //   if (wallets?.connected === false && sdk?.api && store) {
-    //     console.log("called");
-
-    //     // getWallets()
-    //     //   .find((wallet) => wallet.extensionName === "polkadot-js")
-    //     //   .enable("Zeitgiest");
-    //     flowResult(wallets.connectWallet("polkadot-js", true));
-    //   }
-    // }, [wallets.connected, sdk?.api, store]);
-
     return (
       <>
         <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
         <div data-testid="indexPage" className="main-container">
           <div className="flex items-center w-full justify-center relative bottom-[60px]">
             <LearnSection />
-          </div>
-          <div className="font-bold text-red-600 text-[20px]">
-            Nova:{JSON.stringify(isNovaWallet)}
-          </div>
-          <div className="font-bold text-red-600 text-[20px]">
-            Wallet:{JSON.stringify(walletExtension)}
-          </div>
-          <div className="font-bold text-red-600 text-[20px]">
-            Web3:{JSON.stringify(injectedWeb3)}
-          </div>
-          <div className="font-bold text-red-600 text-[20px]">
-            Connected:{JSON.stringify(wallets?.activeAccount)}
-          </div>
-          <div className="font-bold text-red-600 text-[20px]">
-            Balances:{JSON.stringify(wallets?.activeBalance)}
-          </div>
-          <div className="font-bold text-red-600 text-[20px]">
-            Is connected:{JSON.stringify(wallets?.connected)}
           </div>
           {featuredMarkets.length > 0 && (
             <div className="mb-[60px]">

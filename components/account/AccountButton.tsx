@@ -33,7 +33,7 @@ const AccountButton: FC<{
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
   const isNovaWallet: boolean =
     //@ts-ignore
-    typeof window === "object" && window!.walletExtension?.isNovaWallet;
+    typeof window === "object" && window.walletExtension?.isNovaWallet;
 
   const connect = async () => {
     if (isNovaWallet) {
