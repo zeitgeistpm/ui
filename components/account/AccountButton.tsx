@@ -88,7 +88,7 @@ const AccountButton: FC<{
               connectButtonClassname ||
               `flex border-2 rounded-full px-6 leading-[40px] ml-auto ${
                 pathname === "/"
-                  ? "text-white bg-transparent border-white"
+                  ? "text-black border-black sm:text-white sm:bg-transparent sm:border-white"
                   : "text-black border-black"
               } rounded-full font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-30`
             }
