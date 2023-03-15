@@ -4,6 +4,7 @@ import MobxReactForm from "mobx-react-form";
 import { ChevronRight } from "react-feather";
 import { observer } from "mobx-react";
 import Link from "next/link";
+import Heading from "./Heading";
 
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { defaultOptions, defaultPlugins } from "lib/form";
@@ -47,7 +48,7 @@ const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
 
   return (
     <form
-      className="flex flex-col w-full"
+      className="flex flex-col justify-between w-full"
       onSubmit={(e) => {
         e.preventDefault();
         if (invalid) {
@@ -56,10 +57,10 @@ const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
         subscribe(formField.value);
       }}
     >
-      <h3 className="text-center md:text-start text-ztg-16-150 font-semibold mb-ztg-30">
+      <Heading as="h4" className="text-center md:text-start">
         {title}
-      </h3>
-      <div className="flex gap-3 items-center h-ztg-40 mb-auto w-full">
+      </Heading>
+      <div className="flex gap-3 items-center h-ztg-40 w-full">
         <input
           value={newsletterSubForm.$("email").value}
           onChange={newsletterSubForm.$("email").onChange}
@@ -93,7 +94,7 @@ const FooterMenu: FC<FooterMenuProps> = observer(
         className={` ${className}
           `}
       >
-        <h3 className="font-semibold">{title}</h3>
+        <Heading as="h4">{title}</Heading>
         <div className="text-ztg-14-150 flex flex-col text-sky-600">
           {links.map(({ text, href }, idx) => {
             return (

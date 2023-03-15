@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Heading from "components/ui/Heading";
 
 interface LearnCardProps {
   tag: string;
@@ -31,9 +32,9 @@ const LearnCard = ({
         <span className="bg-white p-[6px] rounded-[50px] w-fit text-ztg-12-120">
           {tag}
         </span>
-        <div className="flex items-start justify-between gap-[30px]">
+        <div className="flex items-start justify-between gap-[30px] mt-2">
           <div>
-            <h6 className="font-semibold text-ztg-16-150 mt-[8px]">{title}</h6>
+            <Heading as="h4">{title}</Heading>
             <p className="hidden md:block text-ztg-14-150">{description}</p>
           </div>
           <Image
@@ -41,6 +42,7 @@ const LearnCard = ({
             width={84}
             height={80}
             alt={title}
+            style={{ width: 84, height: 80 }}
             className="hidden lg:block object-contain"
           />
         </div>
@@ -51,32 +53,35 @@ const LearnCard = ({
 
 const LearnSection = () => {
   return (
-    <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-[20px]">
-      <LearnCard
-        tag="Trade"
-        title="Prediction Markets"
-        description="Make money from what you believe"
-        link="https://docs.zeitgeist.pm/docs/learn/prediction-markets"
-        classes="bg-tropical-blue"
-        img="/learn/learn-1.png"
-      />
-      <LearnCard
-        tag="Earn"
-        title="Liquidity Pools"
-        description="Earn ZTG by providing Liquidity"
-        link="https://docs.zeitgeist.pm/docs/learn/liquidity"
-        classes="bg-link-water"
-        img="/learn/learn-2.png"
-      />
-      <LearnCard
-        tag="Learn"
-        title="Get Started"
-        description="Learn all about the Zeitgeist ecosystem in our Docs"
-        link="https://docs.zeitgeist.pm/docs/getting-started"
-        classes="bg-mystic col-span-2 sm:col-span-1 min-h-[84px]"
-        img="/learn/learn-3.png"
-      />
-    </div>
+    <section>
+      <Heading as="h2">How to</Heading>
+      <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-[20px]">
+        <LearnCard
+          tag="Trade"
+          title="Prediction Markets"
+          description="Make money from what you believe"
+          link="https://docs.zeitgeist.pm/docs/learn/prediction-markets"
+          classes="bg-tropical-blue"
+          img="/learn/learn-1.png"
+        />
+        <LearnCard
+          tag="Earn"
+          title="Liquidity Pools"
+          description="Earn ZTG by providing Liquidity"
+          link="https://docs.zeitgeist.pm/docs/learn/liquidity"
+          classes="bg-link-water"
+          img="/learn/learn-2.png"
+        />
+        <LearnCard
+          tag="Learn"
+          title="Get Started"
+          description="Learn all about the Zeitgeist ecosystem in our Docs"
+          link="https://docs.zeitgeist.pm/docs/getting-started"
+          classes="bg-mystic col-span-2 sm:col-span-1 min-h-[84px]"
+          img="/learn/learn-3.png"
+        />
+      </div>
+    </section>
   );
 };
 

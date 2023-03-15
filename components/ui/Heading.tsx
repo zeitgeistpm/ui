@@ -3,7 +3,7 @@ import { PropsWithChildren } from "react";
 interface HeadingProps {
   as: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
   size?: number;
-  className: string;
+  className?: string;
 }
 
 const Heading = ({
@@ -25,12 +25,12 @@ const Heading = ({
     );
   }
   if (heading === "h2") {
-    const defaultSize = 24;
+    const defaultSize = 28;
     return (
       <h2
         className={`text-[${
           size ? size : defaultSize
-        }px] font-bold text-fog-of-war  ${className}`}
+        }px] font-bold text-fog-of-war mb-4 ${className}`}
       >
         {children}
       </h2>
@@ -42,7 +42,7 @@ const Heading = ({
       <h3
         className={`text-[${
           size ? size : defaultSize
-        }px] font-bold text-fog-of-war  ${className}`}
+        }px] font-semibold text-fog-of-war mb-4 ${className}`}
       >
         {children}
       </h3>
@@ -51,7 +51,11 @@ const Heading = ({
   if (heading === "h4") {
     const defaultSize = 16;
     return (
-      <h4 className={`text-2xl font-semibold text-fog-of-war  ${className}`}>
+      <h4
+        className={`text-[${
+          size ? size : defaultSize
+        }px] font-semibold text-fog-of-war ${className}`}
+      >
         {children}
       </h4>
     );
@@ -62,7 +66,7 @@ const Heading = ({
       <h5
         className={`text-[${
           size ? size : defaultSize
-        }px] font-semibold text-fog-of-war  ${className}`}
+        }px] font-semibold text-fog-of-war ${className}`}
       >
         {children}
       </h5>
@@ -74,7 +78,7 @@ const Heading = ({
       <h6
         className={`text-[${
           size ? size : defaultSize
-        }px] font-bold text-fog-of-war  ${className}`}
+        }px] font-bold text-fog-of-war ${className}`}
       >
         {children}
       </h6>

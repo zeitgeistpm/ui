@@ -73,7 +73,7 @@ const MarketScroll = observer(
         ref={containerRef}
         className="grid gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
       >
-        <Heading as="h1" className="sm:col-span-2 ">
+        <Heading as="h2" className="sm:col-span-2 ">
           {title}
         </Heading>
         <HorizontalScroll

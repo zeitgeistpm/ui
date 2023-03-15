@@ -90,10 +90,7 @@ const IndexPage: NextPage<{
     return (
       <>
         <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
-        <div data-testid="indexPage" className="main-container">
-          <div className="flex items-center w-full justify-center relative bottom-[60px]">
-            <LearnSection />
-          </div>
+        <section data-testid="indexPage" className="main-container mt-12">
           {featuredMarkets.length > 0 && (
             <div className="mb-[60px]">
               <MarketScroll
@@ -120,7 +117,8 @@ const IndexPage: NextPage<{
               />
             </div>
           )}
-        </div>
+          <LearnSection />
+        </section>
       </>
     );
   },
