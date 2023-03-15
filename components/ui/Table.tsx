@@ -122,6 +122,7 @@ const Cell = observer(
     onClick?: () => void;
   }) => {
     const { data: ztgInfo } = useZtgInfo();
+    console.log(ztgInfo);
 
     const base = `dark:text-white px-ztg-15 h-ztg-72 ${
       onClick ? "cursor-pointer" : ""
@@ -206,7 +207,7 @@ const Cell = observer(
               <div className="text-ztg-12-150 font-light text-sky-600">
                 $
                 {(
-                  (value.usdValue || ztgInfo?.price.toNumber()) * value.value
+                  (value.usdValue || ztgInfo?.price?.toNumber()) * value.value
                 ).toFixed(2)}
               </div>
             </td>
