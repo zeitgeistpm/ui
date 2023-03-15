@@ -45,6 +45,15 @@ const TradeForm = observer(() => {
 
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
   const { data: tradeItemState } = useTradeItemState(tradeItem);
+
+  const {
+    poolBaseBalance,
+    baseWeight,
+    assetWeight,
+    poolAssetBalance,
+    swapFee,
+  } = tradeItemState ?? {};
+
   const maxBaseAmount = useTradeMaxBaseAmount(tradeItem);
   const maxAssetAmount = useTradeMaxAssetAmount(tradeItem);
 
@@ -166,12 +175,12 @@ const TradeForm = observer(() => {
       if (tradeItem.action === "buy") {
         const amountOut = maxAssetAmountDecimal.mul(percentage);
 
-        const {
-          poolBaseBalance: balanceIn,
-          baseWeight: weightIn,
-          assetWeight: weightOut,
-          poolAssetBalance: balanceOut,
-        } = tradeItemState;
+        const [balanceIn, weightIn, balanceOut, weightOut] = [
+          poolBaseBalance,
+          baseWeight,
+          poolAssetBalance,
+          assetWeight,
+        ];
 
         const amountIn = calcInGivenOut(
           balanceIn,
@@ -190,15 +199,15 @@ const TradeForm = observer(() => {
       } else if (tradeItem.action === "sell") {
         const amountOut = maxBaseAmountDecimal.mul(percentage);
 
-        const {
+        const [balanceIn, weightIn, balanceOut, weightOut] = [
+          poolBaseBalance,
+          baseWeight,
           poolAssetBalance,
-          poolBaseBalance: balanceIn,
-          baseWeight: weightIn,
-          assetWeight: weightOut,
-        } = tradeItemState;
+          assetWeight,
+        ];
 
         const amountIn = calcInGivenOut(
-          poolAssetBalance,
+          balanceOut,
           weightOut,
           balanceIn,
           weightIn,
@@ -226,13 +235,6 @@ const TradeForm = observer(() => {
       if (tradeItemState == null) {
         return;
       }
-      const {
-        poolBaseBalance,
-        baseWeight,
-        assetWeight,
-        poolAssetBalance,
-        swapFee,
-      } = tradeItemState;
 
       const percentage = maxAssetAmountDecimal.gt(0)
         ? assetAmount.div(maxAssetAmountDecimal).mul(100).toDecimalPlaces(0)

@@ -17,8 +17,6 @@ import { createContext } from "react";
 import { useSdkv2 } from "./useSdkv2";
 import { useContext } from "react";
 import { useTradeItemState } from "./queries/useTradeItemState";
-import { useQuery } from "@tanstack/react-query";
-import { from } from "rxjs";
 
 export type TradeItem = {
   action: TradeType;
