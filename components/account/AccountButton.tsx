@@ -33,7 +33,15 @@ const AccountButton: FC<{
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
 
   const connect = async () => {
-    accountModals.openWalletSelect();
+    const isNovaWallet: boolean =
+      //@ts-ignore
+      typeof window === "object" && window!.walletExtension?.isNovaWallet;
+
+    if (isNovaWallet) {
+      wallets.connectWallet("polkadot-js", true);
+    } else {
+      accountModals.openWalletSelect();
+    }
   };
 
   const handleMouseEnter = () => {
@@ -72,7 +80,7 @@ const AccountButton: FC<{
     <>
       {!connected ? (
         <div
-          className="hidden md:block flex-1"
+          className="flex-1"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
@@ -105,7 +113,7 @@ const AccountButton: FC<{
           )}
         </div>
       ) : (
-        <div className="hidden md:block relative">
+        <div className="relative">
           <Menu>
             {({ open }) => (
               <>

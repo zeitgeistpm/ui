@@ -110,22 +110,22 @@ const IndexPage: NextPage<{
     console.log(isNovaWallet);
     console.log();
 
-    useEffect(() => {
-      const isNovaWallet =
-        //@ts-ignore
-        typeof window === "object" && window.walletExtension?.isNovaWallet;
+    // useEffect(() => {
+    //   const isNovaWallet =
+    //     //@ts-ignore
+    //     typeof window === "object" && window.walletExtension?.isNovaWallet;
 
-      console.log(wallets?.connected);
+    //   console.log(wallets?.connected);
 
-      if (wallets?.connected === false && sdk?.api && store) {
-        console.log("called");
+    //   if (wallets?.connected === false && sdk?.api && store) {
+    //     console.log("called");
 
-        // getWallets()
-        //   .find((wallet) => wallet.extensionName === "polkadot-js")
-        //   .enable("Zeitgiest");
-        flowResult(wallets.connectWallet("polkadot-js", true));
-      }
-    }, [wallets.connected, sdk?.api, store]);
+    //     // getWallets()
+    //     //   .find((wallet) => wallet.extensionName === "polkadot-js")
+    //     //   .enable("Zeitgiest");
+    //     flowResult(wallets.connectWallet("polkadot-js", true));
+    //   }
+    // }, [wallets.connected, sdk?.api, store]);
 
     return (
       <>

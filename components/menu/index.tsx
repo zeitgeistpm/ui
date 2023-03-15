@@ -64,7 +64,9 @@ const TopBar = () => {
         <SideMenu />
         <MenuLogo menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
         {/* <MarketSearch /> */}
-        <AccountButton />
+        <div className="hidden sm:block">
+          <AccountButton />
+        </div>
         {menuOpen ? (
           <X
             className="block md:hidden ml-auto cursor-pointer text-white"
