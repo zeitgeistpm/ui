@@ -36,7 +36,6 @@ const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
     typeof window === "object" && window.walletExtension?.isNovaWallet;
 
   console.log(isNovaWallet);
-  console.log(window);
 
   const {
     width,
