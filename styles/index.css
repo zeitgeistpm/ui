@@ -6,26 +6,8 @@
 @tailwind components;
 /* Stop purging. */
 
-body {
-  @apply bg-gray-50;
-}
-
 html {
-  font-size: 16px;
-}
-
-/* tailwind sm breakpoint */
-@media only screen and (max-width: 640px) {
-  html {
-    font-size: 12px;
-  }
-}
-
-/* tailwind md breakpoint */
-@media only screen and (max-width: 768px) {
-  html {
-    font-size: 14px;
-  }
+  font-size: 100%;
 }
 
 /* hide number input arrows */
@@ -205,17 +187,14 @@ input[type="number"] {
 @import "./card.css";
 @import "./date-picker.css";
 @import "./quill.css";
-
-body {
-  --topbar-height: 76px;
-}
-
-.topbar {
-  height: var(--topbar-height);
-}
+@import "./range-component.css";
 
 .main-container {
-  height: calc(calc(100vh - var(--topbar-height)) - 38px);
+  @apply px-4 sm:px-10 md:px-24 lg:px-32 max-w-screen-xl mx-auto;
+}
+
+.container-fluid {
+  @apply px-4 sm:px-10 md:px-24 lg:px-32 max-w-screen-xl mx-auto;
 }
 
 .carousel__slide--visible {
@@ -231,19 +210,12 @@ body {
 }
 
 table {
-  border-spacing: 0 15px;
+  /* override tailwind utils */
+  border-collapse: collapse !important;
 }
 
-td:first-child {
-  padding-left: 15px;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
-}
-
-td:last-child {
-  padding-right: 15px;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
+tr {
+  border-bottom: 1px solid #e5e7eb;
 }
 
 /* Scroll */
@@ -253,29 +225,9 @@ td:last-child {
   height: 0;
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-white;
-  @apply dark:bg-sky-1000;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #d9e3ee;
-  border-radius: 8px;
-  background-clip: padding-box;
-}
-
-.dark > * ::-webkit-scrollbar-thumb {
-  background: #1d2533;
-}
-
 .header {
   @apply font-bold;
-  @apply text-ztg-20-150;
+  @apply text-3xl;
 }
 
 .sub-header {
@@ -320,6 +272,15 @@ td:last-child {
 
 .ztg-transition {
   @apply transition duration-200 ease-in-out;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
 }
 
 @keyframes glitch-anim-1 {

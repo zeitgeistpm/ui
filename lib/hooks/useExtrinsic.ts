@@ -35,20 +35,22 @@ export const useExtrinsic = <T>(
           setIsLoading(false);
           setIsSuccess(true);
 
-          callbacks?.onSuccess();
+          callbacks?.onSuccess && callbacks.onSuccess();
         },
         failCallback: ({ index, error }) => {
           setIsLoading(false);
           setIsError(true);
 
-          callbacks?.onError();
+          callbacks?.onError && callbacks.onError();
           notificationStore.pushNotification(
             store.getTransactionError(index, error),
             { type: "Error" },
           );
         },
       }),
-    );
+    ).catch(() => {
+      setIsLoading(false);
+    });
   };
 
   return { send, isError, isSuccess, isLoading };

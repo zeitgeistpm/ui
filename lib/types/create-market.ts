@@ -9,8 +9,8 @@ export interface MultipleOutcomeEntry {
 }
 
 export interface RangeOutcomeEntry {
-  minimum: number | typeof NaN;
-  maximum: number | typeof NaN;
+  minimum: string;
+  maximum: string;
   ticker: string;
   type: RangeType;
 }
@@ -18,8 +18,8 @@ export interface RangeOutcomeEntry {
 export type RangeType = "number" | "date";
 
 export type YesNoOutcome = [
-  { name: "yes"; ticker: "YES"; color: "#0E992D" },
-  { name: "no"; ticker: "NO"; color: "#00A3FF" },
+  { name: "Yes"; ticker: "YES"; color: "#0E992D" },
+  { name: "No"; ticker: "NO"; color: "#00A3FF" },
 ];
 
 export type Outcomes =

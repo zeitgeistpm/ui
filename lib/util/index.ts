@@ -169,7 +169,9 @@ export const formatNumberLocalized = (
   num: number,
   locale: string = "en-US",
 ) => {
-  return new Intl.NumberFormat(locale).format(num);
+  return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(
+    num,
+  );
 };
 
 export const paramsForBlocksArray = (
@@ -250,14 +252,4 @@ export const getEndpointOption = (url?: string): EndpointOption => {
     opt.value = url;
   }
   return { ...opt };
-};
-
-Array.prototype.findLastIndexOf = function <T>(fn: (element: T) => boolean) {
-  const arr = [...this].reverse();
-  const len = arr.length;
-  const idx = arr.findIndex(fn);
-  if (idx < 0) {
-    return idx;
-  }
-  return len - idx - 1;
 };

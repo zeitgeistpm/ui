@@ -1,6 +1,6 @@
 import { useModalStore } from "lib/stores/ModalStore";
 import { observer } from "mobx-react";
-import React, { FC } from "react";
+import React, { FC, PropsWithChildren } from "react";
 import Modal, { ModalProps } from "./Modal";
 
 export type ConfirmModalProps = ModalProps & {
@@ -9,7 +9,7 @@ export type ConfirmModalProps = ModalProps & {
   cancelButtonText?: string;
 };
 
-const ConfirmModal: FC<ConfirmModalProps> = observer(
+const ConfirmModal: FC<PropsWithChildren<ConfirmModalProps>> = observer(
   ({
     confirmButtonText = "Confirm",
     cancelButtonText = "Cancel",

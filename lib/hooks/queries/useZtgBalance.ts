@@ -1,29 +1,29 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { isRpcData, isRpcSdk, NA, PoolGetQuery } from "@zeitgeistpm/sdk-next";
-import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import { useQuery } from "@tanstack/react-query";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
+import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
 
-export const rootKey = "ztg-balance";
+export const ztgBalanceRootKey = "ztg-blance";
 
-export const useZtgBalance = (account?: KeyringPairOrExtSigner) => {
+export const useZtgBalance = (address: string, blockNumber?: number) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, rootKey, account?.address],
+    [id, ztgBalanceRootKey, address, blockNumber],
     async () => {
-      if (account && isRpcSdk(sdk)) {
-        const balance = await sdk.context.api.query.system.account(
-          account.address,
-        );
+      if (address && isRpcSdk(sdk)) {
+        const api = await getApiAtBlock(sdk.api, blockNumber);
+
+        const balance = await api.query.system.account(address);
         return new Decimal(balance.data.free.toString());
       }
-      return NA;
+      return null;
     },
     {
-      initialData: NA,
+      initialData: null,
       keepPreviousData: true,
-      enabled: Boolean(sdk && account && isRpcSdk(sdk)),
+      enabled: Boolean(sdk && address && isRpcSdk(sdk)),
     },
   );
 

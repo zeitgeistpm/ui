@@ -1,5 +1,4 @@
 import { CategoricalAssetId, ScalarAssetId } from "@zeitgeistpm/sdk-next";
-import BuySellButtons from "components/trade-slip/BuySellButtons";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useStore } from "lib/stores/Store";
@@ -7,17 +6,21 @@ import { observer } from "mobx-react";
 import DisputeButton from "./DisputeButton";
 import RedeemButton from "./RedeemButton";
 import ReportButton from "./ReportButton";
+import { useState } from "react";
+import Modal from "components/ui/Modal";
+import TradeForm from "components/trade-form";
+import { useTradeItem } from "lib/hooks/trade";
+import TradeButton from "./TradeButton";
 
 interface AssetActionButtonsProps {
   marketId: number;
   assetId?: ScalarAssetId | CategoricalAssetId;
-  assetTicker: string;
 }
 
 const AssetActionButtons = observer(
-  ({ marketId, assetId, assetTicker }: AssetActionButtonsProps) => {
+  ({ marketId, assetId }: AssetActionButtonsProps) => {
     const store = useStore();
-    const { data: market } = useMarket(marketId);
+    const { data: market } = useMarket({ marketId });
     const { data: marketStage } = useMarketStage(market);
 
     const userAddress = store.wallets?.getActiveSigner()?.address;
@@ -31,9 +34,7 @@ const AssetActionButtons = observer(
       marketStage.type === "OpenReportingPeriod" ||
       (marketStage.type === "OracleReportingPeriod" && isOracle)
     ) {
-      return (
-        <ReportButton market={market} assetId={assetId} ticker={assetTicker} />
-      );
+      return <ReportButton market={market} assetId={assetId} />;
     }
 
     if (marketStage.type === "Disputed") {
@@ -41,9 +42,7 @@ const AssetActionButtons = observer(
     }
 
     if (marketStage.type === "Reported") {
-      return (
-        <DisputeButton market={market} assetId={assetId} ticker={assetTicker} />
-      );
+      return <DisputeButton market={market} assetId={assetId} />;
     }
 
     if (marketStage.type === "Resolved") {
@@ -51,7 +50,7 @@ const AssetActionButtons = observer(
     }
 
     if (marketStage.type === "Trading") {
-      return <BuySellButtons assetId={assetId} disabled={assetId == null} />;
+      return <TradeButton assetId={assetId} />;
     }
   },
 );

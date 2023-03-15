@@ -5,6 +5,7 @@ import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS, ZTG } from "lib/constants";
 import { MarketOutcomes, MarketOutcome } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
+import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
 
 const poolChangesQuery = gql`
   query PoolChanges($start: DateTime, $end: DateTime) {
@@ -45,6 +46,12 @@ const marketQuery = gql`
         baseAsset
       }
       outcomeAssets
+      tags
+      period {
+        end
+      }
+      status
+      scalarType
     }
   }
 `;
@@ -94,6 +101,10 @@ const getTrendingMarkets = async (
             volume: string;
             baseAsset: string;
           };
+          tags: [];
+          status: string;
+          scalarType: ScalarRangeType;
+          period: { end: string };
         }[];
       }>(marketQuery, {
         poolId: Number(poolId),
@@ -136,6 +147,12 @@ const getTrendingMarkets = async (
         volume: Number(new Decimal(market.pool.volume).div(ZTG).toFixed(0)),
         baseAsset: market.pool.baseAsset,
         outcomes: marketCategories,
+        pool: market.pool,
+        marketType: market.marketType,
+        tags: market.tags,
+        status: market.status,
+        scalarType: market.scalarType,
+        endDate: market.period.end,
       };
 
       return trendingMarket;

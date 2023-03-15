@@ -7,11 +7,8 @@ import {
   getIndexOf,
   getMarketIdOf,
   IndexerContext,
-  isNA,
   isRpcSdk,
   Market,
-  na,
-  NA,
   Pool,
   SaturatedPoolEntryAsset,
 } from "@zeitgeistpm/sdk-next";
@@ -65,15 +62,15 @@ export type TradeSlipItemState = {
   /**
    * Ztg balance of the trader.
    */
-  traderZtgBalance: Decimal | NA;
+  traderZtgBalance: Decimal;
   /**
    * Free ztg balance in the assets pool.
    */
-  poolZtgBalance: Decimal | NA;
+  poolZtgBalance: Decimal;
   /**
    * Free balance the trader has of the items asset.
    */
-  traderAssetBalance: Decimal | NA;
+  traderAssetBalance: Decimal;
   /**
    * Free balance the pool has of the items asset.
    */
@@ -149,7 +146,7 @@ export const useTradeslipItemsState = (
 
   const [slippage] = useAtom(slippagePercentageAtom);
 
-  const { data: traderZtgBalance } = useZtgBalance(signer);
+  const { data: traderZtgBalance } = useZtgBalance(signer?.address);
 
   const { data: pools } = usePoolsByIds(
     items.map((item) => ({ marketId: getMarketIdOf(item.assetId) })),
@@ -179,7 +176,7 @@ export const useTradeslipItemsState = (
   );
 
   const balancesKey = {
-    traderZtgBalance: traderZtgBalance.toString(),
+    traderZtgBalance: traderZtgBalance?.toString(),
     traderAssets: traderAssets?.query.map((a) => a?.toString()),
   };
 
@@ -208,9 +205,7 @@ export const useTradeslipItemsState = (
         : new Decimal(0);
 
       const poolZtgBalance =
-        !pool ||
-        !poolZtgBalances[pool?.poolId] ||
-        isNA(poolZtgBalances[pool?.poolId])
+        !pool || !poolZtgBalances[pool?.poolId]
           ? null
           : new Decimal(poolZtgBalances[pool.poolId].free.toString());
 
@@ -224,20 +219,17 @@ export const useTradeslipItemsState = (
         item.assetId,
       )?.data?.balance;
 
-      const traderAssetBalance =
-        !traderAssetBalanceLookup || isNA(traderAssetBalanceLookup)
-          ? na("Account balance not available.")
-          : new Decimal(traderAssetBalanceLookup.free.toString());
+      const traderAssetBalance = !traderAssetBalanceLookup
+        ? "Account balance not available."
+        : new Decimal(traderAssetBalanceLookup.free.toString());
 
-      const poolAssetBalance =
-        !poolAssetBalanceLookup || isNA(poolAssetBalanceLookup)
-          ? null
-          : new Decimal(poolAssetBalanceLookup.free.toString());
+      const poolAssetBalance = !poolAssetBalanceLookup
+        ? null
+        : new Decimal(poolAssetBalanceLookup.free.toString());
 
-      const tradeablePoolBalance =
-        !poolAssetBalance || isNA(poolAssetBalance)
-          ? null
-          : new Decimal(poolAssetBalance).mul(MAX_IN_OUT_RATIO);
+      const tradeablePoolBalance = !poolAssetBalance
+        ? null
+        : new Decimal(poolAssetBalance).mul(MAX_IN_OUT_RATIO);
 
       const enabled = Boolean(
         item &&
@@ -279,7 +271,7 @@ export const useTradeslipItemsState = (
 
           const max = (() => {
             if (item.action === "buy") {
-              const maxTokens = isNA(traderZtgBalance)
+              const maxTokens = traderZtgBalance
                 ? tradeablePoolBalance
                 : traderZtgBalance.div(price.div(ZTG) ?? 0);
               if (tradeablePoolBalance?.lte(maxTokens)) {
@@ -288,7 +280,7 @@ export const useTradeslipItemsState = (
                 return maxTokens;
               }
             } else {
-              if (!traderAssetBalance || isNA(traderAssetBalance)) {
+              if (!traderAssetBalance) {
                 return tradeablePoolBalance;
               }
               if (tradeablePoolBalance?.lte(traderAssetBalance)) {
@@ -336,7 +328,7 @@ export const useTradeslipItemsState = (
                 ).mul(new Decimal(slippage / 100 + 1));
 
                 if (!maxAmountIn.isNaN()) {
-                  transaction = sdk.context.api.tx.swaps.swapExactAmountOut(
+                  transaction = sdk.api.tx.swaps.swapExactAmountOut(
                     pool.poolId,
                     { Ztg: null },
                     maxAmountIn.toFixed(0),
@@ -356,7 +348,7 @@ export const useTradeslipItemsState = (
                 ).mul(new Decimal(1 - slippage / 100));
 
                 if (!minAmountOut.isNaN()) {
-                  transaction = sdk.context.api.tx.swaps.swapExactAmountIn(
+                  transaction = sdk.api.tx.swaps.swapExactAmountIn(
                     pool.poolId,
                     asset.assetId,
                     amount.toFixed(0),

@@ -4,7 +4,7 @@ import {
   isRpcSdk,
   Market,
 } from "@zeitgeistpm/sdk-next";
-import { AmountInput } from "components/ui/inputs";
+import { AmountInput, DateTimeInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -14,6 +14,7 @@ import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
+import moment from "moment";
 import { useState } from "react";
 
 const ScalarDisputeBox = observer(
@@ -27,7 +28,6 @@ const ScalarDisputeBox = observer(
     const [sdk] = useSdkv2();
     const store = useStore();
     const notificationStore = useNotificationStore();
-    const [scalarReportValue, setScalarReportValue] = useState("");
 
     //TODO: move to react query
     const disputeBond = store.config.markets.disputeBond;
@@ -44,6 +44,30 @@ const ScalarDisputeBox = observer(
       : disputeBond;
 
     const bounds = getScalarBounds(market).unwrap();
+
+    const isScalarDate = market.scalarType === "date";
+
+    const [scalarReportValue, setScalarReportValue] = useState(() => {
+      if (isScalarDate) {
+        return ((bounds[1].toNumber() + bounds[0].toNumber()) / 2).toFixed(0);
+      } else {
+        return "";
+      }
+    });
+
+    const getPreviousReport = () => {
+      const reportVal = new Decimal(
+        lastDispute?.outcome.asScalar.toString() ??
+          market.report?.outcome.scalar,
+      )
+        .div(ZTG)
+        .toString();
+      if (isScalarDate) {
+        return moment(Number(reportVal)).format("YYYY-MM-DD HH:mm");
+      } else {
+        return reportVal;
+      }
+    };
 
     const handleSignTransaction = async () => {
       if (!isRpcSdk(sdk)) return;
@@ -69,8 +93,7 @@ const ScalarDisputeBox = observer(
         },
       });
 
-      console.log(outcomeReport);
-      const tx = sdk.context.api.tx.predictionMarkets.dispute(
+      const tx = sdk.api.tx.predictionMarkets.dispute(
         market.marketId,
         outcomeReport,
       );
@@ -83,24 +106,35 @@ const ScalarDisputeBox = observer(
           Bond will start at {disputeBond} {tokenSymbol}, increasing by{" "}
           {disputeFactor} {tokenSymbol} for each dispute
         </div>
-        <AmountInput
-          value={scalarReportValue}
-          min={bounds?.[0].toString()}
-          max={bounds?.[1].toString()}
-          onChange={(val) => setScalarReportValue(val)}
-          showErrorMessage={false}
-        />
+        {isScalarDate ? (
+          <DateTimeInput
+            timestamp={scalarReportValue}
+            onChange={setScalarReportValue}
+            isValidDate={(current) => {
+              const loBound = bounds[0].toNumber();
+              const hiBound = bounds[1].toNumber();
+              if (
+                current.valueOf() >= loBound &&
+                current.valueOf() <= hiBound
+              ) {
+                return true;
+              }
+              return false;
+            }}
+          />
+        ) : (
+          <AmountInput
+            value={scalarReportValue}
+            min={bounds?.[0].toString()}
+            max={bounds?.[1].toString()}
+            onChange={(val) => setScalarReportValue(val)}
+            showErrorMessage={false}
+          />
+        )}
         <div className="my-ztg-10">
           <div className=" h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
             <span>Previous Report:</span>
-            <span className="font-mono">
-              {new Decimal(
-                lastDispute?.outcome.asScalar.toString() ??
-                  market.report?.outcome.scalar,
-              )
-                .div(ZTG)
-                .toString()}
-            </span>
+            <span className="font-mono">{getPreviousReport()}</span>
           </div>
           {bondAmount !== disputeBond && bondAmount !== undefined ? (
             <div className=" h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600 ">

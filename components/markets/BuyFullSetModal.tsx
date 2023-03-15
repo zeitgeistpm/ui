@@ -1,7 +1,4 @@
-import { transactionErrorToString } from "@zeitgeistpm/rpc";
-import { Context, hasMarketMethods } from "@zeitgeistpm/sdk-next";
 import { Market } from "@zeitgeistpm/sdk/dist/models";
-import { isRight } from "@zeitgeistpm/utility/dist/either";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
@@ -25,7 +22,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const notificationStore = useNotificationStore();
   const modalStore = useModalStore();
 
-  const { data: market } = useMarket(marketId);
+  const { data: market } = useMarket({ marketId });
   const { data: saturatedMarket } = useSaturatedMarket(market);
   const { data: pool } = usePool({ marketId: marketId });
   const [sdkMarket, setSdkMarket] = useState<Market>();

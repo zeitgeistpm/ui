@@ -2,8 +2,6 @@ import { Market, Swap } from "@zeitgeistpm/sdk/dist/models";
 import {
   AssetId,
   CategoryMetadata,
-  CourtDisputeMechanism,
-  isAuthorisedDisputeMechanism,
   MarketCreation,
   MarketDispute,
   MarketPeriod,
@@ -94,23 +92,11 @@ class MarketStore {
   get disputeMechanism(): "authorized" | "other" {
     if (
       this.market.disputeMechanism &&
-      isAuthorisedDisputeMechanism(this.market.disputeMechanism)
+      this.market.disputeMechanism === "Authorized"
     ) {
       return "authorized";
     } else {
       return "other";
-    }
-  }
-
-  get connectedWalletCanReport(): boolean {
-    if (this.inOpenReportPeriod === true) return true;
-    if (!this.store.wallets.activeAccount?.address) return false;
-
-    const activeAddress = this.store.wallets.activeAccount?.address;
-    if (this.status === "Closed" && this.isOracle) {
-      return true;
-    } else {
-      return false;
     }
   }
 
@@ -126,14 +112,6 @@ class MarketStore {
     const marketEnd = moment(this.endTimestamp);
     const periodEnd = marketEnd.clone().add(1, "day");
     return now.isBetween(marketEnd, periodEnd);
-  }
-
-  get inOpenReportPeriod(): boolean {
-    return (
-      this.status === "Closed" &&
-      (new Date().getTime() - this.endTimestamp) / 1000 >
-        this.store.config.markets.reportingPeriodSec
-    );
   }
 
   get inReportPeriod(): boolean {
@@ -192,62 +170,8 @@ class MarketStore {
     return timeRemaining > 0 ? timeRemaining / 1000 : 0;
   }
 
-  get oracleReportDuration(): number | null {
-    if (this.status === "Active" || this.market.report) {
-      return null;
-    }
-
-    const timeRemaining =
-      this.store.config.markets.reportingPeriodSec -
-      (new Date().getTime() - this.endTimestamp) / 1000;
-
-    return timeRemaining > 0 ? timeRemaining : 0;
-  }
-
-  get openReportDuration(): number | null {
-    if (this.status === "Active" || this.market.report) {
-      return null;
-    }
-
-    const timeRemaining =
-      2 * this.store.config.markets.reportingPeriodSec -
-      (new Date().getTime() - this.endTimestamp) / 1000;
-
-    return timeRemaining;
-  }
-
-  get reportCooldownDuration(): number | null {
-    if (!this.market.report) {
-      return null;
-    }
-    const blockDiff =
-      this.store.blockNumber.toNumber() - this.market.report?.at;
-
-    return blockDiff > 0
-      ? this.store.config.markets.disputePeriodSec -
-          blockDiff * this.store.config.blockTimeSec
-      : 0;
-  }
-
-  get disputeCooldownDuration(): number | null {
-    if (!(this.disputes?.length > 0)) {
-      return null;
-    }
-
-    const blockDiff =
-      this.store.blockNumber.toNumber() -
-      this.disputes[this.disputes.length - 1].at;
-
-    return blockDiff > 0
-      ? this.store.config.markets.disputePeriodSec -
-          blockDiff * this.store.config.blockTimeSec
-      : null;
-  }
-
   get isCourt(): boolean {
-    return (
-      (this.market.disputeMechanism as CourtDisputeMechanism).Court === null
-    );
+    return this.market.disputeMechanism === "Court";
   }
 
   get bounds(): [number, number] | null {
@@ -277,9 +201,9 @@ class MarketStore {
     });
   }
 
-  get reportedScalarOutcome(): number {
+  get reportedScalarOutcome(): string {
     //@ts-ignore
-    return this.market.report.outcome.asScalar.toNumber();
+    return this.market.report.outcome.asScalar.toString();
   }
 
   get reportedOutcomeIndex(): number | null {
@@ -620,7 +544,6 @@ class MarketStore {
       oracleReportPeriodPassed: computed,
       inOracleReportPeriod: computed,
       inReportPeriod: computed,
-      connectedWalletCanReport: computed,
       hasReport: computed,
       status: computed,
       creator: computed,

@@ -114,8 +114,8 @@ const rdtpInput = (
   );
 };
 
-const getDateFromTimestamp = (timestamp?: number) => {
-  const ts = timestamp || new Date().valueOf();
+const getDateFromTimestamp = (timestamp?: string) => {
+  const ts = Number(timestamp) || new Date().valueOf();
   return new Date(ts);
 };
 
@@ -139,36 +139,40 @@ const getLocalDateFormat = () => {
 };
 
 export const DateTimeInput: FC<{
-  timestamp?: number;
+  timestamp?: string;
   className?: string;
-  onChange: (timestamp: number) => void;
-  name: string;
+  onChange: (timestamp: string) => void;
+  name?: string;
+  isValidDate?: (currentDate: Moment) => boolean;
   form?: Form;
-}> = observer(({ className = "", onChange, timestamp, name, form }) => {
-  const ref = useRef();
-  const date = useMemo<Date>(() => {
-    return getDateFromTimestamp(timestamp);
-  }, [timestamp]);
-  const { invalid } = useFormField(form, name, timestamp);
+}> = observer(
+  ({ className = "", onChange, timestamp, name, form, isValidDate }) => {
+    const ref = useRef();
+    const date = useMemo<Date>(() => {
+      return getDateFromTimestamp(timestamp);
+    }, [timestamp]);
+    const { invalid } = useFormField(form, name, timestamp);
 
-  const dateChange = (v: Moment | string) => {
-    if (isMoment(v)) {
-      onChange(v.valueOf());
-    }
-  };
-  const localDateFormat = getLocalDateFormat();
+    const dateChange = (v: Moment | string) => {
+      if (isMoment(v)) {
+        onChange(`${v.valueOf()}`);
+      }
+    };
+    const localDateFormat = getLocalDateFormat();
 
-  return (
-    <DateTime
-      value={date}
-      renderInput={rdtpInput}
-      inputProps={{ ref, className: `${invalid ? invalidClasses : ""}` }}
-      onChange={dateChange}
-      dateFormat={localDateFormat}
-      className={className}
-    />
-  );
-});
+    return (
+      <DateTime
+        value={date}
+        renderInput={rdtpInput}
+        inputProps={{ ref, className: `${invalid ? invalidClasses : ""}` }}
+        onChange={dateChange}
+        dateFormat={localDateFormat}
+        className={className}
+        isValidDate={isValidDate}
+      />
+    );
+  },
+);
 
 export interface AmountInputProps {
   value?: string;
@@ -327,12 +331,12 @@ export const AmountInput: FC<AmountInputProps> = observer(
           let calcVal = val.replace(/(\.[0-9]*[1-9])0+$|\.0*$/, "$1");
           const checked = checkVal(calcVal, amountRegex);
           if (+checked > +max) {
-            return setVal(max);
+            setVal(max);
+          } else if (+checked < +min) {
+            setVal(min);
+          } else {
+            setVal(checkVal(calcVal, amountRegex));
           }
-          if (+checked < +min) {
-            return setVal(min);
-          }
-          setVal(checkVal(calcVal, amountRegex));
         }
         setFocused(false);
         !initialBlur && setInitialBlur(true);

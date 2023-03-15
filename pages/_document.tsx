@@ -6,7 +6,7 @@ export default function Document() {
   const useAnalytics = environment === "production" || environment == null;
 
   return (
-    <Html className="overflow-x-hidden max-w-full">
+    <Html>
       <Head>
         {useAnalytics && (
           <Script id="google-analytics" strategy="afterInteractive">
@@ -48,8 +48,20 @@ export default function Document() {
         />
         <link rel="manifest" href="/site.webmanifest" />
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+
+        <meta key="twitter:site" name="twitter:site" content="@ZeitgeistPM" />
+        <meta
+          key="twitter:card"
+          name="twitter:card"
+          content="summary_large_image"
+        />
+        <meta
+          key="twitter:creator"
+          name="twitter:creator"
+          content="@ZeitgeistPM"
+        />
       </Head>
-      <body className="overflow-x-hidden max-w-full">
+      <body>
         <Main />
         <NextScript />
       </body>

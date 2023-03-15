@@ -1,25 +1,14 @@
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 
-import { ZTG } from "lib/constants";
-import { IndexedMarketCardData } from "components/markets/market-card/index";
+import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
 import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
+import { IndexedMarketCardData } from "components/markets/market-card/index";
+import { ZTG } from "lib/constants";
 import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
+
+import { getFeaturedMarketIds } from "lib/cms/get-featured-marketids";
 import { getCurrentPrediction } from "lib/util/assets";
-
-const getMarketIdsFromEnvVar = () => {
-  try {
-    const mIds = JSON.parse(process.env.NEXT_PUBLIC_FEATURED_MARKET_IDS);
-    // this line *should not* be needed, but here just in case
-    const marketIds = mIds.map((id) => Number(id));
-    return marketIds;
-  } catch (err) {
-    console.error(err);
-    return [];
-  }
-};
-
-const marketIds = getMarketIdsFromEnvVar();
 
 const marketQuery = gql`
   query Market($marketId: Int) {
@@ -44,6 +33,12 @@ const marketQuery = gql`
         ticker
       }
       outcomeAssets
+      tags
+      period {
+        end
+      }
+      status
+      scalarType
     }
   }
 `;
@@ -61,11 +56,10 @@ const assetsQuery = gql`
 const getFeaturedMarkets = async (
   client: GraphQLClient,
 ): Promise<IndexedMarketCardData[]> => {
-  // handles if we don't have any markets set
-  if (marketIds.length === 0) return null;
+  const ids = await getFeaturedMarketIds();
 
   const featuredMarkets = await Promise.all(
-    marketIds.map(async (id) => {
+    ids.map(async (id) => {
       const marketRes = await client.request<{
         markets: {
           pool: {
@@ -78,8 +72,12 @@ const getFeaturedMarkets = async (
           question: string;
           creation: MarketCreation;
           marketType: { [key: string]: string };
+          scalarType: ScalarRangeType;
           categories: { color: string; name: string; ticker: string }[];
           outcomeAssets: string[];
+          tags: [];
+          status: string;
+          period: { end: string };
         }[];
       }>(marketQuery, {
         marketId: id,
@@ -93,11 +91,17 @@ const getFeaturedMarkets = async (
           marketId: market.marketId,
           question: market.question,
           creation: market.creation,
+          pool: market.pool,
           img: market.img,
-          prediction: "None",
+          prediction: { name: "None", price: 0 },
+          marketType: market.marketType,
+          scalarType: market.scalarType,
           volume: 0,
           baseAsset: "",
           outcomes: [],
+          tags: [],
+          status: market.status,
+          endDate: market.period.end,
         };
 
         return noPoolMarket;
@@ -127,7 +131,6 @@ const getFeaturedMarkets = async (
           return marketCategory;
         },
       );
-
       const featuredMarket: IndexedMarketCardData = {
         marketId: market.marketId,
         question: market.question,
@@ -137,6 +140,12 @@ const getFeaturedMarkets = async (
         volume: new Decimal(pool.volume).div(ZTG).toNumber(),
         baseAsset: pool.baseAsset,
         outcomes: marketCategories,
+        pool: market.pool,
+        marketType: market.marketType,
+        scalarType: market.scalarType,
+        tags: market.tags,
+        status: market.status,
+        endDate: market.period.end,
       };
 
       return featuredMarket;

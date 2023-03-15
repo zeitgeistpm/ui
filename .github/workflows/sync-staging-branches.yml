@@ -1,0 +1,27 @@
+name: Sync staging to test-staging
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  sync-branches:
+    runs-on: ubuntu-latest
+    name: Syncing branches
+    steps:
+      - uses: actions/checkout@v3
+      - name: open-pr
+        id: open-pr
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: "staging"
+          destination_branch: "test-staging"
+          pr_title: "Pulling ${{ github.ref }} into test-staging"
+          pr_label: "automerge"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: automerge
+        uses: pascalgn/automerge-action@v0.15.5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_REQUEST: ${{ steps.open-pr.outputs.pr_number }}

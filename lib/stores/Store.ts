@@ -26,16 +26,15 @@ import CourtStore from "./CourtStore";
 import Wallets from "../wallets";
 
 import { Context, Sdk } from "@zeitgeistpm/sdk-next";
+
 interface Config {
   tokenSymbol: string;
   ss58Prefix: number;
   blockTimeSec: number;
   markets: {
-    reportingPeriodSec: number;
     maxDisputes: number;
     disputeBond: number; // initial dispute amount
     disputeFactor: number; // increase in bond per dispute
-    disputePeriodSec: number;
     oracleBond: number;
     advisoryBond: number;
     validityBond: number;
@@ -71,7 +70,6 @@ export default class Store {
   exchangeStore = new ExchangeStore(this);
   courtStore: CourtStore;
   wallets = new Wallets(this);
-  ztgInfo: ZTGInfo;
 
   markets = new MarketsStore(this);
 
@@ -98,7 +96,7 @@ export default class Store {
 
   leftDrawerClosed = false;
 
-  rightDrawerClosed = false;
+  rightDrawerClosed = true;
 
   leftDrawerAnimating = false;
 
@@ -147,11 +145,11 @@ export default class Store {
       "Enter amount greater than zero.",
     );
 
-    validatorjs.register("timestamp_gt_now", (val: number) => {
-      if (typeof val !== "number") {
+    validatorjs.register("timestamp_gt_now", (val: string) => {
+      if (typeof val !== "string") {
         return false;
       }
-      return new Date().valueOf() < val;
+      return new Date().valueOf() < Number(val);
     });
 
     validatorjs.register("gt_current_blocknum", (val: number | string) => {
@@ -193,15 +191,14 @@ export default class Store {
       runInAction(() => {
         this.initialized = true;
       });
-    } catch {
+    } catch (err) {
+      console.warn("Can't initialize Store with error: ", err);
       this.userStore.setNextBestEndpoints(
         this.userStore.endpoint,
         this.userStore.gqlEndpoint,
       );
       this.initialize();
     }
-
-    this.fetchZTGPrice();
   }
 
   async connectNewSDK(endpoint: string, gqlEndpoint: string) {
@@ -258,20 +255,6 @@ export default class Store {
     }
   }
 
-  private async fetchZTGPrice(): Promise<void> {
-    const res = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=zeitgeist&vs_currencies=usd&include_24hr_change=true",
-    );
-    const json = await res.json();
-
-    runInAction(() => {
-      this.ztgInfo = {
-        price: new Decimal(json.zeitgeist.usd),
-        change: new Decimal(json.zeitgeist.usd_24h_change),
-      };
-    });
-  }
-
   private async loadConfig() {
     const [consts, properties] = await Promise.all([
       this.sdk.api.consts,
@@ -290,17 +273,11 @@ export default class Store {
       ss58Prefix: this.codecToNumber(consts.system.ss58Prefix),
       blockTimeSec: blockTimeSec,
       markets: {
-        reportingPeriodSec:
-          this.codecToNumber(consts.predictionMarkets.reportingPeriod) *
-          blockTimeSec,
         maxDisputes: this.codecToNumber(consts.predictionMarkets.maxDisputes),
         disputeBond:
           this.codecToNumber(consts.predictionMarkets.disputeBond) / ZTG,
         disputeFactor:
           this.codecToNumber(consts.predictionMarkets.disputeFactor) / ZTG,
-        disputePeriodSec:
-          this.codecToNumber(consts.predictionMarkets.disputePeriod) *
-          blockTimeSec,
         oracleBond:
           this.codecToNumber(consts.predictionMarkets.oracleBond) / ZTG,
         advisoryBond:

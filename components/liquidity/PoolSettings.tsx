@@ -90,7 +90,7 @@ const PriceSetter = ({
     onChange({ price: newPrice, locked: true });
   };
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center">
       <input
         className="h-ztg-40 w-[100px] rounded-ztg-5 bg-sky-200 text-right p-ztg-8 focus:outline-none"
         value={price}
@@ -186,7 +186,7 @@ const PoolSettings: FC<{
         />
       ),
       total: {
-        value: d.value,
+        value: Number(d.value),
         usdValue: 0,
       },
       amount: {

@@ -19,9 +19,16 @@ import MobileMenu from "components/menu/MobileMenu";
 import ModalContainer from "components/modal/ModalContainer";
 import { AnimatePresence } from "framer-motion";
 import DefaultLayout from "layouts/DefaultLayout";
-import DemoLayout from "layouts/DemoLayout";
 import ModalStore from "lib/stores/ModalStore";
 import Store from "lib/stores/Store";
+import dynamic from "next/dynamic";
+
+const Onboarding = dynamic(
+  () => import("../components/onboarding/Onboarding"),
+  {
+    ssr: false,
+  },
+);
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -100,14 +107,13 @@ const MyApp = observer(({ Component, pageProps }) => {
               <title>Zeitgeist - Prediction Markets</title>
             </Head>
             <DefaultLayout>
-              {/* <DemoLayout> */}
               <AnimatePresence>
                 {store.showMobileMenu && <MobileMenu />}
               </AnimatePresence>
               <Layout>
                 <Component {...pageProps} />
+                <Onboarding />
               </Layout>
-              {/* </DemoLayout> */}
             </DefaultLayout>
             {process.env.NEXT_PUBLIC_REACT_QUERY_DEVTOOLS === "true" &&
             typeof window === "object" ? (

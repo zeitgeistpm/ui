@@ -15,8 +15,11 @@ const marketQuery = gql`
     markets(where: { marketId_eq: $marketId }) {
       marketId
       description
+      baseAsset
       pool {
         poolId
+        createdAt
+        volume
       }
       question
       slug
@@ -35,6 +38,7 @@ const marketQuery = gql`
         ticker
         color
       }
+      tags
     }
   }
 `;
@@ -52,17 +56,18 @@ export interface MarketPageIndexedData {
   };
   categories: { ticker: string; color: string }[];
   outcomeAssets: string[];
-  pool: { poolId: number };
-  scalarType: ScalarRangeType | null;
+  pool: { poolId: number; volume: string; createdAt: string };
+  scalarType: ScalarRangeType;
   creator: string;
   oracle: string;
+  tags: [];
   disputeMechanism: "SimpleDisputes" | "Authorized" | "Court";
 }
 
 export const getRecentMarketIds = async (
   client: GraphQLClient,
 ): Promise<number[]> => {
-  const timstampOneMonthAgo = new Date(
+  const timestampOneMonthAgo = new Date(
     new Date().getTime() - DAY_SECONDS * 31 * 1000,
   ).getTime();
 
@@ -71,7 +76,7 @@ export const getRecentMarketIds = async (
       marketId: number;
     }[];
   }>(marketIdsQuery, {
-    end: timstampOneMonthAgo,
+    end: timestampOneMonthAgo,
   });
 
   return response.markets.map((m) => m.marketId);

@@ -1,6 +1,6 @@
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 
-const Pill: FC<{ title: string; value: string }> = ({
+const Pill: FC<PropsWithChildren<{ title: string; value: string }>> = ({
   title,
   value,
   children,

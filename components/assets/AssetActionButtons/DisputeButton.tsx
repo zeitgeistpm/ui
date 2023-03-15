@@ -1,8 +1,9 @@
 import {
-  AssetId,
+  getIndexOf,
   IndexerContext,
   isRpcSdk,
   Market,
+  MarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk-next";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
@@ -18,17 +19,17 @@ const DisputeButton = observer(
   ({
     market,
     assetId,
-    ticker,
   }: {
     market: Market<IndexerContext>;
-    assetId: AssetId;
-    ticker: string;
+    assetId: MarketOutcomeAssetId;
   }) => {
     const [sdk, id] = useSdkv2();
     const store = useStore();
     const { wallets } = store;
     const notificationStore = useNotificationStore();
     const modalStore = useModalStore();
+
+    const ticker = market.categories?.[getIndexOf(assetId)].ticker;
 
     const { data: disputes } = useMarketDisputes(market);
 
@@ -42,11 +43,10 @@ const DisputeButton = observer(
           <div>
             <ScalarDisputeBox market={market} />
           </div>,
-          "Dispute outcome",
+          <>"Dispute outcome",</>,
         );
       } else if (isRpcSdk(sdk)) {
-        //@ts-ignore
-        const ID = assetId.CategoricalOutcome[1];
+        const ID = getIndexOf(assetId);
         const signer = wallets.getActiveSigner();
 
         const callback = extrinsicCallback({
@@ -69,23 +69,20 @@ const DisputeButton = observer(
           },
         });
 
-        const tx = sdk.context.api.tx.predictionMarkets.dispute(
-          market.marketId,
-          { Categorical: ID },
-        );
+        const tx = sdk.api.tx.predictionMarkets.dispute(market.marketId, {
+          Categorical: ID,
+        });
         await signAndSend(tx, signer, callback);
       }
     };
     return (
-      <div className="w-full flex items-center justify-center">
-        <button
-          onClick={handleClick}
-          disabled={disputeDisabled}
-          className="rounded-full h-ztg-20  text-ztg-10-150 focus:outline-none px-ztg-15 py-ztg-2 ml-auto bg-dark-yellow text-white disabled:opacity-20 disabled:cursor-default"
-        >
-          Dispute Outcome
-        </button>
-      </div>
+      <button
+        onClick={handleClick}
+        disabled={disputeDisabled}
+        className="text-mariner font-semibold text-ztg-14-120"
+      >
+        Dispute Outcome
+      </button>
     );
   },
 );
