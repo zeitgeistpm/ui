@@ -13,6 +13,7 @@ export type UseSliderControls = {
   next: (userOrigin?: boolean) => void;
   prev: (userOrigin?: boolean) => void;
   goto: (slide: number, userOrigin?: boolean) => void;
+  pause: (time: number) => void;
 };
 
 export const useSliderControls = (props: UseSlidesProps): UseSliderControls => {
@@ -27,28 +28,28 @@ export const useSliderControls = (props: UseSlidesProps): UseSliderControls => {
     const isFirstSlide = currentSlide === props.count - 1;
     const newSlide = isFirstSlide ? 0 : currentSlide + 1;
     setCurrentSlide(newSlide);
-    userOrigin && pause();
+    userOrigin && pause(props.pauseOnUserInteraction);
   };
 
   const next = (userOrigin?: boolean) => {
     const isFirstSlide = currentSlide === 0;
     const newSlide = isFirstSlide ? props.count - 1 : currentSlide - 1;
     setCurrentSlide(newSlide);
-    userOrigin && pause();
+    userOrigin && pause(props.pauseOnUserInteraction);
   };
 
   const goto = (slide: number, userOrigin?: boolean) => {
     setCurrentSlide(slide);
-    userOrigin && pause();
+    userOrigin && pause(props.pauseOnUserInteraction);
   };
 
-  const pause = () => {
+  const pause = (time: number) => {
     clearTimeout(timerRef.current);
     setPaused(true);
     clearTimeout(pauseTimerRef.current);
     pauseTimerRef.current = setTimeout(() => {
       setPaused(false);
-    }, props.pauseOnUserInteraction);
+    }, time);
   };
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -73,5 +74,6 @@ export const useSliderControls = (props: UseSlidesProps): UseSliderControls => {
     next,
     prev,
     goto,
+    pause,
   };
 };

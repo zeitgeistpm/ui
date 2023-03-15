@@ -15,9 +15,10 @@ const HeroSlider = ({
 }) => {
   const slider = useSliderControls({
     count: banners.length,
-    autoplay: 15000,
-    pauseOnUserInteraction: 30000,
+    autoplay: 15 * 1000,
+    pauseOnUserInteraction: 45 * 1000,
   });
+
   const [animate, setAnimate] = useState<boolean>(false);
 
   useEffect(() => {
