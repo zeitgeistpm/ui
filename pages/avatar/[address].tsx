@@ -12,6 +12,7 @@ import Checkbox from "components/ui/Checkbox";
 import DiscordIcon from "components/icons/DiscordIcon";
 import TwitterIcon from "components/icons/TwitterIcon";
 import CopyIcon from "components/ui/CopyIcon";
+import Heading from "components/ui/Heading";
 import { encodeAddress } from "@polkadot/util-crypto";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useStore } from "lib/stores/Store";
@@ -143,7 +144,7 @@ const AvatarPage = observer(() => {
   };
 
   return (
-    <div className={"pt-ztg-46 "}>
+    <section>
       <AnimatePresence>
         {helpnotifications?.avatarKsmFeesInfo && (
           <motion.div
@@ -173,11 +174,11 @@ const AvatarPage = observer(() => {
         )}
       </AnimatePresence>
       <div className="mb-ztg-40">
-        <div className="flex">
+        <div className="flex flex-col sm:flex-row">
           <div className="relative rounded-full mr-ztg-40">
             <div
               style={{ overflow: "hidden" }}
-              className={`rounded-full overflow-hidden border-2 border-black ${
+              className={`w-fit rounded-full overflow-hidden border-2 border-black mb-8 ${
                 isOwner && hasPendingItems && " border-yellow-500 border-solid"
               }`}
             >
@@ -235,17 +236,13 @@ const AvatarPage = observer(() => {
           </div>
 
           <div>
-            <h3 className="mb-ztg-14  text-ztg-[24px]">
-              <span className="mr-4">{name}</span>
-            </h3>
-
-            <h4 className="flex mb-ztg-20">
-              <div className="font-mono text-ztg-16-120 font-semibold mr-4">
+            <Heading as="h3">{name}</Heading>
+            <div className="flex">
+              <Heading as="h4" className="break-all">
                 {address}
-              </div>
-              <CopyIcon copyText={address} className="flex-grow" />
-            </h4>
-
+              </Heading>{" "}
+              <CopyIcon copyText={address} className="flex-grow ml-4" />
+            </div>
             <div className="flex">
               <div className="flex flex-row py-ztg-15">
                 {identity?.twitter?.length > 0 ? (
@@ -274,9 +271,7 @@ const AvatarPage = observer(() => {
           </div>
         </div>
       </div>
-      <h3 className="mb-ztg-40  text-ztg-28-120 font-semibold">
-        <span className="mr-4">Achievements</span>
-      </h3>
+      <Heading as="h2">Achievements</Heading>
       <p className="text-gray-600 mb-ztg-12">
         All badges earned for this account.{" "}
         <i>
@@ -302,7 +297,7 @@ const AvatarPage = observer(() => {
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 });
 
@@ -414,10 +409,10 @@ const BadgeItem = (props: { item: Badge.IndexedBadge }) => {
         </div>
       </div>
       <div>
-        <h2 className="mb-1 text-xl font-bold">
+        <Heading as="h2">
           {item.metadata_properties?.badge.value.levelName ||
             item.metadata_properties?.badge.value.name}
-        </h2>
+        </Heading>
         <p className="text-sm text-lg text-gray-500">
           {capitalize(item.metadata_properties?.badge.value.category)}
         </p>

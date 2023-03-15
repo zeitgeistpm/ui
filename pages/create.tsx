@@ -62,6 +62,7 @@ import {
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { dateBlock } from "@zeitgeistpm/utility/dist/time";
 import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
+import Heading from "components/ui/Heading";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
@@ -676,9 +677,9 @@ const CreatePage: NextPage = observer(() => {
   return (
     <form data-test="createMarketForm">
       <InfoBoxes />
-      <h2 className="header mb-ztg-23" data-test="createMarketHeader">
+      <Heading as="h2" data-test="createMarketHeader">
         Create Market
-      </h2>
+      </Heading>
       <MarketFormCard header="1. Market name*">
         <MarketSlugField
           slug={formData.slug}

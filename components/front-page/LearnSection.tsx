@@ -54,8 +54,10 @@ const LearnCard = ({
 const LearnSection = () => {
   return (
     <section>
-      <Heading as="h2">How to</Heading>
-      <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-[20px]">
+      <Heading as="h2" className="mb-8">
+        How to
+      </Heading>
+      <div className="w-full grid sm:grid-cols-3 gap-[20px]">
         <LearnCard
           tag="Trade"
           title="Prediction Markets"
@@ -77,7 +79,7 @@ const LearnSection = () => {
           title="Get Started"
           description="Learn all about the Zeitgeist ecosystem in our Docs"
           link="https://docs.zeitgeist.pm/docs/getting-started"
-          classes="bg-mystic col-span-2 sm:col-span-1 min-h-[84px]"
+          classes="bg-mystic"
           img="/learn/learn-3.png"
         />
       </div>

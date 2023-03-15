@@ -8,6 +8,7 @@ import {
 } from "components/portfolio/MarketPositions";
 import TransactionHistoryTable from "components/portfolio/TransactionHistoryTable";
 import InfoBoxes from "components/ui/InfoBoxes";
+import Heading from "components/ui/Heading";
 import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 import { groupBy, range } from "lodash-es";
@@ -52,9 +53,9 @@ const Portfolio: NextPage = observer(() => {
           <Tab.Panel>
             {" "}
             <div className="mb-12">
-              <h3 className="font-bold text-ztg-22-120 mb-6 text-center">
+              <Heading as="h2" className="text-center">
                 Breakdown
-              </h3>
+              </Heading>
               <PortfolioBreakdown
                 {...(breakdown ?? {
                   loading: true,
@@ -62,9 +63,9 @@ const Portfolio: NextPage = observer(() => {
               />
             </div>
             <div className="mb-12">
-              <h3 className="font-bold text-ztg-22-120 mb-6 text-center">
+              <Heading as="h2" className="text-center">
                 Predictions
-              </h3>
+              </Heading>
               <Tab.Group>
                 <Tab.List className="flex center mb-14">
                   {["By Markets", "Subsidy", "Bonds"].map((title, index) => (

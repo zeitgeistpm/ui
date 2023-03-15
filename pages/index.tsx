@@ -11,7 +11,6 @@ import getTrendingMarkets from "lib/gql/trending-markets";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import HeroSlider from "components/hero-slider/HeroSlider";
-import { slidesData } from "components/hero-slider/slides-data";
 
 import {
   getPlaiceholder,

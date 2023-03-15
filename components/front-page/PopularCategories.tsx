@@ -1,6 +1,7 @@
 import { observer } from "mobx-react";
 import { FC } from "react";
 import Image from "next/image";
+import Heading from "components/ui/Heading";
 import { useRouter } from "next/router";
 
 export const CATEGORIES = [
@@ -64,7 +65,9 @@ const PopularCategories: FC<{
 
   return (
     <div className="flex flex-col mt-ztg-30">
-      <h3 className=" font-bold text-[28px] mb-ztg-30">Popular Categories</h3>
+      <Heading as="h2" className="mb-7">
+        Popular Categories
+      </Heading>
       <div className="flex gap-x-[20px] overflow-x-auto no-scroll-bar">
         {CATEGORIES.map((category, index) => (
           <Category

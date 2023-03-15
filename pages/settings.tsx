@@ -4,6 +4,7 @@ import { ChangeEvent, FC, PropsWithChildren, useEffect, useState } from "react";
 import { when } from "mobx";
 import Loader from "react-spinners/PulseLoader";
 import { Input } from "components/ui/inputs";
+import Heading from "components/ui/Heading";
 import Select from "components/ui/Select";
 import { useStore } from "lib/stores/Store";
 import { useUserStore } from "lib/stores/UserStore";
@@ -125,9 +126,9 @@ const IdentitySettings = observer(() => {
 
   return (
     <>
-      <div className="text-ztg-16-150  mb-ztg-20" data-test="displayNameLabel">
+      <Heading as="h3" data-test="displayNameLabel">
         Display Name
-      </div>
+      </Heading>
       <Input
         data-test="display-name"
         type="text"
@@ -138,9 +139,9 @@ const IdentitySettings = observer(() => {
       />
       <div className="flex flex-row mb-ztg-20">
         <div className="w-full mr-ztg-27">
-          <div className="text-ztg-16-150 mb-ztg-20" data-test="discordLabel">
+          <Heading as="h3" data-test="discordLabel">
             Discord
-          </div>
+          </Heading>
           <Input
             data-test="discord"
             type="text"
@@ -151,9 +152,9 @@ const IdentitySettings = observer(() => {
           />
         </div>
         <div className="w-full ">
-          <div className="text-ztg-16-150 mb-ztg-20" data-test="twitterLabel">
+          <Heading as="h3" data-test="twitterLabel">
             Twitter
-          </div>
+          </Heading>
           <Input
             data-test="twitter"
             type="text"
@@ -343,7 +344,7 @@ const EndpointsSettings = observer(() => {
   return (
     <div className="text-ztg-16-150">
       <div className="mb-ztg-20">
-        RPC Node Endpoint
+        <Heading as="h3">RPC Node Endpoint</Heading>
         <div className="flex flex-wrap mt-ztg-20 mb-ztg-20">
           <EndpointSelect
             options={endpoints}
@@ -405,12 +406,9 @@ const Settings: NextPage = observer(() => {
 
   return (
     <>
-      <h2
-        className="text-ztg-20-150 font-bold  mb-ztg-23"
-        data-test="accountSettingsHeader"
-      >
+      <Heading as="h2" data-test="accountSettingsHeader">
         Account Settings
-      </h2>
+      </Heading>
       <div className="p-ztg-30 rounded-ztg-10 mb-ztg-32  font-bold bg-sky-100 dark:bg-sky-700">
         <IdentitySettings />
         <EndpointsSettings />

@@ -11,6 +11,7 @@ import { createBlocksArray, formatBal, paramsForBlocksArray } from "lib/util";
 import { useRouter } from "next/router";
 import { DAY_SECONDS } from "lib/constants";
 import { usePoolsStore } from "lib/stores/PoolsStore";
+import Heading from "components/ui/Heading";
 
 interface AssetDetailProps {
   header: string;
@@ -158,7 +159,9 @@ const AssetPage: NextPage = observer(() => {
           className="cursor-pointer text-sky-600"
           onClick={navigateBack}
         />
-        <h2 className="header ml-ztg-16">Portfolio</h2>
+        <Heading as="h2" className="ml-4">
+          Portfolio
+        </Heading>
       </div>
       <div className="flex">
         <div className="flex flex-col">

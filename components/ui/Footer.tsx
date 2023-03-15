@@ -57,7 +57,7 @@ const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
         subscribe(formField.value);
       }}
     >
-      <Heading as="h4" className="text-center md:text-start">
+      <Heading as="h4" className="text-center md:text-start mb-4">
         {title}
       </Heading>
       <div className="flex gap-3 items-center h-ztg-40 w-full">
