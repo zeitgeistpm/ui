@@ -38,6 +38,7 @@ const HeroSlider = ({
         animate && styles.fadeIn
       }`}
       onAnimationEnd={() => setAnimate(false)}
+      data-testid="heroSlider"
     >
       <Image
         src={banners[currentSlide].imageUrl}

@@ -3,17 +3,6 @@ import { IndexPage } from "./lib/index.page";
 import test from "./lib/test";
 
 test.describe("index page", () => {
-  test("banner button navigates to markets page", async ({ page }) => {
-    const indexPage = new IndexPage(page);
-    await indexPage.goto();
-
-    await indexPage.bannerButton.click();
-
-    await page.waitForNavigation();
-    expect(page.url()).toContain("/markets");
-    expect(page.url()).not.toContain("/markets/");
-  });
-
   test("learn section buttons open in new tab and display correct pages", async ({
     page,
   }) => {
@@ -38,6 +27,36 @@ test.describe("index page", () => {
       const newPage = await pagePromise;
       newPage.close();
     }
+  });
+
+  test("hero slider chages a slide", async ({ page }) => {
+    const indexPage = new IndexPage(page);
+    await indexPage.goto();
+
+    const { heroSlider } = indexPage;
+
+    const prevButton = heroSlider.locator("button").first();
+    const nextButton = heroSlider.locator("button").last();
+    const title = await heroSlider.locator("h2").textContent();
+
+    const image = heroSlider.locator("> img");
+    const imageSrc = await image.getAttribute("src");
+
+    await nextButton.click();
+
+    const titleAfterNext = await heroSlider.locator("h2").textContent();
+    const imageSrcAfterNext = await image.getAttribute("src");
+
+    expect(titleAfterNext).not.toBe(title);
+    expect(imageSrcAfterNext).not.toBe(imageSrc);
+
+    await prevButton.click();
+
+    const titleAfterPrev = await heroSlider.locator("h2").textContent();
+    const imageSrcAfterPrev = await image.getAttribute("src");
+
+    expect(titleAfterPrev).not.toBe(titleAfterNext);
+    expect(imageSrcAfterPrev).not.toBe(imageSrcAfterNext);
   });
 
   test("popular categories buttons open correct urls", async ({ page }) => {

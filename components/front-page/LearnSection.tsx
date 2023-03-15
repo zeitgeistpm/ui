@@ -51,7 +51,10 @@ const LearnCard = ({
 
 const LearnSection = () => {
   return (
-    <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-[20px]">
+    <div
+      className="w-full grid grid-cols-2 sm:grid-cols-3 gap-[20px]"
+      data-testid="learnSection"
+    >
       <LearnCard
         tag="Trade"
         title="Prediction Markets"
