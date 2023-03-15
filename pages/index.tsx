@@ -140,6 +140,9 @@ const IndexPage: NextPage<{
           <div className="font-bold text-red-600 text-[20px]">
             Connected:{JSON.stringify(wallets?.activeAccount)}
           </div>
+          <div className="font-bold text-red-600 text-[20px]">
+            Balances:{JSON.stringify(wallets?.activeBalance)}
+          </div>
           {featuredMarkets.length > 0 && (
             <div className="mb-[60px]">
               <MarketScroll
