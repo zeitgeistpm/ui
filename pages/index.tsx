@@ -129,13 +129,16 @@ const IndexPage: NextPage<{
             <LearnSection />
           </div>
           <div className="font-bold text-red-600 text-[20px]">
-            Nova:{JSON.stringify(isNovaWallet)}-{typeof isNovaWallet}
+            Nova:{JSON.stringify(isNovaWallet)}
           </div>
           <div className="font-bold text-red-600 text-[20px]">
             Wallet:{JSON.stringify(walletExtension)}
           </div>
           <div className="font-bold text-red-600 text-[20px]">
             Web3:{JSON.stringify(injectedWeb3)}
+          </div>
+          <div className="font-bold text-red-600 text-[20px]">
+            Connected:{JSON.stringify(wallets?.activeAccount)}
           </div>
           {featuredMarkets.length > 0 && (
             <div className="mb-[60px]">
