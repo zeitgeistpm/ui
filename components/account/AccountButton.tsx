@@ -181,7 +181,7 @@ const AccountButton: FC<{
                             >
                               {`${formatNumberLocalized(
                                 activeBalance?.toNumber(),
-                              )} ${store.config.tokenSymbol}`}
+                              )} ${store.config?.tokenSymbol}`}
                             </div>
                           </div>
                         </div>
