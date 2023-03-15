@@ -107,7 +107,7 @@ const IndexPage: NextPage<{
             <LearnSection />
           </div>
           <div className="font-bold text-red-600 text-[20px]">
-            Nova:{isNovaWallet}-{typeof isNovaWallet}
+            Nova:{JSON.stringify(isNovaWallet)}-{typeof isNovaWallet}
           </div>
           <div className="font-bold text-red-600 text-[20px]">
             Wallet:{JSON.stringify(walletExtension)}
