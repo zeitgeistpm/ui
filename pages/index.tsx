@@ -87,12 +87,33 @@ const IndexPage: NextPage<{
     categoryPlaceholders,
     bannerPlaceHolders,
   }) => {
+    const isNovaWallet =
+      //@ts-ignore
+      typeof window === "object" && window.walletExtension?.isNovaWallet;
+    const walletExtension =
+      //@ts-ignore
+      typeof window === "object" && window.walletExtension?.isNovaWallet;
+
+    const injectedWeb3 =
+      //@ts-ignore
+      typeof window === "object" && window.injectedWeb3;
+
+    console.log(isNovaWallet);
     return (
       <>
         <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
         <div data-testid="indexPage" className="main-container">
           <div className="flex items-center w-full justify-center relative bottom-[60px]">
             <LearnSection />
+          </div>
+          <div className="font-bold text-red-600 text-[20px]">
+            Nova:{isNovaWallet}
+          </div>
+          <div className="font-bold text-red-600 text-[20px]">
+            Wallet:{walletExtension}
+          </div>
+          <div className="font-bold text-red-600 text-[20px]">
+            Web3:{JSON.stringify(injectedWeb3)}
           </div>
           {featuredMarkets.length > 0 && (
             <div className="mb-[60px]">

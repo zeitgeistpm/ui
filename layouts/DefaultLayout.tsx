@@ -31,12 +31,6 @@ const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
   useSubscribeBlockEvents();
   const [trade, setTrade] = useState<TradeItem | null>(null);
 
-  const isNovaWallet =
-    //@ts-ignore
-    typeof window === "object" && window.walletExtension?.isNovaWallet;
-
-  console.log(isNovaWallet);
-
   const {
     width,
     height,
@@ -72,9 +66,6 @@ const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
               </div>
             </div>
           )}
-          <div className="font-bold text-red-600 text-[40px]">
-            Nova:{isNovaWallet}
-          </div>
           <main
             className={`flex flex-col dark:text-white mb-12 ${
               router.pathname !== "/" && "main-container mt-32"
