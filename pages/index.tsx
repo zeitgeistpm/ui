@@ -92,7 +92,7 @@ const IndexPage: NextPage<{
       typeof window === "object" && window.walletExtension?.isNovaWallet;
     const walletExtension =
       //@ts-ignore
-      typeof window === "object" && window.walletExtension?.isNovaWallet;
+      typeof window === "object" && window.walletExtension;
 
     const injectedWeb3 =
       //@ts-ignore
@@ -110,7 +110,7 @@ const IndexPage: NextPage<{
             Nova:{isNovaWallet}
           </div>
           <div className="font-bold text-red-600 text-[20px]">
-            Wallet:{walletExtension}
+            Wallet:{JSON.stringify(walletExtension)}
           </div>
           <div className="font-bold text-red-600 text-[20px]">
             Web3:{JSON.stringify(injectedWeb3)}
