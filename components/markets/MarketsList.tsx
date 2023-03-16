@@ -1,4 +1,4 @@
-import { Context, IndexedMarket, ScalarRangeType } from "@zeitgeistpm/sdk-next";
+import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
 import React, { useEffect, useState } from "react";
 import Decimal from "decimal.js";
 import { useInView } from "react-intersection-observer";
@@ -7,7 +7,6 @@ import Loader from "react-spinners/PulseLoader";
 import { X } from "react-feather";
 import { useRouter } from "next/router";
 import { useInfiniteMarkets } from "lib/hooks/queries/useInfiniteMarkets";
-import { MarketOutcomes } from "lib/types/markets";
 import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
 import MarketFilterSelection from "./market-filter";
 import MarketCard from "./market-card/index";
@@ -79,18 +78,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     }
   }, [isLoadMarkerInView, hasNextPage]);
 
-  const [markets, setMarkets] = useState<
-    (IndexedMarket<Context> & {
-      outcomes: MarketOutcomes;
-      prediction: { name: string; price: number };
-    })[]
-  >();
-
-  useEffect(() => {
-    const markets =
-      marketsPages?.pages.flatMap((markets) => markets.data) ?? [];
-    setMarkets(markets);
-  }, [marketsPages?.pages]);
+  const markets = marketsPages?.pages.flatMap((markets) => markets.data) ?? [];
 
   const count = markets?.length ?? 0;
   const marketIds = markets?.map((m) => m.marketId) ?? [];
