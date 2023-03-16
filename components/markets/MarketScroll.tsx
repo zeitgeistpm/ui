@@ -19,9 +19,6 @@ const MarketScroll = observer(
   }) => {
     const scrollRef = useRef<HTMLDivElement>();
     const [scrollLeft, setScrollLeft] = useState(0);
-    const [scrollDirection, setScrollDirection] = useState<"left" | "right">(
-      "right",
-    );
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
     const { data: marketsStats } = useMarketsStats(
       markets.map((m) => m.marketId),
@@ -44,7 +41,6 @@ const MarketScroll = observer(
     }, [scrollRef, scrollLeft]);
 
     const handleRightClick = () => {
-      setScrollDirection("right");
       setScrollLeft((prev) => {
         const newScroll = prev + moveSize;
         const max = scrollMax - containerWidth;
@@ -54,7 +50,6 @@ const MarketScroll = observer(
     };
 
     const handleLeftClick = () => {
-      setScrollDirection("left");
       setScrollLeft((prev) => {
         const newScroll = prev - moveSize;
 
@@ -83,12 +78,6 @@ const MarketScroll = observer(
           leftDisabled={leftDisabled}
         />
         <div className="col-span-3 relative">
-          {(scrollDirection === "left" && scrollLeft !== 0) ||
-          (scrollDirection === "right" && hasReachedEnd) ? (
-            <div className="md:bg-gradient-to-r from-white w-[20px] absolute z-ztg-10 -left-[5px] h-full"></div>
-          ) : (
-            <div className="md:bg-gradient-to-r from-transparent to-white w-[20px] absolute z-ztg-1 -right-[5px] h-full"></div>
-          )}
           <div
             ref={scrollRef}
             className="flex flex-col gap-7 md:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
