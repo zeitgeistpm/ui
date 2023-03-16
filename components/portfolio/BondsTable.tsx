@@ -33,7 +33,7 @@ const BondsTable = ({ address }: { address: string }) => {
   return (
     <div>
       {marketBonds?.map((market) => (
-        <div key={market.marketId}>
+        <div key={market.marketId} className="mb-[30px]">
           <MarketPositionHeader
             marketId={market.marketId}
             question={market.question}
