@@ -1,4 +1,5 @@
-import { Frown, Link } from "react-feather";
+import Link from "next/link";
+import { Frown } from "react-feather";
 
 const EmptyPortfolio = ({
   headerText,
@@ -19,7 +20,7 @@ const EmptyPortfolio = ({
       {buttonText && buttonLink && (
         <Link
           href={buttonLink}
-          className="text-[14px] bg-mystic rounded-ztg-100 py-[5px] px-[10px]"
+          className="text-[14px] bg-mystic rounded-ztg-100 py-[8px] px-[20px]"
         >
           {buttonText}
         </Link>

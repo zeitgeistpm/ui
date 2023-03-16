@@ -1,6 +1,7 @@
 import { useTransactionHistory } from "lib/hooks/queries/useTransactionHistory";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Link from "next/link";
+import EmptyPortfolio from "./EmptyPortfolio";
 
 const columns: TableColumn[] = [
   {
@@ -31,7 +32,8 @@ const columns: TableColumn[] = [
 ];
 
 const TransactionHistoryTable = ({ address }: { address: string }) => {
-  const { data: transactionHistory } = useTransactionHistory(address);
+  const { data: transactionHistory, isLoading } =
+    useTransactionHistory(address);
 
   const tableData: TableData[] = transactionHistory?.map((transaction) => {
     return {
@@ -56,7 +58,21 @@ const TransactionHistoryTable = ({ address }: { address: string }) => {
     };
   });
 
-  return <Table columns={columns} data={tableData} />;
+  return (
+    <div>
+      {isLoading === false &&
+      (transactionHistory == null || transactionHistory?.length === 0) ? (
+        <EmptyPortfolio
+          headerText="No Transactions"
+          bodyText="Browse markets"
+          buttonText="View markets"
+          buttonLink="/markets"
+        />
+      ) : (
+        <Table columns={columns} data={tableData} />
+      )}
+    </div>
+  );
 };
 
 export default TransactionHistoryTable;
