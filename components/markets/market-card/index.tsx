@@ -88,7 +88,7 @@ const MarketCardPredictionBar = ({
           </span>
         </div>
         <div
-          className={`w-full rounded-lg h-1.5 transition-al group-hover:bg-white bg-gray-200`}
+          className={`w-full rounded-lg h-1.5 transition-all group-hover:bg-white bg-gray-200`}
         >
           <div
             className={`rounded-lg h-full bg-blue`}
