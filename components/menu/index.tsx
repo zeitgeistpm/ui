@@ -60,7 +60,7 @@ const TopBar = () => {
         pathname === "/" ? "border-b-0" : "border-b border-gray-200"
       }`}
     >
-      <div className="relative flex justify-between items-center w-full max-w-screen-2xl h-[44px] mx-auto px-8">
+      <div className="relative flex justify-between items-center w-full max-w-screen-2xl h-[44px] mx-auto px-3.5">
         <SideMenu />
         <MenuLogo menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
         {/* <MarketSearch /> */}
