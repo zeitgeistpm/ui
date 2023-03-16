@@ -55,7 +55,7 @@ const MarketCardInfo = ({ question }: { question: string }) => {
 const MarketCardTags = ({ tags }: { tags: string[] }) => {
   return (
     <>
-      {tags.map((tag, index) => {
+      {tags?.map((tag, index) => {
         return (
           <Pill
             key={index}
