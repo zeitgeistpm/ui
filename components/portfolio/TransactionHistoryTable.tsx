@@ -1,11 +1,12 @@
 import { useTransactionHistory } from "lib/hooks/queries/useTransactionHistory";
 import Table, { TableColumn, TableData } from "components/ui/Table";
+import Link from "next/link";
 
 const columns: TableColumn[] = [
   {
     header: "Market",
     accessor: "question",
-    type: "paragraph",
+    type: "component",
   },
   {
     header: "Action",
@@ -34,7 +35,11 @@ const TransactionHistoryTable = ({ address }: { address: string }) => {
 
   const tableData: TableData[] = transactionHistory?.map((transaction) => {
     return {
-      question: transaction.question,
+      question: (
+        <Link href={`/markets/${transaction.marketId}`} className="text-[14px]">
+          {transaction.question}
+        </Link>
+      ),
       action: transaction.action,
       price: {
         value: transaction.price,
