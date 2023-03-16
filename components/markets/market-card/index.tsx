@@ -83,12 +83,12 @@ const MarketCardPredictionBar = ({
       <>
         <div className="text-sm flex justify-between mb-1">
           <span className="text-blue">{name}</span>
-          <span className="group-hover:text-white text-blue-600 transition-all">
+          <span className="group-hover:text-white text-gray-500 transition-all">
             {impliedPercentage}%
           </span>
         </div>
         <div
-          className={`w-full rounded-lg h-1.5 transition-all group-hover:text-white group-hover:bg-white bg-gray-200 text-blue-600`}
+          className={`w-full rounded-lg h-1.5 transition-al group-hover:bg-white bg-gray-200`}
         >
           <div
             className={`rounded-lg h-full bg-blue`}
