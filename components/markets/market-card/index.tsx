@@ -71,11 +71,9 @@ const MarketCardTags = ({ tags }: { tags: string[] }) => {
 const MarketCardPredictionBar = ({
   prediction: { name, price },
   pool,
-  isHovered,
 }: {
   prediction: { name: string; price: number };
   pool: null | {};
-  isHovered: boolean;
 }) => {
   // check if market has liquidity
   if (pool !== null) {
@@ -85,24 +83,15 @@ const MarketCardPredictionBar = ({
       <>
         <div className="text-sm flex justify-between mb-1">
           <span className="text-blue">{name}</span>
-          <span
-            style={{
-              color: `${isHovered ? "#FFFFFF" : "#6b7280"}`,
-              transition: "color 500ms ease",
-            }}
-          >
+          <span className="group-hover:text-white text-gray-500 transition-all">
             {impliedPercentage}%
           </span>
         </div>
         <div
-          className={`w-full rounded-lg h-1.5`}
-          style={{
-            backgroundColor: `${isHovered ? "#FFFFFF" : "#E5E7EB"}`,
-            transition: "background-color 500ms ease",
-          }}
+          className={`w-full rounded-lg h-1.5 transition-all group-hover:bg-white bg-gray-200`}
         >
           <div
-            className={`rounded-lg h-full transition-all bg-blue`}
+            className={`rounded-lg h-full bg-blue`}
             style={{
               width: `${isNaN(impliedPercentage) ? 0 : impliedPercentage}%`,
             }}
@@ -205,8 +194,6 @@ const MarketCard = ({
   liquidity,
   numParticipants,
 }: MarketCardProps) => {
-  const [isHovered, setIsHovered] = useState(false);
-
   const hasEnded = () => {
     const currentTime = new Date();
     const endTime = Number(endDate);
@@ -253,13 +240,9 @@ const MarketCard = ({
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
         data-testid={`marketCard-${marketId}`}
-        className={`group flex flex-col w-full h-auto rounded-xl p-[15px] relative ${className}`}
+        className={`group flex flex-col w-full h-auto rounded-xl p-[15px] relative bg-anti-flash-white hover:bg-pastel-blue ${className}`}
         style={{
-          backgroundColor: isHovered ? "#B5C1CA" : "#F0F2F5",
-          transition: "background-color 500ms ease",
           minWidth: isNaN(width) ? "100%" : width,
           maxWidth: isNaN(width) ? "100%" : width,
         }}
@@ -289,11 +272,7 @@ const MarketCard = ({
           <MarketCardInfo question={question} />
           <div className="w-full">
             {marketType.scalar === null ? (
-              <MarketCardPredictionBar
-                isHovered={isHovered}
-                pool={pool}
-                prediction={prediction}
-              />
+              <MarketCardPredictionBar pool={pool} prediction={prediction} />
             ) : pool !== null ? (
               <ScalarPriceRange
                 scalarType={scalarType}
