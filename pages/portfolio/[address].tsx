@@ -2,6 +2,7 @@ import { Tab } from "@headlessui/react";
 import { getIndexOf } from "@zeitgeistpm/sdk-next";
 import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
+import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
 import {
   MarketPositions,
   MarketPositionsSkeleton,
@@ -35,6 +36,8 @@ const Portfolio: NextPage = observer(() => {
     () => subsidy && groupBy(subsidy, (position) => position.market.marketId),
     [subsidy],
   );
+
+  console.log(marketPositionsByMarket, subsidyPositionsByMarket);
 
   return (
     <>
@@ -86,67 +89,85 @@ const Portfolio: NextPage = observer(() => {
 
                 <Tab.Panels>
                   <Tab.Panel>
-                    {!marketPositionsByMarket || !ztgPrice
-                      ? range(0, 8).map((i) => (
-                          <MarketPositionsSkeleton className="mb-14" key={i} />
-                        ))
-                      : Object.values(marketPositionsByMarket).map(
-                          (marketPositions) => {
-                            const market = marketPositions[0].market;
+                    {!marketPositionsByMarket || !ztgPrice ? (
+                      range(0, 8).map((i) => (
+                        <MarketPositionsSkeleton className="mb-14" key={i} />
+                      ))
+                    ) : Object.values(marketPositionsByMarket).length > 1 ? (
+                      Object.values(marketPositionsByMarket).map(
+                        (marketPositions) => {
+                          const market = marketPositions[0].market;
 
+                          marketPositions = marketPositions.filter((position) =>
+                            position.userBalance.gt(0),
+                          );
+
+                          if (
+                            market.status === "Resolved" &&
+                            market.marketType.categorical
+                          ) {
                             marketPositions = marketPositions.filter(
-                              (position) => position.userBalance.gt(0),
+                              (position) =>
+                                getIndexOf(position.assetId) ===
+                                Number(market.resolvedOutcome),
                             );
+                          }
 
-                            if (
-                              market.status === "Resolved" &&
-                              market.marketType.categorical
-                            ) {
-                              marketPositions = marketPositions.filter(
-                                (position) =>
-                                  getIndexOf(position.assetId) ===
-                                  Number(market.resolvedOutcome),
-                              );
-                            }
+                          if (marketPositions.length === 0) return null;
 
-                            if (marketPositions.length === 0) return null;
-
-                            return (
-                              <MarketPositions
-                                key={market.marketId}
-                                className="mb-14 border-b-4 border-gray-200"
-                                market={market}
-                                usdZtgPrice={ztgPrice.price}
-                                positions={marketPositions.filter((position) =>
-                                  position.userBalance.gt(0),
-                                )}
-                              />
-                            );
-                          },
-                        )}
+                          return (
+                            <MarketPositions
+                              key={market.marketId}
+                              className="mb-14 border-b-4 border-gray-200"
+                              market={market}
+                              usdZtgPrice={ztgPrice.price}
+                              positions={marketPositions.filter((position) =>
+                                position.userBalance.gt(0),
+                              )}
+                            />
+                          );
+                        },
+                      )
+                    ) : (
+                      <EmptyPortfolio
+                        headerText="You don't have any assets"
+                        bodyText="View markets to trade assets"
+                        buttonText="View Markets"
+                        buttonLink="/markets"
+                      />
+                    )}
                   </Tab.Panel>
 
                   <Tab.Panel>
-                    {!subsidyPositionsByMarket || !ztgPrice
-                      ? range(0, 8).map((i) => (
-                          <MarketPositionsSkeleton className="mb-14" key={i} />
-                        ))
-                      : Object.values(subsidyPositionsByMarket).map(
-                          (subsidyPositions) => {
-                            const market = subsidyPositions[0].market;
-                            return (
-                              <MarketPositions
-                                key={market.marketId}
-                                className="mb-14 border-b-4 border-gray-200"
-                                market={market}
-                                usdZtgPrice={ztgPrice.price}
-                                positions={subsidyPositions.filter((position) =>
-                                  position.userBalance.gt(0),
-                                )}
-                              />
-                            );
-                          },
-                        )}
+                    {!subsidyPositionsByMarket || !ztgPrice ? (
+                      range(0, 8).map((i) => (
+                        <MarketPositionsSkeleton className="mb-14" key={i} />
+                      ))
+                    ) : Object.values(subsidyPositionsByMarket).length > 0 ? (
+                      Object.values(subsidyPositionsByMarket).map(
+                        (subsidyPositions) => {
+                          const market = subsidyPositions[0].market;
+                          return (
+                            <MarketPositions
+                              key={market.marketId}
+                              className="mb-14 border-b-4 border-gray-200"
+                              market={market}
+                              usdZtgPrice={ztgPrice.price}
+                              positions={subsidyPositions.filter((position) =>
+                                position.userBalance.gt(0),
+                              )}
+                            />
+                          );
+                        },
+                      )
+                    ) : (
+                      <EmptyPortfolio
+                        headerText="You don't have any subsidy"
+                        bodyText="View liquidity pools to find places to provide liquidity"
+                        buttonText="View Pools"
+                        buttonLink="/liquidity"
+                      />
+                    )}
                   </Tab.Panel>
                   <Tab.Panel>
                     <BondsTable address={address} />

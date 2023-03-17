@@ -14,7 +14,7 @@ const EmptyPortfolio = ({
 }) => {
   return (
     <div className="flex flex-col items-center justify-center gap-y-[30px] mb-[200px]">
-      <Frown size={80} />
+      <Frown className="text-pastel-blue" size={80} />
       <div className="font-semibold text-[24px]">{headerText}</div>
       <div>{bodyText}</div>
       {buttonText && buttonLink && (

@@ -30,7 +30,6 @@ const columns: TableColumn[] = [
 
 const BondsTable = ({ address }: { address: string }) => {
   const { data: marketBonds, isLoading } = useAccountBonds(address);
-  console.log(isLoading, marketBonds);
 
   return (
     <div>
