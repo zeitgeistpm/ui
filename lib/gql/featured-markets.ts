@@ -84,6 +84,8 @@ const getFeaturedMarkets = async (
       });
 
       const market = marketRes.markets[0];
+
+      if (!market) return;
       const pool = market.pool;
 
       if (!pool) {
@@ -152,7 +154,7 @@ const getFeaturedMarkets = async (
     }),
   );
 
-  return featuredMarkets;
+  return featuredMarkets.filter((market) => market !== undefined);
 };
 
 export default getFeaturedMarkets;
