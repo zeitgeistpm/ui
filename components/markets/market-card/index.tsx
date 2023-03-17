@@ -143,12 +143,12 @@ const MarketCardDetails = ({
       </div>
       <div className="flex gap-2.5 text-sm">
         {rows.numParticipants != null ? (
-          <div className="flex items-center gap-2 w-[50px]">
+          <div className="flex items-center gap-2">
             <Users size={18} />
             <span>{rows.numParticipants}</span>
           </div>
         ) : (
-          <Skeleton width={50} />
+          <Skeleton width={35} />
         )}
         <div className="flex items-center gap-2">
           <BarChart2 size={18} />
