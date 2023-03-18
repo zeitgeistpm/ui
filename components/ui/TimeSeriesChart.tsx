@@ -57,13 +57,19 @@ const ChartToolTip = observer((props) => {
             <div className="mt-ztg-13">
               {props.series?.map((asset, index) => (
                 <div key={index} className="flex flex-col mt-1">
-                  <span className="font-semibold capitalize">
-                    {asset.label}
-                  </span>
-                  <span className="">
+                  <div className="flex items-center">
+                    <div
+                      className="bg-black w-[8px] h-[8px] rounded-full"
+                      style={{ backgroundColor: asset.color }}
+                    ></div>
+                    <div className="font-semibold capitalize ml-[6px]">
+                      {asset.label}
+                    </div>
+                  </div>
+                  <div>
                     {new Decimal(props.payload[index]?.value ?? 0).toFixed(3) +
                       ` ${props.yUnits}`}
-                  </span>
+                  </div>
                 </div>
               ))}
             </div>
