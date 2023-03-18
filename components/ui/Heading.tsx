@@ -1,18 +1,45 @@
 import { PropsWithChildren } from "react";
 
+type fontSize =
+  | 12
+  | 14
+  | 16
+  | 18
+  | 20
+  | 22
+  | 24
+  | 28
+  | 30
+  | 36
+  | 48
+  | 60
+  | 72
+  | 96
+  | 128;
+
 interface HeadingProps {
   as: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-  size?: 12 | 14 | 16 | 18 | 20 | 22 | 24 | 30 | 36 | 60 | 72 | 96 | 128;
+  xl?: fontSize;
+  lg?: fontSize;
+  md?: fontSize;
+  sm?: fontSize;
   className?: string;
 }
 
 const Heading = ({
   as: heading,
-  size,
+  xl,
+  lg,
+  md,
+  sm,
   className = "",
   children,
 }: PropsWithChildren<HeadingProps>) => {
-  const getSize = (size: number) => {
+  const getPrefix = (size: fontSize, prefix: string) => {
+    return `${prefix}${getSize(size)}`;
+  };
+
+  const getSize = (size: fontSize) => {
     switch (size) {
       case 12:
         return "text-xs";
@@ -26,6 +53,8 @@ const Heading = ({
         return "text-xl";
       case 24:
         return "text-2xl";
+      case 28:
+        return "text-2.5xl";
       case 30:
         return "text-3xl";
       case 36:
@@ -45,24 +74,32 @@ const Heading = ({
     }
   };
 
+  const extraLarge = xl && getSize(xl);
+  const large = lg && getPrefix(lg, "lg:");
+  const medium = md && getPrefix(md, "md:");
+  const small = sm && getPrefix(sm, "sm:");
+
   if (heading === "h1") {
-    const defaultSize = 30;
+    const defaultSize = 28;
     return (
       <h1
         className={`${
-          size ? getSize(size) : getSize(defaultSize)
-        } font-bold text-fog-of-war mb-4 ${className}`}
+          extraLarge ? extraLarge : getSize(defaultSize)
+        } ${small} ${medium} ${large} font-bold text-fog-of-war mb-4 ${className}`}
       >
         {children}
       </h1>
     );
   }
   if (heading === "h2") {
-    const defaultSize = 30;
+    const defaultSize = 28;
+    console.log(small);
     return (
       <h2
-        className={`${
-          size ? getSize(size) : getSize(defaultSize)
+        className={`${extraLarge ? extraLarge : getSize(defaultSize)} ${
+          sm && getPrefix(sm, "sm:")
+        } ${md && getPrefix(md, "md:")} ${
+          lg && getPrefix(lg, "lg:")
         } font-bold text-fog-of-war mb-4 ${className}`}
       >
         {children}
@@ -74,8 +111,8 @@ const Heading = ({
     return (
       <h3
         className={`${
-          size ? getSize(size) : getSize(defaultSize)
-        } font-semibold text-fog-of-war mb-4 ${className}`}
+          extraLarge ? extraLarge : getSize(defaultSize)
+        } ${large} ${medium} ${small} font-semibold text-fog-of-war mb-4 ${className}`}
       >
         {children}
       </h3>
@@ -86,8 +123,8 @@ const Heading = ({
     return (
       <h4
         className={`${
-          size ? getSize(size) : getSize(defaultSize)
-        } font-semibold text-fog-of-war ${className}`}
+          extraLarge ? extraLarge : getSize(defaultSize)
+        } ${large} ${medium} ${small}  font-semibold text-fog-of-war ${className}`}
       >
         {children}
       </h4>
@@ -95,11 +132,12 @@ const Heading = ({
   }
   if (heading === "h5") {
     const defaultSize = 14;
+
     return (
       <h5
         className={`${
-          size ? getSize(size) : getSize(defaultSize)
-        } font-semibold text-fog-of-war ${className}`}
+          extraLarge ? extraLarge : getSize(defaultSize)
+        } ${large} ${medium} ${small}  font-semibold text-fog-of-war ${className}`}
       >
         {children}
       </h5>
@@ -110,8 +148,8 @@ const Heading = ({
     return (
       <h6
         className={`${
-          size ? getSize(size) : getSize(defaultSize)
-        } font-bold text-fog-of-war ${className}`}
+          extraLarge ? extraLarge : getSize(defaultSize)
+        } ${large} ${medium} ${small}  font-bold text-fog-of-war ${className}`}
       >
         {children}
       </h6>

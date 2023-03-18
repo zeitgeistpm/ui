@@ -159,7 +159,7 @@ const LiquidityPools: NextPage = observer(() => {
           <span className="bg-gray-100 dark:bg-gray-800 rounded-3xl py-1 px-3 font-bold text-sm inline-block mb-3">
             Learn & Earn
           </span>
-          <Heading as="h4" size={20} className="text-gray-100 mb-2">
+          <Heading as="h4" className="text-gray-100 mb-2">
             Liquidity Pools
           </Heading>
           <div className="px-1 text-sm text-gray-200">

@@ -406,7 +406,13 @@ const Settings: NextPage = observer(() => {
 
   return (
     <>
-      <Heading as="h2" data-test="accountSettingsHeader">
+      <Heading
+        as="h2"
+        lg={36}
+        md={30}
+        sm={18}
+        data-test="accountSettingsHeader"
+      >
         Account Settings
       </Heading>
       <div className="p-ztg-30 rounded-ztg-10 mb-ztg-32  font-bold bg-sky-100 dark:bg-sky-700">
