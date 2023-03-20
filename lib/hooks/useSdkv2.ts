@@ -1,12 +1,4 @@
-import {
-  Context,
-  create$,
-  createStorage,
-  MarketMetadata,
-  Sdk,
-  ZeitgeistIpfs,
-} from "@zeitgeistpm/sdk-next";
-import { IPFS } from "@zeitgeistpm/web3.storage";
+import { Context, create$, Sdk, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
 import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import { memoize } from "lodash-es";
 import { useEffect, useState } from "react";
@@ -55,7 +47,7 @@ export const useSdkv2 = (): UseSdkv2 => {
       //@ts-ignore todo: adjust type in sdk
       const nextSub = sdk$.subscribe(setSdk);
 
-      setSub(nextSub);
+      setSub(nextSub as any);
 
       return () => {
         setTimeout(() => {
@@ -76,27 +68,15 @@ export const useSdkv2 = (): UseSdkv2 => {
  */
 const init = memoize(
   (endpoint: string, graphQlEndpoint: string) => {
-    const isLocalEndpoint =
-      endpoint.includes("localhost") || endpoint.includes("127.0.0.1");
-    if (isLocalEndpoint) {
-      return create$({
-        provider: endpoint,
-        indexer: graphQlEndpoint,
-        storage: createStorage<MarketMetadata>(
-          IPFS.storage({ node: { url: "http://localhost:5001 " } }),
-        ),
-      });
-    } else {
-      const backupRPCs = endpointOptions
-        .filter((ep) => ep.value !== endpoint)
-        .map((e) => e.value);
+    const backupRPCs = endpointOptions
+      .filter((ep) => ep.value !== endpoint)
+      .map((e) => e.value);
 
-      return create$({
-        provider: [endpoint, ...backupRPCs],
-        indexer: graphQlEndpoint,
-        storage: ZeitgeistIpfs(),
-      });
-    }
+    return create$({
+      provider: [endpoint, ...backupRPCs],
+      indexer: graphQlEndpoint,
+      storage: ZeitgeistIpfs(),
+    });
   },
   (endpoint, graphQlEndpoint) => identify(endpoint, graphQlEndpoint) ?? "--",
 );

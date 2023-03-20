@@ -120,14 +120,9 @@ export default class Store {
     this.showMobileMenu = !this.showMobileMenu;
   }
 
-  get isTestEnv() {
-    return process.env.NEXT_PUBLIC_TESTING_ENV === "true";
-  }
-
   constructor() {
     makeAutoObservable<this, "balanceSubscription">(this, {
       registerValidationRules: false,
-      isTestEnv: false,
       unsubscribeNewHeads: false,
       balanceSubscription: false,
     });
@@ -216,14 +211,8 @@ export default class Store {
   }
 
   async initSDK(endpoint: string, graphQlEndpoint: string) {
-    const isLocalEndpoint =
-      endpoint.includes("localhost") || endpoint.includes("127.0.0.1");
-    const ipfsClientUrl =
-      this.isTestEnv || isLocalEndpoint ? "http://127.0.0.1:5001" : undefined;
-
     const sdk = await SDK.initialize(endpoint, {
       graphQlEndpoint,
-      ipfsClientUrl,
     });
 
     runInAction(() => {
