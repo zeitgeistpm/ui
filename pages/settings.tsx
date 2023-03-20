@@ -1,6 +1,5 @@
 import { observer } from "mobx-react";
 import { NextPage } from "next";
-import { useAtom } from "jotai";
 import {
   FC,
   FormEventHandler,
@@ -12,21 +11,16 @@ import {
 import { when } from "mobx";
 import Loader from "react-spinners/PulseLoader";
 import { Input } from "components/ui/inputs";
-import Select from "components/ui/Select";
 import { useStore } from "lib/stores/Store";
-import { useUserStore } from "lib/stores/UserStore";
 import { EndpointOption } from "lib/types";
-import { endpoints, endpointOptions, graphQlEndpoint } from "lib/constants";
+import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { AlertTriangle } from "react-feather";
-import { groupBy } from "lodash";
 import { identityRootKey, useIdentity } from "lib/hooks/queries/useIdentity";
 import { useQueryClient } from "@tanstack/react-query";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import endpointSettingAtom, {
-  useEndpointSettings,
-} from "lib/state/endpointSettings";
+import { useEndpointSettings } from "lib/state/endpointSettings";
 import EndpointSelect from "components/ui/EndpointSelect";
 
 const SubmitButton: FC<
