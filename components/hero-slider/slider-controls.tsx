@@ -1,5 +1,5 @@
 export const moveSlider = (
-  direction: string,
+  direction: "prev" | "next" | "goto",
   currentSlide: number,
   setCurrentSlide: (a: number) => void,
   slidesLength: number,
