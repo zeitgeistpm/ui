@@ -30,7 +30,7 @@ const transactionHistoryQuery = gql`
 
 const marketHeaderQuery = gql`
   query MarketTransactionHeader($marketIds: [Int!]) {
-    markets(where: { marketId_in: $marketIds }) {
+    markets(where: { marketId_in: $marketIds }, orderBy: marketId_ASC) {
       question
     }
   }
@@ -95,7 +95,7 @@ export const useTransactionHistory = (address: string) => {
           }),
         );
 
-        const marketIdsArray = Array.from(marketIds);
+        const marketIdsArray = Array.from(marketIds).sort((a, b) => a - b);
 
         const { markets } = await sdk.indexer.client.request<{
           markets: MarketHeader[];
