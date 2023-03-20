@@ -34,22 +34,21 @@ import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
 import Link from "next/link";
 import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
+import { graphQlEndpoint, ZTG } from "lib/constants";
 import MarketHeader from "components/markets/MarketHeader";
 import MarketChart from "components/markets/MarketChart";
 import {
   getPriceHistory,
   PriceHistory,
 } from "lib/hooks/queries/useMarketPriceHistory";
-import TimeFilters, { filters } from "components/ui/TimeFilters";
+import { filters } from "components/ui/TimeFilters";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
 });
 
 export async function getStaticPaths() {
-  const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
-  const client = new GraphQLClient(url);
+  const client = new GraphQLClient(graphQlEndpoint);
   const marketIds = await getRecentMarketIds(client);
 
   const paths = marketIds.map((market) => ({
@@ -60,8 +59,7 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
-  const client = new GraphQLClient(url);
+  const client = new GraphQLClient(graphQlEndpoint);
 
   const market = await getMarket(client, params.marketid);
 
