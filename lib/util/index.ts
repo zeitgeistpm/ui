@@ -1,12 +1,12 @@
 import {
   EndpointOption,
+  Environment,
   JSONObject,
   SelectOption,
-  SupportedParachain,
 } from "../types";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { hexToU8a, isHex } from "@polkadot/util";
-import { endpoints } from "../constants";
+import { endpoints, graphQlEndpoints, environment } from "../constants";
 
 export const padBalance = (bal: string): string => {
   const digits = bal.length;
@@ -238,18 +238,4 @@ export const convertBlockNumberToTimestamp = (
 
   const unixTime = new Date().getTime() - timeDiffMS;
   return new Date(unixTime).getTime();
-};
-
-export const getEndpointOption = (url?: string): EndpointOption => {
-  if (url == null) {
-    return endpoints.find((e) => e.parachain === SupportedParachain.BSR);
-  }
-  const opt = endpoints.find((e) => e.value === url);
-  if (opt == null) {
-    let opt = endpoints.find(
-      (endpoint) => endpoint.parachain == SupportedParachain.CUSTOM,
-    );
-    opt.value = url;
-  }
-  return { ...opt };
 };

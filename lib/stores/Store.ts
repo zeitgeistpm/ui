@@ -6,12 +6,12 @@ import SDK from "@zeitgeistpm/sdk";
 import { useContext } from "react";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 import Decimal from "decimal.js";
-import { makeAutoObservable, runInAction, when } from "mobx";
+import { get, makeAutoObservable, runInAction, when } from "mobx";
 import type { Codec } from "@polkadot/types-codec/types";
 import validatorjs from "validatorjs";
 import { GraphQLClient } from "graphql-request";
 import { StoreContext } from "components/context/StoreContext";
-import { ZTG } from "lib/constants";
+import { graphQlEndpoint, ZTG } from "lib/constants";
 import { isValidPolkadotAddress } from "lib/util";
 
 import { extractIndexFromErrorHex } from "../../lib/util/error-table";
@@ -169,40 +169,31 @@ export default class Store {
     this.exchangeStore.initialize();
   }
 
-  async initialize() {
+  async initialize(endpoint: string) {
     this.userStore.init();
     this.initGraphQlClient();
 
     this.userStore.checkIP();
-    try {
-      await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
-      await this.loadConfig();
-      const storedWalletId = this.userStore.walletId;
+    await this.initSDK(endpoint, graphQlEndpoint);
+    await this.loadConfig();
+    const storedWalletId = this.userStore.walletId;
 
-      if (storedWalletId) {
-        this.wallets.initialize(storedWalletId);
-      }
-
-      this.registerValidationRules();
-
-      this.pools.init();
-      this.initializeMarkets();
-
-      runInAction(() => {
-        this.initialized = true;
-      });
-    } catch (err) {
-      console.warn("Can't initialize Store with error: ", err);
-      this.userStore.setNextBestEndpoints(
-        this.userStore.endpoint,
-        this.userStore.gqlEndpoint,
-      );
-      this.initialize();
+    if (storedWalletId) {
+      this.wallets.initialize(storedWalletId);
     }
+
+    this.registerValidationRules();
+
+    this.pools.init();
+    this.initializeMarkets();
+
+    runInAction(() => {
+      this.initialized = true;
+    });
   }
 
-  async connectNewSDK(endpoint: string, gqlEndpoint: string) {
-    await this.initSDK(endpoint, gqlEndpoint);
+  async connectNewSDK(endpoint: string, graphQlEndpoint: string) {
+    await this.initSDK(endpoint, graphQlEndpoint);
 
     this.unsubscribeNewHeads();
     this.exchangeStore.destroy();
@@ -229,19 +220,11 @@ export default class Store {
       endpoint.includes("localhost") || endpoint.includes("127.0.0.1");
     const ipfsClientUrl =
       this.isTestEnv || isLocalEndpoint ? "http://127.0.0.1:5001" : undefined;
+
     const sdk = await SDK.initialize(endpoint, {
       graphQlEndpoint,
       ipfsClientUrl,
     });
-
-    if (sdk.graphQLClient != null) {
-      this.userStore.setGqlEndpoint(graphQlEndpoint);
-    } else {
-      //might makes sense to throw an error in the future if we have alternative indexers
-      console.error("Graphql service not available " + graphQlEndpoint);
-    }
-
-    this.userStore.setEndpoint(endpoint);
 
     runInAction(() => {
       this.sdk = sdk;
@@ -250,9 +233,7 @@ export default class Store {
   }
 
   private initGraphQlClient() {
-    if (this.userStore.gqlEndpoint && this.userStore.gqlEndpoint.length > 0) {
-      this.graphQLClient = new GraphQLClient(this.userStore.gqlEndpoint, {});
-    }
+    this.graphQLClient = new GraphQLClient(graphQlEndpoint, {});
   }
 
   private async loadConfig() {

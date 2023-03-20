@@ -9,10 +9,7 @@ import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
 import MarketImage from "components/ui/MarketImage";
-import TimeSeriesChart, {
-  ChartData,
-  ChartSeries,
-} from "components/ui/TimeSeriesChart";
+import { ChartSeries } from "components/ui/TimeSeriesChart";
 import { GraphQLClient } from "graphql-request";
 import {
   getMarket,
@@ -20,7 +17,6 @@ import {
   MarketPageIndexedData,
 } from "lib/gql/markets";
 import { getBaseAsset } from "lib/gql/pool";
-import { getAssetPriceHistory } from "lib/gql/prices";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
@@ -44,7 +40,6 @@ import MarketChart from "components/markets/MarketChart";
 import {
   getPriceHistory,
   PriceHistory,
-  useMarketPriceHistory,
 } from "lib/hooks/queries/useMarketPriceHistory";
 import TimeFilters, { filters } from "components/ui/TimeFilters";
 

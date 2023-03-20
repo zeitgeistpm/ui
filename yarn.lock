@@ -3211,6 +3211,7 @@ __metadata:
     ip-range-check: ^0.2.0
     jest: ^28.1.0
     jest-environment-jsdom: ^28.1.0
+    jotai: ^2.0.3
     lodash.merge: ^4.6.2
     mobx: ^6.3.12
     mobx-react: ^7.2.1
@@ -7844,6 +7845,18 @@ __metadata:
     jotai-zustand:
       optional: true
   checksum: bc1f88ec1d52dda7c2aa39d278b15c128a6babc91fe9294862feb1b2d8467e47fc37cd193fd1358107212b9a4e5f5a8ae9a5a5ed1e845b74421d4476ce5d9efd
+  languageName: node
+  linkType: hard
+
+"jotai@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "jotai@npm:2.0.3"
+  peerDependencies:
+    react: ">=17.0.0"
+  peerDependenciesMeta:
+    react:
+      optional: true
+  checksum: 3ad1d6a9b7e40a8dd8cdc423441164c25852a328c98806ed0e2a283a4e07af661f4a88b50528367aeae582932171bc8979e45cbc9023af30b9f4a348faeed567
   languageName: node
   linkType: hard
 

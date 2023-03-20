@@ -2,7 +2,7 @@ import { MarketDeadlines } from "@zeitgeistpm/sdk/dist/types";
 import Decimal from "decimal.js";
 import resolveTailwindConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../../tailwind.config";
-import { EndpointOption, SupportedParachain } from "../types";
+import { EndpointOption, Environment } from "../types";
 
 export const ZTG = 10 ** 10;
 
@@ -38,44 +38,74 @@ export const endpoints: EndpointOption[] = [
   // {
   //   value: "wss://rpc-0.zeitgeist.pm/",
   //   label: "ZeitgeistPM",
-  //   parachain: SupportedParachain.KUSAMA,
+  //   environment: "production",
   // },
   {
-    value: "wss://zeitgeist-rpc.dwellir.com/",
+    value: "wss://zeitgeist-rpc.dwellir.com",
     label: "Dwellir",
-    parachain: SupportedParachain.KUSAMA,
+    environment: "production",
   },
   {
     value: "wss://zeitgeist.api.onfinality.io/public-ws",
     label: "OnFinality",
-    parachain: SupportedParachain.KUSAMA,
+    environment: "production",
   },
   {
     value: "wss://bsr.zeitgeist.pm",
     label: "Battery Station",
-    parachain: SupportedParachain.BSR,
+    environment: "staging",
   },
-  {
-    value: "ws://127.0.0.1:9944",
-    label: "Custom",
-    parachain: SupportedParachain.CUSTOM,
-  },
+  // {
+  //   value: "ws://127.0.0.1:9944",
+  //   label: "Custom",
+  // },
 ];
 
-export const gqlEndpoints: EndpointOption[] = [
+export const graphQlEndpoints: EndpointOption[] = [
   {
     value: "https://processor.bsr.zeitgeist.pm/graphql",
     label: "Battery Park (Testnet)",
-    parachain: SupportedParachain.BSR,
+    environment: "staging",
   },
   {
     value: "https://processor.rpc-0.zeitgeist.pm/graphql",
-    label: "Kusama (Live)",
-    parachain: SupportedParachain.KUSAMA,
+    label: "Polkadot (Live)",
+    environment: "production",
   },
-  {
-    value: "http://localhost:4350/graphql",
-    label: "Custom",
-    parachain: SupportedParachain.CUSTOM,
-  },
+  // {
+  //   value: "http://localhost:4350/graphql",
+  //   label: "Custom",
+  // },
 ];
+
+const getEnvironment = (): Environment => {
+  const environments = ["production", "staging"];
+  const env = process.env.NEXT_PUBLIC_VERCEL_ENV;
+  if (env == null || !["production", "staging"].includes(env)) {
+    throw Error(
+      `Invalid environment, please set NEXT_PUBLIC_VERCEL_ENV environment variable to one of ${environments.join(
+        ",",
+      )}`,
+    );
+  }
+  return env as Environment;
+};
+
+export const environment = getEnvironment();
+
+const getGraphQlEndpoint = (): string => {
+  const endpoint = graphQlEndpoints.find((e) => e.environment === environment);
+  return endpoint.value;
+};
+
+export const graphQlEndpoint = getGraphQlEndpoint();
+
+const getEndpointOptions = (env: Environment): EndpointOption[] => {
+  return endpoints.filter((e) => e.environment === env);
+};
+
+export const endpointsProduction = getEndpointOptions("production");
+export const endpointsStaging = getEndpointOptions("staging");
+
+export const endpointOptions =
+  environment === "production" ? endpointsProduction : endpointsStaging;
