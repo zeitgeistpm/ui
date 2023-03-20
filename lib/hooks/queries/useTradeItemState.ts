@@ -3,8 +3,6 @@ import {
   getMarketIdOf,
   getAssetWeight,
   getIndexOf,
-  ZtgAssetId,
-  IOZtgAssetId,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { useAtom } from "jotai";
@@ -136,8 +134,6 @@ export const useTradeItemState = (item: TradeItem) => {
         !!poolAssetBalance &&
         !!wallets.activeAccount?.address,
       keepPreviousData: true,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
     },
   );
 
