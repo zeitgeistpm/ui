@@ -122,8 +122,8 @@ const LiquidityPools: NextPage = observer(() => {
 
   return (
     <div data-testid="liquidityPage">
-      <div className="flex mb-ztg-20">
-        <div className="px-4 py-6 bg-sky-100 dark:bg-black rounded-ztg-10 w-1/3 mr-4">
+      <div className="mb-ztg-20 grid sm:grid-cols-3 grid-cols-2 gap-[20px]">
+        <div className="px-4 py-6 bg-sky-100 dark:bg-black rounded-ztg-10 min-h-[165px]">
           <h3 className="bg-gray-200 dark:bg-gray-800 rounded-3xl py-1 px-3 font-bold text-sm inline-block mb-3">
             Total Value
           </h3>
@@ -135,7 +135,7 @@ const LiquidityPools: NextPage = observer(() => {
           </div>
         </div>
 
-        <div className="px-4 py-6 bg-sky-100 dark:bg-black rounded-ztg-10 w-1/3 mr-4">
+        <div className="px-4 py-6 bg-sky-100 dark:bg-black rounded-ztg-10 min-h-[165px]">
           <h3 className="bg-gray-200 dark:bg-gray-800 rounded-3xl py-1 px-3 font-bold text-sm inline-block mb-3">
             Active Markets
           </h3>
@@ -150,7 +150,7 @@ const LiquidityPools: NextPage = observer(() => {
         <a
           href={"https://docs.zeitgeist.pm/docs/learn/liquidity"}
           target="_blank"
-          className="relative px-4 py-6 bg-ztg-blue rounded-ztg-10 w-1/3 cursor-pointer hover:scale-105 transition-all"
+          className="relative px-4 py-6 bg-ztg-blue rounded-ztg-10 cursor-pointer hover:scale-105 transition-all col-span-2 sm:col-span-1"
         >
           <div className="absolute top-2 right-4 text-gray-50">
             <AiOutlineRead size={22} />
