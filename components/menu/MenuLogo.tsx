@@ -1,4 +1,5 @@
 import React, { FC } from "react";
+import { observer } from "mobx-react";
 import Link from "next/link";
 import Logo from "../icons/ZeitgeistIcon";
 import { useStore } from "lib/stores/Store";
@@ -7,7 +8,7 @@ import { useRouter } from "next/router";
 const MenuLogo: FC<{
   menuOpen: boolean;
   setMenuOpen?: (boolean) => void;
-}> = ({ menuOpen, setMenuOpen }) => {
+}> = observer(({ menuOpen, setMenuOpen }) => {
   const { pathname } = useRouter();
   const { blockNumber } = useStore();
 
@@ -39,6 +40,6 @@ const MenuLogo: FC<{
       </>
     </Link>
   );
-};
+});
 
 export default MenuLogo;
