@@ -1,9 +1,7 @@
-const BREAKPOINTS = (module.exports = {
-  sm: "600px",
-  md: "905px",
-  lg: "1240px",
-  xl: "1440px",
-  "2xl": "1728px",
-});
-
-export { BREAKPOINTS };
+export const BREAKPOINTS = {
+  sm: 600,
+  md: 905,
+  lg: 1240,
+  xl: 1440,
+  "2xl": 1728,
+};
