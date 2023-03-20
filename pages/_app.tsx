@@ -20,6 +20,9 @@ import DefaultLayout from "layouts/DefaultLayout";
 import ModalStore from "lib/stores/ModalStore";
 import Store from "lib/stores/Store";
 
+import { AnimatePresence } from "framer-motion";
+import MobileMenu from "components/menu/MobileMenu";
+
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
 const domain = process.env["NEXT_PUBLIC_DOMAIN"];
