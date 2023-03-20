@@ -246,9 +246,11 @@ const Heading = ({
     }
   };
 
-  const sizes = `${getSmallSize(sm)} ${getMediumSize(md)} ${getLargeSize(
-    lg,
-  )} ${getXLSize(xl)} ${get2XLSize(xxl)}`;
+  const sizes = `${getSmallSize(sm).trim()} ${getMediumSize(
+    md,
+  ).trim()} ${getLargeSize(lg).trim()} ${getXLSize(xl).trim()} ${get2XLSize(
+    xxl,
+  ).trim()}`;
 
   if (heading === "h1") {
     const defaultSize = 28;
@@ -289,14 +291,17 @@ const Heading = ({
   if (heading === "h4") {
     const defaultSize = 16;
     return (
-      <h4 className={`vfont-semibold text-fog-of-war ${className}`}>
+      <h4
+        className={`${getSize(
+          size ? size : defaultSize,
+        )} ${sizes} font-semibold text-fog-of-war ${className}`}
+      >
         {children}
       </h4>
     );
   }
   if (heading === "h5") {
     const defaultSize = 14;
-
     return (
       <h5
         className={`${getSize(
