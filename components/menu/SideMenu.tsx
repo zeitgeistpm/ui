@@ -4,7 +4,7 @@ import Navigation from "./Navigation";
 
 const SideMenu = () => {
   return (
-    <nav className="hidden absolute left-4 top-32 md:flex flex-col gap-5 z-50">
+    <nav className="hidden absolute left-4 top-28 md:flex flex-col gap-5 z-50">
       <Navigation navigation={NAVIGATION_ITEMS} mobile={false} />
     </nav>
   );

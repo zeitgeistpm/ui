@@ -208,7 +208,7 @@ export default class UserStore {
 
     const chain =
       process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
-        ? SupportedParachain.KUSAMA
+        ? SupportedParachain.POLKADOT
         : SupportedParachain.BSR;
     this.gqlEndpoint = getFromLocalStorage(
       this.qglEndpointKey,
@@ -222,12 +222,12 @@ export default class UserStore {
       return oneOrZero === 0
         ? endpoints.find(
             (endpoint) =>
-              endpoint.parachain == SupportedParachain.KUSAMA &&
+              endpoint.parachain == SupportedParachain.POLKADOT &&
               endpoint.label === "Dwellir",
           ).value
         : endpoints.find(
             (endpoint) =>
-              endpoint.parachain == SupportedParachain.KUSAMA &&
+              endpoint.parachain == SupportedParachain.POLKADOT &&
               endpoint.label === "OnFinality",
           ).value;
     } else {
