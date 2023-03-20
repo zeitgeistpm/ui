@@ -2,8 +2,8 @@ import { Html, Head, Main, NextScript } from "next/document";
 import Script from "next/script";
 
 export default function Document() {
-  const environment = process.env.NEXT_PUBLIC_ENVIRONMENT_NAME;
-  const useAnalytics = environment === "production" || environment == null;
+  const useAnalytics =
+    process.env.NEXT_PUBLIC_SITE_URL === "https://app.zeitgeist.pm";
 
   return (
     <Html>
