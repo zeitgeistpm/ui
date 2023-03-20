@@ -56,7 +56,7 @@ const TopBar = () => {
 
   return (
     <div
-      className={`w-full py-7 fixed z-40 transition-all duration-300 bg-${navbarBGColor} ${
+      className={`w-full py-3.5 fixed z-40 transition-all duration-300 bg-${navbarBGColor} ${
         pathname === "/" ? "border-b-0" : "border-b border-gray-200"
       }`}
     >

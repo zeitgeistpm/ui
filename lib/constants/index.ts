@@ -43,12 +43,12 @@ export const endpoints: EndpointOption[] = [
   {
     value: "wss://zeitgeist-rpc.dwellir.com/",
     label: "Dwellir",
-    parachain: SupportedParachain.KUSAMA,
+    parachain: SupportedParachain.POLKADOT,
   },
   {
     value: "wss://zeitgeist.api.onfinality.io/public-ws",
     label: "OnFinality",
-    parachain: SupportedParachain.KUSAMA,
+    parachain: SupportedParachain.POLKADOT,
   },
   {
     value: "wss://bsr.zeitgeist.pm",
@@ -70,8 +70,8 @@ export const gqlEndpoints: EndpointOption[] = [
   },
   {
     value: "https://processor.rpc-0.zeitgeist.pm/graphql",
-    label: "Kusama (Live)",
-    parachain: SupportedParachain.KUSAMA,
+    label: "Polkadot (Live)",
+    parachain: SupportedParachain.POLKADOT,
   },
   {
     value: "http://localhost:4350/graphql",
