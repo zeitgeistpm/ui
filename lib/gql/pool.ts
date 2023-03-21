@@ -22,7 +22,7 @@ export const getBaseAsset = async (client: GraphQLClient, poolId: number) => {
 
 const assetsQuery = gql`
   query Asset($poolId: Int) {
-    assets(where: { poolId_eq: $poolId }) {
+    assets(where: { pool: { poolId_eq: $poolId } }) {
       price
       assetId
       amountInPool

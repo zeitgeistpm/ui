@@ -58,8 +58,10 @@ const marketQuery = gql`
 
 const assetsQuery = gql`
   query Assets($poolId: Int) {
-    assets(where: { poolId_eq: $poolId }) {
-      poolId
+    assets(where: { pool: { poolId_eq: $poolId } }) {
+      pool {
+        poolId
+      }
       price
       assetId
     }
@@ -114,7 +116,7 @@ const getTrendingMarkets = async (
 
       const assetsRes = await client.request<{
         assets: {
-          poolId: number;
+          pool: { poolId: number };
           price: number;
         }[];
       }>(assetsQuery, {
