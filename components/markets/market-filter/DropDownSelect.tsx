@@ -141,20 +141,15 @@ const DropDownSelect = observer(
     label,
     options,
     add,
+    portal,
     isOpen = false,
   }: {
     label: string;
     options: MarketFilter[];
+    portal: HTMLDivElement;
     isOpen?: boolean;
     add: (val: MarketFilter) => void;
   }) => {
-    const [portal, setPortal] = useState<HTMLElement>();
-    // const portal = document.getElementById("marketsFiltersMenuPortal");
-
-    useEffect(() => {
-      setPortal(document.getElementById("marketsFiltersMenuPortal"));
-    }, []);
-
     return (
       <ReactSelect
         className="mr-[10px]"
@@ -164,10 +159,12 @@ const DropDownSelect = observer(
         isMulti={false}
         isSearchable={false}
         menuPortalTarget={portal}
+        instanceId={`${label}-select`}
         menuIsOpen={isOpen}
         onChange={(val: MarketFilter) => {
           add(val);
         }}
+        captureMenuScroll={false}
         components={{
           Control,
           SingleValue,

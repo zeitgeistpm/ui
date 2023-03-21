@@ -15,19 +15,25 @@ import { hotjar } from "react-hotjar";
 import { AvatarContext } from "@zeitgeistpm/avatara-react";
 import { ModalStoreContext } from "components/context/ModalStoreContext";
 import { StoreProvider } from "components/context/StoreContext";
-import MobileMenu from "components/menu/MobileMenu";
 import ModalContainer from "components/modal/ModalContainer";
-import { AnimatePresence } from "framer-motion";
 import DefaultLayout from "layouts/DefaultLayout";
 import ModalStore from "lib/stores/ModalStore";
 import Store from "lib/stores/Store";
+import dynamic from "next/dynamic";
+
+const Onboarding = dynamic(
+  () => import("../components/onboarding/Onboarding"),
+  {
+    ssr: false,
+  },
+);
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
 const domain = process.env["NEXT_PUBLIC_DOMAIN"];
 const hotjarSiteId = process.env["NEXT_PUBLIC_HOTJAR_SITE_ID"];
-const environment = process.env.NEXT_PUBLIC_ENVIRONMENT_NAME;
-const isProduction = environment === "production" || environment == null;
+const isProduction =
+  process.env.NEXT_PUBLIC_SITE_URL === "https://app.zeitgeist.pm";
 
 const queryClient = new QueryClient();
 
@@ -64,18 +70,6 @@ const MyApp = observer(({ Component, pageProps }) => {
       router.events.off("routeChangeComplete", onRouteChangeComplete);
   }, []);
 
-  useEffect(() => {
-    const clientWidth = window.innerWidth;
-    if (clientWidth < 1300) {
-      store.toggleDrawer("right");
-    } else {
-      store.navigationStore.toggleGroupOpen("markets");
-    }
-    if (clientWidth < 900) {
-      store.toggleDrawer("left");
-    }
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider store={store}>
@@ -99,11 +93,9 @@ const MyApp = observer(({ Component, pageProps }) => {
               <title>Zeitgeist - Prediction Markets</title>
             </Head>
             <DefaultLayout>
-              <AnimatePresence>
-                {store.showMobileMenu && <MobileMenu />}
-              </AnimatePresence>
               <Layout>
                 <Component {...pageProps} />
+                <Onboarding />
               </Layout>
             </DefaultLayout>
             {process.env.NEXT_PUBLIC_REACT_QUERY_DEVTOOLS === "true" &&
