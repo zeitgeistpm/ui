@@ -11,7 +11,12 @@ import type { Codec } from "@polkadot/types-codec/types";
 import validatorjs from "validatorjs";
 import { GraphQLClient } from "graphql-request";
 import { StoreContext } from "components/context/StoreContext";
-import { endpoints, graphQlEndpoint, ZTG } from "lib/constants";
+import {
+  endpointOptions,
+  endpoints,
+  graphQlEndpoint,
+  ZTG,
+} from "lib/constants";
 import { isValidPolkadotAddress } from "lib/util";
 
 import { extractIndexFromErrorHex } from "../../lib/util/error-table";
@@ -169,7 +174,7 @@ export default class Store {
     this.initGraphQlClient();
 
     this.userStore.checkIP();
-    await this.initSDK(endpoints[0].value, graphQlEndpoint);
+    await this.initSDK(endpointOptions[0].value, graphQlEndpoint);
     await this.loadConfig();
     const storedWalletId = this.userStore.walletId;
 
