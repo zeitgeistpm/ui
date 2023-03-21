@@ -26,11 +26,6 @@ export type PoolsListQuery = {
   page: number;
 };
 
-export type PaginationOptions = {
-  page: number;
-  pageSize: number;
-};
-
 export interface SelectOption {
   value: number | string;
   label: string;
