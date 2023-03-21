@@ -39,19 +39,22 @@ const HeroSlider = ({
       }`}
       onAnimationEnd={() => setAnimate(false)}
     >
-      <Image
-        priority
-        src={banners[slider.currentSlide].imageUrl}
-        alt={`Image depicting ${banners[slider.currentSlide].title}`}
-        placeholder="blur"
-        blurDataURL={bannerPlaceHolders[slider.currentSlide]}
-        sizes="100vw"
-        fill
-        style={{
-          objectFit: "cover",
-          objectPosition: `${banners[slider.currentSlide].imageAlignment} 50%`,
-        }}
-      />
+      {banners.map((banner, index) => (
+        <Image
+          priority
+          src={banner.imageUrl}
+          alt={`Image depicting ${banner.title}`}
+          placeholder="blur"
+          blurDataURL={bannerPlaceHolders[index]}
+          sizes="100vw"
+          fill
+          style={{
+            display: index === slider.currentSlide ? "block" : "none",
+            objectFit: "cover",
+            objectPosition: `${banner.imageAlignment} 50%`,
+          }}
+        />
+      ))}
       <div className="h-full relative container-fluid">
         <HeroSlide banner={banners[slider.currentSlide]} />
         {banners.length > 1 && (
