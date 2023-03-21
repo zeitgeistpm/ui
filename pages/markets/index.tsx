@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 import { NextPage } from "next";
