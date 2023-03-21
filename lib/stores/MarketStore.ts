@@ -678,5 +678,3 @@ class MarketStore {
 }
 
 export default MarketStore;
-
-export const useMarketStore = () => useContext(MarketStoreContext);
