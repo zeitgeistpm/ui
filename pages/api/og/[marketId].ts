@@ -1,5 +1,5 @@
 import { create } from "@zeitgeistpm/indexer";
-import type { FullMarketFragment } from "@zeitgeistpm/indexer";
+import type { FullMarketFragment, PoolWhereInput } from "@zeitgeistpm/indexer";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { getCurrentPrediction } from "lib/util/assets";
@@ -47,7 +47,7 @@ export default async function (
   if (market.pool) {
     const { assets } = await sdk.assets({
       where: {
-        poolId_eq: market.pool.poolId,
+        pool: { poolId_eq: market.pool.poolId },
       },
     });
 
