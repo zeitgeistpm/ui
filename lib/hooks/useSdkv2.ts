@@ -1,10 +1,9 @@
 import { Context, create$, Sdk, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
-import { endpointOptions, graphQlEndpoint } from "lib/constants";
+import { endpointOptions, endpoints, graphQlEndpoint } from "lib/constants";
 import { memoize } from "lodash-es";
 import { useEffect, useState } from "react";
 import { Subscription } from "rxjs";
 import { usePrevious } from "./usePrevious";
-import { useEndpointSettings } from "lib/state/endpointSettings";
 
 export type UseSdkv2 = [
   /**
@@ -27,15 +26,18 @@ export type UseSdkv2 = [
  * @returns UseSdkv2
  */
 export const useSdkv2 = (): UseSdkv2 => {
-  const { endpoint } = useEndpointSettings();
   const [sub, setSub] = useState<Subscription>();
   const [sdk, setSdk] = useState<Sdk<Context> | null>();
 
-  const id = identify(endpoint, graphQlEndpoint);
+  const id = identify(
+    endpoints.map((e) => e.value),
+    graphQlEndpoint,
+  );
   const prevId = usePrevious(id);
 
   useEffect(() => {
-    if ((id && endpoint) || graphQlEndpoint) {
+    const endpointVals = endpoints.map((e) => e.value);
+    if ((id && endpoints) || graphQlEndpoint) {
       if (sub && prevId && id !== prevId) {
         setTimeout(() => {
           init.cache.delete(prevId);
@@ -43,7 +45,7 @@ export const useSdkv2 = (): UseSdkv2 => {
         }, 500);
       }
 
-      const sdk$ = init(endpoint, graphQlEndpoint);
+      const sdk$ = init(endpointVals, graphQlEndpoint);
       //@ts-ignore todo: adjust type in sdk
       const nextSub = sdk$.subscribe(setSdk);
 
@@ -67,18 +69,14 @@ export const useSdkv2 = (): UseSdkv2 => {
  * @returns MemoizedFunction & Sdk<Context>
  */
 const init = memoize(
-  (endpoint: string, graphQlEndpoint: string) => {
-    const backupRPCs = endpointOptions
-      .filter((ep) => ep.value !== endpoint)
-      .map((e) => e.value);
-
+  (endpoints: string[], graphQlEndpoint: string) => {
     return create$({
-      provider: [endpoint, ...backupRPCs],
+      provider: endpoints,
       indexer: graphQlEndpoint,
       storage: ZeitgeistIpfs(),
     });
   },
-  (endpoint, graphQlEndpoint) => identify(endpoint, graphQlEndpoint) ?? "--",
+  (endpoints, graphQlEndpoint) => identify(endpoints, graphQlEndpoint) ?? "--",
 );
 
 /**
@@ -87,5 +85,7 @@ const init = memoize(
  * @param store Store
  * @returns
  */
-const identify = (endpoint: string, graphQlEndpoint: string): string | null =>
-  endpoint || graphQlEndpoint ? `${endpoint}:${graphQlEndpoint}` : null;
+const identify = (
+  endpoints: string[],
+  graphQlEndpoint: string,
+): string | null => `${endpoints.join(",")}:${graphQlEndpoint}`;

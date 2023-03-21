@@ -2,26 +2,19 @@ import { observer } from "mobx-react";
 import { NextPage } from "next";
 import {
   FC,
-  FormEventHandler,
   MouseEventHandler,
   PropsWithChildren,
   useEffect,
   useState,
 } from "react";
-import { when } from "mobx";
-import Loader from "react-spinners/PulseLoader";
 import { Input } from "components/ui/inputs";
 import { useStore } from "lib/stores/Store";
-import { EndpointOption } from "lib/types";
-import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { AlertTriangle } from "react-feather";
 import { identityRootKey, useIdentity } from "lib/hooks/queries/useIdentity";
 import { useQueryClient } from "@tanstack/react-query";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useEndpointSettings } from "lib/state/endpointSettings";
-import EndpointSelect from "components/ui/EndpointSelect";
 
 const SubmitButton: FC<
   PropsWithChildren<{
@@ -192,77 +185,6 @@ const IdentitySettings = observer(() => {
   );
 });
 
-const EndpointsSettings = observer(() => {
-  const { endpoint, setEndpoint } = useEndpointSettings();
-
-  const [endpointSelection, setEndpointSelection] = useState<EndpointOption>(
-    () => {
-      return endpointOptions.find((item) => item.value === endpoint);
-    },
-  );
-
-  const [isConnectingSdk, setIsConnectingSdk] = useState<boolean>(false);
-
-  const notificationStore = useNotificationStore();
-  const store = useStore();
-
-  const connect = async (rpcUrl: string, gqlUrl: string) => {
-    try {
-      await store.connectNewSDK(rpcUrl, gqlUrl);
-      await when(() => store.initialized === true);
-      setIsConnectingSdk(false);
-      notificationStore.pushNotification("Connected to chain and indexer", {
-        autoRemove: true,
-        lifetime: 4,
-        type: "Success",
-      });
-      setEndpoint(rpcUrl);
-    } catch (error) {
-      notificationStore.pushNotification(
-        "Unable to connect. Using last known configuration to reconnect.",
-        {
-          autoRemove: true,
-          lifetime: 8,
-          type: "Error",
-        },
-      );
-      setTimeout(() => {
-        connect(endpoint, graphQlEndpoint);
-      }, 5000);
-    }
-  };
-
-  const submitEndpoints: FormEventHandler<HTMLFormElement> = (e) => {
-    e.preventDefault();
-    setIsConnectingSdk(true);
-
-    connect(endpointSelection.value, graphQlEndpoint);
-  };
-
-  return (
-    <form className="text-ztg-16-150" onSubmit={submitEndpoints}>
-      <div className="mb-ztg-20">
-        RPC Node Endpoint
-        <div className="flex flex-wrap mt-ztg-20 mb-ztg-20">
-          <EndpointSelect
-            options={endpointOptions}
-            value={endpointSelection}
-            onChange={(opt) => setEndpointSelection(opt)}
-          />
-        </div>
-      </div>
-      <div className="flex items-center">
-        <SubmitButton disabled={endpointSelection.value === endpoint} />
-        {isConnectingSdk && (
-          <div className="ml-4">
-            <Loader size={8} />
-          </div>
-        )}
-      </div>
-    </form>
-  );
-});
-
 const Settings: NextPage = observer(() => {
   return (
     <>
@@ -274,7 +196,6 @@ const Settings: NextPage = observer(() => {
       </h2>
       <div className="p-ztg-30 rounded-ztg-10 mb-ztg-32  font-bold bg-sky-100 dark:bg-sky-700">
         <IdentitySettings />
-        <EndpointsSettings />
         {/* Post beta */}
         {/* <div className="text-ztg-16-150 mb-ztg-20">Email Address</div>
         <Input

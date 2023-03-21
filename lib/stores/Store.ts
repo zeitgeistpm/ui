@@ -11,7 +11,7 @@ import type { Codec } from "@polkadot/types-codec/types";
 import validatorjs from "validatorjs";
 import { GraphQLClient } from "graphql-request";
 import { StoreContext } from "components/context/StoreContext";
-import { graphQlEndpoint, ZTG } from "lib/constants";
+import { endpoints, graphQlEndpoint, ZTG } from "lib/constants";
 import { isValidPolkadotAddress } from "lib/util";
 
 import { extractIndexFromErrorHex } from "../../lib/util/error-table";
@@ -164,12 +164,12 @@ export default class Store {
     this.exchangeStore.initialize();
   }
 
-  async initialize(endpoint: string) {
+  async initialize() {
     this.userStore.init();
     this.initGraphQlClient();
 
     this.userStore.checkIP();
-    await this.initSDK(endpoint, graphQlEndpoint);
+    await this.initSDK(endpoints[0].value, graphQlEndpoint);
     await this.loadConfig();
     const storedWalletId = this.userStore.walletId;
 
@@ -180,29 +180,6 @@ export default class Store {
     this.registerValidationRules();
 
     this.pools.init();
-    this.initializeMarkets();
-
-    runInAction(() => {
-      this.initialized = true;
-    });
-  }
-
-  async connectNewSDK(endpoint: string, graphQlEndpoint: string) {
-    await this.initSDK(endpoint, graphQlEndpoint);
-
-    this.unsubscribeNewHeads();
-    this.exchangeStore.destroy();
-
-    await this.loadConfig();
-    this.initGraphQlClient();
-
-    this.markets.unsubscribeAll();
-
-    if (this.wallets.connected) {
-      this.wallets.subscribeToBalanceChanges();
-    }
-
-    await this.pools.init();
     this.initializeMarkets();
 
     runInAction(() => {
