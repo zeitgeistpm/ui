@@ -3,11 +3,13 @@ import { MarketOutcomes } from "lib/types/markets";
 
 const assetsQuery = gql`
   query AssetsForPools($poolIds: [Int!]) {
-    assets(where: { poolId_in: $poolIds }) {
+    assets(where: { pool: { poolId_in: $poolIds } }) {
       price
       assetId
       amountInPool
-      poolId
+      pool {
+        poolId
+      }
     }
   }
 `;
@@ -34,7 +36,7 @@ export const getOutcomesForMarkets = async (
       price: number;
       assetId: string;
       amountInPool: string;
-      poolId: number;
+      pool: { poolId: number };
     }[];
   }>(assetsQuery, { poolIds });
 
@@ -42,7 +44,7 @@ export const getOutcomesForMarkets = async (
 
   return markets.reduce((prev, market) => {
     const filteredAssets = assets.filter(
-      (a) => a.poolId === market.pool?.poolId,
+      (a) => a.pool.poolId === market.pool?.poolId,
     );
 
     const { marketId, categories } = market;
