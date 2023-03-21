@@ -13,7 +13,6 @@ import {
   YAxis,
 } from "recharts";
 import { AxisDomain } from "recharts/types/util/types";
-import { useStore } from "lib/stores/Store";
 
 interface TimeSeriesChartProps {
   data: ChartData[];
@@ -34,9 +33,6 @@ export interface ChartData {
 }
 
 const ChartToolTip = observer((props) => {
-  const series = props.series.find(
-    (s) => s.accessor === props.payload[0]?.name,
-  );
   return (
     <>
       {props.label !== undefined &&
@@ -46,28 +42,36 @@ const ChartToolTip = observer((props) => {
           className="px-ztg-9 py-ztg-12 bg-white dark:bg-black  rounded-ztg-10"
           style={{ boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)" }}
         >
-          <div className="font-bold text-ztg-14-150">
+          <div className="text-ztg-12-150">
             <span>
               {new Intl.DateTimeFormat("default", {
                 dateStyle: "short",
               }).format(new Date(props.label))}
             </span>
-            <span className="text-sky-600 ml-ztg-34">
+            <span className="ml-ztg-34">
               {new Intl.DateTimeFormat("default", {
                 hour: "numeric",
                 minute: "numeric",
               }).format(new Date(props.label))}
             </span>
             <div className="mt-ztg-13">
-              {series && (
-                <div className="flex">
-                  <span style={{ color: series.color }}>{series.label}</span>
-                  <span className="ml-auto">
-                    {new Decimal(props.payload[0]?.value).toFixed(3) +
+              {props.series?.map((asset, index) => (
+                <div key={index} className="flex flex-col mt-1">
+                  <div className="flex items-center">
+                    <div
+                      className="bg-black w-[8px] h-[8px] rounded-full"
+                      style={{ backgroundColor: asset.color }}
+                    ></div>
+                    <div className="font-semibold capitalize ml-[6px]">
+                      {asset.label}
+                    </div>
+                  </div>
+                  <div>
+                    {new Decimal(props.payload[index]?.value ?? 0).toFixed(3) +
                       ` ${props.yUnits}`}
-                  </span>
+                  </div>
                 </div>
-              )}
+              ))}
             </div>
           </div>
         </div>
@@ -159,18 +163,24 @@ const TimeSeriesChart = observer(
             >
               <CartesianGrid
                 strokeDasharray="3 3"
-                strokeWidth={0.2}
-                stroke="#748296"
+                strokeWidth={1}
+                stroke="#E8EAED"
+                vertical={false}
               />
               <XAxis
                 dataKey="t"
                 domain={[leftX, rightX]}
                 tickCount={5}
-                tick={{ fontFamily: "Roboto Mono", fontSize: "10px" }}
+                tick={{
+                  fontSize: "10px",
+                  stroke: "black",
+                  strokeWidth: 1,
+                  fontWeight: 100,
+                }}
                 type="number"
-                stroke="#748296"
+                stroke="#E8EAED"
                 tickLine={false}
-                strokeWidth={0.7}
+                strokeWidth={2}
                 tickFormatter={(unixTime) => {
                   if (unixTime !== -Infinity && unixTime !== Infinity) {
                     if (lessThanTwoDays === true) {
@@ -188,13 +198,25 @@ const TimeSeriesChart = observer(
                 }}
               />
               <YAxis
-                tick={{ fontFamily: "Roboto Mono", fontSize: "10px" }}
+                tick={{
+                  fontSize: "10px",
+                  stroke: "black",
+                  strokeWidth: 1,
+                  fontWeight: 100,
+                }}
                 tickLine={false}
                 domain={
-                  yDomain ?? [0, (dataMax) => (dataMax === 0 ? 1 : dataMax)]
+                  yDomain ?? [
+                    (dataMin: number) => {
+                      return dataMin < 0.3 ? 0 : Math.floor(dataMin * 10) / 10;
+                    },
+                    (dataMax) => {
+                      return dataMax === 0 ? 1 : Math.ceil(dataMax * 10) / 10;
+                    },
+                  ]
                 }
-                stroke="#748296"
-                strokeWidth={0.7}
+                stroke="#E8EAED"
+                strokeWidth={2}
                 tickFormatter={(val) => `${+val.toFixed(2)} ${yUnits}`}
               />
 
@@ -207,7 +229,7 @@ const TimeSeriesChart = observer(
                 <Line
                   key={index}
                   strokeWidth={mouseInside ? 3 : 2}
-                  type="monotone"
+                  type="linear"
                   dataKey={s.accessor}
                   dot={false}
                   stroke={s.color ? s.color : "#0001FE"}

@@ -11,7 +11,7 @@ export const HeroSlide: FC<HeroSlideProps> = ({ banner }) => {
     <div className="flex items-center h-full w-full">
       <div className="w-full pb-8">
         <h2
-          className={`text-center sm:text-left text-white font-sans sm:whitespace-pre font-extrabold text-6xl md:text-8xl mb-4`}
+          className={`text-center sm:text-left text-white font-sans md:whitespace-pre font-extrabold text-5xl sm:text-7xl lg:text-8xl mb-4`}
         >
           {banner.title}
         </h2>

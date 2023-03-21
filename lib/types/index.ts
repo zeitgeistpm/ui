@@ -5,7 +5,7 @@ import { NextPage } from "next";
 import { FC } from "react";
 
 export enum SupportedParachain {
-  KUSAMA = "kusama",
+  POLKADOT = "polkadot",
   ROCOCO = "rococo",
   BSR = "bsr",
   CUSTOM = "custom",
@@ -16,8 +16,8 @@ export const supportedParachainToString = (chain: SupportedParachain) =>
     ? "BSR Testnet"
     : chain === SupportedParachain.ROCOCO
     ? "Rcococo Testnet"
-    : chain === SupportedParachain.KUSAMA
-    ? "Kusama Live"
+    : chain === SupportedParachain.POLKADOT
+    ? "Polkadot"
     : "Custom";
 
 export type Theme = "light" | "dark";
