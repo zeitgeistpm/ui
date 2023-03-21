@@ -5,6 +5,8 @@ import { HeroSlide } from "./HeroSlide";
 import styles from "./HeroSlider.module.css";
 import { Banner } from "lib/cms/get-banners";
 import { useSliderControls } from "lib/hooks/slides";
+import { usePrevious } from "lib/hooks/usePrevious";
+import { isNumber } from "lodash-es";
 
 const HeroSlider = ({
   banners,
@@ -21,8 +23,13 @@ const HeroSlider = ({
 
   const [animate, setAnimate] = useState<boolean>(false);
 
+  const prevSlide = usePrevious(slider.currentSlide);
+
   useEffect(() => {
-    setAnimate(true);
+    if (isNumber(prevSlide) && prevSlide !== slider.currentSlide) {
+      console.log("set animate");
+      setAnimate(true);
+    }
   }, [slider.currentSlide]);
 
   return (
@@ -33,6 +40,7 @@ const HeroSlider = ({
       onAnimationEnd={() => setAnimate(false)}
     >
       <Image
+        priority
         src={banners[slider.currentSlide].imageUrl}
         alt={`Image depicting ${banners[slider.currentSlide].title}`}
         placeholder="blur"
