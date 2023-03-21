@@ -20,15 +20,7 @@ export const supportedParachainToString = (chain: SupportedParachain) =>
     ? "Polkadot"
     : "Custom";
 
-export type Theme = "light" | "dark";
-
 export type NotificationType = "Error" | "Info" | "Success";
-
-// Add Layout member to NextPage so it pages can be integrated in layouts for
-// code reuse
-export type PageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
-  Layout?: FC | (() => JSX.Element);
-};
 
 export type PoolsListQuery = {
   page: number;
@@ -39,18 +31,9 @@ export type PaginationOptions = {
   pageSize: number;
 };
 
-export interface SharesBalances {
-  yes: Decimal;
-  no: Decimal;
-}
-
 export interface SelectOption {
   value: number | string;
   label: string;
-}
-
-export interface OutcomeSelectOption extends SelectOption {
-  value: number;
 }
 
 export const isAsset = (val: any): val is Asset => {

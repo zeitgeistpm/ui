@@ -1,0 +1,10 @@
+{
+  "files": [
+    "./pages/index.tsx",
+    "./pages/_app.tsx",
+    "./pages/activity.tsx",
+    "./pages/badges.tsx",
+    "./pages/create.tsx",
+    "./pages/settings.tsx"
+  ]
+}

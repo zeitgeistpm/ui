@@ -117,19 +117,6 @@ export const itemKey = (item: TradeSlipItem): TradeSlipItemStateKey =>
 export const rootKey = "trade-slip-item-state";
 
 /**
- * Get the state for a singel trade slip item.
- *
- * @param item TradeSlipItem
- * @returns TradeSlipItemState | null
- */
-export const useTradeslipItemState = (
-  item: TradeSlipItem,
-): TradeSlipItemState | null => {
-  const states = useTradeslipItemsState([item]);
-  return states[itemKey(item)];
-};
-
-/**
  * Returns remote and computed state pr trade slip item like max amount, sum, market, asset
  * the transaction etc.
  *

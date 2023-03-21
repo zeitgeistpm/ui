@@ -1,6 +1,5 @@
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
-import { ZTG } from "lib/constants";
 
 const baseAssetQuery = gql`
   query BaseAsset($poolId: Int) {
@@ -18,41 +17,4 @@ export const getBaseAsset = async (client: GraphQLClient, poolId: number) => {
   }>(baseAssetQuery, { poolId });
 
   return response.pools[0]?.baseAsset;
-};
-
-const assetsQuery = gql`
-  query Asset($poolId: Int) {
-    assets(where: { poolId_eq: $poolId }) {
-      price
-      assetId
-      amountInPool
-    }
-  }
-`;
-
-export type PoolAsset = {
-  price: number;
-  assetId: string;
-  amountInPool: Decimal;
-};
-
-export const getPoolAssets = async (
-  client: GraphQLClient,
-  poolId: number,
-): Promise<PoolAsset[]> => {
-  const response = await client.request<{
-    assets: {
-      price: number;
-      assetId: string;
-      amountInPool: string;
-    }[];
-  }>(assetsQuery, { poolId });
-
-  const assetsRaw = response.assets;
-
-  return assetsRaw.map((asset) => ({
-    price: asset.price,
-    assetId: asset.assetId,
-    amountInPool: new Decimal(asset.amountInPool).div(ZTG),
-  }));
 };
