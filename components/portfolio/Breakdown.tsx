@@ -3,7 +3,6 @@ import { ZTG } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { PorfolioBreakdown } from "lib/hooks/queries/usePortfolioPositions";
 import { formatNumberLocalized } from "lib/util";
-import { random } from "lodash-es";
 import { useMemo } from "react";
 
 export type PortfolioBreakdownProps =
@@ -23,54 +22,59 @@ export type PortfolioBreakdownProps =
  */
 export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
   return (
-    <div className="flex">
-      <div className="flex-1 border-r-2 border-gray-200">
-        {"loading" in props ? (
-          <BreakdownSlotSkeleton />
-        ) : (
-          <BreakdownSlot
-            title="Total Value"
-            value={props.total.value}
-            usdZtgPrice={props.usdZtgPrice}
-            changePercentage={props.total.changePercentage}
-          />
-        )}
+    <div className="flex flex-col md:flex-row items-center justify-center gap-y-[30px]">
+      <div className="flex w-full max-w-[600px] md:border-r-2 md:border-gray-200">
+        <div className="flex-1 border-r-2 border-gray-200">
+          {"loading" in props ? (
+            <BreakdownSlotSkeleton />
+          ) : (
+            <BreakdownSlot
+              title="Total Value"
+              value={props.total.value}
+              usdZtgPrice={props.usdZtgPrice}
+              changePercentage={props.total.changePercentage}
+            />
+          )}
+        </div>
+        <div className="flex-1 pl-4">
+          {"loading" in props ? (
+            <BreakdownSlotSkeleton />
+          ) : (
+            <BreakdownSlot
+              title="Trading Positions"
+              value={props.tradingPositions.value}
+              usdZtgPrice={props.usdZtgPrice}
+              changePercentage={props.tradingPositions.changePercentage}
+            />
+          )}
+        </div>
       </div>
-      <div className="flex-1 border-r-2 border-gray-200 pl-4">
-        {"loading" in props ? (
-          <BreakdownSlotSkeleton />
-        ) : (
-          <BreakdownSlot
-            title="Trading Positions"
-            value={props.tradingPositions.value}
-            usdZtgPrice={props.usdZtgPrice}
-            changePercentage={props.tradingPositions.changePercentage}
-          />
-        )}
-      </div>
-      <div className="flex-1 border-r-2 border-gray-200 pl-4">
-        {"loading" in props ? (
-          <BreakdownSlotSkeleton />
-        ) : (
-          <BreakdownSlot
-            title="Subsidy"
-            value={props.subsidy.value}
-            usdZtgPrice={props.usdZtgPrice}
-            changePercentage={props.subsidy.changePercentage}
-          />
-        )}
-      </div>
-      <div className="flex-1 border-gray-200 pl-4">
-        {"loading" in props ? (
-          <BreakdownSlotSkeleton />
-        ) : (
-          <BreakdownSlot
-            title="Bonded"
-            value={props.bonded.value}
-            usdZtgPrice={props.usdZtgPrice}
-            changePercentage={props.bonded.changePercentage}
-          />
-        )}
+
+      <div className="flex w-full max-w-[600px] md:pl-4">
+        <div className="flex-1 border-r-2 border-gray-200">
+          {"loading" in props ? (
+            <BreakdownSlotSkeleton />
+          ) : (
+            <BreakdownSlot
+              title="Subsidy"
+              value={props.subsidy.value}
+              usdZtgPrice={props.usdZtgPrice}
+              changePercentage={props.subsidy.changePercentage}
+            />
+          )}
+        </div>
+        <div className="flex-1 pl-4">
+          {"loading" in props ? (
+            <BreakdownSlotSkeleton />
+          ) : (
+            <BreakdownSlot
+              title="Bonded"
+              value={props.bonded.value}
+              usdZtgPrice={props.usdZtgPrice}
+              changePercentage={props.bonded.changePercentage}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
