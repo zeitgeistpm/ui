@@ -18,16 +18,3 @@ export const ContentDimensionsProvider: FC<
     {children}
   </ContentDimensionsContext.Provider>
 );
-
-export const useContentHeight = () =>
-  useContext(ContentDimensionsContext).height;
-
-export const useContentWidth = () => useContext(ContentDimensionsContext).width;
-
-export const useContentScrollTop = (): [
-  number,
-  (scrollTop: number) => void,
-] => [
-  useContext(ContentDimensionsContext).scrollTop,
-  useContext(ContentDimensionsContext).scrollTo,
-];

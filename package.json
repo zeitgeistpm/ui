@@ -13,7 +13,8 @@
     "prettier:fix": "npx prettier ./**/*.tsx --write",
     "start": "next start",
     "test:watch": "jest --watch",
-    "test": "jest"
+    "test": "jest",
+    "prunable": "ts-prune | grep -v 'used in module' | grep -v '^pages.*\\- [default|getStaticPaths|getStaticPaths]' | grep -v 'playwright.config.ts'"
   },
   "dependencies": {
     "@babel/helper-compilation-targets": "^7.19.3",
@@ -109,6 +110,7 @@
     "prettier": "2.4.1",
     "start-server-and-test": "^1.14.0",
     "tailwindcss": "^3.1.8",
+    "ts-prune": "^0.10.3",
     "typescript": "^4.5.4"
   },
   "packageManager": "yarn@3.2.2"

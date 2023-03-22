@@ -63,11 +63,6 @@ interface Config {
   };
 }
 
-export interface ZTGInfo {
-  price: Decimal;
-  change: Decimal;
-}
-
 export default class Store {
   userStore = new UserStore(this);
   notificationStore = new NotificationStore();

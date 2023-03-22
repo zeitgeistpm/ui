@@ -35,51 +35,6 @@ export const formatBal = (bal: string | null) => {
   return f;
 };
 
-/**
- * The opposite of `formatBal`.
- * @param formatBal The formatted balance from `formatBal` function.
- */
-export const toRawBalance = (formattedBal: string) => {
-  const split = formattedBal.split(".");
-  const left = split[0];
-  let right = split[1] || "";
-  if (right.length < 10) {
-    right = right.padEnd(10, "0");
-  }
-
-  const whole = left.concat(right);
-
-  return whole.replace(/^0+/, "");
-};
-
-/**
- * Returns label from [[SelectOption]] array for a value.
- * If option not found returns null
- * @param value: number | string
- * @param options: [[SelectOption]]
- * @returns option label: string | null
- */
-export const getOptionLabel = (
-  value: number | string,
-  options: SelectOption[],
-) => {
-  const o = options.find((o) => o.value === value);
-  return o == null ? null : o.label;
-};
-
-export const camelize = (s: string): string => {
-  return s
-    .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
-      return index === 0 ? word.toLowerCase() : word.toUpperCase();
-    })
-    .replace(/\s+/g, "");
-};
-
-// returns false if objects aren't same and true otherwise
-export const compareJSON = (a: JSONObject, b: JSONObject): boolean => {
-  return JSON.stringify(a) === JSON.stringify(b);
-};
-
 export const shortenAddress = (
   address: string,
   sliceStart: number = 6,

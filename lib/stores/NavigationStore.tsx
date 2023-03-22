@@ -202,12 +202,3 @@ export const useNavigationStore = () => {
   const store = useStore();
   return store.navigationStore;
 };
-
-export const initializeNavigation = () => {
-  const router = useRouter();
-  const navigationStore = useNavigationStore();
-
-  useEffect(() => {
-    navigationStore.initialize(router.asPath);
-  }, []);
-};
