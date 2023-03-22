@@ -1,10 +1,5 @@
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  Context,
-  IndexerContext,
-  isIndexedSdk,
-  Market,
-} from "@zeitgeistpm/sdk-next";
+import { IndexerContext, isIndexedSdk, Market } from "@zeitgeistpm/sdk-next";
 import { MarketOrderByInput } from "@zeitgeistpm/indexer";
 import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets";
 import objectHash from "object-hash";
