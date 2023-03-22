@@ -1,9 +1,9 @@
 import React, { FC } from "react";
+import { observer } from "mobx-react";
 import Link from "next/link";
 import Logo from "../icons/ZeitgeistIcon";
 import { useStore } from "lib/stores/Store";
 import { useRouter } from "next/router";
-import { observer } from "mobx-react";
 
 const MenuLogo: FC<{
   menuOpen: boolean;

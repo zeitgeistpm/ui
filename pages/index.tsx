@@ -21,6 +21,7 @@ import {
 import React from "react";
 import { Banner, getBanners } from "lib/cms/get-banners";
 import path from "path";
+import { graphQlEndpoint } from "lib/constants";
 
 const getPlaiceholders = (
   paths: string[],
@@ -30,8 +31,7 @@ const getPlaiceholders = (
 };
 
 export async function getStaticProps() {
-  const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
-  const client = new GraphQLClient(url);
+  const client = new GraphQLClient(graphQlEndpoint);
 
   const banners = await getBanners();
 
