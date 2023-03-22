@@ -48,7 +48,6 @@ const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
 });
 
 export async function getStaticPaths() {
-  console.log(graphQlEndpoint);
   const client = new GraphQLClient(graphQlEndpoint);
   const marketIds = await getRecentMarketIds(client);
 
