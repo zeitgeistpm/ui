@@ -26,15 +26,6 @@ export type MarketPositionsProps = {
   className?: string;
 };
 
-export type MarketPosition = {
-  color;
-  outcome: string;
-  balance: Decimal;
-  price: Decimal;
-  assetId: AssetId;
-  changePercentage: number;
-};
-
 export const MarketPositions = ({
   positions,
   usdZtgPrice,

@@ -10,8 +10,6 @@ export const MAX_IN_OUT_RATIO = new Decimal(1).div(3).toString();
 
 export const DEFAULT_SLIPPAGE_PERCENTAGE = 1;
 
-export const REPORT_ALLOWED_DURATION_MS = 24 * 3600 * 1000; // 24 hours
-
 export const BLOCK_TIME_SECONDS = Number(
   process.env["NEXT_PUBLIC_BLOCK_TIME"] ?? 6,
 );
@@ -27,12 +25,6 @@ export const SUPPORTED_WALLET_NAMES = [
   "subwallet-js",
   "polkadot-js",
 ];
-
-export const DEFAULT_DEADLINES: MarketDeadlines = {
-  gracePeriod: "0",
-  oracleDuration: "28800",
-  disputeDuration: "28800",
-};
 
 export const endpoints: EndpointOption[] = [
   // {
