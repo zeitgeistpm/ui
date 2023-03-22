@@ -340,25 +340,3 @@ export default class ExchangeStore {
     return amount.sub(this.ztgAmount).toFixed(4);
   }
 }
-
-export const useExchangeStore = () => {
-  const store = useStore();
-
-  const exchange = store.exchangeStore;
-
-  const returnExchange = useMemo<boolean>(() => {
-    return store.initialized && exchange?.hasOutcomeOptions;
-  }, [exchange?.outcomeOptions, store.initialized]);
-
-  useEffect(() => {
-    if (exchange?.outcomeOption == null) {
-      return;
-    }
-    exchange.setAmount();
-  }, [exchange?.outcomeOption]);
-
-  if (returnExchange === true) {
-    return exchange;
-  }
-  return null;
-};
