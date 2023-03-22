@@ -15,7 +15,7 @@
     "start": "next start",
     "test:watch": "jest --watch",
     "test": "jest",
-    "prunable": "ts-prune | grep -v 'used in module' | grep -v '^pages.*\\- [default|getStaticPaths|getStaticPaths]' | grep -v 'playwright.config.ts'"
+    "prunable": "ts-prune | grep -v 'used in module' | grep -v '^pages.*\\- [default|getStaticPaths|getStaticProps]' | grep -v 'playwright.config.ts'"
   },
   "dependencies": {
     "@babel/helper-compilation-targets": "^7.19.3",
