@@ -136,7 +136,7 @@ const PoolDetails: NextPage = observer(() => {
       <div>
         <InfoBoxes />
         <div className="flex items-center mb-ztg-33">
-          <h2 className="header">Market Pool</h2>
+          <h2>Market Pool</h2>
           <ChevronLeft
             size={20}
             className="cursor-pointer ml-5 mr-1"

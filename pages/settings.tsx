@@ -121,22 +121,22 @@ const IdentitySettings = observer(() => {
 
   return (
     <>
-      <div className="text-ztg-16-150  mb-ztg-20" data-test="displayNameLabel">
+      <h6 className="font-bold mb-5" data-test="displayNameLabel">
         Display Name
-      </div>
+      </h6>
       <Input
         data-test="display-name"
         type="text"
-        className="w-1/2 mb-ztg-20 bg-sky-200 dark:bg-sky-1000 text-sky-600"
+        className="w-1/2 mb-5 bg-sky-200 dark:bg-sky-1000 text-sky-600"
         onChange={(e) => handleDisplayNameChange(e.target.value)}
         value={displayName}
         disabled={!wallets.connected}
       />
-      <div className="flex flex-row mb-ztg-20">
+      <div className="flex flex-row mb-5">
         <div className="w-full mr-ztg-27">
-          <div className="text-ztg-16-150 mb-ztg-20" data-test="discordLabel">
+          <h6 className="font-bold mb-5" data-test="discordLabel">
             Discord
-          </div>
+          </h6>
           <Input
             data-test="discord"
             type="text"
@@ -147,9 +147,9 @@ const IdentitySettings = observer(() => {
           />
         </div>
         <div className="w-full ">
-          <div className="text-ztg-16-150 mb-ztg-20" data-test="twitterLabel">
+          <h6 className="font-bold mb-5" data-test="twitterLabel">
             Twitter
-          </div>
+          </h6>
           <Input
             data-test="twitter"
             type="text"
@@ -160,8 +160,8 @@ const IdentitySettings = observer(() => {
           />
         </div>
       </div>
-      <div className="flex items-center border border-sky-600 rounded-ztg-5 my-ztg-20 p-ztg-20 text-sky-600">
-        <AlertTriangle size={20} className="mr-ztg-20" />
+      <div className="flex items-center border border-sky-600 rounded-ztg-5 my-5 p-5 text-sky-600">
+        <AlertTriangle size={20} className="mr-5" />
         <div className="text-ztg-14-120 font-normal">
           Setting an identity requires a deposit of up to{" "}
           {store.config.identity.basicDeposit +
@@ -170,12 +170,12 @@ const IdentitySettings = observer(() => {
           your identity.
         </div>
       </div>
-      <div className="flex mb-ztg-20" data-test="createMarketButton">
+      <div className="flex mb-5" data-test="createMarketButton">
         <SubmitButton onClick={updateIdentity} disabled={submitDisabled}>
           Set Identity
         </SubmitButton>
         <button
-          className="ml-ztg-20 text-ztg-14-120 text-sky-600 focus:outline-none"
+          className="ml-5 text-ztg-14-120 text-sky-600 focus:outline-none"
           onClick={clearIdentity}
         >
           Clear Identity
@@ -189,7 +189,7 @@ const Settings: NextPage = observer(() => {
   return (
     <>
       <h2
-        className="text-ztg-20-150 font-bold  mb-ztg-23"
+        className="text-5-150 font-bold  mb-ztg-23"
         data-test="accountSettingsHeader"
       >
         Account Settings
@@ -197,7 +197,7 @@ const Settings: NextPage = observer(() => {
       <div className="p-ztg-30 rounded-ztg-10 mb-ztg-32  font-bold bg-sky-100 dark:bg-sky-700">
         <IdentitySettings />
         {/* Post beta */}
-        {/* <div className="text-ztg-16-150 mb-ztg-20">Email Address</div>
+        {/* <div className="font-bold mb-5">Email Address</div>
         <Input
           type="text"
           placeholder="elite-trader@domain.com"
@@ -217,9 +217,9 @@ const Settings: NextPage = observer(() => {
           Subscribe to the newsletter
         </label>
         <SubmitButton onClick={handleEmailAddressSubmit} /> */}
-        {/* <div className="text-ztg-16-150 mt-ztg-40">
+        {/* <div className="font-bold mt-ztg-40">
           Theme
-          <div className="flex flex-wrap mt-ztg-20">
+          <div className="flex flex-wrap mt-5">
             <SubmitButton
               onClick={handleResetTheme}
               disabled={userStore.storedTheme === "system"}
@@ -231,7 +231,7 @@ const Settings: NextPage = observer(() => {
         {/* TODO */}
         {/* <div className="p-ztg-15 bg-efefef mx-ztg-17 rounded-ztg-10 flex flex-row">
           <div className="flex flex-col w-full">
-            <div className="flex flex-row justify-between text-ztg-16-150 font-medium">
+            <div className="flex flex-row justify-between font-bold font-medium">
               <div>New York</div>
               <div>6:00pm</div>
             </div>
