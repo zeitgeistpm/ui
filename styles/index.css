@@ -38,6 +38,27 @@ input[type="number"] {
 
 @import "./kusama-derby.css";
 
+/* HEADINGS */
+
+h1 {
+  @apply text-2.5xl font-bold text-fog-of-war;
+}
+h2 {
+  @apply text-2.5xl font-bold text-fog-of-war;
+}
+h3 {
+  @apply text-xl font-semibold text-fog-of-war;
+}
+h4 {
+  @apply text-xl font-medium text-fog-of-war;
+}
+h5 {
+  @apply text-lg font-medium text-fog-of-war;
+}
+h6 {
+  @apply text-base font-medium text-fog-of-war;
+}
+
 .rounded-3px {
   border-radius: 3px;
 }
@@ -223,16 +244,6 @@ tr {
 .no-scroll-bar::-webkit-scrollbar {
   width: 0;
   height: 0;
-}
-
-.header {
-  @apply font-bold;
-  @apply text-3xl;
-}
-
-.sub-header {
-  @apply font-medium;
-  @apply text-ztg-20-150;
 }
 
 /* Skeleton */

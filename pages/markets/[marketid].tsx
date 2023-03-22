@@ -274,9 +274,7 @@ const Market: NextPage<{
           )}
           {indexedMarket.description?.length > 0 && (
             <>
-              <h3 className="text-center text-2xl font-semibold mb-5">
-                About Market
-              </h3>
+              <h3 className="text-center text-2xl mb-5">About Market</h3>
               <QuillViewer value={indexedMarket.description} />
             </>
           )}
@@ -284,9 +282,7 @@ const Market: NextPage<{
             marketStore={marketStore}
             onPoolDeployed={handlePoolDeployed}
           />
-          <h3 className="text-center text-2xl font-semibold mt-10">
-            Market Cast
-          </h3>
+          <h3 className="text-center text-2xl mt-10">Market Cast</h3>
           <MarketAddresses
             oracleAddress={indexedMarket.oracle}
             creatorAddress={indexedMarket.creator}

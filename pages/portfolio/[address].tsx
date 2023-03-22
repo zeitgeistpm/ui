@@ -52,9 +52,7 @@ const Portfolio: NextPage = observer(() => {
           <Tab.Panel>
             {" "}
             <div className="mb-12">
-              <h3 className="font-bold text-ztg-22-120 mb-6 text-center">
-                Breakdown
-              </h3>
+              <h2 className="text-2xl mb-6 text-center">Breakdown</h2>
               <PortfolioBreakdown
                 {...(breakdown ?? {
                   loading: true,
@@ -62,9 +60,7 @@ const Portfolio: NextPage = observer(() => {
               />
             </div>
             <div className="mb-12">
-              <h3 className="font-bold text-ztg-22-120 mb-6 text-center">
-                Predictions
-              </h3>
+              <h2 className="text-2xl mb-6 text-center">Predictions</h2>
               <Tab.Group>
                 <Tab.List className="flex center mb-14">
                   {["By Markets", "Subsidy", "Bonds"].map((title, index) => (

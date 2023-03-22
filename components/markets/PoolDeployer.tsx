@@ -91,7 +91,7 @@ const PoolDeployer = observer(
         {marketStore?.poolExists === false ? (
           poolRows ? (
             <div className="my-ztg-20">
-              <div className="sub-header mt-ztg-40 mb-ztg-15">Deploy Pool</div>
+              <h4 className="mt-10 mb-4">Deploy Pool</h4>
               <PoolSettings
                 data={poolRows}
                 onChange={(v) => {
