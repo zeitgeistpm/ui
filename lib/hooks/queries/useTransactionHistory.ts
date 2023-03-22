@@ -47,6 +47,7 @@ const humanReadableEventMap = {
 type Action = typeof humanReadableEventMap[keyof typeof humanReadableEventMap];
 
 type TradeEvent = {
+  marketId: number;
   question: string;
   action: Action;
   value: number;
@@ -116,6 +117,7 @@ export const useTransactionHistory = (address: string) => {
             : null;
 
           return {
+            marketId: marketId,
             question: marketsMap.get(marketId).question,
             action: action,
             value:

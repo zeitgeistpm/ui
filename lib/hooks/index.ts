@@ -58,22 +58,3 @@ export const useFormField = (form: Form, name: string, value: any) => {
     message,
   };
 };
-
-export const useObservable = <T = any, R = T>(
-  observable: Observable<T>,
-  transform: (val?: T) => R,
-  deps: any[] = [],
-  debounceMs: number = 0,
-) => {
-  const [res, setRes] = useState<R | T>(null);
-  useEffect(() => {
-    if (observable == null) {
-      return;
-    }
-    const sub = observable.pipe(debounceTime(debounceMs)).subscribe((v?: T) => {
-      setRes((transform && transform(v)) || v);
-    });
-    return () => sub.unsubscribe();
-  }, deps ?? []);
-  return res;
-};

@@ -1,13 +1,13 @@
 import { create } from "@zeitgeistpm/indexer";
 import type { FullMarketFragment, PoolWhereInput } from "@zeitgeistpm/indexer";
 import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
+import { graphQlEndpoint, ZTG } from "lib/constants";
 import { getCurrentPrediction } from "lib/util/assets";
 import moment from "moment";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 const sdkPromise = create({
-  uri: process.env.NEXT_PUBLIC_SSR_INDEXER_URL,
+  uri: graphQlEndpoint,
 });
 
 export type MarketImageData = {
