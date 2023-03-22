@@ -1,30 +1,26 @@
 import { observer } from "mobx-react";
 import { NextPage } from "next";
-import { ChangeEvent, FC, PropsWithChildren, useEffect, useState } from "react";
-import { when } from "mobx";
-import Loader from "react-spinners/PulseLoader";
-import { Input } from "components/ui/inputs";
-import Select from "components/ui/Select";
-import { useStore } from "lib/stores/Store";
-import { useUserStore } from "lib/stores/UserStore";
 import {
-  EndpointOption,
-  isCustomEndpointOption,
-  SupportedParachain,
-  supportedParachainToString,
-} from "lib/types";
-import { endpoints, gqlEndpoints } from "lib/constants";
-import { getEndpointOption } from "lib/util";
+  FC,
+  MouseEventHandler,
+  PropsWithChildren,
+  useEffect,
+  useState,
+} from "react";
+import { Input } from "components/ui/inputs";
+import { useStore } from "lib/stores/Store";
 import { useNotificationStore } from "lib/stores/NotificationStore";
 import { AlertTriangle } from "react-feather";
-import { groupBy } from "lodash";
 import { identityRootKey, useIdentity } from "lib/hooks/queries/useIdentity";
 import { useQueryClient } from "@tanstack/react-query";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 
 const SubmitButton: FC<
-  PropsWithChildren<{ onClick?: () => void; disabled?: boolean }>
+  PropsWithChildren<{
+    onClick?: MouseEventHandler<HTMLButtonElement>;
+    disabled?: boolean;
+  }>
 > = ({ onClick = () => {}, disabled = false, children }) => {
   return (
     <button
@@ -189,220 +185,7 @@ const IdentitySettings = observer(() => {
   );
 });
 
-// Temporary for now
-const statCardData = [
-  {
-    header: "Total Value",
-    text: "176,780,870 ZGT",
-    bottomText: "≈ $10,000,000",
-  },
-  {
-    header: "Total Value",
-    text: "176,780,870 ZGT",
-    bottomText: "≈ $10,000,000",
-  },
-  {
-    header: "Total Value",
-    text: "176,780,870 ZGT",
-    bottomText: "≈ $10,000,000",
-  },
-];
-
-export const getCorrespondingGqlIndex = (
-  rpcEndpoint: EndpointOption,
-): number => {
-  const { parachain } = rpcEndpoint;
-  return gqlEndpoints.findIndex((item) => item.parachain === parachain);
-};
-
-const EndpointSelect = observer(
-  ({
-    options,
-    selectedOption,
-    onChange,
-  }: {
-    options: EndpointOption[];
-    selectedOption: EndpointOption;
-    onChange: (opt: EndpointOption) => void;
-  }) => {
-    return (
-      <Select
-        className="w-1/3 mr-ztg-3"
-        onChange={onChange}
-        value={selectedOption}
-        options={Object.entries(groupBy(options, "parachain")).map(
-          ([parachain, endpoints]) => ({
-            label: supportedParachainToString(parachain as SupportedParachain),
-            options: endpoints,
-          }),
-        )}
-      />
-    );
-  },
-);
-
-type EndpointType = "rpc" | "gql";
-
-const EndpointsSettings = observer(() => {
-  const userStore = useUserStore();
-  const notificationStore = useNotificationStore();
-  const store = useStore();
-
-  const [isConnectingSdk, setIsConnectingSdk] = useState<boolean>(false);
-
-  const [endpointSelection, setEndpointSelection] = useState<EndpointOption>(
-    () => {
-      return getEndpointOption(userStore.endpoint);
-    },
-  );
-
-  const gqlEndpointOption = () => {
-    return gqlEndpoints[getCorrespondingGqlIndex(endpointSelection)];
-  };
-
-  const getCustomRpcEndpoint = () => {
-    return endpointSelection.parachain === SupportedParachain.CUSTOM
-      ? endpointSelection.value
-      : "";
-  };
-
-  const getCustomGqlEndpoint = () => {
-    const opt = gqlEndpointOption();
-    return opt?.parachain === SupportedParachain.CUSTOM ? opt.value : "";
-  };
-
-  const [customRpcUrl, setCustomRpcUrl] = useState<string>(() =>
-    getCustomRpcEndpoint(),
-  );
-  const [customGqlUrl, setCustomGqlUrl] = useState<string>(() =>
-    getCustomGqlEndpoint(),
-  );
-
-  const isCustomEndpoint = Boolean(isCustomEndpointOption(endpointSelection));
-
-  const changeEndpoint = (opt: EndpointOption) => {
-    setEndpointSelection(opt);
-  };
-
-  const selectionChanged =
-    endpointSelection.value !== userStore.endpoint ||
-    gqlEndpointOption().value !== userStore.gqlEndpoint;
-
-  const customValuesChanged =
-    isCustomEndpoint &&
-    (customRpcUrl !== userStore.endpoint ||
-      customGqlUrl !== userStore.gqlEndpoint);
-
-  const endpointSubmitDisabled = () => {
-    return isConnectingSdk || !(selectionChanged || customValuesChanged);
-  };
-
-  const connect = async (rpcUrl: string, gqlUrl: string) => {
-    try {
-      await store.connectNewSDK(rpcUrl, gqlUrl);
-      await when(() => store.initialized === true);
-      setIsConnectingSdk(false);
-      notificationStore.pushNotification("Connected to chain and indexer", {
-        autoRemove: true,
-        lifetime: 4,
-        type: "Success",
-      });
-      userStore.setEndpoint(rpcUrl);
-      userStore.setGqlEndpoint(gqlUrl);
-      const opt = getEndpointOption(rpcUrl);
-      setEndpointSelection(opt);
-    } catch (error) {
-      notificationStore.pushNotification(
-        "Unable to connect. Using last known configuration to reconnect.",
-        {
-          autoRemove: true,
-          lifetime: 8,
-          type: "Error",
-        },
-      );
-      setTimeout(() => {
-        connect(userStore.endpoint, userStore.gqlEndpoint);
-      }, 5000);
-    }
-  };
-
-  const submitEndpoints = () => {
-    setIsConnectingSdk(true);
-
-    const rpcUrl = isCustomEndpoint ? customRpcUrl : endpointSelection.value;
-    const gqlUrl = isCustomEndpoint ? customGqlUrl : gqlEndpointOption().value;
-
-    connect(rpcUrl, gqlUrl);
-  };
-
-  useEffect(() => {
-    setCustomRpcUrl(getCustomRpcEndpoint());
-    setCustomGqlUrl(getCustomGqlEndpoint());
-  }, [endpointSelection]);
-
-  return (
-    <div className="text-ztg-16-150">
-      <div className="mb-ztg-20">
-        RPC Node Endpoint
-        <div className="flex flex-wrap mt-ztg-20 mb-ztg-20">
-          <EndpointSelect
-            options={endpoints}
-            selectedOption={endpointSelection}
-            onChange={(opt) => changeEndpoint(opt)}
-          />
-          {isCustomEndpoint && (
-            <Input
-              type="text"
-              placeholder="Custom endpoint"
-              className="w-1/3 ml-ztg-26 bg-sky-200 dark:bg-sky-1000 text-sky-600"
-              value={customRpcUrl}
-              disabled={isConnectingSdk}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                setCustomRpcUrl(e.target.value);
-              }}
-            />
-          )}
-        </div>
-        {isCustomEndpoint && (
-          <>
-            Subsquid Endpoint
-            <div className="flex flex-wrap mt-ztg-20">
-              <Input
-                type="text"
-                placeholder="Custom endpoint"
-                className="w-1/3 bg-sky-200 dark:bg-sky-1000 text-sky-600"
-                value={customGqlUrl}
-                disabled={isConnectingSdk}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  setCustomGqlUrl(e.target.value);
-                }}
-              />
-            </div>
-          </>
-        )}
-      </div>
-      <div className="flex items-center">
-        <SubmitButton
-          onClick={submitEndpoints}
-          disabled={endpointSubmitDisabled()}
-        />
-        {isConnectingSdk && (
-          <div className="ml-4">
-            <Loader size={8} />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-});
-
 const Settings: NextPage = observer(() => {
-  const userStore = useUserStore();
-
-  const handleResetTheme = () => {
-    userStore.toggleTheme("system");
-  };
-
   return (
     <>
       <h2
@@ -413,7 +196,6 @@ const Settings: NextPage = observer(() => {
       </h2>
       <div className="p-ztg-30 rounded-ztg-10 mb-ztg-32  font-bold bg-sky-100 dark:bg-sky-700">
         <IdentitySettings />
-        <EndpointsSettings />
         {/* Post beta */}
         {/* <div className="text-ztg-16-150 mb-ztg-20">Email Address</div>
         <Input
