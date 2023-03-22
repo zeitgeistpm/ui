@@ -27,7 +27,6 @@ const HeroSlider = ({
 
   useEffect(() => {
     if (isNumber(prevSlide) && prevSlide !== slider.currentSlide) {
-      console.log("set animate");
       setAnimate(true);
     }
   }, [slider.currentSlide]);

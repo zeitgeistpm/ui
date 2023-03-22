@@ -24,14 +24,14 @@ export const useSliderControls = (props: UseSlidesProps): UseSliderControls => {
   const pauseTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [paused, setPaused] = useState(false);
 
-  const prev = (userOrigin?: boolean) => {
+  const next = (userOrigin?: boolean) => {
     const isFirstSlide = currentSlide === props.count - 1;
     const newSlide = isFirstSlide ? 0 : currentSlide + 1;
     setCurrentSlide(newSlide);
     userOrigin && pause(props.pauseOnUserInteraction);
   };
 
-  const next = (userOrigin?: boolean) => {
+  const prev = (userOrigin?: boolean) => {
     const isFirstSlide = currentSlide === 0;
     const newSlide = isFirstSlide ? props.count - 1 : currentSlide - 1;
     setCurrentSlide(newSlide);
