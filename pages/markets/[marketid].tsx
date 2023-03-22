@@ -24,7 +24,6 @@ import { getAssetPriceHistory } from "lib/gql/prices";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
-import useMarketImageUrl from "lib/hooks/useMarketImageUrl";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
@@ -41,6 +40,13 @@ import Link from "next/link";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import MarketHeader from "components/markets/MarketHeader";
+import MarketChart from "components/markets/MarketChart";
+import {
+  getPriceHistory,
+  PriceHistory,
+  useMarketPriceHistory,
+} from "lib/hooks/queries/useMarketPriceHistory";
+import TimeFilters, { filters } from "components/ui/TimeFilters";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -64,43 +70,33 @@ export async function getStaticProps({ params }) {
 
   const market = await getMarket(client, params.marketid);
 
-  const startDate = new Date(Number(market?.period.start)).toISOString();
-  const assetPrices = market?.outcomeAssets
-    ? await Promise.all(
-        market?.outcomeAssets?.map((asset) =>
-          getAssetPriceHistory(client, asset, startDate),
-        ),
-      )
-    : undefined;
-
   const chartSeries: ChartSeries[] = market?.categories?.map(
     (category, index) => {
       return {
         accessor: `v${index}`,
-        label: category.ticker.toUpperCase(),
+        label: category.name,
         color: category.color,
       };
     },
   );
 
-  const chartData: ChartData[] = assetPrices?.flatMap((prices, index) => {
-    return prices.map((price) => {
-      return {
-        t: new Date(price.timestamp).getTime(),
-        ["v" + index]: price.newPrice,
-      };
-    });
-  });
+  const baseAsset =
+    market?.pool != null
+      ? await getBaseAsset(client, market.pool.poolId)
+      : null;
 
-  const baseAsset = market?.pool
-    ? await getBaseAsset(client, market.pool.poolId)
-    : null;
+  const priceHistory = await getPriceHistory(
+    client,
+    market.marketId,
+    filters[1].interval,
+    filters[1].time,
+  );
 
   return {
     props: {
       indexedMarket: market ?? null,
       chartSeries: chartSeries ?? null,
-      chartData: chartData ?? null,
+      priceHistory: priceHistory ?? null,
       baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
     },
     revalidate: 10 * 60, //10mins
@@ -110,9 +106,9 @@ export async function getStaticProps({ params }) {
 const Market: NextPage<{
   indexedMarket: MarketPageIndexedData;
   chartSeries: ChartSeries[];
-  chartData: ChartData[];
+  priceHistory: PriceHistory[];
   baseAsset: string;
-}> = observer(({ indexedMarket, chartSeries, chartData, baseAsset }) => {
+}> = observer(({ indexedMarket, chartSeries, priceHistory, baseAsset }) => {
   const marketsStore = useMarketsStore();
   const router = useRouter();
   const { marketid } = router.query;
@@ -196,22 +192,23 @@ const Market: NextPage<{
             Market rejected: {marketSdkv2.rejectReason}
           </div>
         )}
-        <div className="flex justify-center py-ztg-50 mb-10 h-32">
+        <div className="flex justify-center my-10">
           {marketStage ? (
             <MarketTimer stage={marketStage} />
           ) : (
             <MarketTimerSkeleton />
           )}
         </div>
-        {chartData?.length > 0 && chartSeries ? (
-          <div className="-ml-ztg-25">
-            <TimeSeriesChart
-              data={chartData}
-              series={chartSeries}
-              yDomain={[0, 1]}
-              yUnits={baseAsset}
-            />
-          </div>
+        {priceHistory?.length > 0 &&
+        chartSeries &&
+        indexedMarket?.pool?.poolId ? (
+          <MarketChart
+            marketId={indexedMarket.marketId}
+            chartSeries={chartSeries}
+            initialData={priceHistory}
+            baseAsset={baseAsset}
+            poolCreationDate={indexedMarket?.pool?.createdAt}
+          />
         ) : (
           <></>
         )}

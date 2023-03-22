@@ -118,6 +118,6 @@ const init = memoize(
  * @returns
  */
 const identify = (store: Store): string | null =>
-  store.userStore.endpoint || store.userStore.gqlEndpoint
+  store?.userStore.endpoint || store?.userStore.gqlEndpoint
     ? `${store.userStore.endpoint}:${store.userStore.gqlEndpoint}`
     : null;

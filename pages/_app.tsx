@@ -19,6 +19,14 @@ import ModalContainer from "components/modal/ModalContainer";
 import DefaultLayout from "layouts/DefaultLayout";
 import ModalStore from "lib/stores/ModalStore";
 import Store from "lib/stores/Store";
+import dynamic from "next/dynamic";
+
+const Onboarding = dynamic(
+  () => import("../components/onboarding/Onboarding"),
+  {
+    ssr: false,
+  },
+);
 
 import { AnimatePresence } from "framer-motion";
 import MobileMenu from "components/menu/MobileMenu";
@@ -65,18 +73,6 @@ const MyApp = observer(({ Component, pageProps }) => {
       router.events.off("routeChangeComplete", onRouteChangeComplete);
   }, []);
 
-  useEffect(() => {
-    const clientWidth = window.innerWidth;
-    if (clientWidth < 1300) {
-      store.toggleDrawer("right");
-    } else {
-      store.navigationStore.toggleGroupOpen("markets");
-    }
-    if (clientWidth < 900) {
-      store.toggleDrawer("left");
-    }
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider store={store}>
@@ -100,11 +96,9 @@ const MyApp = observer(({ Component, pageProps }) => {
               <title>Zeitgeist - Prediction Markets</title>
             </Head>
             <DefaultLayout>
-              <AnimatePresence>
-                {store.showMobileMenu && <MobileMenu />}
-              </AnimatePresence>
               <Layout>
                 <Component {...pageProps} />
+                <Onboarding />
               </Layout>
             </DefaultLayout>
             {process.env.NEXT_PUBLIC_REACT_QUERY_DEVTOOLS === "true" &&

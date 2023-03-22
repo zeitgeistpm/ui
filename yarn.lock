@@ -2975,6 +2975,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@zeitgeistpm/augment-api@npm:^2.11.2":
+  version: 2.11.2
+  resolution: "@zeitgeistpm/augment-api@npm:2.11.2"
+  peerDependencies:
+    "@polkadot/api-base": "*"
+    "@polkadot/rpc-core": "*"
+    "@polkadot/types": "*"
+  checksum: d210e7fa1ee2aadd9497d96fd2f0298d4a16bbbf5e7e7be29b3c7ff8c561c04684eaa641c5aa162507b919c75caf894509b51d41bbeb0eb077e69b7954071fdf
+  languageName: node
+  linkType: hard
+
 "@zeitgeistpm/augment-api@npm:^2.8.1":
   version: 2.8.1
   resolution: "@zeitgeistpm/augment-api@npm:2.8.1"
@@ -3052,14 +3063,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/indexer@npm:^2.13.0":
-  version: 2.13.0
-  resolution: "@zeitgeistpm/indexer@npm:2.13.0"
+"@zeitgeistpm/indexer@npm:^2.14.2":
+  version: 2.14.2
+  resolution: "@zeitgeistpm/indexer@npm:2.14.2"
   dependencies:
     graphql: ^16.6.0
     graphql-request: ^5.0.0
     graphql-tag: ^2.12.6
-  checksum: 164a8739356ae20be8807c591c47351e83bbcdd284f46309a60737a660c06b363914078b681aab9267044e2f41ee8156eae0326457093e8ae01d96e6575e27b0
+  checksum: d357c3fcfeb8cc18e731ed7d82d270cd6ad84a053d5184966fbc22ac420bb373d92d3b998a9d4917d6b08a154d91650023a06bc6f05a9c7e62098eeba330126c
   languageName: node
   linkType: hard
 
@@ -3077,14 +3088,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.21.5":
-  version: 2.21.5
-  resolution: "@zeitgeistpm/sdk@npm:2.21.5"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.22.2":
+  version: 2.22.2
+  resolution: "@zeitgeistpm/sdk@npm:2.22.2"
   dependencies:
-    "@zeitgeistpm/augment-api": ^2.10.0
-    "@zeitgeistpm/indexer": ^2.13.0
+    "@zeitgeistpm/augment-api": ^2.11.2
+    "@zeitgeistpm/indexer": ^2.14.2
     "@zeitgeistpm/rpc": ^2.7.0
-    "@zeitgeistpm/utility": ^2.12.0
+    "@zeitgeistpm/utility": ^2.13.0
     "@zeitgeistpm/web3.storage": ^2.7.1
     cids: ^1.1.9
     decimal.js: ^10.4.3
@@ -3098,7 +3109,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: 9bf26c9cba5290e5e312415a24e6341ee857a8bf9202405afcda56b3ad06b7fe2765b47d550351c339eb48a9ac1dbf126bdd9710b10dd52cf28ba895f8ea83bd
+  checksum: 1bf87db472d6504b190ee96e5125cee13855c31e4fa935dabf1e8fc2169dc5cb48ab0ee77019e2cfc23cd5aaf2f4185e32a4752b933097a6544df96c2b6d3fe7
   languageName: node
   linkType: hard
 
@@ -3194,7 +3205,7 @@ __metadata:
     "@zeitgeistpm/avatara-react": ^1.3.0
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^1.0.3
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.21.5"
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.22.2"
     "@zeitgeistpm/utility": ^2.12.0
     autoprefixer: 10.2.5
     axios: ^0.21.4
@@ -3207,7 +3218,7 @@ __metadata:
     flexsearch: ^0.7.21
     font-color-contrast: ^11.1.0
     framer-motion: 4.1.17
-    graphql-request: ^3.6.1
+    graphql-request: ^5.0.0
     ip-range-check: ^0.2.0
     jest: ^28.1.0
     jest-environment-jsdom: ^28.1.0
@@ -3240,7 +3251,7 @@ __metadata:
     react-select: ^5.7.0
     react-spinners: ^0.10.6
     react-table: ^7.7.0
-    recharts: ^2.1.8
+    recharts: ^2.4.3
     rxjs: ^7.5.6
     sharp: ^0.31.2
     start-server-and-test: ^1.14.0
@@ -3267,6 +3278,22 @@ __metadata:
     "@polkadot/types": "*"
     "@polkadot/util": "*"
   checksum: e777182642788dcac5256a6bdf31360beed5779241295f9a6fd542af134972e52969970243025f11e78e882c4f6415c0ddf0bf29bc4551878098cabc28205688
+  languageName: node
+  linkType: hard
+
+"@zeitgeistpm/utility@npm:^2.13.0":
+  version: 2.13.0
+  resolution: "@zeitgeistpm/utility@npm:2.13.0"
+  dependencies:
+    decimal.js: ^10.4.3
+    lodash.omit: ^4.5.0
+    ms: ^2.1.3
+    rxjs: ^7.2.0
+  peerDependencies:
+    "@polkadot/api": "*"
+    "@polkadot/types": "*"
+    "@polkadot/util": "*"
+  checksum: 3db2778544ce5a83a6f72cbf512b03eec7afd103f9c94ea9b1fefdc4cfce6e4c91262d9862f6d61c042c0817d8a17d6ff71fdc5f97e4139e375270245fabbc5c
   languageName: node
   linkType: hard
 
@@ -10374,7 +10401,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"recharts@npm:^2.1.8":
+"recharts@npm:^2.4.3":
   version: 2.4.3
   resolution: "recharts@npm:2.4.3"
   dependencies:
