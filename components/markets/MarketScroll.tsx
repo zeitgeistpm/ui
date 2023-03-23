@@ -31,7 +31,8 @@ const MarketScroll = observer(
 
     //calculate cards shown and width based on container width
 
-    const cardsShown = windowWidth < BREAKPOINTS.lg ? 2 : 3;
+    const cardsShown =
+      windowWidth < BREAKPOINTS.md ? 1 : windowWidth < BREAKPOINTS.lg ? 2 : 3;
     const cardWidth =
       windowWidth < BREAKPOINTS.md
         ? containerWidth
@@ -85,7 +86,7 @@ const MarketScroll = observer(
         <div className="col-span-3 relative">
           <div
             ref={scrollRef}
-            className="flex flex-col gap-7 md:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
+            className="flex flex-col gap-7 sm:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
           >
             {markets.map((market) => {
               const stat = marketsStats?.find(
