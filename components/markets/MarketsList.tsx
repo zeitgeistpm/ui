@@ -100,7 +100,6 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
           const volume = market.pool?.volume ?? 0;
           const scalarType = market.scalarType as ScalarRangeType;
           const stat = stats?.find((s) => s.marketId === market.marketId);
-          // console.log(market.question, stat?.liquidity);
           return (
             <MarketCard
               marketId={market.marketId}
