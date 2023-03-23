@@ -1,4 +1,4 @@
-import { useUserStore } from "lib/stores/UserStore";
+import { useUserLocation } from "lib/hooks/useUserLocation";
 import { observer } from "mobx-react";
 import { forwardRef, useMemo } from "react";
 import ReactSelect from "react-select";
@@ -13,7 +13,7 @@ interface SelectProps {
 const Select = observer(
   forwardRef<any, SelectProps>(
     ({ options, className = "", onChange, value, ...rest }, ref) => {
-      const userStore = useUserStore();
+      const userStore = useUserLocation();
 
       const customStyles = useMemo(
         () => ({

@@ -10,7 +10,7 @@ import { useAccountModals } from "lib/hooks/account";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useStore } from "lib/stores/Store";
-import { useUserStore } from "lib/stores/UserStore";
+import { useUserLocation } from "lib/hooks/useUserLocation";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -27,7 +27,7 @@ const AccountButton: FC<{
   const { connected, activeAccount, activeBalance } = wallets;
   const modalStore = useModalStore();
   const accountModals = useAccountModals();
-  const { locationAllowed, isUsingVPN } = useUserStore();
+  const { locationAllowed, isUsingVPN } = useUserLocation();
   const [hovering, setHovering] = useState<boolean>(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);

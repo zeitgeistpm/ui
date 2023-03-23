@@ -3,7 +3,7 @@ import { Badge } from "@zeitgeistpm/avatara-nft-sdk";
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 import { partial } from "lodash";
 
-import { useUserStore } from "lib/stores/UserStore";
+import { useUserLocation } from "lib/hooks/useUserLocation";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import Select from "react-select";

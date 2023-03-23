@@ -15,7 +15,7 @@ import CopyIcon from "components/ui/CopyIcon";
 import { encodeAddress } from "@polkadot/util-crypto";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useStore } from "lib/stores/Store";
-import { useUserStore } from "lib/stores/UserStore";
+import { useUserLocation } from "lib/hooks/useUserLocation";
 import { observer } from "mobx-react";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
