@@ -64,7 +64,7 @@ interface Config {
 }
 
 export default class Store {
-  userStore = new UserStore(this);
+  userStore = new UserStore();
   notificationStore = new NotificationStore();
   navigationStore = new NavigationStore(this);
   exchangeStore = new ExchangeStore(this);
@@ -165,14 +165,13 @@ export default class Store {
   }
 
   async initialize() {
-    this.userStore.init();
     this.initGraphQlClient();
-
-    this.userStore.checkIP();
-    this.wallets.initialize();
 
     await this.initSDK(endpointOptions[0].value, graphQlEndpoint);
     await this.loadConfig();
+
+    this.userStore.checkIP();
+    this.wallets.initialize();
 
     this.registerValidationRules();
 

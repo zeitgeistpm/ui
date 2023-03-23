@@ -34,6 +34,7 @@ import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { delay } from "lib/util/delay";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
+import { useLocalStorage } from "lib/hooks/useLocalStorage";
 
 const AvatarPage = observer(() => {
   const router = useRouter();
@@ -43,8 +44,6 @@ const AvatarPage = observer(() => {
   const address = router.query.address as string;
   const zeitAddress = encodeAddress(router.query.address as string, 73);
 
-  const { toggleHelpNotification, helpnotifications } = useUserStore();
-
   const modalStore = useModalStore();
 
   const [loading, setLoading] = useState(true);
@@ -53,6 +52,11 @@ const AvatarPage = observer(() => {
   const [hasCrossed, setHasCrossed] = useState(false);
 
   const [earnedBadges, setEarnedBadges] = useState<Badge.IndexedBadge[]>([]);
+
+  const [showKsmInfo, setShowKsmInfo] = useLocalStorage(
+    "avatar-page:show-ksm-info",
+    true,
+  );
 
   const [tarotStats, setTarotStats] =
     useState<Tarot.TarotStatsForAddress>(null);
@@ -145,7 +149,7 @@ const AvatarPage = observer(() => {
   return (
     <div className={"pt-ztg-46 "}>
       <AnimatePresence>
-        {helpnotifications?.avatarKsmFeesInfo && (
+        {showKsmInfo && (
           <motion.div
             className="mb-12"
             initial={{ opacity: 0 }}
@@ -161,9 +165,7 @@ const AvatarPage = observer(() => {
                 small fees in KSM.
               </div>
               <div
-                onClick={() =>
-                  toggleHelpNotification("avatarKsmFeesInfo", false)
-                }
+                onClick={() => setShowKsmInfo(false)}
                 className="border-2 self-end cursor-pointer border-red-800 py-2 px-4 text-red-800 rounded-md"
               >
                 Got it!

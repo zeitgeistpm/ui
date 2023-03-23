@@ -4,96 +4,16 @@ import Store, { useStore } from "./Store";
 import { endpoints } from "lib/constants";
 import ipRangeCheck from "ip-range-check";
 
-export type Theme = "dark" | "light";
-
-export type Judgement =
-  | "Unknown"
-  | "FeePaid"
-  | "Reasonable"
-  | "KnownGood"
-  | "OutOfDate"
-  | "LowQuality"
-  | "Erroneous";
-
-export interface UserIdentity {
-  displayName: string;
-  discord: string;
-  twitter: string;
-  judgement: Judgement;
-}
-
-export type HelperNotifications = {
-  avatarKsmFeesInfo: boolean;
-};
-
-const getFromLocalStorage = (
-  key: string,
-  defaultValue: JSONObject,
-): JSONObject => {
-  const val = window.localStorage.getItem(key);
-  if (val == null && defaultValue) {
-    return defaultValue;
-  }
-  return JSON.parse(val);
-};
-
-const setToLocalStorage = (key: string, value: JSONObject | Primitive) => {
-  const val = JSON.stringify(value);
-  window.localStorage.setItem(key, val);
-};
-
-type StoredTheme = Theme | "system";
-
 export default class UserStore {
-  storedTheme: StoredTheme | null = "light";
-  accountAddress: string | null = null;
-  identity?: UserIdentity;
   locationAllowed: boolean;
   isUsingVPN: boolean;
-  helpnotifications: HelperNotifications | null = null;
   endpointKey = `endpoint-${process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"}`;
   qglEndpointKey = `gql-endpoint-${
     process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"
   }`;
 
-  constructor(private store: Store) {
+  constructor() {
     makeAutoObservable(this, {}, { autoBind: true, deep: false });
-
-    reaction(
-      () => this.store.wallets.activeAccount,
-      (activeAccount) => {
-        setToLocalStorage("accountAddress", activeAccount.address);
-      },
-    );
-
-    reaction(
-      () => this.store.wallets.wallet,
-      (wallet) => {
-        setToLocalStorage("walletId", wallet?.extensionName ?? null);
-      },
-    );
-
-    reaction(
-      () => this.helpnotifications,
-      (notifications) => {
-        setToLocalStorage("help-notifications", notifications);
-      },
-    );
-  }
-
-  async init() {
-    this.accountAddress = getFromLocalStorage("accountAddress", "") as string;
-
-    this.helpnotifications = getFromLocalStorage("help-notifications", {
-      avatarKsmFeesInfo: true,
-    }) as HelperNotifications;
-  }
-
-  toggleHelpNotification(key: keyof HelperNotifications, value: boolean) {
-    this.helpnotifications = {
-      ...this.helpnotifications,
-      [key]: value,
-    };
   }
 
   async checkIP() {
@@ -118,7 +38,7 @@ export default class UserStore {
 
     if (!locationAllowed || isUsingVPN) {
       localStorage.removeItem("accountAddress");
-      this.accountAddress = null;
+      // TODO: disconnect wallet
     }
 
     runInAction(() => {

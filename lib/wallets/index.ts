@@ -1,16 +1,15 @@
-import keyring from "@polkadot/ui-keyring";
-import Decimal from "decimal.js";
-import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { KeyringPair } from "@polkadot/keyring/types";
-import { makeAutoObservable, reaction, runInAction } from "mobx";
+import keyring from "@polkadot/ui-keyring";
 import { decodeAddress, encodeAddress } from "@polkadot/util-crypto";
-import { cryptoWaitReady } from "@polkadot/util-crypto";
+import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
+import Store from "lib/stores/Store";
+import { makeAutoObservable, reaction, runInAction } from "mobx";
 import { PolkadotjsWallet } from "./polkadotjs-wallet";
 import { SubWallet } from "./subwallet";
-import { Wallet, WalletAccount } from "./types";
 import { TalismanWallet } from "./talisman-wallet";
-import Store from "lib/stores/Store";
-import { ZTG } from "lib/constants";
+import { Wallet, WalletAccount } from "./types";
 
 const supportedWallets = [
   new PolkadotjsWallet(),
@@ -37,6 +36,69 @@ export type WalletErrorMessage = {
 
 export default class Wallets {
   wallet?: Wallet = undefined;
+  accountAddress: string | null = null;
+  activeAccount?: WalletAccount = undefined;
+  enableIntervalId?: number;
+  walletEnabled = false;
+  errorMessages: WalletErrorMessage[] = [];
+  activeBalance = new Decimal(0);
+  accounts: WalletAccount[] = [];
+  accountsChangeUnsub: any;
+  connected = false;
+
+  private balanceSubscription?: any;
+
+  constructor(private store: Store) {
+    makeAutoObservable(this, {}, { deep: false, autoBind: true });
+
+    this.accountAddress =
+      globalThis.localStorage?.getItem("accountAddress") ?? "";
+
+    reaction(
+      () => this.wallet,
+      (wallet) => {
+        localStorage.setItem("walletId", wallet?.extensionName ?? null);
+      },
+    );
+
+    reaction(
+      () => this.accountAddress,
+      (address) => {
+        localStorage.setItem("accountAddress", address);
+      },
+    );
+
+    reaction(
+      () => this.activeAccount,
+      (account) => {
+        this.accountAddress = account.address;
+      },
+    );
+
+    reaction(
+      () => this.accounts,
+      (accounts) => {
+        if (accounts.length > 0) {
+          if (this.wallet) {
+            this.unsetErrorMessage(this.wallet.extensionName);
+          }
+          let acc: typeof this.activeAccount;
+          const storedAddress = this.accountAddress;
+          if (storedAddress) {
+            acc = accounts.find((acc) => acc.address === this.accountAddress);
+          } else {
+            acc = accounts[0];
+          }
+          if (acc == null) {
+            acc = accounts[0];
+          }
+          this.setActiveAccount(acc);
+        } else {
+          this.unsetActiveAccount();
+        }
+      },
+    );
+  }
 
   setWallet(wallet: Wallet) {
     this.wallet = wallet;
@@ -70,8 +132,6 @@ export default class Wallets {
     return supportedWallets.find((w) => w.extensionName === extensionName);
   }
 
-  activeAccount?: WalletAccount = undefined;
-
   unsetActiveAccount() {
     this.activeBalance = new Decimal(0);
     this.activeAccount = undefined;
@@ -91,8 +151,6 @@ export default class Wallets {
     }
     this.subscribeToBalanceChanges();
   }
-
-  errorMessages: WalletErrorMessage[] = [];
 
   get faultyConnection() {
     return this.errorMessages.length > 0;
@@ -129,18 +187,12 @@ export default class Wallets {
     this.errorMessages = [];
   }
 
-  accounts: WalletAccount[] = [];
-
   setAccounts(accounts: WalletAccount[]) {
     this.accounts = accounts;
     if (!this.activeAccount) {
       this.activeAccount = accounts[0];
     }
   }
-
-  accountsChangeUnsub: any;
-
-  connected = false;
 
   setConnected(connected: boolean) {
     this.connected = connected;
@@ -156,10 +208,6 @@ export default class Wallets {
     }
   }
 
-  activeBalance = new Decimal(0);
-
-  private balanceSubscription?: any;
-
   get accountSelectOptions() {
     return this.accounts.map((account, id) => {
       return {
@@ -167,43 +215,6 @@ export default class Wallets {
         value: account.address,
       };
     });
-  }
-
-  constructor(private store: Store) {
-    makeAutoObservable(this, {}, { deep: false, autoBind: true });
-
-    reaction(
-      () => this.wallet,
-      (wallet) => {
-        localStorage.setItem("walletId", wallet?.extensionName ?? null);
-      },
-    );
-
-    reaction(
-      () => this.accounts,
-      (accounts) => {
-        if (accounts.length > 0) {
-          if (this.wallet) {
-            this.unsetErrorMessage(this.wallet.extensionName);
-          }
-          let acc: typeof this.activeAccount;
-          const storedAddress = this.store.userStore.accountAddress;
-          if (storedAddress) {
-            acc = accounts.find(
-              (acc) => acc.address === this.store.userStore.accountAddress,
-            );
-          } else {
-            acc = accounts[0];
-          }
-          if (acc == null) {
-            acc = accounts[0];
-          }
-          this.setActiveAccount(acc);
-        } else {
-          this.unsetActiveAccount();
-        }
-      },
-    );
   }
 
   *getAccounts(wallet: Wallet) {
@@ -266,9 +277,6 @@ export default class Wallets {
       },
     );
   }
-
-  enableIntervalId?: number;
-  walletEnabled = false;
 
   get enablingInProgress() {
     return this.enableIntervalId != null;
