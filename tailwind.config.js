@@ -108,6 +108,7 @@ module.exports = {
       fontSize: {
         "lg-2": ["1.375rem", "1.875rem"],
         xxs: ["0.5625rem", "0.75rem"],
+        "2.5xl": "1.75rem",
 
         // NEW
         "ztg-10-150": ["0.625rem", "1.5"],

@@ -23,9 +23,7 @@ const MarketFiltersContainer: FC<
     <MarketFiltersContext.Provider
       value={{ activeFilters, selectedMenu, setSelectedMenu, portal }}
     >
-      <div className="font-bold text-[28px] text-center mb-[15px]">
-        All Markets
-      </div>
+      <h2 className="text-center mb-4">All Markets</h2>
       <div className="w-full flex flex-col items-center justify-center mb-[30px]">
         {children}
       </div>

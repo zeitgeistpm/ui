@@ -125,8 +125,8 @@ const Court: NextPage = observer(() => {
         Back to Cases
       </button>
 
-      <h2 className="header my-ztg-23">{marketStore?.slug}</h2>
-      <p className=" text-ztg-16-150 mb-ztg-20">{marketStore?.description}</p>
+      <h2 className="my-6">{marketStore?.slug}</h2>
+      <p className="text-ztg-16-150 mb-ztg-20">{marketStore?.description}</p>
       <CaseSummary courtCase={courtCase} />
       {courtCase.endTimestamp - new Date().getTime() > 0 ? (
         <div className="my-ztg-20 ml-ztg-10">
