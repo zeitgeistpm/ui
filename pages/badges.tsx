@@ -60,8 +60,6 @@ const BadgesPage = observer(() => {
     })
     .filter(Boolean);
 
-  const { theme } = useUserStore();
-
   return (
     <div className={"pt-ztg-46 "}>
       <h2 className="header mb-ztg-23">Badges</h2>
@@ -85,21 +83,12 @@ const BadgesPage = observer(() => {
             option: (provided, state) => {
               return {
                 ...provided,
-                ...(theme === "dark"
-                  ? {
-                      backgroundColor: state.isSelected
-                        ? "blue"
-                        : state.isFocused
-                        ? "rgb(93, 186, 252)"
-                        : "transparent",
-                    }
-                  : {}),
               };
             },
             menu: (provided, state) => {
               return {
                 ...provided,
-                backgroundColor: theme === "dark" ? "black" : "white",
+                backgroundColor: "white",
               };
             },
           }}

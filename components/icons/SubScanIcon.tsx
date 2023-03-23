@@ -2,8 +2,7 @@ import { useUserStore } from "lib/stores/UserStore";
 import { observer } from "mobx-react";
 
 const SubScanIcon = observer(() => {
-  const { theme } = useUserStore();
-  const dotColor = theme === "dark" ? "white" : "black";
+  const dotColor = "black";
 
   return (
     <svg

@@ -173,6 +173,13 @@ export default class Wallets {
     makeAutoObservable(this, {}, { deep: false, autoBind: true });
 
     reaction(
+      () => this.wallet,
+      (wallet) => {
+        localStorage.setItem("walletId", wallet?.extensionName ?? null);
+      },
+    );
+
+    reaction(
       () => this.accounts,
       (accounts) => {
         if (accounts.length > 0) {
@@ -359,8 +366,9 @@ export default class Wallets {
     this.setConnected(true);
   }
 
-  async initialize(extensionName: string) {
-    this.connectWallet(extensionName);
+  async initialize() {
+    const walletId = localStorage.getItem("walletId");
+    this.connectWallet(walletId);
   }
 
   static get supportedWallets() {

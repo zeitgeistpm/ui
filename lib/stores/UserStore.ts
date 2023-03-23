@@ -45,13 +45,11 @@ const setToLocalStorage = (key: string, value: JSONObject | Primitive) => {
 type StoredTheme = Theme | "system";
 
 export default class UserStore {
-  theme: Theme | null = "light";
   storedTheme: StoredTheme | null = "light";
   accountAddress: string | null = null;
   identity?: UserIdentity;
   locationAllowed: boolean;
   isUsingVPN: boolean;
-  walletId: string | null = null;
   helpnotifications: HelperNotifications | null = null;
   endpointKey = `endpoint-${process.env.NEXT_PUBLIC_VERCEL_ENV ?? "dev"}`;
   qglEndpointKey = `gql-endpoint-${
@@ -85,40 +83,10 @@ export default class UserStore {
 
   async init() {
     this.accountAddress = getFromLocalStorage("accountAddress", "") as string;
-    this.walletId = getFromLocalStorage("walletId", null) as string;
-
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", (query) => {
-        if (this.storedTheme === "system") {
-          this.theme = query.matches ? "dark" : "light";
-        }
-      });
 
     this.helpnotifications = getFromLocalStorage("help-notifications", {
       avatarKsmFeesInfo: true,
     }) as HelperNotifications;
-  }
-
-  toggleTheme(theme?: StoredTheme) {
-    if (theme != null) {
-      this.storedTheme = theme;
-      return;
-    }
-
-    if (this.theme === "light") {
-      this.storedTheme = "dark";
-    } else if (this.theme === "dark") {
-      this.storedTheme = "light";
-    }
-  }
-
-  setTheme(theme: Theme) {
-    this.theme = theme;
-  }
-
-  setWalletId(walletId: string | null) {
-    this.walletId = walletId;
   }
 
   toggleHelpNotification(key: keyof HelperNotifications, value: boolean) {

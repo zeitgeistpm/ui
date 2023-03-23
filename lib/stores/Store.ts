@@ -171,11 +171,8 @@ export default class Store {
     this.userStore.checkIP();
     await this.initSDK(endpointOptions[0].value, graphQlEndpoint);
     await this.loadConfig();
-    const storedWalletId = this.userStore.walletId;
 
-    if (storedWalletId) {
-      this.wallets.initialize(storedWalletId);
-    }
+    this.wallets.initialize();
 
     this.registerValidationRules();
 
