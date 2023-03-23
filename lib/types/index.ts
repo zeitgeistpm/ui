@@ -1,10 +1,5 @@
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces";
-import Decimal from "decimal.js";
-import { NextPage } from "next";
-import { FC } from "react";
-
-export type Theme = "light" | "dark";
 
 export type NotificationType = "Error" | "Info" | "Success";
 
