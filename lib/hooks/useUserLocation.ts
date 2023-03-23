@@ -7,7 +7,7 @@ export type UserLocation = {
 };
 
 export const useUserLocation = () => {
-  const { data } = useQuery<UserLocation>(
+  const { data, isFetched } = useQuery<UserLocation>(
     ["user-location"],
     async () => {
       const response = await fetch(`/api/location`);
@@ -39,5 +39,5 @@ export const useUserLocation = () => {
     },
   );
 
-  return data;
+  return { ...data, isFetched };
 };

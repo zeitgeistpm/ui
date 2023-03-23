@@ -20,6 +20,7 @@ import DefaultLayout from "layouts/DefaultLayout";
 import ModalStore from "lib/stores/ModalStore";
 import Store from "lib/stores/Store";
 import dynamic from "next/dynamic";
+import { WalletDisconnector } from "components/account/WalletDisconnector";
 
 const Onboarding = dynamic(
   () => import("../components/onboarding/Onboarding"),
@@ -85,6 +86,7 @@ const MyApp = observer(({ Component, pageProps }) => {
             prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
           }}
         >
+          <WalletDisconnector />
           <ModalStoreContext.Provider value={modalStore}>
             {modalStore.modal && (
               <ModalContainer>{modalStore.modal}</ModalContainer>

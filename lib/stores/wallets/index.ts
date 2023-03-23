@@ -135,6 +135,11 @@ export default class Wallets {
   unsetActiveAccount() {
     this.activeBalance = new Decimal(0);
     this.activeAccount = undefined;
+    this.accountAddress = null;
+    if (this.balanceSubscription) {
+      this.balanceSubscription();
+      this.balanceSubscription = undefined;
+    }
     return;
   }
 
@@ -246,7 +251,7 @@ export default class Wallets {
   }
 
   getActiveSigner(): KeyringPairOrExtSigner | undefined {
-    if (this.wallet == null) return;
+    if (this.wallet == null || !this.activeAccount) return;
 
     const signer = this.wallet.signer;
 

@@ -141,7 +141,7 @@ const AccountButton: FC<{
                         >
                           <Avatar
                             zoomed
-                            address={activeAccount.address}
+                            address={activeAccount?.address}
                             deps={avatarDeps}
                           />
                         </div>
@@ -150,7 +150,7 @@ const AccountButton: FC<{
                             pathname === "/" ? "text-white" : "text-black"
                           }`}
                         >
-                          {shortenAddress(activeAccount.address, 6, 4)}
+                          {shortenAddress(activeAccount?.address, 6, 4)}
                         </span>
                       </div>
                     </div>
