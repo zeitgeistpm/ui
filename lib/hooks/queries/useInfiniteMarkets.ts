@@ -84,17 +84,19 @@ export const useInfiniteMarkets = (
         status_in: statuses.length === 0 ? undefined : statuses,
         tags_containsAny: tags.length === 0 ? undefined : tags,
         pool_isNull: withLiquidityOnly ? false : undefined,
-        pool:
-          currencies.length === 0
-            ? undefined
-            : {
-                baseAsset_in: currencies,
-              },
+        pool: withLiquidityOnly
+          ? { ztgQty_gt: 0 }
+          : undefined && currencies.length === 0
+          ? undefined
+          : {
+              baseAsset_in: currencies,
+            },
       },
       offset: !pageParam ? 0 : limit * pageParam,
       limit: limit,
       order: orderByMap[orderBy],
     });
+    console.log(markets);
     const outcomes = await getOutcomesForMarkets(graphQLClient, markets);
 
     let resMarkets: Array<QueryMarketData> = [];
