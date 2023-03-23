@@ -72,14 +72,14 @@ const AccountButton: FC<{
     <>
       {!connected ? (
         <div
-          className="hidden md:block flex-1"
+          className="sm:mr-5 sm:ml-auto"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
           <button
             className={
               connectButtonClassname ||
-              `flex border-2 rounded-full px-6 leading-[40px] ml-auto ${
+              `flex border-2 rounded-full px-6 leading-[40px] ${
                 pathname === "/"
                   ? "text-white bg-transparent border-white"
                   : "text-black border-black"
@@ -105,7 +105,7 @@ const AccountButton: FC<{
           )}
         </div>
       ) : (
-        <div className="hidden md:block relative">
+        <div className="relative sm:mr-5 sm:ml-auto">
           <Menu>
             {({ open }) => (
               <>
