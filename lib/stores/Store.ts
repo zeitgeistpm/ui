@@ -16,7 +16,7 @@ import validatorjs from "validatorjs";
 
 import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 import { isAsset, ztgAsset } from "../types";
-import Wallets from "../wallets";
+import Wallets from "./wallets";
 import CourtStore from "./CourtStore";
 import ExchangeStore from "./ExchangeStore";
 import MarketsStore from "./MarketsStore";

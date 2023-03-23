@@ -7,7 +7,7 @@ const NotFoundPage = observer(
   ({ backText, backLink }: { backText?: string; backLink?: string }) => {
     const router = useRouter();
     const userStore = useUserLocation();
-    const src = userStore.theme === "dark" ? "/dark-404.png" : "/light-404.png";
+    const src = "/light-404.png";
 
     const handleClick = () => {
       router.push(backLink);

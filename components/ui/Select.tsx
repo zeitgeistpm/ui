@@ -22,14 +22,10 @@ const Select = observer(
             fontWeight: 400,
             fontSize: "14px",
             "&:hover": {
-              backgroundColor: userStore.theme === "dark" ? "black" : "white",
+              backgroundColor: "white",
               color: "#748296",
             },
-            backgroundColor: state.isSelected
-              ? "#0001FE"
-              : userStore.theme === "dark"
-              ? "#11161F"
-              : "#D9E3EE",
+            backgroundColor: state.isSelected ? "#0001FE" : "#D9E3EE",
             color: state.isSelected ? "white" : "#748296",
           }),
           control: (provided, state) => ({
@@ -37,7 +33,7 @@ const Select = observer(
             fontWeight: 400,
             fontSize: "14px",
             color: "#748296",
-            backgroundColor: userStore.theme === "dark" ? "#11161F" : "#D9E3EE",
+            backgroundColor: "#D9E3EE",
             height: 40,
             border: 0,
           }),
@@ -46,21 +42,21 @@ const Select = observer(
             fontWeight: 400,
             fontSize: "14px",
             color: "#748296",
-            backgroundColor: userStore.theme === "dark" ? "#11161F" : "#D9E3EE",
+            backgroundColor: "#D9E3EE",
           }),
           singleValue: (provided, state) => ({
             ...provided,
             fontWeight: 400,
             fontSize: "14px",
             color: "#748296",
-            backgroundColor: userStore.theme === "dark" ? "#11161F" : "#D9E3EE",
+            backgroundColor: "#D9E3EE",
           }),
           dropdownIndicator: () => ({
             color: "#748296",
             margin: "0 10px 0 0",
           }),
         }),
-        [userStore.theme],
+        [],
       );
 
       return (
