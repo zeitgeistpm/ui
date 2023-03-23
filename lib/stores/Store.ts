@@ -169,10 +169,10 @@ export default class Store {
     this.initGraphQlClient();
 
     this.userStore.checkIP();
+    this.wallets.initialize();
+
     await this.initSDK(endpointOptions[0].value, graphQlEndpoint);
     await this.loadConfig();
-
-    this.wallets.initialize();
 
     this.registerValidationRules();
 

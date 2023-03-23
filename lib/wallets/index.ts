@@ -368,7 +368,7 @@ export default class Wallets {
 
   async initialize() {
     const walletId = localStorage.getItem("walletId");
-    this.connectWallet(walletId);
+    return this.connectWallet(walletId);
   }
 
   static get supportedWallets() {
