@@ -64,7 +64,7 @@ const BadgesPage = observer(() => {
 
   return (
     <div className={"pt-ztg-46 "}>
-      <h2 className="header mb-ztg-23">Badges</h2>
+      <h2 className="mb-6">Badges</h2>
       <div className="flex content-center items-center mb-ztg-38">
         <p className="text-gray-600 flex-3 mr-8">
           All available badges. Grouped by rarity. Select rarity to view how the

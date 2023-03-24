@@ -47,7 +47,7 @@ const MarketHeader: FC<{
 }) => {
   return (
     <header className="text-center">
-      <h1 className="font-bold text-4xl my-5">{question}</h1>
+      <h1 className="text-4xl my-5">{question}</h1>
       <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-2 mb-5">
         <HeaderStat label={hasDatePassed(starts) ? "Started" : "Starts"}>
           {new Intl.DateTimeFormat("default", {

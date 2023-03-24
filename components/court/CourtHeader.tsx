@@ -220,7 +220,7 @@ const CourtHeader = observer(() => {
   return (
     <>
       <div className="flex items-center mb-ztg-22">
-        <h2 className="header ">Court</h2>
+        <h2>Court</h2>
         {activeJurorStatus !== null ? (
           <JurorStatusPill active={activeJurorStatus === "OK"} />
         ) : (

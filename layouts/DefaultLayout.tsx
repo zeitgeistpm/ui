@@ -1,19 +1,12 @@
 import { observer } from "mobx-react";
 import { Skeleton } from "@material-ui/lab";
-import React, {
-  FC,
-  PropsWithChildren,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { FC, PropsWithChildren, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 
 import { useStore } from "lib/stores/Store";
-import TopBar from "components/top-bar";
+import TopBar from "components/menu";
 import Footer from "components/ui/Footer";
 import NotificationCenter from "components/ui/NotificationCenter";
-import Menu from "components/menu";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";
 import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
@@ -52,13 +45,12 @@ const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
             }
           `}
         </style>
-        {process.env.NEXT_PUBLIC_MIGRATION_IN_PROGRESS !== "true" && <Menu />}
         <div
           ref={contentRef}
           className="overflow-y-a1uto overflow-x-hidden flex-grow"
         >
           <TopBar />
-          {/* //hide navbar until designs are ready */}
+          {/* hide notification bar */}
           {NOTIFICATION_MESSAGE && (
             <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38 hidden">
               <div className="text-ztg-12-150 font-semibold">
