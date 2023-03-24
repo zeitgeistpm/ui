@@ -30,6 +30,7 @@ const HorizontalScroll: FC<HorizontalScrollProps> = ({
         <Link
           href={link}
           className="leading-[40px] rounded-ztg-100 text-ztg-14-150 bg-mystic px-[15px] text-center w-full sm:w-fit"
+          data-testid="horizontalScroll__cta"
         >
           {cta}
         </Link>
@@ -42,6 +43,7 @@ const HorizontalScroll: FC<HorizontalScrollProps> = ({
             : "bg-pastel-blue text-white"
         }`}
         disabled={leftDisabled}
+        data-testid="horizontalScroll__leftBtn"
       >
         <ChevronLeft className="relative right-[1px]" />
       </button>
@@ -53,6 +55,7 @@ const HorizontalScroll: FC<HorizontalScrollProps> = ({
             : "bg-pastel-blue text-white"
         }`}
         disabled={rightDisabled}
+        data-testid="horizontalScroll__rightBtn"
       >
         <ChevronRight className="relative left-[1px]" />
       </button>

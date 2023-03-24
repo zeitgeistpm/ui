@@ -45,7 +45,12 @@ const Pill = ({ value, classes }: { value: string; classes: string }) => {
 const MarketCardInfo = ({ question }: { question: string }) => {
   return (
     <div className="w-full h-full flex flex-col text-ztg-14-165 whitespace-normal">
-      <h5 className="font-semibold w-full h-fit line-clamp-3">{question}</h5>
+      <h5
+        className="font-semibold w-full h-fit line-clamp-3"
+        data-testid="marketCardInfo__title"
+      >
+        {question}
+      </h5>
     </div>
   );
 };

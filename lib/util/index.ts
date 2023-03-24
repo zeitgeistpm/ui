@@ -1,12 +1,7 @@
-import {
-  EndpointOption,
-  Environment,
-  JSONObject,
-  SelectOption,
-} from "../types";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { hexToU8a, isHex } from "@polkadot/util";
-import { endpoints, graphQlEndpoints, environment } from "../constants";
+import { GraphQLClient } from "graphql-request";
+import { graphQlEndpoint } from "../constants";
 
 export const padBalance = (bal: string): string => {
   const digits = bal.length;

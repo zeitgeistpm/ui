@@ -1,5 +1,6 @@
 import { MarketDeadlines } from "@zeitgeistpm/sdk/dist/types";
 import Decimal from "decimal.js";
+import { GraphQLClient } from "graphql-request";
 import resolveTailwindConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../../tailwind.config";
 import { EndpointOption, Environment } from "../types";
@@ -91,6 +92,8 @@ const getGraphQlEndpoint = (): string => {
 };
 
 export const graphQlEndpoint = getGraphQlEndpoint();
+
+export const graphQlClient = new GraphQLClient(graphQlEndpoint);
 
 const getEndpointOptions = (env: Environment): EndpointOption[] => {
   return endpoints.filter((e) => e.environment === env);

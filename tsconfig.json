@@ -17,12 +17,14 @@
     "useDefineForClassFields": true,
     "baseUrl": "./",
     "incremental": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "types": ["next", "next/types/global"]
   },
   "include": [
     "next-env.d.ts",
     "declarations.d.ts",
     "**/*.ts",
+    "**/*.cy.tsx",
     "**/*.tsx",
     "**/*.jsx",
     "**/*.js"

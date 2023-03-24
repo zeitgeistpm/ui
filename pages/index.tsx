@@ -56,7 +56,6 @@ export async function getStaticProps() {
       CATEGORIES.map((cat) => cat.name),
     ),
   ]);
-
   return {
     props: {
       banners: banners,

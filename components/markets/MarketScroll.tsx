@@ -72,7 +72,9 @@ const MarketScroll = observer(
         ref={containerRef}
         className="grid gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
       >
-        <h2 className="sm:col-span-2">{title}</h2>
+        <h2 className="sm:col-span-2" data-testid="marketScroll__title">
+          {title}
+        </h2>
         <HorizontalScroll
           classes="order-2 sm:order-none"
           link={link}
