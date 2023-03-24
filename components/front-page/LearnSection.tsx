@@ -52,7 +52,10 @@ const LearnCard = ({
 const LearnSection = () => {
   return (
     <>
-      <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-[20px]">
+      <div
+        className="w-full grid grid-cols-2 sm:grid-cols-3 gap-[20px]"
+        data-testid="learnSection"
+      >
         <h2 className="col-span-3">How to</h2>
         <LearnCard
           tag="Trade"
