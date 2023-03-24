@@ -1,4 +1,3 @@
-import { useUserLocation } from "lib/hooks/useUserLocation";
 import { observer } from "mobx-react";
 
 const SubScanIcon = observer(() => {

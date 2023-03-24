@@ -1,4 +1,3 @@
-import { useUserLocation } from "lib/hooks/useUserLocation";
 import { observer } from "mobx-react";
 
 const ZeitgeistIcon = observer(({ width = 35, height = 35, dark = false }) => {

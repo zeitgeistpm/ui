@@ -1,10 +1,5 @@
-import {
-  Checkbox as MaterialCheckBox,
-  makeStyles,
-  Theme,
-} from "@material-ui/core/";
+import { Checkbox as MaterialCheckBox, makeStyles } from "@material-ui/core/";
 import clsx from "clsx";
-import { useUserLocation } from "lib/hooks/useUserLocation";
 import { observer } from "mobx-react";
 import { ChangeEvent } from "react";
 
@@ -43,8 +38,6 @@ interface CheckboxProps {
 }
 
 const Checkbox = observer(({ value, onChange, disabled }: CheckboxProps) => {
-  const userStore = useUserLocation();
-
   const classes = useStyles();
 
   return (

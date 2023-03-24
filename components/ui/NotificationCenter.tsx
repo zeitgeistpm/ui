@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useNotificationStore } from "lib/stores/NotificationStore";
-import { useUserLocation } from "lib/hooks/useUserLocation";
 import { NotificationType } from "lib/types";
 import { observer } from "mobx-react";
 import React, { FC } from "react";
@@ -14,8 +13,6 @@ const NotificationCard: FC<{
   type: NotificationType;
   dataTest?: string;
 }> = observer(({ close, timer, lifetime, content, type, dataTest }) => {
-  const userStore = useUserLocation();
-
   const getColor = (type: NotificationType) => {
     switch (type) {
       case "Success":
