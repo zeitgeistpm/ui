@@ -5,10 +5,13 @@ import {
   isRpcSdk,
   ScalarAssetId,
   ZTG,
+  IOZtgAssetId,
+  AssetId,
+  IOMarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { atomWithStorage } from "jotai/utils";
-import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
+import { calcInGivenOut, calcOutGivenIn } from "lib/math";
 import { TradeType } from "lib/types";
 import { createContext } from "react";
 import { useSdkv2 } from "./useSdkv2";
@@ -69,7 +72,7 @@ export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
     );
   }
   if (item.action === "sell") {
-    const assetBalance = traderAssetBalance.gt(tradeablePoolAssetBalance)
+    const maxAssetIn = traderAssetBalance.gt(tradeablePoolAssetBalance)
       ? tradeablePoolAssetBalance
       : traderAssetBalance;
 
@@ -78,7 +81,7 @@ export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
       assetWeight,
       poolBaseBalance,
       baseWeight,
-      assetBalance,
+      maxAssetIn,
       swapFee,
     );
   }
@@ -147,16 +150,17 @@ export const useTradeMaxAssetAmount = (item: TradeItem): Decimal => {
 
 export const useTradeTransaction = (
   item: TradeItem,
-  amountAsset?: string,
+  exactAmountAssetId: AssetId,
+  amount: string,
 ): SubmittableExtrinsic<"promise", ISubmittableResult> | undefined => {
-  amountAsset = !amountAsset ? "0" : amountAsset;
-  const amountAssetDecimal = new Decimal(amountAsset).mul(ZTG);
   const [sdk] = useSdkv2();
   const { data: itemState } = useTradeItemState(item);
 
-  if (itemState == null || sdk == null) {
+  if (itemState == null || sdk == null || !isRpcSdk(sdk)) {
     return undefined;
   }
+  amount = !amount ? "0" : amount;
+  const amountDecimal = new Decimal(amount).mul(ZTG);
 
   const {
     pool,
@@ -166,50 +170,99 @@ export const useTradeTransaction = (
     assetWeight,
     swapFee,
     slippage,
+    baseAssetId,
+    assetId,
   } = itemState;
 
   let transaction:
     | SubmittableExtrinsic<"promise", ISubmittableResult>
     | undefined;
 
-  if (isRpcSdk(sdk)) {
-    if (item.action == "buy") {
-      const maxAmountIn = calcInGivenOut(
-        poolBaseBalance,
-        baseWeight,
-        poolAssetBalance,
-        assetWeight,
-        amountAssetDecimal,
-        swapFee,
-      ).mul(new Decimal(slippage / 100 + 1));
-
-      if (!maxAmountIn.isNaN()) {
-        transaction = sdk.api.tx.swaps.swapExactAmountOut(
-          pool.poolId,
-          { Ztg: null },
-          maxAmountIn.toFixed(0),
-          item.assetId,
-          amountAssetDecimal.toFixed(0),
-          null,
-        );
-      }
-    } else {
+  if (item.action === "buy") {
+    const inAssetId = baseAssetId;
+    const outAssetId = assetId;
+    if (IOZtgAssetId.is(exactAmountAssetId)) {
       const minAmountOut = calcOutGivenIn(
-        poolAssetBalance,
-        assetWeight,
         poolBaseBalance,
         baseWeight,
-        amountAssetDecimal,
+        poolAssetBalance,
+        assetWeight,
+        amountDecimal,
         swapFee,
       ).mul(new Decimal(1 - slippage / 100));
 
       if (!minAmountOut.isNaN()) {
         transaction = sdk.api.tx.swaps.swapExactAmountIn(
           pool.poolId,
-          item.assetId,
-          amountAssetDecimal.toFixed(0),
-          { Ztg: null },
-          minAmountOut.toFixed(0),
+          inAssetId,
+          amountDecimal.toFixed(0),
+          outAssetId,
+          minAmountOut.toFixed(0, Decimal.ROUND_DOWN),
+          null,
+        );
+      }
+    } else if (IOMarketOutcomeAssetId.is(exactAmountAssetId)) {
+      const maxAmountIn = calcInGivenOut(
+        poolBaseBalance,
+        baseWeight,
+        poolAssetBalance,
+        assetWeight,
+        amountDecimal,
+        swapFee,
+      ).mul(new Decimal(slippage / 100 + 1));
+
+      if (!maxAmountIn.isNaN()) {
+        transaction = sdk.api.tx.swaps.swapExactAmountOut(
+          pool.poolId,
+          inAssetId,
+          maxAmountIn.toFixed(0, Decimal.ROUND_UP),
+          outAssetId,
+          amountDecimal.toFixed(0),
+          null,
+        );
+      }
+    }
+  } else if (item.action === "sell") {
+    const inAssetId = assetId;
+    const outAssetId = baseAssetId;
+
+    if (IOZtgAssetId.is(exactAmountAssetId)) {
+      const maxAmountIn = calcInGivenOut(
+        poolAssetBalance,
+        assetWeight,
+        poolBaseBalance,
+        baseWeight,
+        amountDecimal,
+        swapFee,
+      ).mul(new Decimal(slippage / 100 + 1));
+
+      if (!maxAmountIn.isNaN()) {
+        transaction = sdk.api.tx.swaps.swapExactAmountOut(
+          pool.poolId,
+          inAssetId,
+          amountDecimal.toFixed(0),
+          outAssetId,
+          maxAmountIn.toFixed(0, Decimal.ROUND_UP),
+          null,
+        );
+      }
+    } else if (IOMarketOutcomeAssetId.is(exactAmountAssetId)) {
+      const minAmountOut = calcOutGivenIn(
+        poolAssetBalance,
+        assetWeight,
+        poolBaseBalance,
+        baseWeight,
+        amountDecimal,
+        swapFee,
+      ).mul(new Decimal(1 - slippage / 100));
+
+      if (!minAmountOut.isNaN()) {
+        transaction = sdk.api.tx.swaps.swapExactAmountIn(
+          pool.poolId,
+          inAssetId,
+          amountDecimal.toFixed(0),
+          outAssetId,
+          minAmountOut.toFixed(0, Decimal.ROUND_DOWN),
           null,
         );
       }
