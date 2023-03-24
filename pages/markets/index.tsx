@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import { observer } from "mobx-react";
 import React, { useEffect } from "react";
 import { NextPage } from "next";
@@ -8,10 +7,10 @@ import { GraphQLClient } from "graphql-request";
 import { IndexedMarketCardData } from "components/markets/market-card/index";
 import MarketScroll from "components/markets/MarketScroll";
 import getNewestMarkets from "lib/gql/newest-markets";
+import { graphQlEndpoint } from "lib/constants";
 
 export async function getStaticProps() {
-  const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
-  const client = new GraphQLClient(url);
+  const client = new GraphQLClient(graphQlEndpoint);
   const newestMarkets = await getNewestMarkets(client);
 
   return {

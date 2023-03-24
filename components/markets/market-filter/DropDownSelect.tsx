@@ -164,6 +164,7 @@ const DropDownSelect = observer(
         onChange={(val: MarketFilter) => {
           add(val);
         }}
+        captureMenuScroll={false}
         components={{
           Control,
           SingleValue,

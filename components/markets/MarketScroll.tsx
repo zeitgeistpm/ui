@@ -4,6 +4,8 @@ import { useResizeDetector } from "react-resize-detector";
 import MarketCard, { IndexedMarketCardData } from "./market-card/index";
 import HorizontalScroll from "components/ui/HorizontalScroll";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
+import { useWindowSize } from "lib/hooks/useWindowSize";
+import { BREAKPOINTS } from "lib/constants/breakpoints";
 
 const MarketScroll = observer(
   ({
@@ -19,22 +21,23 @@ const MarketScroll = observer(
   }) => {
     const scrollRef = useRef<HTMLDivElement>();
     const [scrollLeft, setScrollLeft] = useState(0);
-    const [scrollDirection, setScrollDirection] = useState<"left" | "right">(
-      "right",
-    );
+
+    const { width: windowWidth } = useWindowSize();
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
     const { data: marketsStats } = useMarketsStats(
       markets.map((m) => m.marketId),
     );
     const gap = 28;
+
     //calculate cards shown and width based on container width
-    const cardsShown = containerWidth >= 716 && containerWidth < 983 ? 2 : 3;
+
+    const cardsShown = windowWidth < BREAKPOINTS.lg ? 2 : 3;
     const cardWidth =
-      containerWidth < 716
+      windowWidth < BREAKPOINTS.md
         ? containerWidth
-        : containerWidth >= 983
-        ? (containerWidth - gap * 2) / cardsShown
-        : (containerWidth - gap) / cardsShown;
+        : windowWidth < BREAKPOINTS.lg
+        ? (containerWidth - gap) / cardsShown
+        : (containerWidth - gap * 2) / cardsShown;
     const scrollMin = 0;
     const scrollMax = cardWidth * markets.length + gap * (markets.length - 1);
 
@@ -44,17 +47,14 @@ const MarketScroll = observer(
     }, [scrollRef, scrollLeft]);
 
     const handleRightClick = () => {
-      setScrollDirection("right");
       setScrollLeft((prev) => {
         const newScroll = prev + moveSize;
         const max = scrollMax - containerWidth;
-
         return newScroll > max ? scrollMax - containerWidth : newScroll;
       });
     };
 
     const handleLeftClick = () => {
-      setScrollDirection("left");
       setScrollLeft((prev) => {
         const newScroll = prev - moveSize;
 
@@ -72,7 +72,7 @@ const MarketScroll = observer(
         ref={containerRef}
         className="grid gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
       >
-        <h3 className="sm:col-span-2 font-bold text-[28px]">{title}</h3>
+        <h2 className="sm:col-span-2">{title}</h2>
         <HorizontalScroll
           classes="order-2 sm:order-none"
           link={link}
@@ -83,12 +83,6 @@ const MarketScroll = observer(
           leftDisabled={leftDisabled}
         />
         <div className="col-span-3 relative">
-          {(scrollDirection === "left" && scrollLeft !== 0) ||
-          (scrollDirection === "right" && hasReachedEnd) ? (
-            <div className="bg-gradient-to-r from-white w-[20px] absolute z-ztg-10 -left-[5px] h-full"></div>
-          ) : (
-            <div className="bg-gradient-to-r from-transparent to-white w-[20px] absolute z-ztg-1 -right-[5px] h-full"></div>
-          )}
           <div
             ref={scrollRef}
             className="flex flex-col gap-7 md:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"

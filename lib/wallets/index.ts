@@ -228,10 +228,6 @@ export default class Wallets {
   }
 
   getActiveSigner(): KeyringPairOrExtSigner | undefined {
-    if (this.store.isTestEnv) {
-      this.testingKeyringPair.unlock();
-      return this.testingKeyringPair;
-    }
     if (this.wallet == null) return;
 
     const signer = this.wallet.signer;
@@ -240,9 +236,6 @@ export default class Wallets {
   }
 
   get testingKeyringPair(): KeyringPair | undefined {
-    if (!this.store.isTestEnv) {
-      return;
-    }
     const pair = keyring.getPair(keyring.getAccounts()[0].address);
     return pair;
   }
@@ -367,30 +360,7 @@ export default class Wallets {
   }
 
   async initialize(extensionName: string) {
-    if (this.store.isTestEnv) {
-      await cryptoWaitReady();
-
-      keyring.loadAll({
-        ss58Format: this.store.config.ss58Prefix,
-        type: "sr25519",
-      });
-
-      const seed = process.env.NEXT_PUBLIC_TESTING_SEED;
-
-      const acc = keyring.addUri(seed);
-
-      const activeAccount: WalletAccount = {
-        address: acc.pair.address,
-        source: "ui-keyring",
-      };
-
-      (window as any).ACTIVE_ACCOUNT_ADDRESS = acc.pair.address;
-
-      this.setActiveAccount(activeAccount);
-      this.setConnected(true);
-    } else {
-      this.connectWallet(extensionName);
-    }
+    this.connectWallet(extensionName);
   }
 
   static get supportedWallets() {

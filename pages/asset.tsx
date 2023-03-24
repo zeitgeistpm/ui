@@ -158,7 +158,7 @@ const AssetPage: NextPage = observer(() => {
           className="cursor-pointer text-sky-600"
           onClick={navigateBack}
         />
-        <h2 className="header ml-ztg-16">Portfolio</h2>
+        <h2 className="ml-4">Portfolio</h2>
       </div>
       <div className="flex">
         <div className="flex flex-col">

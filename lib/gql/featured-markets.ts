@@ -45,8 +45,10 @@ const marketQuery = gql`
 
 const assetsQuery = gql`
   query Assets($poolId: Int) {
-    assets(where: { poolId_eq: $poolId }) {
-      poolId
+    assets(where: { pool: { poolId_eq: $poolId } }) {
+      pool {
+        poolId
+      }
       price
       assetId
     }
@@ -84,6 +86,8 @@ const getFeaturedMarkets = async (
       });
 
       const market = marketRes.markets[0];
+
+      if (!market) return;
       const pool = market.pool;
 
       if (!pool) {
@@ -108,7 +112,7 @@ const getFeaturedMarkets = async (
       }
       const assetsRes = await client.request<{
         assets: {
-          poolId: number;
+          pool: { poolId: number };
           price: number;
         }[];
       }>(assetsQuery, {
@@ -152,7 +156,7 @@ const getFeaturedMarkets = async (
     }),
   );
 
-  return featuredMarkets;
+  return featuredMarkets.filter((market) => market !== undefined);
 };
 
 export default getFeaturedMarkets;

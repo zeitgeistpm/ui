@@ -9,10 +9,7 @@ import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
 import MarketImage from "components/ui/MarketImage";
-import TimeSeriesChart, {
-  ChartData,
-  ChartSeries,
-} from "components/ui/TimeSeriesChart";
+import { ChartSeries } from "components/ui/TimeSeriesChart";
 import { GraphQLClient } from "graphql-request";
 import {
   getMarket,
@@ -20,11 +17,9 @@ import {
   MarketPageIndexedData,
 } from "lib/gql/markets";
 import { getBaseAsset } from "lib/gql/pool";
-import { getAssetPriceHistory } from "lib/gql/prices";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
-import useMarketImageUrl from "lib/hooks/useMarketImageUrl";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
@@ -39,16 +34,21 @@ import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
 import Link from "next/link";
 import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
+import { graphQlEndpoint, ZTG } from "lib/constants";
 import MarketHeader from "components/markets/MarketHeader";
+import MarketChart from "components/markets/MarketChart";
+import {
+  getPriceHistory,
+  PriceHistory,
+} from "lib/hooks/queries/useMarketPriceHistory";
+import { filters } from "components/ui/TimeFilters";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
 });
 
 export async function getStaticPaths() {
-  const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
-  const client = new GraphQLClient(url);
+  const client = new GraphQLClient(graphQlEndpoint);
   const marketIds = await getRecentMarketIds(client);
 
   const paths = marketIds.map((market) => ({
@@ -59,49 +59,37 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
-  const client = new GraphQLClient(url);
+  const client = new GraphQLClient(graphQlEndpoint);
 
   const market = await getMarket(client, params.marketid);
-
-  const startDate = new Date(Number(market?.period.start)).toISOString();
-  const assetPrices = market?.outcomeAssets
-    ? await Promise.all(
-        market?.outcomeAssets?.map((asset) =>
-          getAssetPriceHistory(client, asset, startDate),
-        ),
-      )
-    : undefined;
 
   const chartSeries: ChartSeries[] = market?.categories?.map(
     (category, index) => {
       return {
         accessor: `v${index}`,
-        label: category.ticker.toUpperCase(),
+        label: category.name,
         color: category.color,
       };
     },
   );
-
-  const chartData: ChartData[] = assetPrices?.flatMap((prices, index) => {
-    return prices.map((price) => {
-      return {
-        t: new Date(price.timestamp).getTime(),
-        ["v" + index]: price.newPrice,
-      };
-    });
-  });
 
   const baseAsset =
     market?.pool != null
       ? await getBaseAsset(client, market.pool.poolId)
       : null;
 
+  const priceHistory = await getPriceHistory(
+    client,
+    market.marketId,
+    filters[1].interval,
+    filters[1].time,
+  );
+
   return {
     props: {
       indexedMarket: market ?? null,
       chartSeries: chartSeries ?? null,
-      chartData: chartData ?? null,
+      priceHistory: priceHistory ?? null,
       baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
     },
     revalidate: 10 * 60, //10mins
@@ -111,9 +99,9 @@ export async function getStaticProps({ params }) {
 const Market: NextPage<{
   indexedMarket: MarketPageIndexedData;
   chartSeries: ChartSeries[];
-  chartData: ChartData[];
+  priceHistory: PriceHistory[];
   baseAsset: string;
-}> = observer(({ indexedMarket, chartSeries, chartData, baseAsset }) => {
+}> = observer(({ indexedMarket, chartSeries, priceHistory, baseAsset }) => {
   const marketsStore = useMarketsStore();
   const router = useRouter();
   const { marketid } = router.query;
@@ -197,22 +185,23 @@ const Market: NextPage<{
             Market rejected: {marketSdkv2.rejectReason}
           </div>
         )}
-        <div className="flex justify-center py-ztg-50 mb-10 h-32">
+        <div className="flex justify-center my-10">
           {marketStage ? (
             <MarketTimer stage={marketStage} />
           ) : (
             <MarketTimerSkeleton />
           )}
         </div>
-        {chartData?.length > 0 && chartSeries ? (
-          <div className="-ml-ztg-25">
-            <TimeSeriesChart
-              data={chartData}
-              series={chartSeries}
-              yDomain={[0, 1]}
-              yUnits={baseAsset}
-            />
-          </div>
+        {priceHistory?.length > 0 &&
+        chartSeries &&
+        indexedMarket?.pool?.poolId ? (
+          <MarketChart
+            marketId={indexedMarket.marketId}
+            chartSeries={chartSeries}
+            initialData={priceHistory}
+            baseAsset={baseAsset}
+            poolCreationDate={indexedMarket?.pool?.createdAt}
+          />
         ) : (
           <></>
         )}
@@ -278,9 +267,7 @@ const Market: NextPage<{
           )}
           {indexedMarket.description?.length > 0 && (
             <>
-              <h3 className="text-center text-2xl font-semibold mb-5">
-                About Market
-              </h3>
+              <h3 className="text-center text-2xl mb-5">About Market</h3>
               <QuillViewer value={indexedMarket.description} />
             </>
           )}
@@ -288,9 +275,7 @@ const Market: NextPage<{
             marketStore={marketStore}
             onPoolDeployed={handlePoolDeployed}
           />
-          <h3 className="text-center text-2xl font-semibold mt-10">
-            Market Cast
-          </h3>
+          <h3 className="text-center text-2xl mt-10">Market Cast</h3>
           <MarketAddresses
             oracleAddress={indexedMarket.oracle}
             creatorAddress={indexedMarket.creator}
