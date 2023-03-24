@@ -23,7 +23,7 @@ const MenuLogo: FC<{
       <>
         <div className="flex flex-col items-center">
           <h1
-            className={`font-bold font-kanit text-xl ${
+            className={`font-kanit text-xl ${
               pathname === "/"
                 ? menuOpen
                   ? "text-black"

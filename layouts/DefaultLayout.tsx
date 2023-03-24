@@ -22,7 +22,7 @@ const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
   const store = useStore();
   const router = useRouter();
   useSubscribeBlockEvents();
-  const [trade, setTrade] = useState<TradeItem | null>(null);
+  const [tradeItem, setTradeItem] = useState<TradeItem | null>(null);
 
   const {
     width,
@@ -34,7 +34,7 @@ const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
 
   return (
     <div className="relative flex min-h-screen justify-evenly overflow-hidden">
-      <TradeItemContext.Provider value={{ data: trade, set: setTrade }}>
+      <TradeItemContext.Provider value={{ data: tradeItem, set: setTradeItem }}>
         {/* loads optimized fonts for global access */}
         <style jsx global>
           {`

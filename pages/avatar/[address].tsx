@@ -173,11 +173,11 @@ const AvatarPage = observer(() => {
         )}
       </AnimatePresence>
       <div className="mb-ztg-40">
-        <div className="flex">
+        <div className="flex flex-col sm:flex-row gap-6">
           <div className="relative rounded-full mr-ztg-40">
             <div
               style={{ overflow: "hidden" }}
-              className={`rounded-full overflow-hidden border-2 border-black ${
+              className={`w-fit rounded-full overflow-hidden border-2 border-black ${
                 isOwner && hasPendingItems && " border-yellow-500 border-solid"
               }`}
             >
@@ -235,16 +235,11 @@ const AvatarPage = observer(() => {
           </div>
 
           <div>
-            <h3 className="mb-ztg-14  text-ztg-[24px]">
-              <span className="mr-4">{name}</span>
-            </h3>
-
-            <h4 className="flex mb-ztg-20">
-              <div className="font-mono text-ztg-16-120 font-semibold mr-4">
-                {address}
-              </div>
-              <CopyIcon copyText={address} className="flex-grow" />
-            </h4>
+            <h3 className="mb-3.5 mr-1">{name}</h3>
+            <h5 className="flex break-all mb-5 gap-2">
+              {address}
+              <CopyIcon copyText={address} />
+            </h5>
 
             <div className="flex">
               <div className="flex flex-row py-ztg-15">
@@ -274,9 +269,7 @@ const AvatarPage = observer(() => {
           </div>
         </div>
       </div>
-      <h3 className="mb-ztg-40  text-ztg-28-120 font-semibold">
-        <span className="mr-4">Achievements</span>
-      </h3>
+      <h2 className="mb-10 mr-1">Achievements</h2>
       <p className="text-gray-600 mb-ztg-12">
         All badges earned for this account.{" "}
         <i>
@@ -347,10 +340,10 @@ const BadgeItem = (props: { item: Badge.IndexedBadge }) => {
           >
             <div className="flex mb-ztg-2">
               <div className="flex-1">
-                <h4 className="font-bold text-lg mb-3">
+                <h5 className="font-bold mb-3">
                   {capitalize(item.metadata_properties?.badge.value.rarity)}{" "}
                   Badge
-                </h4>
+                </h5>
               </div>
               <div
                 className={`rounded-md text-white inline-block text-sm mb-4 py-1 px-2 bg-${rarityBgColor} `}

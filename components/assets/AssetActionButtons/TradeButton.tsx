@@ -11,14 +11,14 @@ const TradeButton = ({
   assetId: ScalarAssetId | CategoricalAssetId;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const trade = useTradeItem();
+  const { data: tradeItem, set: setTradeItem } = useTradeItem();
 
   return (
     <>
       <button
         className="text-mariner font-semibold text-ztg-14-120"
         onClick={() => {
-          trade.set({
+          setTradeItem({
             assetId: assetId,
             action: "buy",
           });
@@ -27,11 +27,13 @@ const TradeButton = ({
       >
         Trade
       </button>
-      <Modal open={isOpen} onClose={() => setIsOpen(false)}>
-        <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
-          <TradeForm />
-        </Dialog.Panel>
-      </Modal>
+      {tradeItem && (
+        <Modal open={isOpen} onClose={() => setIsOpen(false)}>
+          <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
+            <TradeForm />
+          </Dialog.Panel>
+        </Modal>
+      )}
     </>
   );
 };
