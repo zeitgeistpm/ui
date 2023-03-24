@@ -37,6 +37,7 @@ const HeroSlider = ({
         animate && styles.fadeIn
       }`}
       onAnimationEnd={() => setAnimate(false)}
+      data-testid="heroSlider"
     >
       {banners.map((banner, index) => (
         <Image
