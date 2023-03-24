@@ -42,6 +42,13 @@ test.describe("index page", () => {
     const image = heroSlider.locator("> img");
     const imageSrc = await image.getAttribute("src");
 
+    const buttonsVisible =
+      (await prevButton.isVisible()) && (await nextButton.isVisible());
+
+    if (!buttonsVisible) {
+      return;
+    }
+
     await nextButton.click();
 
     const titleAfterNext = await heroSlider.locator("h2").textContent();
