@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useStore } from "lib/stores/Store";
+import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
 
 const PortfolioIndex: NextPage = observer(() => {
   const router = useRouter();
@@ -26,7 +27,14 @@ const PortfolioIndex: NextPage = observer(() => {
 
   return (
     <>
-      {noAddress === true ? <div>Connect wallet to view portfolio</div> : <></>}
+      {noAddress === true ? (
+        <EmptyPortfolio
+          headerText="No wallet connected"
+          bodyText="Connect your wallet to view your Portfolio"
+        />
+      ) : (
+        <></>
+      )}
     </>
   );
 });

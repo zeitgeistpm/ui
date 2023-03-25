@@ -6,12 +6,17 @@ import SDK from "@zeitgeistpm/sdk";
 import { useContext } from "react";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 import Decimal from "decimal.js";
-import { makeAutoObservable, runInAction, when } from "mobx";
+import { get, makeAutoObservable, runInAction, when } from "mobx";
 import type { Codec } from "@polkadot/types-codec/types";
 import validatorjs from "validatorjs";
 import { GraphQLClient } from "graphql-request";
 import { StoreContext } from "components/context/StoreContext";
-import { ZTG } from "lib/constants";
+import {
+  endpointOptions,
+  endpoints,
+  graphQlEndpoint,
+  ZTG,
+} from "lib/constants";
 import { isValidPolkadotAddress } from "lib/util";
 
 import { extractIndexFromErrorHex } from "../../lib/util/error-table";
@@ -56,11 +61,6 @@ interface Config {
   balances: {
     existentialDeposit: number;
   };
-}
-
-export interface ZTGInfo {
-  price: Decimal;
-  change: Decimal;
 }
 
 export default class Store {
@@ -120,14 +120,9 @@ export default class Store {
     this.showMobileMenu = !this.showMobileMenu;
   }
 
-  get isTestEnv() {
-    return process.env.NEXT_PUBLIC_TESTING_ENV === "true";
-  }
-
   constructor() {
     makeAutoObservable<this, "balanceSubscription">(this, {
       registerValidationRules: false,
-      isTestEnv: false,
       unsubscribeNewHeads: false,
       balanceSubscription: false,
     });
@@ -174,49 +169,17 @@ export default class Store {
     this.initGraphQlClient();
 
     this.userStore.checkIP();
-    try {
-      await this.initSDK(this.userStore.endpoint, this.userStore.gqlEndpoint);
-      await this.loadConfig();
-      const storedWalletId = this.userStore.walletId;
-
-      if (storedWalletId) {
-        this.wallets.initialize(storedWalletId);
-      }
-
-      this.registerValidationRules();
-
-      this.pools.init();
-      this.initializeMarkets();
-
-      runInAction(() => {
-        this.initialized = true;
-      });
-    } catch (err) {
-      console.warn("Can't initialize Store with error: ", err);
-      this.userStore.setNextBestEndpoints(
-        this.userStore.endpoint,
-        this.userStore.gqlEndpoint,
-      );
-      this.initialize();
-    }
-  }
-
-  async connectNewSDK(endpoint: string, gqlEndpoint: string) {
-    await this.initSDK(endpoint, gqlEndpoint);
-
-    this.unsubscribeNewHeads();
-    this.exchangeStore.destroy();
-
+    await this.initSDK(endpointOptions[0].value, graphQlEndpoint);
     await this.loadConfig();
-    this.initGraphQlClient();
+    const storedWalletId = this.userStore.walletId;
 
-    this.markets.unsubscribeAll();
-
-    if (this.wallets.connected) {
-      this.wallets.subscribeToBalanceChanges();
+    if (storedWalletId) {
+      this.wallets.initialize(storedWalletId);
     }
 
-    await this.pools.init();
+    this.registerValidationRules();
+
+    this.pools.init();
     this.initializeMarkets();
 
     runInAction(() => {
@@ -225,23 +188,9 @@ export default class Store {
   }
 
   async initSDK(endpoint: string, graphQlEndpoint: string) {
-    const isLocalEndpoint =
-      endpoint.includes("localhost") || endpoint.includes("127.0.0.1");
-    const ipfsClientUrl =
-      this.isTestEnv || isLocalEndpoint ? "http://127.0.0.1:5001" : undefined;
     const sdk = await SDK.initialize(endpoint, {
       graphQlEndpoint,
-      ipfsClientUrl,
     });
-
-    if (sdk.graphQLClient != null) {
-      this.userStore.setGqlEndpoint(graphQlEndpoint);
-    } else {
-      //might makes sense to throw an error in the future if we have alternative indexers
-      console.error("Graphql service not available " + graphQlEndpoint);
-    }
-
-    this.userStore.setEndpoint(endpoint);
 
     runInAction(() => {
       this.sdk = sdk;
@@ -250,9 +199,7 @@ export default class Store {
   }
 
   private initGraphQlClient() {
-    if (this.userStore.gqlEndpoint && this.userStore.gqlEndpoint.length > 0) {
-      this.graphQLClient = new GraphQLClient(this.userStore.gqlEndpoint, {});
-    }
+    this.graphQLClient = new GraphQLClient(graphQlEndpoint, {});
   }
 
   private async loadConfig() {

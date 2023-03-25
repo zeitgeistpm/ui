@@ -676,7 +676,7 @@ const CreatePage: NextPage = observer(() => {
   return (
     <form data-test="createMarketForm">
       <InfoBoxes />
-      <h2 className="header mb-ztg-23" data-test="createMarketHeader">
+      <h2 className="mb-4" data-test="createMarketHeader">
         Create Market
       </h2>
       <MarketFormCard header="1. Market name*">

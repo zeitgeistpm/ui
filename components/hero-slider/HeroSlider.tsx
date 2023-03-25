@@ -1,12 +1,12 @@
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { HeroControls } from "./HeroControls";
 import { HeroSlide } from "./HeroSlide";
 import styles from "./HeroSlider.module.css";
-import Image from "next/image";
-
-import { moveSlider } from "./slider-controls";
 import { Banner } from "lib/cms/get-banners";
-import { IGetPlaiceholderReturn } from "plaiceholder";
+import { useSliderControls } from "lib/hooks/slides";
+import { usePrevious } from "lib/hooks/usePrevious";
+import { isNumber } from "lodash-es";
 
 const HeroSlider = ({
   banners,
@@ -15,22 +15,21 @@ const HeroSlider = ({
   banners: Banner[];
   bannerPlaceHolders: string[];
 }) => {
-  const [currentSlide, setCurrentSlide] = useState<number>(0);
-  const [animate, setAnimate] = useState<boolean>(false);
-  const slidesLength = banners.length;
+  const slider = useSliderControls({
+    count: banners.length,
+    autoplay: 15 * 1000,
+    pauseOnUserInteraction: 45 * 1000,
+  });
 
-  // autoplay
+  const [animate, setAnimate] = useState<boolean>(false);
+
+  const prevSlide = usePrevious(slider.currentSlide);
+
   useEffect(() => {
-    if (banners.length > 1) {
-      const ref = setTimeout(() => {
-        setAnimate(true);
-        moveSlider("next", currentSlide, setCurrentSlide, slidesLength);
-      }, 10000);
-      return () => {
-        clearTimeout(ref);
-      };
+    if (isNumber(prevSlide) && prevSlide !== slider.currentSlide) {
+      setAnimate(true);
     }
-  }, [currentSlide]);
+  }, [slider.currentSlide]);
 
   return (
     <section
@@ -38,33 +37,28 @@ const HeroSlider = ({
         animate && styles.fadeIn
       }`}
       onAnimationEnd={() => setAnimate(false)}
+      data-testid="heroSlider"
     >
-      <Image
-        src={banners[currentSlide].imageUrl}
-        alt={`Image depicting ${banners[currentSlide].title}`}
-        placeholder="blur"
-        blurDataURL={bannerPlaceHolders[currentSlide]}
-        sizes="100vw"
-        fill
-        style={{
-          objectFit: "cover",
-          objectPosition: `${banners[currentSlide].imageAlignment} 50%`,
-        }}
-      />
-      <div className="h-full relative container-fluid">
-        <HeroSlide
-          banner={banners[currentSlide]}
-          animate={animate}
-          setAnimate={setAnimate}
+      {banners.map((banner, index) => (
+        <Image
+          priority
+          src={banner.imageUrl}
+          alt={`Image depicting ${banner.title}`}
+          placeholder="blur"
+          blurDataURL={bannerPlaceHolders[index]}
+          sizes="100vw"
+          fill
+          style={{
+            display: index === slider.currentSlide ? "block" : "none",
+            objectFit: "cover",
+            objectPosition: `${banner.imageAlignment} 50%`,
+          }}
         />
+      ))}
+      <div className="h-full relative container-fluid">
+        <HeroSlide banner={banners[slider.currentSlide]} />
         {banners.length > 1 && (
-          <HeroControls
-            slides={banners}
-            slidesLength={slidesLength}
-            currentSlide={currentSlide}
-            setCurrentSlide={setCurrentSlide}
-            setAnimate={setAnimate}
-          />
+          <HeroControls slides={banners} slider={slider} />
         )}
       </div>
     </section>

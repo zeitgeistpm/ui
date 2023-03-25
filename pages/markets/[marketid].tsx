@@ -9,10 +9,7 @@ import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
 import MarketImage from "components/ui/MarketImage";
-import TimeSeriesChart, {
-  ChartData,
-  ChartSeries,
-} from "components/ui/TimeSeriesChart";
+import { ChartSeries } from "components/ui/TimeSeriesChart";
 import { GraphQLClient } from "graphql-request";
 import {
   getMarket,
@@ -20,7 +17,6 @@ import {
   MarketPageIndexedData,
 } from "lib/gql/markets";
 import { getBaseAsset } from "lib/gql/pool";
-import { getAssetPriceHistory } from "lib/gql/prices";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
@@ -38,23 +34,21 @@ import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
 import Link from "next/link";
 import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
+import { graphQlEndpoint, ZTG } from "lib/constants";
 import MarketHeader from "components/markets/MarketHeader";
 import MarketChart from "components/markets/MarketChart";
 import {
   getPriceHistory,
   PriceHistory,
-  useMarketPriceHistory,
 } from "lib/hooks/queries/useMarketPriceHistory";
-import TimeFilters, { filters } from "components/ui/TimeFilters";
+import { filters } from "components/ui/TimeFilters";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
 });
 
 export async function getStaticPaths() {
-  const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
-  const client = new GraphQLClient(url);
+  const client = new GraphQLClient(graphQlEndpoint);
   const marketIds = await getRecentMarketIds(client);
 
   const paths = marketIds.map((market) => ({
@@ -65,8 +59,7 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const url = process.env.NEXT_PUBLIC_SSR_INDEXER_URL;
-  const client = new GraphQLClient(url);
+  const client = new GraphQLClient(graphQlEndpoint);
 
   const market = await getMarket(client, params.marketid);
 
@@ -274,9 +267,7 @@ const Market: NextPage<{
           )}
           {indexedMarket.description?.length > 0 && (
             <>
-              <h3 className="text-center text-2xl font-semibold mb-5">
-                About Market
-              </h3>
+              <h3 className="text-center text-2xl mb-5">About Market</h3>
               <QuillViewer value={indexedMarket.description} />
             </>
           )}
@@ -284,9 +275,7 @@ const Market: NextPage<{
             marketStore={marketStore}
             onPoolDeployed={handlePoolDeployed}
           />
-          <h3 className="text-center text-2xl font-semibold mt-10">
-            Market Cast
-          </h3>
+          <h3 className="text-center text-2xl mt-10">Market Cast</h3>
           <MarketAddresses
             oracleAddress={indexedMarket.oracle}
             creatorAddress={indexedMarket.creator}

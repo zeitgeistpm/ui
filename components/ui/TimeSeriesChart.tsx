@@ -33,6 +33,14 @@ export interface ChartData {
 }
 
 const ChartToolTip = observer((props) => {
+  const items = props.series
+    ?.map((s, index) => ({
+      color: s.color,
+      label: s.label,
+      value: new Decimal(props.payload[index]?.value ?? 0),
+    }))
+    .sort((a, b) => b.value.minus(a.value).toNumber());
+
   return (
     <>
       {props.label !== undefined &&
@@ -55,21 +63,18 @@ const ChartToolTip = observer((props) => {
               }).format(new Date(props.label))}
             </span>
             <div className="mt-ztg-13">
-              {props.series?.map((asset, index) => (
+              {items?.map((item, index) => (
                 <div key={index} className="flex flex-col mt-1">
                   <div className="flex items-center">
                     <div
                       className="bg-black w-[8px] h-[8px] rounded-full"
-                      style={{ backgroundColor: asset.color }}
+                      style={{ backgroundColor: item.color }}
                     ></div>
                     <div className="font-semibold capitalize ml-[6px]">
-                      {asset.label}
+                      {item.label}
                     </div>
                   </div>
-                  <div>
-                    {new Decimal(props.payload[index]?.value ?? 0).toFixed(3) +
-                      ` ${props.yUnits}`}
-                  </div>
+                  <div>{`${item.value.toFixed(3)} ${props.yUnits}`}</div>
                 </div>
               ))}
             </div>

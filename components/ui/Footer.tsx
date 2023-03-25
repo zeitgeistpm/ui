@@ -56,9 +56,9 @@ const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
         subscribe(formField.value);
       }}
     >
-      <h3 className="text-center md:text-start text-ztg-16-150 font-semibold mb-ztg-30">
+      <h6 className="text-center md:text-start font-semibold mb-ztg-30">
         {title}
-      </h3>
+      </h6>
       <div className="flex gap-3 items-center h-ztg-40 mb-auto w-full">
         <input
           value={newsletterSubForm.$("email").value}
@@ -93,7 +93,7 @@ const FooterMenu: FC<FooterMenuProps> = observer(
         className={` ${className}
           `}
       >
-        <h3 className="font-semibold">{title}</h3>
+        <h6 className="font-semibold">{title}</h6>
         <div className="text-ztg-14-150 flex flex-col text-sky-600">
           {links.map(({ text, href }, idx) => {
             return (

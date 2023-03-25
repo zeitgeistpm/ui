@@ -41,33 +41,3 @@ export const mergeR = <T extends Record<string, any>, K extends keyof T>(
     },
   };
 };
-
-export const mergeL = <T extends Record<string, any>, K extends keyof T>(
-  dataA: Normalized<T, K>,
-  dataB: Normalized<T, K>,
-): Normalized<T, K> => {
-  return {
-    ids: [...new Set([...dataB.ids, ...dataA.ids])],
-    byId: {
-      ...dataB.byId,
-      ...dataA.byId,
-    },
-  };
-};
-
-export const remove = <T extends Record<string, any>, K extends keyof T>(
-  data: Normalized<T, K>,
-  removeId: T[K] | T[K][],
-): Normalized<T, K> => {
-  const newIds = data.ids.filter((id) =>
-    Array.isArray(removeId) ? removeId.indexOf(id) === -1 : id !== removeId,
-  );
-  return {
-    ids: newIds,
-    byId: newIds.reduce<
-      Partial<{
-        [K in keyof T]: T;
-      }>
-    >((byId, id) => ({ ...byId, [id]: data.byId[id] }), {}),
-  };
-};

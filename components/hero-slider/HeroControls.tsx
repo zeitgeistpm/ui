@@ -1,21 +1,19 @@
+import { Banner } from "lib/cms/get-banners";
+import { UseSliderControls } from "lib/hooks/slides";
 import { FC } from "react";
 import { ChevronLeft, ChevronRight } from "react-feather";
-import { moveSlider } from "./slider-controls";
-import { HeroControlsProps } from "./slider-types";
 
-export const HeroControls: FC<HeroControlsProps> = ({
-  slides,
-  slidesLength,
-  currentSlide,
-  setAnimate,
-  setCurrentSlide,
-}) => {
+export interface HeroControlsProps {
+  slides: Banner[];
+  slider: UseSliderControls;
+}
+
+export const HeroControls: FC<HeroControlsProps> = ({ slides, slider }) => {
   return (
     <div className="flex items-center justify-center md:justify-end w-full mx-auto gap-1 pb-16 absolute bottom-0 right-0 px-[inherit]">
       <button
         onClick={() => {
-          setAnimate(true);
-          moveSlider("next", currentSlide, setCurrentSlide, slidesLength);
+          slider.next(true);
         }}
         className={`bg-black border border-white flex items-center justify-center w-[40px] h-[40px] rounded-full`}
       >
@@ -25,17 +23,10 @@ export const HeroControls: FC<HeroControlsProps> = ({
         {slides.map((slide, index) => (
           <span
             onClick={() => {
-              setAnimate(true);
-              moveSlider(
-                "goto",
-                currentSlide,
-                setCurrentSlide,
-                slidesLength,
-                index,
-              );
+              slider.goto(index, true);
             }}
             className={`cursor-pointer text-[48px] px-1 ${
-              index === currentSlide ? "text-white" : "opacity-50"
+              index === slider.currentSlide ? "text-white" : "opacity-50"
             }`}
             key={index}
           >
@@ -45,8 +36,7 @@ export const HeroControls: FC<HeroControlsProps> = ({
       </div>
       <button
         onClick={() => {
-          setAnimate(true);
-          moveSlider("prev", currentSlide, setCurrentSlide, slidesLength);
+          slider.prev(true);
         }}
         className={`bg-black border border-white flex items-center justify-center w-[40px] h-[40px] rounded-full ztg-transition`}
       >

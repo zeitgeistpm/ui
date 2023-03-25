@@ -1,9 +1,9 @@
 import React, { FC } from "react";
+import { observer } from "mobx-react";
 import Link from "next/link";
 import Logo from "../icons/ZeitgeistIcon";
 import { useStore } from "lib/stores/Store";
 import { useRouter } from "next/router";
-import { observer } from "mobx-react";
 
 const MenuLogo: FC<{
   menuOpen: boolean;
@@ -23,7 +23,7 @@ const MenuLogo: FC<{
       <>
         <div className="flex flex-col items-center">
           <h1
-            className={`font-bold font-kanit text-xl ${
+            className={`font-kanit text-xl ${
               pathname === "/"
                 ? menuOpen
                   ? "text-black"

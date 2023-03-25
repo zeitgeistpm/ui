@@ -198,7 +198,7 @@ const MarketAssetDetails = observer(
       <div>
         {marketStore?.is("Disputed") && authReportNumberOrId != null && (
           <>
-            <div className="sub-header mt-ztg-40">Authorized Report</div>
+            <h4 className="mt-10">Authorized Report</h4>
             {marketStore.type === "categorical" ? (
               <Table
                 columns={columns}
@@ -222,7 +222,7 @@ const MarketAssetDetails = observer(
         )}
         {marketStore?.is("Reported") && (
           <>
-            <div className="sub-header mt-ztg-40">Reported Outcome</div>
+            <h4 className="mt-10">Reported Outcome</h4>
             {marketStore.type === "categorical" ? (
               <Table
                 columns={columns}
@@ -238,7 +238,7 @@ const MarketAssetDetails = observer(
         )}
         {marketStore?.is("Disputed") && (
           <>
-            <div className="sub-header mt-ztg-40">Disputed Outcome</div>
+            <h4 className="mt-10">Disputed Outcome</h4>
             {marketStore.type === "categorical" ? (
               <Table
                 columns={columns}
@@ -254,7 +254,7 @@ const MarketAssetDetails = observer(
         )}
         {marketStore?.is("Resolved") ? (
           <>
-            <div className="sub-header mt-ztg-40">Winning Outcome</div>
+            <h4 className="mt-10">Winning Outcome</h4>
             {marketStore.type === "categorical" ? (
               <Table
                 columns={columns}
