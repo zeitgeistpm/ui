@@ -1,15 +1,5 @@
-import {
-  Context,
-  create$,
-  createStorage,
-  MarketMetadata,
-  Sdk,
-  ZeitgeistIpfs,
-} from "@zeitgeistpm/sdk-next";
-import { IPFS } from "@zeitgeistpm/web3.storage";
-import { SupportedParachain } from "lib/types";
-import { endpoints } from "lib/constants";
-import Store, { useStore } from "lib/stores/Store";
+import { Context, create$, Sdk, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
+import { endpointOptions as endpoints, graphQlEndpoint } from "lib/constants";
 import { memoize } from "lodash-es";
 import { useEffect, useState } from "react";
 import { Subscription } from "rxjs";
@@ -36,15 +26,18 @@ export type UseSdkv2 = [
  * @returns UseSdkv2
  */
 export const useSdkv2 = (): UseSdkv2 => {
-  const store = useStore();
   const [sub, setSub] = useState<Subscription>();
   const [sdk, setSdk] = useState<Sdk<Context> | null>();
 
-  const id = identify(store);
+  const id = identify(
+    endpoints.map((e) => e.value),
+    graphQlEndpoint,
+  );
   const prevId = usePrevious(id);
 
   useEffect(() => {
-    if ((id && store.userStore.endpoint) || store.userStore.gqlEndpoint) {
+    const endpointVals = endpoints.map((e) => e.value);
+    if ((id && endpoints) || graphQlEndpoint) {
       if (sub && prevId && id !== prevId) {
         setTimeout(() => {
           init.cache.delete(prevId);
@@ -52,8 +45,7 @@ export const useSdkv2 = (): UseSdkv2 => {
         }, 500);
       }
 
-      const sdk$ = init(store);
-      //@ts-ignore todo: adjust type in sdk
+      const sdk$ = init(endpointVals, graphQlEndpoint);
       const nextSub = sdk$.subscribe(setSdk);
 
       setSub(nextSub);
@@ -76,39 +68,14 @@ export const useSdkv2 = (): UseSdkv2 => {
  * @returns MemoizedFunction & Sdk<Context>
  */
 const init = memoize(
-  (store: Store) => {
-    const { endpoint, gqlEndpoint } = store.userStore;
-    const isLocalEndpoint =
-      endpoint.includes("localhost") || endpoint.includes("127.0.0.1");
-    if (isLocalEndpoint) {
-      return create$({
-        provider: endpoint,
-        indexer: gqlEndpoint,
-        storage: createStorage<MarketMetadata>(
-          IPFS.storage({ node: { url: "http://localhost:5001 " } }),
-        ),
-      });
-    } else {
-      const chain = endpoints.find(
-        (e) => e.value === store.userStore.endpoint,
-      ).parachain;
-
-      const backupRPCs = endpoints
-        .filter(
-          (endpoint) =>
-            endpoint.parachain === chain &&
-            store.userStore.endpoint !== endpoint.value,
-        )
-        .map((e) => e.value);
-
-      return create$({
-        provider: [store.userStore.endpoint, ...backupRPCs],
-        indexer: store.userStore.gqlEndpoint,
-        storage: ZeitgeistIpfs(),
-      });
-    }
+  (endpoints: string[], graphQlEndpoint: string) => {
+    return create$({
+      provider: endpoints,
+      indexer: graphQlEndpoint,
+      storage: ZeitgeistIpfs(),
+    });
   },
-  (store) => identify(store) ?? "--",
+  (endpoints, graphQlEndpoint) => identify(endpoints, graphQlEndpoint) ?? "--",
 );
 
 /**
@@ -117,7 +84,7 @@ const init = memoize(
  * @param store Store
  * @returns
  */
-const identify = (store: Store): string | null =>
-  store.userStore.endpoint || store.userStore.gqlEndpoint
-    ? `${store.userStore.endpoint}:${store.userStore.gqlEndpoint}`
-    : null;
+const identify = (
+  endpoints: string[],
+  graphQlEndpoint: string,
+): string | null => `${endpoints.join(",")}:${graphQlEndpoint}`;

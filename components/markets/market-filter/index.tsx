@@ -186,7 +186,7 @@ const MarketFilterSelection = ({
 }) => {
   const [activeFilters, setActiveFilters] = useState<MarketFilter[]>();
   const [activeOrdering, setActiveOrdering] = useState<MarketsOrderBy>();
-  const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>(false);
+  const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
   const portalRef = useRef<HTMLDivElement>(null);
 
   const queryState = useMarketsUrlQuery();

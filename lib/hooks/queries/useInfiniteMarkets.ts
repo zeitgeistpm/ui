@@ -1,10 +1,5 @@
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  Context,
-  IndexerContext,
-  isIndexedSdk,
-  Market,
-} from "@zeitgeistpm/sdk-next";
+import { IndexerContext, isIndexedSdk, Market } from "@zeitgeistpm/sdk-next";
 import { MarketOrderByInput } from "@zeitgeistpm/indexer";
 import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets";
 import objectHash from "object-hash";
@@ -68,7 +63,12 @@ export const useInfiniteMarkets = (
   const fetcher = async ({
     pageParam = 0,
   }): Promise<{ data: QueryMarketData[]; next: number | boolean }> => {
-    if (!isIndexedSdk(sdk) || filters == null) {
+    if (
+      !isIndexedSdk(sdk) ||
+      filters == null ||
+      orderBy == null ||
+      withLiquidityOnly == null
+    ) {
       return {
         data: [],
         next: false,
@@ -86,12 +86,10 @@ export const useInfiniteMarkets = (
         status_in: statuses.length === 0 ? undefined : statuses,
         tags_containsAny: tags.length === 0 ? undefined : tags,
         pool_isNull: withLiquidityOnly ? false : undefined,
-        pool:
-          currencies.length === 0
-            ? undefined
-            : {
-                baseAsset_in: currencies,
-              },
+        pool: {
+          ztgQty_gt: withLiquidityOnly ? 0 : undefined,
+          baseAsset_in: currencies.length > 0 ? currencies : undefined,
+        },
       },
       offset: !pageParam ? 0 : limit * pageParam,
       limit: limit,
@@ -126,9 +124,13 @@ export const useInfiniteMarkets = (
   const query = useInfiniteQuery({
     queryKey: [id, rootKey, hashFilters(filters), orderBy, withLiquidityOnly],
     queryFn: fetcher,
-    enabled: Boolean(sdk) && isIndexedSdk(sdk),
+    enabled:
+      Boolean(sdk) &&
+      isIndexedSdk(sdk) &&
+      filters !== undefined &&
+      orderBy !== undefined &&
+      withLiquidityOnly !== undefined,
     getNextPageParam: (lastPage) => lastPage.next,
-    keepPreviousData: true,
     onSuccess(data) {
       data.pages
         .flatMap((p) => p.data)

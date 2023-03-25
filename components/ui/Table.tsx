@@ -1,7 +1,6 @@
 import { Skeleton } from "@material-ui/lab";
 import TableChart from "components/ui/TableChart";
 import { useEvent } from "lib/hooks";
-import { useStore } from "lib/stores/Store";
 import { formatNumberLocalized } from "lib/util";
 import { observer } from "mobx-react-lite";
 import { ReactNode, useEffect, useRef, useState } from "react";
@@ -314,7 +313,6 @@ const Table = observer(
     const tableRef = useRef<HTMLTableElement>();
     const loadMoreRef = useRef();
     const [isOverflowing, setIsOverflowing] = useState<boolean>();
-    const store = useStore();
     const windowResizeEvent = useEvent(
       typeof window !== "undefined" ? window : undefined,
       "resize",
@@ -359,19 +357,8 @@ const Table = observer(
     };
 
     useEffect(() => {
-      if (
-        store.rightDrawerAnimating === false &&
-        store.leftDrawerAnimating === false
-      ) {
-        calcOverflow();
-      }
-    }, [
-      store.leftDrawerClosed,
-      store.rightDrawerClosed,
-      store.leftDrawerAnimating,
-      store.rightDrawerAnimating,
-      windowResizeEvent,
-    ]);
+      calcOverflow();
+    }, [windowResizeEvent, rows]);
 
     const calcOverflow = () => {
       if (tableRef?.current) {

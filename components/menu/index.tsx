@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { observer } from "mobx-react";
 import SideMenu from "./SideMenu";
 import MobileMenu from "components/menu/MobileMenu";
 import { Menu, X } from "react-feather";
@@ -12,7 +13,7 @@ const AccountButton = dynamic(() => import("../account/AccountButton"), {
   ssr: false,
 });
 
-const TopBar = () => {
+const TopBar = observer(() => {
   const { pathname } = useRouter();
 
   const [navbarBGColor, setNavbarBGColor] =
@@ -56,7 +57,7 @@ const TopBar = () => {
 
   return (
     <div
-      className={`w-full py-7 fixed z-40 transition-all duration-300 bg-${navbarBGColor} ${
+      className={`w-full py-3.5 fixed z-40 transition-all duration-300 bg-${navbarBGColor} ${
         pathname === "/" ? "border-b-0" : "border-b border-gray-200"
       }`}
     >
@@ -88,6 +89,6 @@ const TopBar = () => {
       <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
     </div>
   );
-};
+});
 
 export default TopBar;

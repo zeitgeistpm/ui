@@ -122,27 +122,27 @@ const LiquidityPools: NextPage = observer(() => {
 
   return (
     <div data-testid="liquidityPage">
-      <div className="flex mb-ztg-20">
-        <div className="px-4 py-6 bg-sky-100 dark:bg-black rounded-ztg-10 w-1/3 mr-4">
-          <h3 className="bg-gray-200 dark:bg-gray-800 rounded-3xl py-1 px-3 font-bold text-sm inline-block mb-3">
+      <div className="mb-ztg-20 grid sm:grid-cols-3 grid-cols-2 gap-[20px]">
+        <div className="px-4 py-6 bg-sky-100 rounded-ztg-10 min-h-[165px]">
+          <h3 className="bg-gray-200 rounded-3xl py-1 px-3 text-sm inline-block mb-3">
             Total Value
           </h3>
-          <div className="font-bold font-mono px-1 text-xl mb-2">
+          <div className="font-bold px-1 text-xl mb-2">
             {formatNumberLocalized(totalLiquidity.div(ZTG).toNumber())} ZTG
           </div>
-          <div className="font-mono px-1 text-sm text-gray-600">
+          <div className="px-1 text-sm text-gray-600">
             ≈ {formatNumberLocalized(totalLiquidityValue.toNumber())} USD
           </div>
         </div>
 
-        <div className="px-4 py-6 bg-sky-100 dark:bg-black rounded-ztg-10 w-1/3 mr-4">
-          <h3 className="bg-gray-200 dark:bg-gray-800 rounded-3xl py-1 px-3 font-bold text-sm inline-block mb-3">
+        <div className="px-4 py-6 bg-sky-100 rounded-ztg-10 min-h-[165px]">
+          <h3 className="bg-gray-200 rounded-3xl py-1 px-3 text-sm inline-block mb-3">
             Active Markets
           </h3>
-          <div className="font-bold font-mono px-1 text-xl mb-2">
+          <div className="font-bold px-1 text-xl mb-2">
             {activeMarketCount ?? 0}
           </div>
-          <div className="font-mono px-1 text-sm text-gray-600">
+          <div className="px-1 text-sm text-gray-600">
             Currently open markets.
           </div>
         </div>
@@ -150,24 +150,22 @@ const LiquidityPools: NextPage = observer(() => {
         <a
           href={"https://docs.zeitgeist.pm/docs/learn/liquidity"}
           target="_blank"
-          className="relative px-4 py-6 bg-ztg-blue rounded-ztg-10 w-1/3 cursor-pointer hover:scale-105 transition-all"
+          className="relative px-4 py-6 bg-ztg-blue rounded-ztg-10 cursor-pointer hover:scale-105 transition-all col-span-2 sm:col-span-1"
         >
           <div className="absolute top-2 right-4 text-gray-50">
             <AiOutlineRead size={22} />
           </div>
-          <h3 className="bg-gray-100 dark:bg-gray-800 rounded-3xl py-1 px-3 font-bold text-sm inline-block mb-3">
+          <h3 className="bg-gray-100 rounded-3xl py-1 px-3 text-sm inline-block mb-3">
             Learn & Earn
           </h3>
-          <div className="font-bold text-gray-100 font-mono px-1 text-xl mb-2">
-            Liquidity Pools
-          </div>
-          <div className="font-mono px-1 text-sm text-gray-200">
+          <h3 className="text-gray-100 px-1 mb-2">Liquidity Pools</h3>
+          <div className="px-1 text-sm text-gray-200">
             Learn about earning ZTG by providing liquidity.
           </div>
         </a>
       </div>
 
-      <h2 className="mb-ztg-20  text-[24px] font-semibold">Market Pools</h2>
+      <h2 className="mb-5">Market Pools</h2>
 
       <Table
         data={tableData}
