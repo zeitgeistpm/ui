@@ -17,7 +17,6 @@ import validatorjs from "validatorjs";
 import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 import { isAsset, ztgAsset } from "../types";
 import Wallets from "./wallets";
-import CourtStore from "./CourtStore";
 import ExchangeStore from "./ExchangeStore";
 import MarketsStore from "./MarketsStore";
 import NavigationStore from "./NavigationStore";
@@ -61,7 +60,6 @@ export default class Store {
   notificationStore = new NotificationStore();
   navigationStore = new NavigationStore(this);
   exchangeStore = new ExchangeStore(this);
-  courtStore: CourtStore;
   wallets = new Wallets(this);
 
   markets = new MarketsStore(this);
