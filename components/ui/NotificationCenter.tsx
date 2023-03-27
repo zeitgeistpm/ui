@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useNotificationStore } from "lib/stores/NotificationStore";
-import { useUserStore } from "lib/stores/UserStore";
 import { NotificationType } from "lib/types";
 import { observer } from "mobx-react";
 import React, { FC } from "react";
@@ -14,8 +13,6 @@ const NotificationCard: FC<{
   type: NotificationType;
   dataTest?: string;
 }> = observer(({ close, timer, lifetime, content, type, dataTest }) => {
-  const userStore = useUserStore();
-
   const getColor = (type: NotificationType) => {
     switch (type) {
       case "Success":
@@ -39,24 +36,13 @@ const NotificationCard: FC<{
   };
 
   const getGradient = (type: NotificationType) => {
-    if (userStore.theme === "dark") {
-      switch (type) {
-        case "Success":
-          return "linear-gradient(90deg,rgba(112, 199, 3, 0.3) 0%,rgba(0, 0, 0, 0) 100%),linear-gradient(0deg, #11161f, #11161f)";
-        case "Info":
-          return "linear-gradient(90deg, rgba(0, 160, 250, 0.3) 0%, rgba(0, 0, 0, 0) 100%),linear-gradient(0deg, #11161F, #11161F)";
-        case "Error":
-          return "linear-gradient(90deg, rgba(233, 3, 3, 0.3) 0%, rgba(0, 0, 0, 0) 100%),linear-gradient(0deg, #11161F, #11161F)";
-      }
-    } else {
-      switch (type) {
-        case "Success":
-          return "linear-gradient(90deg, rgba(112, 199, 3, 0.2) 0%, rgba(0, 0, 0, 0) 100%),linear-gradient(0deg, #FFFFFF, #FFFFFF)";
-        case "Info":
-          return "linear-gradient(90deg, rgba(0, 160, 250, 0.2) 0%, rgba(0, 0, 0, 0) 100%),linear-gradient(0deg, #FFFFFF, #FFFFFF)";
-        case "Error":
-          return "linear-gradient(90deg, rgba(233, 3, 3, 0.2) 0%, rgba(0, 0, 0, 0) 100%),linear-gradient(0deg, #FFFFFF, #FFFFFF)";
-      }
+    switch (type) {
+      case "Success":
+        return "linear-gradient(90deg, rgba(112, 199, 3, 0.2) 0%, rgba(0, 0, 0, 0) 100%),linear-gradient(0deg, #FFFFFF, #FFFFFF)";
+      case "Info":
+        return "linear-gradient(90deg, rgba(0, 160, 250, 0.2) 0%, rgba(0, 0, 0, 0) 100%),linear-gradient(0deg, #FFFFFF, #FFFFFF)";
+      case "Error":
+        return "linear-gradient(90deg, rgba(233, 3, 3, 0.2) 0%, rgba(0, 0, 0, 0) 100%),linear-gradient(0deg, #FFFFFF, #FFFFFF)";
     }
   };
 

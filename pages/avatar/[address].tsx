@@ -1,39 +1,38 @@
-import {
-  useInventoryManagement,
-  useAvatarContext,
-  ZeitgeistAvatar,
-  UseInventoryManagement,
-} from "@zeitgeistpm/avatara-react";
-import Link from "next/link";
 import { formatBalance } from "@polkadot/util";
+import { encodeAddress } from "@polkadot/util-crypto";
 import { Avatar, Badge, Tarot } from "@zeitgeistpm/avatara-nft-sdk";
+import { PendingInventoryItem } from "@zeitgeistpm/avatara-nft-sdk/dist/core/inventory";
+import {
+  useAvatarContext,
+  useInventoryManagement,
+  UseInventoryManagement,
+  ZeitgeistAvatar,
+} from "@zeitgeistpm/avatara-react";
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
-import Checkbox from "components/ui/Checkbox";
+import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import DiscordIcon from "components/icons/DiscordIcon";
 import TwitterIcon from "components/icons/TwitterIcon";
+import Checkbox from "components/ui/Checkbox";
 import CopyIcon from "components/ui/CopyIcon";
-import { encodeAddress } from "@polkadot/util-crypto";
+import { AnimatePresence, motion } from "framer-motion";
+import { ZTG } from "lib/constants";
+import { useIdentity } from "lib/hooks/queries/useIdentity";
+import { useLocalStorage } from "lib/hooks/useLocalStorage";
 import { useModalStore } from "lib/stores/ModalStore";
+import { useNotificationStore } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
-import { useUserStore } from "lib/stores/UserStore";
+import { shortenAddress } from "lib/util";
+import { delay } from "lib/util/delay";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
+import { capitalize } from "lodash";
 import { observer } from "mobx-react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
+import { AiFillFire, AiFillInfoCircle } from "react-icons/ai";
 import { BsGearFill } from "react-icons/bs";
-import { AiFillFire } from "react-icons/ai";
 import { IoIosNotifications, IoIosWarning } from "react-icons/io";
-import { AiFillInfoCircle } from "react-icons/ai";
 import Loader from "react-spinners/PulseLoader";
-import { useNotificationStore } from "lib/stores/NotificationStore";
-import { capitalize } from "lodash";
-import { motion, AnimatePresence } from "framer-motion";
-import { shortenAddress } from "lib/util";
-import { PendingInventoryItem } from "@zeitgeistpm/avatara-nft-sdk/dist/core/inventory";
-import { ZTG } from "lib/constants";
-import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import { extrinsicCallback, signAndSend } from "lib/util/tx";
-import { delay } from "lib/util/delay";
-import { useIdentity } from "lib/hooks/queries/useIdentity";
 
 const AvatarPage = observer(() => {
   const router = useRouter();
@@ -43,8 +42,6 @@ const AvatarPage = observer(() => {
   const address = router.query.address as string;
   const zeitAddress = encodeAddress(router.query.address as string, 73);
 
-  const { toggleHelpNotification, helpnotifications } = useUserStore();
-
   const modalStore = useModalStore();
 
   const [loading, setLoading] = useState(true);
@@ -53,6 +50,11 @@ const AvatarPage = observer(() => {
   const [hasCrossed, setHasCrossed] = useState(false);
 
   const [earnedBadges, setEarnedBadges] = useState<Badge.IndexedBadge[]>([]);
+
+  const [showKsmInfo, setShowKsmInfo] = useLocalStorage(
+    "avatar-page:show-ksm-info",
+    true,
+  );
 
   const [tarotStats, setTarotStats] =
     useState<Tarot.TarotStatsForAddress>(null);
@@ -145,7 +147,7 @@ const AvatarPage = observer(() => {
   return (
     <div className={"pt-ztg-46 "}>
       <AnimatePresence>
-        {helpnotifications?.avatarKsmFeesInfo && (
+        {showKsmInfo && (
           <motion.div
             className="mb-12"
             initial={{ opacity: 0 }}
@@ -161,9 +163,7 @@ const AvatarPage = observer(() => {
                 small fees in KSM.
               </div>
               <div
-                onClick={() =>
-                  toggleHelpNotification("avatarKsmFeesInfo", false)
-                }
+                onClick={() => setShowKsmInfo(false)}
                 className="border-2 self-end cursor-pointer border-red-800 py-2 px-4 text-red-800 rounded-md"
               >
                 Got it!

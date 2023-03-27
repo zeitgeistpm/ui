@@ -1,7 +1,7 @@
 import { useAccountModals } from "lib/hooks/account";
 import { useStore } from "lib/stores/Store";
-import Wallets, { WalletErrorMessage } from "lib/wallets";
-import { Wallet } from "lib/wallets/types";
+import Wallets, { WalletErrorMessage } from "lib/stores/wallets";
+import { Wallet } from "lib/stores/wallets/types";
 import { flowResult } from "mobx";
 import { observer } from "mobx-react";
 import { useEffect } from "react";
