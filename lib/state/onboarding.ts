@@ -5,14 +5,39 @@ import { proxy, subscribe } from "valtio";
 import { useProxy } from "valtio/utils";
 
 export type OnboardingState = {
+  /**
+   * Session ID of the onboarding process.
+   * Needed when the user refreshes the page so we can decide if we want to show the modal again.
+   */
   session: string;
+  /**
+   * Whether the user has confirmed the wallet installation.
+   */
   walletInstallConfirmed: boolean;
+};
+
+export type UseOnboarding = {
+  /**
+   * Whether the user has a wallet installed.
+   */
+  hasWallet: boolean;
+  /**
+   * Set the wallet install confirmation.
+   *
+   * @param value confirmation
+   * @returns void
+   */
+  setWalletInstallConfirmed: (value: boolean) => void;
+  /**
+   * Whether the user has just confirmed the wallet installation.
+   */
+  walletInstallJustConfirmed: boolean;
 };
 
 const persistensKey = "onboarding";
 
 /**
- * Atom storage of onboarding process.
+ * Atom proxy storage of onboarding process.
  *
  * @persistent - local
  */
@@ -27,9 +52,16 @@ subscribe(proxyState, () => {
   localStorage.setItem(persistensKey, JSON.stringify(proxyState));
 });
 
+/**
+ * Session ID of the current onboarding process.
+ */
 const session = generateGUID();
 
-export const useOnboarding = () => {
+/**
+ *
+ * @returns
+ */
+export const useOnboarding = (): UseOnboarding => {
   const state = useProxy(proxyState);
 
   const hasWallet =
