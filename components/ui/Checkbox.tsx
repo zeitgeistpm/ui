@@ -1,14 +1,9 @@
-import {
-  Checkbox as MaterialCheckBox,
-  makeStyles,
-  Theme,
-} from "@material-ui/core/";
+import { Checkbox as MaterialCheckBox, makeStyles } from "@material-ui/core/";
 import clsx from "clsx";
-import { useUserStore } from "lib/stores/UserStore";
 import { observer } from "mobx-react";
 import { ChangeEvent } from "react";
 
-const useStyles = makeStyles<Theme, { theme: string }>({
+const useStyles = makeStyles({
   root: {
     "&:hover": {
       backgroundColor: "transparent",
@@ -18,7 +13,7 @@ const useStyles = makeStyles<Theme, { theme: string }>({
     borderRadius: 3,
     width: 16,
     height: 16,
-    backgroundColor: (props) => (props.theme === "dark" ? "black" : "white"),
+    backgroundColor: (props) => "white",
   },
   checkedIcon: {
     backgroundImage:
@@ -43,9 +38,7 @@ interface CheckboxProps {
 }
 
 const Checkbox = observer(({ value, onChange, disabled }: CheckboxProps) => {
-  const userStore = useUserStore();
-
-  const classes = useStyles({ theme: userStore.theme });
+  const classes = useStyles();
 
   return (
     <MaterialCheckBox
