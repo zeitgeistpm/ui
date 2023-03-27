@@ -9,7 +9,7 @@ import {
 } from "react";
 import { Input } from "components/ui/inputs";
 import { useStore } from "lib/stores/Store";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/stores/NotificationStore";
 import { AlertTriangle } from "react-feather";
 import { identityRootKey, useIdentity } from "lib/hooks/queries/useIdentity";
 import { useQueryClient } from "@tanstack/react-query";
@@ -38,7 +38,7 @@ const SubmitButton: FC<
 const IdentitySettings = observer(() => {
   const store = useStore();
   const { wallets } = store;
-  const notificationStore = useNotificationStore();
+  const notificationStore = useNotifications();
 
   const [displayName, setDisplayName] = useState("");
   const [discordHandle, setDiscordHandle] = useState("");

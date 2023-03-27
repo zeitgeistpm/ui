@@ -5,7 +5,7 @@ import { ChevronRight } from "react-feather";
 import { observer } from "mobx-react";
 import Link from "next/link";
 
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/stores/NotificationStore";
 import { defaultOptions, defaultPlugins } from "lib/form";
 
 const newsletterSubForm = new MobxReactForm(
@@ -24,7 +24,7 @@ const newsletterSubForm = new MobxReactForm(
 );
 
 const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
-  const notificationStore = useNotificationStore();
+  const notificationStore = useNotifications();
   const formField = newsletterSubForm.$("email");
 
   const invalid = formField.showError && !formField.isValid;

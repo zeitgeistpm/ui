@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/stores/NotificationStore";
 import { NotificationType } from "lib/types";
 import { observer } from "mobx-react";
 import React, { FC } from "react";
@@ -103,7 +103,7 @@ const NotificationCard: FC<{
 });
 
 const NotificationCenter = observer(() => {
-  const notificationStore = useNotificationStore();
+  const notificationStore = useNotifications();
 
   return (
     <div className="fixed h-full w-full top-0 pointer-events-none z-50">

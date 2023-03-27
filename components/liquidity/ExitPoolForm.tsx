@@ -8,7 +8,7 @@ import { usePool } from "lib/hooks/queries/usePool";
 import { poolTotalIssuanceRootQueryKey } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -42,7 +42,7 @@ const ExitPoolForm = ({
   });
   const { data: pool } = usePool({ poolId });
   const [sdk, id] = useSdkv2();
-  const notificationStore = useNotificationStore();
+  const notificationStore = useNotifications();
   const userPercentageOwnership = userPoolShares.div(totalPoolShares);
   const { data: market } = useMarket({ poolId });
   const queryClient = useQueryClient();

@@ -1,7 +1,7 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useState } from "react";
@@ -19,7 +19,7 @@ export const useExtrinsic = <T>(
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const notificationStore = useNotificationStore();
+  const notificationStore = useNotifications();
   const store = useStore();
 
   const send = (params?: T) => {

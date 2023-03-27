@@ -131,7 +131,7 @@ export default class NotificationStore {
   }
 }
 
-export const useNotificationStore = () => {
+export const useNotifications = () => {
   const { notificationStore } = useStore();
   return notificationStore;
 };

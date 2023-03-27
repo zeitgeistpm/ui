@@ -10,7 +10,7 @@ import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
@@ -27,7 +27,7 @@ const ScalarDisputeBox = observer(
   }) => {
     const [sdk] = useSdkv2();
     const store = useStore();
-    const notificationStore = useNotificationStore();
+    const notificationStore = useNotifications();
 
     //TODO: move to react query
     const disputeBond = store.config.markets.disputeBond;

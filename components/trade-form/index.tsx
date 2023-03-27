@@ -12,7 +12,7 @@ import {
   useTradeMaxBaseAmount,
   useTradeTransaction,
 } from "lib/hooks/trade";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -29,7 +29,7 @@ import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import TradeResult from "components/markets/TradeResult";
 
 const TradeForm = observer(() => {
-  const notificationStore = useNotificationStore();
+  const notificationStore = useNotifications();
   const [tabIndex, setTabIndex] = useState<number>(0);
   const { register, formState, watch, setValue, reset } = useForm<{
     percentage: string;

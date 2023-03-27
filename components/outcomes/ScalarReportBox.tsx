@@ -9,7 +9,7 @@ import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { getCurrentPrediction } from "lib/util/assets";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
@@ -28,7 +28,7 @@ const ScalarReportBox = observer(
     const [sdk] = useSdkv2();
     const store = useStore();
     const { wallets } = store;
-    const notificationStore = useNotificationStore();
+    const notificationStore = useNotifications();
 
     if (!market) return null;
 

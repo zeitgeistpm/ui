@@ -20,7 +20,7 @@ import Moment from "moment";
 
 import { defaultOptions, defaultPlugins } from "lib/form";
 import { useStore } from "lib/stores/Store";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/stores/NotificationStore";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import {
   EndType,
@@ -121,7 +121,7 @@ const initialFields = {
 const CreatePage: NextPage = observer(() => {
   const store = useStore();
   const { data: now } = useChainTimeNow();
-  const notificationStore = useNotificationStore();
+  const notificationStore = useNotifications();
   const modalStore = useModalStore();
   const markets = useMarketsStore();
   const [formData, setFormData] = useState<CreateMarketFormData>({

@@ -15,7 +15,7 @@ import {
   useAccountAssetBalances,
 } from "lib/hooks/queries/useAccountAssetBalances";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/stores/NotificationStore";
 import { useStore } from "lib/stores/Store";
 import { calcScalarWinnings } from "lib/util/calc-scalar-winnings";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
@@ -115,7 +115,7 @@ export const RedeemButtonByValue = observer(
     const store = useStore();
     const { wallets } = store;
     const signer = wallets?.getActiveSigner();
-    const notificationStore = useNotificationStore();
+    const notificationStore = useNotifications();
 
     const [isRedeeming, setIsRedeeming] = useState(false);
     const [isRedeemed, setIsRedeemed] = useState(false);
