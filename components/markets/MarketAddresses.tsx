@@ -8,10 +8,10 @@ import CopyIcon from "components/ui/CopyIcon";
 import Link from "next/link";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { useModalStore } from "lib/stores/ModalStore";
-import { Judgement, UserIdentity } from "lib/stores/UserStore";
 import { shortenAddress } from "lib/util";
 import { observer } from "mobx-react";
 import dynamic from "next/dynamic";
+import { Judgement, UserIdentity } from "lib/types/user-identity";
 
 const AddressInspectContent = ({
   address,

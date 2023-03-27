@@ -16,13 +16,12 @@ import validatorjs from "validatorjs";
 
 import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 import { isAsset, ztgAsset } from "../types";
-import Wallets from "../wallets";
+import Wallets from "./wallets";
 import ExchangeStore from "./ExchangeStore";
 import MarketsStore from "./MarketsStore";
 import NavigationStore from "./NavigationStore";
 import NotificationStore from "./NotificationStore";
 import PoolsStore from "./PoolsStore";
-import UserStore from "./UserStore";
 
 import { Context, Sdk } from "@zeitgeistpm/sdk-next";
 
@@ -58,7 +57,6 @@ interface Config {
 }
 
 export default class Store {
-  userStore = new UserStore(this);
   notificationStore = new NotificationStore();
   navigationStore = new NavigationStore(this);
   exchangeStore = new ExchangeStore(this);
@@ -158,17 +156,12 @@ export default class Store {
   }
 
   async initialize() {
-    this.userStore.init();
     this.initGraphQlClient();
 
-    this.userStore.checkIP();
     await this.initSDK(endpointOptions[0].value, graphQlEndpoint);
     await this.loadConfig();
-    const storedWalletId = this.userStore.walletId;
 
-    if (storedWalletId) {
-      this.wallets.initialize(storedWalletId);
-    }
+    this.wallets.initialize();
 
     this.registerValidationRules();
 

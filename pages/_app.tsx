@@ -1,9 +1,9 @@
 import "react-datetime/css/react-datetime.css";
 import "styles/index.css";
 
-import BatsthitDevtools from "@yornaath/batshit-devtools-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import BatsthitDevtools from "@yornaath/batshit-devtools-react";
 import * as Fathom from "fathom-client";
 
 import { observer } from "mobx-react";
@@ -13,6 +13,7 @@ import React, { Suspense, useEffect, useState } from "react";
 import { hotjar } from "react-hotjar";
 
 import { AvatarContext } from "@zeitgeistpm/avatara-react";
+import { WalletDisconnector } from "components/account/WalletDisconnector";
 import { ModalStoreContext } from "components/context/ModalStoreContext";
 import { StoreProvider } from "components/context/StoreContext";
 import ModalContainer from "components/modal/ModalContainer";
@@ -85,6 +86,7 @@ const MyApp = observer(({ Component, pageProps }) => {
             prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
           }}
         >
+          <WalletDisconnector />
           <ModalStoreContext.Provider value={modalStore}>
             {modalStore.modal && (
               <ModalContainer>{modalStore.modal}</ModalContainer>
