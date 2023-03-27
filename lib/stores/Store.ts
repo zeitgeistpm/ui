@@ -19,7 +19,7 @@ import { isAsset, ztgAsset } from "../types";
 import Wallets from "./wallets";
 import ExchangeStore from "./ExchangeStore";
 import MarketsStore from "./MarketsStore";
-import NavigationStore from "./NavigationStore";
+import NavigationStore from "../state/notifications";
 import PoolsStore from "./PoolsStore";
 
 import { Context, Sdk } from "@zeitgeistpm/sdk-next";

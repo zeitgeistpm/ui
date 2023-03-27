@@ -4,7 +4,7 @@ import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import { ZTG } from "lib/constants";
 import MarketStore from "lib/stores/MarketStore";
-import { useNavigationStore } from "lib/stores/NavigationStore";
+import { useNavigationStore } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { observer } from "mobx-react";

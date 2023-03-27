@@ -19,7 +19,7 @@ import {
   User,
   Users,
 } from "react-feather";
-import Store, { useStore } from "./Store";
+import Store, { useStore } from "../stores/Store";
 
 export default class NavigationStore {
   currentGroup: string | null = null;
