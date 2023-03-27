@@ -29,7 +29,7 @@ import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import TradeResult from "components/markets/TradeResult";
 
 const TradeForm = observer(() => {
-  const notificationStore = useNotifications();
+  const notifications = useNotifications();
   const [tabIndex, setTabIndex] = useState<number>(0);
   const { register, formState, watch, setValue, reset } = useForm<{
     percentage: string;
@@ -136,7 +136,7 @@ const TradeForm = observer(() => {
     isLoading,
   } = useExtrinsic(() => transaction, {
     onSuccess: () => {
-      notificationStore.pushNotification(
+      notifications.pushNotification(
         `Successfully ${
           tradeItem.action === "buy" ? "bought" : "sold"
         } ${assetAmount} ${

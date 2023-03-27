@@ -20,7 +20,6 @@ import Wallets from "./wallets";
 import ExchangeStore from "./ExchangeStore";
 import MarketsStore from "./MarketsStore";
 import NavigationStore from "./NavigationStore";
-import NotificationStore from "./NotificationStore";
 import PoolsStore from "./PoolsStore";
 
 import { Context, Sdk } from "@zeitgeistpm/sdk-next";
@@ -57,7 +56,6 @@ interface Config {
 }
 
 export default class Store {
-  notificationStore = new NotificationStore();
   navigationStore = new NavigationStore(this);
   exchangeStore = new ExchangeStore(this);
   wallets = new Wallets(this);

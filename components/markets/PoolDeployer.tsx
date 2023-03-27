@@ -57,7 +57,7 @@ const PoolDeployer = observer(
             new Decimal(amount).mul(ZTG).toFixed(0),
             weights,
             extrinsicCallback({
-              notificationStore,
+              notifications: notificationStore,
               successCallback: () => {
                 notificationStore.pushNotification("Liquidity pool deployed", {
                   type: "Success",

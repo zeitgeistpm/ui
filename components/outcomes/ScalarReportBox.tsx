@@ -57,7 +57,7 @@ const ScalarReportBox = observer(
       const signer = wallets.getActiveSigner();
 
       const callback = extrinsicCallback({
-        notificationStore,
+        notifications: notificationStore,
         successCallback: async () => {
           notificationStore.pushNotification("Outcome Reported", {
             type: "Success",

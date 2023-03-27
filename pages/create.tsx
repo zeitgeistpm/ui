@@ -530,7 +530,7 @@ const CreatePage: NextPage = observer(() => {
       return new Promise(async (resolve, reject) => {
         const params = await getCreateCpmmMarketAndAddPoolParameters(
           extrinsicCallback({
-            notificationStore,
+            notifications: notificationStore,
             successMethod: "PoolCreate",
             successCallback: (data) => {
               const marketId: number = findMarketId(data);
@@ -578,7 +578,7 @@ const CreatePage: NextPage = observer(() => {
           if (!deployPool) {
             const params = await getCreateMarketParameters(
               extrinsicCallback({
-                notificationStore,
+                notifications: notificationStore,
                 successMethod: "MarketCreated",
                 finalizedCallback: (data: JSONObject) => {
                   if (marketImageFile != null) {

@@ -1,29 +1,36 @@
 import { getWallets } from "@talismn/connect-wallets";
-import { useAtom } from "jotai";
-import { atomWithStorage } from "jotai/utils";
 import { SUPPORTED_WALLET_NAMES } from "lib/constants";
+import { generateGUID } from "lib/util/generate-guid";
+import { proxy, subscribe } from "valtio";
+import { useProxy } from "valtio/utils";
 
 export type OnboardingState = {
-  session: number;
+  session: string;
   walletInstallConfirmed: boolean;
 };
 
-const generateSession = () => Math.floor(Math.random() * 1000000000);
+const persistensKey = "onboarding";
 
 /**
  * Atom storage of onboarding process.
  *
  * @persistent - local
  */
-const onboardingAtom = atomWithStorage<OnboardingState>("onboarding", {
-  session: generateSession(),
-  walletInstallConfirmed: false,
+const proxyState = proxy<OnboardingState>(
+  JSON.parse(localStorage.getItem(persistensKey)) || {
+    session: generateGUID(),
+    walletInstallConfirmed: false,
+  },
+);
+
+subscribe(proxyState, () => {
+  localStorage.setItem(persistensKey, JSON.stringify(proxyState));
 });
 
-const session = generateSession();
+const session = generateGUID();
 
 export const useOnboarding = () => {
-  const [state, update] = useAtom(onboardingAtom);
+  const state = useProxy(proxyState);
 
   const hasWallet =
     typeof window !== "undefined" &&
@@ -38,8 +45,10 @@ export const useOnboarding = () => {
   const walletInstallJustConfirmed =
     state.walletInstallConfirmed && state.session !== session;
 
-  const setWalletInstallConfirmed = (value: boolean) =>
-    update({ walletInstallConfirmed: value, session });
+  const setWalletInstallConfirmed = (value: boolean) => {
+    state.walletInstallConfirmed = value;
+    state.session = session;
+  };
 
   return {
     hasWallet,

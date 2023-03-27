@@ -126,7 +126,7 @@ export const RedeemButtonByValue = observer(
       setIsRedeeming(true);
 
       const callback = extrinsicCallback({
-        notificationStore,
+        notifications: notificationStore,
         successCallback: async () => {
           notificationStore.pushNotification(
             `Redeemed ${value.toFixed(2)} ZTG`,

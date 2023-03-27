@@ -19,7 +19,7 @@ export const useExtrinsic = <T>(
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const notificationStore = useNotifications();
+  const notifications = useNotifications();
   const store = useStore();
 
   const send = (params?: T) => {
@@ -30,7 +30,7 @@ export const useExtrinsic = <T>(
       extrinsic,
       signer,
       extrinsicCallback({
-        notificationStore,
+        notifications,
         successCallback: () => {
           setIsLoading(false);
           setIsSuccess(true);
@@ -42,7 +42,7 @@ export const useExtrinsic = <T>(
           setIsError(true);
 
           callbacks?.onError && callbacks.onError();
-          notificationStore.pushNotification(
+          notifications.pushNotification(
             store.getTransactionError(index, error),
             { type: "Error" },
           );

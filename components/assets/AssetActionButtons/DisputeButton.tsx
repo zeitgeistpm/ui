@@ -50,7 +50,7 @@ const DisputeButton = observer(
         const signer = wallets.getActiveSigner();
 
         const callback = extrinsicCallback({
-          notificationStore,
+          notifications: notificationStore,
           successCallback: async () => {
             notificationStore.pushNotification(
               `Disputed reported outcome with ${ticker}`,

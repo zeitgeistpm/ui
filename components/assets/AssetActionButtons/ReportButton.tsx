@@ -50,7 +50,7 @@ const ReportButton = observer(
         const signer = wallets.getActiveSigner();
 
         const callback = extrinsicCallback({
-          notificationStore,
+          notifications: notificationStore,
           successCallback: async () => {
             notificationStore.pushNotification(
               `Reported market outcome: ${ticker}`,

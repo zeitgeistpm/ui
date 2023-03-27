@@ -487,7 +487,7 @@ const ClaimModal = (props: {
           tx,
           signer,
           extrinsicCallback({
-            notificationStore,
+            notifications: notificationStore,
             broadcastCallback: () => {
               notificationStore.pushNotification("Burning ZTG.", {
                 type: "Info",

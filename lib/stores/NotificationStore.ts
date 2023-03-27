@@ -1,96 +1,46 @@
-import { makeAutoObservable, observable } from "mobx";
-import { useStore } from "./Store";
+import { generateGUID } from "lib/util/generate-guid";
+import { proxy, subscribe } from "valtio";
+import { useProxy } from "valtio/utils";
+
 import { NotificationType } from "../types";
 
-class SingleNotificationObservable {
-  type: NotificationType = "Info";
-  content: string | null = null;
-
-  // maximum timer value
-  lifetime: number = 100;
-
-  // timer counts down to 0 and then notification is removed
-  timer: number = this.lifetime;
-
-  // automatically remove notification when new one is added
-  // regardless of timer value
-  autoRemove = false;
-
-  broadcast = false;
-
-  setLifetime(lifetime: number) {
-    this.timer = lifetime;
-    this.lifetime = lifetime;
-  }
-
-  initialize(
-    content: string,
-    lifetime?: number,
-    type?: NotificationType,
-    autoRemove?: boolean,
-    broadcast?: boolean,
-  ) {
-    lifetime != null && this.setLifetime(lifetime);
-    type != null && (this.type = type);
-    this.content = content;
-    autoRemove && (this.autoRemove = true);
-    broadcast && (this.broadcast = true);
-    this.run();
-  }
-
-  intervalId: number | null = null;
-
-  constructor(private notificationStore: NotificationStore) {
-    makeAutoObservable(this);
-  }
-
-  updateTimer() {
-    this.timer -= 0.25;
-  }
-
-  stop() {
-    window.clearInterval(this.intervalId);
-    this.timer = 0;
-    this.intervalId = null;
-  }
-
-  get isRunning(): boolean {
-    return this.intervalId != null;
-  }
-
-  run() {
-    this.intervalId = window.setInterval(() => {
-      if (this.timer === 0) {
-        return this.notificationStore.removeNotification(this);
-      }
-      this.updateTimer();
-    }, 250);
-  }
-}
-
-/**
- * The NotificationStore holds the notifications that are displayed using
- * the NotificationCenter component. Eventually it would be smart to
- * abstract this out to its own component that can be used by the community.
- */
-export default class NotificationStore {
-  notifications: SingleNotificationObservable[] = [];
-
-  constructor() {
-    makeAutoObservable(this, { notifications: observable.ref });
-  }
-
-  get broadcasting(): boolean {
-    return this.notifications.findIndex((n) => n.broadcast) !== -1;
-  }
-
+export type Notification = {
   /**
-   * Pushes new notification at end of stack and schedule showing it.
-   * @param content text
-   * @param options for notification:
-   *  - type: one of 'Info', 'Success' or 'Error' (default: Info)
-   *  - lifetime: how long should be notification be shown (default 100 seconds)
-   *  - autoRemove: true if notification should be hidden when new one is added (default: false)
+   * Unique ID of the notification.
+   */
+  id: string;
+  /**
+   * Type of the notification.
+   */
+  type: NotificationType;
+  /**
+   * Content of the notification.
+   */
+  content: string | null;
+  /**
+   * Whether the notification should be removed automatically when a new notifications is pushed.
+   */
+  autoRemove: boolean;
+  /**
+   * Lifetime of the notification in seconds.
+   */
+  lifetime: number;
+  /**
+   * Time left on the notification in seconds.
+   */
+  timer: number;
+};
+
+export type UseNotifications = {
+  /**
+   * List of notifications.
+   */
+  notifications: Notification[];
+  /**
+   * Pushe a new notification to the notification list.
+   *
+   * @param content - Content of the notification.
+   * @param options - Options for the notification.
    */
   pushNotification(
     content: string,
@@ -98,40 +48,90 @@ export default class NotificationStore {
       type?: NotificationType;
       lifetime?: number;
       autoRemove?: boolean;
-      broadcast?: boolean;
     },
-  ) {
-    const { lifetime, type, autoRemove, broadcast } = options || {};
+  ): Notification;
+  /**
+   * Remove a noptification from the notification list, you can pass the notification object or the id.
+   *
+   * @param notification - Notification to remove.
+   */
+  removeNotification(notification: Notification | string): void;
+};
 
-    const newNotification = new SingleNotificationObservable(this);
-    const numNotifications = this.notifications.length;
+/**
+ * Proxy atom storage of notifications.
+ */
+const proxystate = proxy<{ notifications: Notification[] }>({
+  notifications: [],
+});
 
-    if (numNotifications > 0) {
-      const lastNotification = this.notifications[numNotifications - 1];
-      if (lastNotification.autoRemove) {
-        this.removeNotification(lastNotification);
-      }
+/**
+ * Timer to update the timer of the notifications.
+ */
+let updateTimer: NodeJS.Timer = null;
+
+subscribe(proxystate, () => {
+  clearInterval(updateTimer);
+  if (proxystate.notifications.length > 0) {
+    updateTimer = setInterval(() => {
+      proxystate.notifications = proxystate.notifications
+        .map((n) => ({
+          ...n,
+          timer: n.timer - 0.25,
+        }))
+        .filter((n) => n.timer > 0);
+    }, 250);
+  }
+});
+
+/**
+ * Hook to use the notification state.
+ *
+ * @returns UseNotifications
+ */
+export const useNotifications = (): UseNotifications => {
+  const state = useProxy(proxystate);
+
+  const pushNotification: UseNotifications["pushNotification"] = (
+    content,
+    options,
+  ) => {
+    let notifications = state.notifications;
+
+    const latestNotification =
+      state.notifications[state.notifications.length - 1];
+
+    if (latestNotification?.autoRemove) {
+      notifications = notifications.slice(0, -1);
     }
 
-    this.notifications = [...this.notifications, newNotification];
+    const notification: Notification = {
+      id: generateGUID(),
+      content,
+      autoRemove: options.autoRemove ?? false,
+      lifetime: options.lifetime ?? 100,
+      timer: options.lifetime ?? 100,
+      type: options.type ?? "Info",
+    };
 
-    newNotification.initialize(content, lifetime, type, autoRemove, broadcast);
+    state.notifications = [...notifications, notification];
 
-    return newNotification;
-  }
+    return notification;
+  };
 
-  removeNotification(notification: SingleNotificationObservable) {
-    const notifications = this.notifications;
-    const idx = notifications.indexOf(notification);
-    this.notifications = [
-      ...notifications.slice(0, idx),
-      ...notifications.slice(idx + 1),
-    ];
-    notification.stop();
-  }
-}
+  const removeNotification: UseNotifications["removeNotification"] = (
+    notification,
+  ) => {
+    state.notifications = state.notifications.filter((n) =>
+      typeof notification === "string"
+        ? n.id !== notification
+        : n.id !== notification.id,
+    );
+  };
 
-export const useNotifications = () => {
-  const { notificationStore } = useStore();
-  return notificationStore;
+  return {
+    notifications: state.notifications,
+    pushNotification,
+    removeNotification,
+  };
 };

@@ -77,7 +77,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
       signer,
       new Decimal(amount).mul(ZTG).toNumber(),
       extrinsicCallback({
-        notificationStore,
+        notifications: notificationStore,
         successCallback: () => {
           notificationStore.pushNotification(
             `Bought ${new Decimal(amount).toFixed(1)} full sets`,

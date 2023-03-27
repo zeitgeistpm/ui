@@ -76,7 +76,7 @@ const ScalarDisputeBox = observer(
       };
 
       const callback = extrinsicCallback({
-        notificationStore,
+        notifications: notificationStore,
         successCallback: async () => {
           notificationStore.pushNotification("Outcome Disputed", {
             type: "Success",
