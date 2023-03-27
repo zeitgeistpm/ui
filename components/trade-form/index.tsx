@@ -142,7 +142,7 @@ const TradeForm = observer(() => {
         } ${assetAmount} ${
           tradeItemState.asset.category.ticker
         } for ${baseAmount} ${baseSymbol}`,
-        { type: "Success" },
+        { type: "Success", lifetime: 60 },
       );
 
       setFinalAmounts({ asset: assetAmount, base: baseAmount });

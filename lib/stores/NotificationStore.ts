@@ -70,6 +70,10 @@ const proxystate = proxy<{ notifications: Notification[] }>({
  */
 let updateTimer: NodeJS.Timer = null;
 
+/**
+ * Every time the state changes we start processing existing notifications
+ * and decrement their timer every 250ms. If the timer reaches 0 we remove the notification from the list.
+ */
 subscribe(proxystate, () => {
   clearInterval(updateTimer);
   if (proxystate.notifications.length > 0) {
