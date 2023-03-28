@@ -32,12 +32,12 @@ const FullSetButtons = observer(({ marketId }: { marketId: number }) => {
   const enabled = useMarketIsTradingEnabled(market);
 
   return (
-    <div className="hidden sm:block">
+    <div>
       {enabled ? (
         <>
           <button
             onClick={handleBuyFullSetClick}
-            className="h-ztg-19 ml-ztg-20 text-sky-600 border-sky-600 rounded-ztg-100 border-2 text-ztg-10-150 px-ztg-10 font-bold"
+            className="h-ztg-19 text-sky-600 border-sky-600 rounded-ztg-100 border-2 text-ztg-10-150 px-ztg-10 font-bold"
           >
             Buy Full Set
           </button>
