@@ -205,7 +205,7 @@ const Cell = observer(
               <div className="text-ztg-12-150 font-light text-sky-600">
                 $
                 {(
-                  (value.usdValue || ztgInfo?.price.toNumber()) * value.value
+                  (value.usdValue || ztgInfo?.price?.toNumber()) * value.value
                 ).toFixed(2)}
               </div>
             </td>

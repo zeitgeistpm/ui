@@ -196,10 +196,14 @@ const PoolDetails: NextPage = observer(() => {
         {/* <PoolChart /> */}
         {/* <PoolSummary /> */}
         <div className="flex my-ztg-23 items-center">
-          <h3 className=" font-semibold text-ztg-20-150">Assets in Pool</h3>
-          {saturatedPoolData && (
-            <FullSetButtons marketId={saturatedPoolData.market.marketId} />
-          )}
+          <div className="flex flex-col sm:flex-row">
+            <h3 className="font-semibold text-ztg-20-150 mr-ztg-15 mb-[10px] sm:mb-0">
+              Assets in Pool
+            </h3>
+            {saturatedPoolData && (
+              <FullSetButtons marketId={saturatedPoolData.market.marketId} />
+            )}
+          </div>
           {saturatedPoolData && (
             <div className="flex flex-1 justify-end">
               <Link
