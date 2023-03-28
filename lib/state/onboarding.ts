@@ -3,6 +3,7 @@ import { SUPPORTED_WALLET_NAMES } from "lib/constants";
 import { generateGUID } from "lib/util/generate-guid";
 import { proxy, subscribe } from "valtio";
 import { useProxy } from "valtio/utils";
+import { persistentProxy } from "./util/persistent-proxy";
 
 export type OnboardingState = {
   /**
@@ -38,18 +39,11 @@ const persistensKey = "onboarding";
 
 /**
  * Atom proxy storage of onboarding process.
- *
  * @persistent - local
  */
-const proxyState = proxy<OnboardingState>(
-  JSON.parse(localStorage.getItem(persistensKey)) || {
-    session: generateGUID(),
-    walletInstallConfirmed: false,
-  },
-);
-
-subscribe(proxyState, () => {
-  localStorage.setItem(persistensKey, JSON.stringify(proxyState));
+const proxyState = persistentProxy<OnboardingState>("onboarding", {
+  session: generateGUID(),
+  walletInstallConfirmed: false,
 });
 
 /**
