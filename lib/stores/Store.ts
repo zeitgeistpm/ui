@@ -13,15 +13,11 @@ import { isValidPolkadotAddress } from "lib/util";
 import { makeAutoObservable, runInAction } from "mobx";
 import { useContext } from "react";
 import validatorjs from "validatorjs";
-
 import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 import { isAsset, ztgAsset } from "../types";
 import Wallets from "./wallets";
-import ExchangeStore from "./ExchangeStore";
 import MarketsStore from "./MarketsStore";
-import NavigationStore from "./NavigationStore";
 import PoolsStore from "./PoolsStore";
-
 import { Context, Sdk } from "@zeitgeistpm/sdk-next";
 
 interface Config {
@@ -56,8 +52,6 @@ interface Config {
 }
 
 export default class Store {
-  navigationStore = new NavigationStore(this);
-  exchangeStore = new ExchangeStore(this);
   wallets = new Wallets(this);
 
   markets = new MarketsStore(this);
@@ -149,10 +143,6 @@ export default class Store {
     });
   }
 
-  private initializeMarkets() {
-    this.exchangeStore.initialize();
-  }
-
   async initialize() {
     this.initGraphQlClient();
 
@@ -164,7 +154,6 @@ export default class Store {
     this.registerValidationRules();
 
     this.pools.init();
-    this.initializeMarkets();
 
     runInAction(() => {
       this.initialized = true;
