@@ -35,7 +35,7 @@ export type UseNotifications = {
   /**
    * List of notifications.
    */
-  notifications: Notification[];
+  readonly notifications: Readonly<Notification>[];
   /**
    * Pushe a new notification to the notification list.
    *
@@ -49,7 +49,7 @@ export type UseNotifications = {
       lifetime?: number;
       autoRemove?: boolean;
     },
-  ): Notification;
+  ): Readonly<Notification>;
   /**
    * Remove a noptification from the notification list, you can pass the notification object or the id.
    *
