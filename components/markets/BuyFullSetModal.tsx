@@ -8,7 +8,7 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useSaturatedMarket } from "lib/hooks/queries/useSaturatedMarket";
 import { useModalStore } from "lib/stores/ModalStore";
-import { useNotifications } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback } from "lib/util/tx";
 import { observer } from "mobx-react";

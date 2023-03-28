@@ -9,7 +9,7 @@ import {
 } from "react";
 import { Input } from "components/ui/inputs";
 import { useStore } from "lib/stores/Store";
-import { useNotifications } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/state/notifications";
 import { AlertTriangle } from "react-feather";
 import { identityRootKey, useIdentity } from "lib/hooks/queries/useIdentity";
 import { useQueryClient } from "@tanstack/react-query";

@@ -5,7 +5,7 @@ import { ChevronRight } from "react-feather";
 import { observer } from "mobx-react";
 import Link from "next/link";
 
-import { useNotifications } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/state/notifications";
 import { defaultOptions, defaultPlugins } from "lib/form";
 
 const newsletterSubForm = new MobxReactForm(

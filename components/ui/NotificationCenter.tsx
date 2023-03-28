@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useNotifications } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/state/notifications";
 import { NotificationType } from "lib/types";
 import { observer } from "mobx-react";
 import React, { FC } from "react";

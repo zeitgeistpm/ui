@@ -19,7 +19,7 @@ import { ZTG } from "lib/constants";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { useLocalStorage } from "lib/hooks/useLocalStorage";
 import { useModalStore } from "lib/stores/ModalStore";
-import { useNotifications } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { shortenAddress } from "lib/util";
 import { delay } from "lib/util/delay";

@@ -1,7 +1,7 @@
 import { ISubmittableResult, IEventRecord } from "@polkadot/types/types";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
-import { UseNotifications } from "lib/stores/NotificationStore";
+import { UseNotifications } from "lib/state/notifications";
 import { isExtSigner, unsubOrWarns } from "@zeitgeistpm/sdk/dist/util";
 
 type GenericCallback = (...args: any[]) => void;

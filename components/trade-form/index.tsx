@@ -12,7 +12,7 @@ import {
   useTradeMaxBaseAmount,
   useTradeTransaction,
 } from "lib/hooks/trade";
-import { useNotifications } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";

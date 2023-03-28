@@ -2,13 +2,10 @@ import {
   isNavigationGroup,
   isNavigationSingleItem,
   NavigationGroup,
-  NavigationItem,
   NavigationSingleItem,
   PageName,
 } from "lib/types/navigation";
 import { action, makeAutoObservable } from "mobx";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
 import {
   BarChart2,
   Box,
@@ -19,7 +16,7 @@ import {
   User,
   Users,
 } from "react-feather";
-import Store, { useStore } from "../stores/Store";
+import Store, { useStore } from "./Store";
 
 export default class NavigationStore {
   currentGroup: string | null = null;

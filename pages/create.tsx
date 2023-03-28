@@ -20,7 +20,7 @@ import Moment from "moment";
 
 import { defaultOptions, defaultPlugins } from "lib/form";
 import { useStore } from "lib/stores/Store";
-import { useNotifications } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/state/notifications";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import {
   EndType,
