@@ -41,6 +41,7 @@ const HeroSlider = ({
     >
       {banners.map((banner, index) => (
         <Image
+          key={index}
           priority
           src={banner.imageUrl}
           alt={`Image depicting ${banner.title}`}

@@ -135,15 +135,17 @@ const MarketFilterOptions = ({
         isOpen={selectedMenu === "Status"}
       />
       <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
-      <label className="text-black font-medium mr-[20px] ml-[20px]">
-        <input
-          className="mr-[10px]"
-          type="checkbox"
-          checked={withLiquidityOnly}
-          onChange={(e) => onWithLiquidityOnlyChange(e.target.checked)}
-        />
-        Liquidity only
-      </label>
+      {withLiquidityOnly != null && (
+        <label className="text-black font-medium mr-[20px] ml-[20px]">
+          <input
+            className="mr-[10px]"
+            type="checkbox"
+            checked={withLiquidityOnly}
+            onChange={(e) => onWithLiquidityOnlyChange(e.target.checked)}
+          />
+          Liquidity only
+        </label>
+      )}
       <SortBySelect ordering={ordering} onOrderingChange={onOrderingChange} />
     </div>
   );
