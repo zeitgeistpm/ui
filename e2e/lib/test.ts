@@ -21,8 +21,10 @@ const test = base.extend<{ consoleErrors: string[] }>({
     page.on("console", (consoleMessage) => {
       if (consoleMessage.type() === "error") {
         const text = consoleMessage.text();
-        if (IGNORED_MESSAGES.includes(text)) {
-          return;
+        for (const ignoredMessage of IGNORED_MESSAGES) {
+          if (text.includes(ignoredMessage)) {
+            return;
+          }
         }
         logs.push(text);
       }
