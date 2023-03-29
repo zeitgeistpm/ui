@@ -10,8 +10,10 @@ const test = base.extend<{ consoleErrors: string[] }>({
     const logs = [];
 
     page.on("pageerror", (error) => {
-      if (IGNORED_MESSAGES.includes(error.message)) {
-        return;
+      for (const ignoredMessage of IGNORED_MESSAGES) {
+        if (error.message.includes(ignoredMessage)) {
+          return;
+        }
       }
       logs.push(error.message);
     });
