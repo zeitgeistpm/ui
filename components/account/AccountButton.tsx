@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { DollarSign, Frown, Settings, User } from "react-feather";
 import OnBoardingModal from "./OnboardingModal";
+import dynamic from "next/dynamic";
 
 const AccountButton: FC<{
   connectButtonClassname?: string;
@@ -286,4 +287,6 @@ const AccountButton: FC<{
   );
 });
 
-export default AccountButton;
+export default dynamic(() => Promise.resolve(AccountButton), {
+  ssr: false,
+});
