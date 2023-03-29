@@ -11,7 +11,7 @@ export const useExtrinsic = <T>(
     params: T,
   ) => SubmittableExtrinsic<"promise", ISubmittableResult>,
   callbacks?: {
-    onSuccess?: () => void;
+    onSuccess?: (...args: any[]) => void;
     onError?: () => void;
   },
 ) => {

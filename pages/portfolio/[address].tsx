@@ -37,8 +37,6 @@ const Portfolio: NextPage = observer(() => {
     [subsidy],
   );
 
-  console.log(marketPositionsByMarket, subsidyPositionsByMarket);
-
   return (
     <>
       <InfoBoxes />

@@ -37,9 +37,11 @@ const HeroSlider = ({
         animate && styles.fadeIn
       }`}
       onAnimationEnd={() => setAnimate(false)}
+      data-testid="heroSlider"
     >
       {banners.map((banner, index) => (
         <Image
+          key={index}
           priority
           src={banner.imageUrl}
           alt={`Image depicting ${banner.title}`}

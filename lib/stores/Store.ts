@@ -1,34 +1,27 @@
 import { Compact } from "@polkadot/types";
+import type { Codec } from "@polkadot/types-codec/types";
 import { BlockNumber } from "@polkadot/types/interfaces";
+import SDK from "@zeitgeistpm/sdk";
 import { Swap } from "@zeitgeistpm/sdk/dist/models";
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
-import SDK from "@zeitgeistpm/sdk";
-import { useContext } from "react";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
-import Decimal from "decimal.js";
-import { get, makeAutoObservable, runInAction, when } from "mobx";
-import type { Codec } from "@polkadot/types-codec/types";
-import validatorjs from "validatorjs";
-import { GraphQLClient } from "graphql-request";
 import { StoreContext } from "components/context/StoreContext";
-import {
-  endpointOptions,
-  endpoints,
-  graphQlEndpoint,
-  ZTG,
-} from "lib/constants";
+import Decimal from "decimal.js";
+import { GraphQLClient } from "graphql-request";
+import { endpointOptions, graphQlEndpoint, ZTG } from "lib/constants";
 import { isValidPolkadotAddress } from "lib/util";
+import { makeAutoObservable, runInAction } from "mobx";
+import { useContext } from "react";
+import validatorjs from "validatorjs";
 
 import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 import { isAsset, ztgAsset } from "../types";
-import UserStore from "./UserStore";
-import MarketsStore from "./MarketsStore";
-import NotificationStore from "./NotificationStore";
-import NavigationStore from "./NavigationStore";
-import PoolsStore from "./PoolsStore";
+import Wallets from "./wallets";
 import ExchangeStore from "./ExchangeStore";
-import CourtStore from "./CourtStore";
-import Wallets from "../wallets";
+import MarketsStore from "./MarketsStore";
+import NavigationStore from "./NavigationStore";
+import NotificationStore from "./NotificationStore";
+import PoolsStore from "./PoolsStore";
 
 import { Context, Sdk } from "@zeitgeistpm/sdk-next";
 
@@ -64,11 +57,9 @@ interface Config {
 }
 
 export default class Store {
-  userStore = new UserStore(this);
   notificationStore = new NotificationStore();
   navigationStore = new NavigationStore(this);
   exchangeStore = new ExchangeStore(this);
-  courtStore: CourtStore;
   wallets = new Wallets(this);
 
   markets = new MarketsStore(this);
@@ -165,17 +156,12 @@ export default class Store {
   }
 
   async initialize() {
-    this.userStore.init();
     this.initGraphQlClient();
 
-    this.userStore.checkIP();
     await this.initSDK(endpointOptions[0].value, graphQlEndpoint);
     await this.loadConfig();
-    const storedWalletId = this.userStore.walletId;
 
-    if (storedWalletId) {
-      this.wallets.initialize(storedWalletId);
-    }
+    this.wallets.initialize();
 
     this.registerValidationRules();
 

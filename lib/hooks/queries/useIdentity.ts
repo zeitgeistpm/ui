@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
-import { Judgement } from "lib/stores/UserStore";
+import { Judgement } from "lib/types/user-identity";
 import { useSdkv2 } from "../useSdkv2";
 
 export const identityRootKey = "identity";

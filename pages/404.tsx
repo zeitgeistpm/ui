@@ -1,4 +1,3 @@
-import { useUserStore } from "lib/stores/UserStore";
 import { observer } from "mobx-react";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -6,8 +5,7 @@ import { useRouter } from "next/router";
 const NotFoundPage = observer(
   ({ backText, backLink }: { backText?: string; backLink?: string }) => {
     const router = useRouter();
-    const userStore = useUserStore();
-    const src = userStore.theme === "dark" ? "/dark-404.png" : "/light-404.png";
+    const src = "/light-404.png";
 
     const handleClick = () => {
       router.push(backLink);

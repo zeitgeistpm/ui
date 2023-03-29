@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import { FC, PropsWithChildren } from "react";
 import { useStore } from "lib/stores/Store";
-import { useUserStore } from "lib/stores/UserStore";
+import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useAccountModals } from "lib/hooks/account";
 
 interface TransactionButtonProps {
@@ -26,7 +26,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> =
       const { wallets } = store;
       const { connected } = wallets;
       const accountModals = useAccountModals();
-      const { locationAllowed, isUsingVPN } = useUserStore();
+      const { locationAllowed, isUsingVPN } = useUserLocation();
 
       const click = (
         event?: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -53,7 +53,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> =
       return (
         <button
           className={`ztg-transition bg-ztg-blue text-white focus:outline-none disabled:opacity-20 disabled:cursor-default 
-        rounded-full w-full  font-bold text-ztg-16-150 h-ztg-40 ${className}`}
+        rounded-full w-full  font-bold text-ztg-16-150 h-ztg-56 ${className}`}
           onClick={(e) => click(e)}
           disabled={isDisabled()}
           data-test={dataTest}
