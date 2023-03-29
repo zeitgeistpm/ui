@@ -59,7 +59,6 @@ export const useInfiniteMarkets = (
   filters = filters ?? [];
 
   const limit = 12;
-
   const fetcher = async ({
     pageParam = 0,
   }): Promise<{ data: QueryMarketData[]; next: number | boolean }> => {
@@ -78,7 +77,6 @@ export const useInfiniteMarkets = (
     const statuses = getFilterValuesByType(filters, "status") as MarketStatus[];
     const tags = getFilterValuesByType(filters, "tag");
     const currencies = getFilterValuesByType(filters, "currency");
-
     const markets: Market<IndexerContext>[] = await sdk.model.markets.list({
       where: {
         categories_isNull: false,
@@ -95,7 +93,6 @@ export const useInfiniteMarkets = (
       limit: limit,
       order: orderByMap[orderBy],
     });
-
     const outcomes = await getOutcomesForMarkets(graphQLClient, markets);
 
     let resMarkets: Array<QueryMarketData> = [];
@@ -120,7 +117,6 @@ export const useInfiniteMarkets = (
   };
 
   const queryClient = useQueryClient();
-
   const query = useInfiniteQuery({
     queryKey: [id, rootKey, hashFilters(filters), orderBy, withLiquidityOnly],
     queryFn: fetcher,
@@ -142,6 +138,5 @@ export const useInfiniteMarkets = (
         });
     },
   });
-
   return query;
 };
