@@ -9,7 +9,7 @@ import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useModalStore } from "lib/stores/ModalStore";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
@@ -26,7 +26,7 @@ const DisputeButton = observer(
     const [sdk, id] = useSdkv2();
     const store = useStore();
     const { wallets } = store;
-    const notificationStore = useNotificationStore();
+    const notificationStore = useNotifications();
     const modalStore = useModalStore();
 
     const ticker = market.categories?.[getIndexOf(assetId)].ticker;
@@ -50,7 +50,7 @@ const DisputeButton = observer(
         const signer = wallets.getActiveSigner();
 
         const callback = extrinsicCallback({
-          notificationStore,
+          notifications: notificationStore,
           successCallback: async () => {
             notificationStore.pushNotification(
               `Disputed reported outcome with ${ticker}`,

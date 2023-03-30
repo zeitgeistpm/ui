@@ -1,20 +1,19 @@
 import { parseAssetId } from "@zeitgeistpm/sdk-next";
-import Decimal from "decimal.js";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
+import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import MarketStore from "lib/stores/MarketStore";
-import { useNavigationStore } from "lib/stores/NavigationStore";
-import { useStore } from "lib/stores/Store";
 import { useMarket } from "lib/hooks/queries/useMarket";
+import { useMarket24hrPriceChanges } from "lib/hooks/queries/useMarket24hrPriceChanges";
+import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
+import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
+import MarketStore from "lib/stores/MarketStore";
+import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
+import moment from "moment";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { from } from "rxjs";
-import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
-import { useMarket24hrPriceChanges } from "lib/hooks/queries/useMarket24hrPriceChanges";
-import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
-import moment from "moment";
 
 const columns: TableColumn[] = [
   { header: "Outcome", accessor: "outcome", type: "text" },
@@ -44,7 +43,7 @@ const MarketAssetDetails = observer(
   }) => {
     const [tableData, setTableData] = useState<TableData[]>();
     const store = useStore();
-    const navigationStore = useNavigationStore();
+
     const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
     const { data: market } = useMarket({ marketId });
@@ -54,10 +53,6 @@ const MarketAssetDetails = observer(
     const { data: disputes } = useMarketDisputes(marketId);
 
     const poolAlreadyDeployed = market?.pool?.poolId != null;
-
-    useEffect(() => {
-      navigationStore.setPage("marketDetails");
-    }, []);
 
     useEffect(() => {
       if (market == null) {

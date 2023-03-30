@@ -1,22 +1,20 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import {
+  AssetId,
   CategoricalAssetId,
+  IOMarketOutcomeAssetId,
+  IOZtgAssetId,
   isRpcSdk,
   ScalarAssetId,
   ZTG,
-  IOZtgAssetId,
-  AssetId,
-  IOMarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
-import { atomWithStorage } from "jotai/utils";
 import { calcInGivenOut, calcOutGivenIn } from "lib/math";
 import { TradeType } from "lib/types";
-import { createContext } from "react";
-import { useSdkv2 } from "./useSdkv2";
-import { useContext } from "react";
+import { createContext, useContext } from "react";
 import { useTradeItemState } from "./queries/useTradeItemState";
+import { useSdkv2 } from "./useSdkv2";
 
 export type TradeItem = {
   action: TradeType;
@@ -31,15 +29,6 @@ export const TradeItemContext = createContext<{
 export const useTradeItem = () => {
   return useContext(TradeItemContext);
 };
-
-/**
- * Atom storage for trade slippage percentage.
- * @persistent - local
- */
-export const slippagePercentageAtom = atomWithStorage<number>(
-  "trade-slippage-percentage",
-  1,
-);
 
 export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
   const { data: itemState } = useTradeItemState(item);
