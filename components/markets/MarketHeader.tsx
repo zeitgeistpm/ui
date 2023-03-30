@@ -34,6 +34,7 @@ const MarketHeader: FC<{
   subsidy: number;
   volume: number;
   token: string;
+  marketType: string;
 }> = ({
   question,
   status,
@@ -44,6 +45,7 @@ const MarketHeader: FC<{
   subsidy,
   volume,
   token,
+  marketType,
 }) => {
   return (
     <header className="text-center">
@@ -95,6 +97,9 @@ const MarketHeader: FC<{
         {tags?.map((tag, index) => {
           return <Tag key={index}>{tag}</Tag>;
         })}
+        <Tag className="!bg-black text-white">
+          {marketType === null ? "Categorical" : "Scalar"}
+        </Tag>
       </div>
     </header>
   );

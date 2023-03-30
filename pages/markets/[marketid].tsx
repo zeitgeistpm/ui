@@ -157,7 +157,7 @@ const Market: NextPage<{
     ? new Decimal(indexedMarket?.pool?.volume).div(ZTG).toNumber()
     : 0;
   const subsidy = marketSdkv2?.pool?.poolId == null ? 0 : pool?.liquidity;
-
+  console.log(indexedMarket);
   return (
     <>
       <MarketMeta market={indexedMarket} />
@@ -179,6 +179,7 @@ const Market: NextPage<{
           prizePool={prizePool}
           volume={volume}
           subsidy={subsidy}
+          marketType={indexedMarket.scalarType}
         />
         {marketSdkv2?.rejectReason && marketSdkv2.rejectReason.length > 0 && (
           <div className="mt-[10px] text-ztg-14-150">
