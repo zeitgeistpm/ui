@@ -12,7 +12,7 @@ import {
   useTradeMaxBaseAmount,
   useTradeTransaction,
 } from "lib/hooks/trade";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -29,7 +29,7 @@ import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import TradeResult from "components/markets/TradeResult";
 
 const TradeForm = observer(() => {
-  const notificationStore = useNotificationStore();
+  const notifications = useNotifications();
   const [tabIndex, setTabIndex] = useState<number>(0);
   const { register, formState, watch, setValue, reset } = useForm<{
     percentage: string;
@@ -136,13 +136,13 @@ const TradeForm = observer(() => {
     isLoading,
   } = useExtrinsic(() => transaction, {
     onSuccess: () => {
-      notificationStore.pushNotification(
+      notifications.pushNotification(
         `Successfully ${
           tradeItem.action === "buy" ? "bought" : "sold"
         } ${assetAmount} ${
           tradeItemState.asset.category.ticker
         } for ${baseAmount} ${baseSymbol}`,
-        { type: "Success" },
+        { type: "Success", lifetime: 60 },
       );
 
       setFinalAmounts({ asset: assetAmount, base: baseAmount });

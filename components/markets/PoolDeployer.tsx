@@ -6,7 +6,7 @@ import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import MarketStore from "lib/stores/MarketStore";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { MultipleOutcomeEntry } from "lib/types/create-market";
 import { calculatePoolCost } from "lib/util/market";
@@ -26,7 +26,7 @@ const PoolDeployer = observer(
     const [swapFee, setSwapFee] = useState<string>();
 
     const store = useStore();
-    const notificationStore = useNotificationStore();
+    const notificationStore = useNotifications();
 
     const poolCost =
       poolRows && calculatePoolCost(poolRows.map((row) => Number(row.amount)));
@@ -57,7 +57,7 @@ const PoolDeployer = observer(
             new Decimal(amount).mul(ZTG).toFixed(0),
             weights,
             extrinsicCallback({
-              notificationStore,
+              notifications: notificationStore,
               successCallback: () => {
                 notificationStore.pushNotification("Liquidity pool deployed", {
                   type: "Success",

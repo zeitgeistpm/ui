@@ -20,7 +20,7 @@ import Moment from "moment";
 
 import { defaultOptions, defaultPlugins } from "lib/form";
 import { useStore } from "lib/stores/Store";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/state/notifications";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import {
   EndType,
@@ -121,7 +121,7 @@ const initialFields = {
 const CreatePage: NextPage = observer(() => {
   const store = useStore();
   const { data: now } = useChainTimeNow();
-  const notificationStore = useNotificationStore();
+  const notificationStore = useNotifications();
   const modalStore = useModalStore();
   const markets = useMarketsStore();
   const [formData, setFormData] = useState<CreateMarketFormData>({
@@ -530,7 +530,7 @@ const CreatePage: NextPage = observer(() => {
       return new Promise(async (resolve, reject) => {
         const params = await getCreateCpmmMarketAndAddPoolParameters(
           extrinsicCallback({
-            notificationStore,
+            notifications: notificationStore,
             successMethod: "PoolCreate",
             successCallback: (data) => {
               const marketId: number = findMarketId(data);
@@ -578,7 +578,7 @@ const CreatePage: NextPage = observer(() => {
           if (!deployPool) {
             const params = await getCreateMarketParameters(
               extrinsicCallback({
-                notificationStore,
+                notifications: notificationStore,
                 successMethod: "MarketCreated",
                 finalizedCallback: (data: JSONObject) => {
                   if (marketImageFile != null) {
