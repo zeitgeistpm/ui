@@ -278,6 +278,7 @@ const MarketCard = ({
                 upperBound={upper}
                 shortPrice={outcomes[1].price}
                 longPrice={outcomes[0].price}
+                status={status}
               />
             ) : (
               <>
