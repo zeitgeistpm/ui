@@ -158,9 +158,7 @@ const Market: NextPage<{
     ? new Decimal(indexedMarket?.pool?.volume).div(ZTG).toNumber()
     : 0;
   const subsidy = marketSdkv2?.pool?.poolId == null ? 0 : pool?.liquidity;
-  //if status is proposed check scalar range
-  //query scalar range
-  console.log(spotPrices);
+
   return (
     <>
       <MarketMeta market={indexedMarket} />
@@ -182,7 +180,7 @@ const Market: NextPage<{
           prizePool={prizePool}
           volume={volume}
           subsidy={subsidy}
-          marketType={indexedMarket.scalarType}
+          marketType={indexedMarket?.marketType?.scalar}
         />
         {marketSdkv2?.rejectReason && marketSdkv2.rejectReason.length > 0 && (
           <div className="mt-[10px] text-ztg-14-150">
@@ -233,36 +231,26 @@ const Market: NextPage<{
                 Subsidy
               </Tab>
             </Tab.List>
-            {indexedMarket.scalarType !== null && marketIsLoading ? (
-              <div className="mb-12">
-                <Skeleton height="40" width="100%" />
-              </div>
-            ) : spotPrices ? (
-              <div className="mb-12">
-                <ScalarPriceRange
-                  scalarType={indexedMarket.scalarType}
-                  lowerBound={new Decimal(indexedMarket.marketType.scalar[0])
-                    .div(ZTG)
-                    .toNumber()}
-                  upperBound={new Decimal(indexedMarket.marketType.scalar[1])
-                    .div(ZTG)
-                    .toNumber()}
-                  shortPrice={
-                    indexedMarket.status !== "Proposed"
-                      ? spotPrices?.get(1).toNumber()
-                      : 0
-                  }
-                  longPrice={
-                    indexedMarket.status !== "Proposed"
-                      ? spotPrices?.get(0).toNumber()
-                      : 0
-                  }
-                  status={indexedMarket.status}
-                />
-              </div>
-            ) : (
-              <div className="mb-12">
-                <Skeleton height="40" width="100%" />
+            {indexedMarket?.marketType?.scalar !== null && (
+              <div className="mb-8 max-w-[800px] mx-auto">
+                {marketIsLoading ||
+                !spotPrices?.get(1) ||
+                !spotPrices?.get(0) ? (
+                  <Skeleton height="40px" width="100%" />
+                ) : (
+                  <ScalarPriceRange
+                    scalarType={indexedMarket.scalarType}
+                    lowerBound={new Decimal(indexedMarket.marketType.scalar[0])
+                      .div(ZTG)
+                      .toNumber()}
+                    upperBound={new Decimal(indexedMarket.marketType.scalar[1])
+                      .div(ZTG)
+                      .toNumber()}
+                    shortPrice={spotPrices?.get(1).toNumber()}
+                    longPrice={spotPrices?.get(0).toNumber()}
+                    status={indexedMarket.status}
+                  />
+                )}
               </div>
             )}
             <Tab.Panels>

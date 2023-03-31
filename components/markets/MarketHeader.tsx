@@ -34,7 +34,7 @@ const MarketHeader: FC<{
   subsidy: number;
   volume: number;
   token: string;
-  marketType: string;
+  marketType: string[];
 }> = ({
   question,
   status,

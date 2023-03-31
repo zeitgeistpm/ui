@@ -32,7 +32,6 @@ const marketQuery = gql`
         name
         ticker
       }
-      outcomeAssets
       tags
       period {
         end

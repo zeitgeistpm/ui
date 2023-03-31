@@ -24,7 +24,6 @@ const ScalarPriceRange = observer(
     status,
   }: ScalarPriceRangeProps) => {
     const { width, ref } = useResizeDetector();
-    status = "Proposed";
     const shortPercentage = 1 - shortPrice;
     const longPercentage = longPrice;
     const averagePercentage = (shortPercentage + longPercentage) / 2;
@@ -84,7 +83,7 @@ const ScalarPriceRange = observer(
 
     return (
       <div ref={ref}>
-        <div className="relative top-1.5 ">
+        <div className="relative top-1.5">
           <div className="flex justify-between">
             <div className="flex flex-col justify-start">
               <span className="mb-2.5 text-sm text-blue">{lower}</span>
@@ -93,20 +92,21 @@ const ScalarPriceRange = observer(
               <span className="mb-2.5 text-sm text-red">{upper}</span>
             </div>
           </div>
-          {showShortAndLongPrices && status !== "Proposed" && (
-            <>
-              <motion.div
-                layout
-                className="bg-vermilion h-1.5 w-1.5 rounded-full absolute bottom-ztg-0"
-                style={{ left: `${shortPosition}px` }}
-              ></motion.div>
-              <div
-                style={{
-                  width: `${isNaN(averagePosition) ? 0 : averagePosition}px`,
-                }}
-                className="bg-blue h-1.5 absolute left-0 bottom-0 rounded"
-              ></div>{" "}
-            </>
+          {/* TODO: check if this can be removed */}
+          {/* {showShortAndLongPrices && (
+            <motion.div
+              layout
+              className="bg-vermilion h-1.5 w-1.5 rounded-full absolute bottom-ztg-0"
+              style={{ left: `${shortPosition}px` }}
+            ></motion.div>
+          )} */}
+          {status !== "Proposed" && (
+            <div
+              style={{
+                width: `${isNaN(averagePosition) ? 0 : averagePosition}px`,
+              }}
+              className="bg-blue h-1.5 absolute left-0 bottom-0 rounded"
+            ></div>
           )}
           {status !== "Proposed" && (
             <div
@@ -127,14 +127,14 @@ const ScalarPriceRange = observer(
               </div>
             </div>
           )}
-
-          {showShortAndLongPrices && status !== "Proposed" && (
+          {/* TODO: check if this can be removed */}
+          {/* {showShortAndLongPrices && (
             <motion.div
               layout
               className="bg-sheen-green h-1.5 w-1.5 rounded-full absolute bottom-ztg-0"
               style={{ left: `${longPosition}px` }}
             ></motion.div>
-          )}
+          )} */}
         </div>
         <div className="h-1.5 flex items-center">
           <div className="h-1.5 w-full bg-red rounded"></div>
