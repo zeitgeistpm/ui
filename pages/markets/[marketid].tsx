@@ -234,8 +234,8 @@ const Market: NextPage<{
             {indexedMarket?.marketType?.scalar !== null && (
               <div className="mb-8 max-w-[800px] mx-auto">
                 {marketIsLoading ||
-                !spotPrices?.get(1) ||
-                !spotPrices?.get(0) ? (
+                (!spotPrices?.get(1) && indexedMarket.status !== "Proposed") ||
+                (!spotPrices?.get(0) && indexedMarket.status !== "Proposed") ? (
                   <Skeleton height="40px" width="100%" />
                 ) : (
                   <ScalarPriceRange
