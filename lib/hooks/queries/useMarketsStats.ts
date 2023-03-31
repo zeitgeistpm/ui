@@ -1,6 +1,6 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { graphQlClient } from "lib/constants";
 import { getMarketsStats, MarketStats } from "lib/gql/markets-stats";
-import { useStore } from "lib/stores/Store";
 import { useSdkv2 } from "../useSdkv2";
 import { useMarketsByIds } from "./useMarketsByIds";
 
@@ -9,7 +9,6 @@ export const marketsStatsRootQuery = "marketsStats";
 export const useMarketsStats = (
   marketIds: number[] = [],
 ): UseQueryResult<MarketStats[]> => {
-  const { graphQLClient } = useStore();
   const [sdk, id] = useSdkv2();
   const { data: markets } = useMarketsByIds(
     marketIds.map((id) => ({ marketId: id })),
@@ -26,9 +25,6 @@ export const useMarketsStats = (
   return useQuery<MarketStats[]>(
     [marketsStatsRootQuery, id, marketIds, marketIdPoolIdMap],
     async () => {
-      if (graphQLClient == null) {
-        return [];
-      }
       const noPoolMarketIds = marketIdPoolIdMap
         .filter((item) => item.poolId == null)
         .map((item) => item.marketId);
@@ -38,7 +34,7 @@ export const useMarketsStats = (
         .map((item) => item.marketId);
 
       const yesPoolStats = await getMarketsStats(
-        graphQLClient,
+        graphQlClient,
         yesPoolmarketIds,
       );
 
@@ -49,11 +45,7 @@ export const useMarketsStats = (
       return [...yesPoolStats, ...noPoolStats];
     },
     {
-      enabled:
-        graphQLClient != null ||
-        sdk != null ||
-        markets != null ||
-        marketIds.length > 0,
+      enabled: sdk != null || markets != null || marketIds.length > 0,
     },
   );
 };
