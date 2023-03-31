@@ -5,6 +5,7 @@ import {
   MarketTimer,
   MarketTimerSkeleton,
 } from "components/markets/MarketTimer";
+import { Skeleton } from "@material-ui/lab";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
@@ -157,7 +158,9 @@ const Market: NextPage<{
     ? new Decimal(indexedMarket?.pool?.volume).div(ZTG).toNumber()
     : 0;
   const subsidy = marketSdkv2?.pool?.poolId == null ? 0 : pool?.liquidity;
-  console.log(indexedMarket);
+  //if status is proposed check scalar range
+  //query scalar range
+  console.log(spotPrices);
   return (
     <>
       <MarketMeta market={indexedMarket} />
@@ -230,7 +233,38 @@ const Market: NextPage<{
                 Subsidy
               </Tab>
             </Tab.List>
-
+            {indexedMarket.scalarType !== null && marketIsLoading ? (
+              <div className="mb-12">
+                <Skeleton height="40" width="100%" />
+              </div>
+            ) : spotPrices ? (
+              <div className="mb-12">
+                <ScalarPriceRange
+                  scalarType={indexedMarket.scalarType}
+                  lowerBound={new Decimal(indexedMarket.marketType.scalar[0])
+                    .div(ZTG)
+                    .toNumber()}
+                  upperBound={new Decimal(indexedMarket.marketType.scalar[1])
+                    .div(ZTG)
+                    .toNumber()}
+                  shortPrice={
+                    indexedMarket.status !== "Proposed"
+                      ? spotPrices?.get(1).toNumber()
+                      : 0
+                  }
+                  longPrice={
+                    indexedMarket.status !== "Proposed"
+                      ? spotPrices?.get(0).toNumber()
+                      : 0
+                  }
+                  status={indexedMarket.status}
+                />
+              </div>
+            ) : (
+              <div className="mb-12">
+                <Skeleton height="40" width="100%" />
+              </div>
+            )}
             <Tab.Panels>
               <Tab.Panel>
                 <MarketAssetDetails
@@ -255,17 +289,6 @@ const Market: NextPage<{
           </Tab.Group>
         </div>
         <div className="lg:px-36">
-          {marketStore?.type === "scalar" && spotPrices && (
-            <div className="mb-12">
-              <ScalarPriceRange
-                scalarType={marketStore.scalarType}
-                lowerBound={marketStore.bounds[0]}
-                upperBound={marketStore.bounds[1]}
-                shortPrice={spotPrices?.get(1).toNumber()}
-                longPrice={spotPrices?.get(0).toNumber()}
-              />
-            </div>
-          )}
           {indexedMarket.description?.length > 0 && (
             <>
               <h3 className="text-center text-2xl mb-5">About Market</h3>

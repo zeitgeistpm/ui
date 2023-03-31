@@ -11,6 +11,7 @@ interface ScalarPriceRangeProps {
   upperBound: number;
   shortPrice: number; //between 0 and 1
   longPrice: number; //between 0 and 1
+  status: string;
 }
 
 const ScalarPriceRange = observer(
@@ -20,9 +21,10 @@ const ScalarPriceRange = observer(
     upperBound,
     shortPrice,
     longPrice,
+    status,
   }: ScalarPriceRangeProps) => {
     const { width, ref } = useResizeDetector();
-
+    status = "Proposed";
     const shortPercentage = 1 - shortPrice;
     const longPercentage = longPrice;
     const averagePercentage = (shortPercentage + longPercentage) / 2;
@@ -91,36 +93,42 @@ const ScalarPriceRange = observer(
               <span className="mb-2.5 text-sm text-red">{upper}</span>
             </div>
           </div>
-          {showShortAndLongPrices && (
-            <motion.div
-              layout
-              className="bg-vermilion h-1.5 w-1.5 rounded-full absolute bottom-ztg-0"
-              style={{ left: `${shortPosition}px` }}
-            ></motion.div>
+          {showShortAndLongPrices && status !== "Proposed" && (
+            <>
+              <motion.div
+                layout
+                className="bg-vermilion h-1.5 w-1.5 rounded-full absolute bottom-ztg-0"
+                style={{ left: `${shortPosition}px` }}
+              ></motion.div>
+              <div
+                style={{
+                  width: `${isNaN(averagePosition) ? 0 : averagePosition}px`,
+                }}
+                className="bg-blue h-1.5 absolute left-0 bottom-0 rounded"
+              ></div>{" "}
+            </>
           )}
-          <div
-            style={{
-              width: `${isNaN(averagePosition) ? 0 : averagePosition}px`,
-            }}
-            className="bg-blue h-1.5 absolute left-0 bottom-0 rounded"
-          ></div>
-          <div
-            className="absolute bottom-ztg-0"
-            style={{
-              left: `${
-                isNaN(averagePosition) ? 0 : getMinMaxPosition(averagePosition)
-              }px`,
-              transform: "translateX(calc(-50% + 2px))",
-            }}
-          >
-            <div className="flex flex-col items-center">
-              <span className="mb-2.5 px-1 bg-white rounded text-sm">
-                {position}
-              </span>
+          {status !== "Proposed" && (
+            <div
+              className="absolute bottom-ztg-0"
+              style={{
+                left: `${
+                  isNaN(averagePosition)
+                    ? 0
+                    : getMinMaxPosition(averagePosition)
+                }px`,
+                transform: "translateX(calc(-50% + 2px))",
+              }}
+            >
+              <div className="flex flex-col items-center">
+                <span className="mb-2.5 px-1 bg-white rounded text-sm">
+                  {position}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
-          {showShortAndLongPrices && (
+          {showShortAndLongPrices && status !== "Proposed" && (
             <motion.div
               layout
               className="bg-sheen-green h-1.5 w-1.5 rounded-full absolute bottom-ztg-0"
