@@ -42,19 +42,6 @@ const Pill = ({ value, classes }: { value: string; classes: string }) => {
   );
 };
 
-const MarketCardInfo = ({ question }: { question: string }) => {
-  return (
-    <div className="w-full h-full flex flex-col text-ztg-14-165 whitespace-normal">
-      <h5
-        className="font-semibold w-full h-fit line-clamp-3"
-        data-testid="marketCardInfo__title"
-      >
-        {question}
-      </h5>
-    </div>
-  );
-};
-
 const MarketCardTags = ({ tags }: { tags: string[] }) => {
   return (
     <>
@@ -272,7 +259,14 @@ const MarketCard = ({
               )}
             </div>
           </div>
-          <MarketCardInfo question={question} />
+          <div className="w-full h-full flex flex-col text-ztg-14-165 whitespace-normal">
+            <h5
+              className="font-semibold w-full h-fit line-clamp-3"
+              data-testid="marketCard__question"
+            >
+              {question}
+            </h5>
+          </div>
           <div className="w-full">
             {marketType.scalar === null ? (
               <MarketCardPredictionBar pool={pool} prediction={prediction} />

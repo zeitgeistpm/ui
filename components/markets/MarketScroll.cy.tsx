@@ -220,14 +220,12 @@ describe("MarketScroll component", () => {
     cy.get("[data-testid=marketScroll__title]").should("contains.text", title);
   });
 
-  it("renders with more than three markets", () => {
+  it("renders with 4 markets", () => {
     cy.mount(
       <QueryClientProvider client={queryClient}>
         <MarketScroll title={title} cta={cta} link={link} markets={markets} />
       </QueryClientProvider>,
     );
-
-    const marketsLen = markets.length;
 
     const ctaEl = cy.get("[data-testid=horizontalScroll__cta]");
 
@@ -239,6 +237,31 @@ describe("MarketScroll component", () => {
 
     const rightBtn = cy.get("[data-testid=horizontalScroll__rightBtn]");
     rightBtn.should("exist").should("be.enabled");
+
+    const scrollArea = cy.get("[data-testid=marketScroll__scrollArea]");
+
+    scrollArea.then((area) => {
+      let sl = area[0].scrollLeft;
+      expect(sl).to.equal(0);
+
+      rightBtn.click().then((btn) => {
+        cy.wait(600).then(() => {
+          sl = area[0].scrollLeft;
+          expect(sl).to.be.greaterThan(0);
+          expect(btn).to.be.disabled;
+        });
+      });
+    });
+
+    leftBtn.click().then((btn) => {
+      cy.wait(600).then(() => {
+        expect(btn).to.be.disabled;
+        scrollArea.then((area) => {
+          const sl = area[0].scrollLeft;
+          expect(sl).to.be.equal(0);
+        });
+      });
+    });
 
     cy.get("[data-testid=marketScroll__title]").should("contains.text", title);
   });

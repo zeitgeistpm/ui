@@ -88,6 +88,7 @@ const MarketScroll = observer(
           <div
             ref={scrollRef}
             className="flex flex-col gap-7 md:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
+            data-testid="marketScroll__scrollArea"
           >
             {markets.map((market) => {
               const stat = marketsStats?.find(
