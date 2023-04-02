@@ -37,8 +37,6 @@ const Portfolio: NextPage = observer(() => {
     [subsidy],
   );
 
-  console.log(marketPositionsByMarket, subsidyPositionsByMarket);
-
   return (
     <>
       <InfoBoxes />
@@ -89,7 +87,7 @@ const Portfolio: NextPage = observer(() => {
                       range(0, 8).map((i) => (
                         <MarketPositionsSkeleton className="mb-14" key={i} />
                       ))
-                    ) : Object.values(marketPositionsByMarket).length > 1 ? (
+                    ) : Object.values(marketPositionsByMarket).length > 0 ? (
                       Object.values(marketPositionsByMarket).map(
                         (marketPositions) => {
                           const market = marketPositions[0].market;
