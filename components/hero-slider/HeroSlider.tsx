@@ -54,6 +54,7 @@ const HeroSlider = ({
             objectFit: "cover",
             objectPosition: `${banner.imageAlignment} 50%`,
           }}
+          key={index}
         />
       ))}
       <div className="h-full relative container-fluid">
