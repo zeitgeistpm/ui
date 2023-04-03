@@ -182,9 +182,10 @@ const TimeSeriesChart = observer(
                   strokeWidth: 1,
                   fontWeight: 100,
                 }}
+                tickMargin={10}
                 type="number"
                 stroke="#E8EAED"
-                tickLine={false}
+                tickLine={true}
                 strokeWidth={2}
                 tickFormatter={(unixTime) => {
                   if (unixTime !== -Infinity && unixTime !== Infinity) {
@@ -209,6 +210,13 @@ const TimeSeriesChart = observer(
                   strokeWidth: 1,
                   fontWeight: 100,
                 }}
+                label={{
+                  value: yUnits,
+                  angle: -90,
+                  position: "insideLeft",
+                  fontSize: "10px",
+                  stroke: "black",
+                }}
                 tickLine={false}
                 domain={
                   yDomain ?? [
@@ -222,7 +230,7 @@ const TimeSeriesChart = observer(
                 }
                 stroke="#E8EAED"
                 strokeWidth={2}
-                tickFormatter={(val) => `${+val.toFixed(2)} ${yUnits}`}
+                tickFormatter={(val) => `${+val.toFixed(2)}`}
               />
 
               <Tooltip
