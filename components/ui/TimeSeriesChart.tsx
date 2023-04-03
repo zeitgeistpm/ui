@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import React, { useCallback, useState } from "react";
 import {
   CartesianGrid,
+  Label,
   Line,
   LineChart,
   ReferenceArea,
@@ -210,13 +211,6 @@ const TimeSeriesChart = observer(
                   strokeWidth: 1,
                   fontWeight: 100,
                 }}
-                label={{
-                  value: yUnits,
-                  angle: -90,
-                  position: "insideLeft",
-                  fontSize: "10px",
-                  stroke: "black",
-                }}
                 tickLine={false}
                 domain={
                   yDomain ?? [
@@ -231,7 +225,16 @@ const TimeSeriesChart = observer(
                 stroke="#E8EAED"
                 strokeWidth={2}
                 tickFormatter={(val) => `${+val.toFixed(2)}`}
-              />
+              >
+                <Label
+                  fontSize={10}
+                  stroke="black"
+                  value="ZTG"
+                  offset={15}
+                  position="insideLeft"
+                  angle={-90}
+                />
+              </YAxis>
 
               <Tooltip
                 animationEasing={"linear"}
