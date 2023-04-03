@@ -65,7 +65,7 @@ const TopBar = observer(() => {
         <SideMenu />
         <MenuLogo menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
         {/* <MarketSearch /> */}
-        <div className="hidden sm:block">
+        <div className="hidden md:block">
           <AccountButton />
         </div>
         {menuOpen ? (
