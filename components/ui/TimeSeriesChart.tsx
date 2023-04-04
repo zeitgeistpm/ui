@@ -96,6 +96,8 @@ const TimeSeriesChart = observer(
     const [rightX, setRightX] = useState("dataMax");
     const [mouseInside, setMouseInside] = useState(false);
 
+    const roundingThreshold = 0.3;
+
     const lessThanTwoDays =
       data?.length > 0
         ? Math.abs(data[data.length - 1].t - data[0].t) < 172800
@@ -215,10 +217,14 @@ const TimeSeriesChart = observer(
                 domain={
                   yDomain ?? [
                     (dataMin: number) => {
-                      return dataMin < 0.3 ? 0 : Math.floor(dataMin * 10) / 10;
+                      return dataMin < roundingThreshold
+                        ? 0
+                        : Math.floor(dataMin * 10) / 10;
                     },
                     (dataMax) => {
-                      return dataMax === 0 ? 1 : Math.ceil(dataMax * 10) / 10;
+                      return dataMax === 0 || 1 - roundingThreshold
+                        ? 1
+                        : Math.ceil(dataMax * 10) / 10;
                     },
                   ]
                 }
