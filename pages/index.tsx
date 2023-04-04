@@ -91,7 +91,7 @@ const IndexPage: NextPage<{
         <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
         <div data-testid="indexPage" className="main-container">
           {featuredMarkets.length > 0 && (
-            <div className="my-14">
+            <div className="my-[60px]">
               <MarketScroll
                 title="Featured Markets"
                 cta="Go to Markets"
