@@ -4,6 +4,7 @@ import Link from "next/link";
 import Logo from "../icons/ZeitgeistIcon";
 import { useStore } from "lib/stores/Store";
 import { useRouter } from "next/router";
+import AccountButton from "components/account/AccountButton";
 
 const MenuLogo: FC<{
   menuOpen: boolean;
@@ -15,13 +16,13 @@ const MenuLogo: FC<{
   return (
     <Link
       onClick={() => setMenuOpen(false)}
-      className="flex flex-1 items-center gap-4"
+      className="flex items-center gap-4"
       href="/"
       role="button"
     >
       <Logo dark={pathname === "/" ? (menuOpen ? true : false) : true} />
       <>
-        <div className="flex flex-col items-center">
+        <div className="hidden sm:flex flex-col items-center">
           <h1
             className={`font-kanit text-xl ${
               pathname === "/"
