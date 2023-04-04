@@ -43,6 +43,7 @@ import {
   PriceHistory,
 } from "lib/hooks/queries/useMarketPriceHistory";
 import { filters } from "components/ui/TimeFilters";
+import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -107,10 +108,10 @@ const Market: NextPage<{
   const router = useRouter();
   const { marketid } = router.query;
   const [marketStore, setMarketStore] = useState<MarketStore>();
-  const [prizePool, setPrizePool] = useState<number>();
   const store = useStore();
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
+  const { data: prizePool } = usePrizePool(Number(marketid));
 
   const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
     marketId: Number(marketid),
@@ -125,10 +126,6 @@ const Market: NextPage<{
   const fetchMarket = async () => {
     const market = await marketsStore?.getMarket(Number(marketid));
     if (market != null) {
-      setMarketStore(market);
-      const prizePool = await market.getPrizePool();
-      setPrizePool(Number(prizePool));
-
       if (market.poolExists) {
         const { poolId } = market.pool;
         const pool = await poolStore.getPoolFromChain(Number(poolId));
@@ -177,7 +174,7 @@ const Market: NextPage<{
           starts={starts}
           ends={ends}
           token={token}
-          prizePool={prizePool}
+          prizePool={prizePool?.div(ZTG).toNumber()}
           volume={volume}
           subsidy={subsidy}
           marketType={indexedMarket?.marketType?.scalar}
