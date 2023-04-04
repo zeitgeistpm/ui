@@ -104,10 +104,8 @@ const Market: NextPage<{
   priceHistory: PriceHistory[];
   baseAsset: string;
 }> = observer(({ indexedMarket, chartSeries, priceHistory, baseAsset }) => {
-  const marketsStore = useMarketsStore();
   const router = useRouter();
   const { marketid } = router.query;
-  const [marketStore, setMarketStore] = useState<MarketStore>();
   const store = useStore();
   const [pool, setPool] = useState<CPool>();
   const poolStore = usePoolsStore();
@@ -123,25 +121,22 @@ const Market: NextPage<{
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
 
-  const fetchMarket = async () => {
-    const market = await marketsStore?.getMarket(Number(marketid));
-    if (market != null) {
-      if (market.poolExists) {
-        const { poolId } = market.pool;
-        const pool = await poolStore.getPoolFromChain(Number(poolId));
+  const fetchPool = async () => {
+    if (marketSdkv2 != null && marketSdkv2.pool?.poolId != null) {
+      const poolId = marketSdkv2.pool?.poolId;
+      const pool = await poolStore.getPoolFromChain(Number(poolId));
 
-        setPool(pool);
-      }
+      setPool(pool);
     }
   };
 
   useEffect(() => {
     if (!store) return;
-    fetchMarket();
-  }, [marketsStore, marketid]);
+    fetchPool();
+  }, [marketSdkv2, marketid]);
 
   const handlePoolDeployed = () => {
-    fetchMarket();
+    fetchPool();
   };
 
   //required to fix title element warning
@@ -155,6 +150,7 @@ const Market: NextPage<{
     ? new Decimal(indexedMarket?.pool?.volume).div(ZTG).toNumber()
     : 0;
   const subsidy = marketSdkv2?.pool?.poolId == null ? 0 : pool?.liquidity;
+  console.log(marketSdkv2);
 
   return (
     <>
@@ -252,10 +248,7 @@ const Market: NextPage<{
             )}
             <Tab.Panels>
               <Tab.Panel>
-                <MarketAssetDetails
-                  marketId={Number(marketid)}
-                  marketStore={marketStore}
-                />
+                {/* <MarketAssetDetails marketId={Number(marketid)} /> */}
               </Tab.Panel>
               <Tab.Panel>
                 {marketSdkv2?.pool && (
@@ -280,10 +273,10 @@ const Market: NextPage<{
               <QuillViewer value={indexedMarket.description} />
             </>
           )}
-          <PoolDeployer
+          {/* <PoolDeployer
             marketStore={marketStore}
             onPoolDeployed={handlePoolDeployed}
-          />
+          /> */}
           <h3 className="text-center text-2xl mt-10">Market Cast</h3>
           <MarketAddresses
             oracleAddress={indexedMarket.oracle}
