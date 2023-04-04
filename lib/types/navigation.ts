@@ -6,7 +6,6 @@ export type PageName =
   | "markets"
   | "marketDetails"
   | "portfolio"
-  | "settings"
   | "liquidity"
   | "activity"
   | "court"
