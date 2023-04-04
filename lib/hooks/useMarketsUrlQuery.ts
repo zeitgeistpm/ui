@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import type { ParsedUrlQuery } from "querystring";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { isUndefined, isEmpty } from "lodash";
+import { useCallback, useEffect, useState } from "react";
+import { isUndefined, isEmpty } from "lodash-es";
 import { DeepPartial } from "lib/types/DeepPartial";
 import { parse as parseUri } from "uri-js";
 import { MarketsListQuery, MarketsOrderBy } from "lib/types/market-filter";

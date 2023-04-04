@@ -1,14 +1,12 @@
 import { useAvatarContext } from "@zeitgeistpm/avatara-react";
 import { Badge } from "@zeitgeistpm/avatara-nft-sdk";
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
-import { partial } from "lodash";
+import { partial, capitalize } from "lodash-es";
 
-import { useUserLocation } from "lib/hooks/useUserLocation";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { AiFillInfoCircle } from "react-icons/ai";
-import { capitalize } from "lodash";
 import { motion, AnimatePresence } from "framer-motion";
 
 export type RaritySelectValue = {

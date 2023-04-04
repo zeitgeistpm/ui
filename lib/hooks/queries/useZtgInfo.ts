@@ -1,7 +1,7 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { fetchZTGInfo, ZTGPriceInfo } from "@zeitgeistpm/utility/dist/ztg";
 import Decimal from "decimal.js";
-import { isEmpty } from "lodash";
+import { isEmpty } from "lodash-es";
 
 export const key = () => ["ztg-price-info"];
 

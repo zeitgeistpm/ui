@@ -24,7 +24,7 @@ import { useStore } from "lib/stores/Store";
 import { shortenAddress } from "lib/util";
 import { delay } from "lib/util/delay";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
-import { capitalize } from "lodash";
+import { capitalize } from "lodash-es";
 import { observer } from "mobx-react";
 import Link from "next/link";
 import { useRouter } from "next/router";

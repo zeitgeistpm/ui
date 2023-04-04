@@ -2,7 +2,7 @@ import type { u128 } from "@polkadot/types";
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import * as batshit from "@yornaath/batshit";
 import { isRpcSdk, RpcContext, Sdk } from "@zeitgeistpm/sdk-next";
-import { memoize } from "lodash-es";
+import { memoize } from "lodash";
 import { useEffect } from "react";
 import { useSdkv2 } from "../useSdkv2";
 

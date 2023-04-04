@@ -27,6 +27,7 @@ const MarketScroll = observer(
     const { data: marketsStats } = useMarketsStats(
       markets.map((m) => m.marketId),
     );
+
     const gap = 28;
 
     //calculate cards shown and width based on container width

@@ -11,7 +11,7 @@ import Paginator from "./Paginator";
 import PercentageChange from "./PercentageChange";
 import { ChartData } from "./TimeSeriesChart";
 import Avatar from "./Avatar";
-import { range } from "lodash";
+import { range } from "lodash-es";
 import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
 
