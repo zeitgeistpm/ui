@@ -47,7 +47,6 @@ const AvatarPage = observer(() => {
   const [loading, setLoading] = useState(true);
   const [mintingAvatar, setMintingAvatar] = useState(false);
   const [burnAmount, setBurnAmount] = useState<number>();
-  const [hasCrossed, setHasCrossed] = useState(false);
 
   const [earnedBadges, setEarnedBadges] = useState<Badge.IndexedBadge[]>([]);
 
@@ -80,12 +79,6 @@ const AvatarPage = observer(() => {
       setEarnedBadges(earnedBadges);
       setBurnAmount(burnAmount.toJSON() as number);
       setTarotStats(tarotStats);
-      if (store.wallets.activeAccount?.address) {
-        const crossing = await store.sdk.api.query.styx.crossings(
-          store.wallets.activeAccount.address,
-        );
-        setHasCrossed(!crossing.isEmpty);
-      }
     } catch (error) {
       await delay(1000);
       await loadData();
