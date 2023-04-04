@@ -4,6 +4,11 @@ import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
 export const getFeaturedMarketIds = async () => {
+  // Short circuit to use default if NOTION_API_KEY doesn't exist.
+  if (!process.env.NOTION_API_KEY) {
+    return [0, 1, 2];
+  }
+
   const { results: featuredMarketData } = await notion.databases.query({
     database_id: "ebcc6269f7414362997b615571d90764",
     sorts: [
