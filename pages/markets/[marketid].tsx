@@ -150,7 +150,7 @@ const Market: NextPage<{
     ? new Decimal(indexedMarket?.pool?.volume).div(ZTG).toNumber()
     : 0;
   const subsidy =
-    marketSdkv2?.pool?.poolId == null ? 0 : liquidity.div(ZTG).toNumber();
+    marketSdkv2?.pool?.poolId == null ? 0 : liquidity?.div(ZTG).toNumber();
 
   return (
     <>
