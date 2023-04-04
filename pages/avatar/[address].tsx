@@ -108,7 +108,7 @@ const AvatarPage = observer(() => {
   const onClickPendingItemNotification = () => {
     modalStore.openModal(
       <PendingItemsModal address={address} onClose={() => inventory.reset()} />,
-      <>"You have pending items!"</>,
+      <>You have pending items!</>,
       {
         styles: { width: "580px" },
       },
@@ -118,7 +118,7 @@ const AvatarPage = observer(() => {
   const onClickSettingsButton = () => {
     modalStore.openModal(
       <InventoryModal address={address} onClose={() => inventory.reset()} />,
-      <>"Inventory."</>,
+      <>Inventory.</>,
       {
         styles: { width: "580px" },
       },
@@ -137,7 +137,7 @@ const AvatarPage = observer(() => {
           setMintingAvatar(false);
         }}
       />,
-      <>"Claim your avatar!"</>,
+      <>Claim your avatar!</>,
       {
         styles: { width: "680px" },
       },
