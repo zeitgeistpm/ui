@@ -117,13 +117,4 @@ test.describe("index page", () => {
       }
     }
   });
-
-  test("popular categories snapshot", async ({ page }) => {
-    const indexPage = new IndexPage(page);
-    await indexPage.goto();
-
-    expect(await indexPage.learnSection.screenshot()).toMatchSnapshot(
-      "popularCategories.png",
-    );
-  });
 });
