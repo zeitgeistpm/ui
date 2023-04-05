@@ -13,7 +13,25 @@ export type Banner = {
   imageAlignment: "left" | "right" | "center";
 };
 
+const DEFAULT_BANNERS: Banner[] = [
+  {
+    title: 'Defaut Banner Title',
+    subtitle: 'Default Subtitle',
+    imageUrl: 'https://images.unsplash.com/photo-1680523127490-978b85b8bf71?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2832&q=80',
+    ctaText: 'CTA Button',
+    ctaLink: '#',
+    buttonColor: 'red',
+    buttonTextColor: 'white',
+    imageAlignment: 'center',
+  }
+]
+
 export const getBanners = async (): Promise<Banner[]> => {
+  // Short circuit to use default if NOTION_API_KEY doesn't exist.
+  if (!process.env.NOTION_API_KEY) {
+    return DEFAULT_BANNERS;
+  }
+
   const contrast = (await import("font-color-contrast")).default;
   const { results: bannersData } = await notion.databases.query({
     database_id: "7085702a851842adace1c9963e817446",

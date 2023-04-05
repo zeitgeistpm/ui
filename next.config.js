@@ -6,6 +6,6 @@ module.exports = withPlaiceholder({
     esmExternals: true,
   },
   images: {
-    domains: ["ipfs-gateway.zeitgeist.pm", "cdn.discordapp.com"],
+    domains: ["ipfs-gateway.zeitgeist.pm", "cdn.discordapp.com", "images.unsplash.com"],
   },
 });
