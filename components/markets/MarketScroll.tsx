@@ -44,7 +44,7 @@ const MarketScroll = observer(
 
     const moveSize = cardsShown * (cardWidth + gap);
     useEffect(() => {
-      scrollRef.current.scroll({ left: scrollLeft, behavior: "smooth" });
+      scrollRef.current?.scroll({ left: scrollLeft, behavior: "smooth" });
     }, [scrollRef, scrollLeft]);
 
     const handleRightClick = () => {
