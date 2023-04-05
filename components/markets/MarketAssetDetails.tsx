@@ -176,20 +176,6 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
     }
   };
 
-  const getDisputedScalarOutcome = () => {
-    const lastDispute = disputes?.[disputes.length - 1];
-    const reportVal = new Decimal(
-      lastDispute?.outcome.asScalar.toString() ?? market.report?.outcome.scalar,
-    )
-      .div(ZTG)
-      .toString();
-    if (market.scalarType === "date") {
-      return moment(Number(reportVal)).format("YYYY-MM-DD HH:mm");
-    } else {
-      return reportVal;
-    }
-  };
-
   const getWinningCategoricalOutcome = () => {
     const resolvedOutcomeIndex = rpcMarket.resolvedOutcome
       .unwrap()

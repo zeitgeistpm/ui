@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import PoolSettings, {
   PoolAssetRowData,
@@ -6,9 +7,11 @@ import PoolSettings, {
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { accountPoolAssetBalancesRootKey } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useRpcMarket } from "lib/hooks/queries/useRpcMarket";
+import { ztgBalanceRootKey } from "lib/hooks/queries/useZtgBalance";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
@@ -31,6 +34,10 @@ const PoolDeployer = observer(
 
     const { data: poolId } = useMarketPoolId(marketId);
     const { data: market } = useMarket({ marketId });
+    const queryClient = useQueryClient();
+    const store = useStore();
+    const notificationStore = useNotifications();
+    const [sdk, id] = useSdkv2();
 
     const { send: deployPool, isLoading } = useExtrinsic(
       () => {
@@ -58,14 +65,11 @@ const PoolDeployer = observer(
             type: "Success",
           });
           onPoolDeployed();
+          queryClient.invalidateQueries([id, ztgBalanceRootKey]);
+          queryClient.invalidateQueries([id, accountPoolAssetBalancesRootKey]);
         },
       },
     );
-
-    const store = useStore();
-    const notificationStore = useNotifications();
-
-    const [sdk] = useSdkv2();
 
     const poolCost =
       poolRows && calculatePoolCost(poolRows.map((row) => Number(row.amount)));
@@ -80,7 +84,7 @@ const PoolDeployer = observer(
 
     return (
       <>
-        {poolId != null ? (
+        {poolId == null ? (
           poolRows ? (
             <div className="my-ztg-20">
               <h4 className="mt-10 mb-4">Deploy Pool</h4>
@@ -114,7 +118,7 @@ const PoolDeployer = observer(
             </div>
           ) : (
             <>
-              {market.status === "Active" && (
+              {market?.status === "Active" && (
                 <button
                   className="my-ztg-20 font-bold text-ztg-16-150 text-sky-600 border-1 px-ztg-20 py-ztg-10 rounded-ztg-10 border-sky-600"
                   data-test="deployLiquidityButton"

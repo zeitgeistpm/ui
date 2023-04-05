@@ -12,7 +12,7 @@ export const useMarketPoolId = (marketId: number) => {
     async () => {
       if (isRpcSdk(sdk)) {
         const poolId = await sdk.api.query.marketCommons.marketPool(marketId);
-        return poolId.unwrap().toNumber();
+        return poolId.isSome ? poolId.unwrap().toNumber() : null;
       }
     },
     {
