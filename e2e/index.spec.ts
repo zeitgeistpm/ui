@@ -29,7 +29,7 @@ test.describe("index page", () => {
     }
   });
 
-  test("learn section section snapshot", async ({ page }) => {
+  test("learn section corresponds the snapshot", async ({ page }) => {
     const indexPage = new IndexPage(page);
     await indexPage.goto();
 
