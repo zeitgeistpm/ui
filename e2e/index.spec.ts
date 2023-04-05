@@ -29,6 +29,15 @@ test.describe("index page", () => {
     }
   });
 
+  test("learn section section snapshot", async ({ page }) => {
+    const indexPage = new IndexPage(page);
+    await indexPage.goto();
+
+    expect(await indexPage.learnSection.screenshot()).toMatchSnapshot(
+      "learnSection.png",
+    );
+  });
+
   test("hero slider chages a slide", async ({ page }) => {
     const indexPage = new IndexPage(page);
     await indexPage.goto();
@@ -107,5 +116,14 @@ test.describe("index page", () => {
         await indexPage.popularCategories.waitFor();
       }
     }
+  });
+
+  test("popular categories snapshot", async ({ page }) => {
+    const indexPage = new IndexPage(page);
+    await indexPage.goto();
+
+    expect(await indexPage.learnSection.screenshot()).toMatchSnapshot(
+      "popularCategories.png",
+    );
   });
 });
