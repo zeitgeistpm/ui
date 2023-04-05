@@ -268,7 +268,6 @@ const MarketAssetDetails = observer(
         ) : (
           <></>
         )}
-        {/* use get current prediciton hook  */}
         <Table columns={columns} data={tableData} />
       </div>
     );

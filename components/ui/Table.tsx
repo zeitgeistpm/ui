@@ -372,22 +372,6 @@ const Table = observer(
         setIsOverflowing(false);
       }
     };
-    console.log(data);
-    if (data !== undefined) {
-      const categoryPosts = data.reduce((acc, asset) => {
-        const {
-          totalValue: { value },
-          assetId,
-          poolId,
-        } = asset;
-        // return console.log(value, assetId);
-        return [...acc, { assetId: assetId, price: value, poolId: poolId }];
-      }, []);
-      console.log(categoryPosts);
-    }
-    // const prediction = getCurrentPrediction(marketOutcomes, m as any)
-
-    console.log(data, columns);
     return (
       <>
         {data == null ? (
