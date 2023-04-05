@@ -188,7 +188,7 @@ const AccountButton: FC<{
                               className={`group font-bold flex w-full items-center rounded-md px-2 py-2 text-sm`}
                             >
                               {`${formatNumberLocalized(
-                                activeBalance?.toNumber(),
+                                activeBalance?.abs().toNumber(),
                               )} ${store.config?.tokenSymbol}`}
                             </div>
                           </div>
