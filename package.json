@@ -13,7 +13,8 @@
     "prettier:fix": "npx prettier ./**/*.tsx --write",
     "start": "next start",
     "test:watch": "jest --watch",
-    "test": "NEXT_PUBLIC_VERCEL_ENV=production jest",
+    "test:update-snapshots": "jest --updateSnapshot",
+    "test": "jest",
     "prunable": "ts-prune | grep -v 'used in module' | grep -v '^pages.*\\- [default|getStaticPaths|getStaticProps]' | grep -v 'playwright.config.ts'"
   },
   "dependencies": {
