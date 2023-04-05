@@ -4,7 +4,6 @@ import {
   Briefcase,
   Droplet,
   PlusSquare,
-  Settings,
   User,
   Users,
 } from "react-feather";
@@ -24,11 +23,6 @@ export const NAVIGATION_ITEMS = {
     label: "Portfolio",
     href: "/portfolio",
     IconComponent: Briefcase,
-  },
-  settings: {
-    label: "Settings",
-    href: "/settings",
-    IconComponent: Settings,
   },
   avatar: {
     label: "Avatar and Badges",

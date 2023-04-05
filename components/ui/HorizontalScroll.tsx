@@ -36,7 +36,7 @@ const HorizontalScroll: FC<HorizontalScrollProps> = ({
       )}
       <button
         onClick={handleLeftClick}
-        className={`hidden md:flex items-center justify-center w-[40px] h-[40px] rounded-full ml-[12px] mr-[8px] ztg-transition ${
+        className={`hidden sm:flex items-center justify-center w-[40px] h-[40px] rounded-full ml-[12px] mr-[8px] ztg-transition ${
           leftDisabled
             ? "bg-sky-600 opacity-30 text-pastel-blue"
             : "bg-pastel-blue text-white"
@@ -48,7 +48,7 @@ const HorizontalScroll: FC<HorizontalScrollProps> = ({
       </button>
       <button
         onClick={handleRightClick}
-        className={`hidden md:flex items-center justify-center w-[40px] h-[40px] rounded-full ztg-transition  ${
+        className={`hidden sm:flex items-center justify-center w-[40px] h-[40px] rounded-full ztg-transition  ${
           rightDisabled
             ? "bg-sky-600 opacity-30 text-pastel-blue"
             : "bg-pastel-blue text-white"

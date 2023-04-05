@@ -32,7 +32,8 @@ const MarketScroll = observer(
 
     //calculate cards shown and width based on container width
 
-    const cardsShown = windowWidth < BREAKPOINTS.lg ? 2 : 3;
+    const cardsShown =
+      windowWidth < BREAKPOINTS.md ? 1 : windowWidth < BREAKPOINTS.lg ? 2 : 3;
     const cardWidth =
       windowWidth < BREAKPOINTS.md
         ? containerWidth
@@ -71,9 +72,9 @@ const MarketScroll = observer(
     return (
       <div
         ref={containerRef}
-        className="grid gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+        className="grid gap-y-7 sm:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
       >
-        <h2 className="sm:col-span-2">{title}</h2>
+        <h2 className="sm:col-span-2 text-center sm:text-start">{title}</h2>
         <HorizontalScroll
           classes="order-2 sm:order-none"
           link={link}
