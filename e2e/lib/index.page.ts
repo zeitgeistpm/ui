@@ -1,4 +1,8 @@
 import { Locator, Page } from "@playwright/test";
+import path from "path";
+
+const resolvePath = (p: string) => path.resolve(__dirname, "..", p);
+const resolveHarFile = (p: string) => resolvePath(`har-files/${p}`);
 
 export class IndexPage {
   readonly learnSection: Locator;
@@ -11,8 +15,17 @@ export class IndexPage {
     this.heroSlider = page.getByTestId("HeroSlider__container");
   }
 
-  async goto() {
+  async goto(
+    { useHar, harFile }: { useHar?: boolean; harFile?: string } = {
+      useHar: false,
+    },
+  ) {
     await this.page.goto("/");
+    if (useHar) {
+      await this.page.routeFromHAR(
+        resolveHarFile(harFile ?? "production-graphql.index.har"),
+      );
+    }
   }
 
   getLearnSectionButtons(): Locator {
