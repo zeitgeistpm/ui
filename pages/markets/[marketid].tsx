@@ -44,6 +44,7 @@ import {
 } from "lib/hooks/queries/useMarketPriceHistory";
 import { filters } from "components/ui/TimeFilters";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
+import { useRpcMarket } from "lib/hooks/queries/useRpcMarket";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -116,6 +117,8 @@ const Market: NextPage<{
   });
   const { data: marketStage } = useMarketStage(marketSdkv2);
   const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
+
+  const { data: rpcMarket } = useRpcMarket(Number(marketid));
 
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
