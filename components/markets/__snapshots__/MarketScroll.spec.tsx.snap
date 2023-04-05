@@ -2,10 +2,10 @@
 
 exports[`MarketScroll renders correctly - four markets: MarketScroll - four markets - default 1`] = `
 <div
-  className="grid gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+  className="grid gap-y-7 sm:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
 >
   <h2
-    className="sm:col-span-2"
+    className="sm:col-span-2 text-center sm:text-start"
   >
     Title
   </h2>
@@ -22,7 +22,7 @@ exports[`MarketScroll renders correctly - four markets: MarketScroll - four mark
       CTA
     </a>
     <button
-      className="hidden md:flex items-center justify-center w-[40px] h-[40px] rounded-full ml-[12px] mr-[8px] ztg-transition bg-sky-600 opacity-30 text-pastel-blue"
+      className="hidden sm:flex items-center justify-center w-[40px] h-[40px] rounded-full ml-[12px] mr-[8px] ztg-transition bg-sky-600 opacity-30 text-pastel-blue"
       data-testid="HorizontalScroll__leftButton"
       disabled={true}
       onClick={[Function]}
@@ -45,7 +45,7 @@ exports[`MarketScroll renders correctly - four markets: MarketScroll - four mark
       </svg>
     </button>
     <button
-      className="hidden md:flex items-center justify-center w-[40px] h-[40px] rounded-full ztg-transition  bg-pastel-blue text-white"
+      className="hidden sm:flex items-center justify-center w-[40px] h-[40px] rounded-full ztg-transition  bg-pastel-blue text-white"
       data-testid="HorizontalScroll__rightButton"
       disabled={false}
       onClick={[Function]}
@@ -999,10 +999,10 @@ exports[`MarketScroll renders correctly - four markets: MarketScroll - four mark
 
 exports[`MarketScroll renders correctly - three markets: MarketScroll - three markets 1`] = `
 <div
-  className="grid gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+  className="grid gap-y-7 sm:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
 >
   <h2
-    className="sm:col-span-2"
+    className="sm:col-span-2 text-center sm:text-start"
   >
     Title
   </h2>
@@ -1019,7 +1019,7 @@ exports[`MarketScroll renders correctly - three markets: MarketScroll - three ma
       CTA
     </a>
     <button
-      className="hidden md:flex items-center justify-center w-[40px] h-[40px] rounded-full ml-[12px] mr-[8px] ztg-transition bg-sky-600 opacity-30 text-pastel-blue"
+      className="hidden sm:flex items-center justify-center w-[40px] h-[40px] rounded-full ml-[12px] mr-[8px] ztg-transition bg-sky-600 opacity-30 text-pastel-blue"
       data-testid="HorizontalScroll__leftButton"
       disabled={true}
       onClick={[Function]}
@@ -1042,7 +1042,7 @@ exports[`MarketScroll renders correctly - three markets: MarketScroll - three ma
       </svg>
     </button>
     <button
-      className="hidden md:flex items-center justify-center w-[40px] h-[40px] rounded-full ztg-transition  bg-pastel-blue text-white"
+      className="hidden sm:flex items-center justify-center w-[40px] h-[40px] rounded-full ztg-transition  bg-pastel-blue text-white"
       data-testid="HorizontalScroll__rightButton"
       disabled={false}
       onClick={[Function]}
