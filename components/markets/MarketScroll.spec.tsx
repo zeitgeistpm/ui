@@ -1,12 +1,9 @@
-import { render } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import renderer from "react-test-renderer";
 import MarketScroll from "./MarketScroll";
 import "@testing-library/jest-dom";
-import { IndexedMarketCardData } from "./market-card";
 
-window.HTMLElement.prototype.scroll = function (
-  opts: ScrollToOptions | number,
-) {};
+window.HTMLElement.prototype.scroll = jest.fn().mockImplementation(() => {});
 
 //@ts-ignore
 window.ResizeObserver = function () {
@@ -168,6 +165,47 @@ const markets = [
     status: "Active",
     endDate: "1682287195790",
   },
+  {
+    marketId: 132,
+    question: "Will Singular EVM launch in March?",
+    creation: "Permissionless",
+    img: "QmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv",
+    prediction: {
+      name: "no",
+      price: 1,
+      percentage: 100,
+    },
+    volume: 24909,
+    baseAsset: "Ztg",
+    outcomes: [
+      {
+        color: "#0E992D",
+        name: "yes",
+        ticker: "YES",
+        assetId: '{"categoricalOutcome":[132,0]}',
+        price: 0,
+      },
+      {
+        color: "#00A3FF",
+        name: "no",
+        ticker: "NO",
+        assetId: '{"categoricalOutcome":[132,1]}',
+        price: 1,
+      },
+    ],
+    pool: {
+      volume: "249085258942487",
+      baseAsset: "Ztg",
+    },
+    marketType: {
+      categorical: "2",
+      scalar: null,
+    },
+    tags: ["Dotsama", "Technology"],
+    status: "Resolved",
+    scalarType: null,
+    endDate: "1680299993160",
+  },
 ];
 
 jest.mock("lib/hooks/queries/useMarketsByIds", () => {
@@ -200,6 +238,11 @@ jest.mock("lib/hooks/queries/useMarketsStats", () => {
             liquidity: "20000000000000",
             marketId: 138,
           },
+          {
+            participants: 25,
+            liquidity: "165398124947195",
+            marketId: 132,
+          },
         ],
       };
     },
@@ -211,12 +254,45 @@ const cta = "CTA";
 const link = "#link";
 
 describe("MarketScroll", () => {
-  it("renders correctly", () => {
+  it("renders correctly - three markets", () => {
+    const tree = renderer
+      .create(
+        <MarketScroll
+          markets={markets.slice(0, 3)}
+          title={title}
+          cta={cta}
+          link={link}
+        />,
+      )
+      .toJSON();
+    expect(tree).toMatchSnapshot("MarketScroll - three markets");
+  });
+
+  it("renders correctly - four markets", () => {
     const tree = renderer
       .create(
         <MarketScroll markets={markets} title={title} cta={cta} link={link} />,
       )
       .toJSON();
-    expect(tree).toMatchSnapshot();
+
+    expect(tree).toMatchSnapshot("MarketScroll - four markets - default");
+  });
+
+  // impossible to test - jsdom doesn't support scroll
+  it.skip("scroll button scrolls the element", () => {
+    render(
+      <MarketScroll markets={markets} title={title} cta={cta} link={link} />,
+    );
+
+    const rightButton = screen.getByTestId("HorizontalScroll__rightButton");
+    const scrollArea = screen.getByTestId("MarketScroll__scrollArea");
+
+    scrollArea.scroll = jest.fn().mockImplementationOnce(() => {});
+    fireEvent.click(rightButton);
+
+    // fails although button isn't scrolling
+    // expect(rightButton.scroll).not.toHaveBeenCalled();
+
+    expect(scrollArea.scroll).toHaveBeenCalled();
   });
 });

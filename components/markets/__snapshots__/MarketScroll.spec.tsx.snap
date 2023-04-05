@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`MarketScroll renders correctly 1`] = `
+exports[`MarketScroll renders correctly - four markets: MarketScroll - four markets - default 1`] = `
 <div
   className="grid gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
 >
@@ -23,6 +23,7 @@ exports[`MarketScroll renders correctly 1`] = `
     </a>
     <button
       className="hidden md:flex items-center justify-center w-[40px] h-[40px] rounded-full ml-[12px] mr-[8px] ztg-transition bg-sky-600 opacity-30 text-pastel-blue"
+      data-testid="HorizontalScroll__leftButton"
       disabled={true}
       onClick={[Function]}
     >
@@ -45,6 +46,7 @@ exports[`MarketScroll renders correctly 1`] = `
     </button>
     <button
       className="hidden md:flex items-center justify-center w-[40px] h-[40px] rounded-full ztg-transition  bg-pastel-blue text-white"
+      data-testid="HorizontalScroll__rightButton"
       disabled={false}
       onClick={[Function]}
     >
@@ -71,6 +73,1004 @@ exports[`MarketScroll renders correctly 1`] = `
   >
     <div
       className="flex flex-col gap-7 md:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
+      data-testid="MarketScroll__scrollArea"
+    >
+      <div
+        className="group flex flex-col w-full h-auto rounded-xl p-[15px] relative bg-anti-flash-white hover:bg-pastel-blue market-card rounded-ztg-10 transition duration-500 ease-in-out"
+        data-testid="marketCard-95"
+        style={
+          {
+            "maxWidth": "100%",
+            "minWidth": "100%",
+          }
+        }
+      >
+        <a
+          className="flex flex-col flex-1 gap-2.5"
+          href="/markets/95"
+          onClick={[Function]}
+          onMouseEnter={[Function]}
+          onTouchStart={[Function]}
+        >
+          <div
+            className="flex gap-2.5"
+          >
+            <div
+              className="relative rounded-full flex-shrink-0 overflow-hidden false  "
+              style={
+                {
+                  "height": "70px",
+                  "width": "70px",
+                }
+              }
+            >
+              <img
+                alt="Will ZTG be available for trading on a DEX by the end of May?"
+                className="rounded-full"
+                data-nimg="fill"
+                decoding="async"
+                loading="lazy"
+                onError={[Function]}
+                onLoad={[Function]}
+                sizes="70px"
+                src="/_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=3840&q=75"
+                srcSet="/_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=16&q=75 16w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=32&q=75 32w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=48&q=75 48w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=64&q=75 64w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=96&q=75 96w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=128&q=75 128w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=256&q=75 256w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=384&q=75 384w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=640&q=75 640w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=750&q=75 750w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=828&q=75 828w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=1080&q=75 1080w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=1200&q=75 1200w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=1920&q=75 1920w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=2048&q=75 2048w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYDFUevuzi1um7dS1KixdPtJGheZ4EVWavP6t643JQxUD&w=3840&q=75 3840w"
+                style={
+                  {
+                    "bottom": 0,
+                    "color": "transparent",
+                    "height": "100%",
+                    "left": 0,
+                    "objectFit": "cover",
+                    "objectPosition": "50% 50%",
+                    "position": "absolute",
+                    "right": 0,
+                    "top": 0,
+                    "width": "100%",
+                  }
+                }
+              />
+            </div>
+            <div
+              className="flex flex-wrap gap-2.5 font-medium h-fit"
+            >
+              <span
+                className="px-2.5 py-0.5 h-fit text-xs rounded text-blue-dark bg-blue-light"
+              >
+                Dotsama
+              </span>
+              <span
+                className="px-2.5 py-0.5 h-fit text-xs rounded text-blue-dark bg-blue-light"
+              >
+                Zeitgeist
+              </span>
+              <span
+                className="px-2.5 py-0.5 h-fit text-xs rounded bg-green-light text-green"
+              >
+                ✓ Verified
+              </span>
+            </div>
+          </div>
+          <div
+            className="w-full h-full flex flex-col text-ztg-14-165 whitespace-normal"
+          >
+            <h5
+              className="font-semibold w-full h-fit line-clamp-3"
+            >
+              Will ZTG be available for trading on a DEX by the end of May?
+            </h5>
+          </div>
+          <div
+            className="w-full"
+          >
+            <div
+              className="text-sm flex justify-between mb-1"
+            >
+              <span
+                className="text-blue"
+              >
+                yes
+              </span>
+              <span
+                className="group-hover:text-white text-gray-500 transition-all"
+              >
+                81
+                %
+              </span>
+            </div>
+            <div
+              className="w-full rounded-lg h-1.5 transition-all group-hover:bg-white bg-gray-200"
+            >
+              <div
+                className="rounded-lg h-full bg-blue"
+                style={
+                  {
+                    "width": "81%",
+                  }
+                }
+              />
+            </div>
+          </div>
+          <div>
+            <div
+              className="text-xs mb-2.5"
+            >
+              <span
+                className="font-semibold"
+              >
+                2
+                 outcomes
+              </span>
+              <span>
+                 | Ends May 31, 2023
+              </span>
+            </div>
+            <div
+              className="flex gap-2.5 text-sm"
+            >
+              <div
+                className="flex items-center gap-2"
+              >
+                <svg
+                  fill="none"
+                  height={18}
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width={18}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
+                  />
+                  <circle
+                    cx="9"
+                    cy="7"
+                    r="4"
+                  />
+                  <path
+                    d="M23 21v-2a4 4 0 0 0-3-3.87"
+                  />
+                  <path
+                    d="M16 3.13a4 4 0 0 1 0 7.75"
+                  />
+                </svg>
+                <span>
+                  22
+                </span>
+              </div>
+              <div
+                className="flex items-center gap-2"
+              >
+                <svg
+                  fill="none"
+                  height={18}
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width={18}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <line
+                    x1="18"
+                    x2="18"
+                    y1="20"
+                    y2="10"
+                  />
+                  <line
+                    x1="12"
+                    x2="12"
+                    y1="20"
+                    y2="4"
+                  />
+                  <line
+                    x1="6"
+                    x2="6"
+                    y1="20"
+                    y2="14"
+                  />
+                </svg>
+                <span>
+                  1.08K
+                   
+                  ZTG
+                </span>
+              </div>
+              <div
+                className="flex items-center gap-2 w-[120px]"
+              >
+                <svg
+                  fill="none"
+                  height={18}
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width={18}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"
+                  />
+                </svg>
+                <span>
+                  1.08K
+                   
+                  ZTG
+                </span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div
+        className="group flex flex-col w-full h-auto rounded-xl p-[15px] relative bg-anti-flash-white hover:bg-pastel-blue market-card rounded-ztg-10 transition duration-500 ease-in-out"
+        data-testid="marketCard-138"
+        style={
+          {
+            "maxWidth": "100%",
+            "minWidth": "100%",
+          }
+        }
+      >
+        <a
+          className="flex flex-col flex-1 gap-2.5"
+          href="/markets/138"
+          onClick={[Function]}
+          onMouseEnter={[Function]}
+          onTouchStart={[Function]}
+        >
+          <div
+            className="flex gap-2.5"
+          >
+            <div
+              className="relative rounded-full flex-shrink-0 overflow-hidden false  "
+              style={
+                {
+                  "height": "70px",
+                  "width": "70px",
+                }
+              }
+            >
+              <img
+                alt="Who will win LCS Spring Split 2023 Championship?"
+                className="rounded-full"
+                data-nimg="fill"
+                decoding="async"
+                loading="lazy"
+                onError={[Function]}
+                onLoad={[Function]}
+                sizes="70px"
+                src="/_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=3840&q=75"
+                srcSet="/_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=16&q=75 16w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=32&q=75 32w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=48&q=75 48w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=64&q=75 64w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=96&q=75 96w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=128&q=75 128w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=256&q=75 256w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=384&q=75 384w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=640&q=75 640w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=750&q=75 750w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=828&q=75 828w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=1080&q=75 1080w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=1200&q=75 1200w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=1920&q=75 1920w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=2048&q=75 2048w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmW9LQnBsxqs3sYbQuN2AQTMFwyGznm8JRQuNoCnXtUizU&w=3840&q=75 3840w"
+                style={
+                  {
+                    "bottom": 0,
+                    "color": "transparent",
+                    "height": "100%",
+                    "left": 0,
+                    "objectFit": "cover",
+                    "objectPosition": "50% 50%",
+                    "position": "absolute",
+                    "right": 0,
+                    "top": 0,
+                    "width": "100%",
+                  }
+                }
+              />
+            </div>
+            <div
+              className="flex flex-wrap gap-2.5 font-medium h-fit"
+            >
+              <span
+                className="px-2.5 py-0.5 h-fit text-xs rounded text-blue-dark bg-blue-light"
+              >
+                E-Sports
+              </span>
+              <span
+                className="px-2.5 py-0.5 h-fit text-xs rounded bg-green-light text-green"
+              >
+                ✓ Verified
+              </span>
+            </div>
+          </div>
+          <div
+            className="w-full h-full flex flex-col text-ztg-14-165 whitespace-normal"
+          >
+            <h5
+              className="font-semibold w-full h-fit line-clamp-3"
+            >
+              Who will win LCS Spring Split 2023 Championship?
+            </h5>
+          </div>
+          <div
+            className="w-full"
+          >
+            <div
+              className="text-sm flex justify-between mb-1"
+            >
+              <span
+                className="text-blue"
+              >
+                Cloud9
+              </span>
+              <span
+                className="group-hover:text-white text-gray-500 transition-all"
+              >
+                30
+                %
+              </span>
+            </div>
+            <div
+              className="w-full rounded-lg h-1.5 transition-all group-hover:bg-white bg-gray-200"
+            >
+              <div
+                className="rounded-lg h-full bg-blue"
+                style={
+                  {
+                    "width": "30%",
+                  }
+                }
+              />
+            </div>
+          </div>
+          <div>
+            <div
+              className="text-xs mb-2.5"
+            >
+              <span
+                className="font-semibold"
+              >
+                6
+                 outcomes
+              </span>
+              <span>
+                 | Ends April 7, 2023
+              </span>
+            </div>
+            <div
+              className="flex gap-2.5 text-sm"
+            >
+              <div
+                className="flex items-center gap-2"
+              >
+                <svg
+                  fill="none"
+                  height={18}
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width={18}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
+                  />
+                  <circle
+                    cx="9"
+                    cy="7"
+                    r="4"
+                  />
+                  <path
+                    d="M23 21v-2a4 4 0 0 0-3-3.87"
+                  />
+                  <path
+                    d="M16 3.13a4 4 0 0 1 0 7.75"
+                  />
+                </svg>
+                <span>
+                  1
+                </span>
+              </div>
+              <div
+                className="flex items-center gap-2"
+              >
+                <svg
+                  fill="none"
+                  height={18}
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width={18}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <line
+                    x1="18"
+                    x2="18"
+                    y1="20"
+                    y2="10"
+                  />
+                  <line
+                    x1="12"
+                    x2="12"
+                    y1="20"
+                    y2="4"
+                  />
+                  <line
+                    x1="6"
+                    x2="6"
+                    y1="20"
+                    y2="14"
+                  />
+                </svg>
+                <span>
+                  0
+                   
+                  ZTG
+                </span>
+              </div>
+              <div
+                className="flex items-center gap-2 w-[120px]"
+              >
+                <svg
+                  fill="none"
+                  height={18}
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width={18}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"
+                  />
+                </svg>
+                <span>
+                  2K
+                   
+                  ZTG
+                </span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div
+        className="group flex flex-col w-full h-auto rounded-xl p-[15px] relative bg-anti-flash-white hover:bg-pastel-blue market-card rounded-ztg-10 transition duration-500 ease-in-out"
+        data-testid="marketCard-134"
+        style={
+          {
+            "maxWidth": "100%",
+            "minWidth": "100%",
+          }
+        }
+      >
+        <a
+          className="flex flex-col flex-1 gap-2.5"
+          href="/markets/134"
+          onClick={[Function]}
+          onMouseEnter={[Function]}
+          onTouchStart={[Function]}
+        >
+          <div
+            className="flex gap-2.5"
+          >
+            <div
+              className="relative rounded-full flex-shrink-0 overflow-hidden false  "
+              style={
+                {
+                  "height": "70px",
+                  "width": "70px",
+                }
+              }
+            >
+              <img
+                alt="Will @realDonaldTrump tweet before the end of April 2023 (UTC)?"
+                className="rounded-full"
+                data-nimg="fill"
+                decoding="async"
+                loading="lazy"
+                onError={[Function]}
+                onLoad={[Function]}
+                sizes="70px"
+                src="/_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=3840&q=75"
+                srcSet="/_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=16&q=75 16w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=32&q=75 32w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=48&q=75 48w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=64&q=75 64w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=96&q=75 96w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=128&q=75 128w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=256&q=75 256w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=384&q=75 384w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=640&q=75 640w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=750&q=75 750w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=828&q=75 828w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=1080&q=75 1080w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=1200&q=75 1200w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=1920&q=75 1920w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=2048&q=75 2048w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmWYFL6Wy79R1JHEsjV1kkbyKDBL5GKxCZeKXMaC1Xb8jv&w=3840&q=75 3840w"
+                style={
+                  {
+                    "bottom": 0,
+                    "color": "transparent",
+                    "height": "100%",
+                    "left": 0,
+                    "objectFit": "cover",
+                    "objectPosition": "50% 50%",
+                    "position": "absolute",
+                    "right": 0,
+                    "top": 0,
+                    "width": "100%",
+                  }
+                }
+              />
+            </div>
+            <div
+              className="flex flex-wrap gap-2.5 font-medium h-fit"
+            >
+              <span
+                className="px-2.5 py-0.5 h-fit text-xs rounded text-blue-dark bg-blue-light"
+              >
+                Politics
+              </span>
+              <span
+                className="px-2.5 py-0.5 h-fit text-xs rounded bg-green-light text-green"
+              >
+                ✓ Verified
+              </span>
+            </div>
+          </div>
+          <div
+            className="w-full h-full flex flex-col text-ztg-14-165 whitespace-normal"
+          >
+            <h5
+              className="font-semibold w-full h-fit line-clamp-3"
+            >
+              Will @realDonaldTrump tweet before the end of April 2023 (UTC)?
+            </h5>
+          </div>
+          <div
+            className="w-full"
+          >
+            <div
+              className="text-sm flex justify-between mb-1"
+            >
+              <span
+                className="text-blue"
+              >
+                no
+              </span>
+              <span
+                className="group-hover:text-white text-gray-500 transition-all"
+              >
+                74
+                %
+              </span>
+            </div>
+            <div
+              className="w-full rounded-lg h-1.5 transition-all group-hover:bg-white bg-gray-200"
+            >
+              <div
+                className="rounded-lg h-full bg-blue"
+                style={
+                  {
+                    "width": "74%",
+                  }
+                }
+              />
+            </div>
+          </div>
+          <div>
+            <div
+              className="text-xs mb-2.5"
+            >
+              <span
+                className="font-semibold"
+              >
+                2
+                 outcomes
+              </span>
+              <span>
+                 | Ends April 23, 2023
+              </span>
+            </div>
+            <div
+              className="flex gap-2.5 text-sm"
+            >
+              <div
+                className="flex items-center gap-2"
+              >
+                <svg
+                  fill="none"
+                  height={18}
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width={18}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
+                  />
+                  <circle
+                    cx="9"
+                    cy="7"
+                    r="4"
+                  />
+                  <path
+                    d="M23 21v-2a4 4 0 0 0-3-3.87"
+                  />
+                  <path
+                    d="M16 3.13a4 4 0 0 1 0 7.75"
+                  />
+                </svg>
+                <span>
+                  4
+                </span>
+              </div>
+              <div
+                className="flex items-center gap-2"
+              >
+                <svg
+                  fill="none"
+                  height={18}
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width={18}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <line
+                    x1="18"
+                    x2="18"
+                    y1="20"
+                    y2="10"
+                  />
+                  <line
+                    x1="12"
+                    x2="12"
+                    y1="20"
+                    y2="4"
+                  />
+                  <line
+                    x1="6"
+                    x2="6"
+                    y1="20"
+                    y2="14"
+                  />
+                </svg>
+                <span>
+                  29.7
+                   
+                  ZTG
+                </span>
+              </div>
+              <div
+                className="flex items-center gap-2 w-[120px]"
+              >
+                <svg
+                  fill="none"
+                  height={18}
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width={18}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"
+                  />
+                </svg>
+                <span>
+                  1.19K
+                   
+                  ZTG
+                </span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div
+        className="group flex flex-col w-full h-auto rounded-xl p-[15px] relative bg-anti-flash-white hover:bg-pastel-blue market-card rounded-ztg-10 transition duration-500 ease-in-out"
+        data-testid="marketCard-132"
+        style={
+          {
+            "maxWidth": "100%",
+            "minWidth": "100%",
+          }
+        }
+      >
+        <a
+          className="flex flex-col flex-1 gap-2.5"
+          href="/markets/132"
+          onClick={[Function]}
+          onMouseEnter={[Function]}
+          onTouchStart={[Function]}
+        >
+          <div
+            className="flex gap-2.5"
+          >
+            <div
+              className="relative rounded-full flex-shrink-0 overflow-hidden false  "
+              style={
+                {
+                  "height": "70px",
+                  "width": "70px",
+                }
+              }
+            >
+              <img
+                alt="Will Singular EVM launch in March?"
+                className="rounded-full"
+                data-nimg="fill"
+                decoding="async"
+                loading="lazy"
+                onError={[Function]}
+                onLoad={[Function]}
+                sizes="70px"
+                src="/_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=3840&q=75"
+                srcSet="/_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=16&q=75 16w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=32&q=75 32w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=48&q=75 48w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=64&q=75 64w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=96&q=75 96w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=128&q=75 128w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=256&q=75 256w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=384&q=75 384w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=640&q=75 640w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=750&q=75 750w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=828&q=75 828w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=1080&q=75 1080w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=1200&q=75 1200w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=1920&q=75 1920w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=2048&q=75 2048w, /_next/image?url=https%3A%2F%2Fipfs-gateway.zeitgeist.pm%2Fipfs%2FQmYhEmCWBajURDZXGPt3aPRSvt6QGRUYcyTba9KgDaHLfv&w=3840&q=75 3840w"
+                style={
+                  {
+                    "bottom": 0,
+                    "color": "transparent",
+                    "height": "100%",
+                    "left": 0,
+                    "objectFit": "cover",
+                    "objectPosition": "50% 50%",
+                    "position": "absolute",
+                    "right": 0,
+                    "top": 0,
+                    "width": "100%",
+                  }
+                }
+              />
+            </div>
+            <div
+              className="flex flex-wrap gap-2.5 font-medium h-fit"
+            >
+              <span
+                className="px-2.5 py-0.5 h-fit text-xs rounded text-blue-dark bg-blue-light"
+              >
+                Dotsama
+              </span>
+              <span
+                className="px-2.5 py-0.5 h-fit text-xs rounded text-blue-dark bg-blue-light"
+              >
+                Technology
+              </span>
+            </div>
+          </div>
+          <div
+            className="w-full h-full flex flex-col text-ztg-14-165 whitespace-normal"
+          >
+            <h5
+              className="font-semibold w-full h-fit line-clamp-3"
+            >
+              Will Singular EVM launch in March?
+            </h5>
+          </div>
+          <div
+            className="w-full"
+          >
+            <div
+              className="text-sm flex justify-between mb-1"
+            >
+              <span
+                className="text-blue"
+              >
+                no
+              </span>
+              <span
+                className="group-hover:text-white text-gray-500 transition-all"
+              >
+                100
+                %
+              </span>
+            </div>
+            <div
+              className="w-full rounded-lg h-1.5 transition-all group-hover:bg-white bg-gray-200"
+            >
+              <div
+                className="rounded-lg h-full bg-blue"
+                style={
+                  {
+                    "width": "100%",
+                  }
+                }
+              />
+            </div>
+          </div>
+          <div>
+            <div
+              className="text-xs mb-2.5"
+            >
+              <span
+                className="font-semibold"
+              >
+                2
+                 outcomes
+              </span>
+              <span>
+                 | Ended March 31, 2023
+              </span>
+            </div>
+            <div
+              className="flex gap-2.5 text-sm"
+            >
+              <div
+                className="flex items-center gap-2"
+              >
+                <svg
+                  fill="none"
+                  height={18}
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width={18}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
+                  />
+                  <circle
+                    cx="9"
+                    cy="7"
+                    r="4"
+                  />
+                  <path
+                    d="M23 21v-2a4 4 0 0 0-3-3.87"
+                  />
+                  <path
+                    d="M16 3.13a4 4 0 0 1 0 7.75"
+                  />
+                </svg>
+                <span>
+                  25
+                </span>
+              </div>
+              <div
+                className="flex items-center gap-2"
+              >
+                <svg
+                  fill="none"
+                  height={18}
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width={18}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <line
+                    x1="18"
+                    x2="18"
+                    y1="20"
+                    y2="10"
+                  />
+                  <line
+                    x1="12"
+                    x2="12"
+                    y1="20"
+                    y2="4"
+                  />
+                  <line
+                    x1="6"
+                    x2="6"
+                    y1="20"
+                    y2="14"
+                  />
+                </svg>
+                <span>
+                  24.9K
+                   
+                  ZTG
+                </span>
+              </div>
+              <div
+                className="flex items-center gap-2 w-[120px]"
+              >
+                <svg
+                  fill="none"
+                  height={18}
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width={18}
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"
+                  />
+                </svg>
+                <span>
+                  16.5K
+                   
+                  ZTG
+                </span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`MarketScroll renders correctly - three markets: MarketScroll - three markets 1`] = `
+<div
+  className="grid gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+>
+  <h2
+    className="sm:col-span-2"
+  >
+    Title
+  </h2>
+  <div
+    className="flex md:ml-auto w-full items-center justify-end order-2 sm:order-none"
+  >
+    <a
+      className="leading-[40px] rounded-ztg-100 text-ztg-14-150 bg-mystic px-[15px] text-center w-full sm:w-fit"
+      href="#link"
+      onClick={[Function]}
+      onMouseEnter={[Function]}
+      onTouchStart={[Function]}
+    >
+      CTA
+    </a>
+    <button
+      className="hidden md:flex items-center justify-center w-[40px] h-[40px] rounded-full ml-[12px] mr-[8px] ztg-transition bg-sky-600 opacity-30 text-pastel-blue"
+      data-testid="HorizontalScroll__leftButton"
+      disabled={true}
+      onClick={[Function]}
+    >
+      <svg
+        className="relative right-[1px]"
+        fill="none"
+        height={24}
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+        width={24}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <polyline
+          points="15 18 9 12 15 6"
+        />
+      </svg>
+    </button>
+    <button
+      className="hidden md:flex items-center justify-center w-[40px] h-[40px] rounded-full ztg-transition  bg-pastel-blue text-white"
+      data-testid="HorizontalScroll__rightButton"
+      disabled={false}
+      onClick={[Function]}
+    >
+      <svg
+        className="relative left-[1px]"
+        fill="none"
+        height={24}
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+        width={24}
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <polyline
+          points="9 18 15 12 9 6"
+        />
+      </svg>
+    </button>
+  </div>
+  <div
+    className="col-span-3 relative"
+  >
+    <div
+      className="flex flex-col gap-7 md:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
+      data-testid="MarketScroll__scrollArea"
     >
       <div
         className="group flex flex-col w-full h-auto rounded-xl p-[15px] relative bg-anti-flash-white hover:bg-pastel-blue market-card rounded-ztg-10 transition duration-500 ease-in-out"

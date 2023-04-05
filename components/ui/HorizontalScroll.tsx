@@ -42,6 +42,7 @@ const HorizontalScroll: FC<HorizontalScrollProps> = ({
             : "bg-pastel-blue text-white"
         }`}
         disabled={leftDisabled}
+        data-testid="HorizontalScroll__leftButton"
       >
         <ChevronLeft className="relative right-[1px]" />
       </button>
@@ -53,6 +54,7 @@ const HorizontalScroll: FC<HorizontalScrollProps> = ({
             : "bg-pastel-blue text-white"
         }`}
         disabled={rightDisabled}
+        data-testid="HorizontalScroll__rightButton"
       >
         <ChevronRight className="relative left-[1px]" />
       </button>

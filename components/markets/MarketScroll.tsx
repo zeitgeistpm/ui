@@ -44,7 +44,7 @@ const MarketScroll = observer(
 
     const moveSize = cardsShown * (cardWidth + gap);
     useEffect(() => {
-      scrollRef.current.scroll({ left: scrollLeft, behavior: "smooth" });
+      scrollRef.current?.scroll({ left: scrollLeft, behavior: "smooth" });
     }, [scrollRef, scrollLeft]);
 
     const handleRightClick = () => {
@@ -87,6 +87,7 @@ const MarketScroll = observer(
           <div
             ref={scrollRef}
             className="flex flex-col gap-7 md:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
+            data-testid="MarketScroll__scrollArea"
           >
             {markets.map((market) => {
               const stat = marketsStats?.find(
