@@ -37,33 +37,50 @@ test.describe("index page", () => {
 
     const prevButton = heroSlider.locator("button").first();
     const nextButton = heroSlider.locator("button").last();
-    const title = await heroSlider.locator("h2").textContent();
 
-    const image = heroSlider.locator("> img");
-    const imageSrc = await image.getAttribute("src");
+    const images = await heroSlider.locator("> img").all();
 
     const hasButtons =
       (await prevButton.isVisible()) && (await nextButton.isVisible());
 
-    if (!hasButtons) {
-      return;
+    if (images.length === 1) {
+      console.log("Hero slider has only one slide");
+      expect(hasButtons).toBe(false);
+    } else {
+      expect(hasButtons).toBe(true);
+
+      const numSlides = images.length;
+
+      let lastTitle: string;
+      let lastSubTitle: string;
+      for (let index = 0; index < numSlides; index++) {
+        expect(await indexPage.getActiveSlideIndex()).toBe(index);
+        const title = await heroSlider.locator("h2").textContent();
+        const subTitle = await heroSlider.locator("p").textContent();
+        if (index > 0) {
+          expect(title).not.toBe(lastTitle);
+          expect(subTitle).not.toBe(lastSubTitle);
+        } else {
+          lastTitle = title;
+          lastSubTitle = subTitle;
+        }
+        await nextButton.click();
+      }
+
+      for (let index = numSlides - 1; index === numSlides; index--) {
+        expect(await indexPage.getActiveSlideIndex()).toBe(index);
+        const title = await heroSlider.locator("h2").textContent();
+        const subTitle = await heroSlider.locator("p").textContent();
+        if (index < numSlides - 1) {
+          expect(title).not.toBe(lastTitle);
+          expect(subTitle).not.toBe(lastSubTitle);
+        } else {
+          lastTitle = title;
+          lastSubTitle = subTitle;
+        }
+        await prevButton.click();
+      }
     }
-
-    await nextButton.click();
-
-    const titleAfterNext = await heroSlider.locator("h2").textContent();
-    const imageSrcAfterNext = await image.getAttribute("src");
-
-    expect(titleAfterNext).not.toBe(title);
-    expect(imageSrcAfterNext).not.toBe(imageSrc);
-
-    await prevButton.click();
-
-    const titleAfterPrev = await heroSlider.locator("h2").textContent();
-    const imageSrcAfterPrev = await image.getAttribute("src");
-
-    expect(titleAfterPrev).not.toBe(titleAfterNext);
-    expect(imageSrcAfterPrev).not.toBe(imageSrcAfterNext);
   });
 
   test("popular categories buttons open correct urls", async ({ page }) => {
