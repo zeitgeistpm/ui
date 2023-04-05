@@ -80,14 +80,14 @@ const AccountButton: FC<{
     <>
       {!connected ? (
         <div
-          className="flex-1"
+          className="sm:mr-5 sm:ml-auto"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
           <button
             className={
               connectButtonClassname ||
-              `flex border-2 rounded-full px-6 leading-[40px] ml-auto ${
+              `flex border-2 rounded-full px-6 leading-[40px] ${
                 pathname === "/"
                   ? "text-black border-black sm:text-white sm:bg-transparent sm:border-white"
                   : "text-black border-black"
@@ -113,7 +113,7 @@ const AccountButton: FC<{
           )}
         </div>
       ) : (
-        <div className="relative">
+        <div className="relative sm:mr-5 sm:ml-auto">
           <Menu>
             {({ open }) => (
               <>
@@ -129,7 +129,7 @@ const AccountButton: FC<{
                       }`}
                     >
                       <div
-                        className={`flex items-center rounded-full h-full border-2 pl-1.5 pr-4 ${
+                        className={`flex items-center rounded-full h-full border-2 pl-1.5 ${
                           pathname === "/"
                             ? `bg-black text-white ${
                                 open ? "border-orange-500" : "border-white"
@@ -154,7 +154,7 @@ const AccountButton: FC<{
                           />
                         </div>
                         <span
-                          className={`font-medium pl-4 text-sm h-full leading-[40px] ${
+                          className={`font-medium px-3.5 text-sm h-full leading-[40px] ${
                             pathname === "/" ? "text-white" : "text-black"
                           }`}
                         >
@@ -174,7 +174,7 @@ const AccountButton: FC<{
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <Menu.Items className="absolute right-0 py-3  mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <Menu.Items className="absolute right-0 py-3 z-40 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="">
                       <div className="border-b-2 mb-3 py-2">
                         <div className="px-4">

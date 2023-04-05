@@ -1,8 +1,9 @@
+import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult, IEventRecord } from "@polkadot/types/types";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import { SubmittableExtrinsic } from "@polkadot/api/types";
-import { UseNotifications } from "lib/state/notifications";
 import { isExtSigner, unsubOrWarns } from "@zeitgeistpm/sdk/dist/util";
+
+import { UseNotifications } from "lib/state/notifications";
 
 type GenericCallback = (...args: any[]) => void;
 
@@ -70,15 +71,15 @@ export const extrinsicCallback = ({
       retractedCallback
         ? retractedCallback()
         : notificationStore?.pushNotification(
-            "This transaction was temporarily retracted. It will take a little longer to complete",
-            { type: "Info" },
-          );
+          "This transaction was temporarily retracted. It will take a little longer to complete",
+          { type: "Info" },
+        );
     } else if (status.isBroadcast) {
       broadcastCallback
         ? broadcastCallback()
         : notificationStore?.pushNotification("Broadcasting transaction...", {
-            autoRemove: true,
-          });
+          autoRemove: true,
+        });
     }
   };
 };
