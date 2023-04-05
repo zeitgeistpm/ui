@@ -178,10 +178,10 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
 
   return (
     <div>
-      {marketStore?.is("Disputed") && authReportNumberOrId != null && (
+      {market?.status === "Disputed" && authReportNumberOrId != null && (
         <>
           <h4 className="mt-10">Authorized Report</h4>
-          {marketStore.type === "categorical" ? (
+          {market.marketType.categorical ? (
             <Table
               columns={columns}
               data={
@@ -202,10 +202,10 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
           )}
         </>
       )}
-      {marketStore?.is("Reported") && (
+      {market?.status === "Reported" && (
         <>
           <h4 className="mt-10">Reported Outcome</h4>
-          {marketStore.type === "categorical" ? (
+          {market.marketType.categorical ? (
             <Table
               columns={columns}
               data={getReportedOutcome()}
@@ -218,10 +218,10 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
           )}
         </>
       )}
-      {marketStore?.is("Disputed") && (
+      {market?.status === "Disputed" && (
         <>
           <h4 className="mt-10">Disputed Outcome</h4>
-          {marketStore.type === "categorical" ? (
+          {market.marketType.categorical ? (
             <Table
               columns={columns}
               data={getReportedOutcome()}
@@ -234,10 +234,10 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
           )}
         </>
       )}
-      {marketStore?.is("Resolved") ? (
+      {market?.status === "Resolved" ? (
         <>
           <h4 className="mt-10">Winning Outcome</h4>
-          {marketStore.type === "categorical" ? (
+          {market.marketType.categorical ? (
             <Table
               columns={columns}
               data={getWinningCategoricalOutcome() as TableData[]}

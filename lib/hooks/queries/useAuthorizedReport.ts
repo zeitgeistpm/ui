@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 
-export const authorizedReportRootKey = "rpc-market";
+export const authorizedReportRootKey = "authorized-report";
 
 export const useAuthorizedReport = (marketId: number) => {
   const [sdk, id] = useSdkv2();
