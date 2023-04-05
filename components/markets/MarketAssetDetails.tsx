@@ -7,6 +7,7 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarket24hrPriceChanges } from "lib/hooks/queries/useMarket24hrPriceChanges";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
+import { useRpcMarket } from "lib/hooks/queries/useRpcMarket";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import moment from "moment";
@@ -39,12 +40,12 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
   const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
   const { data: market } = useMarket({ marketId });
-  console.log(market);
 
   const { data: spotPrices } = useMarketSpotPrices(marketId);
   const { data: priceChanges } = useMarket24hrPriceChanges(marketId);
 
   const { data: disputes } = useMarketDisputes(marketId);
+  const { data: rpcMarket } = useRpcMarket(marketId);
 
   const poolAlreadyDeployed = market?.pool?.poolId != null;
 
@@ -139,20 +140,43 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
     }
   };
 
-  const getReportedOutcome = () => {
-    let outcomeId: number;
-    if (marketStore.is("Disputed") && marketStore.lastDispute) {
-      // @ts-ignore
-      outcomeId = marketStore.lastDispute.outcome.categorical;
-    } else {
-      outcomeId = marketStore.reportedOutcomeIndex;
-    }
-    const outcome = tableData?.find((data) => data.id === outcomeId);
+  const getReportedCategoricalOutcome = () => {
+    if (!rpcMarket) return;
+    const outcomeIndex = rpcMarket.report
+      .unwrap()
+      .outcome.asCategorical.toNumber();
+
+    const outcome = tableData?.find((data) => data.id === outcomeIndex);
+
+    return outcome ? [outcome] : undefined;
+  };
+
+  const getDisputedCategoricalOutcome = () => {
+    const lastDisputeIndex =
+      disputes?.[disputes.length - 1].outcome.asCategorical.toNumber();
+
+    const outcome = tableData?.find((data) => data.id === lastDisputeIndex);
 
     return outcome ? [outcome] : undefined;
   };
 
   const getReportedScalarOutcome = () => {
+    const lastDispute = disputes?.[disputes.length - 1];
+
+    const reportVal = new Decimal(
+      lastDispute?.outcome.asScalar.toString() ??
+        rpcMarket.report?.unwrap().outcome.asScalar.toString(),
+    )
+      .div(ZTG)
+      .toString();
+    if (market.scalarType === "date") {
+      return moment(Number(reportVal)).format("YYYY-MM-DD HH:mm");
+    } else {
+      return reportVal;
+    }
+  };
+
+  const getDisputedScalarOutcome = () => {
     const lastDispute = disputes?.[disputes.length - 1];
     const reportVal = new Decimal(
       lastDispute?.outcome.asScalar.toString() ?? market.report?.outcome.scalar,
@@ -167,10 +191,12 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
   };
 
   const getWinningCategoricalOutcome = () => {
-    const reportedOutcome = marketStore.resolvedCategoricalOutcome;
+    const resolvedOutcomeIndex = rpcMarket.resolvedOutcome
+      .unwrap()
+      .asCategorical.toNumber();
 
     const outcome = tableData?.find(
-      (data) => data.assetId === JSON.stringify(reportedOutcome?.asset),
+      (data) => data.assetId === resolvedOutcomeIndex,
     );
 
     return outcome ? [outcome] : undefined;
@@ -208,7 +234,7 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
           {market.marketType.categorical ? (
             <Table
               columns={columns}
-              data={getReportedOutcome()}
+              data={getReportedCategoricalOutcome()}
               loadingNumber={1}
             />
           ) : (
@@ -224,7 +250,7 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
           {market.marketType.categorical ? (
             <Table
               columns={columns}
-              data={getReportedOutcome()}
+              data={getDisputedCategoricalOutcome()}
               loadingNumber={1}
             />
           ) : (

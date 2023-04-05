@@ -21,8 +21,6 @@ import { getBaseAsset } from "lib/gql/pool";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
-import { useMarketsStore } from "lib/stores/MarketsStore";
-import MarketStore from "lib/stores/MarketStore";
 import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react-lite";
@@ -44,7 +42,6 @@ import {
 } from "lib/hooks/queries/useMarketPriceHistory";
 import { filters } from "components/ui/TimeFilters";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
-import { useRpcMarket } from "lib/hooks/queries/useRpcMarket";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -118,8 +115,6 @@ const Market: NextPage<{
   const { data: marketStage } = useMarketStage(marketSdkv2);
   const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
 
-  const { data: rpcMarket } = useRpcMarket(Number(marketid));
-
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
@@ -153,7 +148,6 @@ const Market: NextPage<{
     ? new Decimal(indexedMarket?.pool?.volume).div(ZTG).toNumber()
     : 0;
   const subsidy = marketSdkv2?.pool?.poolId == null ? 0 : pool?.liquidity;
-  console.log(marketSdkv2);
 
   return (
     <>
@@ -251,7 +245,7 @@ const Market: NextPage<{
             )}
             <Tab.Panels>
               <Tab.Panel>
-                {/* <MarketAssetDetails marketId={Number(marketid)} /> */}
+                <MarketAssetDetails marketId={Number(marketid)} />
               </Tab.Panel>
               <Tab.Panel>
                 {marketSdkv2?.pool && (
