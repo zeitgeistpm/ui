@@ -139,7 +139,7 @@ const MarketCardDetails = ({
             })}`}
         </span>
       </div>
-      <div className="flex gap-2.5 text-sm">
+      <div className="flex gap-2.5 text-sm min-w-full">
         {rows.numParticipants != null ? (
           <div className="flex items-center gap-2">
             <Users size={18} />
@@ -155,7 +155,7 @@ const MarketCardDetails = ({
           </span>
         </div>
         {rows.liquidity != null ? (
-          <div className="flex items-center gap-2 w-[120px]">
+          <div className="flex items-center gap-2">
             <Droplet size={18} />
             <span>
               {formatNumberCompact(
