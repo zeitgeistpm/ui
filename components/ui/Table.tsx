@@ -108,6 +108,10 @@ const isAmountInput = (cellValue: CellValue): cellValue is Amount => {
   return (cellValue as Amount).onChange !== undefined;
 };
 
+const hasZTGPriceLoaded = (ztgPrice: number) => {
+  return ztgPrice !== undefined;
+};
+
 const Cell = observer(
   ({
     type,
@@ -126,19 +130,22 @@ const Cell = observer(
       onClick ? "cursor-pointer" : ""
     }`;
     const style = { height: `${rowHeight}px` };
+    const skeletonElement = (
+      <td
+        className={`font-semibold text-ztg-12-150 ${base}`}
+        onClick={onClick}
+        style={style}
+      >
+        <div className="">
+          <Skeleton className="!transform-none !w-[25px] !h-[25px]" />
+        </div>
+      </td>
+    );
+
     if (value == null) {
-      return (
-        <td
-          className={`font-semibold text-ztg-12-150 ${base}`}
-          onClick={onClick}
-          style={style}
-        >
-          <div className="">
-            <Skeleton className="!transform-none !w-[25px] !h-[25px]" />
-          </div>
-        </td>
-      );
+      return skeletonElement;
     }
+
     switch (type) {
       case "text":
         return (
@@ -196,7 +203,10 @@ const Cell = observer(
           </td>
         );
       case "currency":
-        if (isCurrencyData(value)) {
+        if (
+          isCurrencyData(value) &&
+          hasZTGPriceLoaded(ztgInfo?.price?.toNumber())
+        ) {
           return (
             <td className={`${base} `} onClick={onClick} style={style}>
               <div className="text-ztg-14-150 font-mediun mb-[2px]">
@@ -210,6 +220,8 @@ const Cell = observer(
               </div>
             </td>
           );
+        } else {
+          return skeletonElement;
         }
       case "address":
         return (
