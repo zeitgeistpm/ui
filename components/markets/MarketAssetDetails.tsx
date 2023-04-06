@@ -161,6 +161,8 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
   };
 
   const getReportedScalarOutcome = () => {
+    if (!rpcMarket) return;
+
     const lastDispute = disputes?.[disputes.length - 1];
 
     const reportVal = new Decimal(
@@ -177,7 +179,7 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
   };
 
   const getWinningCategoricalOutcome = () => {
-    const resolvedOutcomeIndex = rpcMarket.resolvedOutcome
+    const resolvedOutcomeIndex = rpcMarket?.resolvedOutcome
       .unwrap()
       .asCategorical.toNumber();
 
