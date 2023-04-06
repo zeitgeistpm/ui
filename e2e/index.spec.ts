@@ -29,6 +29,15 @@ test.describe("index page", () => {
     }
   });
 
+  test("learn section corresponds the snapshot", async ({ page }) => {
+    const indexPage = new IndexPage(page);
+    await indexPage.goto();
+
+    expect(await indexPage.learnSection.screenshot()).toMatchSnapshot(
+      "learnSection.png",
+    );
+  });
+
   test("hero slider chages a slide", async ({ page }) => {
     const indexPage = new IndexPage(page);
     await indexPage.goto();
