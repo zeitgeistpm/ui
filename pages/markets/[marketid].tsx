@@ -252,10 +252,7 @@ const Market: NextPage<{
               <QuillViewer value={indexedMarket.description} />
             </>
           )}
-          <PoolDeployer
-            marketId={Number(marketid)}
-            onPoolDeployed={handlePoolDeployed}
-          />
+          <PoolDeployer marketId={Number(marketid)} />
           <h3 className="text-center text-2xl mt-10">Market Cast</h3>
           <MarketAddresses
             oracleAddress={indexedMarket.oracle}
