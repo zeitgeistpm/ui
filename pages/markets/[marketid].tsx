@@ -21,7 +21,6 @@ import { getBaseAsset } from "lib/gql/pool";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
-import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
@@ -42,6 +41,7 @@ import {
 } from "lib/hooks/queries/useMarketPriceHistory";
 import { filters } from "components/ui/TimeFilters";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
+import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -105,8 +105,6 @@ const Market: NextPage<{
   const router = useRouter();
   const { marketid } = router.query;
   const store = useStore();
-  const [pool, setPool] = useState<CPool>();
-  const poolStore = usePoolsStore();
   const { data: prizePool } = usePrizePool(Number(marketid));
 
   const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
@@ -114,28 +112,11 @@ const Market: NextPage<{
   });
   const { data: marketStage } = useMarketStage(marketSdkv2);
   const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
+  const { data: liquidity } = usePoolLiquidity({ marketId: Number(marketid) });
 
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
-
-  const fetchPool = async () => {
-    if (marketSdkv2 != null && marketSdkv2.pool?.poolId != null) {
-      const poolId = marketSdkv2.pool?.poolId;
-      const pool = await poolStore.getPoolFromChain(Number(poolId));
-
-      setPool(pool);
-    }
-  };
-
-  useEffect(() => {
-    if (!store) return;
-    fetchPool();
-  }, [marketSdkv2, marketid]);
-
-  const handlePoolDeployed = () => {
-    fetchPool();
-  };
 
   //required to fix title element warning
   const question = indexedMarket.question;
@@ -147,7 +128,8 @@ const Market: NextPage<{
   const volume = indexedMarket?.pool?.volume
     ? new Decimal(indexedMarket?.pool?.volume).div(ZTG).toNumber()
     : 0;
-  const subsidy = marketSdkv2?.pool?.poolId == null ? 0 : pool?.liquidity;
+  const subsidy =
+    marketSdkv2?.pool?.poolId == null ? 0 : liquidity?.div(ZTG).toNumber();
 
   return (
     <>
