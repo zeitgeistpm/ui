@@ -54,7 +54,6 @@ class MarketsStore {
       if (pool == null) {
         return;
       }
-      this.store.pools.updateExistingChainPoolIndex(market);
     });
     this.subscriptions[market.id] = [
       sub1,

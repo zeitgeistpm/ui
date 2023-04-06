@@ -23,7 +23,6 @@ import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useMarketsStore } from "lib/stores/MarketsStore";
 import MarketStore from "lib/stores/MarketStore";
-import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
@@ -43,6 +42,7 @@ import {
   PriceHistory,
 } from "lib/hooks/queries/useMarketPriceHistory";
 import { filters } from "components/ui/TimeFilters";
+import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -109,14 +109,13 @@ const Market: NextPage<{
   const [marketStore, setMarketStore] = useState<MarketStore>();
   const [prizePool, setPrizePool] = useState<number>();
   const store = useStore();
-  const [pool, setPool] = useState<CPool>();
-  const poolStore = usePoolsStore();
 
   const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
     marketId: Number(marketid),
   });
   const { data: marketStage } = useMarketStage(marketSdkv2);
   const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
+  const { data: liquidity } = usePoolLiquidity({ marketId: Number(marketid) });
 
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
@@ -128,13 +127,6 @@ const Market: NextPage<{
       setMarketStore(market);
       const prizePool = await market.getPrizePool();
       setPrizePool(Number(prizePool));
-
-      if (market.poolExists) {
-        const { poolId } = market.pool;
-        const pool = await poolStore.getPoolFromChain(Number(poolId));
-
-        setPool(pool);
-      }
     }
   };
 
@@ -157,7 +149,8 @@ const Market: NextPage<{
   const volume = indexedMarket?.pool?.volume
     ? new Decimal(indexedMarket?.pool?.volume).div(ZTG).toNumber()
     : 0;
-  const subsidy = marketSdkv2?.pool?.poolId == null ? 0 : pool?.liquidity;
+  const subsidy =
+    marketSdkv2?.pool?.poolId == null ? 0 : liquidity?.div(ZTG).toNumber();
 
   return (
     <>
