@@ -42,6 +42,7 @@ import {
 import { filters } from "components/ui/TimeFilters";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
+import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -104,15 +105,17 @@ const Market: NextPage<{
 }> = observer(({ indexedMarket, chartSeries, priceHistory, baseAsset }) => {
   const router = useRouter();
   const { marketid } = router.query;
+  const marketId = Number(marketid);
   const store = useStore();
-  const { data: prizePool } = usePrizePool(Number(marketid));
+  const { data: prizePool } = usePrizePool(marketId);
 
   const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
-    marketId: Number(marketid),
+    marketId,
   });
   const { data: marketStage } = useMarketStage(marketSdkv2);
-  const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
-  const { data: liquidity } = usePoolLiquidity({ marketId: Number(marketid) });
+  const { data: spotPrices } = useMarketSpotPrices(marketId);
+  const { data: liquidity } = usePoolLiquidity({ marketId });
+  const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
 
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
@@ -179,7 +182,7 @@ const Market: NextPage<{
         ) : (
           <></>
         )}
-        {marketSdkv2?.pool?.poolId == null && marketIsLoading === false && (
+        {poolId == null && poolIdLoading === false && (
           <div className="flex h-ztg-22 items-center bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
             <div className="w-ztg-20 h-ztg-20">
               <AlertTriangle size={20} />
