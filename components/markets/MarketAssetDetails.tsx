@@ -1,4 +1,4 @@
-import { parseAssetId } from "@zeitgeistpm/sdk-next";
+import { parseAssetId, isRpcSdk } from "@zeitgeistpm/sdk-next";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
@@ -7,8 +7,8 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarket24hrPriceChanges } from "lib/hooks/queries/useMarket24hrPriceChanges";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import MarketStore from "lib/stores/MarketStore";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import moment from "moment";
 import dynamic from "next/dynamic";
@@ -42,7 +42,7 @@ const MarketAssetDetails = observer(
     marketStore: MarketStore;
   }) => {
     const [tableData, setTableData] = useState<TableData[]>();
-    const store = useStore();
+    const [sdk] = useSdkv2();
 
     const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
@@ -63,7 +63,7 @@ const MarketAssetDetails = observer(
 
     useEffect(() => {
       if (
-        store.sdk?.api == null ||
+        !isRpcSdk(sdk) ||
         marketStore?.id == null ||
         marketStore?.status === "Active" ||
         marketStore?.status === "Proposed"
@@ -71,10 +71,9 @@ const MarketAssetDetails = observer(
         return;
       }
       const fetchAuthorizedReport = async (marketId: number) => {
-        const report =
-          await store.sdk.api.query.authorized.authorizedOutcomeReports(
-            marketId,
-          );
+        const report = await sdk.api.query.authorized.authorizedOutcomeReports(
+          marketId,
+        );
 
         if (report.isEmpty === true) {
           return null;
@@ -94,7 +93,7 @@ const MarketAssetDetails = observer(
         },
       );
       return () => sub.unsubscribe();
-    }, [store.sdk?.api, marketStore?.id, marketStore?.status]);
+    }, [sdk, marketStore?.id, marketStore?.status]);
 
     const getPageData = async () => {
       let tblData: TableData[] = [];
