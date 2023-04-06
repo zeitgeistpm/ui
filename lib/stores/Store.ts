@@ -17,7 +17,6 @@ import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 import { isAsset, ztgAsset } from "../types";
 import Wallets from "./wallets";
 import MarketsStore from "./MarketsStore";
-import PoolsStore from "./PoolsStore";
 import { Context, Sdk } from "@zeitgeistpm/sdk-next";
 
 interface Config {
@@ -55,8 +54,6 @@ export default class Store {
   wallets = new Wallets(this);
 
   markets = new MarketsStore(this);
-
-  pools = new PoolsStore(this);
 
   initialized = false;
 
@@ -152,8 +149,6 @@ export default class Store {
     this.wallets.initialize();
 
     this.registerValidationRules();
-
-    this.pools.init();
 
     runInAction(() => {
       this.initialized = true;
