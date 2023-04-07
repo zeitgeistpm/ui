@@ -10,6 +10,7 @@ import { formatNumberCompact } from "lib/util/format-compact";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { Skeleton } from "@material-ui/lab";
+import { hasDatePassed } from "lib/util/hasDatePassed";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -129,7 +130,7 @@ const MarketCardDetails = ({
         <span className="font-semibold">{rows.outcomes} outcomes</span>
         <span>
           {rows.endDate &&
-            ` | ${rows.hasEnded ? "Ends" : "Ended"} ${new Date(
+            ` | ${rows.hasEnded ? "Ended" : "Ends"} ${new Date(
               Number(rows?.endDate),
             ).toLocaleString("en-US", {
               month: "long",
@@ -138,7 +139,7 @@ const MarketCardDetails = ({
             })}`}
         </span>
       </div>
-      <div className="flex gap-2.5 text-sm">
+      <div className="flex gap-2.5 text-sm min-w-full">
         {rows.numParticipants != null ? (
           <div className="flex items-center gap-2">
             <Users size={18} />
@@ -154,7 +155,7 @@ const MarketCardDetails = ({
           </span>
         </div>
         {rows.liquidity != null ? (
-          <div className="flex items-center gap-2 w-[120px]">
+          <div className="flex items-center gap-2">
             <Droplet size={18} />
             <span>
               {formatNumberCompact(
@@ -190,13 +191,6 @@ const MarketCard = ({
   liquidity,
   numParticipants,
 }: MarketCardProps) => {
-  const hasEnded = () => {
-    const currentTime = new Date();
-    const endTime = Number(endDate);
-    const diff = endTime - currentTime.getTime();
-    return diff >= 0 ? true : false;
-  };
-
   const isEnding = () => {
     const currentTime = new Date();
     const endTime = Number(endDate);
@@ -218,7 +212,7 @@ const MarketCard = ({
   const infoRows = {
     marketType: marketType,
     endDate: endDate,
-    hasEnded: hasEnded(),
+    hasEnded: hasDatePassed(Number(endDate)),
     outcomes: outcomes.length,
     volume: volume,
     baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
