@@ -383,7 +383,6 @@ const Table = observer(
         setIsOverflowing(false);
       }
     };
-
     return (
       <>
         {data == null ? (
