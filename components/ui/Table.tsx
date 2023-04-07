@@ -108,10 +108,6 @@ const isAmountInput = (cellValue: CellValue): cellValue is Amount => {
   return (cellValue as Amount).onChange !== undefined;
 };
 
-const hasZTGPriceLoaded = (ztgPrice: number) => {
-  return ztgPrice !== undefined;
-};
-
 const Cell = observer(
   ({
     type,
@@ -124,7 +120,11 @@ const Cell = observer(
     value: string | number | CurrencyData;
     onClick?: () => void;
   }) => {
-    const { data: ztgInfo } = useZtgInfo();
+    const {
+      data: ztgInfo,
+      isLoading: ztgIsLoading,
+      isLoadingError: ztgIsLoadingError,
+    } = useZtgInfo();
 
     const base = `dark:text-white px-ztg-15 h-ztg-72 ${
       onClick ? "cursor-pointer" : ""
@@ -205,7 +205,8 @@ const Cell = observer(
       case "currency":
         if (
           isCurrencyData(value) &&
-          hasZTGPriceLoaded(ztgInfo?.price?.toNumber())
+          ztgIsLoading === false &&
+          ztgIsLoadingError === false
         ) {
           return (
             <td className={`${base} `} onClick={onClick} style={style}>
