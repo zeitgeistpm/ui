@@ -1,5 +1,5 @@
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import BatsthitDevtools from "@yornaath/batshit-devtools-react";
+import BatshitDevtools from "@yornaath/batshit-devtools-react";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
@@ -10,7 +10,7 @@ const DevTools = () => {
       typeof window === "object" ? (
         <Suspense fallback={<></>}>
           <ReactQueryDevtools />
-          <BatsthitDevtools />
+          <BatshitDevtools />
         </Suspense>
       ) : (
         <></>
