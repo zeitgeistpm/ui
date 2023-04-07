@@ -32,7 +32,6 @@ export interface IndexedMarketCardData {
 }
 export interface MarketCardProps extends IndexedMarketCardData {
   className?: string;
-  width?: number;
 }
 
 const Pill = ({ value, classes }: { value: string; classes: string }) => {
@@ -185,7 +184,6 @@ const MarketCard = ({
   scalarType,
   volume,
   baseAsset,
-  width,
   tags = [],
   endDate,
   status,
@@ -233,11 +231,7 @@ const MarketCard = ({
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
         data-testid={`marketCard-${marketId}`}
-        className={`group flex flex-col w-full h-auto rounded-xl p-[15px] relative bg-anti-flash-white hover:bg-pastel-blue ${className}`}
-        style={{
-          minWidth: isNaN(width) ? "100%" : width,
-          maxWidth: isNaN(width) ? "100%" : width,
-        }}
+        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(33.33%-28px)] min-h-[250px] h-auto rounded-xl p-[15px] relative bg-anti-flash-white hover:bg-pastel-blue ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}

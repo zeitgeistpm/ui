@@ -24,13 +24,13 @@ const MarketScroll = observer(
 
     const { width: windowWidth } = useWindowSize();
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
+
     const { data: marketsStats } = useMarketsStats(
       markets.map((m) => m.marketId),
     );
     const gap = 28;
 
     //calculate cards shown and width based on container width
-
     const cardsShown =
       windowWidth < BREAKPOINTS.md ? 1 : windowWidth < BREAKPOINTS.lg ? 2 : 3;
     const cardWidth =
@@ -43,6 +43,7 @@ const MarketScroll = observer(
     const scrollMax = cardWidth * markets.length + gap * (markets.length - 1);
 
     const moveSize = cardsShown * (cardWidth + gap);
+
     useEffect(() => {
       scrollRef.current.scroll({ left: scrollLeft, behavior: "smooth" });
     }, [scrollRef, scrollLeft]);
@@ -101,7 +102,6 @@ const MarketScroll = observer(
                 <MarketCard
                   key={market.marketId}
                   {...market}
-                  width={cardWidth}
                   className="market-card rounded-ztg-10 transition duration-500 ease-in-out"
                 />
               );
