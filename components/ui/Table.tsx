@@ -14,7 +14,6 @@ import Avatar from "./Avatar";
 import { range } from "lodash";
 import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
-import { getCurrentPrediction } from "lib/util/assets";
 
 interface TableProps {
   data: TableData[];
