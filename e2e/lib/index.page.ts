@@ -8,7 +8,7 @@ export class IndexPage {
   constructor(public readonly page: Page) {
     this.learnSection = page.getByTestId("learnSection");
     this.popularCategories = page.getByTestId("popularCategories");
-    this.heroSlider = page.getByTestId("heroSlider");
+    this.heroSlider = page.getByTestId("HeroSlider__container");
   }
 
   async goto() {
@@ -17,5 +17,16 @@ export class IndexPage {
 
   getLearnSectionButtons(): Locator {
     return this.learnSection.locator("a");
+  }
+
+  async getActiveSlideIndex(): Promise<number> {
+    const images = await this.heroSlider.locator("> img").all();
+    for (const image of images) {
+      const isVisible = await image.isVisible();
+      if (isVisible) {
+        return images.indexOf(image);
+      }
+    }
+    return -1;
   }
 }

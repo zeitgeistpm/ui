@@ -6,10 +6,6 @@ import { observer } from "mobx-react";
 import DisputeButton from "./DisputeButton";
 import RedeemButton from "./RedeemButton";
 import ReportButton from "./ReportButton";
-import { useState } from "react";
-import Modal from "components/ui/Modal";
-import TradeForm from "components/trade-form";
-import { useTradeItem } from "lib/hooks/trade";
 import TradeButton from "./TradeButton";
 
 interface AssetActionButtonsProps {
