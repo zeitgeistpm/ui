@@ -315,7 +315,6 @@ export const usePortfolioPositions = (
       const balance = userAssetBalances.get(address, assetId)?.data.balance;
       const totalIssuanceForPoolQuery = poolsTotalIssuance[pool.poolId];
       const totalIssuanceData = poolsTotalIssuance[pool.poolId]?.data;
-
       if (!balance || !totalIssuanceForPoolQuery.data || !totalIssuanceData) {
         stillLoading = true;
         continue;
@@ -437,14 +436,19 @@ export const usePortfolioPositions = (
 
       const totalCost = transactionHistory
         .filter((transaction) => {
-          return transaction.marketId == market.marketId;
+          return (
+            transaction.assetId["CategoricalOutcome"][1] ===
+              assetId?.["CategoricalOutcome"][1] &&
+            transaction.assetId?.["CategoricalOutcome"][0] ===
+              assetId?.["CategoricalOutcome"][0]
+          );
         })
         .reduce((acc, transaction) => {
           return acc + transaction.value;
         }, 0);
 
       const change = diffChange(price, price24HoursAgo);
-      console.log(transactionHistory);
+
       positionsData.push({
         assetId,
         market,

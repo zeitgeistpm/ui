@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import {
+  AssetId,
   parseAssetId,
   getMarketIdOf,
   isIndexedSdk,
@@ -48,6 +49,7 @@ type Action = typeof humanReadableEventMap[keyof typeof humanReadableEventMap];
 
 type TradeEvent = {
   marketId: number;
+  assetId: AssetId;
   question: string;
   action: Action;
   value: number;
@@ -120,6 +122,7 @@ export const useTransactionHistory = (address: string) => {
             marketId: marketId,
             question: marketsMap.get(marketId).question,
             action: action,
+            assetId,
             value:
               action === "Trade" && asset.ztgTraded != null
                 ? new Decimal(asset.ztgTraded).div(ZTG).toNumber()
