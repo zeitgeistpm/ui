@@ -62,6 +62,11 @@ export const MarketPositions = ({
             type: "currency",
           },
           {
+            header: "Total Cost",
+            accessor: "cost",
+            type: "currency",
+          },
+          {
             header: "Total Value",
             accessor: "value",
             type: "currency",
@@ -78,12 +83,23 @@ export const MarketPositions = ({
           },
         ]}
         data={positions.map<TableData>(
-          ({ assetId, price, userBalance, outcome, changePercentage }) => {
+          ({
+            assetId,
+            price,
+            userBalance,
+            outcome,
+            totalCost,
+            changePercentage,
+          }) => {
             return {
               outcome: outcome,
               userBalance: userBalance.div(ZTG).toNumber(),
               price: {
                 value: price.toNumber(),
+                usdValue: usdZtgPrice.toNumber(),
+              },
+              cost: {
+                value: totalCost,
                 usdValue: usdZtgPrice.toNumber(),
               },
               value: {

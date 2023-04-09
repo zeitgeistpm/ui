@@ -35,6 +35,7 @@ import { calcSpotPrice } from "lib/math";
 import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { useMemo } from "react";
 import { MarketBond, useAccountBonds } from "./useAccountBonds";
+import { useTransactionHistory } from "./useTransactionHistory";
 
 export type UsePortfolioPositions = {
   /**
@@ -82,6 +83,10 @@ export type Position<T extends AssetId = AssetId> = {
   price: Decimal;
   /**
    * The price of the position 24 hours ago.
+   */
+  totalCost: number;
+  /**
+   * The total spent to acquire all positions of the asset.
    */
   price24HoursAgo: Decimal;
   /**
@@ -233,6 +238,9 @@ export const usePortfolioPositions = (
       account: address,
     })) ?? [],
   );
+
+  const { data: transactionHistory, isLoading } =
+    useTransactionHistory(address);
 
   const positions = useMemo<Position[] | null>(() => {
     let positionsData: Position[] = [];
@@ -427,13 +435,22 @@ export const usePortfolioPositions = (
         color = "#DF0076";
       }
 
-      const change = diffChange(price, price24HoursAgo);
+      const totalCost = transactionHistory
+        .filter((transaction) => {
+          return transaction.marketId == market.marketId;
+        })
+        .reduce((acc, transaction) => {
+          return acc + transaction.value;
+        }, 0);
 
+      const change = diffChange(price, price24HoursAgo);
+      console.log(transactionHistory);
       positionsData.push({
         assetId,
         market,
         pool,
         price,
+        totalCost,
         price24HoursAgo,
         outcome,
         color,
