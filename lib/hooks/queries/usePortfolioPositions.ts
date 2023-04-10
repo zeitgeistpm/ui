@@ -436,12 +436,23 @@ export const usePortfolioPositions = (
 
       const totalCost = transactionHistory
         .filter((transaction) => {
-          return (
-            transaction.assetId["CategoricalOutcome"][1] ===
-              assetId?.["CategoricalOutcome"][1] &&
-            transaction.assetId?.["CategoricalOutcome"][0] ===
-              assetId?.["CategoricalOutcome"][0]
-          );
+          const scalarTransaction = transaction?.assetId["ScalarOutcome"];
+          const scalarAsset = assetId?.["ScalarOutcome"];
+          const categoricalTransaction =
+            transaction?.assetId["CategoricalOutcome"];
+          const categoricalAsset = assetId?.["CategoricalOutcome"];
+          if (scalarTransaction && scalarAsset) {
+            return (
+              scalarTransaction[1] === scalarAsset[1] &&
+              scalarTransaction[0] === scalarAsset[0]
+            );
+          }
+          if (categoricalTransaction && categoricalAsset) {
+            return (
+              categoricalTransaction[1] === categoricalAsset[1] &&
+              categoricalTransaction[0] === categoricalAsset[0]
+            );
+          }
         })
         .reduce((acc, transaction) => {
           return acc + transaction.value;

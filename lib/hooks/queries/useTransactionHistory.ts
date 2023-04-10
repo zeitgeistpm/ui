@@ -70,7 +70,7 @@ export const useTransactionHistory = (address: string) => {
       if (isIndexedSdk(sdk) && address) {
         const { historicalAssets } = await sdk.indexer.client.request<{
           historicalAssets: {
-            assetId: string;
+            assetId: string | AssetId;
             dAmountInPool: string;
             ztgTraded: string;
             newPrice: number;
