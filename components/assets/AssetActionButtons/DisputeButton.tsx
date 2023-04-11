@@ -6,18 +6,12 @@ import {
   MarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk-next";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
-import {
-  marketDisputesRootKey,
-  useMarketDisputes,
-} from "lib/hooks/queries/useMarketDisputes";
+import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useModalStore } from "lib/stores/ModalStore";
-import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { useMemo } from "react";
 import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
-import { useQueryClient } from "@tanstack/react-query";
 
 const DisputeButton = observer(
   ({
@@ -27,14 +21,9 @@ const DisputeButton = observer(
     market: Market<IndexerContext>;
     assetId: MarketOutcomeAssetId;
   }) => {
-    const [sdk, id] = useSdkv2();
-    const store = useStore();
-    const { wallets } = store;
-    const notificationStore = useNotifications();
+    const [sdk] = useSdkv2();
     const modalStore = useModalStore();
     const assetIndex = getIndexOf(assetId);
-
-    const ticker = market.categories?.[assetIndex].ticker;
 
     const { data: disputes } = useMarketDisputes(market);
 
@@ -54,7 +43,7 @@ const DisputeButton = observer(
           </div>,
           <>Dispute outcome</>,
         );
-      } else if (isRpcSdk(sdk)) {
+      } else {
         modalStore.openModal(
           <div>
             <CategoricalDisputeBox market={market} assetId={assetId} />

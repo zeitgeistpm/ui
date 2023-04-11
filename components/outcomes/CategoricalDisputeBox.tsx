@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import {
   getIndexOf,
   IndexerContext,
@@ -6,7 +7,10 @@ import {
   MarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk-next";
 import TransactionButton from "components/ui/TransactionButton";
-import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
+import {
+  marketDisputesRootKey,
+  useMarketDisputes,
+} from "lib/hooks/queries/useMarketDisputes";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
@@ -22,11 +26,12 @@ const CategoricalDisputeBox = observer(
     market: Market<IndexerContext>;
     assetId: MarketOutcomeAssetId;
   }) => {
-    const [sdk] = useSdkv2();
+    const [sdk, id] = useSdkv2();
     const store = useStore();
     const { data: disputes } = useMarketDisputes(market);
     const notificationStore = useNotifications();
     const modalStore = useModalStore();
+    const queryClient = useQueryClient();
 
     const disputeBond = store.config?.markets.disputeBond;
     const disputeFactor = store.config?.markets.disputeFactor;
@@ -49,6 +54,11 @@ const CategoricalDisputeBox = observer(
       {
         onSuccess: () => {
           modalStore.closeModal();
+          queryClient.invalidateQueries([
+            id,
+            marketDisputesRootKey,
+            market.marketId,
+          ]);
           notificationStore.pushNotification(
             `Successfully disputed. New report: ${assetName}`,
             {
