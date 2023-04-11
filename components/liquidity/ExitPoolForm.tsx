@@ -1,5 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
+import {
+  getIndexOf,
+  IOCategoricalAssetId,
+  IOZtgAssetId,
+  isRpcSdk,
+  parseAssetId,
+  ZTG,
+} from "@zeitgeistpm/sdk-next";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
@@ -47,6 +54,20 @@ const ExitPoolForm = ({
   const { data: market } = useMarket({ poolId });
   const queryClient = useQueryClient();
 
+  // filter out non-winning assets as they are deleted on chain
+  const poolWeights =
+    market.status === "Resolved" && market.marketType.categorical
+      ? pool?.weights.filter((weight) => {
+          const assetId = parseAssetId(weight.assetId).unwrap();
+
+          return (
+            IOZtgAssetId.is(assetId) ||
+            (IOCategoricalAssetId.is(assetId) &&
+              market.resolvedOutcome === getIndexOf(assetId).toString())
+          );
+        })
+      : pool?.weights;
+
   const { send: exitPool, isLoading } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && pool) {
@@ -54,7 +75,7 @@ const ExitPoolForm = ({
         const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
         const feeMultiplier = 1 - config.swaps.exitFee;
 
-        const minAssetsOut = pool?.weights.map((asset, index) => {
+        const minAssetsOut = poolWeights.map((asset) => {
           const id = assetObjStringToId(asset.assetId);
 
           const assetAmount = formValue[id] ?? 0;
@@ -162,10 +183,12 @@ const ExitPoolForm = ({
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-y-6 max-h-[200px] md:max-h-[400px] overflow-y-auto">
-        {pool?.weights.map((asset, index) => {
+        {poolWeights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
           const assetName =
-            market?.categories[index]?.name ?? pool.baseAsset.toUpperCase();
+            poolWeights.length - 1 === index
+              ? pool.baseAsset.toUpperCase()
+              : market?.categories[index]?.name;
 
           if (!userPercentageOwnership || userPercentageOwnership.isNaN())
             return null;
