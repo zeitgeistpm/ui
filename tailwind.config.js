@@ -63,6 +63,12 @@ module.exports = {
       xl: "1440px",
       "2xl": "1728px",
     },
+    containers: {
+      sm: "520px",
+      md: "713px",
+      lg: "984px",
+      xl: "1184px",
+    },
     container: {
       screens: {
         sm: "600px",
@@ -387,5 +393,6 @@ module.exports = {
   plugins: [
     require("@tailwindcss/line-clamp"),
     require("@headlessui/tailwindcss"),
+    require("@tailwindcss/container-queries"),
   ],
 };

@@ -37,7 +37,7 @@ const NotificationCard: FC<{
 
   return (
     <>
-      <span className="text-white ml-ztg-10 mr-ztg-22 flex  justify-center ">
+      <span className="text-white ml-ztg-10 mr-ztg-22 flex justify-center ">
         <div
           className={`p-ztg-5 rounded-ztg-5 w-ztg-34 h-ztg-34 mt-ztg-14 ${getColor(
             type,
@@ -97,7 +97,7 @@ const NotificationCenter = observer(() => {
 
   return (
     <div className="fixed h-full w-full top-0 pointer-events-none z-50">
-      <div className="flex flex-row justify-end pr-ztg-27 pt-[120px]">
+      <div className="flex flex-row justify-end pr-ztg-27 pt-20">
         <div className="flex flex-col">
           <AnimatePresence>
             {notificationStore.notifications.map((notification, index) => (
@@ -107,7 +107,7 @@ const NotificationCenter = observer(() => {
                 exit={{ x: 300, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ type: "spring", duration: 0.7 }}
-                className="flex rounded-ztg-5 border-1 border-sky-600 p-ztg-14 pointer-events-auto"
+                className="mb-[17px] flex rounded-ztg-5 border-1 border-sky-600 p-ztg-14 pointer-events-auto"
                 style={{
                   width: "304px",
                   background: getGradient(notification.type),

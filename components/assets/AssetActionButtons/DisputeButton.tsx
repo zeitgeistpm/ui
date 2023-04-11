@@ -6,7 +6,10 @@ import {
   MarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk-next";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
-import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
+import {
+  marketDisputesRootKey,
+  useMarketDisputes,
+} from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useNotifications } from "lib/state/notifications";
@@ -15,6 +18,7 @@ import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useMemo } from "react";
 import { useWallet } from "lib/stores/wallets";
+import { useQueryClient } from "@tanstack/react-query";
 
 const DisputeButton = observer(
   ({
@@ -29,14 +33,20 @@ const DisputeButton = observer(
     const wallet = useWallet();
     const notificationStore = useNotifications();
     const modalStore = useModalStore();
+    const queryClient = useQueryClient();
+    const assetIndex = getIndexOf(assetId);
 
-    const ticker = market.categories?.[getIndexOf(assetId)].ticker;
+    const ticker = market.categories?.[assetIndex].ticker;
 
     const { data: disputes } = useMarketDisputes(market);
 
     const disputeDisabled = useMemo(() => {
-      return sdk && !isRpcSdk(sdk);
-    }, [sdk, disputes?.length]);
+      const assetAlreadyReported =
+        market.marketType.categorical &&
+        market.report.outcome.categorical === assetIndex;
+
+      return (sdk && !isRpcSdk(sdk)) || assetAlreadyReported;
+    }, [sdk, disputes?.length, market, assetIndex]);
 
     const handleClick = async () => {
       if (market.marketType.scalar) {
@@ -59,6 +69,11 @@ const DisputeButton = observer(
                 type: "Success",
               },
             );
+            queryClient.invalidateQueries([
+              id,
+              marketDisputesRootKey,
+              market.marketId,
+            ]);
           },
           failCallback: ({ index, error }) => {
             notificationStore.pushNotification(
@@ -80,7 +95,7 @@ const DisputeButton = observer(
       <button
         onClick={handleClick}
         disabled={disputeDisabled}
-        className="text-mariner font-semibold text-ztg-14-120"
+        className="text-mariner font-semibold text-ztg-14-120 disabled:opacity-50"
       >
         Dispute Outcome
       </button>

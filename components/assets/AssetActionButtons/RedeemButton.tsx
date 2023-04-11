@@ -163,10 +163,8 @@ export const RedeemButtonByValue = observer(
         ) : (
           <button
             onClick={handleClick}
-            className={`text-mariner font-semibold text-ztg-14-120 ${
-              isRedeeming && "animate-pulse"
-            }`}
-            disabled={isRedeeming}
+            className={`text-mariner font-semibold text-ztg-14-120 disabled:opacity-50`}
+            disabled={isRedeeming || value.eq(0)}
           >
             Redeem Tokens
           </button>

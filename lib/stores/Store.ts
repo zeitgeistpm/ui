@@ -16,8 +16,6 @@ import validatorjs from "validatorjs";
 import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 import { isAsset, ztgAsset } from "../types";
 import Wallets from "./wallets";
-import MarketsStore from "./MarketsStore";
-import PoolsStore from "./PoolsStore";
 import { Context, Sdk } from "@zeitgeistpm/sdk-next";
 
 interface Config {
@@ -53,10 +51,6 @@ interface Config {
 
 export default class Store {
   wallets = new Wallets(this);
-
-  markets = new MarketsStore(this);
-
-  pools = new PoolsStore(this);
 
   initialized = false;
 
@@ -150,8 +144,6 @@ export default class Store {
     await this.loadConfig();
 
     this.registerValidationRules();
-
-    this.pools.init();
 
     runInAction(() => {
       this.initialized = true;

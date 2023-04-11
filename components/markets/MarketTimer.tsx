@@ -39,15 +39,15 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
   return (
     <div className="inline-block w-full max-w-[800px]">
       <div className="flex mb-4 items-center">
-        <h3 className="font-bold text-lg mr-4 md:mr-4 text-black">
+        <div className="font-bold text-lg mr-4 md:mr-4 text-black">
           {copy[stage.type].title}
-        </h3>
-        <h4 className="text-sky-600">{copy[stage.type].description}</h4>
+        </div>
+        <div className="text-sky-600">{copy[stage.type].description}</div>
         {!isInfinite(stage) && (
-          <h4 className="ml-auto text-black text-right">
+          <div className="ml-auto text-black text-right">
             {timer.toFixed(0)}{" "}
-            {upperFirst(format + (Math.floor(timer) > 1 ? "s" : ""))} left
-          </h4>
+            {upperFirst(format + (Math.floor(timer) >= 1 ? "s" : ""))} left
+          </div>
         )}
       </div>
       <div className="w-full">

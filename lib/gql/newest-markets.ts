@@ -28,7 +28,6 @@ const marketsQuery = gql`
         name
         ticker
       }
-      outcomeAssets
       pool {
         baseAsset
         volume

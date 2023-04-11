@@ -34,6 +34,7 @@ const MarketHeader: FC<{
   subsidy: number;
   volume: number;
   token: string;
+  marketType: string[];
 }> = ({
   question,
   status,
@@ -44,10 +45,11 @@ const MarketHeader: FC<{
   subsidy,
   volume,
   token,
+  marketType,
 }) => {
   return (
-    <header className="text-center">
-      <h1 className="text-4xl my-5">{question}</h1>
+    <header className="flex flex-col items-center w-full">
+      <h1 className="text-4xl my-5 max-w-[900px] text-center">{question}</h1>
       <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-2 mb-5">
         <HeaderStat label={hasDatePassed(starts) ? "Started" : "Starts"}>
           {new Intl.DateTimeFormat("default", {
@@ -95,6 +97,9 @@ const MarketHeader: FC<{
         {tags?.map((tag, index) => {
           return <Tag key={index}>{tag}</Tag>;
         })}
+        <Tag className="!bg-black text-white">
+          {marketType === null ? "Categorical" : "Scalar"}
+        </Tag>
       </div>
     </header>
   );

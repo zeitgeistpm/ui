@@ -30,6 +30,9 @@ const marketQuery = gql`
       creator
       oracle
       disputeMechanism
+      marketType {
+        scalar
+      }
       period {
         start
         end
@@ -58,6 +61,9 @@ export interface MarketPageIndexedData {
   outcomeAssets: string[];
   pool: { poolId: number; volume: string; createdAt: string };
   scalarType: ScalarRangeType;
+  marketType: {
+    scalar: string[];
+  };
   creator: string;
   oracle: string;
   tags: [];

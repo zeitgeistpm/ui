@@ -21,7 +21,6 @@ import Moment from "moment";
 import { defaultOptions, defaultPlugins } from "lib/form";
 import { useStore } from "lib/stores/Store";
 import { useNotifications } from "lib/state/notifications";
-import { useMarketsStore } from "lib/stores/MarketsStore";
 import {
   EndType,
   isMultipleOutcomeEntries,
@@ -59,9 +58,9 @@ import {
   MarketDeadlinesInput,
   MarketDeadlinesValue,
 } from "components/create/MarketDeadlinesInput";
-import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { dateBlock } from "@zeitgeistpm/utility/dist/time";
 import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
@@ -123,7 +122,7 @@ const CreatePage: NextPage = observer(() => {
   const { data: now } = useChainTimeNow();
   const notificationStore = useNotifications();
   const modalStore = useModalStore();
-  const markets = useMarketsStore();
+  const [sdk] = useSdkv2();
   const [formData, setFormData] = useState<CreateMarketFormData>({
     slug: "",
     question: "",
@@ -611,7 +610,7 @@ const CreatePage: NextPage = observer(() => {
         }
       });
 
-      await markets.getMarket(marketId);
+      await sdk.asRpc().model.markets.get(marketId);
       setNewMarketId(marketId);
       notificationStore.pushNotification(`Indexing market`, {
         type: "Info",
