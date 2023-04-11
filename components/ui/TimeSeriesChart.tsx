@@ -222,7 +222,7 @@ const TimeSeriesChart = observer(
                         : Math.floor(dataMin * 10) / 10;
                     },
                     (dataMax) => {
-                      return dataMax === 0 || 1 - roundingThreshold
+                      return dataMax > 1 - roundingThreshold
                         ? 1
                         : Math.ceil(dataMax * 10) / 10;
                     },
