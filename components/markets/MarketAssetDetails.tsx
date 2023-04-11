@@ -183,9 +183,7 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
       .unwrap()
       .asCategorical.toNumber();
 
-    const outcome = tableData?.find(
-      (data) => data.assetId === resolvedOutcomeIndex,
-    );
+    const outcome = tableData?.find((data) => data.id === resolvedOutcomeIndex);
 
     return outcome ? [outcome] : undefined;
   };
