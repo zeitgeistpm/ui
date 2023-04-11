@@ -231,7 +231,7 @@ const MarketCard = ({
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
         data-testid={`marketCard-${marketId}`}
-        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(33.33%-28px)] min-h-[250px] h-auto rounded-xl p-[15px] relative bg-anti-flash-white hover:bg-pastel-blue ${className}`}
+        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)] min-h-[290px] h-auto rounded-xl p-[15px] relative bg-anti-flash-white hover:bg-pastel-blue ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
