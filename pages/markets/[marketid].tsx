@@ -169,9 +169,7 @@ const Market: NextPage<{
             <MarketTimerSkeleton />
           )}
         </div>
-        {priceHistory?.length > 0 &&
-        chartSeries &&
-        indexedMarket?.pool?.poolId ? (
+        {chartSeries && indexedMarket?.pool?.poolId ? (
           <MarketChart
             marketId={indexedMarket.marketId}
             chartSeries={chartSeries}
