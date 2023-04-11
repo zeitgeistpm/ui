@@ -47,7 +47,7 @@ const ExitPoolForm = ({
   const { data: market } = useMarket({ poolId });
   const queryClient = useQueryClient();
 
-  const { send: exitPool, isLoading: isUpdating } = useExtrinsic(
+  const { send: exitPool, isLoading } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && pool) {
         const formValue = getValues();
@@ -228,7 +228,9 @@ const ExitPoolForm = ({
         type="range"
         {...register("poolSharesPercentage", { min: 0, value: "0" })}
       />
-      <FormTransactionButton disabled={formState.isValid === false}>
+      <FormTransactionButton
+        disabled={formState.isValid === false || isLoading}
+      >
         Exit Pool
       </FormTransactionButton>
     </form>

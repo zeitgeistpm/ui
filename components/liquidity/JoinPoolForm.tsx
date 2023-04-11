@@ -32,7 +32,7 @@ const JoinPoolForm = ({
   const { data: market } = useMarket({ poolId });
   const queryClient = useQueryClient();
 
-  const { send: joinPool, isLoading: isLoading } = useExtrinsic(
+  const { send: joinPool, isLoading } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && pool) {
         const formValue = getValues();
