@@ -199,7 +199,9 @@ const JoinPoolForm = ({
         {...register("baseAssetPercentage", { min: 0, value: "0" })}
       />
       <FormTransactionButton
-        disabled={formState.isValid === false || isLoading}
+        disabled={
+          formState.isValid === false || isLoading || market.status !== "Active"
+        }
       >
         Join Pool
       </FormTransactionButton>
