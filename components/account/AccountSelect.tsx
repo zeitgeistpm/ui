@@ -1,4 +1,5 @@
 import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/stores/wallets";
 import { observer } from "mobx-react";
 import React, { FC, useEffect, useState } from "react";
 import Select, { components, ControlProps } from "react-select";
@@ -74,8 +75,11 @@ const customStyles = {
 
 const AccountSelect: FC = observer(() => {
   const store = useStore();
-  const { wallets } = store;
-  const { accountSelectOptions: options, activeAccount } = wallets;
+  const {
+    accountSelectOptions: options,
+    activeAccount,
+    setActiveAccount,
+  } = useWallet();
 
   useEffect(() => {
     if (activeAccount) {
@@ -88,7 +92,7 @@ const AccountSelect: FC = observer(() => {
     useState<{ value: string; label: string }>();
 
   const onSelectChange = (opt) => {
-    wallets.setActiveAccount(opt.value);
+    setActiveAccount(opt.value);
   };
 
   return (
@@ -109,7 +113,7 @@ const AccountSelect: FC = observer(() => {
       />
 
       <CopyIcon
-        copyText={wallets.activeAccount?.address}
+        copyText={activeAccount?.address}
         className="flex-grow pr-ztg-8"
         size={16}
       />

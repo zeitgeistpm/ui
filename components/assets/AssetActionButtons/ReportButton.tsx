@@ -13,6 +13,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
+import { useWallet } from "lib/stores/wallets";
 
 const ReportButton = observer(
   ({
@@ -24,7 +25,7 @@ const ReportButton = observer(
   }) => {
     const [sdk] = useSdkv2();
     const store = useStore();
-    const { wallets } = store;
+    const wallet = useWallet();
     const notificationStore = useNotifications();
     const modalStore = useModalStore();
 

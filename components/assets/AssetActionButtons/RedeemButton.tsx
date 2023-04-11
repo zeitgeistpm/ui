@@ -17,6 +17,7 @@ import {
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/stores/wallets";
 import { calcScalarWinnings } from "lib/util/calc-scalar-winnings";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
@@ -46,8 +47,8 @@ export const RedeemButtonByAssetId = observer(
     assetId: AssetId;
   }) => {
     const store = useStore();
-    const { wallets } = store;
-    const signer = wallets?.getActiveSigner();
+    const wallet = useWallet();
+    const signer = wallet?.getActiveSigner();
 
     const scalarBounds = getScalarBounds(market);
 
@@ -113,8 +114,8 @@ export const RedeemButtonByValue = observer(
     const [sdk] = useSdkv2();
 
     const store = useStore();
-    const { wallets } = store;
-    const signer = wallets?.getActiveSigner();
+    const wallet = useWallet();
+    const signer = wallet?.getActiveSigner();
     const notificationStore = useNotifications();
 
     const [isRedeeming, setIsRedeeming] = useState(false);

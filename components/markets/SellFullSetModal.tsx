@@ -15,10 +15,11 @@ import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
 import { from } from "rxjs";
+import { useWallet } from "lib/stores/wallets";
 
 const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const store = useStore();
-  const { wallets } = store;
+  const wallet = useWallet();
   const notificationStore = useNotifications();
   const modalStore = useModalStore();
   const [sdkMarket, setSdkMarket] = useState<Market>();
@@ -28,7 +29,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const { data: pool } = usePool({ marketId: marketId });
 
   const { data: balances } = useAccountPoolAssetBalances(
-    wallets.getActiveSigner()?.address,
+    wallet.getActiveSigner()?.address,
     pool,
   );
 
@@ -62,7 +63,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
 
   const handleSignTransaction = async () => {
     if (
-      Number(amount) > wallets.activeBalance.toNumber() ||
+      Number(amount) > wallet.activeBalance.toNumber() ||
       Number(amount) === 0 ||
       sdkMarket == null
     ) {
@@ -71,7 +72,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
 
     setTransacting(true);
 
-    const signer = wallets.getActiveSigner();
+    const signer = wallet.getActiveSigner();
 
     sdkMarket.sellCompleteSet(
       signer,

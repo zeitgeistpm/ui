@@ -14,6 +14,7 @@ import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useMemo } from "react";
+import { useWallet } from "lib/stores/wallets";
 
 const DisputeButton = observer(
   ({
@@ -25,7 +26,7 @@ const DisputeButton = observer(
   }) => {
     const [sdk, id] = useSdkv2();
     const store = useStore();
-    const { wallets } = store;
+    const wallet = useWallet();
     const notificationStore = useNotifications();
     const modalStore = useModalStore();
 
@@ -47,7 +48,7 @@ const DisputeButton = observer(
         );
       } else if (isRpcSdk(sdk)) {
         const ID = getIndexOf(assetId);
-        const signer = wallets.getActiveSigner();
+        const signer = wallet.getActiveSigner();
 
         const callback = extrinsicCallback({
           notifications: notificationStore,

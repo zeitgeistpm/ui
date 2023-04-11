@@ -1,6 +1,10 @@
 import { useAccountModals } from "lib/hooks/account";
 import { useStore } from "lib/stores/Store";
-import Wallets, { WalletErrorMessage } from "lib/stores/wallets";
+import {
+  supportedWallets,
+  useWallet,
+  WalletErrorMessage,
+} from "lib/stores/wallets";
 import { Wallet } from "lib/stores/wallets/types";
 import { flowResult } from "mobx";
 import { observer } from "mobx-react";
@@ -9,19 +13,17 @@ import { Download } from "react-feather";
 
 const WalletSelect = observer(() => {
   const store = useStore();
-  const { wallets } = store;
-  const { errorMessages, enablingInProgress } = wallets;
+  const wallet = useWallet();
   const accountModals = useAccountModals();
 
   const selectWallet = async (wallet: Wallet) => {
-    wallets.stopEnableLoop();
     if (!wallet.installed) {
       window.open(wallet.installUrl);
     } else {
       try {
-        await flowResult(wallets.connectWallet(wallet.extensionName, true));
+        await flowResult(wallet.connectWallet(wallet.extensionName, true));
 
-        if (!wallets.faultyConnection) {
+        if (!wallet.faultyConnection) {
           accountModals.openAccontSelect();
         }
       } catch (err) {
@@ -30,16 +32,10 @@ const WalletSelect = observer(() => {
     }
   };
 
-  useEffect(() => {
-    return () => {
-      wallets.stopEnableLoop();
-    };
-  }, [enablingInProgress]);
-
   return (
     <div className="flex flex-col">
-      {Wallets.supportedWallets.map((wallet, idx) => {
-        const error = errorMessages.find(
+      {supportedWallets.map((wallet, idx) => {
+        const error = wallet.errorMessages.find(
           (e) => e.extensionName === wallet.extensionName,
         );
         const hasError = error != null;

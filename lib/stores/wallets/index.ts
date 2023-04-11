@@ -10,8 +10,10 @@ import { PolkadotjsWallet } from "./polkadotjs-wallet";
 import { SubWallet } from "./subwallet";
 import { TalismanWallet } from "./talisman-wallet";
 import { Wallet, WalletAccount } from "./types";
+import { proxy } from "valtio";
+import { persistentProxy } from "lib/state/util/persistent-proxy";
 
-const supportedWallets = [
+export const supportedWallets = [
   new PolkadotjsWallet(),
   new SubWallet(),
   new TalismanWallet(),
@@ -34,7 +36,34 @@ export type WalletErrorMessage = {
   message: string;
 };
 
-export default class Wallets {
+export type UseWallet = {
+  activeBalance: Decimal;
+  activeAccount?: WalletAccount;
+  getActiveSigner: () => KeyringPairOrExtSigner | null;
+};
+
+export type WalletState = {
+  selectedAddress: string;
+  activeBalance: Decimal;
+  activeAccount?: WalletAccount;
+};
+
+const selectedAddressProxy = persistentProxy<{ address?: string }>(
+  "selected-account",
+  { address: globalThis.localStorage?.getItem("accountAddress") },
+);
+
+const proxyState = proxy;
+
+export const useWallet = (): UseWallet => {
+  return {
+    activeBalance: new Decimal(0),
+    activeAccount: null,
+    getActiveSigner: () => null,
+  };
+};
+
+class Wallets {
   wallet?: Wallet = undefined;
   accountAddress: string | null = null;
   activeAccount?: WalletAccount = undefined;
@@ -382,9 +411,5 @@ export default class Wallets {
   async initialize() {
     const walletId = localStorage.getItem("walletId");
     return this.connectWallet(walletId);
-  }
-
-  static get supportedWallets() {
-    return supportedWallets;
   }
 }

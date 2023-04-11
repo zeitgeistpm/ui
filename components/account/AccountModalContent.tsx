@@ -4,12 +4,12 @@ import { LogOut } from "react-feather";
 import { useStore } from "lib/stores/Store";
 import AccountSelect from "./AccountSelect";
 import { useModalStore } from "lib/stores/ModalStore";
+import { useWallet } from "lib/stores/wallets";
 
 const AccountModalContent: FC = observer(() => {
   const store = useStore();
 
-  const { wallets } = store;
-  const { activeBalance, disconnectWallet } = wallets;
+  const { activeBalance, disconnectWallet } = useWallet();
 
   const modalStore = useModalStore();
   return (

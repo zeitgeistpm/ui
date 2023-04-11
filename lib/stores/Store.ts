@@ -149,8 +149,6 @@ export default class Store {
     await this.initSDK(endpointOptions[0].value, graphQlEndpoint);
     await this.loadConfig();
 
-    this.wallets.initialize();
-
     this.registerValidationRules();
 
     this.pools.init();

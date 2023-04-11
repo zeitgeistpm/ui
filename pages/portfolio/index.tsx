@@ -4,17 +4,18 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useStore } from "lib/stores/Store";
 import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
+import { useWallet } from "lib/stores/wallets";
 
 const PortfolioIndex: NextPage = observer(() => {
   const router = useRouter();
   const store = useStore();
-  const { wallets } = store;
+  const wallet = useWallet();
   const [noAddress, setNoAddress] = useState<boolean>();
 
   useEffect(() => {
-    if (wallets.activeAccount?.address) {
+    if (wallet.activeAccount?.address) {
       router.push(
-        `portfolio/${wallets.activeAccount.address ?? ""}`,
+        `portfolio/${wallet.activeAccount.address ?? ""}`,
         undefined,
         {
           shallow: true,
@@ -23,7 +24,7 @@ const PortfolioIndex: NextPage = observer(() => {
     } else {
       setNoAddress(true);
     }
-  }, [wallets.activeAccount]);
+  }, [wallet.activeAccount]);
 
   return (
     <>

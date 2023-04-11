@@ -6,6 +6,8 @@ import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useState } from "react";
 
+const {}
+
 export const useExtrinsic = <T>(
   extrinsicFn: (
     params: T,
@@ -55,3 +57,15 @@ export const useExtrinsic = <T>(
 
   return { send, isError, isSuccess, isLoading };
 };
+
+const Declarative = () => {
+  const { send, isError, isSuccess } = useExtrinsic(...)
+
+return (
+  <div>
+    {
+      isError ? <Notification message=""> : ""
+    }
+  </div>
+)
+}

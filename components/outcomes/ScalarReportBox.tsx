@@ -11,6 +11,7 @@ import { ZTG } from "lib/constants";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/stores/wallets";
 import { getCurrentPrediction } from "lib/util/assets";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
@@ -27,7 +28,7 @@ const ScalarReportBox = observer(
   }) => {
     const [sdk] = useSdkv2();
     const store = useStore();
-    const { wallets } = store;
+    const wallet = useWallet();
     const notificationStore = useNotifications();
 
     if (!market) return null;
@@ -54,7 +55,7 @@ const ScalarReportBox = observer(
       const outcomeReport: any = {
         scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
       };
-      const signer = wallets.getActiveSigner();
+      const signer = wallet.getActiveSigner();
 
       const callback = extrinsicCallback({
         notifications: notificationStore,

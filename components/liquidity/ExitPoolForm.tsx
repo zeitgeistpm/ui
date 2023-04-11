@@ -236,3 +236,17 @@ const ExitPoolForm = ({
 };
 
 export default ExitPoolForm;
+
+const Declarative = () => {
+  const { send, isError, isSuccess } = useExtrinsic({} as any);
+
+  return (
+    <div>
+      {isSuccess ? (
+        <Notification message="" success />
+      ) : isError ? (
+        <Notification message="" error />
+      ) : null}
+    </div>
+  );
+};

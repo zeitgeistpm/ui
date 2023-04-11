@@ -24,8 +24,8 @@ const AccountButton: FC<{
   avatarDeps?: any[];
 }> = observer(({ connectButtonClassname, autoClose, avatarDeps }) => {
   const store = useStore();
-  const { wallets } = store;
-  const { connected, activeAccount, activeBalance } = wallets;
+  const { connected, activeAccount, activeBalance, connectWallet } =
+    useWallet();
   const modalStore = useModalStore();
   const accountModals = useAccountModals();
   const { locationAllowed, isUsingVPN } = useUserLocation();
@@ -38,7 +38,7 @@ const AccountButton: FC<{
 
   const connect = async () => {
     if (isNovaWallet) {
-      wallets.connectWallet("polkadot-js", true);
+      connectWallet("polkadot-js", true);
     } else {
       accountModals.openWalletSelect();
     }
