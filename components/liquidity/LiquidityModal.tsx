@@ -11,6 +11,7 @@ import { usePool } from "lib/hooks/queries/usePool";
 import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/stores/wallets";
 import { useMemo } from "react";
 import ExitPoolForm from "./ExitPoolForm";
 import JoinPoolForm from "./JoinPoolForm";
@@ -30,7 +31,8 @@ export const assetObjStringToId = (assetId: string) => {
 const LiquidityModal = ({ poolId }: { poolId: number }) => {
   const store = useStore();
 
-  const connectedAddress = store.wallets.activeAccount?.address;
+  const wallet = useWallet();
+  const connectedAddress = wallet.activeAccount?.address;
   const { data: pool } = usePool({ poolId });
 
   // pool balances

@@ -13,7 +13,7 @@ import { Download } from "react-feather";
 
 const WalletSelect = observer(() => {
   const store = useStore();
-  const wallet = useWallet();
+  const { connectWallet, errorMessages } = useWallet();
   const accountModals = useAccountModals();
 
   const selectWallet = async (wallet: Wallet) => {
@@ -21,9 +21,9 @@ const WalletSelect = observer(() => {
       window.open(wallet.installUrl);
     } else {
       try {
-        await flowResult(wallet.connectWallet(wallet.extensionName, true));
+        await connectWallet(wallet.extensionName);
 
-        if (!wallet.faultyConnection) {
+        if (errorMessages.length > 0) {
           accountModals.openAccontSelect();
         }
       } catch (err) {
@@ -35,7 +35,7 @@ const WalletSelect = observer(() => {
   return (
     <div className="flex flex-col">
       {supportedWallets.map((wallet, idx) => {
-        const error = wallet.errorMessages.find(
+        const error = errorMessages.find(
           (e) => e.extensionName === wallet.extensionName,
         );
         const hasError = error != null;

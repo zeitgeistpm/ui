@@ -3,6 +3,8 @@ import { endpointOptions as endpoints, graphQlEndpoint } from "lib/constants";
 import { memoize } from "lodash-es";
 import { useEffect, useState } from "react";
 import { Subscription } from "rxjs";
+import { proxy } from "valtio";
+import { useProxy } from "valtio/utils";
 import { usePrevious } from "./usePrevious";
 
 export type UseSdkv2 = [
@@ -17,6 +19,10 @@ export type UseSdkv2 = [
   id: string,
 ];
 
+export const sdkProxy = proxy<{ sdk: Sdk<Context> | null }>({
+  sdk: null,
+});
+
 /**
  * Use sdkv2, will initialize and memoize if not present for current store settings.
  * Returns existing instance if initialized.
@@ -27,7 +33,7 @@ export type UseSdkv2 = [
  */
 export const useSdkv2 = (): UseSdkv2 => {
   const [sub, setSub] = useState<Subscription>();
-  const [sdk, setSdk] = useState<Sdk<Context> | null>();
+  const sdkState = useProxy(sdkProxy);
 
   const id = identify(
     endpoints.map((e) => e.value),
@@ -46,7 +52,9 @@ export const useSdkv2 = (): UseSdkv2 => {
       }
 
       const sdk$ = init(endpointVals, graphQlEndpoint);
-      const nextSub = sdk$.subscribe(setSdk);
+      const nextSub = sdk$.subscribe((sdk) => {
+        sdkState.sdk = sdk;
+      });
 
       setSub(nextSub);
 
@@ -58,7 +66,7 @@ export const useSdkv2 = (): UseSdkv2 => {
     }
   }, [id]);
 
-  return [sdk, id];
+  return [sdkState.sdk, id];
 };
 
 /**

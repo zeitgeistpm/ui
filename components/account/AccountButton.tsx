@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 
 import { Menu, Transition } from "@headlessui/react";
 import { getWallets } from "@talismn/connect-wallets";
@@ -7,16 +7,15 @@ import Avatar from "components/ui/Avatar";
 import Modal from "components/ui/Modal";
 import { SUPPORTED_WALLET_NAMES } from "lib/constants";
 import { useAccountModals } from "lib/hooks/account";
-import { usePrevious } from "lib/hooks/usePrevious";
-import { useModalStore } from "lib/stores/ModalStore";
-import { useStore } from "lib/stores/Store";
 import { useUserLocation } from "lib/hooks/useUserLocation";
+import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/stores/wallets";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { DollarSign, Frown, Settings, User } from "react-feather";
 import OnBoardingModal from "./OnboardingModal";
-import dynamic from "next/dynamic";
 
 const AccountButton: FC<{
   connectButtonClassname?: string;
@@ -24,9 +23,13 @@ const AccountButton: FC<{
   avatarDeps?: any[];
 }> = observer(({ connectButtonClassname, autoClose, avatarDeps }) => {
   const store = useStore();
-  const { connected, activeAccount, activeBalance, connectWallet } =
-    useWallet();
-  const modalStore = useModalStore();
+  const {
+    connected,
+    activeAccount,
+    activeBalance,
+    connectWallet,
+    disconnectWallet,
+  } = useWallet();
   const accountModals = useAccountModals();
   const { locationAllowed, isUsingVPN } = useUserLocation();
   const [hovering, setHovering] = useState<boolean>(false);
@@ -38,7 +41,7 @@ const AccountButton: FC<{
 
   const connect = async () => {
     if (isNovaWallet) {
-      connectWallet("polkadot-js", true);
+      connectWallet("polkadot-js");
     } else {
       accountModals.openWalletSelect();
     }
@@ -52,15 +55,7 @@ const AccountButton: FC<{
     setHovering(false);
   };
 
-  const prevactiveAccount = usePrevious(activeAccount);
-
   const { pathname } = useRouter();
-
-  useEffect(() => {
-    if (autoClose && activeAccount !== prevactiveAccount) {
-      modalStore.closeModal();
-    }
-  }, [activeAccount]);
 
   const hasWallet =
     typeof window !== "undefined" &&
@@ -158,7 +153,8 @@ const AccountButton: FC<{
                             pathname === "/" ? "text-white" : "text-black"
                           }`}
                         >
-                          {shortenAddress(activeAccount?.address, 6, 4)}
+                          {activeAccount &&
+                            shortenAddress(activeAccount?.address, 6, 4)}
                         </span>
                       </div>
                     </div>
@@ -187,9 +183,10 @@ const AccountButton: FC<{
                             <div
                               className={`group font-bold flex w-full items-center rounded-md px-2 py-2 text-sm`}
                             >
-                              {`${formatNumberLocalized(
-                                activeBalance?.abs().toNumber(),
-                              )} ${store.config?.tokenSymbol}`}
+                              {activeBalance &&
+                                `${formatNumberLocalized(
+                                  activeBalance?.abs().toNumber(),
+                                )} ${store.config?.tokenSymbol}`}
                             </div>
                           </div>
                         </div>
@@ -258,7 +255,7 @@ const AccountButton: FC<{
                         {({ active }) => (
                           <div
                             className="flex items-center px-4 hover:bg-slate-100"
-                            onClick={() => wallets.disconnectWallet()}
+                            onClick={() => disconnectWallet()}
                           >
                             <Frown />
                             <button

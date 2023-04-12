@@ -16,6 +16,7 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/stores/wallets";
 import { MultipleOutcomeEntry } from "lib/types/create-market";
 import { calculatePoolCost } from "lib/util/market";
 import { observer } from "mobx-react";
@@ -25,6 +26,7 @@ const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[]>();
   const [swapFee, setSwapFee] = useState<string>();
 
+  const wallet = useWallet();
   const { data: poolId } = useMarketPoolId(marketId);
   const { data: market } = useMarket({ marketId });
   const queryClient = useQueryClient();
@@ -93,9 +95,7 @@ const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
               <TransactionButton
                 className="w-ztg-266 ml-ztg-8"
                 onClick={deployPool}
-                disabled={
-                  store.wallets.activeBalance.lessThan(poolCost) || isLoading
-                }
+                disabled={wallet.activeBalance.lessThan(poolCost) || isLoading}
               >
                 Deploy Pool
               </TransactionButton>

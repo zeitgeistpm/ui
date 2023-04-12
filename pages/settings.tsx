@@ -46,7 +46,8 @@ const IdentitySettings = observer(() => {
   const [twitterHandle, setTwitterHandle] = useState("");
   const queryClient = useQueryClient();
   const [_, id] = useSdkv2();
-  const address = store.wallets.activeAccount?.address;
+
+  const address = wallet.activeAccount?.address;
 
   const { data: identity } = useIdentity(address);
 

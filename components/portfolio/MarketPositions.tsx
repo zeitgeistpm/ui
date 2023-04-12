@@ -16,6 +16,7 @@ import Decimal from "decimal.js";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { Position } from "lib/hooks/queries/usePortfolioPositions";
 import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/stores/wallets";
 import Link from "next/link";
 import MarketPositionHeader from "./MarketPositionHeader";
 
@@ -34,8 +35,9 @@ export const MarketPositions = ({
 }: MarketPositionsProps) => {
   const { data: marketStage } = useMarketStage(market);
 
+  const wallet = useWallet();
   const store = useStore();
-  const userAddress = store.wallets?.getActiveSigner()?.address;
+  const userAddress = wallet.getActiveSigner()?.address;
   const isOracle = market?.oracle === userAddress;
 
   return (

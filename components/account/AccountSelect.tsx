@@ -1,3 +1,4 @@
+import { Unpacked } from "@zeitgeistpm/utility/dist/array";
 import { useStore } from "lib/stores/Store";
 import { useWallet } from "lib/stores/wallets";
 import { observer } from "mobx-react";
@@ -74,12 +75,14 @@ const customStyles = {
 };
 
 const AccountSelect: FC = observer(() => {
-  const store = useStore();
-  const {
-    accountSelectOptions: options,
-    activeAccount,
-    setActiveAccount,
-  } = useWallet();
+  const { activeAccount, accounts, setActiveAccount } = useWallet();
+
+  const options = accounts.map((account, id) => {
+    return {
+      label: account.name ?? `Account #${id}`,
+      value: account.address,
+    };
+  });
 
   useEffect(() => {
     if (activeAccount) {
@@ -91,7 +94,7 @@ const AccountSelect: FC = observer(() => {
   const [defaultOption, setDefaultOption] =
     useState<{ value: string; label: string }>();
 
-  const onSelectChange = (opt) => {
+  const onSelectChange = (opt: Unpacked<typeof options>) => {
     setActiveAccount(opt.value);
   };
 

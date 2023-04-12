@@ -107,7 +107,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
 
   const disabled =
     transacting ||
-    Number(amount) > wallets.activeBalance.toNumber() ||
+    Number(amount) > wallet.activeBalance.toNumber() ||
     Number(amount) === 0;
 
   return (
@@ -119,7 +119,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
             {store.config.tokenSymbol}
           </div>
           <span className="font-mono text-ztg-12-150 font-medium ml-auto text-sky-600">
-            {wallets.activeBalance.toNumber()}
+            {wallet.activeBalance.toNumber()}
           </span>
         </div>
         <AmountInput value={amount} onChange={handleAmountChange} min="0" />

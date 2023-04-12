@@ -137,7 +137,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
             {store.config.tokenSymbol}
           </div>
           <span className="font-mono text-ztg-12-150 font-medium ml-auto text-sky-600">
-            {wallets.activeBalance.toNumber()}
+            {wallet.activeBalance.toNumber()}
           </span>
         </div>
         <AmountInput

@@ -3285,7 +3285,7 @@ __metadata:
     uri-js: ^4.4.1
     use-debounce: ^7.0.1
     validatorjs: ^3.22.1
-    valtio: ^1.10.3
+    valtio: ^1.10.4
   languageName: unknown
   linkType: soft
 
@@ -11972,9 +11972,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"valtio@npm:^1.10.3":
-  version: 1.10.3
-  resolution: "valtio@npm:1.10.3"
+"valtio@npm:^1.10.4":
+  version: 1.10.4
+  resolution: "valtio@npm:1.10.4"
   dependencies:
     proxy-compare: 2.5.0
     use-sync-external-store: 1.2.0
@@ -11983,7 +11983,7 @@ __metadata:
   peerDependenciesMeta:
     react:
       optional: true
-  checksum: 2e0951090a0bc9c63ecc1c4fa3bf4dea46b561a1c8e35ae7c7359908029a3b56ea202ebe485152e7c79dfa3781e84d59be5c5cf082bb005ba5b463c3309ed850
+  checksum: 6d877e24cc065ef70b7d4fdfe0914398098c08505df885103bec3bc34ea4c0562d89a94e05c16ddc125ff800601564986eab4792e5ba9f1130013f932f224b1b
   languageName: node
   linkType: hard
 
