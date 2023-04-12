@@ -82,7 +82,8 @@ export async function getStaticProps({ params }) {
   const priceHistory = await getPriceHistory(
     client,
     market.marketId,
-    filters[1].interval,
+    filters[1].timeUnit,
+    filters[1].timeValue,
     filters[1].time,
   );
 

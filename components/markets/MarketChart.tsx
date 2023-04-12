@@ -46,7 +46,8 @@ const MarketChart = ({
 
   const { data: prices } = useMarketPriceHistory(
     marketId,
-    chartFilter.interval,
+    chartFilter.timeUnit,
+    chartFilter.timeValue,
     //hack to make data end on same time as now
     setTimeToNow(new Date(startDate)).toISOString(),
   );
