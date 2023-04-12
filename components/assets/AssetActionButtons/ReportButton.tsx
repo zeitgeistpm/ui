@@ -48,7 +48,7 @@ const ReportButton = observer(
       } else {
         //@ts-ignore
         const ID = assetId.CategoricalOutcome[1];
-        const signer = wallets.getActiveSigner();
+        const signer = wallet.getActiveSigner();
 
         const callback = extrinsicCallback({
           notifications: notificationStore,

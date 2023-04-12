@@ -8,6 +8,7 @@ import Decimal from "decimal.js";
 import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
 import { calcSpotPrice } from "lib/math";
 import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/stores/wallets";
 import { TradeItem } from "../trade";
 import { useSdkv2 } from "../useSdkv2";
 import { useAccountAssetBalances } from "./useAccountAssetBalances";
@@ -21,11 +22,11 @@ export const tradeItemStateRootQueryKey = "trade-item-state";
 
 export const useTradeItemState = (item: TradeItem) => {
   const [sdk, id] = useSdkv2();
-  const { wallets } = useStore();
-  const signer = wallets.activeAccount ? wallets.getActiveSigner() : null;
+  const wallet = useWallet();
+  const signer = wallet.activeAccount ? wallet.getActiveSigner() : null;
   const slippage = 1;
   const { data: traderBaseBalance } = useZtgBalance(
-    wallets.activeAccount?.address,
+    wallet.activeAccount?.address,
   );
 
   const { data: pools } = usePoolsByIds([
@@ -77,7 +78,7 @@ export const useTradeItemState = (item: TradeItem) => {
       id,
       tradeItemStateRootQueryKey,
       poolAccountId,
-      wallets.activeAccount?.address,
+      wallet.activeAccount?.address,
       balances,
       item.action,
       JSON.stringify(item.assetId),
@@ -130,7 +131,7 @@ export const useTradeItemState = (item: TradeItem) => {
         !!traderBaseBalance &&
         !!traderAssetBalance &&
         !!poolAssetBalance &&
-        !!wallets.activeAccount?.address,
+        !!wallet.activeAccount?.address,
       keepPreviousData: true,
     },
   );

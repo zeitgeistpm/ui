@@ -172,22 +172,6 @@ export const useWallet = (): UseWallet => {
     selectedAddressProxy.selectedAddress = undefined;
   };
 
-  const activeAccount: WalletAccount | undefined = useMemo(() => {
-    const userSelectedAddress = walletState.accounts.find((acc) => {
-      return (
-        selectedAddressState.selectedAddress &&
-        encodeAddress(acc.address, 73) ===
-          encodeAddress(selectedAddressState.selectedAddress, 73)
-      );
-    });
-
-    if (!userSelectedAddress) {
-      return walletState.accounts[0];
-    }
-
-    return userSelectedAddress;
-  }, [selectedAddressState.selectedAddress, walletState.accounts]);
-
   const getActiveSigner = (): KeyringPairOrExtSigner | null => {
     if (walletState.wallet == null || !activeAccount) return;
     return {
@@ -203,6 +187,22 @@ export const useWallet = (): UseWallet => {
       selectedAddressProxy.selectedAddress = account.address;
     }
   };
+
+  const activeAccount: WalletAccount | undefined = useMemo(() => {
+    const userSelectedAddress = walletState.accounts.find((acc) => {
+      return (
+        selectedAddressState.selectedAddress &&
+        encodeAddress(acc.address, 73) ===
+          encodeAddress(selectedAddressState.selectedAddress, 73)
+      );
+    });
+
+    if (!userSelectedAddress) {
+      return walletState.accounts[0];
+    }
+
+    return userSelectedAddress;
+  }, [selectedAddressState.selectedAddress, walletState.accounts]);
 
   const activeBalance = useMemo(
     () =>
