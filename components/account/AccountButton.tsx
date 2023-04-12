@@ -25,10 +25,9 @@ const AccountButton: FC<{
   const store = useStore();
   const {
     connected,
-    accounts,
     activeAccount,
     activeBalance,
-    selectWallet: connectWallet,
+    selectWallet,
     disconnectWallet,
   } = useWallet();
   const accountModals = useAccountModals();
@@ -42,7 +41,7 @@ const AccountButton: FC<{
 
   const connect = async () => {
     if (isNovaWallet) {
-      connectWallet("polkadot-js");
+      selectWallet("polkadot-js");
     } else {
       accountModals.openWalletSelect();
     }

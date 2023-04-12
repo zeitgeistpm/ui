@@ -192,7 +192,7 @@ export const useWallet = (): UseWallet => {
 
   const { data: activeBalance } = useZtgBalance(selectedAddress);
 
-  const connectWallet = async (wallet: Wallet | string) => {
+  const selectWallet = async (wallet: Wallet | string) => {
     setSelectedWalletId(isString(wallet) ? wallet : wallet.extensionName);
   };
 
@@ -214,7 +214,7 @@ export const useWallet = (): UseWallet => {
     };
   };
 
-  const setActiveAccount = (account: WalletAccount | string) => {
+  const selectAddress = (account: WalletAccount | string) => {
     if (typeof account === "string") {
       setSelectedAddress(account);
     } else {
@@ -240,9 +240,9 @@ export const useWallet = (): UseWallet => {
   return {
     ...walletState,
     selectedAddress,
-    selectAddress: setActiveAccount,
+    selectAddress,
     activeAccount,
-    selectWallet: connectWallet,
+    selectWallet,
     disconnectWallet,
     getActiveSigner,
     activeBalance: activeBalance?.div(ZTG) ?? new Decimal(0),
