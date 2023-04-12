@@ -62,6 +62,7 @@ import { dateBlock } from "@zeitgeistpm/utility/dist/time";
 import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useWallet } from "lib/state/wallet";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
@@ -166,6 +167,8 @@ const CreatePage: NextPage = observer(() => {
   const [swapFee, setSwapFee] = useState<string>();
   const [txFee, setTxFee] = useState<string>();
 
+  const { data: activeBalance } = useZtgBalance(wallet.selectedAddress);
+
   const router = useRouter();
 
   const questionInputRef = useRef();
@@ -182,6 +185,8 @@ const CreatePage: NextPage = observer(() => {
   >(null);
 
   const [marketImageCid, setMarketImageCid] = useState<string>();
+
+  activeBalance;
 
   useEffect(() => {
     if (marketImageFile == null) {
@@ -835,7 +840,7 @@ const CreatePage: NextPage = observer(() => {
             disabled={
               !form.isValid ||
               !formData.deadlines.isValid ||
-              wallet.activeBalance.lessThan(marketCost) ||
+              activeBalance?.lessThan(marketCost) ||
               (poolRows?.length > 0 && poolValid === false)
             }
           >

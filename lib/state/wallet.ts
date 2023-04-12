@@ -18,8 +18,8 @@ import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 
 export type UseWallet = WalletState & {
+  init: () => void;
   selectedAddress?: string;
-  activeBalance: Decimal;
   activeAccount?: WalletAccount;
   selectWallet: (wallet: Wallet | string) => Promise<void>;
   selectAddress: (account: string) => void;
@@ -31,7 +31,6 @@ export type WalletState = {
   connected: boolean;
   wallet?: Wallet;
   accounts: WalletAccount[];
-  activeBalanceString: string;
   errorMessages: WalletErrorMessage[];
 };
 
@@ -39,7 +38,6 @@ const walletAtom = atom<WalletState>({
   connected: false,
   wallet: undefined,
   accounts: [],
-  activeBalanceString: null,
   errorMessages: [],
 });
 
@@ -65,32 +63,6 @@ export const supportedWallets = [
   new SubWallet(),
   new TalismanWallet(),
 ];
-
-// let balanceSubscriptionUnsub: VoidFunction | null = null;
-
-// subscribe(
-//   proxy({
-//     sdk: sdkProxy,
-//     selectedAddress: selectedAddressProxy,
-//   }),
-//   async () => {
-//     if (balanceSubscriptionUnsub) balanceSubscriptionUnsub();
-
-//     if (!selectedAddressProxy.selectedAddress) return;
-
-//     if (sdkProxy.sdk && isRpcSdk(sdkProxy.sdk)) {
-//       balanceSubscriptionUnsub = await sdkProxy.sdk.api.query.system.account(
-//         selectedAddressProxy.selectedAddress,
-//         ({ data: { free, miscFrozen } }) => {
-//           walletStateProxy.activeBalanceString = new Decimal(free.toString())
-//             .minus(miscFrozen.toString())
-//             .div(ZTG)
-//             .toString();
-//         },
-//       );
-//     }
-//   },
-// );
 
 let accountsSubscriptionUnsub: VoidFunction | null = null;
 
@@ -169,15 +141,6 @@ const enableWallet = async (walletId: Wallet | string) => {
   }
 };
 
-setTimeout(() => {
-  const walletId = store.get(selectedWalletIdAtom);
-  if (walletId) {
-    enableWallet(walletId);
-  } else if (accountsSubscriptionUnsub) {
-    accountsSubscriptionUnsub();
-  }
-});
-
 store.sub(selectedWalletIdAtom, () => {
   const walletId = store.get(selectedWalletIdAtom);
   if (walletId) {
@@ -186,11 +149,15 @@ store.sub(selectedWalletIdAtom, () => {
 });
 
 export const useWallet = (): UseWallet => {
-  const [_, setSelectedWalletId] = useAtom(selectedWalletIdAtom);
+  const [selectedWalletId, setSelectedWalletId] = useAtom(selectedWalletIdAtom);
   const [selectedAddress, setSelectedAddress] = useAtom(selectedAddressAtom);
   const [walletState, setWalletState] = useAtom(walletAtom);
 
-  const { data: activeBalance } = useZtgBalance(selectedAddress);
+  const init = () => {
+    if (selectedWalletId) {
+      enableWallet(selectedWalletId);
+    }
+  };
 
   const selectWallet = async (wallet: Wallet | string) => {
     setSelectedWalletId(isString(wallet) ? wallet : wallet.extensionName);
@@ -239,12 +206,12 @@ export const useWallet = (): UseWallet => {
 
   return {
     ...walletState,
+    init,
     selectedAddress,
     selectAddress,
     activeAccount,
     selectWallet,
     disconnectWallet,
     getActiveSigner,
-    activeBalance: activeBalance?.div(ZTG) ?? new Decimal(0),
   };
 };

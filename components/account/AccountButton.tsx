@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { DollarSign, Frown, Settings, User } from "react-feather";
 import OnBoardingModal from "./OnboardingModal";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 
 const AccountButton: FC<{
   connectButtonClassname?: string;
@@ -26,15 +27,18 @@ const AccountButton: FC<{
   const {
     connected,
     activeAccount,
-    activeBalance,
     selectWallet,
     disconnectWallet,
+    selectedAddress,
   } = useWallet();
   const accountModals = useAccountModals();
   const { locationAllowed, isUsingVPN } = useUserLocation();
   const [hovering, setHovering] = useState<boolean>(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
+
+  const { data: activeBalance } = useZtgBalance(selectedAddress);
+
   const isNovaWallet: boolean =
     //@ts-ignore
     typeof window === "object" && window.walletExtension?.isNovaWallet;

@@ -34,6 +34,7 @@ import { BsGearFill } from "react-icons/bs";
 import { IoIosNotifications, IoIosWarning } from "react-icons/io";
 import Loader from "react-spinners/PulseLoader";
 import { useWallet } from "lib/state/wallet";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 
 const AvatarPage = observer(() => {
   const router = useRouter();
@@ -440,8 +441,10 @@ const ClaimModal = (props: {
 
   const [hasCrossed, setHasCrossed] = useState(false);
 
-  const balance = wallet.activeBalance;
-  const hasEnoughBalance = balance.greaterThan((props.burnAmount + fee) / ZTG);
+  const { data: activeBalance } = useZtgBalance(wallet.selectedAddress);
+
+  const balance = activeBalance;
+  const hasEnoughBalance = balance?.greaterThan((props.burnAmount + fee) / ZTG);
 
   const tx = useMemo(
     () => store.sdk.api.tx.styx.cross(),

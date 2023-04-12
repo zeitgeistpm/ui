@@ -11,7 +11,10 @@ import { accountPoolAssetBalancesRootKey } from "lib/hooks/queries/useAccountPoo
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useRpcMarket } from "lib/hooks/queries/useRpcMarket";
-import { ztgBalanceRootKey } from "lib/hooks/queries/useZtgBalance";
+import {
+  useZtgBalance,
+  ztgBalanceRootKey,
+} from "lib/hooks/queries/useZtgBalance";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
@@ -33,6 +36,8 @@ const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
   const store = useStore();
   const notificationStore = useNotifications();
   const [sdk, id] = useSdkv2();
+
+  const { data: activeBalance } = useZtgBalance(wallet.selectedAddress);
 
   const { send: deployPool, isLoading } = useExtrinsic(
     () => {
@@ -95,7 +100,7 @@ const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
               <TransactionButton
                 className="w-ztg-266 ml-ztg-8"
                 onClick={deployPool}
-                disabled={wallet.activeBalance.lessThan(poolCost) || isLoading}
+                disabled={activeBalance?.lessThan(poolCost) || isLoading}
               >
                 Deploy Pool
               </TransactionButton>

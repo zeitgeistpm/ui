@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
 import { from } from "rxjs";
 import { useWallet } from "lib/state/wallet";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 
 const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const store = useStore();
@@ -27,6 +28,8 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const { data: saturatedMarket } = useSaturatedMarket(market);
   const { data: pool } = usePool({ marketId: marketId });
   const [sdkMarket, setSdkMarket] = useState<Market>();
+
+  const { data: activeBalance } = useZtgBalance(wallet.selectedAddress);
 
   const { data: balances } = useAccountPoolAssetBalances(
     wallet.getActiveSigner()?.address,
@@ -63,7 +66,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
 
   const handleSignTransaction = async () => {
     if (
-      Number(amount) > wallet.activeBalance.toNumber() ||
+      Number(amount) > activeBalance?.toNumber() ||
       Number(amount) === 0 ||
       sdkMarket == null
     ) {
@@ -107,7 +110,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
 
   const disabled =
     transacting ||
-    Number(amount) > wallet.activeBalance.toNumber() ||
+    Number(amount) > activeBalance?.toNumber() ||
     Number(amount) === 0;
 
   return (
@@ -119,7 +122,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
             {store.config.tokenSymbol}
           </div>
           <span className="font-mono text-ztg-12-150 font-medium ml-auto text-sky-600">
-            {wallet.activeBalance.toNumber()}
+            {activeBalance?.toNumber()}
           </span>
         </div>
         <AmountInput value={amount} onChange={handleAmountChange} min="0" />

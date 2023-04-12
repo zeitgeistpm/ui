@@ -5,9 +5,11 @@ import { useStore } from "lib/stores/Store";
 import AccountSelect from "./AccountSelect";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useWallet } from "lib/state/wallet";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 
 const AccountModalContent: FC = observer(() => {
-  const { activeBalance, disconnectWallet } = useWallet();
+  const { selectedAddress, disconnectWallet } = useWallet();
+  const { data: activeBalance } = useZtgBalance(selectedAddress);
   const modalStore = useModalStore();
 
   return (

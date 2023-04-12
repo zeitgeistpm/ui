@@ -20,6 +20,7 @@ import DefaultLayout from "layouts/DefaultLayout";
 import ModalStore from "lib/stores/ModalStore";
 import Store from "lib/stores/Store";
 import dynamic from "next/dynamic";
+import { useWallet } from "lib/state/wallet";
 
 const Onboarding = dynamic(
   () => import("../components/onboarding/Onboarding"),
@@ -38,10 +39,15 @@ const isProduction =
 const queryClient = new QueryClient();
 
 const MyApp = observer(({ Component, pageProps }) => {
+  const wallet = useWallet();
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
   const router = useRouter();
   const [modalStore] = useState(() => new ModalStore());
   const [store] = useState(() => new Store());
+
+  useEffect(() => {
+    wallet.init();
+  }, []);
 
   useEffect(() => {
     if (!isProduction) {
