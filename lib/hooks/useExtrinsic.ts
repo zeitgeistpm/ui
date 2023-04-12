@@ -16,6 +16,7 @@ export const useExtrinsic = <T>(
     onError?: () => void;
   },
 ) => {
+  const wallet = useWallet();
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +27,7 @@ export const useExtrinsic = <T>(
   const send = (params?: T) => {
     setIsLoading(true);
     const extrinsic = extrinsicFn(params);
-    const wallet = useWallet();
+
     const signer = wallet.getActiveSigner() as ExtSigner;
     signAndSend(
       extrinsic,
