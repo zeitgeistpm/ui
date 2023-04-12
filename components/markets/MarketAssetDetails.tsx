@@ -58,6 +58,7 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
 
   useEffect(() => {
     if (
+      !sdk ||
       !isRpcSdk(sdk) ||
       marketId == null ||
       market?.status === "Active" ||
