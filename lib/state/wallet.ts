@@ -1,21 +1,13 @@
 import { encodeAddress } from "@polkadot/util-crypto";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
-import { persistentProxy } from "lib/state/util/persistent-proxy";
-import { DeepReadonly } from "lib/types/deep-readonly";
+import { atom, getDefaultStore, useAtom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 import { isString } from "lodash-es";
 import { useMemo } from "react";
-import { proxy, subscribe, useSnapshot } from "valtio";
-import { atom, useAtom, getDefaultStore } from "jotai";
-import { atomWithStorage } from "jotai/utils";
 import { PolkadotjsWallet } from "../wallets/polkadotjs-wallet";
 import { SubWallet } from "../wallets/subwallet";
 import { TalismanWallet } from "../wallets/talisman-wallet";
 import { Wallet, WalletAccount } from "../wallets/types";
-import { tryCatch } from "@zeitgeistpm/utility/dist/option";
-import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 
 export type UseWallet = WalletState & {
   init: () => void;
