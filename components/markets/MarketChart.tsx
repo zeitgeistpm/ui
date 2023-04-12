@@ -34,10 +34,10 @@ const MarketChart = ({
     if (chartFilter.label === "All") {
       return poolCreationDate;
     } else {
-      const filterDate = new Date(chartFilter.time);
+      const filterDate = new Date(chartFilter.startTime);
       const poolDate = new Date(poolCreationDate);
       if (filterDate.getTime() > poolDate.getTime()) {
-        return chartFilter.time;
+        return chartFilter.startTime;
       } else {
         return poolCreationDate;
       }

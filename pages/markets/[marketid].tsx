@@ -84,7 +84,7 @@ export async function getStaticProps({ params }) {
     market.marketId,
     filters[1].timeUnit,
     filters[1].timeValue,
-    filters[1].time,
+    filters[1].startTime,
   );
 
   return {

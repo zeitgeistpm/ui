@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 
 export interface TimeFilter {
   label: FilterLabel;
-  time: string; // ISO string
+  startTime: string; // ISO string
   timeUnit: TimeUnit;
   timeValue: number;
 }
@@ -15,19 +15,23 @@ export type TimeUnit = "Second" | "Minute" | "Hour" | "Day";
 export const filters: TimeFilter[] = [
   {
     label: "Day",
-    time: new Date(new Date().getTime() - DAY_SECONDS * 1000).toISOString(),
+    startTime: new Date(
+      new Date().getTime() - DAY_SECONDS * 1000,
+    ).toISOString(),
     timeUnit: "Hour",
     timeValue: 1,
   },
   {
     label: "Week",
-    time: new Date(new Date().getTime() - DAY_SECONDS * 1000 * 7).toISOString(),
+    startTime: new Date(
+      new Date().getTime() - DAY_SECONDS * 1000 * 7,
+    ).toISOString(),
     timeUnit: "Hour",
     timeValue: 6,
   },
   {
     label: "Month",
-    time: new Date(
+    startTime: new Date(
       new Date().getTime() - DAY_SECONDS * 1000 * 30,
     ).toISOString(),
     timeUnit: "Day",
@@ -35,7 +39,7 @@ export const filters: TimeFilter[] = [
   },
   {
     label: "All",
-    time: new Date("Wed Dec 30 2020").toISOString(),
+    startTime: new Date("Wed Dec 30 2020").toISOString(),
     timeUnit: "Day",
     timeValue: 1,
   },
