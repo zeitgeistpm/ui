@@ -13,7 +13,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
-import { useWallet } from "lib/stores/wallets";
+import { useWallet } from "lib/state/wallet";
 
 const ReportButton = observer(
   ({

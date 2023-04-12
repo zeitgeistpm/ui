@@ -4,8 +4,8 @@ import {
   supportedWallets,
   useWallet,
   WalletErrorMessage,
-} from "lib/stores/wallets";
-import { Wallet } from "lib/stores/wallets/types";
+} from "lib/state/wallet";
+import { Wallet } from "lib/wallets/types";
 import { flowResult } from "mobx";
 import { observer } from "mobx-react";
 import { useEffect } from "react";

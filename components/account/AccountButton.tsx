@@ -9,7 +9,7 @@ import { SUPPORTED_WALLET_NAMES } from "lib/constants";
 import { useAccountModals } from "lib/hooks/account";
 import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useStore } from "lib/stores/Store";
-import { useWallet } from "lib/stores/wallets";
+import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import dynamic from "next/dynamic";
 import Link from "next/link";

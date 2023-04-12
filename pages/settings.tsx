@@ -15,7 +15,7 @@ import { identityRootKey, useIdentity } from "lib/hooks/queries/useIdentity";
 import { useQueryClient } from "@tanstack/react-query";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useWallet } from "lib/stores/wallets";
+import { useWallet } from "lib/state/wallet";
 
 const SubmitButton: FC<
   PropsWithChildren<{

@@ -61,7 +61,7 @@ import {
 import { dateBlock } from "@zeitgeistpm/utility/dist/time";
 import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useWallet } from "lib/stores/wallets";
+import { useWallet } from "lib/state/wallet";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,

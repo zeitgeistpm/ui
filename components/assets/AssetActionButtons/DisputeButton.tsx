@@ -17,7 +17,7 @@ import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useMemo } from "react";
-import { useWallet } from "lib/stores/wallets";
+import { useWallet } from "lib/state/wallet";
 import { useQueryClient } from "@tanstack/react-query";
 
 const DisputeButton = observer(

@@ -11,7 +11,7 @@ import { usePool } from "lib/hooks/queries/usePool";
 import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useStore } from "lib/stores/Store";
-import { useWallet } from "lib/stores/wallets";
+import { useWallet } from "lib/state/wallet";
 import { useMemo } from "react";
 import ExitPoolForm from "./ExitPoolForm";
 import JoinPoolForm from "./JoinPoolForm";

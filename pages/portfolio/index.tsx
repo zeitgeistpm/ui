@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useStore } from "lib/stores/Store";
 import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
-import { useWallet } from "lib/stores/wallets";
+import { useWallet } from "lib/state/wallet";
 
 const PortfolioIndex: NextPage = observer(() => {
   const router = useRouter();

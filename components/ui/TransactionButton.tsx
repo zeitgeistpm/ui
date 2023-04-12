@@ -3,7 +3,7 @@ import { FC, PropsWithChildren } from "react";
 import { useStore } from "lib/stores/Store";
 import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useAccountModals } from "lib/hooks/account";
-import { useWallet } from "lib/stores/wallets";
+import { useWallet } from "lib/state/wallet";
 
 interface TransactionButtonProps {
   preventDefault?: boolean;

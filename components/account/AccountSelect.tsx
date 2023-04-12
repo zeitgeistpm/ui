@@ -1,6 +1,6 @@
 import { Unpacked } from "@zeitgeistpm/utility/dist/array";
 import { useStore } from "lib/stores/Store";
-import { useWallet } from "lib/stores/wallets";
+import { useWallet } from "lib/state/wallet";
 import { observer } from "mobx-react";
 import React, { FC, useEffect, useMemo, useState } from "react";
 import Select, { components, ControlProps } from "react-select";

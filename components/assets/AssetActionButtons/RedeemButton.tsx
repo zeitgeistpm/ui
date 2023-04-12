@@ -17,7 +17,7 @@ import {
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
-import { useWallet } from "lib/stores/wallets";
+import { useWallet } from "lib/state/wallet";
 import { calcScalarWinnings } from "lib/util/calc-scalar-winnings";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";

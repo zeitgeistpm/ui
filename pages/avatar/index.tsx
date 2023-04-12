@@ -1,5 +1,5 @@
 import { useStore } from "lib/stores/Store";
-import { useWallet } from "lib/stores/wallets";
+import { useWallet } from "lib/state/wallet";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import * as React from "react";

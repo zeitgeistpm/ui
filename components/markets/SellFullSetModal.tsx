@@ -15,7 +15,7 @@ import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
 import { from } from "rxjs";
-import { useWallet } from "lib/stores/wallets";
+import { useWallet } from "lib/state/wallet";
 
 const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const store = useStore();

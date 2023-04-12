@@ -8,7 +8,7 @@ import Decimal from "decimal.js";
 import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
 import { calcSpotPrice } from "lib/math";
 import { useStore } from "lib/stores/Store";
-import { useWallet } from "lib/stores/wallets";
+import { useWallet } from "lib/state/wallet";
 import { TradeItem } from "../trade";
 import { useSdkv2 } from "../useSdkv2";
 import { useAccountAssetBalances } from "./useAccountAssetBalances";

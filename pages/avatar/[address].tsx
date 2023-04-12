@@ -33,7 +33,7 @@ import { AiFillFire, AiFillInfoCircle } from "react-icons/ai";
 import { BsGearFill } from "react-icons/bs";
 import { IoIosNotifications, IoIosWarning } from "react-icons/io";
 import Loader from "react-spinners/PulseLoader";
-import { useWallet } from "lib/stores/wallets";
+import { useWallet } from "lib/state/wallet";
 
 const AvatarPage = observer(() => {
   const router = useRouter();

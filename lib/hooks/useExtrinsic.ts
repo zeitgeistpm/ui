@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
-import { useWallet } from "lib/stores/wallets";
+import { useWallet } from "lib/state/wallet";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (

@@ -1,28 +1,23 @@
-import { KeyringPair } from "@polkadot/keyring/types";
-import keyring from "@polkadot/ui-keyring";
-import { decodeAddress, encodeAddress } from "@polkadot/util-crypto";
+import { encodeAddress } from "@polkadot/util-crypto";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import Store from "lib/stores/Store";
-import { makeAutoObservable, reaction, runInAction } from "mobx";
-import { PolkadotjsWallet } from "./polkadotjs-wallet";
-import { SubWallet } from "./subwallet";
-import { TalismanWallet } from "./talisman-wallet";
-import { Wallet, WalletAccount } from "./types";
-import { proxy, subscribe, useSnapshot } from "valtio";
+import { sdkProxy } from "lib/hooks/useSdkv2";
 import { persistentProxy } from "lib/state/util/persistent-proxy";
-import { derive, useProxy } from "valtio/utils";
-import { sdkProxy, useSdkv2 } from "lib/hooks/useSdkv2";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
-import { useMemo } from "react";
-import { isString } from "lodash-es";
 import { DeepReadonly } from "lib/types/deep-readonly";
+import { isString } from "lodash-es";
+import { useMemo } from "react";
+import { proxy, subscribe, useSnapshot } from "valtio";
+import { PolkadotjsWallet } from "../wallets/polkadotjs-wallet";
+import { SubWallet } from "../wallets/subwallet";
+import { TalismanWallet } from "../wallets/talisman-wallet";
+import { Wallet, WalletAccount } from "../wallets/types";
 
 export type UseWallet = DeepReadonly<
-  typeof walletStateProxy &
-    typeof selectedAddressProxy &
-    typeof selectedWalletIdProxy & {
+  WalletState &
+    SelectedAddressState &
+    SelectedWalletState & {
       activeBalance: Decimal;
       setActiveAccount: (account: WalletAccount | string) => void;
       activeAccount?: WalletAccount;
@@ -40,6 +35,10 @@ export type WalletState = {
   errorMessages: WalletErrorMessage[];
 };
 
+export type SelectedAddressState = { selectedAddress?: string };
+
+export type SelectedWalletState = { walletId?: string };
+
 export type WalletErrorMessage = {
   extensionName: string;
   message: string;
@@ -51,12 +50,12 @@ export const supportedWallets = [
   new TalismanWallet(),
 ];
 
-const selectedAddressProxy = persistentProxy<{ selectedAddress?: string }>(
+const selectedAddressProxy = persistentProxy<SelectedAddressState>(
   "selected-account",
   { selectedAddress: globalThis.localStorage?.getItem("accountAddress") },
 );
 
-const selectedWalletIdProxy = persistentProxy<{ walletId?: string }>(
+const selectedWalletIdProxy = persistentProxy<SelectedWalletState>(
   "selected-wallet-id",
   { walletId: globalThis.localStorage?.getItem("walletId") },
 );
