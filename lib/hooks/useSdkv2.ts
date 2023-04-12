@@ -33,7 +33,7 @@ export const sdkProxy = proxy<{ sdk: Sdk<Context> | null }>({
  */
 export const useSdkv2 = (): UseSdkv2 => {
   const [sub, setSub] = useState<Subscription>();
-  const sdkState = useProxy(sdkProxy);
+  const [sdk, setSdk] = useState<Sdk<Context> | null>(null);
 
   const id = identify(
     endpoints.map((e) => e.value),
@@ -53,7 +53,8 @@ export const useSdkv2 = (): UseSdkv2 => {
 
       const sdk$ = init(endpointVals, graphQlEndpoint);
       const nextSub = sdk$.subscribe((sdk) => {
-        sdkState.sdk = sdk;
+        sdkProxy.sdk = sdk;
+        setSdk(sdk);
       });
 
       setSub(nextSub);
@@ -66,7 +67,7 @@ export const useSdkv2 = (): UseSdkv2 => {
     }
   }, [id]);
 
-  return [sdkState.sdk, id];
+  return [sdk, id];
 };
 
 /**
