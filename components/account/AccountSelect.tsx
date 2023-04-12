@@ -2,7 +2,7 @@ import { Unpacked } from "@zeitgeistpm/utility/dist/array";
 import { useStore } from "lib/stores/Store";
 import { useWallet } from "lib/stores/wallets";
 import { observer } from "mobx-react";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import Select, { components, ControlProps } from "react-select";
 
 import CopyIcon from "../ui/CopyIcon";
@@ -77,12 +77,14 @@ const customStyles = {
 const AccountSelect: FC = observer(() => {
   const { activeAccount, accounts, setActiveAccount } = useWallet();
 
-  const options = accounts.map((account, id) => {
-    return {
-      label: account.name ?? `Account #${id}`,
-      value: account.address,
-    };
-  });
+  const options = useMemo(() => {
+    return accounts.map((account, id) => {
+      return {
+        label: account.name ?? `Account #${id}`,
+        value: account.address,
+      };
+    });
+  }, [accounts]);
 
   useEffect(() => {
     if (activeAccount) {

@@ -25,6 +25,7 @@ const AccountButton: FC<{
   const store = useStore();
   const {
     connected,
+    accounts,
     activeAccount,
     activeBalance,
     connectWallet,

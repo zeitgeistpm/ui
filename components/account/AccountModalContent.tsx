@@ -7,11 +7,9 @@ import { useModalStore } from "lib/stores/ModalStore";
 import { useWallet } from "lib/stores/wallets";
 
 const AccountModalContent: FC = observer(() => {
-  const store = useStore();
-
   const { activeBalance, disconnectWallet } = useWallet();
-
   const modalStore = useModalStore();
+
   return (
     <div className="flex flex-col">
       <AccountSelect />
