@@ -50,6 +50,7 @@
     "framer-motion": "4.1.17",
     "graphql-request": "^5.0.0",
     "ip-range-check": "^0.2.0",
+    "jotai": "^2.0.4",
     "lodash.merge": "^4.6.2",
     "mobx": "^6.3.12",
     "mobx-react": "^7.2.1",

@@ -13,7 +13,7 @@ import { Download } from "react-feather";
 
 const WalletSelect = observer(() => {
   const store = useStore();
-  const { connectWallet, errorMessages } = useWallet();
+  const { selectWallet: connectWallet, errorMessages } = useWallet();
   const accountModals = useAccountModals();
 
   const selectWallet = async (wallet: Wallet) => {

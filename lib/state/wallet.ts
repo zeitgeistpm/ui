@@ -3,29 +3,29 @@ import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import { sdkProxy } from "lib/hooks/useSdkv2";
 import { persistentProxy } from "lib/state/util/persistent-proxy";
 import { DeepReadonly } from "lib/types/deep-readonly";
 import { isString } from "lodash-es";
 import { useMemo } from "react";
 import { proxy, subscribe, useSnapshot } from "valtio";
+import { atom, useAtom, getDefaultStore } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 import { PolkadotjsWallet } from "../wallets/polkadotjs-wallet";
 import { SubWallet } from "../wallets/subwallet";
 import { TalismanWallet } from "../wallets/talisman-wallet";
 import { Wallet, WalletAccount } from "../wallets/types";
+import { tryCatch } from "@zeitgeistpm/utility/dist/option";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 
-export type UseWallet = DeepReadonly<
-  WalletState &
-    SelectedAddressState &
-    SelectedWalletState & {
-      activeBalance: Decimal;
-      setActiveAccount: (account: WalletAccount | string) => void;
-      activeAccount?: WalletAccount;
-      getActiveSigner: () => KeyringPairOrExtSigner | null;
-      connectWallet: (wallet: Wallet | string) => Promise<void>;
-      disconnectWallet: () => void;
-    }
->;
+export type UseWallet = WalletState & {
+  selectedAddress?: string;
+  activeBalance: Decimal;
+  activeAccount?: WalletAccount;
+  selectWallet: (wallet: Wallet | string) => Promise<void>;
+  selectAddress: (account: string) => void;
+  getActiveSigner: () => KeyringPairOrExtSigner | null;
+  disconnectWallet: () => void;
+};
 
 export type WalletState = {
   connected: boolean;
@@ -35,9 +35,25 @@ export type WalletState = {
   errorMessages: WalletErrorMessage[];
 };
 
-export type SelectedAddressState = { selectedAddress?: string };
+const walletAtom = atom<WalletState>({
+  connected: false,
+  wallet: undefined,
+  accounts: [],
+  activeBalanceString: null,
+  errorMessages: [],
+});
 
-export type SelectedWalletState = { walletId?: string };
+const selectedAddressAtom = atomWithStorage<string | undefined>(
+  "selected-address",
+  undefined,
+);
+
+const selectedWalletIdAtom = atomWithStorage<string | undefined>(
+  "selected-wallet-id",
+  undefined,
+);
+
+const store = getDefaultStore();
 
 export type WalletErrorMessage = {
   extensionName: string;
@@ -50,125 +66,144 @@ export const supportedWallets = [
   new TalismanWallet(),
 ];
 
-const selectedAddressProxy = persistentProxy<SelectedAddressState>(
-  "selected-account",
-  { selectedAddress: globalThis.localStorage?.getItem("accountAddress") },
-);
+// let balanceSubscriptionUnsub: VoidFunction | null = null;
 
-const selectedWalletIdProxy = persistentProxy<SelectedWalletState>(
-  "selected-wallet-id",
-  { walletId: globalThis.localStorage?.getItem("walletId") },
-);
+// subscribe(
+//   proxy({
+//     sdk: sdkProxy,
+//     selectedAddress: selectedAddressProxy,
+//   }),
+//   async () => {
+//     if (balanceSubscriptionUnsub) balanceSubscriptionUnsub();
 
-const walletStateProxy = proxy<WalletState>({
-  connected: false,
-  wallet: undefined,
-  accounts: [],
-  activeBalanceString: null,
-  errorMessages: [],
-});
+//     if (!selectedAddressProxy.selectedAddress) return;
 
-let balanceSubscriptionUnsub: VoidFunction | null = null;
-
-subscribe(
-  proxy({
-    sdk: sdkProxy,
-    selectedAddress: selectedAddressProxy,
-  }),
-  async () => {
-    if (balanceSubscriptionUnsub) balanceSubscriptionUnsub();
-
-    if (!selectedAddressProxy.selectedAddress) return;
-
-    if (sdkProxy.sdk && isRpcSdk(sdkProxy.sdk)) {
-      balanceSubscriptionUnsub = await sdkProxy.sdk.api.query.system.account(
-        selectedAddressProxy.selectedAddress,
-        ({ data: { free, miscFrozen } }) => {
-          walletStateProxy.activeBalanceString = new Decimal(free.toString())
-            .minus(miscFrozen.toString())
-            .div(ZTG)
-            .toString();
-        },
-      );
-    }
-  },
-);
+//     if (sdkProxy.sdk && isRpcSdk(sdkProxy.sdk)) {
+//       balanceSubscriptionUnsub = await sdkProxy.sdk.api.query.system.account(
+//         selectedAddressProxy.selectedAddress,
+//         ({ data: { free, miscFrozen } }) => {
+//           walletStateProxy.activeBalanceString = new Decimal(free.toString())
+//             .minus(miscFrozen.toString())
+//             .div(ZTG)
+//             .toString();
+//         },
+//       );
+//     }
+//   },
+// );
 
 let accountsSubscriptionUnsub: VoidFunction | null = null;
 
-const enableWallet = async (wallet: Wallet) => {
-  try {
-    if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
+const enableWallet = async (walletId: Wallet | string) => {
+  if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
 
-    walletStateProxy.connected = false;
+  const wallet = isString(walletId)
+    ? supportedWallets.find((w) => w.extensionName === walletId)
+    : walletId;
+
+  try {
+    store.set(walletAtom, (state) => {
+      return {
+        ...state,
+        connected: false,
+      };
+    });
 
     await wallet.enable();
 
-    walletStateProxy.wallet = wallet;
-    selectedWalletIdProxy.walletId = wallet.extensionName;
+    store.set(walletAtom, (state) => {
+      return {
+        ...state,
+        wallet,
+      };
+    });
 
     accountsSubscriptionUnsub = await wallet.subscribeAccounts((accounts) => {
       if (accounts.length === 0) {
-        walletStateProxy.accounts = [];
-        walletStateProxy.errorMessages = [
-          {
-            extensionName: wallet.extensionName,
-            message:
-              "No accounts on this wallet. Please add account in wallet extension.",
-          },
-        ];
-      } else {
-        walletStateProxy.errorMessages = [];
-
-        walletStateProxy.accounts = accounts.map((account) => {
+        store.set(walletAtom, (state) => {
           return {
-            ...account,
-            address: encodeAddress(account.address, 73),
+            ...state,
+            accounts: [],
+            errorMessages: [
+              {
+                extensionName: wallet.extensionName,
+                message:
+                  "No accounts on this wallet. Please add account in wallet extension.",
+              },
+            ],
           };
         });
-
-        setTimeout(() => (walletStateProxy.connected = true), 33);
+      } else {
+        store.set(walletAtom, (state) => {
+          return {
+            ...state,
+            connected: true,
+            accounts: accounts.map((account) => {
+              return {
+                ...account,
+                address: encodeAddress(account.address, 73),
+              };
+            }),
+            errorMessages: [],
+          };
+        });
       }
     });
 
     return true;
   } catch (error) {
-    walletStateProxy.accounts = [];
-    walletStateProxy.errorMessages = [
-      {
-        extensionName: wallet.extensionName,
-        message:
-          "Not allowed to interact with extension. Please change permission settings.",
-      },
-    ];
+    store.set(walletAtom, (state) => {
+      return {
+        ...state,
+        accounts: [],
+        errorMessages: [
+          {
+            extensionName: wallet.extensionName,
+            message:
+              "Not allowed to interact with extension. Please change permission settings.",
+          },
+        ],
+      };
+    });
     return false;
   }
 };
 
-if (selectedWalletIdProxy.walletId) {
-  const wallet = supportedWallets.find(
-    (w) => w.extensionName === selectedWalletIdProxy.walletId,
-  );
-  enableWallet(wallet);
-}
+setTimeout(() => {
+  const walletId = store.get(selectedWalletIdAtom);
+  if (walletId) {
+    enableWallet(walletId);
+  } else if (accountsSubscriptionUnsub) {
+    accountsSubscriptionUnsub();
+  }
+});
+
+store.sub(selectedWalletIdAtom, () => {
+  const walletId = store.get(selectedWalletIdAtom);
+  if (walletId) {
+    enableWallet(walletId);
+  }
+});
 
 export const useWallet = (): UseWallet => {
-  const walletIdState = useSnapshot(selectedWalletIdProxy);
-  const selectedAddressState = useSnapshot(selectedAddressProxy);
-  const walletState = useSnapshot(walletStateProxy);
+  const [_, setSelectedWalletId] = useAtom(selectedWalletIdAtom);
+  const [selectedAddress, setSelectedAddress] = useAtom(selectedAddressAtom);
+  const [walletState, setWalletState] = useAtom(walletAtom);
+
+  const { data: activeBalance } = useZtgBalance(selectedAddress);
 
   const connectWallet = async (wallet: Wallet | string) => {
-    if (isString(wallet)) {
-      wallet = supportedWallets.find((w) => w.extensionName === wallet);
-    }
-    await enableWallet(wallet);
+    setSelectedWalletId(isString(wallet) ? wallet : wallet.extensionName);
   };
 
   const disconnectWallet = () => {
-    walletStateProxy.connected = false;
-    walletStateProxy.accounts = [];
-    walletStateProxy.wallet = undefined;
-    selectedAddressProxy.selectedAddress = undefined;
+    setWalletState({
+      ...walletState,
+      connected: false,
+      accounts: [],
+      wallet: undefined,
+    });
+    setSelectedWalletId(undefined);
   };
 
   const getActiveSigner = (): KeyringPairOrExtSigner | null => {
@@ -181,18 +216,17 @@ export const useWallet = (): UseWallet => {
 
   const setActiveAccount = (account: WalletAccount | string) => {
     if (typeof account === "string") {
-      selectedAddressProxy.selectedAddress = account;
+      setSelectedAddress(account);
     } else {
-      selectedAddressProxy.selectedAddress = account.address;
+      setSelectedAddress(account.address);
     }
   };
 
   const activeAccount: WalletAccount | undefined = useMemo(() => {
     const userSelectedAddress = walletState.accounts.find((acc) => {
       return (
-        selectedAddressState.selectedAddress &&
-        encodeAddress(acc.address, 73) ===
-          encodeAddress(selectedAddressState.selectedAddress, 73)
+        selectedAddress &&
+        encodeAddress(acc.address, 73) === encodeAddress(selectedAddress, 73)
       );
     });
 
@@ -201,25 +235,16 @@ export const useWallet = (): UseWallet => {
     }
 
     return userSelectedAddress;
-  }, [selectedAddressState.selectedAddress, walletState.accounts]);
-
-  const activeBalance = useMemo(
-    () =>
-      new Decimal(
-        walletState.activeBalanceString ? walletState.activeBalanceString : 0,
-      ),
-    [walletState.activeBalanceString],
-  );
+  }, [selectedAddress, walletState.accounts]);
 
   return {
     ...walletState,
-    ...selectedAddressState,
-    ...walletIdState,
-    setActiveAccount,
+    selectedAddress,
+    selectAddress: setActiveAccount,
     activeAccount,
-    connectWallet,
+    selectWallet: connectWallet,
     disconnectWallet,
     getActiveSigner,
-    activeBalance,
+    activeBalance: activeBalance?.div(ZTG) ?? new Decimal(0),
   };
 };

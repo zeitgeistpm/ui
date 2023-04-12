@@ -75,29 +75,29 @@ const customStyles = {
 };
 
 const AccountSelect: FC = observer(() => {
-  const { activeAccount, accounts, setActiveAccount } = useWallet();
+  const wallet = useWallet();
 
   const options = useMemo(() => {
-    return accounts.map((account, id) => {
+    return wallet.accounts.map((account, id) => {
       return {
         label: account.name ?? `Account #${id}`,
         value: account.address,
       };
     });
-  }, [accounts]);
+  }, [wallet.accounts]);
 
   useEffect(() => {
-    if (activeAccount) {
-      const def = options.find((o) => o.value === activeAccount.address);
+    if (wallet.activeAccount) {
+      const def = options.find((o) => o.value === wallet.activeAccount.address);
       setDefaultOption(def);
     }
-  }, [activeAccount, options]);
+  }, [wallet.activeAccount, options]);
 
   const [defaultOption, setDefaultOption] =
     useState<{ value: string; label: string }>();
 
   const onSelectChange = (opt: Unpacked<typeof options>) => {
-    setActiveAccount(opt.value);
+    wallet.selectAddress(opt.value);
   };
 
   return (
@@ -118,7 +118,7 @@ const AccountSelect: FC = observer(() => {
       />
 
       <CopyIcon
-        copyText={activeAccount?.address}
+        copyText={wallet.activeAccount?.address}
         className="flex-grow pr-ztg-8"
         size={16}
       />

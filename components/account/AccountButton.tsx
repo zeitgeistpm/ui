@@ -28,7 +28,7 @@ const AccountButton: FC<{
     accounts,
     activeAccount,
     activeBalance,
-    connectWallet,
+    selectWallet: connectWallet,
     disconnectWallet,
   } = useWallet();
   const accountModals = useAccountModals();
