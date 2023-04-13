@@ -44,6 +44,14 @@ export type UseWallet = WalletState & {
 };
 
 /**
+ * State type of user wallet config.
+ */
+export type WalletUserConfig = Partial<{
+  walletId: string;
+  selectedAddress: string;
+}>;
+
+/**
  * State type of wallet.
  */
 export type WalletState = {
@@ -65,6 +73,10 @@ export type WalletState = {
   errorMessages: WalletErrorMessage[];
 };
 
+/**
+ * Atom proxy storage.
+ * Used to access and write all atom state in the app.
+ */
 const store = getDefaultStore();
 
 /**
@@ -78,14 +90,6 @@ const walletAtom = atom<WalletState>({
 });
 
 /**
- * State type of user wallet config.
- */
-export type WalletUserConfig = Partial<{
-  walletId: string;
-  selectedAddress: string;
-}>;
-
-/**
  * Atom proxy storage of user wallet config.
  * Stores the selected wallet and address in localStorage.
  *
@@ -94,7 +98,7 @@ export type WalletUserConfig = Partial<{
 const userConfigAtom = persistentAtom<WalletUserConfig>({
   store,
   key: "wallet-user-config",
-  initial: {},
+  defaultValue: {},
   migrations: [
     (state: unknown): WalletUserConfig => {
       if (!state || Object.keys(state).length === 0) {

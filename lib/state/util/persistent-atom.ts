@@ -2,21 +2,54 @@ import { getDefaultStore, createStore } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 
+export type PersistentAtomConfig<T> = {
+  /**
+   * Storage key
+   */
+  key: string;
+  /**
+   * Default value if no value is stored.
+   */
+  defaultValue: T;
+  /**
+   * Migrations to run on the stored value.
+   * @note index is used as version number.
+   * @warning when adding migrations all previous migrations in the list will have to left in place.
+   */
+  migrations?: Migration<any, T>[];
+  /**
+   * Store to use.
+   * @default getDefaultStore()
+   */
+  store?: ReturnType<typeof getDefaultStore | typeof createStore>;
+};
+
+/**
+ * Migration function to make state changes needed for the next version.
+ */
 export type Migration<A, B> = (state: A) => B;
 
-export const persistentAtom = <T>(opts: {
-  key: string;
-  initial: T;
-  migrations?: Migration<any, T>[];
-  store?: ReturnType<typeof getDefaultStore | typeof createStore>;
-}) => {
+/**
+ * Create a persisten atom that is stored in localStorage.
+ *
+ * Has some improvements over the default atomWithStorage where the
+ * stored value is readable and writable right after initialization.
+ *
+ * And supports migrations.
+ *
+ * @warning when adding migrations all previous migrations in the list will have to left in place.
+ *
+ * @param opts PersistentAtomConfig
+ * @returns WritableAtom<T & {__version: number}
+ */
+export const persistentAtom = <T>(opts: PersistentAtomConfig<T>) => {
   const parsedStorageValue = tryCatch(
     () => JSON.parse(globalThis.localStorage?.getItem(opts.key)) as T,
-  ).unwrapOr(opts.initial);
+  ).unwrapOr(opts.defaultValue);
 
   const atom = atomWithStorage<T & { __version: number }>(
     opts.key,
-    (parsedStorageValue ?? opts.initial) as T & { __version: number },
+    (parsedStorageValue ?? opts.defaultValue) as T & { __version: number },
   );
 
   const store = opts.store ?? getDefaultStore();
