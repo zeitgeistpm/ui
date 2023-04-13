@@ -6,19 +6,15 @@ import {
   MarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk-next";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
-import {
-  marketDisputesRootKey,
-  useMarketDisputes,
-} from "lib/hooks/queries/useMarketDisputes";
+import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useModalStore } from "lib/stores/ModalStore";
-import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
-import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useMemo } from "react";
 import { useWallet } from "lib/state/wallet";
 import { useQueryClient } from "@tanstack/react-query";
+import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
+import { useNotifications } from "lib/state/notifications";
 
 const DisputeButton = observer(
   ({
@@ -28,15 +24,9 @@ const DisputeButton = observer(
     market: Market<IndexerContext>;
     assetId: MarketOutcomeAssetId;
   }) => {
-    const [sdk, id] = useSdkv2();
-    const store = useStore();
-    const wallet = useWallet();
-    const notificationStore = useNotifications();
+    const [sdk, _] = useSdkv2();
     const modalStore = useModalStore();
-    const queryClient = useQueryClient();
     const assetIndex = getIndexOf(assetId);
-
-    const ticker = market.categories?.[assetIndex].ticker;
 
     const { data: disputes } = useMarketDisputes(market);
 
@@ -56,39 +46,13 @@ const DisputeButton = observer(
           </div>,
           <>Dispute outcome</>,
         );
-      } else if (isRpcSdk(sdk)) {
-        const ID = getIndexOf(assetId);
-        const signer = wallet.getActiveSigner();
-
-        const callback = extrinsicCallback({
-          notifications: notificationStore,
-          successCallback: async () => {
-            notificationStore.pushNotification(
-              `Disputed reported outcome with ${ticker}`,
-              {
-                type: "Success",
-              },
-            );
-            queryClient.invalidateQueries([
-              id,
-              marketDisputesRootKey,
-              market.marketId,
-            ]);
-          },
-          failCallback: ({ index, error }) => {
-            notificationStore.pushNotification(
-              store.getTransactionError(index, error),
-              {
-                type: "Error",
-              },
-            );
-          },
-        });
-
-        const tx = sdk.api.tx.predictionMarkets.dispute(market.marketId, {
-          Categorical: ID,
-        });
-        await signAndSend(tx, signer, callback);
+      } else {
+        modalStore.openModal(
+          <div>
+            <CategoricalDisputeBox market={market} assetId={assetId} />
+          </div>,
+          <>Dispute outcome</>,
+        );
       }
     };
     return (
