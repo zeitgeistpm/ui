@@ -15,7 +15,7 @@ const FullSetButtons = observer(({ marketId }: { marketId: number }) => {
   const handleBuyFullSetClick = () => {
     modalStore.openModal(
       <BuyFullSetModal marketId={marketId} />,
-      <>"Buy Full Set"</>,
+      <>Buy Full Set</>,
       modalOptions,
     );
   };
@@ -23,7 +23,7 @@ const FullSetButtons = observer(({ marketId }: { marketId: number }) => {
   const handleSellFullSetClick = () => {
     modalStore.openModal(
       <SellFullSetModal marketId={marketId} />,
-      <>"Sell Full Set"</>,
+      <>Sell Full Set</>,
       modalOptions,
     );
   };

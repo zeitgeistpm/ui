@@ -42,7 +42,7 @@ const ReportButton = observer(
           <div>
             <ScalarReportBox market={market} />
           </div>,
-          <>"Report outcome",</>,
+          <>Report outcome</>,
         );
       } else {
         //@ts-ignore
