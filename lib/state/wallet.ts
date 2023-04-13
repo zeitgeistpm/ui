@@ -101,6 +101,10 @@ const userConfigAtom = persistentAtom<WalletUserConfig>({
   defaultValue: {},
   migrations: [
     (state: unknown): WalletUserConfig => {
+      /**
+       * Migrate existing localStorage values to new atom state.
+       * So existing users don't have to reselect their wallet and address.
+       */
       if (!state || Object.keys(state).length === 0) {
         const walletId = globalThis.localStorage?.getItem("walletId");
         const selectedAddress =
