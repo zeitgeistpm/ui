@@ -186,8 +186,6 @@ const CreatePage: NextPage = observer(() => {
 
   const [marketImageCid, setMarketImageCid] = useState<string>();
 
-  activeBalance;
-
   useEffect(() => {
     if (marketImageFile == null) {
       setBase64MarketImage(undefined);
@@ -840,7 +838,7 @@ const CreatePage: NextPage = observer(() => {
             disabled={
               !form.isValid ||
               !formData.deadlines.isValid ||
-              activeBalance?.lessThan(marketCost) ||
+              activeBalance?.div(ZTG).lessThan(marketCost) ||
               (poolRows?.length > 0 && poolValid === false)
             }
           >

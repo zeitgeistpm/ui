@@ -76,7 +76,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
 
   const handleSignTransaction = async () => {
     if (
-      Number(amount) > activeBalance?.toNumber() ||
+      Number(amount) > activeBalance?.div(ZTG).toNumber() ||
       Number(amount) === 0 ||
       !isRpcSdk(sdk)
     ) {
@@ -122,7 +122,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
             {store.config.tokenSymbol}
           </div>
           <span className="font-mono text-ztg-12-150 font-medium ml-auto text-sky-600">
-            {activeBalance?.toNumber()}
+            {activeBalance?.div(ZTG).toNumber()}
           </span>
         </div>
         <AmountInput

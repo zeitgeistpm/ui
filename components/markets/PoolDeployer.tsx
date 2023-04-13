@@ -100,7 +100,9 @@ const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
               <TransactionButton
                 className="w-ztg-266 ml-ztg-8"
                 onClick={deployPool}
-                disabled={activeBalance?.lessThan(poolCost) || isLoading}
+                disabled={
+                  activeBalance?.div(ZTG).lessThan(poolCost) || isLoading
+                }
               >
                 Deploy Pool
               </TransactionButton>

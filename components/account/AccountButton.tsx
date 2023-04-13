@@ -17,6 +17,7 @@ import { useRouter } from "next/router";
 import { DollarSign, Frown, Settings, User } from "react-feather";
 import OnBoardingModal from "./OnboardingModal";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
+import { ZTG } from "@zeitgeistpm/sdk-next";
 
 const AccountButton: FC<{
   connectButtonClassname?: string;
@@ -189,7 +190,7 @@ const AccountButton: FC<{
                             >
                               {activeBalance &&
                                 `${formatNumberLocalized(
-                                  activeBalance?.abs().toNumber(),
+                                  activeBalance?.div(ZTG).abs().toNumber(),
                                 )} ${store.config?.tokenSymbol}`}
                             </div>
                           </div>
