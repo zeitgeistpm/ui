@@ -1,4 +1,4 @@
-import { parseAssetId } from "@zeitgeistpm/sdk-next";
+import { parseAssetId, isRpcSdk } from "@zeitgeistpm/sdk-next";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
@@ -7,8 +7,8 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarket24hrPriceChanges } from "lib/hooks/queries/useMarket24hrPriceChanges";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useRpcMarket } from "lib/hooks/queries/useRpcMarket";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import moment from "moment";
 import dynamic from "next/dynamic";
@@ -35,7 +35,7 @@ const columns: TableColumn[] = [
 
 const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
   const [tableData, setTableData] = useState<TableData[]>();
-  const store = useStore();
+  const [sdk] = useSdkv2();
 
   const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
@@ -58,7 +58,7 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
 
   useEffect(() => {
     if (
-      store.sdk?.api == null ||
+      !isRpcSdk(sdk) ||
       marketId == null ||
       market?.status === "Active" ||
       market?.status === "Proposed"
@@ -66,8 +66,9 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
       return;
     }
     const fetchAuthorizedReport = async (marketId: number) => {
-      const report =
-        await store.sdk.api.query.authorized.authorizedOutcomeReports(marketId);
+      const report = await sdk.api.query.authorized.authorizedOutcomeReports(
+        marketId,
+      );
 
       if (report.isEmpty === true) {
         return null;
@@ -85,7 +86,7 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
       setAuthReportNumberOrId(res);
     });
     return () => sub.unsubscribe();
-  }, [store.sdk?.api, marketId, market?.status]);
+  }, [sdk, marketId, market?.status]);
 
   const getPageData = async () => {
     let tblData: TableData[] = [];
@@ -183,9 +184,7 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
       .unwrap()
       .asCategorical.toNumber();
 
-    const outcome = tableData?.find(
-      (data) => data.assetId === resolvedOutcomeIndex,
-    );
+    const outcome = tableData?.find((data) => data.id === resolvedOutcomeIndex);
 
     return outcome ? [outcome] : undefined;
   };
