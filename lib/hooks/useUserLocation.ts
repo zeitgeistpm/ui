@@ -1,15 +1,22 @@
-import { useQuery } from "@tanstack/react-query";
 import ipRangeCheck from "ip-range-check";
+import { useAtom } from "jotai";
+import { atomsWithQuery } from "jotai-tanstack-query";
 
 export type UserLocation = {
   isUsingVPN: boolean;
   locationAllowed: boolean;
 };
 
-export const useUserLocation = () => {
-  const { data, isFetched, isFetching, isError } = useQuery<UserLocation>(
-    ["user-location"],
-    async () => {
+export const userLocationKey = "user-location";
+
+export const [useLocationDataAtom, userLocationStatusAtom] =
+  atomsWithQuery<UserLocation>(() => ({
+    queryKey: [userLocationKey],
+    initialData: () => ({
+      isUsingVPN: false,
+      locationAllowed: false,
+    }),
+    queryFn: async () => {
       const response = await fetch(`/api/location`);
       const json = await response.json();
 
@@ -31,13 +38,10 @@ export const useUserLocation = () => {
 
       return { isUsingVPN, locationAllowed };
     },
-    {
-      initialData: () => ({
-        isUsingVPN: false,
-        locationAllowed: false,
-      }),
-    },
-  );
+  }));
 
-  return { ...data, isFetched, isFetching, isError };
+export const useUserLocation = () => {
+  const [data] = useAtom(useLocationDataAtom);
+  const [status] = useAtom(userLocationStatusAtom);
+  return { ...data, ...status };
 };

@@ -2409,6 +2409,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:^4.29.1":
+  version: 4.29.1
+  resolution: "@tanstack/query-core@npm:4.29.1"
+  checksum: e7a5a73e5e743411e39348bee3ded4b6c5dd3a70009e72e067e257d5f3d612bfe8df0998cddff6ad7a078e0bcf7a3c92ded669758ca697055472ce910e23a368
+  languageName: node
+  linkType: hard
+
 "@tanstack/react-query-devtools@npm:^4.19.1":
   version: 4.24.10
   resolution: "@tanstack/react-query-devtools@npm:4.24.10"
@@ -3241,6 +3248,7 @@ __metadata:
     "@tailwindcss/container-queries": ^0.1.1
     "@tailwindcss/line-clamp": ^0.4.2
     "@talismn/connect-wallets": ^1.2.3
+    "@tanstack/query-core": ^4.29.1
     "@tanstack/react-query": ^4.19.0
     "@tanstack/react-query-devtools": ^4.19.1
     "@testing-library/jest-dom": ^5.16.5
@@ -3279,6 +3287,7 @@ __metadata:
     jest: ^29.5.0
     jest-environment-jsdom: ^29.5.0
     jotai: ^2.0.4
+    jotai-tanstack-query: ^0.7.0
     lodash.merge: ^4.6.2
     mobx: ^6.3.12
     mobx-react: ^7.2.1
@@ -7880,6 +7889,16 @@ __metadata:
     "@sideway/formula": ^3.0.1
     "@sideway/pinpoint": ^2.0.0
   checksum: d93ea768740fc447d19a3340734af8062a53616bfe61d117992632f5064c0abe7ca495a29747317a4f6cd655839507a0e3c9daa90f4f14a7e57a5ad653c43714
+  languageName: node
+  linkType: hard
+
+"jotai-tanstack-query@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "jotai-tanstack-query@npm:0.7.0"
+  peerDependencies:
+    "@tanstack/query-core": "*"
+    jotai: ">=1.11.0"
+  checksum: f6c45594b2b848af9d140f4926a44602fbe65992b32b86b22d867084c51082753335edea2e2773255c15bcb2b24d55a9b5ff66fd8f27b82b0f0a70aaf528e504
   languageName: node
   linkType: hard
 
