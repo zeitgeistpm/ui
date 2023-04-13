@@ -30,6 +30,35 @@ import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import TradeResult from "components/markets/TradeResult";
 import { TradeType } from "lib/types";
 
+const getTradeValuesFromExtrinsicResult = (
+  type: TradeType,
+  data: ISubmittableResult,
+): { baseAmount: string; assetAmount: string } => {
+  let baseAsset = new Decimal(0);
+  let outcome = new Decimal(0);
+  const { events } = data;
+  for (const eventData of events) {
+    const { event } = eventData;
+    const { data } = event;
+    if (
+      event.method === "SwapExactAmountIn" ||
+      event.method === "SwapExactAmountOut"
+    ) {
+      if (type === "buy") {
+        baseAsset = baseAsset.add(data[0]["assetAmountIn"].toPrimitive());
+        outcome = outcome.add(data[0]["assetAmountOut"].toPrimitive());
+      } else {
+        baseAsset = baseAsset.add(data[0]["assetAmountOut"].toPrimitive());
+        outcome = outcome.add(data[0]["assetAmountIn"].toPrimitive());
+      }
+    }
+  }
+  return {
+    baseAmount: baseAsset.div(ZTG).toFixed(4),
+    assetAmount: outcome.div(ZTG).toFixed(4),
+  };
+};
+
 const TradeForm = observer(() => {
   const notifications = useNotifications();
   const [tabIndex, setTabIndex] = useState<number>(0);
@@ -132,49 +161,16 @@ const TradeForm = observer(() => {
     IOMarketOutcomeAssetId.is(lastEditedAssetId) ? assetAmount : baseAmount,
   );
 
-  const getTradeValuesFromEvents = (
-    type: TradeType,
-    data: ISubmittableResult,
-  ): { baseAmount: string; assetAmount: string } => {
-    let baseAsset = new Decimal(0);
-    let outcome = new Decimal(0);
-    const { events } = data;
-    for (const eventData of events) {
-      console.log(eventData.toJSON());
-      const { event } = eventData;
-      const { data } = event;
-      if (event.method === "SwapExactAmountIn") {
-        if (type === "buy") {
-          console.log(data[0]["assetAmountIn"].toPrimitive());
-          baseAsset = baseAsset.add(data[0]["assetAmountIn"].toPrimitive());
-          outcome = outcome.add(data[0]["assetAmountOut"].toPrimitive());
-        } else {
-          baseAsset = baseAsset.add(data[0]["assetAmountOut"].toPrimitive());
-          outcome = outcome.add(data[0]["assetAmountIn"].toPrimitive());
-        }
-      } else if (event.method === "SwapExactAmountOut") {
-        if (type === "sell") {
-          baseAsset = baseAsset.add(data[0]["assetAmountIn"].toPrimitive());
-          outcome = outcome.add(data[0]["assetAmountOut"].toPrimitive());
-        } else {
-          baseAsset = baseAsset.add(data[0]["assetAmountOut"].toPrimitive());
-          outcome = outcome.add(data[0]["assetAmountIn"].toPrimitive());
-        }
-      }
-    }
-    return {
-      baseAmount: baseAsset.div(ZTG).toFixed(4),
-      assetAmount: outcome.div(ZTG).toFixed(4),
-    };
-  };
-
   const {
     send: swapTx,
     isSuccess,
     isLoading,
   } = useExtrinsic(() => transaction, {
     onSuccess: (data) => {
-      const { baseAmount, assetAmount } = getTradeValuesFromEvents(type, data);
+      const { baseAmount, assetAmount } = getTradeValuesFromExtrinsicResult(
+        type,
+        data,
+      );
       notifications.pushNotification(
         `Successfully ${
           tradeItem.action === "buy" ? "bought" : "sold"
