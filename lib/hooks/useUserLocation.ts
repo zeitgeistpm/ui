@@ -9,7 +9,7 @@ export type UserLocation = {
 
 export const userLocationKey = "user-location";
 
-export const [useLocationDataAtom, userLocationStatusAtom] =
+export const [userLocationDataAtom, userLocationStatusAtom] =
   atomsWithQuery<UserLocation>(() => ({
     queryKey: [userLocationKey],
     initialData: () => ({
@@ -41,7 +41,7 @@ export const [useLocationDataAtom, userLocationStatusAtom] =
   }));
 
 export const useUserLocation = () => {
-  const [data] = useAtom(useLocationDataAtom);
+  const [data] = useAtom(userLocationDataAtom);
   const [status] = useAtom(userLocationStatusAtom);
   return { ...data, ...status };
 };
