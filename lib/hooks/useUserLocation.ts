@@ -14,8 +14,9 @@ export const [userLocationDataAtom, userLocationStatusAtom] =
     queryKey: [userLocationKey],
     initialData: () => ({
       isUsingVPN: false,
-      locationAllowed: false,
+      locationAllowed: true,
     }),
+    keepPreviousData: true,
     queryFn: async () => {
       const response = await fetch(`/api/location`);
       const json = await response.json();
