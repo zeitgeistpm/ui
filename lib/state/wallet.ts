@@ -60,7 +60,7 @@ export type WalletState = {
    */
   connected: boolean;
   /**
-   *
+   * Instance of the current wallet.
    */
   wallet?: Wallet;
   /**
