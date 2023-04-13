@@ -54,7 +54,7 @@ const DisputeButton = observer(
           <div>
             <ScalarDisputeBox market={market} />
           </div>,
-          <>"Dispute outcome",</>,
+          <>Dispute outcome</>,
         );
       } else if (isRpcSdk(sdk)) {
         const ID = getIndexOf(assetId);

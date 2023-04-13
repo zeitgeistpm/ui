@@ -35,6 +35,8 @@ import { IoIosNotifications, IoIosWarning } from "react-icons/io";
 import Loader from "react-spinners/PulseLoader";
 import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 
 const AvatarPage = observer(() => {
   const router = useRouter();
@@ -43,6 +45,7 @@ const AvatarPage = observer(() => {
 
   const wallet = useWallet();
 
+  const [sdk] = useSdkv2();
   const address = router.query.address as string;
   const zeitAddress = encodeAddress(router.query.address as string, 73);
 
@@ -51,7 +54,6 @@ const AvatarPage = observer(() => {
   const [loading, setLoading] = useState(true);
   const [mintingAvatar, setMintingAvatar] = useState(false);
   const [burnAmount, setBurnAmount] = useState<number>();
-  const [hasCrossed, setHasCrossed] = useState(false);
 
   const [earnedBadges, setEarnedBadges] = useState<Badge.IndexedBadge[]>([]);
 
@@ -75,26 +77,22 @@ const AvatarPage = observer(() => {
   );
 
   const loadData = async () => {
-    try {
-      const [burnAmount, tarotStats, earnedBadges] = await Promise.all([
-        store.sdk.api.query.styx.burnAmount(),
-        Tarot.fetchStatsForAddress(avatarContext, address),
-        Avatar.fetchEarnedBadgesForAddress(avatarContext, address),
-      ]);
-      setEarnedBadges(earnedBadges);
-      setBurnAmount(burnAmount.toJSON() as number);
-      setTarotStats(tarotStats);
-      if (wallet.activeAccount?.address) {
-        const crossing = await store.sdk.api.query.styx.crossings(
-          wallet.activeAccount.address,
-        );
-        setHasCrossed(!crossing.isEmpty);
+    if (isRpcSdk(sdk)) {
+      try {
+        const [burnAmount, tarotStats, earnedBadges] = await Promise.all([
+          sdk.api.query.styx.burnAmount(),
+          Tarot.fetchStatsForAddress(avatarContext, address),
+          Avatar.fetchEarnedBadgesForAddress(avatarContext, address),
+        ]);
+        setEarnedBadges(earnedBadges);
+        setBurnAmount(burnAmount.toJSON() as number);
+        setTarotStats(tarotStats);
+      } catch (error) {
+        await delay(1000);
+        await loadData();
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      await delay(1000);
-      await loadData();
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -112,7 +110,7 @@ const AvatarPage = observer(() => {
   const onClickPendingItemNotification = () => {
     modalStore.openModal(
       <PendingItemsModal address={address} onClose={() => inventory.reset()} />,
-      <>"You have pending items!"</>,
+      <>You have pending items!</>,
       {
         styles: { width: "580px" },
       },
@@ -122,7 +120,7 @@ const AvatarPage = observer(() => {
   const onClickSettingsButton = () => {
     modalStore.openModal(
       <InventoryModal address={address} onClose={() => inventory.reset()} />,
-      <>"Inventory."</>,
+      <>Inventory.</>,
       {
         styles: { width: "580px" },
       },
@@ -141,7 +139,7 @@ const AvatarPage = observer(() => {
           setMintingAvatar(false);
         }}
       />,
-      <>"Claim your avatar!"</>,
+      <>Claim your avatar!</>,
       {
         styles: { width: "680px" },
       },
@@ -435,6 +433,7 @@ const ClaimModal = (props: {
   const notificationStore = useNotifications();
   const avatarSdk = useAvatarContext();
   const wallet = useWallet();
+  const [sdk] = useSdkv2();
 
   const [isClaiming, setIsClaiming] = useState(false);
   const [fee, setFee] = useState<number>(null);
@@ -446,10 +445,11 @@ const ClaimModal = (props: {
   const balance = activeBalance;
   const hasEnoughBalance = balance?.greaterThan((props.burnAmount + fee) / ZTG);
 
-  const tx = useMemo(
-    () => store.sdk.api.tx.styx.cross(),
-    [props.address, props.burnAmount],
-  );
+  const tx = useMemo(() => {
+    if (isRpcSdk(sdk)) {
+      return sdk.api.tx.styx.cross();
+    }
+  }, [props.address, props.burnAmount]);
 
   useEffect(() => {
     store.sdk.api.query.styx
@@ -457,6 +457,13 @@ const ClaimModal = (props: {
       .then((crossing) => {
         setHasCrossed(!crossing.isEmpty);
       });
+    if (isRpcSdk(sdk)) {
+      sdk.api.query.styx
+        .crossings(wallet.activeAccount?.address)
+        .then((crossing) => {
+          setHasCrossed(!crossing.isEmpty);
+        });
+    }
   }, [props.address, isClaiming]);
 
   const doClaim = async () => {

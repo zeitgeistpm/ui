@@ -1,4 +1,4 @@
-import { Market } from "@zeitgeistpm/sdk/dist/models";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
@@ -7,23 +7,23 @@ import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAss
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useSaturatedMarket } from "lib/hooks/queries/useSaturatedMarket";
-import { useModalStore } from "lib/stores/ModalStore";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
+import { useModalStore } from "lib/stores/ModalStore";
 import { useStore } from "lib/stores/Store";
-import { extrinsicCallback } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
-import { from } from "rxjs";
-import { useWallet } from "lib/state/wallet";
-import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 
 const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const store = useStore();
   const wallet = useWallet();
   const notificationStore = useNotifications();
   const modalStore = useModalStore();
-  const [sdkMarket, setSdkMarket] = useState<Market>();
+  const [sdk] = useSdkv2();
 
   const { data: activeBalance } = useZtgBalance(wallet.selectedAddress);
 
@@ -36,18 +36,28 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
     pool,
   );
 
-  const [transacting, setTransacting] = useState(false);
   const [amount, setAmount] = useState<string>("0");
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 
-  useEffect(() => {
-    const sub = from(store.sdk.models.fetchMarketData(marketId)).subscribe(
-      (market) => {
-        setSdkMarket(market);
+  const { send: sellSets, isLoading } = useExtrinsic(
+    () => {
+      if (isRpcSdk(sdk)) {
+        return sdk.api.tx.predictionMarkets.sellCompleteSet(
+          marketId,
+          new Decimal(amount).mul(ZTG).toNumber(),
+        );
+      }
+    },
+    {
+      onSuccess: () => {
+        notificationStore.pushNotification(
+          `Sold ${new Decimal(amount).toFixed(1)} full sets`,
+          { type: "Success" },
+        );
+        modalStore.closeModal();
       },
-    );
-    return () => sub.unsubscribe();
-  }, [store.sdk]);
+    },
+  );
 
   useEffect(() => {
     let lowestTokenAmount: Decimal = null;
@@ -68,40 +78,12 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
     if (
       Number(amount) > activeBalance?.toNumber() ||
       Number(amount) === 0 ||
-      sdkMarket == null
+      !isRpcSdk(sdk)
     ) {
       return;
     }
 
-    setTransacting(true);
-
-    const signer = wallet.getActiveSigner();
-
-    sdkMarket.sellCompleteSet(
-      signer,
-      new Decimal(amount).mul(ZTG).toNumber(),
-      extrinsicCallback({
-        notifications: notificationStore,
-        successCallback: () => {
-          notificationStore.pushNotification(
-            `Bought ${new Decimal(amount).toFixed(1)} full sets`,
-            { type: "Success" },
-          );
-          modalStore.closeModal();
-        },
-        failCallback: ({ index, error }) => {
-          notificationStore.pushNotification(
-            store.getTransactionError(index, error),
-            {
-              type: "Error",
-            },
-          );
-        },
-      }),
-    );
-
-    setTransacting(false);
-    modalStore.closeModal();
+    sellSets();
   };
 
   useEffect(() => {
@@ -109,7 +91,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
   }, [modalStore, market, handleSignTransaction]);
 
   const disabled =
-    transacting ||
+    isLoading ||
     Number(amount) > maxTokenSet.toNumber() ||
     Number(amount) === 0;
 
@@ -161,7 +143,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
         onClick={handleSignTransaction}
         disabled={disabled}
       >
-        {transacting ? <Loader size={8} /> : "Sign Transaction"}
+        {isLoading ? <Loader size={8} /> : "Sign Transaction"}
       </TransactionButton>
     </div>
   );

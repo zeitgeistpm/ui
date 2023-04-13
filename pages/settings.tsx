@@ -16,6 +16,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useWallet } from "lib/state/wallet";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 
 const SubmitButton: FC<
   PropsWithChildren<{
@@ -45,19 +46,22 @@ const IdentitySettings = observer(() => {
   const [discordHandle, setDiscordHandle] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
   const queryClient = useQueryClient();
-  const [_, id] = useSdkv2();
 
   const address = wallet.activeAccount?.address;
+  const [sdk, id] = useSdkv2();
 
   const { data: identity } = useIdentity(address);
 
   const { send: updateIdentity, isLoading: isUpdating } = useExtrinsic(
-    () =>
-      store.sdk.api.tx.identity.setIdentity({
-        additional: [[{ Raw: "discord" }, { Raw: discordHandle }]],
-        display: { Raw: displayName },
-        twitter: { Raw: twitterHandle },
-      }),
+    () => {
+      if (isRpcSdk(sdk)) {
+        return sdk.api.tx.identity.setIdentity({
+          additional: [[{ Raw: "discord" }, { Raw: discordHandle }]],
+          display: { Raw: displayName },
+          twitter: { Raw: twitterHandle },
+        });
+      }
+    },
     {
       onSuccess: () => {
         queryClient.invalidateQueries([id, identityRootKey, address]);
@@ -68,7 +72,11 @@ const IdentitySettings = observer(() => {
     },
   );
   const { send: clearIdentity, isLoading: isClearing } = useExtrinsic(
-    () => store.sdk.api.tx.identity.clearIdentity(),
+    () => {
+      if (isRpcSdk(sdk)) {
+        return sdk.api.tx.identity.clearIdentity();
+      }
+    },
     {
       onSuccess: () => {
         queryClient.invalidateQueries([id, identityRootKey, address]);
