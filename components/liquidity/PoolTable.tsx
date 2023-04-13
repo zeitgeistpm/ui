@@ -51,7 +51,7 @@ const PoolTable = ({ poolId }: { poolId: number }) => {
       poolBalance: {
         value: (saturatedPoolData.assets.length - 1 === index
           ? basePoolBalance
-          : new Decimal(balances[index].free.toString())
+          : new Decimal(balances[index]?.free.toString() ?? asset.amount)
         )
           .div(ZTG)
           .toDecimalPlaces(2)
