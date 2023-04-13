@@ -1,16 +1,15 @@
 import { encodeAddress } from "@polkadot/util-crypto";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { atom, getDefaultStore, useAtom } from "jotai";
-import { atomWithStorage } from "jotai/utils";
 import { isString } from "lodash-es";
 import { useMemo } from "react";
 import { PolkadotjsWallet } from "../wallets/polkadotjs-wallet";
 import { SubWallet } from "../wallets/subwallet";
 import { TalismanWallet } from "../wallets/talisman-wallet";
 import { Wallet, WalletAccount } from "../wallets/types";
+import { persistentAtom } from "./util/persistent-atom";
 
 export type UseWallet = WalletState & {
-  init: () => void;
   selectedAddress?: string;
   activeAccount?: WalletAccount;
   selectWallet: (wallet: Wallet | string) => Promise<void>;
@@ -26,6 +25,8 @@ export type WalletState = {
   errorMessages: WalletErrorMessage[];
 };
 
+const store = getDefaultStore();
+
 const walletAtom = atom<WalletState>({
   connected: false,
   wallet: undefined,
@@ -33,17 +34,35 @@ const walletAtom = atom<WalletState>({
   errorMessages: [],
 });
 
-const selectedAddressAtom = atomWithStorage<string | undefined>(
-  "selected-address",
-  undefined,
-);
+export type WalletUserConfig = Partial<{
+  walletId: string;
+  selectedAddress: string;
+}>;
 
-const selectedWalletIdAtom = atomWithStorage<string | undefined>(
-  "selected-wallet-id",
-  undefined,
-);
+const userConfigAtom = persistentAtom<WalletUserConfig>({
+  store,
+  key: "wallet-user-config",
+  initial: {},
+  migrations: [
+    (state: unknown): WalletUserConfig => {
+      if (!state || Object.keys(state).length === 0) {
+        const walletId = globalThis.localStorage?.getItem("walletId");
+        const selectedAddress =
+          globalThis.localStorage?.getItem("accountAddress");
 
-const store = getDefaultStore();
+        globalThis.localStorage?.removeItem("walletId");
+        globalThis.localStorage?.removeItem("accountAddress");
+
+        return {
+          walletId,
+          selectedAddress,
+        };
+      }
+
+      return state;
+    },
+  ],
+});
 
 export type WalletErrorMessage = {
   extensionName: string;
@@ -133,26 +152,26 @@ const enableWallet = async (walletId: Wallet | string) => {
   }
 };
 
-store.sub(selectedWalletIdAtom, () => {
-  const walletId = store.get(selectedWalletIdAtom);
+if (store.get(userConfigAtom).walletId) {
+  enableWallet(store.get(userConfigAtom).walletId);
+}
+
+store.sub(userConfigAtom, () => {
+  const { walletId } = store.get(userConfigAtom);
   if (walletId) {
     enableWallet(walletId);
   }
 });
 
 export const useWallet = (): UseWallet => {
-  const [selectedWalletId, setSelectedWalletId] = useAtom(selectedWalletIdAtom);
-  const [selectedAddress, setSelectedAddress] = useAtom(selectedAddressAtom);
+  const [userConfig, setUserConfig] = useAtom(userConfigAtom);
   const [walletState, setWalletState] = useAtom(walletAtom);
 
-  const init = () => {
-    if (selectedWalletId) {
-      enableWallet(selectedWalletId);
-    }
-  };
-
   const selectWallet = async (wallet: Wallet | string) => {
-    setSelectedWalletId(isString(wallet) ? wallet : wallet.extensionName);
+    setUserConfig({
+      ...userConfig,
+      walletId: isString(wallet) ? wallet : wallet.extensionName,
+    });
   };
 
   const disconnectWallet = () => {
@@ -162,7 +181,10 @@ export const useWallet = (): UseWallet => {
       accounts: [],
       wallet: undefined,
     });
-    setSelectedWalletId(undefined);
+    setUserConfig({
+      ...userConfig,
+      walletId: undefined,
+    });
   };
 
   const getActiveSigner = (): KeyringPairOrExtSigner | null => {
@@ -174,18 +196,18 @@ export const useWallet = (): UseWallet => {
   };
 
   const selectAddress = (account: WalletAccount | string) => {
-    if (typeof account === "string") {
-      setSelectedAddress(account);
-    } else {
-      setSelectedAddress(account.address);
-    }
+    setUserConfig({
+      ...userConfig,
+      selectedAddress: isString(account) ? account : account.address,
+    });
   };
 
   const activeAccount: WalletAccount | undefined = useMemo(() => {
     const userSelectedAddress = walletState.accounts.find((acc) => {
       return (
-        selectedAddress &&
-        encodeAddress(acc.address, 73) === encodeAddress(selectedAddress, 73)
+        userConfig.selectedAddress &&
+        encodeAddress(acc.address, 73) ===
+          encodeAddress(userConfig.selectedAddress, 73)
       );
     });
 
@@ -194,12 +216,11 @@ export const useWallet = (): UseWallet => {
     }
 
     return userSelectedAddress;
-  }, [selectedAddress, walletState.accounts]);
+  }, [userConfig.selectedAddress, walletState.accounts]);
 
   return {
     ...walletState,
-    init,
-    selectedAddress,
+    selectedAddress: userConfig.selectedAddress,
     selectAddress,
     activeAccount,
     selectWallet,

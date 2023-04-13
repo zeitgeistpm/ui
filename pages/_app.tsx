@@ -39,15 +39,10 @@ const isProduction =
 const queryClient = new QueryClient();
 
 const MyApp = observer(({ Component, pageProps }) => {
-  const wallet = useWallet();
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
   const router = useRouter();
   const [modalStore] = useState(() => new ModalStore());
   const [store] = useState(() => new Store());
-
-  useEffect(() => {
-    wallet.init();
-  }, []);
 
   useEffect(() => {
     if (!isProduction) {
