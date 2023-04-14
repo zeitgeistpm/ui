@@ -40,7 +40,7 @@ export type UseOnboarding = {
  */
 const onboardingAtom = persistentAtom<OnboardingState>({
   key: "onboarding-state",
-  initial: {
+  defaultValue: {
     session: generateGUID(),
     walletInstallConfirmed: false,
   },
