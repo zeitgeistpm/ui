@@ -1,9 +1,11 @@
+import { MarketStatus } from "@zeitgeistpm/sdk-next";
 import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
 import TimeSeriesChart, { ChartSeries } from "components/ui/TimeSeriesChart";
 import {
   PriceHistory,
   useMarketPriceHistory,
 } from "lib/hooks/queries/useMarketPriceHistory";
+import { calcPriceHistoryStartDate } from "pages/markets/[marketid]";
 import { useMemo, useState } from "react";
 
 const setTimeToNow = (date: Date) => {
@@ -18,38 +20,47 @@ const MarketChart = ({
   marketId,
   chartSeries,
   baseAsset,
-  poolCreationDate,
   initialData,
+  endDate,
+  poolCreationDate,
+  marketStatus,
+  deadlines,
 }: {
   marketId: number;
   chartSeries: ChartSeries[];
   baseAsset: string;
-  poolCreationDate: string;
   initialData: PriceHistory[];
+  poolCreationDate: Date;
+  deadlines: {
+    disputeDuration: string;
+    gracePeriod: string;
+    oracleDuration: string;
+  };
+  endDate: Date;
+  marketStatus: MarketStatus;
 }) => {
   const [chartFilter, setChartFilter] = useState<TimeFilter>(filters[1]);
   const [filterSelected, setFilterSelected] = useState(false);
 
-  const startDate = useMemo(() => {
-    if (chartFilter.label === "All") {
-      return poolCreationDate;
-    } else {
-      const filterDate = new Date(chartFilter.startTime);
-      const poolDate = new Date(poolCreationDate);
-      if (filterDate.getTime() > poolDate.getTime()) {
-        return chartFilter.startTime;
-      } else {
-        return poolCreationDate;
-      }
-    }
-  }, [chartFilter.label]);
+  const startDate = useMemo(
+    () =>
+      calcPriceHistoryStartDate(
+        marketStatus,
+        endDate,
+        deadlines,
+        chartFilter,
+        poolCreationDate,
+      ),
+    [chartFilter.label],
+  );
 
+  console.log(startDate);
   const { data: prices } = useMarketPriceHistory(
     marketId,
-    chartFilter.timeUnit,
-    chartFilter.timeValue,
+    chartFilter.resolutionUnit,
+    chartFilter.resolutionValue,
     //hack to make data end on same time as now
-    setTimeToNow(new Date(startDate)).toISOString(),
+    setTimeToNow(startDate).toISOString(),
   );
 
   const chartData = (filterSelected == false ? initialData : prices)?.map(

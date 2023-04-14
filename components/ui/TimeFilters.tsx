@@ -3,9 +3,9 @@ import { observer } from "mobx-react";
 
 export interface TimeFilter {
   label: FilterLabel;
-  startTime: string; // ISO string
-  timeUnit: TimeUnit;
-  timeValue: number;
+  timePeriodMS?: number;
+  resolutionUnit: TimeUnit;
+  resolutionValue: number;
 }
 
 export type FilterLabel = "All" | "Day" | "Week" | "Month";
@@ -15,33 +15,26 @@ export type TimeUnit = "Second" | "Minute" | "Hour" | "Day";
 export const filters: TimeFilter[] = [
   {
     label: "Day",
-    startTime: new Date(
-      new Date().getTime() - DAY_SECONDS * 1000,
-    ).toISOString(),
-    timeUnit: "Hour",
-    timeValue: 1,
+    timePeriodMS: DAY_SECONDS * 1000,
+    resolutionUnit: "Hour",
+    resolutionValue: 1,
   },
   {
     label: "Week",
-    startTime: new Date(
-      new Date().getTime() - DAY_SECONDS * 1000 * 7,
-    ).toISOString(),
-    timeUnit: "Hour",
-    timeValue: 6,
+    timePeriodMS: DAY_SECONDS * 1000 * 7,
+    resolutionUnit: "Hour",
+    resolutionValue: 6,
   },
   {
     label: "Month",
-    startTime: new Date(
-      new Date().getTime() - DAY_SECONDS * 1000 * 30,
-    ).toISOString(),
-    timeUnit: "Day",
-    timeValue: 1,
+    timePeriodMS: DAY_SECONDS * 1000 * 30,
+    resolutionUnit: "Day",
+    resolutionValue: 1,
   },
   {
     label: "All",
-    startTime: new Date("Wed Dec 30 2020").toISOString(),
-    timeUnit: "Day",
-    timeValue: 1,
+    resolutionUnit: "Day",
+    resolutionValue: 1,
   },
 ];
 

@@ -27,26 +27,79 @@ import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
-import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
 import Link from "next/link";
 import Decimal from "decimal.js";
-import { graphQlEndpoint, ZTG } from "lib/constants";
+import { DAY_SECONDS, graphQlEndpoint, ZTG } from "lib/constants";
 import MarketHeader from "components/markets/MarketHeader";
 import MarketChart from "components/markets/MarketChart";
 import {
   getPriceHistory,
   PriceHistory,
 } from "lib/hooks/queries/useMarketPriceHistory";
-import { filters } from "components/ui/TimeFilters";
+import { filters, TimeFilter } from "components/ui/TimeFilters";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
+import { indexers, MarketStatus } from "@zeitgeistpm/sdk-next";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
 });
+
+const estimateResolutionDate = (
+  endDate: Date,
+  deadlines?: {
+    disputeDuration: string;
+    gracePeriod: string;
+    oracleDuration: string;
+  },
+) => {
+  if (!deadlines) return new Date(endDate.getTime() + DAY_SECONDS * 1000 * 2);
+
+  const blockTime = Number(process.env["NEXT_PUBLIC_BLOCK_TIME"]);
+
+  const closeToResolutionBlocks =
+    Number(deadlines.oracleDuration) +
+    Number(deadlines.gracePeriod) +
+    Number(deadlines.disputeDuration);
+
+  const closeToResolutionTime = closeToResolutionBlocks * blockTime;
+
+  return new Date(closeToResolutionTime * 1000 + endDate.getTime());
+};
+
+export const calcPriceHistoryStartDate = (
+  marketStatus: MarketStatus,
+  endDate: Date,
+  deadlines: {
+    disputeDuration: string;
+    gracePeriod: string;
+    oracleDuration: string;
+  },
+  chartFilter: TimeFilter,
+  poolCreationDate: Date,
+) => {
+  if (chartFilter.label === "All") return poolCreationDate;
+  if (marketStatus === "Resolved") {
+    const resolvedDate = estimateResolutionDate(endDate, deadlines);
+
+    const startDate = resolvedDate.getTime() - chartFilter.timePeriodMS;
+
+    return startDate > poolCreationDate.getTime()
+      ? new Date(startDate)
+      : poolCreationDate;
+  } else {
+    const now = new Date();
+
+    const startDate = now.getTime() - chartFilter.timePeriodMS;
+
+    return startDate > poolCreationDate.getTime()
+      ? new Date(startDate)
+      : poolCreationDate;
+  }
+};
 
 export async function getStaticPaths() {
   const client = new GraphQLClient(graphQlEndpoint);
@@ -79,12 +132,24 @@ export async function getStaticProps({ params }) {
       ? await getBaseAsset(client, market.pool.poolId)
       : null;
 
+  const chartFilter = filters[1];
+
+  const chartStartDate = calcPriceHistoryStartDate(
+    market.status,
+    new Date(market.period.end),
+    market.deadlines,
+    chartFilter,
+    new Date(market.pool.createdAt),
+  );
+
+  console.log(chartStartDate);
+
   const priceHistory = await getPriceHistory(
     client,
     market.marketId,
-    filters[1].timeUnit,
-    filters[1].timeValue,
-    filters[1].startTime,
+    chartFilter.resolutionUnit,
+    chartFilter.resolutionValue,
+    chartStartDate.toISOString(),
   );
 
   return {
@@ -176,7 +241,10 @@ const Market: NextPage<{
             chartSeries={chartSeries}
             initialData={priceHistory}
             baseAsset={baseAsset}
-            poolCreationDate={indexedMarket?.pool?.createdAt}
+            poolCreationDate={new Date(indexedMarket.pool.createdAt)}
+            endDate={new Date(indexedMarket.period.end)}
+            deadlines={indexedMarket.deadlines}
+            marketStatus={indexedMarket.status}
           />
         ) : (
           <></>

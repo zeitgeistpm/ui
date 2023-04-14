@@ -1,3 +1,4 @@
+import { MarketStatus } from "@zeitgeistpm/sdk-next";
 import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS } from "lib/constants";
@@ -37,6 +38,11 @@ const marketQuery = gql`
         start
         end
       }
+      deadlines {
+        disputeDuration
+        gracePeriod
+        oracleDuration
+      }
       categories {
         name
         color
@@ -52,7 +58,7 @@ export interface MarketPageIndexedData {
   slug: string;
   question: string;
   description: string;
-  status: string;
+  status: MarketStatus;
   period: {
     start: string;
     end: string;
@@ -63,6 +69,11 @@ export interface MarketPageIndexedData {
   scalarType: ScalarRangeType;
   marketType: {
     scalar: string[];
+  };
+  deadlines?: {
+    disputeDuration: string;
+    gracePeriod: string;
+    oracleDuration: string;
   };
   creator: string;
   oracle: string;
