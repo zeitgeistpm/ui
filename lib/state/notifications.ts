@@ -59,35 +59,6 @@ export type UseNotifications = {
 const notificationsAtom = atom<Notification[]>([]);
 
 /**
- * Timer to update the timer of the notifications.
- */
-// let updateTimer: NodeJS.Timer = null;
-
-/**
- * Every time the state changes we start processing existing notifications
- * and decrement their timer every 250ms. If the timer reaches 0 we remove the notification from the list.
- */
-// store.sub(notificationsAtom, () => {
-//   const notifications = store.get(notificationsAtom);
-
-//   if (notifications.length > 0 && !updateTimer) {
-//     updateTimer = setInterval(() => {
-//       store.set(notificationsAtom, (notifications) =>
-//         notifications
-//           .map((n) => ({
-//             ...n,
-//             timer: n.timer - TIMER_TICK_RATE / 1000,
-//           }))
-//           .filter((n) => n.timer > 0),
-//       );
-//     }, TIMER_TICK_RATE);
-//   } else if (notifications.length === 0 && updateTimer) {
-//     clearInterval(updateTimer);
-//     updateTimer = null;
-//   }
-// });
-
-/**
  * Hook to use the notification state.
  *
  * @returns UseNotifications
