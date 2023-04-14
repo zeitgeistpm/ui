@@ -114,7 +114,7 @@ const getGradient = (type: NotificationType) => {
 
 const NotificationCenter = observer(() => {
   const { notifications, removeNotification } = useNotifications();
-  console.log(notifications);
+
   return (
     <div className="fixed h-full w-full top-0 pointer-events-none z-50">
       <div className="flex flex-row justify-end pr-ztg-27 pt-20">
