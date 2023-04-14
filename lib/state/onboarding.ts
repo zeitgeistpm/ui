@@ -1,5 +1,5 @@
 import { getWallets } from "@talismn/connect-wallets";
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
 import { SUPPORTED_WALLET_NAMES } from "lib/constants";
 import { generateGUID } from "lib/util/generate-guid";
 import { persistentAtom } from "./util/persistent-atom";
