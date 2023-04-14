@@ -1,12 +1,9 @@
 import { encodeAddress } from "@polkadot/util-crypto";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { atom, getDefaultStore, useAtom } from "jotai";
-import {
-  userLocationDataAtom,
-  useUserLocation,
-} from "lib/hooks/useUserLocation";
+import { userLocationDataAtom } from "lib/hooks/useUserLocation";
 import { isString } from "lodash-es";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { PolkadotjsWallet } from "../wallets/polkadotjs-wallet";
 import { SubWallet } from "../wallets/subwallet";
 import { TalismanWallet } from "../wallets/talisman-wallet";
@@ -80,6 +77,13 @@ export type WalletState = {
   errorMessages: WalletErrorMessage[];
 };
 
+/**
+ * Transitions the wallet state to a disconnected state.
+ *
+ * @param wallet WalletState
+ * @param userConfig WalletUserConfig
+ * @returns [WalletState, WalletUserConfig]
+ */
 const disconnectWalletStateTransition = (
   wallet: WalletState,
   userConfig: WalletUserConfig,
