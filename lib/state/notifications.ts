@@ -1,4 +1,4 @@
-import { atom, getDefaultStore, useAtom } from "jotai";
+import { atom, useAtom } from "jotai";
 import { generateGUID } from "lib/util/generate-guid";
 
 import { NotificationType } from "../types";
@@ -53,15 +53,6 @@ export type UseNotifications = {
   removeNotification(notification: Notification | string): void;
 };
 
-/**
- * The tick rate of notification timers in milliseconds.
- */
-export const TIMER_TICK_RATE = 500;
-
-/**
- * Use the default store jotai store.
- */
-const store = getDefaultStore();
 /**
  * Atom storage of notifications.
  */
