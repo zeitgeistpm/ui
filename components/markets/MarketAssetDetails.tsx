@@ -17,6 +17,7 @@ import { from } from "rxjs";
 
 const columns: TableColumn[] = [
   { header: "Outcome", accessor: "outcome", type: "text" },
+  { header: "", accessor: "status", type: "status" },
   { header: "Implied %", accessor: "pre", type: "percentage" },
   { header: "Price", accessor: "totalValue", type: "currency" },
   {
@@ -90,7 +91,6 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
 
   const getPageData = async () => {
     let tblData: TableData[] = [];
-
     if (market && poolAlreadyDeployed) {
       const totalAssetPrice = spotPrices
         ? Array.from(spotPrices.values()).reduce(
@@ -99,10 +99,18 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
           )
         : new Decimal(0);
 
+      let maxPrice = 0;
+      if (spotPrices) {
+        maxPrice = Math.max(
+          ...Array.from(spotPrices, ([key, value]) => value.toNumber()),
+        );
+      }
+
       for (const [index, category] of market.categories.entries()) {
         const outcomeName = category.name;
         const currentPrice = spotPrices?.get(index).toNumber();
-
+        const assetStatus =
+          market?.status === "Active" && currentPrice === maxPrice;
         const priceChange = priceChanges?.get(index);
         tblData = [
           ...tblData,
@@ -110,6 +118,7 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
             assetId: market.pool.weights[index].assetId,
             id: index,
             outcome: outcomeName,
+            status: assetStatus && "Winning Prediction",
             totalValue: {
               value: currentPrice,
               usdValue: 0,

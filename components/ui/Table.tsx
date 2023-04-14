@@ -58,6 +58,7 @@ type CellValue =
 
 type ColumnType =
   | "text"
+  | "status"
   | "paragraph"
   | "number"
   | "currency"
@@ -142,6 +143,12 @@ const Cell = observer(
       </td>
     );
 
+    const getStatus = (value) => {
+      if (value) {
+        return "Winning Outcome";
+      }
+    };
+
     if (value == null) {
       return skeletonElement;
     }
@@ -150,12 +157,24 @@ const Cell = observer(
       case "text":
         return (
           <td
-            className={`text-ztg-14-150 ${base}`}
+            className={`text-ztg-14-150 whitespace-nowrap	w-[50px] ${base}`}
             data-test="outcomeText"
             onClick={onClick}
             style={style}
           >
             <>{value}</>
+          </td>
+        );
+      case "status":
+        return (
+          <td className={`text-xs`} data-test="statusText" style={style}>
+            {value ? (
+              <span className="bg-green-light text-green-dark px-2.5 py-0.5 rounded font-medium">
+                <>{value}</>
+              </span>
+            ) : (
+              <>{value}</>
+            )}
           </td>
         );
       case "number":
@@ -384,6 +403,7 @@ const Table = observer(
         setIsOverflowing(false);
       }
     };
+
     return (
       <>
         {data == null ? (
@@ -448,7 +468,6 @@ const Table = observer(
                 <tbody>
                   {rows.map((row, index) => {
                     prepareRow(row);
-
                     return (
                       <tr
                         ref={

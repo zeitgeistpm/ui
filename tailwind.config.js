@@ -261,6 +261,7 @@ module.exports = {
           lighter: "#EAF8DF",
           light: "#DEF7EC",
           DEFAULT: "#03543F",
+          dark: "#03543F",
         },
       },
       inset: {
