@@ -54,8 +54,8 @@ const getTradeValuesFromExtrinsicResult = (
     }
   }
   return {
-    baseAmount: baseAsset.div(ZTG).toFixed(4),
-    assetAmount: outcome.div(ZTG).toFixed(4),
+    baseAmount: baseAsset.div(ZTG).toFixed(1),
+    assetAmount: outcome.div(ZTG).toFixed(1),
   };
 };
 
