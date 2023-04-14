@@ -279,8 +279,8 @@ store.sub(userConfigAtom, () => {
 store.sub(userLocationDataAtom, async () => {
   const data = await store.get(userLocationDataAtom);
   if (
-    (store.get(walletAtom).connected && !data?.locationAllowed) ||
-    data?.isUsingVPN
+    store.get(walletAtom).connected &&
+    (!data?.locationAllowed || data?.isUsingVPN)
   ) {
     const [newWalletState, newUserConfigState] =
       disconnectWalletStateTransition(
