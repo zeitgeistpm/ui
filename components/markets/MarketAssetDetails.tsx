@@ -9,6 +9,7 @@ import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useRpcMarket } from "lib/hooks/queries/useRpcMarket";
+import { useDisputeDetails } from "lib/hooks/queries/useDisputeDetails";
 import { observer } from "mobx-react";
 import moment from "moment";
 import dynamic from "next/dynamic";
@@ -46,7 +47,6 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
 
   const { data: disputes } = useMarketDisputes(marketId);
   const { data: rpcMarket } = useRpcMarket(marketId);
-
   const poolAlreadyDeployed = market?.pool?.poolId != null;
 
   useEffect(() => {
@@ -153,11 +153,11 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
   };
 
   const getDisputedCategoricalOutcome = () => {
-    const lastDisputeIndex =
-      disputes?.[disputes.length - 1].outcome.asCategorical.toNumber();
-
+    if (!rpcMarket) return;
+    // const lastDisputeIndex =
+    //   disputes?.[disputes.length - 1].outcome.asCategorical.toNumber();
+    const lastDisputeIndex = 0;
     const outcome = tableData?.find((data) => data.id === lastDisputeIndex);
-
     return outcome ? [outcome] : undefined;
   };
 

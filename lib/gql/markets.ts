@@ -30,6 +30,14 @@ const marketQuery = gql`
       creator
       oracle
       disputeMechanism
+      disputes {
+        by
+        at
+        outcome {
+          categorical
+          scalar
+        }
+      }
       marketType {
         scalar
       }
@@ -68,6 +76,14 @@ export interface MarketPageIndexedData {
   oracle: string;
   tags: [];
   disputeMechanism: "SimpleDisputes" | "Authorized" | "Court";
+  disputes: {
+    by: string;
+    at: number;
+    outcome: {
+      categorical: number;
+      scalar: number;
+    };
+  };
 }
 
 export const getRecentMarketIds = async (

@@ -134,7 +134,7 @@ const Market: NextPage<{
     : 0;
   const subsidy =
     marketSdkv2?.pool?.poolId == null ? 0 : liquidity?.div(ZTG).toNumber();
-
+  console.log(indexedMarket);
   return (
     <>
       <MarketMeta market={indexedMarket} />
