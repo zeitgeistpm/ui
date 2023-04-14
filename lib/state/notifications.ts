@@ -1,8 +1,6 @@
 import { atom, useAtom } from "jotai";
 import { generateGUID } from "lib/util/generate-guid";
 
-import { NotificationType } from "../types";
-
 export type Notification = {
   /**
    * Unique ID of the notification.
@@ -26,6 +24,14 @@ export type Notification = {
   lifetime: number;
 };
 
+/**
+ * Type of the notification.
+ */
+export type NotificationType = "Error" | "Info" | "Success";
+
+/**
+ * Hook to use the notification state.
+ */
 export type UseNotifications = {
   /**
    * List of notifications.

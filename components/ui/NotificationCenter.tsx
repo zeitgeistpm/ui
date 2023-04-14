@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useNotifications } from "lib/state/notifications";
-import { NotificationType } from "lib/types";
+import { useNotifications, NotificationType } from "lib/state/notifications";
 import { observer } from "mobx-react";
 import React, { FC, useEffect } from "react";
 import { AlertTriangle, CheckCircle, Info, X } from "react-feather";
