@@ -17,7 +17,6 @@ import {
   getRecentMarketIds,
   MarketPageIndexedData,
 } from "lib/gql/markets";
-import { getBaseAsset } from "lib/gql/pool";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
@@ -127,37 +126,32 @@ export async function getStaticProps({ params }) {
     },
   );
 
-  const baseAsset =
-    market?.pool != null
-      ? await getBaseAsset(client, market.pool.poolId)
-      : null;
+  let priceHistory: PriceHistory[];
+  if (market.pool) {
+    const chartFilter = filters[1];
 
-  const chartFilter = filters[1];
+    const chartStartDate = calcPriceHistoryStartDate(
+      market.status,
+      new Date(market.period.end),
+      market.deadlines,
+      chartFilter,
+      new Date(market.pool.createdAt),
+    );
 
-  const chartStartDate = calcPriceHistoryStartDate(
-    market.status,
-    new Date(market.period.end),
-    market.deadlines,
-    chartFilter,
-    new Date(market.pool.createdAt),
-  );
-
-  console.log(chartStartDate);
-
-  const priceHistory = await getPriceHistory(
-    client,
-    market.marketId,
-    chartFilter.resolutionUnit,
-    chartFilter.resolutionValue,
-    chartStartDate.toISOString(),
-  );
+    priceHistory = await getPriceHistory(
+      client,
+      market.marketId,
+      chartFilter.resolutionUnit,
+      chartFilter.resolutionValue,
+      chartStartDate.toISOString(),
+    );
+  }
 
   return {
     props: {
       indexedMarket: market ?? null,
       chartSeries: chartSeries ?? null,
       priceHistory: priceHistory ?? null,
-      baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
     },
     revalidate: 10 * 60, //10mins
   };
@@ -167,8 +161,7 @@ const Market: NextPage<{
   indexedMarket: MarketPageIndexedData;
   chartSeries: ChartSeries[];
   priceHistory: PriceHistory[];
-  baseAsset: string;
-}> = observer(({ indexedMarket, chartSeries, priceHistory, baseAsset }) => {
+}> = observer(({ indexedMarket, chartSeries, priceHistory }) => {
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
@@ -240,7 +233,7 @@ const Market: NextPage<{
             marketId={indexedMarket.marketId}
             chartSeries={chartSeries}
             initialData={priceHistory}
-            baseAsset={baseAsset}
+            baseAsset={indexedMarket.pool.baseAsset}
             poolCreationDate={new Date(indexedMarket.pool.createdAt)}
             endDate={new Date(indexedMarket.period.end)}
             deadlines={indexedMarket.deadlines}
