@@ -1,6 +1,5 @@
+import { atom, getDefaultStore, useAtom } from "jotai";
 import { generateGUID } from "lib/util/generate-guid";
-import { proxy, subscribe } from "valtio";
-import { useProxy } from "valtio/utils";
 
 import { NotificationType } from "../types";
 
@@ -25,10 +24,6 @@ export type Notification = {
    * Lifetime of the notification in seconds.
    */
   lifetime: number;
-  /**
-   * Time left on the notification in seconds.
-   */
-  timer: number;
 };
 
 export type UseNotifications = {
@@ -59,34 +54,47 @@ export type UseNotifications = {
 };
 
 /**
- * Proxy atom storage of notifications.
+ * The tick rate of notification timers in milliseconds.
  */
-const proxystate = proxy<{ notifications: Notification[] }>({
-  notifications: [],
-});
+export const TIMER_TICK_RATE = 500;
+
+/**
+ * Use the default store jotai store.
+ */
+const store = getDefaultStore();
+/**
+ * Atom storage of notifications.
+ */
+const notificationsAtom = atom<Notification[]>([]);
 
 /**
  * Timer to update the timer of the notifications.
  */
-let updateTimer: NodeJS.Timer = null;
+// let updateTimer: NodeJS.Timer = null;
 
 /**
  * Every time the state changes we start processing existing notifications
  * and decrement their timer every 250ms. If the timer reaches 0 we remove the notification from the list.
  */
-subscribe(proxystate, () => {
-  clearInterval(updateTimer);
-  if (proxystate.notifications.length > 0) {
-    updateTimer = setInterval(() => {
-      proxystate.notifications = proxystate.notifications
-        .map((n) => ({
-          ...n,
-          timer: n.timer - 0.25,
-        }))
-        .filter((n) => n.timer > 0);
-    }, 250);
-  }
-});
+// store.sub(notificationsAtom, () => {
+//   const notifications = store.get(notificationsAtom);
+
+//   if (notifications.length > 0 && !updateTimer) {
+//     updateTimer = setInterval(() => {
+//       store.set(notificationsAtom, (notifications) =>
+//         notifications
+//           .map((n) => ({
+//             ...n,
+//             timer: n.timer - TIMER_TICK_RATE / 1000,
+//           }))
+//           .filter((n) => n.timer > 0),
+//       );
+//     }, TIMER_TICK_RATE);
+//   } else if (notifications.length === 0 && updateTimer) {
+//     clearInterval(updateTimer);
+//     updateTimer = null;
+//   }
+// });
 
 /**
  * Hook to use the notification state.
@@ -94,19 +102,18 @@ subscribe(proxystate, () => {
  * @returns UseNotifications
  */
 export const useNotifications = (): UseNotifications => {
-  const state = useProxy(proxystate);
+  const [notifications, setNotifications] = useAtom(notificationsAtom);
 
   const pushNotification: UseNotifications["pushNotification"] = (
     content,
     options,
   ) => {
-    let notifications = state.notifications;
+    let nextNotifications = [...notifications];
 
-    const latestNotification =
-      state.notifications[state.notifications.length - 1];
+    const latestNotification = notifications[notifications.length - 1];
 
     if (latestNotification?.autoRemove) {
-      notifications = notifications.slice(0, -1);
+      nextNotifications = notifications.slice(0, -1);
     }
 
     const notification: Notification = {
@@ -114,11 +121,12 @@ export const useNotifications = (): UseNotifications => {
       content,
       autoRemove: options.autoRemove ?? false,
       lifetime: options.lifetime ?? 100,
-      timer: options.lifetime ?? 100,
       type: options.type ?? "Info",
     };
 
-    state.notifications = [...notifications, notification];
+    nextNotifications = [...nextNotifications, notification];
+
+    setNotifications(nextNotifications);
 
     return notification;
   };
@@ -126,15 +134,17 @@ export const useNotifications = (): UseNotifications => {
   const removeNotification: UseNotifications["removeNotification"] = (
     notification,
   ) => {
-    state.notifications = state.notifications.filter((n) =>
-      typeof notification === "string"
-        ? n.id !== notification
-        : n.id !== notification.id,
+    setNotifications(
+      notifications.filter((n) =>
+        typeof notification === "string"
+          ? n.id !== notification
+          : n.id !== notification.id,
+      ),
     );
   };
 
   return {
-    notifications: state.notifications,
+    notifications,
     pushNotification,
     removeNotification,
   };
