@@ -30,7 +30,7 @@ export type PersistentAtomConfig<T> = {
 export type Migration<A, B> = (state: A) => B;
 
 /**
- * Create a persisten atom that is stored in localStorage.
+ * Create a persistent atom that is stored in localStorage.
  *
  * Has some improvements over the default atomWithStorage where the
  * stored value is readable and writable right after initialization.
