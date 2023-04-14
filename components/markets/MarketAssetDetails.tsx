@@ -9,7 +9,6 @@ import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useRpcMarket } from "lib/hooks/queries/useRpcMarket";
-import { useDisputeDetails } from "lib/hooks/queries/useDisputeDetails";
 import { observer } from "mobx-react";
 import moment from "moment";
 import dynamic from "next/dynamic";
@@ -154,9 +153,8 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
 
   const getDisputedCategoricalOutcome = () => {
     if (!rpcMarket) return;
-    // const lastDisputeIndex =
-    //   disputes?.[disputes.length - 1].outcome.asCategorical.toNumber();
-    const lastDisputeIndex = 0;
+    const lastDisputeIndex =
+      disputes?.[disputes.length - 1].outcome.asCategorical.toNumber();
     const outcome = tableData?.find((data) => data.id === lastDisputeIndex);
     return outcome ? [outcome] : undefined;
   };
@@ -231,22 +229,23 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
           )}
         </>
       )}
-      {market?.status === "Disputed" && (
-        <>
-          <h4 className="mt-10">Disputed Outcome</h4>
-          {market.marketType.categorical ? (
-            <Table
-              columns={columns}
-              data={getDisputedCategoricalOutcome()}
-              loadingNumber={1}
-            />
-          ) : (
-            <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10 mb-[10px]">
-              {getReportedScalarOutcome()}
-            </div>
-          )}
-        </>
-      )}
+      {market?.status === "Disputed" &&
+        market.disputeMechanism === "Authorized" && (
+          <>
+            <h4 className="mt-10">Disputed Outcome</h4>
+            {market.marketType.categorical ? (
+              <Table
+                columns={columns}
+                data={getDisputedCategoricalOutcome()}
+                loadingNumber={1}
+              />
+            ) : (
+              <div className="font-mono font-bold text-ztg-18-150 mt-ztg-10 mb-[10px]">
+                {getReportedScalarOutcome()}
+              </div>
+            )}
+          </>
+        )}
       {market?.status === "Resolved" ? (
         <>
           <h4 className="mt-10">Winning Outcome</h4>
