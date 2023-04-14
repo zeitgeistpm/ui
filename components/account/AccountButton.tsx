@@ -30,7 +30,7 @@ const AccountButton: FC<{
     activeAccount,
     selectWallet,
     disconnectWallet,
-    selectedAddress,
+    isNovaWallet,
   } = useWallet();
   const accountModals = useAccountModals();
   const { locationAllowed, isUsingVPN } = useUserLocation();
@@ -38,11 +38,7 @@ const AccountButton: FC<{
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
 
-  const { data: activeBalance } = useZtgBalance(selectedAddress);
-
-  const isNovaWallet: boolean =
-    //@ts-ignore
-    typeof window === "object" && window.walletExtension?.isNovaWallet;
+  const { data: activeBalance } = useZtgBalance(activeAccount?.address);
 
   const connect = async () => {
     if (isNovaWallet) {

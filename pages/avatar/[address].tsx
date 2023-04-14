@@ -440,7 +440,7 @@ const ClaimModal = (props: {
 
   const [hasCrossed, setHasCrossed] = useState(false);
 
-  const { data: activeBalance } = useZtgBalance(wallet.selectedAddress);
+  const { data: activeBalance } = useZtgBalance(wallet.activeAccount?.address);
 
   const balance = activeBalance;
   const hasEnoughBalance = balance?.greaterThan((props.burnAmount + fee) / ZTG);

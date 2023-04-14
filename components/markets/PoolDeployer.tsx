@@ -37,7 +37,7 @@ const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
   const notificationStore = useNotifications();
   const [sdk, id] = useSdkv2();
 
-  const { data: activeBalance } = useZtgBalance(wallet.selectedAddress);
+  const { data: activeBalance } = useZtgBalance(wallet.activeAccount?.address);
 
   const { send: deployPool, isLoading } = useExtrinsic(
     () => {

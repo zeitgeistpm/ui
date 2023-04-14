@@ -30,7 +30,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const { data: saturatedMarket } = useSaturatedMarket(market);
   const { data: pool } = usePool({ marketId: marketId });
 
-  const { data: activeBalance } = useZtgBalance(wallet.selectedAddress);
+  const { data: activeBalance } = useZtgBalance(wallet.activeAccount?.address);
 
   const { data: balances } = useAccountPoolAssetBalances(
     wallet.getActiveSigner()?.address,

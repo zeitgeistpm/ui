@@ -25,7 +25,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const modalStore = useModalStore();
   const [sdk] = useSdkv2();
 
-  const { data: activeBalance } = useZtgBalance(wallet.selectedAddress);
+  const { data: activeBalance } = useZtgBalance(wallet.activeAccount?.address);
 
   const { data: market } = useMarket({ marketId });
   const { data: saturatedMarket } = useSaturatedMarket(market);

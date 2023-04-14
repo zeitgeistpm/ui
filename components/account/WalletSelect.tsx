@@ -1,36 +1,30 @@
 import { useAccountModals } from "lib/hooks/account";
-import { useStore } from "lib/stores/Store";
-import {
-  supportedWallets,
-  useWallet,
-  WalletErrorMessage,
-} from "lib/state/wallet";
+import { usePrevious } from "lib/hooks/usePrevious";
+import { supportedWallets, useWallet } from "lib/state/wallet";
 import { Wallet } from "lib/wallets/types";
-import { flowResult } from "mobx";
 import { observer } from "mobx-react";
 import { useEffect } from "react";
 import { Download } from "react-feather";
 
 const WalletSelect = observer(() => {
-  const store = useStore();
-  const { selectWallet: connectWallet, errorMessages } = useWallet();
+  const { selectWallet, errorMessages, accounts, connected } = useWallet();
   const accountModals = useAccountModals();
 
-  const selectWallet = async (wallet: Wallet) => {
+  const wasConnected = usePrevious(connected);
+
+  const handleSelectWallet = async (wallet: Wallet) => {
     if (!wallet.installed) {
       window.open(wallet.installUrl);
     } else {
-      try {
-        await connectWallet(wallet.extensionName);
-
-        if (errorMessages.length > 0) {
-          accountModals.openAccontSelect();
-        }
-      } catch (err) {
-        console.log(err);
-      }
+      selectWallet(wallet.extensionName);
     }
   };
+
+  useEffect(() => {
+    if (!wasConnected && connected && accounts.length) {
+      accountModals.openAccontSelect();
+    }
+  }, [wasConnected, connected, accounts, errorMessages]);
 
   return (
     <div className="flex flex-col">
@@ -47,7 +41,7 @@ const WalletSelect = observer(() => {
                 (idx < 2 ? "mb-ztg-12 " : "")
               }
               onClick={() => {
-                selectWallet(wallet);
+                handleSelectWallet(wallet);
               }}
             >
               <img

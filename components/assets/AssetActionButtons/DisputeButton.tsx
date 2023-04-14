@@ -21,7 +21,7 @@ const DisputeButton = observer(
     market: Market<IndexerContext>;
     assetId: MarketOutcomeAssetId;
   }) => {
-    const [sdk, _] = useSdkv2();
+    const [sdk] = useSdkv2();
     const modalStore = useModalStore();
     const assetIndex = getIndexOf(assetId);
 

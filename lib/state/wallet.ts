@@ -1,9 +1,12 @@
 import { encodeAddress } from "@polkadot/util-crypto";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { atom, getDefaultStore, useAtom } from "jotai";
-import { userLocationDataAtom } from "lib/hooks/useUserLocation";
+import {
+  userLocationDataAtom,
+  useUserLocation,
+} from "lib/hooks/useUserLocation";
 import { isString } from "lodash-es";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { PolkadotjsWallet } from "../wallets/polkadotjs-wallet";
 import { SubWallet } from "../wallets/subwallet";
 import { TalismanWallet } from "../wallets/talisman-wallet";
@@ -41,6 +44,10 @@ export type UseWallet = WalletState & {
    * @returns void
    */
   disconnectWallet: () => void;
+  /**
+   * Whether the wallet is nova wallet.
+   */
+  isNovaWallet: boolean;
 };
 
 /**
@@ -71,6 +78,25 @@ export type WalletState = {
    * Error messages of the wallet.
    */
   errorMessages: WalletErrorMessage[];
+};
+
+const disconnectWalletStateTransition = (
+  wallet: WalletState,
+  userConfig: WalletUserConfig,
+): [WalletState, WalletUserConfig] => {
+  return [
+    {
+      ...wallet,
+      connected: false,
+      wallet: undefined,
+      accounts: [],
+      errorMessages: [],
+    },
+    {
+      ...userConfig,
+      walletId: undefined,
+    },
+  ];
 };
 
 /**
@@ -252,20 +278,13 @@ store.sub(userLocationDataAtom, async () => {
     (store.get(walletAtom).connected && !data?.locationAllowed) ||
     data?.isUsingVPN
   ) {
-    store.set(walletAtom, (state) => {
-      return {
-        ...state,
-        connected: false,
-        accounts: [],
-        wallet: undefined,
-      };
-    });
-    store.set(userConfigAtom, (state) => {
-      return {
-        ...state,
-        walletId: undefined,
-      };
-    });
+    const [newWalletState, newUserConfigState] =
+      disconnectWalletStateTransition(
+        store.get(walletAtom),
+        store.get(userConfigAtom),
+      );
+    store.set(walletAtom, newWalletState);
+    store.set(userConfigAtom, newUserConfigState);
   }
 });
 
@@ -277,7 +296,7 @@ export const useWallet = (): UseWallet => {
   const [userConfig, setUserConfig] = useAtom(userConfigAtom);
   const [walletState, setWalletState] = useAtom(walletAtom);
 
-  const selectWallet = async (wallet: Wallet | string) => {
+  const selectWallet = (wallet: Wallet | string) => {
     setUserConfig({
       ...userConfig,
       walletId: isString(wallet) ? wallet : wallet.extensionName,
@@ -285,16 +304,10 @@ export const useWallet = (): UseWallet => {
   };
 
   const disconnectWallet = () => {
-    setWalletState({
-      ...walletState,
-      connected: false,
-      accounts: [],
-      wallet: undefined,
-    });
-    setUserConfig({
-      ...userConfig,
-      walletId: undefined,
-    });
+    const [newWalletState, newUserConfigState] =
+      disconnectWalletStateTransition(walletState, userConfig);
+    setWalletState(newWalletState);
+    setUserConfig(newUserConfigState);
   };
 
   const getActiveSigner = (): KeyringPairOrExtSigner | null => {
@@ -306,10 +319,16 @@ export const useWallet = (): UseWallet => {
   };
 
   const selectAddress = (account: WalletAccount | string) => {
-    setUserConfig({
-      ...userConfig,
-      selectedAddress: isString(account) ? account : account.address,
-    });
+    const selectedAddress = isString(account) ? account : account.address;
+    try {
+      encodeAddress(selectedAddress, 73);
+      setUserConfig({
+        ...userConfig,
+        selectedAddress,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const activeAccount: WalletAccount | undefined = useMemo(() => {
@@ -328,6 +347,9 @@ export const useWallet = (): UseWallet => {
     return userSelectedAddress;
   }, [userConfig.selectedAddress, walletState.accounts]);
 
+  const isNovaWallet: boolean =
+    typeof window === "object" && (window as any).walletExtension?.isNovaWallet;
+
   return {
     ...walletState,
     selectedAddress: userConfig.selectedAddress,
@@ -336,5 +358,6 @@ export const useWallet = (): UseWallet => {
     selectWallet,
     disconnectWallet,
     getActiveSigner,
+    isNovaWallet,
   };
 };

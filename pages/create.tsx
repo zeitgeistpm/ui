@@ -167,7 +167,7 @@ const CreatePage: NextPage = observer(() => {
   const [swapFee, setSwapFee] = useState<string>();
   const [txFee, setTxFee] = useState<string>();
 
-  const { data: activeBalance } = useZtgBalance(wallet.selectedAddress);
+  const { data: activeBalance } = useZtgBalance(wallet.activeAccount?.address);
 
   const router = useRouter();
 

@@ -9,8 +9,8 @@ import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { ZTG } from "@zeitgeistpm/sdk-next";
 
 const AccountModalContent: FC = observer(() => {
-  const { selectedAddress, disconnectWallet } = useWallet();
-  const { data: activeBalance } = useZtgBalance(selectedAddress);
+  const { activeAccount, disconnectWallet } = useWallet();
+  const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const modalStore = useModalStore();
 
   return (

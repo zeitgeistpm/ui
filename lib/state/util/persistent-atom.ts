@@ -10,19 +10,21 @@ export type PersistentAtomConfig<T> = {
   /**
    * Default value if no value is stored.
    */
-  defaultValue: T;
+  defaultValue: Versioned<T>;
   /**
    * Migrations to run on the stored value.
    * @note index is used as version number.
    * @warning when adding migrations all previous migrations in the list will have to left in place.
    */
-  migrations?: Migration<any, T>[];
+  migrations?: Migration<any, Versioned<T>>[];
   /**
    * Store to use.
    * @default getDefaultStore()
    */
   store?: ReturnType<typeof getDefaultStore | typeof createStore>;
 };
+
+export type Versioned<T> = T & { __version?: number };
 
 /**
  * Migration function to make state changes needed for the next version.
@@ -42,14 +44,15 @@ export type Migration<A, B> = (state: A) => B;
  * @param opts PersistentAtomConfig
  * @returns WritableAtom<T & {__version: number}
  */
-export const persistentAtom = <T>(opts: PersistentAtomConfig<T>) => {
+export const persistentAtom = <T>(opts: PersistentAtomConfig<Versioned<T>>) => {
   const parsedStorageValue = tryCatch(
-    () => JSON.parse(globalThis.localStorage?.getItem(opts.key)) as T,
+    () =>
+      JSON.parse(globalThis.localStorage?.getItem(opts.key)) as Versioned<T>,
   ).unwrapOr(opts.defaultValue);
 
-  const atom = atomWithStorage<T & { __version: number }>(
+  const atom = atomWithStorage<Versioned<T>>(
     opts.key,
-    (parsedStorageValue ?? opts.defaultValue) as T & { __version: number },
+    (parsedStorageValue ?? opts.defaultValue) as Versioned<T>,
   );
 
   const store = opts.store ?? getDefaultStore();
