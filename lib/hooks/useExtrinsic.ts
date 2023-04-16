@@ -12,7 +12,7 @@ export const useExtrinsic = <T>(
     params: T,
   ) => SubmittableExtrinsic<"promise", ISubmittableResult>,
   callbacks?: {
-    onSuccess?: (...args: any[]) => void;
+    onSuccess?: (data: ISubmittableResult) => void;
     onError?: () => void;
   },
 ) => {
@@ -32,11 +32,11 @@ export const useExtrinsic = <T>(
       signer,
       extrinsicCallback({
         notifications,
-        successCallback: () => {
+        successCallback: (data) => {
           setIsLoading(false);
           setIsSuccess(true);
 
-          callbacks?.onSuccess && callbacks.onSuccess();
+          callbacks?.onSuccess && callbacks.onSuccess(data);
         },
         failCallback: ({ index, error }) => {
           setIsLoading(false);

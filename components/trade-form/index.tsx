@@ -12,6 +12,7 @@ import {
   useTradeMaxBaseAmount,
   useTradeTransaction,
 } from "lib/hooks/trade";
+import { ISubmittableResult } from "@polkadot/types/types";
 import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
@@ -27,6 +28,36 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import TradeResult from "components/markets/TradeResult";
+import { TradeType } from "lib/types";
+
+const getTradeValuesFromExtrinsicResult = (
+  type: TradeType,
+  data: ISubmittableResult,
+): { baseAmount: string; assetAmount: string } => {
+  let baseAsset = new Decimal(0);
+  let outcome = new Decimal(0);
+  const { events } = data;
+  for (const eventData of events) {
+    const { event } = eventData;
+    const { data } = event;
+    if (
+      event.method === "SwapExactAmountIn" ||
+      event.method === "SwapExactAmountOut"
+    ) {
+      if (type === "buy") {
+        baseAsset = baseAsset.add(data[0]["assetAmountIn"].toPrimitive());
+        outcome = outcome.add(data[0]["assetAmountOut"].toPrimitive());
+      } else {
+        baseAsset = baseAsset.add(data[0]["assetAmountOut"].toPrimitive());
+        outcome = outcome.add(data[0]["assetAmountIn"].toPrimitive());
+      }
+    }
+  }
+  return {
+    baseAmount: baseAsset.div(ZTG).toFixed(1),
+    assetAmount: outcome.div(ZTG).toFixed(1),
+  };
+};
 
 const TradeForm = observer(() => {
   const notifications = useNotifications();
@@ -135,7 +166,11 @@ const TradeForm = observer(() => {
     isSuccess,
     isLoading,
   } = useExtrinsic(() => transaction, {
-    onSuccess: () => {
+    onSuccess: (data) => {
+      const { baseAmount, assetAmount } = getTradeValuesFromExtrinsicResult(
+        type,
+        data,
+      );
       notifications.pushNotification(
         `Successfully ${
           tradeItem.action === "buy" ? "bought" : "sold"

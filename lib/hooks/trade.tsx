@@ -229,9 +229,9 @@ export const useTradeTransaction = (
         transaction = sdk.api.tx.swaps.swapExactAmountOut(
           pool.poolId,
           inAssetId,
-          amountDecimal.toFixed(0),
-          outAssetId,
           maxAmountIn.toFixed(0, Decimal.ROUND_UP),
+          outAssetId,
+          amountDecimal.toFixed(0),
           null,
         );
       }
