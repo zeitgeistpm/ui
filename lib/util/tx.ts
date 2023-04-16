@@ -42,7 +42,7 @@ export const extrinsicCallback = ({
   notifications: notificationStore,
   successMethod = "ExtrinsicSuccess",
 }: {
-  successCallback?: GenericCallback;
+  successCallback?: (data: ISubmittableResult) => void;
   broadcastCallback?: GenericCallback;
   failCallback?: GenericCallback;
   finalizedCallback?: GenericCallback;
@@ -71,15 +71,15 @@ export const extrinsicCallback = ({
       retractedCallback
         ? retractedCallback()
         : notificationStore?.pushNotification(
-          "This transaction was temporarily retracted. It will take a little longer to complete",
-          { type: "Info" },
-        );
+            "This transaction was temporarily retracted. It will take a little longer to complete",
+            { type: "Info" },
+          );
     } else if (status.isBroadcast) {
       broadcastCallback
         ? broadcastCallback()
         : notificationStore?.pushNotification("Broadcasting transaction...", {
-          autoRemove: true,
-        });
+            autoRemove: true,
+          });
     }
   };
 };
