@@ -97,7 +97,7 @@ const AccountSelect: FC = observer(() => {
     useState<{ value: string; label: string }>();
 
   const onSelectChange = (opt: Unpacked<typeof options>) => {
-    wallet.selectAddress(opt.value);
+    wallet.selectAccount(opt.value);
   };
 
   return (

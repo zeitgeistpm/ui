@@ -31,7 +31,7 @@ export type UseWallet = WalletState &
      * @param account the address to select
      * @returns void
      */
-    selectAddress: (account: string) => void;
+    selectAccount: (account: string) => void;
     /**
      * Get the active signer for transactions.
      * @returns KeyringPairOrExtSigner | null
@@ -314,7 +314,7 @@ export const useWallet = (): UseWallet => {
     };
   };
 
-  const selectAddress = (account: WalletAccount | string) => {
+  const selectAccount = (account: WalletAccount | string) => {
     const selectedAddress = isString(account) ? account : account.address;
     try {
       encodeAddress(selectedAddress, 73);
@@ -349,7 +349,7 @@ export const useWallet = (): UseWallet => {
   return {
     ...walletState,
     ...userConfig,
-    selectAddress,
+    selectAccount,
     activeAccount,
     selectWallet,
     disconnectWallet,
