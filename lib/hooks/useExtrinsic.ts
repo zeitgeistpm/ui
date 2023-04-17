@@ -2,10 +2,10 @@ import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { useState } from "react";
-
 import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
+import { useWallet } from "lib/state/wallet";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
@@ -16,6 +16,7 @@ export const useExtrinsic = <T>(
     onError?: () => void;
   },
 ) => {
+  const wallet = useWallet();
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +27,8 @@ export const useExtrinsic = <T>(
   const send = (params?: T) => {
     setIsLoading(true);
     const extrinsic = extrinsicFn(params);
-    const signer = store.wallets.getActiveSigner() as ExtSigner;
+
+    const signer = wallet.getActiveSigner() as ExtSigner;
     signAndSend(
       extrinsic,
       signer,

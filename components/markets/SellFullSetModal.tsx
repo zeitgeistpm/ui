@@ -1,3 +1,4 @@
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
@@ -6,29 +7,32 @@ import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAss
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useSaturatedMarket } from "lib/hooks/queries/useSaturatedMarket";
-import { useModalStore } from "lib/stores/ModalStore";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
+import { useModalStore } from "lib/stores/ModalStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
-import { useExtrinsic } from "lib/hooks/useExtrinsic";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
 
 const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
   const store = useStore();
-  const { wallets } = store;
+  const wallet = useWallet();
   const notificationStore = useNotifications();
   const modalStore = useModalStore();
   const [sdk] = useSdkv2();
+
+  const { data: activeBalance } = useZtgBalance(wallet.activeAccount?.address);
 
   const { data: market } = useMarket({ marketId });
   const { data: saturatedMarket } = useSaturatedMarket(market);
   const { data: pool } = usePool({ marketId: marketId });
 
   const { data: balances } = useAccountPoolAssetBalances(
-    wallets.getActiveSigner()?.address,
+    wallet.getActiveSigner()?.address,
     pool,
   );
 
@@ -72,7 +76,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
 
   const handleSignTransaction = async () => {
     if (
-      Number(amount) > wallets.activeBalance.toNumber() ||
+      Number(amount) > activeBalance?.div(ZTG).toNumber() ||
       Number(amount) === 0 ||
       !isRpcSdk(sdk)
     ) {
@@ -118,7 +122,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
             {store.config.tokenSymbol}
           </div>
           <span className="font-mono text-ztg-12-150 font-medium ml-auto text-sky-600">
-            {wallets.activeBalance.toNumber()}
+            {activeBalance?.div(ZTG).toNumber()}
           </span>
         </div>
         <AmountInput

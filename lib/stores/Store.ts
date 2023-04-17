@@ -15,7 +15,6 @@ import { useContext } from "react";
 import validatorjs from "validatorjs";
 import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 import { isAsset, ztgAsset } from "../types";
-import Wallets from "./wallets";
 import { Context, Sdk } from "@zeitgeistpm/sdk-next";
 
 interface Config {
@@ -50,8 +49,6 @@ interface Config {
 }
 
 export default class Store {
-  wallets = new Wallets(this);
-
   initialized = false;
 
   config: Config;
@@ -142,8 +139,6 @@ export default class Store {
 
     await this.initSDK(endpointOptions[0].value, graphQlEndpoint);
     await this.loadConfig();
-
-    this.wallets.initialize();
 
     this.registerValidationRules();
 
@@ -263,37 +258,6 @@ export default class Store {
   async getBlockTimestamp(): Promise<number> {
     const now = await this.sdk.api.query.timestamp.now();
     return Number(now.toString());
-  }
-
-  /**
-   * Get either the ZTG balance or the token balance for the active account.
-   */
-  async getBalance(asset?: Asset | AssetId): Promise<Decimal | null> {
-    if (!this.wallets.connected) {
-      return new Decimal(0);
-    }
-    let assetObj: Asset;
-    if (asset == null) {
-      assetObj = (this.sdk.api as any).createType("Asset", ztgAsset);
-    } else {
-      assetObj = isAsset(asset)
-        ? asset
-        : (this.sdk.api as any).createType("Asset", asset);
-    }
-    if (assetObj.isZtg) {
-      const { data } = await this.sdk.api.query.system.account(
-        this.wallets.activeAccount.address,
-      );
-      return new Decimal(data.free.toString()).div(ZTG);
-    }
-
-    const data = await this.sdk.api.query.tokens.accounts(
-      this.wallets.activeAccount.address,
-      asset as any,
-    );
-
-    //@ts-ignore
-    return new Decimal(data.free.toString()).div(ZTG);
   }
 
   async getPoolBalance(

@@ -1,6 +1,8 @@
+import { Unpacked } from "@zeitgeistpm/utility/dist/array";
 import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/state/wallet";
 import { observer } from "mobx-react";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import Select, { components, ControlProps } from "react-select";
 
 import CopyIcon from "../ui/CopyIcon";
@@ -73,22 +75,29 @@ const customStyles = {
 };
 
 const AccountSelect: FC = observer(() => {
-  const store = useStore();
-  const { wallets } = store;
-  const { accountSelectOptions: options, activeAccount } = wallets;
+  const wallet = useWallet();
+
+  const options = useMemo(() => {
+    return wallet.accounts.map((account, id) => {
+      return {
+        label: account.name ?? `Account #${id}`,
+        value: account.address,
+      };
+    });
+  }, [wallet.accounts]);
 
   useEffect(() => {
-    if (activeAccount) {
-      const def = options.find((o) => o.value === activeAccount.address);
+    if (wallet.activeAccount) {
+      const def = options.find((o) => o.value === wallet.activeAccount.address);
       setDefaultOption(def);
     }
-  }, [activeAccount, options]);
+  }, [wallet.activeAccount, options]);
 
   const [defaultOption, setDefaultOption] =
     useState<{ value: string; label: string }>();
 
-  const onSelectChange = (opt) => {
-    wallets.setActiveAccount(opt.value);
+  const onSelectChange = (opt: Unpacked<typeof options>) => {
+    wallet.selectAccount(opt.value);
   };
 
   return (
@@ -109,7 +118,7 @@ const AccountSelect: FC = observer(() => {
       />
 
       <CopyIcon
-        copyText={wallets.activeAccount?.address}
+        copyText={wallet.activeAccount?.address}
         className="flex-grow pr-ztg-8"
         size={16}
       />

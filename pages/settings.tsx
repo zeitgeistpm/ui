@@ -15,6 +15,7 @@ import { identityRootKey, useIdentity } from "lib/hooks/queries/useIdentity";
 import { useQueryClient } from "@tanstack/react-query";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useWallet } from "lib/state/wallet";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 
 const SubmitButton: FC<
@@ -38,15 +39,16 @@ const SubmitButton: FC<
 
 const IdentitySettings = observer(() => {
   const store = useStore();
-  const { wallets } = store;
+  const wallet = useWallet();
   const notificationStore = useNotifications();
 
   const [displayName, setDisplayName] = useState("");
   const [discordHandle, setDiscordHandle] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
   const queryClient = useQueryClient();
+
+  const address = wallet.activeAccount?.address;
   const [sdk, id] = useSdkv2();
-  const address = store.wallets.activeAccount?.address;
 
   const { data: identity } = useIdentity(address);
 
@@ -125,7 +127,7 @@ const IdentitySettings = observer(() => {
       identity.displayName === displayName &&
       identity.twitter === twitterHandle) ||
     transactionPending ||
-    !wallets.connected;
+    !wallet.connected;
 
   return (
     <>
@@ -138,7 +140,7 @@ const IdentitySettings = observer(() => {
         className="w-1/2 mb-5 bg-sky-200 dark:bg-sky-1000 text-sky-600"
         onChange={(e) => handleDisplayNameChange(e.target.value)}
         value={displayName}
-        disabled={!wallets.connected}
+        disabled={!wallet.connected}
       />
       <div className="flex flex-row mb-5">
         <div className="w-full mr-ztg-27">
@@ -151,7 +153,7 @@ const IdentitySettings = observer(() => {
             className=" bg-sky-200 dark:bg-sky-1000 text-sky-600 "
             onChange={(e) => handleDiscordChange(e.target.value)}
             value={discordHandle}
-            disabled={!wallets.connected}
+            disabled={!wallet.connected}
           />
         </div>
         <div className="w-full ">
@@ -164,7 +166,7 @@ const IdentitySettings = observer(() => {
             className=" bg-sky-200 dark:bg-sky-1000 text-sky-600"
             onChange={(e) => handleTwitterChange(e.target.value)}
             value={twitterHandle}
-            disabled={!wallets.connected}
+            disabled={!wallet.connected}
           />
         </div>
       </div>

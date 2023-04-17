@@ -3,6 +3,7 @@ import { FC, PropsWithChildren } from "react";
 import { useStore } from "lib/stores/Store";
 import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useAccountModals } from "lib/hooks/account";
+import { useWallet } from "lib/state/wallet";
 
 interface TransactionButtonProps {
   disabled?: boolean;
@@ -13,13 +14,12 @@ interface TransactionButtonProps {
 const FormTransactionButton: FC<PropsWithChildren<TransactionButtonProps>> =
   observer(({ disabled = false, className = "", dataTest = "", children }) => {
     const store = useStore();
-    const { wallets } = store;
-    const { connected } = wallets;
+    const wallet = useWallet();
     const accountModals = useAccountModals();
     const { locationAllowed, isUsingVPN } = useUserLocation();
 
     const click = (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      if (!connected) {
+      if (!wallet.connected) {
         event.preventDefault();
         accountModals.openWalletSelect();
       }
@@ -28,7 +28,7 @@ const FormTransactionButton: FC<PropsWithChildren<TransactionButtonProps>> =
     const isDisabled = () => {
       if (locationAllowed !== true || isUsingVPN || !store?.sdk?.api) {
         return true;
-      } else if (!connected) {
+      } else if (!wallet.connected) {
         return false;
       }
       return disabled;
@@ -43,7 +43,7 @@ const FormTransactionButton: FC<PropsWithChildren<TransactionButtonProps>> =
         disabled={isDisabled() || disabled}
         data-test={dataTest}
       >
-        {connected ? children : "Connect Wallet"}
+        {wallet.connected ? children : "Connect Wallet"}
       </button>
     );
   });
