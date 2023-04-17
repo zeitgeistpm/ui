@@ -42,25 +42,24 @@ const MarketChart = ({
   const [chartFilter, setChartFilter] = useState<TimeFilter>(filters[1]);
   const [filterSelected, setFilterSelected] = useState(false);
 
-  const startDate = useMemo(
-    () =>
-      calcPriceHistoryStartDate(
-        marketStatus,
-        endDate,
-        deadlines,
-        chartFilter,
-        poolCreationDate,
-      ),
-    [chartFilter.label],
-  );
+  const startDateISOString = useMemo(() => {
+    const startDate = calcPriceHistoryStartDate(
+      marketStatus,
+      endDate,
+      deadlines,
+      chartFilter,
+      poolCreationDate,
+    );
 
-  console.log(startDate);
+    return setTimeToNow(startDate).toISOString();
+  }, [chartFilter.label]);
+
   const { data: prices } = useMarketPriceHistory(
     marketId,
     chartFilter.resolutionUnit,
     chartFilter.resolutionValue,
     //hack to make data end on same time as now
-    setTimeToNow(startDate).toISOString(),
+    startDateISOString,
   );
 
   const chartData = (filterSelected == false ? initialData : prices)?.map(

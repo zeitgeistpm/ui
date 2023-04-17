@@ -132,7 +132,7 @@ export async function getStaticProps({ params }) {
 
     const chartStartDate = calcPriceHistoryStartDate(
       market.status,
-      new Date(market.period.end),
+      new Date(Number(market.period.end)),
       market.deadlines,
       chartFilter,
       new Date(market.pool.createdAt),
@@ -235,7 +235,7 @@ const Market: NextPage<{
             initialData={priceHistory}
             baseAsset={indexedMarket.pool.baseAsset}
             poolCreationDate={new Date(indexedMarket.pool.createdAt)}
-            endDate={new Date(indexedMarket.period.end)}
+            endDate={new Date(Number(indexedMarket.period.end))}
             deadlines={indexedMarket.deadlines}
             marketStatus={indexedMarket.status}
           />
