@@ -1,10 +1,6 @@
 import PoolTable from "components/liquidity/PoolTable";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
-import {
-  MarketTimer,
-  MarketTimerSkeleton,
-} from "components/markets/MarketTimer";
 import { Skeleton } from "@material-ui/lab";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
@@ -27,7 +23,6 @@ import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
-import { useEffect, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
 import Link from "next/link";
@@ -156,19 +151,9 @@ const Market: NextPage<{
           volume={volume}
           subsidy={subsidy}
           marketType={indexedMarket?.marketType?.scalar}
+          marketStage={marketStage}
+          rejectReason={marketSdkv2?.rejectReason}
         />
-        {marketSdkv2?.rejectReason && marketSdkv2.rejectReason.length > 0 && (
-          <div className="mt-[10px] text-ztg-14-150">
-            Market rejected: {marketSdkv2.rejectReason}
-          </div>
-        )}
-        <div className="flex justify-center my-10">
-          {marketStage ? (
-            <MarketTimer stage={marketStage} />
-          ) : (
-            <MarketTimerSkeleton />
-          )}
-        </div>
         {priceHistory?.length > 0 &&
         chartSeries &&
         indexedMarket?.pool?.poolId ? (

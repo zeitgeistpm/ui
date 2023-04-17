@@ -2,6 +2,9 @@ import { Skeleton } from "@material-ui/lab";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import { FC, PropsWithChildren } from "react";
+import { MarketStage } from "@zeitgeistpm/sdk-next";
+import { MarketTimer } from "./MarketTimer";
+import { MarketTimerSkeleton } from "./MarketTimer";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
   ({ label, border = true, children }) => {
@@ -35,6 +38,8 @@ const MarketHeader: FC<{
   volume: number;
   token: string;
   marketType: string[];
+  marketStage: MarketStage;
+  rejectReason?: string;
 }> = ({
   question,
   status,
@@ -46,10 +51,34 @@ const MarketHeader: FC<{
   volume,
   token,
   marketType,
+  marketStage,
+  rejectReason,
 }) => {
   return (
     <header className="flex flex-col items-center w-full">
       <h1 className="text-4xl my-5 max-w-[900px] text-center">{question}</h1>
+      <div className="flex flex-wrap justify-center gap-2.5">
+        <Tag className={`${status === "Active" && "!bg-green-lighter"}`}>
+          {status === "Active" && <span className="text-green">&#x2713; </span>}
+          {status}
+        </Tag>
+        {tags?.map((tag, index) => {
+          return <Tag key={index}>{tag}</Tag>;
+        })}
+        <Tag className="!bg-black text-white">
+          {marketType === null ? "Categorical" : "Scalar"}
+        </Tag>
+      </div>
+      {rejectReason && rejectReason.length > 0 && (
+        <div className="mt-2.5">Market rejected: {rejectReason}</div>
+      )}
+      <div className="flex justify-center my-8 w-full">
+        {marketStage ? (
+          <MarketTimer stage={marketStage} />
+        ) : (
+          <MarketTimerSkeleton />
+        )}
+      </div>
       <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-2 mb-5">
         <HeaderStat label={hasDatePassed(starts) ? "Started" : "Starts"}>
           {new Intl.DateTimeFormat("default", {
@@ -88,18 +117,6 @@ const MarketHeader: FC<{
         ) : (
           <Skeleton width="150px" height="24px" />
         )}
-      </div>
-      <div className="flex flex-wrap justify-center gap-2.5">
-        <Tag className={`${status === "Active" && "!bg-green-lighter"}`}>
-          {status === "Active" && <span className="text-green">&#x2713; </span>}
-          {status}
-        </Tag>
-        {tags?.map((tag, index) => {
-          return <Tag key={index}>{tag}</Tag>;
-        })}
-        <Tag className="!bg-black text-white">
-          {marketType === null ? "Categorical" : "Scalar"}
-        </Tag>
       </div>
     </header>
   );
