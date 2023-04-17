@@ -88,6 +88,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   return (
     <div
       className={"pt-ztg-46 mb-[38px]" + className}
+      style={{ scrollMarginTop: 50 }}
       data-testid="marketsList"
       id={"market-list"}
     >
