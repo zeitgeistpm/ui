@@ -1,5 +1,5 @@
-import { MarketDeadlines } from "@zeitgeistpm/sdk/dist/types";
 import Decimal from "decimal.js";
+import { GraphQLClient } from "graphql-request";
 import resolveTailwindConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../../tailwind.config";
 import { EndpointOption, Environment } from "../types";
@@ -27,11 +27,11 @@ export const SUPPORTED_WALLET_NAMES = [
 ];
 
 export const endpoints: EndpointOption[] = [
-  // {
-  //   value: "wss://rpc-0.zeitgeist.pm/",
-  //   label: "ZeitgeistPM",
-  //   environment: "production",
-  // },
+  {
+    value: "wss://main.rpc.zeitgeist.pm/ws",
+    label: "ZeitgeistPM",
+    environment: "production",
+  },
   {
     value: "wss://zeitgeist-rpc.dwellir.com",
     label: "Dwellir",
@@ -91,6 +91,7 @@ const getGraphQlEndpoint = (): string => {
 };
 
 export const graphQlEndpoint = getGraphQlEndpoint();
+export const graphQlClient = new GraphQLClient(graphQlEndpoint);
 
 const getEndpointOptions = (env: Environment): EndpointOption[] => {
   return endpoints.filter((e) => e.environment === env);

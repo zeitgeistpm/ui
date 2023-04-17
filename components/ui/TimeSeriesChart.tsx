@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 import React, { useCallback, useState } from "react";
 import {
   CartesianGrid,
+  Label,
   Line,
   LineChart,
   ReferenceArea,
@@ -95,6 +96,8 @@ const TimeSeriesChart = observer(
     const [rightX, setRightX] = useState("dataMax");
     const [mouseInside, setMouseInside] = useState(false);
 
+    const roundingThreshold = 0.3;
+
     const lessThanTwoDays =
       data?.length > 0
         ? Math.abs(data[data.length - 1].t - data[0].t) < 172800
@@ -182,9 +185,10 @@ const TimeSeriesChart = observer(
                   strokeWidth: 1,
                   fontWeight: 100,
                 }}
+                tickMargin={10}
                 type="number"
                 stroke="#E8EAED"
-                tickLine={false}
+                tickLine={true}
                 strokeWidth={2}
                 tickFormatter={(unixTime) => {
                   if (unixTime !== -Infinity && unixTime !== Infinity) {
@@ -213,17 +217,30 @@ const TimeSeriesChart = observer(
                 domain={
                   yDomain ?? [
                     (dataMin: number) => {
-                      return dataMin < 0.3 ? 0 : Math.floor(dataMin * 10) / 10;
+                      return dataMin < roundingThreshold
+                        ? 0
+                        : Math.floor(dataMin * 10) / 10;
                     },
                     (dataMax) => {
-                      return dataMax === 0 ? 1 : Math.ceil(dataMax * 10) / 10;
+                      return dataMax > 1 - roundingThreshold
+                        ? 1
+                        : Math.ceil(dataMax * 10) / 10;
                     },
                   ]
                 }
                 stroke="#E8EAED"
                 strokeWidth={2}
-                tickFormatter={(val) => `${+val.toFixed(2)} ${yUnits}`}
-              />
+                tickFormatter={(val) => `${+val.toFixed(2)}`}
+              >
+                <Label
+                  fontSize={10}
+                  stroke="black"
+                  value="ZTG"
+                  offset={15}
+                  position="insideLeft"
+                  angle={-90}
+                />
+              </YAxis>
 
               <Tooltip
                 animationEasing={"linear"}

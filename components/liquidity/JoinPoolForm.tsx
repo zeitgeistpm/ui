@@ -8,7 +8,7 @@ import { usePool } from "lib/hooks/queries/usePool";
 import { poolTotalIssuanceRootQueryKey } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/state/notifications";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
@@ -27,12 +27,12 @@ const JoinPoolForm = ({
 
   const { data: pool } = usePool({ poolId });
   const [sdk, id] = useSdkv2();
-  const notificationStore = useNotificationStore();
+  const notificationStore = useNotifications();
   const [poolSharesToReceive, setPoolSharesToReceive] = useState<Decimal>();
   const { data: market } = useMarket({ poolId });
   const queryClient = useQueryClient();
 
-  const { send: joinPool, isLoading: isLoading } = useExtrinsic(
+  const { send: joinPool, isLoading } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && pool) {
         const formValue = getValues();
@@ -199,7 +199,9 @@ const JoinPoolForm = ({
         {...register("baseAssetPercentage", { min: 0, value: "0" })}
       />
       <FormTransactionButton
-        disabled={formState.isValid === false || isLoading}
+        disabled={
+          formState.isValid === false || isLoading || market.status !== "Active"
+        }
       >
         Join Pool
       </FormTransactionButton>

@@ -1,7 +1,10 @@
 import { ZTG } from "@zeitgeistpm/sdk-next";
 import Table, { TableColumn, TableData } from "components/ui/Table";
+import Decimal from "decimal.js";
+import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import ManageLiquidityButton from "./ManageLiquidityButton";
 
 const columns: TableColumn[] = [
@@ -35,18 +38,29 @@ const PoolTable = ({ poolId }: { poolId: number }) => {
   );
   const saturatedPoolData = saturatedPoolIndex?.[poolId];
 
-  const tableData: TableData[] = saturatedPoolData?.assets?.map((asset) => ({
-    token: {
-      color: asset.category.color || "#ffffff",
-      label: asset.category.ticker,
-    },
-    weights: asset.percentage,
-    poolBalance: {
-      value: asset.amount.div(ZTG).toDecimalPlaces(2).toNumber(),
-      usdValue: 0,
-    },
-    manage: <ManageLiquidityButton poolId={poolId} />,
-  }));
+  const { data: balances } = useAccountPoolAssetBalances(pool?.accountId, pool);
+  const { data: basePoolBalance } = useZtgBalance(pool?.accountId);
+
+  const tableData: TableData[] = saturatedPoolData?.assets?.map(
+    (asset, index) => ({
+      token: {
+        color: asset.category.color || "#ffffff",
+        label: asset.category.ticker,
+      },
+      weights: asset.percentage,
+      poolBalance: {
+        value: (saturatedPoolData.assets.length - 1 === index
+          ? basePoolBalance
+          : new Decimal(balances[index]?.free.toString() ?? asset.amount)
+        )
+          .div(ZTG)
+          .toDecimalPlaces(2)
+          .toNumber(),
+        usdValue: 0,
+      },
+      manage: <ManageLiquidityButton poolId={poolId} />,
+    }),
+  );
 
   return <Table data={tableData} columns={columns} />;
 };

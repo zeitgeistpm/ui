@@ -1,8 +1,9 @@
+import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult, IEventRecord } from "@polkadot/types/types";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import { SubmittableExtrinsic } from "@polkadot/api/types";
-import NotificationStore from "lib/stores/NotificationStore";
 import { isExtSigner, unsubOrWarns } from "@zeitgeistpm/sdk/dist/util";
+
+import { UseNotifications } from "lib/state/notifications";
 
 type GenericCallback = (...args: any[]) => void;
 
@@ -38,19 +39,20 @@ export const extrinsicCallback = ({
   failCallback,
   finalizedCallback,
   retractedCallback,
-  notificationStore,
+  notifications: notificationStore,
   successMethod = "ExtrinsicSuccess",
 }: {
-  successCallback?: GenericCallback;
+  successCallback?: (data: ISubmittableResult) => void;
   broadcastCallback?: GenericCallback;
   failCallback?: GenericCallback;
   finalizedCallback?: GenericCallback;
   retractedCallback?: GenericCallback;
   successMethod?: string;
-  notificationStore?: NotificationStore;
+  notifications?: UseNotifications;
 }): ((res: ISubmittableResult, unsub?: () => void) => void) => {
   return (result, unsub) => {
     const { status, events } = result;
+
     if (status.isInBlock && successCallback) {
       processEvents(
         events,
@@ -72,7 +74,7 @@ export const extrinsicCallback = ({
             "This transaction was temporarily retracted. It will take a little longer to complete",
             { type: "Info" },
           );
-    } else {
+    } else if (status.isBroadcast) {
       broadcastCallback
         ? broadcastCallback()
         : notificationStore?.pushNotification("Broadcasting transaction...", {

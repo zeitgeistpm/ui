@@ -1,20 +1,20 @@
 import "react-datetime/css/react-datetime.css";
 import "styles/index.css";
 
-import BatsthitDevtools from "@yornaath/batshit-devtools-react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import * as Fathom from "fathom-client";
 
 import { observer } from "mobx-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { hotjar } from "react-hotjar";
 
 import { AvatarContext } from "@zeitgeistpm/avatara-react";
+import { WalletDisconnector } from "components/account/WalletDisconnector";
 import { ModalStoreContext } from "components/context/ModalStoreContext";
 import { StoreProvider } from "components/context/StoreContext";
+import Devtools from "components/devtools";
 import ModalContainer from "components/modal/ModalContainer";
 import DefaultLayout from "layouts/DefaultLayout";
 import ModalStore from "lib/stores/ModalStore";
@@ -88,6 +88,7 @@ const MyApp = observer(({ Component, pageProps }) => {
             prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
           }}
         >
+          <WalletDisconnector />
           <ModalStoreContext.Provider value={modalStore}>
             {modalStore.modal && (
               <ModalContainer>{modalStore.modal}</ModalContainer>
@@ -101,13 +102,7 @@ const MyApp = observer(({ Component, pageProps }) => {
                 <Onboarding />
               </Layout>
             </DefaultLayout>
-            {process.env.NEXT_PUBLIC_REACT_QUERY_DEVTOOLS === "true" &&
-            typeof window === "object" ? (
-              <Suspense fallback={<></>}>
-                <ReactQueryDevtools />
-                <BatsthitDevtools />
-              </Suspense>
-            ) : null}
+            <Devtools />
           </ModalStoreContext.Provider>
         </AvatarContext.Provider>
       </StoreProvider>

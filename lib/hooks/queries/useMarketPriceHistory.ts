@@ -1,15 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import { TimeUnit } from "components/ui/TimeFilters";
 import { gql, GraphQLClient } from "graphql-request";
 import { useSdkv2 } from "../useSdkv2";
 
 export const marketPriceHistoryKey = "market-price-histroy";
 
 const priceHistoryQuery = gql`
-  query PriceHistory($marketId: Float!, $interval: String, $startTime: String) {
+  query PriceHistory(
+    $marketId: Int!
+    $unit: Unit!
+    $value: Int!
+    $startTime: String
+  ) {
     priceHistory(
       marketId: $marketId
-      interval: $interval
+      interval: { unit: $unit, value: $value }
       startTime: $startTime
     ) {
       prices {
@@ -27,25 +33,29 @@ export interface PriceHistory {
 }
 export const useMarketPriceHistory = (
   marketId: number,
-  interval: string,
+  timeUnit: TimeUnit,
+  timeValue: number,
   startTime: string, //ISO timestamp
 ) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, marketPriceHistoryKey, marketId, interval, startTime],
+    [id, marketPriceHistoryKey, marketId, timeUnit, timeValue, startTime],
     async () => {
       if (isIndexedSdk(sdk)) {
         return await getPriceHistory(
           sdk.indexer.client,
           marketId,
-          interval,
+          timeUnit,
+          timeValue,
           startTime,
         );
       }
     },
     {
-      enabled: Boolean(sdk && marketId != null && interval && startTime),
+      enabled: Boolean(
+        sdk && marketId != null && timeUnit && timeValue && startTime,
+      ),
     },
   );
 
@@ -55,14 +65,16 @@ export const useMarketPriceHistory = (
 export async function getPriceHistory(
   client: GraphQLClient,
   marketId: number,
-  interval: string,
+  timeUnit: TimeUnit,
+  timeValue: number,
   startTime: string,
 ) {
   const { priceHistory } = await client.request<{
     priceHistory: PriceHistory[];
   }>(priceHistoryQuery, {
     marketId: marketId,
-    interval: interval,
+    unit: timeUnit,
+    value: timeValue,
     startTime: startTime,
   });
 

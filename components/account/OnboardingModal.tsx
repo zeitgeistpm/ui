@@ -1,13 +1,12 @@
 import { Dialog } from "@headlessui/react";
 import { useOnboarding } from "lib/state/onboarding";
-import { BaseDotsamaWallet } from "lib/wallets/base-dotsama-wallet";
-import { PolkadotjsWallet } from "lib/wallets/polkadotjs-wallet";
-import { SubWallet } from "lib/wallets/subwallet";
-import { TalismanWallet } from "lib/wallets/talisman-wallet";
+import { BaseDotsamaWallet } from "lib/stores/wallets/base-dotsama-wallet";
+import { PolkadotjsWallet } from "lib/stores/wallets/polkadotjs-wallet";
+import { SubWallet } from "lib/stores/wallets/subwallet";
+import { TalismanWallet } from "lib/stores/wallets/talisman-wallet";
 import { range } from "lodash-es";
 import { observer } from "mobx-react";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import { Dispatch, SetStateAction, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
 
@@ -163,11 +162,14 @@ export const ExchangeTypeSelection = (props: {
       onClick: () => props.setStep(5),
     },
     {
-      name: "Credit Card (Coming Soon)",
-      disabled: true,
+      name: "With Crypto (DEX)",
+      disabled: false,
+      onClick: () => {
+        window.open("https://app.hydradx.io/#/trade?assetOut=12&assetIn=5");
+      },
     },
     {
-      name: "With Crypto (DEX) (Coming Soon)",
+      name: "Credit Card (Coming Soon)",
       disabled: true,
     },
   ];
@@ -196,7 +198,6 @@ export const ExchangeTypeSelection = (props: {
 
 const OnBoardingModal = (props: { step?: number; notice?: string }) => {
   const [step, setStep] = useState(props.step ?? 0);
-  const router = useRouter();
 
   const screens = [
     <TextSection

@@ -68,7 +68,7 @@ const TopBar = observer(() => {
         <AccountButton />
         {menuOpen ? (
           <X
-            className="block md:hidden ml-auto cursor-pointer text-white"
+            className="block md:hidden cursor-pointer text-white"
             color={`${
               pathname === "/" ? (menuOpen ? "black" : "white") : "black"
             }`}
@@ -79,7 +79,7 @@ const TopBar = observer(() => {
             color={`${
               pathname === "/" ? (menuOpen ? "black" : "white") : "black"
             }`}
-            className="block md:hidden ml-auto cursor-pointer"
+            className="block md:hidden cursor-pointer"
             onClick={() => setMenuOpen(true)}
           />
         )}

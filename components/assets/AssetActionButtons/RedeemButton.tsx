@@ -15,7 +15,7 @@ import {
   useAccountAssetBalances,
 } from "lib/hooks/queries/useAccountAssetBalances";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { calcScalarWinnings } from "lib/util/calc-scalar-winnings";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
@@ -115,7 +115,7 @@ export const RedeemButtonByValue = observer(
     const store = useStore();
     const { wallets } = store;
     const signer = wallets?.getActiveSigner();
-    const notificationStore = useNotificationStore();
+    const notificationStore = useNotifications();
 
     const [isRedeeming, setIsRedeeming] = useState(false);
     const [isRedeemed, setIsRedeemed] = useState(false);
@@ -126,7 +126,7 @@ export const RedeemButtonByValue = observer(
       setIsRedeeming(true);
 
       const callback = extrinsicCallback({
-        notificationStore,
+        notifications: notificationStore,
         successCallback: async () => {
           notificationStore.pushNotification(
             `Redeemed ${value.toFixed(2)} ZTG`,
@@ -162,10 +162,8 @@ export const RedeemButtonByValue = observer(
         ) : (
           <button
             onClick={handleClick}
-            className={`text-mariner font-semibold text-ztg-14-120 ${
-              isRedeeming && "animate-pulse"
-            }`}
-            disabled={isRedeeming}
+            className={`text-mariner font-semibold text-ztg-14-120 disabled:opacity-50`}
+            disabled={isRedeeming || value.eq(0)}
           >
             Redeem Tokens
           </button>

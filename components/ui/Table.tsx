@@ -120,25 +120,32 @@ const Cell = observer(
     value: string | number | CurrencyData;
     onClick?: () => void;
   }) => {
-    const { data: ztgInfo } = useZtgInfo();
+    const {
+      data: ztgInfo,
+      isLoading: ztgIsLoading,
+      isLoadingError: ztgIsLoadingError,
+    } = useZtgInfo();
 
     const base = `dark:text-white px-ztg-15 h-ztg-72 ${
       onClick ? "cursor-pointer" : ""
     }`;
     const style = { height: `${rowHeight}px` };
+    const skeletonElement = (
+      <td
+        className={`font-semibold text-ztg-12-150 ${base}`}
+        onClick={onClick}
+        style={style}
+      >
+        <div className="">
+          <Skeleton className="!transform-none !w-[25px] !h-[25px]" />
+        </div>
+      </td>
+    );
+
     if (value == null) {
-      return (
-        <td
-          className={`font-semibold text-ztg-12-150 ${base}`}
-          onClick={onClick}
-          style={style}
-        >
-          <div className="">
-            <Skeleton className="!transform-none !w-[25px] !h-[25px]" />
-          </div>
-        </td>
-      );
+      return skeletonElement;
     }
+
     switch (type) {
       case "text":
         return (
@@ -196,7 +203,11 @@ const Cell = observer(
           </td>
         );
       case "currency":
-        if (isCurrencyData(value)) {
+        if (
+          isCurrencyData(value) &&
+          ztgIsLoading === false &&
+          ztgIsLoadingError === false
+        ) {
           return (
             <td className={`${base} `} onClick={onClick} style={style}>
               <div className="text-ztg-14-150 font-mediun mb-[2px]">
@@ -205,11 +216,13 @@ const Cell = observer(
               <div className="text-ztg-12-150 font-light text-sky-600">
                 $
                 {(
-                  (value.usdValue || ztgInfo?.price.toNumber()) * value.value
+                  (value.usdValue || ztgInfo?.price?.toNumber()) * value.value
                 ).toFixed(2)}
               </div>
             </td>
           );
+        } else {
+          return skeletonElement;
         }
       case "address":
         return (
@@ -371,7 +384,6 @@ const Table = observer(
         setIsOverflowing(false);
       }
     };
-
     return (
       <>
         {data == null ? (

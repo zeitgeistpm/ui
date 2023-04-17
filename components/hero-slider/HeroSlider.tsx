@@ -37,10 +37,11 @@ const HeroSlider = ({
         animate && styles.fadeIn
       }`}
       onAnimationEnd={() => setAnimate(false)}
-      data-testid="heroSlider"
+      data-testid="HeroSlider__container"
     >
       {banners.map((banner, index) => (
         <Image
+          key={index}
           priority
           src={banner.imageUrl}
           alt={`Image depicting ${banner.title}`}
@@ -53,7 +54,6 @@ const HeroSlider = ({
             objectFit: "cover",
             objectPosition: `${banner.imageAlignment} 50%`,
           }}
-          key={index}
         />
       ))}
       <div className="h-full relative container-fluid">

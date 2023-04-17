@@ -10,12 +10,13 @@ import { useAccountModals } from "lib/hooks/account";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useStore } from "lib/stores/Store";
-import { useUserStore } from "lib/stores/UserStore";
+import { useUserLocation } from "lib/hooks/useUserLocation";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { DollarSign, Frown, Settings, User } from "react-feather";
 import OnBoardingModal from "./OnboardingModal";
+import dynamic from "next/dynamic";
 
 const AccountButton: FC<{
   connectButtonClassname?: string;
@@ -27,13 +28,20 @@ const AccountButton: FC<{
   const { connected, activeAccount, activeBalance } = wallets;
   const modalStore = useModalStore();
   const accountModals = useAccountModals();
-  const { locationAllowed, isUsingVPN } = useUserStore();
+  const { locationAllowed, isUsingVPN } = useUserLocation();
   const [hovering, setHovering] = useState<boolean>(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
+  const isNovaWallet: boolean =
+    //@ts-ignore
+    typeof window === "object" && window.walletExtension?.isNovaWallet;
 
   const connect = async () => {
-    accountModals.openWalletSelect();
+    if (isNovaWallet) {
+      wallets.connectWallet("polkadot-js", true);
+    } else {
+      accountModals.openWalletSelect();
+    }
   };
 
   const handleMouseEnter = () => {
@@ -72,16 +80,16 @@ const AccountButton: FC<{
     <>
       {!connected ? (
         <div
-          className="hidden md:block flex-1"
+          className="sm:mr-5 sm:ml-auto"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
           <button
             className={
               connectButtonClassname ||
-              `flex border-2 rounded-full px-6 leading-[40px] ml-auto ${
+              `flex border-2 rounded-full px-6 leading-[40px] ${
                 pathname === "/"
-                  ? "text-white bg-transparent border-white"
+                  ? "text-black border-black sm:text-white sm:bg-transparent sm:border-white"
                   : "text-black border-black"
               } rounded-full font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-30`
             }
@@ -105,7 +113,7 @@ const AccountButton: FC<{
           )}
         </div>
       ) : (
-        <div className="hidden md:block relative">
+        <div className="relative sm:mr-5 sm:ml-auto">
           <Menu>
             {({ open }) => (
               <>
@@ -121,7 +129,7 @@ const AccountButton: FC<{
                       }`}
                     >
                       <div
-                        className={`flex items-center rounded-full h-full border-2 pl-1.5 pr-4 ${
+                        className={`flex items-center rounded-full h-full border-2 pl-1.5 ${
                           pathname === "/"
                             ? `bg-black text-white ${
                                 open ? "border-orange-500" : "border-white"
@@ -141,16 +149,16 @@ const AccountButton: FC<{
                         >
                           <Avatar
                             zoomed
-                            address={activeAccount.address}
+                            address={activeAccount?.address}
                             deps={avatarDeps}
                           />
                         </div>
                         <span
-                          className={`font-medium pl-4 text-sm h-full leading-[40px] ${
+                          className={`font-medium px-3.5 text-sm h-full leading-[40px] ${
                             pathname === "/" ? "text-white" : "text-black"
                           }`}
                         >
-                          {shortenAddress(activeAccount.address, 6, 4)}
+                          {shortenAddress(activeAccount?.address, 6, 4)}
                         </span>
                       </div>
                     </div>
@@ -166,7 +174,7 @@ const AccountButton: FC<{
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <Menu.Items className="absolute right-0 py-3  mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <Menu.Items className="absolute right-0 py-3 z-40 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="">
                       <div className="border-b-2 mb-3 py-2">
                         <div className="px-4">
@@ -180,8 +188,8 @@ const AccountButton: FC<{
                               className={`group font-bold flex w-full items-center rounded-md px-2 py-2 text-sm`}
                             >
                               {`${formatNumberLocalized(
-                                activeBalance?.toNumber(),
-                              )} ${store.config.tokenSymbol}`}
+                                activeBalance?.abs().toNumber(),
+                              )} ${store.config?.tokenSymbol}`}
                             </div>
                           </div>
                         </div>
@@ -213,23 +221,25 @@ const AccountButton: FC<{
                           </div>
                         )}
                       </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="flex items-center px-4 mb-3 hover:bg-slate-100"
-                            onClick={() => {
-                              accountModals.openAccontSelect();
-                            }}
-                          >
-                            <User />
-                            <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                      {isNovaWallet !== true && (
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div
+                              className="flex items-center px-4 mb-3 hover:bg-slate-100"
+                              onClick={() => {
+                                accountModals.openAccontSelect();
+                              }}
                             >
-                              Select Account
-                            </button>
-                          </div>
-                        )}
-                      </Menu.Item>
+                              <User />
+                              <button
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                              >
+                                Select Account
+                              </button>
+                            </div>
+                          )}
+                        </Menu.Item>
+                      )}
                       <Menu.Item>
                         {({ active }) => (
                           <Link href="/settings">
@@ -277,4 +287,6 @@ const AccountButton: FC<{
   );
 });
 
-export default AccountButton;
+export default dynamic(() => Promise.resolve(AccountButton), {
+  ssr: false,
+});

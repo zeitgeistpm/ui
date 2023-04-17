@@ -9,7 +9,7 @@ import {
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useModalStore } from "lib/stores/ModalStore";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
@@ -25,7 +25,7 @@ const ReportButton = observer(
     const [sdk] = useSdkv2();
     const store = useStore();
     const { wallets } = store;
-    const notificationStore = useNotificationStore();
+    const notificationStore = useNotifications();
     const modalStore = useModalStore();
 
     if (!market) return null;
@@ -42,7 +42,7 @@ const ReportButton = observer(
           <div>
             <ScalarReportBox market={market} />
           </div>,
-          <>"Report outcome",</>,
+          <>Report outcome</>,
         );
       } else {
         //@ts-ignore
@@ -50,7 +50,7 @@ const ReportButton = observer(
         const signer = wallets.getActiveSigner();
 
         const callback = extrinsicCallback({
-          notificationStore,
+          notifications: notificationStore,
           successCallback: async () => {
             notificationStore.pushNotification(
               `Reported market outcome: ${ticker}`,

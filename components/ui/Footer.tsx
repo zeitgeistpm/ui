@@ -1,35 +1,17 @@
 import React, { FC } from "react";
 import axios from "axios";
-import MobxReactForm from "mobx-react-form";
 import { ChevronRight } from "react-feather";
-import { observer } from "mobx-react";
 import Link from "next/link";
+import { useNotifications } from "lib/state/notifications";
+import { useForm } from "react-hook-form";
 
-import { useNotificationStore } from "lib/stores/NotificationStore";
-import { defaultOptions, defaultPlugins } from "lib/form";
+const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
+  const notificationStore = useNotifications();
+  const { register, formState, handleSubmit, reset } = useForm();
 
-const newsletterSubForm = new MobxReactForm(
-  {
-    fields: {
-      email: {
-        value: "",
-        rules: "required|email",
-      },
-    },
-  },
-  {
-    plugins: defaultPlugins,
-    options: defaultOptions,
-  },
-);
+  const invalid = formState.isValid === false && formState.isDirty;
 
-const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
-  const notificationStore = useNotificationStore();
-  const formField = newsletterSubForm.$("email");
-
-  const invalid = formField.showError && !formField.isValid;
-
-  const subscribe = async (email: string) => {
+  const subscribe = async ({ email }: { email: string }) => {
     try {
       await axios.post("https://emails.zeitgeist.pm/app-subscribe", { email });
 
@@ -37,6 +19,8 @@ const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
         "Email sent successfully! We'll be in touch soon.",
         { type: "Success" },
       );
+
+      reset();
     } catch {
       notificationStore.pushNotification(
         "Something went wrong, please try again.",
@@ -46,26 +30,17 @@ const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
   };
 
   return (
-    <form
-      className="flex flex-col w-full"
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (invalid) {
-          return;
-        }
-        subscribe(formField.value);
-      }}
-    >
+    <form className="flex flex-col w-full" onSubmit={handleSubmit(subscribe)}>
       <h6 className="text-center md:text-start font-semibold mb-ztg-30">
         {title}
       </h6>
       <div className="flex gap-3 items-center h-ztg-40 mb-auto w-full">
         <input
-          value={newsletterSubForm.$("email").value}
-          onChange={newsletterSubForm.$("email").onChange}
-          className={`h-full grow rounded text-sky-600 p-2 text-ztg-12-120 bg-anti-flash-white focus:outline-none ${
+          {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
+          className={`h-full grow rounded text-sky-600 p-2 text-ztg-12-120 bg-anti-flash-white border-[1px] focus:outline-none ${
             invalid ? "border-vermilion" : "border-none"
           }`}
+          type="email"
         />
         <button
           type="submit"
@@ -78,7 +53,7 @@ const FooterNewsletterSub: FC<{ title: string }> = observer(({ title }) => {
       </div>
     </form>
   );
-});
+};
 
 interface FooterMenuProps {
   title: string;
@@ -86,29 +61,27 @@ interface FooterMenuProps {
   className?: string;
 }
 
-const FooterMenu: FC<FooterMenuProps> = observer(
-  ({ title, links, className = "" }) => {
-    return (
-      <div
-        className={` ${className}
+const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
+  return (
+    <div
+      className={` ${className}
           `}
-      >
-        <h6 className="font-semibold">{title}</h6>
-        <div className="text-ztg-14-150 flex flex-col text-sky-600">
-          {links.map(({ text, href }, idx) => {
-            return (
-              <Link href={href} key={`footerMenuLink${idx}`} target="_blank">
-                <span>{text}</span>
-              </Link>
-            );
-          })}
-        </div>
+    >
+      <h6 className="font-semibold">{title}</h6>
+      <div className="text-ztg-14-150 flex flex-col text-sky-600">
+        {links.map(({ text, href }, idx) => {
+          return (
+            <Link href={href} key={`footerMenuLink${idx}`} target="_blank">
+              <span>{text}</span>
+            </Link>
+          );
+        })}
       </div>
-    );
-  },
-);
+    </div>
+  );
+};
 
-const Footer = observer(() => {
+const Footer = () => {
   return (
     <div className="container-fluid mx-auto mt-auto flex flex-col pb-24">
       <div className="flex justify-between gap-5 lg:gap-12 mb-8 md:mb-16">
@@ -171,6 +144,6 @@ const Footer = observer(() => {
       </div>
     </div>
   );
-});
+};
 
 export default Footer;

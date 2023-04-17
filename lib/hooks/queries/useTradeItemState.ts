@@ -1,15 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import {
-  getMarketIdOf,
   getAssetWeight,
   getIndexOf,
+  getMarketIdOf,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
-import { useAtom } from "jotai";
-import { ZTG, MAX_IN_OUT_RATIO } from "lib/constants";
+import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
 import { calcSpotPrice } from "lib/math";
 import { useStore } from "lib/stores/Store";
-import { TradeItem, slippagePercentageAtom } from "../trade";
+import { TradeItem } from "../trade";
 import { useSdkv2 } from "../useSdkv2";
 import { useAccountAssetBalances } from "./useAccountAssetBalances";
 import { usePoolAccountIds } from "./usePoolAccountIds";
@@ -24,8 +23,7 @@ export const useTradeItemState = (item: TradeItem) => {
   const [sdk, id] = useSdkv2();
   const { wallets } = useStore();
   const signer = wallets.activeAccount ? wallets.getActiveSigner() : null;
-  const [slippage] = useAtom(slippagePercentageAtom);
-
+  const slippage = 1;
   const { data: traderBaseBalance } = useZtgBalance(
     wallets.activeAccount?.address,
   );

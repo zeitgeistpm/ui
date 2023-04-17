@@ -9,11 +9,9 @@ import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useModalStore } from "lib/stores/ModalStore";
-import { useNotificationStore } from "lib/stores/NotificationStore";
-import { useStore } from "lib/stores/Store";
-import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useMemo } from "react";
+import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
 
 const DisputeButton = observer(
   ({
@@ -23,19 +21,19 @@ const DisputeButton = observer(
     market: Market<IndexerContext>;
     assetId: MarketOutcomeAssetId;
   }) => {
-    const [sdk, id] = useSdkv2();
-    const store = useStore();
-    const { wallets } = store;
-    const notificationStore = useNotificationStore();
+    const [sdk] = useSdkv2();
     const modalStore = useModalStore();
-
-    const ticker = market.categories?.[getIndexOf(assetId)].ticker;
+    const assetIndex = getIndexOf(assetId);
 
     const { data: disputes } = useMarketDisputes(market);
 
     const disputeDisabled = useMemo(() => {
-      return sdk && !isRpcSdk(sdk);
-    }, [sdk, disputes?.length]);
+      const assetAlreadyReported =
+        market.marketType.categorical &&
+        market.report.outcome.categorical === assetIndex;
+
+      return (sdk && !isRpcSdk(sdk)) || assetAlreadyReported;
+    }, [sdk, disputes?.length, market, assetIndex]);
 
     const handleClick = async () => {
       if (market.marketType.scalar) {
@@ -43,43 +41,22 @@ const DisputeButton = observer(
           <div>
             <ScalarDisputeBox market={market} />
           </div>,
-          <>"Dispute outcome",</>,
+          <>Dispute outcome</>,
         );
-      } else if (isRpcSdk(sdk)) {
-        const ID = getIndexOf(assetId);
-        const signer = wallets.getActiveSigner();
-
-        const callback = extrinsicCallback({
-          notificationStore,
-          successCallback: async () => {
-            notificationStore.pushNotification(
-              `Disputed reported outcome with ${ticker}`,
-              {
-                type: "Success",
-              },
-            );
-          },
-          failCallback: ({ index, error }) => {
-            notificationStore.pushNotification(
-              store.getTransactionError(index, error),
-              {
-                type: "Error",
-              },
-            );
-          },
-        });
-
-        const tx = sdk.api.tx.predictionMarkets.dispute(market.marketId, {
-          Categorical: ID,
-        });
-        await signAndSend(tx, signer, callback);
+      } else {
+        modalStore.openModal(
+          <div>
+            <CategoricalDisputeBox market={market} assetId={assetId} />
+          </div>,
+          <>Dispute outcome</>,
+        );
       }
     };
     return (
       <button
         onClick={handleClick}
         disabled={disputeDisabled}
-        className="text-mariner font-semibold text-ztg-14-120"
+        className="text-mariner font-semibold text-ztg-14-120 disabled:opacity-50"
       >
         Dispute Outcome
       </button>

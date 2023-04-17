@@ -12,7 +12,8 @@ import {
   useTradeMaxBaseAmount,
   useTradeTransaction,
 } from "lib/hooks/trade";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { ISubmittableResult } from "@polkadot/types/types";
+import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -27,9 +28,39 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import TradeResult from "components/markets/TradeResult";
+import { TradeType } from "lib/types";
+
+const getTradeValuesFromExtrinsicResult = (
+  type: TradeType,
+  data: ISubmittableResult,
+): { baseAmount: string; assetAmount: string } => {
+  let baseAsset = new Decimal(0);
+  let outcome = new Decimal(0);
+  const { events } = data;
+  for (const eventData of events) {
+    const { event } = eventData;
+    const { data } = event;
+    if (
+      event.method === "SwapExactAmountIn" ||
+      event.method === "SwapExactAmountOut"
+    ) {
+      if (type === "buy") {
+        baseAsset = baseAsset.add(data[0]["assetAmountIn"].toPrimitive());
+        outcome = outcome.add(data[0]["assetAmountOut"].toPrimitive());
+      } else {
+        baseAsset = baseAsset.add(data[0]["assetAmountOut"].toPrimitive());
+        outcome = outcome.add(data[0]["assetAmountIn"].toPrimitive());
+      }
+    }
+  }
+  return {
+    baseAmount: baseAsset.div(ZTG).toFixed(1),
+    assetAmount: outcome.div(ZTG).toFixed(1),
+  };
+};
 
 const TradeForm = observer(() => {
-  const notificationStore = useNotificationStore();
+  const notifications = useNotifications();
   const [tabIndex, setTabIndex] = useState<number>(0);
   const { register, formState, watch, setValue, reset } = useForm<{
     percentage: string;
@@ -135,14 +166,18 @@ const TradeForm = observer(() => {
     isSuccess,
     isLoading,
   } = useExtrinsic(() => transaction, {
-    onSuccess: () => {
-      notificationStore.pushNotification(
+    onSuccess: (data) => {
+      const { baseAmount, assetAmount } = getTradeValuesFromExtrinsicResult(
+        type,
+        data,
+      );
+      notifications.pushNotification(
         `Successfully ${
           tradeItem.action === "buy" ? "bought" : "sold"
         } ${assetAmount} ${
           tradeItemState.asset.category.ticker
         } for ${baseAmount} ${baseSymbol}`,
-        { type: "Success" },
+        { type: "Success", lifetime: 60 },
       );
 
       setFinalAmounts({ asset: assetAmount, base: baseAmount });
@@ -472,7 +507,7 @@ const TradeForm = observer(() => {
               {tradeItemState?.asset.category.name}
             </div>
             <div className="font-semibold text-center mb-[20px]">For</div>
-            <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px]">
+            <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative">
               <input
                 type="number"
                 {...register("baseAmount", {
@@ -486,7 +521,7 @@ const TradeForm = observer(() => {
                 step="any"
                 className="w-full bg-transparent outline-none !text-center"
               />
-              <div className="mr-[10px]">{baseSymbol}</div>
+              <div className="mr-[10px] absolute right-0">{baseSymbol}</div>
             </div>
             <RangeInput
               min="0"

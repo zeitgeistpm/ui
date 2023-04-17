@@ -20,8 +20,7 @@ import Moment from "moment";
 
 import { defaultOptions, defaultPlugins } from "lib/form";
 import { useStore } from "lib/stores/Store";
-import { useNotificationStore } from "lib/stores/NotificationStore";
-import { useMarketsStore } from "lib/stores/MarketsStore";
+import { useNotifications } from "lib/state/notifications";
 import {
   EndType,
   isMultipleOutcomeEntries,
@@ -59,9 +58,9 @@ import {
   MarketDeadlinesInput,
   MarketDeadlinesValue,
 } from "components/create/MarketDeadlinesInput";
-import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { dateBlock } from "@zeitgeistpm/utility/dist/time";
 import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
@@ -121,9 +120,9 @@ const initialFields = {
 const CreatePage: NextPage = observer(() => {
   const store = useStore();
   const { data: now } = useChainTimeNow();
-  const notificationStore = useNotificationStore();
+  const notificationStore = useNotifications();
   const modalStore = useModalStore();
-  const markets = useMarketsStore();
+  const [sdk] = useSdkv2();
   const [formData, setFormData] = useState<CreateMarketFormData>({
     slug: "",
     question: "",
@@ -530,7 +529,7 @@ const CreatePage: NextPage = observer(() => {
       return new Promise(async (resolve, reject) => {
         const params = await getCreateCpmmMarketAndAddPoolParameters(
           extrinsicCallback({
-            notificationStore,
+            notifications: notificationStore,
             successMethod: "PoolCreate",
             successCallback: (data) => {
               const marketId: number = findMarketId(data);
@@ -578,7 +577,7 @@ const CreatePage: NextPage = observer(() => {
           if (!deployPool) {
             const params = await getCreateMarketParameters(
               extrinsicCallback({
-                notificationStore,
+                notifications: notificationStore,
                 successMethod: "MarketCreated",
                 finalizedCallback: (data: JSONObject) => {
                   if (marketImageFile != null) {
@@ -611,7 +610,7 @@ const CreatePage: NextPage = observer(() => {
         }
       });
 
-      await markets.getMarket(marketId);
+      await sdk.asRpc().model.markets.get(marketId);
       setNewMarketId(marketId);
       notificationStore.pushNotification(`Indexing market`, {
         type: "Info",

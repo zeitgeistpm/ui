@@ -5,6 +5,7 @@ import {
   MarketTimer,
   MarketTimerSkeleton,
 } from "components/markets/MarketTimer";
+import { Skeleton } from "@material-ui/lab";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
@@ -20,9 +21,6 @@ import { getBaseAsset } from "lib/gql/pool";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
-import { useMarketsStore } from "lib/stores/MarketsStore";
-import MarketStore from "lib/stores/MarketStore";
-import { CPool, usePoolsStore } from "lib/stores/PoolsStore";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
@@ -42,6 +40,9 @@ import {
   PriceHistory,
 } from "lib/hooks/queries/useMarketPriceHistory";
 import { filters } from "components/ui/TimeFilters";
+import { usePrizePool } from "lib/hooks/queries/usePrizePool";
+import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
+import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -81,8 +82,9 @@ export async function getStaticProps({ params }) {
   const priceHistory = await getPriceHistory(
     client,
     market.marketId,
-    filters[1].interval,
-    filters[1].time,
+    filters[1].timeUnit,
+    filters[1].timeValue,
+    filters[1].startTime,
   );
 
   return {
@@ -102,49 +104,23 @@ const Market: NextPage<{
   priceHistory: PriceHistory[];
   baseAsset: string;
 }> = observer(({ indexedMarket, chartSeries, priceHistory, baseAsset }) => {
-  const marketsStore = useMarketsStore();
   const router = useRouter();
   const { marketid } = router.query;
-  const [marketStore, setMarketStore] = useState<MarketStore>();
-  const [prizePool, setPrizePool] = useState<number>();
+  const marketId = Number(marketid);
   const store = useStore();
-  const [pool, setPool] = useState<CPool>();
-  const poolStore = usePoolsStore();
+  const { data: prizePool } = usePrizePool(marketId);
 
   const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
-    marketId: Number(marketid),
+    marketId,
   });
   const { data: marketStage } = useMarketStage(marketSdkv2);
-  const { data: spotPrices } = useMarketSpotPrices(Number(marketid));
+  const { data: spotPrices } = useMarketSpotPrices(marketId);
+  const { data: liquidity } = usePoolLiquidity({ marketId });
+  const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
 
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
-
-  const fetchMarket = async () => {
-    const market = await marketsStore?.getMarket(Number(marketid));
-    if (market != null) {
-      setMarketStore(market);
-      const prizePool = await market.getPrizePool();
-      setPrizePool(Number(prizePool));
-
-      if (market.poolExists) {
-        const { poolId } = market.pool;
-        const pool = await poolStore.getPoolFromChain(Number(poolId));
-
-        setPool(pool);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (!store) return;
-    fetchMarket();
-  }, [marketsStore, marketid]);
-
-  const handlePoolDeployed = () => {
-    fetchMarket();
-  };
 
   //required to fix title element warning
   const question = indexedMarket.question;
@@ -156,7 +132,8 @@ const Market: NextPage<{
   const volume = indexedMarket?.pool?.volume
     ? new Decimal(indexedMarket?.pool?.volume).div(ZTG).toNumber()
     : 0;
-  const subsidy = marketSdkv2?.pool?.poolId == null ? 0 : pool?.liquidity;
+  const subsidy =
+    marketSdkv2?.pool?.poolId == null ? 0 : liquidity?.div(ZTG).toNumber();
 
   return (
     <>
@@ -176,9 +153,10 @@ const Market: NextPage<{
           starts={starts}
           ends={ends}
           token={token}
-          prizePool={prizePool}
+          prizePool={prizePool?.div(ZTG).toNumber()}
           volume={volume}
           subsidy={subsidy}
+          marketType={indexedMarket?.marketType?.scalar}
         />
         {marketSdkv2?.rejectReason && marketSdkv2.rejectReason.length > 0 && (
           <div className="mt-[10px] text-ztg-14-150">
@@ -205,7 +183,7 @@ const Market: NextPage<{
         ) : (
           <></>
         )}
-        {marketSdkv2?.pool?.poolId == null && marketIsLoading === false && (
+        {poolId == null && poolIdLoading === false && (
           <div className="flex h-ztg-22 items-center bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
             <div className="w-ztg-20 h-ztg-20">
               <AlertTriangle size={20} />
@@ -229,13 +207,31 @@ const Market: NextPage<{
                 Subsidy
               </Tab>
             </Tab.List>
-
+            {indexedMarket?.marketType?.scalar !== null && (
+              <div className="mb-8 max-w-[800px] mx-auto">
+                {marketIsLoading ||
+                (!spotPrices?.get(1) && indexedMarket.status !== "Proposed") ||
+                (!spotPrices?.get(0) && indexedMarket.status !== "Proposed") ? (
+                  <Skeleton height="40px" width="100%" />
+                ) : (
+                  <ScalarPriceRange
+                    scalarType={indexedMarket.scalarType}
+                    lowerBound={new Decimal(indexedMarket.marketType.scalar[0])
+                      .div(ZTG)
+                      .toNumber()}
+                    upperBound={new Decimal(indexedMarket.marketType.scalar[1])
+                      .div(ZTG)
+                      .toNumber()}
+                    shortPrice={spotPrices?.get(1).toNumber()}
+                    longPrice={spotPrices?.get(0).toNumber()}
+                    status={indexedMarket.status}
+                  />
+                )}
+              </div>
+            )}
             <Tab.Panels>
               <Tab.Panel>
-                <MarketAssetDetails
-                  marketId={Number(marketid)}
-                  marketStore={marketStore}
-                />
+                <MarketAssetDetails marketId={Number(marketid)} />
               </Tab.Panel>
               <Tab.Panel>
                 {marketSdkv2?.pool && (
@@ -254,27 +250,13 @@ const Market: NextPage<{
           </Tab.Group>
         </div>
         <div className="lg:px-36">
-          {marketStore?.type === "scalar" && spotPrices && (
-            <div className="mb-12">
-              <ScalarPriceRange
-                scalarType={marketStore.scalarType}
-                lowerBound={marketStore.bounds[0]}
-                upperBound={marketStore.bounds[1]}
-                shortPrice={spotPrices?.get(1).toNumber()}
-                longPrice={spotPrices?.get(0).toNumber()}
-              />
-            </div>
-          )}
           {indexedMarket.description?.length > 0 && (
             <>
               <h3 className="text-center text-2xl mb-5">About Market</h3>
               <QuillViewer value={indexedMarket.description} />
             </>
           )}
-          <PoolDeployer
-            marketStore={marketStore}
-            onPoolDeployed={handlePoolDeployed}
-          />
+          <PoolDeployer marketId={Number(marketid)} />
           <h3 className="text-center text-2xl mt-10">Market Cast</h3>
           <MarketAddresses
             oracleAddress={indexedMarket.oracle}

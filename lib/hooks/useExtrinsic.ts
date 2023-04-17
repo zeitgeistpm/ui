@@ -1,17 +1,18 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import { useNotificationStore } from "lib/stores/NotificationStore";
+import { useState } from "react";
+
+import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
-import { useState } from "react";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
     params: T,
   ) => SubmittableExtrinsic<"promise", ISubmittableResult>,
   callbacks?: {
-    onSuccess?: (...args: any[]) => void;
+    onSuccess?: (data: ISubmittableResult) => void;
     onError?: () => void;
   },
 ) => {
@@ -19,7 +20,7 @@ export const useExtrinsic = <T>(
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const notificationStore = useNotificationStore();
+  const notifications = useNotifications();
   const store = useStore();
 
   const send = (params?: T) => {
@@ -30,19 +31,19 @@ export const useExtrinsic = <T>(
       extrinsic,
       signer,
       extrinsicCallback({
-        notificationStore,
-        successCallback: () => {
+        notifications,
+        successCallback: (data) => {
           setIsLoading(false);
           setIsSuccess(true);
 
-          callbacks?.onSuccess && callbacks.onSuccess();
+          callbacks?.onSuccess && callbacks.onSuccess(data);
         },
         failCallback: ({ index, error }) => {
           setIsLoading(false);
           setIsError(true);
 
           callbacks?.onError && callbacks.onError();
-          notificationStore.pushNotification(
+          notifications.pushNotification(
             store.getTransactionError(index, error),
             { type: "Error" },
           );

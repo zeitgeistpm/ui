@@ -24,14 +24,15 @@ const MarketScroll = observer(
 
     const { width: windowWidth } = useWindowSize();
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
+
     const { data: marketsStats } = useMarketsStats(
       markets.map((m) => m.marketId),
     );
     const gap = 28;
 
     //calculate cards shown and width based on container width
-
-    const cardsShown = windowWidth < BREAKPOINTS.lg ? 2 : 3;
+    const cardsShown =
+      windowWidth < BREAKPOINTS.md ? 1 : windowWidth < BREAKPOINTS.lg ? 2 : 3;
     const cardWidth =
       windowWidth < BREAKPOINTS.md
         ? containerWidth
@@ -42,8 +43,9 @@ const MarketScroll = observer(
     const scrollMax = cardWidth * markets.length + gap * (markets.length - 1);
 
     const moveSize = cardsShown * (cardWidth + gap);
+
     useEffect(() => {
-      scrollRef.current.scroll({ left: scrollLeft, behavior: "smooth" });
+      scrollRef.current?.scroll({ left: scrollLeft, behavior: "smooth" });
     }, [scrollRef, scrollLeft]);
 
     const handleRightClick = () => {
@@ -70,9 +72,9 @@ const MarketScroll = observer(
     return (
       <div
         ref={containerRef}
-        className="grid gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+        className="grid gap-y-7 sm:gap-7 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
       >
-        <h2 className="sm:col-span-2">{title}</h2>
+        <h2 className="sm:col-span-2 text-center sm:text-start">{title}</h2>
         <HorizontalScroll
           classes="order-2 sm:order-none"
           link={link}
@@ -85,7 +87,7 @@ const MarketScroll = observer(
         <div className="col-span-3 relative">
           <div
             ref={scrollRef}
-            className="flex flex-col gap-7 md:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
+            className="flex flex-col gap-7 sm:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
           >
             {markets.map((market) => {
               const stat = marketsStats?.find(
@@ -100,7 +102,6 @@ const MarketScroll = observer(
                 <MarketCard
                   key={market.marketId}
                   {...market}
-                  width={cardWidth}
                   className="market-card rounded-ztg-10 transition duration-500 ease-in-out"
                 />
               );
