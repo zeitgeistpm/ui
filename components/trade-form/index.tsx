@@ -28,6 +28,7 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import TradeResult from "components/markets/TradeResult";
+import { useWallet } from "lib/state/wallet";
 import { TradeType } from "lib/types";
 
 const getTradeValuesFromExtrinsicResult = (
@@ -71,8 +72,8 @@ const TradeForm = observer(() => {
   });
 
   const store = useStore();
-  const { wallets } = store;
-  const signer = wallets.getActiveSigner();
+  const wallet = useWallet();
+  const signer = wallet.getActiveSigner();
 
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
   const { data: tradeItemState } = useTradeItemState(tradeItem);

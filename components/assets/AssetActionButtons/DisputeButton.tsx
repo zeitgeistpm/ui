@@ -5,13 +5,13 @@ import {
   Market,
   MarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk-next";
+import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useModalStore } from "lib/stores/ModalStore";
 import { observer } from "mobx-react";
 import { useMemo } from "react";
-import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
 
 const DisputeButton = observer(
   ({
