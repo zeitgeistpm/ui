@@ -61,7 +61,7 @@ export const useGetCurrentPrediction = (marketId: number) => {
         .minus(lower)
         .mul(predictedPrice.price)
         .plus(lower);
-      return { name: predictedPrice.name, price: predictedValue };
+      return { name: predictedPrice.name, price: predictedValue.toFixed(2) };
     } else {
       return {
         name: predictedPrice.name,
