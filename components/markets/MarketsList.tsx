@@ -89,6 +89,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     <div
       className={"pt-ztg-46 mb-[38px]" + className}
       data-testid="marketsList"
+      id={"market-list"}
     >
       <MarketFilterSelection
         onFiltersChange={setFilters}
