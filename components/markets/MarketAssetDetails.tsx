@@ -230,7 +230,7 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
         </>
       )}
       {market?.status === "Disputed" &&
-        market.disputeMechanism === "Authorized" && (
+        market.disputeMechanism !== "SimpleDisputes" && (
           <>
             <h4 className="mt-10">Disputed Outcome</h4>
             {market.marketType.categorical ? (
