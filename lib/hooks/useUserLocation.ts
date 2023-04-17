@@ -22,6 +22,7 @@ export const useUserLocation = () => {
 
       const ip = json.body.ip;
 
+      //source: https://raw.githubusercontent.com/X4BNet/lists_vpn/main/output/datacenter/ipv4.txt
       const vpnIPsResponse = await fetch("/vpn-ips.txt");
       const vpnIPs = await vpnIPsResponse.text();
       const isUsingVPN = vpnIPs
