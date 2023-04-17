@@ -10,42 +10,43 @@ import { TalismanWallet } from "../wallets/talisman-wallet";
 import { Wallet, WalletAccount } from "../wallets/types";
 import { persistentAtom } from "./util/persistent-atom";
 
-export type UseWallet = WalletState & {
-  /**
-   * The selected address of the current wallet.
-   */
-  selectedAddress?: string;
-  /**
-   * The active account of the current wallet.
-   */
-  activeAccount?: WalletAccount;
-  /**
-   * Select a wallet.
-   * @param wallet the selected wallet id or instance
-   * @returns void
-   */
-  selectWallet: (wallet: Wallet | string) => void;
-  /**
-   * Select an address.
-   * @param account the address to select
-   * @returns void
-   */
-  selectAddress: (account: string) => void;
-  /**
-   * Get the active signer for transactions.
-   * @returns KeyringPairOrExtSigner | null
-   */
-  getActiveSigner: () => KeyringPairOrExtSigner | null;
-  /**
-   * Disconnect the wallet.
-   * @returns void
-   */
-  disconnectWallet: () => void;
-  /**
-   * Whether the wallet is nova wallet.
-   */
-  isNovaWallet: boolean;
-};
+export type UseWallet = WalletState &
+  WalletUserConfig & {
+    /**
+     * The selected address of the current wallet.
+     */
+    selectedAddress?: string;
+    /**
+     * The active account of the current wallet.
+     */
+    activeAccount?: WalletAccount;
+    /**
+     * Select a wallet.
+     * @param wallet the selected wallet id or instance
+     * @returns void
+     */
+    selectWallet: (wallet: Wallet | string) => void;
+    /**
+     * Select an address.
+     * @param account the address to select
+     * @returns void
+     */
+    selectAddress: (account: string) => void;
+    /**
+     * Get the active signer for transactions.
+     * @returns KeyringPairOrExtSigner | null
+     */
+    getActiveSigner: () => KeyringPairOrExtSigner | null;
+    /**
+     * Disconnect the wallet.
+     * @returns void
+     */
+    disconnectWallet: () => void;
+    /**
+     * Whether the wallet is nova wallet.
+     */
+    isNovaWallet: boolean;
+  };
 
 /**
  * State type of user wallet config.
@@ -347,7 +348,7 @@ export const useWallet = (): UseWallet => {
 
   return {
     ...walletState,
-    selectedAddress: userConfig.selectedAddress,
+    ...userConfig,
     selectAddress,
     activeAccount,
     selectWallet,
