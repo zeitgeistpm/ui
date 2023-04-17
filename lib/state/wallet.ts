@@ -74,7 +74,7 @@ export type WalletState = {
   /**
    * Error messages of the wallet.
    */
-  errorMessages: WalletErrorMessage[];
+  errors: WalletError[];
 };
 
 /**
@@ -94,7 +94,7 @@ const disconnectWalletStateTransition = (
       connected: false,
       wallet: undefined,
       accounts: [],
-      errorMessages: [],
+      errors: [],
     },
     {
       ...userConfig,
@@ -116,7 +116,7 @@ const walletAtom = atom<WalletState>({
   connected: false,
   wallet: undefined,
   accounts: [],
-  errorMessages: [],
+  errors: [],
 });
 
 /**
@@ -157,9 +157,9 @@ const userConfigAtom = persistentAtom<WalletUserConfig>({
 /**
  * Type of wallet errors.
  */
-export type WalletErrorMessage = {
+export type WalletError = {
   extensionName: string;
-  message: string;
+  type: "NoAccounts" | "InteractionDenied";
 };
 
 /**
@@ -205,35 +205,27 @@ const enableWallet = async (walletId: Wallet | string) => {
     });
 
     accountsSubscriptionUnsub = await wallet.subscribeAccounts((accounts) => {
-      if (accounts.length === 0) {
-        store.set(walletAtom, (state) => {
-          return {
-            ...state,
-            accounts: [],
-            errorMessages: [
-              {
-                extensionName: wallet.extensionName,
-                message:
-                  "No accounts on this wallet. Please add account in wallet extension.",
-              },
-            ],
-          };
-        });
-      } else {
-        store.set(walletAtom, (state) => {
-          return {
-            ...state,
-            connected: true,
-            accounts: accounts.map((account) => {
-              return {
-                ...account,
-                address: encodeAddress(account.address, 73),
-              };
-            }),
-            errorMessages: [],
-          };
-        });
-      }
+      store.set(walletAtom, (state) => {
+        return {
+          ...state,
+          connected: accounts.length > 0,
+          accounts: accounts.map((account) => {
+            return {
+              ...account,
+              address: encodeAddress(account.address, 73),
+            };
+          }),
+          errors:
+            accounts.length === 0
+              ? [
+                  {
+                    extensionName: wallet.extensionName,
+                    type: "NoAccounts",
+                  },
+                ]
+              : [],
+        };
+      });
     });
 
     return true;
@@ -242,11 +234,10 @@ const enableWallet = async (walletId: Wallet | string) => {
       return {
         ...state,
         accounts: [],
-        errorMessages: [
+        errors: [
           {
             extensionName: wallet.extensionName,
-            message:
-              "Not allowed to interact with extension. Please change permission settings.",
+            type: "InteractionDenied",
           },
         ],
       };

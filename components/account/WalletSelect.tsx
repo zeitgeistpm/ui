@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import { Download } from "react-feather";
 
 const WalletSelect = observer(() => {
-  const { selectWallet, errorMessages, accounts, connected } = useWallet();
+  const { selectWallet, errors, accounts, connected } = useWallet();
   const accountModals = useAccountModals();
 
   const wasConnected = usePrevious(connected);
@@ -24,12 +24,12 @@ const WalletSelect = observer(() => {
     if (!wasConnected && connected && accounts.length) {
       accountModals.openAccontSelect();
     }
-  }, [wasConnected, connected, accounts, errorMessages]);
+  }, [wasConnected, connected, accounts, errors]);
 
   return (
     <div className="flex flex-col">
       {supportedWallets.map((wallet, idx) => {
-        const error = errorMessages.find(
+        const error = errors.find(
           (e) => e.extensionName === wallet.extensionName,
         );
         const hasError = error != null;
@@ -59,7 +59,9 @@ const WalletSelect = observer(() => {
               )}
               {hasError && (
                 <div className="text-vermilion ml-auto  text-ztg-12-120 w-ztg-275">
-                  {error.message}
+                  {error.type === "NoAccounts"
+                    ? "No accounts on this wallet. Please add account in wallet extension."
+                    : "Not allowed to interact with extension. Please change permission settings."}
                 </div>
               )}
             </div>
