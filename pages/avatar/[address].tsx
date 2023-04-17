@@ -33,6 +33,8 @@ import { AiFillFire, AiFillInfoCircle } from "react-icons/ai";
 import { BsGearFill } from "react-icons/bs";
 import { IoIosNotifications, IoIosWarning } from "react-icons/io";
 import Loader from "react-spinners/PulseLoader";
+import { useWallet } from "lib/state/wallet";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 
@@ -40,6 +42,9 @@ const AvatarPage = observer(() => {
   const router = useRouter();
   const store = useStore();
   const avatarContext = useAvatarContext();
+
+  const wallet = useWallet();
+
   const [sdk] = useSdkv2();
   const address = router.query.address as string;
   const zeitAddress = encodeAddress(router.query.address as string, 73);
@@ -62,12 +67,12 @@ const AvatarPage = observer(() => {
   const { data: identity } = useIdentity(address);
 
   const isOwner =
-    store.wallets.activeAccount?.address === address ||
-    store.wallets.activeAccount?.address === zeitAddress;
+    wallet.activeAccount?.address === address ||
+    wallet.activeAccount?.address === zeitAddress;
 
   const inventory = useInventoryManagement(
     (isOwner
-      ? (store.wallets.getActiveSigner() as ExtSigner) || address
+      ? (wallet.getActiveSigner() as ExtSigner) || address
       : address) as any,
   );
 
@@ -95,7 +100,7 @@ const AvatarPage = observer(() => {
     if (avatarContext) {
       loadData();
     }
-  }, [avatarContext, address, store.wallets.activeAccount?.address]);
+  }, [avatarContext, address, wallet.activeAccount?.address]);
 
   const name = identity?.displayName || shortenAddress(address);
 
@@ -427,6 +432,7 @@ const ClaimModal = (props: {
   const modalStore = useModalStore();
   const notificationStore = useNotifications();
   const avatarSdk = useAvatarContext();
+  const wallet = useWallet();
   const [sdk] = useSdkv2();
 
   const [isClaiming, setIsClaiming] = useState(false);
@@ -434,8 +440,10 @@ const ClaimModal = (props: {
 
   const [hasCrossed, setHasCrossed] = useState(false);
 
-  const balance = store.wallets.activeBalance;
-  const hasEnoughBalance = balance.greaterThan((props.burnAmount + fee) / ZTG);
+  const { data: activeBalance } = useZtgBalance(wallet.activeAccount?.address);
+
+  const balance = activeBalance;
+  const hasEnoughBalance = balance?.greaterThan((props.burnAmount + fee) / ZTG);
 
   const tx = useMemo(() => {
     if (isRpcSdk(sdk)) {
@@ -444,9 +452,14 @@ const ClaimModal = (props: {
   }, [props.address, props.burnAmount]);
 
   useEffect(() => {
+    store.sdk.api.query.styx
+      .crossings(wallet.activeAccount.address)
+      .then((crossing) => {
+        setHasCrossed(!crossing.isEmpty);
+      });
     if (isRpcSdk(sdk)) {
       sdk.api.query.styx
-        .crossings(store.wallets.activeAccount.address)
+        .crossings(wallet.activeAccount?.address)
         .then((crossing) => {
           setHasCrossed(!crossing.isEmpty);
         });
@@ -483,7 +496,7 @@ const ClaimModal = (props: {
         }
         setIsClaiming(false);
       } else {
-        const signer = store.wallets.getActiveSigner() as ExtSigner;
+        const signer = wallet.getActiveSigner() as ExtSigner;
         await signAndSend(
           tx,
           signer,
@@ -621,8 +634,9 @@ const ClaimModal = (props: {
 
 const InventoryModal = (props: { address: string; onClose?: () => void }) => {
   const store = useStore();
+  const wallet = useWallet();
   const inventory = useInventoryManagement(
-    ((store.wallets.getActiveSigner() as ExtSigner) || props.address) as any,
+    ((wallet.getActiveSigner() as ExtSigner) || props.address) as any,
   );
   const modalStore = useModalStore();
 
@@ -732,8 +746,9 @@ const PendingItemsModal = (props: {
   onClose?: () => void;
 }) => {
   const store = useStore();
+  const wallet = useWallet();
   const inventory = useInventoryManagement(
-    ((store.wallets.getActiveSigner() as ExtSigner) || props.address) as any,
+    ((wallet.getActiveSigner() as ExtSigner) || props.address) as any,
   );
   const modalStore = useModalStore();
 

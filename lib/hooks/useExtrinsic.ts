@@ -2,20 +2,21 @@ import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { useState } from "react";
-
 import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
+import { useWallet } from "lib/state/wallet";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
     params: T,
   ) => SubmittableExtrinsic<"promise", ISubmittableResult>,
   callbacks?: {
-    onSuccess?: (...args: any[]) => void;
+    onSuccess?: (data: ISubmittableResult) => void;
     onError?: () => void;
   },
 ) => {
+  const wallet = useWallet();
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,17 +27,18 @@ export const useExtrinsic = <T>(
   const send = (params?: T) => {
     setIsLoading(true);
     const extrinsic = extrinsicFn(params);
-    const signer = store.wallets.getActiveSigner() as ExtSigner;
+
+    const signer = wallet.getActiveSigner() as ExtSigner;
     signAndSend(
       extrinsic,
       signer,
       extrinsicCallback({
         notifications,
-        successCallback: () => {
+        successCallback: (data) => {
           setIsLoading(false);
           setIsSuccess(true);
 
-          callbacks?.onSuccess && callbacks.onSuccess();
+          callbacks?.onSuccess && callbacks.onSuccess(data);
         },
         failCallback: ({ index, error }) => {
           setIsLoading(false);
