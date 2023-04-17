@@ -5,6 +5,7 @@ import { FC, PropsWithChildren } from "react";
 import { MarketStage } from "@zeitgeistpm/sdk-next";
 import { MarketTimer } from "./MarketTimer";
 import { MarketTimerSkeleton } from "./MarketTimer";
+import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
   ({ label, border = true, children }) => {
@@ -27,7 +28,12 @@ const Tag: FC<PropsWithChildren<{ className?: string }>> = ({
   );
 };
 
+// const MarketOutcome: FC<PropsWithChildren<{}>> = ({}) => {
+
+// }
+
 const MarketHeader: FC<{
+  marketId: number;
   question: string;
   status: string;
   tags: string[];
@@ -41,6 +47,7 @@ const MarketHeader: FC<{
   marketStage: MarketStage;
   rejectReason?: string;
 }> = ({
+  marketId,
   question,
   status,
   tags,
@@ -56,7 +63,9 @@ const MarketHeader: FC<{
 }) => {
   return (
     <header className="flex flex-col items-center w-full">
-      <h1 className="text-4xl my-5 max-w-[900px] text-center">{question}</h1>
+      <h1 className="text-4xl font-extrabold my-5 max-w-[900px] text-center">
+        {question}
+      </h1>
       <div className="flex flex-wrap justify-center gap-2.5">
         <Tag className={`${status === "Active" && "!bg-green-lighter"}`}>
           {status === "Active" && <span className="text-green">&#x2713; </span>}
@@ -117,6 +126,7 @@ const MarketHeader: FC<{
         ) : (
           <Skeleton width="150px" height="24px" />
         )}
+        {/* <MarketOutcome /> */}
       </div>
     </header>
   );

@@ -38,6 +38,7 @@ import { filters } from "components/ui/TimeFilters";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
+import { useGetCurrentPrediction } from "lib/hooks/queries/useGetCurrentPrediction";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -82,6 +83,16 @@ export async function getStaticProps({ params }) {
     filters[1].startTime,
   );
 
+  const outcome = () => {
+    if (market.disputes !== null) {
+      if (market.marketType?.scalar !== null) {
+        return market.disputes?.outcome?.scalar;
+      } else {
+        return market.categories[market.disputes?.outcome?.categorical].name;
+      }
+    }
+  };
+
   return {
     props: {
       indexedMarket: market ?? null,
@@ -110,9 +121,12 @@ const Market: NextPage<{
   });
   const { data: marketStage } = useMarketStage(marketSdkv2);
   const { data: spotPrices } = useMarketSpotPrices(marketId);
+  const { data: assetPrices } = useGetCurrentPrediction(marketId);
+  console.log(assetPrices);
+  // const {} = getCurrentPrediction(assets, market)
   const { data: liquidity } = usePoolLiquidity({ marketId });
   const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
-
+  // console.log(outcomes);
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
@@ -129,6 +143,7 @@ const Market: NextPage<{
     : 0;
   const subsidy =
     marketSdkv2?.pool?.poolId == null ? 0 : liquidity?.div(ZTG).toNumber();
+
   return (
     <>
       <MarketMeta market={indexedMarket} />
@@ -141,6 +156,7 @@ const Market: NextPage<{
           className="mx-auto"
         />
         <MarketHeader
+          marketId={marketId}
           question={question}
           status={indexedMarket.status}
           tags={indexedMarket.tags}
