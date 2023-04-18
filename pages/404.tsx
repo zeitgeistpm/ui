@@ -13,14 +13,7 @@ const NotFoundPage = observer(
 
     return (
       <>
-        <Image
-          src={src}
-          height={1080}
-          width={1920}
-          layout="responsive"
-          objectFit="scale-down"
-          alt="404 Page"
-        />
+        <Image src={src} height={1080} width={1920} alt="404 Page" />
         {backText && backLink ? (
           <div className="flex justify-center items-center mb-ztg-40">
             <button
