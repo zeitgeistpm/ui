@@ -21,23 +21,17 @@ const MarketChart = ({
   chartSeries,
   baseAsset,
   initialData,
-  endDate,
-  poolCreationDate,
   marketStatus,
-  deadlines,
+  resolutionDate,
+  poolCreationDate,
 }: {
   marketId: number;
   chartSeries: ChartSeries[];
   baseAsset: string;
   initialData: PriceHistory[];
   poolCreationDate: Date;
-  deadlines: {
-    disputeDuration: string;
-    gracePeriod: string;
-    oracleDuration: string;
-  };
-  endDate: Date;
   marketStatus: MarketStatus;
+  resolutionDate: Date;
 }) => {
   const [chartFilter, setChartFilter] = useState<TimeFilter>(filters[1]);
   const [filterSelected, setFilterSelected] = useState(false);
@@ -45,10 +39,9 @@ const MarketChart = ({
   const startDateISOString = useMemo(() => {
     const startDate = calcPriceHistoryStartDate(
       marketStatus,
-      endDate,
-      deadlines,
       chartFilter,
       poolCreationDate,
+      resolutionDate,
     );
 
     return setTimeToNow(startDate).toISOString();
