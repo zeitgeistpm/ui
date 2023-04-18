@@ -39,11 +39,6 @@ const marketQuery = gql`
         start
         end
       }
-      deadlines {
-        disputeDuration
-        gracePeriod
-        oracleDuration
-      }
       categories {
         name
         color
@@ -75,11 +70,6 @@ export interface MarketPageIndexedData {
   scalarType: ScalarRangeType;
   marketType: {
     scalar: string[];
-  };
-  deadlines?: {
-    disputeDuration: string;
-    gracePeriod: string;
-    oracleDuration: string;
   };
   creator: string;
   oracle: string;
