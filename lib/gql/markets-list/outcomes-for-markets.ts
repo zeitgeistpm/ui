@@ -68,7 +68,7 @@ export const getOutcomesForMarkets = async (
     for (const asset of filteredAssets) {
       const assetIdJson = JSON.parse(asset.assetId);
       let categoryIndex: number;
-      console.log(type, assetIdJson);
+
       if (type === "categorical") {
         categoryIndex = assetIdJson["categoricalOutcome"][1];
       } else {

@@ -40,6 +40,7 @@ const marketQuery = gql`
       }
       marketType {
         scalar
+        categorical
       }
       period {
         start
@@ -71,6 +72,7 @@ export interface MarketPageIndexedData {
   scalarType: ScalarRangeType;
   marketType: {
     scalar: string[];
+    categorical: string;
   };
   creator: string;
   oracle: string;

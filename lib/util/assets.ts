@@ -10,7 +10,7 @@ export const getCurrentPrediction = (
   assets: { price: number; assetId?: string }[],
   market: {
     marketType: { categorical?: string; scalar?: string[] };
-    categories: { color: string; name: string; ticker: string }[];
+    categories: { color: string; name: string; ticker?: string }[];
   },
 ): { name: string; price: number; percentage: number } => {
   const totalPrice = assets.reduce((acc, asset) => acc + asset.price, 0);

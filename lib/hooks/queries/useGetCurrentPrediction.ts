@@ -10,6 +10,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useSdkv2 } from "../useSdkv2";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 
+//TODO: check if this can be used to replace areas where multiple queries are made to get predictions, prices, etc.
+//can modify this query to obtain current prediction/price or all assets/prices for a market
 export const useGetCurrentPrediction = (marketId: number) => {
   const [sdk, id] = useSdkv2();
 
@@ -51,6 +53,7 @@ export const useGetCurrentPrediction = (marketId: number) => {
         };
       }),
     );
+
     const predictedPrice = assetPrices
       .sort((a, b) => (a.price.gt(b.price) ? -1 : 1))
       .at(0)!;

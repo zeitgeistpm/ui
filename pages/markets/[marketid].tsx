@@ -39,6 +39,8 @@ import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useGetCurrentPrediction } from "lib/hooks/queries/useGetCurrentPrediction";
+import { getCurrentPrediction } from "lib/util/assets";
+import { useEffect, useState } from "react";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -83,6 +85,7 @@ export async function getStaticProps({ params }) {
     filters[1].startTime,
   );
 
+  //TODO: complete this
   const outcome = () => {
     if (market.disputes !== null) {
       if (market.marketType?.scalar !== null) {
@@ -110,6 +113,7 @@ const Market: NextPage<{
   priceHistory: PriceHistory[];
   baseAsset: string;
 }> = observer(({ indexedMarket, chartSeries, priceHistory, baseAsset }) => {
+  const [currentPrediction, setCurrentPrediction] = useState({});
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
@@ -121,12 +125,25 @@ const Market: NextPage<{
   });
   const { data: marketStage } = useMarketStage(marketSdkv2);
   const { data: spotPrices } = useMarketSpotPrices(marketId);
-  const { data: assetPrices } = useGetCurrentPrediction(marketId);
-  console.log(assetPrices);
-  // const {} = getCurrentPrediction(assets, market)
+
+  const { data: assets } = useGetCurrentPrediction(marketId);
+
+  useEffect(() => {
+    let assets = [];
+    if (spotPrices) {
+      let prices = Array.from(spotPrices, ([key, value]) => value.toNumber());
+      assets = indexedMarket.outcomeAssets.reduce((acc, asset, index) => {
+        acc.push({ assetId: asset, price: prices[index] });
+        return acc;
+      }, []);
+      const { name, price } = getCurrentPrediction(assets, indexedMarket);
+      setCurrentPrediction({ name, price });
+    }
+  }, [spotPrices]);
+
   const { data: liquidity } = usePoolLiquidity({ marketId });
   const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
-  // console.log(outcomes);
+
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
