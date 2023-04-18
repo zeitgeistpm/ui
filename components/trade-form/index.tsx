@@ -538,7 +538,7 @@ const TradeForm = observer(() => {
               {...register("percentage")}
             />
             <div className="text-center mb-[20px]">
-              <div className="text-ztg-14-150">
+              <div className="text-ztg-12-150 sm:text-ztg-14-150">
                 <div className="mb-[10px]">
                   <span className="text-sky-600">Average Price: </span>
                   {averagePrice} {baseSymbol}
