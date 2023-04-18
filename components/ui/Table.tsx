@@ -40,6 +40,7 @@ export interface TableColumn {
   initialSort?: "asc" | "desc";
   onClick?: (row: TableData) => void;
   alignment?: string;
+  collapseOrder?: number;
 }
 
 export interface TableData {
@@ -331,6 +332,9 @@ const Table = observer(
       "resize",
       50,
     );
+    const [collapsedAccessors, setCollapsedAccessors] = useState<Set<string>>(
+      new Set(),
+    );
 
     const loadMoreInView = useIsOnScreen(loadMoreRef);
 
@@ -376,14 +380,34 @@ const Table = observer(
     const calcOverflow = () => {
       if (tableRef?.current) {
         const { clientWidth, scrollWidth, parentElement } = tableRef.current;
-        setIsOverflowing(
+        const isOverflowing =
           scrollWidth > parentElement.scrollWidth ||
-            clientWidth > parentElement.clientWidth,
-        );
+          clientWidth > parentElement.clientWidth;
+
+        //if table is overflowing check if we can collaspe any columns
+        if (isOverflowing) {
+          const collapseNext = columns
+            .filter((col) => col.collapseOrder != null)
+            .sort((a, b) => a.collapseOrder - b.collapseOrder)
+            .map((col) => col.accessor)
+            .filter((accessor) => !collapsedAccessors.has(accessor))[0];
+
+          if (collapseNext) {
+            setCollapsedAccessors((accessors) => accessors.add(collapseNext));
+          } else {
+            setIsOverflowing(true);
+          }
+        } else {
+          setIsOverflowing(false);
+        }
       } else {
         setIsOverflowing(false);
       }
     };
+
+    const columnIsCollapsed = (columnAccessor: string) =>
+      collapsedAccessors.has(columnAccessor);
+
     return (
       <>
         {data == null ? (
@@ -414,35 +438,37 @@ const Table = observer(
               >
                 <thead>
                   <tr className="bg-sky-100 h-[50px]">
-                    {columns.map((column, index) => (
-                      <th
-                        key={index}
-                        className={`${getHeaderClass(column)} ${
-                          index == 0 ? "rounded-tl-md" : ""
-                        } ${
-                          index == columns.length - 1 ? "rounded-tr-md" : ""
-                        }`}
-                        style={column.width ? { width: column.width } : {}}
-                      >
-                        <div
-                          className={`${
-                            column.onSort ? "flex justify-center" : ""
+                    {columns
+                      .filter((col) => columnIsCollapsed(col.accessor) == false)
+                      .map((column, index) => (
+                        <th
+                          key={index}
+                          className={`${getHeaderClass(column)} ${
+                            index == 0 ? "rounded-tl-md" : ""
+                          } ${
+                            index == columns.length - 1 ? "rounded-tr-md" : ""
                           }`}
+                          style={column.width ? { width: column.width } : {}}
                         >
-                          {column.header}
-                          {column.onSort ? (
-                            <ArrowDown
-                              role="button"
-                              onClick={handleSortClick}
-                              size={14}
-                              className="ml-ztg-8 cursor-pointer"
-                            />
-                          ) : (
-                            <></>
-                          )}
-                        </div>
-                      </th>
-                    ))}
+                          <div
+                            className={`${
+                              column.onSort ? "flex justify-center" : ""
+                            }`}
+                          >
+                            {column.header}
+                            {column.onSort ? (
+                              <ArrowDown
+                                role="button"
+                                onClick={handleSortClick}
+                                size={14}
+                                className="ml-ztg-8 cursor-pointer"
+                              />
+                            ) : (
+                              <></>
+                            )}
+                          </div>
+                        </th>
+                      ))}
                   </tr>
                 </thead>
                 <tbody>
@@ -460,21 +486,26 @@ const Table = observer(
                     ${onRowClick ? "cursor-pointer" : ""} mx-ztg-5`}
                         onClick={() => handleRowClick(row)}
                       >
-                        {row.cells.map((cell, index) => {
-                          return (
-                            <Cell
-                              key={`${row.id}-${index}`}
-                              type={cell.column.type}
-                              value={cell.value}
-                              rowHeight={rowHeightPx}
-                              onClick={
-                                cell.column.onClick
-                                  ? () => cell.column.onClick(row.original)
-                                  : null
-                              }
-                            />
-                          );
-                        })}
+                        {row.cells
+                          .filter(
+                            (cell) =>
+                              columnIsCollapsed(cell.column.id) == false,
+                          )
+                          .map((cell, index) => {
+                            return (
+                              <Cell
+                                key={`${row.id}-${index}`}
+                                type={cell.column.type}
+                                value={cell.value}
+                                rowHeight={rowHeightPx}
+                                onClick={
+                                  cell.column.onClick
+                                    ? () => cell.column.onClick(row.original)
+                                    : null
+                                }
+                              />
+                            );
+                          })}
                       </tr>
                     );
                   })}
