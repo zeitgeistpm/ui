@@ -30,47 +30,23 @@ import { AlertTriangle } from "react-feather";
 import { Tab } from "@headlessui/react";
 import Link from "next/link";
 import Decimal from "decimal.js";
-import { DAY_SECONDS, graphQlEndpoint, ZTG } from "lib/constants";
+import { graphQlEndpoint, ZTG } from "lib/constants";
 import MarketHeader from "components/markets/MarketHeader";
 import MarketChart from "components/markets/MarketChart";
 import {
   getPriceHistory,
   PriceHistory,
 } from "lib/hooks/queries/useMarketPriceHistory";
-import { filters, TimeFilter } from "components/ui/TimeFilters";
+import { filters } from "components/ui/TimeFilters";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
-import { MarketStatus } from "@zeitgeistpm/sdk-next";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
+import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
 });
-
-export const calcPriceHistoryStartDate = (
-  marketStatus: MarketStatus,
-  chartFilter: TimeFilter,
-  poolCreationDate: Date,
-  resolutionDate: Date,
-) => {
-  if (chartFilter.label === "All") return poolCreationDate;
-  if (marketStatus === "Resolved" && resolutionDate) {
-    const startDate = resolutionDate.getTime() - chartFilter.timePeriodMS;
-
-    return startDate > poolCreationDate.getTime()
-      ? new Date(startDate)
-      : poolCreationDate;
-  } else {
-    const now = new Date();
-
-    const startDate = now.getTime() - chartFilter.timePeriodMS;
-
-    return startDate > poolCreationDate.getTime()
-      ? new Date(startDate)
-      : poolCreationDate;
-  }
-};
 
 export async function getStaticPaths() {
   const client = new GraphQLClient(graphQlEndpoint);
