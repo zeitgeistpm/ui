@@ -5,7 +5,7 @@ import {
   PriceHistory,
   useMarketPriceHistory,
 } from "lib/hooks/queries/useMarketPriceHistory";
-import { calcPriceHistoryStartDate } from "pages/markets/[marketid]";
+import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
 import { useMemo, useState } from "react";
 
 const setTimeToNow = (date: Date) => {
