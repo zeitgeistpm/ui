@@ -255,36 +255,6 @@ if (store.get(userConfigAtom).walletId) {
 }
 
 /**
- * Enable wallet when the selected wallet id changes.
- */
-store.sub(userConfigAtom, () => {
-  const { walletId } = store.get(userConfigAtom);
-  if (walletId) {
-    enableWallet(walletId);
-  }
-});
-
-/**
- * Subscribe to user location and vpn changes and
- * disconnect the wallet if location isnt allowed or vpn is used.
- */
-store.sub(userLocationDataAtom, async () => {
-  const data = await store.get(userLocationDataAtom);
-  if (
-    store.get(walletAtom).connected &&
-    (!data?.locationAllowed || data?.isUsingVPN)
-  ) {
-    const [newWalletState, newUserConfigState] =
-      disconnectWalletStateTransition(
-        store.get(walletAtom),
-        store.get(userConfigAtom),
-      );
-    store.set(walletAtom, newWalletState);
-    store.set(userConfigAtom, newUserConfigState);
-  }
-});
-
-/**
  * Hook for interacting with the wallet.
  * @returns UseWallet
  */
@@ -297,6 +267,7 @@ export const useWallet = (): UseWallet => {
       ...userConfig,
       walletId: isString(wallet) ? wallet : wallet.extensionName,
     });
+    enableWallet(wallet);
   };
 
   const disconnectWallet = () => {
