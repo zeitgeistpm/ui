@@ -53,7 +53,7 @@ const PoolTable = ({ poolId }: { poolId: number }) => {
           ? basePoolBalance
           : new Decimal(balances[index]?.free.toString() ?? asset.amount)
         )
-          .div(ZTG)
+          ?.div(ZTG)
           .toDecimalPlaces(2)
           .toNumber(),
         usdValue: 0,
