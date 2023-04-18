@@ -91,8 +91,8 @@ export async function getStaticProps({ params }) {
     priceHistory = await getPriceHistory(
       client,
       market.marketId,
-      chartFilter.resolutionUnit,
-      chartFilter.resolutionValue,
+      chartFilter.intervalUnit,
+      chartFilter.intervalValue,
       chartStartDate.toISOString(),
     );
   }

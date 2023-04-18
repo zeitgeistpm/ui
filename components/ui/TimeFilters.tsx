@@ -4,8 +4,8 @@ import { observer } from "mobx-react";
 export interface TimeFilter {
   label: FilterLabel;
   timePeriodMS?: number;
-  resolutionUnit: TimeUnit;
-  resolutionValue: number;
+  intervalUnit: TimeUnit;
+  intervalValue: number;
 }
 
 export type FilterLabel = "All" | "Day" | "Week" | "Month";
@@ -16,25 +16,25 @@ export const filters: TimeFilter[] = [
   {
     label: "Day",
     timePeriodMS: DAY_SECONDS * 1000,
-    resolutionUnit: "Hour",
-    resolutionValue: 1,
+    intervalUnit: "Hour",
+    intervalValue: 1,
   },
   {
     label: "Week",
     timePeriodMS: DAY_SECONDS * 1000 * 7,
-    resolutionUnit: "Hour",
-    resolutionValue: 6,
+    intervalUnit: "Hour",
+    intervalValue: 6,
   },
   {
     label: "Month",
     timePeriodMS: DAY_SECONDS * 1000 * 30,
-    resolutionUnit: "Day",
-    resolutionValue: 1,
+    intervalUnit: "Day",
+    intervalValue: 1,
   },
   {
     label: "All",
-    resolutionUnit: "Day",
-    resolutionValue: 1,
+    intervalUnit: "Day",
+    intervalValue: 1,
   },
 ];
 

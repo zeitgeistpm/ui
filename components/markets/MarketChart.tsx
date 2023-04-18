@@ -49,8 +49,8 @@ const MarketChart = ({
 
   const { data: prices } = useMarketPriceHistory(
     marketId,
-    chartFilter.resolutionUnit,
-    chartFilter.resolutionValue,
+    chartFilter.intervalUnit,
+    chartFilter.intervalValue,
     //hack to make data end on same time as now
     startDateISOString,
   );
