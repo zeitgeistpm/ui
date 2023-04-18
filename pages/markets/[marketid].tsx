@@ -126,8 +126,10 @@ const Market: NextPage<{
   const { data: marketStage } = useMarketStage(marketSdkv2);
   const { data: spotPrices } = useMarketSpotPrices(marketId);
 
+  // OPTION 1
   const { data: assets } = useGetCurrentPrediction(marketId);
 
+  // OPTION 2
   useEffect(() => {
     let assets = [];
     if (spotPrices) {
