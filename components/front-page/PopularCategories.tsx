@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import { FC } from "react";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import Link from "next/link";
 
 export const CATEGORIES = [
   { name: "Sports", imagePath: "/category/sports.png" },
@@ -16,13 +16,11 @@ const Category = ({
   title,
   imgURL,
   blurImage,
-  onClick,
   count,
 }: {
   title: string;
   imgURL: string;
   blurImage: string;
-  onClick: () => void;
   count: number;
   className?: string;
 }) => {
@@ -32,16 +30,17 @@ const Category = ({
       data-testid="category"
     >
       <div className="relative max-w-[230px] max-h-[230px] w-full h-full aspect-square">
-        <Image
-          className="rounded-ztg-10 cursor-pointer"
-          src={imgURL}
-          alt={title}
-          fill
-          onClick={onClick}
-          placeholder={blurImage ? "blur" : "empty"}
-          blurDataURL={blurImage}
-          sizes="(max-width: 1000px) 230px, 130px"
-        />
+        <Link href={`/markets/?tag=${title}#market-list`}>
+          <Image
+            className="rounded-ztg-10 cursor-pointer"
+            src={imgURL}
+            alt={title}
+            fill
+            placeholder={blurImage ? "blur" : "empty"}
+            blurDataURL={blurImage}
+            sizes="(max-width: 1000px) 230px, 130px"
+          />
+        </Link>
       </div>
       <span className="flex flex-col lg:flex-row lg:items-center mt-[10px]">
         <span
@@ -62,12 +61,6 @@ const PopularCategories: FC<{
   counts: number[];
   imagePlaceholders: string[];
 }> = observer(({ counts, imagePlaceholders }) => {
-  const router = useRouter();
-
-  const navigateToTag = (tag: string) => {
-    router.push({ pathname: "/markets", query: { tag } });
-  };
-
   return (
     <div className="flex flex-col mt-ztg-30" data-testid="popularCategories">
       <h2 className="mb-7 text-center sm:text-start">Popular Categories</h2>
@@ -79,7 +72,6 @@ const PopularCategories: FC<{
             imgURL={category.imagePath}
             blurImage={imagePlaceholders[index]}
             count={counts[index]}
-            onClick={() => navigateToTag(category.name)}
           />
         ))}
       </div>
