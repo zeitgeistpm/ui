@@ -214,8 +214,6 @@ const CreatePage: NextPage = observer(() => {
         newMarketId,
       );
 
-      console.log({ marketIndexed });
-
       if (marketIndexed === true) {
         clearInterval(timer);
         notificationStore.pushNotification(`Market Indexed, redirecting`, {
