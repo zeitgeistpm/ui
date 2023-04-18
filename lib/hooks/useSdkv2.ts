@@ -3,8 +3,6 @@ import { endpointOptions as endpoints, graphQlEndpoint } from "lib/constants";
 import { memoize } from "lodash-es";
 import { useEffect, useState } from "react";
 import { Subscription } from "rxjs";
-import { proxy } from "valtio";
-import { useProxy } from "valtio/utils";
 import { atom, useAtom } from "jotai";
 import { usePrevious } from "./usePrevious";
 
