@@ -53,8 +53,6 @@ export default class Store {
 
   config: Config;
 
-  graphQLClient?: GraphQLClient = undefined;
-
   get amountRegex(): RegExp | null {
     return new RegExp(`^[0-9]+(\\.[0-9]{0,10})?`);
   }
@@ -135,8 +133,6 @@ export default class Store {
   }
 
   async initialize() {
-    this.initGraphQlClient();
-
     await this.initSDK(endpointOptions[0].value, graphQlEndpoint);
     await this.loadConfig();
 
@@ -156,10 +152,6 @@ export default class Store {
       this.sdk = sdk;
       this.subscribeBlock();
     });
-  }
-
-  private initGraphQlClient() {
-    this.graphQLClient = new GraphQLClient(graphQlEndpoint, {});
   }
 
   private async loadConfig() {
