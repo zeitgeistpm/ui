@@ -479,7 +479,7 @@ const TradeForm = observer(() => {
             }}
             selectedIndex={tabIndex}
           >
-            <Tab.List className="flex justify-between h-[71px] text-center rounded-[10px]">
+            <Tab.List className="flex justify-between h-[60px] sm:h-[71px] text-center rounded-[10px]">
               <Tab
                 as={TradeTab}
                 selected={type === "buy"}
@@ -496,8 +496,8 @@ const TradeForm = observer(() => {
               </Tab>
             </Tab.List>
           </Tab.Group>
-          <div className="flex flex-col p-[30px]">
-            <div className="center h-[87px]" style={{ fontSize: "58px" }}>
+          <div className="flex flex-col p-[20px] sm:p-[30px]">
+            <div className="center">
               <input
                 type="number"
                 {...register("assetAmount", {
@@ -509,11 +509,11 @@ const TradeForm = observer(() => {
                   setLastEditedAssetId(tradeItemState?.assetId);
                 }}
                 step="any"
-                className="w-full bg-transparent outline-none !text-center text-[58px]"
+                className="w-full bg-transparent outline-none !text-center text-[35px] sm:text-[58px]"
                 autoFocus
               />
             </div>
-            <div className="center h-[48px] font-semibold capitalize text-[28px]">
+            <div className="center sm:h-[48px] font-semibold capitalize text-[20px] sm:text-[28px]">
               {assetName}
             </div>
             <div className="font-semibold text-center mb-[20px]">For</div>
@@ -547,7 +547,7 @@ const TradeForm = observer(() => {
               {...register("percentage")}
             />
             <div className="text-center mb-[20px]">
-              <div className="text-ztg-14-150">
+              <div className="text-ztg-12-150 sm:text-ztg-14-150">
                 <div className="mb-[10px]">
                   <span className="text-sky-600">Average Price: </span>
                   {averagePrice} {baseSymbol}

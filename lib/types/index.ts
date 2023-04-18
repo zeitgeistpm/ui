@@ -1,8 +1,6 @@
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces";
 
-export type NotificationType = "Error" | "Info" | "Success";
-
 export type PoolsListQuery = {
   page: number;
 };
