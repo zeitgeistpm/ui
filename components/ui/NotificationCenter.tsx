@@ -1,39 +1,33 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useNotifications } from "lib/state/notifications";
-import { NotificationType } from "lib/types";
+import { useNotifications, NotificationType } from "lib/state/notifications";
 import { observer } from "mobx-react";
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import { AlertTriangle, CheckCircle, Info, X } from "react-feather";
+
+const TIMER_TICK_RATE = 500;
 
 const NotificationCard: FC<{
   close: () => void;
-  timer: number;
   lifetime: number;
   content: string;
   type: NotificationType;
   dataTest?: string;
-}> = observer(({ close, timer, lifetime, content, type, dataTest }) => {
-  const getColor = (type: NotificationType) => {
-    switch (type) {
-      case "Success":
-        return "bg-sheen-green";
-      case "Info":
-        return "bg-info-blue";
-      case "Error":
-        return "bg-vermilion";
-    }
-  };
+}> = observer(({ close, lifetime, content, type, dataTest }) => {
+  const [timer, setTimer] = React.useState(lifetime);
 
-  const getMessage = (type: NotificationType) => {
-    switch (type) {
-      case "Success":
-        return "Success!";
-      case "Info":
-        return "Info!";
-      case "Error":
-        return "Error!";
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer((timer) => timer - TIMER_TICK_RATE / 1000);
+    }, TIMER_TICK_RATE);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (timer <= 0) {
+      close();
     }
-  };
+  }, [timer]);
 
   return (
     <>
@@ -70,8 +64,11 @@ const NotificationCard: FC<{
           />
         </div>
         <div
-          className={`h-ztg-2 my-ztg-5 ${getColor(type)}`}
+          className={`h-ztg-2 my-ztg-5 ${getColor(
+            type,
+          )} transition-all ease-linear`}
           style={{
+            transitionDuration: `${TIMER_TICK_RATE}ms`,
             width: `${((100 * timer) / lifetime).toFixed(2)}%`,
           }}
         />
@@ -80,6 +77,28 @@ const NotificationCard: FC<{
     </>
   );
 });
+
+const getColor = (type: NotificationType) => {
+  switch (type) {
+    case "Success":
+      return "bg-sheen-green";
+    case "Info":
+      return "bg-info-blue";
+    case "Error":
+      return "bg-vermilion";
+  }
+};
+
+const getMessage = (type: NotificationType) => {
+  switch (type) {
+    case "Success":
+      return "Success!";
+    case "Info":
+      return "Info!";
+    case "Error":
+      return "Error!";
+  }
+};
 
 const getGradient = (type: NotificationType) => {
   switch (type) {
@@ -93,14 +112,14 @@ const getGradient = (type: NotificationType) => {
 };
 
 const NotificationCenter = observer(() => {
-  const notificationStore = useNotifications();
+  const { notifications, removeNotification } = useNotifications();
 
   return (
     <div className="fixed h-full w-full top-0 pointer-events-none z-50">
       <div className="flex flex-row justify-end pr-ztg-27 pt-20">
         <div className="flex flex-col">
           <AnimatePresence>
-            {notificationStore.notifications.map((notification, index) => (
+            {notifications.map((notification, index) => (
               <motion.div
                 key={index}
                 initial={{ x: 300, opacity: 0 }}
@@ -118,7 +137,7 @@ const NotificationCenter = observer(() => {
                   key={notification.id}
                   {...notification}
                   close={() => {
-                    notificationStore.removeNotification(notification);
+                    removeNotification(notification);
                   }}
                 />
               </motion.div>
