@@ -40,6 +40,8 @@ export interface TableColumn {
   initialSort?: "asc" | "desc";
   onClick?: (row: TableData) => void;
   alignment?: string;
+  // if specified the table will hide this column if it is overflowing
+  // lower number columns will be hidden first
   collapseOrder?: number;
 }
 
