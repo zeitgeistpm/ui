@@ -104,7 +104,6 @@ export async function getStaticProps({ params }) {
     const chartFilter = filters[1];
 
     resolutionTimestamp = await getResolutionTimestamp(client, market.marketId);
-    console.log(resolutionTimestamp);
 
     const chartStartDate = calcPriceHistoryStartDate(
       market.status,
@@ -145,7 +144,6 @@ const Market: NextPage<{
     const marketId = Number(marketid);
     const store = useStore();
     const { data: prizePool } = usePrizePool(marketId);
-    console.log(resolutionTimestamp);
 
     const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
       marketId,
