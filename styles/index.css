@@ -8,6 +8,8 @@
 
 html {
   font-size: 100%;
+  overflow: scroll!important;
+  padding-right: 0!important;
 }
 
 /* hide number input arrows */

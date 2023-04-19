@@ -43,6 +43,11 @@ import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
+import {
+  getMarketPromotion,
+  PromotedMarket,
+} from "lib/cms/get-promoted-markets";
+import { MarketPromotionCallout } from "components/markets/PromotionCallout";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -63,6 +68,7 @@ export async function getStaticProps({ params }) {
   const client = new GraphQLClient(graphQlEndpoint);
 
   const market = await getMarket(client, params.marketid);
+  const promotionData = await getMarketPromotion(market.marketId);
 
   const chartSeries: ChartSeries[] = market?.categories?.map(
     (category, index) => {
@@ -103,6 +109,7 @@ export async function getStaticProps({ params }) {
       chartSeries: chartSeries ?? null,
       priceHistory: priceHistory ?? null,
       resolutionTimestamp: resolutionTimestamp ?? null,
+      promotionData,
     },
     revalidate: 10 * 60, //10mins
   };
@@ -113,8 +120,15 @@ const Market: NextPage<{
   chartSeries: ChartSeries[];
   priceHistory: PriceHistory[];
   resolutionTimestamp: string;
+  promotionData: PromotedMarket | null;
 }> = observer(
-  ({ indexedMarket, chartSeries, priceHistory, resolutionTimestamp }) => {
+  ({
+    indexedMarket,
+    chartSeries,
+    priceHistory,
+    resolutionTimestamp,
+    promotionData,
+  }) => {
     const router = useRouter();
     const { marketid } = router.query;
     const marketId = Number(marketid);
@@ -182,6 +196,9 @@ const Market: NextPage<{
               <MarketTimerSkeleton />
             )}
           </div>
+          {promotionData && (
+            <MarketPromotionCallout promotion={promotionData} />
+          )}
           {chartSeries && indexedMarket?.pool?.poolId ? (
             <MarketChart
               marketId={indexedMarket.marketId}
