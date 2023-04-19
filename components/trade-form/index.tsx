@@ -29,7 +29,6 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import TradeResult from "components/markets/TradeResult";
-import { useMarket } from "lib/hooks/queries/useMarket";
 import { useWallet } from "lib/state/wallet";
 import { TradeType } from "lib/types";
 
