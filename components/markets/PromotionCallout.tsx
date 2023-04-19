@@ -1,12 +1,12 @@
-import React from "react";
-import { PromotedMarket } from "lib/cms/get-promoted-markets";
-import Modal from "components/ui/Modal";
 import { Dialog } from "@headlessui/react";
-import { AiFillFire } from "react-icons/ai";
-import Image from "next/image";
-import moment from "moment";
 import { IndexerContext, Market } from "@zeitgeistpm/sdk-next";
+import Modal from "components/ui/Modal";
+import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import { MarketPageIndexedData } from "lib/gql/markets";
+import { useMarketPromotionState } from "lib/state/promotions";
+import moment from "moment";
+import Image from "next/image";
+import { AiFillFire } from "react-icons/ai";
 
 export const MarketPromotionCallout = (props: {
   market: Market<IndexerContext> | MarketPageIndexedData;
@@ -17,7 +17,9 @@ export const MarketPromotionCallout = (props: {
   const endDate = new Date(props.promotion.timeSpan[1]);
   const isActive = startDate < now && endDate > now;
 
-  const [modalIsOpen, setModalIsOpen] = React.useState(false);
+  const { open, toggle } = useMarketPromotionState(props.market.marketId, {
+    defaultOpenedState: isActive,
+  });
 
   return (
     <>
@@ -25,15 +27,15 @@ export const MarketPromotionCallout = (props: {
         <div>
           <div className="flex justify-center">
             <div
-              className="rounded-md bg-orange-200 p-4 inline-flex font-bold text-orange-900"
-              onClick={() => setModalIsOpen(!modalIsOpen)}
+              className="rounded-md bg-orange-200 p-4 inline-flex font-bold text-orange-900 cursor-pointer"
+              onClick={() => toggle()}
             >
               Promoted Market! <i>(placeholder UI)</i>
               <AiFillFire size={24} />
             </div>
           </div>
 
-          <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
+          <Modal open={open} onClose={() => toggle(false)}>
             <Dialog.Panel
               className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
     w-full max-w-[564px]  rounded-ztg-10"
@@ -88,7 +90,7 @@ export const MarketPromotionCallout = (props: {
                   </ol>
                 </div>
                 <button
-                  onClick={() => setModalIsOpen(false)}
+                  onClick={() => toggle(false)}
                   className={`ztg-transition bg-ztg-blue text-white focus:outline-none disabled:opacity-20 disabled:cursor-default 
         rounded-full w-full  font-bold text-ztg-16-150 h-ztg-56`}
                 >
