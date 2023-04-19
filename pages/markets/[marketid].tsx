@@ -38,7 +38,7 @@ import { filters } from "components/ui/TimeFilters";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
-import { useGetCurrentPrediction } from "lib/hooks/queries/useGetCurrentPrediction";
+import { getMarketStatusDetails } from "lib/util/market-status";
 import { getCurrentPrediction } from "lib/util/assets";
 import { useEffect, useState } from "react";
 
@@ -85,17 +85,6 @@ export async function getStaticProps({ params }) {
     filters[1].startTime,
   );
 
-  //TODO: complete this
-  const outcome = () => {
-    if (market.disputes !== null) {
-      if (market.marketType?.scalar !== null) {
-        return market.disputes?.outcome?.scalar;
-      } else {
-        return market.categories[market.disputes?.outcome?.categorical].name;
-      }
-    }
-  };
-
   return {
     props: {
       indexedMarket: market ?? null,
@@ -127,7 +116,7 @@ const Market: NextPage<{
   const { data: spotPrices } = useMarketSpotPrices(marketId);
 
   // OPTION 1
-  const { data: assets } = useGetCurrentPrediction(marketId);
+  // const { data: assets } = useGetCurrentPrediction(marketId);
 
   // OPTION 2
   useEffect(() => {
@@ -162,6 +151,8 @@ const Market: NextPage<{
     : 0;
   const subsidy =
     marketSdkv2?.pool?.poolId == null ? 0 : liquidity?.div(ZTG).toNumber();
+
+  console.log(getMarketStatusDetails(indexedMarket));
 
   return (
     <>

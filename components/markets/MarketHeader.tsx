@@ -126,7 +126,6 @@ const MarketHeader: FC<{
         ) : (
           <Skeleton width="150px" height="24px" />
         )}
-        {/* <MarketOutcome /> */}
       </div>
     </header>
   );

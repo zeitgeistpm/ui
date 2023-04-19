@@ -30,6 +30,15 @@ const marketQuery = gql`
       creator
       oracle
       disputeMechanism
+      resolvedOutcome
+      report {
+        by
+        at
+        outcome {
+          categorical
+          scalar
+        }
+      }
       disputes {
         by
         at
@@ -77,7 +86,16 @@ export interface MarketPageIndexedData {
   creator: string;
   oracle: string;
   tags: [];
+  resolvedOutcome: string;
   disputeMechanism: "SimpleDisputes" | "Authorized" | "Court";
+  report: {
+    by: string;
+    at: number;
+    outcome: {
+      categorical: number;
+      scalar: number;
+    };
+  };
   disputes: {
     by: string;
     at: number;
