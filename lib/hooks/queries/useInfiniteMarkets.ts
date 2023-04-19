@@ -54,7 +54,6 @@ export const useInfiniteMarkets = (
   filters?: MarketFilter[],
 ) => {
   const [sdk, id] = useSdkv2();
-  const { graphQLClient } = useStore();
 
   filters = filters ?? [];
 
@@ -93,7 +92,7 @@ export const useInfiniteMarkets = (
       limit: limit,
       order: orderByMap[orderBy],
     });
-    const outcomes = await getOutcomesForMarkets(graphQLClient, markets);
+    const outcomes = await getOutcomesForMarkets(sdk.indexer.client, markets);
 
     let resMarkets: Array<QueryMarketData> = [];
 
