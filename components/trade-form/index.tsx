@@ -537,6 +537,7 @@ const TradeForm = observer(() => {
               valueSuffix="%"
               maxLabel="100 %"
               className="mb-[20px]"
+              disabled={isLoading === true || signer == null}
               {...register("percentage")}
             />
             <div className="text-center mb-[20px]">
