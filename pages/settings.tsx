@@ -17,6 +17,7 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useWallet } from "lib/state/wallet";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 const SubmitButton: FC<
   PropsWithChildren<{
@@ -51,6 +52,8 @@ const IdentitySettings = observer(() => {
   const [sdk, id] = useSdkv2();
 
   const { data: identity } = useIdentity(address);
+
+  const { data: constants } = useChainConstants();
 
   const { send: updateIdentity, isLoading: isUpdating } = useExtrinsic(
     () => {
@@ -174,9 +177,8 @@ const IdentitySettings = observer(() => {
         <AlertTriangle size={20} className="mr-5" />
         <div className="text-ztg-14-120 font-normal">
           Setting an identity requires a deposit of up to{" "}
-          {store.config.identity.basicDeposit +
-            store.config.identity.fieldDeposit}{" "}
-          {store.config.tokenSymbol}. This deposit can be retrieved by clearing
+          {constants?.identity.basicDeposit + constants?.identity.fieldDeposit}{" "}
+          {constants?.tokenSymbol}. This deposit can be retrieved by clearing
           your identity.
         </div>
       </div>

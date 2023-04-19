@@ -7,6 +7,7 @@ import InfoBoxes from "components/ui/InfoBoxes";
 import Pill from "components/ui/Pill";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
 import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
@@ -99,6 +100,8 @@ const PoolDetails: NextPage = observer(() => {
     pool ? [pool] : undefined,
   );
 
+  const { data: constants } = useChainConstants();
+
   const saturatedPoolData = saturatedPoolIndex?.[poolId];
 
   const { data: ends } = useQuery<number>(
@@ -163,7 +166,7 @@ const PoolDetails: NextPage = observer(() => {
             header="Pool Value"
             middle={`${Math.round(
               saturatedPoolData?.liquidity.div(ZTG).toNumber() || 0,
-            )} ${store?.config?.tokenSymbol ?? "--"}`}
+            )} ${constants?.tokenSymbol ?? "--"}`}
             bottom={`${
               ztgInfo && saturatedPoolData
                 ? ztgInfo?.price

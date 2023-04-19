@@ -18,6 +18,7 @@ import { DollarSign, Frown, Settings, User } from "react-feather";
 import OnBoardingModal from "./OnboardingModal";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { ZTG } from "@zeitgeistpm/sdk-next";
+import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
 
 const AccountButton: FC<{
   connectButtonClassname?: string;
@@ -39,6 +40,8 @@ const AccountButton: FC<{
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
 
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
+
+  const { data: constants } = useChainConstants();
 
   const connect = async () => {
     if (isNovaWallet) {
@@ -187,7 +190,7 @@ const AccountButton: FC<{
                               {activeBalance &&
                                 `${formatNumberLocalized(
                                   activeBalance?.div(ZTG).abs().toNumber(),
-                                )} ${store.config?.tokenSymbol}`}
+                                )} ${constants?.tokenSymbol}`}
                             </div>
                           </div>
                         </div>
