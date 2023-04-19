@@ -38,7 +38,7 @@ export const MarketPromotionCallout = (props: {
               className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
     w-full max-w-[564px]  rounded-ztg-10"
             >
-              <div className="w-full h-64 relative rounded-t-ztg-10 overflow-hidden">
+              <div className="w-full h-52 relative rounded-t-ztg-10 overflow-hidden">
                 <Image
                   alt="AI Logan?"
                   src={props.promotion.imageUrl}
