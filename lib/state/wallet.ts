@@ -276,7 +276,7 @@ export const useWallet = (): UseWallet => {
     setUserConfig(newUserConfigState);
   };
 
-  const getActiveSigner = (): KeyringPairOrExtSigner | null => {
+  const getActiveSigner = (): KeyringPairOrExtSigner | undefined => {
     if (walletState.wallet == null || !activeAccount) return;
     return {
       address: activeAccount?.address,

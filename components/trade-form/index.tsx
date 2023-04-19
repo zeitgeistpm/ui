@@ -73,18 +73,12 @@ const TradeForm = observer(() => {
     defaultValues: { percentage: "0", assetAmount: "0", baseAmount: "0" },
   });
 
-  const store = useStore();
   const wallet = useWallet();
   const signer = wallet.getActiveSigner();
 
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
-  const { data: market } = useMarket({
-    marketId: getMarketIdOf(tradeItem.assetId),
-  });
 
   const { data: tradeItemState } = useTradeItemState(tradeItem);
-
-  const assetName = market?.categories[getIndexOf(tradeItem.assetId)].name;
 
   const {
     poolBaseBalance,
@@ -200,7 +194,7 @@ const TradeForm = observer(() => {
   );
 
   useEffect(() => {
-    if (debouncedTransactionHash == null) {
+    if (debouncedTransactionHash == null || signer == null) {
       return;
     }
     const sub = from(transaction.paymentInfo(signer.address)).subscribe(
@@ -209,7 +203,7 @@ const TradeForm = observer(() => {
       },
     );
     return () => sub.unsubscribe();
-  }, [debouncedTransactionHash]);
+  }, [debouncedTransactionHash, signer]);
 
   const changeByPercentage = useCallback(
     (percentage: Decimal) => {
@@ -443,11 +437,11 @@ const TradeForm = observer(() => {
         <TradeResult
           type={tradeItem.action}
           amount={new Decimal(finalAmounts.asset)}
-          tokenName={assetName}
+          tokenName={tradeItemState?.asset.category.name}
           baseTokenAmount={new Decimal(finalAmounts.base)}
           baseToken={baseSymbol}
-          marketId={market.marketId}
-          marketQuestion={market.question}
+          marketId={tradeItemState?.market.marketId}
+          marketQuestion={tradeItemState?.market.question}
         />
       ) : (
         <form
@@ -513,7 +507,7 @@ const TradeForm = observer(() => {
               />
             </div>
             <div className="center sm:h-[48px] font-semibold capitalize text-[20px] sm:text-[28px]">
-              {assetName}
+              {tradeItemState?.asset.category.name}
             </div>
             <div className="font-semibold text-center mb-[20px]">For</div>
             <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative">
