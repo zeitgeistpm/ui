@@ -51,8 +51,6 @@ interface Config {
 export default class Store {
   initialized = false;
 
-  config: Config;
-
   get amountRegex(): RegExp | null {
     return new RegExp(`^[0-9]+(\\.[0-9]{0,10})?`);
   }
@@ -134,7 +132,6 @@ export default class Store {
 
   async initialize() {
     await this.initSDK(endpointOptions[0].value, graphQlEndpoint);
-    await this.loadConfig();
 
     this.registerValidationRules();
 
@@ -151,66 +148,6 @@ export default class Store {
     runInAction(() => {
       this.sdk = sdk;
       this.subscribeBlock();
-    });
-  }
-
-  private async loadConfig() {
-    const [consts, properties] = await Promise.all([
-      this.sdk.api.consts,
-      this.sdk.api.rpc.system.properties(),
-    ]);
-
-    // minimumPeriod * 2 is fair assumption for now but need to make sure this stays up
-    // to date with the chain code
-    const blockTimeSec =
-      (this.codecToNumber(consts.timestamp.minimumPeriod) * 2) / 1000;
-    const config: Config = {
-      tokenSymbol: properties.tokenSymbol
-        .toString()
-        .replace("[", "")
-        .replace("]", ""),
-      ss58Prefix: this.codecToNumber(consts.system.ss58Prefix),
-      blockTimeSec: blockTimeSec,
-      markets: {
-        maxDisputes: this.codecToNumber(consts.predictionMarkets.maxDisputes),
-        disputeBond:
-          this.codecToNumber(consts.predictionMarkets.disputeBond) / ZTG,
-        disputeFactor:
-          this.codecToNumber(consts.predictionMarkets.disputeFactor) / ZTG,
-        oracleBond:
-          this.codecToNumber(consts.predictionMarkets.oracleBond) / ZTG,
-        advisoryBond:
-          this.codecToNumber(consts.predictionMarkets.advisoryBond) / ZTG,
-        validityBond:
-          this.codecToNumber(consts.predictionMarkets.validityBond) / ZTG,
-        maxCategories: this.codecToNumber(
-          consts.predictionMarkets.maxCategories,
-        ),
-        minCategories: this.codecToNumber(
-          consts.predictionMarkets.minCategories,
-        ),
-      },
-      court: {
-        caseDurationSec:
-          this.codecToNumber(consts.court.courtCaseDuration) * blockTimeSec,
-        stakeWeight: this.codecToNumber(consts.court.stakeWeight) / ZTG,
-      },
-      swaps: {
-        minLiquidity: this.codecToNumber(consts.swaps.minLiquidity) / ZTG,
-        exitFee: this.codecToNumber(consts.swaps.exitFee) / ZTG,
-      },
-      identity: {
-        basicDeposit: this.codecToNumber(consts.identity.basicDeposit) / ZTG,
-        fieldDeposit: this.codecToNumber(consts.identity.fieldDeposit) / ZTG,
-      },
-      balances: {
-        existentialDeposit:
-          this.codecToNumber(consts.balances.existentialDeposit) / ZTG,
-      },
-    };
-
-    runInAction(() => {
-      this.config = config;
     });
   }
 
