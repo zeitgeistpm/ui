@@ -7,30 +7,19 @@ import { useMarketsByIds } from "./useMarketsByIds";
 export const marketsStatsRootQuery = "marketsStats";
 
 export const useMarketsStats = (
-  marketIds: number[] = [],
+  markets: { marketId: number; hasPool: boolean }[],
 ): UseQueryResult<MarketStats[]> => {
   const [sdk, id] = useSdkv2();
-  const { data: markets } = useMarketsByIds(
-    marketIds.map((id) => ({ marketId: id })),
-  );
-
-  const marketIdPoolIdMap =
-    markets?.map((market) => {
-      return {
-        marketId: market.marketId,
-        poolId: market.pool?.poolId,
-      };
-    }) ?? [];
 
   return useQuery<MarketStats[]>(
-    [marketsStatsRootQuery, id, marketIds, marketIdPoolIdMap],
+    [marketsStatsRootQuery, id, markets],
     async () => {
-      const noPoolMarketIds = marketIdPoolIdMap
-        .filter((item) => item.poolId == null)
+      const noPoolMarketIds = markets
+        .filter((item) => !item.hasPool)
         .map((item) => item.marketId);
 
-      const yesPoolmarketIds = marketIdPoolIdMap
-        .filter((item) => item.poolId != null)
+      const yesPoolmarketIds = markets
+        .filter((item) => item.hasPool)
         .map((item) => item.marketId);
 
       const yesPoolStats = await getMarketsStats(
@@ -45,7 +34,8 @@ export const useMarketsStats = (
       return [...yesPoolStats, ...noPoolStats];
     },
     {
-      enabled: sdk != null || markets != null || marketIds.length > 0,
+      enabled: sdk != null || markets.length > 0,
+      keepPreviousData: true,
     },
   );
 };
