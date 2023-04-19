@@ -496,6 +496,7 @@ const TradeForm = observer(() => {
                   required: true,
                   min: "0",
                   max: maxAssetAmount?.div(ZTG).toFixed(4),
+                  validate: (value) => Number(value) > 0,
                 })}
                 onFocus={() => {
                   setLastEditedAssetId(tradeItemState?.assetId);
@@ -516,6 +517,7 @@ const TradeForm = observer(() => {
                   required: true,
                   min: "0",
                   max: maxBaseAmount?.div(ZTG).toFixed(4),
+                  validate: (value) => Number(value) > 0,
                 })}
                 onFocus={() =>
                   setLastEditedAssetId(tradeItemState?.baseAssetId)
