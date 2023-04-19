@@ -64,6 +64,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
@@ -208,10 +209,10 @@ const CreatePage: NextPage = observer(() => {
   }, [marketImageFile]);
 
   useEffect(() => {
-    if (store?.graphQLClient == null || newMarketId == null) return;
+    if (!isIndexedSdk(sdk) || newMarketId == null) return;
     const timer = setInterval(async () => {
       const marketIndexed = await checkMarketExists(
-        store.graphQLClient,
+        sdk.indexer.client,
         newMarketId,
       );
 
@@ -227,7 +228,7 @@ const CreatePage: NextPage = observer(() => {
       }
     }, 1000);
     return () => clearInterval(timer);
-  }, [store?.graphQLClient, newMarketId]);
+  }, [sdk, newMarketId]);
 
   useEffect(() => {
     if (

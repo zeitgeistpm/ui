@@ -4,6 +4,8 @@ import {
   ZTG,
   IOMarketOutcomeAssetId,
   IOZtgAssetId,
+  getMarketIdOf,
+  getIndexOf,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import {
@@ -28,6 +30,7 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import TradeResult from "components/markets/TradeResult";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import { useWallet } from "lib/state/wallet";
 import { TradeType } from "lib/types";
 
@@ -76,7 +79,13 @@ const TradeForm = observer(() => {
   const signer = wallet.getActiveSigner();
 
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
+  const { data: market } = useMarket({
+    marketId: getMarketIdOf(tradeItem.assetId),
+  });
+
   const { data: tradeItemState } = useTradeItemState(tradeItem);
+
+  const assetName = market?.categories[getIndexOf(tradeItem.assetId)].name;
 
   const {
     poolBaseBalance,
@@ -435,11 +444,11 @@ const TradeForm = observer(() => {
         <TradeResult
           type={tradeItem.action}
           amount={new Decimal(finalAmounts.asset)}
-          tokenName={tradeItemState?.asset.category.name}
+          tokenName={assetName}
           baseTokenAmount={new Decimal(finalAmounts.base)}
           baseToken={baseSymbol}
-          marketId={tradeItemState?.market.marketId}
-          marketQuestion={tradeItemState?.market.question}
+          marketId={market.marketId}
+          marketQuestion={market.question}
         />
       ) : (
         <form
@@ -505,7 +514,7 @@ const TradeForm = observer(() => {
               />
             </div>
             <div className="center sm:h-[48px] font-semibold capitalize text-[20px] sm:text-[28px]">
-              {tradeItemState?.asset.category.name}
+              {assetName}
             </div>
             <div className="font-semibold text-center mb-[20px]">For</div>
             <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative">

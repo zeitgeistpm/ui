@@ -1,9 +1,11 @@
+import { MarketStatus } from "@zeitgeistpm/sdk-next";
 import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
 import TimeSeriesChart, { ChartSeries } from "components/ui/TimeSeriesChart";
 import {
   PriceHistory,
   useMarketPriceHistory,
 } from "lib/hooks/queries/useMarketPriceHistory";
+import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
 import { useMemo, useState } from "react";
 
 const setTimeToNow = (date: Date) => {
@@ -18,38 +20,39 @@ const MarketChart = ({
   marketId,
   chartSeries,
   baseAsset,
-  poolCreationDate,
   initialData,
+  marketStatus,
+  resolutionDate,
+  poolCreationDate,
 }: {
   marketId: number;
   chartSeries: ChartSeries[];
   baseAsset: string;
-  poolCreationDate: string;
   initialData: PriceHistory[];
+  poolCreationDate: Date;
+  marketStatus: MarketStatus;
+  resolutionDate: Date;
 }) => {
   const [chartFilter, setChartFilter] = useState<TimeFilter>(filters[1]);
   const [filterSelected, setFilterSelected] = useState(false);
 
-  const startDate = useMemo(() => {
-    if (chartFilter.label === "All") {
-      return poolCreationDate;
-    } else {
-      const filterDate = new Date(chartFilter.startTime);
-      const poolDate = new Date(poolCreationDate);
-      if (filterDate.getTime() > poolDate.getTime()) {
-        return chartFilter.startTime;
-      } else {
-        return poolCreationDate;
-      }
-    }
+  const startDateISOString = useMemo(() => {
+    const startDate = calcPriceHistoryStartDate(
+      marketStatus,
+      chartFilter,
+      poolCreationDate,
+      resolutionDate,
+    );
+
+    return setTimeToNow(startDate).toISOString();
   }, [chartFilter.label]);
 
   const { data: prices } = useMarketPriceHistory(
     marketId,
-    chartFilter.timeUnit,
-    chartFilter.timeValue,
+    chartFilter.intervalUnit,
+    chartFilter.intervalValue,
     //hack to make data end on same time as now
-    setTimeToNow(new Date(startDate)).toISOString(),
+    startDateISOString,
   );
 
   const chartData = (filterSelected == false ? initialData : prices)?.map(
