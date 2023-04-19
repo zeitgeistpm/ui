@@ -1,3 +1,4 @@
+import { MarketStatus } from "@zeitgeistpm/sdk-next";
 import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS } from "lib/constants";
@@ -20,6 +21,7 @@ const marketQuery = gql`
         poolId
         createdAt
         volume
+        baseAsset
       }
       question
       slug
@@ -52,14 +54,19 @@ export interface MarketPageIndexedData {
   slug: string;
   question: string;
   description: string;
-  status: string;
+  status: MarketStatus;
   period: {
     start: string;
     end: string;
   };
   categories: { name: string; color: string }[];
   outcomeAssets: string[];
-  pool: { poolId: number; volume: string; createdAt: string };
+  pool: {
+    poolId: number;
+    volume: string;
+    createdAt: string;
+    baseAsset: string;
+  };
   scalarType: ScalarRangeType;
   marketType: {
     scalar: string[];
