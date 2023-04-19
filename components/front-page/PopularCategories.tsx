@@ -2,6 +2,7 @@ import { observer } from "mobx-react";
 import { FC } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export const CATEGORIES = [
   { name: "Sports", imagePath: "/category/sports.png" },
@@ -29,7 +30,7 @@ const Category = ({
 }) => {
   return (
     <div
-      className="flex flex-col w-full max-w-[230px] min-w-[80px]"
+      className="flex flex-col w-full max-w-[230px] min-w-[80px] md:hover:scale-105 ztg-transition"
       data-testid="category"
     >
       <div className="relative max-w-[230px] max-h-[230px] w-full h-full aspect-square">
@@ -75,7 +76,7 @@ const PopularCategories: FC<{
   return (
     <div className="flex flex-col mt-ztg-30" data-testid="popularCategories">
       <h2 className="mb-7 text-center sm:text-start">Popular Categories</h2>
-      <div className="flex gap-x-[20px] overflow-x-auto no-scroll-bar">
+      <div className="flex gap-x-[20px] overflow-x-auto no-scroll-bar md:overflow-x-visible">
         {topCategories.map((category, index) => (
           <Category
             key={index}
