@@ -16,7 +16,6 @@ import {
 } from "lib/hooks/trade";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { capitalize } from "lodash";

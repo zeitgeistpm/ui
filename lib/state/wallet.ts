@@ -1,7 +1,6 @@
 import { encodeAddress } from "@polkadot/util-crypto";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { atom, getDefaultStore, useAtom } from "jotai";
-import { userLocationDataAtom } from "lib/hooks/useUserLocation";
 import { isString } from "lodash-es";
 import { useMemo } from "react";
 import { PolkadotjsWallet } from "../wallets/polkadotjs-wallet";
