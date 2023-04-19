@@ -1,5 +1,5 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { graphQlClient } from "lib/constants";
+import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { getMarketsStats, MarketStats } from "lib/gql/markets-stats";
 import { useSdkv2 } from "../useSdkv2";
 import { useMarketsByIds } from "./useMarketsByIds";
@@ -25,6 +25,8 @@ export const useMarketsStats = (
   return useQuery<MarketStats[]>(
     [marketsStatsRootQuery, id, marketIds, marketIdPoolIdMap],
     async () => {
+      if (!isIndexedSdk(sdk)) return null;
+
       const noPoolMarketIds = marketIdPoolIdMap
         .filter((item) => item.poolId == null)
         .map((item) => item.marketId);
@@ -34,7 +36,7 @@ export const useMarketsStats = (
         .map((item) => item.marketId);
 
       const yesPoolStats = await getMarketsStats(
-        graphQlClient,
+        sdk.indexer.client,
         yesPoolmarketIds,
       );
 
@@ -45,7 +47,10 @@ export const useMarketsStats = (
       return [...yesPoolStats, ...noPoolStats];
     },
     {
-      enabled: sdk != null || markets != null || marketIds.length > 0,
+      enabled:
+        (sdk != null && isIndexedSdk(sdk)) ||
+        markets != null ||
+        marketIds.length > 0,
     },
   );
 };
