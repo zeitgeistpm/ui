@@ -17,19 +17,25 @@ import { from } from "rxjs";
 
 const columns: TableColumn[] = [
   { header: "Outcome", accessor: "outcome", type: "text" },
-  { header: "Implied %", accessor: "pre", type: "percentage" },
+  {
+    header: "Implied %",
+    accessor: "pre",
+    type: "percentage",
+    collapseOrder: 1,
+  },
   { header: "Price", accessor: "totalValue", type: "currency" },
   {
     header: "24Hr Change",
     accessor: "change",
     type: "change",
     width: "120px",
+    collapseOrder: 2,
   },
   {
     header: "",
     accessor: "buttons",
     type: "component",
-    width: "140px",
+    width: "120px",
   },
 ];
 
