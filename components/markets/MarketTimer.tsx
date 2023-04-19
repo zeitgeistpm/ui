@@ -37,7 +37,7 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
   const timer = timeUntilStageEnds.as(format);
 
   return (
-    <div className="inline-block w-full max-w-[800px]">
+    <div className="inline-block w-full">
       <div className="flex mb-3 items-center">
         <div className="font-semibold mr-4 md:mr-4 text-black">
           {copy[stage.type].title}

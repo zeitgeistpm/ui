@@ -38,7 +38,7 @@ import { filters } from "components/ui/TimeFilters";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
-import { getMarketStatusDetails } from "lib/util/market-status";
+import { getMarketStatusDetails } from "lib/util/market-status-details";
 import { getCurrentPrediction } from "lib/util/assets";
 import { useEffect, useState } from "react";
 
@@ -102,7 +102,6 @@ const Market: NextPage<{
   priceHistory: PriceHistory[];
   baseAsset: string;
 }> = observer(({ indexedMarket, chartSeries, priceHistory, baseAsset }) => {
-  const [currentPrediction, setCurrentPrediction] = useState({});
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
@@ -115,23 +114,6 @@ const Market: NextPage<{
   const { data: marketStage } = useMarketStage(marketSdkv2);
   const { data: spotPrices } = useMarketSpotPrices(marketId);
 
-  // OPTION 1
-  // const { data: assets } = useGetCurrentPrediction(marketId);
-
-  // OPTION 2
-  useEffect(() => {
-    let assets = [];
-    if (spotPrices) {
-      let prices = Array.from(spotPrices, ([key, value]) => value.toNumber());
-      assets = indexedMarket.outcomeAssets.reduce((acc, asset, index) => {
-        acc.push({ assetId: asset, price: prices[index] });
-        return acc;
-      }, []);
-      const { name, price } = getCurrentPrediction(assets, indexedMarket);
-      setCurrentPrediction({ name, price });
-    }
-  }, [spotPrices]);
-
   const { data: liquidity } = usePoolLiquidity({ marketId });
   const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
 
@@ -139,20 +121,8 @@ const Market: NextPage<{
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
 
-  //required to fix title element warning
-  const question = indexedMarket.question;
-
-  //data for MarketHeader
-  const token = store?.config?.tokenSymbol;
-  const starts = Number(indexedMarket.period.start);
-  const ends = Number(indexedMarket.period.end);
-  const volume = indexedMarket?.pool?.volume
-    ? new Decimal(indexedMarket?.pool?.volume).div(ZTG).toNumber()
-    : 0;
   const subsidy =
     marketSdkv2?.pool?.poolId == null ? 0 : liquidity?.div(ZTG).toNumber();
-
-  console.log(getMarketStatusDetails(indexedMarket));
 
   return (
     <>
@@ -160,23 +130,17 @@ const Market: NextPage<{
       <div>
         <MarketImage
           image={indexedMarket.img}
-          alt={`Image depicting ${question}`}
+          alt={`Image depicting ${indexedMarket.question}`}
           size="120px"
           status={indexedMarket.status}
           className="mx-auto"
         />
         <MarketHeader
-          marketId={marketId}
-          question={question}
-          status={indexedMarket.status}
-          tags={indexedMarket.tags}
-          starts={starts}
-          ends={ends}
-          token={token}
+          market={indexedMarket}
+          marketStatusDetails={getMarketStatusDetails(indexedMarket)}
+          token={store?.config?.tokenSymbol}
           prizePool={prizePool?.div(ZTG).toNumber()}
-          volume={volume}
           subsidy={subsidy}
-          marketType={indexedMarket?.marketType?.scalar}
           marketStage={marketStage}
           rejectReason={marketSdkv2?.rejectReason}
         />

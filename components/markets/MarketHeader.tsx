@@ -5,7 +5,9 @@ import { FC, PropsWithChildren } from "react";
 import { MarketStage } from "@zeitgeistpm/sdk-next";
 import { MarketTimer } from "./MarketTimer";
 import { MarketTimerSkeleton } from "./MarketTimer";
-import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
+import { MarketPageIndexedData } from "lib/gql/markets";
+import { ZTG } from "lib/constants";
+import Decimal from "decimal.js";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
   ({ label, border = true, children }) => {
@@ -28,44 +30,60 @@ const Tag: FC<PropsWithChildren<{ className?: string }>> = ({
   );
 };
 
-// const MarketOutcome: FC<PropsWithChildren<{}>> = ({}) => {
-
-// }
+const MarketOutcome: FC<
+  PropsWithChildren<{ status: string; outcome: string; by?: string }>
+> = ({ status, outcome, by }) => {
+  return (
+    <div
+      className={`w-full flex center items-center gap-4 py-6 mb-10 rounded-lg ${
+        status === "Resolved"
+          ? "bg-green-light"
+          : status === "Reported"
+          ? "bg-powderblue"
+          : "bg-yellow-light"
+      }`}
+    >
+      <div className="">
+        <span>{status} Outome: </span>
+        <span className="font-bold">{outcome}</span>
+      </div>
+      {status !== "Resolved" && (
+        <div>
+          <span>{status} by: </span>
+          <span className="font-bold">{by}</span>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const MarketHeader: FC<{
-  marketId: number;
-  question: string;
-  status: string;
-  tags: string[];
-  starts: number;
-  ends: number;
+  market: MarketPageIndexedData;
+  token: string;
   prizePool: number;
   subsidy: number;
-  volume: number;
-  token: string;
-  marketType: string[];
   marketStage: MarketStage;
   rejectReason?: string;
+  marketStatusDetails: { outcome: string; by: string };
 }> = ({
-  marketId,
-  question,
-  status,
-  tags,
-  starts,
-  ends,
+  market: { tags, status, question, period, marketType, pool },
   prizePool,
+  marketStatusDetails: { outcome, by },
   subsidy,
-  volume,
   token,
-  marketType,
   marketStage,
   rejectReason,
 }) => {
+  const starts = Number(period.start);
+  const ends = Number(period.end);
+  const volume = pool?.volume
+    ? new Decimal(pool?.volume).div(ZTG).toNumber()
+    : 0;
+
+  console.log(outcome, by);
   return (
-    <header className="flex flex-col items-center w-full">
-      <h1 className="text-4xl font-extrabold my-5 max-w-[900px] text-center">
-        {question}
-      </h1>
+    <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
+      <h1 className="text-4xl font-extrabold my-5 text-center">{question}</h1>
       <div className="flex flex-wrap justify-center gap-2.5">
         <Tag className={`${status === "Active" && "!bg-green-lighter"}`}>
           {status === "Active" && <span className="text-green">&#x2713; </span>}
@@ -75,7 +93,7 @@ const MarketHeader: FC<{
           return <Tag key={index}>{tag}</Tag>;
         })}
         <Tag className="!bg-black text-white">
-          {marketType === null ? "Categorical" : "Scalar"}
+          {marketType?.scalar === null ? "Categorical" : "Scalar"}
         </Tag>
       </div>
       {rejectReason && rejectReason.length > 0 && (
@@ -127,6 +145,11 @@ const MarketHeader: FC<{
           <Skeleton width="150px" height="24px" />
         )}
       </div>
+      {(status === "Reported" ||
+        status === "Disputed" ||
+        status === "Resolved") && (
+        <MarketOutcome status={status} outcome={outcome} by={by} />
+      )}
     </header>
   );
 };
