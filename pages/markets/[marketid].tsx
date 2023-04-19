@@ -197,7 +197,10 @@ const Market: NextPage<{
             )}
           </div>
           {promotionData && (
-            <MarketPromotionCallout promotion={promotionData} />
+            <MarketPromotionCallout
+              market={indexedMarket}
+              promotion={promotionData}
+            />
           )}
           {chartSeries && indexedMarket?.pool?.poolId ? (
             <MarketChart

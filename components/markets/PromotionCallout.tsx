@@ -5,8 +5,11 @@ import { Dialog } from "@headlessui/react";
 import { AiFillFire } from "react-icons/ai";
 import Image from "next/image";
 import moment from "moment";
+import { IndexerContext, Market } from "@zeitgeistpm/sdk-next";
+import { MarketPageIndexedData } from "lib/gql/markets";
 
 export const MarketPromotionCallout = (props: {
+  market: Market<IndexerContext> | MarketPageIndexedData;
   promotion: PromotedMarket;
 }) => {
   const now = new Date();
@@ -25,7 +28,7 @@ export const MarketPromotionCallout = (props: {
               className="rounded-md bg-orange-200 p-4 inline-flex font-bold text-orange-900"
               onClick={() => setModalIsOpen(!modalIsOpen)}
             >
-              Promoted Market!
+              Promoted Market! <i>(placeholder UI)</i>
               <AiFillFire size={24} />
             </div>
           </div>
@@ -33,7 +36,7 @@ export const MarketPromotionCallout = (props: {
           <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
             <Dialog.Panel
               className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
-    w-full max-w-[520px]  rounded-ztg-10"
+    w-full max-w-[564px]  rounded-ztg-10"
             >
               <div className="w-full h-64 relative rounded-t-ztg-10 overflow-hidden">
                 <Image
@@ -53,8 +56,11 @@ export const MarketPromotionCallout = (props: {
                   <ol className="list-decimal">
                     <li className="mb-6 font-light">
                       Join our trading campaign on the prediction market for
-                      "Will SpaceX's Starship reach outer space before the end
-                      of Q1?" and get the chance to win big!
+                      <b className="font-medium">
+                        {" "}
+                        "{props.market.question}"
+                      </b>{" "}
+                      and get the chance to win big!
                     </li>
                     <li className="mb-6 font-light">
                       Make trades of{" "}
