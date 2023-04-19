@@ -88,7 +88,6 @@ export const useTradeItemState = (item: TradeItem) => {
       const assetWeight = getAssetWeight(pool, item.assetId).unwrap();
       const assetIndex = getIndexOf(item.assetId);
       const asset = saturatedData.assets[assetIndex];
-      const market = saturatedData.market;
       const swapFee = new Decimal(pool.swapFee === "" ? "0" : pool.swapFee).div(
         ZTG,
       );
@@ -104,7 +103,6 @@ export const useTradeItemState = (item: TradeItem) => {
 
       return {
         asset,
-        market,
         pool,
         spotPrice,
         baseAssetId: { Ztg: null },
