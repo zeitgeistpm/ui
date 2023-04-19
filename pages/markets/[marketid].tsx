@@ -67,8 +67,10 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const client = new GraphQLClient(graphQlEndpoint);
 
-  const market = await getMarket(client, params.marketid);
-  const promotionData = await getMarketPromotion(market.marketId);
+  const [market, promotionData] = await Promise.all([
+    getMarket(client, params.marketid),
+    getMarketPromotion(Number(params.marketid)),
+  ]);
 
   const chartSeries: ChartSeries[] = market?.categories?.map(
     (category, index) => {
