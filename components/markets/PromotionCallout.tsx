@@ -54,8 +54,8 @@ export const MarketPromotionCallout = (props: {
                 <h2 className="mb-12 text-xl center">
                   This market has promotional incentives!
                 </h2>
-                <div className="mb-12">
-                  <ol className="list-decimal">
+                <div className="mb-14">
+                  <ol className="list-decimal pl-[24px]">
                     <li className="mb-6 font-light">
                       Join our trading campaign on the prediction market for
                       <b className="font-medium">
@@ -92,7 +92,7 @@ export const MarketPromotionCallout = (props: {
                 <button
                   onClick={() => toggle(false)}
                   className={`ztg-transition bg-ztg-blue text-white focus:outline-none disabled:opacity-20 disabled:cursor-default 
-        rounded-full w-full  font-bold text-ztg-16-150 h-ztg-56`}
+        rounded-full w-full mb-8 font-bold text-ztg-16-150 h-ztg-56`}
                 >
                   Got it!
                 </button>
