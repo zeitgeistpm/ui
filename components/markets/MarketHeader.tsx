@@ -84,6 +84,7 @@ const MarketHeader: FC<{
     disputes,
     report,
     resolvedOutcome,
+    scalarType,
   } = market;
   const starts = Number(period.start);
   const ends = Number(period.end);
@@ -98,9 +99,9 @@ const MarketHeader: FC<{
     disputes,
     report,
     resolvedOutcome,
+    scalarType,
   );
 
-  console.log(outcome, by);
   return (
     <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
       <h1 className="text-4xl font-extrabold my-5 text-center">{question}</h1>

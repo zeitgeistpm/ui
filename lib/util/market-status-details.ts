@@ -1,5 +1,7 @@
 import { ZTG } from "lib/constants";
 import Decimal from "decimal.js";
+import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
+import moment from "moment";
 
 export const getMarketStatusDetails = (
   marketType: { categorical?: string; scalar?: string[] },
@@ -12,15 +14,26 @@ export const getMarketStatusDetails = (
   }[],
   report: { outcome: { categorical?: number; scalar?: string }; by: string },
   resolvedOutcome: string,
+  scalarType: ScalarRangeType,
 ): { outcome: string | number; by: string } => {
   const lastIndex = disputes?.length - 1;
+  const inferedType: ScalarRangeType = scalarType ?? "number";
+  const dateFormat = "MM.DD.YYYY";
+
   if (status === "Disputed") {
     //scalar market
     if (marketType?.scalar !== null) {
       return {
-        outcome: new Decimal(disputes[lastIndex].outcome?.scalar)
-          .div(ZTG)
-          .toNumber(),
+        outcome:
+          inferedType === "number"
+            ? new Decimal(disputes[lastIndex].outcome?.scalar)
+                .div(ZTG)
+                .toNumber()
+            : moment(
+                new Decimal(disputes[lastIndex].outcome?.scalar)
+                  .div(ZTG)
+                  .toNumber(),
+              ).format(dateFormat),
         by: disputes[lastIndex].by,
       };
       //categorical market
@@ -34,7 +47,12 @@ export const getMarketStatusDetails = (
     //scalar market
     if (marketType?.scalar !== null) {
       return {
-        outcome: new Decimal(report.outcome?.scalar).div(ZTG).toNumber(),
+        outcome:
+          inferedType === "number"
+            ? new Decimal(report.outcome?.scalar).div(ZTG).toNumber()
+            : moment(
+                new Decimal(report.outcome?.scalar).div(ZTG).toNumber(),
+              ).format(dateFormat),
         by: report.by,
       };
       //categorical market
@@ -48,7 +66,12 @@ export const getMarketStatusDetails = (
     //scalar market
     if (marketType?.scalar !== null) {
       return {
-        outcome: new Decimal(resolvedOutcome).div(ZTG).toNumber(),
+        outcome:
+          inferedType === "number"
+            ? new Decimal(resolvedOutcome).div(ZTG).toNumber()
+            : moment(new Decimal(resolvedOutcome).div(ZTG).toNumber()).format(
+                dateFormat,
+              ),
         by: null,
       };
       //categorical market

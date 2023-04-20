@@ -135,7 +135,6 @@ const Market: NextPage<{
         />
         <MarketHeader
           market={indexedMarket}
-          marketStatusDetails={getMarketStatusDetails(indexedMarket)}
           token={store?.config?.tokenSymbol}
           prizePool={prizePool?.div(ZTG).toNumber()}
           subsidy={subsidy}
