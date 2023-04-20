@@ -24,10 +24,12 @@ import { MultipleOutcomeEntry } from "lib/types/create-market";
 import { calculatePoolCost } from "lib/util/market";
 import { observer } from "mobx-react";
 import { useState } from "react";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[]>();
   const [swapFee, setSwapFee] = useState<string>();
+  const { data: constants } = useChainConstants();
 
   const wallet = useWallet();
   const { data: poolId } = useMarketPoolId(marketId);
@@ -76,7 +78,7 @@ const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
   const handleDeployClick = () => {
     const rows = poolRowDataFromOutcomes(
       market.categories as MultipleOutcomeEntry[],
-      store.config.tokenSymbol,
+      constants?.tokenSymbol,
     );
     setPoolRows(rows);
   };
@@ -110,7 +112,7 @@ const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
                 Total Cost:
                 <span className="font-mono">
                   {" "}
-                  {poolCost} {store.config.tokenSymbol}
+                  {poolCost} {constants?.tokenSymbol}
                 </span>
               </div>
             </div>
