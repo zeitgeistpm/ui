@@ -17,37 +17,6 @@ import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 import { isAsset, ztgAsset } from "../types";
 import { Context, Sdk } from "@zeitgeistpm/sdk-next";
 
-interface Config {
-  tokenSymbol: string;
-  ss58Prefix: number;
-  blockTimeSec: number;
-  markets: {
-    maxDisputes: number;
-    disputeBond: number; // initial dispute amount
-    disputeFactor: number; // increase in bond per dispute
-    oracleBond: number;
-    advisoryBond: number;
-    validityBond: number;
-    maxCategories: number;
-    minCategories: number;
-  };
-  court: {
-    caseDurationSec: number;
-    stakeWeight: number; // increase in juror stake per juror
-  };
-  swaps: {
-    minLiquidity: number;
-    exitFee: number;
-  };
-  identity: {
-    basicDeposit: number;
-    fieldDeposit: number;
-  };
-  balances: {
-    existentialDeposit: number;
-  };
-}
-
 export default class Store {
   initialized = false;
 
