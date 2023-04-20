@@ -39,8 +39,6 @@ import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { getMarketStatusDetails } from "lib/util/market-status-details";
-import { getCurrentPrediction } from "lib/util/assets";
-import { useEffect, useState } from "react";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,

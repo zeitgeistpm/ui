@@ -8,6 +8,8 @@ import { MarketTimerSkeleton } from "./MarketTimer";
 import { MarketPageIndexedData } from "lib/gql/markets";
 import { ZTG } from "lib/constants";
 import Decimal from "decimal.js";
+import Avatar from "components/ui/Avatar";
+import { shortenAddress } from "lib/util";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
   ({ label, border = true, children }) => {
@@ -48,9 +50,14 @@ const MarketOutcome: FC<
         <span className="font-bold">{outcome}</span>
       </div>
       {status !== "Resolved" && (
-        <div>
+        <div className="flex items-center gap-4">
           <span>{status} by: </span>
-          <span className="font-bold">{by}</span>
+          <div className="flex items-center">
+            <Avatar address={by} />
+            <span className="font-medium px-3.5 text-sms h-full leading-[40px]">
+              {shortenAddress(by, 6, 4)}
+            </span>
+          </div>
         </div>
       )}
     </div>
