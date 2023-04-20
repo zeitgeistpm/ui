@@ -1,3 +1,4 @@
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 
@@ -25,8 +26,8 @@ const CostRow = ({
 
 const MarketCostModal = observer(
   ({ networkFee, permissionless, liquidity }) => {
-    const { config } = useStore();
-    const tokenSymbol = config?.tokenSymbol;
+    const { data: constants } = useChainConstants();
+    const tokenSymbol = constants?.tokenSymbol;
 
     return (
       <div className="flex flex-col gap-y-5 p-[15px]">
@@ -38,19 +39,19 @@ const MarketCostModal = observer(
           <CostRow
             title="Permissionless Bond"
             description="Returned if the market isn't deleted by the committee"
-            cost={`${config.markets.validityBond} ${tokenSymbol}`}
+            cost={`${constants?.markets.validityBond} ${tokenSymbol}`}
           />
         ) : (
           <CostRow
             title="Advised Bond"
             description="Returned if the market is approved or ends before being approved by the committee"
-            cost={`${config.markets.advisoryBond} ${tokenSymbol}`}
+            cost={`${constants?.markets.advisoryBond} ${tokenSymbol}`}
           />
         )}
         <CostRow
           title="Oracle Bond"
           description="Returned if oracle reports the market outcome on time"
-          cost={`${config.markets.oracleBond} ${tokenSymbol}`}
+          cost={`${constants?.markets.oracleBond} ${tokenSymbol}`}
         />
         <CostRow
           title="Liquidity"
