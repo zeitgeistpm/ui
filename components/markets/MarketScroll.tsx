@@ -26,7 +26,7 @@ const MarketScroll = observer(
     const { width: containerWidth, ref: containerRef } = useResizeDetector();
 
     const { data: marketsStats } = useMarketsStats(
-      markets.map((m) => m.marketId),
+      markets.map((m) => ({ marketId: m.marketId, hasPool: m.pool != null })),
     );
     const gap = 28;
 

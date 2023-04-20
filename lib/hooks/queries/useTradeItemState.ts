@@ -7,7 +7,6 @@ import {
 import Decimal from "decimal.js";
 import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
 import { calcSpotPrice } from "lib/math";
-import { useStore } from "lib/stores/Store";
 import { useWallet } from "lib/state/wallet";
 import { TradeItem } from "../trade";
 import { useSdkv2 } from "../useSdkv2";
@@ -37,6 +36,7 @@ export const useTradeItemState = (item: TradeItem) => {
 
   const { data: saturatedIndex } = useSaturatedPoolsIndex(pools ?? []);
   const saturatedData = saturatedIndex?.[pool?.poolId];
+  const market = saturatedData?.market;
 
   const poolBaseBalances = usePoolZtgBalance(pools ?? []);
   const poolBaseBalance =
@@ -104,6 +104,7 @@ export const useTradeItemState = (item: TradeItem) => {
       return {
         asset,
         pool,
+        market,
         spotPrice,
         baseAssetId: { Ztg: null },
         poolAccountId,
@@ -126,10 +127,7 @@ export const useTradeItemState = (item: TradeItem) => {
         !!pool &&
         !!poolBaseBalance &&
         !!saturatedData &&
-        !!traderBaseBalance &&
-        !!traderAssetBalance &&
-        !!poolAssetBalance &&
-        !!wallet.activeAccount?.address,
+        !!poolAssetBalance,
       keepPreviousData: true,
     },
   );
