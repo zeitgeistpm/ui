@@ -1,7 +1,6 @@
 import { observer } from "mobx-react";
 import React, { FC } from "react";
 import { LogOut } from "react-feather";
-import { useStore } from "lib/stores/Store";
 import AccountSelect from "./AccountSelect";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useWallet } from "lib/state/wallet";

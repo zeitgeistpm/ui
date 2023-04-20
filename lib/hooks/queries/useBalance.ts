@@ -16,11 +16,16 @@ export const useBalance = (
   const query = useQuery(
     [id, balanceRootKey, address, blockNumber],
     async () => {
-      if (address && isRpcSdk(sdk) && !IOZtgAssetId.is(assetId)) {
+      if (address && isRpcSdk(sdk)) {
         const api = await getApiAtBlock(sdk.api, blockNumber);
 
-        const balance = await api.query.tokens.accounts(address, assetId);
-        return new Decimal(balance.free.toString());
+        if (IOZtgAssetId.is(assetId)) {
+          const balance = await api.query.system.account(address);
+          return new Decimal(balance.data.free.toString());
+        } else {
+          const balance = await api.query.tokens.accounts(address, assetId);
+          return new Decimal(balance.free.toString());
+        }
       }
       return null;
     },
