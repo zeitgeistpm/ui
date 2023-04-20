@@ -3,6 +3,7 @@ import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { useStore } from "lib/stores/Store";
 import { useEffect, useState } from "react";
 import { useSdkv2 } from "../useSdkv2";
+import { useChainConstants } from "./useChainConstants";
 import { useMarketSpotPrices } from "./useMarketSpotPrices";
 
 export const market24hrPriceChangesKey = "market-24hr-price-changes";
@@ -18,7 +19,8 @@ export const useMarket24hrPriceChanges = (marketId: number) => {
   const [sdk, id] = useSdkv2();
   const [debouncedBlockNumber, setDebouncedBlockNumber] = useState<number>();
 
-  const { config, blockNumber } = useStore();
+  const { blockNumber } = useStore();
+  const { data: constants } = useChainConstants();
 
   useEffect(() => {
     if (!blockNumber) return;
@@ -32,8 +34,8 @@ export const useMarket24hrPriceChanges = (marketId: number) => {
   }, [blockNumber]);
 
   const block24hrsAgo =
-    config?.blockTimeSec && debouncedBlockNumber
-      ? getBlock24hrsAgo(config.blockTimeSec, debouncedBlockNumber)
+    constants?.blockTimeSec && debouncedBlockNumber
+      ? getBlock24hrsAgo(constants?.blockTimeSec, debouncedBlockNumber)
       : null;
 
   const { data: pricesNow } = useMarketSpotPrices(marketId);

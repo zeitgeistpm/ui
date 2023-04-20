@@ -10,6 +10,7 @@ import {
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { poolTotalIssuanceRootQueryKey } from "lib/hooks/queries/useTotalIssuanceForPools";
@@ -34,7 +35,7 @@ const ExitPoolForm = ({
   userPoolShares: Decimal;
   poolStatus: string;
 }) => {
-  const { config } = useStore();
+  const { data: constants } = useChainConstants();
   const {
     register,
     watch,
@@ -73,7 +74,7 @@ const ExitPoolForm = ({
       if (isRpcSdk(sdk) && pool) {
         const formValue = getValues();
         const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
-        const feeMultiplier = 1 - config.swaps.exitFee;
+        const feeMultiplier = 1 - constants.swaps.exitFee;
 
         const minAssetsOut = poolWeights.map((asset) => {
           const id = assetObjStringToId(asset.assetId);
