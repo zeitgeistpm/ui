@@ -33,6 +33,7 @@ const AccountModalContent: FC = observer(() => {
               <div className="uppercase text-ztg-10-150 font-bold text-sky-600">
                 balance
               </div>
+              {/* //todo: specify units (ZTG) */}
               <div className="font-mono text-ztg-14-120 font-bold text-sheen-green">
                 {activeBalance?.div(ZTG).toFixed(4) ?? "---"}
               </div>

@@ -14,9 +14,9 @@ export const useBalance = (
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, balanceRootKey, address, blockNumber],
+    [id, balanceRootKey, address, assetId, blockNumber],
     async () => {
-      if (address && isRpcSdk(sdk)) {
+      if (address && assetId && isRpcSdk(sdk)) {
         const api = await getApiAtBlock(sdk.api, blockNumber);
 
         if (IOZtgAssetId.is(assetId)) {
@@ -31,7 +31,7 @@ export const useBalance = (
     },
     {
       keepPreviousData: true,
-      enabled: Boolean(sdk && address && isRpcSdk(sdk)),
+      enabled: Boolean(sdk && address && isRpcSdk(sdk) && assetId),
     },
   );
 
