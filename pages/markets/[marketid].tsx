@@ -41,6 +41,7 @@ import { filters } from "components/ui/TimeFilters";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
 
@@ -121,6 +122,8 @@ const Market: NextPage<{
     const store = useStore();
     const { data: prizePool } = usePrizePool(marketId);
 
+    const { data: constants } = useChainConstants();
+
     const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
       marketId,
     });
@@ -138,7 +141,8 @@ const Market: NextPage<{
     const question = indexedMarket.question;
 
     //data for MarketHeader
-    const token = store?.config?.tokenSymbol;
+    const token = constants?.tokenSymbol;
+
     const starts = Number(indexedMarket.period.start);
     const ends = Number(indexedMarket.period.end);
     const volume = indexedMarket?.pool?.volume
