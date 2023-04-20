@@ -43,7 +43,7 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
         />
         <button
           type="submit"
-          className={`h-full flex-shrink-0 text-ztg-16-150 rounded-full center bg-ztg-blue text-white px-[20px] ${
+          className={`h-full flex-shrink-0 text-ztg-16-150 rounded-full center bg-ztg-blue text-white px-5 ${
             invalid ? "cursor-default" : "cursor-pointer"
           }`}
         >
