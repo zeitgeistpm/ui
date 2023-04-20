@@ -17,7 +17,6 @@ export const getCurrentPrediction = (
 
   if (market.marketType.categorical) {
     let [highestPrice, highestPriceIndex] = [0, 0];
-
     assets.sort(
       (a, b) =>
         getIndexOf(parseAssetId(a.assetId).unwrap() as MarketOutcomeAssetId) -
