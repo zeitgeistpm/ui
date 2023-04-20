@@ -7,7 +7,7 @@ import {
 import Decimal from "decimal.js";
 import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
 import { calcSpotPrice } from "lib/math";
-import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/state/wallet";
 import { TradeItem } from "../trade";
 import { useSdkv2 } from "../useSdkv2";
 import { useAccountAssetBalances } from "./useAccountAssetBalances";
@@ -21,11 +21,11 @@ export const tradeItemStateRootQueryKey = "trade-item-state";
 
 export const useTradeItemState = (item: TradeItem) => {
   const [sdk, id] = useSdkv2();
-  const { wallets } = useStore();
-  const signer = wallets.activeAccount ? wallets.getActiveSigner() : null;
+  const wallet = useWallet();
+  const signer = wallet.activeAccount ? wallet.getActiveSigner() : null;
   const slippage = 1;
   const { data: traderBaseBalance } = useZtgBalance(
-    wallets.activeAccount?.address,
+    wallet.activeAccount?.address,
   );
 
   const { data: pools } = usePoolsByIds([
@@ -36,6 +36,7 @@ export const useTradeItemState = (item: TradeItem) => {
 
   const { data: saturatedIndex } = useSaturatedPoolsIndex(pools ?? []);
   const saturatedData = saturatedIndex?.[pool?.poolId];
+  const market = saturatedData?.market;
 
   const poolBaseBalances = usePoolZtgBalance(pools ?? []);
   const poolBaseBalance =
@@ -77,7 +78,7 @@ export const useTradeItemState = (item: TradeItem) => {
       id,
       tradeItemStateRootQueryKey,
       poolAccountId,
-      wallets.activeAccount?.address,
+      wallet.activeAccount?.address,
       balances,
       item.action,
       JSON.stringify(item.assetId),
@@ -87,7 +88,6 @@ export const useTradeItemState = (item: TradeItem) => {
       const assetWeight = getAssetWeight(pool, item.assetId).unwrap();
       const assetIndex = getIndexOf(item.assetId);
       const asset = saturatedData.assets[assetIndex];
-      const market = saturatedData.market;
       const swapFee = new Decimal(pool.swapFee === "" ? "0" : pool.swapFee).div(
         ZTG,
       );
@@ -103,8 +103,8 @@ export const useTradeItemState = (item: TradeItem) => {
 
       return {
         asset,
-        market,
         pool,
+        market,
         spotPrice,
         baseAssetId: { Ztg: null },
         poolAccountId,
@@ -127,10 +127,7 @@ export const useTradeItemState = (item: TradeItem) => {
         !!pool &&
         !!poolBaseBalance &&
         !!saturatedData &&
-        !!traderBaseBalance &&
-        !!traderAssetBalance &&
-        !!poolAssetBalance &&
-        !!wallets.activeAccount?.address,
+        !!poolAssetBalance,
       keepPreviousData: true,
     },
   );

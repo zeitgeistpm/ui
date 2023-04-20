@@ -15,48 +15,10 @@ import { useContext } from "react";
 import validatorjs from "validatorjs";
 import { extractIndexFromErrorHex } from "../../lib/util/error-table";
 import { isAsset, ztgAsset } from "../types";
-import Wallets from "./wallets";
 import { Context, Sdk } from "@zeitgeistpm/sdk-next";
 
-interface Config {
-  tokenSymbol: string;
-  ss58Prefix: number;
-  blockTimeSec: number;
-  markets: {
-    maxDisputes: number;
-    disputeBond: number; // initial dispute amount
-    disputeFactor: number; // increase in bond per dispute
-    oracleBond: number;
-    advisoryBond: number;
-    validityBond: number;
-    maxCategories: number;
-    minCategories: number;
-  };
-  court: {
-    caseDurationSec: number;
-    stakeWeight: number; // increase in juror stake per juror
-  };
-  swaps: {
-    minLiquidity: number;
-    exitFee: number;
-  };
-  identity: {
-    basicDeposit: number;
-    fieldDeposit: number;
-  };
-  balances: {
-    existentialDeposit: number;
-  };
-}
-
 export default class Store {
-  wallets = new Wallets(this);
-
   initialized = false;
-
-  config: Config;
-
-  graphQLClient?: GraphQLClient = undefined;
 
   get amountRegex(): RegExp | null {
     return new RegExp(`^[0-9]+(\\.[0-9]{0,10})?`);
@@ -138,12 +100,7 @@ export default class Store {
   }
 
   async initialize() {
-    this.initGraphQlClient();
-
     await this.initSDK(endpointOptions[0].value, graphQlEndpoint);
-    await this.loadConfig();
-
-    this.wallets.initialize();
 
     this.registerValidationRules();
 
@@ -160,70 +117,6 @@ export default class Store {
     runInAction(() => {
       this.sdk = sdk;
       this.subscribeBlock();
-    });
-  }
-
-  private initGraphQlClient() {
-    this.graphQLClient = new GraphQLClient(graphQlEndpoint, {});
-  }
-
-  private async loadConfig() {
-    const [consts, properties] = await Promise.all([
-      this.sdk.api.consts,
-      this.sdk.api.rpc.system.properties(),
-    ]);
-
-    // minimumPeriod * 2 is fair assumption for now but need to make sure this stays up
-    // to date with the chain code
-    const blockTimeSec =
-      (this.codecToNumber(consts.timestamp.minimumPeriod) * 2) / 1000;
-    const config: Config = {
-      tokenSymbol: properties.tokenSymbol
-        .toString()
-        .replace("[", "")
-        .replace("]", ""),
-      ss58Prefix: this.codecToNumber(consts.system.ss58Prefix),
-      blockTimeSec: blockTimeSec,
-      markets: {
-        maxDisputes: this.codecToNumber(consts.predictionMarkets.maxDisputes),
-        disputeBond:
-          this.codecToNumber(consts.predictionMarkets.disputeBond) / ZTG,
-        disputeFactor:
-          this.codecToNumber(consts.predictionMarkets.disputeFactor) / ZTG,
-        oracleBond:
-          this.codecToNumber(consts.predictionMarkets.oracleBond) / ZTG,
-        advisoryBond:
-          this.codecToNumber(consts.predictionMarkets.advisoryBond) / ZTG,
-        validityBond:
-          this.codecToNumber(consts.predictionMarkets.validityBond) / ZTG,
-        maxCategories: this.codecToNumber(
-          consts.predictionMarkets.maxCategories,
-        ),
-        minCategories: this.codecToNumber(
-          consts.predictionMarkets.minCategories,
-        ),
-      },
-      court: {
-        caseDurationSec:
-          this.codecToNumber(consts.court.courtCaseDuration) * blockTimeSec,
-        stakeWeight: this.codecToNumber(consts.court.stakeWeight) / ZTG,
-      },
-      swaps: {
-        minLiquidity: this.codecToNumber(consts.swaps.minLiquidity) / ZTG,
-        exitFee: this.codecToNumber(consts.swaps.exitFee) / ZTG,
-      },
-      identity: {
-        basicDeposit: this.codecToNumber(consts.identity.basicDeposit) / ZTG,
-        fieldDeposit: this.codecToNumber(consts.identity.fieldDeposit) / ZTG,
-      },
-      balances: {
-        existentialDeposit:
-          this.codecToNumber(consts.balances.existentialDeposit) / ZTG,
-      },
-    };
-
-    runInAction(() => {
-      this.config = config;
     });
   }
 
@@ -263,37 +156,6 @@ export default class Store {
   async getBlockTimestamp(): Promise<number> {
     const now = await this.sdk.api.query.timestamp.now();
     return Number(now.toString());
-  }
-
-  /**
-   * Get either the ZTG balance or the token balance for the active account.
-   */
-  async getBalance(asset?: Asset | AssetId): Promise<Decimal | null> {
-    if (!this.wallets.connected) {
-      return new Decimal(0);
-    }
-    let assetObj: Asset;
-    if (asset == null) {
-      assetObj = (this.sdk.api as any).createType("Asset", ztgAsset);
-    } else {
-      assetObj = isAsset(asset)
-        ? asset
-        : (this.sdk.api as any).createType("Asset", asset);
-    }
-    if (assetObj.isZtg) {
-      const { data } = await this.sdk.api.query.system.account(
-        this.wallets.activeAccount.address,
-      );
-      return new Decimal(data.free.toString()).div(ZTG);
-    }
-
-    const data = await this.sdk.api.query.tokens.accounts(
-      this.wallets.activeAccount.address,
-      asset as any,
-    );
-
-    //@ts-ignore
-    return new Decimal(data.free.toString()).div(ZTG);
   }
 
   async getPoolBalance(

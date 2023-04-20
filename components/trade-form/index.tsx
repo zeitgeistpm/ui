@@ -4,6 +4,8 @@ import {
   ZTG,
   IOMarketOutcomeAssetId,
   IOZtgAssetId,
+  getMarketIdOf,
+  getIndexOf,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import {
@@ -12,8 +14,8 @@ import {
   useTradeMaxBaseAmount,
   useTradeTransaction,
 } from "lib/hooks/trade";
+import { ISubmittableResult } from "@polkadot/types/types";
 import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { capitalize } from "lodash";
@@ -27,6 +29,37 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import TradeResult from "components/markets/TradeResult";
+import { useWallet } from "lib/state/wallet";
+import { TradeType } from "lib/types";
+
+const getTradeValuesFromExtrinsicResult = (
+  type: TradeType,
+  data: ISubmittableResult,
+): { baseAmount: string; assetAmount: string } => {
+  let baseAsset = new Decimal(0);
+  let outcome = new Decimal(0);
+  const { events } = data;
+  for (const eventData of events) {
+    const { event } = eventData;
+    const { data } = event;
+    if (
+      event.method === "SwapExactAmountIn" ||
+      event.method === "SwapExactAmountOut"
+    ) {
+      if (type === "buy") {
+        baseAsset = baseAsset.add(data[0]["assetAmountIn"].toPrimitive());
+        outcome = outcome.add(data[0]["assetAmountOut"].toPrimitive());
+      } else {
+        baseAsset = baseAsset.add(data[0]["assetAmountOut"].toPrimitive());
+        outcome = outcome.add(data[0]["assetAmountIn"].toPrimitive());
+      }
+    }
+  }
+  return {
+    baseAmount: baseAsset.div(ZTG).toFixed(1),
+    assetAmount: outcome.div(ZTG).toFixed(1),
+  };
+};
 
 const TradeForm = observer(() => {
   const notifications = useNotifications();
@@ -39,11 +72,11 @@ const TradeForm = observer(() => {
     defaultValues: { percentage: "0", assetAmount: "0", baseAmount: "0" },
   });
 
-  const store = useStore();
-  const { wallets } = store;
-  const signer = wallets.getActiveSigner();
+  const wallet = useWallet();
+  const signer = wallet.getActiveSigner();
 
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
+
   const { data: tradeItemState } = useTradeItemState(tradeItem);
 
   const {
@@ -135,7 +168,11 @@ const TradeForm = observer(() => {
     isSuccess,
     isLoading,
   } = useExtrinsic(() => transaction, {
-    onSuccess: () => {
+    onSuccess: (data) => {
+      const { baseAmount, assetAmount } = getTradeValuesFromExtrinsicResult(
+        type,
+        data,
+      );
       notifications.pushNotification(
         `Successfully ${
           tradeItem.action === "buy" ? "bought" : "sold"
@@ -156,7 +193,7 @@ const TradeForm = observer(() => {
   );
 
   useEffect(() => {
-    if (debouncedTransactionHash == null) {
+    if (debouncedTransactionHash == null || signer == null) {
       return;
     }
     const sub = from(transaction.paymentInfo(signer.address)).subscribe(
@@ -165,7 +202,7 @@ const TradeForm = observer(() => {
       },
     );
     return () => sub.unsubscribe();
-  }, [debouncedTransactionHash]);
+  }, [debouncedTransactionHash, signer]);
 
   const changeByPercentage = useCallback(
     (percentage: Decimal) => {
@@ -434,7 +471,7 @@ const TradeForm = observer(() => {
             }}
             selectedIndex={tabIndex}
           >
-            <Tab.List className="flex justify-between h-[71px] text-center rounded-[10px]">
+            <Tab.List className="flex justify-between h-[60px] sm:h-[71px] text-center rounded-[10px]">
               <Tab
                 as={TradeTab}
                 selected={type === "buy"}
@@ -451,24 +488,25 @@ const TradeForm = observer(() => {
               </Tab>
             </Tab.List>
           </Tab.Group>
-          <div className="flex flex-col p-[30px]">
-            <div className="center h-[87px]" style={{ fontSize: "58px" }}>
+          <div className="flex flex-col p-[20px] sm:p-[30px]">
+            <div className="center">
               <input
                 type="number"
                 {...register("assetAmount", {
                   required: true,
                   min: "0",
                   max: maxAssetAmount?.div(ZTG).toFixed(4),
+                  validate: (value) => Number(value) > 0,
                 })}
                 onFocus={() => {
                   setLastEditedAssetId(tradeItemState?.assetId);
                 }}
                 step="any"
-                className="w-full bg-transparent outline-none !text-center text-[58px]"
+                className="w-full bg-transparent outline-none !text-center text-[35px] sm:text-[58px]"
                 autoFocus
               />
             </div>
-            <div className="center h-[48px] font-semibold capitalize text-[28px]">
+            <div className="center sm:h-[48px] font-semibold capitalize text-[20px] sm:text-[28px]">
               {tradeItemState?.asset.category.name}
             </div>
             <div className="font-semibold text-center mb-[20px]">For</div>
@@ -479,6 +517,7 @@ const TradeForm = observer(() => {
                   required: true,
                   min: "0",
                   max: maxBaseAmount?.div(ZTG).toFixed(4),
+                  validate: (value) => Number(value) > 0,
                 })}
                 onFocus={() =>
                   setLastEditedAssetId(tradeItemState?.baseAssetId)
@@ -499,10 +538,11 @@ const TradeForm = observer(() => {
               valueSuffix="%"
               maxLabel="100 %"
               className="mb-[20px]"
+              disabled={isLoading === true || signer == null}
               {...register("percentage")}
             />
             <div className="text-center mb-[20px]">
-              <div className="text-ztg-14-150">
+              <div className="text-ztg-12-150 sm:text-ztg-14-150">
                 <div className="mb-[10px]">
                   <span className="text-sky-600">Average Price: </span>
                   {averagePrice} {baseSymbol}

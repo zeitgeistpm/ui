@@ -12,7 +12,9 @@ import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/state/wallet";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { observer } from "mobx-react";
 import moment from "moment";
 import { useState } from "react";
@@ -28,16 +30,18 @@ const ScalarDisputeBox = observer(
     const [sdk] = useSdkv2();
     const store = useStore();
     const notificationStore = useNotifications();
+    const { data: constants } = useChainConstants();
 
     //TODO: move to react query
-    const disputeBond = store.config.markets.disputeBond;
-    const disputeFactor = store.config.markets.disputeFactor;
-    const tokenSymbol = store.config.tokenSymbol;
+    const disputeBond = constants?.markets.disputeBond;
+    const disputeFactor = constants?.markets.disputeFactor;
+    const tokenSymbol = constants?.tokenSymbol;
 
     const { data: disputes } = useMarketDisputes(market);
     const lastDispute = disputes?.[disputes.length - 1];
 
-    const signer = store?.wallets?.getActiveSigner();
+    const wallet = useWallet();
+    const signer = wallet.getActiveSigner();
 
     const bondAmount = disputes
       ? disputeBond + disputes.length * disputeFactor

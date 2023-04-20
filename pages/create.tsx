@@ -61,6 +61,10 @@ import {
 import { dateBlock } from "@zeitgeistpm/utility/dist/time";
 import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useWallet } from "lib/state/wallet";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
@@ -123,6 +127,8 @@ const CreatePage: NextPage = observer(() => {
   const notificationStore = useNotifications();
   const modalStore = useModalStore();
   const [sdk] = useSdkv2();
+  const wallet = useWallet();
+  const { data: constants } = useChainConstants();
   const [formData, setFormData] = useState<CreateMarketFormData>({
     slug: "",
     question: "",
@@ -164,6 +170,8 @@ const CreatePage: NextPage = observer(() => {
   const [swapFee, setSwapFee] = useState<string>();
   const [txFee, setTxFee] = useState<string>();
 
+  const { data: activeBalance } = useZtgBalance(wallet.activeAccount?.address);
+
   const router = useRouter();
 
   const questionInputRef = useRef();
@@ -201,10 +209,10 @@ const CreatePage: NextPage = observer(() => {
   }, [marketImageFile]);
 
   useEffect(() => {
-    if (store?.graphQLClient == null || newMarketId == null) return;
+    if (!isIndexedSdk(sdk) || newMarketId == null) return;
     const timer = setInterval(async () => {
       const marketIndexed = await checkMarketExists(
-        store.graphQLClient,
+        sdk.indexer.client,
         newMarketId,
       );
 
@@ -220,13 +228,13 @@ const CreatePage: NextPage = observer(() => {
       }
     }, 1000);
     return () => clearInterval(timer);
-  }, [store?.graphQLClient, newMarketId]);
+  }, [sdk, newMarketId]);
 
   useEffect(() => {
     if (
       !form.isValid ||
       !formData.deadlines.isValid ||
-      store.wallets.activeAccount == null
+      wallet.activeAccount == null
     ) {
       return;
     }
@@ -238,7 +246,7 @@ const CreatePage: NextPage = observer(() => {
     formData,
     poolRows,
     deployPool,
-    store.wallets.activeAccount,
+    wallet.activeAccount,
     marketImageCid,
   ]);
 
@@ -251,32 +259,32 @@ const CreatePage: NextPage = observer(() => {
       ? mapRangeToEntires(formData.outcomes.value)
       : formData.outcomes.value;
     formData.outcomes.value &&
-      setPoolRows(poolRowDataFromOutcomes(entries, store.config.tokenSymbol));
+      setPoolRows(poolRowDataFromOutcomes(entries, constants?.tokenSymbol));
   }, [deployPool, formData.outcomes.type]);
 
   useEffect(() => {
-    if (store.wallets.activeAccount == null || formData.oracle !== "") {
+    if (wallet.activeAccount == null || formData.oracle !== "") {
       return;
     }
-    changeOracle(store.wallets.activeAccount.address);
-  }, [store.wallets.activeAccount]);
+    changeOracle(wallet.activeAccount.address);
+  }, [wallet.activeAccount]);
 
   useEffect(() => {
-    if (!store.config) {
+    if (!constants) {
       return;
     }
-    const bondCost = store.config.markets.oracleBond;
+    const bondCost = constants.markets.oracleBond;
     const marketCost =
       calculateMarketCost(
         {
-          advisedCost: store.config.markets.advisoryBond + bondCost,
-          permissionlessCost: store.config.markets.validityBond + bondCost,
+          advisedCost: constants.markets.advisoryBond + bondCost,
+          permissionlessCost: constants.markets.validityBond + bondCost,
         },
         formData.advised,
         deployPool === true ? poolRows?.map((row) => Number(row.amount)) : null,
       ) + Number(txFee || 0);
     setMarketCost(marketCost);
-  }, [store.config, formData, deployPool, poolRows]);
+  }, [constants, formData, deployPool, poolRows]);
 
   useEffect(() => {
     if (formData?.end?.type === "block") {
@@ -334,7 +342,7 @@ const CreatePage: NextPage = observer(() => {
       const entries = isRangeOutcomeEntry(formData.outcomes.value)
         ? mapRangeToEntires(formData.outcomes.value)
         : formData.outcomes.value;
-      setPoolRows(poolRowDataFromOutcomes(entries, store.config.tokenSymbol));
+      setPoolRows(poolRowDataFromOutcomes(entries, constants?.tokenSymbol));
     }
   };
 
@@ -439,7 +447,7 @@ const CreatePage: NextPage = observer(() => {
       | ((result: ISubmittableResult, _unsub: () => void) => void)
       | boolean,
   ): Promise<CreateMarketParams> => {
-    const signer = store.wallets.getActiveSigner();
+    const signer = wallet.getActiveSigner();
     const oracle = formData.oracle;
     const period = getMarketPeriod();
     const creationType = formData.advised ? "Advised" : "Permissionless";
@@ -491,7 +499,7 @@ const CreatePage: NextPage = observer(() => {
       | ((result: ISubmittableResult, _unsub: () => void) => void)
       | boolean,
   ): Promise<CreateCpmmMarketAndDeployAssetsParams> => {
-    const signer = store.wallets.getActiveSigner();
+    const signer = wallet.getActiveSigner();
     const oracle = formData.oracle;
     const period = getMarketPeriod();
     const metadata = getMarketMetadata();
@@ -833,7 +841,7 @@ const CreatePage: NextPage = observer(() => {
             disabled={
               !form.isValid ||
               !formData.deadlines.isValid ||
-              store.wallets.activeBalance.lessThan(marketCost) ||
+              activeBalance?.div(ZTG).lessThan(marketCost) ||
               (poolRows?.length > 0 && poolValid === false)
             }
           >
@@ -844,7 +852,7 @@ const CreatePage: NextPage = observer(() => {
               Total Cost:
               <span className="font-mono">
                 {" "}
-                {marketCost} {store.config?.tokenSymbol}
+                {marketCost} {constants?.tokenSymbol}
               </span>
             </div>
             <button

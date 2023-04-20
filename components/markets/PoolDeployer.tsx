@@ -11,26 +11,35 @@ import { accountPoolAssetBalancesRootKey } from "lib/hooks/queries/useAccountPoo
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useRpcMarket } from "lib/hooks/queries/useRpcMarket";
-import { ztgBalanceRootKey } from "lib/hooks/queries/useZtgBalance";
+import {
+  useZtgBalance,
+  ztgBalanceRootKey,
+} from "lib/hooks/queries/useZtgBalance";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/state/wallet";
 import { MultipleOutcomeEntry } from "lib/types/create-market";
 import { calculatePoolCost } from "lib/util/market";
 import { observer } from "mobx-react";
 import { useState } from "react";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[]>();
   const [swapFee, setSwapFee] = useState<string>();
+  const { data: constants } = useChainConstants();
 
+  const wallet = useWallet();
   const { data: poolId } = useMarketPoolId(marketId);
   const { data: market } = useMarket({ marketId });
   const queryClient = useQueryClient();
   const store = useStore();
   const notificationStore = useNotifications();
   const [sdk, id] = useSdkv2();
+
+  const { data: activeBalance } = useZtgBalance(wallet.activeAccount?.address);
 
   const { send: deployPool, isLoading } = useExtrinsic(
     () => {
@@ -69,7 +78,7 @@ const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
   const handleDeployClick = () => {
     const rows = poolRowDataFromOutcomes(
       market.categories as MultipleOutcomeEntry[],
-      store.config.tokenSymbol,
+      constants?.tokenSymbol,
     );
     setPoolRows(rows);
   };
@@ -94,7 +103,7 @@ const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
                 className="w-ztg-266 ml-ztg-8"
                 onClick={deployPool}
                 disabled={
-                  store.wallets.activeBalance.lessThan(poolCost) || isLoading
+                  activeBalance?.div(ZTG).lessThan(poolCost) || isLoading
                 }
               >
                 Deploy Pool
@@ -103,7 +112,7 @@ const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
                 Total Cost:
                 <span className="font-mono">
                   {" "}
-                  {poolCost} {store.config.tokenSymbol}
+                  {poolCost} {constants?.tokenSymbol}
                 </span>
               </div>
             </div>

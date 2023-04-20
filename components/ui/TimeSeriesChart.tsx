@@ -157,7 +157,7 @@ const TimeSeriesChart = observer(
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {data?.length > 0 ? (
+        {data ? (
           <ResponsiveContainer>
             <LineChart
               width={500}
@@ -245,7 +245,11 @@ const TimeSeriesChart = observer(
               <Tooltip
                 animationEasing={"linear"}
                 animationDuration={0}
-                content={<ChartToolTip series={series} yUnits={yUnits} />}
+                content={
+                  data?.length > 0 && (
+                    <ChartToolTip series={series} yUnits={yUnits} />
+                  )
+                }
               />
               {series.map((s, index) => (
                 <Line

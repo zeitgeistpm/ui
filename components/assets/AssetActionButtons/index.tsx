@@ -1,7 +1,7 @@
 import { CategoricalAssetId, ScalarAssetId } from "@zeitgeistpm/sdk-next";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
-import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/state/wallet";
 import { observer } from "mobx-react";
 import DisputeButton from "./DisputeButton";
 import RedeemButton from "./RedeemButton";
@@ -15,11 +15,11 @@ interface AssetActionButtonsProps {
 
 const AssetActionButtons = observer(
   ({ marketId, assetId }: AssetActionButtonsProps) => {
-    const store = useStore();
     const { data: market } = useMarket({ marketId });
     const { data: marketStage } = useMarketStage(market);
 
-    const userAddress = store.wallets?.getActiveSigner()?.address;
+    const wallet = useWallet();
+    const userAddress = wallet.getActiveSigner()?.address;
     const isOracle = market?.oracle === userAddress;
 
     if (!market || !marketStage) {
