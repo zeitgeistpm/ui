@@ -16,7 +16,6 @@ import {
 } from "lib/hooks/trade";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { capitalize } from "lodash";
@@ -30,7 +29,6 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import TradeResult from "components/markets/TradeResult";
-import { useMarket } from "lib/hooks/queries/useMarket";
 import { useWallet } from "lib/state/wallet";
 import { TradeType } from "lib/types";
 
@@ -74,18 +72,12 @@ const TradeForm = observer(() => {
     defaultValues: { percentage: "0", assetAmount: "0", baseAmount: "0" },
   });
 
-  const store = useStore();
   const wallet = useWallet();
   const signer = wallet.getActiveSigner();
 
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
-  const { data: market } = useMarket({
-    marketId: getMarketIdOf(tradeItem.assetId),
-  });
 
   const { data: tradeItemState } = useTradeItemState(tradeItem);
-
-  const assetName = market?.categories[getIndexOf(tradeItem.assetId)].name;
 
   const {
     poolBaseBalance,
@@ -201,7 +193,7 @@ const TradeForm = observer(() => {
   );
 
   useEffect(() => {
-    if (debouncedTransactionHash == null) {
+    if (debouncedTransactionHash == null || signer == null) {
       return;
     }
     const sub = from(transaction.paymentInfo(signer.address)).subscribe(
@@ -210,7 +202,7 @@ const TradeForm = observer(() => {
       },
     );
     return () => sub.unsubscribe();
-  }, [debouncedTransactionHash]);
+  }, [debouncedTransactionHash, signer]);
 
   const changeByPercentage = useCallback(
     (percentage: Decimal) => {
@@ -444,11 +436,11 @@ const TradeForm = observer(() => {
         <TradeResult
           type={tradeItem.action}
           amount={new Decimal(finalAmounts.asset)}
-          tokenName={assetName}
+          tokenName={tradeItemState?.asset.category.name}
           baseTokenAmount={new Decimal(finalAmounts.base)}
           baseToken={baseSymbol}
-          marketId={market.marketId}
-          marketQuestion={market.question}
+          marketId={tradeItemState?.market.marketId}
+          marketQuestion={tradeItemState?.market.question}
         />
       ) : (
         <form
@@ -504,6 +496,7 @@ const TradeForm = observer(() => {
                   required: true,
                   min: "0",
                   max: maxAssetAmount?.div(ZTG).toFixed(4),
+                  validate: (value) => Number(value) > 0,
                 })}
                 onFocus={() => {
                   setLastEditedAssetId(tradeItemState?.assetId);
@@ -514,7 +507,7 @@ const TradeForm = observer(() => {
               />
             </div>
             <div className="center sm:h-[48px] font-semibold capitalize text-[20px] sm:text-[28px]">
-              {assetName}
+              {tradeItemState?.asset.category.name}
             </div>
             <div className="font-semibold text-center mb-[20px]">For</div>
             <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative">
@@ -524,6 +517,7 @@ const TradeForm = observer(() => {
                   required: true,
                   min: "0",
                   max: maxBaseAmount?.div(ZTG).toFixed(4),
+                  validate: (value) => Number(value) > 0,
                 })}
                 onFocus={() =>
                   setLastEditedAssetId(tradeItemState?.baseAssetId)
@@ -544,6 +538,7 @@ const TradeForm = observer(() => {
               valueSuffix="%"
               maxLabel="100 %"
               className="mb-[20px]"
+              disabled={isLoading === true || signer == null}
               {...register("percentage")}
             />
             <div className="text-center mb-[20px]">
