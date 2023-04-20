@@ -216,7 +216,10 @@ const PoolDetails: NextPage = observer(() => {
             </div>
           )}
         </div>
-        <PoolTable poolId={poolId} />
+        <PoolTable
+          poolId={poolId}
+          marketId={saturatedPoolData?.market.marketId}
+        />
       </div>
     </>
   );

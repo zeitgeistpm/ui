@@ -118,7 +118,7 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
             outcome: outcomeName,
             totalValue: {
               value: currentPrice,
-              usdValue: 0,
+              usdValue: null,
             },
             pre:
               currentPrice != null
