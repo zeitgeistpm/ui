@@ -18,6 +18,32 @@ import { DollarSign, Frown, Settings, User } from "react-feather";
 import OnBoardingModal from "./OnboardingModal";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { ZTG } from "@zeitgeistpm/sdk-next";
+import { useBalance } from "lib/hooks/queries/useBalance";
+import Decimal from "decimal.js";
+
+const BalanceRow = ({
+  imgPath,
+  balance,
+  units,
+}: {
+  imgPath: string;
+  balance: Decimal;
+  units: string;
+}) => {
+  return (
+    <div className="flex items-center mb-3 ">
+      <img src={imgPath} height={"24px"} width="24px" />
+      <div
+        className={`group font-bold flex w-full items-center rounded-md px-2 py-2 text-sm`}
+      >
+        {balance &&
+          `${formatNumberLocalized(
+            balance?.div(ZTG).abs().toNumber(),
+          )} ${units}`}
+      </div>
+    </div>
+  );
+};
 
 const AccountButton: FC<{
   connectButtonClassname?: string;
@@ -39,6 +65,10 @@ const AccountButton: FC<{
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
 
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
+  const { data: polkadotBalance } = useBalance(activeAccount?.address, {
+    //@ts-ignore todo: remove this when the new sdk is available
+    ForeignAsset: 0,
+  });
 
   const connect = async () => {
     if (isNovaWallet) {
@@ -175,21 +205,18 @@ const AccountButton: FC<{
                     <div className="">
                       <div className="border-b-2 mb-3 py-2">
                         <div className="px-4">
-                          <div className="flex items-center mb-3 ">
-                            <img
-                              src="/currencies/ztg.jpg"
-                              height={"24px"}
-                              width="24px"
-                            />
-                            <div
-                              className={`group font-bold flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                            >
-                              {activeBalance &&
-                                `${formatNumberLocalized(
-                                  activeBalance?.div(ZTG).abs().toNumber(),
-                                )} ${store.config?.tokenSymbol}`}
-                            </div>
-                          </div>
+                          <BalanceRow
+                            imgPath="/currencies/ztg.jpg"
+                            units={store.config?.tokenSymbol}
+                            balance={activeBalance}
+                          />
+                        </div>
+                        <div className="px-4">
+                          <BalanceRow
+                            imgPath="/currencies/dot.png"
+                            units="DOT"
+                            balance={polkadotBalance}
+                          />
                         </div>
                         <div className="px-4">
                           <div className="flex items-center mb-3">
