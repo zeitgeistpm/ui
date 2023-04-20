@@ -7,14 +7,13 @@ import {
 import Decimal from "decimal.js";
 import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
 import { calcSpotPrice } from "lib/math";
-import { useStore } from "lib/stores/Store";
 import { useWallet } from "lib/state/wallet";
 import { TradeItem } from "../trade";
 import { useSdkv2 } from "../useSdkv2";
 import { useAccountAssetBalances } from "./useAccountAssetBalances";
 import { usePoolAccountIds } from "./usePoolAccountIds";
+import { usePoolBaseBalance } from "./usePoolBaseBalance";
 import { usePoolsByIds } from "./usePoolsByIds";
-import { usePoolZtgBalance } from "./usePoolZtgBalance";
 import { useSaturatedPoolsIndex } from "./useSaturatedPoolsIndex";
 import { useZtgBalance } from "./useZtgBalance";
 
@@ -38,11 +37,7 @@ export const useTradeItemState = (item: TradeItem) => {
   const { data: saturatedIndex } = useSaturatedPoolsIndex(pools ?? []);
   const saturatedData = saturatedIndex?.[pool?.poolId];
 
-  const poolBaseBalances = usePoolZtgBalance(pools ?? []);
-  const poolBaseBalance =
-    pool &&
-    poolBaseBalances?.[pool?.poolId] &&
-    new Decimal(poolBaseBalances[pool.poolId].free.toString());
+  const { data: poolBaseBalance } = usePoolBaseBalance(pool?.poolId);
 
   const traderAssets = useAccountAssetBalances([
     { account: signer?.address, assetId: item.assetId },

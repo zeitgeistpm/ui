@@ -15,6 +15,7 @@ import { useWallet } from "lib/state/wallet";
 import { useMemo } from "react";
 import ExitPoolForm from "./ExitPoolForm";
 import JoinPoolForm from "./JoinPoolForm";
+import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
 
 export type PoolBalances = {
   [key: string]: {
@@ -41,7 +42,7 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
     pool,
   );
 
-  const { data: poolBaseBalance } = useZtgBalance(pool?.accountId);
+  const { data: poolBaseBalance } = usePoolBaseBalance(poolId);
 
   const data = useTotalIssuanceForPools([poolId]);
   const totalPoolIssuance = data?.[poolId]?.data?.totalIssuance;

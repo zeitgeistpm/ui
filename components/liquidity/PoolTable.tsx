@@ -3,8 +3,8 @@ import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { usePool } from "lib/hooks/queries/usePool";
+import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
-import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import ManageLiquidityButton from "./ManageLiquidityButton";
 
 const columns: TableColumn[] = [
@@ -39,7 +39,7 @@ const PoolTable = ({ poolId }: { poolId: number }) => {
   const saturatedPoolData = saturatedPoolIndex?.[poolId];
 
   const { data: balances } = useAccountPoolAssetBalances(pool?.accountId, pool);
-  const { data: basePoolBalance } = useZtgBalance(pool?.accountId);
+  const { data: basePoolBalance } = usePoolBaseBalance(poolId);
 
   const tableData: TableData[] = saturatedPoolData?.assets?.map(
     (asset, index) => ({
