@@ -92,18 +92,18 @@ export interface MarketPageIndexedData {
     by: string;
     at: number;
     outcome: {
-      categorical: number;
-      scalar: number;
+      categorical?: number;
+      scalar?: string;
     };
   };
   disputes: {
     by: string;
     at: number;
     outcome: {
-      categorical: number;
-      scalar: number;
+      categorical?: number;
+      scalar?: string;
     };
-  };
+  }[];
 }
 
 export const getRecentMarketIds = async (

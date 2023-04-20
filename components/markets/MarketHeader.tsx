@@ -10,6 +10,7 @@ import { ZTG } from "lib/constants";
 import Decimal from "decimal.js";
 import Avatar from "components/ui/Avatar";
 import { shortenAddress } from "lib/util";
+import { getMarketStatusDetails } from "lib/util/market-status-details";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
   ({ label, border = true, children }) => {
@@ -33,7 +34,7 @@ const Tag: FC<PropsWithChildren<{ className?: string }>> = ({
 };
 
 const MarketOutcome: FC<
-  PropsWithChildren<{ status: string; outcome: string; by?: string }>
+  PropsWithChildren<{ status: string; outcome: string | number; by?: string }>
 > = ({ status, outcome, by }) => {
   return (
     <div
@@ -71,21 +72,33 @@ const MarketHeader: FC<{
   subsidy: number;
   marketStage: MarketStage;
   rejectReason?: string;
-  marketStatusDetails: { outcome: string; by: string };
-}> = ({
-  market: { tags, status, question, period, marketType, pool },
-  prizePool,
-  marketStatusDetails: { outcome, by },
-  subsidy,
-  token,
-  marketStage,
-  rejectReason,
-}) => {
+}> = ({ market, prizePool, subsidy, token, marketStage, rejectReason }) => {
+  const {
+    tags,
+    categories,
+    status,
+    question,
+    period,
+    marketType,
+    pool,
+    disputes,
+    report,
+    resolvedOutcome,
+  } = market;
   const starts = Number(period.start);
   const ends = Number(period.end);
   const volume = pool?.volume
     ? new Decimal(pool?.volume).div(ZTG).toNumber()
     : 0;
+
+  const { outcome, by } = getMarketStatusDetails(
+    marketType,
+    categories,
+    status,
+    disputes,
+    report,
+    resolvedOutcome,
+  );
 
   console.log(outcome, by);
   return (

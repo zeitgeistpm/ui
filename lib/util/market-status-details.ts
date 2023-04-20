@@ -1,53 +1,60 @@
 import { ZTG } from "lib/constants";
 import Decimal from "decimal.js";
 
-export const getMarketStatusDetails = (market) => {
-  if (market.status === "Disputed") {
+export const getMarketStatusDetails = (
+  marketType: { categorical?: string; scalar?: string[] },
+  categories: { name: string }[],
+  status: string,
+  disputes: {
+    at: number;
+    by: string;
+    outcome: { categorical?: number; scalar?: string };
+  }[],
+  report: { outcome: { categorical?: number; scalar?: string }; by: string },
+  resolvedOutcome: string,
+): { outcome: string | number; by: string } => {
+  const lastIndex = disputes?.length - 1;
+  if (status === "Disputed") {
     //scalar market
-    if (market.marketType?.scalar !== null) {
+    if (marketType?.scalar !== null) {
       return {
-        outcome: new Decimal(
-          market.disputes[market.disputes.length - 1].outcome?.scalar,
-        )
+        outcome: new Decimal(disputes[lastIndex].outcome?.scalar)
           .div(ZTG)
           .toNumber(),
-        by: market.disputes[market.disputes.length - 1].by,
+        by: disputes[lastIndex].by,
       };
       //categorical market
     } else {
       return {
-        outcome:
-          market.categories[
-            market.disputes[market.disputes.length - 1].outcome?.categorical
-          ].name,
-        by: market.disputes[market.disputes.length - 1].by,
+        outcome: categories[disputes[lastIndex].outcome?.categorical].name,
+        by: disputes[lastIndex].by,
       };
     }
-  } else if (market.status === "Reported") {
+  } else if (status === "Reported") {
     //scalar market
-    if (market.marketType?.scalar !== null) {
+    if (marketType?.scalar !== null) {
       return {
-        outcome: new Decimal(market.report.outcome?.scalar).div(ZTG).toNumber(),
-        by: market.report.by,
+        outcome: new Decimal(report.outcome?.scalar).div(ZTG).toNumber(),
+        by: report.by,
       };
       //categorical market
     } else {
       return {
-        outcome: market.categories[market.report.outcome?.categorical].name,
-        by: market.report?.by,
+        outcome: categories[report.outcome?.categorical].name,
+        by: report?.by,
       };
     }
-  } else if (market.status === "Resolved") {
+  } else if (status === "Resolved") {
     //scalar market
-    if (market.marketType?.scalar !== null) {
+    if (marketType?.scalar !== null) {
       return {
-        outcome: new Decimal(market.resolvedOutcome).div(ZTG).toNumber(),
+        outcome: new Decimal(resolvedOutcome).div(ZTG).toNumber(),
         by: null,
       };
       //categorical market
     } else {
       return {
-        outcome: market.categories[market.resolvedOutcome].name,
+        outcome: categories[resolvedOutcome].name,
         by: null,
       };
     }

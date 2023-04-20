@@ -189,7 +189,8 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
 
   return (
     <div>
-      {market?.status === "Disputed" && authReportNumberOrId != null && (
+      {/* TODO: check if this can be removed */}
+      {/* {market?.status === "Disputed" && authReportNumberOrId != null && (
         <>
           <h4 className="mt-10">Authorized Report</h4>
           {market.marketType.categorical ? (
@@ -265,7 +266,7 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
         </>
       ) : (
         <></>
-      )}
+      )} */}
       <Table columns={columns} data={tableData} />
     </div>
   );
