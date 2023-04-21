@@ -87,6 +87,8 @@ export const useChainConstants = () => {
             consts.balances.existentialDeposit.toNumber() / ZTG,
         },
       };
+
+      return config;
     },
     {
       keepPreviousData: true,
