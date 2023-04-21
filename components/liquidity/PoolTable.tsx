@@ -1,4 +1,4 @@
-import { IOBaseAssetId, ZTG } from "@zeitgeistpm/sdk-next";
+import { IOBaseAssetId, parseAssetId, ZTG } from "@zeitgeistpm/sdk-next";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
@@ -47,9 +47,9 @@ const PoolTable = ({
   const saturatedPoolData = saturatedPoolIndex?.[poolId];
   const { data: balances } = useAccountPoolAssetBalances(pool?.accountId, pool);
   const { data: basePoolBalance } = usePoolBaseBalance(poolId);
-  // const { data: baseAssetUsdPrice } = useAssetUsdPrice({ ForeignAsset: 0 });
-  //todo: remove hardcoding
-  const { data: baseAssetUsdPrice } = useAssetUsdPrice({ Ztg: null });
+  const { data: baseAssetUsdPrice } = useAssetUsdPrice(
+    parseAssetId(pool.baseAsset).unwrap(),
+  );
   const { data: spotPrices } = useMarketSpotPrices(marketId);
 
   const tableData: TableData[] = saturatedPoolData?.assets?.map(
