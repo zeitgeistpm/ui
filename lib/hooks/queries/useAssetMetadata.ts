@@ -31,10 +31,9 @@ export const useAssetMetadata = (assetId: AssetId) => {
           return assetMetadata;
         } else if (IOForeignAssetId.is(assetId)) {
           const metadata = await sdk.api.query.assetRegistry.metadata(assetId);
-
           const assetMetadata: AssetMetadata = {
-            symbol: metadata.unwrap().symbol.toString(),
-            name: metadata.unwrap().name.toString(),
+            symbol: metadata.unwrap().symbol.toPrimitive() as string,
+            name: metadata.unwrap().name.toPrimitive() as string,
           };
 
           return assetMetadata;
