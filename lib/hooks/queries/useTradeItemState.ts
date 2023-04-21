@@ -36,6 +36,7 @@ export const useTradeItemState = (item: TradeItem) => {
 
   const { data: saturatedIndex } = useSaturatedPoolsIndex(pools ?? []);
   const saturatedData = saturatedIndex?.[pool?.poolId];
+  const market = saturatedData?.market;
 
   const { data: poolBaseBalance } = usePoolBaseBalance(pool?.poolId);
 
@@ -99,6 +100,7 @@ export const useTradeItemState = (item: TradeItem) => {
       return {
         asset,
         pool,
+        market,
         spotPrice,
         baseAssetId: { Ztg: null },
         poolAccountId,
@@ -121,10 +123,7 @@ export const useTradeItemState = (item: TradeItem) => {
         !!pool &&
         !!poolBaseBalance &&
         !!saturatedData &&
-        !!traderBaseBalance &&
-        !!traderAssetBalance &&
-        !!poolAssetBalance &&
-        !!wallet.activeAccount?.address,
+        !!poolAssetBalance,
       keepPreviousData: true,
     },
   );

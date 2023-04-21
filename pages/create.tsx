@@ -63,6 +63,7 @@ import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
@@ -127,6 +128,7 @@ const CreatePage: NextPage = observer(() => {
   const modalStore = useModalStore();
   const [sdk] = useSdkv2();
   const wallet = useWallet();
+  const { data: constants } = useChainConstants();
   const [formData, setFormData] = useState<CreateMarketFormData>({
     slug: "",
     question: "",
@@ -257,7 +259,7 @@ const CreatePage: NextPage = observer(() => {
       ? mapRangeToEntires(formData.outcomes.value)
       : formData.outcomes.value;
     formData.outcomes.value &&
-      setPoolRows(poolRowDataFromOutcomes(entries, store.config.tokenSymbol));
+      setPoolRows(poolRowDataFromOutcomes(entries, constants?.tokenSymbol));
   }, [deployPool, formData.outcomes.type]);
 
   useEffect(() => {
@@ -268,21 +270,21 @@ const CreatePage: NextPage = observer(() => {
   }, [wallet.activeAccount]);
 
   useEffect(() => {
-    if (!store.config) {
+    if (!constants) {
       return;
     }
-    const bondCost = store.config.markets.oracleBond;
+    const bondCost = constants.markets.oracleBond;
     const marketCost =
       calculateMarketCost(
         {
-          advisedCost: store.config.markets.advisoryBond + bondCost,
-          permissionlessCost: store.config.markets.validityBond + bondCost,
+          advisedCost: constants.markets.advisoryBond + bondCost,
+          permissionlessCost: constants.markets.validityBond + bondCost,
         },
         formData.advised,
         deployPool === true ? poolRows?.map((row) => Number(row.amount)) : null,
       ) + Number(txFee || 0);
     setMarketCost(marketCost);
-  }, [store.config, formData, deployPool, poolRows]);
+  }, [constants, formData, deployPool, poolRows]);
 
   useEffect(() => {
     if (formData?.end?.type === "block") {
@@ -340,7 +342,7 @@ const CreatePage: NextPage = observer(() => {
       const entries = isRangeOutcomeEntry(formData.outcomes.value)
         ? mapRangeToEntires(formData.outcomes.value)
         : formData.outcomes.value;
-      setPoolRows(poolRowDataFromOutcomes(entries, store.config.tokenSymbol));
+      setPoolRows(poolRowDataFromOutcomes(entries, constants?.tokenSymbol));
     }
   };
 
@@ -850,7 +852,7 @@ const CreatePage: NextPage = observer(() => {
               Total Cost:
               <span className="font-mono">
                 {" "}
-                {marketCost} {store.config?.tokenSymbol}
+                {marketCost} {constants?.tokenSymbol}
               </span>
             </div>
             <button

@@ -29,6 +29,7 @@ import {
 } from "lib/types/create-market";
 import { useStore } from "lib/stores/Store";
 import { AnimatePresence, motion } from "framer-motion";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 const FormContext = createContext(null);
 
@@ -245,7 +246,7 @@ export const MultipleOutcomesField: FC<{
   onEntriesChange: (entries: MultipleOutcomeEntry[]) => void;
   namePrefix: string;
 }> = observer(({ entries, onEntriesChange, onEntryChange, namePrefix }) => {
-  const { config } = useStore();
+  const { data: constants } = useChainConstants();
   const addOutcome = () => {
     onEntriesChange(addMultipleOutcomeEntry(entries));
   };
@@ -288,13 +289,13 @@ export const MultipleOutcomesField: FC<{
               onNameChange={(v) => changeName(idx, v)}
               onTickerChange={(v) => changeTicker(idx, v)}
               onColorChange={(v) => changeColor(idx, v)}
-              canRemove={entries.length > config?.markets.minCategories}
+              canRemove={entries.length > constants?.markets.minCategories}
               name={`${namePrefix}-${idx}`}
             />
           );
         })}
       </AnimatePresence>
-      {entries.length < config?.markets.maxCategories && (
+      {entries.length < constants?.markets.maxCategories && (
         <div
           className="w-ztg-40 h-ztg-40 rounded-ztg-5 border-2 border-sky-600 center flex-grow-0 flex-shrink-0 cursor-pointer"
           onClick={addOutcome}

@@ -20,6 +20,7 @@ import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { ZTG } from "@zeitgeistpm/sdk-next";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import Decimal from "decimal.js";
+import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
 
 const BalanceRow = ({
   imgPath,
@@ -69,6 +70,8 @@ const AccountButton: FC<{
     //@ts-ignore todo: remove this when the new sdk is available
     ForeignAsset: 0,
   });
+
+  const { data: constants } = useChainConstants();
 
   const connect = async () => {
     if (isNovaWallet) {
@@ -207,7 +210,7 @@ const AccountButton: FC<{
                         <div className="px-4">
                           <BalanceRow
                             imgPath="/currencies/ztg.jpg"
-                            units={store.config?.tokenSymbol}
+                            units={constants?.tokenSymbol}
                             balance={activeBalance}
                           />
                         </div>

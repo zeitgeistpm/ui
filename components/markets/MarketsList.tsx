@@ -81,9 +81,10 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const markets = marketsPages?.pages.flatMap((markets) => markets.data) ?? [];
 
   const count = markets?.length ?? 0;
-  const marketIds = markets?.map((m) => m.marketId) ?? [];
 
-  const { data: stats } = useMarketsStats(marketIds);
+  const { data: stats } = useMarketsStats(
+    markets.map((m) => ({ marketId: m.marketId, hasPool: m.pool != null })),
+  );
 
   return (
     <div
