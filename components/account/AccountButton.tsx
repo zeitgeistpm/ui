@@ -67,7 +67,6 @@ const AccountButton: FC<{
 
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const { data: polkadotBalance } = useBalance(activeAccount?.address, {
-    //@ts-ignore todo: remove this when the new sdk is available
     ForeignAsset: 0,
   });
 
