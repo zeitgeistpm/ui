@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { isIndexedData, projectEndTimestamp } from "@zeitgeistpm/sdk-next";
 import PoolTable from "components/liquidity/PoolTable";
 import FullSetButtons from "components/markets/FullSetButtons";
-import MarketMeta from "components/meta/MarketMeta";
 import InfoBoxes from "components/ui/InfoBoxes";
 import Pill from "components/ui/Pill";
 import Decimal from "decimal.js";
@@ -10,9 +9,8 @@ import { ZTG } from "lib/constants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
-import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
+import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
 import Link from "next/link";
@@ -87,9 +85,8 @@ const PoolDetail = ({
 
 const PoolDetails: NextPage = observer(() => {
   const router = useRouter();
-  const store = useStore();
 
-  const { data: ztgInfo } = useZtgInfo();
+  const { data: ztgPrice } = useZtgPrice();
 
   const poolId = Number(router.query.poolid);
 
@@ -168,8 +165,8 @@ const PoolDetails: NextPage = observer(() => {
               saturatedPoolData?.liquidity.div(ZTG).toNumber() || 0,
             )} ${constants?.tokenSymbol ?? "--"}`}
             bottom={`${
-              ztgInfo && saturatedPoolData
-                ? ztgInfo?.price
+              ztgPrice && saturatedPoolData
+                ? ztgPrice
                     ?.mul(saturatedPoolData?.liquidity.div(ZTG))
                     .toFixed(2)
                 : "--"

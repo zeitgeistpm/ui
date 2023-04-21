@@ -30,7 +30,7 @@ import {
   usePoolZtgBalance,
 } from "lib/hooks/queries/usePoolZtgBalance";
 import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForPools";
-import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
+import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { calcSpotPrice } from "lib/math";
 import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { useMemo } from "react";
@@ -145,7 +145,7 @@ export const usePortfolioPositions = (
 ): UsePortfolioPositions => {
   const { data: now } = useChainTimeNow();
 
-  const { data: ztgPrice } = useZtgInfo();
+  const { data: ztgPrice } = useZtgPrice();
   const block24HoursAgo = Math.floor(now?.block - 7200);
   const { data: marketBonds, isLoading: isBondsLoading } =
     useAccountBonds(address);
@@ -523,7 +523,7 @@ export const usePortfolioPositions = (
     const totalChange = diffChange(positionsTotal, positionsTotal24HoursAgo);
 
     return {
-      usdZtgPrice: ztgPrice.price,
+      usdZtgPrice: ztgPrice,
       total: {
         value: positionsTotal,
         changePercentage: isNaN(totalChange) ? 0 : totalChange,
