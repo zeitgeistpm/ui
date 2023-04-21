@@ -48,7 +48,7 @@ const PoolTable = ({
   const { data: balances } = useAccountPoolAssetBalances(pool?.accountId, pool);
   const { data: basePoolBalance } = usePoolBaseBalance(poolId);
   const { data: baseAssetUsdPrice } = useAssetUsdPrice(
-    parseAssetId(pool.baseAsset).unwrap(),
+    pool?.baseAsset ? parseAssetId(pool.baseAsset).unwrap() : null,
   );
   const { data: spotPrices } = useMarketSpotPrices(marketId);
 
