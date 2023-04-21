@@ -53,7 +53,7 @@ const MarketImage = observer(
           alt={alt ?? "Market image"}
           src={imageUrl}
           fill
-          className="rounded-full"
+          className="overflow-hidden"
           style={{
             objectFit: "cover",
             objectPosition: "50% 50%",
