@@ -34,7 +34,7 @@ export const useMarketsStats = (
       return [...yesPoolStats, ...noPoolStats];
     },
     {
-      enabled: (sdk != null && isIndexedSdk(sdk)) || markets?.length > 0,
+      enabled: sdk != null && isIndexedSdk(sdk) && markets?.length > 0,
       keepPreviousData: true,
     },
   );
