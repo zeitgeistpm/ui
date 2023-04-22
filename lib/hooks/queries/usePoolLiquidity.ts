@@ -14,7 +14,7 @@ export const usePoolLiquidity = (getPoolQuery?: PoolGetQuery) => {
     pool ? [pool] : undefined,
   );
 
-  const saturatedPoolData = saturatedPoolIndex?.[pool.poolId];
+  const saturatedPoolData = saturatedPoolIndex?.[pool?.poolId];
 
   const query = useQuery(
     [id, poolsLiqudityRootKey, getPoolQuery],

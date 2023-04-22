@@ -9,6 +9,30 @@ export const config: PageConfig = {
   runtime: "edge",
 };
 
+const getImageUrl = async (image: string | null): Promise<string> => {
+  const fallbackUrl = new URL(
+    "../../../public/icons/default-market.png",
+    import.meta.url,
+  ).href;
+  if (!image) {
+    return fallbackUrl;
+  }
+  if (isMarketImageBase64Encoded(image)) {
+    return image;
+  }
+
+  try {
+    const url = `https://ipfs-gateway.zeitgeist.pm/ipfs/${image}`;
+    const res = await fetch(url, { method: "HEAD" });
+    if (res.headers.get("Content-Type")?.startsWith("image") === false) {
+      return fallbackUrl;
+    }
+    return url;
+  } catch {
+    return fallbackUrl;
+  }
+};
+
 export default async function GenerateOgImage(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
@@ -27,11 +51,7 @@ export default async function GenerateOgImage(request: NextRequest) {
     url.href,
   ).then((r) => r.json());
 
-  const marketImage = !market.img
-    ? new URL("../../../public/icons/default-market.png", import.meta.url).href
-    : isMarketImageBase64Encoded(market.img)
-    ? market.img
-    : `https://ipfs-gateway.zeitgeist.pm/ipfs/${market.img}`;
+  const marketImageUrl = await getImageUrl(market.img);
 
   const boldFont = await fetch(
     new URL(
@@ -74,7 +94,7 @@ export default async function GenerateOgImage(request: NextRequest) {
                 height: 180,
                 objectFit: "cover",
               }}
-              src={marketImage}
+              src={marketImageUrl}
               tw="rounded-[5px]"
             />
           </div>
