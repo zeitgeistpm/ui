@@ -11,5 +11,6 @@ export const isCurrentOrigin = (url: string) => {
       ? `https://${process.env.VERCEL_URL}`
       : process.env.NEXT_PUBLIC_SITE_URL,
   ).origin;
-  new URL(currentOrigin).origin === new URL(url, currentOrigin).origin;
+
+  return new URL(currentOrigin).origin === new URL(url, currentOrigin).origin;
 };
