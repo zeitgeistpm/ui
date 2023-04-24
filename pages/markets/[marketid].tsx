@@ -44,6 +44,8 @@ import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { parseAssetId } from "@zeitgeistpm/sdk-next";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -131,6 +133,10 @@ const Market: NextPage<{
     const { data: liquidity } = usePoolLiquidity({ marketId });
     const { data: poolId, isLoading: poolIdLoading } =
       useMarketPoolId(marketId);
+    const baseAsset = parseAssetId(indexedMarket.pool?.baseAsset).unrightOr(
+      null,
+    );
+    const { data: metadata } = useAssetMetadata(baseAsset);
 
     if (indexedMarket == null) {
       return <NotFoundPage backText="Back To Markets" backLink="/" />;
@@ -140,7 +146,7 @@ const Market: NextPage<{
     const question = indexedMarket.question;
 
     //data for MarketHeader
-    const token = constants?.tokenSymbol;
+    const token = metadata?.symbol;
 
     const starts = Number(indexedMarket.period.start);
     const ends = Number(indexedMarket.period.end);
