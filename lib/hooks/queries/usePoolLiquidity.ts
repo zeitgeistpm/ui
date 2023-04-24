@@ -19,7 +19,7 @@ export const usePoolLiquidity = (getPoolQuery?: PoolGetQuery) => {
   const query = useQuery(
     [id, poolsLiqudityRootKey, getPoolQuery],
     async () => {
-      return saturatedPoolData.liquidity;
+      return saturatedPoolData?.liquidity;
     },
     {
       enabled: Boolean(sdk && saturatedPoolIndex && saturatedPoolData),

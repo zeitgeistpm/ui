@@ -3,8 +3,8 @@ import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { useEffect } from "react";
 import { accountAssetBalanceRootKey } from "./queries/useAccountAssetBalances";
 import { accountPoolAssetBalancesRootKey } from "./queries/useAccountPoolAssetBalances";
+import { balanceRootKey } from "./queries/useBalance";
 import { tradeItemStateRootQueryKey } from "./queries/useTradeItemState";
-import { ztgBalanceRootKey } from "./queries/useZtgBalance";
 import { useSdkv2 } from "./useSdkv2";
 
 export const useSubscribeBlockEvents = () => {
@@ -41,7 +41,7 @@ export const useSubscribeBlockEvents = () => {
             accountAssetBalanceRootKey,
             account,
           ]);
-          queryClient.invalidateQueries([id, ztgBalanceRootKey, account]);
+          queryClient.invalidateQueries([id, balanceRootKey, account]);
           queryClient.invalidateQueries([
             id,
             tradeItemStateRootQueryKey,

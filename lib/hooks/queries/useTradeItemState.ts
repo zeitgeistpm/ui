@@ -12,8 +12,8 @@ import { TradeItem } from "../trade";
 import { useSdkv2 } from "../useSdkv2";
 import { useAccountAssetBalances } from "./useAccountAssetBalances";
 import { usePoolAccountIds } from "./usePoolAccountIds";
+import { usePoolBaseBalance } from "./usePoolBaseBalance";
 import { usePoolsByIds } from "./usePoolsByIds";
-import { usePoolZtgBalance } from "./usePoolZtgBalance";
 import { useSaturatedPoolsIndex } from "./useSaturatedPoolsIndex";
 import { useZtgBalance } from "./useZtgBalance";
 
@@ -38,11 +38,7 @@ export const useTradeItemState = (item: TradeItem) => {
   const saturatedData = saturatedIndex?.[pool?.poolId];
   const market = saturatedData?.market;
 
-  const poolBaseBalances = usePoolZtgBalance(pools ?? []);
-  const poolBaseBalance =
-    pool &&
-    poolBaseBalances?.[pool?.poolId] &&
-    new Decimal(poolBaseBalances[pool.poolId].free.toString());
+  const { data: poolBaseBalance } = usePoolBaseBalance(pool?.poolId);
 
   const traderAssets = useAccountAssetBalances([
     { account: signer?.address, assetId: item.assetId },
