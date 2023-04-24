@@ -1,6 +1,7 @@
-import { MarketStatus } from "@zeitgeistpm/sdk-next";
+import { MarketStatus, parseAssetId } from "@zeitgeistpm/sdk-next";
 import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
 import TimeSeriesChart, { ChartSeries } from "components/ui/TimeSeriesChart";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import {
   PriceHistory,
   useMarketPriceHistory,
@@ -35,6 +36,9 @@ const MarketChart = ({
 }) => {
   const [chartFilter, setChartFilter] = useState<TimeFilter>(filters[1]);
   const [filterSelected, setFilterSelected] = useState(false);
+
+  const baseAssetId = parseAssetId(baseAsset).unrightOr(null);
+  const { data: metadata } = useAssetMetadata(baseAssetId);
 
   const startDateISOString = useMemo(() => {
     const startDate = calcPriceHistoryStartDate(
@@ -83,7 +87,7 @@ const MarketChart = ({
       <TimeSeriesChart
         data={chartData}
         series={chartSeries}
-        yUnits={baseAsset}
+        yUnits={metadata?.symbol ?? ""}
       />
     </div>
   );

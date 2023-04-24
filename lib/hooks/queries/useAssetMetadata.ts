@@ -20,12 +20,12 @@ export const useAssetMetadata = (assetId: AssetId) => {
   const { data: constants } = useChainConstants();
 
   const query = useQuery(
-    [id, assetMetadataRootKey, assetId],
+    [id, assetMetadataRootKey, assetId, constants?.tokenSymbol],
     async () => {
       if (isRpcSdk(sdk)) {
         if (IOZtgAssetId.is(assetId)) {
           const assetMetadata: AssetMetadata = {
-            symbol: constants.tokenSymbol,
+            symbol: constants?.tokenSymbol,
             name: "Zeitgeist",
           };
           return assetMetadata;
