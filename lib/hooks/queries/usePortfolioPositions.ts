@@ -28,8 +28,8 @@ import { usePoolAccountIds } from "lib/hooks/queries/usePoolAccountIds";
 import { usePoolsByIds } from "lib/hooks/queries/usePoolsByIds";
 import {
   PoolZtgBalanceLookup,
-  usePoolZtgBalance,
-} from "lib/hooks/queries/usePoolZtgBalance";
+  usePoolBaseBalances,
+} from "lib/hooks/queries/usePoolBaseBalances";
 import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { calcSpotPrice } from "lib/math";
@@ -146,6 +146,7 @@ export const usePortfolioPositions = (
 ): UsePortfolioPositions => {
   const { data: now } = useChainTimeNow();
 
+  //todo: needs to base asset balance?
   const { data: ztgPrice } = useZtgPrice();
   const block24HoursAgo = Math.floor(now?.block - 7200);
   const { data: marketBonds, isLoading: isBondsLoading } =
@@ -182,13 +183,13 @@ export const usePortfolioPositions = (
 
   const poolAccountIds = usePoolAccountIds(pools.data);
 
-  const poolsZtgBalances = usePoolZtgBalance(pools.data ?? []);
+  const poolsZtgBalances = usePoolBaseBalances(pools.data ?? []);
 
   const poolsTotalIssuance = useTotalIssuanceForPools(
     pools.data?.map((p) => p.poolId) ?? [],
   );
 
-  const poolsZtgBalances24HoursAgo = usePoolZtgBalance(
+  const poolsZtgBalances24HoursAgo = usePoolBaseBalances(
     pools.data ?? [],
     block24HoursAgo,
     { enabled: Boolean(now?.block) },
@@ -248,7 +249,7 @@ export const usePortfolioPositions = (
       poolsZtgBalances: PoolZtgBalanceLookup,
       poolAssetBalances: UseAccountAssetBalances,
     ): null | Decimal => {
-      const poolZtgBalance = poolsZtgBalances[pool.poolId]?.free.toNumber();
+      const poolZtgBalance = poolsZtgBalances[pool.poolId]?.toNumber();
 
       if (typeof poolZtgBalance === "undefined") {
         return null;

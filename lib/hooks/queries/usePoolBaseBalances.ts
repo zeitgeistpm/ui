@@ -1,6 +1,12 @@
-import { PalletBalancesAccountData } from "@polkadot/types/lookup";
 import { useQueries } from "@tanstack/react-query";
-import { Context, isRpcSdk, PoolList } from "@zeitgeistpm/sdk-next";
+import {
+  Context,
+  IOZtgAssetId,
+  isRpcSdk,
+  parseAssetId,
+  PoolList,
+} from "@zeitgeistpm/sdk-next";
+import Decimal from "decimal.js";
 import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
 import { usePoolAccountIds } from "./usePoolAccountIds";
@@ -11,7 +17,7 @@ export const rootKey = "pool-ztg-balance";
  * Account balance index for pr pool.
  */
 export type PoolZtgBalanceLookup = {
-  [poolId: number]: PalletBalancesAccountData;
+  [poolId: number]: Decimal;
 };
 
 /**
@@ -20,7 +26,7 @@ export type PoolZtgBalanceLookup = {
  * @param pools PoolList<Context>
  * @returns PoolZtgBalanceLookup
  */
-export const usePoolZtgBalance = (
+export const usePoolBaseBalances = (
   pools?: PoolList<Context>,
   blockNumber?: number,
   opts?: {
@@ -40,10 +46,26 @@ export const usePoolZtgBalance = (
           queryFn: async () => {
             if (sdk && isRpcSdk(sdk) && pools && accountId) {
               const api = await getApiAtBlock(sdk.api, blockNumber);
-              return {
-                pool,
-                balance: await api.query.system.account(accountId),
-              };
+              const baseAssetId = parseAssetId(pool?.baseAsset).unrightOr(null);
+
+              if (IOZtgAssetId.is(baseAssetId)) {
+                const balance = await api.query.system.account(accountId);
+
+                return {
+                  pool,
+                  balance: new Decimal(balance.data.free.toString()),
+                };
+              } else {
+                const balance = await api.query.tokens.accounts(
+                  accountId,
+                  baseAssetId,
+                );
+
+                return {
+                  pool,
+                  balance: new Decimal(balance.free.toString()),
+                };
+              }
             }
             return null;
           },
@@ -61,7 +83,7 @@ export const usePoolZtgBalance = (
     if (!query.data) return index;
     return {
       ...index,
-      [query.data.pool.poolId]: query.data.balance.data,
+      [query.data.pool.poolId]: query.data.balance,
     };
   }, {});
 };
