@@ -36,7 +36,7 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
       <div className="flex gap-3 items-center h-[56px] mb-auto w-full">
         <input
           {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-          className={`h-full grow rounded-[5px] text-sky-600 p-2 text-ztg-12-120 bg-anti-flash-white border-[1px] focus:outline-none ${
+          className={`h-full grow rounded-md text-sky-600 p-2 text-ztg-12-120 bg-anti-flash-white border-[1px] focus:outline-none ${
             invalid ? "border-vermilion" : "border-none"
           }`}
           type="email"
