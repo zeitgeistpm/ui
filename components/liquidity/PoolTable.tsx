@@ -69,7 +69,6 @@ const PoolTable = ({
         ?.mul(baseAssetUsdPrice ?? 0);
       category = market?.categories[index];
     }
-    console.log(category);
 
     return {
       token: {

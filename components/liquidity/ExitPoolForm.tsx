@@ -17,7 +17,6 @@ import { poolTotalIssuanceRootQueryKey } from "lib/hooks/queries/useTotalIssuanc
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
@@ -28,12 +27,14 @@ const ExitPoolForm = ({
   totalPoolShares,
   userPoolShares,
   poolStatus,
+  baseAssetTicker,
 }: {
   poolBalances: PoolBalances;
   poolId: number;
   totalPoolShares: Decimal;
   userPoolShares: Decimal;
   poolStatus: string;
+  baseAssetTicker: string;
 }) => {
   const { data: constants } = useChainConstants();
   const {
@@ -188,7 +189,7 @@ const ExitPoolForm = ({
           const id = assetObjStringToId(asset.assetId);
           const assetName =
             poolWeights.length - 1 === index
-              ? pool.baseAsset.toUpperCase()
+              ? baseAssetTicker
               : market?.categories[index]?.name;
 
           if (!userPercentageOwnership || userPercentageOwnership.isNaN())
