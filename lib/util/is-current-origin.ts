@@ -5,6 +5,11 @@
  * @param url url to test
  * @returns boolean
  */
-export const isCurrentOrigin = (url: string) =>
-  new URL(process.env.NEXT_PUBLIC_SITE_URL).origin ===
-  new URL(url, process.env.NEXT_PUBLIC_SITE_URL).origin;
+export const isCurrentOrigin = (url: string) => {
+  const currentOrigin = new URL(
+    process.env.NEXT_PUBLIC_SITE_URL.match("vercel.app")
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NEXT_PUBLIC_SITE_URL,
+  ).origin;
+  new URL(currentOrigin).origin === new URL(url, currentOrigin).origin;
+};
