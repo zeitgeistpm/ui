@@ -3125,14 +3125,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/indexer@npm:^2.16.0":
-  version: 2.16.0
-  resolution: "@zeitgeistpm/indexer@npm:2.16.0"
+"@zeitgeistpm/indexer@npm:^2.16.1":
+  version: 2.16.1
+  resolution: "@zeitgeistpm/indexer@npm:2.16.1"
   dependencies:
     graphql: ^16.6.0
     graphql-request: ^5.0.0
     graphql-tag: ^2.12.6
-  checksum: 65f8b8f1b801b892298d77b4501f31940771df610b05b886fc9e1c3e5fea9fefc6131d236238c0546784aa2b45ef704813bf2efc6472ae8432dc22516c09d1a0
+  checksum: b52f2ab6131387c2b38fd140a1a32c8cc30f097e3727faab977711a4d5f22536a3eec6e3760a32b878420e81df61cf86b6e33203285125e26575479139d4fbec
   languageName: node
   linkType: hard
 
@@ -3150,12 +3150,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.27.0":
-  version: 2.27.0
-  resolution: "@zeitgeistpm/sdk@npm:2.27.0"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.27.1":
+  version: 2.27.1
+  resolution: "@zeitgeistpm/sdk@npm:2.27.1"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.11.3
-    "@zeitgeistpm/indexer": ^2.16.0
+    "@zeitgeistpm/indexer": ^2.16.1
     "@zeitgeistpm/rpc": ^2.7.0
     "@zeitgeistpm/utility": ^2.18.0
     "@zeitgeistpm/web3.storage": ^2.9.0
@@ -3171,7 +3171,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: b237b30d54a03432308365d545532d5590b0c730b458be1f457272a73d168f5ec0ba8cc46fe2e1a2bc84b6b9e7c5f72dcb721deb6401fa61a09d75aa5829bd85
+  checksum: 640137ddc0976eecb842a1b246c1dcd63ceb4eaa6e5b10d66ff9a4f142705ca0f70a35d71cfabb3d7a892c3b22b0c8aa0d2b46ab70eb02790a85620416caba55
   languageName: node
   linkType: hard
 
@@ -3269,7 +3269,7 @@ __metadata:
     "@zeitgeistpm/avatara-react": ^1.3.2
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^1.0.3
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.27.0"
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.27.1"
     "@zeitgeistpm/utility": ^2.18.0
     autoprefixer: 10.2.5
     axios: ^0.21.4
