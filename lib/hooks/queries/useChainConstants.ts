@@ -91,6 +91,7 @@ export const useChainConstants = () => {
       return config;
     },
     {
+      enabled: Boolean(sdk) && isRpcSdk(sdk),
       keepPreviousData: true,
       staleTime: Infinity,
     },
