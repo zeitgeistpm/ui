@@ -119,7 +119,6 @@ const Market: NextPage<{
     const router = useRouter();
     const { marketid } = router.query;
     const marketId = Number(marketid);
-    const store = useStore();
     const { data: prizePool } = usePrizePool(marketId);
 
     const { data: constants } = useChainConstants();

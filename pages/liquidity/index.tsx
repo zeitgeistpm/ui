@@ -1,4 +1,3 @@
-import { ZTG } from "@zeitgeistpm/sdk-next";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { useInfinitePoolsList } from "lib/hooks/queries/useInfinitePoolsList";
@@ -13,6 +12,8 @@ import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { AiOutlineRead } from "react-icons/ai";
 import { MarketStatus } from "@zeitgeistpm/indexer";
+import MarketImage from "components/ui/MarketImage";
+import { ZTG } from "@zeitgeistpm/sdk-next";
 
 const columns: TableColumn[] = [
   {
@@ -74,16 +75,10 @@ const LiquidityPools: NextPage = observer(() => {
           marketId: (
             <div className="flex items-center py-3">
               <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600 mr-4">
-                <div
-                  className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0"
-                  style={{
-                    backgroundImage:
-                      saturatedData?.market.img == null
-                        ? "url(/icons/default-market.png)"
-                        : `url(${saturatedData.market.img})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
+                <MarketImage
+                  image={saturatedData?.market.img}
+                  alt={saturatedData?.market.description}
+                  className="rounded-ztg-10"
                 />
               </div>
 
