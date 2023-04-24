@@ -13,6 +13,7 @@ import {
   IOZtgAssetId,
   PoolShareAssetId,
   ScalarAssetId,
+  IOForeignAssetId,
 } from "@zeitgeistpm/sdk-next";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import Decimal from "decimal.js";
@@ -283,7 +284,7 @@ export const usePortfolioPositions = (
       let marketId: number;
       let market: FullMarketFragment;
 
-      if (IOZtgAssetId.is(assetId)) {
+      if (IOZtgAssetId.is(assetId) || IOForeignAssetId.is(assetId)) {
         continue;
       }
 
