@@ -42,13 +42,19 @@ const batcher = memoize((sdk: Sdk<IndexerContext>) => {
           OR: [
             {
               marketId_in: ids
-                .filter((id): id is { marketId: number } => "marketId" in id)
+                .filter(
+                  (id): id is { marketId: number } =>
+                    "marketId" in id && id.marketId != null,
+                )
                 .map((id) => id.marketId),
             },
             {
               pool: {
                 poolId_in: ids
-                  .filter((id): id is { poolId: number } => "poolId" in id)
+                  .filter(
+                    (id): id is { poolId: number } =>
+                      "poolId" in id && id.poolId != null,
+                  )
                   .map((id) => id.poolId),
               },
             },
