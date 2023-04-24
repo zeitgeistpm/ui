@@ -263,7 +263,10 @@ const Market: NextPage<{
                       >
                         View Pool
                       </Link>
-                      <PoolTable poolId={marketSdkv2.pool.poolId} />
+                      <PoolTable
+                        poolId={marketSdkv2.pool.poolId}
+                        marketId={Number(marketid)}
+                      />
                     </div>
                   )}
                 </Tab.Panel>

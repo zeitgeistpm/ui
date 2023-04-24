@@ -10,11 +10,7 @@ import { ZTG } from "lib/constants";
 import { accountPoolAssetBalancesRootKey } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
-import { useRpcMarket } from "lib/hooks/queries/useRpcMarket";
-import {
-  useZtgBalance,
-  ztgBalanceRootKey,
-} from "lib/hooks/queries/useZtgBalance";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
@@ -66,7 +62,6 @@ const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
         notificationStore.pushNotification("Liquidity pool deployed", {
           type: "Success",
         });
-        queryClient.invalidateQueries([id, ztgBalanceRootKey]);
         queryClient.invalidateQueries([id, accountPoolAssetBalancesRootKey]);
       },
     },

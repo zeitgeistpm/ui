@@ -3150,14 +3150,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.23.0":
-  version: 2.23.0
-  resolution: "@zeitgeistpm/sdk@npm:2.23.0"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.24.0":
+  version: 2.24.0
+  resolution: "@zeitgeistpm/sdk@npm:2.24.0"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.11.3
     "@zeitgeistpm/indexer": ^2.15.0
     "@zeitgeistpm/rpc": ^2.7.0
-    "@zeitgeistpm/utility": ^2.14.0
+    "@zeitgeistpm/utility": ^2.15.0
     "@zeitgeistpm/web3.storage": ^2.7.1
     cids: ^1.1.9
     decimal.js: ^10.4.3
@@ -3171,7 +3171,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: c273106f46dafae84ceface87c4fd07ff3d5905ca56f461d36630af157061b298d05715821732a86f137e60973cd6f38c00e290178ded49f016cc28f1c8b3e18
+  checksum: 2616666e40f9521b00185e16e0c6477fec8f859ce075b3d2e321b27429922be7d08031e5d5c3c1ee55bb2493e5ae813f178cdd460227ea90d03a0d59b1e5729d
   languageName: node
   linkType: hard
 
@@ -3269,8 +3269,8 @@ __metadata:
     "@zeitgeistpm/avatara-react": ^1.3.2
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^1.0.3
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.23.0"
-    "@zeitgeistpm/utility": ^2.14.0
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.24.0"
+    "@zeitgeistpm/utility": ^2.15.0
     autoprefixer: 10.2.5
     axios: ^0.21.4
     boring-avatars: ^1.6.1
@@ -3350,9 +3350,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/utility@npm:^2.14.0":
-  version: 2.14.0
-  resolution: "@zeitgeistpm/utility@npm:2.14.0"
+"@zeitgeistpm/utility@npm:^2.15.0":
+  version: 2.15.0
+  resolution: "@zeitgeistpm/utility@npm:2.15.0"
   dependencies:
     decimal.js: ^10.4.3
     lodash.omit: ^4.5.0
@@ -3362,7 +3362,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: 3ad6f4d6713249b26ec4800e5fc1dc165ccac8c840fef722727b20a93c68aff15f3d0dc3dc73c9eb19bf587de41d09949c4e04516a2a8509c105d1f3ee858a34
+  checksum: a53b514741ce4aaec9a07f9dcaefa6e1844f1de0047617eca03e459ff15826a024e5c0fa107bd4e2086d0171f3dc6838c74f4efa0e2fe5981c497294db0f787c
   languageName: node
   linkType: hard
 
