@@ -8,7 +8,6 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { usePool } from "lib/hooks/queries/usePool";
 import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
-import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
 import ManageLiquidityButton from "./ManageLiquidityButton";
 
 const columns: TableColumn[] = [
