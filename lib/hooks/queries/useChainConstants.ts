@@ -38,7 +38,7 @@ export const useChainConstants = () => {
   const [sdk, id] = useSdkv2();
 
   return useQuery<ChainConstants>(
-    [id, sdk, "chain-constants"],
+    [id, "chain-constants"],
     async () => {
       if (!isRpcSdk(sdk)) return null;
 
@@ -87,6 +87,8 @@ export const useChainConstants = () => {
             consts.balances.existentialDeposit.toNumber() / ZTG,
         },
       };
+
+      return config;
     },
     {
       keepPreviousData: true,

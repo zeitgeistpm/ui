@@ -122,7 +122,7 @@ export const isValidImageFile = (file: File): Promise<boolean> => {
 
 export const formatNumberLocalized = (
   num: number,
-  locale: string = "en-US",
+  locale: string = "default",
 ) => {
   return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(
     num,
