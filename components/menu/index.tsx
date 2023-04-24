@@ -44,13 +44,12 @@ const TopBar = observer(() => {
   }, [changeNavBG]);
 
   useEffect(() => {
-    const scrollY = window.scrollY;
-    setScrollPosition(scrollY);
     if (menuOpen) {
-      document.body.style.position = "fixed";
+      document.body.style.height = `100%`;
+      document.body.style.overflow = `hidden`;
     } else {
-      document.body.style.position = "static";
-      window.scrollBy(0, scrollPosition);
+      document.body.style.height = `auto`;
+      document.body.style.overflow = `initial`;
     }
     changeNavBG();
   }, [menuOpen]);
