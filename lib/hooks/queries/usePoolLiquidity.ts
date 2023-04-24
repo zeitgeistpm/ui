@@ -4,7 +4,6 @@ import { useSdkv2 } from "../useSdkv2";
 import { useAccountPoolAssetBalances } from "./useAccountPoolAssetBalances";
 import { useMarket, UseMarketFilter } from "./useMarket";
 import { useMarketSpotPrices } from "./useMarketSpotPrices";
-import { usePoolBaseBalance } from "./usePoolBaseBalance";
 
 export const poolsLiqudityRootKey = "pool-liquidity";
 

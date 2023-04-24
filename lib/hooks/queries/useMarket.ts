@@ -15,7 +15,11 @@ export const useMarket = (filter?: UseMarketFilter) => {
   const query = useQuery(
     [id, marketsRootQuery, filter],
     async () => {
-      if (isIndexedSdk(sdk)) {
+      if (
+        isIndexedSdk(sdk) &&
+        (("marketId" in filter && filter.marketId != null) ||
+          ("poolId" in filter && filter.poolId != null))
+      ) {
         return batcher(sdk).fetch(filter);
       }
       return null;
@@ -42,19 +46,13 @@ const batcher = memoize((sdk: Sdk<IndexerContext>) => {
           OR: [
             {
               marketId_in: ids
-                .filter(
-                  (id): id is { marketId: number } =>
-                    "marketId" in id && id.marketId != null,
-                )
+                .filter((id): id is { marketId: number } => "marketId" in id)
                 .map((id) => id.marketId),
             },
             {
               pool: {
                 poolId_in: ids
-                  .filter(
-                    (id): id is { poolId: number } =>
-                      "poolId" in id && id.poolId != null,
-                  )
+                  .filter((id): id is { poolId: number } => "poolId" in id)
                   .map((id) => id.poolId),
               },
             },
