@@ -8,7 +8,7 @@
 export const isCurrentOrigin = (url: string) => {
   const currentOrigin = new URL(
     process.env.NEXT_PUBLIC_SITE_URL.match("vercel.app")
-      ? `https://${process.env.VERCEL_URL}`
+      ? `https://${process.env.NEXT_PUBLIC_SITE_URL}`
       : process.env.NEXT_PUBLIC_SITE_URL,
   ).origin;
 
