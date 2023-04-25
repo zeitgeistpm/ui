@@ -26,10 +26,13 @@ export const useMarket24hrPriceChanges = (marketId: number) => {
   useEffect(() => {
     if (!chainTime) return;
 
-    if (!debouncedBlockNumber || chainTime.block - debouncedBlockNumber > 100) {
-      setDebouncedBlockNumber(chainTime.block);
+    if (
+      !debouncedBlockNumber ||
+      chainTime?.block - debouncedBlockNumber > 100
+    ) {
+      setDebouncedBlockNumber(chainTime?.block);
     }
-  }, [chainTime.block]);
+  }, [chainTime?.block]);
 
   const block24hrsAgo =
     constants?.blockTimeSec && debouncedBlockNumber

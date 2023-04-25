@@ -69,7 +69,7 @@ const EndField: FC<EndFieldProps> = observer(
     blockNumberFieldName = "blockNumber",
   }) => {
     const chainTime = useChainTime();
-    const blockNumber = chainTime.block ?? 0;
+    const blockNumber = chainTime?.block ?? 0;
 
     const inputRef = useRef();
 

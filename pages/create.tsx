@@ -288,7 +288,7 @@ const CreatePage: NextPage = observer(() => {
 
   useEffect(() => {
     if (formData?.end?.type === "block") {
-      changeEnd(`${chainTime.block + NUM_BLOCKS_IN_DAY}`);
+      changeEnd(`${chainTime?.block + NUM_BLOCKS_IN_DAY}`);
       form.$("end").set("rules", `gt_current_blocknum|required`);
     } else {
       const date = Moment();
@@ -373,8 +373,8 @@ const CreatePage: NextPage = observer(() => {
 
   const getMarketPeriod = (): MarketPeriod => {
     return formData.end.type === "block"
-      ? { block: [chainTime.block, Number(formData.end.value)] }
-      : { timestamp: [chainTime.now, Number(formData.end.value)] };
+      ? { block: [chainTime?.block, Number(formData.end.value)] }
+      : { timestamp: [chainTime?.now, Number(formData.end.value)] };
   };
 
   const getMarketEndBlock = () => {
