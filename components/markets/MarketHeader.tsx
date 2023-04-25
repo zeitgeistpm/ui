@@ -12,6 +12,7 @@ import Avatar from "components/ui/Avatar";
 import { shortenAddress } from "lib/util";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { getMarketStatusDetails } from "lib/util/market-status-details";
+import { Report, MarketDispute } from "@zeitgeistpm/sdk/dist/types";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
   ({ label, border = true, children }) => {
@@ -75,6 +76,8 @@ const MarketOutcome: FC<
 
 const MarketHeader: FC<{
   market: MarketPageIndexedData;
+  report: Report;
+  disputes: MarketDispute;
   resolvedOutcome: string;
   token: string;
   prizePool: number;
@@ -85,6 +88,8 @@ const MarketHeader: FC<{
   market,
   resolvedOutcome,
   prizePool,
+  report,
+  disputes,
   subsidy,
   token,
   marketStage,
@@ -98,8 +103,6 @@ const MarketHeader: FC<{
     period,
     marketType,
     pool,
-    report,
-    disputes,
     scalarType,
   } = market;
   const starts = Number(period.start);

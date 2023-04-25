@@ -2,12 +2,18 @@ import { ZTG } from "lib/constants";
 import Decimal from "decimal.js";
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { MarketStatus } from "@zeitgeistpm/sdk-next";
+import {
+  Report,
+  MarketDispute,
+  MarketTypeOf,
+} from "@zeitgeistpm/sdk/dist/types";
 
 export const getScalarOutcome = (
   outcome: string,
   scalarType: ScalarRangeType,
 ) => {
   const inferedType: ScalarRangeType = scalarType ?? "number";
+  console.log(outcome);
   return inferedType === "number"
     ? new Decimal(outcome).div(ZTG).toNumber()
     : new Intl.DateTimeFormat("default", {
@@ -16,54 +22,50 @@ export const getScalarOutcome = (
 };
 
 export const getMarketStatusDetails = (
-  marketType: { categorical?: string; scalar?: string[] },
+  marketType: MarketTypeOf,
   categories: { name: string }[],
   status: MarketStatus,
-  disputes: {
-    at: number;
-    by: string;
-    outcome: { categorical?: number; scalar?: string };
-  }[],
-  report: { outcome: { categorical?: number; scalar?: string }; by: string },
+  disputes: MarketDispute,
+  report: Report,
   resolvedOutcome: string,
   scalarType: ScalarRangeType,
 ): { outcome: string | number; by: string } => {
-  const lastIndex = disputes?.length - 1;
-
-  if (status === "Disputed") {
+  console.log(categories, report);
+  if (status === "Disputed" && disputes) {
     //scalar market
-    if (marketType?.scalar !== null) {
+    if (marketType?.["scalar"] !== null) {
+      const stringWithoutCommas = disputes.outcome?.["Scalar"].replace(
+        /,/g,
+        "",
+      );
       return {
-        outcome: getScalarOutcome(
-          disputes[lastIndex].outcome?.scalar,
-          scalarType,
-        ),
-        by: disputes[lastIndex]?.by,
+        outcome: getScalarOutcome(stringWithoutCommas, scalarType),
+        by: disputes?.by,
       };
       //categorical market
     } else {
       return {
-        outcome: categories[disputes[lastIndex].outcome?.categorical].name,
-        by: disputes[lastIndex].by,
+        outcome: categories[Number(disputes?.outcome?.["Categorical"])].name,
+        by: disputes.by,
       };
     }
-  } else if (status === "Reported") {
+  } else if (status === "Reported" && report) {
     //scalar market
-    if (marketType?.scalar !== null) {
+    if (marketType?.["scalar"] !== null) {
       return {
-        outcome: getScalarOutcome(report.outcome?.scalar, scalarType),
+        outcome: getScalarOutcome(report.outcome?.["scalar"], scalarType),
         by: report?.by,
       };
       //categorical market
     } else {
       return {
-        outcome: categories[report.outcome?.categorical].name,
+        outcome: categories[report.outcome?.["categorical"]].name,
         by: report?.by,
       };
     }
   } else if (status === "Resolved" && resolvedOutcome) {
     //scalar market
-    if (marketType?.scalar !== null) {
+    if (marketType?.["scalar"] !== null) {
       return {
         outcome: getScalarOutcome(resolvedOutcome, scalarType),
         by: null,

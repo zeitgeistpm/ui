@@ -16,6 +16,7 @@ import {
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
+import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
@@ -39,7 +40,8 @@ import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
-import { Report } from "@zeitgeistpm/sdk/dist/types";
+import { Report, MarketDispute } from "@zeitgeistpm/sdk/dist/types";
+import { useEffect, useState } from "react";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -112,6 +114,7 @@ const Market: NextPage<{
   resolutionTimestamp: string;
 }> = observer(
   ({ indexedMarket, chartSeries, priceHistory, resolutionTimestamp }) => {
+    const [lastDispute, setLastDispute] = useState<MarketDispute>(null);
     const router = useRouter();
     const { marketid } = router.query;
     const marketId = Number(marketid);
@@ -122,7 +125,8 @@ const Market: NextPage<{
     const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
       marketId,
     });
-    console.log(marketSdkv2);
+    const { data: disputes } = useMarketDisputes(marketId);
+
     const { data: marketStage } = useMarketStage(marketSdkv2);
     const { data: spotPrices } = useMarketSpotPrices(marketId);
     const { data: liquidity } = usePoolLiquidity({ marketId });
@@ -132,6 +136,13 @@ const Market: NextPage<{
     if (indexedMarket == null) {
       return <NotFoundPage backText="Back To Markets" backLink="/" />;
     }
+
+    useEffect(() => {
+      if (disputes && marketSdkv2.status === "Disputed") {
+        const lastDispute = disputes?.[disputes.length - 1].toHuman();
+        setLastDispute(lastDispute as MarketDispute);
+      }
+    }, [disputes]);
 
     //data for MarketHeader
     const token = constants?.tokenSymbol;
@@ -153,6 +164,8 @@ const Market: NextPage<{
           <MarketHeader
             market={indexedMarket}
             resolvedOutcome={marketSdkv2?.resolvedOutcome}
+            report={marketSdkv2?.report as Report}
+            disputes={lastDispute}
             token={token}
             prizePool={prizePool?.div(ZTG).toNumber()}
             subsidy={subsidy}
