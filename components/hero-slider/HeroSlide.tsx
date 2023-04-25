@@ -10,19 +10,16 @@ export interface HeroSlideProps {
 export const HeroSlide: FC<HeroSlideProps> = ({ banner }) => {
   const isExternalLink = !isCurrentOrigin(banner.ctaLink);
 
-  const linkProps = useMemo(
-    () => ({
-      style: {
-        backgroundColor: `${banner.buttonColor}`,
-        borderColor: `${banner.buttonColor}`,
-        color: banner.buttonTextColor,
-      },
-      className:
-        "leading-[42px] w-full sm:w-fit text-center sm:text-start border rounded px-5 mb-5 mr-5 font-bold",
-      href: banner.ctaLink,
-    }),
-    [banner],
-  );
+  const linkProps = {
+    style: {
+      backgroundColor: `${banner.buttonColor}`,
+      borderColor: `${banner.buttonColor}`,
+      color: banner.buttonTextColor,
+    },
+    className:
+      "leading-[42px] w-full sm:w-fit text-center sm:text-start border rounded px-5 mb-5 mr-5 font-bold",
+    href: banner.ctaLink,
+  };
 
   return (
     <div className="flex items-center h-full w-full">
