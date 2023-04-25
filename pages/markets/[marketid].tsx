@@ -39,6 +39,7 @@ import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
+import { Report } from "@zeitgeistpm/sdk/dist/types";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -121,6 +122,7 @@ const Market: NextPage<{
     const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
       marketId,
     });
+    console.log(marketSdkv2);
     const { data: marketStage } = useMarketStage(marketSdkv2);
     const { data: spotPrices } = useMarketSpotPrices(marketId);
     const { data: liquidity } = usePoolLiquidity({ marketId });
@@ -150,6 +152,7 @@ const Market: NextPage<{
           />
           <MarketHeader
             market={indexedMarket}
+            resolvedOutcome={marketSdkv2?.resolvedOutcome}
             token={token}
             prizePool={prizePool?.div(ZTG).toNumber()}
             subsidy={subsidy}

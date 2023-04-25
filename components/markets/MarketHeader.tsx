@@ -10,6 +10,7 @@ import { ZTG } from "lib/constants";
 import Decimal from "decimal.js";
 import Avatar from "components/ui/Avatar";
 import { shortenAddress } from "lib/util";
+import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { getMarketStatusDetails } from "lib/util/market-status-details";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
@@ -40,6 +41,7 @@ const MarketOutcome: FC<
     by?: string;
   }>
 > = ({ status, outcome, by }) => {
+  const { data: identity } = useIdentity(by);
   return (
     <div
       className={`w-full flex center items-center gap-4 py-6 mb-10 rounded-lg ${
@@ -60,7 +62,9 @@ const MarketOutcome: FC<
           <div className="flex items-center">
             <Avatar address={by} />
             <span className="font-medium px-3.5 text-sms h-full leading-[40px]">
-              {shortenAddress(by, 6, 4)}
+              {identity?.displayName?.length > 0
+                ? identity.displayName
+                : shortenAddress(by, 6, 4)}
             </span>
           </div>
         </div>
@@ -71,12 +75,21 @@ const MarketOutcome: FC<
 
 const MarketHeader: FC<{
   market: MarketPageIndexedData;
+  resolvedOutcome: string;
   token: string;
   prizePool: number;
   subsidy: number;
   marketStage: MarketStage;
   rejectReason?: string;
-}> = ({ market, prizePool, subsidy, token, marketStage, rejectReason }) => {
+}> = ({
+  market,
+  resolvedOutcome,
+  prizePool,
+  subsidy,
+  token,
+  marketStage,
+  rejectReason,
+}) => {
   const {
     tags,
     categories,
@@ -85,9 +98,8 @@ const MarketHeader: FC<{
     period,
     marketType,
     pool,
-    disputes,
     report,
-    resolvedOutcome,
+    disputes,
     scalarType,
   } = market;
   const starts = Number(period.start);
