@@ -5,6 +5,7 @@ import Form from "mobx-react-form";
 
 import { EndType } from "lib/types/create-market";
 import { Input, DateTimeInput } from "components/ui/inputs";
+import { useChainTime } from "lib/state/chaintime";
 
 interface EndTypeSwitchProps {
   selected: EndType;
@@ -67,8 +68,8 @@ const EndField: FC<EndFieldProps> = observer(
     timestampFieldName = "timestamp",
     blockNumberFieldName = "blockNumber",
   }) => {
-    const store = useStore();
-    const blockNumber = store.blockNumber ? store.blockNumber.toNumber() : 0;
+    const chainTime = useChainTime();
+    const blockNumber = chainTime.block ?? 0;
 
     const inputRef = useRef();
 

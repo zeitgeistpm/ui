@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";
 import { useMarketSpotPrices } from "./useMarketSpotPrices";
+import { useChainTime } from "lib/state/chaintime";
 
 export const market24hrPriceChangesKey = "market-24hr-price-changes";
 
@@ -19,19 +20,16 @@ export const useMarket24hrPriceChanges = (marketId: number) => {
   const [sdk, id] = useSdkv2();
   const [debouncedBlockNumber, setDebouncedBlockNumber] = useState<number>();
 
-  const { blockNumber } = useStore();
+  const chainTime = useChainTime();
   const { data: constants } = useChainConstants();
 
   useEffect(() => {
-    if (!blockNumber) return;
+    if (!chainTime) return;
 
-    if (
-      !debouncedBlockNumber ||
-      blockNumber.toNumber() - debouncedBlockNumber > 100
-    ) {
-      setDebouncedBlockNumber(blockNumber.toNumber());
+    if (!debouncedBlockNumber || chainTime.block - debouncedBlockNumber > 100) {
+      setDebouncedBlockNumber(chainTime.block);
     }
-  }, [blockNumber]);
+  }, [chainTime.block]);
 
   const block24hrsAgo =
     constants?.blockTimeSec && debouncedBlockNumber
