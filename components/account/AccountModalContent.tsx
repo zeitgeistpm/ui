@@ -1,17 +1,18 @@
 import { observer } from "mobx-react";
 import React, { FC } from "react";
 import { LogOut } from "react-feather";
-import { useStore } from "lib/stores/Store";
 import AccountSelect from "./AccountSelect";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { ZTG } from "@zeitgeistpm/sdk-next";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 const AccountModalContent: FC = observer(() => {
   const { activeAccount, disconnectWallet } = useWallet();
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const modalStore = useModalStore();
+  const { data: constants } = useChainConstants();
 
   return (
     <div className="flex flex-col">
@@ -35,7 +36,9 @@ const AccountModalContent: FC = observer(() => {
                 balance
               </div>
               <div className="font-mono text-ztg-14-120 font-bold text-sheen-green">
-                {activeBalance?.div(ZTG).toFixed(4) ?? "---"}
+                {`${activeBalance?.div(ZTG).toFixed(4)} ${
+                  constants?.tokenSymbol ?? ""
+                }` ?? "---"}
               </div>
             </div>
           </div>

@@ -45,11 +45,11 @@ const TransactionHistoryTable = ({ address }: { address: string }) => {
       action: transaction.action,
       price: {
         value: transaction.price,
-        usdValue: 0,
+        usdValue: null,
       },
       value: {
         value: transaction.value,
-        usdValue: 0,
+        usdValue: null,
       },
       time: new Intl.DateTimeFormat("default", {
         dateStyle: "medium",
