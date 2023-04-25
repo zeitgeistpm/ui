@@ -1,6 +1,7 @@
 import { ZTG } from "lib/constants";
 import Decimal from "decimal.js";
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
+import { MarketStage, MarketStatus } from "@zeitgeistpm/sdk-next";
 import moment from "moment";
 
 export const getScalarOutcome = (
@@ -11,7 +12,9 @@ export const getScalarOutcome = (
   const inferedType: ScalarRangeType = scalarType ?? "number";
   return inferedType === "number"
     ? new Decimal(outcome).div(ZTG).toNumber()
-    : moment(new Decimal(outcome).div(ZTG).toNumber()).format(dateFormat);
+    : new Intl.DateTimeFormat("default", {
+        dateStyle: "medium",
+      }).format(new Decimal(outcome).div(ZTG).toNumber());
 };
 
 export const getMarketStatusDetails = (

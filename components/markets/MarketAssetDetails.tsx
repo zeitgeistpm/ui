@@ -158,7 +158,6 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
   };
 
   const getDisputedCategoricalOutcome = () => {
-    if (!rpcMarket) return;
     const lastDisputeIndex =
       disputes?.[disputes.length - 1].outcome.asCategorical.toNumber();
     const outcome = tableData?.find((data) => data.id === lastDisputeIndex);

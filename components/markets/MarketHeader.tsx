@@ -2,7 +2,7 @@ import { Skeleton } from "@material-ui/lab";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import { FC, PropsWithChildren } from "react";
-import { MarketStage } from "@zeitgeistpm/sdk-next";
+import { MarketStage, MarketStatus } from "@zeitgeistpm/sdk-next";
 import { MarketTimer } from "./MarketTimer";
 import { MarketTimerSkeleton } from "./MarketTimer";
 import { MarketPageIndexedData } from "lib/gql/markets";
@@ -34,7 +34,11 @@ const Tag: FC<PropsWithChildren<{ className?: string }>> = ({
 };
 
 const MarketOutcome: FC<
-  PropsWithChildren<{ status: string; outcome: string | number; by?: string }>
+  PropsWithChildren<{
+    status: MarketStatus;
+    outcome: string | number;
+    by?: string;
+  }>
 > = ({ status, outcome, by }) => {
   return (
     <div
