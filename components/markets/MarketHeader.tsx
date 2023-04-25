@@ -41,7 +41,7 @@ const MarketOutcome: FC<
     by?: string;
   }>
 > = ({ status, outcome, by }) => {
-  const { data: identity } = useIdentity(by);
+  const { data: identity } = useIdentity(by ?? "");
   return (
     <div
       className={`w-full flex center items-center gap-4 py-6 mb-10 rounded-lg ${
@@ -56,7 +56,7 @@ const MarketOutcome: FC<
         <span>{status} Outome: </span>
         <span className="font-bold">{outcome}</span>
       </div>
-      {status !== "Resolved" && (
+      {status !== "Resolved" && by && (
         <div className="flex items-center gap-4">
           <span>{status} by: </span>
           <div className="flex items-center">

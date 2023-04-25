@@ -7,7 +7,6 @@ export const getScalarOutcome = (
   outcome: string,
   scalarType: ScalarRangeType,
 ) => {
-  const dateFormat = "MM.DD.YYYY";
   const inferedType: ScalarRangeType = scalarType ?? "number";
   return inferedType === "number"
     ? new Decimal(outcome).div(ZTG).toNumber()
@@ -39,7 +38,7 @@ export const getMarketStatusDetails = (
           disputes[lastIndex].outcome?.scalar,
           scalarType,
         ),
-        by: disputes[lastIndex].by,
+        by: disputes[lastIndex]?.by,
       };
       //categorical market
     } else {
@@ -53,7 +52,7 @@ export const getMarketStatusDetails = (
     if (marketType?.scalar !== null) {
       return {
         outcome: getScalarOutcome(report.outcome?.scalar, scalarType),
-        by: report.by,
+        by: report?.by,
       };
       //categorical market
     } else {
