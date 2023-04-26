@@ -2,11 +2,7 @@ import { ZTG } from "lib/constants";
 import Decimal from "decimal.js";
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { MarketStatus } from "@zeitgeistpm/sdk-next";
-import {
-  Report,
-  MarketDispute,
-  MarketTypeOf,
-} from "@zeitgeistpm/sdk/dist/types";
+import { MarketDispute, MarketTypeOf } from "@zeitgeistpm/sdk/dist/types";
 import { MarketReport } from "@zeitgeistpm/indexer/src/graphql/sdk";
 
 export const getScalarOutcome = (
@@ -14,7 +10,6 @@ export const getScalarOutcome = (
   scalarType: ScalarRangeType,
 ) => {
   const inferedType: ScalarRangeType = scalarType ?? "number";
-  console.log(outcome);
   return inferedType === "number"
     ? new Decimal(outcome).div(ZTG).toNumber()
     : new Intl.DateTimeFormat("default", {
@@ -34,18 +29,14 @@ export const getMarketStatusDetails = (
   if (status === "Disputed" && disputes) {
     //scalar market
     if (marketType?.["scalar"] !== null) {
-      const stringWithoutCommas = disputes.outcome?.["Scalar"].replace(
-        /,/g,
-        "",
-      );
       return {
-        outcome: getScalarOutcome(stringWithoutCommas, scalarType),
+        outcome: getScalarOutcome(disputes.outcome?.["scalar"], scalarType),
         by: disputes?.by,
       };
       //categorical market
     } else {
       return {
-        outcome: categories[Number(disputes?.outcome?.["Categorical"])].name,
+        outcome: categories[Number(disputes?.outcome?.["categorical"])].name,
         by: disputes.by,
       };
     }

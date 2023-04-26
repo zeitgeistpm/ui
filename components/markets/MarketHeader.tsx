@@ -12,7 +12,7 @@ import Avatar from "components/ui/Avatar";
 import { shortenAddress } from "lib/util";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { getMarketStatusDetails } from "lib/util/market-status-details";
-import { Report, MarketDispute } from "@zeitgeistpm/sdk/dist/types";
+import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
 import { MarketReport } from "@zeitgeistpm/indexer/src/graphql/sdk";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =

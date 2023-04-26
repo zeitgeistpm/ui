@@ -42,10 +42,12 @@ import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
 import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
 import { useEffect, useState } from "react";
-
-const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
-  ssr: false,
-});
+export const QuillViewer = dynamic(
+  () => import("../../components/ui/QuillViewer"),
+  {
+    ssr: false,
+  },
+);
 
 export async function getStaticPaths() {
   const client = new GraphQLClient(graphQlEndpoint);
@@ -139,7 +141,7 @@ const Market: NextPage<{
 
     useEffect(() => {
       if (disputes && marketSdkv2.status === "Disputed") {
-        const lastDispute = disputes?.[disputes.length - 1].toHuman();
+        const lastDispute = disputes?.[disputes.length - 1].toJSON();
         setLastDispute(lastDispute as MarketDispute);
       }
     }, [disputes]);
