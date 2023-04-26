@@ -128,11 +128,13 @@ export default async function GenerateOgImage(request: NextRequest) {
               tw={`font-semibold ${"text-6xl"} `}
               style={{ color: "#ABC1F9" }}
             >
-              {market.marketType.categorical
-                ? `${prediction.name} (${prediction.percentage}%)`
-                : `${Intl.NumberFormat("default", {
-                    maximumSignificantDigits: 3,
-                  }).format(Number(prediction.name))}`}
+              {prediction.name != null
+                ? market.marketType.categorical
+                  ? `${prediction.name} (${prediction.percentage}%)`
+                  : `${Intl.NumberFormat("default", {
+                      maximumSignificantDigits: 3,
+                    }).format(Number(prediction.name))}`
+                : "No Prediction"}
             </div>
           </div>
           <div tw="flex mt-[50px] w-full">
