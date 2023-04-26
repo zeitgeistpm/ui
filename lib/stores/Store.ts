@@ -27,11 +27,7 @@ export default class Store {
   sdk: SDK | null;
   sdkV2?: Sdk<Context> = undefined;
 
-  blockNumber: Compact<BlockNumber> | null = null;
-
   unsubscribeNewHeads: () => void;
-
-  blockTimestamp: number;
 
   leftDrawerClosed = false;
 
@@ -61,48 +57,13 @@ export default class Store {
 
   constructor() {
     makeAutoObservable<this, "balanceSubscription">(this, {
-      registerValidationRules: false,
       unsubscribeNewHeads: false,
       balanceSubscription: false,
     });
   }
 
-  registerValidationRules() {
-    validatorjs.register(
-      "amount_validation",
-      (val: string) => {
-        if (!val) {
-          val = "0";
-        }
-        return +val > 0;
-      },
-      "Enter amount greater than zero.",
-    );
-
-    validatorjs.register("timestamp_gt_now", (val: string) => {
-      if (typeof val !== "string") {
-        return false;
-      }
-      return new Date().valueOf() < Number(val);
-    });
-
-    validatorjs.register("gt_current_blocknum", (val: number | string) => {
-      return this.blockNumber.toNumber() < Number(val);
-    });
-
-    validatorjs.register("range_outcome", (val: number | string) => {
-      return +val > 0 && +val < 1;
-    });
-
-    validatorjs.register("address_input", (val: string) => {
-      return isValidPolkadotAddress(val);
-    });
-  }
-
   async initialize() {
     await this.initSDK(endpointOptions[0].value, graphQlEndpoint);
-
-    this.registerValidationRules();
 
     runInAction(() => {
       this.initialized = true;
@@ -116,12 +77,7 @@ export default class Store {
 
     runInAction(() => {
       this.sdk = sdk;
-      this.subscribeBlock();
     });
-  }
-
-  private codecToNumber(codec: Codec): number {
-    return Number(codec.toString());
   }
 
   getTransactionError(groupIndex: number, error: number | string): string {
@@ -136,18 +92,6 @@ export default class Store {
     return documentation.length > 0
       ? documentation
       : `Transaction failed, error code: ${errorName}`;
-  }
-
-  async subscribeBlock() {
-    this.unsubscribeNewHeads = await this.sdk.api.rpc.chain.subscribeNewHeads(
-      async (header) => {
-        const blockTs = await this.getBlockTimestamp();
-        runInAction(() => {
-          this.blockTimestamp = blockTs;
-          this.blockNumber = header.number;
-        });
-      },
-    );
   }
 
   /**

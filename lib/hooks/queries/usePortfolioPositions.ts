@@ -21,7 +21,6 @@ import {
   useAccountAssetBalances,
 } from "lib/hooks/queries/useAccountAssetBalances";
 import { useAccountTokenPositions } from "lib/hooks/queries/useAccountTokenPositions";
-import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
 import { useMarketsByIds } from "lib/hooks/queries/useMarketsByIds";
 import { usePoolAccountIds } from "lib/hooks/queries/usePoolAccountIds";
 import { usePoolsByIds } from "lib/hooks/queries/usePoolsByIds";
@@ -35,6 +34,7 @@ import { calcSpotPrice } from "lib/math";
 import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { useMemo } from "react";
 import { MarketBond, useAccountBonds } from "./useAccountBonds";
+import { useChainTime } from "lib/state/chaintime";
 
 export type UsePortfolioPositions = {
   /**
@@ -143,7 +143,7 @@ export type PorfolioBreakdown = {
 export const usePortfolioPositions = (
   address?: string,
 ): UsePortfolioPositions => {
-  const { data: now } = useChainTimeNow();
+  const now = useChainTime();
 
   const { data: ztgPrice } = useZtgInfo();
   const block24HoursAgo = Math.floor(now?.block - 7200);

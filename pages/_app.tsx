@@ -20,6 +20,7 @@ import { queryClient } from "lib/query-client";
 import ModalStore from "lib/stores/ModalStore";
 import Store from "lib/stores/Store";
 import dynamic from "next/dynamic";
+import { registerValidationRules } from "lib/form";
 
 const Onboarding = dynamic(
   () => import("../components/onboarding/Onboarding"),
@@ -34,6 +35,8 @@ const domain = process.env["NEXT_PUBLIC_DOMAIN"];
 const hotjarSiteId = process.env["NEXT_PUBLIC_HOTJAR_SITE_ID"];
 const isProduction =
   process.env.NEXT_PUBLIC_SITE_URL === "https://app.zeitgeist.pm";
+
+registerValidationRules();
 
 const MyApp = observer(({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
