@@ -4,8 +4,8 @@ import {
   dateBlock,
 } from "@zeitgeistpm/utility/dist/time";
 import { DateTimeInput } from "components/ui/inputs";
-import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
+import { useChainTime } from "lib/state/chaintime";
 import { CreateMarketFormData } from "pages/create";
 import { useEffect, useMemo, useState } from "react";
 
@@ -72,7 +72,7 @@ export const MarketDeadlinesInput = (props: {
   marketEnd: CreateMarketFormData["end"];
   onChange: (value: MarketDeadlinesValue) => void;
 }) => {
-  const { data: now } = useChainTimeNow();
+  const now = useChainTime();
   const { data: constants } = useMarketDeadlineConstants();
 
   const [tab, setTab] = useState<MarketDeadlineInputType>("grace");
