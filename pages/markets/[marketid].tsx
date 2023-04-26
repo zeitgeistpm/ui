@@ -140,7 +140,7 @@ const Market: NextPage<{
     }
 
     useEffect(() => {
-      if (disputes && marketSdkv2.status === "Disputed") {
+      if (disputes && marketSdkv2?.status === "Disputed") {
         const lastDispute = disputes?.[disputes.length - 1].toJSON();
         setLastDispute(lastDispute as MarketDispute);
       }
