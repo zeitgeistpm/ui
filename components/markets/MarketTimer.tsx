@@ -1,6 +1,6 @@
 import { isInfinite, MarketStage } from "@zeitgeistpm/sdk-next";
 import { clamp, upperFirst } from "lodash-es";
-import { Skeleton } from "@material-ui/lab";
+import Skeleton from "components/ui/Skeleton";
 import moment from "moment";
 
 export type MarketTimerProps = {
@@ -72,14 +72,14 @@ export const MarketTimerSkeleton = () => {
     <div className="inline-block w-full max-w-[800px]">
       <div className="flex mb-4 items-center">
         <h3 className="font-bold text-lg mr-2 md:mr-4">
-          <Skeleton width={150} />
+          <Skeleton width={150} className="inline-block" />
         </h3>
         <h4 className="hidden sm:block">
-          <Skeleton width={260} />
+          <Skeleton width={260} className="inline-block" />
         </h4>
 
         <h4 className="ml-auto">
-          <Skeleton width={40} />
+          <Skeleton width={40} className="inline-block" />
         </h4>
       </div>
       <div className="w-full">

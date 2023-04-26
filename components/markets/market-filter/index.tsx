@@ -14,13 +14,13 @@ import {
   marketStatusFilterOptions,
   marketTagFilterOptions,
 } from "lib/constants/market-filter";
+import Skeleton from "components/ui/Skeleton";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import MarketActiveFilters from "./MarketActiveFilters";
 import MarketFiltersContainer, {
   MarketFiltersContext,
 } from "./MarketFiltersContainer";
 import DropDownSelect from "./DropDownSelect";
-import { Skeleton } from "@material-ui/lab";
 
 const sortBySelectStyles = {
   control: (provided) => {
@@ -269,11 +269,7 @@ const MarketFilterSelection = ({
           onWithLiquidityOnlyChange={setWithLiquidityOnly}
         />
       ) : (
-        <Skeleton
-          width={"80%"}
-          height={"44px"}
-          className="!mb-[30px] !transform-none"
-        ></Skeleton>
+        <Skeleton width="80%" height="44px" className="mb-[25px]"></Skeleton>
       )}
       <div id="marketsFiltersMenuPortal" ref={portalRef}></div>
       <MarketActiveFilters
