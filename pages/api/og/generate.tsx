@@ -67,6 +67,8 @@ export default async function GenerateOgImage(request: NextRequest) {
     ).href,
   ).then((res) => res.arrayBuffer());
 
+  const questionClass = market.question.length > 90 ? "text-4xl" : "text-5xl";
+
   const image = (
     <div
       tw="p-16 text-white"
@@ -113,7 +115,7 @@ export default async function GenerateOgImage(request: NextRequest) {
           </div>
         </div>
         <div tw="flex flex-col h-full ml-[80px]" style={{ width: 750 }}>
-          <h1 tw={`${"text-5xl"}`} style={{ lineHeight: "1.3em" }}>
+          <h1 tw={`${questionClass}`} style={{ lineHeight: "1.3em" }}>
             {market.question}
           </h1>
           <div tw="flex flex-col mt-auto">
@@ -128,7 +130,9 @@ export default async function GenerateOgImage(request: NextRequest) {
             >
               {market.marketType.categorical
                 ? `${prediction.name} (${prediction.percentage}%)`
-                : `${prediction.name}`}
+                : `${Intl.NumberFormat("default", {
+                    maximumSignificantDigits: 3,
+                  }).format(Number(prediction.name))}`}
             </div>
           </div>
           <div tw="flex mt-[50px] w-full">
