@@ -30,7 +30,6 @@ export const getMarketStatusDetails = (
   resolvedOutcome: string,
   scalarType: ScalarRangeType,
 ): { outcome: string | number; by: string } => {
-  console.log(categories, report);
   if (status === "Disputed" && disputes) {
     //scalar market
     if (marketType?.["scalar"] !== null) {
