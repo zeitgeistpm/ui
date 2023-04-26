@@ -1,4 +1,4 @@
-import { Skeleton } from "@material-ui/lab";
+import Skeleton from "components/ui/Skeleton";
 import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { FC, PropsWithChildren } from "react";
@@ -16,9 +16,7 @@ const MarketFormCard: FC<PropsWithChildren<{ header: string }>> = observer(
     const store = useStore();
 
     if (!store.initialized) {
-      return (
-        <Skeleton className="!transform-none !h-ztg-99 w-full !mb-ztg-23" />
-      );
+      return <Skeleton height="99px" className="!block mb-[23px]" />;
     }
     return (
       <div

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { useState } from "react";
+import React from "react";
 import MarketImage from "components/ui/MarketImage";
 import { MarketOutcomes } from "lib/types/markets";
 import MarketCardContext from "./context";
@@ -9,7 +9,7 @@ import { Users, BarChart2, Droplet } from "react-feather";
 import { formatNumberCompact } from "lib/util/format-compact";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import { Skeleton } from "@material-ui/lab";
+import Skeleton from "components/ui/Skeleton";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 
 export interface IndexedMarketCardData {
@@ -146,7 +146,7 @@ const MarketCardDetails = ({
             <span>{rows.numParticipants}</span>
           </div>
         ) : (
-          <Skeleton width={35} />
+          <Skeleton width={35} height={20} />
         )}
         <div className="flex items-center gap-2">
           <BarChart2 size={18} />
@@ -165,7 +165,7 @@ const MarketCardDetails = ({
             </span>
           </div>
         ) : (
-          <Skeleton width={120} />
+          <Skeleton width={120} height={20} />
         )}
       </div>
     </div>

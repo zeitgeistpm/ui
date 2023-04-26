@@ -5,7 +5,7 @@ import {
   MarketTimer,
   MarketTimerSkeleton,
 } from "components/markets/MarketTimer";
-import { Skeleton } from "@material-ui/lab";
+import Skeleton from "components/ui/Skeleton";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
@@ -20,7 +20,6 @@ import {
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
