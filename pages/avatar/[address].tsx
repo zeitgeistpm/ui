@@ -37,6 +37,7 @@ import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { useErrorTable } from "lib/hooks/queries/useErrorTable";
 
 const AvatarPage = observer(() => {
   const router = useRouter();
@@ -434,6 +435,7 @@ const ClaimModal = (props: {
   const avatarSdk = useAvatarContext();
   const wallet = useWallet();
   const [sdk] = useSdkv2();
+  const { data: errorTable } = useErrorTable();
 
   const [isClaiming, setIsClaiming] = useState(false);
   const [fee, setFee] = useState<number>(null);
@@ -526,7 +528,7 @@ const ClaimModal = (props: {
             failCallback: ({ index, error }) => {
               setIsClaiming(false);
               notificationStore.pushNotification(
-                store.getTransactionError(index, error),
+                errorTable?.getTransactionError(index, error),
                 { type: "Error" },
               );
             },

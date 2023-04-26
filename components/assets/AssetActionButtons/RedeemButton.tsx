@@ -22,6 +22,7 @@ import { calcScalarWinnings } from "lib/util/calc-scalar-winnings";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useMemo, useState } from "react";
+import { useErrorTable } from "lib/hooks/queries/useErrorTable";
 
 export type RedeemButtonProps = { market: Market<IndexerContext> } & (
   | { assetId: AssetId }
@@ -117,6 +118,7 @@ export const RedeemButtonByValue = observer(
     const wallet = useWallet();
     const signer = wallet?.getActiveSigner();
     const notificationStore = useNotifications();
+    const { data: errorTable } = useErrorTable();
 
     const [isRedeeming, setIsRedeeming] = useState(false);
     const [isRedeemed, setIsRedeemed] = useState(false);
@@ -140,7 +142,7 @@ export const RedeemButtonByValue = observer(
         },
         failCallback: ({ index, error }) => {
           notificationStore.pushNotification(
-            store.getTransactionError(index, error),
+            errorTable?.getTransactionError(index, error),
             {
               type: "Error",
             },

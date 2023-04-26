@@ -65,6 +65,7 @@ import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import { useErrorTable } from "lib/hooks/queries/useErrorTable";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
@@ -127,6 +128,7 @@ const CreatePage: NextPage = observer(() => {
   const notificationStore = useNotifications();
   const modalStore = useModalStore();
   const [sdk] = useSdkv2();
+  const { data: errorTable } = useErrorTable();
   const wallet = useWallet();
   const { data: constants } = useChainConstants();
   const [formData, setFormData] = useState<CreateMarketFormData>({
@@ -554,8 +556,7 @@ const CreatePage: NextPage = observer(() => {
             },
             failCallback: ({ index, error }) => {
               notificationStore.pushNotification(
-                store.getTransactionError(index, error),
-                { type: "Error" },
+                errorTable?.getTransactionError(index, error),
               );
               reject();
             },
@@ -600,7 +601,7 @@ const CreatePage: NextPage = observer(() => {
                 },
                 failCallback: ({ index, error }) => {
                   notificationStore.pushNotification(
-                    store.getTransactionError(index, error),
+                    errorTable?.getTransactionError(index, error),
                     { type: "Error" },
                   );
                   reject();

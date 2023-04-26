@@ -120,24 +120,6 @@ export default class Store {
     });
   }
 
-  private codecToNumber(codec: Codec): number {
-    return Number(codec.toString());
-  }
-
-  getTransactionError(groupIndex: number, error: number | string): string {
-    const errorIndex =
-      typeof error === "string" ? extractIndexFromErrorHex(error) : error;
-
-    const { errorName, documentation } = this.sdk.errorTable.getEntry(
-      groupIndex,
-      errorIndex,
-    );
-
-    return documentation.length > 0
-      ? documentation
-      : `Transaction failed, error code: ${errorName}`;
-  }
-
   async subscribeBlock() {
     this.unsubscribeNewHeads = await this.sdk.api.rpc.chain.subscribeNewHeads(
       async (header) => {

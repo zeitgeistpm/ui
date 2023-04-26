@@ -17,6 +17,7 @@ import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import moment from "moment";
 import { useState } from "react";
+import { useErrorTable } from "lib/hooks/queries/useErrorTable";
 
 const ScalarReportBox = observer(
   ({
@@ -30,6 +31,7 @@ const ScalarReportBox = observer(
     const store = useStore();
     const wallet = useWallet();
     const notificationStore = useNotifications();
+    const { data: errorTable } = useErrorTable();
 
     if (!market) return null;
 
@@ -67,7 +69,7 @@ const ScalarReportBox = observer(
         },
         failCallback: ({ index, error }) => {
           notificationStore.pushNotification(
-            store.getTransactionError(index, error),
+            errorTable?.getTransactionError(index, error),
             {
               type: "Error",
             },

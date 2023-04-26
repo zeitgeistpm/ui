@@ -18,6 +18,7 @@ import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { observer } from "mobx-react";
 import moment from "moment";
 import { useState } from "react";
+import { useErrorTable } from "lib/hooks/queries/useErrorTable";
 
 const ScalarDisputeBox = observer(
   ({
@@ -42,6 +43,7 @@ const ScalarDisputeBox = observer(
 
     const wallet = useWallet();
     const signer = wallet.getActiveSigner();
+    const { data: errorTable } = useErrorTable();
 
     const bondAmount = disputes
       ? disputeBond + disputes.length * disputeFactor
@@ -89,7 +91,7 @@ const ScalarDisputeBox = observer(
         },
         failCallback: ({ index, error }) => {
           notificationStore.pushNotification(
-            store.getTransactionError(index, error),
+            errorTable?.getTransactionError(index, error),
             {
               type: "Error",
             },

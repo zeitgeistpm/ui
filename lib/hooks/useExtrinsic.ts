@@ -1,11 +1,11 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import { useState } from "react";
 import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
-import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useWallet } from "lib/state/wallet";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
+import { useState } from "react";
+import { useErrorTable } from "./queries/useErrorTable";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
@@ -22,7 +22,8 @@ export const useExtrinsic = <T>(
   const [isLoading, setIsLoading] = useState(false);
 
   const notifications = useNotifications();
-  const store = useStore();
+
+  const { data: errorTable } = useErrorTable();
 
   const send = (params?: T) => {
     setIsLoading(true);
@@ -46,7 +47,7 @@ export const useExtrinsic = <T>(
 
           callbacks?.onError && callbacks.onError();
           notifications.pushNotification(
-            store.getTransactionError(index, error),
+            errorTable?.getTransactionError(index, error),
             { type: "Error" },
           );
         },
