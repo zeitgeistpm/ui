@@ -2,7 +2,7 @@ import { Skeleton } from "@material-ui/lab";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import { FC, PropsWithChildren } from "react";
-import { MarketStage, MarketStatus } from "@zeitgeistpm/sdk-next";
+import { MarketStage, MarketStatus, Reported } from "@zeitgeistpm/sdk-next";
 import { MarketTimer } from "./MarketTimer";
 import { MarketTimerSkeleton } from "./MarketTimer";
 import { MarketPageIndexedData } from "lib/gql/markets";
@@ -13,7 +13,7 @@ import { shortenAddress } from "lib/util";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { getMarketStatusDetails } from "lib/util/market-status-details";
 import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
-import { MarketReport } from "@zeitgeistpm/indexer/src/graphql/sdk";
+// import { MarketReport } from "@zeitgeistpm/indexer/src/graphql/sdk";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
   ({ label, border = true, children }) => {
@@ -81,7 +81,7 @@ const MarketOutcome: FC<
 
 const MarketHeader: FC<{
   market: MarketPageIndexedData;
-  report?: MarketReport;
+  report: Report;
   disputes: MarketDispute;
   resolvedOutcome: string;
   prizePool: number;

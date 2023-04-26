@@ -141,8 +141,21 @@ const Market: NextPage<{
 
     useEffect(() => {
       if (disputes && marketSdkv2?.status === "Disputed") {
-        const lastDispute = disputes?.[disputes.length - 1].toJSON();
-        setLastDispute(lastDispute as MarketDispute);
+        const lastDispute = disputes?.[disputes.length - 1];
+        const at = lastDispute.at.toNumber();
+        const by = lastDispute.by.toString();
+        const outcome = marketSdkv2?.marketType.scalar
+          ? lastDispute?.outcome?.asScalar.toNumber()
+          : lastDispute?.outcome?.asCategorical.toNumber();
+        const marketDispute: MarketDispute = {
+          at,
+          by,
+          outcome: {
+            categorical: outcome,
+            scalar: outcome,
+          },
+        };
+        setLastDispute(marketDispute);
       }
     }, [disputes]);
 

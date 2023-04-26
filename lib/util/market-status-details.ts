@@ -2,8 +2,12 @@ import { ZTG } from "lib/constants";
 import Decimal from "decimal.js";
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { MarketStatus } from "@zeitgeistpm/sdk-next";
-import { MarketDispute, MarketTypeOf } from "@zeitgeistpm/sdk/dist/types";
-import { MarketReport } from "@zeitgeistpm/indexer/src/graphql/sdk";
+import {
+  MarketDispute,
+  MarketTypeOf,
+  OutcomeReport,
+} from "@zeitgeistpm/sdk/dist/types";
+// import { MarketReport } from "@zeitgeistpm/indexer/src/graphql/sdk";
 
 export const getScalarOutcome = (
   outcome: string,
@@ -22,7 +26,7 @@ export const getMarketStatusDetails = (
   categories: { name: string }[],
   status: MarketStatus,
   disputes: MarketDispute,
-  report: MarketReport,
+  report: OutcomeReport,
   resolvedOutcome: string,
   scalarType: ScalarRangeType,
 ): { outcome: string | number; by: string } => {
