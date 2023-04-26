@@ -146,6 +146,7 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
     }
   };
 
+  // TODO: remove once market history is implemented. may neeed this for reference
   const getReportedCategoricalOutcome = () => {
     if (!rpcMarket) return;
     const outcomeIndex = rpcMarket.report

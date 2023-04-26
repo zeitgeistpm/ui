@@ -53,9 +53,13 @@ const MarketOutcome: FC<
           : "bg-yellow-light"
       }`}
     >
-      <div className="">
+      <div className="flex gap-1">
         <span>{status} Outome: </span>
-        <span className="font-bold">{outcome}</span>
+        {outcome ? (
+          <span className="font-bold">{outcome}</span>
+        ) : (
+          <Skeleton width={100} height={24} />
+        )}
       </div>
       {status !== "Resolved" && by && (
         <div className="flex items-center gap-4">
