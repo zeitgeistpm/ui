@@ -40,7 +40,7 @@ import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
-import { Report, MarketDispute } from "@zeitgeistpm/sdk/dist/types";
+import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
 import { useEffect, useState } from "react";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
@@ -164,7 +164,7 @@ const Market: NextPage<{
           <MarketHeader
             market={indexedMarket}
             resolvedOutcome={marketSdkv2?.resolvedOutcome}
-            report={marketSdkv2?.report as Report}
+            report={marketSdkv2?.report}
             disputes={lastDispute}
             token={token}
             prizePool={prizePool?.div(ZTG).toNumber()}

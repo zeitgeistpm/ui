@@ -7,6 +7,7 @@ import {
   MarketDispute,
   MarketTypeOf,
 } from "@zeitgeistpm/sdk/dist/types";
+import { MarketReport } from "@zeitgeistpm/indexer/src/graphql/sdk";
 
 export const getScalarOutcome = (
   outcome: string,
@@ -26,7 +27,7 @@ export const getMarketStatusDetails = (
   categories: { name: string }[],
   status: MarketStatus,
   disputes: MarketDispute,
-  report: Report,
+  report: MarketReport,
   resolvedOutcome: string,
   scalarType: ScalarRangeType,
 ): { outcome: string | number; by: string } => {

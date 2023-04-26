@@ -13,6 +13,7 @@ import { shortenAddress } from "lib/util";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { getMarketStatusDetails } from "lib/util/market-status-details";
 import { Report, MarketDispute } from "@zeitgeistpm/sdk/dist/types";
+import { MarketReport } from "@zeitgeistpm/indexer/src/graphql/sdk";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
   ({ label, border = true, children }) => {
@@ -80,20 +81,20 @@ const MarketOutcome: FC<
 
 const MarketHeader: FC<{
   market: MarketPageIndexedData;
-  report: Report;
+  report?: MarketReport;
   disputes: MarketDispute;
   resolvedOutcome: string;
-  token: string;
   prizePool: number;
   subsidy: number;
+  token: string;
   marketStage: MarketStage;
   rejectReason?: string;
 }> = ({
   market,
-  resolvedOutcome,
-  prizePool,
   report,
   disputes,
+  resolvedOutcome,
+  prizePool,
   subsidy,
   token,
   marketStage,
