@@ -21,6 +21,7 @@ import MarketFiltersContainer, {
   MarketFiltersContext,
 } from "./MarketFiltersContainer";
 import DropDownSelect from "./DropDownSelect";
+import MobileDialog from "./MobileDialog";
 
 const sortBySelectStyles = {
   control: (provided) => {
@@ -99,6 +100,7 @@ type MarketFilterOptionsProps = {
   onOrderingChange: (ordering: MarketsOrderBy) => void;
   withLiquidityOnly: boolean;
   onWithLiquidityOnlyChange: (liqudityOnly: boolean) => void;
+  className: string;
 };
 
 const MarketFilterOptions = ({
@@ -107,10 +109,11 @@ const MarketFilterOptions = ({
   onOrderingChange,
   withLiquidityOnly,
   onWithLiquidityOnlyChange,
+  className,
 }: MarketFilterOptionsProps) => {
   const { selectedMenu, portal } = useContext(MarketFiltersContext);
   return (
-    <div className="flex items-center gap-ztg-5 mb-[25px]">
+    <div className={className}>
       <DropDownSelect
         label="Category"
         options={marketTagFilterOptions}
@@ -260,23 +263,28 @@ const MarketFilterSelection = ({
       activeFilters={activeFilters}
       portal={portalRef.current}
     >
-      {portalRef.current ? (
-        <MarketFilterOptions
-          addFilter={add}
-          onOrderingChange={setActiveOrdering}
-          ordering={activeOrdering}
-          withLiquidityOnly={withLiquidityOnly}
-          onWithLiquidityOnlyChange={setWithLiquidityOnly}
+      <MobileDialog></MobileDialog>
+      <div className="w-full flex flex-col items-center justify-center mb-[30px]">
+        {portalRef.current ? (
+          <MarketFilterOptions
+            addFilter={add}
+            onOrderingChange={setActiveOrdering}
+            ordering={activeOrdering}
+            withLiquidityOnly={withLiquidityOnly}
+            onWithLiquidityOnlyChange={setWithLiquidityOnly}
+            className="flex items-center gap-ztg-5 mb-[25px]"
+          />
+        ) : (
+          <Skeleton width="80%" height="44px" className="mb-[25px]"></Skeleton>
+        )}
+        <div id="marketsFiltersMenuPortal" ref={portalRef}></div>
+        <MarketActiveFilters
+          filters={activeFilters}
+          onClear={clear}
+          onFilterRemove={remove}
+          className="flex gap-2"
         />
-      ) : (
-        <Skeleton width="80%" height="44px" className="mb-[25px]"></Skeleton>
-      )}
-      <div id="marketsFiltersMenuPortal" ref={portalRef}></div>
-      <MarketActiveFilters
-        filters={activeFilters}
-        onClear={clear}
-        onFilterRemove={remove}
-      />
+      </div>
     </MarketFiltersContainer>
   );
 };

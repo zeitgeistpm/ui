@@ -25,15 +25,17 @@ export type MarketActiveFiltersProps = {
   filters: MarketFilter[];
   onClear: () => void;
   onFilterRemove: (filter: MarketFilter) => void;
+  className?: string;
 };
 
 const MarketActiveFilters = ({
   filters,
   onClear,
   onFilterRemove,
+  className = "",
 }: MarketActiveFiltersProps) => {
   return (
-    <div className="flex gap-[10px]">
+    <div className={className}>
       {filters?.length > 0 && <ClearAllButton clear={onClear} />}
       {filters?.map((af, idx) => (
         <MarketActiveFilterItem
