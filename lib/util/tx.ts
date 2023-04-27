@@ -21,7 +21,7 @@ const processEvents = (
   for (const event of events) {
     const { data, method, section } = event.event;
     if (api.events.system.ExtrinsicFailed.is(event.event)) {
-      const [dispatchError, dispatchInfo] = event.event.data;
+      const [dispatchError] = event.event.data;
 
       let errorInfo: string;
 

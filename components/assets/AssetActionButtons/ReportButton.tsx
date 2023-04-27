@@ -11,7 +11,6 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useModalStore } from "lib/stores/ModalStore";
-import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 
@@ -24,7 +23,6 @@ const ReportButton = observer(
     assetId: ScalarAssetId | CategoricalAssetId;
   }) => {
     const [sdk] = useSdkv2();
-    const store = useStore();
     const wallet = useWallet();
     const notificationStore = useNotifications();
     const modalStore = useModalStore();

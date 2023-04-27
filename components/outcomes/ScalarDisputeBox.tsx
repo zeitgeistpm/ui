@@ -13,7 +13,6 @@ import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import moment from "moment";
@@ -28,7 +27,6 @@ const ScalarDisputeBox = observer(
     onDispute?: () => void;
   }) => {
     const [sdk] = useSdkv2();
-    const store = useStore();
     const notificationStore = useNotifications();
     const { data: constants } = useChainConstants();
 
