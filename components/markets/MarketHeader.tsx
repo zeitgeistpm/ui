@@ -1,4 +1,4 @@
-import { Skeleton } from "@material-ui/lab";
+import Skeleton from "components/ui/Skeleton";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import { FC, PropsWithChildren } from "react";
@@ -168,7 +168,7 @@ const MarketHeader: FC<{
             {token}
           </HeaderStat>
         ) : (
-          <Skeleton width="150px" height="24px" />
+          <Skeleton width="150px" height="20px" />
         )}
         {prizePool >= 0 && token ? (
           <HeaderStat label="Prize Pool">
@@ -177,7 +177,7 @@ const MarketHeader: FC<{
             {token}
           </HeaderStat>
         ) : (
-          <Skeleton width="150px" height="24px" />
+          <Skeleton width="150px" height="20px" />
         )}
         {subsidy >= 0 && token ? (
           <HeaderStat label="Subsidy" border={false}>
@@ -186,7 +186,7 @@ const MarketHeader: FC<{
             {token}
           </HeaderStat>
         ) : (
-          <Skeleton width="150px" height="24px" />
+          <Skeleton width="150px" height="20px" />
         )}
       </div>
       {(status === "Reported" ||

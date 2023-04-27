@@ -1,4 +1,4 @@
-import { Skeleton } from "@material-ui/lab";
+import Skeleton from "components/ui/Skeleton";
 import TableChart from "components/ui/TableChart";
 import { useEvent } from "lib/hooks";
 import { formatNumberLocalized } from "lib/util";
@@ -13,7 +13,7 @@ import { ChartData } from "./TimeSeriesChart";
 import Avatar from "./Avatar";
 import { range } from "lodash";
 import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
-import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
+import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 
 interface TableProps {
   data: TableData[];
@@ -124,10 +124,10 @@ const Cell = observer(
     onClick?: () => void;
   }) => {
     const {
-      data: ztgInfo,
+      data: ztgPrice,
       isLoading: ztgIsLoading,
       isLoadingError: ztgIsLoadingError,
-    } = useZtgInfo();
+    } = useZtgPrice();
 
     const base = `dark:text-white px-ztg-15 h-ztg-72 ${
       onClick ? "cursor-pointer" : ""
@@ -140,7 +140,7 @@ const Cell = observer(
         style={style}
       >
         <div className="">
-          <Skeleton className="!transform-none !w-[25px] !h-[25px]" />
+          <Skeleton width={25} height={25} />
         </div>
       </td>
     );
@@ -218,9 +218,9 @@ const Cell = observer(
               </div>
               <div className="text-ztg-12-150 font-light text-sky-600">
                 $
-                {(
-                  value.usdValue ?? ztgInfo?.price?.toNumber() * value.value
-                ).toFixed(2)}
+                {(value.usdValue ?? ztgPrice?.toNumber() * value.value).toFixed(
+                  2,
+                )}
               </div>
             </td>
           );
@@ -415,11 +415,7 @@ const Table = observer(
         {data == null ? (
           <div>
             {range(0, loadingNumber).map((index) => (
-              <Skeleton
-                key={index}
-                height={120}
-                className="!-mb-ztg-40 !rounded-ztg-10"
-              />
+              <Skeleton key={index} height={72} className="mb-2" />
             ))}
           </div>
         ) : (
@@ -517,11 +513,7 @@ const Table = observer(
               <div className="">
                 {loadingMore &&
                   range(0, loadingNumber).map((index) => (
-                    <Skeleton
-                      key={index}
-                      height={80}
-                      className="!transform-none block !mb-ztg-16 !rounded-ztg-10"
-                    />
+                    <Skeleton key={index} height={80} className="mb-ztg-16" />
                   ))}
               </div>
 

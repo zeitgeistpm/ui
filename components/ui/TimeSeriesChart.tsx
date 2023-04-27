@@ -1,5 +1,5 @@
 import { Decimal } from "decimal.js";
-import Skeleton from "@material-ui/lab/Skeleton";
+import Skeleton from "components/ui/Skeleton";
 import { observer } from "mobx-react";
 import React, { useCallback, useState } from "react";
 import {
@@ -235,7 +235,7 @@ const TimeSeriesChart = observer(
                 <Label
                   fontSize={10}
                   stroke="black"
-                  value="ZTG"
+                  value={yUnits}
                   offset={15}
                   position="insideLeft"
                   angle={-90}
@@ -266,12 +266,7 @@ const TimeSeriesChart = observer(
             </LineChart>
           </ResponsiveContainer>
         ) : (
-          <Skeleton
-            className="ml-ztg-20 rounded-ztg-5"
-            animation="wave"
-            height={350}
-            variant="rect"
-          />
+          <Skeleton className="ml-ztg-20" height={350} />
         )}
       </div>
     );

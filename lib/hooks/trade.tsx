@@ -3,6 +3,7 @@ import { ISubmittableResult } from "@polkadot/types/types";
 import {
   AssetId,
   CategoricalAssetId,
+  IOForeignAssetId,
   IOMarketOutcomeAssetId,
   IOZtgAssetId,
   isRpcSdk,
@@ -170,7 +171,10 @@ export const useTradeTransaction = (
   if (item.action === "buy") {
     const inAssetId = baseAssetId;
     const outAssetId = assetId;
-    if (IOZtgAssetId.is(exactAmountAssetId)) {
+    if (
+      IOZtgAssetId.is(exactAmountAssetId) ||
+      IOForeignAssetId.is(exactAmountAssetId)
+    ) {
       const minAmountOut = calcOutGivenIn(
         poolBaseBalance,
         baseWeight,
@@ -215,7 +219,10 @@ export const useTradeTransaction = (
     const inAssetId = assetId;
     const outAssetId = baseAssetId;
 
-    if (IOZtgAssetId.is(exactAmountAssetId)) {
+    if (
+      IOZtgAssetId.is(exactAmountAssetId) ||
+      IOForeignAssetId.is(exactAmountAssetId)
+    ) {
       const maxAmountIn = calcInGivenOut(
         poolAssetBalance,
         assetWeight,
