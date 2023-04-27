@@ -12,7 +12,6 @@ import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import DiscordIcon from "components/icons/DiscordIcon";
 import TwitterIcon from "components/icons/TwitterIcon";
-import Checkbox from "components/ui/Checkbox";
 import CopyIcon from "components/ui/CopyIcon";
 import { AnimatePresence, motion } from "framer-motion";
 import { ZTG } from "lib/constants";
@@ -69,6 +68,8 @@ const AvatarPage = observer(() => {
   const isOwner =
     wallet.activeAccount?.address === address ||
     wallet.activeAccount?.address === zeitAddress;
+
+  console.log("isOwner", isOwner, wallet.activeAccount?.address, address);
 
   const inventory = useInventoryManagement(
     (isOwner
@@ -214,7 +215,7 @@ const AvatarPage = observer(() => {
               />
             </div>
 
-            {isOwner && hasInventory && (
+            {isOwner && true && (
               <div
                 className="absolute rounded-full cursor-pointer bottom-3 z-ztg-6 right-3 bg-gray-900/70 flex justify-center items-center w-8 h-8"
                 onClick={onClickSettingsButton}
@@ -687,9 +688,10 @@ const InventoryModal = (props: { address: string; onClose?: () => void }) => {
               <label className="block mb-2">Equipped</label>
               <div className="flex items-center justify-center">
                 <div className="inline-block bg-gray-900/20 rounded-md">
-                  <Checkbox
+                  <input
+                    type="checkbox"
                     disabled={inventory.comitting}
-                    value={inventory.hasSelected(item)}
+                    checked={inventory.hasSelected(item)}
                     onChange={(event) => {
                       if (event.target.checked) {
                         inventory.select(item);
