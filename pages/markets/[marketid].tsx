@@ -44,6 +44,7 @@ import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
+import { useTimeStampForBlock } from "lib/hooks/queries/useTimeStampForBlock";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -126,6 +127,8 @@ const Market: NextPage<{
     const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
       marketId,
     });
+    const { data: timeStamp } = useTimeStampForBlock(3360889);
+    console.log(new Date(timeStamp));
     const { data: marketStage } = useMarketStage(marketSdkv2);
     const { data: spotPrices } = useMarketSpotPrices(marketId);
     const { data: liquidity } = usePoolLiquidity({ marketId });
