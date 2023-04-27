@@ -19,6 +19,7 @@ const marketsQuery = gql`
       question
       creation
       img
+      baseAsset
       marketType {
         categorical
         scalar
@@ -29,7 +30,6 @@ const marketsQuery = gql`
         ticker
       }
       pool {
-        baseAsset
         volume
         poolId
       }
@@ -64,10 +64,11 @@ const getNewestMarkets = async (
       img: string;
       question: string;
       creation: MarketCreation;
+      baseAsset: string;
       marketType: { [key: string]: string };
       categories: { color: string; name: string; ticker: string }[];
       outcomeAssets: string[];
-      pool: { baseAsset: string; volume: string; poolId: number };
+      pool: { volume: string; poolId: number };
       tags: [];
       status: string;
       scalarType: ScalarRangeType;
@@ -111,7 +112,7 @@ const getNewestMarkets = async (
         creation: market.creation,
         prediction: prediction,
         volume: new Decimal(market.pool.volume).div(ZTG).toNumber(),
-        baseAsset: market.pool.baseAsset,
+        baseAsset: market.baseAsset,
         outcomes: marketCategories,
         pool: market.pool,
         marketType: market.marketType,

@@ -13,7 +13,7 @@ import { ChartData } from "./TimeSeriesChart";
 import Avatar from "./Avatar";
 import { range } from "lodash";
 import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
-import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
+import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 
 interface TableProps {
   data: TableData[];
@@ -124,10 +124,10 @@ const Cell = observer(
     onClick?: () => void;
   }) => {
     const {
-      data: ztgInfo,
+      data: ztgPrice,
       isLoading: ztgIsLoading,
       isLoadingError: ztgIsLoadingError,
-    } = useZtgInfo();
+    } = useZtgPrice();
 
     const base = `dark:text-white px-ztg-15 h-ztg-72 ${
       onClick ? "cursor-pointer" : ""
@@ -218,9 +218,9 @@ const Cell = observer(
               </div>
               <div className="text-ztg-12-150 font-light text-sky-600">
                 $
-                {(
-                  value.usdValue ?? ztgInfo?.price?.toNumber() * value.value
-                ).toFixed(2)}
+                {(value.usdValue ?? ztgPrice?.toNumber() * value.value).toFixed(
+                  2,
+                )}
               </div>
             </td>
           );
