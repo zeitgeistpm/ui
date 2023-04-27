@@ -33,7 +33,7 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
   return (
     <form className="flex flex-col w-full" onSubmit={handleSubmit(subscribe)}>
       <h6 className="font-semibold mb-[26px]">{title}</h6>
-      <div className="flex gap-3 items-center h-[56px] mb-auto w-full">
+      <div className="flex gap-3 items-center h-10 mb-auto w-full">
         <input
           {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
           className={`h-full grow rounded-md text-sky-600 p-2 text-ztg-12-120 bg-anti-flash-white border-[1px] focus:outline-none ${
