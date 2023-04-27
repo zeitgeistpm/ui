@@ -1,158 +1,20 @@
-import { observer } from "mobx-react";
-import { useContext, useEffect, useRef, useState } from "react";
-import ReactSelect from "react-select";
+import { useState, useRef, useEffect } from "react";
 import {
   MarketFilter,
   MarketsListQuery,
   MarketsOrderBy,
 } from "lib/types/market-filter";
 import { findFilterIndex } from "lib/util/market-filter";
-import {
-  filterTypes,
-  marketCurrencyFilterOptions,
-  marketsOrderByOptions,
-  marketStatusFilterOptions,
-  marketTagFilterOptions,
-} from "lib/constants/market-filter";
+import { filterTypes } from "lib/constants/market-filter";
 import Skeleton from "components/ui/Skeleton";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import MarketActiveFilters from "./MarketActiveFilters";
-import MarketFiltersContainer, {
-  MarketFiltersContext,
-} from "./MarketFiltersContainer";
-import DropDownSelect from "./DropDownSelect";
+import MarketFiltersContainer from "./MarketFiltersContainer";
 import MobileDialog from "./MobileDialog";
-
-const sortBySelectStyles = {
-  control: (provided) => {
-    return {
-      ...provided,
-      width: "180px",
-      height: "32px",
-      minHeight: "32px",
-      fontSize: "14px",
-    };
-  },
-  dropdownIndicator: (provided) => {
-    return {
-      ...provided,
-      padding: "0px",
-      paddingRight: "10px",
-    };
-  },
-  singleValue: (provided) => {
-    return {
-      ...provided,
-    };
-  },
-  valueContainer: (provided) => {
-    return {
-      ...provided,
-      paddingLeft: "10px",
-    };
-  },
-  input: (provided) => {
-    return {
-      ...provided,
-    };
-  },
-  menu: (provided) => {
-    return {
-      ...provided,
-      backgroundColor: "white",
-      color: "black",
-      zIndex: 100,
-    };
-  },
-};
-
-const IndicatorSeparator = () => {
-  return <></>;
-};
-
-const SortBySelect = observer(
-  ({
-    onOrderingChange,
-    ordering,
-  }: {
-    ordering: MarketsOrderBy;
-    onOrderingChange: (v: MarketsOrderBy) => void;
-  }) => {
-    return (
-      <ReactSelect
-        value={marketsOrderByOptions.find((opt) => opt.value === ordering)}
-        onChange={(v) => {
-          onOrderingChange(v.value);
-        }}
-        options={marketsOrderByOptions}
-        styles={sortBySelectStyles}
-        components={{
-          IndicatorSeparator,
-        }}
-      />
-    );
-  },
-);
-
-type MarketFilterOptionsProps = {
-  addFilter: (filter: MarketFilter) => void;
-  ordering: MarketsOrderBy;
-  onOrderingChange: (ordering: MarketsOrderBy) => void;
-  withLiquidityOnly: boolean;
-  onWithLiquidityOnlyChange: (liqudityOnly: boolean) => void;
-  className: string;
-};
-
-const MarketFilterOptions = ({
-  addFilter,
-  ordering,
-  onOrderingChange,
-  withLiquidityOnly,
-  onWithLiquidityOnlyChange,
-  className,
-}: MarketFilterOptionsProps) => {
-  const { selectedMenu, portal } = useContext(MarketFiltersContext);
-  return (
-    <div className={className}>
-      <DropDownSelect
-        label="Category"
-        options={marketTagFilterOptions}
-        add={addFilter}
-        portal={portal}
-        isOpen={selectedMenu === "Category"}
-      />
-      <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
-      <DropDownSelect
-        label="Currency"
-        options={marketCurrencyFilterOptions}
-        add={addFilter}
-        portal={portal}
-        isOpen={selectedMenu === "Currency"}
-      />
-      <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
-      <DropDownSelect
-        label="Status"
-        options={marketStatusFilterOptions}
-        add={addFilter}
-        portal={portal}
-        isOpen={selectedMenu === "Status"}
-      />
-      <div className="w-[1px] h-[10px] bg-pastel-blue"></div>
-      {withLiquidityOnly != null && (
-        <label className="text-black font-medium mr-[20px] ml-[20px]">
-          <input
-            className="mr-[10px]"
-            type="checkbox"
-            checked={withLiquidityOnly}
-            onChange={(e) => onWithLiquidityOnlyChange(e.target.checked)}
-          />
-          Liquidity only
-        </label>
-      )}
-      <SortBySelect ordering={ordering} onOrderingChange={onOrderingChange} />
-    </div>
-  );
-};
+import MarketFiltersDropdowns from "./MarketFiltersDropdowns";
+import MarketFiltersCheckboxes from "./MarketFiltersCheckboxes";
+import MarketFiltersSort from "./MarketFiltersSort";
+import { ChevronDown } from "react-feather";
 
 const getFiltersFromQueryState = (
   queryState: MarketsListQuery,
@@ -192,6 +54,7 @@ const MarketFilterSelection = ({
   const [activeFilters, setActiveFilters] = useState<MarketFilter[]>();
   const [activeOrdering, setActiveOrdering] = useState<MarketsOrderBy>();
   const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
+  const [mobileDialogOpen, setMobileDialogOpen] = useState(false);
   const portalRef = useRef<HTMLDivElement>(null);
 
   const queryState = useMarketsUrlQuery();
@@ -263,21 +126,56 @@ const MarketFilterSelection = ({
       activeFilters={activeFilters}
       portal={portalRef.current}
     >
-      <MobileDialog></MobileDialog>
+      <MobileDialog
+        open={mobileDialogOpen}
+        setOpen={setMobileDialogOpen}
+      ></MobileDialog>
       <div className="w-full flex flex-col items-center justify-center mb-[30px]">
         {portalRef.current ? (
-          <MarketFilterOptions
-            addFilter={add}
-            onOrderingChange={setActiveOrdering}
-            ordering={activeOrdering}
-            withLiquidityOnly={withLiquidityOnly}
-            onWithLiquidityOnlyChange={setWithLiquidityOnly}
-            className="flex items-center gap-ztg-5 mb-[25px]"
-          />
+          <div className="hidden md:flex md:items-center md:gap-2 md:mb-6">
+            <MarketFiltersDropdowns
+              addFilter={add}
+              className="flex items-center gap-2"
+            ></MarketFiltersDropdowns>
+            <MarketFiltersCheckboxes
+              onWithLiquidityOnlyChange={setWithLiquidityOnly}
+              withLiquidityOnly={withLiquidityOnly}
+              className="hidden lg:block mr-[20px] ml-[20px]"
+            ></MarketFiltersCheckboxes>
+            <MarketFiltersSort
+              onOrderingChange={setActiveOrdering}
+              ordering={activeOrdering}
+              className="hidden lg:block"
+            ></MarketFiltersSort>
+          </div>
         ) : (
           <Skeleton width="80%" height="44px" className="mb-[25px]"></Skeleton>
         )}
-        <div id="marketsFiltersMenuPortal" ref={portalRef}></div>
+        <p
+          className="text-ztg-blue cursor-pointer mb-6"
+          onClick={() => setMobileDialogOpen(true)}
+        >
+          Find Your Market <ChevronDown className="inline mb-1" size={20} />
+        </p>
+        <div
+          className="hidden md:block"
+          id="marketsFiltersMenuPortal"
+          ref={portalRef}
+        ></div>
+        {portalRef.current ? (
+          <div className="flex items-center gap-6 mb-6 lg:hidden">
+            <MarketFiltersCheckboxes
+              onWithLiquidityOnlyChange={setWithLiquidityOnly}
+              withLiquidityOnly={withLiquidityOnly}
+            ></MarketFiltersCheckboxes>
+            <MarketFiltersSort
+              onOrderingChange={setActiveOrdering}
+              ordering={activeOrdering}
+            ></MarketFiltersSort>
+          </div>
+        ) : (
+          <Skeleton width="40%" height="32px" className="mb-[25px]"></Skeleton>
+        )}
         <MarketActiveFilters
           filters={activeFilters}
           onClear={clear}

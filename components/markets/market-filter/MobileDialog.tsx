@@ -6,9 +6,7 @@ export type MobileDialogProps = {
   setOpen: (open: boolean) => void;
 };
 
-const MobileDialog = () => {
-  const [open, setOpen] = useState(true);
-
+const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
   return (
     <Dialog
       open={open}
