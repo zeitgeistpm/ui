@@ -20,15 +20,24 @@ const getImageUrl = async (image: string | null): Promise<string> => {
   if (isMarketImageBase64Encoded(image)) {
     return image;
   }
+  const controller = new AbortController();
+
+  setTimeout(() => {
+    controller.abort();
+  }, 2500);
 
   try {
     const url = `https://ipfs-gateway.zeitgeist.pm/ipfs/${image}`;
-    const res = await fetch(url, { method: "HEAD" });
+    const res = await fetch(url, {
+      method: "HEAD",
+      signal: controller.signal,
+    });
     if (res.headers.get("Content-Type")?.startsWith("image") === false) {
       return fallbackUrl;
     }
     return url;
-  } catch {
+  } catch (e) {
+    console.log(e); // TODO: remove after debugging
     return fallbackUrl;
   }
 };
