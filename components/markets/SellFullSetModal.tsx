@@ -1,38 +1,39 @@
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk, parseAssetId } from "@zeitgeistpm/sdk-next";
 import { AmountInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useBalance } from "lib/hooks/queries/useBalance";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useSaturatedMarket } from "lib/hooks/queries/useSaturatedMarket";
-import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useModalStore } from "lib/stores/ModalStore";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
 
 const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
-  const store = useStore();
   const wallet = useWallet();
   const notificationStore = useNotifications();
   const modalStore = useModalStore();
   const [sdk] = useSdkv2();
 
-  const { data: constants } = useChainConstants();
-
-  const { data: activeBalance } = useZtgBalance(wallet.activeAccount?.address);
-
   const { data: market } = useMarket({ marketId });
   const { data: saturatedMarket } = useSaturatedMarket(market);
   const { data: pool } = usePool({ marketId: marketId });
+  const baseAssetId = parseAssetId(pool?.baseAsset).unrightOr(null);
+  const { data: metadata } = useAssetMetadata(baseAssetId);
+
+  const { data: baseAssetBalance } = useBalance(
+    wallet.getActiveSigner()?.address,
+    baseAssetId,
+  );
 
   const { data: balances } = useAccountPoolAssetBalances(
     wallet.getActiveSigner()?.address,
@@ -79,7 +80,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
 
   const handleSignTransaction = async () => {
     if (
-      Number(amount) > activeBalance?.div(ZTG).toNumber() ||
+      Number(amount) > baseAssetBalance?.div(ZTG).toNumber() ||
       Number(amount) === 0 ||
       !isRpcSdk(sdk)
     ) {
@@ -122,10 +123,10 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
         <div className="flex items-center mt-ztg-24 mb-ztg-8">
           <div className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2 bg-ztg-blue"></div>
           <div className="font-bold   text-ztg-16-150 uppercase text-black dark:text-white">
-            {constants?.tokenSymbol}
+            {metadata?.symbol}
           </div>
           <span className="font-mono text-ztg-12-150 font-medium ml-auto text-sky-600">
-            {activeBalance?.div(ZTG).toNumber()}
+            {baseAssetBalance?.div(ZTG).toNumber()}
           </span>
         </div>
         <AmountInput
@@ -137,9 +138,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
       </div>
       <div className="h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 my-ztg-10 text-sky-600">
         <span className=" font-bold">Price per Set:</span>
-        <span className="font-mono font-medium">
-          1 {constants?.tokenSymbol}
-        </span>
+        <span className="font-mono font-medium">1 {metadata?.symbol}</span>
       </div>
       <TransactionButton
         className="!rounded-ztg-10 h-ztg-50"

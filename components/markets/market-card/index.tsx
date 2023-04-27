@@ -11,6 +11,8 @@ import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { Skeleton } from "@material-ui/lab";
 import { hasDatePassed } from "lib/util/hasDatePassed";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { parseAssetId } from "@zeitgeistpm/sdk-next";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -140,7 +142,7 @@ const MarketCardDetails = ({
         </span>
       </div>
       <div className="flex gap-2.5 text-sm min-w-full">
-        {rows.numParticipants != null ? (
+        {rows.numParticipants != null && rows.baseAsset ? (
           <div className="flex items-center gap-2">
             <Users size={18} />
             <span>{rows.numParticipants}</span>
@@ -154,7 +156,7 @@ const MarketCardDetails = ({
             {formatNumberCompact(rows.volume)} {rows.baseAsset}
           </span>
         </div>
-        {rows.liquidity != null ? (
+        {rows.liquidity != null && rows.baseAsset ? (
           <div className="flex items-center gap-2">
             <Droplet size={18} />
             <span>
@@ -208,6 +210,9 @@ const MarketCard = ({
   const isProposed = () => {
     return creation === "Advised" && status === "Proposed" ? true : false;
   };
+  const { data: metadata } = useAssetMetadata(
+    parseAssetId(baseAsset).unrightOr(null),
+  );
 
   const infoRows = {
     marketType: marketType,
@@ -215,7 +220,7 @@ const MarketCard = ({
     hasEnded: hasDatePassed(Number(endDate)),
     outcomes: outcomes.length,
     volume: volume,
-    baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
+    baseAsset: metadata?.symbol,
     liquidity,
     numParticipants: numParticipants,
   };

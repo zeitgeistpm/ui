@@ -235,7 +235,7 @@ const TimeSeriesChart = observer(
                 <Label
                   fontSize={10}
                   stroke="black"
-                  value="ZTG"
+                  value={yUnits}
                   offset={15}
                   position="insideLeft"
                   angle={-90}

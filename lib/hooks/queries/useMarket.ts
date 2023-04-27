@@ -15,7 +15,11 @@ export const useMarket = (filter?: UseMarketFilter) => {
   const query = useQuery(
     [id, marketsRootQuery, filter],
     async () => {
-      if (isIndexedSdk(sdk)) {
+      if (
+        isIndexedSdk(sdk) &&
+        (("marketId" in filter && filter.marketId != null) ||
+          ("poolId" in filter && filter.poolId != null))
+      ) {
         return batcher(sdk).fetch(filter);
       }
       return null;
