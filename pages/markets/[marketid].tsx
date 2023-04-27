@@ -40,8 +40,9 @@ import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
-import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
+import { MarketDispute, Report } from "@zeitgeistpm/sdk/dist/types";
 import { useEffect, useState } from "react";
+
 export const QuillViewer = dynamic(
   () => import("../../components/ui/QuillViewer"),
   {
@@ -117,6 +118,7 @@ const Market: NextPage<{
 }> = observer(
   ({ indexedMarket, chartSeries, priceHistory, resolutionTimestamp }) => {
     const [lastDispute, setLastDispute] = useState<MarketDispute>(null);
+    const [report, setReport] = useState<Report>(null);
     const router = useRouter();
     const { marketid } = router.query;
     const marketId = Number(marketid);
@@ -157,7 +159,18 @@ const Market: NextPage<{
         };
         setLastDispute(marketDispute);
       }
-    }, [disputes]);
+      if (marketSdkv2?.report && marketSdkv2?.status === "Reported") {
+        const report: Report = {
+          at: marketSdkv2?.report?.at,
+          by: marketSdkv2?.report?.by,
+          outcome: {
+            categorical: marketSdkv2?.report?.outcome?.categorical,
+            scalar: marketSdkv2?.report?.outcome?.scalar,
+          },
+        };
+        setReport(report);
+      }
+    }, [disputes, marketSdkv2?.report]);
 
     //data for MarketHeader
     const token = constants?.tokenSymbol;
@@ -179,7 +192,7 @@ const Market: NextPage<{
           <MarketHeader
             market={indexedMarket}
             resolvedOutcome={marketSdkv2?.resolvedOutcome}
-            report={marketSdkv2?.report}
+            report={report}
             disputes={lastDispute}
             token={token}
             prizePool={prizePool?.div(ZTG).toNumber()}
