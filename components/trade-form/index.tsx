@@ -4,8 +4,7 @@ import {
   ZTG,
   IOMarketOutcomeAssetId,
   IOZtgAssetId,
-  getMarketIdOf,
-  getIndexOf,
+  IOForeignAssetId,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import {
@@ -31,6 +30,7 @@ import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import TradeResult from "components/markets/TradeResult";
 import { useWallet } from "lib/state/wallet";
 import { TradeType } from "lib/types";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -95,7 +95,8 @@ const TradeForm = observer(() => {
 
   const [fee, setFee] = useState<string>("0.00");
   const [percentageDisplay, setPercentageDisplay] = useState<string>("0");
-  const baseSymbol = tradeItemState?.pool.baseAsset.toUpperCase() ?? "ZTG";
+  const { data: assetMetadata } = useAssetMetadata(tradeItemState?.baseAssetId);
+  const baseSymbol = assetMetadata?.symbol;
 
   const type = tradeItem.action;
 
@@ -177,7 +178,7 @@ const TradeForm = observer(() => {
         `Successfully ${
           tradeItem.action === "buy" ? "bought" : "sold"
         } ${assetAmount} ${
-          tradeItemState.asset.category.ticker
+          tradeItemState.asset.ticker
         } for ${baseAmount} ${baseSymbol}`,
         { type: "Success", lifetime: 60 },
       );
@@ -421,7 +422,10 @@ const TradeForm = observer(() => {
   }, [watch, maxBaseAmount.toString(), maxAssetAmount.toString()]);
 
   useEffect(() => {
-    if (IOZtgAssetId.is(lastEditedAssetId)) {
+    if (
+      IOZtgAssetId.is(lastEditedAssetId) ||
+      IOForeignAssetId.is(lastEditedAssetId)
+    ) {
       changeByBaseAmount(new Decimal(baseAmount));
     } else if (IOMarketOutcomeAssetId.is(lastEditedAssetId)) {
       changeByAssetAmount(new Decimal(assetAmount));
@@ -436,7 +440,7 @@ const TradeForm = observer(() => {
         <TradeResult
           type={tradeItem.action}
           amount={new Decimal(finalAmounts.asset)}
-          tokenName={tradeItemState?.asset.category.name}
+          tokenName={tradeItemState?.asset.name}
           baseTokenAmount={new Decimal(finalAmounts.base)}
           baseToken={baseSymbol}
           marketId={tradeItemState?.market.marketId}
@@ -507,7 +511,7 @@ const TradeForm = observer(() => {
               />
             </div>
             <div className="center sm:h-[48px] font-semibold capitalize text-[20px] sm:text-[28px]">
-              {tradeItemState?.asset.category.name}
+              {tradeItemState?.asset.name}
             </div>
             <div className="font-semibold text-center mb-[20px]">For</div>
             <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative">

@@ -15,12 +15,12 @@ const columns: TableColumn[] = [
     type: "text",
   },
   {
-    header: "Price(ZTG)",
+    header: "Price",
     accessor: "price",
     type: "currency",
   },
   {
-    header: "Cost(ZTG)",
+    header: "Cost",
     accessor: "value",
     type: "currency",
   },
