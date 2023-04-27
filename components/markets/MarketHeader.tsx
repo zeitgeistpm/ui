@@ -79,16 +79,32 @@ const MarketOutcome: FC<
   );
 };
 
-const MarketHistory = () => {
-  //market open
-
-  //market closed
-  //oracled reported
-  //disputes
-  //authority reoprted
-  //resolved
-  return;
-};
+const MarketHistory: FC<PropsWithChildren<{ starts: number; ends: number }>> =
+  ({ starts, ends }) => {
+    //market open
+    const marketStart = new Intl.DateTimeFormat("default", {
+      dateStyle: "medium",
+    }).format(starts);
+    const marketClosed = new Intl.DateTimeFormat("default", {
+      dateStyle: "medium",
+    }).format(ends);
+    return (
+      <ol>
+        {[marketStart, marketClosed].map((item, index) => {
+          return (
+            <li>
+              {index}. {item}
+            </li>
+          );
+        })}
+      </ol>
+    );
+    //market closed
+    //oracled reported
+    //disputes
+    //authority reoprted
+    //resolved
+  };
 
 const MarketHeader: FC<{
   market: MarketPageIndexedData;
@@ -137,19 +153,7 @@ const MarketHeader: FC<{
     scalarType,
   );
 
-  console.log(
-    market,
-    report,
-    disputes,
-    resolvedOutcome,
-    prizePool,
-    subsidy,
-    token,
-    marketStage,
-    rejectReason,
-  );
-
-  const { data } = useMarketEventHistory(market.marketId);
+  const { data } = useMarketEventHistory(market.marketId.toString());
   console.log(data);
 
   return (
@@ -221,6 +225,7 @@ const MarketHeader: FC<{
         status === "Resolved") && (
         <MarketOutcome status={status} outcome={outcome} by={by} />
       )}
+      <MarketHistory starts={starts} ends={ends} />
     </header>
   );
 };

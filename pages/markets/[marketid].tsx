@@ -128,8 +128,7 @@ const Market: NextPage<{
     const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
       marketId,
     });
-    const { data: timeStamp } = useTimeStampForBlock(3360889);
-    console.log(new Date(timeStamp));
+
     const { data: disputes } = useMarketDisputes(marketId);
 
     const { data: marketStage } = useMarketStage(marketSdkv2);
@@ -182,7 +181,7 @@ const Market: NextPage<{
 
     const subsidy =
       marketSdkv2?.pool?.poolId == null ? 0 : liquidity?.div(ZTG).toNumber();
-    console.log(marketSdkv2);
+
     return (
       <>
         <MarketMeta market={indexedMarket} />
