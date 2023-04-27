@@ -1,6 +1,6 @@
 import { MarketFilter } from "lib/types/market-filter";
 import { X } from "react-feather";
-import { ClearAllBtn } from "./ui";
+import ClearAllButton from "./ClearAllButton";
 
 export type MarketActiveFilterProps = {
   filter: MarketFilter;
@@ -34,7 +34,7 @@ const MarketActiveFilters = ({
 }: MarketActiveFiltersProps) => {
   return (
     <div className="flex gap-[10px]">
-      {filters?.length > 0 && <ClearAllBtn clear={onClear} />}
+      {filters?.length > 0 && <ClearAllButton clear={onClear} />}
       {filters?.map((af, idx) => (
         <MarketActiveFilterItem
           filter={af}

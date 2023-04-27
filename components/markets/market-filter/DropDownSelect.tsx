@@ -1,7 +1,7 @@
 import { MarketFilter } from "lib/types/market-filter";
 import { findFilterIndex } from "lib/util/market-filter";
 import { observer } from "mobx-react";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { ChevronUp, ChevronDown } from "react-feather";
 import ReactSelect, {
   ControlProps,
