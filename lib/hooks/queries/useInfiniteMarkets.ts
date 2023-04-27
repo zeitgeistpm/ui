@@ -3,11 +3,11 @@ import { IndexerContext, isIndexedSdk, Market } from "@zeitgeistpm/sdk-next";
 import { MarketOrderByInput } from "@zeitgeistpm/indexer";
 import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets";
 import objectHash from "object-hash";
-import { useStore } from "lib/stores/Store";
 import { getCurrentPrediction } from "lib/util/assets";
 import {
   MarketFilter,
   MarketFilterType,
+  MarketsListFiltersQuery,
   MarketsOrderBy,
 } from "lib/types/market-filter";
 import { marketsRootQuery } from "./useMarket";
@@ -51,11 +51,9 @@ export type QueryMarketData = Market<IndexerContext> & {
 export const useInfiniteMarkets = (
   orderBy: MarketsOrderBy,
   withLiquidityOnly = false,
-  filters?: MarketFilter[],
+  filters?: MarketsListFiltersQuery,
 ) => {
   const [sdk, id] = useSdkv2();
-
-  filters = filters ?? [];
 
   const limit = 12;
   const fetcher = async ({
@@ -73,9 +71,9 @@ export const useInfiniteMarkets = (
       };
     }
 
-    const statuses = getFilterValuesByType(filters, "status") as MarketStatus[];
-    const tags = getFilterValuesByType(filters, "tag");
-    const currencies = getFilterValuesByType(filters, "currency");
+    const statuses = filters.status as MarketStatus[];
+    const tags = filters.tag;
+    const currencies = filters.currency;
     const markets: Market<IndexerContext>[] = await sdk.model.markets.list({
       where: {
         categories_isNull: false,
@@ -117,7 +115,7 @@ export const useInfiniteMarkets = (
 
   const queryClient = useQueryClient();
   const query = useInfiniteQuery({
-    queryKey: [id, rootKey, hashFilters(filters), orderBy, withLiquidityOnly],
+    queryKey: [id, rootKey, filters, orderBy, withLiquidityOnly],
     queryFn: fetcher,
     enabled:
       Boolean(sdk) &&

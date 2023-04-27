@@ -27,37 +27,42 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
 } => {
   const router = useRouter();
   const routerPath = router.asPath;
-  const [query, setQuery] = useState<MarketsListQuery>();
+  console.log(routerPath);
+  const queryParams = getQueryParams(routerPath);
+  const query = parse(queryParams);
+  console.log(query);
 
-  const setQueryToDefault = () => {
-    setQuery(defaultMarketsQueryState);
-    updateQuery(defaultMarketsQueryState);
-  };
+  // const [query, setQuery] = useState<MarketsListQuery>();
 
-  const setInitialQuery = useCallback(() => {
-    const queryParams = getQueryParams(routerPath);
-    try {
-      if (isEmpty(queryParams)) {
-        setQueryToDefault();
-      } else {
-        const query = parse(queryParams);
-        setQuery(query);
-      }
-    } catch (error) {
-      console.warn(error);
-      setQueryToDefault();
-    }
-  }, [routerPath]);
+  // const setQueryToDefault = () => {
+  //   setQuery(defaultMarketsQueryState);
+  //   updateQuery(defaultMarketsQueryState);
+  // };
 
-  useEffect(() => {
-    const queryParams = getQueryParams(routerPath);
-    const query = parse(queryParams);
-    setQuery(query);
-  }, [routerPath]);
+  // const setInitialQuery = useCallback(() => {
+  //   const queryParams = getQueryParams(routerPath);
+  //   try {
+  //     if (isEmpty(queryParams)) {
+  //       setQueryToDefault();
+  //     } else {
+  //       const query = parse(queryParams);
+  //       setQuery(query);
+  //     }
+  //   } catch (error) {
+  //     console.warn(error);
+  //     setQueryToDefault();
+  //   }
+  // }, [routerPath]);
 
-  useEffect(() => {
-    setInitialQuery();
-  }, []);
+  // useEffect(() => {
+  //   const queryParams = getQueryParams(routerPath);
+  //   const query = parse(queryParams);
+  //   setQuery(query);
+  // }, [routerPath]);
+
+  // useEffect(() => {
+  //   setInitialQuery();
+  // }, []);
 
   const updateQuery = useCallback<MarketListQueryUpdater>(
     (update) => {
@@ -76,18 +81,18 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
     [routerPath, query],
   );
 
-  const [queryState, setQueryState] = useState<
-    MarketsListQuery & { updateQuery: MarketListQueryUpdater }
-  >();
+  // const [queryState, setQueryState] = useState<
+  //   MarketsListQuery & { updateQuery: MarketListQueryUpdater }
+  // >();
 
-  useEffect(() => {
-    if (query == null) {
-      return;
-    }
-    setQueryState({ ...query, updateQuery });
-  }, [query]);
+  // useEffect(() => {
+  //   if (query == null) {
+  //     return;
+  //   }
+  //   setQueryState({ ...query, updateQuery });
+  // }, [query]);
 
-  return queryState;
+  return { ...query, updateQuery };
 };
 
 const toString = (query: MarketsListQuery) => {
