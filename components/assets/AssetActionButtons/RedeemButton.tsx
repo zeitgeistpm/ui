@@ -1,11 +1,11 @@
 import {
   AssetId,
-  parseAssetId,
   getScalarBounds,
   IndexerContext,
   isRpcSdk,
   Market,
   MarketId,
+  parseAssetId,
 } from "@zeitgeistpm/sdk-next";
 import * as AE from "@zeitgeistpm/utility/dist/aeither";
 import Decimal from "decimal.js";
@@ -16,13 +16,12 @@ import {
 } from "lib/hooks/queries/useAccountAssetBalances";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
 import { useWallet } from "lib/state/wallet";
+import { useStore } from "lib/stores/Store";
 import { calcScalarWinnings } from "lib/util/calc-scalar-winnings";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import { useMemo, useState } from "react";
-import { useErrorTable } from "lib/hooks/queries/useErrorTable";
 
 export type RedeemButtonProps = { market: Market<IndexerContext> } & (
   | { assetId: AssetId }
@@ -118,7 +117,6 @@ export const RedeemButtonByValue = observer(
     const wallet = useWallet();
     const signer = wallet?.getActiveSigner();
     const notificationStore = useNotifications();
-    const { data: errorTable } = useErrorTable();
 
     const [isRedeeming, setIsRedeeming] = useState(false);
     const [isRedeemed, setIsRedeemed] = useState(false);
@@ -129,6 +127,7 @@ export const RedeemButtonByValue = observer(
       setIsRedeeming(true);
 
       const callback = extrinsicCallback({
+        api: sdk.api,
         notifications: notificationStore,
         successCallback: async () => {
           notificationStore.pushNotification(
@@ -140,13 +139,10 @@ export const RedeemButtonByValue = observer(
           setIsRedeeming(false);
           setIsRedeemed(true);
         },
-        failCallback: ({ index, error }) => {
-          notificationStore.pushNotification(
-            errorTable?.getTransactionError(index, error),
-            {
-              type: "Error",
-            },
-          );
+        failCallback: (error) => {
+          notificationStore.pushNotification(error, {
+            type: "Error",
+          });
           setIsRedeeming(false);
         },
       });

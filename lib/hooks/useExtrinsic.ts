@@ -1,11 +1,12 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useState } from "react";
-import { useErrorTable } from "./queries/useErrorTable";
+import { useSdkv2 } from "./useSdkv2";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
@@ -16,6 +17,7 @@ export const useExtrinsic = <T>(
     onError?: () => void;
   },
 ) => {
+  const [sdk] = useSdkv2();
   const wallet = useWallet();
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -23,17 +25,21 @@ export const useExtrinsic = <T>(
 
   const notifications = useNotifications();
 
-  const { data: errorTable } = useErrorTable();
-
   const send = (params?: T) => {
-    setIsLoading(true);
-    const extrinsic = extrinsicFn(params);
+    if (!isRpcSdk(sdk)) {
+      throw new Error("SDK is not RPC");
+    }
 
+    setIsLoading(true);
+
+    const extrinsic = extrinsicFn(params);
     const signer = wallet.getActiveSigner() as ExtSigner;
+
     signAndSend(
       extrinsic,
       signer,
       extrinsicCallback({
+        api: sdk.api,
         notifications,
         successCallback: (data) => {
           setIsLoading(false);
@@ -41,15 +47,12 @@ export const useExtrinsic = <T>(
 
           callbacks?.onSuccess && callbacks.onSuccess(data);
         },
-        failCallback: ({ index, error }) => {
+        failCallback: (error) => {
           setIsLoading(false);
           setIsError(true);
 
           callbacks?.onError && callbacks.onError();
-          notifications.pushNotification(
-            errorTable?.getTransactionError(index, error),
-            { type: "Error" },
-          );
+          notifications.pushNotification(error, { type: "Error" });
         },
       }),
     ).catch(() => {

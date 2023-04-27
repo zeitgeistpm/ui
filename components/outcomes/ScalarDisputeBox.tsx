@@ -8,17 +8,16 @@ import { AmountInput, DateTimeInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
 import { useWallet } from "lib/state/wallet";
+import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { observer } from "mobx-react";
 import moment from "moment";
 import { useState } from "react";
-import { useErrorTable } from "lib/hooks/queries/useErrorTable";
 
 const ScalarDisputeBox = observer(
   ({
@@ -43,7 +42,6 @@ const ScalarDisputeBox = observer(
 
     const wallet = useWallet();
     const signer = wallet.getActiveSigner();
-    const { data: errorTable } = useErrorTable();
 
     const bondAmount = disputes
       ? disputeBond + disputes.length * disputeFactor
@@ -82,6 +80,7 @@ const ScalarDisputeBox = observer(
       };
 
       const callback = extrinsicCallback({
+        api: sdk.api,
         notifications: notificationStore,
         successCallback: async () => {
           notificationStore.pushNotification("Outcome Disputed", {
@@ -89,13 +88,10 @@ const ScalarDisputeBox = observer(
           });
           onDispute?.();
         },
-        failCallback: ({ index, error }) => {
-          notificationStore.pushNotification(
-            errorTable?.getTransactionError(index, error),
-            {
-              type: "Error",
-            },
-          );
+        failCallback: (error) => {
+          notificationStore.pushNotification(error, {
+            type: "Error",
+          });
         },
       });
 

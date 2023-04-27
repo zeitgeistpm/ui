@@ -8,13 +8,12 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useModalStore } from "lib/stores/ModalStore";
 import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
+import { useModalStore } from "lib/stores/ModalStore";
 import { useStore } from "lib/stores/Store";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
-import { useWallet } from "lib/state/wallet";
-import { useErrorTable } from "lib/hooks/queries/useErrorTable";
 
 const ReportButton = observer(
   ({
@@ -29,7 +28,6 @@ const ReportButton = observer(
     const wallet = useWallet();
     const notificationStore = useNotifications();
     const modalStore = useModalStore();
-    const { data: errorTable } = useErrorTable();
 
     if (!market) return null;
 
@@ -53,6 +51,7 @@ const ReportButton = observer(
         const signer = wallet.getActiveSigner();
 
         const callback = extrinsicCallback({
+          api: sdk.api,
           notifications: notificationStore,
           successCallback: async () => {
             notificationStore.pushNotification(
@@ -62,13 +61,10 @@ const ReportButton = observer(
               },
             );
           },
-          failCallback: ({ index, error }) => {
-            notificationStore.pushNotification(
-              errorTable?.getTransactionError(index, error),
-              {
-                type: "Error",
-              },
-            );
+          failCallback: (error) => {
+            notificationStore.pushNotification(error, {
+              type: "Error",
+            });
           },
         });
 
