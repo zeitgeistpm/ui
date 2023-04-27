@@ -13,6 +13,7 @@ import MarketCard from "./market-card/index";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import { filterTypes } from "lib/constants/market-filter";
 import { ZTG } from "lib/constants";
+import { getBaseAsset } from "@zeitgeistpm/sdk-next";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
 
 export type MarketsListProps = {
