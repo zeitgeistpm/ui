@@ -44,9 +44,9 @@ import { NUM_BLOCKS_IN_DAY, ZTG } from "lib/constants";
 import { defaultOptions, defaultPlugins } from "lib/form";
 import { checkMarketExists } from "lib/gql/markets";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
-import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useChainTime } from "lib/state/chaintime";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useModalStore } from "lib/stores/ModalStore";
@@ -123,7 +123,7 @@ const initialFields = {
 
 const CreatePage: NextPage = observer(() => {
   const store = useStore();
-  const { data: now } = useChainTimeNow();
+  const chainTime = useChainTime();
   const notificationStore = useNotifications();
   const modalStore = useModalStore();
   const [sdk] = useSdkv2();
@@ -288,7 +288,7 @@ const CreatePage: NextPage = observer(() => {
 
   useEffect(() => {
     if (formData?.end?.type === "block") {
-      changeEnd(`${store.blockNumber.toNumber() + NUM_BLOCKS_IN_DAY}`);
+      changeEnd(`${chainTime?.block + NUM_BLOCKS_IN_DAY}`);
       form.$("end").set("rules", `gt_current_blocknum|required`);
     } else {
       const date = Moment();
@@ -373,14 +373,14 @@ const CreatePage: NextPage = observer(() => {
 
   const getMarketPeriod = (): MarketPeriod => {
     return formData.end.type === "block"
-      ? { block: [store.blockNumber.toNumber(), Number(formData.end.value)] }
-      : { timestamp: [store.blockTimestamp, Number(formData.end.value)] };
+      ? { block: [chainTime?.block, Number(formData.end.value)] }
+      : { timestamp: [chainTime?.now, Number(formData.end.value)] };
   };
 
   const getMarketEndBlock = () => {
     return formData.end.type === "block"
       ? Number(formData.end.value)
-      : dateBlock(now, new Date(Number(formData.end.value)));
+      : dateBlock(chainTime, new Date(Number(formData.end.value)));
   };
 
   const mapRangeToEntires = (
@@ -422,17 +422,18 @@ const CreatePage: NextPage = observer(() => {
   const getMarketDeadlines = () => {
     const gracePeriod = (
       formData.deadlines.grace.label === "Custom"
-        ? dateBlock(now, formData.deadlines.grace.value) - getMarketEndBlock()
+        ? dateBlock(chainTime, formData.deadlines.grace.value) -
+          getMarketEndBlock()
         : formData.deadlines.grace.value
     ).toString();
     const oracleDuration = (
       formData.deadlines.oracle.label === "Custom"
-        ? getBlocksDeltaForDuration(now, formData.deadlines.oracle.value)
+        ? getBlocksDeltaForDuration(chainTime, formData.deadlines.oracle.value)
         : formData.deadlines.oracle.value
     ).toString();
     const disputeDuration = (
       formData.deadlines.dispute.label === "Custom"
-        ? getBlocksDeltaForDuration(now, formData.deadlines.dispute.value)
+        ? getBlocksDeltaForDuration(chainTime, formData.deadlines.dispute.value)
         : formData.deadlines.dispute.value
     ).toString();
     return {
