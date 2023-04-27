@@ -1,4 +1,5 @@
 import { MarketStatus } from "@zeitgeistpm/sdk-next";
+import { MarketDispute, Report } from "@zeitgeistpm/sdk/dist/types";
 import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS } from "lib/constants";
@@ -34,6 +35,23 @@ const marketQuery = gql`
       disputeMechanism
       marketType {
         scalar
+        categorical
+      }
+      disputes {
+        at
+        by
+        outcome {
+          scalar
+          categorical
+        }
+      }
+      report {
+        at
+        by
+        outcome {
+          scalar
+          categorical
+        }
       }
       period {
         start
@@ -70,7 +88,10 @@ export interface MarketPageIndexedData {
   scalarType: ScalarRangeType;
   marketType: {
     scalar: string[];
+    categorical: string;
   };
+  disputes: MarketDispute[];
+  report: Report;
   creator: string;
   oracle: string;
   tags: [];

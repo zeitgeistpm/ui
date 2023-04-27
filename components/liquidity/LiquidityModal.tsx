@@ -9,13 +9,13 @@ import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalanc
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForPools";
-import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
-import { useStore } from "lib/stores/Store";
 import { useWallet } from "lib/state/wallet";
 import { useMemo } from "react";
 import ExitPoolForm from "./ExitPoolForm";
 import JoinPoolForm from "./JoinPoolForm";
 import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
+import { useBalance } from "lib/hooks/queries/useBalance";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 
 export type PoolBalances = {
   [key: string]: {
@@ -30,8 +30,6 @@ export const assetObjStringToId = (assetId: string) => {
 };
 
 const LiquidityModal = ({ poolId }: { poolId: number }) => {
-  const store = useStore();
-
   const wallet = useWallet();
   const connectedAddress = wallet.activeAccount?.address;
   const { data: pool } = usePool({ poolId });
@@ -58,8 +56,14 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
     })
     ?.data.balance.free.toString();
 
+  const baseAsset = parseAssetId(pool?.baseAsset).unrightOr(null);
+  const { data: metadata } = useAssetMetadata(baseAsset);
+
   //user balances outside of pool
-  const { data: userBaseBalance } = useZtgBalance(connectedAddress);
+  const { data: userBaseBalance } = useBalance(
+    wallet.activeAccount?.address,
+    baseAsset,
+  );
   const { data: userAssetBalances } = useAccountPoolAssetBalances(
     connectedAddress,
     pool,
@@ -123,6 +127,7 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
               poolId={poolId}
               poolBalances={allBalances}
               totalPoolShares={new Decimal(totalPoolIssuance?.toString() ?? 0)}
+              baseAssetTicker={metadata.symbol}
             />
           </Tab.Panel>
           <Tab.Panel>
@@ -132,6 +137,7 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
               poolBalances={allBalances}
               totalPoolShares={new Decimal(totalPoolIssuance?.toString() ?? 0)}
               userPoolShares={new Decimal(userPoolTokens?.toString() ?? 0)}
+              baseAssetTicker={metadata.symbol}
             />
           </Tab.Panel>
         </Tab.Panels>

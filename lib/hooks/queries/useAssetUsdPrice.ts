@@ -1,8 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { AssetId, IOZtgAssetId, IOForeignAssetId } from "@zeitgeistpm/sdk-next";
+import {
+  AssetId,
+  IOZtgAssetId,
+  IOForeignAssetId,
+  ForeignAssetId,
+} from "@zeitgeistpm/sdk-next";
 import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
 import Decimal from "decimal.js";
 import { FORIEGN_ASSET_METADATA } from "lib/constants/foreign-asset";
+import { isEmpty } from "lodash";
 
 export const assetUsdPriceRootKey = "asset-usd-price";
 
@@ -11,12 +17,12 @@ export const useAssetUsdPrice = (assetId: AssetId) => {
     [assetUsdPriceRootKey, assetId],
     async () => {
       if (IOZtgAssetId.is(assetId)) {
-        //todo: is there a way to use the cache for this
-        const ztgInfo = await fetchZTGInfo();
-        return ztgInfo.price;
+        return await getZTGPrice();
       } else if (IOForeignAssetId.is(assetId)) {
-        return getForeignAssetPrice(assetId.ForeignAsset);
+        return await getForeignAssetPrice(assetId);
       }
+
+      return null;
     },
     {
       enabled: Boolean(assetId),
@@ -29,18 +35,30 @@ export const useAssetUsdPrice = (assetId: AssetId) => {
   return query;
 };
 
-const getForeignAssetPrice = async (number: number) => {
-  //todo: why are the types broken?
-  const coinGeckoId = FORIEGN_ASSET_METADATA[number].coinGeckoId;
-  console.log(coinGeckoId);
-  console.log(number);
+const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
+  const coinGeckoId =
+    FORIEGN_ASSET_METADATA[foreignAsset.ForeignAsset].coinGeckoId;
 
   const res = await fetch(
     `https://api.coingecko.com/api/v3/simple/price?ids=${coinGeckoId}&vs_currencies=usd`,
   );
 
   const json = await res.json();
-  console.log(json);
 
   return new Decimal(json[coinGeckoId].usd);
+};
+
+const getZTGPrice = async () => {
+  try {
+    const ztgInfo = await fetchZTGInfo();
+    window.localStorage.setItem("ztgInfo", JSON.stringify(ztgInfo));
+    return ztgInfo.price;
+  } catch (err) {
+    const ztgInfo = JSON.parse(window.localStorage.getItem("ztgInfo") || "{}");
+    if (isEmpty(ztgInfo)) {
+      return new Decimal(0);
+    } else {
+      return ztgInfo.price;
+    }
+  }
 };

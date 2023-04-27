@@ -1,6 +1,6 @@
 import { isInfinite, MarketStage } from "@zeitgeistpm/sdk-next";
 import { clamp, upperFirst } from "lodash-es";
-import { Skeleton } from "@material-ui/lab";
+import Skeleton from "components/ui/Skeleton";
 import moment from "moment";
 
 export type MarketTimerProps = {
@@ -37,9 +37,9 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
   const timer = timeUntilStageEnds.as(format);
 
   return (
-    <div className="inline-block w-full max-w-[800px]">
-      <div className="flex mb-4 items-center">
-        <div className="font-bold text-lg mr-4 md:mr-4 text-black">
+    <div className="inline-block w-full">
+      <div className="flex mb-3 items-center">
+        <div className="font-semibold mr-4 md:mr-4 text-black">
           {copy[stage.type].title}
         </div>
         <div className="text-sky-600">{copy[stage.type].description}</div>
@@ -51,10 +51,10 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
         )}
       </div>
       <div className="w-full">
-        <div className="text-black text-sm text-right">
+        <div className="text-xs text-sky-600 text-right">
           {percentage.toFixed(0)}%
         </div>
-        <div className="w-full rounded-lg h-2 bg-gray-200">
+        <div className="w-full rounded-lg h-1.5 bg-gray-200">
           <div
             className={`rounded-lg h-full transition-all ${
               copy[stage.type].color
@@ -72,14 +72,14 @@ export const MarketTimerSkeleton = () => {
     <div className="inline-block w-full max-w-[800px]">
       <div className="flex mb-4 items-center">
         <h3 className="font-bold text-lg mr-2 md:mr-4">
-          <Skeleton width={150} />
+          <Skeleton width={150} className="inline-block" />
         </h3>
         <h4 className="hidden sm:block">
-          <Skeleton width={260} />
+          <Skeleton width={260} className="inline-block" />
         </h4>
 
         <h4 className="ml-auto">
-          <Skeleton width={40} />
+          <Skeleton width={40} className="inline-block" />
         </h4>
       </div>
       <div className="w-full">
