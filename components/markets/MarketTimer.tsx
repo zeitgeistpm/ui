@@ -37,9 +37,9 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
   const timer = timeUntilStageEnds.as(format);
 
   return (
-    <div className="inline-block w-full max-w-[800px]">
-      <div className="flex mb-4 items-center">
-        <div className="font-bold text-lg mr-4 md:mr-4 text-black">
+    <div className="inline-block w-full">
+      <div className="flex mb-3 items-center">
+        <div className="font-semibold mr-4 md:mr-4 text-black">
           {copy[stage.type].title}
         </div>
         <div className="text-sky-600">{copy[stage.type].description}</div>
@@ -51,10 +51,10 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
         )}
       </div>
       <div className="w-full">
-        <div className="text-black text-sm text-right">
+        <div className="text-xs text-sky-600 text-right">
           {percentage.toFixed(0)}%
         </div>
-        <div className="w-full rounded-lg h-2 bg-gray-200">
+        <div className="w-full rounded-lg h-1.5 bg-gray-200">
           <div
             className={`rounded-lg h-full transition-all ${
               copy[stage.type].color
