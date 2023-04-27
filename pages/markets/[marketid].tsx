@@ -1,10 +1,6 @@
 import PoolTable from "components/liquidity/PoolTable";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
-import {
-  MarketTimer,
-  MarketTimerSkeleton,
-} from "components/markets/MarketTimer";
 import Skeleton from "components/ui/Skeleton";
 import PoolDeployer from "components/markets/PoolDeployer";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
@@ -40,15 +36,20 @@ import { filters } from "components/ui/TimeFilters";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { parseAssetId } from "@zeitgeistpm/sdk-next";
+import { MarketDispute, Report } from "@zeitgeistpm/sdk/dist/types";
+import { useState, useEffect } from "react";
+import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 
-const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
-  ssr: false,
-});
+export const QuillViewer = dynamic(
+  () => import("../../components/ui/QuillViewer"),
+  {
+    ssr: false,
+  },
+);
 
 export async function getStaticPaths() {
   const client = new GraphQLClient(graphQlEndpoint);
@@ -117,6 +118,8 @@ const Market: NextPage<{
   resolutionTimestamp: string;
 }> = observer(
   ({ indexedMarket, chartSeries, priceHistory, resolutionTimestamp }) => {
+    const [lastDispute, setLastDispute] = useState<MarketDispute>(null);
+    const [report, setReport] = useState<Report>(null);
     const router = useRouter();
     const { marketid } = router.query;
     const marketId = Number(marketid);
@@ -124,6 +127,8 @@ const Market: NextPage<{
     const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
       marketId,
     });
+    const { data: disputes } = useMarketDisputes(marketId);
+
     const { data: marketStage } = useMarketStage(marketSdkv2);
     const { data: spotPrices } = useMarketSpotPrices(marketId);
     const { data: liquidity } = usePoolLiquidity({ marketId });
@@ -138,17 +143,40 @@ const Market: NextPage<{
       return <NotFoundPage backText="Back To Markets" backLink="/" />;
     }
 
-    //required to fix title element warning
-    const question = indexedMarket.question;
+    useEffect(() => {
+      if (disputes && marketSdkv2?.status === "Disputed") {
+        const lastDispute = disputes?.[disputes.length - 1];
+        const at = lastDispute.at.toNumber();
+        const by = lastDispute.by.toString();
+        const outcome = marketSdkv2?.marketType.scalar
+          ? lastDispute?.outcome?.asScalar.toNumber()
+          : lastDispute?.outcome?.asCategorical.toNumber();
+        const marketDispute: MarketDispute = {
+          at,
+          by,
+          outcome: {
+            categorical: outcome,
+            scalar: outcome,
+          },
+        };
+        setLastDispute(marketDispute);
+      }
+      if (marketSdkv2?.report && marketSdkv2?.status === "Reported") {
+        const report: Report = {
+          at: marketSdkv2?.report?.at,
+          by: marketSdkv2?.report?.by,
+          outcome: {
+            categorical: marketSdkv2?.report?.outcome?.categorical,
+            scalar: marketSdkv2?.report?.outcome?.scalar,
+          },
+        };
+        setReport(report);
+      }
+    }, [disputes, marketSdkv2?.report]);
 
     //data for MarketHeader
     const token = metadata?.symbol;
 
-    const starts = Number(indexedMarket.period.start);
-    const ends = Number(indexedMarket.period.end);
-    const volume = indexedMarket?.pool?.volume
-      ? new Decimal(indexedMarket?.pool?.volume).div(ZTG).toNumber()
-      : 0;
     const subsidy =
       marketSdkv2?.pool?.poolId == null ? 0 : liquidity?.div(ZTG).toNumber();
 
@@ -158,35 +186,22 @@ const Market: NextPage<{
         <div>
           <MarketImage
             image={indexedMarket.img}
-            alt={`Image depicting ${question}`}
+            alt={`Image depicting ${indexedMarket.question}`}
             size="120px"
             status={indexedMarket.status}
             className="mx-auto"
           />
           <MarketHeader
-            question={question}
-            status={indexedMarket.status}
-            tags={indexedMarket.tags}
-            starts={starts}
-            ends={ends}
+            market={indexedMarket}
+            resolvedOutcome={marketSdkv2?.resolvedOutcome}
+            report={report}
+            disputes={lastDispute}
             token={token}
             prizePool={prizePool?.div(ZTG).toNumber()}
-            volume={volume}
             subsidy={subsidy}
-            marketType={indexedMarket?.marketType?.scalar}
+            marketStage={marketStage}
+            rejectReason={marketSdkv2?.rejectReason}
           />
-          {marketSdkv2?.rejectReason && marketSdkv2.rejectReason.length > 0 && (
-            <div className="mt-[10px] text-ztg-14-150">
-              Market rejected: {marketSdkv2.rejectReason}
-            </div>
-          )}
-          <div className="flex justify-center my-10">
-            {marketStage ? (
-              <MarketTimer stage={marketStage} />
-            ) : (
-              <MarketTimerSkeleton />
-            )}
-          </div>
           {chartSeries && indexedMarket?.pool?.poolId ? (
             <MarketChart
               marketId={indexedMarket.marketId}
