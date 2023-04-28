@@ -51,12 +51,12 @@ const HeroSlider = ({
           <Transition
             className={"absolute h-full w-full"}
             show={index == slider.currentSlide}
-            enter="transition-all duration-1000"
-            enterFrom="opacity-0 blur-md"
+            enter="transition-all duration-500"
+            enterFrom="opacity-0 blur"
             enterTo="opacity-100 blur-none"
             leave="transition-all duration-1000"
             leaveFrom="opacity-100 blur-none"
-            leaveTo="opacity-0 blur-md"
+            leaveTo="opacity-0 blur"
           >
             <HeroSlide className="absolute h-full w-full" banner={banner} />
           </Transition>
