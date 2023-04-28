@@ -1,12 +1,8 @@
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { HeroControls } from "./HeroControls";
 import { HeroSlide } from "./HeroSlide";
-import styles from "./HeroSlider.module.css";
 import { Banner } from "lib/cms/get-banners";
 import { useSliderControls } from "lib/hooks/slides";
-import { usePrevious } from "lib/hooks/usePrevious";
-import { isNumber } from "lodash-es";
 import { Transition } from "@headlessui/react";
 
 const HeroSlider = ({
