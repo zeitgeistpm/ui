@@ -563,7 +563,7 @@ const TradeForm = observer(() => {
               </div>
             </div>
             <TransactionButton
-              disabled={(false && !formState.isValid) || isLoading === true}
+              disabled={!formState.isValid || isLoading === true}
               className="h-[56px]"
             >
               <div className="center font-normal h-[20px]">
