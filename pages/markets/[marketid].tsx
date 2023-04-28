@@ -213,6 +213,16 @@ const Market: NextPage<MarketPageProps> = observer(
             status={indexedMarket.status}
             className="mx-auto"
           />
+
+          <div className="mt-4">
+            {promotionData && (
+              <MarketPromotionCallout
+                market={indexedMarket}
+                promotion={promotionData}
+              />
+            )}
+          </div>
+
           <MarketHeader
             market={indexedMarket}
             resolvedOutcome={marketSdkv2?.resolvedOutcome}
@@ -236,12 +246,6 @@ const Market: NextPage<MarketPageProps> = observer(
               <MarketTimerSkeleton />
             )}
           </div>
-          {promotionData && (
-            <MarketPromotionCallout
-              market={indexedMarket}
-              promotion={promotionData}
-            />
-          )}
           {chartSeries && indexedMarket?.pool?.poolId ? (
             <MarketChart
               marketId={indexedMarket.marketId}

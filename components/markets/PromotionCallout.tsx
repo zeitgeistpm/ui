@@ -27,11 +27,11 @@ export const MarketPromotionCallout = (props: {
         <div>
           <div className="flex justify-center">
             <div
-              className="rounded-md bg-orange-200 p-4 inline-flex font-bold text-orange-900 cursor-pointer"
+              className="rounded-md bg-green-lighter p-2 text-sm cursor-pointer"
               onClick={() => toggle()}
             >
-              Promoted Market! <i>(placeholder UI)</i>
-              <AiFillFire size={24} />
+              <span>Promo Market</span>
+              <span className="text-blue-600"> Rules</span>
             </div>
           </div>
 
