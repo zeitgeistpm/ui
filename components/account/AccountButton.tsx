@@ -190,8 +190,8 @@ const AccountButton: FC<{
                             shortenAddress(activeAccount?.address, 6, 4)}
                         </span>
                         <ChevronDown
-                          className={`px-2 box-content w-[18px] ${
-                            open && "rotate-180"
+                          className={`box-content pl-1 pr-2 ${
+                            open && "rotate-180 pl-2 pr-1"
                           }`}
                         />
                       </div>
