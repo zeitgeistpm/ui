@@ -9,6 +9,7 @@ import {
   ZeitgeistAvatar,
 } from "@zeitgeistpm/avatara-react";
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import DiscordIcon from "components/icons/DiscordIcon";
 import TwitterIcon from "components/icons/TwitterIcon";
@@ -16,9 +17,12 @@ import CopyIcon from "components/ui/CopyIcon";
 import { AnimatePresence, motion } from "framer-motion";
 import { ZTG } from "lib/constants";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useLocalStorage } from "lib/hooks/useLocalStorage";
-import { useModalStore } from "lib/stores/ModalStore";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
+import { useModalStore } from "lib/stores/ModalStore";
 import { useStore } from "lib/stores/Store";
 import { shortenAddress } from "lib/util";
 import { delay } from "lib/util/delay";
@@ -32,10 +36,6 @@ import { AiFillFire, AiFillInfoCircle } from "react-icons/ai";
 import { BsGearFill } from "react-icons/bs";
 import { IoIosNotifications, IoIosWarning } from "react-icons/io";
 import Loader from "react-spinners/PulseLoader";
-import { useWallet } from "lib/state/wallet";
-import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 
 const AvatarPage = observer(() => {
   const router = useRouter();
@@ -485,7 +485,12 @@ const ClaimModal = (props: {
   };
 
   const onClickBurn = async () => {
+    if (!isRpcSdk(sdk)) {
+      return;
+    }
+
     setIsClaiming(true);
+
     try {
       if (hasCrossed) {
         try {
@@ -502,6 +507,7 @@ const ClaimModal = (props: {
           tx,
           signer,
           extrinsicCallback({
+            api: sdk.api,
             notifications: notificationStore,
             broadcastCallback: () => {
               notificationStore.pushNotification("Burning ZTG.", {
@@ -524,12 +530,9 @@ const ClaimModal = (props: {
             retractedCallback: async () => {
               setIsClaiming(false);
             },
-            failCallback: ({ index, error }) => {
+            failCallback: (error) => {
               setIsClaiming(false);
-              notificationStore.pushNotification(
-                store.getTransactionError(index, error),
-                { type: "Error" },
-              );
+              notificationStore.pushNotification(error, { type: "Error" });
             },
           }),
         );
