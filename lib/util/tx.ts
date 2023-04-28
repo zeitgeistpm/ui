@@ -2,12 +2,14 @@ import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult, IEventRecord } from "@polkadot/types/types";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { isExtSigner, unsubOrWarns } from "@zeitgeistpm/sdk/dist/util";
+import type { ApiPromise } from "@polkadot/api";
 
 import { UseNotifications } from "lib/state/notifications";
 
 type GenericCallback = (...args: any[]) => void;
 
 const processEvents = (
+  api: ApiPromise,
   events: IEventRecord<any>[],
   {
     failCallback,
@@ -17,14 +19,28 @@ const processEvents = (
   unsub?: () => void,
 ) => {
   for (const event of events) {
-    const { data, method } = event.event;
-    if (method === "ExtrinsicFailed" && failCallback) {
-      const { index, error } = data.toHuman()["dispatchError"].Module;
-      failCallback({ index, error });
-    }
-    if (method === "BatchInterrupted" && failCallback) {
-      const { index, error } = data.toHuman().error.Module;
-      failCallback({ index, error }, +data.toHuman().index);
+    const { data, method, section } = event.event;
+    if (api.events.system.ExtrinsicFailed.is(event.event)) {
+      const [dispatchError] = event.event.data;
+
+      let errorInfo: string;
+
+      if (dispatchError.isModule) {
+        const decoded = api.registry.findMetaError(dispatchError.asModule);
+        const documentation = decoded.docs.length
+          ? `${decoded.section}.${decoded.name} :: ${decoded.docs.join(" ")}`
+          : null;
+
+        if (documentation) {
+          errorInfo = documentation;
+        } else {
+          errorInfo = `ExtrinsicFailed :: ${section}.${method} :: ${decoded.section}.${decoded.name}`;
+        }
+      } else {
+        errorInfo = dispatchError.toString();
+      }
+
+      failCallback(errorInfo);
     } else if (successCallback && method === successMethod) {
       const res = data.toHuman();
       successCallback(res);
@@ -34,6 +50,7 @@ const processEvents = (
 };
 
 export const extrinsicCallback = ({
+  api,
   successCallback,
   broadcastCallback,
   failCallback,
@@ -42,6 +59,7 @@ export const extrinsicCallback = ({
   notifications: notificationStore,
   successMethod = "ExtrinsicSuccess",
 }: {
+  api: ApiPromise;
   successCallback?: (data: ISubmittableResult) => void;
   broadcastCallback?: GenericCallback;
   failCallback?: GenericCallback;
@@ -55,6 +73,7 @@ export const extrinsicCallback = ({
 
     if (status.isInBlock && successCallback) {
       processEvents(
+        api,
         events,
         { failCallback, successCallback: () => successCallback(result) },
         successMethod,
@@ -62,6 +81,7 @@ export const extrinsicCallback = ({
       );
     } else if (status.isFinalized) {
       processEvents(
+        api,
         events,
         { failCallback, successCallback: finalizedCallback },
         successMethod,
