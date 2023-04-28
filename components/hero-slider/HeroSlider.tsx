@@ -57,6 +57,7 @@ const HeroSlider = ({
             leave="transition-all duration-1000"
             leaveFrom="opacity-100 blur-none"
             leaveTo="opacity-0 blur-md"
+            key={index}
           >
             <HeroSlide banner={banner} />
           </Transition>
