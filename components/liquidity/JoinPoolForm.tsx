@@ -17,10 +17,12 @@ const JoinPoolForm = ({
   poolBalances,
   poolId,
   totalPoolShares,
+  baseAssetTicker,
 }: {
   poolBalances: PoolBalances;
   poolId: number;
   totalPoolShares: Decimal;
+  baseAssetTicker: string;
 }) => {
   const { register, watch, handleSubmit, setValue, getValues, formState } =
     useForm({ reValidateMode: "onChange", mode: "all" });
@@ -145,8 +147,7 @@ const JoinPoolForm = ({
       <div className="flex flex-col gap-y-6 max-h-[250px] md:max-h-[400px] overflow-y-auto">
         {pool?.weights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
-          const assetName =
-            market?.categories[index]?.name ?? pool.baseAsset.toUpperCase();
+          const assetName = market?.categories[index]?.name ?? baseAssetTicker;
           const userAssetBalance =
             poolBalances?.[id]?.user.div(ZTG).toNumber() ?? 0;
 

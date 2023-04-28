@@ -9,17 +9,20 @@ import {
   ZeitgeistAvatar,
 } from "@zeitgeistpm/avatara-react";
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import DiscordIcon from "components/icons/DiscordIcon";
 import TwitterIcon from "components/icons/TwitterIcon";
-import Checkbox from "components/ui/Checkbox";
 import CopyIcon from "components/ui/CopyIcon";
 import { AnimatePresence, motion } from "framer-motion";
 import { ZTG } from "lib/constants";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useLocalStorage } from "lib/hooks/useLocalStorage";
-import { useModalStore } from "lib/stores/ModalStore";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
+import { useModalStore } from "lib/stores/ModalStore";
 import { useStore } from "lib/stores/Store";
 import { shortenAddress } from "lib/util";
 import { delay } from "lib/util/delay";
@@ -33,10 +36,6 @@ import { AiFillFire, AiFillInfoCircle } from "react-icons/ai";
 import { BsGearFill } from "react-icons/bs";
 import { IoIosNotifications, IoIosWarning } from "react-icons/io";
 import Loader from "react-spinners/PulseLoader";
-import { useWallet } from "lib/state/wallet";
-import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 
 const AvatarPage = observer(() => {
   const router = useRouter();
@@ -69,6 +68,8 @@ const AvatarPage = observer(() => {
   const isOwner =
     wallet.activeAccount?.address === address ||
     wallet.activeAccount?.address === zeitAddress;
+
+  console.log("isOwner", isOwner, wallet.activeAccount?.address, address);
 
   const inventory = useInventoryManagement(
     (isOwner
@@ -214,7 +215,7 @@ const AvatarPage = observer(() => {
               />
             </div>
 
-            {isOwner && hasInventory && (
+            {isOwner && true && (
               <div
                 className="absolute rounded-full cursor-pointer bottom-3 z-ztg-6 right-3 bg-gray-900/70 flex justify-center items-center w-8 h-8"
                 onClick={onClickSettingsButton}
@@ -484,7 +485,12 @@ const ClaimModal = (props: {
   };
 
   const onClickBurn = async () => {
+    if (!isRpcSdk(sdk)) {
+      return;
+    }
+
     setIsClaiming(true);
+
     try {
       if (hasCrossed) {
         try {
@@ -501,6 +507,7 @@ const ClaimModal = (props: {
           tx,
           signer,
           extrinsicCallback({
+            api: sdk.api,
             notifications: notificationStore,
             broadcastCallback: () => {
               notificationStore.pushNotification("Burning ZTG.", {
@@ -523,12 +530,9 @@ const ClaimModal = (props: {
             retractedCallback: async () => {
               setIsClaiming(false);
             },
-            failCallback: ({ index, error }) => {
+            failCallback: (error) => {
               setIsClaiming(false);
-              notificationStore.pushNotification(
-                store.getTransactionError(index, error),
-                { type: "Error" },
-              );
+              notificationStore.pushNotification(error, { type: "Error" });
             },
           }),
         );
@@ -687,9 +691,10 @@ const InventoryModal = (props: { address: string; onClose?: () => void }) => {
               <label className="block mb-2">Equipped</label>
               <div className="flex items-center justify-center">
                 <div className="inline-block bg-gray-900/20 rounded-md">
-                  <Checkbox
+                  <input
+                    type="checkbox"
                     disabled={inventory.comitting}
-                    value={inventory.hasSelected(item)}
+                    checked={inventory.hasSelected(item)}
                     onChange={(event) => {
                       if (event.target.checked) {
                         inventory.select(item);

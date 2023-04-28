@@ -1,7 +1,18 @@
-import { Skeleton } from "@material-ui/lab";
+import Skeleton from "components/ui/Skeleton";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import { FC, PropsWithChildren } from "react";
+import { MarketStage, MarketStatus } from "@zeitgeistpm/sdk-next";
+import { MarketTimer } from "./MarketTimer";
+import { MarketTimerSkeleton } from "./MarketTimer";
+import { MarketPageIndexedData } from "lib/gql/markets";
+import { ZTG } from "lib/constants";
+import Decimal from "decimal.js";
+import Avatar from "components/ui/Avatar";
+import { shortenAddress } from "lib/util";
+import { useIdentity } from "lib/hooks/queries/useIdentity";
+import { getMarketStatusDetails } from "lib/util/market-status-details";
+import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
   ({ label, border = true, children }) => {
@@ -24,32 +35,121 @@ const Tag: FC<PropsWithChildren<{ className?: string }>> = ({
   );
 };
 
+const MarketOutcome: FC<
+  PropsWithChildren<{
+    status: MarketStatus;
+    outcome: string | number;
+    by?: string;
+  }>
+> = ({ status, outcome, by }) => {
+  const { data: identity } = useIdentity(by ?? "");
+  return (
+    <div
+      className={`w-full flex center items-center gap-4 py-6 mb-10 rounded-lg ${
+        status === "Resolved"
+          ? "bg-green-light"
+          : status === "Reported"
+          ? "bg-powderblue"
+          : "bg-yellow-light"
+      }`}
+    >
+      <div className="flex gap-1">
+        <span>{status} Outome: </span>
+        {outcome ? (
+          <span className="font-bold">{outcome}</span>
+        ) : (
+          <Skeleton width={100} height={24} />
+        )}
+      </div>
+      {status !== "Resolved" && by && (
+        <div className="flex items-center gap-4">
+          <span>{status} by: </span>
+          <div className="flex items-center">
+            <Avatar address={by} />
+            <span className="font-medium px-3.5 text-sms h-full leading-[40px]">
+              {identity?.displayName?.length > 0
+                ? identity.displayName
+                : shortenAddress(by, 6, 4)}
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const MarketHeader: FC<{
-  question: string;
-  status: string;
-  tags: string[];
-  starts: number;
-  ends: number;
+  market: MarketPageIndexedData;
+  report: MarketDispute;
+  disputes: MarketDispute;
+  resolvedOutcome: string;
   prizePool: number;
   subsidy: number;
-  volume: number;
   token: string;
-  marketType: string[];
+  marketStage: MarketStage;
+  rejectReason?: string;
 }> = ({
-  question,
-  status,
-  tags,
-  starts,
-  ends,
+  market,
+  report,
+  disputes,
+  resolvedOutcome,
   prizePool,
   subsidy,
-  volume,
   token,
-  marketType,
+  marketStage,
+  rejectReason,
 }) => {
+  const {
+    tags,
+    categories,
+    status,
+    question,
+    period,
+    marketType,
+    pool,
+    scalarType,
+  } = market;
+  const starts = Number(period.start);
+  const ends = Number(period.end);
+  const volume = pool?.volume
+    ? new Decimal(pool?.volume).div(ZTG).toNumber()
+    : 0;
+
+  const { outcome, by } = getMarketStatusDetails(
+    marketType,
+    categories,
+    status,
+    disputes,
+    report,
+    resolvedOutcome,
+    scalarType,
+  );
+
   return (
-    <header className="flex flex-col items-center w-full">
-      <h1 className="text-4xl my-5 max-w-[900px] text-center">{question}</h1>
+    <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
+      <h1 className="text-4xl font-extrabold my-5 text-center">{question}</h1>
+      <div className="flex flex-wrap justify-center gap-2.5">
+        <Tag className={`${status === "Active" && "!bg-green-lighter"}`}>
+          {status === "Active" && <span className="text-green">&#x2713; </span>}
+          {status}
+        </Tag>
+        {tags?.map((tag, index) => {
+          return <Tag key={index}>{tag}</Tag>;
+        })}
+        <Tag className="!bg-black text-white">
+          {marketType?.scalar === null ? "Categorical" : "Scalar"}
+        </Tag>
+      </div>
+      {rejectReason && rejectReason.length > 0 && (
+        <div className="mt-2.5">Market rejected: {rejectReason}</div>
+      )}
+      <div className="flex justify-center my-8 w-full">
+        {marketStage ? (
+          <MarketTimer stage={marketStage} />
+        ) : (
+          <MarketTimerSkeleton />
+        )}
+      </div>
       <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-2 mb-5">
         <HeaderStat label={hasDatePassed(starts) ? "Started" : "Starts"}>
           {new Intl.DateTimeFormat("default", {
@@ -68,7 +168,7 @@ const MarketHeader: FC<{
             {token}
           </HeaderStat>
         ) : (
-          <Skeleton width="150px" height="24px" />
+          <Skeleton width="150px" height="20px" />
         )}
         {prizePool >= 0 && token ? (
           <HeaderStat label="Prize Pool">
@@ -77,7 +177,7 @@ const MarketHeader: FC<{
             {token}
           </HeaderStat>
         ) : (
-          <Skeleton width="150px" height="24px" />
+          <Skeleton width="150px" height="20px" />
         )}
         {subsidy >= 0 && token ? (
           <HeaderStat label="Subsidy" border={false}>
@@ -86,21 +186,14 @@ const MarketHeader: FC<{
             {token}
           </HeaderStat>
         ) : (
-          <Skeleton width="150px" height="24px" />
+          <Skeleton width="150px" height="20px" />
         )}
       </div>
-      <div className="flex flex-wrap justify-center gap-2.5">
-        <Tag className={`${status === "Active" && "!bg-green-lighter"}`}>
-          {status === "Active" && <span className="text-green">&#x2713; </span>}
-          {status}
-        </Tag>
-        {tags?.map((tag, index) => {
-          return <Tag key={index}>{tag}</Tag>;
-        })}
-        <Tag className="!bg-black text-white">
-          {marketType === null ? "Categorical" : "Scalar"}
-        </Tag>
-      </div>
+      {(status === "Reported" ||
+        status === "Disputed" ||
+        status === "Resolved") && (
+        <MarketOutcome status={status} outcome={outcome} by={by} />
+      )}
     </header>
   );
 };

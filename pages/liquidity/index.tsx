@@ -4,7 +4,7 @@ import { useInfinitePoolsList } from "lib/hooks/queries/useInfinitePoolsList";
 import { useMarketStatusCount } from "lib/hooks/queries/useMarketStatusCount";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
 import { useTotalLiquidity } from "lib/hooks/queries/useTotalLiquidity";
-import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
+import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { formatNumberLocalized } from "lib/util";
 import { observer } from "mobx-react";
 import { NextPage } from "next";
@@ -42,7 +42,7 @@ const columns: TableColumn[] = [
 const LiquidityPools: NextPage = observer(() => {
   const router = useRouter();
 
-  const { data: ztgInfo } = useZtgInfo();
+  const { data: ztgPrice } = useZtgPrice();
 
   const {
     data: poolPages,
@@ -58,11 +58,11 @@ const LiquidityPools: NextPage = observer(() => {
   const totalLiquidity = useTotalLiquidity({ enabled: isFetched });
 
   const totalLiquidityValue = useMemo(() => {
-    if (ztgInfo) {
-      return totalLiquidity.div(ZTG).mul(ztgInfo.price);
+    if (ztgPrice) {
+      return totalLiquidity.div(ZTG).mul(ztgPrice);
     }
     return new Decimal(0);
-  }, [ztgInfo, totalLiquidity]);
+  }, [ztgPrice, totalLiquidity]);
 
   const { data: activeMarketCount } = useMarketStatusCount(MarketStatus.Active);
 
@@ -101,7 +101,7 @@ const LiquidityPools: NextPage = observer(() => {
           poolBalance: saturatedData ? (
             {
               value: saturatedData?.liquidity.div(ZTG).toNumber(),
-              usdValue: ztgInfo?.price.toNumber() ?? 0,
+              usdValue: ztgPrice?.toNumber() ?? 0,
             }
           ) : (
             <span>...</span>

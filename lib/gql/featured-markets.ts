@@ -14,10 +14,10 @@ const marketQuery = gql`
   query Market($marketId: Int) {
     markets(where: { marketId_eq: $marketId }) {
       marketId
+      baseAsset
       pool {
         poolId
         volume
-        baseAsset
       }
       outcomeAssets
       question
@@ -66,9 +66,9 @@ const getFeaturedMarkets = async (
           pool: {
             poolId: number;
             volume: string;
-            baseAsset: string;
           } | null;
           marketId: number;
+          baseAsset: string;
           img: string;
           question: string;
           creation: MarketCreation;
@@ -100,7 +100,7 @@ const getFeaturedMarkets = async (
           marketType: market.marketType,
           scalarType: market.scalarType,
           volume: 0,
-          baseAsset: "",
+          baseAsset: market.baseAsset,
           outcomes: [],
           tags: [],
           status: market.status,
@@ -141,7 +141,7 @@ const getFeaturedMarkets = async (
         img: market.img,
         prediction: prediction,
         volume: new Decimal(pool.volume).div(ZTG).toNumber(),
-        baseAsset: pool.baseAsset,
+        baseAsset: market.baseAsset,
         outcomes: marketCategories,
         pool: market.pool,
         marketType: market.marketType,

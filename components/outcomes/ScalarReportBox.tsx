@@ -10,12 +10,9 @@ import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
 import { useWallet } from "lib/state/wallet";
-import { getCurrentPrediction } from "lib/util/assets";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
-import moment from "moment";
 import { useState } from "react";
 
 const ScalarReportBox = observer(
@@ -27,7 +24,6 @@ const ScalarReportBox = observer(
     onReport?: () => void;
   }) => {
     const [sdk] = useSdkv2();
-    const store = useStore();
     const wallet = useWallet();
     const notificationStore = useNotifications();
 
@@ -57,29 +53,28 @@ const ScalarReportBox = observer(
       };
       const signer = wallet.getActiveSigner();
 
-      const callback = extrinsicCallback({
-        notifications: notificationStore,
-        successCallback: async () => {
-          notificationStore.pushNotification("Outcome Reported", {
-            type: "Success",
-          });
-          onReport?.();
-        },
-        failCallback: ({ index, error }) => {
-          notificationStore.pushNotification(
-            store.getTransactionError(index, error),
-            {
-              type: "Error",
-            },
-          );
-        },
-      });
-
       if (isRpcSdk(sdk)) {
         const tx = sdk.api.tx.predictionMarkets.report(
           market.marketId,
           outcomeReport,
         );
+
+        const callback = extrinsicCallback({
+          api: sdk.api,
+          notifications: notificationStore,
+          successCallback: async () => {
+            notificationStore.pushNotification("Outcome Reported", {
+              type: "Success",
+            });
+            onReport?.();
+          },
+          failCallback: (error) => {
+            notificationStore.pushNotification(error, {
+              type: "Error",
+            });
+          },
+        });
+
         signAndSend(tx, signer, callback);
       }
     };

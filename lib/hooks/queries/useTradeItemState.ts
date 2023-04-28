@@ -3,6 +3,7 @@ import {
   getAssetWeight,
   getIndexOf,
   getMarketIdOf,
+  parseAssetId,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
@@ -11,11 +12,11 @@ import { useWallet } from "lib/state/wallet";
 import { TradeItem } from "../trade";
 import { useSdkv2 } from "../useSdkv2";
 import { useAccountAssetBalances } from "./useAccountAssetBalances";
+import { useBalance } from "./useBalance";
+import { useMarket } from "./useMarket";
 import { usePoolAccountIds } from "./usePoolAccountIds";
 import { usePoolBaseBalance } from "./usePoolBaseBalance";
 import { usePoolsByIds } from "./usePoolsByIds";
-import { useSaturatedPoolsIndex } from "./useSaturatedPoolsIndex";
-import { useZtgBalance } from "./useZtgBalance";
 
 export const tradeItemStateRootQueryKey = "trade-item-state";
 
@@ -24,19 +25,20 @@ export const useTradeItemState = (item: TradeItem) => {
   const wallet = useWallet();
   const signer = wallet.activeAccount ? wallet.getActiveSigner() : null;
   const slippage = 1;
-  const { data: traderBaseBalance } = useZtgBalance(
-    wallet.activeAccount?.address,
-  );
 
-  const { data: pools } = usePoolsByIds([
-    { marketId: getMarketIdOf(item.assetId) },
-  ]);
+  const marketId = getMarketIdOf(item.assetId);
+  const { data: pools } = usePoolsByIds([{ marketId: marketId }]);
+  const { data: market } = useMarket({ marketId });
 
   const pool = pools?.[0];
+  const baseAsset = pool?.baseAsset
+    ? parseAssetId(pool.baseAsset).unwrap()
+    : null;
 
-  const { data: saturatedIndex } = useSaturatedPoolsIndex(pools ?? []);
-  const saturatedData = saturatedIndex?.[pool?.poolId];
-  const market = saturatedData?.market;
+  const { data: traderBaseBalance } = useBalance(
+    wallet.activeAccount?.address,
+    baseAsset,
+  );
 
   const { data: poolBaseBalance } = usePoolBaseBalance(pool?.poolId);
 
@@ -80,10 +82,10 @@ export const useTradeItemState = (item: TradeItem) => {
       JSON.stringify(item.assetId),
     ],
     () => {
-      const baseWeight = getAssetWeight(pool, { Ztg: null }).unwrap();
+      const baseWeight = getAssetWeight(pool, baseAsset).unwrap();
       const assetWeight = getAssetWeight(pool, item.assetId).unwrap();
       const assetIndex = getIndexOf(item.assetId);
-      const asset = saturatedData.assets[assetIndex];
+      const asset = market.categories[assetIndex];
       const swapFee = new Decimal(pool.swapFee === "" ? "0" : pool.swapFee).div(
         ZTG,
       );
@@ -102,7 +104,7 @@ export const useTradeItemState = (item: TradeItem) => {
         pool,
         market,
         spotPrice,
-        baseAssetId: { Ztg: null },
+        baseAssetId: baseAsset,
         poolAccountId,
         poolBaseBalance,
         poolAssetBalance,
@@ -118,12 +120,7 @@ export const useTradeItemState = (item: TradeItem) => {
     },
     {
       enabled:
-        !!sdk &&
-        !!item &&
-        !!pool &&
-        !!poolBaseBalance &&
-        !!saturatedData &&
-        !!poolAssetBalance,
+        !!sdk && !!item && !!pool && !!poolBaseBalance && !!poolAssetBalance,
       keepPreviousData: true,
     },
   );
