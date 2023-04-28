@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import type { ParsedUrlQuery } from "querystring";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback } from "react";
 import { isUndefined, isEmpty } from "lodash";
 import { DeepPartial } from "lib/types/DeepPartial";
 import { parse as parseUri } from "uri-js";
@@ -22,6 +22,19 @@ const getQueryParams = (path: string) => {
   return queryParams;
 };
 
+const parseQuery = (queryParams: {}) => {
+  try {
+    if (isEmpty(queryParams)) {
+      return defaultMarketsQueryState;
+    } else {
+      return parse(queryParams);
+    }
+  } catch (error) {
+    console.warn(error);
+    return defaultMarketsQueryState;
+  }
+};
+
 const useMarketsUrlQuery = (): MarketsListQuery & {
   updateQuery: MarketListQueryUpdater;
 } => {
@@ -29,40 +42,8 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
   const routerPath = router.asPath;
   console.log(routerPath);
   const queryParams = getQueryParams(routerPath);
-  const query = parse(queryParams);
+  const query = parseQuery(queryParams);
   console.log(query);
-
-  // const [query, setQuery] = useState<MarketsListQuery>();
-
-  // const setQueryToDefault = () => {
-  //   setQuery(defaultMarketsQueryState);
-  //   updateQuery(defaultMarketsQueryState);
-  // };
-
-  // const setInitialQuery = useCallback(() => {
-  //   const queryParams = getQueryParams(routerPath);
-  //   try {
-  //     if (isEmpty(queryParams)) {
-  //       setQueryToDefault();
-  //     } else {
-  //       const query = parse(queryParams);
-  //       setQuery(query);
-  //     }
-  //   } catch (error) {
-  //     console.warn(error);
-  //     setQueryToDefault();
-  //   }
-  // }, [routerPath]);
-
-  // useEffect(() => {
-  //   const queryParams = getQueryParams(routerPath);
-  //   const query = parse(queryParams);
-  //   setQuery(query);
-  // }, [routerPath]);
-
-  // useEffect(() => {
-  //   setInitialQuery();
-  // }, []);
 
   const updateQuery = useCallback<MarketListQueryUpdater>(
     (update) => {
@@ -80,17 +61,6 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
     },
     [routerPath, query],
   );
-
-  // const [queryState, setQueryState] = useState<
-  //   MarketsListQuery & { updateQuery: MarketListQueryUpdater }
-  // >();
-
-  // useEffect(() => {
-  //   if (query == null) {
-  //     return;
-  //   }
-  //   setQueryState({ ...query, updateQuery });
-  // }, [query]);
 
   return { ...query, updateQuery };
 };
