@@ -1,26 +1,57 @@
-import { observer } from "mobx-react";
-import { NextPage } from "next";
-import { useRouter } from "next/router";
-import MobxReactForm from "mobx-react-form";
-import Decimal from "decimal.js";
-import React, { useEffect, useRef, useState } from "react";
-import { from } from "rxjs";
-import { AlertTriangle } from "react-feather";
-import {
-  CreateMarketParams,
-  CreateCpmmMarketAndDeployAssetsParams,
-} from "@zeitgeistpm/sdk/dist/types/market";
 import { ISubmittableResult } from "@polkadot/types/types";
 import {
   DecodedMarketMetadata,
   MarketPeriod,
   MarketTypeOf,
 } from "@zeitgeistpm/sdk/dist/types";
+import {
+  CreateCpmmMarketAndDeployAssetsParams,
+  CreateMarketParams,
+} from "@zeitgeistpm/sdk/dist/types/market";
+import Decimal from "decimal.js";
+import { observer } from "mobx-react";
+import MobxReactForm from "mobx-react-form";
 import Moment from "moment";
+import { NextPage } from "next";
+import { useRouter } from "next/router";
+import React, { useEffect, useRef, useState } from "react";
+import { AlertTriangle } from "react-feather";
+import { from } from "rxjs";
 
+import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import { dateBlock } from "@zeitgeistpm/utility/dist/time";
+import EndField from "components/create/EndField";
+import {
+  getBlocksDeltaForDuration,
+  MarketDeadlinesInput,
+  MarketDeadlinesValue,
+} from "components/create/MarketDeadlinesInput";
+import MarketFormCard from "components/create/MarketFormCard";
+import MarketSlugField from "components/create/MarketSlugField";
+import OutcomesField from "components/create/OutcomesField";
+import TagChoices from "components/create/TagChoices";
+import PoolSettings, {
+  PoolAssetRowData,
+  poolRowDataFromOutcomes,
+} from "components/liquidity/PoolSettings";
+import MarketCostModal from "components/markets/MarketCostModal";
+import InfoBoxes from "components/ui/InfoBoxes";
+import { Input } from "components/ui/inputs";
+import LabeledToggle from "components/ui/LabeledToggle";
+import Toggle from "components/ui/Toggle";
+import TransactionButton from "components/ui/TransactionButton";
+import { NUM_BLOCKS_IN_DAY, ZTG } from "lib/constants";
 import { defaultOptions, defaultPlugins } from "lib/form";
-import { useStore } from "lib/stores/Store";
+import { checkMarketExists } from "lib/gql/markets";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useChainTime } from "lib/state/chaintime";
 import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
+import { useModalStore } from "lib/stores/ModalStore";
+import { useStore } from "lib/stores/Store";
+import { JSONObject } from "lib/types";
 import {
   EndType,
   isMultipleOutcomeEntries,
@@ -30,41 +61,10 @@ import {
   OutcomeType,
   RangeOutcomeEntry,
 } from "lib/types/create-market";
-import { JSONObject } from "lib/types";
 import { toBase64 } from "lib/util";
-import { extrinsicCallback } from "lib/util/tx";
 import { calculateMarketCost } from "lib/util/market";
-import { NUM_BLOCKS_IN_DAY, ZTG } from "lib/constants";
-import { Input } from "components/ui/inputs";
-import OutcomesField from "components/create/OutcomesField";
-import MarketSlugField from "components/create/MarketSlugField";
-import TagChoices from "components/create/TagChoices";
-import EndField from "components/create/EndField";
-import InfoBoxes from "components/ui/InfoBoxes";
-import LabeledToggle from "components/ui/LabeledToggle";
-import Toggle from "components/ui/Toggle";
-import PoolSettings, {
-  PoolAssetRowData,
-  poolRowDataFromOutcomes,
-} from "components/liquidity/PoolSettings";
-import TransactionButton from "components/ui/TransactionButton";
-import MarketFormCard from "components/create/MarketFormCard";
-import { useModalStore } from "lib/stores/ModalStore";
-import MarketCostModal from "components/markets/MarketCostModal";
-import { checkMarketExists } from "lib/gql/markets";
+import { extrinsicCallback } from "lib/util/tx";
 import dynamic from "next/dynamic";
-import {
-  getBlocksDeltaForDuration,
-  MarketDeadlinesInput,
-  MarketDeadlinesValue,
-} from "components/create/MarketDeadlinesInput";
-import { dateBlock } from "@zeitgeistpm/utility/dist/time";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useWallet } from "lib/state/wallet";
-import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
-import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
-import { useChainTime } from "lib/state/chaintime";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
@@ -538,6 +538,7 @@ const CreatePage: NextPage = observer(() => {
       return new Promise(async (resolve, reject) => {
         const params = await getCreateCpmmMarketAndAddPoolParameters(
           extrinsicCallback({
+            api: sdk.asRpc().api,
             notifications: notificationStore,
             successMethod: "PoolCreate",
             successCallback: (data) => {
@@ -553,11 +554,8 @@ const CreatePage: NextPage = observer(() => {
               );
               resolve(marketId);
             },
-            failCallback: ({ index, error }) => {
-              notificationStore.pushNotification(
-                store.getTransactionError(index, error),
-                { type: "Error" },
-              );
+            failCallback: (error) => {
+              notificationStore.pushNotification(error, { type: "Error" });
               reject();
             },
           }),
@@ -586,6 +584,7 @@ const CreatePage: NextPage = observer(() => {
           if (!deployPool) {
             const params = await getCreateMarketParameters(
               extrinsicCallback({
+                api: sdk.asRpc().api,
                 notifications: notificationStore,
                 successMethod: "MarketCreated",
                 finalizedCallback: (data: JSONObject) => {
@@ -599,11 +598,8 @@ const CreatePage: NextPage = observer(() => {
                   );
                   resolve(Number(marketId));
                 },
-                failCallback: ({ index, error }) => {
-                  notificationStore.pushNotification(
-                    store.getTransactionError(index, error),
-                    { type: "Error" },
-                  );
+                failCallback: (error) => {
+                  notificationStore.pushNotification(error, { type: "Error" });
                   reject();
                 },
               }),
