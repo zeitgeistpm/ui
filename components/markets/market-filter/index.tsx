@@ -152,7 +152,7 @@ const MarketFilterSelection = ({
           <Skeleton width="80%" height="44px" className="mb-[25px]"></Skeleton>
         )}
         <p
-          className="text-ztg-blue cursor-pointer mb-6"
+          className="block md:hidden text-ztg-blue cursor-pointer mb-6"
           onClick={() => setMobileDialogOpen(true)}
         >
           Find Your Market <ChevronDown className="inline mb-1" size={20} />
