@@ -6,10 +6,6 @@ import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import MarketChart from "components/markets/MarketChart";
 import MarketHeader from "components/markets/MarketHeader";
-import {
-  MarketTimer,
-  MarketTimerSkeleton,
-} from "components/markets/MarketTimer";
 import PoolDeployer from "components/markets/PoolDeployer";
 import { MarketPromotionCallout } from "components/markets/PromotionCallout";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";

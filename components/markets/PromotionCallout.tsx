@@ -6,7 +6,6 @@ import { MarketPageIndexedData } from "lib/gql/markets";
 import { useMarketPromotionState } from "lib/state/promotions";
 import moment from "moment";
 import Image from "next/image";
-import { AiFillFire } from "react-icons/ai";
 
 export const MarketPromotionCallout = (props: {
   market: Market<IndexerContext> | MarketPageIndexedData;
