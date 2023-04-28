@@ -63,10 +63,6 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
   const queryState = useMarketsUrlQuery();
-  console.log(queryState.filters);
-
-  // console.log(queryState);
-  console.log(orderBy, withLiquidityOnly, filters);
 
   useChangeQuery(filters, orderBy, withLiquidityOnly);
 

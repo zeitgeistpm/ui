@@ -40,10 +40,8 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
 } => {
   const router = useRouter();
   const routerPath = router.asPath;
-  console.log(routerPath);
   const queryParams = getQueryParams(routerPath);
   const query = parseQuery(queryParams);
-  console.log(query);
 
   const updateQuery = useCallback<MarketListQueryUpdater>(
     (update) => {
