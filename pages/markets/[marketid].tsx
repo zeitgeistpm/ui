@@ -239,13 +239,7 @@ const Market: NextPage<MarketPageProps> = observer(
               Market rejected: {marketSdkv2.rejectReason}
             </div>
           )}
-          <div className="flex justify-center my-10">
-            {marketStage ? (
-              <MarketTimer stage={marketStage} />
-            ) : (
-              <MarketTimerSkeleton />
-            )}
-          </div>
+
           {chartSeries && indexedMarket?.pool?.poolId ? (
             <MarketChart
               marketId={indexedMarket.marketId}
