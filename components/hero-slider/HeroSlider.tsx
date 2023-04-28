@@ -49,7 +49,7 @@ const HeroSlider = ({
       <div className="h-full relative container-fluid">
         {banners.map((banner, index) => (
           <Transition
-            className={"absolute h-full w-full"}
+            className="absolute h-full w-full container-fluid left-0"
             show={index == slider.currentSlide}
             enter="transition-all duration-1000"
             enterFrom="opacity-0 blur-md"
@@ -58,7 +58,7 @@ const HeroSlider = ({
             leaveFrom="opacity-100 blur-none"
             leaveTo="opacity-0 blur-md"
           >
-            <HeroSlide className="absolute h-full w-full" banner={banner} />
+            <HeroSlide banner={banner} />
           </Transition>
         ))}
         {banners.length > 1 && (
