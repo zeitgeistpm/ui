@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 import React, { FC, useState } from "react";
-
+import { ChevronDown } from "react-feather";
 import { Menu, Transition } from "@headlessui/react";
 import { getWallets } from "@talismn/connect-wallets";
 import Avatar from "components/ui/Avatar";
@@ -182,13 +182,18 @@ const AccountButton: FC<{
                           />
                         </div>
                         <span
-                          className={`font-medium px-3.5 text-sm h-full leading-[40px] ${
+                          className={`font-medium pl-2 text-sm h-full leading-[40px] ${
                             pathname === "/" ? "text-white" : "text-black"
                           }`}
                         >
                           {activeAccount &&
                             shortenAddress(activeAccount?.address, 6, 4)}
                         </span>
+                        <ChevronDown
+                          className={`px-2 box-content w-[18px] ${
+                            open && "rotate-180"
+                          }`}
+                        />
                       </div>
                     </div>
                   </Menu.Button>
