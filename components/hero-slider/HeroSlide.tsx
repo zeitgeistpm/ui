@@ -1,13 +1,15 @@
-import { FC, useMemo } from "react";
+import { CSSProperties, FC, useMemo } from "react";
 import Link from "next/link";
 import { Banner } from "lib/cms/get-banners";
 import { isCurrentOrigin } from "lib/util/is-current-origin";
 
 export interface HeroSlideProps {
+  className?: string;
+  style?: CSSProperties;
   banner: Banner;
 }
 
-export const HeroSlide: FC<HeroSlideProps> = ({ banner }) => {
+export const HeroSlide: FC<HeroSlideProps> = ({ banner, style, className }) => {
   const isExternalLink = !isCurrentOrigin(banner.ctaLink);
 
   const linkProps = {
@@ -22,7 +24,10 @@ export const HeroSlide: FC<HeroSlideProps> = ({ banner }) => {
   };
 
   return (
-    <div className="flex items-center h-full w-full">
+    <div
+      className={`flex items-center h-full w-full ${className}`}
+      style={style}
+    >
       <div className="w-full pb-8">
         <h2
           className={`text-center sm:text-left text-white font-sans md:whitespace-pre font-extrabold text-5xl sm:text-7xl lg:text-8xl mb-4`}
