@@ -21,10 +21,13 @@ export class IndexPage {
 
   async getActiveSlideIndex(): Promise<number> {
     const images = await this.heroSlider.locator("> img").all();
-    for (const image of images) {
-      const isVisible = await image.isVisible();
+    for (const [index, image] of images.entries()) {
+      const opacity = await image.evaluate((node) => {
+        return node.style.opacity;
+      });
+      const isVisible = opacity === "1";
       if (isVisible) {
-        return images.indexOf(image);
+        return index;
       }
     }
     return -1;
