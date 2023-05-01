@@ -33,13 +33,13 @@ export default async function (
   const market = markets[0];
 
   if (!market) {
-    return new Response(`no market found by id ${marketId}`, {
-      status: 404,
-    });
+    return response
+      .status(404)
+      .json({ error: `No market found by id ${marketId}` });
   }
 
   let prediction: { name: string; price: number; percentage: number } = {
-    name: "No Prediction",
+    name: null,
     percentage: 0,
     price: 0,
   };
@@ -54,7 +54,7 @@ export default async function (
     prediction = getCurrentPrediction(assets as any, market as any);
   }
 
-  const volume = new Decimal(market.pool?.volume).div(ZTG).toFixed(2);
+  const volume = new Decimal(market.pool?.volume ?? 0).div(ZTG).toFixed(2);
 
   const ends = moment(Number(market.period.end)).format("MMM Do, YYYY");
 
