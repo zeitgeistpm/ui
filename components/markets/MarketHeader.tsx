@@ -90,13 +90,15 @@ const MarketHistory: FC<PropsWithChildren<{ starts: number; ends: number }>> =
     }).format(ends);
     return (
       <ol>
-        {[marketStart, marketClosed].map((item, index) => {
-          return (
-            <li>
-              {index}. {item}
-            </li>
-          );
-        })}
+        {[marketStart, marketClosed, reported, disputed, resolved].map(
+          (item, index) => {
+            return (
+              <li>
+                {index}. {item}
+              </li>
+            );
+          },
+        )}
       </ol>
     );
     //market closed
@@ -153,8 +155,12 @@ const MarketHeader: FC<{
     scalarType,
   );
 
-  const { data } = useMarketEventHistory(market.marketId.toString());
-  console.log(data);
+  const { data: eventHistory } = useMarketEventHistory(
+    market.marketId.toString(),
+  );
+  console.log(eventHistory);
+  // const { data: authReport } = useAuthorizedReport(market.marketId);
+  // console.log(authReport?.toHuman());
 
   return (
     <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">

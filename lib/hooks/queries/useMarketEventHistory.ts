@@ -3,6 +3,7 @@ import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { getMarket } from "lib/gql/markets";
 import { MarketPageIndexedData } from "lib/gql/markets";
 import { useSdkv2 } from "../useSdkv2";
+import { useAuthorizedReport } from "./useAuthorizedReport";
 import { useTimeStampForBlock } from "./useTimeStampForBlock";
 
 export const marketsEventsRootQuery = "marketsEvents";
@@ -23,7 +24,6 @@ export const useMarketEventHistory = (
       if (!isIndexedSdk(sdk)) return [];
 
       const market = await getMarket(sdk.indexer.client, marketId);
-
       const disputes = market.disputes;
       const report = market.report;
 

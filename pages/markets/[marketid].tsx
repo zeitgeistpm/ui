@@ -38,7 +38,6 @@ import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
-import { useTimeStampForBlock } from "lib/hooks/queries/useTimeStampForBlock";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import { MarketDispute, Report } from "@zeitgeistpm/sdk/dist/types";
