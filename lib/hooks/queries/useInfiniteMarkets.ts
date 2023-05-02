@@ -2,11 +2,8 @@ import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { IndexerContext, isIndexedSdk, Market } from "@zeitgeistpm/sdk-next";
 import { MarketOrderByInput } from "@zeitgeistpm/indexer";
 import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets";
-import objectHash from "object-hash";
 import { getCurrentPrediction } from "lib/util/assets";
 import {
-  MarketFilter,
-  MarketFilterType,
   MarketsListFiltersQuery,
   MarketsOrderBy,
 } from "lib/types/market-filter";
@@ -16,25 +13,6 @@ import { MarketOutcomes } from "lib/types/markets";
 import { MarketStatus } from "@zeitgeistpm/indexer";
 
 export const rootKey = "markets-filtered";
-
-const hashFilters = (filters: MarketFilter[]): string => {
-  const sortedFilters = [...filters].sort((a, b) => {
-    if (a.type !== b.type) {
-      return a.type < b.type ? -1 : 1;
-    } else {
-      return a.value < b.value ? -1 : 1;
-    }
-  });
-  const hashed = objectHash(sortedFilters);
-  return hashed;
-};
-
-const getFilterValuesByType = (
-  filters: MarketFilter[],
-  type: MarketFilterType,
-): string[] => {
-  return filters.filter((f) => f.type === type).map((f) => f.value);
-};
 
 const orderByMap = {
   [MarketsOrderBy.Newest]: MarketOrderByInput.MarketIdDesc,

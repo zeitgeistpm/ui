@@ -4,6 +4,7 @@ module.exports = withPlaiceholder({
   reactStrictMode: true,
   experimental: {
     esmExternals: true,
+    scrollRestoration: true,
   },
   images: {
     domains: [
