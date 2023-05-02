@@ -10,6 +10,7 @@ import {
   marketsOrderByOptions,
 } from "lib/constants/market-filter";
 import MarketActiveFilters from "./MarketActiveFilters";
+import MarketFiltersCheckboxes from "./MarketFiltersCheckboxes";
 
 type FilterButtonProps = PropsWithChildren<{
   RightBtn: Icon;
@@ -41,6 +42,8 @@ const AllFilters = ({
   onFilterRemove,
   ordering,
   close,
+  withLiquidityOnly,
+  onWithLiquidityOnlyChange,
 }) => {
   return (
     <>
@@ -84,6 +87,11 @@ const AllFilters = ({
       >
         Sort By: {ordering}
       </FilterButton>
+      <MarketFiltersCheckboxes
+        withLiquidityOnly={withLiquidityOnly}
+        onWithLiquidityOnlyChange={onWithLiquidityOnlyChange}
+        className="mt-4"
+      />
       <button
         className="rounded-full bg-ztg-blue mt-auto h-14 text-white"
         onClick={close}
@@ -110,9 +118,6 @@ const FilterSelection = ({
   back,
   type,
   addFilter,
-  withLiquidityOnly,
-  onWithLiquidityOnlyChange,
-  ordering,
   onOrderingChange,
 }: FilterSelectionProps) => {
   return (
@@ -288,6 +293,8 @@ const MobileDialog = ({
                     onFilterRemove={onFilterRemove}
                     ordering={ordering}
                     close={close}
+                    withLiquidityOnly={withLiquidityOnly}
+                    onWithLiquidityOnlyChange={onWithLiquidityOnlyChange}
                   />
                 ),
                 1: (

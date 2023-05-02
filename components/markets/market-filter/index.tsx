@@ -170,7 +170,7 @@ const MarketFilterSelection = ({
           ref={portalRef}
         ></div>
         {portalRef.current ? (
-          <div className="flex items-center gap-6 mb-6 lg:hidden">
+          <div className="hidden md:flex items-center gap-6 mb-6 lg:hidden">
             <MarketFiltersCheckboxes
               onWithLiquidityOnlyChange={setWithLiquidityOnly}
               withLiquidityOnly={withLiquidityOnly}
