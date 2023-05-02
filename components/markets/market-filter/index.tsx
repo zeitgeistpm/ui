@@ -129,6 +129,13 @@ const MarketFilterSelection = ({
       <MobileDialog
         open={mobileDialogOpen}
         setOpen={setMobileDialogOpen}
+        addFilter={add}
+        withLiquidityOnly={withLiquidityOnly}
+        onWithLiquidityOnlyChange={setWithLiquidityOnly}
+        ordering={activeOrdering}
+        onOrderingChange={setActiveOrdering}
+        onClear={clear}
+        onFilterRemove={remove}
       ></MobileDialog>
       <div className="w-full flex flex-col items-center justify-center mb-[30px]">
         {portalRef.current ? (
