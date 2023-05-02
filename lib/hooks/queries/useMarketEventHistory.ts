@@ -1,10 +1,11 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import { isIndexedSdk, isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { getMarket } from "lib/gql/markets";
 import { MarketPageIndexedData } from "lib/gql/markets";
 import { useSdkv2 } from "../useSdkv2";
 import { useAuthorizedReport } from "./useAuthorizedReport";
 import { useTimeStampForBlock } from "./useTimeStampForBlock";
+import { getApiAtBlock } from "lib/util/get-api-at";
 
 export const marketsEventsRootQuery = "marketsEvents";
 
@@ -21,24 +22,60 @@ export const useMarketEventHistory = (
   return useQuery(
     [marketsEventsRootQuery, id, marketId],
     async () => {
-      if (!isIndexedSdk(sdk)) return [];
+      if (isIndexedSdk(sdk) && isRpcSdk(sdk)) {
+        const market = await getMarket(sdk.indexer.client, marketId);
+        const disputes = market.disputes;
+        const report = market.report;
+        const oracleReported = report.by === market.oracle;
 
-      const market = await getMarket(sdk.indexer.client, marketId);
-      const disputes = market.disputes;
-      const report = market.report;
+        const getTimeStampForBlock = async (blockNumber: number) => {
+          const api = await getApiAtBlock(sdk.api, blockNumber);
+          const timestamp = await api.query.timestamp
+            .now()
+            .then((now) => now.toNumber());
+          return timestamp;
+        };
 
-      //if oracle report is true, then oracle reported otherwise market reporter reported
-      const oracleReported = report.by === market.oracle;
-      console.log(oracleReported);
-      // const { data: timeStamp } = useTimeStampForBlock(1838978);
+        let disputesWithTimestamp;
+        let reportWithTimestamp;
 
-      // console.log(new Date(timeStamp));
+        if (disputes) {
+          const updateDisputesWithTimestamp = async (disputes) => {
+            const promises = disputes.map(async (dispute) => {
+              const timestamp = await getTimeStampForBlock(dispute.at);
+              dispute.at = timestamp;
+              return dispute;
+            });
 
-      return market;
+            const updatedDisputes = await Promise.all(promises);
+
+            return updatedDisputes;
+          };
+          disputesWithTimestamp = await updateDisputesWithTimestamp(disputes);
+        }
+        if (report) {
+          const updateReportWithTimestamp = async (report) => {
+            const timestamp = await getTimeStampForBlock(report.at);
+            reportWithTimestamp = {
+              ...report,
+              ["at"]: timestamp,
+            };
+          };
+          await updateReportWithTimestamp(report);
+        }
+
+        const marketHistory = {
+          reported: reportWithTimestamp,
+          disputes: disputesWithTimestamp,
+          resolved: market.resolvedOutcome,
+          oracleReported: oracleReported,
+        };
+
+        return marketHistory;
+      }
     },
     {
-      enabled: sdk != null && isIndexedSdk(sdk),
-      keepPreviousData: true,
+      enabled: Boolean(sdk && isIndexedSdk(sdk) && isRpcSdk(sdk)),
     },
   );
 };

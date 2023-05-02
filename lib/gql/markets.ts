@@ -33,6 +33,7 @@ const marketQuery = gql`
       creator
       oracle
       disputeMechanism
+      resolvedOutcome
       marketType {
         scalar
         categorical
@@ -79,6 +80,7 @@ export interface MarketPageIndexedData {
   };
   categories: { name: string; color: string }[];
   outcomeAssets: string[];
+  resolvedOutcome: string;
   pool: {
     poolId: number;
     volume: string;
