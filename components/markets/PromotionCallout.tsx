@@ -36,12 +36,12 @@ export const MarketPromotionCallout = (props: {
 
           <Modal open={open} onClose={() => toggle(false)}>
             <Dialog.Panel
-              className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
+              className="flex flex-col max-h-screen justify-center items-center bg-white 
     w-full max-w-[564px]  rounded-ztg-10"
             >
-              <div className="w-full h-52 relative rounded-t-ztg-10 overflow-hidden">
+              <div className="w-full h-40 lg:h-52 mb-4 relative rounded-t-ztg-10 overflow-hidden">
                 <Image
-                  alt="AI Logan?"
+                  alt="Market Promotion Banner Image"
                   src={props.promotion.imageUrl}
                   fill
                   style={{
@@ -49,13 +49,13 @@ export const MarketPromotionCallout = (props: {
                   }}
                 />
               </div>
-              <div className="px-16 py-8">
-                <h2 className="mb-12 text-xl center">
+              <div className="px-8 py-4 lg:px-16 lg:py-8">
+                <h2 className="mb-8 lg:mb-12 text-xl center text-center lg:text-left">
                   This market has promotional incentives!
                 </h2>
-                <div className="mb-14">
+                <div className="mb-8 lg:mb-14">
                   <ol className="list-decimal pl-[24px]">
-                    <li className="mb-6 font-light">
+                    <li className="mb-4 lg:mb-6 font-light">
                       Join our trading campaign on the prediction market for
                       <b className="font-medium">
                         {" "}
@@ -63,7 +63,7 @@ export const MarketPromotionCallout = (props: {
                       </b>{" "}
                       and get the chance to win big!
                     </li>
-                    <li className="mb-6 font-light">
+                    <li className="mb-4 lg:mb-6 font-light">
                       Make trades of{" "}
                       <b className="font-medium">
                         {props.promotion.tradeRequirement}+ $ZTG{" "}
@@ -75,14 +75,14 @@ export const MarketPromotionCallout = (props: {
                       </b>{" "}
                       prize.
                     </li>
-                    <li className="mb-6 font-light">
+                    <li className="mb-4 lg:mb-6 font-light">
                       The campaign will only run until{" "}
                       <b className="font-medium">
                         {moment(props.promotion.timeSpan[1]).calendar()}
                       </b>
                       , so make sure to get your trades in before the deadline.
                     </li>
-                    <li className="mb-6 font-light">
+                    <li className="mb-4 lg:mb-6 font-light">
                       Don't miss out on this exciting opportunity to test your
                       knowledge and earn rewards!
                     </li>
@@ -91,7 +91,7 @@ export const MarketPromotionCallout = (props: {
                 <button
                   onClick={() => toggle(false)}
                   className={`ztg-transition bg-ztg-blue text-white focus:outline-none disabled:opacity-20 disabled:cursor-default 
-        rounded-full w-full mb-8 font-bold text-ztg-16-150 h-ztg-56`}
+        rounded-full w-full mb-4 lg:mb-8 font-bold text-ztg-16-150 h-ztg-56`}
                 >
                   Got it!
                 </button>

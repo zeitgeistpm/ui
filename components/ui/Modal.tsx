@@ -5,10 +5,12 @@ const Modal = ({
   open,
   children,
   onClose,
+  containerClassName,
 }: {
   children: ReactNode;
   open: boolean;
   onClose: () => void;
+  containerClassName?: string;
 }) => {
   return (
     <Transition appear show={open} as={Fragment}>
@@ -34,7 +36,9 @@ const Modal = ({
           leaveFrom="opacity-100 scale-100"
           leaveTo="opacity-0 scale-95"
         >
-          <div className="fixed inset-0 flex items-center justify-center p-4">
+          <div
+            className={`fixed inset-0 flex items-center justify-center p-4 ${containerClassName}`}
+          >
             {children}
           </div>
         </Transition.Child>
