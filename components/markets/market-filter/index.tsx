@@ -187,7 +187,7 @@ const MarketFilterSelection = ({
           filters={activeFilters}
           onClear={clear}
           onFilterRemove={remove}
-          className="flex gap-2"
+          className="hidden md:flex gap-2"
         />
       </div>
     </MarketFiltersContainer>
