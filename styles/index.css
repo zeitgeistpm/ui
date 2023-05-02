@@ -711,3 +711,13 @@ tr {
     transform: scale3d(1, 1, 1);
   }
 }
+
+@counter-style crystal-ball-emoji-list {
+  system: cyclic;
+  symbols: "🔮";
+  suffix: " ";
+}
+
+.crystal-ball-emoji-list {
+  list-style-type: crystal-ball-emoji-list;
+}

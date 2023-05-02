@@ -54,37 +54,30 @@ export const MarketPromotionCallout = (props: {
                   This market has promotional incentives!
                 </h2>
                 <div className="mb-8 lg:mb-14">
-                  <ol className="list-decimal pl-[24px]">
+                  <ol className="list-decimal pl-[24px] crystal-ball-emoji-list">
                     <li className="mb-4 lg:mb-6 font-light">
-                      Join our trading campaign on the prediction market for
-                      <b className="font-medium">
-                        {" "}
-                        "{props.market.question}"
-                      </b>{" "}
-                      and get the chance to win big!
+                      If you trade in this prediction market, you stand the
+                      chance of winning considerable prizes!
                     </li>
                     <li className="mb-4 lg:mb-6 font-light">
-                      Make trades of{" "}
-                      <b className="font-medium">
-                        {props.promotion.tradeRequirement}+ $ZTG{" "}
-                      </b>
-                      and you'll be entered into a lucky draw to win a massive
-                      <b className="font-medium">
-                        {" "}
-                        {props.promotion.prize} $ZTG
-                      </b>{" "}
-                      prize.
+                      To enter, simply make a trade in this market of{" "}
+                      {props.promotion.tradeRequirement} ZTG or more. By doing
+                      so, you will automatically be entered into a lucky draw to
+                      win {props.promotion.prize} ZTG!{" "}
+                      <i>
+                        (Of course, this would be in addition to the rewards you
+                        will receive if you predict correctly.)
+                      </i>
                     </li>
                     <li className="mb-4 lg:mb-6 font-light">
                       The campaign will only run until{" "}
-                      <b className="font-medium">
-                        {moment(props.promotion.timeSpan[1]).calendar()}
+                      <b>
+                        {moment(props.promotion.timeSpan[1]).format(
+                          "Do of MMMM YYYY",
+                        )}
                       </b>
-                      , so make sure to get your trades in before the deadline.
-                    </li>
-                    <li className="mb-4 lg:mb-6 font-light">
-                      Don't miss out on this exciting opportunity to test your
-                      knowledge and earn rewards!
+                      , so make sure to get your trades in soon! The campaign
+                      will only run until{" "}
                     </li>
                   </ol>
                 </div>

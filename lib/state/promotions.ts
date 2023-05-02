@@ -7,10 +7,7 @@ export type MarketPromotions = {
   };
 };
 /**
- * Atom proxy storage of user wallet config.
- * Stores the selected wallet and address in localStorage.
- *
- * @warning - when adding migrations all previous migrations in the list will have to left in place.
+ * FIX
  */
 const marketPromotionsAtom = persistentAtom<MarketPromotions>({
   key: "market-promotions",
