@@ -11,6 +11,7 @@ interface TransactionButtonProps {
   disabled?: boolean;
   className?: string;
   dataTest?: string;
+  type?: "button" | "submit" | "reset";
 }
 
 const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> =
@@ -22,6 +23,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> =
       dataTest = "",
       children,
       preventDefault,
+      type = "button",
     }) => {
       const store = useStore();
       const wallet = useWallet();
@@ -50,15 +52,31 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> =
         return disabled;
       };
 
+      const colorClass =
+        locationAllowed !== true || isUsingVPN ? "bg-vermilion" : "bg-ztg-blue";
+
+      const getButtonChildren = () => {
+        if (locationAllowed !== true) {
+          return "Location Blocked";
+        } else if (isUsingVPN) {
+          return "VPN Blocked";
+        } else if (wallet.connected) {
+          return children;
+        } else {
+          return "Connect Wallet";
+        }
+      };
+
       return (
         <button
-          className={`ztg-transition bg-ztg-blue text-white focus:outline-none disabled:opacity-20 disabled:cursor-default 
-        rounded-full w-full  font-bold text-ztg-16-150 h-ztg-56 ${className}`}
+          type={type}
+          className={`ztg-transition text-white focus:outline-none disabled:opacity-20 disabled:cursor-default 
+        rounded-full w-full font-bold text-ztg-16-150 h-ztg-56 ${className} ${colorClass}`}
           onClick={(e) => click(e)}
           disabled={isDisabled()}
           data-test={dataTest}
         >
-          {wallet.connected ? children : "Connect Wallet"}
+          {getButtonChildren()}
         </button>
       );
     },
