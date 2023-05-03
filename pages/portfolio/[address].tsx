@@ -2,6 +2,7 @@ import { Tab } from "@headlessui/react";
 import { getIndexOf } from "@zeitgeistpm/sdk-next";
 import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
+import CurrenciesTable from "components/portfolio/CurrenciesTable";
 import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
 import {
   MarketPositions,
@@ -65,21 +66,23 @@ const Portfolio: NextPage = observer(() => {
               <h2 className="text-2xl mb-6 text-center">Predictions</h2>
               <Tab.Group>
                 <Tab.List className="flex center mb-14">
-                  {["By Markets", "Subsidy", "Bonds"].map((title, index) => (
-                    <Tab className="px-4" key={index}>
-                      {({ selected }) => (
-                        <div
-                          className={
-                            selected
-                              ? "font-semibold text-black transition-all"
-                              : "text-sky-600 transition-all"
-                          }
-                        >
-                          {title}
-                        </div>
-                      )}
-                    </Tab>
-                  ))}
+                  {["By Markets", "Subsidy", "Bonds", "Currencies"].map(
+                    (title, index) => (
+                      <Tab className="px-4" key={index}>
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "font-semibold text-black transition-all"
+                                : "text-sky-600 transition-all"
+                            }
+                          >
+                            {title}
+                          </div>
+                        )}
+                      </Tab>
+                    ),
+                  )}
                 </Tab.List>
 
                 <Tab.Panels>
@@ -166,6 +169,9 @@ const Portfolio: NextPage = observer(() => {
                   </Tab.Panel>
                   <Tab.Panel>
                     <BondsTable address={address} />
+                  </Tab.Panel>
+                  <Tab.Panel>
+                    <CurrenciesTable address={address} />
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>
