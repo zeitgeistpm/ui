@@ -1,3 +1,9 @@
+import { Dialog } from "@headlessui/react";
+import Modal from "components/ui/Modal";
+import TransactionButton from "components/ui/TransactionButton";
+import { useState } from "react";
+import { ArrowRight } from "react-feather";
+
 const WithdrawButton = () => {
   const [isOpen, setIsOpen] = useState(false);
 
