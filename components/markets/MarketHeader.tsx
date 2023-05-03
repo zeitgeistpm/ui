@@ -1,4 +1,4 @@
-import { MarketStage, MarketStatus } from "@zeitgeistpm/sdk-next";
+import { MarketStage, MarketStatus, MarketTypeOf } from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
 import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";
@@ -89,8 +89,12 @@ const MarketHistory: FC<
     ends: number;
     marketHistory: MarketHistory;
     categories: { name: string; color: string }[];
+    marketType: {
+      scalar: string[];
+      categorical: string;
+    };
   }>
-> = ({ marketHistory, categories }) => {
+> = ({ marketHistory, categories, marketType }) => {
   const marketStart = new Intl.DateTimeFormat("default", {
     dateStyle: "medium",
   }).format(marketHistory?.start.timestamp);
@@ -99,16 +103,15 @@ const MarketHistory: FC<
   }).format(marketHistory?.end.timestamp);
 
   const getOutcome = (outcome: OutcomeReport) => {
-    console.log(outcome, categories);
-    if (outcome["categorical"] !== null) {
-      return categories[outcome["categorical"]].name;
+    if (marketType.scalar === null) {
+      return categories[outcome["categorical"]]?.name;
     } else {
       return outcome["scalar"];
     }
   };
 
   return (
-    <ol>
+    <ol className="list-decimal">
       <li>
         <span>
           {marketStart} (block: {marketHistory?.start.block})
@@ -141,6 +144,44 @@ const MarketHistory: FC<
                 </span>
               </span>
             </div>
+          </span>
+        </li>
+      )}
+      {marketHistory?.disputes &&
+        marketHistory?.disputes.map((dispute) => {
+          return (
+            <li>
+              {new Intl.DateTimeFormat("default", {
+                dateStyle: "medium",
+              }).format(dispute.timestamp)}
+              (block:{dispute.at})
+              <span>
+                {marketHistory.oracleReported ?? "Oracle"}
+                <div className="flex items-center">
+                  <Avatar address={dispute.by} />
+                  <span className="font-medium px-3.5 text-sms h-full leading-[40px]">
+                    <span className="font-bold">
+                      {shortenAddress(dispute.by, 6, 4)}
+                    </span>{" "}
+                    disputed{" "}
+                    <span className="font-bold">
+                      {getOutcome(dispute.outcome)}
+                    </span>
+                  </span>
+                </div>
+              </span>
+            </li>
+          );
+        })}
+      {marketHistory?.resolved && (
+        <li>
+          <span>
+            Market resolved{" "}
+            <span className="font-bold">
+              {marketType.scalar === null
+                ? categories[marketHistory?.resolved].name
+                : marketHistory?.resolved}
+            </span>
           </span>
         </li>
       )}
@@ -279,6 +320,7 @@ const MarketHeader: FC<{
         ends={ends}
         marketHistory={marketHistory}
         categories={categories}
+        marketType={marketType}
       />
     </header>
   );
