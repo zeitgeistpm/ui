@@ -70,14 +70,13 @@ export const MarketPromotionCallout = (props: {
                       </i>
                     </li>
                     <li className="mb-4 lg:mb-6 font-light">
-                      The campaign will only run until{" "}
+                      This promotion will run until{" "}
                       <b>
                         {moment(props.promotion.timeSpan[1]).format(
                           "Do of MMMM YYYY",
                         )}
                       </b>
-                      , so make sure to get your trades in soon! The campaign
-                      will only run until{" "}
+                      , so make sure to get your trades in soon!
                     </li>
                   </ol>
                 </div>
