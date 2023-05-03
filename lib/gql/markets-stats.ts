@@ -2,7 +2,7 @@ import { gql, GraphQLClient } from "graphql-request";
 
 const query = gql`
   query MarketStats($ids: [Int!]!) {
-    marketStats(ids: $ids) {
+    marketStats(marketId: $ids) {
       participants
       liquidity
       marketId
