@@ -19,8 +19,9 @@ const FormTransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
       disabled={disabled}
       className={className}
       dataTest={dataTest}
-      children={children}
-    ></TransactionButton>
+    >
+      {children}
+    </TransactionButton>
   );
 };
 
