@@ -2,7 +2,7 @@ import { PropsWithChildren } from "react";
 import { Icon, Plus, ChevronDown, ChevronUp } from "react-feather";
 import MarketActiveFilters from "../MarketActiveFilters";
 import MarketFiltersCheckboxes from "../MarketFiltersCheckboxes";
-import { SelectionType } from "./types";
+import { SelectedMenu } from "../MarketFiltersContainer";
 import MarketFiltersSort from "../MarketFiltersSort";
 
 const sortBySelectStyles = {
@@ -91,18 +91,18 @@ const FilterButton = ({
 };
 
 export type FiltersListProps = {
-  showSelection: (type: SelectionType) => void;
+  showMenu: (menu: SelectedMenu) => void;
   close: () => void;
 };
 
-const FiltersList = ({ showSelection, close }: FiltersListProps) => {
+const FiltersList = ({ showMenu, close }: FiltersListProps) => {
   return (
     <>
       <MarketActiveFilters className="flex flex-row w-full justify-center gap-2 flex-wrap mb-5 " />
       <FilterButton
         RightIcon={Plus}
         onClick={() => {
-          showSelection("Category");
+          showMenu("Category");
         }}
         className="cursor-pointer"
       >
@@ -111,7 +111,7 @@ const FiltersList = ({ showSelection, close }: FiltersListProps) => {
       <FilterButton
         RightIcon={Plus}
         onClick={() => {
-          showSelection("Currency");
+          showMenu("Currency");
         }}
         className="cursor-pointer"
       >
@@ -120,7 +120,7 @@ const FiltersList = ({ showSelection, close }: FiltersListProps) => {
       <FilterButton
         RightIcon={Plus}
         onClick={() => {
-          showSelection("Status");
+          showMenu("Status");
         }}
         className="cursor-pointer"
       >

@@ -5,12 +5,12 @@ import {
 } from "lib/constants/market-filter";
 import { ChevronLeft, X } from "react-feather";
 import { useMarketFiltersContext } from "../MarketFiltersContainer";
-import { SelectionType } from "./types";
+import { SelectedMenu } from "../MarketFiltersContainer";
 import { MarketFilter } from "lib/types/market-filter";
 
 type FilterDetailsProps = {
   back: () => void;
-  type: SelectionType;
+  menu: SelectedMenu;
 };
 
 const FilterToggle = ({ option }: { option: MarketFilter }) => {
@@ -42,7 +42,7 @@ const FilterToggle = ({ option }: { option: MarketFilter }) => {
   );
 };
 
-const FilterDetails = ({ back, type }: FilterDetailsProps) => {
+const FilterDetails = ({ back, menu }: FilterDetailsProps) => {
   return (
     <>
       <a
@@ -52,7 +52,7 @@ const FilterDetails = ({ back, type }: FilterDetailsProps) => {
         <ChevronLeft className="w-6" transform="translate(-6, 0)" />{" "}
         <div className="inline-block">Back</div>
       </a>
-      <h3 className="text-2xl my-7">{type}</h3>
+      <h3 className="text-2xl my-7">{menu}</h3>
       <div className="flex flex-wrap">
         {
           {
@@ -77,7 +77,7 @@ const FilterDetails = ({ back, type }: FilterDetailsProps) => {
                 ))}
               </>
             ),
-          }[type]
+          }[menu]
         }
       </div>
       <button

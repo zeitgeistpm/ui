@@ -1,7 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { useState, useEffect, useRef } from "react";
 import { X } from "react-feather";
-import { SelectionType } from "./types";
+import { SelectedMenu } from "../MarketFiltersContainer";
 import FiltersList from "./FiltersList";
 import FilterDetails from "./FilterDetails";
 
@@ -15,7 +15,7 @@ export type MobileDialogProps = {
 const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
   const [showTransition, setShowTransition] = useState(open);
   const [currentSelection, setCurrentSelection] =
-    useState<SelectionType>("None");
+    useState<SelectedMenu>("None");
   const [step, setStep] = useState(0);
   const focusRef = useRef<HTMLDivElement>(null);
 
@@ -74,7 +74,7 @@ const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
               {
                 0: (
                   <FiltersList
-                    showSelection={(selection) => {
+                    showMenu={(selection) => {
                       setCurrentSelection(selection);
                       setStep(1);
                     }}
@@ -83,8 +83,11 @@ const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
                 ),
                 1: (
                   <FilterDetails
-                    back={() => setStep(0)}
-                    type={currentSelection}
+                    back={() => {
+                      setStep(0);
+                      setCurrentSelection("None");
+                    }}
+                    menu={currentSelection}
                   />
                 ),
               }[step]
