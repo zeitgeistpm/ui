@@ -22,9 +22,11 @@ const getImageUrl = async (image: string | null): Promise<string> => {
   }
   const controller = new AbortController();
 
+  const abortTimeout = 10000;
+
   setTimeout(() => {
     controller.abort();
-  }, 2500);
+  }, abortTimeout);
 
   try {
     const url = `https://ipfs-gateway.zeitgeist.pm/ipfs/${image}`;
