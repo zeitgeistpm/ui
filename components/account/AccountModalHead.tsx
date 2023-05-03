@@ -1,5 +1,4 @@
 import { useAccountModals } from "lib/state/account";
-import { useModalStore } from "lib/stores/ModalStore";
 import { observer } from "mobx-react";
 import React from "react";
 

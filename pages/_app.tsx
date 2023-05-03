@@ -4,24 +4,20 @@ import "styles/index.css";
 import { QueryClientProvider } from "@tanstack/react-query";
 import * as Fathom from "fathom-client";
 
+import { AvatarContext } from "@zeitgeistpm/avatara-react";
+import { Account } from "components/account/Account";
+import { StoreProvider } from "components/context/StoreContext";
+import Devtools from "components/devtools";
+import DefaultLayout from "layouts/DefaultLayout";
+import { registerValidationRules } from "lib/form";
+import { queryClient } from "lib/query-client";
+import Store from "lib/stores/Store";
 import { observer } from "mobx-react";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { hotjar } from "react-hotjar";
-
-import { AvatarContext } from "@zeitgeistpm/avatara-react";
-import { ModalStoreContext } from "components/context/ModalStoreContext";
-import { StoreProvider } from "components/context/StoreContext";
-import Devtools from "components/devtools";
-import ModalContainer from "components/modal/ModalContainer";
-import DefaultLayout from "layouts/DefaultLayout";
-import { queryClient } from "lib/query-client";
-import ModalStore from "lib/stores/ModalStore";
-import Store from "lib/stores/Store";
-import dynamic from "next/dynamic";
-import { registerValidationRules } from "lib/form";
-import { Account } from "components/account/Account";
 
 const Onboarding = dynamic(
   () => import("../components/onboarding/Onboarding"),
@@ -42,7 +38,6 @@ registerValidationRules();
 const MyApp = observer(({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
   const router = useRouter();
-  const [modalStore] = useState(() => new ModalStore());
   const [store] = useState(() => new Store());
 
   useEffect(() => {
@@ -87,22 +82,17 @@ const MyApp = observer(({ Component, pageProps }) => {
             prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
           }}
         >
-          <ModalStoreContext.Provider value={modalStore}>
-            {modalStore.modal && (
-              <ModalContainer>{modalStore.modal}</ModalContainer>
-            )}
-            <Head>
-              <title>Zeitgeist - Prediction Markets</title>
-            </Head>
-            <DefaultLayout>
-              <Layout>
-                <Component {...pageProps} />
-                <Account />
-                <Onboarding />
-              </Layout>
-            </DefaultLayout>
-            <Devtools />
-          </ModalStoreContext.Provider>
+          <Head>
+            <title>Zeitgeist - Prediction Markets</title>
+          </Head>
+          <DefaultLayout>
+            <Layout>
+              <Component {...pageProps} />
+              <Account />
+              <Onboarding />
+            </Layout>
+          </DefaultLayout>
+          <Devtools />
         </AvatarContext.Provider>
       </StoreProvider>
     </QueryClientProvider>
