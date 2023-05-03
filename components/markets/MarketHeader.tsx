@@ -11,13 +11,12 @@ import { hasDatePassed } from "lib/util/hasDatePassed";
 import { FC, PropsWithChildren, useEffect } from "react";
 import { MarketTimer } from "./MarketTimer";
 import { MarketTimerSkeleton } from "./MarketTimer";
-import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
+import { MarketDispute, OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
 import {
   MarketHistory,
   useMarketEventHistory,
 } from "lib/hooks/queries/useMarketEventHistory";
-import { ApiPromise, WsProvider } from "@polkadot/api";
-import { useState } from "react";
+
 import { getMarketStatusDetails } from "lib/util/market-status-details";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
@@ -89,31 +88,60 @@ const MarketHistory: FC<
     starts: number;
     ends: number;
     marketHistory: MarketHistory;
+    categories: { name: string; color: string }[];
   }>
-> = ({ starts, ends, marketHistory }) => {
-  //market open
+> = ({ marketHistory, categories }) => {
   const marketStart = new Intl.DateTimeFormat("default", {
     dateStyle: "medium",
-  }).format(starts);
+  }).format(marketHistory?.start.timestamp);
   const marketClosed = new Intl.DateTimeFormat("default", {
     dateStyle: "medium",
-  }).format(ends);
+  }).format(marketHistory?.end.timestamp);
+
+  const getOutcome = (outcome: OutcomeReport) => {
+    console.log(outcome, categories);
+    if (outcome["categorical"] !== null) {
+      return categories[outcome["categorical"]].name;
+    } else {
+      return outcome["scalar"];
+    }
+  };
+
   return (
     <ol>
       <li>
-        <span>{marketStart}</span>
+        <span>
+          {marketStart} (block: {marketHistory?.start.block})
+        </span>
         <span> Market opened</span>
       </li>
       <li>
-        <span>{marketClosed}</span>
+        <span>
+          {marketClosed} (block: {marketHistory?.end.block})
+        </span>
         <span> Market closed</span>
       </li>
       {marketHistory?.reported && (
         <li>
           {new Intl.DateTimeFormat("default", {
             dateStyle: "medium",
-          }).format(marketHistory?.reported.timestamp)}{" "}
+          }).format(marketHistory?.reported.timestamp)}
           (block:{marketHistory?.reported.at})
+          <span>
+            {marketHistory.oracleReported ?? "Oracle"}
+            <div className="flex items-center">
+              <Avatar address={marketHistory?.reported.by} />
+              <span className="font-medium px-3.5 text-sms h-full leading-[40px]">
+                <span className="font-bold">
+                  {shortenAddress(marketHistory?.reported.by, 6, 4)}
+                </span>{" "}
+                reported{" "}
+                <span className="font-bold">
+                  {getOutcome(marketHistory?.reported.outcome)}
+                </span>
+              </span>
+            </div>
+          </span>
         </li>
       )}
     </ol>
@@ -250,6 +278,7 @@ const MarketHeader: FC<{
         starts={starts}
         ends={ends}
         marketHistory={marketHistory}
+        categories={categories}
       />
     </header>
   );
