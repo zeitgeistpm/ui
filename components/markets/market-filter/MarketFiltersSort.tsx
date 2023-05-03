@@ -1,12 +1,17 @@
 import { marketsOrderByOptions } from "lib/constants/market-filter";
-import { MarketsOrderBy } from "lib/types/market-filter";
+import { MarketOrderByOption, MarketsOrderBy } from "lib/types/market-filter";
 import { observer } from "mobx-react";
 import React from "react";
-import ReactSelect from "react-select";
+import ReactSelect, { GroupBase, StylesConfig } from "react-select";
 import { useMarketFiltersContext } from "./MarketFiltersContainer";
+import { SelectComponents } from "react-select/dist/declarations/src/components";
 
 type MarketFilterSortProps = {
   className?: string;
+  selectStyles?: StylesConfig<MarketOrderByOption, false>;
+  components?: Partial<
+    SelectComponents<MarketOrderByOption, false, GroupBase<MarketOrderByOption>>
+  >;
 };
 
 const sortBySelectStyles = {
@@ -60,9 +65,19 @@ const SortBySelect = observer(
   ({
     onOrderingChange,
     ordering,
+    styles,
+    components,
   }: {
     ordering: MarketsOrderBy;
     onOrderingChange: (v: MarketsOrderBy) => void;
+    styles?: StylesConfig<MarketOrderByOption, false>;
+    components?: Partial<
+      SelectComponents<
+        MarketOrderByOption,
+        false,
+        GroupBase<MarketOrderByOption>
+      >
+    >;
   }) => {
     return (
       <ReactSelect
@@ -71,9 +86,11 @@ const SortBySelect = observer(
           onOrderingChange(v.value);
         }}
         options={marketsOrderByOptions}
-        styles={sortBySelectStyles}
+        styles={{ ...sortBySelectStyles, ...(styles ?? {}) }}
+        // menuIsOpen={true}
         components={{
           IndicatorSeparator,
+          ...(components ?? {}),
         }}
       />
     );
@@ -82,11 +99,18 @@ const SortBySelect = observer(
 
 const MarketFilterSort: React.FC<MarketFilterSortProps> = ({
   className = "",
+  selectStyles = {},
+  components,
 }) => {
   const { ordering, setOrdering } = useMarketFiltersContext();
   return (
     <div className={className}>
-      <SortBySelect ordering={ordering} onOrderingChange={setOrdering} />
+      <SortBySelect
+        ordering={ordering}
+        onOrderingChange={setOrdering}
+        styles={selectStyles}
+        components={components}
+      />
     </div>
   );
 };

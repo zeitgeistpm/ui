@@ -1,32 +1,91 @@
 import { PropsWithChildren } from "react";
-import { Icon, Plus, ChevronDown } from "react-feather";
+import { Icon, Plus, ChevronDown, ChevronUp } from "react-feather";
 import MarketActiveFilters from "../MarketActiveFilters";
 import MarketFiltersCheckboxes from "../MarketFiltersCheckboxes";
-import { useMarketFiltersContext } from "../MarketFiltersContainer";
 import { SelectionType } from "./types";
+import MarketFiltersSort from "../MarketFiltersSort";
+
+const sortBySelectStyles = {
+  container: (provided) => {
+    return { ...provided, borderColor: "transparent" };
+  },
+  control: (provided) => {
+    return {
+      ...provided,
+      width: "100%",
+      height: "32px",
+      minHeight: "32px",
+      fontSize: "16px",
+      borderColor: "transparent",
+      "&:hover": {
+        borderColor: "transparent",
+      },
+      boxShadow: "none",
+      cursor: "pointer",
+    };
+  },
+  dropdownIndicator: (provided) => {
+    return {
+      ...provided,
+      display: "none",
+    };
+  },
+  singleValue: (provided) => {
+    return {
+      ...provided,
+    };
+  },
+  valueContainer: (provided) => {
+    return {
+      ...provided,
+      padding: "0px",
+    };
+  },
+  input: (provided) => {
+    return {
+      ...provided,
+      padding: "0px",
+      margin: "0px",
+    };
+  },
+  menu: (provided) => {
+    return {
+      ...provided,
+      backgroundColor: "white",
+      color: "black",
+      zIndex: 100,
+      width: "100%",
+    };
+  },
+};
+
+const IndicatorSeparator = (props) => {
+  const { menuIsOpen } = props.selectProps;
+  return menuIsOpen ? <ChevronUp /> : <ChevronDown />;
+};
 
 type FilterButtonProps = PropsWithChildren<{
-  RightIcon: Icon;
-  onClick: () => void;
+  RightIcon?: Icon;
+  onClick?: () => void;
   className?: string;
 }>;
 
 const FilterButton = ({
   children,
   RightIcon,
-  onClick,
+  onClick = () => {},
   className = "",
 }: FilterButtonProps) => {
   return (
     <div
       className={
-        "flex items-center h-10 cursor-pointer border-b border-gray-200 box-content mb-5" +
+        "flex items-center h-10 border-b border-gray-200 box-content mb-5 " +
         className
       }
       onClick={onClick}
     >
-      <div>{children}</div>
-      <RightIcon className="ml-auto" size={24} />
+      {children}
+      {RightIcon && <RightIcon className="ml-auto" size={24} />}
     </div>
   );
 };
@@ -37,7 +96,6 @@ export type FiltersListProps = {
 };
 
 const FiltersList = ({ showSelection, close }: FiltersListProps) => {
-  const { activeFilters, ordering } = useMarketFiltersContext();
   return (
     <>
       <MarketActiveFilters className="flex flex-row w-full justify-center gap-2 flex-wrap mb-5 " />
@@ -46,6 +104,7 @@ const FiltersList = ({ showSelection, close }: FiltersListProps) => {
         onClick={() => {
           showSelection("Category");
         }}
+        className="cursor-pointer"
       >
         Category
       </FilterButton>
@@ -54,6 +113,7 @@ const FiltersList = ({ showSelection, close }: FiltersListProps) => {
         onClick={() => {
           showSelection("Currency");
         }}
+        className="cursor-pointer"
       >
         Currency
       </FilterButton>
@@ -62,16 +122,19 @@ const FiltersList = ({ showSelection, close }: FiltersListProps) => {
         onClick={() => {
           showSelection("Status");
         }}
+        className="cursor-pointer"
       >
         Status
       </FilterButton>
-      <FilterButton
-        RightIcon={ChevronDown}
-        onClick={() => {
-          showSelection("Sort By");
-        }}
-      >
-        Sort By: {ordering}
+      <FilterButton>
+        <div className="flex items-center flex-grow">
+          <div style={{ minWidth: "62px" }}>Sort By:</div>
+          <MarketFiltersSort
+            className="w-full"
+            selectStyles={sortBySelectStyles}
+            components={{ IndicatorSeparator }}
+          />
+        </div>
       </FilterButton>
       <MarketFiltersCheckboxes className="mt-4" />
       <button

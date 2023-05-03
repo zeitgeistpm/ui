@@ -2,20 +2,46 @@ import {
   marketTagFilterOptions,
   marketCurrencyFilterOptions,
   marketStatusFilterOptions,
-  marketsOrderByOptions,
 } from "lib/constants/market-filter";
 import { ChevronLeft } from "react-feather";
 import { useMarketFiltersContext } from "../MarketFiltersContainer";
 import { SelectionType } from "./types";
+import { MarketFilter } from "lib/types/market-filter";
 
 type FilterDetailsProps = {
   back: () => void;
   type: SelectionType;
 };
 
-const FilterDetails = ({ back, type }: FilterDetailsProps) => {
-  const { addActiveFilter, setOrdering } = useMarketFiltersContext();
+const FilterToggle = ({ option }: { option: MarketFilter }) => {
+  const { addActiveFilter, removeActiveFilter, activeFilters } =
+    useMarketFiltersContext();
+  const isActive = activeFilters?.some(
+    (af) => af.type === option.type && af.value === option.value,
+  );
+  const toggle = () => {
+    if (isActive) {
+      removeActiveFilter(option);
+    } else {
+      addActiveFilter(option);
+    }
+  };
 
+  return (
+    <a
+      className={
+        "w-1/2 mb-7 cursor-pointer " + (isActive ? "text-ztg-blue" : "")
+      }
+      onClick={() => {
+        toggle();
+      }}
+    >
+      {option.value}
+    </a>
+  );
+};
+
+const FilterDetails = ({ back, type }: FilterDetailsProps) => {
   return (
     <>
       <a
@@ -32,72 +58,33 @@ const FilterDetails = ({ back, type }: FilterDetailsProps) => {
             Category: (
               <>
                 {marketTagFilterOptions.map((opt, index) => (
-                  <a
-                    className="w-1/2 mb-7 cursor-pointer"
-                    onClick={() => {
-                      addActiveFilter(opt);
-                      back();
-                    }}
-                    key={index}
-                  >
-                    {opt.value}
-                  </a>
+                  <FilterToggle option={opt} key={index} />
                 ))}
               </>
             ),
             Currency: (
               <>
                 {marketCurrencyFilterOptions.map((opt, index) => (
-                  <a
-                    className="w-1/2 mb-7 cursor-pointer"
-                    onClick={() => {
-                      addActiveFilter(opt);
-                      back();
-                    }}
-                    key={index}
-                  >
-                    {opt.value}
-                  </a>
+                  <FilterToggle option={opt} key={index} />
                 ))}
               </>
             ),
             Status: (
               <>
                 {marketStatusFilterOptions.map((opt, index) => (
-                  <a
-                    className="w-1/2 mb-7 cursor-pointer"
-                    onClick={() => {
-                      addActiveFilter(opt);
-                      back();
-                    }}
-                    key={index}
-                  >
-                    {opt.value}
-                  </a>
+                  <FilterToggle option={opt} key={index} />
                 ))}
-              </>
-            ),
-            "Sort By": (
-              <>
-                {marketsOrderByOptions.map((opt, index) => {
-                  return (
-                    <a
-                      className="w-1/2 mb-7 cursor-pointer"
-                      onClick={() => {
-                        setOrdering(opt.value);
-                        back();
-                      }}
-                      key={index}
-                    >
-                      {opt.value}
-                    </a>
-                  );
-                })}
               </>
             ),
           }[type]
         }
       </div>
+      <button
+        className="rounded-full bg-ztg-blue mt-auto h-14 text-white"
+        onClick={back}
+      >
+        Apply
+      </button>
     </>
   );
 };
