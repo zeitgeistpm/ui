@@ -84,7 +84,7 @@ export const useInfiniteMarkets = (
         tags_containsAny: tags.length === 0 ? undefined : tags,
         pool_isNull: withLiquidityOnly ? false : undefined,
         pool: {
-          ztgQty_gt: withLiquidityOnly ? 0 : undefined,
+          baseAssetQty_gt: withLiquidityOnly ? 0 : undefined,
           baseAsset_in: currencies.length > 0 ? currencies : undefined,
         },
       },
