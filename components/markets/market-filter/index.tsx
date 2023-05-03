@@ -10,7 +10,7 @@ import Skeleton from "components/ui/Skeleton";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import MarketActiveFilters from "./MarketActiveFilters";
 import MarketFiltersContainer, { SelectedMenu } from "./MarketFiltersContainer";
-import MobileDialog from "./MobileDialog";
+import MobileDialog from "./mobile-dialog";
 import MarketFiltersDropdowns from "./MarketFiltersDropdowns";
 import MarketFiltersCheckboxes from "./MarketFiltersCheckboxes";
 import MarketFiltersSort from "./MarketFiltersSort";
