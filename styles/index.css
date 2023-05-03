@@ -8,6 +8,8 @@
 
 html {
   font-size: 100%;
+  overflow: scroll!important;
+  padding-right: 0!important;
 }
 
 /* hide number input arrows */
@@ -708,4 +710,14 @@ tr {
     opacity: 1;
     transform: scale3d(1, 1, 1);
   }
+}
+
+@counter-style crystal-ball-emoji-list {
+  system: cyclic;
+  symbols: "🔮";
+  suffix: " ";
+}
+
+.crystal-ball-emoji-list {
+  list-style-type: crystal-ball-emoji-list;
 }
