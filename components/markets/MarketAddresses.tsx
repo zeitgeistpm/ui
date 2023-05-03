@@ -7,11 +7,13 @@ import Avatar from "components/ui/Avatar";
 import CopyIcon from "components/ui/CopyIcon";
 import Link from "next/link";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
-import { useModalStore } from "lib/stores/ModalStore";
 import { shortenAddress } from "lib/util";
 import { observer } from "mobx-react";
 import dynamic from "next/dynamic";
 import { Judgement, UserIdentity } from "lib/types/user-identity";
+import { useState } from "react";
+import { Dialog } from "@headlessui/react";
+import Modal from "components/ui/Modal";
 
 const AddressInspectContent = ({
   address,
@@ -105,42 +107,64 @@ const AddressInspectContent = ({
 const AddressDetails = ({
   title,
   address,
-  displayName,
-  onInspect,
 }: {
   title: string;
   address: string;
-  displayName?: string;
-  judgement: Judgement;
-  onInspect: () => void;
 }) => {
-  const handleInspectClick = () => {
-    onInspect();
-  };
+  const [inspected, setInspected] = useState(false);
+  const { data: identity } = useIdentity(address);
+
+  const displayName =
+    identity?.displayName?.length > 0
+      ? identity?.displayName
+      : shortenAddress(address, 8, 8);
 
   return (
-    <div
-      className="flex flex-col sm:flex-row items-start sm:items-center mb-ztg-18 cursor-pointer hover:bg-sky-100 ztg-transition rounded-lg p-[5px]"
-      onClick={handleInspectClick}
-      data-test="inspectButton"
-    >
-      <div className="flex items-center">
-        <div className="flex justify-center items-center pl-ztg-6 pr-ztg-10">
-          <div className="w-ztg-40 h-ztg-40 rounded-full bg-white overflow-hidden text-ztg-14-150 mr-[15px]">
-            <Avatar address={address} size={40} />
-          </div>
-          <div className="flex flex-col font-medium text-ztg-16-150">
-            <div className=" text-sky-600">{title}</div>
-            <div className="">
-              {displayName ?? shortenAddress(address, 8, 8)}
+    <>
+      <div
+        className="flex flex-col sm:flex-row items-start sm:items-center mb-ztg-18 cursor-pointer hover:bg-sky-100 ztg-transition rounded-lg p-[5px]"
+        onClick={() => setInspected(true)}
+        data-test="inspectButton"
+      >
+        <div className="flex items-center">
+          <div className="flex justify-center items-center pl-ztg-6 pr-ztg-10">
+            <div className="w-ztg-40 h-ztg-40 rounded-full bg-white overflow-hidden text-ztg-14-150 mr-[15px]">
+              <Avatar address={address} size={40} />
+            </div>
+            <div className="flex flex-col font-medium text-ztg-16-150">
+              <div className=" text-sky-600">{title}</div>
+              <div className="">{displayName}</div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <Modal open={inspected} onClose={() => setInspected(false)}>
+        <Dialog.Panel className="bg-white rounded-ztg-10 p-[15px]">
+          <div>
+            Address Details
+            <AddressModalHeader
+              name={identity?.displayName ?? ""}
+              judgement={identity?.judgement}
+            />
+            <AddressInspectContent address={address} identity={identity} />
+          </div>
+        </Dialog.Panel>
+      </Modal>
+    </>
   );
 };
-
+const getJudgementColorClass = (judgement: Judgement) => {
+  if (judgement === "KnownGood" || judgement === "Reasonable") {
+    return "text-sheen-green";
+  } else if (
+    judgement === "LowQuality" ||
+    judgement === "OutOfDate" ||
+    judgement === "Erroneous"
+  ) {
+    return "text-vermilion";
+  }
+};
 const AddressModalHeader = ({
   name,
   judgement,
@@ -148,17 +172,6 @@ const AddressModalHeader = ({
   name: string;
   judgement: Judgement;
 }) => {
-  const getJudgementColorClass = (judgement: Judgement) => {
-    if (judgement === "KnownGood" || judgement === "Reasonable") {
-      return "text-sheen-green";
-    } else if (
-      judgement === "LowQuality" ||
-      judgement === "OutOfDate" ||
-      judgement === "Erroneous"
-    ) {
-      return "text-vermilion";
-    }
-  };
   return (
     <span className="w-full mx-ztg-10">
       <span className="text-sunglow-2 font-medium ml-ztg-30">{name}</span>
@@ -180,49 +193,10 @@ interface MarketAddressesProps {
 
 const MarketAddresses = observer(
   ({ creatorAddress, oracleAddress }: MarketAddressesProps) => {
-    const modalStore = useModalStore();
-
-    const { data: creatorIdentity } = useIdentity(creatorAddress);
-    const { data: oracleIdentity } = useIdentity(oracleAddress);
-
-    const handleInspect = (address: string, identity: UserIdentity) => {
-      modalStore.openModal(
-        <AddressInspectContent address={address} identity={identity} />,
-        <>
-          Address Details
-          <AddressModalHeader
-            name={identity.displayName ?? ""}
-            judgement={identity.judgement}
-          />
-        </>,
-        { styles: { width: "70%", maxWidth: "473px" } },
-      );
-    };
-
     return (
       <div className="flex flex-wrap gap-[20px] justify-center my-ztg-20">
-        <AddressDetails
-          title="Creator"
-          address={creatorAddress}
-          displayName={
-            creatorIdentity?.displayName?.length > 0
-              ? creatorIdentity.displayName
-              : null
-          }
-          judgement={creatorIdentity?.judgement}
-          onInspect={() => handleInspect(creatorAddress, creatorIdentity)}
-        />
-        <AddressDetails
-          title="Oracle"
-          address={oracleAddress}
-          displayName={
-            oracleIdentity?.displayName?.length > 0
-              ? oracleIdentity.displayName
-              : null
-          }
-          judgement={oracleIdentity?.judgement}
-          onInspect={() => handleInspect(oracleAddress, oracleIdentity)}
-        />
+        <AddressDetails title="Creator" address={creatorAddress} />
+        <AddressDetails title="Oracle" address={oracleAddress} />
       </div>
     );
   },
