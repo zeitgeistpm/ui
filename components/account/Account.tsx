@@ -23,6 +23,7 @@ export const Account = () => {
           <AccountModalContent />
         </Dialog.Panel>
       </Modal>
+
       <Modal open={walletSelectModalOpen} onClose={closeWalletSelect}>
         <Dialog.Panel
           className="
