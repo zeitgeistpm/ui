@@ -3,7 +3,7 @@ import { X } from "react-feather";
 import ClearAllButton from "./ClearAllButton";
 import { useMarketFiltersContext } from "./MarketFiltersContainer";
 
-export type MarketActiveFilterProps = {
+export type MarketActiveFilterItemProps = {
   filter: MarketFilter;
   onRemove: (filter: MarketFilter) => void;
 };
@@ -11,7 +11,7 @@ export type MarketActiveFilterProps = {
 export const MarketActiveFilterItem = ({
   filter,
   onRemove,
-}: MarketActiveFilterProps) => {
+}: MarketActiveFilterItemProps) => {
   return (
     <div className="flex px-ztg-10 py-ztg-5 rounded-ztg-5 bg-sky-200 text-gray-800 font-normal text-ztg-14-150 gap-ztg-5">
       <button onClick={() => onRemove(filter)}>
