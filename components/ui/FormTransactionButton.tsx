@@ -2,7 +2,7 @@ import { observer } from "mobx-react";
 import { FC, PropsWithChildren } from "react";
 import { useStore } from "lib/stores/Store";
 import { useUserLocation } from "lib/hooks/useUserLocation";
-import { useAccountModals } from "lib/hooks/account";
+import { useAccountModals } from "lib/state/account";
 import { useWallet } from "lib/state/wallet";
 
 interface TransactionButtonProps {

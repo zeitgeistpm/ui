@@ -21,6 +21,7 @@ import ModalStore from "lib/stores/ModalStore";
 import Store from "lib/stores/Store";
 import dynamic from "next/dynamic";
 import { registerValidationRules } from "lib/form";
+import { Account } from "components/account/Account";
 
 const Onboarding = dynamic(
   () => import("../components/onboarding/Onboarding"),
@@ -96,6 +97,7 @@ const MyApp = observer(({ Component, pageProps }) => {
             <DefaultLayout>
               <Layout>
                 <Component {...pageProps} />
+                <Account />
                 <Onboarding />
               </Layout>
             </DefaultLayout>

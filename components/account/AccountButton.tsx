@@ -6,7 +6,7 @@ import { getWallets } from "@talismn/connect-wallets";
 import Avatar from "components/ui/Avatar";
 import Modal from "components/ui/Modal";
 import { SUPPORTED_WALLET_NAMES } from "lib/constants";
-import { useAccountModals } from "lib/hooks/account";
+import { useAccountModals } from "lib/state/account";
 import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useStore } from "lib/stores/Store";
 import { useWallet } from "lib/state/wallet";
@@ -254,7 +254,7 @@ const AccountButton: FC<{
                             <div
                               className="flex items-center px-4 mb-3 hover:bg-slate-100"
                               onClick={() => {
-                                accountModals.openAccontSelect();
+                                accountModals.openAccountSelect();
                               }}
                             >
                               <User />
