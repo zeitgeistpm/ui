@@ -24,22 +24,6 @@ class ModalStore {
     this.options = {};
   }
 
-  openConfirmModal(
-    el: JSX.Element,
-    heading: ReactElement,
-    action?: () => void,
-    options?: ModalOptions,
-  ) {
-    if (options) {
-      this.setOptions(options);
-    }
-    this.modal = (
-      <ConfirmModal onYes={action} heading={heading}>
-        {el}
-      </ConfirmModal>
-    );
-  }
-
   openModal(el: ReactElement, heading: ReactElement, options?: ModalOptions) {
     if (options) {
       this.setOptions(options);
