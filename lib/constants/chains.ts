@@ -4,20 +4,23 @@ import type { ApiPromise } from "@polkadot/api";
 
 interface Balance {
   amount: Decimal;
-  name: string;
+  symbol: string;
 }
 
 interface Chain {
   name: string;
   endpoints: string[];
-  fetchBalances: (api: ApiPromise, address: string) => Balance[]; //todo: figure out return type
+  fetchBalances: (api: ApiPromise, address: string) => Promise<Balance[]>; //todo: figure out return type
 }
 const BATTERY_STATION_CHAINS: Chain[] = [
   {
     name: "Rococo",
     endpoints: ["wss://rococo-rpc.polkadot.io"],
-    fetchBalances: (api, address) => {
-      return [];
+    fetchBalances: async (api, address) => {
+      const account = await api.query.system.account(address);
+      return [
+        { symbol: "ROC", amount: new Decimal(account.data.free.toString()) },
+      ];
     },
   },
 ];

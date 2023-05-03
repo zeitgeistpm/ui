@@ -1,4 +1,5 @@
 import Table, { TableColumn } from "components/ui/Table";
+import { useCurrencyBalances } from "lib/hooks/queries/useCurrencyBalances";
 import DepositButton from "./DepositButton";
 import WithdrawButton from "./WithdrawButton";
 
@@ -27,6 +28,8 @@ const columns: TableColumn[] = [
 ];
 
 const CurrenciesTable = ({ address }: { address: string }) => {
+  useCurrencyBalances(address);
+
   const tableData = [
     {
       asset: "ZTG",

@@ -6,7 +6,7 @@ import { useState } from "react";
 const crossChainApisAtom = atom<ApiPromise[]>([]);
 
 export type UseCrossChainApis = {
-  readonly apis: Readonly<ApiPromise>[];
+  apis: ApiPromise[];
   initApis: () => void;
 };
 
@@ -18,6 +18,8 @@ export const useCrossChainApis = (): UseCrossChainApis => {
   const initApis = async () => {
     if (isLoading) return;
     setIsLoading(true);
+    console.log("called");
+
     const wsProviders = CHAINS.map((chain) => new WsProvider(chain.endpoints));
 
     const apiPromises = wsProviders.map((provider) =>
@@ -25,6 +27,7 @@ export const useCrossChainApis = (): UseCrossChainApis => {
     );
 
     const apis = await Promise.all(apiPromises);
+    console.log(apis);
 
     setApis(apis);
   };
