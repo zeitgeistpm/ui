@@ -15,22 +15,21 @@ import {
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
-import { useModalStore } from "lib/stores/ModalStore";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 
 const CategoricalDisputeBox = observer(
   ({
     market,
     assetId,
+    onSuccess,
   }: {
     market: Market<IndexerContext>;
     assetId: MarketOutcomeAssetId;
+    onSuccess?: () => void;
   }) => {
     const [sdk, id] = useSdkv2();
     const { data: disputes } = useMarketDisputes(market);
     const notificationStore = useNotifications();
-    const modalStore = useModalStore();
     const queryClient = useQueryClient();
     const { data: constants } = useChainConstants();
 
@@ -54,7 +53,6 @@ const CategoricalDisputeBox = observer(
       },
       {
         onSuccess: () => {
-          modalStore.closeModal();
           queryClient.invalidateQueries([
             id,
             marketDisputesRootKey,
@@ -66,6 +64,7 @@ const CategoricalDisputeBox = observer(
               type: "Success",
             },
           );
+          onSuccess?.();
         },
       },
     );
@@ -79,7 +78,7 @@ const CategoricalDisputeBox = observer(
     };
 
     return (
-      <>
+      <div className="p-[30px]">
         <div className="text-ztg-12-150 mb-ztg-5">
           Bond will start at {disputeBond} {tokenSymbol}, increasing by{" "}
           {disputeFactor} {tokenSymbol} for each dispute
@@ -114,7 +113,7 @@ const CategoricalDisputeBox = observer(
         >
           Confirm Dispute
         </TransactionButton>
-      </>
+      </div>
     );
   },
 );
