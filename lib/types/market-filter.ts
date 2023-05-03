@@ -60,10 +60,12 @@ export const isMarketCurrencyFilter = (
   return filter.type === "currency";
 };
 
+export type MarketsListFiltersQuery = {
+  [key in MarketFilterType]?: string[];
+};
+
 export type MarketsListQuery = {
-  filters: {
-    [key in MarketFilterType]?: string[];
-  };
+  filters: MarketsListFiltersQuery;
   ordering: MarketsOrderBy;
   liquidityOnly: boolean;
 };

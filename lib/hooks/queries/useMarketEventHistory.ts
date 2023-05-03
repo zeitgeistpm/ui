@@ -30,7 +30,7 @@ export type MarketHistory = {
 
 export const useMarketEventHistory = (
   marketId: string,
-): UseQueryResult<MarketPageIndexedData> => {
+): UseQueryResult<MarketHistory> => {
   const [sdk, id] = useSdkv2();
 
   return useQuery(
