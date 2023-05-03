@@ -1,7 +1,7 @@
 import Skeleton from "components/ui/Skeleton";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { hasDatePassed } from "lib/util/hasDatePassed";
-import { FC, PropsWithChildren } from "react";
+import { FC, PropsWithChildren, useEffect } from "react";
 import { MarketStage, MarketStatus } from "@zeitgeistpm/sdk-next";
 import { MarketTimer } from "./MarketTimer";
 import { MarketTimerSkeleton } from "./MarketTimer";
@@ -13,7 +13,12 @@ import { shortenAddress } from "lib/util";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { getMarketStatusDetails } from "lib/util/market-status-details";
 import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
-import { useMarketEventHistory } from "lib/hooks/queries/useMarketEventHistory";
+import {
+  MarketHistory,
+  useMarketEventHistory,
+} from "lib/hooks/queries/useMarketEventHistory";
+import { ApiPromise, WsProvider } from "@polkadot/api";
+import { useState } from "react";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
   ({ label, border = true, children }) => {
@@ -79,34 +84,46 @@ const MarketOutcome: FC<
   );
 };
 
-const MarketHistory: FC<PropsWithChildren<{ starts: number; ends: number }>> =
-  ({ starts, ends }) => {
-    //market open
-    const marketStart = new Intl.DateTimeFormat("default", {
-      dateStyle: "medium",
-    }).format(starts);
-    const marketClosed = new Intl.DateTimeFormat("default", {
-      dateStyle: "medium",
-    }).format(ends);
-    return (
-      <ol>
-        {/* {[marketStart, marketClosed, reported, disputed, resolved].map(
-          (item, index) => {
-            return (
-              <li>
-                {index}. {item}
-              </li>
-            );
-          },
-        )} */}
-      </ol>
-    );
-    //market closed
-    //oracled reported
-    //disputes
-    //authority reoprted
-    //resolved
-  };
+const MarketHistory: FC<
+  PropsWithChildren<{
+    starts: number;
+    ends: number;
+    marketHistory: MarketHistory;
+  }>
+> = ({ starts, ends, marketHistory }) => {
+  //market open
+  const marketStart = new Intl.DateTimeFormat("default", {
+    dateStyle: "medium",
+  }).format(starts);
+  const marketClosed = new Intl.DateTimeFormat("default", {
+    dateStyle: "medium",
+  }).format(ends);
+  return (
+    <ol>
+      <li>
+        <span>{marketStart}</span>
+        <span>Market opened</span>
+      </li>
+      <li>
+        <span>{marketClosed}</span>
+        <span>Market closed</span>
+      </li>
+      {marketHistory?.reported && (
+        <li>
+          {new Intl.DateTimeFormat("default", {
+            dateStyle: "medium",
+          }).format(marketHistory?.reported.timestamp)}{" "}
+          (block:{marketHistory?.reported.at})
+        </li>
+      )}
+    </ol>
+  );
+  //market closed
+  //oracled reported
+  //disputes
+  //authority reoprted
+  //resolved
+};
 
 const MarketHeader: FC<{
   market: MarketPageIndexedData;
@@ -155,11 +172,38 @@ const MarketHeader: FC<{
     scalarType,
   );
 
-  const { data: eventHistory } = useMarketEventHistory(
+  const { data: marketHistory } = useMarketEventHistory(
     market.marketId.toString(),
   );
-  console.log(eventHistory);
+  console.log(marketHistory);
 
+  const [blockNumber, setBlockNumber] = useState("");
+  const [timestamp, setTimestamp] = useState("");
+
+  const getBlockTimestamp = async (blockNumber) => {
+    const provider = new WsProvider("wss://rpc.polkadot.io");
+    const api = await ApiPromise.create({ provider });
+
+    // Fetch block hash for the given block number
+    const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
+
+    // Get the timestamp for the given block hash
+    const timestamp = await api.query.timestamp.now.at(blockHash);
+
+    console.log(
+      `Timestamp for block number ${blockNumber}: ${new Intl.DateTimeFormat(
+        "default",
+        {
+          dateStyle: "medium",
+        },
+      ).format(timestamp.toNumber())}`,
+    );
+  };
+
+  useEffect(() => {
+    getBlockTimestamp(1762868);
+  }, []);
+  console.log(blockNumber, timestamp);
   return (
     <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
       <h1 className="text-4xl font-extrabold my-5 text-center">{question}</h1>
@@ -229,7 +273,11 @@ const MarketHeader: FC<{
         status === "Resolved") && (
         <MarketOutcome status={status} outcome={outcome} by={by} />
       )}
-      <MarketHistory starts={starts} ends={ends} />
+      <MarketHistory
+        starts={starts}
+        ends={ends}
+        marketHistory={marketHistory}
+      />
     </header>
   );
 };

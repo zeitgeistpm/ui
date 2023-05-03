@@ -3,8 +3,7 @@ import { isIndexedSdk, isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { getMarket } from "lib/gql/markets";
 import { MarketPageIndexedData } from "lib/gql/markets";
 import { useSdkv2 } from "../useSdkv2";
-import { useAuthorizedReport } from "./useAuthorizedReport";
-import { useTimeStampForBlock } from "./useTimeStampForBlock";
+import { Report, MarketDispute } from "@zeitgeistpm/sdk/dist/types";
 import { getApiAtBlock } from "lib/util/get-api-at";
 
 export const marketsEventsRootQuery = "marketsEvents";
@@ -13,6 +12,21 @@ export const marketsEventsRootQuery = "marketsEvents";
 //if the oracle doesnt report the result then who is the reporter? (i.e. did the oracle fail to report?)
 //who is the "Authority"? is that the "Authorized Address"? Does the Authority ultimatrely decide the outcome of the market?
 //are all markets resolved? or can they simply end?
+
+interface ReportWithTimestamp extends Report {
+  timestamp: number;
+}
+
+interface DisputesWithTimestamp extends MarketDispute {
+  timestamp: number;
+}
+
+export type MarketHistory = {
+  reported: ReportWithTimestamp;
+  disputes: DisputesWithTimestamp[];
+  resolved: string;
+  oracleReported: boolean;
+};
 
 export const useMarketEventHistory = (
   marketId: string,
@@ -43,7 +57,7 @@ export const useMarketEventHistory = (
           const updateDisputesWithTimestamp = async (disputes) => {
             const promises = disputes.map(async (dispute) => {
               const timestamp = await getTimeStampForBlock(dispute.at);
-              dispute.at = timestamp;
+              dispute.timestamp = timestamp;
               return dispute;
             });
 
@@ -58,7 +72,7 @@ export const useMarketEventHistory = (
             const timestamp = await getTimeStampForBlock(report.at);
             reportWithTimestamp = {
               ...report,
-              ["at"]: timestamp,
+              ["timestamp"]: timestamp,
             };
           };
           await updateReportWithTimestamp(report);
