@@ -1,5 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { X } from "react-feather";
 import { SelectionType } from "./types";
 import FiltersList from "./FiltersList";
@@ -17,6 +17,7 @@ const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
   const [currentSelection, setCurrentSelection] =
     useState<SelectionType>("None");
   const [step, setStep] = useState(0);
+  const focusRef = useRef<HTMLDivElement>(null);
 
   const close = () => {
     setTimeout(() => {
@@ -38,6 +39,9 @@ const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
       open={open}
       onClose={close}
       className="fixed top-0 left-0 w-full h-full bg-transparent z-50"
+      initialFocus={focusRef}
+      ref={focusRef}
+      tabIndex={1}
     >
       <Transition
         show={showTransition}
@@ -51,12 +55,17 @@ const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
         appear={true}
       >
         <Dialog.Panel className="w-full h-full">
-          <Dialog.Title className="py-3.5 px-8 h-[72px] border-b border-gray-200 text-xl flex items-center">
+          <div className="py-3.5 px-8 h-[72px] border-b border-gray-200 text-xl flex items-center">
             <div className="text-xl">Filters</div>
             <div className="ml-auto">
-              <X size={24} className="cursor-pointer" onClick={close} />
+              <X
+                size={24}
+                className="cursor-pointer"
+                onClick={close}
+                tabIndex={1}
+              />
             </div>
-          </Dialog.Title>
+          </div>
           <div
             className="px-10 flex flex-col h-full py-6"
             style={{ height: "calc(100vh - 72px)" }}
