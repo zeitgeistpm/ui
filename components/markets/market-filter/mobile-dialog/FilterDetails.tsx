@@ -3,7 +3,7 @@ import {
   marketCurrencyFilterOptions,
   marketStatusFilterOptions,
 } from "lib/constants/market-filter";
-import { ChevronLeft } from "react-feather";
+import { ChevronLeft, X } from "react-feather";
 import { useMarketFiltersContext } from "../MarketFiltersContainer";
 import { SelectionType } from "./types";
 import { MarketFilter } from "lib/types/market-filter";
@@ -28,16 +28,17 @@ const FilterToggle = ({ option }: { option: MarketFilter }) => {
   };
 
   return (
-    <a
-      className={
-        "w-1/2 mb-7 cursor-pointer " + (isActive ? "text-ztg-blue" : "")
-      }
-      onClick={() => {
-        toggle();
-      }}
-    >
-      {option.value}
-    </a>
+    <div className="w-1/2 mb-7">
+      <a
+        className={"cursor-pointer " + (isActive ? "text-ztg-blue" : "")}
+        onClick={() => {
+          toggle();
+        }}
+      >
+        {option.value}{" "}
+        {isActive ? <X className="text-gray-600 inline" size={14} /> : ""}
+      </a>
+    </div>
   );
 };
 
