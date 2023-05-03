@@ -19,7 +19,7 @@ const transactionHistoryQuery = gql`
       orderBy: timestamp_DESC
     ) {
       assetId
-      ztgTraded
+      baseAssetTraded
       timestamp
       event
       newPrice
@@ -70,7 +70,7 @@ export const useTransactionHistory = (address: string) => {
           historicalAssets: {
             assetId: string;
             dAmountInPool: string;
-            ztgTraded: string;
+            baseAssetTraded: string;
             newPrice: number;
             dPrice: number;
             timestamp: string;
@@ -121,8 +121,8 @@ export const useTransactionHistory = (address: string) => {
             question: marketsMap.get(marketId).question,
             action: action,
             value:
-              action === "Trade" && asset.ztgTraded != null
-                ? new Decimal(asset.ztgTraded).div(ZTG).toNumber()
+              action === "Trade" && asset.baseAssetTraded != null
+                ? new Decimal(asset.baseAssetTraded).div(ZTG).toNumber()
                 : null,
             price:
               action === "Trade" ? asset.newPrice - asset.dPrice / 2 : null,
