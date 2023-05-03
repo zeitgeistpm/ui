@@ -102,11 +102,11 @@ const MarketHistory: FC<
     <ol>
       <li>
         <span>{marketStart}</span>
-        <span>Market opened</span>
+        <span> Market opened</span>
       </li>
       <li>
         <span>{marketClosed}</span>
-        <span>Market closed</span>
+        <span> Market closed</span>
       </li>
       {marketHistory?.reported && (
         <li>
@@ -177,33 +177,6 @@ const MarketHeader: FC<{
   );
   console.log(marketHistory);
 
-  const [blockNumber, setBlockNumber] = useState("");
-  const [timestamp, setTimestamp] = useState("");
-
-  const getBlockTimestamp = async (blockNumber) => {
-    const provider = new WsProvider("wss://rpc.polkadot.io");
-    const api = await ApiPromise.create({ provider });
-
-    // Fetch block hash for the given block number
-    const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
-
-    // Get the timestamp for the given block hash
-    const timestamp = await api.query.timestamp.now.at(blockHash);
-
-    console.log(
-      `Timestamp for block number ${blockNumber}: ${new Intl.DateTimeFormat(
-        "default",
-        {
-          dateStyle: "medium",
-        },
-      ).format(timestamp.toNumber())}`,
-    );
-  };
-
-  useEffect(() => {
-    getBlockTimestamp(1762868);
-  }, []);
-  console.log(blockNumber, timestamp);
   return (
     <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
       <h1 className="text-4xl font-extrabold my-5 text-center">{question}</h1>

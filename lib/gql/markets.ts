@@ -55,6 +55,7 @@ const marketQuery = gql`
         }
       }
       period {
+        block
         start
         end
       }
@@ -75,6 +76,7 @@ export interface MarketPageIndexedData {
   description: string;
   status: MarketStatus;
   period: {
+    block: string[];
     start: string;
     end: string;
   };
