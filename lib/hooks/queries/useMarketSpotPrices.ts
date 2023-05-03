@@ -77,7 +77,7 @@ const calcMarketPrices = (
       basePoolBalance.toString(),
       baseWeight,
       balances[index].free.toString(),
-      weight.len,
+      weight.weight,
       0,
     );
 
