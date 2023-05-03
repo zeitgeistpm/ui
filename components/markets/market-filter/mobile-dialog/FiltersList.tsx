@@ -6,24 +6,27 @@ import { useMarketFiltersContext } from "../MarketFiltersContainer";
 import { SelectionType } from "./types";
 
 type FilterButtonProps = PropsWithChildren<{
-  RightBtn: Icon;
+  RightIcon: Icon;
   onClick: () => void;
   className?: string;
 }>;
 
 const FilterButton = ({
   children,
-  RightBtn,
+  RightIcon,
   onClick,
   className = "",
 }: FilterButtonProps) => {
   return (
     <div
-      className={"flex items-center h-10 cursor-pointer " + className}
+      className={
+        "flex items-center h-10 cursor-pointer border-b border-gray-200 box-content mb-5" +
+        className
+      }
       onClick={onClick}
     >
       <div>{children}</div>
-      <RightBtn className="ml-auto" size={24} />
+      <RightIcon className="ml-auto" size={24} />
     </div>
   );
 };
@@ -37,11 +40,9 @@ const FiltersList = ({ showSelection, close }: FiltersListProps) => {
   const { activeFilters, ordering } = useMarketFiltersContext();
   return (
     <>
-      {activeFilters && (
-        <MarketActiveFilters className="flex flex-row mr-auto ml-auto gap-2" />
-      )}
+      <MarketActiveFilters className="flex flex-row w-full justify-center gap-2 flex-wrap mb-5 " />
       <FilterButton
-        RightBtn={Plus}
+        RightIcon={Plus}
         onClick={() => {
           showSelection("Category");
         }}
@@ -49,7 +50,7 @@ const FiltersList = ({ showSelection, close }: FiltersListProps) => {
         Category
       </FilterButton>
       <FilterButton
-        RightBtn={Plus}
+        RightIcon={Plus}
         onClick={() => {
           showSelection("Currency");
         }}
@@ -57,7 +58,7 @@ const FiltersList = ({ showSelection, close }: FiltersListProps) => {
         Currency
       </FilterButton>
       <FilterButton
-        RightBtn={Plus}
+        RightIcon={Plus}
         onClick={() => {
           showSelection("Status");
         }}
@@ -65,7 +66,7 @@ const FiltersList = ({ showSelection, close }: FiltersListProps) => {
         Status
       </FilterButton>
       <FilterButton
-        RightBtn={ChevronDown}
+        RightIcon={ChevronDown}
         onClick={() => {
           showSelection("Sort By");
         }}

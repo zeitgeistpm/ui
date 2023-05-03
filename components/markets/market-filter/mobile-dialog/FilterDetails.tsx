@@ -22,7 +22,7 @@ const FilterDetails = ({ back, type }: FilterDetailsProps) => {
         className="cursor-pointer flex mr-auto text-sky-600 mt-1"
         onClick={back}
       >
-        <ChevronLeft size={24} className="inline-block" />{" "}
+        <ChevronLeft className="w-6" transform="translate(-6, 0)" />{" "}
         <div className="inline-block">Back</div>
       </a>
       <h3 className="text-2xl my-7">{type}</h3>

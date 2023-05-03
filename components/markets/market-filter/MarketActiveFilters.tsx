@@ -30,18 +30,20 @@ const MarketActiveFilters = ({ className = "" }: MarketActiveFiltersProps) => {
   const { activeFilters, clearActiveFilters, removeActiveFilter } =
     useMarketFiltersContext();
   return (
-    <div className={className}>
-      {activeFilters?.length > 0 && (
-        <ClearAllButton clear={clearActiveFilters} />
-      )}
-      {activeFilters?.map((af, idx) => (
-        <MarketActiveFilterItem
-          filter={af}
-          onRemove={removeActiveFilter}
-          key={`af-${idx}`}
-        />
-      ))}
-    </div>
+    activeFilters?.length > 0 && (
+      <div className={className}>
+        {activeFilters.length > 0 && (
+          <ClearAllButton clear={clearActiveFilters} />
+        )}
+        {activeFilters.map((af, idx) => (
+          <MarketActiveFilterItem
+            filter={af}
+            onRemove={removeActiveFilter}
+            key={`af-${idx}`}
+          />
+        ))}
+      </div>
+    )
   );
 };
 
