@@ -62,6 +62,8 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
 
   const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
 
+  const queryState = useMarketsUrlQuery();
+
   useChangeQuery(filters, orderBy, withLiquidityOnly);
 
   const {
@@ -70,7 +72,11 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     isLoading,
     hasNextPage,
     fetchNextPage,
-  } = useInfiniteMarkets(orderBy, withLiquidityOnly, filters);
+  } = useInfiniteMarkets(
+    queryState.ordering,
+    queryState.liquidityOnly,
+    queryState.filters,
+  );
 
   useEffect(() => {
     if (isLoadMarkerInView === true && hasNextPage === true) {

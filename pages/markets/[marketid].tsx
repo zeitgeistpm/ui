@@ -1,48 +1,53 @@
+import { Tab } from "@headlessui/react";
+import { parseAssetId } from "@zeitgeistpm/sdk-next";
+import { MarketDispute, Report } from "@zeitgeistpm/sdk/dist/types";
 import PoolTable from "components/liquidity/PoolTable";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
-import Skeleton from "components/ui/Skeleton";
+import MarketChart from "components/markets/MarketChart";
+import MarketHeader from "components/markets/MarketHeader";
 import PoolDeployer from "components/markets/PoolDeployer";
+import { MarketPromotionCallout } from "components/markets/PromotionCallout";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
 import MarketImage from "components/ui/MarketImage";
+import Skeleton from "components/ui/Skeleton";
+import { filters } from "components/ui/TimeFilters";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
+import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
+import {
+  getMarketPromotion,
+  PromotedMarket,
+} from "lib/cms/get-promoted-markets";
+import { graphQlEndpoint, ZTG } from "lib/constants";
 import {
   getMarket,
   getRecentMarketIds,
   MarketPageIndexedData,
 } from "lib/gql/markets";
+import { getResolutionTimestamp } from "lib/gql/resolution-date";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useMarket } from "lib/hooks/queries/useMarket";
-import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
-import { useMarketStage } from "lib/hooks/queries/useMarketStage";
-import { observer } from "mobx-react-lite";
-import { NextPage } from "next";
-import dynamic from "next/dynamic";
-import { useRouter } from "next/router";
-import NotFoundPage from "pages/404";
-import { AlertTriangle } from "react-feather";
-import { Tab } from "@headlessui/react";
-import Link from "next/link";
-import Decimal from "decimal.js";
-import { graphQlEndpoint, ZTG } from "lib/constants";
-import MarketHeader from "components/markets/MarketHeader";
-import MarketChart from "components/markets/MarketChart";
+import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
+import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import {
   getPriceHistory,
   PriceHistory,
 } from "lib/hooks/queries/useMarketPriceHistory";
-import { filters } from "components/ui/TimeFilters";
-import { usePrizePool } from "lib/hooks/queries/usePrizePool";
+import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
+import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
-import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
-import { getResolutionTimestamp } from "lib/gql/resolution-date";
+import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
-import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
-import { parseAssetId } from "@zeitgeistpm/sdk-next";
-import { MarketDispute, Report } from "@zeitgeistpm/sdk/dist/types";
-import { useState, useEffect } from "react";
-import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
+import { observer } from "mobx-react-lite";
+import { NextPage } from "next";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import NotFoundPage from "pages/404";
+import { useEffect, useState } from "react";
+import { AlertTriangle } from "react-feather";
 
 export const QuillViewer = dynamic(
   () => import("../../components/ui/QuillViewer"),
@@ -65,7 +70,10 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const client = new GraphQLClient(graphQlEndpoint);
 
-  const market = await getMarket(client, params.marketid);
+  const [market, promotionData] = await Promise.all([
+    getMarket(client, params.marketid),
+    getMarketPromotion(Number(params.marketid)),
+  ]);
 
   const chartSeries: ChartSeries[] = market?.categories?.map(
     (category, index) => {
@@ -106,18 +114,28 @@ export async function getStaticProps({ params }) {
       chartSeries: chartSeries ?? null,
       priceHistory: priceHistory ?? null,
       resolutionTimestamp: resolutionTimestamp ?? null,
+      promotionData,
     },
     revalidate: 10 * 60, //10mins
   };
 }
 
-const Market: NextPage<{
+type MarketPageProps = {
   indexedMarket: MarketPageIndexedData;
   chartSeries: ChartSeries[];
   priceHistory: PriceHistory[];
   resolutionTimestamp: string;
-}> = observer(
-  ({ indexedMarket, chartSeries, priceHistory, resolutionTimestamp }) => {
+  promotionData: PromotedMarket | null;
+};
+
+const Market: NextPage<MarketPageProps> = observer(
+  ({
+    indexedMarket,
+    chartSeries,
+    priceHistory,
+    resolutionTimestamp,
+    promotionData,
+  }) => {
     const [lastDispute, setLastDispute] = useState<MarketDispute>(null);
     const [report, setReport] = useState<Report>(null);
     const router = useRouter();
@@ -191,6 +209,16 @@ const Market: NextPage<{
             status={indexedMarket.status}
             className="mx-auto"
           />
+
+          <div className="mt-4">
+            {promotionData && (
+              <MarketPromotionCallout
+                market={indexedMarket}
+                promotion={promotionData}
+              />
+            )}
+          </div>
+
           <MarketHeader
             market={indexedMarket}
             resolvedOutcome={marketSdkv2?.resolvedOutcome}
@@ -202,6 +230,12 @@ const Market: NextPage<{
             marketStage={marketStage}
             rejectReason={marketSdkv2?.rejectReason}
           />
+          {marketSdkv2?.rejectReason && marketSdkv2.rejectReason.length > 0 && (
+            <div className="mt-[10px] text-ztg-14-150">
+              Market rejected: {marketSdkv2.rejectReason}
+            </div>
+          )}
+
           {chartSeries && indexedMarket?.pool?.poolId ? (
             <MarketChart
               marketId={indexedMarket.marketId}

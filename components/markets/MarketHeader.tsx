@@ -1,18 +1,17 @@
+import { MarketStage, MarketStatus } from "@zeitgeistpm/sdk-next";
+import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
+import Avatar from "components/ui/Avatar";
 import Skeleton from "components/ui/Skeleton";
+import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
+import { MarketPageIndexedData } from "lib/gql/markets";
+import { useIdentity } from "lib/hooks/queries/useIdentity";
+import { shortenAddress } from "lib/util";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { hasDatePassed } from "lib/util/hasDatePassed";
-import { FC, PropsWithChildren } from "react";
-import { MarketStage, MarketStatus } from "@zeitgeistpm/sdk-next";
-import { MarketTimer } from "./MarketTimer";
-import { MarketTimerSkeleton } from "./MarketTimer";
-import { MarketPageIndexedData } from "lib/gql/markets";
-import { ZTG } from "lib/constants";
-import Decimal from "decimal.js";
-import Avatar from "components/ui/Avatar";
-import { shortenAddress } from "lib/util";
-import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { getMarketStatusDetails } from "lib/util/market-status-details";
-import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
+import { FC, PropsWithChildren } from "react";
+import { MarketTimer, MarketTimerSkeleton } from "./MarketTimer";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
   ({ label, border = true, children }) => {
