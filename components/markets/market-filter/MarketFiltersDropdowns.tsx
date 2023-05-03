@@ -1,16 +1,12 @@
-import { useContext } from "react";
-import { MarketsOrderBy } from "@zeitgeistpm/sdk/dist/types";
 import {
   marketTagFilterOptions,
   marketCurrencyFilterOptions,
   marketStatusFilterOptions,
 } from "lib/constants/market-filter";
-import { MarketFilter } from "lib/types/market-filter";
 import DropDownSelect from "./DropDownSelect";
-import { MarketFiltersContext } from "./MarketFiltersContainer";
+import { useMarketFiltersContext } from "./MarketFiltersContainer";
 
 export type MarketFiltersDropdownsProps = {
-  addFilter: (filter: MarketFilter) => void;
   className?: string;
 };
 
@@ -21,16 +17,15 @@ const Divider = () => {
 };
 
 const MarketFiltersDropdowns = ({
-  addFilter,
   className = "",
 }: MarketFiltersDropdownsProps) => {
-  const { selectedMenu, portal } = useContext(MarketFiltersContext);
+  const { selectedMenu, portal, addActiveFilter } = useMarketFiltersContext();
   return (
     <div className={className}>
       <DropDownSelect
         label="Category"
         options={marketTagFilterOptions}
-        add={addFilter}
+        add={addActiveFilter}
         portal={portal}
         isOpen={selectedMenu === "Category"}
       />
@@ -38,7 +33,7 @@ const MarketFiltersDropdowns = ({
       <DropDownSelect
         label="Currency"
         options={marketCurrencyFilterOptions}
-        add={addFilter}
+        add={addActiveFilter}
         portal={portal}
         isOpen={selectedMenu === "Currency"}
       />
@@ -46,7 +41,7 @@ const MarketFiltersDropdowns = ({
       <DropDownSelect
         label="Status"
         options={marketStatusFilterOptions}
-        add={addFilter}
+        add={addActiveFilter}
         portal={portal}
         isOpen={selectedMenu === "Status"}
       />

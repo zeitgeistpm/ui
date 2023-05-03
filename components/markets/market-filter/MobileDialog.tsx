@@ -1,8 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
-import { PropsWithChildren, useContext, useEffect, useState } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 import { ChevronDown, ChevronLeft, Icon, Plus, X } from "react-feather";
-import { MarketFiltersContext } from "./MarketFiltersContainer";
+import { useMarketFiltersContext } from "./MarketFiltersContainer";
 import {
   marketCurrencyFilterOptions,
   marketStatusFilterOptions,
@@ -35,25 +34,13 @@ const FilterButton = ({
   );
 };
 
-const AllFilters = ({
-  showSelection,
-  activeFilters,
-  onClear,
-  onFilterRemove,
-  ordering,
-  close,
-  withLiquidityOnly,
-  onWithLiquidityOnlyChange,
-}) => {
+const AllFilters = ({ showSelection, close }) => {
+  const { activeFilters, clearActiveFilters, removeActiveFilter, ordering } =
+    useMarketFiltersContext();
   return (
     <>
       {activeFilters && (
-        <MarketActiveFilters
-          filters={activeFilters}
-          onClear={onClear}
-          onFilterRemove={onFilterRemove}
-          className="flex flex-row mr-auto ml-auto gap-2"
-        />
+        <MarketActiveFilters className="flex flex-row mr-auto ml-auto gap-2" />
       )}
       <FilterButton
         RightBtn={Plus}
@@ -87,11 +74,7 @@ const AllFilters = ({
       >
         Sort By: {ordering}
       </FilterButton>
-      <MarketFiltersCheckboxes
-        withLiquidityOnly={withLiquidityOnly}
-        onWithLiquidityOnlyChange={onWithLiquidityOnlyChange}
-        className="mt-4"
-      />
+      <MarketFiltersCheckboxes className="mt-4" />
       <button
         className="rounded-full bg-ztg-blue mt-auto h-14 text-white"
         onClick={close}
@@ -107,19 +90,11 @@ type SelectionType = "Category" | "Currency" | "Status" | "Sort By" | "None";
 type FilterSelectionProps = {
   back: () => void;
   type: SelectionType;
-  addFilter: (filter: MarketFilter) => void;
-  withLiquidityOnly: boolean;
-  onWithLiquidityOnlyChange: (liqudityOnly: boolean) => void;
-  ordering: MarketsOrderBy;
-  onOrderingChange: (v: MarketsOrderBy) => void;
 };
 
-const FilterSelection = ({
-  back,
-  type,
-  addFilter,
-  onOrderingChange,
-}: FilterSelectionProps) => {
+const FilterSelection = ({ back, type }: FilterSelectionProps) => {
+  const { addActiveFilter, setOrdering } = useMarketFiltersContext();
+
   return (
     <>
       <a
@@ -139,7 +114,7 @@ const FilterSelection = ({
                   <a
                     className="w-1/2 mb-7 cursor-pointer"
                     onClick={() => {
-                      addFilter(opt);
+                      addActiveFilter(opt);
                       back();
                     }}
                     key={index}
@@ -155,7 +130,7 @@ const FilterSelection = ({
                   <a
                     className="w-1/2 mb-7 cursor-pointer"
                     onClick={() => {
-                      addFilter(opt);
+                      addActiveFilter(opt);
                       back();
                     }}
                     key={index}
@@ -171,7 +146,7 @@ const FilterSelection = ({
                   <a
                     className="w-1/2 mb-7 cursor-pointer"
                     onClick={() => {
-                      addFilter(opt);
+                      addActiveFilter(opt);
                       back();
                     }}
                     key={index}
@@ -188,7 +163,7 @@ const FilterSelection = ({
                     <a
                       className="w-1/2 mb-7 cursor-pointer"
                       onClick={() => {
-                        onOrderingChange(opt.value);
+                        setOrdering(opt.value);
                         back();
                       }}
                       key={index}
@@ -211,31 +186,13 @@ const TRANSITION_DURATION = 300;
 export type MobileDialogProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
-  addFilter: (filter: MarketFilter) => void;
-  withLiquidityOnly: boolean;
-  onWithLiquidityOnlyChange: (liqudityOnly: boolean) => void;
-  ordering: MarketsOrderBy;
-  onOrderingChange: (v: MarketsOrderBy) => void;
-  onClear: () => void;
-  onFilterRemove: (filter: MarketFilter) => void;
 };
 
-const MobileDialog = ({
-  open,
-  setOpen,
-  addFilter,
-  withLiquidityOnly,
-  onWithLiquidityOnlyChange,
-  ordering,
-  onOrderingChange,
-  onClear,
-  onFilterRemove,
-}: MobileDialogProps) => {
+const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
   const [showTransition, setShowTransition] = useState(open);
   const [currentSelection, setCurrentSelection] =
     useState<SelectionType>("None");
   const [step, setStep] = useState(0);
-  const { activeFilters } = useContext(MarketFiltersContext);
 
   const close = () => {
     setTimeout(() => {
@@ -288,24 +245,13 @@ const MobileDialog = ({
                       setCurrentSelection(selection);
                       setStep(1);
                     }}
-                    activeFilters={activeFilters}
-                    onClear={onClear}
-                    onFilterRemove={onFilterRemove}
-                    ordering={ordering}
                     close={close}
-                    withLiquidityOnly={withLiquidityOnly}
-                    onWithLiquidityOnlyChange={onWithLiquidityOnlyChange}
                   />
                 ),
                 1: (
                   <FilterSelection
                     back={() => setStep(0)}
                     type={currentSelection}
-                    addFilter={addFilter}
-                    ordering={ordering}
-                    onOrderingChange={onOrderingChange}
-                    withLiquidityOnly={withLiquidityOnly}
-                    onWithLiquidityOnlyChange={onWithLiquidityOnlyChange}
                   />
                 ),
               }[step]

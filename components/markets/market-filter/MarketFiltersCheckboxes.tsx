@@ -1,23 +1,21 @@
 import React from "react";
+import { useMarketFiltersContext } from "./MarketFiltersContainer";
 
 type MarketFiltersCheckboxesProps = {
-  withLiquidityOnly: boolean;
-  onWithLiquidityOnlyChange: (liqudityOnly: boolean) => void;
   className?: string;
 };
 
 const MarketFiltersCheckboxes: React.FC<MarketFiltersCheckboxesProps> = ({
-  withLiquidityOnly,
-  onWithLiquidityOnlyChange,
   className = "",
 }) => {
+  const { withLiquidityOnly, setWithLiquidityOnly } = useMarketFiltersContext();
   return withLiquidityOnly != null ? (
     <label className={"text-black font-medium " + className}>
       <input
         className="mr-[10px]"
         type="checkbox"
         checked={withLiquidityOnly}
-        onChange={(e) => onWithLiquidityOnlyChange(e.target.checked)}
+        onChange={(e) => setWithLiquidityOnly(e.target.checked)}
       />
       Liquidity only
     </label>

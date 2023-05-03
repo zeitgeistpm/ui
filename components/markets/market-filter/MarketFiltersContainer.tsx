@@ -1,35 +1,48 @@
-import { Dialog } from "@headlessui/react";
-import { MarketFilter } from "lib/types/market-filter";
+import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
 import { observer } from "mobx-react";
-import { createContext, FC, PropsWithChildren, useState } from "react";
+import { createContext, FC, PropsWithChildren, useContext } from "react";
 
 export type SelectedMenu = "Category" | "Currency" | "Status" | "None";
 
-export const MarketFiltersContext = createContext<{
+export type MarketFiltersProps = {
   activeFilters: MarketFilter[];
+  addActiveFilter: (filter: MarketFilter) => void;
+  removeActiveFilter: (filter: MarketFilter) => void;
+  clearActiveFilters: () => void;
+  withLiquidityOnly: boolean;
+  setWithLiquidityOnly: (liqudityOnly: boolean) => void;
+  ordering: MarketsOrderBy;
+  setOrdering: (v: MarketsOrderBy) => void;
+  portal: HTMLDivElement;
   selectedMenu: SelectedMenu;
   setSelectedMenu: (menu: SelectedMenu) => void;
-  portal: HTMLDivElement;
-}>(null);
+};
+
+export const MarketFiltersContext = createContext<MarketFiltersProps>(null);
+
+export const useMarketFiltersContext = () => {
+  const context = useContext(MarketFiltersContext);
+  if (context == null) {
+    throw new Error(
+      "useMarketFiltersContext must be used within a MarketFiltersContainer",
+    );
+  }
+  return context;
+};
 
 export type MarketFiltersContainerProps = PropsWithChildren<{
   activeFilters: MarketFilter[];
   portal: HTMLDivElement;
 }>;
 
-const MarketFiltersContainer: FC<MarketFiltersContainerProps> = observer(
-  ({ children, activeFilters, portal }) => {
-    const [selectedMenu, setSelectedMenu] = useState<SelectedMenu>("None");
-
+const MarketFiltersContainer: FC<PropsWithChildren<MarketFiltersProps>> =
+  observer((props) => {
     return (
-      <MarketFiltersContext.Provider
-        value={{ activeFilters, selectedMenu, setSelectedMenu, portal }}
-      >
+      <MarketFiltersContext.Provider value={{ ...props }}>
         <h2 className="text-center mb-4">All Markets</h2>
-        {children}
+        {props.children}
       </MarketFiltersContext.Provider>
     );
-  },
-);
+  });
 
 export default MarketFiltersContainer;

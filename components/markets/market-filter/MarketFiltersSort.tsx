@@ -3,10 +3,9 @@ import { MarketsOrderBy } from "lib/types/market-filter";
 import { observer } from "mobx-react";
 import React from "react";
 import ReactSelect from "react-select";
+import { useMarketFiltersContext } from "./MarketFiltersContainer";
 
 type MarketFilterSortProps = {
-  ordering: MarketsOrderBy;
-  onOrderingChange: (ordering: MarketsOrderBy) => void;
   className?: string;
 };
 
@@ -82,13 +81,12 @@ const SortBySelect = observer(
 );
 
 const MarketFilterSort: React.FC<MarketFilterSortProps> = ({
-  ordering,
-  onOrderingChange,
   className = "",
 }) => {
+  const { ordering, setOrdering } = useMarketFiltersContext();
   return (
     <div className={className}>
-      <SortBySelect ordering={ordering} onOrderingChange={onOrderingChange} />
+      <SortBySelect ordering={ordering} onOrderingChange={setOrdering} />
     </div>
   );
 };

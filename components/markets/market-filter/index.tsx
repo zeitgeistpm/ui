@@ -9,7 +9,7 @@ import { filterTypes } from "lib/constants/market-filter";
 import Skeleton from "components/ui/Skeleton";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import MarketActiveFilters from "./MarketActiveFilters";
-import MarketFiltersContainer from "./MarketFiltersContainer";
+import MarketFiltersContainer, { SelectedMenu } from "./MarketFiltersContainer";
 import MobileDialog from "./MobileDialog";
 import MarketFiltersDropdowns from "./MarketFiltersDropdowns";
 import MarketFiltersCheckboxes from "./MarketFiltersCheckboxes";
@@ -56,6 +56,7 @@ const MarketFilterSelection = ({
   const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
   const [mobileDialogOpen, setMobileDialogOpen] = useState(false);
   const portalRef = useRef<HTMLDivElement>(null);
+  const [selectedMenu, setSelectedMenu] = useState<SelectedMenu>("None");
 
   const queryState = useMarketsUrlQuery();
 
@@ -125,35 +126,26 @@ const MarketFilterSelection = ({
     <MarketFiltersContainer
       activeFilters={activeFilters}
       portal={portalRef.current}
+      addActiveFilter={add}
+      removeActiveFilter={remove}
+      withLiquidityOnly={withLiquidityOnly}
+      setWithLiquidityOnly={setWithLiquidityOnly}
+      ordering={activeOrdering}
+      setOrdering={setActiveOrdering}
+      clearActiveFilters={clear}
+      selectedMenu={selectedMenu}
+      setSelectedMenu={setSelectedMenu}
     >
       <MobileDialog
         open={mobileDialogOpen}
         setOpen={setMobileDialogOpen}
-        addFilter={add}
-        withLiquidityOnly={withLiquidityOnly}
-        onWithLiquidityOnlyChange={setWithLiquidityOnly}
-        ordering={activeOrdering}
-        onOrderingChange={setActiveOrdering}
-        onClear={clear}
-        onFilterRemove={remove}
       ></MobileDialog>
       <div className="w-full flex flex-col items-center justify-center mb-[30px]">
         {portalRef.current ? (
           <div className="hidden md:flex md:items-center md:gap-2 md:mb-6">
-            <MarketFiltersDropdowns
-              addFilter={add}
-              className="flex items-center gap-2"
-            ></MarketFiltersDropdowns>
-            <MarketFiltersCheckboxes
-              onWithLiquidityOnlyChange={setWithLiquidityOnly}
-              withLiquidityOnly={withLiquidityOnly}
-              className="hidden lg:block mr-[20px] ml-[20px]"
-            ></MarketFiltersCheckboxes>
-            <MarketFiltersSort
-              onOrderingChange={setActiveOrdering}
-              ordering={activeOrdering}
-              className="hidden lg:block"
-            ></MarketFiltersSort>
+            <MarketFiltersDropdowns className="flex items-center gap-2"></MarketFiltersDropdowns>
+            <MarketFiltersCheckboxes className="hidden lg:block mr-[20px] ml-[20px]"></MarketFiltersCheckboxes>
+            <MarketFiltersSort className="hidden lg:block"></MarketFiltersSort>
           </div>
         ) : (
           <Skeleton width="80%" height="44px" className="mb-[25px]"></Skeleton>
@@ -171,24 +163,13 @@ const MarketFilterSelection = ({
         ></div>
         {portalRef.current ? (
           <div className="hidden md:flex items-center gap-6 mb-6 lg:hidden">
-            <MarketFiltersCheckboxes
-              onWithLiquidityOnlyChange={setWithLiquidityOnly}
-              withLiquidityOnly={withLiquidityOnly}
-            ></MarketFiltersCheckboxes>
-            <MarketFiltersSort
-              onOrderingChange={setActiveOrdering}
-              ordering={activeOrdering}
-            ></MarketFiltersSort>
+            <MarketFiltersCheckboxes></MarketFiltersCheckboxes>
+            <MarketFiltersSort></MarketFiltersSort>
           </div>
         ) : (
           <Skeleton width="40%" height="32px" className="mb-[25px]"></Skeleton>
         )}
-        <MarketActiveFilters
-          filters={activeFilters}
-          onClear={clear}
-          onFilterRemove={remove}
-          className="hidden md:flex gap-2"
-        />
+        <MarketActiveFilters className="hidden md:flex gap-2" />
       </div>
     </MarketFiltersContainer>
   );

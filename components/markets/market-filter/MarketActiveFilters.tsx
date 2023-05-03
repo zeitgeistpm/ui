@@ -1,6 +1,7 @@
 import { MarketFilter } from "lib/types/market-filter";
 import { X } from "react-feather";
 import ClearAllButton from "./ClearAllButton";
+import { useMarketFiltersContext } from "./MarketFiltersContainer";
 
 export type MarketActiveFilterProps = {
   filter: MarketFilter;
@@ -22,25 +23,21 @@ export const MarketActiveFilterItem = ({
 };
 
 export type MarketActiveFiltersProps = {
-  filters: MarketFilter[];
-  onClear: () => void;
-  onFilterRemove: (filter: MarketFilter) => void;
   className?: string;
 };
 
-const MarketActiveFilters = ({
-  filters,
-  onClear,
-  onFilterRemove,
-  className = "",
-}: MarketActiveFiltersProps) => {
+const MarketActiveFilters = ({ className = "" }: MarketActiveFiltersProps) => {
+  const { activeFilters, clearActiveFilters, removeActiveFilter } =
+    useMarketFiltersContext();
   return (
     <div className={className}>
-      {filters?.length > 0 && <ClearAllButton clear={onClear} />}
-      {filters?.map((af, idx) => (
+      {activeFilters?.length > 0 && (
+        <ClearAllButton clear={clearActiveFilters} />
+      )}
+      {activeFilters?.map((af, idx) => (
         <MarketActiveFilterItem
           filter={af}
-          onRemove={onFilterRemove}
+          onRemove={removeActiveFilter}
           key={`af-${idx}`}
         />
       ))}
