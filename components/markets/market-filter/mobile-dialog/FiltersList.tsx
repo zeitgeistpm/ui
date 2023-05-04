@@ -24,12 +24,6 @@ const sortBySelectStyles = {
       cursor: "pointer",
     };
   },
-  dropdownIndicator: (provided) => {
-    return {
-      ...provided,
-      display: "none",
-    };
-  },
   singleValue: (provided) => {
     return {
       ...provided,
@@ -59,9 +53,14 @@ const sortBySelectStyles = {
   },
 };
 
-const IndicatorSeparator = (props) => {
+const IndicatorsContainer = (props) => {
   const { menuIsOpen } = props.selectProps;
-  return menuIsOpen ? <ChevronUp /> : <ChevronDown />;
+  console.log(props);
+  return menuIsOpen ? (
+    <ChevronUp className="pointer-events-none" />
+  ) : (
+    <ChevronDown className="pointer-events-none" />
+  );
 };
 
 type FilterButtonProps = PropsWithChildren<{
@@ -132,7 +131,7 @@ const FiltersList = ({ showMenu, close }: FiltersListProps) => {
           <MarketFiltersSort
             className="w-full"
             selectStyles={sortBySelectStyles}
-            components={{ IndicatorSeparator }}
+            components={{ IndicatorsContainer }}
           />
         </div>
       </FilterButton>
