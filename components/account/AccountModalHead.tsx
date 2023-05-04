@@ -1,5 +1,4 @@
-import { useAccountModals } from "lib/hooks/account";
-import { useModalStore } from "lib/stores/ModalStore";
+import { useAccountModals } from "lib/state/account";
 import { observer } from "mobx-react";
 import React from "react";
 
@@ -12,7 +11,7 @@ const AccountModalHead = observer(() => {
 
   return (
     <div className="flex flex-row justify-between">
-      <div>Account</div>
+      <div className="font-bold text-ztg-16-150 text-black">Account</div>
       <div
         className="mr-ztg-7 cursor-pointer underline"
         onClick={() => {
