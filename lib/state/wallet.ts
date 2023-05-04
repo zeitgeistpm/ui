@@ -1,5 +1,6 @@
 import { encodeAddress } from "@polkadot/util-crypto";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import { isSome, tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { atom, getDefaultStore, useAtom } from "jotai";
 import { isString } from "lodash-es";
 import { useMemo } from "react";
@@ -137,11 +138,23 @@ const userConfigAtom = persistentAtom<WalletUserConfig>({
        */
       if (!state || Object.keys(state).length === 0) {
         const walletId = globalThis.localStorage?.getItem("walletId");
-        const selectedAddress =
+        let selectedAddress =
           globalThis.localStorage?.getItem("accountAddress");
 
         globalThis.localStorage?.removeItem("walletId");
         globalThis.localStorage?.removeItem("accountAddress");
+
+        if (selectedAddress?.match(/\".+\"/)) {
+          selectedAddress = selectedAddress.replace(/\"/g, "");
+        }
+
+        if (
+          selectedAddress &&
+          tryCatch(() => encodeAddress(selectedAddress)).isNone()
+        ) {
+          console.log("Invalid address in localStorage, disconnecting wallet.");
+          return {};
+        }
 
         return {
           walletId,
