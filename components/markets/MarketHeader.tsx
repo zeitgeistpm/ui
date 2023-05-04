@@ -154,27 +154,25 @@ const MarketHistory: FC<
                 }).format(marketHistory?.reported.timestamp)}{" "}
                 (block: {marketHistory?.reported.at})
               </p>
-              <p>
-                <div className="">
-                  {marketHistory?.oracleReported && "Oracle "}
-                  {/* <Avatar address={marketHistory?.reported.by} /> */}
-                  <p className="inline font-medium">
-                    <span className="font-bold">
-                      {shortenAddress(marketHistory?.reported.by, 10, 10)}
-                    </span>{" "}
-                    reported{" "}
-                    <span className="font-bold">
-                      {getOutcome(marketHistory?.reported.outcome)}
-                    </span>
-                  </p>
-                </div>
-              </p>
+              <div>
+                {marketHistory?.oracleReported && "Oracle "}
+                {/* <Avatar address={marketHistory?.reported.by} /> */}
+                <p className="inline font-medium">
+                  <span className="font-bold">
+                    {shortenAddress(marketHistory?.reported.by, 10, 10)}
+                  </span>{" "}
+                  reported{" "}
+                  <span className="font-bold">
+                    {getOutcome(marketHistory?.reported.outcome)}
+                  </span>
+                </p>
+              </div>
             </li>
           )}
           {marketHistory?.disputes &&
             marketHistory?.disputes.map((dispute) => {
               return (
-                <li className="mb-8">
+                <li key={dispute.timestamp} className="mb-8">
                   <p className="pb-1">
                     {new Intl.DateTimeFormat("default", {
                       dateStyle: "medium",
@@ -182,9 +180,9 @@ const MarketHistory: FC<
                     }).format(dispute.timestamp)}{" "}
                     (block: {dispute.at})
                   </p>
-                  <span>
+                  <div>
                     {marketHistory.oracleReported ?? "Oracle"}
-                    <div className="flex items-center">
+                    <p className="flex items-center">
                       {/* <Avatar address={dispute.by} /> */}
                       <span className="inline font-medium">
                         <span className="font-bold">
@@ -195,8 +193,8 @@ const MarketHistory: FC<
                           {getOutcome(dispute.outcome)}
                         </span>
                       </span>
-                    </div>
-                  </span>
+                    </p>
+                  </div>
                 </li>
               );
             })}
@@ -269,7 +267,6 @@ const MarketHeader: FC<{
   const { data: marketHistory } = useMarketEventHistory(
     market.marketId.toString(),
   );
-  console.log(marketHistory);
 
   return (
     <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">

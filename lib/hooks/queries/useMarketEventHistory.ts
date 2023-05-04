@@ -62,7 +62,7 @@ export const useMarketEventHistory = (
       enabled: Boolean(sdk2 && isIndexedSdk(sdk2) && isRpcSdk(sdk2)),
     },
   );
-  console.log(market);
+
   return useQuery(
     [marketsEventsRootQuery, id, marketId],
     async () => {
