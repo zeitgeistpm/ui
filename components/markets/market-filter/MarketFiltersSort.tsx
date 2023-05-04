@@ -87,7 +87,6 @@ const SortBySelect = observer(
         }}
         options={marketsOrderByOptions}
         styles={{ ...sortBySelectStyles, ...(styles ?? {}) }}
-        // menuIsOpen={true}
         components={{
           IndicatorSeparator,
           ...(components ?? {}),
