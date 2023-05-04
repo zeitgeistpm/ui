@@ -17,6 +17,7 @@ const WalletSelect = observer(() => {
       window.open(wallet.installUrl);
     } else {
       selectWallet(wallet.extensionName);
+      accountModals.closeWalletSelect();
     }
   };
 
