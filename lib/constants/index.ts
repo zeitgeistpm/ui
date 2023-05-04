@@ -101,3 +101,5 @@ export const endpointsStaging = getEndpointOptions("staging");
 
 export const endpointOptions =
   environment === "production" ? endpointsProduction : endpointsStaging;
+
+export const allCurrencies = ["ZTG"];
