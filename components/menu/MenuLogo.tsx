@@ -3,7 +3,6 @@ import { observer } from "mobx-react";
 import Link from "next/link";
 import Logo from "../icons/ZeitgeistIcon";
 import { useRouter } from "next/router";
-import AccountButton from "components/account/AccountButton";
 
 const MenuLogo: FC<{
   menuOpen: boolean;

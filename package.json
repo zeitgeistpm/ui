@@ -83,8 +83,7 @@
     "toformat": "^2.0.0",
     "uri-js": "^4.4.1",
     "use-debounce": "^7.0.1",
-    "validatorjs": "^3.22.1",
-    "valtio": "^1.10.3"
+    "validatorjs": "^3.22.1"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^12.3.1",
