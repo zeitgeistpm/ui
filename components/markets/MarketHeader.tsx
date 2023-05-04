@@ -1,14 +1,15 @@
-import { MarketStage, MarketStatus, MarketTypeOf } from "@zeitgeistpm/sdk-next";
+import { MarketStage, MarketStatus } from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
 import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { X } from "react-feather";
 import { MarketPageIndexedData } from "lib/gql/markets";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { shortenAddress } from "lib/util";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { hasDatePassed } from "lib/util/hasDatePassed";
-import { FC, PropsWithChildren, useEffect } from "react";
+import { FC, PropsWithChildren, useState } from "react";
 import { MarketTimer } from "./MarketTimer";
 import { MarketTimerSkeleton } from "./MarketTimer";
 import { MarketDispute, OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
@@ -16,6 +17,7 @@ import {
   MarketHistory,
   useMarketEventHistory,
 } from "lib/hooks/queries/useMarketEventHistory";
+import Modal from "components/ui/Modal";
 
 import { getMarketStatusDetails } from "lib/util/market-status-details";
 
@@ -42,11 +44,12 @@ const Tag: FC<PropsWithChildren<{ className?: string }>> = ({
 
 const MarketOutcome: FC<
   PropsWithChildren<{
+    setShowMarketHistory: (show: boolean) => void;
     status: MarketStatus;
     outcome: string | number;
     by?: string;
   }>
-> = ({ status, outcome, by }) => {
+> = ({ status, outcome, by, setShowMarketHistory }) => {
   const { data: identity } = useIdentity(by ?? "");
   return (
     <div
@@ -79,12 +82,19 @@ const MarketOutcome: FC<
           </div>
         </div>
       )}
+      <button
+        className="text-ztg-blue font-medium"
+        onClick={() => setShowMarketHistory(true)}
+      >
+        See History
+      </button>
     </div>
   );
 };
 
 const MarketHistory: FC<
   PropsWithChildren<{
+    setShowMarketHistory: (show: boolean) => void;
     starts: number;
     ends: number;
     marketHistory: MarketHistory;
@@ -94,12 +104,14 @@ const MarketHistory: FC<
       categorical: string;
     };
   }>
-> = ({ marketHistory, categories, marketType }) => {
+> = ({ marketHistory, categories, marketType, setShowMarketHistory }) => {
   const marketStart = new Intl.DateTimeFormat("default", {
     dateStyle: "medium",
+    timeStyle: "short",
   }).format(marketHistory?.start.timestamp);
   const marketClosed = new Intl.DateTimeFormat("default", {
     dateStyle: "medium",
+    timeStyle: "short",
   }).format(marketHistory?.end.timestamp);
 
   const getOutcome = (outcome: OutcomeReport) => {
@@ -111,87 +123,99 @@ const MarketHistory: FC<
   };
 
   return (
-    <ol className="list-decimal">
-      <li>
-        <span>
-          {marketStart} (block: {marketHistory?.start.block})
-        </span>
-        <span> Market opened</span>
-      </li>
-      <li>
-        <span>
-          {marketClosed} (block: {marketHistory?.end.block})
-        </span>
-        <span> Market closed</span>
-      </li>
-      {marketHistory?.reported && (
-        <li>
-          {new Intl.DateTimeFormat("default", {
-            dateStyle: "medium",
-          }).format(marketHistory?.reported.timestamp)}
-          (block:{marketHistory?.reported.at})
-          <span>
-            {marketHistory.oracleReported ?? "Oracle"}
-            <div className="flex items-center">
-              <Avatar address={marketHistory?.reported.by} />
-              <span className="font-medium px-3.5 text-sms h-full leading-[40px]">
-                <span className="font-bold">
-                  {shortenAddress(marketHistory?.reported.by, 6, 4)}
-                </span>{" "}
-                reported{" "}
-                <span className="font-bold">
-                  {getOutcome(marketHistory?.reported.outcome)}
-                </span>
-              </span>
-            </div>
-          </span>
-        </li>
-      )}
-      {marketHistory?.disputes &&
-        marketHistory?.disputes.map((dispute) => {
-          return (
-            <li>
-              {new Intl.DateTimeFormat("default", {
-                dateStyle: "medium",
-              }).format(dispute.timestamp)}
-              (block:{dispute.at})
-              <span>
-                {marketHistory.oracleReported ?? "Oracle"}
-                <div className="flex items-center">
-                  <Avatar address={dispute.by} />
-                  <span className="font-medium px-3.5 text-sms h-full leading-[40px]">
+    <div className="bg-white p-10 max-h-[670px] sm:min-w-[540px] sm:max-w-[540px] relative overflow-hidden rounded-xl">
+      <X
+        className="absolute top-5 right-5 cursor-pointer"
+        onClick={() => {
+          setShowMarketHistory(false);
+        }}
+      />
+      <h3 className="font-bold mb-10 text-center">Market History</h3>
+      <div className="sm:overflow-hidden">
+        <ol className="list-decimal pl-5 overflow-y-auto h-[500px] w-[calc(100%+16px)]">
+          <li className="mb-8 list-item">
+            <p className="pb-1">
+              {marketStart} (block: {marketHistory?.start.block})
+            </p>
+            <p> Market opened</p>
+          </li>
+          <li className="mb-8 list-item">
+            <p className="pb-1">
+              {marketClosed} (block: {marketHistory?.end.block})
+            </p>
+            <p> Market closed</p>
+          </li>
+          {marketHistory?.reported && (
+            <li className="mb-8 list-item">
+              <p className="pb-1">
+                {new Intl.DateTimeFormat("default", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                }).format(marketHistory?.reported.timestamp)}{" "}
+                (block: {marketHistory?.reported.at})
+              </p>
+              <p>
+                <div className="">
+                  {marketHistory?.oracleReported && "Oracle "}
+                  {/* <Avatar address={marketHistory?.reported.by} /> */}
+                  <p className="inline font-medium">
                     <span className="font-bold">
-                      {shortenAddress(dispute.by, 6, 4)}
+                      {shortenAddress(marketHistory?.reported.by, 10, 10)}
                     </span>{" "}
-                    disputed{" "}
+                    reported{" "}
                     <span className="font-bold">
-                      {getOutcome(dispute.outcome)}
+                      {getOutcome(marketHistory?.reported.outcome)}
                     </span>
-                  </span>
+                  </p>
                 </div>
-              </span>
+              </p>
             </li>
-          );
-        })}
-      {marketHistory?.resolved && (
-        <li>
-          <span>
-            Market resolved{" "}
-            <span className="font-bold">
-              {marketType.scalar === null
-                ? categories[marketHistory?.resolved].name
-                : marketHistory?.resolved}
-            </span>
-          </span>
-        </li>
-      )}
-    </ol>
+          )}
+          {marketHistory?.disputes &&
+            marketHistory?.disputes.map((dispute) => {
+              return (
+                <li className="mb-8">
+                  <p className="pb-1">
+                    {new Intl.DateTimeFormat("default", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }).format(dispute.timestamp)}{" "}
+                    (block: {dispute.at})
+                  </p>
+                  <span>
+                    {marketHistory.oracleReported ?? "Oracle"}
+                    <div className="flex items-center">
+                      {/* <Avatar address={dispute.by} /> */}
+                      <span className="inline font-medium">
+                        <span className="font-bold">
+                          {shortenAddress(dispute.by, 10, 10)}
+                        </span>{" "}
+                        disputed and suggested{" "}
+                        <span className="font-bold">
+                          {getOutcome(dispute.outcome)}
+                        </span>
+                      </span>
+                    </div>
+                  </span>
+                </li>
+              );
+            })}
+          {marketHistory?.resolved && (
+            <li className="mb-8 list-item">
+              <p className="pb-1">
+                Market resolved{" "}
+                <span className="font-bold">
+                  {marketType.scalar === null
+                    ? categories[marketHistory?.resolved].name
+                    : marketHistory?.resolved}
+                </span>
+              </p>
+            </li>
+          )}
+        </ol>
+      </div>
+    </div>
   );
-  //market closed
-  //oracled reported
-  //disputes
-  //authority reoprted
-  //resolved
 };
 
 const MarketHeader: FC<{
@@ -225,6 +249,7 @@ const MarketHeader: FC<{
     pool,
     scalarType,
   } = market;
+  const [showMarketHistory, setShowMarketHistory] = useState(false);
   const starts = Number(period.start);
   const ends = Number(period.end);
   const volume = pool?.volume
@@ -313,15 +338,27 @@ const MarketHeader: FC<{
       {(status === "Reported" ||
         status === "Disputed" ||
         status === "Resolved") && (
-        <MarketOutcome status={status} outcome={outcome} by={by} />
+        <MarketOutcome
+          setShowMarketHistory={setShowMarketHistory}
+          status={status}
+          outcome={outcome}
+          by={by}
+        />
       )}
-      <MarketHistory
-        starts={starts}
-        ends={ends}
-        marketHistory={marketHistory}
-        categories={categories}
-        marketType={marketType}
-      />
+
+      <Modal
+        open={showMarketHistory}
+        onClose={() => setShowMarketHistory(false)}
+      >
+        <MarketHistory
+          starts={starts}
+          ends={ends}
+          marketHistory={marketHistory}
+          categories={categories}
+          marketType={marketType}
+          setShowMarketHistory={setShowMarketHistory}
+        />
+      </Modal>
     </header>
   );
 };
