@@ -55,7 +55,7 @@ const useChangeQuery = (
   }, [withLiquidityOnly]);
 };
 
-const MarketsList = observer(({ className = "" }: MarketsListProps) => {
+const MarketsList = ({ className = "" }: MarketsListProps) => {
   const [filters, setFilters] = useState<MarketFilter[]>();
   const [orderBy, setOrderBy] = useState<MarketsOrderBy>();
   const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
@@ -148,9 +148,9 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       ></div>
     </div>
   );
-});
+};
 
-const MarketsSearchInfo = observer(({ searchText }: { searchText: string }) => {
+const MarketsSearchInfo = ({ searchText }: { searchText: string }) => {
   const router = useRouter();
 
   return (
@@ -169,6 +169,6 @@ const MarketsSearchInfo = observer(({ searchText }: { searchText: string }) => {
       </div>
     </div>
   );
-});
+};
 
 export default MarketsList;

@@ -39,7 +39,7 @@ const columns: TableColumn[] = [
   },
 ];
 
-const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
+const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
   const [tableData, setTableData] = useState<TableData[]>();
   const [sdk] = useSdkv2();
 
@@ -194,7 +194,7 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
   };
 
   return <Table columns={columns} data={tableData} />;
-});
+};
 
 export default dynamic(() => Promise.resolve(MarketAssetDetails), {
   ssr: false,

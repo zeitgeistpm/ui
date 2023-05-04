@@ -36,7 +36,7 @@ const isProduction =
 
 registerValidationRules();
 
-const MyApp = observer(({ Component, pageProps }) => {
+const MyApp = ({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
   const router = useRouter();
   const [modalStore] = useState(() => new ModalStore());
@@ -100,6 +100,6 @@ const MyApp = observer(({ Component, pageProps }) => {
       </AvatarContext.Provider>
     </QueryClientProvider>
   );
-});
+};
 
 export default MyApp;

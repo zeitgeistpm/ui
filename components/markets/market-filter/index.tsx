@@ -69,29 +69,27 @@ const IndicatorSeparator = () => {
   return <></>;
 };
 
-const SortBySelect = observer(
-  ({
-    onOrderingChange,
-    ordering,
-  }: {
-    ordering: MarketsOrderBy;
-    onOrderingChange: (v: MarketsOrderBy) => void;
-  }) => {
-    return (
-      <ReactSelect
-        value={marketsOrderByOptions.find((opt) => opt.value === ordering)}
-        onChange={(v) => {
-          onOrderingChange(v.value);
-        }}
-        options={marketsOrderByOptions}
-        styles={sortBySelectStyles}
-        components={{
-          IndicatorSeparator,
-        }}
-      />
-    );
-  },
-);
+const SortBySelect = ({
+  onOrderingChange,
+  ordering,
+}: {
+  ordering: MarketsOrderBy;
+  onOrderingChange: (v: MarketsOrderBy) => void;
+}) => {
+  return (
+    <ReactSelect
+      value={marketsOrderByOptions.find((opt) => opt.value === ordering)}
+      onChange={(v) => {
+        onOrderingChange(v.value);
+      }}
+      options={marketsOrderByOptions}
+      styles={sortBySelectStyles}
+      components={{
+        IndicatorSeparator,
+      }}
+    />
+  );
+};
 
 type MarketFilterOptionsProps = {
   addFilter: (filter: MarketFilter) => void;

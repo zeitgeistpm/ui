@@ -1,15 +1,13 @@
-import { observer } from "mobx-react";
-import React, { FC, PropsWithChildren, useRef, useState } from "react";
+import { FC, PropsWithChildren, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 
+import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import TopBar from "components/menu";
 import Footer from "components/ui/Footer";
-import Skeleton from "components/ui/Skeleton";
 import NotificationCenter from "components/ui/NotificationCenter";
-import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
-import { useRouter } from "next/router";
-import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
 import { TradeItem, TradeItemContext } from "lib/hooks/trade";
+import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
+import { useRouter } from "next/router";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
@@ -17,7 +15,7 @@ import Image from "next/image";
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 
-const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
+const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   useSubscribeBlockEvents();
   const [tradeItem, setTradeItem] = useState<TradeItem | null>(null);
@@ -91,6 +89,6 @@ const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
       </TradeItemContext.Provider>
     </div>
   );
-});
+};
 
 export default DefaultLayout;

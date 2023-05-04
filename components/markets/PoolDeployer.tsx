@@ -21,7 +21,7 @@ import { observer } from "mobx-react";
 import { useState } from "react";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
-const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
+const PoolDeployer = ({ marketId }: { marketId: number }) => {
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[]>();
   const [swapFee, setSwapFee] = useState<string>();
   const { data: constants } = useChainConstants();
@@ -128,6 +128,6 @@ const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
       )}
     </>
   );
-});
+};
 
 export default PoolDeployer;

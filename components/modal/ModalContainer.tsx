@@ -7,7 +7,7 @@ const defaultStyle: React.CSSProperties = {
   width: "320px",
 };
 
-const ModalContainer = observer(({ children }) => {
+const ModalContainer = ({ children }) => {
   const modalRef = useRef<HTMLDivElement>();
   const modalStore = useModalStore();
 
@@ -73,6 +73,6 @@ const ModalContainer = observer(({ children }) => {
       </motion.div>
     </motion.div>
   );
-});
+};
 
 export default ModalContainer;

@@ -4,7 +4,7 @@ import { NextPage } from "next";
 import React from "react";
 import InfoBoxes from "../components/ui/InfoBoxes";
 
-const ActivityFeed: NextPage = observer(() => {
+const ActivityFeed: NextPage = () => {
   const tableData: TableData[] = [
     {
       address: "5FRzouqt2BtMFezeXhgvPV2HghHLXdzqQLoZDx5oNtvQ3w6D",
@@ -83,6 +83,6 @@ const ActivityFeed: NextPage = observer(() => {
       <Table data={tableData} columns={columns} />
     </div>
   );
-});
+};
 
 export default ActivityFeed;

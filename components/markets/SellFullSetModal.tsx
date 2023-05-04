@@ -14,11 +14,10 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useModalStore } from "lib/stores/ModalStore";
-import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
 
-const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
+const SellFullSetModal = ({ marketId }: { marketId: number }) => {
   const wallet = useWallet();
   const notificationStore = useNotifications();
   const modalStore = useModalStore();
@@ -149,6 +148,6 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
       </TransactionButton>
     </div>
   );
-});
+};
 
 export default SellFullSetModal;

@@ -16,7 +16,7 @@ const MarketFiltersContainer: FC<
     activeFilters: MarketFilter[];
     portal: HTMLDivElement;
   }>
-> = observer(({ children, activeFilters, portal }) => {
+> = ({ children, activeFilters, portal }) => {
   const [selectedMenu, setSelectedMenu] = useState<SelectedMenu>("None");
 
   return (
@@ -29,6 +29,6 @@ const MarketFiltersContainer: FC<
       </div>
     </MarketFiltersContext.Provider>
   );
-});
+};
 
 export default MarketFiltersContainer;
