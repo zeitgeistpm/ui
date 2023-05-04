@@ -11,9 +11,12 @@ import {
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import { tryCatch } from "@zeitgeistpm/utility/dist/either";
+import { fromNullable } from "@zeitgeistpm/utility/dist/option";
 import DiscordIcon from "components/icons/DiscordIcon";
 import TwitterIcon from "components/icons/TwitterIcon";
 import CopyIcon from "components/ui/CopyIcon";
+import Skeleton from "components/ui/Skeleton";
 import { AnimatePresence, motion } from "framer-motion";
 import { ZTG } from "lib/constants";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
@@ -29,6 +32,7 @@ import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { capitalize } from "lodash";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AiFillFire, AiFillInfoCircle } from "react-icons/ai";
 import { BsGearFill } from "react-icons/bs";
@@ -37,13 +41,35 @@ import Loader from "react-spinners/PulseLoader";
 
 const AvatarPage = () => {
   const router = useRouter();
-  const avatarContext = useAvatarContext();
 
-  const wallet = useWallet();
+  const zeitAddress = fromNullable(router.query.address as string).map(
+    (address) => {
+      return tryCatch(() => encodeAddress(address, 73));
+    },
+  );
 
+  if (zeitAddress.isNone()) return <Skeleton height={524} />;
+
+  if (zeitAddress.unwrap().isLeft()) return <NotFoundPage />;
+
+  return (
+    <Inner
+      ztgEncodedAddress={zeitAddress.unwrap().unwrap()}
+      address={router.query.address as string}
+    />
+  );
+};
+
+const Inner = ({
+  ztgEncodedAddress,
+  address,
+}: {
+  ztgEncodedAddress: string;
+  address: string;
+}) => {
   const [sdk] = useSdkv2();
-  const address = router.query.address as string;
-  const zeitAddress = encodeAddress(router.query.address as string, 73);
+  const avatarContext = useAvatarContext();
+  const wallet = useWallet();
 
   const modalStore = useModalStore();
 
@@ -64,7 +90,7 @@ const AvatarPage = () => {
 
   const isOwner =
     wallet.activeAccount?.address === address ||
-    wallet.activeAccount?.address === zeitAddress;
+    wallet.activeAccount?.address === ztgEncodedAddress;
 
   const inventory = useInventoryManagement(
     (isOwner
