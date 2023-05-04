@@ -13,7 +13,7 @@ export const HeroControls: FC<HeroControlsProps> = ({ slides, slider }) => {
     <div className="flex items-center justify-center md:justify-end w-full mx-auto gap-1 pb-16 absolute bottom-0 right-0 px-[inherit]">
       <button
         onClick={() => {
-          slider.next(true);
+          slider.prev(true);
         }}
         className={`bg-black border border-white flex items-center justify-center w-[40px] h-[40px] rounded-full`}
       >
@@ -36,7 +36,7 @@ export const HeroControls: FC<HeroControlsProps> = ({ slides, slider }) => {
       </div>
       <button
         onClick={() => {
-          slider.prev(true);
+          slider.next(true);
         }}
         className={`bg-black border border-white flex items-center justify-center w-[40px] h-[40px] rounded-full ztg-transition`}
       >

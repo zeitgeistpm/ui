@@ -1,9 +1,7 @@
 import { observer } from "mobx-react";
 import { useMemo } from "react";
 import { useResizeDetector } from "react-resize-detector";
-import { motion } from "framer-motion";
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
-import moment from "moment";
 
 interface ScalarPriceRangeProps {
   scalarType: ScalarRangeType;
@@ -28,13 +26,8 @@ const ScalarPriceRange = observer(
     const longPercentage = longPrice;
     const averagePercentage = (shortPercentage + longPercentage) / 2;
     const averagePosition = width * averagePercentage;
-    const shortPosition = width * shortPercentage;
-    const longPosition = width * longPercentage;
 
-    const showShortAndLongPrices = Math.abs(1 - shortPrice - longPrice) > 0.03;
     const inferedType: ScalarRangeType = scalarType ?? "number";
-
-    const dateFormat = "MM.DD.YYYY";
 
     const lower = useMemo(
       () =>
@@ -43,7 +36,9 @@ const ScalarPriceRange = observer(
               maximumSignificantDigits: 3,
               notation: "compact",
             }).format(Number(lowerBound))
-          : moment(lowerBound).format(dateFormat),
+          : new Intl.DateTimeFormat("default", {
+              dateStyle: "medium",
+            }).format(lowerBound),
       [lowerBound],
     );
 
@@ -54,7 +49,9 @@ const ScalarPriceRange = observer(
               maximumSignificantDigits: 3,
               notation: "compact",
             }).format(Number(upperBound))
-          : moment(upperBound).format(dateFormat),
+          : new Intl.DateTimeFormat("default", {
+              dateStyle: "medium",
+            }).format(upperBound),
       [upperBound],
     );
 
@@ -68,7 +65,9 @@ const ScalarPriceRange = observer(
             maximumSignificantDigits: 3,
             notation: "compact",
           }).format(Number(pos))
-        : moment(pos).format(dateFormat);
+        : new Intl.DateTimeFormat("default", {
+            dateStyle: "medium",
+          }).format(pos);
     }, [upperBound, lowerBound, shortPrice, longPrice]);
 
     const getMinMaxPosition = (position) => {
@@ -92,14 +91,6 @@ const ScalarPriceRange = observer(
               <span className="mb-2.5 text-sm text-red">{upper}</span>
             </div>
           </div>
-          {/* TODO: check if this can be removed */}
-          {/* {showShortAndLongPrices && (
-            <motion.div
-              layout
-              className="bg-vermilion h-1.5 w-1.5 rounded-full absolute bottom-ztg-0"
-              style={{ left: `${shortPosition}px` }}
-            ></motion.div>
-          )} */}
           {status !== "Proposed" && (
             <div
               style={{
@@ -127,14 +118,6 @@ const ScalarPriceRange = observer(
               </div>
             </div>
           )}
-          {/* TODO: check if this can be removed */}
-          {/* {showShortAndLongPrices && (
-            <motion.div
-              layout
-              className="bg-sheen-green h-1.5 w-1.5 rounded-full absolute bottom-ztg-0"
-              style={{ left: `${longPosition}px` }}
-            ></motion.div>
-          )} */}
         </div>
         <div className="h-1.5 flex items-center">
           <div className="h-1.5 w-full bg-red rounded"></div>

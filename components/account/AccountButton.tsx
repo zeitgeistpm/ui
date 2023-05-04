@@ -1,22 +1,50 @@
 import { observer } from "mobx-react";
-import React, { FC, useEffect, useState } from "react";
-
+import React, { FC, useState } from "react";
+import { ChevronDown } from "react-feather";
 import { Menu, Transition } from "@headlessui/react";
 import { getWallets } from "@talismn/connect-wallets";
 import Avatar from "components/ui/Avatar";
 import Modal from "components/ui/Modal";
 import { SUPPORTED_WALLET_NAMES } from "lib/constants";
 import { useAccountModals } from "lib/hooks/account";
-import { usePrevious } from "lib/hooks/usePrevious";
-import { useModalStore } from "lib/stores/ModalStore";
-import { useStore } from "lib/stores/Store";
 import { useUserLocation } from "lib/hooks/useUserLocation";
+import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { DollarSign, Frown, Settings, User } from "react-feather";
 import OnBoardingModal from "./OnboardingModal";
-import dynamic from "next/dynamic";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
+import { ZTG } from "@zeitgeistpm/sdk-next";
+import { useBalance } from "lib/hooks/queries/useBalance";
+import Decimal from "decimal.js";
+import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
+
+const BalanceRow = ({
+  imgPath,
+  balance,
+  units,
+}: {
+  imgPath: string;
+  balance: Decimal;
+  units: string;
+}) => {
+  return (
+    <div className="flex items-center mb-3 ">
+      <img src={imgPath} height={"24px"} width="24px" />
+      <div
+        className={`group font-bold flex w-full items-center rounded-md px-2 py-2 text-sm`}
+      >
+        {balance &&
+          `${formatNumberLocalized(
+            balance?.div(ZTG).abs().toNumber(),
+          )} ${units}`}
+      </div>
+    </div>
+  );
+};
 
 const AccountButton: FC<{
   connectButtonClassname?: string;
@@ -24,21 +52,29 @@ const AccountButton: FC<{
   avatarDeps?: any[];
 }> = observer(({ connectButtonClassname, autoClose, avatarDeps }) => {
   const store = useStore();
-  const { wallets } = store;
-  const { connected, activeAccount, activeBalance } = wallets;
-  const modalStore = useModalStore();
+  const {
+    connected,
+    activeAccount,
+    selectWallet,
+    disconnectWallet,
+    isNovaWallet,
+  } = useWallet();
   const accountModals = useAccountModals();
   const { locationAllowed, isUsingVPN } = useUserLocation();
   const [hovering, setHovering] = useState<boolean>(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
-  const isNovaWallet: boolean =
-    //@ts-ignore
-    typeof window === "object" && window.walletExtension?.isNovaWallet;
+
+  const { data: activeBalance } = useZtgBalance(activeAccount?.address);
+  const { data: polkadotBalance } = useBalance(activeAccount?.address, {
+    ForeignAsset: 0,
+  });
+
+  const { data: constants } = useChainConstants();
 
   const connect = async () => {
     if (isNovaWallet) {
-      wallets.connectWallet("polkadot-js", true);
+      selectWallet("polkadot-js");
     } else {
       accountModals.openWalletSelect();
     }
@@ -52,15 +88,7 @@ const AccountButton: FC<{
     setHovering(false);
   };
 
-  const prevactiveAccount = usePrevious(activeAccount);
-
   const { pathname } = useRouter();
-
-  useEffect(() => {
-    if (autoClose && activeAccount !== prevactiveAccount) {
-      modalStore.closeModal();
-    }
-  }, [activeAccount]);
 
   const hasWallet =
     typeof window !== "undefined" &&
@@ -154,12 +182,22 @@ const AccountButton: FC<{
                           />
                         </div>
                         <span
-                          className={`font-medium px-3.5 text-sm h-full leading-[40px] ${
+                          className={`font-medium pl-2 text-sm h-full leading-[40px] ${
                             pathname === "/" ? "text-white" : "text-black"
                           }`}
                         >
-                          {shortenAddress(activeAccount?.address, 6, 4)}
+                          {activeAccount &&
+                            shortenAddress(activeAccount?.address, 6, 4)}
                         </span>
+                        <div className="pr-1">
+                          <ChevronDown
+                            size={12}
+                            viewBox="6 6 12 12"
+                            className={`box-content px-2 ${
+                              open && "rotate-180"
+                            }`}
+                          />
+                        </div>
                       </div>
                     </div>
                   </Menu.Button>
@@ -178,20 +216,18 @@ const AccountButton: FC<{
                     <div className="">
                       <div className="border-b-2 mb-3 py-2">
                         <div className="px-4">
-                          <div className="flex items-center mb-3 ">
-                            <img
-                              src="/currencies/ztg.jpg"
-                              height={"24px"}
-                              width="24px"
-                            />
-                            <div
-                              className={`group font-bold flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                            >
-                              {`${formatNumberLocalized(
-                                activeBalance?.abs().toNumber(),
-                              )} ${store.config?.tokenSymbol}`}
-                            </div>
-                          </div>
+                          <BalanceRow
+                            imgPath="/currencies/ztg.jpg"
+                            units={constants?.tokenSymbol}
+                            balance={activeBalance}
+                          />
+                        </div>
+                        <div className="px-4">
+                          <BalanceRow
+                            imgPath="/currencies/dot.png"
+                            units="DOT"
+                            balance={polkadotBalance}
+                          />
                         </div>
                         <div className="px-4">
                           <div className="flex items-center mb-3">
@@ -258,7 +294,7 @@ const AccountButton: FC<{
                         {({ active }) => (
                           <div
                             className="flex items-center px-4 hover:bg-slate-100"
-                            onClick={() => wallets.disconnectWallet()}
+                            onClick={() => disconnectWallet()}
                           >
                             <Frown />
                             <button

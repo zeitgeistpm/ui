@@ -1,7 +1,7 @@
 import "react-datetime/css/react-datetime.css";
 import "styles/index.css";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import * as Fathom from "fathom-client";
 
 import { observer } from "mobx-react";
@@ -11,15 +11,16 @@ import React, { useEffect, useState } from "react";
 import { hotjar } from "react-hotjar";
 
 import { AvatarContext } from "@zeitgeistpm/avatara-react";
-import { WalletDisconnector } from "components/account/WalletDisconnector";
 import { ModalStoreContext } from "components/context/ModalStoreContext";
 import { StoreProvider } from "components/context/StoreContext";
 import Devtools from "components/devtools";
 import ModalContainer from "components/modal/ModalContainer";
 import DefaultLayout from "layouts/DefaultLayout";
+import { queryClient } from "lib/query-client";
 import ModalStore from "lib/stores/ModalStore";
 import Store from "lib/stores/Store";
 import dynamic from "next/dynamic";
+import { registerValidationRules } from "lib/form";
 
 const Onboarding = dynamic(
   () => import("../components/onboarding/Onboarding"),
@@ -38,7 +39,7 @@ const hotjarSiteId = process.env["NEXT_PUBLIC_HOTJAR_SITE_ID"];
 const isProduction =
   process.env.NEXT_PUBLIC_SITE_URL === "https://app.zeitgeist.pm";
 
-const queryClient = new QueryClient();
+registerValidationRules();
 
 const MyApp = observer(({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
@@ -88,7 +89,6 @@ const MyApp = observer(({ Component, pageProps }) => {
             prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
           }}
         >
-          <WalletDisconnector />
           <ModalStoreContext.Provider value={modalStore}>
             {modalStore.modal && (
               <ModalContainer>{modalStore.modal}</ModalContainer>

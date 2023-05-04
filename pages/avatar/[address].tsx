@@ -9,15 +9,18 @@ import {
   ZeitgeistAvatar,
 } from "@zeitgeistpm/avatara-react";
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import DiscordIcon from "components/icons/DiscordIcon";
 import TwitterIcon from "components/icons/TwitterIcon";
-import Checkbox from "components/ui/Checkbox";
 import CopyIcon from "components/ui/CopyIcon";
 import { AnimatePresence, motion } from "framer-motion";
 import { ZTG } from "lib/constants";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useLocalStorage } from "lib/hooks/useLocalStorage";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useWallet } from "lib/state/wallet";
 import { useModalStore } from "lib/stores/ModalStore";
 import { useNotifications } from "lib/state/notifications";
 import { useStore } from "lib/stores/Store";
@@ -33,13 +36,14 @@ import { AiFillFire, AiFillInfoCircle } from "react-icons/ai";
 import { BsGearFill } from "react-icons/bs";
 import { IoIosNotifications, IoIosWarning } from "react-icons/io";
 import Loader from "react-spinners/PulseLoader";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 
 const AvatarPage = observer(() => {
   const router = useRouter();
   const store = useStore();
   const avatarContext = useAvatarContext();
+
+  const wallet = useWallet();
+
   const [sdk] = useSdkv2();
   const address = router.query.address as string;
   const zeitAddress = encodeAddress(router.query.address as string, 73);
@@ -62,12 +66,14 @@ const AvatarPage = observer(() => {
   const { data: identity } = useIdentity(address);
 
   const isOwner =
-    store.wallets.activeAccount?.address === address ||
-    store.wallets.activeAccount?.address === zeitAddress;
+    wallet.activeAccount?.address === address ||
+    wallet.activeAccount?.address === zeitAddress;
+
+  console.log("isOwner", isOwner, wallet.activeAccount?.address, address);
 
   const inventory = useInventoryManagement(
     (isOwner
-      ? (store.wallets.getActiveSigner() as ExtSigner) || address
+      ? (wallet.getActiveSigner() as ExtSigner) || address
       : address) as any,
   );
 
@@ -95,7 +101,7 @@ const AvatarPage = observer(() => {
     if (avatarContext) {
       loadData();
     }
-  }, [avatarContext, address, store.wallets.activeAccount?.address]);
+  }, [avatarContext, address, wallet.activeAccount?.address]);
 
   const name = identity?.displayName || shortenAddress(address);
 
@@ -209,7 +215,7 @@ const AvatarPage = observer(() => {
               />
             </div>
 
-            {isOwner && hasInventory && (
+            {isOwner && true && (
               <div
                 className="absolute rounded-full cursor-pointer bottom-3 z-ztg-6 right-3 bg-gray-900/70 flex justify-center items-center w-8 h-8"
                 onClick={onClickSettingsButton}
@@ -427,6 +433,7 @@ const ClaimModal = (props: {
   const modalStore = useModalStore();
   const notificationStore = useNotifications();
   const avatarSdk = useAvatarContext();
+  const wallet = useWallet();
   const [sdk] = useSdkv2();
 
   const [isClaiming, setIsClaiming] = useState(false);
@@ -434,8 +441,10 @@ const ClaimModal = (props: {
 
   const [hasCrossed, setHasCrossed] = useState(false);
 
-  const balance = store.wallets.activeBalance;
-  const hasEnoughBalance = balance.greaterThan((props.burnAmount + fee) / ZTG);
+  const { data: activeBalance } = useZtgBalance(wallet.activeAccount?.address);
+
+  const balance = activeBalance;
+  const hasEnoughBalance = balance?.greaterThan((props.burnAmount + fee) / ZTG);
 
   const tx = useMemo(() => {
     if (isRpcSdk(sdk)) {
@@ -444,9 +453,14 @@ const ClaimModal = (props: {
   }, [props.address, props.burnAmount]);
 
   useEffect(() => {
+    store.sdk.api.query.styx
+      .crossings(wallet.activeAccount.address)
+      .then((crossing) => {
+        setHasCrossed(!crossing.isEmpty);
+      });
     if (isRpcSdk(sdk)) {
       sdk.api.query.styx
-        .crossings(store.wallets.activeAccount.address)
+        .crossings(wallet.activeAccount?.address)
         .then((crossing) => {
           setHasCrossed(!crossing.isEmpty);
         });
@@ -471,7 +485,12 @@ const ClaimModal = (props: {
   };
 
   const onClickBurn = async () => {
+    if (!isRpcSdk(sdk)) {
+      return;
+    }
+
     setIsClaiming(true);
+
     try {
       if (hasCrossed) {
         try {
@@ -483,11 +502,12 @@ const ClaimModal = (props: {
         }
         setIsClaiming(false);
       } else {
-        const signer = store.wallets.getActiveSigner() as ExtSigner;
+        const signer = wallet.getActiveSigner() as ExtSigner;
         await signAndSend(
           tx,
           signer,
           extrinsicCallback({
+            api: sdk.api,
             notifications: notificationStore,
             broadcastCallback: () => {
               notificationStore.pushNotification("Burning ZTG.", {
@@ -510,12 +530,9 @@ const ClaimModal = (props: {
             retractedCallback: async () => {
               setIsClaiming(false);
             },
-            failCallback: ({ index, error }) => {
+            failCallback: (error) => {
               setIsClaiming(false);
-              notificationStore.pushNotification(
-                store.getTransactionError(index, error),
-                { type: "Error" },
-              );
+              notificationStore.pushNotification(error, { type: "Error" });
             },
           }),
         );
@@ -621,8 +638,9 @@ const ClaimModal = (props: {
 
 const InventoryModal = (props: { address: string; onClose?: () => void }) => {
   const store = useStore();
+  const wallet = useWallet();
   const inventory = useInventoryManagement(
-    ((store.wallets.getActiveSigner() as ExtSigner) || props.address) as any,
+    ((wallet.getActiveSigner() as ExtSigner) || props.address) as any,
   );
   const modalStore = useModalStore();
 
@@ -673,9 +691,10 @@ const InventoryModal = (props: { address: string; onClose?: () => void }) => {
               <label className="block mb-2">Equipped</label>
               <div className="flex items-center justify-center">
                 <div className="inline-block bg-gray-900/20 rounded-md">
-                  <Checkbox
+                  <input
+                    type="checkbox"
                     disabled={inventory.comitting}
-                    value={inventory.hasSelected(item)}
+                    checked={inventory.hasSelected(item)}
                     onChange={(event) => {
                       if (event.target.checked) {
                         inventory.select(item);
@@ -732,8 +751,9 @@ const PendingItemsModal = (props: {
   onClose?: () => void;
 }) => {
   const store = useStore();
+  const wallet = useWallet();
   const inventory = useInventoryManagement(
-    ((store.wallets.getActiveSigner() as ExtSigner) || props.address) as any,
+    ((wallet.getActiveSigner() as ExtSigner) || props.address) as any,
   );
   const modalStore = useModalStore();
 

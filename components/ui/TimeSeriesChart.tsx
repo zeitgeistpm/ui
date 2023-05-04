@@ -1,5 +1,5 @@
 import { Decimal } from "decimal.js";
-import Skeleton from "@material-ui/lab/Skeleton";
+import Skeleton from "components/ui/Skeleton";
 import { observer } from "mobx-react";
 import React, { useCallback, useState } from "react";
 import {
@@ -157,7 +157,7 @@ const TimeSeriesChart = observer(
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {data?.length > 0 ? (
+        {data ? (
           <ResponsiveContainer>
             <LineChart
               width={500}
@@ -235,7 +235,7 @@ const TimeSeriesChart = observer(
                 <Label
                   fontSize={10}
                   stroke="black"
-                  value="ZTG"
+                  value={yUnits}
                   offset={15}
                   position="insideLeft"
                   angle={-90}
@@ -245,7 +245,11 @@ const TimeSeriesChart = observer(
               <Tooltip
                 animationEasing={"linear"}
                 animationDuration={0}
-                content={<ChartToolTip series={series} yUnits={yUnits} />}
+                content={
+                  data?.length > 0 && (
+                    <ChartToolTip series={series} yUnits={yUnits} />
+                  )
+                }
               />
               {series.map((s, index) => (
                 <Line
@@ -262,12 +266,7 @@ const TimeSeriesChart = observer(
             </LineChart>
           </ResponsiveContainer>
         ) : (
-          <Skeleton
-            className="ml-ztg-20 rounded-ztg-5"
-            animation="wave"
-            height={350}
-            variant="rect"
-          />
+          <Skeleton className="ml-ztg-20" height={350} />
         )}
       </div>
     );

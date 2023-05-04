@@ -1,26 +1,57 @@
-import { observer } from "mobx-react";
-import { NextPage } from "next";
-import { useRouter } from "next/router";
-import MobxReactForm from "mobx-react-form";
-import Decimal from "decimal.js";
-import React, { useEffect, useRef, useState } from "react";
-import { from } from "rxjs";
-import { AlertTriangle } from "react-feather";
-import {
-  CreateMarketParams,
-  CreateCpmmMarketAndDeployAssetsParams,
-} from "@zeitgeistpm/sdk/dist/types/market";
 import { ISubmittableResult } from "@polkadot/types/types";
 import {
   DecodedMarketMetadata,
   MarketPeriod,
   MarketTypeOf,
 } from "@zeitgeistpm/sdk/dist/types";
+import {
+  CreateCpmmMarketAndDeployAssetsParams,
+  CreateMarketParams,
+} from "@zeitgeistpm/sdk/dist/types/market";
+import Decimal from "decimal.js";
+import { observer } from "mobx-react";
+import MobxReactForm from "mobx-react-form";
 import Moment from "moment";
+import { NextPage } from "next";
+import { useRouter } from "next/router";
+import React, { useEffect, useRef, useState } from "react";
+import { AlertTriangle } from "react-feather";
+import { from } from "rxjs";
 
+import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import { dateBlock } from "@zeitgeistpm/utility/dist/time";
+import EndField from "components/create/EndField";
+import {
+  getBlocksDeltaForDuration,
+  MarketDeadlinesInput,
+  MarketDeadlinesValue,
+} from "components/create/MarketDeadlinesInput";
+import MarketFormCard from "components/create/MarketFormCard";
+import MarketSlugField from "components/create/MarketSlugField";
+import OutcomesField from "components/create/OutcomesField";
+import TagChoices from "components/create/TagChoices";
+import PoolSettings, {
+  PoolAssetRowData,
+  poolRowDataFromOutcomes,
+} from "components/liquidity/PoolSettings";
+import MarketCostModal from "components/markets/MarketCostModal";
+import InfoBoxes from "components/ui/InfoBoxes";
+import { Input } from "components/ui/inputs";
+import LabeledToggle from "components/ui/LabeledToggle";
+import Toggle from "components/ui/Toggle";
+import TransactionButton from "components/ui/TransactionButton";
+import { NUM_BLOCKS_IN_DAY, ZTG } from "lib/constants";
 import { defaultOptions, defaultPlugins } from "lib/form";
-import { useStore } from "lib/stores/Store";
+import { checkMarketExists } from "lib/gql/markets";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useChainTime } from "lib/state/chaintime";
 import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
+import { useModalStore } from "lib/stores/ModalStore";
+import { useStore } from "lib/stores/Store";
+import { JSONObject } from "lib/types";
 import {
   EndType,
   isMultipleOutcomeEntries,
@@ -30,37 +61,10 @@ import {
   OutcomeType,
   RangeOutcomeEntry,
 } from "lib/types/create-market";
-import { JSONObject } from "lib/types";
 import { toBase64 } from "lib/util";
-import { extrinsicCallback } from "lib/util/tx";
 import { calculateMarketCost } from "lib/util/market";
-import { NUM_BLOCKS_IN_DAY, ZTG } from "lib/constants";
-import { Input } from "components/ui/inputs";
-import OutcomesField from "components/create/OutcomesField";
-import MarketSlugField from "components/create/MarketSlugField";
-import TagChoices from "components/create/TagChoices";
-import EndField from "components/create/EndField";
-import InfoBoxes from "components/ui/InfoBoxes";
-import LabeledToggle from "components/ui/LabeledToggle";
-import Toggle from "components/ui/Toggle";
-import PoolSettings, {
-  PoolAssetRowData,
-  poolRowDataFromOutcomes,
-} from "components/liquidity/PoolSettings";
-import TransactionButton from "components/ui/TransactionButton";
-import MarketFormCard from "components/create/MarketFormCard";
-import { useModalStore } from "lib/stores/ModalStore";
-import MarketCostModal from "components/markets/MarketCostModal";
-import { checkMarketExists } from "lib/gql/markets";
+import { extrinsicCallback } from "lib/util/tx";
 import dynamic from "next/dynamic";
-import {
-  getBlocksDeltaForDuration,
-  MarketDeadlinesInput,
-  MarketDeadlinesValue,
-} from "components/create/MarketDeadlinesInput";
-import { dateBlock } from "@zeitgeistpm/utility/dist/time";
-import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
@@ -119,10 +123,12 @@ const initialFields = {
 
 const CreatePage: NextPage = observer(() => {
   const store = useStore();
-  const { data: now } = useChainTimeNow();
+  const chainTime = useChainTime();
   const notificationStore = useNotifications();
   const modalStore = useModalStore();
   const [sdk] = useSdkv2();
+  const wallet = useWallet();
+  const { data: constants } = useChainConstants();
   const [formData, setFormData] = useState<CreateMarketFormData>({
     slug: "",
     question: "",
@@ -164,6 +170,8 @@ const CreatePage: NextPage = observer(() => {
   const [swapFee, setSwapFee] = useState<string>();
   const [txFee, setTxFee] = useState<string>();
 
+  const { data: activeBalance } = useZtgBalance(wallet.activeAccount?.address);
+
   const router = useRouter();
 
   const questionInputRef = useRef();
@@ -201,10 +209,10 @@ const CreatePage: NextPage = observer(() => {
   }, [marketImageFile]);
 
   useEffect(() => {
-    if (store?.graphQLClient == null || newMarketId == null) return;
+    if (!isIndexedSdk(sdk) || newMarketId == null) return;
     const timer = setInterval(async () => {
       const marketIndexed = await checkMarketExists(
-        store.graphQLClient,
+        sdk.indexer.client,
         newMarketId,
       );
 
@@ -220,13 +228,13 @@ const CreatePage: NextPage = observer(() => {
       }
     }, 1000);
     return () => clearInterval(timer);
-  }, [store?.graphQLClient, newMarketId]);
+  }, [sdk, newMarketId]);
 
   useEffect(() => {
     if (
       !form.isValid ||
       !formData.deadlines.isValid ||
-      store.wallets.activeAccount == null
+      wallet.activeAccount == null
     ) {
       return;
     }
@@ -238,7 +246,7 @@ const CreatePage: NextPage = observer(() => {
     formData,
     poolRows,
     deployPool,
-    store.wallets.activeAccount,
+    wallet.activeAccount,
     marketImageCid,
   ]);
 
@@ -251,36 +259,36 @@ const CreatePage: NextPage = observer(() => {
       ? mapRangeToEntires(formData.outcomes.value)
       : formData.outcomes.value;
     formData.outcomes.value &&
-      setPoolRows(poolRowDataFromOutcomes(entries, store.config.tokenSymbol));
+      setPoolRows(poolRowDataFromOutcomes(entries, constants?.tokenSymbol));
   }, [deployPool, formData.outcomes.type]);
 
   useEffect(() => {
-    if (store.wallets.activeAccount == null || formData.oracle !== "") {
+    if (wallet.activeAccount == null || formData.oracle !== "") {
       return;
     }
-    changeOracle(store.wallets.activeAccount.address);
-  }, [store.wallets.activeAccount]);
+    changeOracle(wallet.activeAccount.address);
+  }, [wallet.activeAccount]);
 
   useEffect(() => {
-    if (!store.config) {
+    if (!constants) {
       return;
     }
-    const bondCost = store.config.markets.oracleBond;
+    const bondCost = constants.markets.oracleBond;
     const marketCost =
       calculateMarketCost(
         {
-          advisedCost: store.config.markets.advisoryBond + bondCost,
-          permissionlessCost: store.config.markets.validityBond + bondCost,
+          advisedCost: constants.markets.advisoryBond + bondCost,
+          permissionlessCost: constants.markets.validityBond + bondCost,
         },
         formData.advised,
         deployPool === true ? poolRows?.map((row) => Number(row.amount)) : null,
       ) + Number(txFee || 0);
     setMarketCost(marketCost);
-  }, [store.config, formData, deployPool, poolRows]);
+  }, [constants, formData, deployPool, poolRows]);
 
   useEffect(() => {
     if (formData?.end?.type === "block") {
-      changeEnd(`${store.blockNumber.toNumber() + NUM_BLOCKS_IN_DAY}`);
+      changeEnd(`${chainTime?.block + NUM_BLOCKS_IN_DAY}`);
       form.$("end").set("rules", `gt_current_blocknum|required`);
     } else {
       const date = Moment();
@@ -334,7 +342,7 @@ const CreatePage: NextPage = observer(() => {
       const entries = isRangeOutcomeEntry(formData.outcomes.value)
         ? mapRangeToEntires(formData.outcomes.value)
         : formData.outcomes.value;
-      setPoolRows(poolRowDataFromOutcomes(entries, store.config.tokenSymbol));
+      setPoolRows(poolRowDataFromOutcomes(entries, constants?.tokenSymbol));
     }
   };
 
@@ -365,14 +373,14 @@ const CreatePage: NextPage = observer(() => {
 
   const getMarketPeriod = (): MarketPeriod => {
     return formData.end.type === "block"
-      ? { block: [store.blockNumber.toNumber(), Number(formData.end.value)] }
-      : { timestamp: [store.blockTimestamp, Number(formData.end.value)] };
+      ? { block: [chainTime?.block, Number(formData.end.value)] }
+      : { timestamp: [chainTime?.now, Number(formData.end.value)] };
   };
 
   const getMarketEndBlock = () => {
     return formData.end.type === "block"
       ? Number(formData.end.value)
-      : dateBlock(now, new Date(Number(formData.end.value)));
+      : dateBlock(chainTime, new Date(Number(formData.end.value)));
   };
 
   const mapRangeToEntires = (
@@ -414,17 +422,18 @@ const CreatePage: NextPage = observer(() => {
   const getMarketDeadlines = () => {
     const gracePeriod = (
       formData.deadlines.grace.label === "Custom"
-        ? dateBlock(now, formData.deadlines.grace.value) - getMarketEndBlock()
+        ? dateBlock(chainTime, formData.deadlines.grace.value) -
+          getMarketEndBlock()
         : formData.deadlines.grace.value
     ).toString();
     const oracleDuration = (
       formData.deadlines.oracle.label === "Custom"
-        ? getBlocksDeltaForDuration(now, formData.deadlines.oracle.value)
+        ? getBlocksDeltaForDuration(chainTime, formData.deadlines.oracle.value)
         : formData.deadlines.oracle.value
     ).toString();
     const disputeDuration = (
       formData.deadlines.dispute.label === "Custom"
-        ? getBlocksDeltaForDuration(now, formData.deadlines.dispute.value)
+        ? getBlocksDeltaForDuration(chainTime, formData.deadlines.dispute.value)
         : formData.deadlines.dispute.value
     ).toString();
     return {
@@ -439,7 +448,7 @@ const CreatePage: NextPage = observer(() => {
       | ((result: ISubmittableResult, _unsub: () => void) => void)
       | boolean,
   ): Promise<CreateMarketParams> => {
-    const signer = store.wallets.getActiveSigner();
+    const signer = wallet.getActiveSigner();
     const oracle = formData.oracle;
     const period = getMarketPeriod();
     const creationType = formData.advised ? "Advised" : "Permissionless";
@@ -491,7 +500,7 @@ const CreatePage: NextPage = observer(() => {
       | ((result: ISubmittableResult, _unsub: () => void) => void)
       | boolean,
   ): Promise<CreateCpmmMarketAndDeployAssetsParams> => {
-    const signer = store.wallets.getActiveSigner();
+    const signer = wallet.getActiveSigner();
     const oracle = formData.oracle;
     const period = getMarketPeriod();
     const metadata = getMarketMetadata();
@@ -529,6 +538,7 @@ const CreatePage: NextPage = observer(() => {
       return new Promise(async (resolve, reject) => {
         const params = await getCreateCpmmMarketAndAddPoolParameters(
           extrinsicCallback({
+            api: sdk.asRpc().api,
             notifications: notificationStore,
             successMethod: "PoolCreate",
             successCallback: (data) => {
@@ -544,11 +554,8 @@ const CreatePage: NextPage = observer(() => {
               );
               resolve(marketId);
             },
-            failCallback: ({ index, error }) => {
-              notificationStore.pushNotification(
-                store.getTransactionError(index, error),
-                { type: "Error" },
-              );
+            failCallback: (error) => {
+              notificationStore.pushNotification(error, { type: "Error" });
               reject();
             },
           }),
@@ -577,6 +584,7 @@ const CreatePage: NextPage = observer(() => {
           if (!deployPool) {
             const params = await getCreateMarketParameters(
               extrinsicCallback({
+                api: sdk.asRpc().api,
                 notifications: notificationStore,
                 successMethod: "MarketCreated",
                 finalizedCallback: (data: JSONObject) => {
@@ -590,11 +598,8 @@ const CreatePage: NextPage = observer(() => {
                   );
                   resolve(Number(marketId));
                 },
-                failCallback: ({ index, error }) => {
-                  notificationStore.pushNotification(
-                    store.getTransactionError(index, error),
-                    { type: "Error" },
-                  );
+                failCallback: (error) => {
+                  notificationStore.pushNotification(error, { type: "Error" });
                   reject();
                 },
               }),
@@ -833,7 +838,7 @@ const CreatePage: NextPage = observer(() => {
             disabled={
               !form.isValid ||
               !formData.deadlines.isValid ||
-              store.wallets.activeBalance.lessThan(marketCost) ||
+              activeBalance?.div(ZTG).lessThan(marketCost) ||
               (poolRows?.length > 0 && poolValid === false)
             }
           >
@@ -844,7 +849,7 @@ const CreatePage: NextPage = observer(() => {
               Total Cost:
               <span className="font-mono">
                 {" "}
-                {marketCost} {store.config?.tokenSymbol}
+                {marketCost} {constants?.tokenSymbol}
               </span>
             </div>
             <button

@@ -10,13 +10,13 @@ import {
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { poolTotalIssuanceRootQueryKey } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
@@ -27,14 +27,16 @@ const ExitPoolForm = ({
   totalPoolShares,
   userPoolShares,
   poolStatus,
+  baseAssetTicker,
 }: {
   poolBalances: PoolBalances;
   poolId: number;
   totalPoolShares: Decimal;
   userPoolShares: Decimal;
   poolStatus: string;
+  baseAssetTicker: string;
 }) => {
-  const { config } = useStore();
+  const { data: constants } = useChainConstants();
   const {
     register,
     watch,
@@ -73,7 +75,7 @@ const ExitPoolForm = ({
       if (isRpcSdk(sdk) && pool) {
         const formValue = getValues();
         const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
-        const feeMultiplier = 1 - config.swaps.exitFee;
+        const feeMultiplier = 1 - constants.swaps.exitFee;
 
         const minAssetsOut = poolWeights.map((asset) => {
           const id = assetObjStringToId(asset.assetId);
@@ -187,7 +189,7 @@ const ExitPoolForm = ({
           const id = assetObjStringToId(asset.assetId);
           const assetName =
             poolWeights.length - 1 === index
-              ? pool.baseAsset.toUpperCase()
+              ? baseAssetTicker
               : market?.categories[index]?.name;
 
           if (!userPercentageOwnership || userPercentageOwnership.isNaN())

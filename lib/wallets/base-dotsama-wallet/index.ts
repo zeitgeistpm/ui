@@ -9,6 +9,8 @@ import type { Signer as InjectedSigner } from "@polkadot/api/types";
 import { WalletError } from "../errors/BaseWalletError";
 import { AuthError } from "../errors/AuthError";
 import { SubscriptionFn, Wallet } from "../types";
+import { cryptoWaitReady } from "@polkadot/util-crypto";
+import { poll, PollingTimeout } from "@zeitgeistpm/avatara-util";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -66,29 +68,42 @@ export class BaseDotsamaWallet implements Wallet {
     return err;
   };
 
-  enable = async () => {
-    if (!this.installed) {
-      return;
-    }
-
+  enable = async (): Promise<InjectedExtension> => {
     try {
-      const injectedExtension = this.rawExtension;
-      const rawExtension = await injectedExtension?.enable(DAPP_NAME);
-      if (!rawExtension) {
-        return;
+      const extension = await poll(
+        async () => {
+          await cryptoWaitReady();
+
+          const injectedExtension = this.rawExtension;
+          const rawExtension = await injectedExtension?.enable(DAPP_NAME);
+
+          if (!rawExtension) {
+            return;
+          }
+
+          const extension: InjectedExtension = {
+            ...rawExtension,
+            name: this.extensionName,
+            version: injectedExtension.version,
+          };
+
+          this._extension = extension;
+          this._signer = extension?.signer;
+          this._metadata = extension?.metadata;
+          this._provider = extension?.provider;
+          return extension;
+        },
+        {
+          intervall: 66,
+          timeout: 10_000,
+        },
+      );
+
+      if (extension === PollingTimeout) {
+        throw new Error("Wallet enabling timed out");
       }
 
-      const extension: InjectedExtension = {
-        ...rawExtension,
-        // Manually add `InjectedExtensionInfo` so as to have a consistent response.
-        name: this.extensionName,
-        version: injectedExtension.version,
-      };
-
-      this._extension = extension;
-      this._signer = extension?.signer;
-      this._metadata = extension?.metadata;
-      this._provider = extension?.provider;
+      return extension;
     } catch (err) {
       throw this.transformError(err as WalletError);
     }

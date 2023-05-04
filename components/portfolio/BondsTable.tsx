@@ -59,7 +59,7 @@ const BondsTable = ({ address }: { address: string }) => {
                       value: new Decimal(market.bonds.creation.value)
                         .div(ZTG)
                         .toNumber(),
-                      usdValue: 0,
+                      usdValue: null,
                     },
                     settled:
                       market.bonds.creation.isSettled === true ? "Yes" : "No",
@@ -71,7 +71,7 @@ const BondsTable = ({ address }: { address: string }) => {
                       value: new Decimal(market.bonds.oracle.value)
                         .div(ZTG)
                         .toNumber(),
-                      usdValue: 0,
+                      usdValue: null,
                     },
                     settled:
                       market.bonds.oracle.isSettled === true ? "Yes" : "No",

@@ -244,6 +244,7 @@ module.exports = {
         "fog-of-war": "#0F1A2D",
         mariner: "#3056D3",
         platinum: "#DFE0E6",
+        powderblue: "#ECFAFF",
         purple: {
           light: "#FCE8F3",
           DEFAULT: "#99154B",
@@ -261,6 +262,10 @@ module.exports = {
           lighter: "#EAF8DF",
           light: "#DEF7EC",
           DEFAULT: "#03543F",
+        },
+        yellow: {
+          light: "#FFF7EC",
+          DEFAULT: "yellow", //placeholder
         },
       },
       inset: {

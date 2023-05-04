@@ -4,6 +4,7 @@ import {
   ZTG,
   IOMarketOutcomeAssetId,
   IOZtgAssetId,
+  IOForeignAssetId,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import {
@@ -14,7 +15,6 @@ import {
 } from "lib/hooks/trade";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
 import { observer } from "mobx-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { capitalize } from "lodash";
@@ -28,7 +28,9 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import TradeResult from "components/markets/TradeResult";
+import { useWallet } from "lib/state/wallet";
 import { TradeType } from "lib/types";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -70,11 +72,11 @@ const TradeForm = observer(() => {
     defaultValues: { percentage: "0", assetAmount: "0", baseAmount: "0" },
   });
 
-  const store = useStore();
-  const { wallets } = store;
-  const signer = wallets.getActiveSigner();
+  const wallet = useWallet();
+  const signer = wallet.getActiveSigner();
 
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
+
   const { data: tradeItemState } = useTradeItemState(tradeItem);
 
   const {
@@ -93,7 +95,8 @@ const TradeForm = observer(() => {
 
   const [fee, setFee] = useState<string>("0.00");
   const [percentageDisplay, setPercentageDisplay] = useState<string>("0");
-  const baseSymbol = tradeItemState?.pool.baseAsset.toUpperCase() ?? "ZTG";
+  const { data: assetMetadata } = useAssetMetadata(tradeItemState?.baseAssetId);
+  const baseSymbol = assetMetadata?.symbol;
 
   const type = tradeItem.action;
 
@@ -175,7 +178,7 @@ const TradeForm = observer(() => {
         `Successfully ${
           tradeItem.action === "buy" ? "bought" : "sold"
         } ${assetAmount} ${
-          tradeItemState.asset.category.ticker
+          tradeItemState.asset.ticker
         } for ${baseAmount} ${baseSymbol}`,
         { type: "Success", lifetime: 60 },
       );
@@ -191,7 +194,7 @@ const TradeForm = observer(() => {
   );
 
   useEffect(() => {
-    if (debouncedTransactionHash == null) {
+    if (debouncedTransactionHash == null || signer == null) {
       return;
     }
     const sub = from(transaction.paymentInfo(signer.address)).subscribe(
@@ -200,7 +203,7 @@ const TradeForm = observer(() => {
       },
     );
     return () => sub.unsubscribe();
-  }, [debouncedTransactionHash]);
+  }, [debouncedTransactionHash, signer]);
 
   const changeByPercentage = useCallback(
     (percentage: Decimal) => {
@@ -419,7 +422,10 @@ const TradeForm = observer(() => {
   }, [watch, maxBaseAmount.toString(), maxAssetAmount.toString()]);
 
   useEffect(() => {
-    if (IOZtgAssetId.is(lastEditedAssetId)) {
+    if (
+      IOZtgAssetId.is(lastEditedAssetId) ||
+      IOForeignAssetId.is(lastEditedAssetId)
+    ) {
       changeByBaseAmount(new Decimal(baseAmount));
     } else if (IOMarketOutcomeAssetId.is(lastEditedAssetId)) {
       changeByAssetAmount(new Decimal(assetAmount));
@@ -434,7 +440,7 @@ const TradeForm = observer(() => {
         <TradeResult
           type={tradeItem.action}
           amount={new Decimal(finalAmounts.asset)}
-          tokenName={tradeItemState?.asset.category.name}
+          tokenName={tradeItemState?.asset.name}
           baseTokenAmount={new Decimal(finalAmounts.base)}
           baseToken={baseSymbol}
           marketId={tradeItemState?.market.marketId}
@@ -469,7 +475,7 @@ const TradeForm = observer(() => {
             }}
             selectedIndex={tabIndex}
           >
-            <Tab.List className="flex justify-between h-[71px] text-center rounded-[10px]">
+            <Tab.List className="flex justify-between h-[60px] sm:h-[71px] text-center rounded-[10px]">
               <Tab
                 as={TradeTab}
                 selected={type === "buy"}
@@ -486,25 +492,26 @@ const TradeForm = observer(() => {
               </Tab>
             </Tab.List>
           </Tab.Group>
-          <div className="flex flex-col p-[30px]">
-            <div className="center h-[87px]" style={{ fontSize: "58px" }}>
+          <div className="flex flex-col p-[20px] sm:p-[30px]">
+            <div className="center">
               <input
                 type="number"
                 {...register("assetAmount", {
                   required: true,
                   min: "0",
                   max: maxAssetAmount?.div(ZTG).toFixed(4),
+                  validate: (value) => Number(value) > 0,
                 })}
                 onFocus={() => {
                   setLastEditedAssetId(tradeItemState?.assetId);
                 }}
                 step="any"
-                className="w-full bg-transparent outline-none !text-center text-[58px]"
+                className="w-full bg-transparent outline-none !text-center text-[35px] sm:text-[58px]"
                 autoFocus
               />
             </div>
-            <div className="center h-[48px] font-semibold capitalize text-[28px]">
-              {tradeItemState?.asset.category.name}
+            <div className="center sm:h-[48px] font-semibold capitalize text-[20px] sm:text-[28px]">
+              {tradeItemState?.asset.name}
             </div>
             <div className="font-semibold text-center mb-[20px]">For</div>
             <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative">
@@ -514,6 +521,7 @@ const TradeForm = observer(() => {
                   required: true,
                   min: "0",
                   max: maxBaseAmount?.div(ZTG).toFixed(4),
+                  validate: (value) => Number(value) > 0,
                 })}
                 onFocus={() =>
                   setLastEditedAssetId(tradeItemState?.baseAssetId)
@@ -534,10 +542,11 @@ const TradeForm = observer(() => {
               valueSuffix="%"
               maxLabel="100 %"
               className="mb-[20px]"
+              disabled={isLoading === true || signer == null}
               {...register("percentage")}
             />
             <div className="text-center mb-[20px]">
-              <div className="text-ztg-14-150">
+              <div className="text-ztg-12-150 sm:text-ztg-14-150">
                 <div className="mb-[10px]">
                   <span className="text-sky-600">Average Price: </span>
                   {averagePrice} {baseSymbol}

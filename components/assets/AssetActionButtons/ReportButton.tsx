@@ -8,9 +8,9 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useModalStore } from "lib/stores/ModalStore";
 import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/state/wallet";
+import { useModalStore } from "lib/stores/ModalStore";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 
@@ -23,8 +23,7 @@ const ReportButton = observer(
     assetId: ScalarAssetId | CategoricalAssetId;
   }) => {
     const [sdk] = useSdkv2();
-    const store = useStore();
-    const { wallets } = store;
+    const wallet = useWallet();
     const notificationStore = useNotifications();
     const modalStore = useModalStore();
 
@@ -47,9 +46,10 @@ const ReportButton = observer(
       } else {
         //@ts-ignore
         const ID = assetId.CategoricalOutcome[1];
-        const signer = wallets.getActiveSigner();
+        const signer = wallet.getActiveSigner();
 
         const callback = extrinsicCallback({
+          api: sdk.api,
           notifications: notificationStore,
           successCallback: async () => {
             notificationStore.pushNotification(
@@ -59,13 +59,10 @@ const ReportButton = observer(
               },
             );
           },
-          failCallback: ({ index, error }) => {
-            notificationStore.pushNotification(
-              store.getTransactionError(index, error),
-              {
-                type: "Error",
-              },
-            );
+          failCallback: (error) => {
+            notificationStore.pushNotification(error, {
+              type: "Error",
+            });
           },
         });
 

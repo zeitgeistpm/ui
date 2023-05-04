@@ -3,6 +3,7 @@ import { FC, PropsWithChildren } from "react";
 import { useStore } from "lib/stores/Store";
 import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useAccountModals } from "lib/hooks/account";
+import { useWallet } from "lib/state/wallet";
 
 interface TransactionButtonProps {
   preventDefault?: boolean;
@@ -10,6 +11,7 @@ interface TransactionButtonProps {
   disabled?: boolean;
   className?: string;
   dataTest?: string;
+  type?: "button" | "submit" | "reset";
 }
 
 const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> =
@@ -21,10 +23,10 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> =
       dataTest = "",
       children,
       preventDefault,
+      type = "button",
     }) => {
       const store = useStore();
-      const { wallets } = store;
-      const { connected } = wallets;
+      const wallet = useWallet();
       const accountModals = useAccountModals();
       const { locationAllowed, isUsingVPN } = useUserLocation();
 
@@ -34,7 +36,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> =
         if (preventDefault) {
           event.preventDefault();
         }
-        if (!connected) {
+        if (!wallet.connected) {
           accountModals.openWalletSelect();
         } else {
           onClick && onClick(event);
@@ -44,21 +46,37 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> =
       const isDisabled = () => {
         if (locationAllowed !== true || isUsingVPN || !store?.sdk?.api) {
           return true;
-        } else if (!connected) {
+        } else if (!wallet.connected) {
           return false;
         }
         return disabled;
       };
 
+      const colorClass =
+        locationAllowed !== true || isUsingVPN ? "bg-vermilion" : "bg-ztg-blue";
+
+      const getButtonChildren = () => {
+        if (locationAllowed !== true) {
+          return "Location Blocked";
+        } else if (isUsingVPN) {
+          return "VPN Blocked";
+        } else if (wallet.connected) {
+          return children;
+        } else {
+          return "Connect Wallet";
+        }
+      };
+
       return (
         <button
-          className={`ztg-transition bg-ztg-blue text-white focus:outline-none disabled:opacity-20 disabled:cursor-default 
-        rounded-full w-full  font-bold text-ztg-16-150 h-ztg-56 ${className}`}
+          type={type}
+          className={`ztg-transition text-white focus:outline-none disabled:opacity-20 disabled:cursor-default 
+        rounded-full w-full font-bold text-ztg-16-150 h-ztg-56 ${className} ${colorClass}`}
           onClick={(e) => click(e)}
           disabled={isDisabled()}
           data-test={dataTest}
         >
-          {connected ? children : "Connect Wallet"}
+          {getButtonChildren()}
         </button>
       );
     },

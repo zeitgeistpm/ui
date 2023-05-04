@@ -1,4 +1,4 @@
-import { Skeleton } from "@material-ui/lab";
+import Skeleton from "components/ui/Skeleton";
 import TableChart from "components/ui/TableChart";
 import { useEvent } from "lib/hooks";
 import { formatNumberLocalized } from "lib/util";
@@ -13,7 +13,7 @@ import { ChartData } from "./TimeSeriesChart";
 import Avatar from "./Avatar";
 import { range } from "lodash";
 import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
-import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
+import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 
 interface TableProps {
   data: TableData[];
@@ -40,6 +40,9 @@ export interface TableColumn {
   initialSort?: "asc" | "desc";
   onClick?: (row: TableData) => void;
   alignment?: string;
+  // if specified the table will hide this column if it is overflowing
+  // lower number columns will be hidden first
+  collapseOrder?: number;
 }
 
 export interface TableData {
@@ -72,7 +75,7 @@ type ColumnType =
 
 interface CurrencyData {
   value: number;
-  usdValue: number;
+  usdValue?: number;
 }
 
 interface TokenData {
@@ -121,10 +124,10 @@ const Cell = observer(
     onClick?: () => void;
   }) => {
     const {
-      data: ztgInfo,
+      data: ztgPrice,
       isLoading: ztgIsLoading,
       isLoadingError: ztgIsLoadingError,
-    } = useZtgInfo();
+    } = useZtgPrice();
 
     const base = `dark:text-white px-ztg-15 h-ztg-72 ${
       onClick ? "cursor-pointer" : ""
@@ -137,7 +140,7 @@ const Cell = observer(
         style={style}
       >
         <div className="">
-          <Skeleton className="!transform-none !w-[25px] !h-[25px]" />
+          <Skeleton width={25} height={25} />
         </div>
       </td>
     );
@@ -215,9 +218,9 @@ const Cell = observer(
               </div>
               <div className="text-ztg-12-150 font-light text-sky-600">
                 $
-                {(
-                  (value.usdValue || ztgInfo?.price?.toNumber()) * value.value
-                ).toFixed(2)}
+                {(value.usdValue ?? ztgPrice?.toNumber() * value.value).toFixed(
+                  2,
+                )}
               </div>
             </td>
           );
@@ -331,6 +334,9 @@ const Table = observer(
       "resize",
       50,
     );
+    const [collapsedAccessors, setCollapsedAccessors] = useState<Set<string>>(
+      new Set(),
+    );
 
     const loadMoreInView = useIsOnScreen(loadMoreRef);
 
@@ -376,24 +382,40 @@ const Table = observer(
     const calcOverflow = () => {
       if (tableRef?.current) {
         const { clientWidth, scrollWidth, parentElement } = tableRef.current;
-        setIsOverflowing(
+        const isOverflowing =
           scrollWidth > parentElement.scrollWidth ||
-            clientWidth > parentElement.clientWidth,
-        );
+          clientWidth > parentElement.clientWidth;
+
+        //if table is overflowing check if we can collaspe any columns
+        if (isOverflowing) {
+          const collapseNext = columns
+            .filter((col) => col.collapseOrder != null)
+            .sort((a, b) => a.collapseOrder - b.collapseOrder)
+            .map((col) => col.accessor)
+            .filter((accessor) => !collapsedAccessors.has(accessor))[0];
+
+          if (collapseNext) {
+            setCollapsedAccessors((accessors) => accessors.add(collapseNext));
+          } else {
+            setIsOverflowing(true);
+          }
+        } else {
+          setIsOverflowing(false);
+        }
       } else {
         setIsOverflowing(false);
       }
     };
+
+    const columnIsCollapsed = (columnAccessor: string) =>
+      collapsedAccessors.has(columnAccessor);
+
     return (
       <>
         {data == null ? (
           <div>
             {range(0, loadingNumber).map((index) => (
-              <Skeleton
-                key={index}
-                height={120}
-                className="!-mb-ztg-40 !rounded-ztg-10"
-              />
+              <Skeleton key={index} height={72} className="mb-2" />
             ))}
           </div>
         ) : (
@@ -414,35 +436,37 @@ const Table = observer(
               >
                 <thead>
                   <tr className="bg-sky-100 h-[50px]">
-                    {columns.map((column, index) => (
-                      <th
-                        key={index}
-                        className={`${getHeaderClass(column)} ${
-                          index == 0 ? "rounded-tl-md" : ""
-                        } ${
-                          index == columns.length - 1 ? "rounded-tr-md" : ""
-                        }`}
-                        style={column.width ? { width: column.width } : {}}
-                      >
-                        <div
-                          className={`${
-                            column.onSort ? "flex justify-center" : ""
+                    {columns
+                      .filter((col) => columnIsCollapsed(col.accessor) == false)
+                      .map((column, index) => (
+                        <th
+                          key={index}
+                          className={`${getHeaderClass(column)} ${
+                            index == 0 ? "rounded-tl-md" : ""
+                          } ${
+                            index == columns.length - 1 ? "rounded-tr-md" : ""
                           }`}
+                          style={column.width ? { width: column.width } : {}}
                         >
-                          {column.header}
-                          {column.onSort ? (
-                            <ArrowDown
-                              role="button"
-                              onClick={handleSortClick}
-                              size={14}
-                              className="ml-ztg-8 cursor-pointer"
-                            />
-                          ) : (
-                            <></>
-                          )}
-                        </div>
-                      </th>
-                    ))}
+                          <div
+                            className={`${
+                              column.onSort ? "flex justify-center" : ""
+                            }`}
+                          >
+                            {column.header}
+                            {column.onSort ? (
+                              <ArrowDown
+                                role="button"
+                                onClick={handleSortClick}
+                                size={14}
+                                className="ml-ztg-8 cursor-pointer"
+                              />
+                            ) : (
+                              <></>
+                            )}
+                          </div>
+                        </th>
+                      ))}
                   </tr>
                 </thead>
                 <tbody>
@@ -460,21 +484,26 @@ const Table = observer(
                     ${onRowClick ? "cursor-pointer" : ""} mx-ztg-5`}
                         onClick={() => handleRowClick(row)}
                       >
-                        {row.cells.map((cell, index) => {
-                          return (
-                            <Cell
-                              key={`${row.id}-${index}`}
-                              type={cell.column.type}
-                              value={cell.value}
-                              rowHeight={rowHeightPx}
-                              onClick={
-                                cell.column.onClick
-                                  ? () => cell.column.onClick(row.original)
-                                  : null
-                              }
-                            />
-                          );
-                        })}
+                        {row.cells
+                          .filter(
+                            (cell) =>
+                              columnIsCollapsed(cell.column.id) == false,
+                          )
+                          .map((cell, index) => {
+                            return (
+                              <Cell
+                                key={`${row.id}-${index}`}
+                                type={cell.column.type}
+                                value={cell.value}
+                                rowHeight={rowHeightPx}
+                                onClick={
+                                  cell.column.onClick
+                                    ? () => cell.column.onClick(row.original)
+                                    : null
+                                }
+                              />
+                            );
+                          })}
                       </tr>
                     );
                   })}
@@ -484,11 +513,7 @@ const Table = observer(
               <div className="">
                 {loadingMore &&
                   range(0, loadingNumber).map((index) => (
-                    <Skeleton
-                      key={index}
-                      height={80}
-                      className="!transform-none block !mb-ztg-16 !rounded-ztg-10"
-                    />
+                    <Skeleton key={index} height={80} className="mb-ztg-16" />
                   ))}
               </div>
 

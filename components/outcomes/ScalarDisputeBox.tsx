@@ -8,10 +8,11 @@ import { AmountInput, DateTimeInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/state/wallet";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 import moment from "moment";
@@ -26,18 +27,19 @@ const ScalarDisputeBox = observer(
     onDispute?: () => void;
   }) => {
     const [sdk] = useSdkv2();
-    const store = useStore();
     const notificationStore = useNotifications();
+    const { data: constants } = useChainConstants();
 
     //TODO: move to react query
-    const disputeBond = store.config.markets.disputeBond;
-    const disputeFactor = store.config.markets.disputeFactor;
-    const tokenSymbol = store.config.tokenSymbol;
+    const disputeBond = constants?.markets.disputeBond;
+    const disputeFactor = constants?.markets.disputeFactor;
+    const tokenSymbol = constants?.tokenSymbol;
 
     const { data: disputes } = useMarketDisputes(market);
     const lastDispute = disputes?.[disputes.length - 1];
 
-    const signer = store?.wallets?.getActiveSigner();
+    const wallet = useWallet();
+    const signer = wallet.getActiveSigner();
 
     const bondAmount = disputes
       ? disputeBond + disputes.length * disputeFactor
@@ -76,6 +78,7 @@ const ScalarDisputeBox = observer(
       };
 
       const callback = extrinsicCallback({
+        api: sdk.api,
         notifications: notificationStore,
         successCallback: async () => {
           notificationStore.pushNotification("Outcome Disputed", {
@@ -83,13 +86,10 @@ const ScalarDisputeBox = observer(
           });
           onDispute?.();
         },
-        failCallback: ({ index, error }) => {
-          notificationStore.pushNotification(
-            store.getTransactionError(index, error),
-            {
-              type: "Error",
-            },
-          );
+        failCallback: (error) => {
+          notificationStore.pushNotification(error, {
+            type: "Error",
+          });
         },
       });
 

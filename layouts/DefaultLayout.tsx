@@ -1,11 +1,11 @@
 import { observer } from "mobx-react";
-import { Skeleton } from "@material-ui/lab";
 import React, { FC, PropsWithChildren, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 
 import { useStore } from "lib/stores/Store";
 import TopBar from "components/menu";
 import Footer from "components/ui/Footer";
+import Skeleton from "components/ui/Skeleton";
 import NotificationCenter from "components/ui/NotificationCenter";
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import { useRouter } from "next/router";
@@ -89,10 +89,7 @@ const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
                   router.pathname.split("/")[1] === "liquidity" ? (
                     children
                   ) : (
-                    <Skeleton
-                      className="!transform-none !mt-ztg-30"
-                      style={{ height: "550px" }}
-                    />
+                    <Skeleton className="mt-7" height={550} />
                   )}
                 </ContentDimensionsProvider>
               )}

@@ -9,6 +9,41 @@ export const config: PageConfig = {
   runtime: "edge",
 };
 
+const getImageUrl = async (image: string | null): Promise<string> => {
+  const fallbackUrl = new URL(
+    "../../../public/icons/default-market.png",
+    import.meta.url,
+  ).href;
+  if (!image) {
+    return fallbackUrl;
+  }
+  if (isMarketImageBase64Encoded(image)) {
+    return image;
+  }
+  const controller = new AbortController();
+
+  const abortTimeout = 10000;
+
+  setTimeout(() => {
+    controller.abort();
+  }, abortTimeout);
+
+  try {
+    const url = `https://ipfs-gateway.zeitgeist.pm/ipfs/${image}`;
+    const res = await fetch(url, {
+      method: "HEAD",
+      signal: controller.signal,
+    });
+    if (res.headers.get("Content-Type")?.startsWith("image") === false) {
+      return fallbackUrl;
+    }
+    return url;
+  } catch (e) {
+    console.log(e); // TODO: remove after debugging
+    return fallbackUrl;
+  }
+};
+
 export default async function GenerateOgImage(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
@@ -27,11 +62,7 @@ export default async function GenerateOgImage(request: NextRequest) {
     url.href,
   ).then((r) => r.json());
 
-  const marketImage = !market.img
-    ? new URL("../../../public/icons/default-market.png", import.meta.url).href
-    : isMarketImageBase64Encoded(market.img)
-    ? market.img
-    : `https://ipfs-gateway.zeitgeist.pm/ipfs/${market.img}`;
+  const marketImageUrl = await getImageUrl(market.img);
 
   const boldFont = await fetch(
     new URL(
@@ -46,6 +77,8 @@ export default async function GenerateOgImage(request: NextRequest) {
       import.meta.url,
     ).href,
   ).then((res) => res.arrayBuffer());
+
+  const questionClass = market.question.length > 90 ? "text-4xl" : "text-5xl";
 
   const image = (
     <div
@@ -74,7 +107,7 @@ export default async function GenerateOgImage(request: NextRequest) {
                 height: 180,
                 objectFit: "cover",
               }}
-              src={marketImage}
+              src={marketImageUrl}
               tw="rounded-[5px]"
             />
           </div>
@@ -93,7 +126,7 @@ export default async function GenerateOgImage(request: NextRequest) {
           </div>
         </div>
         <div tw="flex flex-col h-full ml-[80px]" style={{ width: 750 }}>
-          <h1 tw={`${"text-5xl"}`} style={{ lineHeight: "1.3em" }}>
+          <h1 tw={`${questionClass}`} style={{ lineHeight: "1.3em" }}>
             {market.question}
           </h1>
           <div tw="flex flex-col mt-auto">
@@ -106,9 +139,13 @@ export default async function GenerateOgImage(request: NextRequest) {
               tw={`font-semibold ${"text-6xl"} `}
               style={{ color: "#ABC1F9" }}
             >
-              {market.marketType.categorical
-                ? `${prediction.name} (${prediction.percentage}%)`
-                : `${prediction.name}`}
+              {prediction.name != null
+                ? market.marketType.categorical
+                  ? `${prediction.name} (${prediction.percentage}%)`
+                  : `${Intl.NumberFormat("default", {
+                      maximumSignificantDigits: 3,
+                    }).format(Number(prediction.name))}`
+                : "No Prediction"}
             </div>
           </div>
           <div tw="flex mt-[50px] w-full">

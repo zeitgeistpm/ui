@@ -21,7 +21,7 @@ const PoolFeeOption = ({
   };
   return (
     <button
-      className={`flex justify-center items-center w-[100px] h-[40px] border-2 dark bg-sky-200 dark:bg-black rounded-ztg-100
+      className={`flex justify-center items-center w-[100px] h-[40px] border-2 bg-sky-200 dark:bg-black rounded-ztg-100
           ${
             selected
               ? "text-black dark:text-white border-black dark:border-white"
@@ -96,7 +96,7 @@ const PoolFeesSelect = observer(
           />
         ))}
         <div
-          className={`flex justify-center items-center w-[100px] h-[40px] border-2 dark bg-sky-200 dark:bg-black rounded-ztg-100
+          className={`flex justify-center items-center w-[100px] h-[40px] border-2 bg-sky-200 dark:bg-black rounded-ztg-100
               ${
                 inputSelected
                   ? "border-black dark:border-white"
@@ -111,7 +111,7 @@ const PoolFeesSelect = observer(
             placeholder="3%"
             value={inputValue}
             onChange={(value) => handleInputFeeChange(value)}
-            className="box-border  m-[15px] p-[5px] w-[80px] h-[20px] !bg-transparent !border-transparent text-black"
+            className="box-border flex justify-center items-center !text-center !bg-transparent !border-transparent text-black"
           />
         </div>
       </div>

@@ -7,6 +7,7 @@ import {
   MarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk-next";
 import TransactionButton from "components/ui/TransactionButton";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import {
   marketDisputesRootKey,
   useMarketDisputes,
@@ -27,15 +28,15 @@ const CategoricalDisputeBox = observer(
     assetId: MarketOutcomeAssetId;
   }) => {
     const [sdk, id] = useSdkv2();
-    const store = useStore();
     const { data: disputes } = useMarketDisputes(market);
     const notificationStore = useNotifications();
     const modalStore = useModalStore();
     const queryClient = useQueryClient();
+    const { data: constants } = useChainConstants();
 
-    const disputeBond = store.config?.markets.disputeBond;
-    const disputeFactor = store.config?.markets.disputeFactor;
-    const tokenSymbol = store.config?.tokenSymbol;
+    const disputeBond = constants?.markets.disputeBond;
+    const disputeFactor = constants?.markets.disputeFactor;
+    const tokenSymbol = constants?.tokenSymbol;
 
     const lastDispute = disputes?.[disputes.length - 1];
     const assetName = market.categories[getIndexOf(assetId)].name;
