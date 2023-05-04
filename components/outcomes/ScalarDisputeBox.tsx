@@ -21,16 +21,15 @@ import { useState } from "react";
 const ScalarDisputeBox = observer(
   ({
     market,
-    onDispute,
+    onSuccess,
   }: {
     market: Market<IndexerContext>;
-    onDispute?: () => void;
+    onSuccess?: () => void;
   }) => {
     const [sdk] = useSdkv2();
     const notificationStore = useNotifications();
     const { data: constants } = useChainConstants();
 
-    //TODO: move to react query
     const disputeBond = constants?.markets.disputeBond;
     const disputeFactor = constants?.markets.disputeFactor;
     const tokenSymbol = constants?.tokenSymbol;
@@ -84,7 +83,7 @@ const ScalarDisputeBox = observer(
           notificationStore.pushNotification("Outcome Disputed", {
             type: "Success",
           });
-          onDispute?.();
+          onSuccess?.();
         },
         failCallback: (error) => {
           notificationStore.pushNotification(error, {
@@ -101,7 +100,7 @@ const ScalarDisputeBox = observer(
     };
 
     return (
-      <>
+      <div className="p-[30px]">
         <div className=" text-ztg-10-150 mb-ztg-5">
           Bond will start at {disputeBond} {tokenSymbol}, increasing by{" "}
           {disputeFactor} {tokenSymbol} for each dispute
@@ -152,7 +151,7 @@ const ScalarDisputeBox = observer(
         >
           Dispute Outcome
         </TransactionButton>
-      </>
+      </div>
     );
   },
 );
