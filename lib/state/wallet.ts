@@ -103,7 +103,7 @@ const disconnectWalletStateTransition = (
     },
   ];
 };
-globalThis.encodeAddress = encodeAddress;
+
 /**
  * Atom proxy storage.
  * Used to access and write all atom state in the app.
