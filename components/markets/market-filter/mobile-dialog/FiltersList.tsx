@@ -55,7 +55,6 @@ const sortBySelectStyles = {
 
 const IndicatorsContainer = (props) => {
   const { menuIsOpen } = props.selectProps;
-  console.log(props);
   return menuIsOpen ? (
     <ChevronUp className="pointer-events-none" />
   ) : (
