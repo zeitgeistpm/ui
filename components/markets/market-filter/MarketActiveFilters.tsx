@@ -1,8 +1,9 @@
 import { MarketFilter } from "lib/types/market-filter";
 import { X } from "react-feather";
-import { ClearAllBtn } from "./ui";
+import ClearAllButton from "./ClearAllButton";
+import { useMarketFiltersContext } from "./MarketFiltersContainer";
 
-export type MarketActiveFilterProps = {
+export type MarketActiveFilterItemProps = {
   filter: MarketFilter;
   onRemove: (filter: MarketFilter) => void;
 };
@@ -10,7 +11,7 @@ export type MarketActiveFilterProps = {
 export const MarketActiveFilterItem = ({
   filter,
   onRemove,
-}: MarketActiveFilterProps) => {
+}: MarketActiveFilterItemProps) => {
   return (
     <div className="flex px-ztg-10 py-ztg-5 rounded-ztg-5 bg-sky-200 text-gray-800 font-normal text-ztg-14-150 gap-ztg-5">
       <button onClick={() => onRemove(filter)}>
@@ -22,27 +23,27 @@ export const MarketActiveFilterItem = ({
 };
 
 export type MarketActiveFiltersProps = {
-  filters: MarketFilter[];
-  onClear: () => void;
-  onFilterRemove: (filter: MarketFilter) => void;
+  className?: string;
 };
 
-const MarketActiveFilters = ({
-  filters,
-  onClear,
-  onFilterRemove,
-}: MarketActiveFiltersProps) => {
+const MarketActiveFilters = ({ className = "" }: MarketActiveFiltersProps) => {
+  const { activeFilters, clearActiveFilters, removeActiveFilter } =
+    useMarketFiltersContext();
   return (
-    <div className="flex gap-[10px]">
-      {filters?.length > 0 && <ClearAllBtn clear={onClear} />}
-      {filters?.map((af, idx) => (
-        <MarketActiveFilterItem
-          filter={af}
-          onRemove={onFilterRemove}
-          key={`af-${idx}`}
-        />
-      ))}
-    </div>
+    activeFilters?.length > 0 && (
+      <div className={className}>
+        {activeFilters.length > 0 && (
+          <ClearAllButton clear={clearActiveFilters} />
+        )}
+        {activeFilters.map((af, idx) => (
+          <MarketActiveFilterItem
+            filter={af}
+            onRemove={removeActiveFilter}
+            key={`af-${idx}`}
+          />
+        ))}
+      </div>
+    )
   );
 };
 
