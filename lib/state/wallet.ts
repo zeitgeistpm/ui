@@ -137,11 +137,15 @@ const userConfigAtom = persistentAtom<WalletUserConfig>({
        */
       if (!state || Object.keys(state).length === 0) {
         const walletId = globalThis.localStorage?.getItem("walletId");
-        const selectedAddress =
+        let selectedAddress =
           globalThis.localStorage?.getItem("accountAddress");
 
         globalThis.localStorage?.removeItem("walletId");
         globalThis.localStorage?.removeItem("accountAddress");
+
+        if (selectedAddress?.match(/\".+\"/)) {
+          selectedAddress = selectedAddress.replace(/\"/g, "");
+        }
 
         return {
           walletId,
