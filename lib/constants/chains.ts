@@ -1,16 +1,15 @@
 import Decimal from "decimal.js";
 
 import type { ApiPromise } from "@polkadot/api";
-
-interface Balance {
-  amount: Decimal;
-  symbol: string;
-}
+import { CurrencyBalance } from "lib/hooks/queries/useCurrencyBalances";
 
 interface Chain {
   name: string;
   endpoints: string[];
-  fetchBalances: (api: ApiPromise, address: string) => Promise<Balance[]>; //todo: figure out return type
+  fetchBalances: (
+    api: ApiPromise,
+    address: string,
+  ) => Promise<CurrencyBalance[]>;
 }
 const BATTERY_STATION_CHAINS: Chain[] = [
   {
@@ -19,7 +18,11 @@ const BATTERY_STATION_CHAINS: Chain[] = [
     fetchBalances: async (api, address) => {
       const account = await api.query.system.account(address);
       return [
-        { symbol: "ROC", amount: new Decimal(account.data.free.toString()) },
+        {
+          symbol: "ROC",
+          balance: new Decimal(account.data.free.toString()),
+          chain: "Rococo",
+        },
       ];
     },
   },
