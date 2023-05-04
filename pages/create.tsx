@@ -50,7 +50,6 @@ import { useChainTime } from "lib/state/chaintime";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useModalStore } from "lib/stores/ModalStore";
-import { useStore } from "lib/stores/Store";
 import { JSONObject } from "lib/types";
 import {
   EndType,
@@ -61,10 +60,13 @@ import {
   OutcomeType,
   RangeOutcomeEntry,
 } from "lib/types/create-market";
+import SDK from "@zeitgeistpm/sdk";
+import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import { toBase64 } from "lib/util";
 import { calculateMarketCost } from "lib/util/market";
 import { extrinsicCallback } from "lib/util/tx";
 import dynamic from "next/dynamic";
+import Skeleton from "components/ui/Skeleton";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
@@ -121,8 +123,21 @@ const initialFields = {
   },
 };
 
-const CreatePage: NextPage = observer(() => {
-  const store = useStore();
+const CreatePage: NextPage = () => {
+  const [sdk, setSdk] = useState<SDK>();
+
+  useEffect(() => {
+    SDK.initialize(endpointOptions[0].value, {
+      graphQlEndpoint,
+    }).then(setSdk);
+  }, []);
+
+  if (!sdk) return <Skeleton className="mt-7" height={550} />;
+
+  return <Inner sdkv1={sdk} />;
+};
+
+const Inner = ({ sdkv1 }: { sdkv1: SDK }) => {
   const chainTime = useChainTime();
   const notificationStore = useNotifications();
   const modalStore = useModalStore();
@@ -177,7 +192,7 @@ const CreatePage: NextPage = observer(() => {
   const questionInputRef = useRef();
   const oracleInputRef = useRef();
 
-  const ipfsClient = store.sdk.models.ipfsClient;
+  const ipfsClient = sdkv1.models.ipfsClient;
 
   const [marketCost, setMarketCost] = useState<number>();
   const [newMarketId, setNewMarketId] = useState<number>();
@@ -561,7 +576,7 @@ const CreatePage: NextPage = observer(() => {
           }),
         );
 
-        await store.sdk.models.createCpmmMarketAndDeployAssets(params);
+        await sdkv1.models.createCpmmMarketAndDeployAssets(params);
       });
     };
 
@@ -604,7 +619,7 @@ const CreatePage: NextPage = observer(() => {
                 },
               }),
             );
-            return parseInt(await store.sdk.models.createMarket(params));
+            return parseInt(await sdkv1.models.createMarket(params));
           } else {
             const id =
               await createCategoricalCpmmMarketAndDeployPoolTransaction();
@@ -632,14 +647,12 @@ const CreatePage: NextPage = observer(() => {
   const getTransactionFee = async (): Promise<string> => {
     if (!deployPool) {
       const params = await getCreateMarketParameters(true);
-      return new Decimal(await store.sdk.models.createMarket(params))
+      return new Decimal(await sdkv1.models.createMarket(params))
         .div(ZTG)
         .toFixed(4);
     } else if (poolRows) {
       const params = await getCreateCpmmMarketAndAddPoolParameters(true);
-      const fee = await store.sdk.models.createCpmmMarketAndDeployAssets(
-        params,
-      );
+      const fee = await sdkv1.models.createCpmmMarketAndDeployAssets(params);
       return new Decimal(typeof fee == "string" ? fee : "0")
         .div(ZTG)
         .toFixed(4);
@@ -863,6 +876,6 @@ const CreatePage: NextPage = observer(() => {
       </div>
     </form>
   );
-});
+};
 
 export default CreatePage;

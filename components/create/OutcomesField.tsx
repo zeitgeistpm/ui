@@ -27,7 +27,6 @@ import {
   RangeType,
   YesNoOutcome,
 } from "lib/types/create-market";
-import { useStore } from "lib/stores/Store";
 import { AnimatePresence, motion } from "framer-motion";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
@@ -68,7 +67,7 @@ export const OutcomeColor: FC<{
   color: Color;
   onChange: (color: Color) => void;
   name: string;
-}> = observer(({ color, onChange, name }) => {
+}> = ({ color, onChange, name }) => {
   const [pickerOpen, setPickerOpen] = useState(false);
   const targetId = `colorPicker-${name}`;
   const targetIdSelector = `[data-target-id=${targetId}]`;
@@ -103,7 +102,7 @@ export const OutcomeColor: FC<{
       )}
     </div>
   );
-});
+};
 
 export const YesNoOutcomesField: FC<{ entries: YesNoOutcome }> = ({
   entries,
@@ -143,109 +142,107 @@ export const MultipleOutcomeRow: FC<{
   onColorChange: (color: Color) => void;
   canRemove: boolean;
   name: string;
-}> = observer(
-  ({
-    outcomeName,
-    color,
-    ticker,
-    onRemove,
-    onNameChange,
-    onTickerChange,
-    onColorChange,
-    canRemove,
-    name,
-  }) => {
-    const form = useContext(FormContext);
-    const parentField = form.$("outcomes");
-    const nameRef = useRef();
-    const tickerRef = useRef();
+}> = ({
+  outcomeName,
+  color,
+  ticker,
+  onRemove,
+  onNameChange,
+  onTickerChange,
+  onColorChange,
+  canRemove,
+  name,
+}) => {
+  const form = useContext(FormContext);
+  const parentField = form.$("outcomes");
+  const nameRef = useRef();
+  const tickerRef = useRef();
 
-    const nameFieldName = `${name}-name`;
-    const tickerFieldName = `${name}-ticker`;
+  const nameFieldName = `${name}-name`;
+  const tickerFieldName = `${name}-ticker`;
 
-    const createFields = () =>
-      runInAction(() => {
-        parentField.add({ name: nameFieldName, rules: "required" });
-        parentField.add({ name: tickerFieldName, rules: "required" });
-      });
+  const createFields = () =>
+    runInAction(() => {
+      parentField.add({ name: nameFieldName, rules: "required" });
+      parentField.add({ name: tickerFieldName, rules: "required" });
+    });
 
-    const removeFields = () =>
-      runInAction(() => {
-        parentField.del(nameFieldName);
-        parentField.del(tickerFieldName);
-      });
+  const removeFields = () =>
+    runInAction(() => {
+      parentField.del(nameFieldName);
+      parentField.del(tickerFieldName);
+    });
 
-    useEffect(() => {
-      createFields();
-      return () => removeFields();
-    }, []);
+  useEffect(() => {
+    createFields();
+    return () => removeFields();
+  }, []);
 
-    return (
-      <motion.div
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 50, opacity: 0 }}
-        transition={{ type: "spring", duration: 0.5 }}
-        className="flex mb-ztg-10"
+  return (
+    <motion.div
+      initial={{ y: 100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 50, opacity: 0 }}
+      transition={{ type: "spring", duration: 0.5 }}
+      className="flex mb-ztg-10"
+    >
+      <div
+        className="flex-ztg-basis-520 pr-ztg-16 flex-grow flex-shrink"
+        data-test="outComeInput"
       >
+        <Input
+          type="text"
+          ref={nameRef}
+          form={form}
+          placeholder="Outcome"
+          className="w-full"
+          value={outcomeName}
+          maxLength={outcomeSettings.outcomeNameMaxLength}
+          name={`outcomes.${nameFieldName}`}
+          autoComplete="off"
+          onChange={(e) => {
+            onNameChange(e.target.value);
+          }}
+        />
+      </div>
+      <div
+        className="flex-ztg-basis-85 pr-ztg-15 flex-grow"
+        data-test="outComeTicker"
+      >
+        <Input
+          type="text"
+          ref={tickerRef}
+          form={form}
+          value={ticker}
+          maxLength={outcomeSettings.tickerMaxLength}
+          placeholder="ABC"
+          className="w-full"
+          name={`outcomes.${tickerFieldName}`}
+          autoComplete="off"
+          onChange={(e) => {
+            onTickerChange(e.target.value);
+          }}
+        />
+      </div>
+      <OutcomeColor color={color} onChange={onColorChange} name={name} />
+      {canRemove && (
         <div
-          className="flex-ztg-basis-520 pr-ztg-16 flex-grow flex-shrink"
-          data-test="outComeInput"
+          className="w-ztg-40 h-ztg-40 rounded-ztg-5 border-2 border-sky-600 center ml-ztg-15 flex-grow-0 flex-shrink-0 cursor-pointer"
+          onClick={() => onRemove()}
         >
-          <Input
-            type="text"
-            ref={nameRef}
-            form={form}
-            placeholder="Outcome"
-            className="w-full"
-            value={outcomeName}
-            maxLength={outcomeSettings.outcomeNameMaxLength}
-            name={`outcomes.${nameFieldName}`}
-            autoComplete="off"
-            onChange={(e) => {
-              onNameChange(e.target.value);
-            }}
-          />
+          <Minus size={20} className="text-sky-600" />
         </div>
-        <div
-          className="flex-ztg-basis-85 pr-ztg-15 flex-grow"
-          data-test="outComeTicker"
-        >
-          <Input
-            type="text"
-            ref={tickerRef}
-            form={form}
-            value={ticker}
-            maxLength={outcomeSettings.tickerMaxLength}
-            placeholder="ABC"
-            className="w-full"
-            name={`outcomes.${tickerFieldName}`}
-            autoComplete="off"
-            onChange={(e) => {
-              onTickerChange(e.target.value);
-            }}
-          />
-        </div>
-        <OutcomeColor color={color} onChange={onColorChange} name={name} />
-        {canRemove && (
-          <div
-            className="w-ztg-40 h-ztg-40 rounded-ztg-5 border-2 border-sky-600 center ml-ztg-15 flex-grow-0 flex-shrink-0 cursor-pointer"
-            onClick={() => onRemove()}
-          >
-            <Minus size={20} className="text-sky-600" />
-          </div>
-        )}
-      </motion.div>
-    );
-  },
-);
+      )}
+    </motion.div>
+  );
+};
 
 export const MultipleOutcomesField: FC<{
   entries: MultipleOutcomeEntry[];
   onEntryChange: (index: number, entry: MultipleOutcomeEntry) => void;
   onEntriesChange: (entries: MultipleOutcomeEntry[]) => void;
   namePrefix: string;
-}> = observer(({ entries, onEntriesChange, onEntryChange, namePrefix }) => {
+}> = ({ entries, onEntriesChange, onEntryChange, namePrefix }) => {
   const { data: constants } = useChainConstants();
   const addOutcome = () => {
     onEntriesChange(addMultipleOutcomeEntry(entries));
@@ -306,13 +303,13 @@ export const MultipleOutcomesField: FC<{
       )}
     </div>
   );
-});
+};
 
 export const RangeOutcomeField: FC<{
   namePrefix: string;
   outcome: RangeOutcomeEntry;
   onOutcomeChange: (outcome: RangeOutcomeEntry) => void;
-}> = observer(({ outcome, onOutcomeChange, namePrefix }) => {
+}> = ({ outcome, onOutcomeChange, namePrefix }) => {
   const form = useContext(FormContext);
   const parentField = form.$("outcomes");
   const shortFieldName = `${namePrefix}-short`;
@@ -471,7 +468,7 @@ export const RangeOutcomeField: FC<{
       </div>
     </>
   );
-});
+};
 
 const OutcomeTypeSelection: FC<{
   value: OutcomeType;
@@ -524,83 +521,84 @@ export interface OutcomesFieldProps {
   form: Form;
 }
 
-const OutcomesField: FC<OutcomesFieldProps> = observer(
-  ({ type, value, onChange, namePrefix, form }) => {
-    const initOutcomesForType = (t: OutcomeType) => {
-      if (t === "multiple") {
-        onChange(t, createInitialMultipleOutcomeEntries());
-      } else if (t === "yesno") {
-        onChange(t, createYesNoOutcomeEntries());
-      } else {
-        onChange(t, createInitialRangeOutcomeEntry());
-      }
-    };
+const OutcomesField: FC<OutcomesFieldProps> = ({
+  type,
+  value,
+  onChange,
+  namePrefix,
+  form,
+}) => {
+  const initOutcomesForType = (t: OutcomeType) => {
+    if (t === "multiple") {
+      onChange(t, createInitialMultipleOutcomeEntries());
+    } else if (t === "yesno") {
+      onChange(t, createYesNoOutcomeEntries());
+    } else {
+      onChange(t, createInitialRangeOutcomeEntry());
+    }
+  };
 
-    useEffect(() => {
-      initOutcomesForType(type);
-    }, []);
+  useEffect(() => {
+    initOutcomesForType(type);
+  }, []);
 
-    /// need this because the form wouldn't revalidate when outcome type changes
-    const [prevType, setPrevType] = useState(type);
-    useEffect(() => {
-      if (type === prevType) {
-        return;
-      }
-      form.$("outcomes").set("value", {});
-      form.validate();
-      setPrevType(type);
-    }, [type]);
+  /// need this because the form wouldn't revalidate when outcome type changes
+  const [prevType, setPrevType] = useState(type);
+  useEffect(() => {
+    if (type === prevType) {
+      return;
+    }
+    form.$("outcomes").set("value", {});
+    form.validate();
+    setPrevType(type);
+  }, [type]);
 
-    const changeMultipleOutcomeEntry = (
-      idx: number,
-      v: MultipleOutcomeEntry,
-    ) => {
-      if (isMultipleOutcomeEntries(value)) {
-        onChange(type, [...value.slice(0, idx), v, ...value.slice(idx + 1)]);
-      }
-    };
+  const changeMultipleOutcomeEntry = (idx: number, v: MultipleOutcomeEntry) => {
+    if (isMultipleOutcomeEntries(value)) {
+      onChange(type, [...value.slice(0, idx), v, ...value.slice(idx + 1)]);
+    }
+  };
 
-    const changeMultipleOutcomes = (v: MultipleOutcomeEntry[]) => {
-      if (isMultipleOutcomeEntries(value)) {
-        onChange(type, v);
-      }
-    };
+  const changeMultipleOutcomes = (v: MultipleOutcomeEntry[]) => {
+    if (isMultipleOutcomeEntries(value)) {
+      onChange(type, v);
+    }
+  };
 
-    const changeRangeOutcome = (v: RangeOutcomeEntry) => {
-      if (isRangeOutcomeEntry(value)) {
-        onChange(type, v);
-      }
-    };
+  const changeRangeOutcome = (v: RangeOutcomeEntry) => {
+    if (isRangeOutcomeEntry(value)) {
+      onChange(type, v);
+    }
+  };
 
-    return (
-      <FormContext.Provider value={form}>
-        <div>
-          <OutcomeTypeSelection value={type} onChange={initOutcomesForType} />
-        </div>
+  return (
+    <FormContext.Provider value={form}>
+      <div>
+        <OutcomeTypeSelection value={type} onChange={initOutcomesForType} />
+      </div>
 
-        <div className="flex flex-col">
-          {type === "yesno" && value && (
-            <YesNoOutcomesField entries={value as YesNoOutcome} />
-          )}
-          {type === "multiple" && value && (
-            <MultipleOutcomesField
-              entries={isMultipleOutcomeEntries(value) && value}
-              onEntryChange={changeMultipleOutcomeEntry}
-              onEntriesChange={changeMultipleOutcomes}
-              namePrefix={namePrefix || "multiple"}
-            />
-          )}
-          {type === "range" && value && (
-            <RangeOutcomeField
-              outcome={isRangeOutcomeEntry(value) && value}
-              onOutcomeChange={changeRangeOutcome}
-              namePrefix={namePrefix || "range"}
-            />
-          )}
-        </div>
-      </FormContext.Provider>
-    );
-  },
-);
+      <div className="flex flex-col">
+        {type === "yesno" && value && (
+          <YesNoOutcomesField entries={value as YesNoOutcome} />
+        )}
+        {type === "multiple" && value && (
+          <MultipleOutcomesField
+            entries={isMultipleOutcomeEntries(value) && value}
+            onEntryChange={changeMultipleOutcomeEntry}
+            onEntriesChange={changeMultipleOutcomes}
+            namePrefix={namePrefix || "multiple"}
+          />
+        )}
+        {type === "range" && value && (
+          <RangeOutcomeField
+            outcome={isRangeOutcomeEntry(value) && value}
+            onOutcomeChange={changeRangeOutcome}
+            namePrefix={namePrefix || "range"}
+          />
+        )}
+      </div>
+    </FormContext.Provider>
+  );
+};
 
 export default OutcomesField;

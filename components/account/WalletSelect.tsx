@@ -6,7 +6,7 @@ import { observer } from "mobx-react";
 import { useEffect } from "react";
 import { Download } from "react-feather";
 
-const WalletSelect = observer(() => {
+const WalletSelect = () => {
   const { selectWallet, errors, accounts, connected } = useWallet();
   const accountModals = useAccountModals();
 
@@ -70,6 +70,6 @@ const WalletSelect = observer(() => {
       })}
     </div>
   );
-});
+};
 
 export default WalletSelect;

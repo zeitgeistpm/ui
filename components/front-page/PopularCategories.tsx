@@ -64,7 +64,7 @@ const Category = ({
 const PopularCategories: FC<{
   counts: number[];
   imagePlaceholders: string[];
-}> = observer(({ counts, imagePlaceholders }) => {
+}> = ({ counts, imagePlaceholders }) => {
   const topCategories = CATEGORIES.map((category, index) => ({
     ...category,
     count: counts[index],
@@ -89,6 +89,6 @@ const PopularCategories: FC<{
       </div>
     </div>
   );
-});
+};
 
 export default PopularCategories;

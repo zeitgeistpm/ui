@@ -178,55 +178,56 @@ interface MarketAddressesProps {
   oracleAddress: string;
 }
 
-const MarketAddresses = observer(
-  ({ creatorAddress, oracleAddress }: MarketAddressesProps) => {
-    const modalStore = useModalStore();
+const MarketAddresses = ({
+  creatorAddress,
+  oracleAddress,
+}: MarketAddressesProps) => {
+  const modalStore = useModalStore();
 
-    const { data: creatorIdentity } = useIdentity(creatorAddress);
-    const { data: oracleIdentity } = useIdentity(oracleAddress);
+  const { data: creatorIdentity } = useIdentity(creatorAddress);
+  const { data: oracleIdentity } = useIdentity(oracleAddress);
 
-    const handleInspect = (address: string, identity: UserIdentity) => {
-      modalStore.openModal(
-        <AddressInspectContent address={address} identity={identity} />,
-        <>
-          Address Details
-          <AddressModalHeader
-            name={identity.displayName ?? ""}
-            judgement={identity.judgement}
-          />
-        </>,
-        { styles: { width: "70%", maxWidth: "473px" } },
-      );
-    };
-
-    return (
-      <div className="flex flex-wrap gap-[20px] justify-center my-ztg-20">
-        <AddressDetails
-          title="Creator"
-          address={creatorAddress}
-          displayName={
-            creatorIdentity?.displayName?.length > 0
-              ? creatorIdentity.displayName
-              : null
-          }
-          judgement={creatorIdentity?.judgement}
-          onInspect={() => handleInspect(creatorAddress, creatorIdentity)}
+  const handleInspect = (address: string, identity: UserIdentity) => {
+    modalStore.openModal(
+      <AddressInspectContent address={address} identity={identity} />,
+      <>
+        Address Details
+        <AddressModalHeader
+          name={identity.displayName ?? ""}
+          judgement={identity.judgement}
         />
-        <AddressDetails
-          title="Oracle"
-          address={oracleAddress}
-          displayName={
-            oracleIdentity?.displayName?.length > 0
-              ? oracleIdentity.displayName
-              : null
-          }
-          judgement={oracleIdentity?.judgement}
-          onInspect={() => handleInspect(oracleAddress, oracleIdentity)}
-        />
-      </div>
+      </>,
+      { styles: { width: "70%", maxWidth: "473px" } },
     );
-  },
-);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-[20px] justify-center my-ztg-20">
+      <AddressDetails
+        title="Creator"
+        address={creatorAddress}
+        displayName={
+          creatorIdentity?.displayName?.length > 0
+            ? creatorIdentity.displayName
+            : null
+        }
+        judgement={creatorIdentity?.judgement}
+        onInspect={() => handleInspect(creatorAddress, creatorIdentity)}
+      />
+      <AddressDetails
+        title="Oracle"
+        address={oracleAddress}
+        displayName={
+          oracleIdentity?.displayName?.length > 0
+            ? oracleIdentity.displayName
+            : null
+        }
+        judgement={oracleIdentity?.judgement}
+        onInspect={() => handleInspect(oracleAddress, oracleIdentity)}
+      />
+    </div>
+  );
+};
 
 export default dynamic(() => Promise.resolve(MarketAddresses), {
   ssr: false,

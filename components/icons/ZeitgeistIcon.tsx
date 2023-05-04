@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 
-const ZeitgeistIcon = observer(({ width = 35, height = 35, dark = false }) => {
+const ZeitgeistIcon = ({ width = 35, height = 35, dark = false }) => {
   return (
     <svg
       width={width}
@@ -15,6 +15,6 @@ const ZeitgeistIcon = observer(({ width = 35, height = 35, dark = false }) => {
       />
     </svg>
   );
-});
+};
 
 export default ZeitgeistIcon;

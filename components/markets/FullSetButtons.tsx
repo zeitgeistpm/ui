@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import BuyFullSetModal from "./BuyFullSetModal";
 import SellFullSetModal from "./SellFullSetModal";
 
-const FullSetButtons = observer(({ marketId }: { marketId: number }) => {
+const FullSetButtons = ({ marketId }: { marketId: number }) => {
   const modalStore = useModalStore();
   const modalOptions = {
     styles: { width: "304px" },
@@ -53,7 +53,7 @@ const FullSetButtons = observer(({ marketId }: { marketId: number }) => {
       )}
     </div>
   );
-});
+};
 
 export default dynamic(() => Promise.resolve(FullSetButtons), {
   ssr: false,

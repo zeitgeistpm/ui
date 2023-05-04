@@ -50,73 +50,75 @@ const feeOptions = [
   },
 ];
 
-const PoolFeesSelect = observer(
-  ({ onFeeChange }: { onFeeChange: (fee: Decimal) => void }) => {
-    const [fee, setFee] = useState(1);
-    const [inputSelected, setInputSelected] = useState(false);
-    const [inputValue, setInputValue] = useState("");
+const PoolFeesSelect = ({
+  onFeeChange,
+}: {
+  onFeeChange: (fee: Decimal) => void;
+}) => {
+  const [fee, setFee] = useState(1);
+  const [inputSelected, setInputSelected] = useState(false);
+  const [inputValue, setInputValue] = useState("");
 
-    useEffect(() => {
-      onFeeChange(new Decimal(fee));
-    }, []);
+  useEffect(() => {
+    onFeeChange(new Decimal(fee));
+  }, []);
 
-    const handleInputFeeChange = (selectedFee: string) => {
-      setInputValue(selectedFee);
-      if (selectedFee === "" || selectedFee == null) {
-        onFeeChange(new Decimal(0));
-      } else {
-        onFeeChange(new Decimal(selectedFee));
-      }
-    };
-
-    const handleButtonFeeChange = (selectedFee: number) => {
-      setFee(selectedFee);
-      setInputSelected(false);
+  const handleInputFeeChange = (selectedFee: string) => {
+    setInputValue(selectedFee);
+    if (selectedFee === "" || selectedFee == null) {
+      onFeeChange(new Decimal(0));
+    } else {
       onFeeChange(new Decimal(selectedFee));
-    };
+    }
+  };
 
-    const handleInputClick = () => {
-      setInputSelected(true);
-      if (inputValue === "" || inputValue == null) {
-        onFeeChange(new Decimal(0));
-      } else {
-        onFeeChange(new Decimal(inputValue));
-      }
-    };
+  const handleButtonFeeChange = (selectedFee: number) => {
+    setFee(selectedFee);
+    setInputSelected(false);
+    onFeeChange(new Decimal(selectedFee));
+  };
 
-    return (
-      <div className="flex gap-x-3">
-        {feeOptions.map((option) => (
-          <PoolFeeOption
-            key={option.value}
-            label={option.label}
-            value={option.value}
-            selected={fee === option.value && inputSelected === false}
-            onSelected={handleButtonFeeChange}
-          />
-        ))}
-        <div
-          className={`flex justify-center items-center w-[100px] h-[40px] border-2 bg-sky-200 dark:bg-black rounded-ztg-100
+  const handleInputClick = () => {
+    setInputSelected(true);
+    if (inputValue === "" || inputValue == null) {
+      onFeeChange(new Decimal(0));
+    } else {
+      onFeeChange(new Decimal(inputValue));
+    }
+  };
+
+  return (
+    <div className="flex gap-x-3">
+      {feeOptions.map((option) => (
+        <PoolFeeOption
+          key={option.value}
+          label={option.label}
+          value={option.value}
+          selected={fee === option.value && inputSelected === false}
+          onSelected={handleButtonFeeChange}
+        />
+      ))}
+      <div
+        className={`flex justify-center items-center w-[100px] h-[40px] border-2 bg-sky-200 dark:bg-black rounded-ztg-100
               ${
                 inputSelected
                   ? "border-black dark:border-white"
                   : "dark:border-black"
               }
             `}
-          onClick={handleInputClick}
-        >
-          <AmountInput
-            min="0"
-            max="10"
-            placeholder="3%"
-            value={inputValue}
-            onChange={(value) => handleInputFeeChange(value)}
-            className="box-border flex justify-center items-center !text-center !bg-transparent !border-transparent text-black"
-          />
-        </div>
+        onClick={handleInputClick}
+      >
+        <AmountInput
+          min="0"
+          max="10"
+          placeholder="3%"
+          value={inputValue}
+          onChange={(value) => handleInputFeeChange(value)}
+          className="box-border flex justify-center items-center !text-center !bg-transparent !border-transparent text-black"
+        />
       </div>
-    );
-  },
-);
+    </div>
+  );
+};
 
 export default PoolFeesSelect;

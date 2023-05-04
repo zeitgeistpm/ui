@@ -12,13 +12,11 @@ import { hotjar } from "react-hotjar";
 
 import { AvatarContext } from "@zeitgeistpm/avatara-react";
 import { ModalStoreContext } from "components/context/ModalStoreContext";
-import { StoreProvider } from "components/context/StoreContext";
 import Devtools from "components/devtools";
 import ModalContainer from "components/modal/ModalContainer";
 import DefaultLayout from "layouts/DefaultLayout";
 import { queryClient } from "lib/query-client";
 import ModalStore from "lib/stores/ModalStore";
-import Store from "lib/stores/Store";
 import dynamic from "next/dynamic";
 import { registerValidationRules } from "lib/form";
 
@@ -42,7 +40,6 @@ const MyApp = observer(({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
   const router = useRouter();
   const [modalStore] = useState(() => new ModalStore());
-  const [store] = useState(() => new Store());
 
   useEffect(() => {
     if (!isProduction) {
@@ -73,36 +70,34 @@ const MyApp = observer(({ Component, pageProps }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <StoreProvider store={store}>
-        <AvatarContext.Provider
-          value={{
-            api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
-            ipfs: { node: { url: process.env.NEXT_PUBLIC_IPFS_NODE } },
-            rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
-            indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
-            avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,
-            badgeCollectionId: process.env.NEXT_PUBLIC_BADGE_COLLECTION_ID,
-            avatarBaseId: process.env.NEXT_PUBLIC_AVATAR_BASE_ID,
-            prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
-          }}
-        >
-          <ModalStoreContext.Provider value={modalStore}>
-            {modalStore.modal && (
-              <ModalContainer>{modalStore.modal}</ModalContainer>
-            )}
-            <Head>
-              <title>Zeitgeist - Prediction Markets</title>
-            </Head>
-            <DefaultLayout>
-              <Layout>
-                <Component {...pageProps} />
-                <Onboarding />
-              </Layout>
-            </DefaultLayout>
-            <Devtools />
-          </ModalStoreContext.Provider>
-        </AvatarContext.Provider>
-      </StoreProvider>
+      <AvatarContext.Provider
+        value={{
+          api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
+          ipfs: { node: { url: process.env.NEXT_PUBLIC_IPFS_NODE } },
+          rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
+          indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
+          avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,
+          badgeCollectionId: process.env.NEXT_PUBLIC_BADGE_COLLECTION_ID,
+          avatarBaseId: process.env.NEXT_PUBLIC_AVATAR_BASE_ID,
+          prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
+        }}
+      >
+        <ModalStoreContext.Provider value={modalStore}>
+          {modalStore.modal && (
+            <ModalContainer>{modalStore.modal}</ModalContainer>
+          )}
+          <Head>
+            <title>Zeitgeist - Prediction Markets</title>
+          </Head>
+          <DefaultLayout>
+            <Layout>
+              <Component {...pageProps} />
+              <Onboarding />
+            </Layout>
+          </DefaultLayout>
+          <Devtools />
+        </ModalStoreContext.Provider>
+      </AvatarContext.Provider>
     </QueryClientProvider>
   );
 });

@@ -23,7 +23,6 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useModalStore } from "lib/stores/ModalStore";
-import { useStore } from "lib/stores/Store";
 import { shortenAddress } from "lib/util";
 import { delay } from "lib/util/delay";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
@@ -39,7 +38,6 @@ import Loader from "react-spinners/PulseLoader";
 
 const AvatarPage = observer(() => {
   const router = useRouter();
-  const store = useStore();
   const avatarContext = useAvatarContext();
 
   const wallet = useWallet();
@@ -68,8 +66,6 @@ const AvatarPage = observer(() => {
   const isOwner =
     wallet.activeAccount?.address === address ||
     wallet.activeAccount?.address === zeitAddress;
-
-  console.log("isOwner", isOwner, wallet.activeAccount?.address, address);
 
   const inventory = useInventoryManagement(
     (isOwner
@@ -429,7 +425,6 @@ const ClaimModal = (props: {
   onClaimSuccess: () => void;
   onClose?: () => void;
 }) => {
-  const store = useStore();
   const modalStore = useModalStore();
   const notificationStore = useNotifications();
   const avatarSdk = useAvatarContext();
@@ -453,11 +448,6 @@ const ClaimModal = (props: {
   }, [props.address, props.burnAmount]);
 
   useEffect(() => {
-    store.sdk.api.query.styx
-      .crossings(wallet.activeAccount.address)
-      .then((crossing) => {
-        setHasCrossed(!crossing.isEmpty);
-      });
     if (isRpcSdk(sdk)) {
       sdk.api.query.styx
         .crossings(wallet.activeAccount?.address)
@@ -465,7 +455,7 @@ const ClaimModal = (props: {
           setHasCrossed(!crossing.isEmpty);
         });
     }
-  }, [props.address, isClaiming]);
+  }, [sdk, props.address, isClaiming]);
 
   const doClaim = async () => {
     notificationStore.pushNotification("Minting Avatar.", {
@@ -637,7 +627,6 @@ const ClaimModal = (props: {
 };
 
 const InventoryModal = (props: { address: string; onClose?: () => void }) => {
-  const store = useStore();
   const wallet = useWallet();
   const inventory = useInventoryManagement(
     ((wallet.getActiveSigner() as ExtSigner) || props.address) as any,
@@ -750,7 +739,6 @@ const PendingItemsModal = (props: {
   address: string;
   onClose?: () => void;
 }) => {
-  const store = useStore();
   const wallet = useWallet();
   const inventory = useInventoryManagement(
     ((wallet.getActiveSigner() as ExtSigner) || props.address) as any,

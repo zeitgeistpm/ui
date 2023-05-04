@@ -1,9 +1,10 @@
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { useAccountModals } from "lib/hooks/account";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useUserLocation } from "lib/hooks/useUserLocation";
+import { useWallet } from "lib/state/wallet";
 import { observer } from "mobx-react";
 import { FC, PropsWithChildren } from "react";
-import { useStore } from "lib/stores/Store";
-import { useUserLocation } from "lib/hooks/useUserLocation";
-import { useAccountModals } from "lib/hooks/account";
-import { useWallet } from "lib/state/wallet";
 
 interface TransactionButtonProps {
   preventDefault?: boolean;
@@ -25,8 +26,8 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> =
       preventDefault,
       type = "button",
     }) => {
-      const store = useStore();
       const wallet = useWallet();
+      const [sdk] = useSdkv2();
       const accountModals = useAccountModals();
       const { locationAllowed, isUsingVPN } = useUserLocation();
 
@@ -44,7 +45,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> =
       };
 
       const isDisabled = () => {
-        if (locationAllowed !== true || isUsingVPN || !store?.sdk?.api) {
+        if (locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)) {
           return true;
         } else if (!wallet.connected) {
           return false;

@@ -14,77 +14,75 @@ import { useModalStore } from "lib/stores/ModalStore";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { observer } from "mobx-react";
 
-const ReportButton = observer(
-  ({
-    market,
-    assetId,
-  }: {
-    market: Market<IndexerContext>;
-    assetId: ScalarAssetId | CategoricalAssetId;
-  }) => {
-    const [sdk] = useSdkv2();
-    const wallet = useWallet();
-    const notificationStore = useNotifications();
-    const modalStore = useModalStore();
+const ReportButton = ({
+  market,
+  assetId,
+}: {
+  market: Market<IndexerContext>;
+  assetId: ScalarAssetId | CategoricalAssetId;
+}) => {
+  const [sdk] = useSdkv2();
+  const wallet = useWallet();
+  const notificationStore = useNotifications();
+  const modalStore = useModalStore();
 
-    if (!market) return null;
+  if (!market) return null;
 
-    const ticker = market.categories?.[getIndexOf(assetId)].ticker;
+  const ticker = market.categories?.[getIndexOf(assetId)].ticker;
 
-    const reportDisabled = !sdk || !isRpcSdk(sdk);
+  const reportDisabled = !sdk || !isRpcSdk(sdk);
 
-    const handleClick = async () => {
-      if (!isRpcSdk(sdk)) return;
+  const handleClick = async () => {
+    if (!isRpcSdk(sdk)) return;
 
-      if (market.marketType.scalar) {
-        modalStore.openModal(
-          <div>
-            <ScalarReportBox market={market} />
-          </div>,
-          <>Report outcome</>,
-        );
-      } else {
-        //@ts-ignore
-        const ID = assetId.CategoricalOutcome[1];
-        const signer = wallet.getActiveSigner();
+    if (market.marketType.scalar) {
+      modalStore.openModal(
+        <div>
+          <ScalarReportBox market={market} />
+        </div>,
+        <>Report outcome</>,
+      );
+    } else {
+      //@ts-ignore
+      const ID = assetId.CategoricalOutcome[1];
+      const signer = wallet.getActiveSigner();
 
-        const callback = extrinsicCallback({
-          api: sdk.api,
-          notifications: notificationStore,
-          successCallback: async () => {
-            notificationStore.pushNotification(
-              `Reported market outcome: ${ticker}`,
-              {
-                type: "Success",
-              },
-            );
-          },
-          failCallback: (error) => {
-            notificationStore.pushNotification(error, {
-              type: "Error",
-            });
-          },
-        });
-
-        if (isRpcSdk(sdk)) {
-          const tx = sdk.api.tx.predictionMarkets.report(market.marketId, {
-            Categorical: ID,
+      const callback = extrinsicCallback({
+        api: sdk.api,
+        notifications: notificationStore,
+        successCallback: async () => {
+          notificationStore.pushNotification(
+            `Reported market outcome: ${ticker}`,
+            {
+              type: "Success",
+            },
+          );
+        },
+        failCallback: (error) => {
+          notificationStore.pushNotification(error, {
+            type: "Error",
           });
-          signAndSend(tx, signer, callback);
-        }
-      }
-    };
+        },
+      });
 
-    return (
-      <button
-        onClick={handleClick}
-        disabled={reportDisabled}
-        className="text-mariner font-semibold text-ztg-14-120"
-      >
-        Report Outcome
-      </button>
-    );
-  },
-);
+      if (isRpcSdk(sdk)) {
+        const tx = sdk.api.tx.predictionMarkets.report(market.marketId, {
+          Categorical: ID,
+        });
+        signAndSend(tx, signer, callback);
+      }
+    }
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={reportDisabled}
+      className="text-mariner font-semibold text-ztg-14-120"
+    >
+      Report Outcome
+    </button>
+  );
+};
 
 export default ReportButton;

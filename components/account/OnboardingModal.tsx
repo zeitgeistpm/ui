@@ -95,7 +95,7 @@ const walletsConfig = [
   new SubWallet(),
 ];
 
-const WalletSelection = observer(() => {
+const WalletSelection = () => {
   const { setWalletInstallConfirmed } = useOnboarding();
   const [isReloading, setIsReloading] = useState(false);
 
@@ -150,7 +150,7 @@ const WalletSelection = observer(() => {
       </button>
     </>
   );
-});
+};
 
 export const ExchangeTypeSelection = (props: {
   setStep: Dispatch<SetStateAction<number>>;

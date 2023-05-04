@@ -2,7 +2,6 @@ import { observer } from "mobx-react";
 import React, { FC, PropsWithChildren, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 
-import { useStore } from "lib/stores/Store";
 import TopBar from "components/menu";
 import Footer from "components/ui/Footer";
 import Skeleton from "components/ui/Skeleton";
@@ -19,7 +18,6 @@ import Image from "next/image";
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 
 const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
-  const store = useStore();
   const router = useRouter();
   useSubscribeBlockEvents();
   const [tradeItem, setTradeItem] = useState<TradeItem | null>(null);
@@ -82,15 +80,7 @@ const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
                 </div>
               ) : (
                 <ContentDimensionsProvider height={height} width={width}>
-                  {store.initialized ||
-                  router.pathname === "/" ||
-                  router.pathname.split("/")[1] === "markets" ||
-                  router.pathname.split("/")[1] === "portfolio" ||
-                  router.pathname.split("/")[1] === "liquidity" ? (
-                    children
-                  ) : (
-                    <Skeleton className="mt-7" height={550} />
-                  )}
+                  {children}
                 </ContentDimensionsProvider>
               )}
             </div>

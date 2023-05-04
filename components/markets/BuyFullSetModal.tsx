@@ -18,7 +18,7 @@ import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
 
-const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
+const BuyFullSetModal = ({ marketId }: { marketId: number }) => {
   const wallet = useWallet();
   const notificationStore = useNotifications();
   const modalStore = useModalStore();
@@ -146,6 +146,6 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
       </TransactionButton>
     </div>
   );
-});
+};
 
 export default BuyFullSetModal;

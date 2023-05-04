@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 
-const SubIdIcon = observer(() => {
+const SubIdIcon = () => {
   return (
     <svg
       width="25"
@@ -17,6 +17,6 @@ const SubIdIcon = observer(() => {
       />
     </svg>
   );
-});
+};
 
 export default SubIdIcon;
