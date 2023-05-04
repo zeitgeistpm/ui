@@ -9,7 +9,7 @@ import {
   CreateMarketParams,
 } from "@zeitgeistpm/sdk/dist/types/market";
 import Decimal from "decimal.js";
-import { observer } from "mobx-react";
+
 import MobxReactForm from "mobx-react-form";
 import Moment from "moment";
 import { NextPage } from "next";

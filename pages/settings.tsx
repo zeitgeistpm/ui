@@ -7,7 +7,6 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { observer } from "mobx-react";
 import { NextPage } from "next";
 import {
   FC,
@@ -37,7 +36,7 @@ const SubmitButton: FC<
   );
 };
 
-const IdentitySettings = observer(() => {
+const IdentitySettings = () => {
   const wallet = useWallet();
   const notificationStore = useNotifications();
 
@@ -193,9 +192,9 @@ const IdentitySettings = observer(() => {
       </div>
     </>
   );
-});
+};
 
-const Settings: NextPage = observer(() => {
+const Settings: NextPage = () => {
   return (
     <>
       <h2
@@ -254,6 +253,6 @@ const Settings: NextPage = observer(() => {
       </div>
     </>
   );
-});
+};
 
 export default Settings;

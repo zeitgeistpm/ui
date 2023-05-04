@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { observer } from "mobx-react";
+
 import SideMenu from "./SideMenu";
 import MobileMenu from "components/menu/MobileMenu";
 import { Menu, X } from "react-feather";

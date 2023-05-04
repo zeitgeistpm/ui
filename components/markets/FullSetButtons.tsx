@@ -1,7 +1,7 @@
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketIsTradingEnabled } from "lib/hooks/queries/useMarketIsTradingEnabled";
 import { useModalStore } from "lib/stores/ModalStore";
-import { observer } from "mobx-react";
+
 import dynamic from "next/dynamic";
 import BuyFullSetModal from "./BuyFullSetModal";
 import SellFullSetModal from "./SellFullSetModal";

@@ -12,7 +12,6 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useModalStore } from "lib/stores/ModalStore";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
-import { observer } from "mobx-react";
 
 const ReportButton = ({
   market,

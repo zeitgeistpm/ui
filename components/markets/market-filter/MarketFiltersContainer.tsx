@@ -1,5 +1,5 @@
 import { MarketFilter } from "lib/types/market-filter";
-import { observer } from "mobx-react";
+
 import { createContext, FC, PropsWithChildren, useState } from "react";
 
 export type SelectedMenu = "Category" | "Currency" | "Status" | "None";

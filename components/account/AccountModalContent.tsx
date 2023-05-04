@@ -1,4 +1,3 @@
-import { observer } from "mobx-react";
 import React, { FC } from "react";
 import { LogOut } from "react-feather";
 import AccountSelect from "./AccountSelect";

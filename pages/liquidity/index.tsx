@@ -1,3 +1,6 @@
+import { MarketStatus } from "@zeitgeistpm/indexer";
+import { ZTG } from "@zeitgeistpm/sdk-next";
+import MarketImage from "components/ui/MarketImage";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { useInfinitePoolsList } from "lib/hooks/queries/useInfinitePoolsList";
@@ -6,14 +9,10 @@ import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex
 import { useTotalLiquidity } from "lib/hooks/queries/useTotalLiquidity";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { formatNumberLocalized } from "lib/util";
-import { observer } from "mobx-react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { AiOutlineRead } from "react-icons/ai";
-import { MarketStatus } from "@zeitgeistpm/indexer";
-import MarketImage from "components/ui/MarketImage";
-import { ZTG } from "@zeitgeistpm/sdk-next";
 
 const columns: TableColumn[] = [
   {
@@ -39,7 +38,7 @@ const columns: TableColumn[] = [
   },
 ];
 
-const LiquidityPools: NextPage = observer(() => {
+const LiquidityPools: NextPage = () => {
   const router = useRouter();
 
   const { data: ztgPrice } = useZtgPrice();
@@ -175,6 +174,6 @@ const LiquidityPools: NextPage = observer(() => {
       />
     </div>
   );
-});
+};
 
 export default LiquidityPools;

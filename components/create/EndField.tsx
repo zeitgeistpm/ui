@@ -1,5 +1,5 @@
 import React, { FC, useRef } from "react";
-import { observer } from "mobx-react";
+
 import Form from "mobx-react-form";
 
 import { EndType } from "lib/types/create-market";

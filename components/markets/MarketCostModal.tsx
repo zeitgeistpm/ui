@@ -1,5 +1,4 @@
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
-import { observer } from "mobx-react";
 
 const CostRow = ({
   title,

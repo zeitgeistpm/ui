@@ -1,5 +1,3 @@
-import { observer } from "mobx-react";
-
 const ZeitgeistIconDark = ({ width = 35, height = 35 }) => {
   return (
     <svg

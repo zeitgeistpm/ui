@@ -1,4 +1,3 @@
-import { observer } from "mobx-react";
 import { FC, PropsWithChildren } from "react";
 
 const SectionTitle: FC<{ text: string; className?: string }> = ({

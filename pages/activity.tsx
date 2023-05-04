@@ -1,5 +1,5 @@
 import Table, { TableColumn, TableData } from "components/ui/Table";
-import { observer } from "mobx-react";
+
 import { NextPage } from "next";
 import React from "react";
 import InfoBoxes from "../components/ui/InfoBoxes";

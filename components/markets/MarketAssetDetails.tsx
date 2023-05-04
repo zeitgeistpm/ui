@@ -9,7 +9,7 @@ import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useRpcMarket } from "lib/hooks/queries/useRpcMarket";
-import { observer } from "mobx-react";
+
 import moment from "moment";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";

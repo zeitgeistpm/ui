@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useModalStore } from "lib/stores/ModalStore";
-import { observer } from "mobx-react";
+
 import { FC, useEffect, useRef } from "react";
 
 const defaultStyle: React.CSSProperties = {

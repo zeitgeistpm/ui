@@ -1,4 +1,3 @@
-import { observer } from "mobx-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import ReactSelect from "react-select";
 import {

@@ -12,7 +12,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
-import { observer } from "mobx-react";
+
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";

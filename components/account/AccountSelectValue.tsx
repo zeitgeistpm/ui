@@ -1,5 +1,5 @@
 import Avatar from "components/ui/Avatar";
-import { observer } from "mobx-react";
+
 import React, { FC } from "react";
 
 export interface AccountSelectValueProps {

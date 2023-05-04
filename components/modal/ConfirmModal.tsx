@@ -1,5 +1,5 @@
 import { useModalStore } from "lib/stores/ModalStore";
-import { observer } from "mobx-react";
+
 import React, { FC, PropsWithChildren } from "react";
 import Modal, { ModalProps } from "./Modal";
 

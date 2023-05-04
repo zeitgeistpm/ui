@@ -1,5 +1,3 @@
-import { observer } from "mobx-react";
-
 const TwitterIcon = () => {
   return (
     <svg

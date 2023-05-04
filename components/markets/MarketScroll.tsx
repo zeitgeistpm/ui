@@ -1,4 +1,3 @@
-import { observer } from "mobx-react";
 import { useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import MarketCard, { IndexedMarketCardData } from "./market-card/index";

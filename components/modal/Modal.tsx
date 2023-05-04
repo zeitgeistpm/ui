@@ -1,4 +1,3 @@
-import { observer } from "mobx-react";
 import React, { FC, PropsWithChildren, ReactElement } from "react";
 import { X } from "react-feather";
 import { useModalStore } from "lib/stores/ModalStore";

@@ -1,6 +1,6 @@
 import { AmountInput } from "components/ui/inputs";
 import Decimal from "decimal.js";
-import { observer } from "mobx-react";
+
 import { useEffect, useState } from "react";
 
 const PoolFeeOption = ({

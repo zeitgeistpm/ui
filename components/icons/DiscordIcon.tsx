@@ -1,5 +1,3 @@
-import { observer } from "mobx-react";
-
 const DiscordIcon = () => {
   return (
     <svg

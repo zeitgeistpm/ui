@@ -17,7 +17,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { MultipleOutcomeEntry } from "lib/types/create-market";
 import { calculatePoolCost } from "lib/util/market";
-import { observer } from "mobx-react";
+
 import { useState } from "react";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 

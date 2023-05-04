@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { runInAction } from "mobx";
 import Form from "mobx-react-form";
-import { observer } from "mobx-react";
+
 import { Minus, Plus, ArrowDownCircle, ArrowUpCircle } from "react-feather";
 import { Color, HuePicker as ColorPicker } from "react-color";
 import LabeledToggle from "components/ui/LabeledToggle";

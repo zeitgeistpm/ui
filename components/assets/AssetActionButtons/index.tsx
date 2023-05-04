@@ -2,7 +2,7 @@ import { CategoricalAssetId, ScalarAssetId } from "@zeitgeistpm/sdk-next";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useWallet } from "lib/state/wallet";
-import { observer } from "mobx-react";
+
 import DisputeButton from "./DisputeButton";
 import RedeemButton from "./RedeemButton";
 import ReportButton from "./ReportButton";

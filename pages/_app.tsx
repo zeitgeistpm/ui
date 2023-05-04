@@ -4,7 +4,6 @@ import "styles/index.css";
 import { QueryClientProvider } from "@tanstack/react-query";
 import * as Fathom from "fathom-client";
 
-import { observer } from "mobx-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";

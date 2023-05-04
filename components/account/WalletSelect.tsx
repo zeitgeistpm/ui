@@ -2,7 +2,7 @@ import { useAccountModals } from "lib/hooks/account";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { supportedWallets, useWallet } from "lib/state/wallet";
 import { Wallet } from "lib/wallets/types";
-import { observer } from "mobx-react";
+
 import { useEffect } from "react";
 import { Download } from "react-feather";
 

@@ -27,7 +27,6 @@ import { shortenAddress } from "lib/util";
 import { delay } from "lib/util/delay";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { capitalize } from "lodash";
-import { observer } from "mobx-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
@@ -36,7 +35,7 @@ import { BsGearFill } from "react-icons/bs";
 import { IoIosNotifications, IoIosWarning } from "react-icons/io";
 import Loader from "react-spinners/PulseLoader";
 
-const AvatarPage = observer(() => {
+const AvatarPage = () => {
   const router = useRouter();
   const avatarContext = useAvatarContext();
 
@@ -296,7 +295,7 @@ const AvatarPage = observer(() => {
       )}
     </div>
   );
-});
+};
 
 const BadgeItem = (props: { item: Badge.IndexedBadge }) => {
   const { item } = props;

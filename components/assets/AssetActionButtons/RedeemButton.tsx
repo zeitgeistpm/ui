@@ -19,7 +19,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { calcScalarWinnings } from "lib/util/calc-scalar-winnings";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
-import { observer } from "mobx-react";
+
 import { useMemo, useState } from "react";
 
 export type RedeemButtonProps = { market: Market<IndexerContext> } & (

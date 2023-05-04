@@ -1,4 +1,3 @@
-import { observer } from "mobx-react";
 import React, { ChangeEvent, FC, MouseEvent } from "react";
 import { MultipleOutcomeEntry } from "lib/types/create-market";
 import Table, { TableColumn, TableData } from "components/ui/Table";
