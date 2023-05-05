@@ -2,6 +2,7 @@ import { observer } from "mobx-react";
 import { useMemo } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
+import { getScalarOutcome } from "lib/util/get-scalar-outcome";
 
 interface ScalarPriceRangeProps {
   scalarType: ScalarRangeType;
@@ -30,28 +31,12 @@ const ScalarPriceRange = observer(
     const inferedType: ScalarRangeType = scalarType ?? "number";
 
     const lower = useMemo(
-      () =>
-        inferedType === "number"
-          ? new Intl.NumberFormat("default", {
-              maximumSignificantDigits: 3,
-              notation: "compact",
-            }).format(Number(lowerBound))
-          : new Intl.DateTimeFormat("default", {
-              dateStyle: "medium",
-            }).format(lowerBound),
+      () => getScalarOutcome(lowerBound, inferedType),
       [lowerBound],
     );
 
     const upper = useMemo(
-      () =>
-        inferedType === "number"
-          ? new Intl.NumberFormat("default", {
-              maximumSignificantDigits: 3,
-              notation: "compact",
-            }).format(Number(upperBound))
-          : new Intl.DateTimeFormat("default", {
-              dateStyle: "medium",
-            }).format(upperBound),
+      () => getScalarOutcome(upperBound, inferedType),
       [upperBound],
     );
 
@@ -59,15 +44,7 @@ const ScalarPriceRange = observer(
       const pos =
         (upperBound - lowerBound) * ((1 - shortPrice + longPrice) / 2) +
         lowerBound;
-      const decimals = pos > 10 ? 0 : 3;
-      return inferedType === "number"
-        ? new Intl.NumberFormat("default", {
-            maximumSignificantDigits: 3,
-            notation: "compact",
-          }).format(Number(pos))
-        : new Intl.DateTimeFormat("default", {
-            dateStyle: "medium",
-          }).format(pos);
+      return getScalarOutcome(pos, inferedType);
     }, [upperBound, lowerBound, shortPrice, longPrice]);
 
     const getMinMaxPosition = (position) => {
