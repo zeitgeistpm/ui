@@ -7,19 +7,7 @@ import {
   MarketTypeOf,
   Report,
 } from "@zeitgeistpm/sdk/dist/types";
-// import { MarketReport } from "@zeitgeistpm/indexer/src/graphql/sdk";
-
-export const getScalarOutcome = (
-  outcome: string,
-  scalarType: ScalarRangeType,
-) => {
-  const inferedType: ScalarRangeType = scalarType ?? "number";
-  return inferedType === "number"
-    ? new Decimal(outcome).div(ZTG).toNumber()
-    : new Intl.DateTimeFormat("default", {
-        dateStyle: "medium",
-      }).format(new Decimal(outcome).div(ZTG).toNumber());
-};
+import { getScalarOutcome } from "./get-scalar-outcome";
 
 export const getMarketStatusDetails = (
   marketType: MarketTypeOf,
