@@ -1,4 +1,8 @@
-import { MarketStage, MarketStatus } from "@zeitgeistpm/sdk-next";
+import {
+  MarketStage,
+  MarketStatus,
+  ScalarRangeType,
+} from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
 import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";
@@ -19,6 +23,7 @@ import {
 } from "lib/hooks/queries/useMarketEventHistory";
 import Modal from "components/ui/Modal";
 import { getMarketStatusDetails } from "lib/util/market-status-details";
+import { getScalarOutcome } from "lib/util/get-scalar-outcome";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
   ({ label, border = true, children }) => {
@@ -102,8 +107,15 @@ const MarketHistory: FC<
       scalar: string[];
       categorical: string;
     };
+    scalarType: ScalarRangeType;
   }>
-> = ({ marketHistory, categories, marketType, setShowMarketHistory }) => {
+> = ({
+  marketHistory,
+  categories,
+  marketType,
+  setShowMarketHistory,
+  scalarType,
+}) => {
   const marketStart = new Intl.DateTimeFormat("default", {
     dateStyle: "medium",
     timeStyle: "short",
@@ -210,7 +222,7 @@ const MarketHistory: FC<
                 <span className="font-bold">
                   {marketType.scalar === null
                     ? categories[marketHistory?.resolved].name
-                    : new Decimal(marketHistory?.resolved).div(ZTG).toNumber()}
+                    : getScalarOutcome(marketHistory?.resolved, scalarType)}
                 </span>
               </p>
             </li>
@@ -359,6 +371,7 @@ const MarketHeader: FC<{
           categories={categories}
           marketType={marketType}
           setShowMarketHistory={setShowMarketHistory}
+          scalarType={scalarType}
         />
       </Modal>
     </header>
