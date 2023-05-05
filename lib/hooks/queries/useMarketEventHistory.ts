@@ -73,22 +73,32 @@ export const useMarketEventHistory = (
         const disputes = market["disputes"];
         const report = market["report"];
         const start = {
-          block: Number(market["period"].block[1]),
-          timestamp: Number(market["period"].start),
+          block:
+            market["period"]?.block !== null
+              ? Number(market["period"]?.block[1])
+              : 0,
+          timestamp: Number(market["period"]?.start),
         };
         const end = {
-          block: Number(market["period"].block[0]),
-          timestamp: Number(market["period"].end),
+          block:
+            market["period"]?.block !== null
+              ? Number(market["period"]?.block[0])
+              : 0,
+          timestamp: Number(market["period"]?.end),
         };
         const resolved = market["resolvedOutcome"];
         const oracleReported = report.by === market["oracle"];
 
         const getTimeStampForBlock = async (blockNumber: number) => {
-          const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
-          const timestamp = (
-            await api.query.timestamp.now.at(blockHash)
-          ).toNumber();
-          return timestamp;
+          try {
+            const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
+            const timestamp = (
+              await api.query.timestamp.now.at(blockHash)
+            ).toNumber();
+            return timestamp;
+          } catch (error) {
+            return 0;
+          }
         };
 
         let disputesWithTimestamp;

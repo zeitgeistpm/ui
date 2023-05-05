@@ -18,7 +18,6 @@ import {
   useMarketEventHistory,
 } from "lib/hooks/queries/useMarketEventHistory";
 import Modal from "components/ui/Modal";
-
 import { getMarketStatusDetails } from "lib/util/market-status-details";
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
@@ -135,23 +134,28 @@ const MarketHistory: FC<
         <ol className="list-decimal pl-5 overflow-y-auto h-[500px] w-[calc(100%+16px)]">
           <li className="mb-8 list-item">
             <p className="pb-1">
-              {marketStart} (block: {marketHistory?.start.block})
+              {marketStart}{" "}
+              {marketHistory?.start.block > 0 &&
+                `(block: ${marketHistory?.start.block})`}
             </p>
             <p> Market opened</p>
           </li>
           <li className="mb-8 list-item">
             <p className="pb-1">
-              {marketClosed} (block: {marketHistory?.end.block})
+              {marketClosed}{" "}
+              {marketHistory?.end.block > 0 &&
+                `(block: ${marketHistory?.end.block})`}
             </p>
             <p> Market closed</p>
           </li>
           {marketHistory?.reported && (
             <li className="mb-8 list-item">
               <p className="pb-1">
-                {new Intl.DateTimeFormat("default", {
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                }).format(marketHistory?.reported.timestamp)}{" "}
+                {marketHistory?.reported.timestamp > 0 &&
+                  new Intl.DateTimeFormat("default", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  }).format(marketHistory?.reported.timestamp)}{" "}
                 (block: {marketHistory?.reported.at})
               </p>
               <div>
@@ -174,10 +178,11 @@ const MarketHistory: FC<
               return (
                 <li key={dispute.timestamp} className="mb-8">
                   <p className="pb-1">
-                    {new Intl.DateTimeFormat("default", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    }).format(dispute.timestamp)}{" "}
+                    {dispute.timestamp > 0 &&
+                      new Intl.DateTimeFormat("default", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      }).format(dispute.timestamp)}{" "}
                     (block: {dispute.at})
                   </p>
                   <div>
@@ -205,7 +210,7 @@ const MarketHistory: FC<
                 <span className="font-bold">
                   {marketType.scalar === null
                     ? categories[marketHistory?.resolved].name
-                    : marketHistory?.resolved}
+                    : new Decimal(marketHistory?.resolved).div(ZTG).toNumber()}
                 </span>
               </p>
             </li>
