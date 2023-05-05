@@ -1,3 +1,4 @@
+import { Dialog } from "@headlessui/react";
 import {
   getIndexOf,
   IndexerContext,
@@ -7,11 +8,11 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
+import Modal from "components/ui/Modal";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useModalStore } from "lib/stores/ModalStore";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 const DisputeButton = ({
   market,
@@ -21,10 +22,11 @@ const DisputeButton = ({
   assetId: MarketOutcomeAssetId;
 }) => {
   const [sdk] = useSdkv2();
-  const modalStore = useModalStore();
   const assetIndex = getIndexOf(assetId);
 
   const { data: disputes } = useMarketDisputes(market);
+
+  const [isOpen, setOpen] = useState(false);
 
   const disputeDisabled = useMemo(() => {
     const assetAlreadyReported =
@@ -34,31 +36,33 @@ const DisputeButton = ({
     return (sdk && !isRpcSdk(sdk)) || assetAlreadyReported;
   }, [sdk, disputes?.length, market, assetIndex]);
 
-  const handleClick = async () => {
-    if (market.marketType.scalar) {
-      modalStore.openModal(
-        <div>
-          <ScalarDisputeBox market={market} />
-        </div>,
-        <>Dispute outcome</>,
-      );
-    } else {
-      modalStore.openModal(
-        <div>
-          <CategoricalDisputeBox market={market} assetId={assetId} />
-        </div>,
-        <>Dispute outcome</>,
-      );
-    }
-  };
   return (
-    <button
-      onClick={handleClick}
-      disabled={disputeDisabled}
-      className="text-mariner font-semibold text-ztg-14-120 disabled:opacity-50"
-    >
-      Dispute Outcome
-    </button>
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        disabled={disputeDisabled}
+        className="text-mariner font-semibold text-ztg-14-120 disabled:opacity-50"
+      >
+        Dispute Outcome
+      </button>
+
+      <Modal open={isOpen} onClose={() => setOpen(false)}>
+        <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
+          {market.marketType.scalar ? (
+            <ScalarDisputeBox
+              market={market}
+              onSuccess={() => setOpen(false)}
+            />
+          ) : (
+            <CategoricalDisputeBox
+              market={market}
+              assetId={assetId}
+              onSuccess={() => setOpen(false)}
+            />
+          )}
+        </Dialog.Panel>
+      </Modal>
+    </>
   );
 };
 

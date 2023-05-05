@@ -19,10 +19,10 @@ import { useState } from "react";
 
 const ScalarDisputeBox = ({
   market,
-  onDispute,
+  onSuccess,
 }: {
   market: Market<IndexerContext>;
-  onDispute?: () => void;
+  onSuccess?: () => void;
 }) => {
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
@@ -81,7 +81,7 @@ const ScalarDisputeBox = ({
         notificationStore.pushNotification("Outcome Disputed", {
           type: "Success",
         });
-        onDispute?.();
+        onSuccess?.();
       },
       failCallback: (error) => {
         notificationStore.pushNotification(error, {

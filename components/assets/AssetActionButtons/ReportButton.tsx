@@ -1,3 +1,4 @@
+import { Dialog } from "@headlessui/react";
 import {
   CategoricalAssetId,
   getIndexOf,
@@ -7,11 +8,12 @@ import {
   ScalarAssetId,
 } from "@zeitgeistpm/sdk-next";
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
+import Modal from "components/ui/Modal";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useModalStore } from "lib/stores/ModalStore";
-import { extrinsicCallback, signAndSend } from "lib/util/tx";
+import { extrinsicCallback } from "lib/util/tx";
+import { useState } from "react";
 
 const ReportButton = ({
   market,
@@ -23,7 +25,7 @@ const ReportButton = ({
   const [sdk] = useSdkv2();
   const wallet = useWallet();
   const notificationStore = useNotifications();
-  const modalStore = useModalStore();
+  const [scalarReportBoxOpen, setScalarReportBoxOpen] = useState(false);
 
   if (!market) return null;
 
@@ -35,12 +37,7 @@ const ReportButton = ({
     if (!isRpcSdk(sdk)) return;
 
     if (market.marketType.scalar) {
-      modalStore.openModal(
-        <div>
-          <ScalarReportBox market={market} />
-        </div>,
-        <>Report outcome</>,
-      );
+      setScalarReportBoxOpen(true);
     } else {
       //@ts-ignore
       const ID = assetId.CategoricalOutcome[1];
@@ -64,24 +61,33 @@ const ReportButton = ({
         },
       });
 
-      if (isRpcSdk(sdk)) {
-        const tx = sdk.api.tx.predictionMarkets.report(market.marketId, {
-          Categorical: ID,
-        });
-        signAndSend(tx, signer, callback);
-      }
+      return (
+        <>
+          <button
+            onClick={handleClick}
+            disabled={reportDisabled}
+            className="text-mariner font-semibold text-ztg-14-120"
+          >
+            Report Outcome
+          </button>
+
+          <Modal
+            open={scalarReportBoxOpen}
+            onClose={() => setScalarReportBoxOpen(false)}
+          >
+            <Dialog.Panel className="bg-white rounded-ztg-10 p-[15px]">
+              <div>
+                <div className="font-bold text-ztg-16-150 text-black">
+                  Report outcome
+                </div>
+                <ScalarReportBox market={market} />
+              </div>
+            </Dialog.Panel>
+          </Modal>
+        </>
+      );
     }
   };
-
-  return (
-    <button
-      onClick={handleClick}
-      disabled={reportDisabled}
-      className="text-mariner font-semibold text-ztg-14-120"
-    >
-      Report Outcome
-    </button>
-  );
 };
 
 export default ReportButton;

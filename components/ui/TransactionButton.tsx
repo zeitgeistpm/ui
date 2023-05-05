@@ -1,5 +1,5 @@
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
-import { useAccountModals } from "lib/hooks/account";
+import { useAccountModals } from "lib/state/account";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useWallet } from "lib/state/wallet";

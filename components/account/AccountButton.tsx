@@ -5,10 +5,10 @@ import Avatar from "components/ui/Avatar";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
 import { SUPPORTED_WALLET_NAMES } from "lib/constants";
-import { useAccountModals } from "lib/hooks/account";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useAccountModals } from "lib/state/account";
 import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
@@ -260,7 +260,7 @@ const AccountButton: FC<{
                             <div
                               className="flex items-center px-4 mb-3 hover:bg-slate-100"
                               onClick={() => {
-                                accountModals.openAccontSelect();
+                                accountModals.openAccountSelect();
                               }}
                             >
                               <User />

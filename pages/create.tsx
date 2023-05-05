@@ -14,10 +14,11 @@ import MobxReactForm from "mobx-react-form";
 import Moment from "moment";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import { from } from "rxjs";
 
+import { Dialog } from "@headlessui/react";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { dateBlock } from "@zeitgeistpm/utility/dist/time";
 import EndField from "components/create/EndField";
@@ -38,6 +39,7 @@ import MarketCostModal from "components/markets/MarketCostModal";
 import InfoBoxes from "components/ui/InfoBoxes";
 import { Input } from "components/ui/inputs";
 import LabeledToggle from "components/ui/LabeledToggle";
+import Modal from "components/ui/Modal";
 import Toggle from "components/ui/Toggle";
 import TransactionButton from "components/ui/TransactionButton";
 import { NUM_BLOCKS_IN_DAY, ZTG } from "lib/constants";
@@ -49,7 +51,6 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChainTime } from "lib/state/chaintime";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useModalStore } from "lib/stores/ModalStore";
 import { JSONObject } from "lib/types";
 import {
   EndType,
@@ -140,7 +141,6 @@ const CreatePage: NextPage = () => {
 const Inner = ({ sdkv1 }: { sdkv1: SDK }) => {
   const chainTime = useChainTime();
   const notificationStore = useNotifications();
-  const modalStore = useModalStore();
   const [sdk] = useSdkv2();
   const wallet = useWallet();
   const { data: constants } = useChainConstants();
@@ -184,6 +184,7 @@ const Inner = ({ sdkv1 }: { sdkv1: SDK }) => {
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[] | null>(null);
   const [swapFee, setSwapFee] = useState<string>();
   const [txFee, setTxFee] = useState<string>();
+  const [marketCostModalOpen, setMarketCostModalOpen] = useState(false);
 
   const { data: activeBalance } = useZtgBalance(wallet.activeAccount?.address);
 
@@ -659,26 +660,17 @@ const Inner = ({ sdkv1 }: { sdkv1: SDK }) => {
     }
   };
 
+  const liquidity = useMemo(() => {
+    return deployPool === true && poolRows
+      ? poolRows
+          .map((row) => new Decimal(row.value))
+          .reduce((prev, curr) => prev.add(curr), new Decimal(0))
+      : new Decimal(0);
+  }, [deployPool, poolRows]);
+
   const showCostModal = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    const liquidity =
-      deployPool === true && poolRows
-        ? poolRows
-            .map((row) => new Decimal(row.value))
-            .reduce((prev, curr) => prev.add(curr), new Decimal(0))
-        : new Decimal(0);
-
-    modalStore.openModal(
-      <MarketCostModal
-        liquidity={liquidity.toFixed(0)}
-        permissionless={!formData.advised}
-        networkFee={txFee}
-      />,
-      <div className="ml-[15px] mt-[15px]">Cost Breakdown</div>,
-      {
-        styles: { width: "70%", maxWidth: "622px" },
-      },
-    );
+    setMarketCostModalOpen(true);
   };
 
   const poolPricesEqualOne = poolRows
@@ -874,6 +866,24 @@ const Inner = ({ sdkv1 }: { sdkv1: SDK }) => {
           </div>
         </div>
       </div>
+
+      <Modal
+        open={marketCostModalOpen}
+        onClose={() => setMarketCostModalOpen(false)}
+      >
+        <Dialog.Panel className="bg-white rounded-ztg-10 p-[15px]">
+          <div>
+            <div className="font-bold text-ztg-16-150 text-black">
+              <div className="ml-[15px] mt-[15px]">Cost Breakdown</div>
+            </div>
+            <MarketCostModal
+              liquidity={liquidity.toFixed(0)}
+              permissionless={!formData.advised}
+              networkFee={txFee}
+            />
+          </div>
+        </Dialog.Panel>
+      </Modal>
     </form>
   );
 };
