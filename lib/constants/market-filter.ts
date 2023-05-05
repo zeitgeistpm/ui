@@ -1,3 +1,4 @@
+import capitalize from "lodash-es/capitalize";
 import {
   MarketCurrencyFilter,
   MarketOrderByOption,
@@ -7,6 +8,7 @@ import {
   MarketTagFilter,
 } from "lib/types/market-filter";
 import { defaultTags, marketStatuses } from "./markets";
+import { allCurrencies } from ".";
 
 export const filterTypes = ["status", "tag", "currency"] as const;
 
@@ -29,7 +31,7 @@ export const categoryImages: Record<typeof defaultTags[number], string> = {
   News: "/category/news.png",
 } as const;
 
-export const currencyImages: Record<"ZTG", string> = {
+export const currencyImages: Record<typeof allCurrencies[number], string> = {
   ZTG: "/currencies/ztg.jpg",
   // "aUSD": "/currencies/ausd.jpg
 } as const;
@@ -43,14 +45,13 @@ export const marketTagFilterOptions: MarketTagFilter[] = defaultTags.map(
   }),
 );
 
-export const marketCurrencyFilterOptions: MarketCurrencyFilter[] = [
-  {
+export const marketCurrencyFilterOptions: MarketCurrencyFilter[] =
+  allCurrencies.map((currency) => ({
     type: "currency",
-    value: "Ztg",
-    label: "ZTG",
-    imageUrl: currencyImages["ZTG"],
-  },
-];
+    value: capitalize(currency),
+    label: currency,
+    imageUrl: currencyImages[currency],
+  }));
 
 export const defaultMarketFilters = [
   ...marketStatusFilterOptions.filter((f) => f.value === "Active"),
