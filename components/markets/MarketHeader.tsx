@@ -49,11 +49,12 @@ const Tag: FC<PropsWithChildren<{ className?: string }>> = ({
 const MarketOutcome: FC<
   PropsWithChildren<{
     setShowMarketHistory: (show: boolean) => void;
+    marketHistory: MarketHistory;
     status: MarketStatus;
     outcome: string | number;
     by?: string;
   }>
-> = ({ status, outcome, by, setShowMarketHistory }) => {
+> = ({ status, outcome, by, setShowMarketHistory, marketHistory }) => {
   const { data: identity } = useIdentity(by ?? "");
   return (
     <div
@@ -86,12 +87,16 @@ const MarketOutcome: FC<
           </div>
         </div>
       )}
-      <button
-        className="text-ztg-blue font-medium"
-        onClick={() => setShowMarketHistory(true)}
-      >
-        See History
-      </button>
+      {marketHistory ? (
+        <button
+          className="text-ztg-blue font-medium"
+          onClick={() => setShowMarketHistory(true)}
+        >
+          See History
+        </button>
+      ) : (
+        <Skeleton width={100} height={24} />
+      )}
     </div>
   );
 };
@@ -132,7 +137,6 @@ const MarketHistory: FC<
       return outcome["scalar"];
     }
   };
-
   return (
     <div className="bg-white p-10 max-h-[670px] sm:min-w-[540px] sm:max-w-[540px] relative overflow-hidden rounded-xl">
       <X
@@ -284,7 +288,7 @@ const MarketHeader: FC<{
   const { data: marketHistory } = useMarketEventHistory(
     market.marketId.toString(),
   );
-
+  console.log(marketHistory);
   return (
     <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
       <h1 className="text-4xl font-extrabold my-5 text-center">{question}</h1>
@@ -357,6 +361,7 @@ const MarketHeader: FC<{
           status={status}
           outcome={outcome}
           by={by}
+          marketHistory={marketHistory}
         />
       )}
 
