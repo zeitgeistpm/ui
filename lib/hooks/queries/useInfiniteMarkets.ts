@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { IndexerContext, isIndexedSdk, Market } from "@zeitgeistpm/sdk-next";
-import { MarketOrderByInput } from "@zeitgeistpm/indexer";
+import { MarketOrderByInput, MarketWhereInput } from "@zeitgeistpm/indexer";
 import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets";
 import { getCurrentPrediction } from "lib/util/assets";
 import {
@@ -19,6 +19,14 @@ const orderByMap = {
   [MarketsOrderBy.Oldest]: MarketOrderByInput.MarketIdAsc,
   [MarketsOrderBy.MostVolume]: MarketOrderByInput.PoolVolumeDesc,
   [MarketsOrderBy.LeastVolume]: MarketOrderByInput.PoolVolumeAsc,
+};
+
+const validMarketWhereInput: MarketWhereInput = {
+  question_isNull: false,
+  question_not_eq: "",
+  description_isNull: false,
+  description_not_eq: "",
+  categories_isNull: false,
 };
 
 export type QueryMarketData = Market<IndexerContext> & {
@@ -54,7 +62,7 @@ export const useInfiniteMarkets = (
     const currencies = filters.currency;
     const markets: Market<IndexerContext>[] = await sdk.model.markets.list({
       where: {
-        categories_isNull: false,
+        ...validMarketWhereInput,
         status_not_in: [MarketStatus.Destroyed],
         status_in: statuses.length === 0 ? undefined : statuses,
         tags_containsAny: tags.length === 0 ? undefined : tags,
