@@ -565,6 +565,7 @@ const TradeForm = observer(() => {
             <TransactionButton
               disabled={!formState.isValid || isLoading === true}
               className="h-[56px]"
+              type="submit"
             >
               <div className="center font-normal h-[20px]">
                 Confirm {`${capitalize(tradeItem.action)}`}
