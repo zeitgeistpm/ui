@@ -191,8 +191,7 @@ const MarketHistory: FC<
               </p>
               <div>
                 {marketHistory?.oracleReported && "Oracle "}
-                {/* <Avatar address={marketHistory?.reported.by} /> */}
-                <p className="inline font-medium">
+                <span className="inline font-medium">
                   <span className="font-bold">
                     {getIdentity(marketHistory?.reported.by)}
                   </span>{" "}
@@ -200,7 +199,7 @@ const MarketHistory: FC<
                   <span className="font-bold">
                     {getOutcome(marketHistory?.reported.outcome)}
                   </span>
-                </p>
+                </span>
               </div>
             </li>
           )}
@@ -218,8 +217,7 @@ const MarketHistory: FC<
                   </p>
                   <div>
                     {marketHistory.oracleReported ?? "Oracle"}
-                    <p className="flex items-center">
-                      {/* <Avatar address={dispute.by} /> */}
+                    <span className="flex items-center">
                       <span className="inline font-medium">
                         <span className="font-bold">
                           {getIdentity(dispute.by)}
@@ -229,7 +227,7 @@ const MarketHistory: FC<
                           {getOutcome(dispute.outcome)}
                         </span>
                       </span>
-                    </p>
+                    </span>
                   </div>
                 </li>
               );
@@ -303,7 +301,7 @@ const MarketHeader: FC<{
   const { data: marketHistory } = useMarketEventHistory(
     market.marketId.toString(),
   );
-  console.log(marketHistory);
+
   return (
     <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
       <h1 className="text-4xl font-extrabold my-5 text-center">{question}</h1>
