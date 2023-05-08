@@ -87,7 +87,7 @@ export async function getStaticProps({ params }) {
 
   let priceHistory: PriceHistory[];
   let resolutionTimestamp: string;
-  if (market.pool) {
+  if (market?.pool) {
     const chartFilter = filters[1];
 
     resolutionTimestamp = await getResolutionTimestamp(client, market.marketId);
@@ -152,7 +152,7 @@ const Market: NextPage<MarketPageProps> = observer(
     const { data: liquidity } = usePoolLiquidity({ marketId });
     const { data: poolId, isLoading: poolIdLoading } =
       useMarketPoolId(marketId);
-    const baseAsset = parseAssetId(indexedMarket.pool?.baseAsset).unrightOr(
+    const baseAsset = parseAssetId(indexedMarket?.pool?.baseAsset).unrightOr(
       null,
     );
     const { data: metadata } = useAssetMetadata(baseAsset);

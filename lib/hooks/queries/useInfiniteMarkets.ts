@@ -24,8 +24,6 @@ const orderByMap = {
 const validMarketWhereInput: MarketWhereInput = {
   question_isNull: false,
   question_not_eq: "",
-  description_isNull: false,
-  description_not_eq: "",
   categories_isNull: false,
 };
 
