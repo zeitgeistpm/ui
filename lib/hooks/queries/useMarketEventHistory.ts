@@ -75,14 +75,14 @@ export const useMarketEventHistory = (
         const start = {
           block:
             market["period"]?.block !== null
-              ? Number(market["period"]?.block[1])
+              ? Number(market["period"]?.block[0])
               : 0,
           timestamp: Number(market["period"]?.start),
         };
         const end = {
           block:
             market["period"]?.block !== null
-              ? Number(market["period"]?.block[0])
+              ? Number(market["period"]?.block[1])
               : 0,
           timestamp: Number(market["period"]?.end),
         };

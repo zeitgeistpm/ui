@@ -134,7 +134,7 @@ const MarketHistory: FC<
     if (marketType.scalar === null) {
       return categories[outcome["categorical"]]?.name;
     } else {
-      return outcome["scalar"];
+      return getScalarOutcome(outcome["scalar"], scalarType);
     }
   };
   return (
@@ -222,7 +222,7 @@ const MarketHistory: FC<
           {marketHistory?.resolved && (
             <li className="mb-8 list-item">
               <p className="pb-1">
-                Market resolved{" "}
+                Market resolved to{" "}
                 <span className="font-bold">
                   {marketType.scalar === null
                     ? categories[marketHistory?.resolved].name
