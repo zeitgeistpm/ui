@@ -1,4 +1,5 @@
 import { useFormField } from "lib/hooks";
+import { observer } from "mobx-react";
 import Form from "mobx-react-form";
 import { isMoment, Moment } from "moment";
 import React, {
@@ -33,54 +34,56 @@ const disabledInputClasses =
 const invalidClasses = "!border-vermilion !text-vermilion";
 
 export const Input: FC<InputProps & InputHTMLAttributes<HTMLInputElement>> =
-  React.forwardRef<
-    HTMLInputElement,
-    InputProps & InputHTMLAttributes<HTMLInputElement>
-  >(
-    (
-      {
-        form,
-        placeholder = "",
-        type,
-        onChange,
-        min,
-        max,
-        step,
-        value,
-        className = "",
-        ...restProps
+  observer(
+    React.forwardRef<
+      HTMLInputElement,
+      InputProps & InputHTMLAttributes<HTMLInputElement>
+    >(
+      (
+        {
+          form,
+          placeholder = "",
+          type,
+          onChange,
+          min,
+          max,
+          step,
+          value,
+          className = "",
+          ...restProps
+        },
+        ref,
+      ) => {
+        const { name, ...rest } = restProps;
+
+        const { invalid, formField } = useFormField(form, name, value);
+
+        return (
+          <input
+            {...rest}
+            ref={ref}
+            name={name}
+            className={`${inputClasses} ${
+              invalid ? invalidClasses : ""
+            } ${className}`}
+            placeholder={placeholder}
+            type={type}
+            onChange={onChange}
+            onBlur={(e) => {
+              formField?.onBlur != null && formField?.onBlur(e);
+              rest.onBlur && rest.onBlur(e);
+            }}
+            min={min}
+            max={max}
+            step={step}
+            value={value}
+            onWheel={(event) => {
+              if (type === "number") event.currentTarget.blur();
+            }}
+          />
+        );
       },
-      ref,
-    ) => {
-      const { name, ...rest } = restProps;
-
-      const { invalid, formField } = useFormField(form, name, value);
-
-      return (
-        <input
-          {...rest}
-          ref={ref}
-          name={name}
-          className={`${inputClasses} ${
-            invalid ? invalidClasses : ""
-          } ${className}`}
-          placeholder={placeholder}
-          type={type}
-          onChange={onChange}
-          onBlur={(e) => {
-            formField?.onBlur != null && formField?.onBlur(e);
-            rest.onBlur && rest.onBlur(e);
-          }}
-          min={min}
-          max={max}
-          step={step}
-          value={value}
-          onWheel={(event) => {
-            if (type === "number") event.currentTarget.blur();
-          }}
-        />
-      );
-    },
+    ),
   );
 
 const rdtpInput = (
@@ -141,32 +144,34 @@ export const DateTimeInput: FC<{
   name?: string;
   isValidDate?: (currentDate: Moment) => boolean;
   form?: Form;
-}> = ({ className = "", onChange, timestamp, name, form, isValidDate }) => {
-  const ref = useRef();
-  const date = useMemo<Date>(() => {
-    return getDateFromTimestamp(timestamp);
-  }, [timestamp]);
-  const { invalid } = useFormField(form, name, timestamp);
+}> = observer(
+  ({ className = "", onChange, timestamp, name, form, isValidDate }) => {
+    const ref = useRef();
+    const date = useMemo<Date>(() => {
+      return getDateFromTimestamp(timestamp);
+    }, [timestamp]);
+    const { invalid } = useFormField(form, name, timestamp);
 
-  const dateChange = (v: Moment | string) => {
-    if (isMoment(v)) {
-      onChange(`${v.valueOf()}`);
-    }
-  };
-  const localDateFormat = getLocalDateFormat();
+    const dateChange = (v: Moment | string) => {
+      if (isMoment(v)) {
+        onChange(`${v.valueOf()}`);
+      }
+    };
+    const localDateFormat = getLocalDateFormat();
 
-  return (
-    <DateTime
-      value={date}
-      renderInput={rdtpInput}
-      inputProps={{ ref, className: `${invalid ? invalidClasses : ""}` }}
-      onChange={dateChange}
-      dateFormat={localDateFormat}
-      className={className}
-      isValidDate={isValidDate}
-    />
-  );
-};
+    return (
+      <DateTime
+        value={date}
+        renderInput={rdtpInput}
+        inputProps={{ ref, className: `${invalid ? invalidClasses : ""}` }}
+        onChange={dateChange}
+        dateFormat={localDateFormat}
+        className={className}
+        isValidDate={isValidDate}
+      />
+    );
+  },
+);
 
 export interface AmountInputProps {
   value?: string;
@@ -228,141 +233,141 @@ const checkVal = (v: string, amountRegex: RegExp): string => {
   return "0";
 };
 
-export const AmountInput: FC<AmountInputProps> = React.forwardRef<
-  HTMLInputElement,
-  AmountInputProps
->(
-  (
-    {
-      onChange,
-      value,
-      max,
-      min,
-      name,
-      placeholder,
-      className = "",
-      containerClass = "",
-      leftComponent,
-      rightComponent,
-      disabled,
-      regex,
-      form,
-      isFocused = false,
-      onFocusChange = () => {},
-      showErrorMessage = true,
-    },
-    ref,
-  ) => {
-    const amountRegex: RegExp = regex || new RegExp(`^[0-9]+(\\.[0-9]{0,10})?`);
+export const AmountInput: FC<AmountInputProps> = observer(
+  React.forwardRef<HTMLInputElement, AmountInputProps>(
+    (
+      {
+        onChange,
+        value,
+        max,
+        min,
+        name,
+        placeholder,
+        className = "",
+        containerClass = "",
+        leftComponent,
+        rightComponent,
+        disabled,
+        regex,
+        form,
+        isFocused = false,
+        onFocusChange = () => {},
+        showErrorMessage = true,
+      },
+      ref,
+    ) => {
+      const amountRegex: RegExp =
+        regex || new RegExp(`^[0-9]+(\\.[0-9]{0,10})?`);
 
-    const [val, setVal] = useState<string>(() => {
-      if (["", "0"].includes(value)) {
-        return value;
-      }
-
-      const v = checkVal(value, amountRegex);
-
-      return v;
-    });
-    const [focused, setFocused] = useState<boolean>(false);
-    const [initialBlur, setInitialBlur] = useState<boolean>(false);
-
-    const _inputRef = useRef<HTMLInputElement>(null);
-    const { invalid, formField, message } = useFormField(form, name, value);
-
-    const strip = (v: string) => {
-      if (v.endsWith(".")) {
-        return v.slice(0, -1);
-      }
-      return v;
-    };
-
-    useEffect(() => {
-      if (["", "0"].includes(value)) {
-        return setVal(value);
-      }
-
-      const v = checkVal(value, amountRegex);
-
-      setVal(v);
-    }, [value]);
-
-    useEffect(() => {
-      if (initialBlur === false) {
-        return;
-      }
-      if (focused === false) {
-        formField?.onBlur != null && formField?.onBlur();
-      }
-      onFocusChange(focused);
-    }, [focused]);
-
-    useEffect(() => {
-      if (isFocused) {
-        _inputRef.current?.focus();
-      }
-    }, [isFocused]);
-
-    useEffect(() => {
-      if (val == null || val === value) {
-        return;
-      }
-      if (val === "0" || val === "") {
-        onChange && onChange(val);
-        return;
-      }
-      const v = strip(val);
-
-      onChange && onChange(v);
-    }, [val]);
-
-    const onChanged: ChangeEventHandler<HTMLInputElement> = (e) => {
-      setVal(checkVal(e.currentTarget.value, amountRegex));
-    };
-
-    const onBlured: FocusEventHandler = (_) => {
-      if (val != null) {
-        // remove insiginificant trailing zeros
-        let calcVal = val.replace(/(\.[0-9]*[1-9])0+$|\.0*$/, "$1");
-        const checked = checkVal(calcVal, amountRegex);
-        if (+checked > +max) {
-          setVal(max);
-        } else if (+checked < +min) {
-          setVal(min);
-        } else {
-          setVal(checkVal(calcVal, amountRegex));
+      const [val, setVal] = useState<string>(() => {
+        if (["", "0"].includes(value)) {
+          return value;
         }
-      }
-      setFocused(false);
-      !initialBlur && setInitialBlur(true);
-    };
 
-    return (
-      <div className={`relative ${containerClass}`}>
-        {leftComponent && leftComponent}
-        <input
-          name={name}
-          value={val == null ? "" : val}
-          disabled={disabled}
-          ref={ref}
-          type="number"
-          max={Number(max)}
-          autoComplete="off"
-          placeholder={placeholder}
-          onChange={onChanged}
-          onBlur={onBlured}
-          onFocus={() => setFocused(true)}
-          className={`${inputClasses} !font-mono text-right ${disabledInputClasses} ${
-            invalid ? invalidClasses : ""
-          } ${className}`}
-        />
-        {showErrorMessage && message != null ? (
-          <div className=" text-vermilion h-ztg-15 items-center flex text-ztg-10-150">
-            {message}
-          </div>
-        ) : null}
-        {rightComponent && rightComponent}
-      </div>
-    );
-  },
+        const v = checkVal(value, amountRegex);
+
+        return v;
+      });
+      const [focused, setFocused] = useState<boolean>(false);
+      const [initialBlur, setInitialBlur] = useState<boolean>(false);
+
+      const _inputRef = useRef<HTMLInputElement>(null);
+      const { invalid, formField, message } = useFormField(form, name, value);
+
+      const strip = (v: string) => {
+        if (v.endsWith(".")) {
+          return v.slice(0, -1);
+        }
+        return v;
+      };
+
+      useEffect(() => {
+        if (["", "0"].includes(value)) {
+          return setVal(value);
+        }
+
+        const v = checkVal(value, amountRegex);
+
+        setVal(v);
+      }, [value]);
+
+      useEffect(() => {
+        if (initialBlur === false) {
+          return;
+        }
+        if (focused === false) {
+          formField?.onBlur != null && formField?.onBlur();
+        }
+        onFocusChange(focused);
+      }, [focused]);
+
+      useEffect(() => {
+        if (isFocused) {
+          _inputRef.current?.focus();
+        }
+      }, [isFocused]);
+
+      useEffect(() => {
+        if (val == null || val === value) {
+          return;
+        }
+        if (val === "0" || val === "") {
+          onChange && onChange(val);
+          return;
+        }
+        const v = strip(val);
+
+        onChange && onChange(v);
+      }, [val]);
+
+      const onChanged: ChangeEventHandler<HTMLInputElement> = (e) => {
+        setVal(checkVal(e.currentTarget.value, amountRegex));
+      };
+
+      const onBlured: FocusEventHandler = (_) => {
+        if (val != null) {
+          // remove insiginificant trailing zeros
+          let calcVal = val.replace(/(\.[0-9]*[1-9])0+$|\.0*$/, "$1");
+          const checked = checkVal(calcVal, amountRegex);
+          if (+checked > +max) {
+            setVal(max);
+          } else if (+checked < +min) {
+            setVal(min);
+          } else {
+            setVal(checkVal(calcVal, amountRegex));
+          }
+        }
+        setFocused(false);
+        !initialBlur && setInitialBlur(true);
+      };
+
+      return (
+        <div className={`relative ${containerClass}`}>
+          {leftComponent && leftComponent}
+          <input
+            name={name}
+            value={val == null ? "" : val}
+            disabled={disabled}
+            ref={ref}
+            type="number"
+            max={Number(max)}
+            autoComplete="off"
+            placeholder={placeholder}
+            onChange={onChanged}
+            onBlur={onBlured}
+            onFocus={() => setFocused(true)}
+            className={`${inputClasses} !font-mono text-right ${disabledInputClasses} ${
+              invalid ? invalidClasses : ""
+            } ${className}`}
+          />
+          {showErrorMessage && message != null ? (
+            <div className=" text-vermilion h-ztg-15 items-center flex text-ztg-10-150">
+              {message}
+            </div>
+          ) : null}
+          {rightComponent && rightComponent}
+        </div>
+      );
+    },
+  ),
 );
