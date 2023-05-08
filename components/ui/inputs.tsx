@@ -1,20 +1,19 @@
-import React, { useMemo } from "react";
-import { Calendar } from "react-feather";
-import Form from "mobx-react-form";
-import DateTime from "react-datetime";
+import { useFormField } from "lib/hooks";
 import { observer } from "mobx-react";
+import Form from "mobx-react-form";
 import { isMoment, Moment } from "moment";
-import {
+import React, {
   ChangeEventHandler,
   FC,
   FocusEventHandler,
   InputHTMLAttributes,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
-import { useStore } from "lib/stores/Store";
-import { useFormField } from "lib/hooks";
+import DateTime from "react-datetime";
+import { Calendar } from "react-feather";
 
 interface InputProps {
   form?: Form;
@@ -257,8 +256,8 @@ export const AmountInput: FC<AmountInputProps> = observer(
       },
       ref,
     ) => {
-      const store = useStore();
-      const amountRegex: RegExp = regex || store.amountRegex;
+      const amountRegex: RegExp =
+        regex || new RegExp(`^[0-9]+(\\.[0-9]{0,10})?`);
 
       const [val, setVal] = useState<string>(() => {
         if (["", "0"].includes(value)) {

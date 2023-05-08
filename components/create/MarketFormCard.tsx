@@ -1,6 +1,3 @@
-import Skeleton from "components/ui/Skeleton";
-import { useStore } from "lib/stores/Store";
-import { observer } from "mobx-react";
 import { FC, PropsWithChildren } from "react";
 
 const SectionTitle: FC<{ text: string; className?: string }> = ({
@@ -11,23 +8,19 @@ const SectionTitle: FC<{ text: string; className?: string }> = ({
   return <div className={classes}>{text}</div>;
 };
 
-const MarketFormCard: FC<PropsWithChildren<{ header: string }>> = observer(
-  ({ children, header }) => {
-    const store = useStore();
-
-    if (!store.initialized) {
-      return <Skeleton height="99px" className="!block mb-[23px]" />;
-    }
-    return (
-      <div
-        data-test={header}
-        className="p-ztg-20 rounded-ztg-10 mb-ztg-23 bg-sky-100 dark:bg-sky-700"
-      >
-        <SectionTitle text={header} />
-        {children}
-      </div>
-    );
-  },
-);
+const MarketFormCard: FC<PropsWithChildren<{ header: string }>> = ({
+  children,
+  header,
+}) => {
+  return (
+    <div
+      data-test={header}
+      className="p-ztg-20 rounded-ztg-10 mb-ztg-23 bg-sky-100 dark:bg-sky-700"
+    >
+      <SectionTitle text={header} />
+      {children}
+    </div>
+  );
+};
 
 export default MarketFormCard;

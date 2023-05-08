@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
-import { useStore } from "lib/stores/Store";
 import { useEffect, useState } from "react";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";

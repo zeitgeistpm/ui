@@ -1,6 +1,5 @@
 import { marketsOrderByOptions } from "lib/constants/market-filter";
 import { MarketOrderByOption, MarketsOrderBy } from "lib/types/market-filter";
-import { observer } from "mobx-react";
 import React from "react";
 import ReactSelect, { GroupBase, StylesConfig } from "react-select";
 import { useMarketFiltersContext } from "./MarketFiltersContainer";
@@ -61,40 +60,34 @@ const IndicatorSeparator = () => {
   return <></>;
 };
 
-const SortBySelect = observer(
-  ({
-    onOrderingChange,
-    ordering,
-    styles,
-    components,
-  }: {
-    ordering: MarketsOrderBy;
-    onOrderingChange: (v: MarketsOrderBy) => void;
-    styles?: StylesConfig<MarketOrderByOption, false>;
-    components?: Partial<
-      SelectComponents<
-        MarketOrderByOption,
-        false,
-        GroupBase<MarketOrderByOption>
-      >
-    >;
-  }) => {
-    return (
-      <ReactSelect
-        value={marketsOrderByOptions.find((opt) => opt.value === ordering)}
-        onChange={(v) => {
-          onOrderingChange(v.value);
-        }}
-        options={marketsOrderByOptions}
-        styles={{ ...sortBySelectStyles, ...(styles ?? {}) }}
-        components={{
-          IndicatorSeparator,
-          ...(components ?? {}),
-        }}
-      />
-    );
-  },
-);
+const SortBySelect = ({
+  onOrderingChange,
+  ordering,
+  styles,
+  components,
+}: {
+  ordering: MarketsOrderBy;
+  onOrderingChange: (v: MarketsOrderBy) => void;
+  styles?: StylesConfig<MarketOrderByOption, false>;
+  components?: Partial<
+    SelectComponents<MarketOrderByOption, false, GroupBase<MarketOrderByOption>>
+  >;
+}) => {
+  return (
+    <ReactSelect
+      value={marketsOrderByOptions.find((opt) => opt.value === ordering)}
+      onChange={(v) => {
+        onOrderingChange(v.value);
+      }}
+      options={marketsOrderByOptions}
+      styles={{ ...sortBySelectStyles, ...(styles ?? {}) }}
+      components={{
+        IndicatorSeparator,
+        ...(components ?? {}),
+      }}
+    />
+  );
+};
 
 const MarketFilterSort: React.FC<MarketFilterSortProps> = ({
   className = "",

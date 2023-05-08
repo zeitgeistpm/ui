@@ -1,8 +1,6 @@
 import { useAccountModals } from "lib/state/account";
-import { observer } from "mobx-react";
-import React from "react";
 
-const AccountModalHead = observer(() => {
+const AccountModalHead = () => {
   const accountModals = useAccountModals();
 
   const switchExtension = () => {
@@ -22,6 +20,6 @@ const AccountModalHead = observer(() => {
       </div>
     </div>
   );
-});
+};
 
 export default AccountModalHead;
