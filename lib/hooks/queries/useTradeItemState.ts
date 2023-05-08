@@ -3,45 +3,44 @@ import {
   getAssetWeight,
   getIndexOf,
   getMarketIdOf,
+  parseAssetId,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
 import { calcSpotPrice } from "lib/math";
-import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/state/wallet";
 import { TradeItem } from "../trade";
 import { useSdkv2 } from "../useSdkv2";
 import { useAccountAssetBalances } from "./useAccountAssetBalances";
+import { useBalance } from "./useBalance";
+import { useMarket } from "./useMarket";
 import { usePoolAccountIds } from "./usePoolAccountIds";
+import { usePoolBaseBalance } from "./usePoolBaseBalance";
 import { usePoolsByIds } from "./usePoolsByIds";
-import { usePoolZtgBalance } from "./usePoolZtgBalance";
-import { useSaturatedPoolsIndex } from "./useSaturatedPoolsIndex";
-import { useZtgBalance } from "./useZtgBalance";
 
 export const tradeItemStateRootQueryKey = "trade-item-state";
 
 export const useTradeItemState = (item: TradeItem) => {
   const [sdk, id] = useSdkv2();
-  const { wallets } = useStore();
-  const signer = wallets.activeAccount ? wallets.getActiveSigner() : null;
+  const wallet = useWallet();
+  const signer = wallet.activeAccount ? wallet.getActiveSigner() : null;
   const slippage = 1;
-  const { data: traderBaseBalance } = useZtgBalance(
-    wallets.activeAccount?.address,
-  );
 
-  const { data: pools } = usePoolsByIds([
-    { marketId: getMarketIdOf(item.assetId) },
-  ]);
+  const marketId = getMarketIdOf(item.assetId);
+  const { data: pools } = usePoolsByIds([{ marketId: marketId }]);
+  const { data: market } = useMarket({ marketId });
 
   const pool = pools?.[0];
+  const baseAsset = pool?.baseAsset
+    ? parseAssetId(pool.baseAsset).unwrap()
+    : null;
 
-  const { data: saturatedIndex } = useSaturatedPoolsIndex(pools ?? []);
-  const saturatedData = saturatedIndex?.[pool?.poolId];
+  const { data: traderBaseBalance } = useBalance(
+    wallet.activeAccount?.address,
+    baseAsset,
+  );
 
-  const poolBaseBalances = usePoolZtgBalance(pools ?? []);
-  const poolBaseBalance =
-    pool &&
-    poolBaseBalances?.[pool?.poolId] &&
-    new Decimal(poolBaseBalances[pool.poolId].free.toString());
+  const { data: poolBaseBalance } = usePoolBaseBalance(pool?.poolId);
 
   const traderAssets = useAccountAssetBalances([
     { account: signer?.address, assetId: item.assetId },
@@ -77,17 +76,16 @@ export const useTradeItemState = (item: TradeItem) => {
       id,
       tradeItemStateRootQueryKey,
       poolAccountId,
-      wallets.activeAccount?.address,
+      wallet.activeAccount?.address,
       balances,
       item.action,
       JSON.stringify(item.assetId),
     ],
     () => {
-      const baseWeight = getAssetWeight(pool, { Ztg: null }).unwrap();
+      const baseWeight = getAssetWeight(pool, baseAsset).unwrap();
       const assetWeight = getAssetWeight(pool, item.assetId).unwrap();
       const assetIndex = getIndexOf(item.assetId);
-      const asset = saturatedData.assets[assetIndex];
-      const market = saturatedData.market;
+      const asset = market.categories[assetIndex];
       const swapFee = new Decimal(pool.swapFee === "" ? "0" : pool.swapFee).div(
         ZTG,
       );
@@ -103,10 +101,10 @@ export const useTradeItemState = (item: TradeItem) => {
 
       return {
         asset,
-        market,
         pool,
+        market,
         spotPrice,
-        baseAssetId: { Ztg: null },
+        baseAssetId: baseAsset,
         poolAccountId,
         poolBaseBalance,
         poolAssetBalance,
@@ -122,15 +120,7 @@ export const useTradeItemState = (item: TradeItem) => {
     },
     {
       enabled:
-        !!sdk &&
-        !!item &&
-        !!pool &&
-        !!poolBaseBalance &&
-        !!saturatedData &&
-        !!traderBaseBalance &&
-        !!traderAssetBalance &&
-        !!poolAssetBalance &&
-        !!wallets.activeAccount?.address,
+        !!sdk && !!item && !!pool && !!poolBaseBalance && !!poolAssetBalance,
       keepPreviousData: true,
     },
   );

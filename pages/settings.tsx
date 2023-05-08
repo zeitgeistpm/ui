@@ -1,4 +1,12 @@
-import { observer } from "mobx-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { Input } from "components/ui/inputs";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { identityRootKey, useIdentity } from "lib/hooks/queries/useIdentity";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
 import { NextPage } from "next";
 import {
   FC,
@@ -7,14 +15,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Input } from "components/ui/inputs";
-import { useStore } from "lib/stores/Store";
-import { useNotifications } from "lib/state/notifications";
 import { AlertTriangle } from "react-feather";
-import { identityRootKey, useIdentity } from "lib/hooks/queries/useIdentity";
-import { useQueryClient } from "@tanstack/react-query";
-import { useExtrinsic } from "lib/hooks/useExtrinsic";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
 
 const SubmitButton: FC<
   PropsWithChildren<{
@@ -35,27 +36,32 @@ const SubmitButton: FC<
   );
 };
 
-const IdentitySettings = observer(() => {
-  const store = useStore();
-  const { wallets } = store;
+const IdentitySettings = () => {
+  const wallet = useWallet();
   const notificationStore = useNotifications();
 
   const [displayName, setDisplayName] = useState("");
   const [discordHandle, setDiscordHandle] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
   const queryClient = useQueryClient();
-  const [_, id] = useSdkv2();
-  const address = store.wallets.activeAccount?.address;
+
+  const address = wallet.activeAccount?.address;
+  const [sdk, id] = useSdkv2();
 
   const { data: identity } = useIdentity(address);
 
+  const { data: constants } = useChainConstants();
+
   const { send: updateIdentity, isLoading: isUpdating } = useExtrinsic(
-    () =>
-      store.sdk.api.tx.identity.setIdentity({
-        additional: [[{ Raw: "discord" }, { Raw: discordHandle }]],
-        display: { Raw: displayName },
-        twitter: { Raw: twitterHandle },
-      }),
+    () => {
+      if (isRpcSdk(sdk)) {
+        return sdk.api.tx.identity.setIdentity({
+          additional: [[{ Raw: "discord" }, { Raw: discordHandle }]],
+          display: { Raw: displayName },
+          twitter: { Raw: twitterHandle },
+        });
+      }
+    },
     {
       onSuccess: () => {
         queryClient.invalidateQueries([id, identityRootKey, address]);
@@ -66,7 +72,11 @@ const IdentitySettings = observer(() => {
     },
   );
   const { send: clearIdentity, isLoading: isClearing } = useExtrinsic(
-    () => store.sdk.api.tx.identity.clearIdentity(),
+    () => {
+      if (isRpcSdk(sdk)) {
+        return sdk.api.tx.identity.clearIdentity();
+      }
+    },
     {
       onSuccess: () => {
         queryClient.invalidateQueries([id, identityRootKey, address]);
@@ -117,7 +127,7 @@ const IdentitySettings = observer(() => {
       identity.displayName === displayName &&
       identity.twitter === twitterHandle) ||
     transactionPending ||
-    !wallets.connected;
+    !wallet.connected;
 
   return (
     <>
@@ -130,7 +140,7 @@ const IdentitySettings = observer(() => {
         className="w-1/2 mb-5 bg-sky-200 dark:bg-sky-1000 text-sky-600"
         onChange={(e) => handleDisplayNameChange(e.target.value)}
         value={displayName}
-        disabled={!wallets.connected}
+        disabled={!wallet.connected}
       />
       <div className="flex flex-row mb-5">
         <div className="w-full mr-ztg-27">
@@ -143,7 +153,7 @@ const IdentitySettings = observer(() => {
             className=" bg-sky-200 dark:bg-sky-1000 text-sky-600 "
             onChange={(e) => handleDiscordChange(e.target.value)}
             value={discordHandle}
-            disabled={!wallets.connected}
+            disabled={!wallet.connected}
           />
         </div>
         <div className="w-full ">
@@ -156,7 +166,7 @@ const IdentitySettings = observer(() => {
             className=" bg-sky-200 dark:bg-sky-1000 text-sky-600"
             onChange={(e) => handleTwitterChange(e.target.value)}
             value={twitterHandle}
-            disabled={!wallets.connected}
+            disabled={!wallet.connected}
           />
         </div>
       </div>
@@ -164,9 +174,8 @@ const IdentitySettings = observer(() => {
         <AlertTriangle size={20} className="mr-5" />
         <div className="text-ztg-14-120 font-normal">
           Setting an identity requires a deposit of up to{" "}
-          {store.config.identity.basicDeposit +
-            store.config.identity.fieldDeposit}{" "}
-          {store.config.tokenSymbol}. This deposit can be retrieved by clearing
+          {constants?.identity.basicDeposit + constants?.identity.fieldDeposit}{" "}
+          {constants?.tokenSymbol}. This deposit can be retrieved by clearing
           your identity.
         </div>
       </div>
@@ -183,9 +192,9 @@ const IdentitySettings = observer(() => {
       </div>
     </>
   );
-});
+};
 
-const Settings: NextPage = observer(() => {
+const Settings: NextPage = () => {
   return (
     <>
       <h2
@@ -244,6 +253,6 @@ const Settings: NextPage = observer(() => {
       </div>
     </>
   );
-});
+};
 
 export default Settings;

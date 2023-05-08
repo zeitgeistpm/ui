@@ -1,14 +1,33 @@
-import { FC } from "react";
+import { CSSProperties, FC, useMemo } from "react";
 import Link from "next/link";
 import { Banner } from "lib/cms/get-banners";
+import { isCurrentOrigin } from "lib/util/is-current-origin";
 
 export interface HeroSlideProps {
+  className?: string;
+  style?: CSSProperties;
   banner: Banner;
 }
 
-export const HeroSlide: FC<HeroSlideProps> = ({ banner }) => {
+export const HeroSlide: FC<HeroSlideProps> = ({ banner, style, className }) => {
+  const isExternalLink = !isCurrentOrigin(banner.ctaLink);
+
+  const linkProps = {
+    style: {
+      backgroundColor: `${banner.buttonColor}`,
+      borderColor: `${banner.buttonColor}`,
+      color: banner.buttonTextColor,
+    },
+    className:
+      "leading-[42px] w-full sm:w-fit text-center sm:text-start border rounded px-5 mb-5 mr-5 font-bold",
+    href: banner.ctaLink,
+  };
+
   return (
-    <div className="flex items-center h-full w-full">
+    <div
+      className={`flex items-center h-full w-full ${className}`}
+      style={style}
+    >
       <div className="w-full pb-8">
         <h2
           className={`text-center sm:text-left text-white font-sans md:whitespace-pre font-extrabold text-5xl sm:text-7xl lg:text-8xl mb-4`}
@@ -23,17 +42,13 @@ export const HeroSlide: FC<HeroSlideProps> = ({ banner }) => {
           {banner.subtitle}
         </p>
         <div className="flex flex-col sm:flex-row">
-          <Link
-            style={{
-              backgroundColor: `${banner.buttonColor}`,
-              borderColor: `${banner.buttonColor}`,
-              color: banner.buttonTextColor,
-            }}
-            className="leading-[42px] w-full sm:w-fit text-center sm:text-start border rounded px-5 mb-5 mr-5 font-bold"
-            href={banner.ctaLink}
-          >
-            {banner.ctaText}
-          </Link>
+          {isExternalLink ? (
+            <a {...linkProps} target="_blank">
+              {banner.ctaText}
+            </a>
+          ) : (
+            <Link {...linkProps}>{banner.ctaText}</Link>
+          )}
         </div>
       </div>
     </div>

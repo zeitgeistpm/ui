@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { useState } from "react";
+import React from "react";
 import MarketImage from "components/ui/MarketImage";
 import { MarketOutcomes } from "lib/types/markets";
 import MarketCardContext from "./context";
@@ -9,8 +9,10 @@ import { Users, BarChart2, Droplet } from "react-feather";
 import { formatNumberCompact } from "lib/util/format-compact";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import { Skeleton } from "@material-ui/lab";
+import Skeleton from "components/ui/Skeleton";
 import { hasDatePassed } from "lib/util/hasDatePassed";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { parseAssetId } from "@zeitgeistpm/sdk-next";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -140,13 +142,13 @@ const MarketCardDetails = ({
         </span>
       </div>
       <div className="flex gap-2.5 text-sm min-w-full">
-        {rows.numParticipants != null ? (
+        {rows.numParticipants != null && rows.baseAsset ? (
           <div className="flex items-center gap-2">
             <Users size={18} />
             <span>{rows.numParticipants}</span>
           </div>
         ) : (
-          <Skeleton width={35} />
+          <Skeleton width={35} height={20} />
         )}
         <div className="flex items-center gap-2">
           <BarChart2 size={18} />
@@ -154,7 +156,7 @@ const MarketCardDetails = ({
             {formatNumberCompact(rows.volume)} {rows.baseAsset}
           </span>
         </div>
-        {rows.liquidity != null ? (
+        {rows.liquidity != null && rows.baseAsset ? (
           <div className="flex items-center gap-2">
             <Droplet size={18} />
             <span>
@@ -165,7 +167,7 @@ const MarketCardDetails = ({
             </span>
           </div>
         ) : (
-          <Skeleton width={120} />
+          <Skeleton width={120} height={20} />
         )}
       </div>
     </div>
@@ -208,6 +210,9 @@ const MarketCard = ({
   const isProposed = () => {
     return creation === "Advised" && status === "Proposed" ? true : false;
   };
+  const { data: metadata } = useAssetMetadata(
+    parseAssetId(baseAsset).unrightOr(null),
+  );
 
   const infoRows = {
     marketType: marketType,
@@ -215,7 +220,7 @@ const MarketCard = ({
     hasEnded: hasDatePassed(Number(endDate)),
     outcomes: outcomes.length,
     volume: volume,
-    baseAsset: baseAsset?.toUpperCase() ?? "ZTG",
+    baseAsset: metadata?.symbol,
     liquidity,
     numParticipants: numParticipants,
   };
@@ -231,7 +236,7 @@ const MarketCard = ({
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
         data-testid={`marketCard-${marketId}`}
-        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(33.33%-28px)] min-h-[250px] h-auto rounded-xl p-[15px] relative bg-anti-flash-white hover:bg-pastel-blue ${className}`}
+        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)] min-h-[290px] h-auto rounded-xl p-[15px] relative bg-anti-flash-white hover:bg-pastel-blue ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}

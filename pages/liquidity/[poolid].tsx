@@ -1,18 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
-import { isIndexedData, projectEndTimestamp } from "@zeitgeistpm/sdk-next";
+import { isIndexedData, parseAssetId } from "@zeitgeistpm/sdk-next";
 import PoolTable from "components/liquidity/PoolTable";
 import FullSetButtons from "components/markets/FullSetButtons";
-import MarketMeta from "components/meta/MarketMeta";
 import InfoBoxes from "components/ui/InfoBoxes";
 import Pill from "components/ui/Pill";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
-import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
-import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
+import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useStore } from "lib/stores/Store";
-import { observer } from "mobx-react";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -84,40 +82,24 @@ const PoolDetail = ({
   );
 };
 
-const PoolDetails: NextPage = observer(() => {
+const PoolDetails: NextPage = () => {
   const router = useRouter();
-  const store = useStore();
-
-  const { data: ztgInfo } = useZtgInfo();
 
   const poolId = Number(router.query.poolid);
-
-  const [sdk, id] = useSdkv2();
+  const [sdk] = useSdkv2();
   const { data: pool, isInitialLoading, isFetched } = usePool({ poolId });
+  const { data: market } = useMarket({ poolId });
 
-  const { data: saturatedPoolIndex } = useSaturatedPoolsIndex(
-    pool ? [pool] : undefined,
-  );
-
-  const saturatedPoolData = saturatedPoolIndex?.[poolId];
-
-  const { data: ends } = useQuery<number>(
-    [id, "market-ends", saturatedPoolData?.market.marketId],
-    async () => projectEndTimestamp(sdk, saturatedPoolData.market),
-    {
-      enabled: Boolean(sdk && saturatedPoolData?.market),
-    },
-  );
+  const baseAssetId = parseAssetId(pool?.baseAsset).unrightOr(null);
+  const { data: metadata } = useAssetMetadata(baseAssetId);
+  const { data: baseAssetUsdPrice } = useAssetUsdPrice(baseAssetId);
+  const { data: liquidity } = usePoolLiquidity({ poolId });
 
   const volume = isIndexedData(pool)
     ? new Decimal(pool.volume).div(ZTG).toFixed(2)
     : null;
 
   const swapFee = Number(pool?.swapFee);
-
-  const prediction = saturatedPoolData?.assets
-    .sort((a, b) => (a.price.greaterThan(b.price) ? 1 : 0))
-    .at(0);
 
   const navigateBack = () => {
     router.push("/liquidity");
@@ -148,27 +130,28 @@ const PoolDetails: NextPage = observer(() => {
           <Pill
             title="Ends"
             value={
-              ends
+              market?.period.end
                 ? new Intl.DateTimeFormat("en-US", {
                     dateStyle: "medium",
-                  }).format(new Date(ends))
+                  }).format(new Date(Number(market.period.end)))
                 : ""
             }
           />
-          <Pill title="Volume" value={`${volume ? volume : "0"} ZTG`} />
-          <Pill title="Status" value={saturatedPoolData?.market.status} />
+          <Pill
+            title="Volume"
+            value={`${volume ? volume : "0"} ${metadata?.symbol}`}
+          />
+          <Pill title="Status" value={pool?.poolStatus} />
         </div>
         <div className="flex flex-row mt-ztg-53 mb-ztg-38">
           <PoolDetail
             header="Pool Value"
-            middle={`${Math.round(
-              saturatedPoolData?.liquidity.div(ZTG).toNumber() || 0,
-            )} ${store?.config?.tokenSymbol ?? "--"}`}
-            bottom={`${
-              ztgInfo && saturatedPoolData
-                ? ztgInfo?.price
-                    ?.mul(saturatedPoolData?.liquidity.div(ZTG))
-                    .toFixed(2)
+            middle={`${Math.round(liquidity?.div(ZTG).toNumber() ?? 0)} ${
+              metadata?.symbol ?? "--"
+            }`}
+            bottom={`$${
+              baseAssetUsdPrice && liquidity
+                ? baseAssetUsdPrice.mul(liquidity.div(ZTG)).toFixed(2)
                 : "--"
             }`}
           />
@@ -178,36 +161,18 @@ const PoolDetails: NextPage = observer(() => {
             middle={`${new Decimal(swapFee).div(ZTG).mul(100)} %`}
             bottom=""
           />
-
-          <PoolDetail
-            header="Prediction"
-            middle={
-              <div className="flex mt-2">
-                <div
-                  className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2"
-                  style={{ backgroundColor: prediction?.category.color }}
-                />
-                {prediction?.category.ticker.toUpperCase()}
-              </div>
-            }
-            bottom=""
-          />
         </div>
-        {/* <PoolChart /> */}
-        {/* <PoolSummary /> */}
         <div className="flex my-ztg-23 items-center">
           <div className="flex flex-col sm:flex-row">
             <h3 className="font-semibold text-ztg-20-150 mr-ztg-15 mb-[10px] sm:mb-0">
               Assets in Pool
             </h3>
-            {saturatedPoolData && (
-              <FullSetButtons marketId={saturatedPoolData.market.marketId} />
-            )}
+            {market && <FullSetButtons marketId={market.marketId} />}
           </div>
-          {saturatedPoolData && (
+          {market && (
             <div className="flex flex-1 justify-end">
               <Link
-                href={`/markets/${saturatedPoolData?.market.marketId}`}
+                href={`/markets/${market.marketId}`}
                 className="flex text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 justify-center items-center"
               >
                 <BarChart2 size={14} className="mr-2" />
@@ -216,10 +181,10 @@ const PoolDetails: NextPage = observer(() => {
             </div>
           )}
         </div>
-        <PoolTable poolId={poolId} />
+        <PoolTable poolId={poolId} marketId={market?.marketId} />
       </div>
     </>
   );
-});
+};
 
 export default PoolDetails;

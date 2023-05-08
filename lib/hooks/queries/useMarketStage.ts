@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Context, isRpcSdk, Market } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
-import { useChainTimeNow } from "./useChainTime";
 import { marketsRootQuery } from "./useMarket";
+import { useChainTime } from "lib/state/chaintime";
 
 export const marketStageRootKey = "market-stage";
 
@@ -15,7 +15,7 @@ export const marketStageRootKey = "market-stage";
 export const useMarketStage = (market?: Market<Context>) => {
   const [sdk, id] = useSdkv2();
 
-  const { data: now } = useChainTimeNow();
+  const now = useChainTime();
 
   return useQuery(
     [id, marketsRootQuery, market?.marketId, marketStageRootKey],

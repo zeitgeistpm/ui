@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { observer } from "mobx-react";
+
 import SideMenu from "./SideMenu";
 import MobileMenu from "components/menu/MobileMenu";
 import { Menu, X } from "react-feather";
@@ -13,7 +13,7 @@ const AccountButton = dynamic(() => import("../account/AccountButton"), {
   ssr: false,
 });
 
-const TopBar = observer(() => {
+const TopBar = () => {
   const { pathname } = useRouter();
 
   const [navbarBGColor, setNavbarBGColor] =
@@ -44,13 +44,12 @@ const TopBar = observer(() => {
   }, [changeNavBG]);
 
   useEffect(() => {
-    const scrollY = window.scrollY;
-    setScrollPosition(scrollY);
     if (menuOpen) {
-      document.body.style.position = "fixed";
+      document.body.style.height = `100%`;
+      document.body.style.overflow = `hidden`;
     } else {
-      document.body.style.position = "static";
-      window.scrollBy(0, scrollPosition);
+      document.body.style.height = `auto`;
+      document.body.style.overflow = `initial`;
     }
     changeNavBG();
   }, [menuOpen]);
@@ -87,6 +86,6 @@ const TopBar = observer(() => {
       <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
     </div>
   );
-});
+};
 
 export default TopBar;

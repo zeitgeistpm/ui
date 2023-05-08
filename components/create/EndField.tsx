@@ -1,10 +1,10 @@
-import { useStore } from "lib/stores/Store";
 import React, { FC, useRef } from "react";
-import { observer } from "mobx-react";
+
 import Form from "mobx-react-form";
 
 import { EndType } from "lib/types/create-market";
 import { Input, DateTimeInput } from "components/ui/inputs";
+import { useChainTime } from "lib/state/chaintime";
 
 interface EndTypeSwitchProps {
   selected: EndType;
@@ -56,55 +56,53 @@ export interface EndFieldProps {
   blockNumberFieldName?: string;
 }
 
-const EndField: FC<EndFieldProps> = observer(
-  ({
-    className = "",
-    onEndTypeChange,
-    onEndChange,
-    endType = "timestamp",
-    value = "",
-    form,
-    timestampFieldName = "timestamp",
-    blockNumberFieldName = "blockNumber",
-  }) => {
-    const store = useStore();
-    const blockNumber = store.blockNumber ? store.blockNumber.toNumber() : 0;
+const EndField: FC<EndFieldProps> = ({
+  className = "",
+  onEndTypeChange,
+  onEndChange,
+  endType = "timestamp",
+  value = "",
+  form,
+  timestampFieldName = "timestamp",
+  blockNumberFieldName = "blockNumber",
+}) => {
+  const chainTime = useChainTime();
+  const blockNumber = chainTime?.block ?? 0;
 
-    const inputRef = useRef();
+  const inputRef = useRef();
 
-    return (
-      <div
-        className={`flex flex-wrap gap-y-ztg-10	${className}`}
-        data-test="marketEndField"
-      >
-        <EndTypeSwitch selected={endType} onChange={onEndTypeChange} />
-        <div className="flex">
-          {endType === "block" ? (
-            <Input
-              value={value}
-              ref={inputRef}
-              form={form}
-              type="number"
-              name={blockNumberFieldName}
-              className="w-ztg-275"
-              min={blockNumber}
-              step={1}
-              onChange={(e) => {
-                onEndChange(e.target.value);
-              }}
-            />
-          ) : (
-            <DateTimeInput
-              onChange={onEndChange}
-              name={timestampFieldName}
-              form={form}
-              timestamp={value}
-            />
-          )}
-        </div>
+  return (
+    <div
+      className={`flex flex-wrap gap-y-ztg-10	${className}`}
+      data-test="marketEndField"
+    >
+      <EndTypeSwitch selected={endType} onChange={onEndTypeChange} />
+      <div className="flex">
+        {endType === "block" ? (
+          <Input
+            value={value}
+            ref={inputRef}
+            form={form}
+            type="number"
+            name={blockNumberFieldName}
+            className="w-ztg-275"
+            min={blockNumber}
+            step={1}
+            onChange={(e) => {
+              onEndChange(e.target.value);
+            }}
+          />
+        ) : (
+          <DateTimeInput
+            onChange={onEndChange}
+            name={timestampFieldName}
+            form={form}
+            timestamp={value}
+          />
+        )}
       </div>
-    );
-  },
-);
+    </div>
+  );
+};
 
 export default EndField;

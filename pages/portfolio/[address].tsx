@@ -10,14 +10,13 @@ import {
 import TransactionHistoryTable from "components/portfolio/TransactionHistoryTable";
 import InfoBoxes from "components/ui/InfoBoxes";
 import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
-import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
+import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { groupBy, range } from "lodash-es";
-import { observer } from "mobx-react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 
-const Portfolio: NextPage = observer(() => {
+const Portfolio: NextPage = () => {
   const router = useRouter();
   const address = Array.isArray(router.query.address)
     ? router.query.address[0]
@@ -25,7 +24,8 @@ const Portfolio: NextPage = observer(() => {
 
   const { markets, subsidy, breakdown } = usePortfolioPositions(address);
 
-  const { data: ztgPrice } = useZtgInfo();
+  //todo: needs to base asset balance?
+  const { data: ztgPrice } = useZtgPrice();
 
   const marketPositionsByMarket = useMemo(
     () => markets && groupBy(markets, (position) => position.market.marketId),
@@ -114,7 +114,7 @@ const Portfolio: NextPage = observer(() => {
                               key={market.marketId}
                               className="mb-14 border-b-4 border-gray-200"
                               market={market}
-                              usdZtgPrice={ztgPrice.price}
+                              usdZtgPrice={ztgPrice}
                               positions={marketPositions.filter((position) =>
                                 position.userBalance.gt(0),
                               )}
@@ -146,7 +146,7 @@ const Portfolio: NextPage = observer(() => {
                               key={market.marketId}
                               className="mb-14 border-b-4 border-gray-200"
                               market={market}
-                              usdZtgPrice={ztgPrice.price}
+                              usdZtgPrice={ztgPrice}
                               positions={subsidyPositions.filter((position) =>
                                 position.userBalance.gt(0),
                               )}
@@ -177,6 +177,6 @@ const Portfolio: NextPage = observer(() => {
       </Tab.Group>
     </>
   );
-});
+};
 
 export default Portfolio;

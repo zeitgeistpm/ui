@@ -1,16 +1,13 @@
-import { observer } from "mobx-react";
-import { Skeleton } from "@material-ui/lab";
-import React, { FC, PropsWithChildren, useRef, useState } from "react";
+import { FC, PropsWithChildren, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 
-import { useStore } from "lib/stores/Store";
+import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import TopBar from "components/menu";
 import Footer from "components/ui/Footer";
 import NotificationCenter from "components/ui/NotificationCenter";
-import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
-import { useRouter } from "next/router";
-import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
 import { TradeItem, TradeItemContext } from "lib/hooks/trade";
+import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
+import { useRouter } from "next/router";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
@@ -18,8 +15,7 @@ import Image from "next/image";
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 
-const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
-  const store = useStore();
+const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   useSubscribeBlockEvents();
   const [tradeItem, setTradeItem] = useState<TradeItem | null>(null);
@@ -82,18 +78,7 @@ const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
                 </div>
               ) : (
                 <ContentDimensionsProvider height={height} width={width}>
-                  {store.initialized ||
-                  router.pathname === "/" ||
-                  router.pathname.split("/")[1] === "markets" ||
-                  router.pathname.split("/")[1] === "portfolio" ||
-                  router.pathname.split("/")[1] === "liquidity" ? (
-                    children
-                  ) : (
-                    <Skeleton
-                      className="!transform-none !mt-ztg-30"
-                      style={{ height: "550px" }}
-                    />
-                  )}
+                  {children}
                 </ContentDimensionsProvider>
               )}
             </div>
@@ -104,6 +89,6 @@ const DefaultLayout: FC<PropsWithChildren> = observer(({ children }) => {
       </TradeItemContext.Provider>
     </div>
   );
-});
+};
 
 export default DefaultLayout;

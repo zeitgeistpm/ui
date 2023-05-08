@@ -1,14 +1,14 @@
-import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/state/wallet";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import * as React from "react";
 
 const Avatar = () => {
   const router = useRouter();
-  const store = useStore();
+  const wallet = useWallet();
 
-  if (store.wallets.activeAccount) {
-    router.replace(`/avatar/${store.wallets.activeAccount.address}`);
+  if (wallet.activeAccount) {
+    router.replace(`/avatar/${wallet.activeAccount.address}`);
     return <></>;
   }
 

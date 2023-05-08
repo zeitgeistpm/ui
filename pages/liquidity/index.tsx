@@ -1,18 +1,18 @@
+import { MarketStatus } from "@zeitgeistpm/indexer";
 import { ZTG } from "@zeitgeistpm/sdk-next";
+import MarketImage from "components/ui/MarketImage";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { useInfinitePoolsList } from "lib/hooks/queries/useInfinitePoolsList";
 import { useMarketStatusCount } from "lib/hooks/queries/useMarketStatusCount";
 import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
 import { useTotalLiquidity } from "lib/hooks/queries/useTotalLiquidity";
-import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
+import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { formatNumberLocalized } from "lib/util";
-import { observer } from "mobx-react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { AiOutlineRead } from "react-icons/ai";
-import { MarketStatus } from "@zeitgeistpm/indexer";
 
 const columns: TableColumn[] = [
   {
@@ -38,10 +38,10 @@ const columns: TableColumn[] = [
   },
 ];
 
-const LiquidityPools: NextPage = observer(() => {
+const LiquidityPools: NextPage = () => {
   const router = useRouter();
 
-  const { data: ztgInfo } = useZtgInfo();
+  const { data: ztgPrice } = useZtgPrice();
 
   const {
     data: poolPages,
@@ -57,11 +57,11 @@ const LiquidityPools: NextPage = observer(() => {
   const totalLiquidity = useTotalLiquidity({ enabled: isFetched });
 
   const totalLiquidityValue = useMemo(() => {
-    if (ztgInfo) {
-      return totalLiquidity.div(ZTG).mul(ztgInfo.price);
+    if (ztgPrice) {
+      return totalLiquidity.div(ZTG).mul(ztgPrice);
     }
     return new Decimal(0);
-  }, [ztgInfo, totalLiquidity]);
+  }, [ztgPrice, totalLiquidity]);
 
   const { data: activeMarketCount } = useMarketStatusCount(MarketStatus.Active);
 
@@ -74,16 +74,10 @@ const LiquidityPools: NextPage = observer(() => {
           marketId: (
             <div className="flex items-center py-3">
               <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600 mr-4">
-                <div
-                  className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0"
-                  style={{
-                    backgroundImage:
-                      saturatedData?.market.img == null
-                        ? "url(/icons/default-market.png)"
-                        : `url(${saturatedData.market.img})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
+                <MarketImage
+                  image={saturatedData?.market.img}
+                  alt={saturatedData?.market.description}
+                  className="rounded-ztg-10"
                 />
               </div>
 
@@ -106,7 +100,7 @@ const LiquidityPools: NextPage = observer(() => {
           poolBalance: saturatedData ? (
             {
               value: saturatedData?.liquidity.div(ZTG).toNumber(),
-              usdValue: ztgInfo?.price.toNumber() ?? 0,
+              usdValue: ztgPrice?.toNumber() ?? 0,
             }
           ) : (
             <span>...</span>
@@ -180,6 +174,6 @@ const LiquidityPools: NextPage = observer(() => {
       />
     </div>
   );
-});
+};
 
 export default LiquidityPools;

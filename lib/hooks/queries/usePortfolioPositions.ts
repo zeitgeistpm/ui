@@ -13,6 +13,7 @@ import {
   IOZtgAssetId,
   PoolShareAssetId,
   ScalarAssetId,
+  IOForeignAssetId,
 } from "@zeitgeistpm/sdk-next";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import Decimal from "decimal.js";
@@ -21,21 +22,20 @@ import {
   useAccountAssetBalances,
 } from "lib/hooks/queries/useAccountAssetBalances";
 import { useAccountTokenPositions } from "lib/hooks/queries/useAccountTokenPositions";
-import { useChainTimeNow } from "lib/hooks/queries/useChainTime";
 import { useMarketsByIds } from "lib/hooks/queries/useMarketsByIds";
 import { usePoolAccountIds } from "lib/hooks/queries/usePoolAccountIds";
 import { usePoolsByIds } from "lib/hooks/queries/usePoolsByIds";
 import {
   PoolZtgBalanceLookup,
-  usePoolZtgBalance,
-} from "lib/hooks/queries/usePoolZtgBalance";
+  usePoolBaseBalances,
+} from "lib/hooks/queries/usePoolBaseBalances";
 import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForPools";
-import { useZtgInfo } from "lib/hooks/queries/useZtgInfo";
+import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { calcSpotPrice } from "lib/math";
 import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { useMemo } from "react";
 import { MarketBond, useAccountBonds } from "./useAccountBonds";
-import { useTransactionHistory } from "./useTransactionHistory";
+import { useChainTime } from "lib/state/chaintime";
 
 export type UsePortfolioPositions = {
   /**
@@ -148,9 +148,10 @@ export type PorfolioBreakdown = {
 export const usePortfolioPositions = (
   address?: string,
 ): UsePortfolioPositions => {
-  const { data: now } = useChainTimeNow();
+  const now = useChainTime();
 
-  const { data: ztgPrice } = useZtgInfo();
+  //todo: needs to base asset balance?
+  const { data: ztgPrice } = useZtgPrice();
   const block24HoursAgo = Math.floor(now?.block - 7200);
   const { data: marketBonds, isLoading: isBondsLoading } =
     useAccountBonds(address);
@@ -186,13 +187,13 @@ export const usePortfolioPositions = (
 
   const poolAccountIds = usePoolAccountIds(pools.data);
 
-  const poolsZtgBalances = usePoolZtgBalance(pools.data ?? []);
+  const poolsZtgBalances = usePoolBaseBalances(pools.data ?? []);
 
   const poolsTotalIssuance = useTotalIssuanceForPools(
     pools.data?.map((p) => p.poolId) ?? [],
   );
 
-  const poolsZtgBalances24HoursAgo = usePoolZtgBalance(
+  const poolsZtgBalances24HoursAgo = usePoolBaseBalances(
     pools.data ?? [],
     block24HoursAgo,
     { enabled: Boolean(now?.block) },
@@ -255,7 +256,7 @@ export const usePortfolioPositions = (
       poolsZtgBalances: PoolZtgBalanceLookup,
       poolAssetBalances: UseAccountAssetBalances,
     ): null | Decimal => {
-      const poolZtgBalance = poolsZtgBalances[pool.poolId]?.free.toNumber();
+      const poolZtgBalance = poolsZtgBalances[pool.poolId]?.toNumber();
 
       if (typeof poolZtgBalance === "undefined") {
         return null;
@@ -291,7 +292,7 @@ export const usePortfolioPositions = (
       let marketId: number;
       let market: FullMarketFragment;
 
-      if (IOZtgAssetId.is(assetId)) {
+      if (IOZtgAssetId.is(assetId) || IOForeignAssetId.is(assetId)) {
         continue;
       }
 
@@ -555,7 +556,7 @@ export const usePortfolioPositions = (
     const totalChange = diffChange(positionsTotal, positionsTotal24HoursAgo);
 
     return {
-      usdZtgPrice: ztgPrice.price,
+      usdZtgPrice: ztgPrice,
       total: {
         value: positionsTotal,
         changePercentage: isNaN(totalChange) ? 0 : totalChange,

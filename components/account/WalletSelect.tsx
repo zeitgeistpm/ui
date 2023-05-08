@@ -1,45 +1,39 @@
-import { useAccountModals } from "lib/hooks/account";
-import { useStore } from "lib/stores/Store";
-import Wallets, { WalletErrorMessage } from "lib/stores/wallets";
-import { Wallet } from "lib/stores/wallets/types";
-import { flowResult } from "mobx";
-import { observer } from "mobx-react";
+import { useAccountModals } from "lib/state/account";
+import { usePrevious } from "lib/hooks/usePrevious";
+import { supportedWallets, useWallet } from "lib/state/wallet";
+import { Wallet } from "lib/wallets/types";
+
 import { useEffect } from "react";
 import { Download } from "react-feather";
 
-const WalletSelect = observer(() => {
-  const store = useStore();
-  const { wallets } = store;
-  const { errorMessages, enablingInProgress } = wallets;
+const WalletSelect = () => {
+  const { selectWallet, errors, accounts, connected } = useWallet();
   const accountModals = useAccountModals();
 
-  const selectWallet = async (wallet: Wallet) => {
-    wallets.stopEnableLoop();
+  const wasConnected = usePrevious(connected);
+
+  const handleSelectWallet = async (wallet: Wallet) => {
     if (!wallet.installed) {
       window.open(wallet.installUrl);
     } else {
-      try {
-        await flowResult(wallets.connectWallet(wallet.extensionName, true));
-
-        if (!wallets.faultyConnection) {
-          accountModals.openAccontSelect();
-        }
-      } catch (err) {
-        console.log(err);
-      }
+      selectWallet(wallet.extensionName);
+      accountModals.closeWalletSelect();
     }
   };
 
   useEffect(() => {
-    return () => {
-      wallets.stopEnableLoop();
-    };
-  }, [enablingInProgress]);
+    if (!wasConnected && connected && accounts.length) {
+      accountModals.openAccountSelect();
+    }
+  }, [wasConnected, connected, accounts, errors]);
 
   return (
     <div className="flex flex-col">
-      {Wallets.supportedWallets.map((wallet, idx) => {
-        const error = errorMessages.find(
+      <div className="font-bold text-ztg-16-150 text-black mb-3">
+        Connect Wallet
+      </div>
+      {supportedWallets.map((wallet, idx) => {
+        const error = errors.find(
           (e) => e.extensionName === wallet.extensionName,
         );
         const hasError = error != null;
@@ -51,7 +45,7 @@ const WalletSelect = observer(() => {
                 (idx < 2 ? "mb-ztg-12 " : "")
               }
               onClick={() => {
-                selectWallet(wallet);
+                handleSelectWallet(wallet);
               }}
             >
               <img
@@ -69,7 +63,9 @@ const WalletSelect = observer(() => {
               )}
               {hasError && (
                 <div className="text-vermilion ml-auto  text-ztg-12-120 w-ztg-275">
-                  {error.message}
+                  {error.type === "NoAccounts"
+                    ? "No accounts on this wallet. Please add account in wallet extension."
+                    : "Not allowed to interact with extension. Please change permission settings."}
                 </div>
               )}
             </div>
@@ -78,6 +74,6 @@ const WalletSelect = observer(() => {
       })}
     </div>
   );
-});
+};
 
 export default WalletSelect;

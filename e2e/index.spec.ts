@@ -64,8 +64,8 @@ test.describe("index page", () => {
       let lastSubTitle: string;
       for (let index = 0; index < numSlides; index++) {
         expect(await indexPage.getActiveSlideIndex()).toBe(index);
-        const title = await heroSlider.locator("h2").textContent();
-        const subTitle = await heroSlider.locator("p").textContent();
+        const title = await heroSlider.locator("h2").last().textContent();
+        const subTitle = await heroSlider.locator("p").last().textContent();
         if (index > 0) {
           expect(title).not.toBe(lastTitle);
           expect(subTitle).not.toBe(lastSubTitle);
@@ -78,8 +78,8 @@ test.describe("index page", () => {
 
       for (let index = numSlides - 1; index === numSlides; index--) {
         expect(await indexPage.getActiveSlideIndex()).toBe(index);
-        const title = await heroSlider.locator("h2").textContent();
-        const subTitle = await heroSlider.locator("p").textContent();
+        const title = await heroSlider.locator("h2").last().textContent();
+        const subTitle = await heroSlider.locator("p").last().textContent();
         if (index < numSlides - 1) {
           expect(title).not.toBe(lastTitle);
           expect(subTitle).not.toBe(lastSubTitle);

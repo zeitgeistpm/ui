@@ -17,10 +17,12 @@ const JoinPoolForm = ({
   poolBalances,
   poolId,
   totalPoolShares,
+  baseAssetTicker,
 }: {
   poolBalances: PoolBalances;
   poolId: number;
   totalPoolShares: Decimal;
+  baseAssetTicker: string;
 }) => {
   const { register, watch, handleSubmit, setValue, getValues, formState } =
     useForm({ reValidateMode: "onChange", mode: "all" });
@@ -32,7 +34,7 @@ const JoinPoolForm = ({
   const { data: market } = useMarket({ poolId });
   const queryClient = useQueryClient();
 
-  const { send: joinPool, isLoading: isLoading } = useExtrinsic(
+  const { send: joinPool, isLoading } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && pool) {
         const formValue = getValues();
@@ -145,8 +147,7 @@ const JoinPoolForm = ({
       <div className="flex flex-col gap-y-6 max-h-[250px] md:max-h-[400px] overflow-y-auto">
         {pool?.weights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
-          const assetName =
-            market?.categories[index]?.name ?? pool.baseAsset.toUpperCase();
+          const assetName = market?.categories[index]?.name ?? baseAssetTicker;
           const userAssetBalance =
             poolBalances?.[id]?.user.div(ZTG).toNumber() ?? 0;
 
@@ -199,7 +200,9 @@ const JoinPoolForm = ({
         {...register("baseAssetPercentage", { min: 0, value: "0" })}
       />
       <FormTransactionButton
-        disabled={formState.isValid === false || isLoading}
+        disabled={
+          formState.isValid === false || isLoading || market.status !== "Active"
+        }
       >
         Join Pool
       </FormTransactionButton>

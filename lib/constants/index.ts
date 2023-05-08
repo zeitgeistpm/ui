@@ -91,7 +91,6 @@ const getGraphQlEndpoint = (): string => {
 };
 
 export const graphQlEndpoint = getGraphQlEndpoint();
-export const graphQlClient = new GraphQLClient(graphQlEndpoint);
 
 const getEndpointOptions = (env: Environment): EndpointOption[] => {
   return endpoints.filter((e) => e.environment === env);
@@ -102,3 +101,5 @@ export const endpointsStaging = getEndpointOptions("staging");
 
 export const endpointOptions =
   environment === "production" ? endpointsProduction : endpointsStaging;
+
+export const allCurrencies = ["ZTG"];

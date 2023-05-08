@@ -1,17 +1,16 @@
-import { observer } from "mobx-react";
 import React, { FC } from "react";
 import { LogOut } from "react-feather";
-import { useStore } from "lib/stores/Store";
 import AccountSelect from "./AccountSelect";
-import { useModalStore } from "lib/stores/ModalStore";
+import { useWallet } from "lib/state/wallet";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
+import { ZTG } from "@zeitgeistpm/sdk-next";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
-const AccountModalContent: FC = observer(() => {
-  const store = useStore();
+const AccountModalContent: FC = () => {
+  const { activeAccount, disconnectWallet } = useWallet();
+  const { data: activeBalance } = useZtgBalance(activeAccount?.address);
+  const { data: constants } = useChainConstants();
 
-  const { wallets } = store;
-  const { activeBalance, disconnectWallet } = wallets;
-
-  const modalStore = useModalStore();
   return (
     <div className="flex flex-col">
       <AccountSelect />
@@ -34,7 +33,9 @@ const AccountModalContent: FC = observer(() => {
                 balance
               </div>
               <div className="font-mono text-ztg-14-120 font-bold text-sheen-green">
-                {activeBalance?.toFixed(4) ?? "---"}
+                {`${activeBalance?.div(ZTG).toFixed(4)} ${
+                  constants?.tokenSymbol ?? ""
+                }` ?? "---"}
               </div>
             </div>
           </div>
@@ -43,7 +44,6 @@ const AccountModalContent: FC = observer(() => {
           className="flex justify-evenly items-center w-ztg-176 bg-border-light dark:bg-sky-700 ml-ztg-16 rounded-ztg-10 h-full text-white cursor-pointer"
           onClick={() => {
             disconnectWallet();
-            modalStore.closeModal();
           }}
         >
           <div className=" text-ztg-16-150 capitalize">disconnect</div>
@@ -52,6 +52,6 @@ const AccountModalContent: FC = observer(() => {
       </div>
     </div>
   );
-});
+};
 
 export default AccountModalContent;

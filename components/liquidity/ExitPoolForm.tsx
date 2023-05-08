@@ -1,15 +1,22 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
+import {
+  getIndexOf,
+  IOCategoricalAssetId,
+  IOZtgAssetId,
+  isRpcSdk,
+  parseAssetId,
+  ZTG,
+} from "@zeitgeistpm/sdk-next";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { poolTotalIssuanceRootQueryKey } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
@@ -20,14 +27,16 @@ const ExitPoolForm = ({
   totalPoolShares,
   userPoolShares,
   poolStatus,
+  baseAssetTicker,
 }: {
   poolBalances: PoolBalances;
   poolId: number;
   totalPoolShares: Decimal;
   userPoolShares: Decimal;
   poolStatus: string;
+  baseAssetTicker: string;
 }) => {
-  const { config } = useStore();
+  const { data: constants } = useChainConstants();
   const {
     register,
     watch,
@@ -47,14 +56,28 @@ const ExitPoolForm = ({
   const { data: market } = useMarket({ poolId });
   const queryClient = useQueryClient();
 
-  const { send: exitPool, isLoading: isUpdating } = useExtrinsic(
+  // filter out non-winning assets as they are deleted on chain
+  const poolWeights =
+    market.status === "Resolved" && market.marketType.categorical
+      ? pool?.weights.filter((weight) => {
+          const assetId = parseAssetId(weight.assetId).unwrap();
+
+          return (
+            IOZtgAssetId.is(assetId) ||
+            (IOCategoricalAssetId.is(assetId) &&
+              market.resolvedOutcome === getIndexOf(assetId).toString())
+          );
+        })
+      : pool?.weights;
+
+  const { send: exitPool, isLoading } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && pool) {
         const formValue = getValues();
         const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
-        const feeMultiplier = 1 - config.swaps.exitFee;
+        const feeMultiplier = 1 - constants.swaps.exitFee;
 
-        const minAssetsOut = pool?.weights.map((asset, index) => {
+        const minAssetsOut = poolWeights.map((asset) => {
           const id = assetObjStringToId(asset.assetId);
 
           const assetAmount = formValue[id] ?? 0;
@@ -162,10 +185,12 @@ const ExitPoolForm = ({
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-y-6 max-h-[200px] md:max-h-[400px] overflow-y-auto">
-        {pool?.weights.map((asset, index) => {
+        {poolWeights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
           const assetName =
-            market?.categories[index]?.name ?? pool.baseAsset.toUpperCase();
+            poolWeights.length - 1 === index
+              ? baseAssetTicker
+              : market?.categories[index]?.name;
 
           if (!userPercentageOwnership || userPercentageOwnership.isNaN())
             return null;
@@ -228,7 +253,9 @@ const ExitPoolForm = ({
         type="range"
         {...register("poolSharesPercentage", { min: 0, value: "0" })}
       />
-      <FormTransactionButton disabled={formState.isValid === false}>
+      <FormTransactionButton
+        disabled={formState.isValid === false || isLoading}
+      >
         Exit Pool
       </FormTransactionButton>
     </form>

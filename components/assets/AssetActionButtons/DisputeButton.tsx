@@ -1,3 +1,4 @@
+import { Dialog } from "@headlessui/react";
 import {
   getIndexOf,
   IndexerContext,
@@ -5,101 +6,64 @@ import {
   Market,
   MarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk-next";
+import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
-import {
-  marketDisputesRootKey,
-  useMarketDisputes,
-} from "lib/hooks/queries/useMarketDisputes";
+import Modal from "components/ui/Modal";
+import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useModalStore } from "lib/stores/ModalStore";
-import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
-import { extrinsicCallback, signAndSend } from "lib/util/tx";
-import { observer } from "mobx-react";
-import { useMemo } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 
-const DisputeButton = observer(
-  ({
-    market,
-    assetId,
-  }: {
-    market: Market<IndexerContext>;
-    assetId: MarketOutcomeAssetId;
-  }) => {
-    const [sdk, id] = useSdkv2();
-    const store = useStore();
-    const { wallets } = store;
-    const notificationStore = useNotifications();
-    const modalStore = useModalStore();
-    const queryClient = useQueryClient();
-    const assetIndex = getIndexOf(assetId);
+import { useMemo, useState } from "react";
 
-    const ticker = market.categories?.[assetIndex].ticker;
+const DisputeButton = ({
+  market,
+  assetId,
+}: {
+  market: Market<IndexerContext>;
+  assetId: MarketOutcomeAssetId;
+}) => {
+  const [sdk] = useSdkv2();
+  const assetIndex = getIndexOf(assetId);
 
-    const { data: disputes } = useMarketDisputes(market);
+  const { data: disputes } = useMarketDisputes(market);
 
-    const disputeDisabled = useMemo(() => {
-      const assetAlreadyReported =
-        market.marketType.categorical &&
-        market.report.outcome.categorical === assetIndex;
+  const [isOpen, setOpen] = useState(false);
 
-      return (sdk && !isRpcSdk(sdk)) || assetAlreadyReported;
-    }, [sdk, disputes?.length, market, assetIndex]);
+  const disputeDisabled = useMemo(() => {
+    const assetAlreadyReported =
+      market.marketType.categorical &&
+      market.report.outcome.categorical === assetIndex;
 
-    const handleClick = async () => {
-      if (market.marketType.scalar) {
-        modalStore.openModal(
-          <div>
-            <ScalarDisputeBox market={market} />
-          </div>,
-          <>"Dispute outcome",</>,
-        );
-      } else if (isRpcSdk(sdk)) {
-        const ID = getIndexOf(assetId);
-        const signer = wallets.getActiveSigner();
+    return (sdk && !isRpcSdk(sdk)) || assetAlreadyReported;
+  }, [sdk, disputes?.length, market, assetIndex]);
 
-        const callback = extrinsicCallback({
-          notifications: notificationStore,
-          successCallback: async () => {
-            notificationStore.pushNotification(
-              `Disputed reported outcome with ${ticker}`,
-              {
-                type: "Success",
-              },
-            );
-            queryClient.invalidateQueries([
-              id,
-              marketDisputesRootKey,
-              market.marketId,
-            ]);
-          },
-          failCallback: ({ index, error }) => {
-            notificationStore.pushNotification(
-              store.getTransactionError(index, error),
-              {
-                type: "Error",
-              },
-            );
-          },
-        });
-
-        const tx = sdk.api.tx.predictionMarkets.dispute(market.marketId, {
-          Categorical: ID,
-        });
-        await signAndSend(tx, signer, callback);
-      }
-    };
-    return (
+  return (
+    <>
       <button
-        onClick={handleClick}
+        onClick={() => setOpen(true)}
         disabled={disputeDisabled}
         className="text-mariner font-semibold text-ztg-14-120 disabled:opacity-50"
       >
         Dispute Outcome
       </button>
-    );
-  },
-);
+
+      <Modal open={isOpen} onClose={() => setOpen(false)}>
+        <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
+          {market.marketType.scalar ? (
+            <ScalarDisputeBox
+              market={market}
+              onSuccess={() => setOpen(false)}
+            />
+          ) : (
+            <CategoricalDisputeBox
+              market={market}
+              assetId={assetId}
+              onSuccess={() => setOpen(false)}
+            />
+          )}
+        </Dialog.Panel>
+      </Modal>
+    </>
+  );
+};
 
 export default DisputeButton;

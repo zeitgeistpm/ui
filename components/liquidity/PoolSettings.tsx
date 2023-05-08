@@ -1,6 +1,4 @@
-import { observer } from "mobx-react";
 import React, { ChangeEvent, FC, MouseEvent } from "react";
-import { useStore } from "lib/stores/Store";
 import { MultipleOutcomeEntry } from "lib/types/create-market";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import { ZTG, ZTG_BLUE_COLOR } from "lib/constants";
@@ -12,6 +10,7 @@ import {
   calcWeightGivenSpotPrice,
   PriceLock,
 } from "lib/util/weight-math";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 export interface PoolAssetRowData {
   assetColor: string;
@@ -117,8 +116,8 @@ const PoolSettings: FC<{
   data: PoolAssetRowData[];
   onChange: (data: PoolAssetRowData[]) => void;
   onFeeChange: (data: Decimal) => void;
-}> = observer(({ data, onChange, onFeeChange }) => {
-  const store = useStore();
+}> = ({ data, onChange, onFeeChange }) => {
+  const { data: constants } = useChainConstants();
 
   const changeOutcomeRow = (amount: string) => {
     onChange(
@@ -187,11 +186,11 @@ const PoolSettings: FC<{
       ),
       total: {
         value: Number(d.value),
-        usdValue: 0,
+        usdValue: null,
       },
       amount: {
         value: d.amount,
-        min: store.config?.swaps.minLiquidity.toString(),
+        min: constants?.swaps.minLiquidity.toString(),
         onChange: (amount: string) => {
           changeOutcomeRow(amount);
         },
@@ -241,6 +240,6 @@ const PoolSettings: FC<{
       </div>
     </motion.div>
   );
-});
+};
 
 export default PoolSettings;

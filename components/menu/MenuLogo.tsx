@@ -1,17 +1,13 @@
-import React, { FC } from "react";
-import { observer } from "mobx-react";
 import Link from "next/link";
-import Logo from "../icons/ZeitgeistIcon";
-import { useStore } from "lib/stores/Store";
 import { useRouter } from "next/router";
-import AccountButton from "components/account/AccountButton";
+import { FC } from "react";
+import Logo from "../icons/ZeitgeistIcon";
 
 const MenuLogo: FC<{
   menuOpen: boolean;
   setMenuOpen?: (boolean) => void;
-}> = observer(({ menuOpen, setMenuOpen }) => {
+}> = ({ menuOpen, setMenuOpen }) => {
   const { pathname } = useRouter();
-  const { blockNumber } = useStore();
 
   return (
     <Link
@@ -22,7 +18,7 @@ const MenuLogo: FC<{
     >
       <Logo dark={pathname === "/" ? (menuOpen ? true : false) : true} />
       <>
-        <div className="hidden sm:flex flex-col items-center">
+        <div className="hidden sm:flex flex-col">
           <h1
             className={`font-kanit text-xl ${
               pathname === "/"
@@ -34,13 +30,13 @@ const MenuLogo: FC<{
           >
             Zeitgeist
           </h1>
-          <span className="w-full text-start text-xs font-mono text-sky-600">
-            <>{blockNumber ? blockNumber.toHuman() : 0}</>
+          <span className="text-xs text-sky-600 font-medium">
+            Prediction Markets
           </span>
         </div>
       </>
     </Link>
   );
-});
+};
 
 export default MenuLogo;

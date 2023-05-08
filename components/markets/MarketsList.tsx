@@ -2,7 +2,7 @@ import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
 import React, { useEffect, useState } from "react";
 import Decimal from "decimal.js";
 import { useInView } from "react-intersection-observer";
-import { observer } from "mobx-react";
+
 import Loader from "react-spinners/PulseLoader";
 import { X } from "react-feather";
 import { useRouter } from "next/router";
@@ -55,12 +55,14 @@ const useChangeQuery = (
   }, [withLiquidityOnly]);
 };
 
-const MarketsList = observer(({ className = "" }: MarketsListProps) => {
+const MarketsList = ({ className = "" }: MarketsListProps) => {
   const [filters, setFilters] = useState<MarketFilter[]>();
   const [orderBy, setOrderBy] = useState<MarketsOrderBy>();
   const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
 
   const { ref: loadMoreRef, inView: isLoadMarkerInView } = useInView();
+
+  const queryState = useMarketsUrlQuery();
 
   useChangeQuery(filters, orderBy, withLiquidityOnly);
 
@@ -70,7 +72,11 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
     isLoading,
     hasNextPage,
     fetchNextPage,
-  } = useInfiniteMarkets(orderBy, withLiquidityOnly, filters);
+  } = useInfiniteMarkets(
+    queryState.ordering,
+    queryState.liquidityOnly,
+    queryState.filters,
+  );
 
   useEffect(() => {
     if (isLoadMarkerInView === true && hasNextPage === true) {
@@ -81,14 +87,14 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
   const markets = marketsPages?.pages.flatMap((markets) => markets.data) ?? [];
 
   const count = markets?.length ?? 0;
-  const marketIds = markets?.map((m) => m.marketId) ?? [];
 
-  const { data: stats } = useMarketsStats(marketIds);
+  const { data: stats } = useMarketsStats(markets.map((m) => m.marketId));
 
   return (
     <div
-      className={"pt-ztg-46 mb-[38px]" + className}
+      className={"pt-ztg-46 mb-[38px] scroll-mt-[40px]" + className}
       data-testid="marketsList"
+      id={"market-list"}
     >
       <MarketFilterSelection
         onFiltersChange={setFilters}
@@ -113,7 +119,7 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
               scalarType={scalarType}
               pool={market.pool}
               status={market.status}
-              baseAsset={market.pool?.baseAsset}
+              baseAsset={market.baseAsset}
               volume={new Decimal(volume).div(ZTG).toNumber()}
               tags={market.tags}
               numParticipants={stat?.participants}
@@ -140,9 +146,9 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       ></div>
     </div>
   );
-});
+};
 
-const MarketsSearchInfo = observer(({ searchText }: { searchText: string }) => {
+const MarketsSearchInfo = ({ searchText }: { searchText: string }) => {
   const router = useRouter();
 
   return (
@@ -161,6 +167,6 @@ const MarketsSearchInfo = observer(({ searchText }: { searchText: string }) => {
       </div>
     </div>
   );
-});
+};
 
 export default MarketsList;

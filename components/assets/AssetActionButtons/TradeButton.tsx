@@ -16,7 +16,7 @@ const TradeButton = ({
   return (
     <>
       <button
-        className="text-mariner font-semibold text-ztg-14-120"
+        className="text-mariner font-semibold text-ztg-14-120 text-center w-full"
         onClick={() => {
           setTradeItem({
             assetId: assetId,

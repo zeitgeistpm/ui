@@ -4,6 +4,7 @@ import { ChevronRight } from "react-feather";
 import Link from "next/link";
 import { useNotifications } from "lib/state/notifications";
 import { useForm } from "react-hook-form";
+import { endpointOptions } from "lib/constants";
 
 const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
   const notificationStore = useNotifications();
@@ -31,24 +32,22 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
 
   return (
     <form className="flex flex-col w-full" onSubmit={handleSubmit(subscribe)}>
-      <h6 className="text-center md:text-start font-semibold mb-ztg-30">
-        {title}
-      </h6>
-      <div className="flex gap-3 items-center h-ztg-40 mb-auto w-full">
+      <h6 className="font-semibold mb-[26px]">{title}</h6>
+      <div className="flex gap-3 items-center h-10 mb-auto w-full">
         <input
           {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-          className={`h-full grow rounded text-sky-600 p-2 text-ztg-12-120 bg-anti-flash-white border-[1px] focus:outline-none ${
+          className={`h-full grow rounded-md text-sky-600 p-2 text-ztg-12-120 bg-anti-flash-white border-[1px] focus:outline-none ${
             invalid ? "border-vermilion" : "border-none"
           }`}
           type="email"
         />
         <button
           type="submit"
-          className={`h-full w-ztg-40 flex-shrink-0 rounded-full center bg-pastel-blue text-white ${
+          className={`h-full flex-shrink-0 text-ztg-16-150 rounded-full center bg-ztg-blue text-white px-5 ${
             invalid ? "cursor-default" : "cursor-pointer"
           }`}
         >
-          <ChevronRight size={20} />
+          Send Email
         </button>
       </div>
     </form>
@@ -63,15 +62,17 @@ interface FooterMenuProps {
 
 const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
   return (
-    <div
-      className={` ${className}
-          `}
-    >
-      <h6 className="font-semibold">{title}</h6>
+    <div className={`${className}`}>
+      <h6 className="font-semibold mb-1">{title}</h6>
       <div className="text-ztg-14-150 flex flex-col text-sky-600">
         {links.map(({ text, href }, idx) => {
           return (
-            <Link href={href} key={`footerMenuLink${idx}`} target="_blank">
+            <Link
+              href={href}
+              key={`footerMenuLink${idx}`}
+              target="_blank"
+              className="mb-0.5"
+            >
               <span>{text}</span>
             </Link>
           );
@@ -84,22 +85,16 @@ const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
 const Footer = () => {
   return (
     <div className="container-fluid mx-auto mt-auto flex flex-col pb-24">
-      <div className="flex justify-between gap-5 lg:gap-12 mb-8 md:mb-16">
-        <FooterNewsletterSub title="Subscribe to Newsletter" />
-        <div className="hidden md:flex justify-between gap-7 w-full ">
+      <div className="flex justify-between gap-12 lg:gap-36 mb-8 md:mb-16 flex-wrap md:flex-nowrap">
+        <div className="flex justify-between gap-7 w-full">
           <FooterMenu
             title="General"
             links={[
+              {
+                text: "Apps (Advanced UI)",
+                href: `https://polkadot.js.org/apps/?rpc=${endpointOptions[0].value}`,
+              },
               { text: "Website", href: "https://zeitgeist.pm" },
-              { text: "Blog", href: "https://blog.zeitgeist.pm" },
-              {
-                text: "Privacy Policy",
-                href: "https://docs.google.com/document/d/e/2PACX-1vSzOpsuAJ3CKHNeitx4um2k-D9m7dJzJ0ZyXe0buWQXm_MWUoaNujCYwnvp4P8Ia70-59JxDraWUebT/pub",
-              },
-              {
-                text: "Terms of Use",
-                href: "https://docs.google.com/document/d/e/2PACX-1vQuMdjqEVt7lPwnGimAQd9lJufSwCJ6S_kSJlL_wYLTOlJnIDcnzOaunXRVpOHIrw/pub",
-              },
             ]}
           />
           <FooterMenu
@@ -107,10 +102,6 @@ const Footer = () => {
             links={[
               { text: "Documentation", href: "https://docs.zeitgeist.pm" },
               { text: "Github", href: "https://github.com/zeitgeistpm" },
-              {
-                text: "Polkadot-JS Apps",
-                href: "https://polkadot.js.org/apps/?rpc=wss://bsr.zeitgeist.pm",
-              },
             ]}
           />
           <FooterMenu
@@ -122,6 +113,7 @@ const Footer = () => {
             ]}
           />
         </div>
+        <FooterNewsletterSub title="Subscribe to Newsletter" />
       </div>
       <div className="flex flex-col md:flex-row gap-5">
         <span className="text-center md:text-start whitespace-nowrap text-ztg-12-150">

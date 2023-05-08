@@ -1,6 +1,6 @@
-import { Skeleton } from "@material-ui/lab";
+// import { Skeleton } from "@material-ui/lab";
+import Skeleton from "components/ui/Skeleton";
 import {
-  AssetId,
   IndexerContext,
   IOMarketOutcomeAssetId,
   IOPoolShareAssetId,
@@ -15,7 +15,7 @@ import Table, { TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { Position } from "lib/hooks/queries/usePortfolioPositions";
-import { useStore } from "lib/stores/Store";
+import { useWallet } from "lib/state/wallet";
 import Link from "next/link";
 import MarketPositionHeader from "./MarketPositionHeader";
 
@@ -34,8 +34,8 @@ export const MarketPositions = ({
 }: MarketPositionsProps) => {
   const { data: marketStage } = useMarketStage(market);
 
-  const store = useStore();
-  const userAddress = store.wallets?.getActiveSigner()?.address;
+  const wallet = useWallet();
+  const userAddress = wallet.getActiveSigner()?.address;
   const isOracle = market?.oracle === userAddress;
 
   return (
@@ -269,30 +269,10 @@ export const MarketPositionsSkeleton = ({
 }) => {
   return (
     <div className={`${className}`}>
-      <Skeleton
-        variant="rect"
-        className="mb-6 center mx-auto rounded-md"
-        height={20}
-        width={"70%"}
-      />
-      <Skeleton
-        variant="rect"
-        className="mb-2 rounded-md"
-        height={50}
-        width={"100%"}
-      />
-      <Skeleton
-        variant="rect"
-        className="mb-2 rounded-md"
-        height={90}
-        width={"100%"}
-      />
-      <Skeleton
-        variant="rect"
-        className="rounded-md"
-        height={90}
-        width={"100%"}
-      />
+      <Skeleton className="mb-6 center mx-auto" height={20} width="70%" />
+      <Skeleton className="mb-2" height={50} width={"100%"} />
+      <Skeleton className="mb-2" height={90} width={"100%"} />
+      <Skeleton height={90} width={"100%"} />
     </div>
   );
 };

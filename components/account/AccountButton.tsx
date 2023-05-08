@@ -1,44 +1,79 @@
-import { observer } from "mobx-react";
-import React, { FC, useEffect, useState } from "react";
-
 import { Menu, Transition } from "@headlessui/react";
 import { getWallets } from "@talismn/connect-wallets";
+import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
 import Modal from "components/ui/Modal";
+import Decimal from "decimal.js";
 import { SUPPORTED_WALLET_NAMES } from "lib/constants";
-import { useAccountModals } from "lib/hooks/account";
-import { usePrevious } from "lib/hooks/usePrevious";
-import { useModalStore } from "lib/stores/ModalStore";
-import { useStore } from "lib/stores/Store";
+import { useBalance } from "lib/hooks/queries/useBalance";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useAccountModals } from "lib/state/account";
 import { useUserLocation } from "lib/hooks/useUserLocation";
+import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
+
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { DollarSign, Frown, Settings, User } from "react-feather";
+import React, { FC, useState } from "react";
+import { ChevronDown, DollarSign, Frown, Settings, User } from "react-feather";
+import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
 import OnBoardingModal from "./OnboardingModal";
-import dynamic from "next/dynamic";
+
+const BalanceRow = ({
+  imgPath,
+  balance,
+  units,
+}: {
+  imgPath: string;
+  balance: Decimal;
+  units: string;
+}) => {
+  return (
+    <div className="flex items-center mb-3 ">
+      <img src={imgPath} height={"24px"} width="24px" />
+      <div
+        className={`group font-bold flex w-full items-center rounded-md px-2 py-2 text-sm`}
+      >
+        {balance &&
+          `${formatNumberLocalized(
+            balance?.div(ZTG).abs().toNumber(),
+          )} ${units}`}
+      </div>
+    </div>
+  );
+};
 
 const AccountButton: FC<{
   connectButtonClassname?: string;
   autoClose?: boolean;
   avatarDeps?: any[];
-}> = observer(({ connectButtonClassname, autoClose, avatarDeps }) => {
-  const store = useStore();
-  const { wallets } = store;
-  const { connected, activeAccount, activeBalance } = wallets;
-  const modalStore = useModalStore();
+}> = ({ connectButtonClassname, autoClose, avatarDeps }) => {
+  const [sdk] = useSdkv2();
+  const {
+    connected,
+    activeAccount,
+    selectWallet,
+    disconnectWallet,
+    isNovaWallet,
+  } = useWallet();
   const accountModals = useAccountModals();
   const { locationAllowed, isUsingVPN } = useUserLocation();
   const [hovering, setHovering] = useState<boolean>(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
-  const isNovaWallet: boolean =
-    //@ts-ignore
-    typeof window === "object" && window.walletExtension?.isNovaWallet;
+
+  const { data: activeBalance } = useZtgBalance(activeAccount?.address);
+  const { data: polkadotBalance } = useBalance(activeAccount?.address, {
+    ForeignAsset: 0,
+  });
+
+  const { data: constants } = useChainConstants();
 
   const connect = async () => {
     if (isNovaWallet) {
-      wallets.connectWallet("polkadot-js", true);
+      selectWallet("polkadot-js");
     } else {
       accountModals.openWalletSelect();
     }
@@ -52,15 +87,7 @@ const AccountButton: FC<{
     setHovering(false);
   };
 
-  const prevactiveAccount = usePrevious(activeAccount);
-
   const { pathname } = useRouter();
-
-  useEffect(() => {
-    if (autoClose && activeAccount !== prevactiveAccount) {
-      modalStore.closeModal();
-    }
-  }, [activeAccount]);
 
   const hasWallet =
     typeof window !== "undefined" &&
@@ -94,9 +121,7 @@ const AccountButton: FC<{
               } rounded-full font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-30`
             }
             onClick={() => handleOnboardingClick()}
-            disabled={
-              locationAllowed !== true || isUsingVPN || !store?.sdk?.api
-            }
+            disabled={locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)}
           >
             {hasWallet === true ? "Connect Wallet" : "Get Started"}
           </button>
@@ -154,12 +179,22 @@ const AccountButton: FC<{
                           />
                         </div>
                         <span
-                          className={`font-medium px-3.5 text-sm h-full leading-[40px] ${
+                          className={`font-medium pl-2 text-sm h-full leading-[40px] ${
                             pathname === "/" ? "text-white" : "text-black"
                           }`}
                         >
-                          {shortenAddress(activeAccount?.address, 6, 4)}
+                          {activeAccount &&
+                            shortenAddress(activeAccount?.address, 6, 4)}
                         </span>
+                        <div className="pr-1">
+                          <ChevronDown
+                            size={12}
+                            viewBox="6 6 12 12"
+                            className={`box-content px-2 ${
+                              open && "rotate-180"
+                            }`}
+                          />
+                        </div>
                       </div>
                     </div>
                   </Menu.Button>
@@ -178,20 +213,18 @@ const AccountButton: FC<{
                     <div className="">
                       <div className="border-b-2 mb-3 py-2">
                         <div className="px-4">
-                          <div className="flex items-center mb-3 ">
-                            <img
-                              src="/currencies/ztg.jpg"
-                              height={"24px"}
-                              width="24px"
-                            />
-                            <div
-                              className={`group font-bold flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                            >
-                              {`${formatNumberLocalized(
-                                activeBalance?.abs().toNumber(),
-                              )} ${store.config?.tokenSymbol}`}
-                            </div>
-                          </div>
+                          <BalanceRow
+                            imgPath="/currencies/ztg.jpg"
+                            units={constants?.tokenSymbol}
+                            balance={activeBalance}
+                          />
+                        </div>
+                        <div className="px-4">
+                          <BalanceRow
+                            imgPath="/currencies/dot.png"
+                            units="DOT"
+                            balance={polkadotBalance}
+                          />
                         </div>
                         <div className="px-4">
                           <div className="flex items-center mb-3">
@@ -227,7 +260,7 @@ const AccountButton: FC<{
                             <div
                               className="flex items-center px-4 mb-3 hover:bg-slate-100"
                               onClick={() => {
-                                accountModals.openAccontSelect();
+                                accountModals.openAccountSelect();
                               }}
                             >
                               <User />
@@ -258,7 +291,7 @@ const AccountButton: FC<{
                         {({ active }) => (
                           <div
                             className="flex items-center px-4 hover:bg-slate-100"
-                            onClick={() => wallets.disconnectWallet()}
+                            onClick={() => disconnectWallet()}
                           >
                             <Frown />
                             <button
@@ -285,7 +318,7 @@ const AccountButton: FC<{
       </Modal>
     </>
   );
-});
+};
 
 export default dynamic(() => Promise.resolve(AccountButton), {
   ssr: false,

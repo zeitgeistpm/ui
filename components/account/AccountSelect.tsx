@@ -1,13 +1,14 @@
-import { useStore } from "lib/stores/Store";
-import { observer } from "mobx-react";
-import React, { FC, useEffect, useState } from "react";
+import { Unpacked } from "@zeitgeistpm/utility/dist/array";
+import { useWallet } from "lib/state/wallet";
+
+import React, { FC, useEffect, useMemo, useState } from "react";
 import Select, { components, ControlProps } from "react-select";
 
 import CopyIcon from "../ui/CopyIcon";
 import AccountSelectOption from "./AccountSelectOption";
 import AccountSelectValue from "./AccountSelectValue";
 
-const Control = observer(({ children, ...rest }) => {
+const Control = ({ children, ...rest }) => {
   return (
     <components.Control {...(rest as ControlProps)}>
       <div className="flex items-center bg-sky-100 dark:bg-black justify-between cursor-pointer rounded-ztg-10">
@@ -15,9 +16,9 @@ const Control = observer(({ children, ...rest }) => {
       </div>
     </components.Control>
   );
-});
+};
 
-const Option = observer((props) => {
+const Option = (props) => {
   const { label, value } = props.data;
 
   return (
@@ -25,13 +26,13 @@ const Option = observer((props) => {
       <AccountSelectOption name={label} address={value} />
     </components.Option>
   );
-});
+};
 
-const SingleValue = observer((props) => {
+const SingleValue = (props) => {
   return (
     <AccountSelectValue name={props.data.label} address={props.data.value} />
   );
-});
+};
 
 const DropdownIndicator = () => {
   return null;
@@ -72,23 +73,30 @@ const customStyles = {
   },
 };
 
-const AccountSelect: FC = observer(() => {
-  const store = useStore();
-  const { wallets } = store;
-  const { accountSelectOptions: options, activeAccount } = wallets;
+const AccountSelect: FC = () => {
+  const wallet = useWallet();
+
+  const options = useMemo(() => {
+    return wallet.accounts.map((account, id) => {
+      return {
+        label: account.name ?? `Account #${id}`,
+        value: account.address,
+      };
+    });
+  }, [wallet.accounts]);
 
   useEffect(() => {
-    if (activeAccount) {
-      const def = options.find((o) => o.value === activeAccount.address);
+    if (wallet.activeAccount) {
+      const def = options.find((o) => o.value === wallet.activeAccount.address);
       setDefaultOption(def);
     }
-  }, [activeAccount, options]);
+  }, [wallet.activeAccount, options]);
 
   const [defaultOption, setDefaultOption] =
     useState<{ value: string; label: string }>();
 
-  const onSelectChange = (opt) => {
-    wallets.setActiveAccount(opt.value);
+  const onSelectChange = (opt: Unpacked<typeof options>) => {
+    wallet.selectAccount(opt.value);
   };
 
   return (
@@ -109,12 +117,12 @@ const AccountSelect: FC = observer(() => {
       />
 
       <CopyIcon
-        copyText={wallets.activeAccount?.address}
+        copyText={wallet.activeAccount?.address}
         className="flex-grow pr-ztg-8"
         size={16}
       />
     </div>
   );
-});
+};
 
 export default AccountSelect;
