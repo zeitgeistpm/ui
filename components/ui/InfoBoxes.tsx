@@ -1,6 +1,5 @@
-import { observer } from "mobx-react";
-import React, { FC } from "react";
-import StatCard, { StatCardProps } from "./StatCard";
+import { FC } from "react";
+import { StatCardProps } from "./StatCard";
 
 const stats: StatCardProps[] = [
   {
@@ -20,7 +19,7 @@ const stats: StatCardProps[] = [
   },
 ];
 
-const InfoBoxes: FC = observer(() => {
+const InfoBoxes: FC = () => {
   return (
     <></>
     // <div className="flex h-ztg-104 mb-ztg-30">
@@ -34,6 +33,6 @@ const InfoBoxes: FC = observer(() => {
     //   ))}
     // </div>
   );
-});
+};
 
 export default InfoBoxes;

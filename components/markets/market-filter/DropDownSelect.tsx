@@ -1,19 +1,17 @@
 import { MarketFilter } from "lib/types/market-filter";
 import { findFilterIndex } from "lib/util/market-filter";
-import { observer } from "mobx-react";
-import { useContext, useEffect, useState } from "react";
-import { ChevronUp, ChevronDown } from "react-feather";
-import ReactSelect, {
-  ControlProps,
-  components,
-  OptionProps,
-  MenuListProps,
-} from "react-select";
-import { MarketFiltersContext } from "./MarketFiltersContainer";
 import Image from "next/image";
+import { ChevronDown, ChevronUp } from "react-feather";
+import ReactSelect, {
+  components,
+  ControlProps,
+  MenuListProps,
+  OptionProps,
+} from "react-select";
+import { useMarketFiltersContext } from "./MarketFiltersContainer";
 
 const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
-  const { setSelectedMenu, selectedMenu } = useContext(MarketFiltersContext);
+  const { setSelectedMenu, selectedMenu } = useMarketFiltersContext();
   const { menuIsOpen, selectProps } = props;
   const Chevron = menuIsOpen ? ChevronUp : ChevronDown;
 
@@ -45,7 +43,7 @@ const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
 const Option = ({ children, ...props }: OptionProps<MarketFilter>) => {
   const { data } = props;
 
-  const { activeFilters } = useContext(MarketFiltersContext);
+  const { activeFilters } = useMarketFiltersContext();
 
   const isActive = findFilterIndex(activeFilters, data) !== -1;
 
@@ -136,47 +134,45 @@ const customStyles = {
   },
 };
 
-const DropDownSelect = observer(
-  ({
-    label,
-    options,
-    add,
-    portal,
-    isOpen = false,
-  }: {
-    label: string;
-    options: MarketFilter[];
-    portal: HTMLDivElement;
-    isOpen?: boolean;
-    add: (val: MarketFilter) => void;
-  }) => {
-    return (
-      <ReactSelect
-        className="mr-[10px]"
-        placeholder={label}
-        options={options}
-        styles={customStyles}
-        isMulti={false}
-        isSearchable={false}
-        menuPortalTarget={portal}
-        instanceId={`${label}-select`}
-        menuIsOpen={isOpen}
-        onChange={(val: MarketFilter) => {
-          add(val);
-        }}
-        captureMenuScroll={false}
-        components={{
-          Control,
-          SingleValue,
-          IndicatorSeparator,
-          DropdownIndicator,
-          Placeholder,
-          Option,
-          MenuList,
-        }}
-      />
-    );
-  },
-);
+const DropDownSelect = ({
+  label,
+  options,
+  add,
+  portal,
+  isOpen = false,
+}: {
+  label: string;
+  options: MarketFilter[];
+  portal: HTMLDivElement;
+  isOpen?: boolean;
+  add: (val: MarketFilter) => void;
+}) => {
+  return (
+    <ReactSelect
+      className="mr-[10px]"
+      placeholder={label}
+      options={options}
+      styles={customStyles}
+      isMulti={false}
+      isSearchable={false}
+      menuPortalTarget={portal}
+      instanceId={`${label}-select`}
+      menuIsOpen={isOpen}
+      onChange={(val: MarketFilter) => {
+        add(val);
+      }}
+      captureMenuScroll={false}
+      components={{
+        Control,
+        SingleValue,
+        IndicatorSeparator,
+        DropdownIndicator,
+        Placeholder,
+        Option,
+        MenuList,
+      }}
+    />
+  );
+};
 
 export default DropDownSelect;

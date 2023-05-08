@@ -1,36 +1,35 @@
 import { Tab } from "@headlessui/react";
+import { ISubmittableResult } from "@polkadot/types/types";
 import {
   AssetId,
-  ZTG,
+  IOForeignAssetId,
   IOMarketOutcomeAssetId,
   IOZtgAssetId,
-  IOForeignAssetId,
+  ZTG,
 } from "@zeitgeistpm/sdk-next";
+import TradeResult from "components/markets/TradeResult";
 import Decimal from "decimal.js";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
 import {
   useTradeItem,
   useTradeMaxAssetAmount,
   useTradeMaxBaseAmount,
   useTradeTransaction,
 } from "lib/hooks/trade";
-import { ISubmittableResult } from "@polkadot/types/types";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import { useNotifications } from "lib/state/notifications";
-import { observer } from "mobx-react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useWallet } from "lib/state/wallet";
+import { TradeType } from "lib/types";
 import { capitalize } from "lodash";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import { from } from "rxjs";
 import { useDebounce } from "use-debounce";
 import RangeInput from "../ui/RangeInput";
 import TransactionButton from "../ui/TransactionButton";
 import TradeTab, { TradeTabType } from "./TradeTab";
-import { useForm } from "react-hook-form";
-import { useExtrinsic } from "lib/hooks/useExtrinsic";
-import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
-import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
-import TradeResult from "components/markets/TradeResult";
-import { useWallet } from "lib/state/wallet";
-import { TradeType } from "lib/types";
-import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -61,7 +60,7 @@ const getTradeValuesFromExtrinsicResult = (
   };
 };
 
-const TradeForm = observer(() => {
+const TradeForm = () => {
   const notifications = useNotifications();
   const [tabIndex, setTabIndex] = useState<number>(0);
   const { register, formState, watch, setValue, reset } = useForm<{
@@ -565,6 +564,7 @@ const TradeForm = observer(() => {
             <TransactionButton
               disabled={!formState.isValid || isLoading === true}
               className="h-[56px]"
+              type="submit"
             >
               <div className="center font-normal h-[20px]">
                 Confirm {`${capitalize(tradeItem.action)}`}
@@ -578,6 +578,6 @@ const TradeForm = observer(() => {
       )}
     </>
   );
-});
+};
 
 export default TradeForm;

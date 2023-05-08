@@ -1,26 +1,25 @@
-import { observer } from "mobx-react";
-import React, { FC, useState } from "react";
-import { ChevronDown } from "react-feather";
 import { Menu, Transition } from "@headlessui/react";
 import { getWallets } from "@talismn/connect-wallets";
+import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
 import Modal from "components/ui/Modal";
+import Decimal from "decimal.js";
 import { SUPPORTED_WALLET_NAMES } from "lib/constants";
-import { useAccountModals } from "lib/hooks/account";
+import { useBalance } from "lib/hooks/queries/useBalance";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useAccountModals } from "lib/state/account";
 import { useUserLocation } from "lib/hooks/useUserLocation";
-import { useStore } from "lib/stores/Store";
 import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
+
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { DollarSign, Frown, Settings, User } from "react-feather";
-import OnBoardingModal from "./OnboardingModal";
-import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
-import { ZTG } from "@zeitgeistpm/sdk-next";
-import { useBalance } from "lib/hooks/queries/useBalance";
-import Decimal from "decimal.js";
+import React, { FC, useState } from "react";
+import { ChevronDown, DollarSign, Frown, Settings, User } from "react-feather";
 import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
+import OnBoardingModal from "./OnboardingModal";
 
 const BalanceRow = ({
   imgPath,
@@ -50,8 +49,8 @@ const AccountButton: FC<{
   connectButtonClassname?: string;
   autoClose?: boolean;
   avatarDeps?: any[];
-}> = observer(({ connectButtonClassname, autoClose, avatarDeps }) => {
-  const store = useStore();
+}> = ({ connectButtonClassname, autoClose, avatarDeps }) => {
+  const [sdk] = useSdkv2();
   const {
     connected,
     activeAccount,
@@ -122,9 +121,7 @@ const AccountButton: FC<{
               } rounded-full font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-30`
             }
             onClick={() => handleOnboardingClick()}
-            disabled={
-              locationAllowed !== true || isUsingVPN || !store?.sdk?.api
-            }
+            disabled={locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)}
           >
             {hasWallet === true ? "Connect Wallet" : "Get Started"}
           </button>
@@ -263,7 +260,7 @@ const AccountButton: FC<{
                             <div
                               className="flex items-center px-4 mb-3 hover:bg-slate-100"
                               onClick={() => {
-                                accountModals.openAccontSelect();
+                                accountModals.openAccountSelect();
                               }}
                             >
                               <User />
@@ -321,7 +318,7 @@ const AccountButton: FC<{
       </Modal>
     </>
   );
-});
+};
 
 export default dynamic(() => Promise.resolve(AccountButton), {
   ssr: false,

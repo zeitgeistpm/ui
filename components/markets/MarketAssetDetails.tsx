@@ -9,7 +9,7 @@ import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useRpcMarket } from "lib/hooks/queries/useRpcMarket";
-import { observer } from "mobx-react";
+
 import moment from "moment";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
@@ -39,7 +39,7 @@ const columns: TableColumn[] = [
   },
 ];
 
-const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
+const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
   const [tableData, setTableData] = useState<TableData[]>();
   const [sdk] = useSdkv2();
 
@@ -194,7 +194,7 @@ const MarketAssetDetails = observer(({ marketId }: { marketId: number }) => {
   };
 
   return <Table columns={columns} data={tableData} />;
-});
+};
 
 export default dynamic(() => Promise.resolve(MarketAssetDetails), {
   ssr: false,

@@ -10,18 +10,22 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useSaturatedMarket } from "lib/hooks/queries/useSaturatedMarket";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useGlobalKeyPress } from "lib/hooks/useGlobalKeyPress";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useModalStore } from "lib/stores/ModalStore";
-import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
 
-const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
+const SellFullSetForm = ({
+  marketId,
+  onSuccess,
+}: {
+  marketId: number;
+  onSuccess?: () => void;
+}) => {
   const wallet = useWallet();
   const notificationStore = useNotifications();
-  const modalStore = useModalStore();
   const [sdk] = useSdkv2();
 
   const { data: market } = useMarket({ marketId });
@@ -58,7 +62,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
           `Sold ${new Decimal(amount).toFixed(1)} full sets`,
           { type: "Success" },
         );
-        modalStore.closeModal();
+        onSuccess?.();
       },
     },
   );
@@ -90,9 +94,7 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
     sellSets();
   };
 
-  useEffect(() => {
-    modalStore.setOnEnterKeyPress(() => handleSignTransaction());
-  }, [modalStore, market, handleSignTransaction]);
+  useGlobalKeyPress("Enter", handleSignTransaction);
 
   const disabled =
     isLoading ||
@@ -100,7 +102,14 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
     Number(amount) === 0;
 
   return (
-    <div>
+    <div className="p-[30px]">
+      <div
+        className={
+          "font-bold text-ztg-16-150  dark:text-white text-black w-full"
+        }
+      >
+        Sell Full Set
+      </div>
       <div>
         <div className="flex items-center mt-ztg-24 mb-ztg-8">
           {saturatedMarket?.categories.map((outcome, index) => (
@@ -149,6 +158,6 @@ const SellFullSetModal = observer(({ marketId }: { marketId: number }) => {
       </TransactionButton>
     </div>
   );
-});
+};
 
-export default SellFullSetModal;
+export default SellFullSetForm;

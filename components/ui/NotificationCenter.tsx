@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useNotifications, NotificationType } from "lib/state/notifications";
-import { observer } from "mobx-react";
+import { NotificationType, useNotifications } from "lib/state/notifications";
 import React, { FC, useEffect } from "react";
 import { AlertTriangle, CheckCircle, Info, X } from "react-feather";
 
@@ -12,7 +11,7 @@ const NotificationCard: FC<{
   content: string;
   type: NotificationType;
   dataTest?: string;
-}> = observer(({ close, lifetime, content, type, dataTest }) => {
+}> = ({ close, lifetime, content, type, dataTest }) => {
   const [timer, setTimer] = React.useState(lifetime);
 
   useEffect(() => {
@@ -76,7 +75,7 @@ const NotificationCard: FC<{
       </span>
     </>
   );
-});
+};
 
 const getColor = (type: NotificationType) => {
   switch (type) {
@@ -111,7 +110,7 @@ const getGradient = (type: NotificationType) => {
   }
 };
 
-const NotificationCenter = observer(() => {
+const NotificationCenter = () => {
   const { notifications, removeNotification } = useNotifications();
 
   return (
@@ -147,6 +146,6 @@ const NotificationCenter = observer(() => {
       </div>
     </div>
   );
-});
+};
 
 export default NotificationCenter;

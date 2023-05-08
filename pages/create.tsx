@@ -9,15 +9,16 @@ import {
   CreateMarketParams,
 } from "@zeitgeistpm/sdk/dist/types/market";
 import Decimal from "decimal.js";
-import { observer } from "mobx-react";
+
 import MobxReactForm from "mobx-react-form";
 import Moment from "moment";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle } from "react-feather";
 import { from } from "rxjs";
 
+import { Dialog } from "@headlessui/react";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { dateBlock } from "@zeitgeistpm/utility/dist/time";
 import EndField from "components/create/EndField";
@@ -38,6 +39,7 @@ import MarketCostModal from "components/markets/MarketCostModal";
 import InfoBoxes from "components/ui/InfoBoxes";
 import { Input } from "components/ui/inputs";
 import LabeledToggle from "components/ui/LabeledToggle";
+import Modal from "components/ui/Modal";
 import Toggle from "components/ui/Toggle";
 import TransactionButton from "components/ui/TransactionButton";
 import { NUM_BLOCKS_IN_DAY, ZTG } from "lib/constants";
@@ -49,8 +51,6 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChainTime } from "lib/state/chaintime";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useModalStore } from "lib/stores/ModalStore";
-import { useStore } from "lib/stores/Store";
 import { JSONObject } from "lib/types";
 import {
   EndType,
@@ -61,10 +61,13 @@ import {
   OutcomeType,
   RangeOutcomeEntry,
 } from "lib/types/create-market";
+import SDK from "@zeitgeistpm/sdk";
+import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import { toBase64 } from "lib/util";
 import { calculateMarketCost } from "lib/util/market";
 import { extrinsicCallback } from "lib/util/tx";
 import dynamic from "next/dynamic";
+import Skeleton from "components/ui/Skeleton";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
@@ -121,11 +124,23 @@ const initialFields = {
   },
 };
 
-const CreatePage: NextPage = observer(() => {
-  const store = useStore();
+const CreatePage: NextPage = () => {
+  const [sdk, setSdk] = useState<SDK>();
+
+  useEffect(() => {
+    SDK.initialize(endpointOptions[0].value, {
+      graphQlEndpoint,
+    }).then(setSdk);
+  }, []);
+
+  if (!sdk) return <Skeleton className="mt-7" height={550} />;
+
+  return <Inner sdkv1={sdk} />;
+};
+
+const Inner = ({ sdkv1 }: { sdkv1: SDK }) => {
   const chainTime = useChainTime();
   const notificationStore = useNotifications();
-  const modalStore = useModalStore();
   const [sdk] = useSdkv2();
   const wallet = useWallet();
   const { data: constants } = useChainConstants();
@@ -169,6 +184,7 @@ const CreatePage: NextPage = observer(() => {
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[] | null>(null);
   const [swapFee, setSwapFee] = useState<string>();
   const [txFee, setTxFee] = useState<string>();
+  const [marketCostModalOpen, setMarketCostModalOpen] = useState(false);
 
   const { data: activeBalance } = useZtgBalance(wallet.activeAccount?.address);
 
@@ -177,7 +193,7 @@ const CreatePage: NextPage = observer(() => {
   const questionInputRef = useRef();
   const oracleInputRef = useRef();
 
-  const ipfsClient = store.sdk.models.ipfsClient;
+  const ipfsClient = sdkv1.models.ipfsClient;
 
   const [marketCost, setMarketCost] = useState<number>();
   const [newMarketId, setNewMarketId] = useState<number>();
@@ -561,7 +577,7 @@ const CreatePage: NextPage = observer(() => {
           }),
         );
 
-        await store.sdk.models.createCpmmMarketAndDeployAssets(params);
+        await sdkv1.models.createCpmmMarketAndDeployAssets(params);
       });
     };
 
@@ -604,7 +620,7 @@ const CreatePage: NextPage = observer(() => {
                 },
               }),
             );
-            return parseInt(await store.sdk.models.createMarket(params));
+            return parseInt(await sdkv1.models.createMarket(params));
           } else {
             const id =
               await createCategoricalCpmmMarketAndDeployPoolTransaction();
@@ -632,40 +648,29 @@ const CreatePage: NextPage = observer(() => {
   const getTransactionFee = async (): Promise<string> => {
     if (!deployPool) {
       const params = await getCreateMarketParameters(true);
-      return new Decimal(await store.sdk.models.createMarket(params))
+      return new Decimal(await sdkv1.models.createMarket(params))
         .div(ZTG)
         .toFixed(4);
     } else if (poolRows) {
       const params = await getCreateCpmmMarketAndAddPoolParameters(true);
-      const fee = await store.sdk.models.createCpmmMarketAndDeployAssets(
-        params,
-      );
+      const fee = await sdkv1.models.createCpmmMarketAndDeployAssets(params);
       return new Decimal(typeof fee == "string" ? fee : "0")
         .div(ZTG)
         .toFixed(4);
     }
   };
 
+  const liquidity = useMemo(() => {
+    return deployPool === true && poolRows
+      ? poolRows
+          .map((row) => new Decimal(row.value))
+          .reduce((prev, curr) => prev.add(curr), new Decimal(0))
+      : new Decimal(0);
+  }, [deployPool, poolRows]);
+
   const showCostModal = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    const liquidity =
-      deployPool === true && poolRows
-        ? poolRows
-            .map((row) => new Decimal(row.value))
-            .reduce((prev, curr) => prev.add(curr), new Decimal(0))
-        : new Decimal(0);
-
-    modalStore.openModal(
-      <MarketCostModal
-        liquidity={liquidity.toFixed(0)}
-        permissionless={!formData.advised}
-        networkFee={txFee}
-      />,
-      <div className="ml-[15px] mt-[15px]">Cost Breakdown</div>,
-      {
-        styles: { width: "70%", maxWidth: "622px" },
-      },
-    );
+    setMarketCostModalOpen(true);
   };
 
   const poolPricesEqualOne = poolRows
@@ -861,8 +866,26 @@ const CreatePage: NextPage = observer(() => {
           </div>
         </div>
       </div>
+
+      <Modal
+        open={marketCostModalOpen}
+        onClose={() => setMarketCostModalOpen(false)}
+      >
+        <Dialog.Panel className="bg-white rounded-ztg-10 p-[15px]">
+          <div>
+            <div className="font-bold text-ztg-16-150 text-black">
+              <div className="ml-[15px] mt-[15px]">Cost Breakdown</div>
+            </div>
+            <MarketCostModal
+              liquidity={liquidity.toFixed(0)}
+              permissionless={!formData.advised}
+              networkFee={txFee}
+            />
+          </div>
+        </Dialog.Panel>
+      </Modal>
     </form>
   );
-});
+};
 
 export default CreatePage;

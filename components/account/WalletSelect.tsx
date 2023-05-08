@@ -1,12 +1,12 @@
-import { useAccountModals } from "lib/hooks/account";
+import { useAccountModals } from "lib/state/account";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { supportedWallets, useWallet } from "lib/state/wallet";
 import { Wallet } from "lib/wallets/types";
-import { observer } from "mobx-react";
+
 import { useEffect } from "react";
 import { Download } from "react-feather";
 
-const WalletSelect = observer(() => {
+const WalletSelect = () => {
   const { selectWallet, errors, accounts, connected } = useWallet();
   const accountModals = useAccountModals();
 
@@ -17,17 +17,21 @@ const WalletSelect = observer(() => {
       window.open(wallet.installUrl);
     } else {
       selectWallet(wallet.extensionName);
+      accountModals.closeWalletSelect();
     }
   };
 
   useEffect(() => {
     if (!wasConnected && connected && accounts.length) {
-      accountModals.openAccontSelect();
+      accountModals.openAccountSelect();
     }
   }, [wasConnected, connected, accounts, errors]);
 
   return (
     <div className="flex flex-col">
+      <div className="font-bold text-ztg-16-150 text-black mb-3">
+        Connect Wallet
+      </div>
       {supportedWallets.map((wallet, idx) => {
         const error = errors.find(
           (e) => e.extensionName === wallet.extensionName,
@@ -70,6 +74,6 @@ const WalletSelect = observer(() => {
       })}
     </div>
   );
-});
+};
 
 export default WalletSelect;
