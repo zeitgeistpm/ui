@@ -12,9 +12,12 @@ import {
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import { tryCatch } from "@zeitgeistpm/utility/dist/either";
+import { fromNullable } from "@zeitgeistpm/utility/dist/option";
 import DiscordIcon from "components/icons/DiscordIcon";
 import TwitterIcon from "components/icons/TwitterIcon";
 import CopyIcon from "components/ui/CopyIcon";
+import Skeleton from "components/ui/Skeleton";
 import Modal from "components/ui/Modal";
 import { AnimatePresence, motion } from "framer-motion";
 import { ZTG } from "lib/constants";
@@ -24,30 +27,50 @@ import { useLocalStorage } from "lib/hooks/useLocalStorage";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useStore } from "lib/stores/Store";
 import { shortenAddress } from "lib/util";
 import { delay } from "lib/util/delay";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { capitalize } from "lodash";
-import { observer } from "mobx-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AiFillFire, AiFillInfoCircle } from "react-icons/ai";
 import { BsGearFill } from "react-icons/bs";
 import { IoIosNotifications, IoIosWarning } from "react-icons/io";
 import Loader from "react-spinners/PulseLoader";
 
-const AvatarPage = observer(() => {
+const AvatarPage = () => {
   const router = useRouter();
-  const store = useStore();
-  const avatarContext = useAvatarContext();
 
-  const wallet = useWallet();
+  const zeitAddress = fromNullable(router.query.address as string).map(
+    (address) => {
+      return tryCatch(() => encodeAddress(address, 73));
+    },
+  );
 
+  if (zeitAddress.isNone()) return <Skeleton height={524} />;
+
+  if (zeitAddress.unwrap().isLeft()) return <NotFoundPage />;
+
+  return (
+    <Inner
+      ztgEncodedAddress={zeitAddress.unwrap().unwrap()}
+      address={router.query.address as string}
+    />
+  );
+};
+
+const Inner = ({
+  ztgEncodedAddress,
+  address,
+}: {
+  ztgEncodedAddress: string;
+  address: string;
+}) => {
   const [sdk] = useSdkv2();
-  const address = router.query.address as string;
-  const zeitAddress = encodeAddress(router.query.address as string, 73);
+  const avatarContext = useAvatarContext();
+  const wallet = useWallet();
 
   const [loading, setLoading] = useState(true);
   const [mintingAvatar, setMintingAvatar] = useState(false);
@@ -66,9 +89,7 @@ const AvatarPage = observer(() => {
 
   const isOwner =
     wallet.activeAccount?.address === address ||
-    wallet.activeAccount?.address === zeitAddress;
-
-  console.log("isOwner", isOwner, wallet.activeAccount?.address, address);
+    wallet.activeAccount?.address === ztgEncodedAddress;
 
   const inventory = useInventoryManagement(
     (isOwner
@@ -334,7 +355,7 @@ const AvatarPage = observer(() => {
       </div>
     </>
   );
-});
+};
 
 const BadgeItem = (props: { item: Badge.IndexedBadge }) => {
   const { item } = props;
@@ -463,7 +484,6 @@ const ClaimModal = (props: {
   onClaimSuccess: () => void;
   onClose?: () => void;
 }) => {
-  const store = useStore();
   const notificationStore = useNotifications();
   const avatarSdk = useAvatarContext();
   const wallet = useWallet();
@@ -486,11 +506,6 @@ const ClaimModal = (props: {
   }, [props.address, props.burnAmount]);
 
   useEffect(() => {
-    store.sdk.api.query.styx
-      .crossings(wallet.activeAccount.address)
-      .then((crossing) => {
-        setHasCrossed(!crossing.isEmpty);
-      });
     if (isRpcSdk(sdk)) {
       sdk.api.query.styx
         .crossings(wallet.activeAccount?.address)
@@ -498,7 +513,7 @@ const ClaimModal = (props: {
           setHasCrossed(!crossing.isEmpty);
         });
     }
-  }, [props.address, isClaiming]);
+  }, [sdk, props.address, isClaiming]);
 
   const doClaim = async () => {
     notificationStore.pushNotification("Minting Avatar.", {
@@ -668,7 +683,7 @@ const ClaimModal = (props: {
   );
 };
 
-const InventoryModal = (props: { address: string }) => {
+const InventoryModal = (props: { address: string; onClose?: () => void }) => {
   const wallet = useWallet();
   const inventory = useInventoryManagement(
     ((wallet.getActiveSigner() as ExtSigner) || props.address) as any,

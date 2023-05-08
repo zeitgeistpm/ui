@@ -1,4 +1,3 @@
-import { observer } from "mobx-react";
 import ProgressBar, { ProgressBarEvent } from "./ProgressBar";
 import { TimeLineContextProvider } from "./TimeLineContext";
 
@@ -17,7 +16,7 @@ interface TimeLineProps {
   };
 }
 
-const TimeLine = observer(({ stages, currentStage }: TimeLineProps) => {
+const TimeLine = ({ stages, currentStage }: TimeLineProps) => {
   return (
     <TimeLineContextProvider>
       <div className="flex">
@@ -38,6 +37,6 @@ const TimeLine = observer(({ stages, currentStage }: TimeLineProps) => {
       </div>
     </TimeLineContextProvider>
   );
-});
+};
 
 export default TimeLine;

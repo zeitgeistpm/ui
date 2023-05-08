@@ -1,4 +1,3 @@
-import { observer } from "mobx-react";
 import React, { FC } from "react";
 import { LogOut } from "react-feather";
 import AccountSelect from "./AccountSelect";
@@ -7,7 +6,7 @@ import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { ZTG } from "@zeitgeistpm/sdk-next";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
-const AccountModalContent: FC = observer(() => {
+const AccountModalContent: FC = () => {
   const { activeAccount, disconnectWallet } = useWallet();
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const { data: constants } = useChainConstants();
@@ -53,6 +52,6 @@ const AccountModalContent: FC = observer(() => {
       </div>
     </div>
   );
-});
+};
 
 export default AccountModalContent;

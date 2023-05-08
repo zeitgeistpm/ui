@@ -1,6 +1,4 @@
-import { observer } from "mobx-react";
-
-const DiscordIcon = observer(() => {
+const DiscordIcon = () => {
   return (
     <svg
       width="21"
@@ -15,6 +13,6 @@ const DiscordIcon = observer(() => {
       />
     </svg>
   );
-});
+};
 
 export default DiscordIcon;
