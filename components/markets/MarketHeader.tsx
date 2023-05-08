@@ -137,6 +137,21 @@ const MarketHistory: FC<
       return getScalarOutcome(outcome["scalar"], scalarType);
     }
   };
+
+  const getIdentity = (user) => {
+    const { data: identity } = useIdentity(user ?? "");
+    const displayName =
+      identity?.displayName?.length > 0
+        ? identity.displayName
+        : shortenAddress(user, 10, 10);
+    return (
+      <div className="inline-flex items-baseline gap-1">
+        <Avatar address={user} />
+        <span>{displayName}</span>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white p-10 max-h-[670px] sm:min-w-[540px] sm:max-w-[540px] relative overflow-hidden rounded-xl">
       <X
@@ -179,7 +194,7 @@ const MarketHistory: FC<
                 {/* <Avatar address={marketHistory?.reported.by} /> */}
                 <p className="inline font-medium">
                   <span className="font-bold">
-                    {shortenAddress(marketHistory?.reported.by, 10, 10)}
+                    {getIdentity(marketHistory?.reported.by)}
                   </span>{" "}
                   reported{" "}
                   <span className="font-bold">
@@ -207,7 +222,7 @@ const MarketHistory: FC<
                       {/* <Avatar address={dispute.by} /> */}
                       <span className="inline font-medium">
                         <span className="font-bold">
-                          {shortenAddress(dispute.by, 10, 10)}
+                          {getIdentity(dispute.by)}
                         </span>{" "}
                         disputed and suggested{" "}
                         <span className="font-bold">
