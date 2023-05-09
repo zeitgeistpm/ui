@@ -311,6 +311,7 @@ const Market: NextPage<MarketPageProps> = ({
             <PoolTable
               poolId={marketSdkv2?.pool?.poolId}
               marketId={Number(marketid)}
+              blacklistFields={["manage"]}
             />
           </Transition>
         </div>

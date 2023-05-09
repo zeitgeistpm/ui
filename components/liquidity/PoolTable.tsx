@@ -9,37 +9,46 @@ import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { usePool } from "lib/hooks/queries/usePool";
 import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
 import ManageLiquidityButton from "./ManageLiquidityButton";
+import { Unpacked } from "@zeitgeistpm/utility/dist/array";
+import { useMemo } from "react";
 
-const columns: TableColumn[] = [
-  {
-    header: "Token",
-    accessor: "token",
-    type: "token",
-  },
-  {
-    header: "Weights",
-    accessor: "weights",
-    type: "percentage",
-  },
-  {
-    header: "Pool Balance",
-    accessor: "poolBalance",
-    type: "currency",
-  },
-  {
-    header: "",
-    accessor: "manage",
-    type: "component",
-    width: "140px",
-  },
-];
+const tokenColumn = {
+  header: "Token",
+  accessor: "token" as const,
+  type: "token",
+} satisfies TableColumn;
+
+const weightsColumn = {
+  header: "Weights",
+  accessor: "weights" as const,
+  type: "percentage",
+} satisfies TableColumn;
+
+const poolColumn = {
+  header: "Pool Balance",
+  accessor: "poolBalance" as const,
+  type: "currency",
+} satisfies TableColumn;
+
+const manageColumn = {
+  header: "",
+  accessor: "manage" as const,
+  type: "component",
+  width: "140px",
+} satisfies TableColumn;
+
+const poolTableColums = [tokenColumn, weightsColumn, poolColumn, manageColumn];
+
+export type Accessors = Unpacked<typeof poolTableColums>["accessor"];
 
 const PoolTable = ({
   poolId,
   marketId,
+  blacklistFields
 }: {
   poolId: number;
   marketId: number;
+  blacklistFields?: Accessors[];
 }) => {
   const { data: pool } = usePool({ poolId });
   const { data: market } = useMarket({ marketId });
@@ -50,6 +59,12 @@ const PoolTable = ({
   const { data: basePoolBalance } = usePoolBaseBalance(poolId);
   const { data: baseAssetUsdPrice } = useAssetUsdPrice(baseAssetId);
   const { data: spotPrices } = useMarketSpotPrices(marketId);
+
+  const columns = useMemo(() => {
+    return poolTableColums.filter(
+      (column) => !blacklistFields?.includes(column.accessor)
+    );
+  }, [blacklistFields])
 
   const tableData: TableData[] = pool?.weights?.map((asset, index) => {
     let amount: Decimal;
