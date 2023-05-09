@@ -1,5 +1,7 @@
 import Table, { TableColumn, TableData } from "components/ui/Table";
+import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useCurrencyBalances } from "lib/hooks/queries/useCurrencyBalances";
 import DepositButton from "./DepositButton";
 import WithdrawButton from "./WithdrawButton";
@@ -28,12 +30,19 @@ const columns: TableColumn[] = [
   },
 ];
 
-const selectButton = (chain: string, token: string) => {
+const selectButton = (
+  chain: string,
+  token: string,
+  balance: Decimal,
+  nativeToken: string,
+) => {
   if (chain === "Zeitgeist") {
-    if (token === "ZTG") {
+    if (token.toUpperCase() === nativeToken.toUpperCase()) {
       return <></>;
     } else {
-      return <WithdrawButton />;
+      return (
+        <WithdrawButton toChain={chain} tokenSymbol={token} balance={balance} />
+      );
     }
   } else {
     return <DepositButton />;
@@ -42,14 +51,20 @@ const selectButton = (chain: string, token: string) => {
 
 const CurrenciesTable = ({ address }: { address: string }) => {
   const { data: balances } = useCurrencyBalances(address);
+  const { data: constants } = useChainConstants();
 
   const tableData: TableData[] = balances
-    .sort((a, b) => b.balance.minus(a.balance).toNumber())
+    ?.sort((a, b) => b.balance.minus(a.balance).toNumber())
     .map((balance) => ({
       asset: balance.symbol,
       chain: balance.chain,
       balance: balance.balance.div(ZTG).toFixed(3),
-      button: selectButton(balance.chain, balance.symbol),
+      button: selectButton(
+        balance.chain,
+        balance.symbol,
+        balance.balance,
+        constants.tokenSymbol,
+      ),
     }));
 
   return (

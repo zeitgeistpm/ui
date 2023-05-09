@@ -5,8 +5,9 @@ import { CurrencyBalance } from "lib/hooks/queries/useCurrencyBalances";
 
 interface Chain {
   name: string;
+  isRelayChain: boolean;
   endpoints: string[];
-  fetchBalances: (
+  fetchCurrencies: (
     api: ApiPromise,
     address: string,
   ) => Promise<CurrencyBalance[]>;
@@ -14,14 +15,16 @@ interface Chain {
 const BATTERY_STATION_CHAINS: Chain[] = [
   {
     name: "Rococo",
+    isRelayChain: true,
     endpoints: ["wss://rococo-rpc.polkadot.io"],
-    fetchBalances: async (api, address) => {
+    fetchCurrencies: async (api, address) => {
       const account = await api.query.system.account(address);
       return [
         {
           symbol: "ROC",
           balance: new Decimal(account.data.free.toString()),
           chain: "Rococo",
+          foreignAssetId: 0,
         },
       ];
     },

@@ -13,6 +13,7 @@ export type CurrencyBalance = {
   symbol: string;
   balance: Decimal;
   chain: string;
+  foreignAssetId?: number;
 };
 
 export const useCurrencyBalances = (address: string) => {
@@ -46,7 +47,7 @@ export const useCurrencyBalances = (address: string) => {
         const nativeBalance = new Decimal(account.data.free.toString());
 
         const chainBalances = await Promise.all(
-          apis.map((api, index) => CHAINS[index].fetchBalances(api, address)),
+          apis.map((api, index) => CHAINS[index].fetchCurrencies(api, address)),
         );
 
         return [
