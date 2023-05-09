@@ -1,4 +1,5 @@
-import { Tab } from "@headlessui/react";
+import { Transition } from "@headlessui/react";
+import { FullPoolFragment } from "@zeitgeistpm/indexer";
 import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import { MarketDispute, Report } from "@zeitgeistpm/sdk/dist/types";
 import PoolTable from "components/liquidity/PoolTable";
@@ -8,13 +9,10 @@ import MarketChart from "components/markets/MarketChart";
 import MarketHeader from "components/markets/MarketHeader";
 import PoolDeployer from "components/markets/PoolDeployer";
 import { MarketPromotionCallout } from "components/markets/PromotionCallout";
-import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
 import MarketImage from "components/ui/MarketImage";
-import Skeleton from "components/ui/Skeleton";
 import { filters } from "components/ui/TimeFilters";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
-import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
 import {
   getMarketPromotion,
@@ -39,14 +37,14 @@ import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
+import { formatNumberLocalized } from "lib/util";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
-import { AlertTriangle } from "react-feather";
+import { AlertTriangle, ChevronDown } from "react-feather";
 
 export const QuillViewer = dynamic(
   () => import("../../components/ui/QuillViewer"),
@@ -151,6 +149,8 @@ const Market: NextPage<MarketPageProps> = ({
   const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
   const baseAsset = parseAssetId(indexedMarket.pool?.baseAsset).unrightOr(null);
   const { data: metadata } = useAssetMetadata(baseAsset);
+
+  const [liquidityOpen, setLiquidityOpen] = useState(false);
 
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
@@ -258,62 +258,13 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           </div>
         )}
-        <div className="mb-12">
-          <Tab.Group>
-            <Tab.List className="flex center my-6">
-              <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
-                Predictions
-              </Tab>
-              <Tab className="text-lg px-4 ui-selected:font-bold ui-selected:text-gray-800 text-gray-500 transition-all">
-                Subsidy
-              </Tab>
-            </Tab.List>
-            {indexedMarket?.marketType?.scalar !== null && (
-              <div className="mb-8 max-w-[800px] mx-auto">
-                {marketIsLoading ||
-                (!spotPrices?.get(1) && indexedMarket.status !== "Proposed") ||
-                (!spotPrices?.get(0) && indexedMarket.status !== "Proposed") ? (
-                  <Skeleton height="40px" width="100%" />
-                ) : (
-                  <ScalarPriceRange
-                    scalarType={indexedMarket.scalarType}
-                    lowerBound={new Decimal(indexedMarket.marketType.scalar[0])
-                      .div(ZTG)
-                      .toNumber()}
-                    upperBound={new Decimal(indexedMarket.marketType.scalar[1])
-                      .div(ZTG)
-                      .toNumber()}
-                    shortPrice={spotPrices?.get(1).toNumber()}
-                    longPrice={spotPrices?.get(0).toNumber()}
-                    status={indexedMarket.status}
-                  />
-                )}
-              </div>
-            )}
-            <Tab.Panels>
-              <Tab.Panel>
-                <MarketAssetDetails marketId={Number(marketid)} />
-              </Tab.Panel>
-              <Tab.Panel>
-                {marketSdkv2?.pool && (
-                  <div className="flex flex-col">
-                    <Link
-                      href={`/liquidity/${marketSdkv2.pool.poolId}`}
-                      className="text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 mb-[10px] "
-                    >
-                      View Pool
-                    </Link>
-                    <PoolTable
-                      poolId={marketSdkv2.pool.poolId}
-                      marketId={Number(marketid)}
-                    />
-                  </div>
-                )}
-              </Tab.Panel>
-            </Tab.Panels>
-          </Tab.Group>
+
+        <div className="mb-8">
+          <h3 className="text-center text-2xl mt-10 mb-8">Predictions</h3>
+          <MarketAssetDetails marketId={Number(marketid)} />
         </div>
-        <div className="lg:px-36">
+
+        <div className="lg:px-36 mb-12">
           {indexedMarket.description?.length > 0 && (
             <>
               <h3 className="text-center text-2xl mb-5">About Market</h3>
@@ -321,14 +272,79 @@ const Market: NextPage<MarketPageProps> = ({
             </>
           )}
           <PoolDeployer marketId={Number(marketid)} />
-          <h3 className="text-center text-2xl mt-10">Market Cast</h3>
+          <h3 className="text-center text-2xl mt-10 mb-8">Market Cast</h3>
           <MarketAddresses
             oracleAddress={indexedMarket.oracle}
             creatorAddress={indexedMarket.creator}
           />
         </div>
+
+        <div className="mb-12">
+          <div
+            className="flex center mb-8 text-mariner cursor-pointer"
+            onClick={() => setLiquidityOpen(!liquidityOpen)}
+          >
+            <div>Show Liquidity</div>
+            <ChevronDown
+              size={12}
+              viewBox="6 6 12 12"
+              className={`box-content px-2 ${liquidityOpen && "rotate-180"}`}
+            />
+          </div>
+
+          <Transition
+            enter="transition ease-out duration-100"
+            enterFrom="transform opacity-0 "
+            enterTo="transform opacity-100 "
+            leave="transition ease-in duration-75"
+            leaveFrom="transform opacity-100 "
+            leaveTo="transform opacity-0 "
+            show={liquidityOpen && Boolean(marketSdkv2?.pool)}
+          >
+            <div className="mb-8">
+              <LiquidityHeader pool={marketSdkv2?.pool} />
+            </div>
+            <PoolTable
+              poolId={marketSdkv2?.pool.poolId}
+              marketId={Number(marketid)}
+            />
+          </Transition>
+        </div>
       </div>
     </>
   );
 };
+
+const LiquidityHeader = ({ pool }: { pool: FullPoolFragment }) => {
+  const { data: liquidity } = usePoolLiquidity({ poolId: pool.poolId });
+  const swapFee = Number(pool?.swapFee ?? 0);
+  const baseAssetId = parseAssetId(pool?.baseAsset).unrightOr(null);
+  const { data: metadata } = useAssetMetadata(baseAssetId);
+  return (
+    <div className="flex">
+      <div className="flex-1 border-r-1 border-gray-300 py-3">
+        <h4 className="text-gray-400 text-sm mb-2">Pool Value</h4>
+        <div className="font-semibold">
+          {formatNumberLocalized(liquidity?.div(ZTG).abs().toNumber() ?? 0)}{" "}
+          {metadata?.symbol}
+        </div>
+      </div>
+      <div className="flex-1 border-r-1 border-gray-300 pl-6 py-3">
+        <h4 className="text-gray-400 text-sm mb-2">Fees</h4>
+        <div className="font-semibold">{swapFee} %</div>
+      </div>
+      <div className="flex-1 border-r-1 border-gray-300 py-3 center">
+        <button className="border-gray-300 text-sm border-2 rounded-full py-2 px-5">
+          Buy/Sell Fullset
+        </button>
+      </div>
+      <div className="flex-1 center py-3">
+        <button className="border-gray-300 text-sm border-2 rounded-full py-2 px-5">
+          Add/Remove Liquidity
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export default Market;
