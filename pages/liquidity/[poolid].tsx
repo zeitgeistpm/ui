@@ -1,6 +1,6 @@
 import { isIndexedData, parseAssetId } from "@zeitgeistpm/sdk-next";
 import PoolTable from "components/liquidity/PoolTable";
-import FullSetButtons from "components/markets/FullSetButtons";
+import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
 import InfoBoxes from "components/ui/InfoBoxes";
 import Pill from "components/ui/Pill";
 import Decimal from "decimal.js";
@@ -167,7 +167,7 @@ const PoolDetails: NextPage = () => {
             <h3 className="font-semibold text-ztg-20-150 mr-ztg-15 mb-[10px] sm:mb-0">
               Assets in Pool
             </h3>
-            {market && <FullSetButtons marketId={market.marketId} />}
+            {market && <BuySellFullSetsButton marketId={market.marketId} />}
           </div>
           {market && (
             <div className="flex flex-1 justify-end">

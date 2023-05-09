@@ -2,6 +2,7 @@ import { Transition } from "@headlessui/react";
 import { FullPoolFragment } from "@zeitgeistpm/indexer";
 import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import { MarketDispute, Report } from "@zeitgeistpm/sdk/dist/types";
+import LiquidityModal from "components/liquidity/LiquidityModal";
 import PoolTable from "components/liquidity/PoolTable";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
@@ -11,9 +12,11 @@ import PoolDeployer from "components/markets/PoolDeployer";
 import { MarketPromotionCallout } from "components/markets/PromotionCallout";
 import MarketMeta from "components/meta/MarketMeta";
 import MarketImage from "components/ui/MarketImage";
+import Modal from "components/ui/Modal";
 import { filters } from "components/ui/TimeFilters";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
 import { GraphQLClient } from "graphql-request";
+import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
 import {
   getMarketPromotion,
   PromotedMarket,
@@ -45,6 +48,7 @@ import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle, ChevronDown } from "react-feather";
+import Decimal from "decimal.js";
 
 export const QuillViewer = dynamic(
   () => import("../../components/ui/QuillViewer"),
@@ -305,7 +309,7 @@ const Market: NextPage<MarketPageProps> = ({
               <LiquidityHeader pool={marketSdkv2?.pool} />
             </div>
             <PoolTable
-              poolId={marketSdkv2?.pool.poolId}
+              poolId={marketSdkv2?.pool?.poolId}
               marketId={Number(marketid)}
             />
           </Transition>
@@ -320,6 +324,9 @@ const LiquidityHeader = ({ pool }: { pool: FullPoolFragment }) => {
   const swapFee = Number(pool?.swapFee ?? 0);
   const baseAssetId = parseAssetId(pool?.baseAsset).unrightOr(null);
   const { data: metadata } = useAssetMetadata(baseAssetId);
+
+  const [manageLiquidityOpen, setManageLiquidityOpen] = useState(false);
+
   return (
     <div className="flex">
       <div className="flex-1 border-r-1 border-gray-300 py-3">
@@ -331,18 +338,31 @@ const LiquidityHeader = ({ pool }: { pool: FullPoolFragment }) => {
       </div>
       <div className="flex-1 border-r-1 border-gray-300 pl-6 py-3">
         <h4 className="text-gray-400 text-sm mb-2">Fees</h4>
-        <div className="font-semibold">{swapFee} %</div>
+        <div className="font-semibold">
+          {new Decimal(swapFee).div(ZTG).mul(100).toNumber()} %
+        </div>
       </div>
       <div className="flex-1 border-r-1 border-gray-300 py-3 center">
-        <button className="border-gray-300 text-sm border-2 rounded-full py-2 px-5">
-          Buy/Sell Fullset
-        </button>
+        <BuySellFullSetsButton
+          marketId={pool.marketId}
+          buttonClassName="border-gray-300 text-sm border-2 rounded-full py-2 px-5"
+        />
       </div>
       <div className="flex-1 center py-3">
-        <button className="border-gray-300 text-sm border-2 rounded-full py-2 px-5">
+        <button
+          className="border-gray-300 text-sm border-2 rounded-full py-2 px-5"
+          onClick={() => setManageLiquidityOpen(true)}
+        >
           Add/Remove Liquidity
         </button>
       </div>
+
+      <Modal
+        open={manageLiquidityOpen}
+        onClose={() => setManageLiquidityOpen(false)}
+      >
+        <LiquidityModal poolId={pool.poolId} />
+      </Modal>
     </div>
   );
 };

@@ -102,14 +102,7 @@ const SellFullSetForm = ({
     Number(amount) === 0;
 
   return (
-    <div className="p-[30px]">
-      <div
-        className={
-          "font-bold text-ztg-16-150  dark:text-white text-black w-full"
-        }
-      >
-        Sell Full Set
-      </div>
+    <div>
       <div>
         <div className="flex items-center mt-ztg-24 mb-ztg-8">
           {saturatedMarket?.categories.map((outcome, index) => (
