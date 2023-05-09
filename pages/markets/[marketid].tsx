@@ -1,9 +1,7 @@
 import { Transition } from "@headlessui/react";
-import { FullPoolFragment } from "@zeitgeistpm/indexer";
 import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import { MarketDispute, Report } from "@zeitgeistpm/sdk/dist/types";
-import LiquidityModal from "components/liquidity/LiquidityModal";
-import PoolTable from "components/liquidity/PoolTable";
+import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import MarketChart from "components/markets/MarketChart";
@@ -12,20 +10,18 @@ import PoolDeployer from "components/markets/PoolDeployer";
 import { MarketPromotionCallout } from "components/markets/PromotionCallout";
 import MarketMeta from "components/meta/MarketMeta";
 import MarketImage from "components/ui/MarketImage";
-import Modal from "components/ui/Modal";
 import { filters } from "components/ui/TimeFilters";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
 import { GraphQLClient } from "graphql-request";
-import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
 import {
-  getMarketPromotion,
   PromotedMarket,
+  getMarketPromotion,
 } from "lib/cms/get-promoted-markets";
-import { graphQlEndpoint, ZTG } from "lib/constants";
+import { ZTG, graphQlEndpoint } from "lib/constants";
 import {
+  MarketPageIndexedData,
   getMarket,
   getRecentMarketIds,
-  MarketPageIndexedData,
 } from "lib/gql/markets";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
@@ -33,14 +29,13 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import {
-  getPriceHistory,
   PriceHistory,
+  getPriceHistory,
 } from "lib/hooks/queries/useMarketPriceHistory";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
-import { formatNumberLocalized } from "lib/util";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
@@ -48,8 +43,6 @@ import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle, ChevronDown } from "react-feather";
-import Decimal from "decimal.js";
-import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 
 export const QuillViewer = dynamic(
   () => import("../../components/ui/QuillViewer"),
