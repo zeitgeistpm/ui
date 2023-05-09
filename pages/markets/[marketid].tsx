@@ -49,6 +49,7 @@ import NotFoundPage from "pages/404";
 import { useEffect, useState } from "react";
 import { AlertTriangle, ChevronDown } from "react-feather";
 import Decimal from "decimal.js";
+import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 
 export const QuillViewer = dynamic(
   () => import("../../components/ui/QuillViewer"),
@@ -305,65 +306,11 @@ const Market: NextPage<MarketPageProps> = ({
             leaveTo="transform opacity-0 "
             show={liquidityOpen && Boolean(marketSdkv2?.pool)}
           >
-            <div className="mb-8">
-              <LiquidityHeader pool={marketSdkv2?.pool} />
-            </div>
-            <PoolTable
-              poolId={marketSdkv2?.pool?.poolId}
-              marketId={Number(marketid)}
-              blacklistFields={["manage"]}
-            />
+            <MarketLiquiditySection market={marketSdkv2} />
           </Transition>
         </div>
       </div>
     </>
-  );
-};
-
-const LiquidityHeader = ({ pool }: { pool: FullPoolFragment }) => {
-  const { data: liquidity } = usePoolLiquidity({ poolId: pool.poolId });
-  const swapFee = Number(pool?.swapFee ?? 0);
-  const baseAssetId = parseAssetId(pool?.baseAsset).unrightOr(null);
-  const { data: metadata } = useAssetMetadata(baseAssetId);
-
-  const [manageLiquidityOpen, setManageLiquidityOpen] = useState(false);
-
-  return (
-    <div className="flex">
-      <div className="flex-1 border-r-1 border-gray-300 py-3">
-        <h4 className="text-gray-400 text-sm mb-2">Pool Value</h4>
-        <div className="font-semibold">
-          {formatNumberLocalized(liquidity?.div(ZTG).abs().toNumber() ?? 0)}{" "}
-          {metadata?.symbol}
-        </div>
-      </div>
-      <div className="flex-1 border-r-1 border-gray-300 pl-6 py-3">
-        <h4 className="text-gray-400 text-sm mb-2">Fees</h4>
-        <div className="font-semibold">
-          {new Decimal(swapFee).div(ZTG).mul(100).toNumber()} %
-        </div>
-      </div>
-      <div className="flex-1 border-r-1 border-gray-300 py-3 center">
-        <BuySellFullSetsButton
-          marketId={pool.marketId}
-          buttonClassName="border-gray-300 text-sm border-2 rounded-full py-2 px-5"
-        />
-      </div>
-      <div className="flex-1 center py-3">
-        <button
-          className="border-gray-300 text-sm border-2 rounded-full py-2 px-5"
-          onClick={() => setManageLiquidityOpen(true)}
-        >
-          Add/Remove Liquidity
-        </button>
-      </div>
-
-      <LiquidityModal
-        poolId={pool.poolId}
-        open={manageLiquidityOpen}
-        onClose={() => setManageLiquidityOpen(false)}
-      />
-    </div>
   );
 };
 
