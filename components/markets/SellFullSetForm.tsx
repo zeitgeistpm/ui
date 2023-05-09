@@ -147,7 +147,7 @@ const SellFullSetForm = ({
         onClick={handleSignTransaction}
         disabled={disabled}
       >
-        {isLoading ? <Loader size={8} /> : "Sign Transaction"}
+        {isLoading ? <Loader size={8} /> : "Sell Full Set"}
       </TransactionButton>
     </div>
   );

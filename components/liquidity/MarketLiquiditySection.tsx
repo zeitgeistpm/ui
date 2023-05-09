@@ -1,7 +1,7 @@
-import { FullPoolFragment } from "@zeitgeistpm/indexer";
+import { FullMarketFragment, FullPoolFragment } from "@zeitgeistpm/indexer";
 import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import LiquidityModal from "components/liquidity/LiquidityModal";
-import PoolTable, { Accessors } from "components/liquidity/PoolTable";
+import PoolTable from "components/liquidity/PoolTable";
 import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -9,7 +9,6 @@ import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { formatNumberLocalized } from "lib/util";
 import { useState } from "react";
-import { FullMarketFragment } from "@zeitgeistpm/indexer";
 
 export const MarketLiquiditySection = ({
   market,

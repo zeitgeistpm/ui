@@ -19,6 +19,7 @@ const BuySellFullSetsButton = ({
   const enabled = useMarketIsTradingEnabled(market);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [tabIndex, setTabIndex] = useState(0);
   return (
     <div>
       <>
@@ -37,7 +38,7 @@ const BuySellFullSetsButton = ({
 
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
-          <Tab.Group>
+          <Tab.Group onChange={setTabIndex}>
             <Tab.List className="flex h-[71px] text-center font-medium text-ztg-18-150">
               <Tab className="ui-selected:font-bold ui-selected:bg-white bg-anti-flash-white transition-all w-1/2 rounded-tl-[10px]">
                 Buy
