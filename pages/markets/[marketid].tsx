@@ -358,12 +358,11 @@ const LiquidityHeader = ({ pool }: { pool: FullPoolFragment }) => {
         </button>
       </div>
 
-      <Modal
+      <LiquidityModal
+        poolId={pool.poolId}
         open={manageLiquidityOpen}
         onClose={() => setManageLiquidityOpen(false)}
-      >
-        <LiquidityModal poolId={pool.poolId} />
-      </Modal>
+      />
     </div>
   );
 };

@@ -28,6 +28,7 @@ const ExitPoolForm = ({
   userPoolShares,
   poolStatus,
   baseAssetTicker,
+  onSuccess,
 }: {
   poolBalances: PoolBalances;
   poolId: number;
@@ -35,6 +36,7 @@ const ExitPoolForm = ({
   userPoolShares: Decimal;
   poolStatus: string;
   baseAssetTicker: string;
+  onSuccess?: () => void;
 }) => {
   const { data: constants } = useChainConstants();
   const {
@@ -111,6 +113,7 @@ const ExitPoolForm = ({
           poolTotalIssuanceRootQueryKey,
           poolId,
         ]);
+        onSuccess?.();
       },
     },
   );

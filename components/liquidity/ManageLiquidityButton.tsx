@@ -13,9 +13,11 @@ const ManageLiquidityButton = ({ poolId }: { poolId: number }) => {
       >
         Manage
       </button>
-      <Modal open={isOpen} onClose={() => setIsOpen(false)}>
-        <LiquidityModal poolId={poolId} />
-      </Modal>
+      <LiquidityModal
+        poolId={poolId}
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+      />
     </>
   );
 };

@@ -18,11 +18,13 @@ const JoinPoolForm = ({
   poolId,
   totalPoolShares,
   baseAssetTicker,
+  onSuccess,
 }: {
   poolBalances: PoolBalances;
   poolId: number;
   totalPoolShares: Decimal;
   baseAssetTicker: string;
+  onSuccess?: () => void;
 }) => {
   const { register, watch, handleSubmit, setValue, getValues, formState } =
     useForm({ reValidateMode: "onChange", mode: "all" });
@@ -66,6 +68,7 @@ const JoinPoolForm = ({
           poolTotalIssuanceRootQueryKey,
           poolId,
         ]);
+        onSuccess?.();
       },
     },
   );
