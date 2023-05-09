@@ -1,13 +1,10 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import {
-  isIndexedSdk,
-  isRpcSdk,
-  createRpcContext,
-  ZeitgeistIpfs,
-} from "@zeitgeistpm/sdk-next";
+import { isIndexedSdk, isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { getMarket, MarketPageIndexedData } from "lib/gql/markets";
 import { useSdkv2 } from "../useSdkv2";
 import { Report, MarketDispute } from "@zeitgeistpm/sdk/dist/types";
+import { getApiAtBlock } from "lib/util/get-api-at";
+import { useMarket } from "./useMarket";
 
 export const marketsEventsRootQuery = "marketsEvents";
 interface ReportWithTimestamp extends Report {
@@ -33,43 +30,27 @@ export type MarketHistory = {
   oracleReported: boolean;
 };
 
-async function getSdk() {
-  return createRpcContext({
-    provider: "wss://zeitgeist.api.onfinality.io/public-ws",
-    storage: ZeitgeistIpfs(),
-  });
-}
-
-const fetchMarketData = async (
-  sdk2,
-  marketId,
-): Promise<MarketPageIndexedData> => {
-  if (isIndexedSdk(sdk2) && isRpcSdk(sdk2)) {
-    return await getMarket(sdk2.indexer.client, marketId);
-  }
-  return null;
-};
+// const fetchMarketData = async (
+//   sdk,
+//   marketId,
+// ): Promise<MarketPageIndexedData> => {
+//   if (isIndexedSdk(sdk) && isRpcSdk(sdk)) {
+//     return await getMarket(sdk.indexer.client, marketId);
+//   }
+//   return null;
+// };
 
 export const useMarketEventHistory = (
   marketId: string,
 ): UseQueryResult<MarketHistory> => {
-  const [sdk2, id] = useSdkv2();
+  const [sdk, id] = useSdkv2();
 
-  const { data: market } = useQuery<MarketPageIndexedData>(
-    ["market", marketId],
-    () => fetchMarketData(sdk2, marketId),
-    {
-      enabled: Boolean(sdk2 && isIndexedSdk(sdk2) && isRpcSdk(sdk2)),
-    },
-  );
+  const { data: market } = useMarket({ marketId: Number(marketId) });
 
   return useQuery(
     [marketsEventsRootQuery, id, marketId],
     async () => {
-      if (isIndexedSdk(sdk2) && isRpcSdk(sdk2) && market) {
-        const sdk = await getSdk();
-        let { api } = sdk;
-
+      if (isRpcSdk(sdk) && market) {
         const disputes = market["disputes"];
         const report = market["report"];
         const start = {
@@ -91,11 +72,10 @@ export const useMarketEventHistory = (
 
         const getTimeStampForBlock = async (blockNumber: number) => {
           try {
-            const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
-            const timestamp = (
-              await api.query.timestamp.now.at(blockHash)
-            ).toNumber();
-            return timestamp;
+            const blockHash = await getApiAtBlock(sdk.api, blockNumber);
+            return await blockHash.query.timestamp
+              .now()
+              .then((now) => now.toNumber());
           } catch (error) {
             return 0;
           }
@@ -137,12 +117,11 @@ export const useMarketEventHistory = (
           resolved,
           oracleReported: oracleReported,
         };
-        await sdk.api.disconnect();
         return marketHistory;
       }
     },
     {
-      enabled: Boolean(sdk2 && isIndexedSdk(sdk2) && isRpcSdk(sdk2) && market),
+      enabled: Boolean(sdk && isRpcSdk(sdk) && market),
     },
   );
 };

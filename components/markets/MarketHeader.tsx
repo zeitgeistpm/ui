@@ -25,6 +25,20 @@ import Modal from "components/ui/Modal";
 import { getMarketStatusDetails } from "lib/util/market-status-details";
 import { getScalarOutcome } from "lib/util/get-scalar-outcome";
 
+const UserIdentity: FC<PropsWithChildren<{ user: string }>> = ({ user }) => {
+  const { data: identity } = useIdentity(user ?? "");
+  const displayName =
+    identity?.displayName?.length > 0
+      ? identity.displayName
+      : shortenAddress(user, 10, 10);
+  return (
+    <div className="inline-flex items-baseline gap-1">
+      <Avatar address={user} />
+      <span className="break-all flex-1">{displayName}</span>
+    </div>
+  );
+};
+
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
   ({ label, border = true, children }) => {
     return (
@@ -55,7 +69,6 @@ const MarketOutcome: FC<
     by?: string;
   }>
 > = ({ status, outcome, by, setShowMarketHistory, marketHistory }) => {
-  const { data: identity } = useIdentity(by ?? "");
   return (
     <div
       className={`w-full flex center items-center gap-4 py-6 mb-10 rounded-lg ${
@@ -78,12 +91,7 @@ const MarketOutcome: FC<
         <div className="flex items-center gap-4">
           <span>{status} by: </span>
           <div className="flex items-center">
-            <Avatar address={by} />
-            <span className="font-medium px-3.5 text-sms h-full leading-[40px]">
-              {identity?.displayName?.length > 0
-                ? identity.displayName
-                : shortenAddress(by, 6, 4)}
-            </span>
+            <UserIdentity user={by} />
           </div>
         </div>
       )}
@@ -138,20 +146,6 @@ const MarketHistory: FC<
     }
   };
 
-  const getIdentity = (user) => {
-    const { data: identity } = useIdentity(user ?? "");
-    const displayName =
-      identity?.displayName?.length > 0
-        ? identity.displayName
-        : shortenAddress(user, 10, 10);
-    return (
-      <div className="inline-flex items-baseline gap-1">
-        <Avatar address={user} />
-        <span>{displayName}</span>
-      </div>
-    );
-  };
-
   return (
     <div className="bg-white p-10 max-h-[670px] sm:min-w-[540px] sm:max-w-[540px] relative overflow-hidden rounded-xl">
       <X
@@ -162,7 +156,7 @@ const MarketHistory: FC<
       />
       <h3 className="font-bold mb-10 text-center">Market History</h3>
       <div className="sm:overflow-hidden">
-        <ol className="list-decimal pl-5 overflow-y-auto h-[500px] w-[calc(100%+16px)]">
+        <ol className="list-decimal pl-6 overflow-y-auto h-[500px] w-[calc(100%+16px)]">
           <li className="mb-8 list-item">
             <p className="pb-1">
               {marketStart}{" "}
@@ -193,7 +187,7 @@ const MarketHistory: FC<
                 {marketHistory?.oracleReported && "Oracle "}
                 <span className="inline font-medium">
                   <span className="font-bold">
-                    {getIdentity(marketHistory?.reported.by)}
+                    <UserIdentity user={marketHistory?.reported.by} />
                   </span>{" "}
                   reported{" "}
                   <span className="font-bold">
@@ -220,7 +214,7 @@ const MarketHistory: FC<
                     <span className="flex items-center">
                       <span className="inline font-medium">
                         <span className="font-bold">
-                          {getIdentity(dispute.by)}
+                          <UserIdentity user={dispute.by} />
                         </span>{" "}
                         disputed and suggested{" "}
                         <span className="font-bold">
