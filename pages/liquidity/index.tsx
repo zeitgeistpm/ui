@@ -7,6 +7,7 @@ import {
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
 import MarketImage from "components/ui/MarketImage";
+import Skeleton from "components/ui/Skeleton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { useInfiniteMarkets } from "lib/hooks/queries/useInfiniteMarkets";
@@ -20,7 +21,9 @@ import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { AiOutlineRead } from "react-icons/ai";
 
-const calcLiqudity = (assets) => {
+const calcLiqudity = (
+  assets: { price: string | number; amountInPool: string | number }[],
+) => {
   return assets.reduce((total, asset) => {
     if (!asset.price || !asset.amountInPool) {
       return total;
@@ -59,7 +62,7 @@ const columns: TableColumn[] = [
 const LiquidityPools: NextPage = () => {
   const router = useRouter();
 
-  const { data: ztgPrice } = useZtgPrice();
+  const { data: ztgPrice, isLoading: isLoadingZtgPrice } = useZtgPrice();
 
   const {
     data: marketsPages,
@@ -75,13 +78,15 @@ const LiquidityPools: NextPage = () => {
   const markets = marketsPages?.pages.flatMap((markets) => markets.data) ?? [];
   const pools = markets?.map((market) => market.pool) || [];
 
-  const totalLiquidity = useTotalLiquidity({ enabled: true });
+  const { data: totalLiquidity } = useTotalLiquidity();
 
   const totalLiquidityValue = useMemo(() => {
-    if (ztgPrice) {
-      return totalLiquidity.div(ZTG).mul(ztgPrice);
+    if (isLoadingZtgPrice) {
+      return;
     }
-    return new Decimal(0);
+    if (ztgPrice) {
+      return totalLiquidity?.mul(ztgPrice);
+    }
   }, [ztgPrice, totalLiquidity]);
 
   const { data: activeMarketCount } = useMarketStatusCount(MarketStatus.Active);
@@ -151,10 +156,18 @@ const LiquidityPools: NextPage = () => {
             Total Value
           </h3>
           <div className="font-bold px-1 text-xl mb-2">
-            {formatNumberLocalized(totalLiquidity.div(ZTG).toNumber())} ZTG
+            {totalLiquidity ? (
+              `${formatNumberLocalized(totalLiquidity?.toNumber())} ZTG`
+            ) : (
+              <Skeleton height={28} />
+            )}
           </div>
           <div className="px-1 text-sm text-gray-600">
-            ≈ {formatNumberLocalized(totalLiquidityValue.toNumber())} USD
+            {totalLiquidityValue ? (
+              `≈ ${formatNumberLocalized(totalLiquidityValue.toNumber())} USD`
+            ) : (
+              <Skeleton height={20} />
+            )}
           </div>
         </div>
 
