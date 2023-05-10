@@ -59,7 +59,7 @@ const selectButton = (
   if (chain === "Zeitgeist") {
     if (token.toUpperCase() === nativeToken.toUpperCase()) {
       return <></>;
-    } else {
+    } else if (sourceChain != null) {
       return (
         //todo: need to find origin chain
         // pass assetId (foreign asset or ztg)
@@ -70,6 +70,8 @@ const selectButton = (
           foreignAssetId={foreignAssetId}
         />
       );
+    } else {
+      return <></>;
     }
   } else {
     return (

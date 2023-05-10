@@ -1,8 +1,7 @@
 import { Dialog } from "@headlessui/react";
-import { isRpcSdk, sdk, ZTG } from "@zeitgeistpm/sdk-next";
+import { ZTG } from "@zeitgeistpm/sdk-next";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
-import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { CHAINS } from "lib/constants/chains";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
@@ -11,8 +10,8 @@ import { useCrossChainApis } from "lib/state/cross-chain";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useState } from "react";
-import { ArrowRight } from "react-feather";
 import { useForm } from "react-hook-form";
+import Transfer from "./Transfer";
 
 const DepositButton = ({
   sourceChain,
@@ -92,13 +91,12 @@ const DepositModal = ({
     <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
       <h3>Deposit</h3>
       <div className="flex flex-col w-full items-center gap-8 mt-[20px] text-ztg-18-150 font-semibold">
-        <div className="flex gap-4">
-          <div>{sourceChain}</div>
-          <ArrowRight />
-          <div>Zeitgeist</div>
-        </div>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 relative font-normal">
+        <Transfer sourceChain={sourceChain} destinationChain="Zeitgeist" />
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-full flex flex-col items-center"
+        >
+          <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 relative font-normal w-full">
             <input
               {...register("amount", {
                 required: {
@@ -120,7 +118,7 @@ const DepositModal = ({
             />
             <div className="mr-[10px] absolute right-0">{tokenSymbol}</div>
           </div>
-          <div className="text-vermilion text-ztg-12-120 mt-[4px]">
+          <div className="text-vermilion text-ztg-12-120 my-[4px] h-[20px]">
             <>{formState.errors["amount"]?.message}</>
           </div>
           <FormTransactionButton

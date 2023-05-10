@@ -11,8 +11,8 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useState } from "react";
-import { ArrowRight } from "react-feather";
 import { useForm } from "react-hook-form";
+import Transfer from "./Transfer";
 
 const WithdrawButton = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -92,16 +92,13 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
   const onSubmit = () => {
     transfer();
   };
+  console.log(toChain);
 
   return (
     <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
       <h3>Withdraw</h3>
       <div className="flex flex-col w-full items-center gap-8 mt-[20px] text-ztg-18-150 font-semibold">
-        <div className="flex gap-4">
-          <div>Zeitgeist</div>
-          <ArrowRight />
-          <div>{toChain}</div>
-        </div>
+        <Transfer sourceChain="Zeitgeist" destinationChain={toChain} />
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 relative font-normal">
             <input
