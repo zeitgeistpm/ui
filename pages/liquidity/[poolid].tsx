@@ -109,10 +109,7 @@ const PoolDetails: NextPage = () => {
     return null;
   }
 
-  if (
-    isFetched &&
-    (pool == null || market == null || market.status === "Destroyed")
-  ) {
+  if (isFetched && pool == null && market.status === "Destroyed") {
     return <NotFoundPage backText="Back To Pools" backLink="/liquidity" />;
   }
 
