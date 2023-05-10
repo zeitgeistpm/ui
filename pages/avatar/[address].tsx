@@ -1,3 +1,4 @@
+import { Dialog } from "@headlessui/react";
 import { formatBalance } from "@polkadot/util";
 import { encodeAddress } from "@polkadot/util-crypto";
 import { Avatar, Badge, Tarot } from "@zeitgeistpm/avatara-nft-sdk";
@@ -11,9 +12,13 @@ import {
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import { tryCatch } from "@zeitgeistpm/utility/dist/either";
+import { fromNullable } from "@zeitgeistpm/utility/dist/option";
 import DiscordIcon from "components/icons/DiscordIcon";
 import TwitterIcon from "components/icons/TwitterIcon";
 import CopyIcon from "components/ui/CopyIcon";
+import Skeleton from "components/ui/Skeleton";
+import Modal from "components/ui/Modal";
 import { AnimatePresence, motion } from "framer-motion";
 import { ZTG } from "lib/constants";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
@@ -22,33 +27,50 @@ import { useLocalStorage } from "lib/hooks/useLocalStorage";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useModalStore } from "lib/stores/ModalStore";
-import { useStore } from "lib/stores/Store";
 import { shortenAddress } from "lib/util";
 import { delay } from "lib/util/delay";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { capitalize } from "lodash";
-import { observer } from "mobx-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AiFillFire, AiFillInfoCircle } from "react-icons/ai";
 import { BsGearFill } from "react-icons/bs";
 import { IoIosNotifications, IoIosWarning } from "react-icons/io";
 import Loader from "react-spinners/PulseLoader";
 
-const AvatarPage = observer(() => {
+const AvatarPage = () => {
   const router = useRouter();
-  const store = useStore();
-  const avatarContext = useAvatarContext();
 
-  const wallet = useWallet();
+  const zeitAddress = fromNullable(router.query.address as string).map(
+    (address) => {
+      return tryCatch(() => encodeAddress(address, 73));
+    },
+  );
 
+  if (zeitAddress.isNone()) return <Skeleton height={524} />;
+
+  if (zeitAddress.unwrap().isLeft()) return <NotFoundPage />;
+
+  return (
+    <Inner
+      ztgEncodedAddress={zeitAddress.unwrap().unwrap()}
+      address={router.query.address as string}
+    />
+  );
+};
+
+const Inner = ({
+  ztgEncodedAddress,
+  address,
+}: {
+  ztgEncodedAddress: string;
+  address: string;
+}) => {
   const [sdk] = useSdkv2();
-  const address = router.query.address as string;
-  const zeitAddress = encodeAddress(router.query.address as string, 73);
-
-  const modalStore = useModalStore();
+  const avatarContext = useAvatarContext();
+  const wallet = useWallet();
 
   const [loading, setLoading] = useState(true);
   const [mintingAvatar, setMintingAvatar] = useState(false);
@@ -67,9 +89,7 @@ const AvatarPage = observer(() => {
 
   const isOwner =
     wallet.activeAccount?.address === address ||
-    wallet.activeAccount?.address === zeitAddress;
-
-  console.log("isOwner", isOwner, wallet.activeAccount?.address, address);
+    wallet.activeAccount?.address === ztgEncodedAddress;
 
   const inventory = useInventoryManagement(
     (isOwner
@@ -105,202 +125,237 @@ const AvatarPage = observer(() => {
 
   const name = identity?.displayName || shortenAddress(address);
 
-  const hasInventory = inventory.items.accepted.length > 0;
   const hasPendingItems = inventory.items.pending.length > 0;
 
+  const [pendingItemsOpen, setPendingItemsOpen] = useState(false);
+  const [inventoryOpen, setInventoryOpen] = useState(false);
+  const [claimOpen, setClaimOpen] = useState(false);
+
   const onClickPendingItemNotification = () => {
-    modalStore.openModal(
-      <PendingItemsModal address={address} onClose={() => inventory.reset()} />,
-      <>You have pending items!</>,
-      {
-        styles: { width: "580px" },
-      },
-    );
+    setPendingItemsOpen(true);
   };
 
   const onClickSettingsButton = () => {
-    modalStore.openModal(
-      <InventoryModal address={address} onClose={() => inventory.reset()} />,
-      <>Inventory.</>,
-      {
-        styles: { width: "580px" },
-      },
-    );
+    setInventoryOpen(true);
   };
 
   const onClickMintAvatar = async () => {
+    setClaimOpen(true);
     setMintingAvatar(true);
-    modalStore.openModal(
-      <ClaimModal
-        burnAmount={burnAmount}
-        isTarotHolder={tarotStats?.nfts.length > 0}
-        address={address}
-        onClaimSuccess={() => inventory.reset()}
-        onClose={() => {
-          setMintingAvatar(false);
-        }}
-      />,
-      <>Claim your avatar!</>,
-      {
-        styles: { width: "680px" },
-      },
-    );
   };
 
   return (
-    <div className={"pt-ztg-46 "}>
-      <AnimatePresence>
-        {showKsmInfo && (
-          <motion.div
-            className="mb-12"
-            initial={{ opacity: 0 }}
-            exit={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <div className="rounded-md bg-red-200 flex p-5 items-center">
-              <div className="text-red-800 mr-4">
-                <IoIosWarning size={32} />
-              </div>
-              <div className="text-red-800 flex-1">
-                All nft-transactions are made on the Kusama chain and will incur
-                small fees in KSM.
-              </div>
-              <div
-                onClick={() => setShowKsmInfo(false)}
-                className="border-2 self-end cursor-pointer border-red-800 py-2 px-4 text-red-800 rounded-md"
-              >
-                Got it!
-              </div>
+    <>
+      <Modal
+        open={pendingItemsOpen}
+        onClose={() => {
+          setPendingItemsOpen(false);
+          inventory.reset();
+        }}
+      >
+        <Dialog.Panel className="bg-white w-[624px] rounded-ztg-10 p-[15px]">
+          <div>
+            <div className="font-bold text-ztg-16-150 text-black">
+              <div className="ml-[15px] mt-[15px]">You have pending items!</div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <div className="mb-ztg-40">
-        <div className="flex flex-col sm:flex-row gap-6">
-          <div className="relative rounded-full mr-ztg-40">
-            <div
-              style={{ overflow: "hidden" }}
-              className={`w-fit rounded-full overflow-hidden border-2 border-black ${
-                isOwner && hasPendingItems && " border-yellow-500 border-solid"
-              }`}
+            <PendingItemsModal address={address} />
+          </div>
+        </Dialog.Panel>
+      </Modal>
+
+      <Modal
+        open={inventoryOpen}
+        onClose={() => {
+          setInventoryOpen(false);
+          inventory.reset();
+        }}
+      >
+        <Dialog.Panel className="bg-white w-[624px] rounded-ztg-10 p-[15px]">
+          <div>
+            <div className="font-bold text-ztg-16-150 text-black">
+              <div className="ml-[15px] mt-[15px]">Inventory</div>
+            </div>
+            <InventoryModal address={address} />
+          </div>
+        </Dialog.Panel>
+      </Modal>
+
+      <Modal open={claimOpen} onClose={() => setClaimOpen(false)}>
+        <Dialog.Panel className="bg-white w-[680px] rounded-ztg-10 p-[15px]">
+          <div>
+            <div className="font-bold text-ztg-16-150 text-black">
+              <div className="ml-[15px] mt-[15px]">Claim your avatar!</div>
+            </div>
+            <ClaimModal
+              burnAmount={burnAmount}
+              isTarotHolder={tarotStats?.nfts.length > 0}
+              address={address}
+              onClaimSuccess={() => inventory.reset()}
+              onClose={() => {
+                setClaimOpen(false);
+                setMintingAvatar(false);
+              }}
+            />
+          </div>
+        </Dialog.Panel>
+      </Modal>
+
+      <div className={"pt-ztg-46 "}>
+        <AnimatePresence>
+          {showKsmInfo && (
+            <motion.div
+              className="mb-12"
+              initial={{ opacity: 0 }}
+              exit={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
             >
-              <ZeitgeistAvatar
-                size="196px"
-                address={address}
-                deps={[mintingAvatar, address]}
-                style={{
-                  zIndex: 0, // safari fix
-                }}
-                fallback={
-                  isOwner ? (
-                    <div className="flex w-full z-ztg-14 h-full items-center justify-center">
-                      <button
-                        disabled={loading || mintingAvatar}
-                        className={`rounded-3xl text-black py-2 px-4 cursor-pointer ${
-                          loading || mintingAvatar
-                            ? "bg-blue-500"
-                            : "bg-blue-700"
-                        }  w-42 text-center`}
-                        onClick={onClickMintAvatar}
-                      >
-                        {mintingAvatar ? (
-                          <Loader size={8} />
-                        ) : (
-                          "Mint Avatar NFT"
-                        )}
-                      </button>
-                    </div>
-                  ) : undefined
-                }
-              />
-            </div>
-
-            {isOwner && true && (
-              <div
-                className="absolute rounded-full cursor-pointer bottom-3 z-ztg-6 right-3 bg-gray-900/70 flex justify-center items-center w-8 h-8"
-                onClick={onClickSettingsButton}
-              >
-                <BsGearFill className="w-5 h-5" color="white" />
-              </div>
-            )}
-
-            {isOwner && hasPendingItems && (
-              <div
-                className="absolute bg-yellow-500 bottom-12 -right-1 z-ztg-6 rounded-full cursor-pointer"
-                onClick={onClickPendingItemNotification}
-              >
-                <div className="absolute top-0 left-0 h-full w-full bg-orange-1 rounded-full animate-ping"></div>
-                <div className="bg-yellow-500 rounded-full cursor-pointer flex justify-center items-center w-8 h-8 overflow-hidden">
-                  <IoIosNotifications className="w-5 h-5" color="white" />
+              <div className="rounded-md bg-red-200 flex p-5 items-center">
+                <div className="text-red-800 mr-4">
+                  <IoIosWarning size={32} />
+                </div>
+                <div className="text-red-800 flex-1">
+                  All nft-transactions are made on the Kusama chain and will
+                  incur small fees in KSM.
+                </div>
+                <div
+                  onClick={() => setShowKsmInfo(false)}
+                  className="border-2 self-end cursor-pointer border-red-800 py-2 px-4 text-red-800 rounded-md"
+                >
+                  Got it!
                 </div>
               </div>
-            )}
-          </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="mb-ztg-40">
+          <div className="flex flex-col sm:flex-row gap-6">
+            <div className="relative rounded-full mr-ztg-40">
+              <div
+                style={{ overflow: "hidden" }}
+                className={`w-fit rounded-full overflow-hidden border-2 border-black ${
+                  isOwner &&
+                  hasPendingItems &&
+                  " border-yellow-500 border-solid"
+                }`}
+              >
+                <ZeitgeistAvatar
+                  size="196px"
+                  address={address}
+                  deps={[mintingAvatar, address]}
+                  style={{
+                    zIndex: 0, // safari fix
+                  }}
+                  fallback={
+                    isOwner ? (
+                      <div className="flex w-full z-ztg-14 h-full items-center justify-center">
+                        <button
+                          disabled={loading || mintingAvatar}
+                          className={`rounded-3xl text-black py-2 px-4 cursor-pointer ${
+                            loading || mintingAvatar
+                              ? "bg-blue-500"
+                              : "bg-blue-700"
+                          }  w-42 text-center`}
+                          onClick={onClickMintAvatar}
+                        >
+                          {mintingAvatar ? (
+                            <Loader size={8} />
+                          ) : (
+                            "Mint Avatar NFT"
+                          )}
+                        </button>
+                      </div>
+                    ) : undefined
+                  }
+                />
+              </div>
 
-          <div>
-            <h3 className="mb-3.5 mr-1">{name}</h3>
-            <h5 className="flex break-all mb-5 gap-2">
-              {address}
-              <CopyIcon copyText={address} />
-            </h5>
+              {isOwner && true && (
+                <div
+                  className="absolute rounded-full cursor-pointer bottom-3 z-ztg-6 right-3 bg-gray-900/70 flex justify-center items-center w-8 h-8"
+                  onClick={onClickSettingsButton}
+                >
+                  <BsGearFill className="w-5 h-5" color="white" />
+                </div>
+              )}
 
-            <div className="flex">
-              <div className="flex flex-row py-ztg-15">
-                {identity?.twitter?.length > 0 ? (
-                  <a
-                    className="flex items-center mr-ztg-40"
-                    href={`https://twitter.com/${identity.twitter}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <TwitterIcon />
-                    <span className="ml-ztg-10 ">{identity.twitter}</span>
-                  </a>
-                ) : (
-                  <></>
-                )}
-                {identity?.discord?.length > 0 ? (
-                  <div className="flex items-center">
-                    <DiscordIcon />
-                    <span className="ml-ztg-10">{identity.discord}</span>
+              {isOwner && hasPendingItems && (
+                <div
+                  className="absolute bg-yellow-500 bottom-12 -right-1 z-ztg-6 rounded-full cursor-pointer"
+                  onClick={onClickPendingItemNotification}
+                >
+                  <div className="absolute top-0 left-0 h-full w-full bg-orange-1 rounded-full animate-ping"></div>
+                  <div className="bg-yellow-500 rounded-full cursor-pointer flex justify-center items-center w-8 h-8 overflow-hidden">
+                    <IoIosNotifications className="w-5 h-5" color="white" />
                   </div>
-                ) : (
-                  <></>
-                )}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <h3 className="mb-3.5 mr-1">{name}</h3>
+              <h5 className="flex break-all mb-5 gap-2">
+                {address}
+                <CopyIcon copyText={address} />
+              </h5>
+
+              <div className="flex">
+                <div className="flex flex-row py-ztg-15">
+                  {identity?.twitter?.length > 0 ? (
+                    <a
+                      className="flex items-center mr-ztg-40"
+                      href={`https://twitter.com/${identity.twitter}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <TwitterIcon />
+                      <span className="ml-ztg-10 ">{identity.twitter}</span>
+                    </a>
+                  ) : (
+                    <></>
+                  )}
+                  {identity?.discord?.length > 0 ? (
+                    <div className="flex items-center">
+                      <DiscordIcon />
+                      <span className="ml-ztg-10">{identity.discord}</span>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
+        <h2 className="mb-10 mr-1">Achievements</h2>
+        <p className="text-gray-600 mb-ztg-12">
+          All badges earned for this account.{" "}
+          <i>
+            Includes all badges this user has earned even if the NFT has been
+            traded or burnt.
+          </i>
+        </p>
+        <Link href={"/badges"}>
+          <div className="text-singular underline text-pink-600 cursor-pointer mb-ztg-38">
+            See all available badges.
+          </div>
+        </Link>
+        {earnedBadges.length === 0 ? (
+          <>
+            <p className="text-gray-600 mb-ztg-38 italic">
+              You havent earned any badges yet.
+            </p>
+          </>
+        ) : (
+          <div className="mb-ztg-38 grid gap-4 grid-cols-4 grid-rows-4">
+            {earnedBadges.map((item) => (
+              <BadgeItem item={item} />
+            ))}
+          </div>
+        )}
       </div>
-      <h2 className="mb-10 mr-1">Achievements</h2>
-      <p className="text-gray-600 mb-ztg-12">
-        All badges earned for this account.{" "}
-        <i>
-          Includes all badges this user has earned even if the NFT has been
-          traded or burnt.
-        </i>
-      </p>
-      <Link href={"/badges"}>
-        <div className="text-singular underline text-pink-600 cursor-pointer mb-ztg-38">
-          See all available badges.
-        </div>
-      </Link>
-      {earnedBadges.length === 0 ? (
-        <>
-          <p className="text-gray-600 mb-ztg-38 italic">
-            You havent earned any badges yet.
-          </p>
-        </>
-      ) : (
-        <div className="mb-ztg-38 grid gap-4 grid-cols-4 grid-rows-4">
-          {earnedBadges.map((item) => (
-            <BadgeItem item={item} />
-          ))}
-        </div>
-      )}
-    </div>
+    </>
   );
-});
+};
 
 const BadgeItem = (props: { item: Badge.IndexedBadge }) => {
   const { item } = props;
@@ -429,8 +484,6 @@ const ClaimModal = (props: {
   onClaimSuccess: () => void;
   onClose?: () => void;
 }) => {
-  const store = useStore();
-  const modalStore = useModalStore();
   const notificationStore = useNotifications();
   const avatarSdk = useAvatarContext();
   const wallet = useWallet();
@@ -453,11 +506,6 @@ const ClaimModal = (props: {
   }, [props.address, props.burnAmount]);
 
   useEffect(() => {
-    store.sdk.api.query.styx
-      .crossings(wallet.activeAccount.address)
-      .then((crossing) => {
-        setHasCrossed(!crossing.isEmpty);
-      });
     if (isRpcSdk(sdk)) {
       sdk.api.query.styx
         .crossings(wallet.activeAccount?.address)
@@ -465,7 +513,7 @@ const ClaimModal = (props: {
           setHasCrossed(!crossing.isEmpty);
         });
     }
-  }, [props.address, isClaiming]);
+  }, [sdk, props.address, isClaiming]);
 
   const doClaim = async () => {
     notificationStore.pushNotification("Minting Avatar.", {
@@ -481,7 +529,6 @@ const ClaimModal = (props: {
       type: "Success",
     });
     props.onClaimSuccess();
-    modalStore.closeModal();
   };
 
   const onClickBurn = async () => {
@@ -637,20 +684,12 @@ const ClaimModal = (props: {
 };
 
 const InventoryModal = (props: { address: string; onClose?: () => void }) => {
-  const store = useStore();
   const wallet = useWallet();
   const inventory = useInventoryManagement(
     ((wallet.getActiveSigner() as ExtSigner) || props.address) as any,
   );
-  const modalStore = useModalStore();
 
   const avatarSdk = useAvatarContext();
-
-  useEffect(() => {
-    return () => {
-      props.onClose?.();
-    };
-  }, [props.onClose]);
 
   return (
     <div>
@@ -731,7 +770,6 @@ const InventoryModal = (props: { address: string; onClose?: () => void }) => {
           disabled={inventory.comitting || !inventory.hasChange}
           onClick={async () => {
             await inventory.commit();
-            modalStore.closeModal();
           }}
           className={`rounded-3xl text-center float-right text-sm w-44 inline-block ${
             inventory.comitting || !inventory.hasChange
@@ -746,32 +784,15 @@ const InventoryModal = (props: { address: string; onClose?: () => void }) => {
   );
 };
 
-const PendingItemsModal = (props: {
-  address: string;
-  onClose?: () => void;
-}) => {
-  const store = useStore();
+const PendingItemsModal = (props: { address: string }) => {
   const wallet = useWallet();
   const inventory = useInventoryManagement(
     ((wallet.getActiveSigner() as ExtSigner) || props.address) as any,
   );
-  const modalStore = useModalStore();
 
   const isAcceptingAll = inventory.items.pending.every((item) =>
     inventory.isAccepting(item),
   );
-
-  useEffect(() => {
-    if (!inventory.loading && inventory.items.pending.length === 0) {
-      modalStore.closeModal();
-    }
-  }, [inventory.items.pending]);
-
-  useEffect(() => {
-    return () => {
-      props.onClose?.();
-    };
-  }, [props.onClose]);
 
   return (
     <div>

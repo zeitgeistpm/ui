@@ -6,35 +6,20 @@ import { useSdkv2 } from "../useSdkv2";
 export const marketsStatsRootQuery = "marketsStats";
 
 export const useMarketsStats = (
-  markets: { marketId: number; hasPool: boolean }[],
+  marketIds: number[],
 ): UseQueryResult<MarketStats[]> => {
   const [sdk, id] = useSdkv2();
 
   return useQuery<MarketStats[]>(
-    [marketsStatsRootQuery, id, markets],
+    [marketsStatsRootQuery, id, marketIds],
     async () => {
       if (!isIndexedSdk(sdk)) return [];
-      const noPoolMarketIds = markets
-        .filter((item) => !item.hasPool)
-        .map((item) => item.marketId);
+      const poolStats = await getMarketsStats(sdk.indexer.client, marketIds);
 
-      const yesPoolmarketIds = markets
-        .filter((item) => item.hasPool)
-        .map((item) => item.marketId);
-
-      const yesPoolStats = await getMarketsStats(
-        sdk.indexer.client,
-        yesPoolmarketIds,
-      );
-
-      const noPoolStats: MarketStats[] = noPoolMarketIds.map((id) => {
-        return { marketId: id, liquidity: "0", participants: 0 };
-      });
-
-      return [...yesPoolStats, ...noPoolStats];
+      return poolStats;
     },
     {
-      enabled: sdk != null && isIndexedSdk(sdk) && markets?.length > 0,
+      enabled: sdk != null && isIndexedSdk(sdk) && marketIds.length > 0,
       keepPreviousData: true,
     },
   );

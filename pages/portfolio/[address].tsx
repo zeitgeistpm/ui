@@ -14,12 +14,11 @@ import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { useCrossChainApis } from "lib/state/cross-chain";
 import { groupBy, range } from "lodash-es";
-import { observer } from "mobx-react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 
-const Portfolio: NextPage = observer(() => {
+const Portfolio: NextPage = () => {
   const { initApis } = useCrossChainApis();
   initApis();
   const router = useRouter();
@@ -187,6 +186,6 @@ const Portfolio: NextPage = observer(() => {
       </Tab.Group>
     </>
   );
-});
+};
 
 export default Portfolio;

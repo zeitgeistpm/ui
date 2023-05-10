@@ -10,26 +10,31 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useSaturatedMarket } from "lib/hooks/queries/useSaturatedMarket";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useGlobalKeyPress } from "lib/hooks/useGlobalKeyPress";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useModalStore } from "lib/stores/ModalStore";
-import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
 
-const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
+const BuyFullSetForm = ({
+  marketId,
+  onSuccess,
+}: {
+  marketId: number;
+  onSuccess?: () => void;
+}) => {
+  const [sdk] = useSdkv2();
   const wallet = useWallet();
   const notificationStore = useNotifications();
-  const modalStore = useModalStore();
-  const [sdk] = useSdkv2();
-  const [amount, setAmount] = useState<string>("0");
-  const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
   const { data: market } = useMarket({ marketId });
   const { data: saturatedMarket } = useSaturatedMarket(market);
   const { data: pool } = usePool({ marketId: marketId });
   const baseAssetId = parseAssetId(pool?.baseAsset).unrightOr(null);
   const { data: metadata } = useAssetMetadata(baseAssetId);
+
+  const [amount, setAmount] = useState<string>("0");
+  const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 
   const { data: baseAssetBalance } = useBalance(
     wallet.getActiveSigner()?.address,
@@ -56,7 +61,7 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
           `Bought ${new Decimal(amount).toFixed(1)} full sets`,
           { type: "Success" },
         );
-        modalStore.closeModal();
+        onSuccess?.();
       },
     },
   );
@@ -87,17 +92,22 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
     buySet();
   };
 
-  useEffect(() => {
-    modalStore.setOnEnterKeyPress(() => handleSignTransaction());
-  }, [modalStore, market, handleSignTransaction]);
-
   const disabled =
     isLoading ||
     Number(amount) > baseAssetBalance?.div(ZTG).toNumber() ||
     Number(amount) === 0;
 
+  useGlobalKeyPress("Enter", handleSignTransaction);
+
   return (
-    <div>
+    <div className="p-[30px]">
+      <div
+        className={
+          "font-bold text-ztg-16-150  dark:text-white text-black w-full"
+        }
+      >
+        Buy Full Set
+      </div>
       <div>
         <div className="flex items-center mt-ztg-24 mb-ztg-8">
           <div className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2 bg-ztg-blue"></div>
@@ -146,6 +156,6 @@ const BuyFullSetModal = observer(({ marketId }: { marketId: number }) => {
       </TransactionButton>
     </div>
   );
-});
+};
 
-export default BuyFullSetModal;
+export default BuyFullSetForm;
