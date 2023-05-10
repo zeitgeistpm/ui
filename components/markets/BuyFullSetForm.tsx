@@ -14,145 +14,148 @@ import { useGlobalKeyPress } from "lib/hooks/useGlobalKeyPress";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
 
-const BuyFullSetForm = observer(
-  ({ marketId, onSuccess }: { marketId: number; onSuccess?: () => void }) => {
-    const [sdk] = useSdkv2();
-    const wallet = useWallet();
-    const notificationStore = useNotifications();
-    const { data: market } = useMarket({ marketId });
-    const { data: saturatedMarket } = useSaturatedMarket(market);
-    const { data: pool } = usePool({ marketId: marketId });
-    const baseAssetId = parseAssetId(pool?.baseAsset).unrightOr(null);
-    const { data: metadata } = useAssetMetadata(baseAssetId);
+const BuyFullSetForm = ({
+  marketId,
+  onSuccess,
+}: {
+  marketId: number;
+  onSuccess?: () => void;
+}) => {
+  const [sdk] = useSdkv2();
+  const wallet = useWallet();
+  const notificationStore = useNotifications();
+  const { data: market } = useMarket({ marketId });
+  const { data: saturatedMarket } = useSaturatedMarket(market);
+  const { data: pool } = usePool({ marketId: marketId });
+  const baseAssetId = parseAssetId(pool?.baseAsset).unrightOr(null);
+  const { data: metadata } = useAssetMetadata(baseAssetId);
 
-    const [amount, setAmount] = useState<string>("0");
-    const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
+  const [amount, setAmount] = useState<string>("0");
+  const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 
-    const { data: baseAssetBalance } = useBalance(
-      wallet.getActiveSigner()?.address,
-      baseAssetId,
-    );
+  const { data: baseAssetBalance } = useBalance(
+    wallet.getActiveSigner()?.address,
+    baseAssetId,
+  );
 
-    const { data: balances } = useAccountPoolAssetBalances(
-      wallet.getActiveSigner()?.address,
-      pool,
-    );
+  const { data: balances } = useAccountPoolAssetBalances(
+    wallet.getActiveSigner()?.address,
+    pool,
+  );
 
-    const { send: buySet, isLoading } = useExtrinsic(
-      () => {
-        if (isRpcSdk(sdk)) {
-          return sdk.api.tx.predictionMarkets.buyCompleteSet(
-            marketId,
-            new Decimal(amount).mul(ZTG).toNumber(),
-          );
-        }
-      },
-      {
-        onSuccess: () => {
-          notificationStore.pushNotification(
-            `Bought ${new Decimal(amount).toFixed(1)} full sets`,
-            { type: "Success" },
-          );
-          onSuccess?.();
-        },
-      },
-    );
-
-    useEffect(() => {
-      let lowestTokenAmount: Decimal = null;
-      balances?.forEach((balance) => {
-        const free = new Decimal(balance.free.toNumber());
-        if (!lowestTokenAmount || free.lessThan(lowestTokenAmount)) {
-          lowestTokenAmount = free;
-        }
-      });
-      setMaxTokenSet(lowestTokenAmount ?? new Decimal(0));
-    }, [balances]);
-
-    const handleAmountChange = (amount: string) => {
-      setAmount(amount);
-    };
-
-    const handleSignTransaction = async () => {
-      if (
-        Number(amount) > baseAssetBalance?.div(ZTG).toNumber() ||
-        Number(amount) === 0 ||
-        !isRpcSdk(sdk)
-      ) {
-        return;
+  const { send: buySet, isLoading } = useExtrinsic(
+    () => {
+      if (isRpcSdk(sdk)) {
+        return sdk.api.tx.predictionMarkets.buyCompleteSet(
+          marketId,
+          new Decimal(amount).mul(ZTG).toNumber(),
+        );
       }
-      buySet();
-    };
+    },
+    {
+      onSuccess: () => {
+        notificationStore.pushNotification(
+          `Bought ${new Decimal(amount).toFixed(1)} full sets`,
+          { type: "Success" },
+        );
+        onSuccess?.();
+      },
+    },
+  );
 
-    const disabled =
-      isLoading ||
+  useEffect(() => {
+    let lowestTokenAmount: Decimal = null;
+    balances?.forEach((balance) => {
+      const free = new Decimal(balance.free.toNumber());
+      if (!lowestTokenAmount || free.lessThan(lowestTokenAmount)) {
+        lowestTokenAmount = free;
+      }
+    });
+    setMaxTokenSet(lowestTokenAmount ?? new Decimal(0));
+  }, [balances]);
+
+  const handleAmountChange = (amount: string) => {
+    setAmount(amount);
+  };
+
+  const handleSignTransaction = async () => {
+    if (
       Number(amount) > baseAssetBalance?.div(ZTG).toNumber() ||
-      Number(amount) === 0;
+      Number(amount) === 0 ||
+      !isRpcSdk(sdk)
+    ) {
+      return;
+    }
+    buySet();
+  };
 
-    useGlobalKeyPress("Enter", handleSignTransaction);
+  const disabled =
+    isLoading ||
+    Number(amount) > baseAssetBalance?.div(ZTG).toNumber() ||
+    Number(amount) === 0;
 
-    return (
-      <div className="p-[30px]">
-        <div
-          className={
-            "font-bold text-ztg-16-150  dark:text-white text-black w-full"
-          }
-        >
-          Buy Full Set
-        </div>
-        <div>
-          <div className="flex items-center mt-ztg-24 mb-ztg-8">
-            <div className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2 bg-ztg-blue"></div>
-            <div className="font-bold   text-ztg-16-150 uppercase text-black dark:text-white">
-              {metadata?.symbol}
-            </div>
-            <span className="font-mono text-ztg-12-150 font-medium ml-auto text-sky-600">
-              {baseAssetBalance?.div(ZTG).toNumber()}
-            </span>
-          </div>
-          <AmountInput value={amount} onChange={handleAmountChange} min="0" />
-        </div>
-        <div>
-          <div className="flex items-center mt-ztg-24 mb-ztg-8">
-            {saturatedMarket?.categories.map((outcome, index) => (
-              <div
-                key={index}
-                className="rounded-full w-ztg-20 h-ztg-20 -mr-ztg-8 border-sky-600 border-2"
-                style={{ backgroundColor: outcome.color }}
-              ></div>
-            ))}
-            <div className="font-bold  ml-ztg-20  text-ztg-16-150 text-black dark:text-white">
-              Full Set
-            </div>
-            <span className="font-mono text-ztg-12-150 font-medium ml-auto ">
-              {maxTokenSet.div(ZTG).toString()}
-            </span>
-          </div>
-          <AmountInput
-            value={amount}
-            onChange={handleAmountChange}
-            disabled={true}
-            min="0"
-          />
-        </div>
-        <div className="h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 my-ztg-10 text-sky-600">
-          <span className=" font-bold">Price per Set:</span>
-          <span className="font-mono font-medium">1 {metadata?.symbol}</span>
-        </div>
-        <TransactionButton
-          className="!rounded-ztg-10 h-ztg-50"
-          onClick={handleSignTransaction}
-          disabled={disabled}
-        >
-          {isLoading ? <Loader size={8} /> : "Sign Transaction"}
-        </TransactionButton>
+  useGlobalKeyPress("Enter", handleSignTransaction);
+
+  return (
+    <div className="p-[30px]">
+      <div
+        className={
+          "font-bold text-ztg-16-150  dark:text-white text-black w-full"
+        }
+      >
+        Buy Full Set
       </div>
-    );
-  },
-);
+      <div>
+        <div className="flex items-center mt-ztg-24 mb-ztg-8">
+          <div className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2 bg-ztg-blue"></div>
+          <div className="font-bold   text-ztg-16-150 uppercase text-black dark:text-white">
+            {metadata?.symbol}
+          </div>
+          <span className="font-mono text-ztg-12-150 font-medium ml-auto text-sky-600">
+            {baseAssetBalance?.div(ZTG).toNumber()}
+          </span>
+        </div>
+        <AmountInput value={amount} onChange={handleAmountChange} min="0" />
+      </div>
+      <div>
+        <div className="flex items-center mt-ztg-24 mb-ztg-8">
+          {saturatedMarket?.categories.map((outcome, index) => (
+            <div
+              key={index}
+              className="rounded-full w-ztg-20 h-ztg-20 -mr-ztg-8 border-sky-600 border-2"
+              style={{ backgroundColor: outcome.color }}
+            ></div>
+          ))}
+          <div className="font-bold  ml-ztg-20  text-ztg-16-150 text-black dark:text-white">
+            Full Set
+          </div>
+          <span className="font-mono text-ztg-12-150 font-medium ml-auto ">
+            {maxTokenSet.div(ZTG).toString()}
+          </span>
+        </div>
+        <AmountInput
+          value={amount}
+          onChange={handleAmountChange}
+          disabled={true}
+          min="0"
+        />
+      </div>
+      <div className="h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 my-ztg-10 text-sky-600">
+        <span className=" font-bold">Price per Set:</span>
+        <span className="font-mono font-medium">1 {metadata?.symbol}</span>
+      </div>
+      <TransactionButton
+        className="!rounded-ztg-10 h-ztg-50"
+        onClick={handleSignTransaction}
+        disabled={disabled}
+      >
+        {isLoading ? <Loader size={8} /> : "Sign Transaction"}
+      </TransactionButton>
+    </div>
+  );
+};
 
 export default BuyFullSetForm;

@@ -8,7 +8,7 @@ import CopyIcon from "components/ui/CopyIcon";
 import Link from "next/link";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { shortenAddress } from "lib/util";
-import { observer } from "mobx-react";
+
 import dynamic from "next/dynamic";
 import { Judgement, UserIdentity } from "lib/types/user-identity";
 import { useState } from "react";
@@ -191,16 +191,17 @@ interface MarketAddressesProps {
   oracleAddress: string;
 }
 
-const MarketAddresses = observer(
-  ({ creatorAddress, oracleAddress }: MarketAddressesProps) => {
-    return (
-      <div className="flex flex-wrap gap-[20px] justify-center my-ztg-20">
-        <AddressDetails title="Creator" address={creatorAddress} />
-        <AddressDetails title="Oracle" address={oracleAddress} />
-      </div>
-    );
-  },
-);
+const MarketAddresses = ({
+  creatorAddress,
+  oracleAddress,
+}: MarketAddressesProps) => {
+  return (
+    <div className="flex flex-wrap gap-[20px] justify-center my-ztg-20">
+      <AddressDetails title="Creator" address={creatorAddress} />
+      <AddressDetails title="Oracle" address={oracleAddress} />
+    </div>
+  );
+};
 
 export default dynamic(() => Promise.resolve(MarketAddresses), {
   ssr: false,

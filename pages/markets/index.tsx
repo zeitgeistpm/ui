@@ -1,13 +1,11 @@
-import { observer } from "mobx-react";
-import React, { useEffect } from "react";
 import { NextPage } from "next";
 
-import MarketsList from "components/markets/MarketsList";
-import { GraphQLClient } from "graphql-request";
 import { IndexedMarketCardData } from "components/markets/market-card/index";
 import MarketScroll from "components/markets/MarketScroll";
-import getNewestMarkets from "lib/gql/newest-markets";
+import MarketsList from "components/markets/MarketsList";
+import { GraphQLClient } from "graphql-request";
 import { graphQlEndpoint } from "lib/constants";
+import getNewestMarkets from "lib/gql/newest-markets";
 
 export async function getStaticProps() {
   const client = new GraphQLClient(graphQlEndpoint);
@@ -23,7 +21,7 @@ export async function getStaticProps() {
 
 const MarketsPage: NextPage<{
   newestMarkets: IndexedMarketCardData[];
-}> = observer(({ newestMarkets }) => {
+}> = ({ newestMarkets }) => {
   return (
     <>
       {newestMarkets?.length > 0 && (
@@ -32,6 +30,6 @@ const MarketsPage: NextPage<{
       <MarketsList />
     </>
   );
-});
+};
 
 export default MarketsPage;

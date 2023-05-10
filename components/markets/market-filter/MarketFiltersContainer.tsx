@@ -1,5 +1,4 @@
 import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
-import { observer } from "mobx-react";
 import { createContext, FC, PropsWithChildren, useContext } from "react";
 
 export type SelectedMenu = "Category" | "Currency" | "Status" | "None";
@@ -35,14 +34,15 @@ export type MarketFiltersContainerProps = PropsWithChildren<{
   portal: HTMLDivElement;
 }>;
 
-const MarketFiltersContainer: FC<PropsWithChildren<MarketFiltersProps>> =
-  observer((props) => {
-    return (
-      <MarketFiltersContext.Provider value={{ ...props }}>
-        <h2 className="text-center mb-4">All Markets</h2>
-        {props.children}
-      </MarketFiltersContext.Provider>
-    );
-  });
+const MarketFiltersContainer: FC<PropsWithChildren<MarketFiltersProps>> = (
+  props,
+) => {
+  return (
+    <MarketFiltersContext.Provider value={{ ...props }}>
+      <h2 className="text-center mb-4">All Markets</h2>
+      {props.children}
+    </MarketFiltersContext.Provider>
+  );
+};
 
 export default MarketFiltersContainer;

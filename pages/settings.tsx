@@ -1,4 +1,12 @@
-import { observer } from "mobx-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { Input } from "components/ui/inputs";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { identityRootKey, useIdentity } from "lib/hooks/queries/useIdentity";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
 import { NextPage } from "next";
 import {
   FC,
@@ -7,17 +15,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Input } from "components/ui/inputs";
-import { useStore } from "lib/stores/Store";
-import { useNotifications } from "lib/state/notifications";
 import { AlertTriangle } from "react-feather";
-import { identityRootKey, useIdentity } from "lib/hooks/queries/useIdentity";
-import { useQueryClient } from "@tanstack/react-query";
-import { useExtrinsic } from "lib/hooks/useExtrinsic";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useWallet } from "lib/state/wallet";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 const SubmitButton: FC<
   PropsWithChildren<{
@@ -38,8 +36,7 @@ const SubmitButton: FC<
   );
 };
 
-const IdentitySettings = observer(() => {
-  const store = useStore();
+const IdentitySettings = () => {
   const wallet = useWallet();
   const notificationStore = useNotifications();
 
@@ -195,9 +192,9 @@ const IdentitySettings = observer(() => {
       </div>
     </>
   );
-});
+};
 
-const Settings: NextPage = observer(() => {
+const Settings: NextPage = () => {
   return (
     <>
       <h2
@@ -256,6 +253,6 @@ const Settings: NextPage = observer(() => {
       </div>
     </>
   );
-});
+};
 
 export default Settings;

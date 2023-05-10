@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { observer } from "mobx-react";
+
 import SideMenu from "./SideMenu";
 import MobileMenu from "components/menu/MobileMenu";
 import { Menu, X } from "react-feather";
@@ -13,7 +13,7 @@ const AccountButton = dynamic(() => import("../account/AccountButton"), {
   ssr: false,
 });
 
-const TopBar = observer(() => {
+const TopBar = () => {
   const { pathname } = useRouter();
 
   const [navbarBGColor, setNavbarBGColor] =
@@ -86,6 +86,6 @@ const TopBar = observer(() => {
       <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
     </div>
   );
-});
+};
 
 export default TopBar;

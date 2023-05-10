@@ -2,14 +2,13 @@ import { Dialog } from "@headlessui/react";
 import Modal from "components/ui/Modal";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketIsTradingEnabled } from "lib/hooks/queries/useMarketIsTradingEnabled";
-import { observer } from "mobx-react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
 import BuyFullSetForm from "./BuyFullSetForm";
 import SellFullSetForm from "./SellFullSetForm";
 
-const FullSetButtons = observer(({ marketId }: { marketId: number }) => {
+const FullSetButtons = ({ marketId }: { marketId: number }) => {
   const { data: market } = useMarket({ marketId });
   const enabled = useMarketIsTradingEnabled(market);
 
@@ -56,7 +55,7 @@ const FullSetButtons = observer(({ marketId }: { marketId: number }) => {
       </Modal>
     </div>
   );
-});
+};
 
 export default dynamic(() => Promise.resolve(FullSetButtons), {
   ssr: false,
