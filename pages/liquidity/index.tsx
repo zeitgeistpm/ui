@@ -16,24 +16,11 @@ import { useTotalLiquidity } from "lib/hooks/queries/useTotalLiquidity";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { MarketsOrderBy } from "lib/types/market-filter";
 import { formatNumberLocalized } from "lib/util";
+import { calcLiqudityFromPoolAssets } from "lib/util/calc-liquidity";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { AiOutlineRead } from "react-icons/ai";
-
-const calcLiqudity = (
-  assets: { price: string | number; amountInPool: string | number }[],
-) => {
-  return assets.reduce((total, asset) => {
-    if (!asset.price || !asset.amountInPool) {
-      return total;
-    }
-    const price = new Decimal(asset.price);
-    return total.plus(
-      new Decimal(price.div(ZTG)).mul(new Decimal(asset.amountInPool)),
-    );
-  }, new Decimal(0));
-};
 
 const columns: TableColumn[] = [
   {
@@ -96,7 +83,7 @@ const LiquidityPools: NextPage = () => {
       markets?.map((market) => {
         const pool = market.pool;
         const { categories } = market;
-        const poolLiquidty = calcLiqudity(pool.assets);
+        const poolLiquidty = calcLiqudityFromPoolAssets(pool.assets);
         return {
           poolId: pool.poolId,
           marketId: (
@@ -137,7 +124,7 @@ const LiquidityPools: NextPage = () => {
           ),
           poolBalance: {
             value: poolLiquidty.toNumber(),
-            usdValue: ztgPrice?.toNumber() ?? 0,
+            usdValue: ztgPrice?.mul(poolLiquidty).toNumber() ?? 0,
           },
         };
       }) ?? []
