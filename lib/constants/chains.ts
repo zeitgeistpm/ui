@@ -1,6 +1,6 @@
-import Decimal from "decimal.js";
-
 import type { ApiPromise } from "@polkadot/api";
+import type { Extrinsic } from "@polkadot/types/interfaces/extrinsics";
+import Decimal from "decimal.js";
 import { CurrencyBalance } from "lib/hooks/queries/useCurrencyBalances";
 
 interface Chain {
@@ -11,6 +11,13 @@ interface Chain {
     api: ApiPromise,
     address: string,
   ) => Promise<CurrencyBalance[]>;
+  //create deposit extrinsic
+  createDepositExtrinsic: (
+    api: ApiPromise,
+    address: string,
+    amount: string,
+    parachainId: number,
+  ) => Extrinsic;
 }
 const BATTERY_STATION_CHAINS: Chain[] = [
   {
@@ -25,8 +32,36 @@ const BATTERY_STATION_CHAINS: Chain[] = [
           balance: new Decimal(account.data.free.toString()),
           chain: "Rococo",
           foreignAssetId: 0,
+          sourceChain: "Rococo",
         },
       ];
+    },
+    createDepositExtrinsic: (api, address, amount, parachainId) => {
+      const accountId = api.createType("AccountId32", address).toHex();
+
+      const destination = {
+        parents: 1,
+        interior: { X1: { Parachain: parachainId } },
+      };
+      const account = {
+        parents: 0,
+        interior: { X1: { AccountId32: { id: accountId, network: "Any" } } },
+      };
+      const asset = [
+        {
+          id: { Concrete: { parents: 0, interior: "Here" } },
+          fun: { Fungible: amount },
+        },
+      ];
+
+      const tx = api.tx.xcmPallet.reserveTransferAssets(
+        { V2: destination },
+        { V2: account },
+        { V2: asset },
+        0,
+      );
+
+      return tx;
     },
   },
 ];

@@ -32,7 +32,9 @@ const columns: TableColumn[] = [
 
 const selectButton = (
   chain: string,
+  sourceChain: string,
   token: string,
+  foreignAssetId: number,
   balance: Decimal,
   nativeToken: string,
 ) => {
@@ -41,17 +43,31 @@ const selectButton = (
       return <></>;
     } else {
       return (
-        <WithdrawButton toChain={chain} tokenSymbol={token} balance={balance} />
+        //todo: need to find origin chain
+        // pass assetId (foreign asset or ztg)
+        <WithdrawButton
+          toChain={sourceChain}
+          tokenSymbol={token}
+          balance={balance}
+          foreignAssetId={foreignAssetId}
+        />
       );
     }
   } else {
-    return <DepositButton />;
+    return (
+      <DepositButton
+        sourceChain={chain}
+        tokenSymbol={token}
+        balance={balance}
+      />
+    );
   }
 };
 
 const CurrenciesTable = ({ address }: { address: string }) => {
   const { data: balances } = useCurrencyBalances(address);
   const { data: constants } = useChainConstants();
+  console.log(balances);
 
   const tableData: TableData[] = balances
     ?.sort((a, b) => b.balance.minus(a.balance).toNumber())
@@ -61,7 +77,9 @@ const CurrenciesTable = ({ address }: { address: string }) => {
       balance: balance.balance.div(ZTG).toFixed(3),
       button: selectButton(
         balance.chain,
+        balance.sourceChain,
         balance.symbol,
+        balance.foreignAssetId,
         balance.balance,
         constants.tokenSymbol,
       ),

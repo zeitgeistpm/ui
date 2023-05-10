@@ -2,14 +2,18 @@ import { Dialog } from "@headlessui/react";
 import { isRpcSdk, sdk } from "@zeitgeistpm/sdk-next";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
+import { ZTG } from "lib/constants";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useNotifications } from "lib/state/notifications";
 import { useState } from "react";
 import { ArrowRight } from "react-feather";
 import { useForm } from "react-hook-form";
 
-const WithdrawButton = ({ toChain, tokenSymbol, balance }) => {
+const WithdrawButton = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const { data: metadata } = useAssetMetadata({ ForeignAsset: foreignAssetId });
 
   return (
     <>
@@ -30,7 +34,6 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance }) => {
     reValidateMode: "onChange",
     mode: "all",
   });
-  console.log("withdraw");
 
   const notificationStore = useNotifications();
   const { send: transfer, isLoading } = useExtrinsic(
@@ -69,16 +72,15 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance }) => {
           <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 relative font-normal">
             <input
               {...register("amount", {
-                value: 0,
                 required: {
                   value: true,
                   message: "Value is required",
                 },
                 validate: (value) => {
-                  if (value > balance) {
-                    return `Insufficient balance. Current balance: ${balance.toFixed(
-                      3,
-                    )}`;
+                  if (balance.div(ZTG).lessThan(value)) {
+                    return `Insufficient balance. Current balance: ${balance
+                      .div(ZTG)
+                      .toFixed(3)}`;
                   } else if (value <= 0) {
                     return "Value cannot be zero or less";
                   }

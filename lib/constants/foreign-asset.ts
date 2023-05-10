@@ -1,15 +1,18 @@
 type ForeignAssetMetadata = {
   [foreignAssetId: number]: {
     coinGeckoId: string;
+    originChain?: string;
   };
 };
 
 const BATTERY_STATION_FORIEGN_ASSET_METADATA: ForeignAssetMetadata = {
   0: {
     coinGeckoId: "polkadot",
+    originChain: null,
   },
   1: {
     coinGeckoId: "polkadot",
+    originChain: "Rococo",
   },
 };
 

@@ -7,10 +7,12 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";
+import { XcmVersionedMultiLocation } from "@polkadot/types/lookup";
 
 export type AssetMetadata = {
   symbol: string;
   name: string;
+  location: XcmVersionedMultiLocation;
 };
 
 export const assetMetadataRootKey = "asset-metadata";
@@ -27,13 +29,22 @@ export const useAssetMetadata = (assetId: AssetId) => {
           const assetMetadata: AssetMetadata = {
             symbol: constants?.tokenSymbol,
             name: "Zeitgeist",
+            location: null,
           };
           return assetMetadata;
         } else if (IOForeignAssetId.is(assetId)) {
           const metadata = await sdk.api.query.assetRegistry.metadata(assetId);
+          console.log(metadata.unwrap());
+          console.log(metadata.unwrap().location);
+          const loc: XcmVersionedMultiLocation = metadata.unwrapOr(null)
+            .location.isSome
+            ? metadata.unwrap().location.unwrap()
+            : null;
+
           const assetMetadata: AssetMetadata = {
             symbol: metadata.unwrap().symbol.toPrimitive() as string,
             name: metadata.unwrap().name.toPrimitive() as string,
+            location: loc,
           };
 
           return assetMetadata;

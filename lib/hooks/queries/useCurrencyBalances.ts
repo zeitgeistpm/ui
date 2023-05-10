@@ -14,6 +14,7 @@ export type CurrencyBalance = {
   balance: Decimal;
   chain: string;
   foreignAssetId?: number;
+  sourceChain: string;
 };
 
 export const useCurrencyBalances = (address: string) => {
@@ -40,6 +41,8 @@ export const useCurrencyBalances = (address: string) => {
             symbol: metadata[index].unwrap().symbol.toPrimitive() as string,
             balance: new Decimal(account.free.toString()),
             chain: "Zeitgeist",
+            sourceChain: FORIEGN_ASSET_METADATA[assetIds[index]].originChain,
+            foreignAssetId: Number(assetIds[index]),
           }),
         );
 
@@ -55,8 +58,11 @@ export const useCurrencyBalances = (address: string) => {
           {
             balance: nativeBalance,
             chain: "Zeitgeist",
+            sourceChain: "Zeitgeist",
+            foreignAssetId: null,
             symbol: constants.tokenSymbol,
           },
+          //todo do these need a different type?
           ...chainBalances.flat(),
         ];
       }
