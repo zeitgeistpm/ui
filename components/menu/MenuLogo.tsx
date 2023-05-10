@@ -1,13 +1,12 @@
-import React, { FC } from "react";
-import { observer } from "mobx-react";
 import Link from "next/link";
-import Logo from "../icons/ZeitgeistIcon";
 import { useRouter } from "next/router";
+import { FC } from "react";
+import Logo from "../icons/ZeitgeistIcon";
 
 const MenuLogo: FC<{
   menuOpen: boolean;
   setMenuOpen?: (boolean) => void;
-}> = observer(({ menuOpen, setMenuOpen }) => {
+}> = ({ menuOpen, setMenuOpen }) => {
   const { pathname } = useRouter();
 
   return (
@@ -38,6 +37,6 @@ const MenuLogo: FC<{
       </>
     </Link>
   );
-});
+};
 
 export default MenuLogo;

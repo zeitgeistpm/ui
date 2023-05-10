@@ -1,6 +1,4 @@
-import { observer } from "mobx-react";
-
-const SubScanIcon = observer(() => {
+const SubScanIcon = () => {
   const dotColor = "black";
 
   return (
@@ -54,6 +52,6 @@ const SubScanIcon = observer(() => {
       />
     </svg>
   );
-});
+};
 
 export default SubScanIcon;

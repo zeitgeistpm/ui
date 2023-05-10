@@ -14,15 +14,14 @@ import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
-import { useStore } from "lib/stores/Store";
 import { useWallet } from "lib/state/wallet";
 import { MultipleOutcomeEntry } from "lib/types/create-market";
 import { calculatePoolCost } from "lib/util/market";
-import { observer } from "mobx-react";
+
 import { useState } from "react";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
-const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
+const PoolDeployer = ({ marketId }: { marketId: number }) => {
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[]>();
   const [swapFee, setSwapFee] = useState<string>();
   const { data: constants } = useChainConstants();
@@ -31,7 +30,6 @@ const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
   const { data: poolId } = useMarketPoolId(marketId);
   const { data: market } = useMarket({ marketId });
   const queryClient = useQueryClient();
-  const store = useStore();
   const notificationStore = useNotifications();
   const [sdk, id] = useSdkv2();
 
@@ -130,6 +128,6 @@ const PoolDeployer = observer(({ marketId }: { marketId: number }) => {
       )}
     </>
   );
-});
+};
 
 export default PoolDeployer;

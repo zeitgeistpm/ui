@@ -2,7 +2,7 @@ import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
 import React, { useEffect, useState } from "react";
 import Decimal from "decimal.js";
 import { useInView } from "react-intersection-observer";
-import { observer } from "mobx-react";
+
 import Loader from "react-spinners/PulseLoader";
 import { X } from "react-feather";
 import { useRouter } from "next/router";
@@ -55,7 +55,7 @@ const useChangeQuery = (
   }, [withLiquidityOnly]);
 };
 
-const MarketsList = observer(({ className = "" }: MarketsListProps) => {
+const MarketsList = ({ className = "" }: MarketsListProps) => {
   const [filters, setFilters] = useState<MarketFilter[]>();
   const [orderBy, setOrderBy] = useState<MarketsOrderBy>();
   const [withLiquidityOnly, setWithLiquidityOnly] = useState<boolean>();
@@ -146,9 +146,9 @@ const MarketsList = observer(({ className = "" }: MarketsListProps) => {
       ></div>
     </div>
   );
-});
+};
 
-const MarketsSearchInfo = observer(({ searchText }: { searchText: string }) => {
+const MarketsSearchInfo = ({ searchText }: { searchText: string }) => {
   const router = useRouter();
 
   return (
@@ -167,6 +167,6 @@ const MarketsSearchInfo = observer(({ searchText }: { searchText: string }) => {
       </div>
     </div>
   );
-});
+};
 
 export default MarketsList;

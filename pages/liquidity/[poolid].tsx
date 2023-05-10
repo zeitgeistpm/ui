@@ -11,7 +11,6 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { observer } from "mobx-react";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -83,7 +82,7 @@ const PoolDetail = ({
   );
 };
 
-const PoolDetails: NextPage = observer(() => {
+const PoolDetails: NextPage = () => {
   const router = useRouter();
 
   const poolId = Number(router.query.poolid);
@@ -186,6 +185,6 @@ const PoolDetails: NextPage = observer(() => {
       </div>
     </>
   );
-});
+};
 
 export default PoolDetails;

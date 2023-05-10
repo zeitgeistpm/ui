@@ -1,20 +1,20 @@
-import { useState, useRef, useEffect } from "react";
+import Skeleton from "components/ui/Skeleton";
+import { filterTypes } from "lib/constants/market-filter";
+import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import {
   MarketFilter,
   MarketsListQuery,
   MarketsOrderBy,
 } from "lib/types/market-filter";
 import { findFilterIndex } from "lib/util/market-filter";
-import { filterTypes } from "lib/constants/market-filter";
-import Skeleton from "components/ui/Skeleton";
-import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
-import MarketActiveFilters from "./MarketActiveFilters";
-import MarketFiltersContainer, { SelectedMenu } from "./MarketFiltersContainer";
-import MobileDialog from "./mobile-dialog";
-import MarketFiltersDropdowns from "./MarketFiltersDropdowns";
-import MarketFiltersCheckboxes from "./MarketFiltersCheckboxes";
-import MarketFiltersSort from "./MarketFiltersSort";
+import { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "react-feather";
+import MarketActiveFilters from "./MarketActiveFilters";
+import MarketFiltersCheckboxes from "./MarketFiltersCheckboxes";
+import MarketFiltersContainer, { SelectedMenu } from "./MarketFiltersContainer";
+import MarketFiltersDropdowns from "./MarketFiltersDropdowns";
+import MarketFiltersSort from "./MarketFiltersSort";
+import MobileDialog from "./mobile-dialog";
 
 const getFiltersFromQueryState = (
   queryState: MarketsListQuery,

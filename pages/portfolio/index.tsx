@@ -1,14 +1,11 @@
-import { NextPage } from "next";
-import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { useStore } from "lib/stores/Store";
 import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
 import { useWallet } from "lib/state/wallet";
+import { NextPage } from "next";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
-const PortfolioIndex: NextPage = observer(() => {
+const PortfolioIndex: NextPage = () => {
   const router = useRouter();
-  const store = useStore();
   const wallet = useWallet();
   const [noAddress, setNoAddress] = useState<boolean>();
 
@@ -38,6 +35,6 @@ const PortfolioIndex: NextPage = observer(() => {
       )}
     </>
   );
-});
+};
 
 export default PortfolioIndex;

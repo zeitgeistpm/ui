@@ -1,5 +1,4 @@
 import { DAY_SECONDS } from "lib/constants";
-import { observer } from "mobx-react";
 import { useEffect, useState } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 
@@ -28,69 +27,71 @@ const timerProps = {
   colors: "#748296",
 };
 
-const Countdown = observer(
-  ({ secondsRemaining, totalTime, timerKey = 0 }: CountdownProps) => {
-    const [dayTimer, setDayTimer] = useState<boolean>();
+const Countdown = ({
+  secondsRemaining,
+  totalTime,
+  timerKey = 0,
+}: CountdownProps) => {
+  const [dayTimer, setDayTimer] = useState<boolean>();
 
-    useEffect(() => {
-      evaluateTimerType(secondsRemaining);
-    }, [secondsRemaining]);
+  useEffect(() => {
+    evaluateTimerType(secondsRemaining);
+  }, [secondsRemaining]);
 
-    const evaluateTimerType = (secondsRemaning: number) => {
-      if (secondsRemaning > DAY_SECONDS * 2) {
-        setDayTimer(true);
-      } else {
-        setDayTimer(false);
-      }
-    };
-
-    if (dayTimer === true) {
-      return (
-        <CountdownCircleTimer
-          {...timerProps}
-          key={timerKey}
-          duration={totalTime}
-          initialRemainingTime={secondsRemaining}
-        >
-          {(val) => {
-            return (
-              <TimerContent
-                title="Ends in"
-                time={`${(
-                  (val.remainingTime / DAY_SECONDS) |
-                  0
-                ).toString()} Days`}
-              />
-            );
-          }}
-        </CountdownCircleTimer>
-      );
-    } else if (dayTimer === false) {
-      return (
-        <CountdownCircleTimer
-          {...timerProps}
-          key={timerKey}
-          duration={totalTime}
-          initialRemainingTime={secondsRemaining}
-        >
-          {(val) => {
-            const days = Math.floor(val.remainingTime / DAY_SECONDS);
-            const remainderFromdays = val.remainingTime % DAY_SECONDS;
-            const isoString = new Date(remainderFromdays * 1000)
-              .toISOString()
-              .slice(11, 19);
-            let isoArray = isoString.split(":");
-            const hours = Number(isoArray[0]) + days * 24;
-            isoArray[0] = hours.toString();
-            const timeString = isoArray.join(":");
-            return <TimerContent title="Ends in" time={timeString} />;
-          }}
-        </CountdownCircleTimer>
-      );
+  const evaluateTimerType = (secondsRemaning: number) => {
+    if (secondsRemaning > DAY_SECONDS * 2) {
+      setDayTimer(true);
     } else {
-      return <></>;
+      setDayTimer(false);
     }
-  },
-);
+  };
+
+  if (dayTimer === true) {
+    return (
+      <CountdownCircleTimer
+        {...timerProps}
+        key={timerKey}
+        duration={totalTime}
+        initialRemainingTime={secondsRemaining}
+      >
+        {(val) => {
+          return (
+            <TimerContent
+              title="Ends in"
+              time={`${(
+                (val.remainingTime / DAY_SECONDS) |
+                0
+              ).toString()} Days`}
+            />
+          );
+        }}
+      </CountdownCircleTimer>
+    );
+  } else if (dayTimer === false) {
+    return (
+      <CountdownCircleTimer
+        {...timerProps}
+        key={timerKey}
+        duration={totalTime}
+        initialRemainingTime={secondsRemaining}
+      >
+        {(val) => {
+          const days = Math.floor(val.remainingTime / DAY_SECONDS);
+          const remainderFromdays = val.remainingTime % DAY_SECONDS;
+          const isoString = new Date(remainderFromdays * 1000)
+            .toISOString()
+            .slice(11, 19);
+          let isoArray = isoString.split(":");
+          const hours = Number(isoArray[0]) + days * 24;
+          isoArray[0] = hours.toString();
+          const timeString = isoArray.join(":");
+          return <TimerContent title="Ends in" time={timeString} />;
+        }}
+      </CountdownCircleTimer>
+    );
+  } else {
+    return <></>;
+  }
+};
 
 export default Countdown;

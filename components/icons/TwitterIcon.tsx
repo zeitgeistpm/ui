@@ -1,6 +1,4 @@
-import { observer } from "mobx-react";
-
-const TwitterIcon = observer(() => {
+const TwitterIcon = () => {
   return (
     <svg
       width="20"
@@ -15,6 +13,6 @@ const TwitterIcon = observer(() => {
       />
     </svg>
   );
-});
+};
 
 export default TwitterIcon;
