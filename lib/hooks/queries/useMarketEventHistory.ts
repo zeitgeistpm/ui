@@ -1,10 +1,10 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { isIndexedSdk, isRpcSdk } from "@zeitgeistpm/sdk-next";
-import { getMarket, MarketPageIndexedData } from "lib/gql/markets";
+import { isRpcSdk, isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 import { Report, MarketDispute } from "@zeitgeistpm/sdk/dist/types";
 import { getApiAtBlock } from "lib/util/get-api-at";
 import { useMarket } from "./useMarket";
+import { getResolutionTimestamp } from "lib/gql/resolution-date";
 
 export const marketsEventsRootQuery = "marketsEvents";
 interface ReportWithTimestamp extends Report {
@@ -50,7 +50,7 @@ export const useMarketEventHistory = (
   return useQuery(
     [marketsEventsRootQuery, id, marketId],
     async () => {
-      if (isRpcSdk(sdk) && market) {
+      if (isIndexedSdk(sdk) && isRpcSdk(sdk) && market) {
         const disputes = market["disputes"];
         const report = market["report"];
         const start = {
@@ -67,9 +67,21 @@ export const useMarketEventHistory = (
               : 0,
           timestamp: Number(market["period"]?.end),
         };
-        const resolved = market["resolvedOutcome"];
+        const resolvedOutcome = market["resolvedOutcome"];
         const oracleReported = report.by === market["oracle"];
 
+        let disputesWithTimestamp;
+        let reportWithTimestamp;
+        let resolutionTimestamp;
+
+        if (resolvedOutcome) {
+          const resolutionData = await getResolutionTimestamp(
+            sdk.indexer.client,
+            Number(marketId),
+          );
+          resolutionTimestamp = new Date(resolutionData);
+        }
+        console.log(resolutionTimestamp);
         const getTimeStampForBlock = async (blockNumber: number) => {
           try {
             const blockHash = await getApiAtBlock(sdk.api, blockNumber);
@@ -80,9 +92,6 @@ export const useMarketEventHistory = (
             return 0;
           }
         };
-
-        let disputesWithTimestamp;
-        let reportWithTimestamp;
 
         if (disputes) {
           const updateDisputesWithTimestamp = async (disputes) => {
@@ -114,7 +123,10 @@ export const useMarketEventHistory = (
           end,
           reported: reportWithTimestamp,
           disputes: disputesWithTimestamp,
-          resolved,
+          resolved: {
+            timestamp: resolutionTimestamp,
+            outcome: resolvedOutcome,
+          },
           oracleReported: oracleReported,
         };
         return marketHistory;

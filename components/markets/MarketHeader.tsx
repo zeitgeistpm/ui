@@ -229,10 +229,15 @@ const MarketHistory: FC<
           {marketHistory?.resolved && (
             <li className="mb-8 list-item">
               <p className="pb-1">
-                Market resolved to{" "}
+                {marketHistory?.resolved?.["timestamp"] &&
+                  new Intl.DateTimeFormat("default", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  }).format(marketHistory?.resolved?.["timestamp"])}{" "}
+                (block: {"XXXX"}) Market resolved to{" "}
                 <span className="font-bold">
                   {marketType.scalar === null
-                    ? categories[marketHistory?.resolved].name
+                    ? categories[marketHistory?.resolved?.["outcome"]].name
                     : getScalarOutcome(marketHistory?.resolved, scalarType)}
                 </span>
               </p>
