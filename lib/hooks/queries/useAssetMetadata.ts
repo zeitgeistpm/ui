@@ -34,8 +34,6 @@ export const useAssetMetadata = (assetId: AssetId) => {
           return assetMetadata;
         } else if (IOForeignAssetId.is(assetId)) {
           const metadata = await sdk.api.query.assetRegistry.metadata(assetId);
-          console.log(metadata.unwrap());
-          console.log(metadata.unwrap().location);
           const loc: XcmVersionedMultiLocation = metadata.unwrapOr(null)
             .location.isSome
             ? metadata.unwrap().location.unwrap()

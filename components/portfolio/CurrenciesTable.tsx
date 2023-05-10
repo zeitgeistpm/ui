@@ -67,7 +67,6 @@ const selectButton = (
 const CurrenciesTable = ({ address }: { address: string }) => {
   const { data: balances } = useCurrencyBalances(address);
   const { data: constants } = useChainConstants();
-  console.log(balances);
 
   const tableData: TableData[] = balances
     ?.sort((a, b) => b.balance.minus(a.balance).toNumber())

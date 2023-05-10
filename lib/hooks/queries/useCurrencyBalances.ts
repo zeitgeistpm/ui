@@ -23,7 +23,7 @@ export const useCurrencyBalances = (address: string) => {
   const { data: constants } = useChainConstants();
 
   const query = useQuery(
-    [id, balanceRootKey, address, apis.length],
+    [id, balanceRootKey, address, Object.values(apis).length],
     async () => {
       if (isRpcSdk(sdk)) {
         const assetIds = Object.keys(FORIEGN_ASSET_METADATA);
@@ -49,8 +49,12 @@ export const useCurrencyBalances = (address: string) => {
         const account = await sdk.api.query.system.account(address);
         const nativeBalance = new Decimal(account.data.free.toString());
 
+        const apisArray = Object.values(apis);
+
         const chainBalances = await Promise.all(
-          apis.map((api, index) => CHAINS[index].fetchCurrencies(api, address)),
+          apisArray.map((api, index) =>
+            CHAINS[index].fetchCurrencies(api, address),
+          ),
         );
 
         return [

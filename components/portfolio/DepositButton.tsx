@@ -5,8 +5,11 @@ import Modal from "components/ui/Modal";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { CHAINS } from "lib/constants/chains";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useCrossChainApis } from "lib/state/cross-chain";
 import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
 import { useState } from "react";
 import { ArrowRight } from "react-feather";
 import { useForm } from "react-hook-form";
@@ -49,22 +52,27 @@ const DepositModal = ({
     reValidateMode: "onChange",
     mode: "all",
   });
-
+  const { apis } = useCrossChainApis();
+  const { data: constants } = useChainConstants();
   const notificationStore = useNotifications();
+  const wallet = useWallet();
+
   const { send: transfer, isLoading } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk)) {
-        const formValue = getValues();
-        const amount = formValue.amount;
+      const formValue = getValues();
+      const amount = formValue.amount;
 
-        const chain = CHAINS.find((chain) => chain.name === sourceChain);
-        console.log(chain);
-        //todo: lookup chain
-        // const tx = chain.createDepositExtrinsic()
+      const chain = CHAINS.find((chain) => chain.name === sourceChain);
 
-        // return sdk.api.tx.xTokens.transfer();
-        return sdk.api.tx.utility.batch([]);
-      }
+      const api = apis[chain.name];
+
+      const tx = chain.createDepositExtrinsic(
+        api,
+        wallet.activeAccount.address,
+        new Decimal(amount).mul(ZTG).toFixed(0),
+        constants.parachainId,
+      );
+      return tx;
     },
     {
       onSuccess: () => {
@@ -76,7 +84,9 @@ const DepositModal = ({
   );
 
   const onSubmit = () => {
-    console.log(getValues());
+    console.log("submit");
+
+    transfer();
   };
   return (
     <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
@@ -96,11 +106,12 @@ const DepositModal = ({
                   message: "Value is required",
                 },
                 validate: (value) => {
-                  if (balance.div(ZTG).lessThan(value)) {
-                    return `Insufficient balance. Current balance: ${balance
-                      .div(ZTG)
-                      .toFixed(3)}`;
-                  } else if (value <= 0) {
+                  // if (balance.div(ZTG).lessThan(value)) {
+                  //   return `Insufficient balance. Current balance: ${balance
+                  //     .div(ZTG)
+                  //     .toFixed(3)}`;
+                  // } else
+                  if (value <= 0) {
                     return "Value cannot be zero or less";
                   }
                 },

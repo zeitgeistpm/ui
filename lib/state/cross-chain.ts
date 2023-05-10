@@ -1,12 +1,15 @@
 import { atom, useAtom } from "jotai";
 import { WsProvider, ApiPromise } from "@polkadot/api";
-import { CHAINS } from "lib/constants/chains";
+import { ChainName, CHAINS } from "lib/constants/chains";
 import { useState } from "react";
 
-const crossChainApisAtom = atom<ApiPromise[]>([]);
+type Apis = { [key: string]: ApiPromise };
+
+const crossChainApisAtom = atom<Apis>({});
 
 export type UseCrossChainApis = {
-  apis: ApiPromise[];
+  // apis: ApiPromise[];
+  apis: { [key: string]: ApiPromise };
   initApis: () => void;
 };
 
@@ -18,7 +21,6 @@ export const useCrossChainApis = (): UseCrossChainApis => {
   const initApis = async () => {
     if (isLoading) return;
     setIsLoading(true);
-    console.log("called");
 
     const wsProviders = CHAINS.map((chain) => new WsProvider(chain.endpoints));
 
@@ -26,8 +28,12 @@ export const useCrossChainApis = (): UseCrossChainApis => {
       ApiPromise.create({ provider: provider }),
     );
 
-    const apis = await Promise.all(apiPromises);
-    console.log(apis);
+    const apisArr = await Promise.all(apiPromises);
+
+    const apis = apisArr.reduce(
+      (apis, api, index) => ({ ...apis, [CHAINS[index].name]: api }),
+      {},
+    );
 
     setApis(apis);
   };

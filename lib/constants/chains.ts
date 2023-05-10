@@ -1,10 +1,13 @@
 import type { ApiPromise } from "@polkadot/api";
-import type { Extrinsic } from "@polkadot/types/interfaces/extrinsics";
 import Decimal from "decimal.js";
 import { CurrencyBalance } from "lib/hooks/queries/useCurrencyBalances";
+import { SubmittableExtrinsic } from "@polkadot/api/types";
+import { ISubmittableResult } from "@polkadot/types/types";
+
+export type ChainName = "Rococo" | "Zeitgeist" | "Polkadot";
 
 interface Chain {
-  name: string;
+  name: ChainName;
   isRelayChain: boolean;
   endpoints: string[];
   fetchCurrencies: (
@@ -17,7 +20,7 @@ interface Chain {
     address: string,
     amount: string,
     parachainId: number,
-  ) => Extrinsic;
+  ) => SubmittableExtrinsic<"promise", ISubmittableResult>;
 }
 const BATTERY_STATION_CHAINS: Chain[] = [
   {
@@ -40,7 +43,7 @@ const BATTERY_STATION_CHAINS: Chain[] = [
       const accountId = api.createType("AccountId32", address).toHex();
 
       const destination = {
-        parents: 1,
+        parents: 0,
         interior: { X1: { Parachain: parachainId } },
       };
       const account = {
