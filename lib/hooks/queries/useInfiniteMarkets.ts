@@ -96,11 +96,11 @@ export const useInfiniteMarkets = (
     queryKey: [id, rootKey, filters, orderBy, withLiquidityOnly],
     queryFn: fetcher,
     enabled:
-      Boolean(sdk) &&
       isIndexedSdk(sdk) &&
       filters !== undefined &&
       orderBy !== undefined &&
-      withLiquidityOnly !== undefined,
+      withLiquidityOnly !== undefined &&
+      Boolean(sdk),
     getNextPageParam: (lastPage) => lastPage.next,
     onSuccess(data) {
       data.pages
