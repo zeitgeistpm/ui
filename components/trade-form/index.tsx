@@ -433,9 +433,6 @@ const TradeForm = () => {
     }
   }, [maxBaseAmount.toString(), maxAssetAmount.toString()]);
 
-  const hasSufficientBalance =
-    assetAmount && maxAssetAmount && maxAssetAmount?.div(ZTG).gt(assetAmount);
-
   return (
     <>
       {isSuccess === true ? (
@@ -547,7 +544,7 @@ const TradeForm = () => {
               disabled={isLoading === true || signer == null}
               {...register("percentage")}
             />
-            <div className="text-center">
+            <div className="text-center mb-4">
               <div className="text-ztg-12-150 sm:text-ztg-14-150">
                 <div className="mb-[10px]">
                   <span className="text-sky-600">Average Price: </span>
@@ -564,15 +561,7 @@ const TradeForm = () => {
                 </div>
               </div>
             </div>
-            <div className="h-6 mb-2">
-              <div
-                className={`text-vermilion text-ztg-12-120 mt-[4px] font-bold text-center opacity-0 transition-opacity ${
-                  assetAmount && !hasSufficientBalance && "opacity-100"
-                }`}
-              >
-                Insufficient Balance.
-              </div>
-            </div>
+
             <TransactionButton
               disabled={!formState.isValid || isLoading === true}
               className="h-[56px]"
