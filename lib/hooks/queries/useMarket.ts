@@ -45,6 +45,7 @@ const batcher = memoize((sdk: Sdk<IndexerContext>) => {
         where: {
           question_isNull: false,
           question_not_eq: "",
+          isMetaComplete_eq: true,
           OR: [
             {
               marketId_in: ids

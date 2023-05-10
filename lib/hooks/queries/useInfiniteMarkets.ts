@@ -24,7 +24,7 @@ const orderByMap = {
 const validMarketWhereInput: MarketWhereInput = {
   question_isNull: false,
   question_not_eq: "",
-  categories_isNull: false,
+  isMetaComplete_eq: true,
 };
 
 export type QueryMarketData = Market<IndexerContext> & {
