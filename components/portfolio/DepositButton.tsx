@@ -106,12 +106,11 @@ const DepositModal = ({
                   message: "Value is required",
                 },
                 validate: (value) => {
-                  // if (balance.div(ZTG).lessThan(value)) {
-                  //   return `Insufficient balance. Current balance: ${balance
-                  //     .div(ZTG)
-                  //     .toFixed(3)}`;
-                  // } else
-                  if (value <= 0) {
+                  if (balance.div(ZTG).lessThan(value)) {
+                    return `Insufficient balance. Current balance: ${balance
+                      .div(ZTG)
+                      .toFixed(3)}`;
+                  } else if (value <= 0) {
                     return "Value cannot be zero or less";
                   }
                 },

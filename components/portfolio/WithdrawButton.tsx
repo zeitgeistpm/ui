@@ -1,11 +1,15 @@
 import { Dialog } from "@headlessui/react";
-import { isRpcSdk, sdk } from "@zeitgeistpm/sdk-next";
+import type { ApiPromise } from "@polkadot/api";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
+import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
 import { useState } from "react";
 import { ArrowRight } from "react-feather";
 import { useForm } from "react-hook-form";
@@ -23,27 +27,57 @@ const WithdrawButton = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
           toChain={toChain}
           tokenSymbol={tokenSymbol}
           balance={balance}
+          foreignAssetId={foreignAssetId}
         />
       </Modal>
     </>
   );
 };
 
-const WithdrawModal = ({ toChain, tokenSymbol, balance }) => {
+const createWithdrawExtrinsic = (
+  api: ApiPromise,
+  amount: string,
+  address: string,
+  foreignAssetId: number,
+) => {
+  const accountId = api.createType("AccountId32", address).toHex();
+
+  const account = {
+    parents: 1,
+    interior: { X1: { AccountId32: { id: accountId, network: "Any" } } },
+  };
+
+  return api.tx.xTokens.transfer(
+    { ForeignAsset: foreignAssetId },
+    amount,
+    { V1: account },
+    "100000000000",
+  );
+};
+
+const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
   const { register, handleSubmit, getValues, formState } = useForm({
     reValidateMode: "onChange",
     mode: "all",
   });
 
   const notificationStore = useNotifications();
+  const wallet = useWallet();
+
+  const [sdk] = useSdkv2();
   const { send: transfer, isLoading } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk)) {
         const formValue = getValues();
-        formValue.amount;
+        const amount = formValue.amount;
 
-        // return sdk.api.tx.xTokens.transfer();
-        return sdk.api.tx.utility.batch([]);
+        const tx = createWithdrawExtrinsic(
+          sdk.api,
+          new Decimal(amount).mul(ZTG).toFixed(0),
+          wallet.activeAccount.address,
+          foreignAssetId,
+        );
+        return tx;
       }
     },
     {
@@ -56,7 +90,7 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance }) => {
   );
 
   const onSubmit = () => {
-    console.log(getValues());
+    transfer();
   };
 
   return (
