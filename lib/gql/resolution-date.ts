@@ -6,6 +6,7 @@ const resolutionQuery = gql`
       where: { event_eq: MarketResolved, marketId_eq: $marketId }
     ) {
       timestamp
+      blockNumber
     }
   }
 `;
@@ -16,12 +17,15 @@ export const getResolutionTimestamp = async (
   marketId: number,
 ) => {
   const response = await client.request<{
-    historicalMarkets: { timestamp: string }[];
+    historicalMarkets: { timestamp: string; blockNumber: number }[];
   }>(resolutionQuery, {
     marketId,
   });
 
   return response.historicalMarkets?.length > 0
-    ? response.historicalMarkets[0].timestamp
+    ? {
+        timestamp: response.historicalMarkets[0].timestamp,
+        blockNumber: response.historicalMarkets[0].blockNumber,
+      }
     : null;
 };

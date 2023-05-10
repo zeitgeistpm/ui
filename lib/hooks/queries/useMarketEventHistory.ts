@@ -26,19 +26,13 @@ export type MarketHistory = {
   };
   reported: ReportWithTimestamp;
   disputes: DisputesWithTimestamp[];
-  resolved: string;
+  resolved: {
+    outcome: number;
+    timestamp: Date;
+    block: number;
+  };
   oracleReported: boolean;
 };
-
-// const fetchMarketData = async (
-//   sdk,
-//   marketId,
-// ): Promise<MarketPageIndexedData> => {
-//   if (isIndexedSdk(sdk) && isRpcSdk(sdk)) {
-//     return await getMarket(sdk.indexer.client, marketId);
-//   }
-//   return null;
-// };
 
 export const useMarketEventHistory = (
   marketId: string,
@@ -72,16 +66,18 @@ export const useMarketEventHistory = (
 
         let disputesWithTimestamp;
         let reportWithTimestamp;
+        let resolutionBlock;
         let resolutionTimestamp;
 
         if (resolvedOutcome) {
-          const resolutionData = await getResolutionTimestamp(
+          const { timestamp, blockNumber } = await getResolutionTimestamp(
             sdk.indexer.client,
             Number(marketId),
           );
-          resolutionTimestamp = new Date(resolutionData);
+          resolutionTimestamp = new Date(timestamp);
+          resolutionBlock = blockNumber;
         }
-        console.log(resolutionTimestamp);
+
         const getTimeStampForBlock = async (blockNumber: number) => {
           try {
             const blockHash = await getApiAtBlock(sdk.api, blockNumber);
@@ -124,8 +120,9 @@ export const useMarketEventHistory = (
           reported: reportWithTimestamp,
           disputes: disputesWithTimestamp,
           resolved: {
-            timestamp: resolutionTimestamp,
             outcome: resolvedOutcome,
+            timestamp: resolutionTimestamp,
+            block: resolutionBlock,
           },
           oracleReported: oracleReported,
         };
@@ -133,7 +130,7 @@ export const useMarketEventHistory = (
       }
     },
     {
-      enabled: Boolean(sdk && isRpcSdk(sdk) && market),
+      enabled: Boolean(sdk && isIndexedSdk(sdk) && isRpcSdk(sdk) && market),
     },
   );
 };

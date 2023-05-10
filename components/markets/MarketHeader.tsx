@@ -234,11 +234,17 @@ const MarketHistory: FC<
                     dateStyle: "medium",
                     timeStyle: "short",
                   }).format(marketHistory?.resolved?.["timestamp"])}{" "}
-                (block: {"XXXX"}) Market resolved to{" "}
-                <span className="font-bold">
-                  {marketType.scalar === null
-                    ? categories[marketHistory?.resolved?.["outcome"]].name
-                    : getScalarOutcome(marketHistory?.resolved, scalarType)}
+                (block: {marketHistory?.resolved?.["block"]})
+                <span className="block">
+                  Market resolved to{" "}
+                  <span className="font-bold">
+                    {marketType.scalar === null
+                      ? categories[marketHistory?.resolved?.["outcome"]].name
+                      : getScalarOutcome(
+                          marketHistory?.resolved?.["outcome"],
+                          scalarType,
+                        )}
+                  </span>
                 </span>
               </p>
             </li>
