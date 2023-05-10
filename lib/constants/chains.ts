@@ -6,6 +6,12 @@ import { ISubmittableResult } from "@polkadot/types/types";
 
 export type ChainName = "Rococo" | "Zeitgeist" | "Polkadot";
 
+export const CHAIN_IMAGES = {
+  Rococo: "/currencies/rococo.png",
+  Polkadot: "/currencies/dot.png",
+  Zeitgeist: "/currencies/ztg.jpg",
+};
+
 interface Chain {
   name: ChainName;
   isRelayChain: boolean;
@@ -34,7 +40,7 @@ const BATTERY_STATION_CHAINS: Chain[] = [
           symbol: "ROC",
           balance: new Decimal(account.data.free.toString()),
           chain: "Rococo",
-          foreignAssetId: 0,
+          foreignAssetId: 1,
           sourceChain: "Rococo",
         },
       ];

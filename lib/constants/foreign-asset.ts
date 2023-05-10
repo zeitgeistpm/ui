@@ -2,22 +2,39 @@ type ForeignAssetMetadata = {
   [foreignAssetId: number]: {
     coinGeckoId: string;
     originChain?: string;
+    image?: string;
+    withdrawSupported: boolean;
   };
+};
+
+export const lookupAssetImagePath = (foreignAssetId?: number) => {
+  if (foreignAssetId == null) {
+    return "/currencies/ztg.jpg";
+  } else {
+    return FORIEGN_ASSET_METADATA[foreignAssetId].image;
+  }
 };
 
 const BATTERY_STATION_FORIEGN_ASSET_METADATA: ForeignAssetMetadata = {
   0: {
-    coinGeckoId: "polkadot",
     originChain: null,
+    image: "/currencies/dot.png",
+    withdrawSupported: false,
+    coinGeckoId: "polkadot",
   },
   1: {
-    coinGeckoId: "polkadot",
     originChain: "Rococo",
+    image: "/currencies/rococo.png",
+    withdrawSupported: true,
+    coinGeckoId: "polkadot",
   },
 };
 
 const PROD_FORIEGN_ASSET_METADATA: ForeignAssetMetadata = {
   0: {
+    originChain: "Polkadot",
+    image: "/currencies/dot.png",
+    withdrawSupported: true,
     coinGeckoId: "polkadot",
   },
 };
