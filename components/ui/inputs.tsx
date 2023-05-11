@@ -28,7 +28,7 @@ interface InputProps {
 }
 
 const inputClasses =
-  "bg-sky-200 dark:bg-black text-ztg-14-150 w-full rounded-ztg-5 h-ztg-40 p-ztg-8  focus:outline-none border-1 dark:border-black text-black dark:text-white";
+  "font-medium text-ztg-18-150 bg-anti-flash-white text-right rounded-[5px] h-[56px] px-[15px] w-full";
 const disabledInputClasses =
   "disabled:bg-transparent dark:disabled:bg-transparent disabled:border-sky-200 dark:disabled:border-border-dark ";
 const invalidClasses = "!border-vermilion !text-vermilion";
@@ -356,7 +356,7 @@ export const AmountInput: FC<AmountInputProps> = observer(
             onChange={onChanged}
             onBlur={onBlured}
             onFocus={() => setFocused(true)}
-            className={`${inputClasses} !font-mono text-right ${disabledInputClasses} ${
+            className={`${inputClasses}  text-right ${disabledInputClasses} ${
               invalid ? invalidClasses : ""
             } ${className}`}
           />

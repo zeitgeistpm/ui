@@ -100,14 +100,7 @@ const BuyFullSetForm = ({
   useGlobalKeyPress("Enter", handleSignTransaction);
 
   return (
-    <div className="p-[30px]">
-      <div
-        className={
-          "font-bold text-ztg-16-150  dark:text-white text-black w-full"
-        }
-      >
-        Buy Full Set
-      </div>
+    <div>
       <div>
         <div className="flex items-center mt-ztg-24 mb-ztg-8">
           <div className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2 bg-ztg-blue"></div>
@@ -152,7 +145,7 @@ const BuyFullSetForm = ({
         onClick={handleSignTransaction}
         disabled={disabled}
       >
-        {isLoading ? <Loader size={8} /> : "Sign Transaction"}
+        {isLoading ? <Loader size={8} /> : "Buy Full Set"}
       </TransactionButton>
     </div>
   );

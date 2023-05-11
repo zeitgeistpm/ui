@@ -28,6 +28,7 @@ const ExitPoolForm = ({
   userPoolShares,
   poolStatus,
   baseAssetTicker,
+  onSuccess,
 }: {
   poolBalances: PoolBalances;
   poolId: number;
@@ -35,6 +36,7 @@ const ExitPoolForm = ({
   userPoolShares: Decimal;
   poolStatus: string;
   baseAssetTicker: string;
+  onSuccess?: () => void;
 }) => {
   const { data: constants } = useChainConstants();
   const {
@@ -111,6 +113,7 @@ const ExitPoolForm = ({
           poolTotalIssuanceRootQueryKey,
           poolId,
         ]);
+        onSuccess?.();
       },
     },
   );
@@ -184,7 +187,7 @@ const ExitPoolForm = ({
   };
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col gap-y-6 max-h-[200px] md:max-h-[400px] overflow-y-auto">
+      <div className="flex flex-col gap-y-6 max-h-[200px] md:max-h-[400px] overflow-y-auto py-4">
         {poolWeights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
           const assetName =
