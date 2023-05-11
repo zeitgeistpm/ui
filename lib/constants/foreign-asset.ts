@@ -4,6 +4,7 @@ type ForeignAssetMetadata = {
     originChain?: string;
     image?: string;
     withdrawSupported: boolean;
+    withdrawDestinationFee?: string;
   };
 };
 

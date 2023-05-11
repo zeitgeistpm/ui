@@ -20,7 +20,6 @@ interface Chain {
     api: ApiPromise,
     address: string,
   ) => Promise<CurrencyBalance[]>;
-  //create deposit extrinsic
   createDepositExtrinsic: (
     api: ApiPromise,
     address: string,
@@ -74,7 +73,56 @@ const BATTERY_STATION_CHAINS: Chain[] = [
     },
   },
 ];
-const PROD_CHAINS = [];
+const PROD_CHAINS: Chain[] = [
+  {
+    name: "Polkadot",
+    isRelayChain: true,
+    endpoints: [
+      "wss://polkadot.api.onfinality.io/public-ws",
+      "wss://polkadot-rpc.dwellir.com",
+      "wss://rpc.polkadot.io",
+    ],
+    fetchCurrencies: async (api, address) => {
+      const account = await api.query.system.account(address);
+      return [
+        {
+          symbol: "DOT",
+          balance: new Decimal(account.data.free.toString()),
+          chain: "Polkadot",
+          foreignAssetId: 0,
+          sourceChain: "Polkadot",
+        },
+      ];
+    },
+    createDepositExtrinsic: (api, address, amount, parachainId) => {
+      const accountId = api.createType("AccountId32", address).toHex();
+
+      const destination = {
+        parents: 0,
+        interior: { X1: { Parachain: parachainId } },
+      };
+      const account = {
+        parents: 0,
+        interior: { X1: { AccountId32: { id: accountId, network: "Any" } } },
+      };
+      const asset = [
+        {
+          id: { Concrete: { parents: 0, interior: "Here" } },
+          fun: { Fungible: amount },
+        },
+      ];
+
+      const tx = api.tx.xcmPallet.reserveTransferAssets(
+        { V2: destination },
+        { V2: account },
+        { V2: asset },
+        0,
+      );
+
+      return tx;
+    },
+  },
+];
 
 export const CHAINS: Chain[] =
   process.env.NEXT_PUBLIC_VERCEL_ENV === "NEXT_PUBLIC_VERCEL_ENV"
