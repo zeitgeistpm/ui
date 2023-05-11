@@ -1,15 +1,13 @@
-import { useAvatarContext } from "@zeitgeistpm/avatara-react";
 import { Badge } from "@zeitgeistpm/avatara-nft-sdk";
+import { useAvatarContext } from "@zeitgeistpm/avatara-react";
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 import { partial } from "lodash";
 
-import { useUserLocation } from "lib/hooks/useUserLocation";
-import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
-import Select from "react-select";
-import { AiFillInfoCircle } from "react-icons/ai";
+import { AnimatePresence, motion } from "framer-motion";
 import { capitalize } from "lodash";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import { AiFillInfoCircle } from "react-icons/ai";
+import Select from "react-select";
 
 export type RaritySelectValue = {
   label: string;
@@ -34,7 +32,7 @@ export const colorForRarity = (rarity: Badge.Rarity) => {
     : "orange-1";
 };
 
-const BadgesPage = observer(() => {
+const BadgesPage = () => {
   const avatarContext = useAvatarContext();
 
   const [rarity, setRarity] = useState<RaritySelectValue>(rarities[1]);
@@ -101,7 +99,7 @@ const BadgesPage = observer(() => {
       </div>
     </div>
   );
-});
+};
 
 const BadgeItem = (props: { item: Badge.DiscreteBadge<any> }) => {
   const { item } = props;

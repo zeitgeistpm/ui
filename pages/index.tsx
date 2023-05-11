@@ -2,25 +2,23 @@ import LearnSection from "components/front-page/LearnSection";
 import PopularCategories, {
   CATEGORIES,
 } from "components/front-page/PopularCategories";
+import HeroSlider from "components/hero-slider/HeroSlider";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import { GraphQLClient } from "graphql-request";
 import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
-import { observer } from "mobx-react";
 import { NextPage } from "next";
-import HeroSlider from "components/hero-slider/HeroSlider";
 
+import { Banner, getBanners } from "lib/cms/get-banners";
+import { graphQlEndpoint } from "lib/constants";
+import path from "path";
 import {
   getPlaiceholder,
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
-import React from "react";
-import { Banner, getBanners } from "lib/cms/get-banners";
-import path from "path";
-import { graphQlEndpoint } from "lib/constants";
 
 const getPlaiceholders = (
   paths: string[],
@@ -77,52 +75,50 @@ const IndexPage: NextPage<{
   categoryCounts: number[];
   categoryPlaceholders: string[];
   bannerPlaceHolders: string[];
-}> = observer(
-  ({
-    banners,
-    trendingMarkets,
-    featuredMarkets,
-    categoryCounts,
-    categoryPlaceholders,
-    bannerPlaceHolders,
-  }) => {
-    return (
-      <>
-        <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
-        <div data-testid="indexPage" className="main-container">
-          {featuredMarkets.length > 0 && (
-            <div className="my-[60px]">
-              <MarketScroll
-                title="Featured Markets"
-                cta="Go to Markets"
-                markets={featuredMarkets}
-                link="markets"
-              />
-            </div>
-          )}
-          <div className="mb-[60px]">
-            <PopularCategories
-              counts={categoryCounts}
-              imagePlaceholders={categoryPlaceholders}
+}> = ({
+  banners,
+  trendingMarkets,
+  featuredMarkets,
+  categoryCounts,
+  categoryPlaceholders,
+  bannerPlaceHolders,
+}) => {
+  return (
+    <>
+      <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
+      <div data-testid="indexPage" className="main-container">
+        {featuredMarkets.length > 0 && (
+          <div className="my-[60px]">
+            <MarketScroll
+              title="Featured Markets"
+              cta="Go to Markets"
+              markets={featuredMarkets}
+              link="markets"
             />
           </div>
-          <div className="flex items-center w-full justify-center bottom-[60px]">
-            <LearnSection />
-          </div>
-          {trendingMarkets.length > 0 && (
-            <div className="my-[60px]">
-              <MarketScroll
-                title="Trending Markets"
-                cta="Go to Markets"
-                markets={trendingMarkets}
-                link="markets"
-              />
-            </div>
-          )}
+        )}
+        <div className="mb-[60px]">
+          <PopularCategories
+            counts={categoryCounts}
+            imagePlaceholders={categoryPlaceholders}
+          />
         </div>
-      </>
-    );
-  },
-);
+        <div className="flex items-center w-full justify-center bottom-[60px]">
+          <LearnSection />
+        </div>
+        {trendingMarkets.length > 0 && (
+          <div className="my-[60px]">
+            <MarketScroll
+              title="Trending Markets"
+              cta="Go to Markets"
+              markets={trendingMarkets}
+              link="markets"
+            />
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
 
 export default IndexPage;

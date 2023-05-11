@@ -18,11 +18,13 @@ const JoinPoolForm = ({
   poolId,
   totalPoolShares,
   baseAssetTicker,
+  onSuccess,
 }: {
   poolBalances: PoolBalances;
   poolId: number;
   totalPoolShares: Decimal;
   baseAssetTicker: string;
+  onSuccess?: () => void;
 }) => {
   const { register, watch, handleSubmit, setValue, getValues, formState } =
     useForm({ reValidateMode: "onChange", mode: "all" });
@@ -66,6 +68,7 @@ const JoinPoolForm = ({
           poolTotalIssuanceRootQueryKey,
           poolId,
         ]);
+        onSuccess?.();
       },
     },
   );
@@ -144,7 +147,7 @@ const JoinPoolForm = ({
 
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col gap-y-6 max-h-[250px] md:max-h-[400px] overflow-y-auto">
+      <div className="flex flex-col gap-y-6 max-h-[250px] md:max-h-[400px] overflow-y-auto py-4">
         {pool?.weights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
           const assetName = market?.categories[index]?.name ?? baseAssetTicker;

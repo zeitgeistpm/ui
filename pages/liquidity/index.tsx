@@ -1,19 +1,26 @@
+import { MarketStatus } from "@zeitgeistpm/indexer";
+import {
+  AssetId,
+  IOMarketOutcomeAssetId,
+  ZTG,
+  getIndexOf,
+  parseAssetId,
+} from "@zeitgeistpm/sdk-next";
+import MarketImage from "components/ui/MarketImage";
+import Skeleton from "components/ui/Skeleton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
-import { useInfinitePoolsList } from "lib/hooks/queries/useInfinitePoolsList";
+import { useInfiniteMarkets } from "lib/hooks/queries/useInfiniteMarkets";
 import { useMarketStatusCount } from "lib/hooks/queries/useMarketStatusCount";
-import { useSaturatedPoolsIndex } from "lib/hooks/queries/useSaturatedPoolsIndex";
 import { useTotalLiquidity } from "lib/hooks/queries/useTotalLiquidity";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
+import { MarketsOrderBy } from "lib/types/market-filter";
 import { formatNumberLocalized } from "lib/util";
-import { observer } from "mobx-react";
+import { calcLiqudityFromPoolAssets } from "lib/util/calc-liquidity";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { AiOutlineRead } from "react-icons/ai";
-import { MarketStatus } from "@zeitgeistpm/indexer";
-import MarketImage from "components/ui/MarketImage";
-import { ZTG } from "@zeitgeistpm/sdk-next";
 
 const columns: TableColumn[] = [
   {
@@ -39,77 +46,90 @@ const columns: TableColumn[] = [
   },
 ];
 
-const LiquidityPools: NextPage = observer(() => {
+const LiquidityPools: NextPage = () => {
   const router = useRouter();
 
-  const { data: ztgPrice } = useZtgPrice();
+  const { data: ztgPrice, isLoading: isLoadingZtgPrice } = useZtgPrice();
 
   const {
-    data: poolPages,
-    isLoading: isLoadingPools,
+    data: marketsPages,
+    isLoading,
     hasNextPage,
     fetchNextPage,
-  } = useInfinitePoolsList();
+  } = useInfiniteMarkets(MarketsOrderBy.Newest, true, {
+    status: [],
+    tag: [],
+    currency: [],
+  });
 
-  const pools = poolPages?.pages.flatMap((pools) => pools.data) || [];
+  const markets = marketsPages?.pages.flatMap((markets) => markets.data) ?? [];
+  const pools = markets?.map((market) => market.pool) || [];
 
-  const { data: saturatedIndex, isFetched } = useSaturatedPoolsIndex(pools);
-
-  const totalLiquidity = useTotalLiquidity({ enabled: isFetched });
+  const { data: totalLiquidity } = useTotalLiquidity();
 
   const totalLiquidityValue = useMemo(() => {
-    if (ztgPrice) {
-      return totalLiquidity.div(ZTG).mul(ztgPrice);
+    if (isLoadingZtgPrice) {
+      return;
     }
-    return new Decimal(0);
+    if (ztgPrice) {
+      return totalLiquidity?.mul(ztgPrice);
+    }
   }, [ztgPrice, totalLiquidity]);
 
   const { data: activeMarketCount } = useMarketStatusCount(MarketStatus.Active);
 
   const tableData = useMemo<TableData[]>(() => {
     return (
-      pools?.map((pool) => {
-        const saturatedData = saturatedIndex?.[pool.poolId];
+      markets?.map((market) => {
+        const pool = market.pool;
+        const { categories } = market;
+        const poolLiquidty = calcLiqudityFromPoolAssets(pool.assets);
         return {
           poolId: pool.poolId,
           marketId: (
             <div className="flex items-center py-3">
               <div className="w-ztg-70 h-ztg-70 rounded-ztg-10 flex-shrink-0 bg-sky-600 mr-4">
                 <MarketImage
-                  image={saturatedData?.market.img}
-                  alt={saturatedData?.market.description}
+                  image={market.img}
+                  alt={market.description}
                   className="rounded-ztg-10"
                 />
               </div>
 
               <div className="text-ztg-12-120 font-bold uppercase text-sky-600">
-                {saturatedData?.market.slug?.toUpperCase() ||
-                  saturatedData?.market.marketId}
+                {market.slug?.toUpperCase() || market.marketId}
               </div>
             </div>
           ),
-          status: (
-            <div className="w-28">{saturatedData?.market.status ?? "..."}</div>
-          ),
+          status: <div className="w-28">{market.status ?? "..."}</div>,
           composition: (
             <span>
-              {saturatedData?.assets
-                .map((asset) => `${asset.percentage}% ${asset.category.ticker}`)
+              {pool.assets
+                .map((asset) => {
+                  const assetId = parseAssetId(asset.assetId).unwrap();
+                  const assetIndex =
+                    IOMarketOutcomeAssetId.is(assetId) && getIndexOf(assetId);
+                  const category = categories[assetIndex];
+                  const weight = pool.weights[assetIndex];
+                  const percentage = Math.round(
+                    new Decimal(weight.weight)
+                      .dividedBy(pool.totalWeight)
+                      .mul(100)
+                      .toNumber(),
+                  );
+                  return `${percentage}% ${category.name}`;
+                })
                 .join(" - ") || "..."}
             </span>
           ),
-          poolBalance: saturatedData ? (
-            {
-              value: saturatedData?.liquidity.div(ZTG).toNumber(),
-              usdValue: ztgPrice?.toNumber() ?? 0,
-            }
-          ) : (
-            <span>...</span>
-          ),
+          poolBalance: {
+            value: poolLiquidty.toNumber(),
+            usdValue: ztgPrice?.mul(poolLiquidty).toNumber() ?? 0,
+          },
         };
       }) ?? []
     );
-  }, [pools, saturatedIndex]);
+  }, [pools]);
 
   const handleRowClick = (data: TableData) => {
     router.push(`/liquidity/${data.poolId}`);
@@ -123,10 +143,18 @@ const LiquidityPools: NextPage = observer(() => {
             Total Value
           </h3>
           <div className="font-bold px-1 text-xl mb-2">
-            {formatNumberLocalized(totalLiquidity.div(ZTG).toNumber())} ZTG
+            {totalLiquidity ? (
+              `${formatNumberLocalized(totalLiquidity?.toNumber())} ZTG`
+            ) : (
+              <Skeleton height={28} />
+            )}
           </div>
           <div className="px-1 text-sm text-gray-600">
-            ≈ {formatNumberLocalized(totalLiquidityValue.toNumber())} USD
+            {totalLiquidityValue ? (
+              `≈ ${formatNumberLocalized(totalLiquidityValue.toNumber())} USD`
+            ) : (
+              <Skeleton height={20} />
+            )}
           </div>
         </div>
 
@@ -167,7 +195,7 @@ const LiquidityPools: NextPage = observer(() => {
         columns={columns}
         onRowClick={handleRowClick}
         onLoadMore={hasNextPage ? fetchNextPage : undefined}
-        loadingMore={isLoadingPools}
+        loadingMore={isLoading}
         loadingNumber={10}
         hideLoadMore
         loadMoreThreshold={70}
@@ -175,6 +203,6 @@ const LiquidityPools: NextPage = observer(() => {
       />
     </div>
   );
-});
+};
 
 export default LiquidityPools;

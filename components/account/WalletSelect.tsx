@@ -2,11 +2,11 @@ import { useAccountModals } from "lib/state/account";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { supportedWallets, useWallet } from "lib/state/wallet";
 import { Wallet } from "lib/wallets/types";
-import { observer } from "mobx-react";
+
 import { useEffect } from "react";
 import { Download } from "react-feather";
 
-const WalletSelect = observer(() => {
+const WalletSelect = () => {
   const { selectWallet, errors, accounts, connected } = useWallet();
   const accountModals = useAccountModals();
 
@@ -74,6 +74,6 @@ const WalletSelect = observer(() => {
       })}
     </div>
   );
-});
+};
 
 export default WalletSelect;

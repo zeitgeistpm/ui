@@ -1,20 +1,19 @@
-import React, { useMemo } from "react";
-import { Calendar } from "react-feather";
-import Form from "mobx-react-form";
-import DateTime from "react-datetime";
+import { useFormField } from "lib/hooks";
 import { observer } from "mobx-react";
+import Form from "mobx-react-form";
 import { isMoment, Moment } from "moment";
-import {
+import React, {
   ChangeEventHandler,
   FC,
   FocusEventHandler,
   InputHTMLAttributes,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
-import { useStore } from "lib/stores/Store";
-import { useFormField } from "lib/hooks";
+import DateTime from "react-datetime";
+import { Calendar } from "react-feather";
 
 interface InputProps {
   form?: Form;
@@ -29,7 +28,7 @@ interface InputProps {
 }
 
 const inputClasses =
-  "bg-sky-200 dark:bg-black text-ztg-14-150 w-full rounded-ztg-5 h-ztg-40 p-ztg-8  focus:outline-none border-1 dark:border-black text-black dark:text-white";
+  "font-medium text-ztg-18-150 bg-anti-flash-white text-right rounded-[5px] h-[56px] px-[15px] w-full";
 const disabledInputClasses =
   "disabled:bg-transparent dark:disabled:bg-transparent disabled:border-sky-200 dark:disabled:border-border-dark ";
 const invalidClasses = "!border-vermilion !text-vermilion";
@@ -257,8 +256,8 @@ export const AmountInput: FC<AmountInputProps> = observer(
       },
       ref,
     ) => {
-      const store = useStore();
-      const amountRegex: RegExp = regex || store.amountRegex;
+      const amountRegex: RegExp =
+        regex || new RegExp(`^[0-9]+(\\.[0-9]{0,10})?`);
 
       const [val, setVal] = useState<string>(() => {
         if (["", "0"].includes(value)) {
@@ -357,7 +356,7 @@ export const AmountInput: FC<AmountInputProps> = observer(
             onChange={onChanged}
             onBlur={onBlured}
             onFocus={() => setFocused(true)}
-            className={`${inputClasses} !font-mono text-right ${disabledInputClasses} ${
+            className={`${inputClasses}  text-right ${disabledInputClasses} ${
               invalid ? invalidClasses : ""
             } ${className}`}
           />

@@ -1,7 +1,6 @@
-import { Decimal } from "decimal.js";
 import Skeleton from "components/ui/Skeleton";
-import { observer } from "mobx-react";
-import React, { useCallback, useState } from "react";
+import { Decimal } from "decimal.js";
+import { useCallback, useState } from "react";
 import {
   CartesianGrid,
   Label,
@@ -33,7 +32,7 @@ export interface ChartData {
   [key: string]: number;
 }
 
-const ChartToolTip = observer((props) => {
+const ChartToolTip = (props) => {
   const items = props.series
     ?.map((s, index) => ({
       color: s.color,
@@ -86,191 +85,192 @@ const ChartToolTip = observer((props) => {
       )}
     </>
   );
-});
+};
 
-const TimeSeriesChart = observer(
-  ({ data, series, yDomain, yUnits }: TimeSeriesChartProps) => {
-    const [refAreaLeft, setRefAreaLeft] = useState("");
-    const [refAreaRight, setRefAreaRight] = useState("");
-    const [leftX, setLeftX] = useState("dataMin");
-    const [rightX, setRightX] = useState("dataMax");
-    const [mouseInside, setMouseInside] = useState(false);
+const TimeSeriesChart = ({
+  data,
+  series,
+  yDomain,
+  yUnits,
+}: TimeSeriesChartProps) => {
+  const [refAreaLeft, setRefAreaLeft] = useState("");
+  const [refAreaRight, setRefAreaRight] = useState("");
+  const [leftX, setLeftX] = useState("dataMin");
+  const [rightX, setRightX] = useState("dataMax");
+  const [mouseInside, setMouseInside] = useState(false);
 
-    const roundingThreshold = 0.3;
+  const roundingThreshold = 0.3;
 
-    const lessThanTwoDays =
-      data?.length > 0
-        ? Math.abs(data[data.length - 1].t - data[0].t) < 172800
-        : false;
+  const lessThanTwoDays =
+    data?.length > 0
+      ? Math.abs(data[data.length - 1].t - data[0].t) < 172800
+      : false;
 
-    const zoom = () => {
-      let left = refAreaLeft;
-      let right = refAreaRight;
+  const zoom = () => {
+    let left = refAreaLeft;
+    let right = refAreaRight;
 
-      if (left === right || right === "") {
-        setRefAreaLeft("");
-        setRefAreaRight("");
-        return;
-      }
-
-      if (left > right) {
-        [left, right] = [right, left];
-      }
-
-      setLeftX(left);
-      setRightX(right);
+    if (left === right || right === "") {
       setRefAreaLeft("");
       setRefAreaRight("");
-    };
+      return;
+    }
 
-    const handleMouseMove = useCallback(
-      (e) => {
-        if (refAreaLeft) {
-          setRefAreaRight(e.activeLabel);
-        }
-      },
+    if (left > right) {
+      [left, right] = [right, left];
+    }
 
-      [refAreaLeft],
-    );
+    setLeftX(left);
+    setRightX(right);
+    setRefAreaLeft("");
+    setRefAreaRight("");
+  };
 
-    const handleMouseEnter = () => {
-      setMouseInside(true);
-    };
+  const handleMouseMove = useCallback(
+    (e) => {
+      if (refAreaLeft) {
+        setRefAreaRight(e.activeLabel);
+      }
+    },
 
-    const handleMouseLeave = () => {
-      setMouseInside(false);
-    };
+    [refAreaLeft],
+  );
 
-    return (
-      <div
-        style={{ width: "100%", height: 350 }}
-        onMouseMove={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        }}
-        onDoubleClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setLeftX("dataMin");
-          setRightX("dataMax");
-        }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-        {data ? (
-          <ResponsiveContainer>
-            <LineChart
-              width={500}
-              height={300}
-              data={data}
-              onMouseDown={(e) => {
-                if (e) setRefAreaLeft(e.activeLabel);
+  const handleMouseEnter = () => {
+    setMouseInside(true);
+  };
+
+  const handleMouseLeave = () => {
+    setMouseInside(false);
+  };
+
+  return (
+    <div
+      style={{ width: "100%", height: 350 }}
+      onMouseMove={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+      onDoubleClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setLeftX("dataMin");
+        setRightX("dataMax");
+      }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {data ? (
+        <ResponsiveContainer>
+          <LineChart
+            width={500}
+            height={300}
+            data={data}
+            onMouseDown={(e) => {
+              if (e) setRefAreaLeft(e.activeLabel);
+            }}
+            onMouseMove={handleMouseMove}
+            onMouseUp={zoom}
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              strokeWidth={1}
+              stroke="#E8EAED"
+              vertical={false}
+            />
+            <XAxis
+              dataKey="t"
+              domain={[leftX, rightX]}
+              tickCount={5}
+              tick={{
+                fontSize: "10px",
+                stroke: "black",
+                strokeWidth: 1,
+                fontWeight: 100,
               }}
-              onMouseMove={handleMouseMove}
-              onMouseUp={zoom}
-            >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                strokeWidth={1}
-                stroke="#E8EAED"
-                vertical={false}
-              />
-              <XAxis
-                dataKey="t"
-                domain={[leftX, rightX]}
-                tickCount={5}
-                tick={{
-                  fontSize: "10px",
-                  stroke: "black",
-                  strokeWidth: 1,
-                  fontWeight: 100,
-                }}
-                tickMargin={10}
-                type="number"
-                stroke="#E8EAED"
-                tickLine={true}
-                strokeWidth={2}
-                tickFormatter={(unixTime) => {
-                  if (unixTime !== -Infinity && unixTime !== Infinity) {
-                    if (lessThanTwoDays === true) {
-                      return new Intl.DateTimeFormat("default", {
-                        weekday: "short",
-                        hour: "numeric",
-                        minute: "numeric",
-                      }).format(new Date(unixTime));
-                    } else {
-                      return new Intl.DateTimeFormat().format(
-                        new Date(unixTime),
-                      );
-                    }
+              tickMargin={10}
+              type="number"
+              stroke="#E8EAED"
+              tickLine={true}
+              strokeWidth={2}
+              tickFormatter={(unixTime) => {
+                if (unixTime !== -Infinity && unixTime !== Infinity) {
+                  if (lessThanTwoDays === true) {
+                    return new Intl.DateTimeFormat("default", {
+                      weekday: "short",
+                      hour: "numeric",
+                      minute: "numeric",
+                    }).format(new Date(unixTime));
+                  } else {
+                    return new Intl.DateTimeFormat().format(new Date(unixTime));
                   }
-                }}
-              />
-              <YAxis
-                tick={{
-                  fontSize: "10px",
-                  stroke: "black",
-                  strokeWidth: 1,
-                  fontWeight: 100,
-                }}
-                tickLine={false}
-                domain={
-                  yDomain ?? [
-                    (dataMin: number) => {
-                      return dataMin < roundingThreshold
-                        ? 0
-                        : Math.floor(dataMin * 10) / 10;
-                    },
-                    (dataMax) => {
-                      return dataMax > 1 - roundingThreshold
-                        ? 1
-                        : Math.ceil(dataMax * 10) / 10;
-                    },
-                  ]
                 }
-                stroke="#E8EAED"
-                strokeWidth={2}
-                tickFormatter={(val) => `${+val.toFixed(2)}`}
-              >
-                <Label
-                  fontSize={10}
-                  stroke="black"
-                  value={yUnits}
-                  offset={15}
-                  position="insideLeft"
-                  angle={-90}
-                />
-              </YAxis>
-
-              <Tooltip
-                animationEasing={"linear"}
-                animationDuration={0}
-                content={
-                  data?.length > 0 && (
-                    <ChartToolTip series={series} yUnits={yUnits} />
-                  )
-                }
+              }}
+            />
+            <YAxis
+              tick={{
+                fontSize: "10px",
+                stroke: "black",
+                strokeWidth: 1,
+                fontWeight: 100,
+              }}
+              tickLine={false}
+              domain={
+                yDomain ?? [
+                  (dataMin: number) => {
+                    return dataMin < roundingThreshold
+                      ? 0
+                      : Math.floor(dataMin * 10) / 10;
+                  },
+                  (dataMax) => {
+                    return dataMax > 1 - roundingThreshold
+                      ? 1
+                      : Math.ceil(dataMax * 10) / 10;
+                  },
+                ]
+              }
+              stroke="#E8EAED"
+              strokeWidth={2}
+              tickFormatter={(val) => `${+val.toFixed(2)}`}
+            >
+              <Label
+                fontSize={10}
+                stroke="black"
+                value={yUnits}
+                offset={15}
+                position="insideLeft"
+                angle={-90}
               />
-              {series.map((s, index) => (
-                <Line
-                  key={index}
-                  strokeWidth={mouseInside ? 3 : 2}
-                  type="linear"
-                  dataKey={s.accessor}
-                  dot={false}
-                  stroke={s.color ? s.color : "#0001FE"}
-                />
-              ))}
+            </YAxis>
 
-              <ReferenceArea x1={refAreaLeft} x2={refAreaRight} />
-            </LineChart>
-          </ResponsiveContainer>
-        ) : (
-          <Skeleton className="ml-ztg-20" height={350} />
-        )}
-      </div>
-    );
-  },
-);
+            <Tooltip
+              animationEasing={"linear"}
+              animationDuration={0}
+              content={
+                data?.length > 0 && (
+                  <ChartToolTip series={series} yUnits={yUnits} />
+                )
+              }
+            />
+            {series.map((s, index) => (
+              <Line
+                key={index}
+                strokeWidth={mouseInside ? 3 : 2}
+                type="linear"
+                dataKey={s.accessor}
+                dot={false}
+                stroke={s.color ? s.color : "#0001FE"}
+              />
+            ))}
+
+            <ReferenceArea x1={refAreaLeft} x2={refAreaRight} />
+          </LineChart>
+        </ResponsiveContainer>
+      ) : (
+        <Skeleton className="ml-ztg-20" height={350} />
+      )}
+    </div>
+  );
+};
 
 export default TimeSeriesChart;

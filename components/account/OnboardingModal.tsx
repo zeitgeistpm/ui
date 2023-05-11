@@ -5,7 +5,7 @@ import { PolkadotjsWallet } from "lib/wallets/polkadotjs-wallet";
 import { SubWallet } from "lib/wallets/subwallet";
 import { TalismanWallet } from "lib/wallets/talisman-wallet";
 import { range } from "lodash-es";
-import { observer } from "mobx-react";
+
 import Image from "next/image";
 import { Dispatch, SetStateAction, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
@@ -95,7 +95,7 @@ const walletsConfig = [
   new SubWallet(),
 ];
 
-const WalletSelection = observer(() => {
+const WalletSelection = () => {
   const { setWalletInstallConfirmed } = useOnboarding();
   const [isReloading, setIsReloading] = useState(false);
 
@@ -150,7 +150,7 @@ const WalletSelection = observer(() => {
       </button>
     </>
   );
-});
+};
 
 export const ExchangeTypeSelection = (props: {
   setStep: Dispatch<SetStateAction<number>>;
