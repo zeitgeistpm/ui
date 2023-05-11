@@ -24,6 +24,7 @@ import {
 import Modal from "components/ui/Modal";
 import { getMarketStatusDetails } from "lib/util/market-status-details";
 import { getScalarOutcome } from "lib/util/get-scalar-outcome";
+import { Dialog } from "@headlessui/react";
 
 const UserIdentity: FC<PropsWithChildren<{ user: string }>> = ({ user }) => {
   const { data: identity } = useIdentity(user ?? "");
@@ -147,111 +148,113 @@ const MarketHistory: FC<
   };
 
   return (
-    <div className="bg-white p-10 max-h-[670px] sm:min-w-[540px] sm:max-w-[540px] relative overflow-hidden rounded-xl">
-      <X
-        className="absolute top-5 right-5 cursor-pointer"
-        onClick={() => {
-          setShowMarketHistory(false);
-        }}
-      />
-      <h3 className="font-bold mb-10 text-center">Market History</h3>
-      <div className="sm:overflow-hidden">
-        <ol className="list-decimal pl-6 overflow-y-auto h-[500px] w-[calc(100%+16px)]">
-          <li className="mb-8 list-item">
-            <p className="pb-1">
-              {marketStart}{" "}
-              {marketHistory?.start.block > 0 &&
-                `(block: ${marketHistory?.start.block})`}
-            </p>
-            <p> Market opened</p>
-          </li>
-          <li className="mb-8 list-item">
-            <p className="pb-1">
-              {marketClosed}{" "}
-              {marketHistory?.end.block > 0 &&
-                `(block: ${marketHistory?.end.block})`}
-            </p>
-            <p> Market closed</p>
-          </li>
-          {marketHistory?.reported && (
+    <Dialog.Panel>
+      <div className="bg-white p-6 sm:p-10 max-h-[670px] sm:min-w-[540px] sm:max-w-[540px] relative overflow-hidden rounded-xl">
+        <X
+          className="absolute top-5 right-5 cursor-pointer"
+          onClick={() => {
+            setShowMarketHistory(false);
+          }}
+        />
+        <h3 className="font-bold mb-10 text-center">Market History</h3>
+        <div className="sm:overflow-hidden">
+          <ol className="list-decimal pl-8 overflow-y-auto h-[500px] w-[calc(100%+16px)]">
             <li className="mb-8 list-item">
               <p className="pb-1">
-                {marketHistory?.reported.timestamp > 0 &&
-                  new Intl.DateTimeFormat("default", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  }).format(marketHistory?.reported.timestamp)}{" "}
-                (block: {marketHistory?.reported.at})
+                {marketStart}{" "}
+                {marketHistory?.start.block > 0 &&
+                  `(block: ${marketHistory?.start.block})`}
               </p>
-              <div>
-                {marketHistory?.oracleReported && "Oracle "}
-                <span className="inline font-medium">
-                  <span className="font-bold">
-                    <UserIdentity user={marketHistory?.reported.by} />
-                  </span>{" "}
-                  reported{" "}
-                  <span className="font-bold">
-                    {getOutcome(marketHistory?.reported.outcome)}
-                  </span>
-                </span>
-              </div>
+              <p> Market opened</p>
             </li>
-          )}
-          {marketHistory?.disputes &&
-            marketHistory?.disputes.map((dispute) => {
-              return (
-                <li key={dispute.timestamp} className="mb-8">
-                  <p className="pb-1">
-                    {dispute.timestamp > 0 &&
-                      new Intl.DateTimeFormat("default", {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      }).format(dispute.timestamp)}{" "}
-                    (block: {dispute.at})
-                  </p>
-                  <div>
-                    {marketHistory.oracleReported ?? "Oracle"}
-                    <span className="flex items-center">
-                      <span className="inline font-medium">
-                        <span className="font-bold">
-                          <UserIdentity user={dispute.by} />
-                        </span>{" "}
-                        disputed and suggested{" "}
-                        <span className="font-bold">
-                          {getOutcome(dispute.outcome)}
+            <li className="mb-8 list-item">
+              <p className="pb-1">
+                {marketClosed}{" "}
+                {marketHistory?.end.block > 0 &&
+                  `(block: ${marketHistory?.end.block})`}
+              </p>
+              <p> Market closed</p>
+            </li>
+            {marketHistory?.reported && (
+              <li className="mb-8 list-item">
+                <p className="pb-1">
+                  {marketHistory?.reported.timestamp > 0 &&
+                    new Intl.DateTimeFormat("default", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }).format(marketHistory?.reported.timestamp)}{" "}
+                  (block: {marketHistory?.reported.at})
+                </p>
+                <div>
+                  {marketHistory?.oracleReported && "Oracle "}
+                  <span className="inline font-medium">
+                    <span className="font-bold">
+                      <UserIdentity user={marketHistory?.reported.by} />
+                    </span>{" "}
+                    reported{" "}
+                    <span className="font-bold">
+                      {getOutcome(marketHistory?.reported.outcome)}
+                    </span>
+                  </span>
+                </div>
+              </li>
+            )}
+            {marketHistory?.disputes &&
+              marketHistory?.disputes.map((dispute) => {
+                return (
+                  <li key={dispute.timestamp} className="mb-8">
+                    <p className="pb-1">
+                      {dispute.timestamp > 0 &&
+                        new Intl.DateTimeFormat("default", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        }).format(dispute.timestamp)}{" "}
+                      (block: {dispute.at})
+                    </p>
+                    <div>
+                      {marketHistory.oracleReported ?? "Oracle"}
+                      <span className="flex items-center">
+                        <span className="inline font-medium">
+                          <span className="font-bold">
+                            <UserIdentity user={dispute.by} />
+                          </span>{" "}
+                          disputed and suggested{" "}
+                          <span className="font-bold">
+                            {getOutcome(dispute.outcome)}
+                          </span>
                         </span>
                       </span>
+                    </div>
+                  </li>
+                );
+              })}
+            {marketHistory?.resolved && (
+              <li className="mb-8 list-item">
+                <p className="pb-1">
+                  {marketHistory?.resolved?.["timestamp"] &&
+                    new Intl.DateTimeFormat("default", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }).format(marketHistory?.resolved?.["timestamp"])}{" "}
+                  (block: {marketHistory?.resolved?.["block"]})
+                  <span className="block">
+                    Market resolved to{" "}
+                    <span className="font-bold">
+                      {marketType.scalar === null
+                        ? categories[marketHistory?.resolved?.["outcome"]].name
+                        : getScalarOutcome(
+                            marketHistory?.resolved?.["outcome"],
+                            scalarType,
+                          )}
                     </span>
-                  </div>
-                </li>
-              );
-            })}
-          {marketHistory?.resolved && (
-            <li className="mb-8 list-item">
-              <p className="pb-1">
-                {marketHistory?.resolved?.["timestamp"] &&
-                  new Intl.DateTimeFormat("default", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  }).format(marketHistory?.resolved?.["timestamp"])}{" "}
-                (block: {marketHistory?.resolved?.["block"]})
-                <span className="block">
-                  Market resolved to{" "}
-                  <span className="font-bold">
-                    {marketType.scalar === null
-                      ? categories[marketHistory?.resolved?.["outcome"]].name
-                      : getScalarOutcome(
-                          marketHistory?.resolved?.["outcome"],
-                          scalarType,
-                        )}
                   </span>
-                </span>
-              </p>
-            </li>
-          )}
-        </ol>
+                </p>
+              </li>
+            )}
+          </ol>
+        </div>
       </div>
-    </div>
+    </Dialog.Panel>
   );
 };
 
