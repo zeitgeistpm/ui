@@ -9,8 +9,10 @@ import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { usePool } from "lib/hooks/queries/usePool";
 import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
 import ManageLiquidityButton from "./ManageLiquidityButton";
+import { Unpacked } from "@zeitgeistpm/utility/dist/array";
+import { useMemo } from "react";
 
-const columns: TableColumn[] = [
+const poolTableColums: TableColumn[] = [
   {
     header: "Token",
     accessor: "token",
@@ -25,12 +27,6 @@ const columns: TableColumn[] = [
     header: "Pool Balance",
     accessor: "poolBalance",
     type: "currency",
-  },
-  {
-    header: "",
-    accessor: "manage",
-    type: "component",
-    width: "140px",
   },
 ];
 
@@ -82,11 +78,10 @@ const PoolTable = ({
         value: amount?.div(ZTG).toDecimalPlaces(2).toNumber(),
         usdValue: usdValue?.div(ZTG).toDecimalPlaces(2).toNumber(),
       },
-      manage: <ManageLiquidityButton poolId={poolId} />,
     };
   });
 
-  return <Table data={tableData} columns={columns} />;
+  return <Table data={tableData} columns={poolTableColums} />;
 };
 
 export default PoolTable;
