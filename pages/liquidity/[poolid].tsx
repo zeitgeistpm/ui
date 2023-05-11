@@ -1,6 +1,7 @@
 import { isIndexedData, parseAssetId } from "@zeitgeistpm/sdk-next";
+import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 import PoolTable from "components/liquidity/PoolTable";
-import FullSetButtons from "components/markets/FullSetButtons";
+import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
 import InfoBoxes from "components/ui/InfoBoxes";
 import Pill from "components/ui/Pill";
 import Decimal from "decimal.js";
@@ -109,13 +110,13 @@ const PoolDetails: NextPage = () => {
     return null;
   }
 
-  if (isFetched && pool === null) {
+  if (isFetched && pool == null && market.status === "Destroyed") {
     return <NotFoundPage backText="Back To Pools" backLink="/liquidity" />;
   }
 
   return (
     <>
-      <div>
+      <div className="mb-8">
         <InfoBoxes />
         <div className="flex items-center mb-ztg-33">
           <h2>Market Pool</h2>
@@ -125,6 +126,13 @@ const PoolDetails: NextPage = () => {
             onClick={navigateBack}
           />
           <span className="text-sm ">Back to pools</span>
+          <Link
+            href={`/markets/${market.marketId}`}
+            className="flex text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 justify-center items-center"
+          >
+            <BarChart2 size={14} className="mr-2" />
+            <div className="flex content-end">Market</div>
+          </Link>
         </div>
         <div className="flex flex-wrap">
           <Pill
@@ -143,45 +151,9 @@ const PoolDetails: NextPage = () => {
           />
           <Pill title="Status" value={pool?.poolStatus} />
         </div>
-        <div className="flex flex-row mt-ztg-53 mb-ztg-38">
-          <PoolDetail
-            header="Pool Value"
-            middle={`${Math.round(liquidity?.div(ZTG).toNumber() ?? 0)} ${
-              metadata?.symbol ?? "--"
-            }`}
-            bottom={`$${
-              baseAssetUsdPrice && liquidity
-                ? baseAssetUsdPrice.mul(liquidity.div(ZTG)).toFixed(2)
-                : "--"
-            }`}
-          />
-          <PoolDetail
-            className="mx-ztg-20"
-            header="Fees"
-            middle={`${new Decimal(swapFee).div(ZTG).mul(100)} %`}
-            bottom=""
-          />
-        </div>
-        <div className="flex my-ztg-23 items-center">
-          <div className="flex flex-col sm:flex-row">
-            <h3 className="font-semibold text-ztg-20-150 mr-ztg-15 mb-[10px] sm:mb-0">
-              Assets in Pool
-            </h3>
-            {market && <FullSetButtons marketId={market.marketId} />}
-          </div>
-          {market && (
-            <div className="flex flex-1 justify-end">
-              <Link
-                href={`/markets/${market.marketId}`}
-                className="flex text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 justify-center items-center"
-              >
-                <BarChart2 size={14} className="mr-2" />
-                <div className="flex content-end">Market</div>
-              </Link>
-            </div>
-          )}
-        </div>
-        <PoolTable poolId={poolId} marketId={market?.marketId} />
+      </div>
+      <div className="">
+        <MarketLiquiditySection market={market} />
       </div>
     </>
   );
