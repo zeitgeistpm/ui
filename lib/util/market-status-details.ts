@@ -7,7 +7,7 @@ import {
   MarketTypeOf,
   Report,
 } from "@zeitgeistpm/sdk/dist/types";
-import { getScalarOutcome } from "./get-scalar-outcome";
+import { formatScalarOutcome } from "./format-scalar-outcome";
 
 export const getMarketStatusDetails = (
   marketType: MarketTypeOf,
@@ -22,7 +22,7 @@ export const getMarketStatusDetails = (
     //scalar market
     if (marketType?.["scalar"] !== null) {
       return {
-        outcome: getScalarOutcome(disputes.outcome?.["scalar"], scalarType),
+        outcome: formatScalarOutcome(disputes.outcome?.["scalar"], scalarType),
         by: disputes?.by,
       };
       //categorical market
@@ -36,7 +36,7 @@ export const getMarketStatusDetails = (
     //scalar market
     if (marketType?.["scalar"] !== null) {
       return {
-        outcome: getScalarOutcome(report.outcome?.["scalar"], scalarType),
+        outcome: formatScalarOutcome(report.outcome?.["scalar"], scalarType),
         by: report?.by,
       };
       //categorical market
@@ -50,7 +50,7 @@ export const getMarketStatusDetails = (
     //scalar market
     if (marketType?.["scalar"] !== null) {
       return {
-        outcome: getScalarOutcome(resolvedOutcome, scalarType),
+        outcome: formatScalarOutcome(resolvedOutcome, scalarType),
         by: null,
       };
       //categorical market
