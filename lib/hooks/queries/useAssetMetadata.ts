@@ -34,7 +34,7 @@ export const useAssetMetadata = (assetId: AssetId) => {
           return assetMetadata;
         } else if (IOForeignAssetId.is(assetId)) {
           const metadata = await sdk.api.query.assetRegistry.metadata(assetId);
-          const loc: XcmVersionedMultiLocation = metadata.unwrapOr(null)
+          const location: XcmVersionedMultiLocation = metadata.unwrapOr(null)
             .location.isSome
             ? metadata.unwrap().location.unwrap()
             : null;
@@ -42,7 +42,7 @@ export const useAssetMetadata = (assetId: AssetId) => {
           const assetMetadata: AssetMetadata = {
             symbol: metadata.unwrap().symbol.toPrimitive() as string,
             name: metadata.unwrap().name.toPrimitive() as string,
-            location: loc,
+            location: location,
           };
 
           return assetMetadata;

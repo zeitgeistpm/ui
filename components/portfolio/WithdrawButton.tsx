@@ -92,7 +92,6 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
   const onSubmit = () => {
     transfer();
   };
-  console.log(toChain);
 
   return (
     <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">

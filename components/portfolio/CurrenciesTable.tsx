@@ -48,21 +48,29 @@ const ImageAndText = ({
   );
 };
 
-const selectButton = (
-  chain: string,
-  sourceChain: string,
-  token: string,
-  foreignAssetId: number,
-  balance: Decimal,
-  nativeToken: string,
-) => {
+const MoveButton = ({
+  chain,
+  sourceChain,
+  token,
+  foreignAssetId,
+  balance,
+  nativeToken,
+}: {
+  chain: string;
+  sourceChain: string;
+  token: string;
+  foreignAssetId: number;
+  balance: Decimal;
+  nativeToken: string;
+}) => {
   if (chain === "Zeitgeist") {
-    if (token.toUpperCase() === nativeToken.toUpperCase()) {
+    if (
+      token.toUpperCase() === nativeToken.toUpperCase() ||
+      sourceChain == null
+    ) {
       return <></>;
-    } else if (sourceChain != null) {
+    } else {
       return (
-        //todo: need to find origin chain
-        // pass assetId (foreign asset or ztg)
         <WithdrawButton
           toChain={sourceChain}
           tokenSymbol={token}
@@ -70,8 +78,6 @@ const selectButton = (
           foreignAssetId={foreignAssetId}
         />
       );
-    } else {
-      return <></>;
     }
   } else {
     return (
@@ -87,7 +93,6 @@ const selectButton = (
 const CurrenciesTable = ({ address }: { address: string }) => {
   const { data: balances } = useCurrencyBalances(address);
   const { data: constants } = useChainConstants();
-  console.log(balances);
 
   const tableData: TableData[] = balances
     ?.sort((a, b) => b.balance.minus(a.balance).toNumber())
@@ -105,13 +110,15 @@ const CurrenciesTable = ({ address }: { address: string }) => {
         />
       ),
       balance: balance.balance.div(ZTG).toFixed(3),
-      button: selectButton(
-        balance.chain,
-        balance.sourceChain,
-        balance.symbol,
-        balance.foreignAssetId,
-        balance.balance,
-        constants.tokenSymbol,
+      button: (
+        <MoveButton
+          chain={balance.chain}
+          sourceChain={balance.sourceChain}
+          token={balance.symbol}
+          foreignAssetId={balance.foreignAssetId}
+          balance={balance.balance}
+          nativeToken={constants.tokenSymbol}
+        />
       ),
     }));
 

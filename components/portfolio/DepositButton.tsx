@@ -49,21 +49,19 @@ const DepositModal = ({
 }) => {
   const { register, handleSubmit, getValues, formState } = useForm({
     reValidateMode: "onChange",
-    mode: "all",
+    mode: "onChange",
   });
   const { apis } = useCrossChainApis();
   const { data: constants } = useChainConstants();
   const notificationStore = useNotifications();
   const wallet = useWallet();
+  const chain = CHAINS.find((chain) => chain.name === sourceChain);
+  const api = apis[chain.name];
 
   const { send: transfer, isLoading } = useExtrinsic(
     () => {
       const formValue = getValues();
       const amount = formValue.amount;
-
-      const chain = CHAINS.find((chain) => chain.name === sourceChain);
-
-      const api = apis[chain.name];
 
       const tx = chain.createDepositExtrinsic(
         api,
@@ -75,18 +73,20 @@ const DepositModal = ({
     },
     {
       onSuccess: () => {
-        notificationStore.pushNotification("Joined pool", {
-          type: "Success",
-        });
+        notificationStore.pushNotification(
+          `Deposited ${tokenSymbol} to Zeitgeist`,
+          {
+            type: "Success",
+          },
+        );
       },
     },
   );
 
   const onSubmit = () => {
-    console.log("submit");
-
     transfer();
   };
+
   return (
     <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
       <h3>Deposit</h3>
@@ -118,8 +118,14 @@ const DepositModal = ({
             />
             <div className="mr-[10px] absolute right-0">{tokenSymbol}</div>
           </div>
-          <div className="text-vermilion text-ztg-12-120 my-[4px] h-[20px]">
+          <div className="text-vermilion text-ztg-12-120 my-[4px] h-[16px]">
             <>{formState.errors["amount"]?.message}</>
+          </div>
+          <div className="center font-normal text-ztg-12-120 mb-[4px]">
+            {sourceChain} fee:
+          </div>
+          <div className="center font-normal text-ztg-12-120 mb-[4px]">
+            Zeitgeist fee:
           </div>
           <FormTransactionButton
             className="w-full max-w-[250px]"
