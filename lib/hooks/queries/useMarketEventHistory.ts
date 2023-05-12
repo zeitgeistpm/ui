@@ -58,7 +58,7 @@ export const useMarketEventHistory = (
           timestamp: Number(market.period?.end),
         };
         const resolvedOutcome = market?.resolvedOutcome;
-        const oracleReported = report?.by === market["oracle"];
+        const oracleReported = report?.by === market.oracle;
 
         let disputesWithTimestamp;
         let reportWithTimestamp;
