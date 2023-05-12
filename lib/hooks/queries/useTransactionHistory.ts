@@ -46,7 +46,7 @@ const humanReadableEventMap = {
 
 type Action = typeof humanReadableEventMap[keyof typeof humanReadableEventMap];
 
-type TradeEvent = {
+export type TradeEvent = {
   marketId: number;
   question: string;
   action: Action;
