@@ -187,7 +187,7 @@ const ExitPoolForm = ({
   };
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col gap-y-6 max-h-[200px] md:max-h-[400px] overflow-y-auto py-4">
+      <div className="flex flex-col gap-y-6 max-h-[200px] md:max-h-[400px] overflow-y-auto py-5">
         {poolWeights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
           const assetName =
@@ -212,10 +212,10 @@ const ExitPoolForm = ({
                 {assetName}
               </div>
               <input
-                className={`bg-anti-flash-white text-right rounded-[5px] h-[56px] px-[15px] w-full
+                className={`bg-anti-flash-white text-right rounded-[5px] h-[56px] px-[15px] w-full outline-none
               ${
                 formState.errors[id.toString()]?.message
-                  ? "border-2 border-vermilion"
+                  ? "border-2 border-vermilion text-vermilion"
                   : ""
               }
               `}
