@@ -45,24 +45,20 @@ export const useMarketEventHistory = (
     [marketsEventsRootQuery, id, marketId],
     async () => {
       if (isIndexedSdk(sdk) && isRpcSdk(sdk) && market) {
-        const disputes = market["disputes"];
-        const report = market["report"];
+        const disputes = market.disputes;
+        const report = market.report;
         const start = {
           block:
-            market["period"]?.block !== null
-              ? Number(market["period"]?.block[0])
-              : 0,
-          timestamp: Number(market["period"]?.start),
+            market.period?.block !== null ? Number(market.period?.block[0]) : 0,
+          timestamp: Number(market.period?.start),
         };
         const end = {
           block:
-            market["period"]?.block !== null
-              ? Number(market["period"]?.block[1])
-              : 0,
-          timestamp: Number(market["period"]?.end),
+            market.period?.block !== null ? Number(market.period?.block[1]) : 0,
+          timestamp: Number(market.period?.end),
         };
-        const resolvedOutcome = market["resolvedOutcome"];
-        const oracleReported = report.by === market["oracle"];
+        const resolvedOutcome = market?.resolvedOutcome;
+        const oracleReported = report?.by === market["oracle"];
 
         let disputesWithTimestamp;
         let reportWithTimestamp;
@@ -80,10 +76,8 @@ export const useMarketEventHistory = (
 
         const getTimeStampForBlock = async (blockNumber: number) => {
           try {
-            const blockHash = await getApiAtBlock(sdk.api, blockNumber);
-            return await blockHash.query.timestamp
-              .now()
-              .then((now) => now.toNumber());
+            const api = await getApiAtBlock(sdk.api, blockNumber);
+            return await (await api.query.timestamp.now()).toNumber();
           } catch (error) {
             return 0;
           }
