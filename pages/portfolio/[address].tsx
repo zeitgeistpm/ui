@@ -19,8 +19,6 @@ import { useRouter } from "next/router";
 import { useMemo } from "react";
 
 const Portfolio: NextPage = () => {
-  const { initApis } = useCrossChainApis();
-  initApis();
   const router = useRouter();
   const address = Array.isArray(router.query.address)
     ? router.query.address[0]
