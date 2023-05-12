@@ -22,10 +22,14 @@ export const getResolutionTimestamp = async (
     marketId,
   });
 
-  return response.historicalMarkets?.length > 0
-    ? {
-        timestamp: response.historicalMarkets[0].timestamp,
-        blockNumber: response.historicalMarkets[0].blockNumber,
-      }
-    : null;
+  return {
+    timestamp:
+      response.historicalMarkets?.length > 0
+        ? response.historicalMarkets[0].timestamp
+        : null,
+    blockNumber:
+      response.historicalMarkets?.length > 0
+        ? response.historicalMarkets[0].blockNumber
+        : null,
+  };
 };
