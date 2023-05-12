@@ -15,18 +15,13 @@ const columns: TableColumn[] = [
     type: "text",
   },
   {
-    header: "Price",
-    accessor: "price",
-    type: "currency",
-  },
-  {
-    header: "Cost",
-    accessor: "value",
-    type: "currency",
-  },
-  {
     header: "Time",
     accessor: "time",
+    type: "text",
+  },
+  {
+    header: "Block",
+    accessor: "block",
     type: "text",
   },
 ];
@@ -43,18 +38,11 @@ const TransactionHistoryTable = ({ address }: { address: string }) => {
         </Link>
       ),
       action: transaction.action,
-      price: {
-        value: transaction.price,
-        usdValue: null,
-      },
-      value: {
-        value: transaction.value,
-        usdValue: null,
-      },
       time: new Intl.DateTimeFormat("default", {
         dateStyle: "medium",
         timeStyle: "medium",
       }).format(new Date(transaction.time)),
+      block: transaction.blockNumber,
     };
   });
 
