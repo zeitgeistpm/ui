@@ -12,23 +12,9 @@ import {
 import Decimal from "decimal.js";
 import { gql } from "graphql-request";
 import { useSdkv2 } from "../useSdkv2";
+import { HistoricalSwapOrderByInput } from "@zeitgeistpm/indexer";
 
 export const transactionHistoryKey = "trade-history";
-
-const tradeHistoryQuery = gql`
-  query TradeHistory($address: String) {
-    historicalSwaps(
-      where: { accountId_eq: $address }
-      orderBy: blockNumber_DESC
-    ) {
-      assetAmountIn
-      assetAmountOut
-      assetIn
-      assetOut
-      timestamp
-    }
-  }
-`;
 
 const marketHeaderQuery = gql`
   query MarketTransactionHeader($marketIds: [Int!]) {
@@ -105,16 +91,11 @@ export const useTradeHistory = (address: string) => {
     [id, transactionHistoryKey, address],
     async () => {
       if (isIndexedSdk(sdk) && isRpcSdk(sdk) && address) {
-        const { historicalSwaps } = await sdk.indexer.client.request<{
-          historicalSwaps: {
-            assetAmountIn: string;
-            assetAmountOut: string;
-            assetIn: string;
-            assetOut: string;
-            timestamp: string;
-          }[];
-        }>(tradeHistoryQuery, {
-          address: address,
+        const { historicalSwaps } = await sdk.indexer.historicalSwaps({
+          where: {
+            accountId_eq: address,
+          },
+          order: HistoricalSwapOrderByInput.BlockNumberDesc,
         });
 
         const foreignAssetIds = new Set<number>();
