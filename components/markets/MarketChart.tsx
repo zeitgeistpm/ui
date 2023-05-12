@@ -2,10 +2,7 @@ import { MarketStatus, parseAssetId } from "@zeitgeistpm/sdk-next";
 import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
 import TimeSeriesChart, { ChartSeries } from "components/ui/TimeSeriesChart";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
-import {
-  PriceHistory,
-  useMarketPriceHistory,
-} from "lib/hooks/queries/useMarketPriceHistory";
+import { useMarketPriceHistory } from "lib/hooks/queries/useMarketPriceHistory";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
 import { useMemo, useState } from "react";
 
@@ -21,7 +18,6 @@ const MarketChart = ({
   marketId,
   chartSeries,
   baseAsset,
-  initialData,
   marketStatus,
   resolutionDate,
   poolCreationDate,
@@ -29,13 +25,11 @@ const MarketChart = ({
   marketId: number;
   chartSeries: ChartSeries[];
   baseAsset: string;
-  initialData: PriceHistory[];
   poolCreationDate: Date;
   marketStatus: MarketStatus;
   resolutionDate: Date;
 }) => {
   const [chartFilter, setChartFilter] = useState<TimeFilter>(filters[1]);
-  const [filterSelected, setFilterSelected] = useState(false);
 
   const baseAssetId = parseAssetId(baseAsset).unrightOr(null);
   const { data: metadata } = useAssetMetadata(baseAssetId);
@@ -59,23 +53,20 @@ const MarketChart = ({
     startDateISOString,
   );
 
-  const chartData = (filterSelected == false ? initialData : prices)?.map(
-    (price) => {
-      const time = new Date(price.timestamp).getTime();
-      const assetPrices = price.prices.reduce((obj, val, index) => {
-        // adjust prices over 1
-        return { ...obj, ["v" + index]: (val.price > 1 ? 1 : val.price) ?? 0 };
-      }, {});
+  const chartData = prices?.map((price) => {
+    const time = new Date(price.timestamp).getTime();
+    const assetPrices = price.prices.reduce((obj, val, index) => {
+      // adjust prices over 1
+      return { ...obj, ["v" + index]: (val.price > 1 ? 1 : val.price) ?? 0 };
+    }, {});
 
-      return {
-        t: time,
-        ...assetPrices,
-      };
-    },
-  );
+    return {
+      t: time,
+      ...assetPrices,
+    };
+  });
 
   const handleFilterChange = (filter: TimeFilter) => {
-    setFilterSelected(true);
     setChartFilter(filter);
   };
 
