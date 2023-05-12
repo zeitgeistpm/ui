@@ -147,7 +147,7 @@ const JoinPoolForm = ({
 
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col gap-y-6 max-h-[250px] md:max-h-[400px] overflow-y-hidden py-4">
+      <div className="flex flex-col gap-y-6 max-h-[250px] md:max-h-[400px] overflow-y-auto py-5">
         {pool?.weights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
           const assetName = market?.categories[index]?.name ?? baseAssetTicker;
