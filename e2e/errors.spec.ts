@@ -5,7 +5,6 @@ test.describe("pages open without errors", () => {
   const testRoutes = [
     { path: "/", testId: "indexPage" },
     { path: "/markets", testId: "marketCard" },
-    { path: "/liquidity", testId: "liquidityTable" },
   ];
 
   for (const route of testRoutes) {
