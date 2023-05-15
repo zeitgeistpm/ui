@@ -3144,7 +3144,7 @@ __metadata:
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^1.0.3
     "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.29.2"
-    "@zeitgeistpm/utility": ^2.18.0
+    "@zeitgeistpm/utility": ^2.18.2
     autoprefixer: 10.2.5
     axios: ^0.21.4
     boring-avatars: ^1.6.1
@@ -3253,6 +3253,22 @@ __metadata:
     "@polkadot/types": "*"
     "@polkadot/util": "*"
   checksum: 51519a658e626030b60ddff75c71e348e979a46fb7addc0d5983962b13151fea9209e3582aea7cc4348af4315c4cc2a9be1308c7987c28465c8f5f97cacd1100
+  languageName: node
+  linkType: hard
+
+"@zeitgeistpm/utility@npm:^2.18.2":
+  version: 2.18.2
+  resolution: "@zeitgeistpm/utility@npm:2.18.2"
+  dependencies:
+    decimal.js: ^10.4.3
+    lodash.omit: ^4.5.0
+    ms: ^2.1.3
+    rxjs: ^7.2.0
+  peerDependencies:
+    "@polkadot/api": "*"
+    "@polkadot/types": "*"
+    "@polkadot/util": "*"
+  checksum: bcaf425af827500cf52a30607b6bcdf60ad728020275acb88eb67fcc8ae8d17ce5c74218f0873944ce5a736ae40bdee7369225600d33442cd5e6d964f6bd5a7b
   languageName: node
   linkType: hard
 
