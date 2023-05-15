@@ -29,11 +29,6 @@ export const NAVIGATION_ITEMS = {
     href: "/avatar",
     IconComponent: User,
   },
-  liquidity: {
-    label: "Liquidity Pools",
-    IconComponent: Droplet,
-    href: "/liquidity",
-  },
   activity: {
     label: "Activity Feed",
     IconComponent: Box,
