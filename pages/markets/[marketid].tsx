@@ -118,7 +118,9 @@ const Market: NextPage<MarketPageProps> = ({
   const { data: spotPrices } = useMarketSpotPrices(marketId);
   const { data: liquidity } = usePoolLiquidity({ marketId });
   const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
-  const baseAsset = parseAssetId(indexedMarket.pool?.baseAsset).unrightOr(null);
+  const baseAsset = parseAssetId(indexedMarket?.pool?.baseAsset).unrightOr(
+    null,
+  );
   const { data: metadata } = useAssetMetadata(baseAsset);
 
   const [liquidityOpen, setLiquidityOpen] = useState(false);

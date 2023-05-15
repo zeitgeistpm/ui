@@ -3144,7 +3144,7 @@ __metadata:
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^1.0.3
     "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.29.2"
-    "@zeitgeistpm/utility": ^2.18.0
+    "@zeitgeistpm/utility": ^2.18.1
     autoprefixer: 10.2.5
     axios: ^0.21.4
     boring-avatars: ^1.6.1

@@ -13,7 +13,14 @@ const marketIdsQuery = gql`
 
 const marketQuery = gql`
   query Market($marketId: Int) {
-    markets(where: { marketId_eq: $marketId }) {
+    markets(
+      where: {
+        marketId_eq: $marketId
+        isMetaComplete_eq: true
+        question_not_eq: ""
+        question_isNull: false
+      }
+    ) {
       marketId
       description
       baseAsset
