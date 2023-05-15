@@ -12,4 +12,6 @@ export const defaultTags = [
   "E-Sports",
 ] as const;
 
+export type SupportedTag = typeof defaultTags[number];
+
 export const marketStatuses = Object.keys(EMarketStatus) as MarketStatus[];

@@ -3,9 +3,9 @@ import { Unpacked } from "@zeitgeistpm/utility/dist/array";
 import Image from "next/image";
 
 export type CurrencySelectProps = {
-  value?: Unpacked<typeof supportedCurrencies>["name"];
-  onChange?: (value: Unpacked<typeof supportedCurrencies>["name"]) => void;
-  options: Array<Unpacked<typeof supportedCurrencies>["name"]>;
+  value?: SupportedCurrencyTag;
+  onChange?: (value: SupportedCurrencyTag) => void;
+  options: Array<SupportedCurrencyTag>;
 };
 
 export type CurrencySpec = {
@@ -20,18 +20,19 @@ export const ztg = {
   description:
     "Create market with the native Zeitgeist token as the base asset.",
   image: "/currencies/ztg_neue.png",
-  assetId: { Ztg: null } as ZtgAssetId,
+  assetId: { Ztg: null } as const,
 } satisfies CurrencySpec
 
 export const dot = {
   name: "DOT" as const,
   description: "Create market with DOT as the base asset.",
   image: "/currencies/dot_filled.png",
-  assetId: { ForeignAsset: 0 },
+  assetId: { ForeignAsset: 0 } as const,
 } satisfies CurrencySpec
 
 export const supportedCurrencies = [ztg, dot];
 
+export type SupportedCurrencyTag = Unpacked<typeof supportedCurrencies>["name"]
 
 export const CurrencySelect: React.FC<CurrencySelectProps> = ({ options, value, onChange }) => {
   return (
@@ -40,7 +41,7 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({ options, value, 
         .filter((currency) => options?.includes(currency.name) ?? true)
         .map((currency) => (
           <div 
-            className={`flex flex-col flex-1 max-w-xs rounded-md p-6 min-h-[300px] ${currency.name === value ? "bg-green-200" : "bg-gray-200"}`} 
+            className={`flex flex-col flex-1 max-w-xs rounded-md p-6 min-h-[300px] cursor-pointer transition-all ${currency.name === value ? "bg-green-200" : "bg-gray-200"}`} 
             onClick={() => onChange(currency.name)}>
             <div className="flex center mb-6">
               <div className="relative w-20 h-20">
