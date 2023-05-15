@@ -49,7 +49,7 @@ const CreateMarketPage: NextPage = () => {
       <div>
         <WizardStepper
           steps={createMarketWizardSteps}
-          step={step}
+          current={step}
           onChange={(step) => setStep(step)}
         />
       </div>
