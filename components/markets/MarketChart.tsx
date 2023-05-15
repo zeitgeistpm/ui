@@ -10,6 +10,8 @@ const setTimeToNow = (date: Date) => {
   const now = new Date();
   date.setHours(now.getHours());
   date.setMinutes(now.getMinutes());
+  date.setSeconds(0);
+  date.setMilliseconds(0);
 
   return date;
 };
@@ -45,7 +47,7 @@ const MarketChart = ({
     return setTimeToNow(startDate).toISOString();
   }, [chartFilter.label]);
 
-  const { data: prices } = useMarketPriceHistory(
+  const { data: prices, isLoading } = useMarketPriceHistory(
     marketId,
     chartFilter.intervalUnit,
     chartFilter.intervalValue,
@@ -79,6 +81,7 @@ const MarketChart = ({
         data={chartData}
         series={chartSeries}
         yUnits={metadata?.symbol ?? ""}
+        isLoading={isLoading}
       />
     </div>
   );
