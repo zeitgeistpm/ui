@@ -43,6 +43,9 @@ const batcher = memoize((sdk: Sdk<IndexerContext>) => {
     fetcher: async (ids) => {
       const { markets } = await sdk.indexer.markets({
         where: {
+          question_isNull: false,
+          question_not_eq: "",
+          isMetaComplete_eq: true,
           OR: [
             {
               marketId_in: ids
