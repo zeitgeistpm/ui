@@ -2,9 +2,9 @@ import Skeleton from "components/ui/Skeleton";
 import TableChart from "components/ui/TableChart";
 import { useEvent } from "lib/hooks";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
-import { useIsOnScreen } from "lib/hooks/useIsOnScreen";
 import { formatNumberLocalized } from "lib/util";
 import { range } from "lodash";
+import { useInView } from "react-intersection-observer";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { ArrowDown } from "react-feather";
 import { useTable } from "react-table";
@@ -323,7 +323,6 @@ const Table = ({
 }: TableProps) => {
   const { rows, prepareRow } = useTable({ columns, data: data ?? [] });
   const tableRef = useRef<HTMLTableElement>();
-  const loadMoreRef = useRef();
   const [isOverflowing, setIsOverflowing] = useState<boolean>();
   const windowResizeEvent = useEvent(
     typeof window !== "undefined" ? window : undefined,
@@ -334,7 +333,7 @@ const Table = ({
     new Set(),
   );
 
-  const loadMoreInView = useIsOnScreen(loadMoreRef);
+  const { ref: loadMoreRef, inView: loadMoreInView } = useInView();
 
   const loadMoreThresholdIndex = loadMoreThreshold
     ? Math.floor((data.length / 100) * loadMoreThreshold)

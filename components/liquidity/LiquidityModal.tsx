@@ -16,6 +16,7 @@ import JoinPoolForm from "./JoinPoolForm";
 import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import Modal from "components/ui/Modal";
 
 export type PoolBalances = {
   [key: string]: {
@@ -29,7 +30,15 @@ export const assetObjStringToId = (assetId: string) => {
   return IOMarketOutcomeAssetId.is(asset) ? getIndexOf(asset) : "base";
 };
 
-const LiquidityModal = ({ poolId }: { poolId: number }) => {
+const LiquidityModal = ({
+  open,
+  onClose,
+  poolId,
+}: {
+  open: boolean;
+  onClose: () => void;
+  poolId: number;
+}) => {
   const wallet = useWallet();
   const connectedAddress = wallet.activeAccount?.address;
   const { data: pool } = usePool({ poolId });
@@ -110,39 +119,47 @@ const LiquidityModal = ({ poolId }: { poolId: number }) => {
   ]);
 
   return (
-    <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
-      <Tab.Group>
-        <Tab.List className="flex h-[71px] text-center font-medium text-ztg-18-150">
-          <Tab className="ui-selected:font-bold ui-selected:bg-white bg-anti-flash-white transition-all w-1/2 rounded-tl-[10px]">
-            Join
-          </Tab>
-          <Tab className="ui-selected:font-bold ui-selected:bg-white bg-anti-flash-white transition-all w-1/2 rounded-tr-[10px]">
-            Exit
-          </Tab>
-        </Tab.List>
+    <Modal open={open} onClose={onClose}>
+      <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
+        <Tab.Group>
+          <Tab.List className="flex h-[71px] text-center font-medium text-ztg-18-150">
+            <Tab className="ui-selected:font-bold ui-selected:bg-white bg-anti-flash-white transition-all w-1/2 rounded-tl-[10px]">
+              Join
+            </Tab>
+            <Tab className="ui-selected:font-bold ui-selected:bg-white bg-anti-flash-white transition-all w-1/2 rounded-tr-[10px]">
+              Exit
+            </Tab>
+          </Tab.List>
 
-        <Tab.Panels className="p-[30px]">
-          <Tab.Panel>
-            <JoinPoolForm
-              poolId={poolId}
-              poolBalances={allBalances}
-              totalPoolShares={new Decimal(totalPoolIssuance?.toString() ?? 0)}
-              baseAssetTicker={metadata.symbol}
-            />
-          </Tab.Panel>
-          <Tab.Panel>
-            <ExitPoolForm
-              poolId={poolId}
-              poolStatus={pool?.poolStatus}
-              poolBalances={allBalances}
-              totalPoolShares={new Decimal(totalPoolIssuance?.toString() ?? 0)}
-              userPoolShares={new Decimal(userPoolTokens?.toString() ?? 0)}
-              baseAssetTicker={metadata.symbol}
-            />
-          </Tab.Panel>
-        </Tab.Panels>
-      </Tab.Group>
-    </Dialog.Panel>
+          <Tab.Panels className="p-[30px]">
+            <Tab.Panel>
+              <JoinPoolForm
+                poolId={poolId}
+                poolBalances={allBalances}
+                totalPoolShares={
+                  new Decimal(totalPoolIssuance?.toString() ?? 0)
+                }
+                baseAssetTicker={metadata?.symbol}
+                onSuccess={onClose}
+              />
+            </Tab.Panel>
+            <Tab.Panel>
+              <ExitPoolForm
+                poolId={poolId}
+                poolStatus={pool?.poolStatus}
+                poolBalances={allBalances}
+                totalPoolShares={
+                  new Decimal(totalPoolIssuance?.toString() ?? 0)
+                }
+                userPoolShares={new Decimal(userPoolTokens?.toString() ?? 0)}
+                baseAssetTicker={metadata?.symbol}
+                onSuccess={onClose}
+              />
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
+      </Dialog.Panel>
+    </Modal>
   );
 };
 
