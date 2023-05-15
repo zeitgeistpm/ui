@@ -75,7 +75,7 @@ const ReportButton = ({
       <button
         onClick={handleClick}
         disabled={reportDisabled}
-        className="text-mariner font-semibold text-ztg-14-120"
+        className="border-gray-300 text-sm border-2 rounded-full py-2 px-5 mr-2"
       >
         Report Outcome
       </button>

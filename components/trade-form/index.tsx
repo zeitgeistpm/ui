@@ -62,7 +62,7 @@ const getTradeValuesFromExtrinsicResult = (
 
 const TradeForm = () => {
   const notifications = useNotifications();
-  const [tabIndex, setTabIndex] = useState<number>(0);
+
   const { register, formState, watch, setValue, reset } = useForm<{
     percentage: string;
     assetAmount: string;
@@ -85,6 +85,10 @@ const TradeForm = () => {
     poolAssetBalance,
     swapFee,
   } = tradeItemState ?? {};
+
+  const [tabIndex, setTabIndex] = useState<number>(
+    tradeItem.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell,
+  );
 
   const maxBaseAmount = useTradeMaxBaseAmount(tradeItem);
   const maxAssetAmount = useTradeMaxAssetAmount(tradeItem);
@@ -454,7 +458,7 @@ const TradeForm = () => {
           }}
         >
           <Tab.Group
-            defaultIndex={0}
+            defaultIndex={tabIndex}
             onChange={(index: TradeTabType) => {
               setTabIndex(index);
               if (index === TradeTabType.Buy) {
