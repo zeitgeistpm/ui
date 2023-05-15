@@ -47,6 +47,7 @@ function WizardStepper<T extends string, S extends WizardStepData<T>[]>({
         {steps.map((step, index) => {
           return (
             <div
+              key={index}
               className={`w-24 cursor-pointer transition-all group`}
               onClick={() => onChange(step)}
             >

@@ -1,4 +1,6 @@
+import { SupportedCurrencyTag } from "components/create/form/inputs/Currency";
 import { WizardStepData } from "components/wizard/WizardStepper";
+import { SupportedTag } from "lib/constants/markets";
 
 export type CreateMarketWizardStep =
   | "Currency"
@@ -22,18 +24,16 @@ export const createMarketWizardSteps: WizardStepData<CreateMarketWizardStep>[] =
     { label: "Preview" },
   ];
 
-export const nextStepFrom = (
-  step: WizardStepData<CreateMarketWizardStep>,
-): WizardStepData<CreateMarketWizardStep> => {
-  const index =
-    createMarketWizardSteps.findIndex((s) => s.label === step.label) + 1;
-  return createMarketWizardSteps[index];
+export type CreateMarketFormData = {
+  currency: CurrencySectionFormData;
+  question: QuestionSectionFormData;
 };
 
-export const prevStepFrom = (
-  step: WizardStepData<CreateMarketWizardStep>,
-): WizardStepData<CreateMarketWizardStep> => {
-  const index =
-    createMarketWizardSteps.findIndex((s) => s.label === step.label) - 1;
-  return createMarketWizardSteps[index];
+export type CurrencySectionFormData = {
+  currency: SupportedCurrencyTag;
+};
+
+export type QuestionSectionFormData = {
+  question: string;
+  tags: SupportedTag[];
 };

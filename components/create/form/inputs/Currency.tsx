@@ -1,10 +1,12 @@
 import { AssetId, ZtgAssetId } from "@zeitgeistpm/sdk-next";
 import { Unpacked } from "@zeitgeistpm/utility/dist/array";
 import Image from "next/image";
+import { forwardRef } from "react";
 
 export type CurrencySelectProps = {
+  name: string;
   value?: SupportedCurrencyTag;
-  onChange?: (value: SupportedCurrencyTag) => void;
+  onChange?: (event: {target: {name: string, value: SupportedCurrencyTag}}) => void;
   options: Array<SupportedCurrencyTag>;
 };
 
@@ -34,7 +36,8 @@ export const supportedCurrencies = [ztg, dot];
 
 export type SupportedCurrencyTag = Unpacked<typeof supportedCurrencies>["name"]
 
-export const CurrencySelect: React.FC<CurrencySelectProps> = ({ options, value, onChange }) => {
+export const CurrencySelect: React.FC<CurrencySelectProps> = forwardRef(({ name, options, value, onChange }) => {
+
   return (
     <div className="flex center gap-6">
       {supportedCurrencies
@@ -42,7 +45,7 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({ options, value, 
         .map((currency) => (
           <div 
             className={`flex flex-col flex-1 max-w-xs rounded-md p-6 min-h-[300px] cursor-pointer transition-all ${currency.name === value ? "bg-green-200" : "bg-gray-200"}`} 
-            onClick={() => onChange(currency.name)}>
+            onClick={() => onChange({target: {name, value: currency.name}})}>
             <div className="flex center mb-6">
               <div className="relative w-20 h-20">
                 <Image
@@ -61,6 +64,6 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({ options, value, 
         ))}
     </div>
   );
-};
+})
 
 export default CurrencySelect;
