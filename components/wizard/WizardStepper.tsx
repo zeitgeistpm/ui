@@ -1,3 +1,6 @@
+import { useWindowSize } from "lib/hooks/useWindowSize";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+
 export type WizardStepData<T extends string> = { label: T };
 
 export type WizardStepperProps<
@@ -17,9 +20,34 @@ function WizardStepper<T extends string, S extends WizardStepData<T>[]>({
   const stepIndex = steps.findIndex((s) => s.label === current.label);
   const progress = (stepIndex / (steps.length - 1)) * 100;
 
+  const windowSize = useWindowSize();
+  const [elementWidth, setElementSize] = useState(0);
+
+  const containerRef = useRef(null);
+  useLayoutEffect(() => {
+    setElementSize(containerRef.current.clientWidth);
+  }, [containerRef, windowSize]);
+
+  const delta = elementWidth - windowSize.width;
+
+  console.log({
+    elementSize: elementWidth,
+    windowWidth: windowSize.width,
+  });
+
+  const x =
+    delta / 2 -
+    (elementWidth / 100) * Math.floor((stepIndex / steps.length) * 95);
+
   return (
-    <div className="flex relative center">
-      <div className="flex relative center">
+    <div
+      className={`flex relative center transition-transform md:!transform-none`}
+      style={{
+        transform: `translateX(${x}px)`,
+        //transform: `translateX(0%)`,
+      }}
+    >
+      <div ref={containerRef} className="flex relative center">
         <div
           className={`absolute -z-10 transiton-all ease-in-out duration-300 bg-black left-[calc(0px+theme(space.12))] top-4 w-[calc(100%-theme(space.24))]`}
           style={{
@@ -40,7 +68,7 @@ function WizardStepper<T extends string, S extends WizardStepData<T>[]>({
         {steps.map((step, index) => {
           return (
             <div
-              className={`w-24 cursor-pointer transition-all group `}
+              className={`w-24 cursor-pointer transition-all group`}
               onClick={() => onChange(step)}
             >
               <div className="flex center mb-2">
@@ -53,7 +81,7 @@ function WizardStepper<T extends string, S extends WizardStepData<T>[]>({
                 </div>
               </div>
               <div
-                className={`flex center ${
+                className={`flex center py-2 ${
                   current === step ? "font-bold" : "font-light"
                 } ${stepIndex >= index ? "text-black" : "text-gray-400"}`}
               >

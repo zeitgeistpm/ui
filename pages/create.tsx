@@ -30,7 +30,7 @@ export const createMarketWizardSteps: WizardStepData<CreateMarketWizardStep>[] =
 const CreateMarketPage: NextPage = () => {
   const [isWizardMode, setIsWizardMode] = useState(false);
   const [step, setStep] = useState<WizardStepData<CreateMarketWizardStep>>({
-    label: "Oracle",
+    label: "Currency",
   });
 
   return (

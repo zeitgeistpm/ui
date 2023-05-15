@@ -3163,6 +3163,7 @@ __metadata:
     jotai: ^2.0.4
     jotai-tanstack-query: ^0.7.0
     lodash.merge: ^4.6.2
+    median-range: ^0.0.11
     mobx: ^6.3.12
     mobx-react: ^7.2.1
     mobx-react-form: ^3.2.0
@@ -8234,6 +8235,13 @@ __metadata:
   version: 1.2.6
   resolution: "material-colors@npm:1.2.6"
   checksum: 72d005ccccb82bab68eef3cd757e802668634fc86976dedb9fc564ce994f2d3258273766b7efecb7404a0031969e2d72201a1b74169763f0a53c0dd8d649209f
+  languageName: node
+  linkType: hard
+
+"median-range@npm:^0.0.11":
+  version: 0.0.11
+  resolution: "median-range@npm:0.0.11"
+  checksum: ab33033713ec47394dae37a02aab23129213a1bf202915de49f7e6440b8d6feb6832717aa25e3261a41701ea97f2dbf1e049f62922020d458041cec5b77ba0c0
   languageName: node
   linkType: hard
 

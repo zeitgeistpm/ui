@@ -52,6 +52,7 @@
     "jotai": "^2.0.4",
     "jotai-tanstack-query": "^0.7.0",
     "lodash.merge": "^4.6.2",
+    "median-range": "^0.0.11",
     "mobx": "^6.3.12",
     "mobx-react": "^7.2.1",
     "mobx-react-form": "^3.2.0",
