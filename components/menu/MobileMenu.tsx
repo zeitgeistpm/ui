@@ -10,7 +10,7 @@ const MobileMenu: FC<{ menuOpen: boolean; setMenuOpen: (boolean) => void }> = ({
   return (
     <div
       className={`${
-        menuOpen ? "translate-y-[70px]" : "translate-y-[-860px]"
+        menuOpen ? "translate-y-[70px]" : "translate-y-[-100%]"
       } md:hidden container-fluid transition-all duration-300 ease-in fixed top-0 left-0 w-full h-[calc(100vh-70px)] z-30 flex flex-col justify-between items-center text-black bg-white`}
     >
       <div className="flex flex-col justify-between items-center gap-7 pt-10">

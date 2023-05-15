@@ -1,42 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
 import Decimal from "decimal.js";
 import { useSdkv2 } from "../useSdkv2";
+import { calcLiqudityFromPoolAssets } from "lib/util/calc-liquidity";
 
 export const rootKey = "total-liquidity";
 
-export const useTotalLiquidity = (options: { enabled: boolean }) => {
+export const useTotalLiquidity = () => {
   const [sdk, id] = useSdkv2();
 
-  const { data: pools } = useQuery(
+  return useQuery(
     [id, rootKey],
-    () => sdk.model.swaps.listPools({}),
-    {
-      enabled: options.enabled && Boolean(sdk),
-    },
-  );
-
-  const { data: saturatedIndex } = useQuery(
-    [id, rootKey, "saturated-index"],
     async () => {
-      return sdk.model.swaps.saturatedPoolsIndex(pools);
+      const pools = await sdk.model.swaps.listPools({});
+      const total =
+        pools?.reduce((acc, pool) => {
+          return acc.plus(calcLiqudityFromPoolAssets(pool.assets as any));
+        }, new Decimal(0)) ?? new Decimal(0);
+
+      return total;
     },
     {
-      enabled: options.enabled && Boolean(sdk) && Boolean(pools),
+      enabled: Boolean(sdk),
     },
   );
-
-  const total =
-    pools?.reduce((acc, pool) => {
-      const saturatedData = saturatedIndex?.[pool.poolId];
-      if (
-        saturatedData &&
-        saturatedData.market.status === "Active" &&
-        saturatedData.liquidity
-      ) {
-        return acc.plus(saturatedData.liquidity);
-      }
-      return acc;
-    }, new Decimal(0)) ?? new Decimal(0);
-
-  return total;
 };

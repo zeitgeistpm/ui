@@ -3001,14 +3001,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/indexer@npm:^2.17.1":
-  version: 2.17.1
-  resolution: "@zeitgeistpm/indexer@npm:2.17.1"
+"@zeitgeistpm/indexer@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "@zeitgeistpm/indexer@npm:3.0.2"
   dependencies:
     graphql: ^16.6.0
     graphql-request: ^5.0.0
     graphql-tag: ^2.12.6
-  checksum: a785a3109546ca8832a0ab591e326f98d4daaae5bb028b613d583e0425958ff1892e4c3461126ac0ab23ac017728d2e683f263c038302fac452c1b699d319b84
+  checksum: 771b02502069a57d987fb8245da2f7dbdec824fe0d9af50d47a271086b77fd72c8ecadfda89657faa14a3f2eef30a3476248a701504c280d9e0ceb3c29d3bf2d
   languageName: node
   linkType: hard
 
@@ -3026,14 +3026,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.28.1":
-  version: 2.28.1
-  resolution: "@zeitgeistpm/sdk@npm:2.28.1"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.29.2":
+  version: 2.29.2
+  resolution: "@zeitgeistpm/sdk@npm:2.29.2"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.11.3
-    "@zeitgeistpm/indexer": ^2.17.1
+    "@zeitgeistpm/indexer": ^3.0.2
     "@zeitgeistpm/rpc": ^2.7.0
-    "@zeitgeistpm/utility": ^2.18.0
+    "@zeitgeistpm/utility": ^2.18.1
     "@zeitgeistpm/web3.storage": ^2.9.0
     cids: ^1.1.9
     decimal.js: ^10.4.3
@@ -3047,7 +3047,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: ee327e2607592236a40b2b2449d70b6e97cb3a23562ad28dbc0d6188e2ea8cd3750c9123286c5668fdaf6b98cca1778919551af4bb2852650378c5cca1064fe0
+  checksum: 34c432fa2a65d61e1aad881a5baf4becf0cbd9456fc0f65f55b82fc1fcf1aa23fa734fd39861c5f52f06246e96fd8ff0bd5b175f4475f5454ec766f17b4e7e87
   languageName: node
   linkType: hard
 
@@ -3143,8 +3143,8 @@ __metadata:
     "@zeitgeistpm/avatara-react": ^1.3.2
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^1.0.3
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.28.1"
-    "@zeitgeistpm/utility": ^2.18.0
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.29.2"
+    "@zeitgeistpm/utility": ^2.18.1
     autoprefixer: 10.2.5
     axios: ^0.21.4
     boring-avatars: ^1.6.1
@@ -3201,7 +3201,7 @@ __metadata:
     toformat: ^2.0.0
     ts-node: ^10.9.1
     ts-prune: ^0.10.3
-    typescript: ^4.5.4
+    typescript: ^5.0.4
     uri-js: ^4.4.1
     use-debounce: ^7.0.1
     validatorjs: ^3.22.1
@@ -3237,6 +3237,22 @@ __metadata:
     "@polkadot/types": "*"
     "@polkadot/util": "*"
   checksum: cedfa3821eba8427bc0325468a599943a8c11a1eaf38417be2433458e05df8b2f5e44afa0403f372649cb63262ce39fe45f068c77a0728bec10a88765738083a
+  languageName: node
+  linkType: hard
+
+"@zeitgeistpm/utility@npm:^2.18.1":
+  version: 2.18.1
+  resolution: "@zeitgeistpm/utility@npm:2.18.1"
+  dependencies:
+    decimal.js: ^10.4.3
+    lodash.omit: ^4.5.0
+    ms: ^2.1.3
+    rxjs: ^7.2.0
+  peerDependencies:
+    "@polkadot/api": "*"
+    "@polkadot/types": "*"
+    "@polkadot/util": "*"
+  checksum: 51519a658e626030b60ddff75c71e348e979a46fb7addc0d5983962b13151fea9209e3582aea7cc4348af4315c4cc2a9be1308c7987c28465c8f5f97cacd1100
   languageName: node
   linkType: hard
 
@@ -11568,23 +11584,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.5.4":
-  version: 4.9.5
-  resolution: "typescript@npm:4.9.5"
+"typescript@npm:^5.0.4":
+  version: 5.0.4
+  resolution: "typescript@npm:5.0.4"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: ee000bc26848147ad423b581bd250075662a354d84f0e06eb76d3b892328d8d4440b7487b5a83e851b12b255f55d71835b008a66cbf8f255a11e4400159237db
+  checksum: 82b94da3f4604a8946da585f7d6c3025fff8410779e5bde2855ab130d05e4fd08938b9e593b6ebed165bda6ad9292b230984f10952cf82f0a0ca07bbeaa08172
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.5.4#~builtin<compat/typescript>":
-  version: 4.9.5
-  resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=f456af"
+"typescript@patch:typescript@^5.0.4#~builtin<compat/typescript>":
+  version: 5.0.4
+  resolution: "typescript@patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=f456af"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 2eee5c37cad4390385db5db5a8e81470e42e8f1401b0358d7390095d6f681b410f2c4a0c496c6ff9ebd775423c7785cdace7bcdad76c7bee283df3d9718c0f20
+  checksum: 6a1fe9a77bb9c5176ead919cc4a1499ee63e46b4e05bf667079f11bf3a8f7887f135aa72460a4c3b016e6e6bb65a822cb8689a6d86cbfe92d22cc9f501f09213
   languageName: node
   linkType: hard
 
