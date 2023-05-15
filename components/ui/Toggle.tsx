@@ -2,20 +2,27 @@ import { useState } from "react";
 import { Switch } from "@headlessui/react";
 
 const Toggle = ({
+  className,
   checked,
   onChange,
+  disabled,
 }: {
+  className?: string;
   checked: boolean;
   onChange?: (checked: boolean) => void;
+  disabled?: boolean;
 }) => {
   return (
     <Switch
       checked={checked}
       onChange={onChange}
+      disabled={disabled}
       className={`
         bg-black relative inline-flex box-content p-[2px] h-3 w-16 shrink-0 cursor-pointer 
         rounded-full border-2 border-transparent transition-all duration-200 ease-in-out 
-        focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75 active:scale-105`}
+        focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75 active:scale-105
+        ${disabled && "bg-gray-400 !cursor-not-allowed"}
+        ${className}`}
     >
       <span className="sr-only">Use setting</span>
       <span

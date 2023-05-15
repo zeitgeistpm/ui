@@ -792,7 +792,7 @@ const Inner = ({ sdkv1 }: { sdkv1: SDK }) => {
           <>
             <div className="flex items-center h-ztg-40 w-full mb-ztg-23 ">
               <Toggle
-                active={deployPool}
+                checked={deployPool}
                 onChange={(active) => setDeployPool(active)}
                 disabled={!form?.isValid}
                 className="mr-ztg-20 mt-ztg-35"
