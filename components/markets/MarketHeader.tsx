@@ -1,17 +1,46 @@
-import { MarketStage, MarketStatus } from "@zeitgeistpm/sdk-next";
-import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
+import {
+  MarketStage,
+  MarketStatus,
+  ScalarRangeType,
+} from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
 import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { X } from "react-feather";
 import { MarketPageIndexedData } from "lib/gql/markets";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { shortenAddress } from "lib/util";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { hasDatePassed } from "lib/util/hasDatePassed";
+import { FC, PropsWithChildren, useState } from "react";
+import { MarketTimer } from "./MarketTimer";
+import { MarketTimerSkeleton } from "./MarketTimer";
+import { MarketDispute, OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
+import {
+  MarketHistory,
+  useMarketEventHistory,
+} from "lib/hooks/queries/useMarketEventHistory";
+import Modal from "components/ui/Modal";
 import { getMarketStatusDetails } from "lib/util/market-status-details";
-import { FC, PropsWithChildren } from "react";
-import { MarketTimer, MarketTimerSkeleton } from "./MarketTimer";
+import { getScalarOutcome } from "lib/util/get-scalar-outcome";
+import { Dialog } from "@headlessui/react";
+
+const UserIdentity: FC<
+  PropsWithChildren<{ user: string; className?: string }>
+> = ({ user, className }) => {
+  const { data: identity } = useIdentity(user ?? "");
+  const displayName =
+    identity?.displayName?.length > 0
+      ? identity.displayName
+      : shortenAddress(user, 10, 10);
+  return (
+    <div className={`inline-flex items-center gap-1 ${className}`}>
+      <Avatar address={user} />
+      <span className="break-all flex-1">{displayName}</span>
+    </div>
+  );
+};
 
 const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
   ({ label, border = true, children }) => {
@@ -36,12 +65,13 @@ const Tag: FC<PropsWithChildren<{ className?: string }>> = ({
 
 const MarketOutcome: FC<
   PropsWithChildren<{
+    setShowMarketHistory: (show: boolean) => void;
+    marketHistory: MarketHistory;
     status: MarketStatus;
     outcome: string | number;
     by?: string;
   }>
-> = ({ status, outcome, by }) => {
-  const { data: identity } = useIdentity(by ?? "");
+> = ({ status, outcome, by, setShowMarketHistory, marketHistory }) => {
   return (
     <div
       className={`w-full flex center items-center gap-4 py-6 mb-10 rounded-lg ${
@@ -64,16 +94,175 @@ const MarketOutcome: FC<
         <div className="flex items-center gap-4">
           <span>{status} by: </span>
           <div className="flex items-center">
-            <Avatar address={by} />
-            <span className="font-medium px-3.5 text-sms h-full leading-[40px]">
-              {identity?.displayName?.length > 0
-                ? identity.displayName
-                : shortenAddress(by, 6, 4)}
-            </span>
+            <UserIdentity user={by} />
           </div>
         </div>
       )}
+      {marketHistory ? (
+        <button
+          className="text-ztg-blue font-medium"
+          onClick={() => setShowMarketHistory(true)}
+        >
+          See History
+        </button>
+      ) : (
+        <Skeleton width={100} height={24} />
+      )}
     </div>
+  );
+};
+
+const MarketHistory: FC<
+  PropsWithChildren<{
+    setShowMarketHistory: (show: boolean) => void;
+    starts: number;
+    ends: number;
+    marketHistory: MarketHistory;
+    categories: { name: string; color: string }[];
+    marketType: {
+      scalar: string[];
+      categorical: string;
+    };
+    scalarType: ScalarRangeType;
+  }>
+> = ({
+  marketHistory,
+  categories,
+  marketType,
+  setShowMarketHistory,
+  scalarType,
+}) => {
+  const marketStart = new Intl.DateTimeFormat("default", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(marketHistory?.start.timestamp);
+  const marketClosed = new Intl.DateTimeFormat("default", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(marketHistory?.end.timestamp);
+
+  const getOutcome = (outcome: OutcomeReport) => {
+    if (marketType.scalar === null) {
+      return categories[outcome["categorical"]]?.name;
+    } else {
+      return getScalarOutcome(outcome["scalar"], scalarType);
+    }
+  };
+
+  return (
+    <Dialog.Panel>
+      <div className="bg-white p-6 sm:p-10 max-h-[670px] sm:min-w-[540px] sm:max-w-[540px] relative overflow-hidden rounded-xl">
+        <X
+          className="absolute top-5 right-5 cursor-pointer"
+          onClick={() => {
+            setShowMarketHistory(false);
+          }}
+        />
+        <h3 className="font-bold mb-10 text-center">Market History</h3>
+        <div className="sm:overflow-hidden">
+          <ol className="list-decimal pl-8 overflow-y-auto h-[500px] w-[calc(100%+16px)]">
+            <li className="mb-8 list-item">
+              <p> Market opened</p>
+              <p className="pb-1 text-sm text-gray-500">
+                {marketStart}{" "}
+                {marketHistory?.start.block > 0 &&
+                  `(block: ${marketHistory?.start.block})`}
+              </p>
+            </li>
+            <li className="mb-8 list-item">
+              <p> Market closed</p>
+              <p className="pb-1 text-sm text-gray-500">
+                {marketClosed}{" "}
+                {marketHistory?.end.block > 0 &&
+                  `(block: ${marketHistory?.end.block})`}
+              </p>
+            </li>
+            {marketHistory?.reported && (
+              <li className="mb-8 list-item">
+                <div>
+                  {marketHistory?.oracleReported && "Oracle "}
+                  <span className="inline font-medium">
+                    <span className="font-bold">
+                      <UserIdentity
+                        user={marketHistory?.reported.by}
+                        className="items-baseline"
+                      />
+                    </span>{" "}
+                    reported{" "}
+                    <span className="font-bold">
+                      {getOutcome(marketHistory?.reported.outcome)}
+                    </span>
+                  </span>
+                </div>
+                <p className="pb-1 text-sm text-gray-500">
+                  {marketHistory?.reported.timestamp > 0 &&
+                    new Intl.DateTimeFormat("default", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }).format(marketHistory?.reported.timestamp)}{" "}
+                  (block: {marketHistory?.reported.at})
+                </p>
+              </li>
+            )}
+            {marketHistory?.disputes &&
+              marketHistory?.disputes.map((dispute) => {
+                return (
+                  <li key={dispute.timestamp} className="mb-8">
+                    <p className="pb-1">
+                      {marketHistory.oracleReported ?? "Oracle"}
+                      <span className="flex items-center ">
+                        <span className="inline font-medium">
+                          <span className="font-bold">
+                            <UserIdentity
+                              user={dispute.by}
+                              className="items-baseline"
+                            />
+                          </span>{" "}
+                          disputed and suggested{" "}
+                          <span className="font-bold">
+                            {getOutcome(dispute.outcome)}
+                          </span>
+                        </span>
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {dispute.timestamp > 0 &&
+                          new Intl.DateTimeFormat("default", {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          }).format(dispute.timestamp)}{" "}
+                        (block: {dispute.at})
+                      </span>
+                    </p>
+                  </li>
+                );
+              })}
+            {marketHistory?.resolved?.outcome && (
+              <li className="mb-8 list-item">
+                <p className="pb-1">
+                  Market resolved to{" "}
+                  <span className="font-bold">
+                    {marketType.scalar === null
+                      ? categories[marketHistory?.resolved?.outcome]?.name
+                      : getScalarOutcome(
+                          marketHistory?.resolved?.outcome,
+                          scalarType,
+                        )}
+                  </span>
+                </p>
+                <span className="text-sm text-gray-500">
+                  {marketHistory?.resolved?.timestamp &&
+                    new Intl.DateTimeFormat("default", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }).format(marketHistory?.resolved?.timestamp)}{" "}
+                  (block: {marketHistory?.resolved?.block})
+                </span>{" "}
+              </li>
+            )}
+          </ol>
+        </div>
+      </div>
+    </Dialog.Panel>
   );
 };
 
@@ -108,6 +297,7 @@ const MarketHeader: FC<{
     pool,
     scalarType,
   } = market;
+  const [showMarketHistory, setShowMarketHistory] = useState(false);
   const starts = Number(period.start);
   const ends = Number(period.end);
   const volume = pool?.volume
@@ -122,6 +312,10 @@ const MarketHeader: FC<{
     report,
     resolvedOutcome,
     scalarType,
+  );
+
+  const { data: marketHistory } = useMarketEventHistory(
+    market.marketId.toString(),
   );
 
   return (
@@ -191,8 +385,29 @@ const MarketHeader: FC<{
       {(status === "Reported" ||
         status === "Disputed" ||
         status === "Resolved") && (
-        <MarketOutcome status={status} outcome={outcome} by={by} />
+        <MarketOutcome
+          setShowMarketHistory={setShowMarketHistory}
+          status={status}
+          outcome={outcome}
+          by={by}
+          marketHistory={marketHistory}
+        />
       )}
+
+      <Modal
+        open={showMarketHistory}
+        onClose={() => setShowMarketHistory(false)}
+      >
+        <MarketHistory
+          starts={starts}
+          ends={ends}
+          marketHistory={marketHistory}
+          categories={categories}
+          marketType={marketType}
+          setShowMarketHistory={setShowMarketHistory}
+          scalarType={scalarType}
+        />
+      </Modal>
     </header>
   );
 };

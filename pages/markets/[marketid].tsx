@@ -85,7 +85,10 @@ export async function getStaticProps({ params }) {
   if (market?.pool) {
     const chartFilter = filters[1];
 
-    resolutionTimestamp = await getResolutionTimestamp(client, market.marketId);
+    const { timestamp: resolutionTimestamp } = await getResolutionTimestamp(
+      client,
+      market.marketId,
+    );
 
     const chartStartDate = calcPriceHistoryStartDate(
       market.status,
