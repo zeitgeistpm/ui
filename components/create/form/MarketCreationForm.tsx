@@ -77,7 +77,6 @@ const MarketCreationForm = () => {
         }`}
       >
         <MarketFormSection<CurrencySectionFormData>
-          values={sum.watch("currency")}
           wizard={state.wizardModeOn}
           onComplete={(data) => {
             sum.setValue("currency", data);
@@ -103,7 +102,6 @@ const MarketCreationForm = () => {
         }`}
       >
         <MarketFormSection<QuestionSectionFormData>
-          values={sum.watch("question")}
           wizard={state.wizardModeOn}
           onClickBack={back}
           onComplete={(data) => {

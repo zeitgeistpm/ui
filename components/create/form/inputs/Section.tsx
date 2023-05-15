@@ -5,14 +5,12 @@ import { DeepPartial, UseFormReturn, useForm } from "react-hook-form";
 
 export type MarketFormSectionProps<T> = {
   wizard?: boolean;
-  values?: T;
   render: (form: UseFormReturn<T, any>) => JSX.Element;
   onComplete: (data: T) => void;
   onClickBack?: () => void;
 };
 
 export type BaseMarketFormSectionProps<T> = {
-  values?: T;
   render: (form: UseFormReturn<T, any>) => JSX.Element;
   onComplete: (data: T) => void;
   onClickBack?: () => void;
@@ -20,12 +18,11 @@ export type BaseMarketFormSectionProps<T> = {
 
 export function MarketFormSection<T>({
   wizard,
-  values,
   render,
   onComplete,
   onClickBack,
 }: MarketFormSectionProps<T>) {
-  const internalForm = useForm<T>({ values });
+  const internalForm = useForm<T>({});
 
   const onSubmit = (data: T) => {
     console.log(`Section.submit`, data);
