@@ -1,4 +1,5 @@
 import { Unpacked } from "@zeitgeistpm/utility/dist/array";
+import CurrencySelect from "components/create/inputs/Currency";
 import Toggle from "components/ui/Toggle";
 import WizardStepper, { WizardStepData } from "components/wizard/WizardStepper";
 import { DeepReadonly } from "lib/types/deep-readonly";
@@ -46,13 +47,15 @@ const CreateMarketPage: NextPage = () => {
         <div className="ml-3 font-light">One Page</div>
       </div>
 
-      <div>
+      <div className="mb-12">
         <WizardStepper
           steps={createMarketWizardSteps}
           current={step}
           onChange={(step) => setStep(step)}
         />
       </div>
+
+      <CurrencySelect options={["ZTG", "DOT"]} value={"DOT"} />
     </div>
   );
 };
