@@ -12,7 +12,13 @@ const marketsQuery = gql`
     markets(
       orderBy: id_DESC
       limit: 8
-      where: { pool_isNull: false, status_in: [Active, Proposed] }
+      where: {
+        pool_isNull: false
+        status_in: [Active, Proposed]
+        question_not_eq: ""
+        question_isNull: false
+        isMetaComplete_eq: true
+      }
     ) {
       marketId
       outcomeAssets
