@@ -84,11 +84,15 @@ export const MarketPositions = ({
               userBalance: userBalance.div(ZTG).toNumber(),
               price: {
                 value: price.toNumber(),
-                usdValue: usdZtgPrice.toNumber(),
+                usdValue: price.mul(usdZtgPrice).toNumber(),
               },
               value: {
                 value: userBalance.mul(price).div(ZTG).toNumber(),
-                usdValue: usdZtgPrice.toNumber(),
+                usdValue: userBalance
+                  .mul(price)
+                  .mul(usdZtgPrice)
+                  .div(ZTG)
+                  .toNumber(),
               },
               change: isNaN(changePercentage) ? 0 : changePercentage.toFixed(1),
               actions: (
