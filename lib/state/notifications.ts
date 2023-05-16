@@ -1,5 +1,6 @@
 import { atom, useAtom } from "jotai";
 import { generateGUID } from "lib/util/generate-guid";
+import { useRef } from "react";
 
 export type Notification = {
   /**
@@ -70,12 +71,16 @@ const notificationsAtom = atom<Notification[]>([]);
  * @returns UseNotifications
  */
 export const useNotifications = (): UseNotifications => {
-  const [notifications, setNotifications] = useAtom(notificationsAtom);
+  const atom = useAtom(notificationsAtom);
+  const atomRef = useRef(atom);
+
+  atomRef.current = atom;
 
   const pushNotification: UseNotifications["pushNotification"] = (
     content,
     options,
   ) => {
+    const [notifications, setnotifications] = atomRef.current;
     let nextNotifications = [...notifications];
 
     const latestNotification = notifications[notifications.length - 1];
@@ -94,7 +99,7 @@ export const useNotifications = (): UseNotifications => {
 
     nextNotifications = [...nextNotifications, notification];
 
-    setNotifications(nextNotifications);
+    setnotifications(nextNotifications);
 
     return notification;
   };
@@ -102,7 +107,8 @@ export const useNotifications = (): UseNotifications => {
   const removeNotification: UseNotifications["removeNotification"] = (
     notification,
   ) => {
-    setNotifications(
+    const [notifications, setnotifications] = atomRef.current;
+    setnotifications(
       notifications.filter((n) =>
         typeof notification === "string"
           ? n.id !== notification
@@ -112,7 +118,7 @@ export const useNotifications = (): UseNotifications => {
   };
 
   return {
-    notifications,
+    notifications: atomRef.current[0],
     pushNotification,
     removeNotification,
   };
