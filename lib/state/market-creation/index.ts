@@ -26,10 +26,6 @@ const createMarketStateAtom = persistentAtom<CreateMarketState>({
 export const useCreateMarketState = () => {
   const [state, setState] = useAtom(createMarketStateAtom);
 
-  const setWizard = (on: boolean) => setState({ ...state, isWizard: on });
-
-  const setStep = (step: MarketCreationStep) => setState({ ...state, step });
-
   const fieldsState: FieldsState = {
     currency: {
       ...validate("currency", state.form),
@@ -55,6 +51,10 @@ export const useCreateMarketState = () => {
       keys.length && keys.every((key) => fieldsState[key].isValid);
     return { ...step, isValid };
   });
+
+  const setWizard = (on: boolean) => setState({ ...state, isWizard: on });
+
+  const setStep = (step: MarketCreationStep) => setState({ ...state, step });
 
   const register = <K extends keyof MarketCreationFormData>(key: K) => {
     const mode = fieldsState.question.isTouched ? "onChange" : "onBlur";

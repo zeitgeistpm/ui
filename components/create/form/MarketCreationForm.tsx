@@ -4,6 +4,8 @@ import { nextStepFrom, prevStepFrom } from "components/wizard/types";
 import { useCreateMarketState } from "lib/state/market-creation";
 import {
   CurrencySectionFormData,
+  FieldState,
+  FieldsState,
   MarketCreationFormData,
   MarketCreationStep,
   QuestionAndCategorySectionFormData,
@@ -109,9 +111,7 @@ const MarketCreationForm = () => {
                   {...register("question")}
                 />
                 <div className="flex center h-5 text-xs text-red-400">
-                  {fieldsState.question.errors &&
-                    fieldsState.question.isTouched &&
-                    fieldsState.question.errors[0]}
+                  <ErrorMessage field={fieldsState.question} />
                 </div>
               </div>
             </div>
@@ -119,15 +119,17 @@ const MarketCreationForm = () => {
               <CategorySelect {...register("tags")} />
             </div>
             <div className="flex center h-5 text-xs text-red-400">
-              {fieldsState.tags.errors &&
-                fieldsState.tags.isTouched &&
-                fieldsState.tags.errors[0]}
+              <ErrorMessage field={fieldsState.tags} />
             </div>
           </MarketFormSection>
         </div>
       </form>
     </div>
   );
+};
+
+const ErrorMessage = ({ field }: { field: FieldState }) => {
+  return <>{field.errors && field.isTouched && field.errors[0]}</>;
 };
 
 export default MarketCreationForm;
