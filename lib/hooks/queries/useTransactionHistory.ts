@@ -6,9 +6,7 @@ import {
   isIndexedSdk,
   IOMarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk-next";
-import Decimal from "decimal.js";
 import { gql } from "graphql-request";
-import { ZTG } from "lib/constants";
 import { useSdkv2 } from "../useSdkv2";
 
 export const transactionHistoryKey = "transaction-history";
@@ -16,15 +14,17 @@ export const transactionHistoryKey = "transaction-history";
 const transactionHistoryQuery = gql`
   query TransactionHistory($address: String) {
     historicalAssets(
-      where: { accountId_eq: $address }
+      where: {
+        accountId_eq: $address
+        AND: { event_not_contains: "SwapExact" }
+      }
       orderBy: timestamp_DESC
     ) {
       assetId
       baseAssetTraded
       timestamp
       event
-      newPrice
-      dPrice
+      blockNumber
     }
   }
 `;
@@ -41,20 +41,19 @@ const humanReadableEventMap = {
   PoolCreate: "Create Pool",
   SwapExactAmountOut: "Trade",
   SwapExactAmountIn: "Trade",
-  PoolExit: "Remove Subsidy",
-  PoolJoin: "Add Subsidy",
+  PoolExit: "Remove Liquidity",
+  PoolJoin: "Add Liquidity",
 } as const;
 
 type Action = typeof humanReadableEventMap[keyof typeof humanReadableEventMap];
 
-type TradeEvent = {
+export type TradeEvent = {
   marketId: number;
   assetId: AssetId;
   question: string;
   action: Action;
-  value: number;
-  price: number;
   time: string;
+  blockNumber: number;
 };
 
 type MarketHeader = {
@@ -73,10 +72,9 @@ export const useTransactionHistory = (address: string) => {
             assetId: string | AssetId;
             dAmountInPool: string;
             baseAssetTraded: string;
-            newPrice: number;
-            dPrice: number;
             timestamp: string;
             event: string;
+            blockNumber: number;
           }[];
         }>(transactionHistoryQuery, {
           address: address,
@@ -111,27 +109,23 @@ export const useTransactionHistory = (address: string) => {
           marketsMap.set(marketId, markets[index]);
         });
 
-        const transactions: TradeEvent[] = eventsToDisplay.map((asset) => {
-          const action: Action = humanReadableEventMap[asset.event];
-          const assetId = parseAssetId(asset.assetId).unwrap();
-          const marketId = IOMarketOutcomeAssetId.is(assetId)
-            ? getMarketIdOf(assetId)
-            : null;
+        const transactions: TradeEvent[] = eventsToDisplay.map(
+          (transaction) => {
+            const action: Action = humanReadableEventMap[transaction.event];
+            const assetId = parseAssetId(transaction.assetId).unwrap();
+            const marketId = IOMarketOutcomeAssetId.is(assetId)
+              ? getMarketIdOf(assetId)
+              : null;
 
-          return {
-            marketId: marketId,
-            question: marketsMap.get(marketId).question,
-            action: action,
-            assetId,
-            value:
-              action === "Trade" && asset.baseAssetTraded != null
-                ? new Decimal(asset.baseAssetTraded).div(ZTG).toNumber()
-                : null,
-            price:
-              action === "Trade" ? asset.newPrice - asset.dPrice / 2 : null,
-            time: asset.timestamp,
-          };
-        });
+            return {
+              marketId: marketId,
+              question: marketsMap.get(marketId).question,
+              action: action,
+              time: transaction.timestamp,
+              blockNumber: transaction.blockNumber,
+            };
+          },
+        );
 
         return transactions;
       }

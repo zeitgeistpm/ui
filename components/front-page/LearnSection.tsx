@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
 interface LearnCardProps {
   tag: string;
@@ -27,7 +28,12 @@ const LearnCard = ({
       whileTap={{ scale: 1 }}
       className={`w-full rounded-[10px] p-[15px] pr-[20px] ${classes} `}
     >
-      <a href={link} target="_blank" rel="noopener noreferrer">
+      <Link
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex flex-col"
+      >
         <span className="bg-white p-[6px] rounded-[50px] w-fit text-ztg-12-120">
           {tag}
         </span>
@@ -41,10 +47,10 @@ const LearnCard = ({
             width={84}
             height={80}
             alt={title}
-            className="hidden lg:block object-contain"
+            className="hidden lg:block flex-shrink-0 w-[84px] h-[80px]"
           />
         </div>
-      </a>
+      </Link>
     </motion.div>
   );
 };

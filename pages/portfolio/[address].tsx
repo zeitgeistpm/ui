@@ -7,6 +7,7 @@ import {
   MarketPositions,
   MarketPositionsSkeleton,
 } from "components/portfolio/MarketPositions";
+import TradeHistoryTable from "components/portfolio/TradeHistoryTable";
 import TransactionHistoryTable from "components/portfolio/TransactionHistoryTable";
 import InfoBoxes from "components/ui/InfoBoxes";
 import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
@@ -171,7 +172,33 @@ const Portfolio: NextPage = () => {
             </div>
           </Tab.Panel>
           <Tab.Panel>
-            <TransactionHistoryTable address={address} />
+            <Tab.Group>
+              <Tab.List className="flex center mb-14">
+                {["Trades", "Other Transactions"].map((title, index) => (
+                  <Tab className="px-4" key={index}>
+                    {({ selected }) => (
+                      <div
+                        className={
+                          selected
+                            ? "font-semibold text-black transition-all"
+                            : "text-sky-600 transition-all"
+                        }
+                      >
+                        {title}
+                      </div>
+                    )}
+                  </Tab>
+                ))}
+              </Tab.List>
+              <Tab.Panels>
+                <Tab.Panel>
+                  <TradeHistoryTable address={address} />
+                </Tab.Panel>
+                <Tab.Panel>
+                  <TransactionHistoryTable address={address} />
+                </Tab.Panel>
+              </Tab.Panels>
+            </Tab.Group>
           </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>

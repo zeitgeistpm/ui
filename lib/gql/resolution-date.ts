@@ -3,9 +3,10 @@ import { gql, GraphQLClient } from "graphql-request";
 const resolutionQuery = gql`
   query MarketResolutionDate($marketId: Int) {
     historicalMarkets(
-      where: { event_contains: "Resolved", marketId_eq: $marketId }
+      where: { event_eq: MarketResolved, marketId_eq: $marketId }
     ) {
       timestamp
+      blockNumber
     }
   }
 `;
@@ -16,12 +17,19 @@ export const getResolutionTimestamp = async (
   marketId: number,
 ) => {
   const response = await client.request<{
-    historicalMarkets: { timestamp: string }[];
+    historicalMarkets: { timestamp: string; blockNumber: number }[];
   }>(resolutionQuery, {
     marketId,
   });
 
-  return response.historicalMarkets?.length > 0
-    ? response.historicalMarkets[0].timestamp
-    : null;
+  return {
+    timestamp:
+      response.historicalMarkets?.length > 0
+        ? response.historicalMarkets[0].timestamp
+        : null,
+    blockNumber:
+      response.historicalMarkets?.length > 0
+        ? response.historicalMarkets[0].blockNumber
+        : null,
+  };
 };

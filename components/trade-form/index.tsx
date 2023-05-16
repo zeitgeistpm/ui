@@ -62,7 +62,7 @@ const getTradeValuesFromExtrinsicResult = (
 
 const TradeForm = () => {
   const notifications = useNotifications();
-  const [tabIndex, setTabIndex] = useState<number>(0);
+
   const { register, formState, watch, setValue, reset } = useForm<{
     percentage: string;
     assetAmount: string;
@@ -85,6 +85,10 @@ const TradeForm = () => {
     poolAssetBalance,
     swapFee,
   } = tradeItemState ?? {};
+
+  const [tabIndex, setTabIndex] = useState<number>(
+    tradeItem.action === "buy" ? TradeTabType.Buy : TradeTabType.Sell,
+  );
 
   const maxBaseAmount = useTradeMaxBaseAmount(tradeItem);
   const maxAssetAmount = useTradeMaxAssetAmount(tradeItem);
@@ -193,7 +197,7 @@ const TradeForm = () => {
   );
 
   useEffect(() => {
-    if (debouncedTransactionHash == null || signer == null) {
+    if (debouncedTransactionHash == null || signer == null || !transaction) {
       return;
     }
     const sub = from(transaction.paymentInfo(signer.address)).subscribe(
@@ -454,7 +458,7 @@ const TradeForm = () => {
           }}
         >
           <Tab.Group
-            defaultIndex={0}
+            defaultIndex={tabIndex}
             onChange={(index: TradeTabType) => {
               setTabIndex(index);
               if (index === TradeTabType.Buy) {
@@ -492,7 +496,7 @@ const TradeForm = () => {
             </Tab.List>
           </Tab.Group>
           <div className="flex flex-col p-[20px] sm:p-[30px]">
-            <div className="center">
+            <div className="center relative">
               <input
                 type="number"
                 {...register("assetAmount", {
@@ -544,7 +548,7 @@ const TradeForm = () => {
               disabled={isLoading === true || signer == null}
               {...register("percentage")}
             />
-            <div className="text-center mb-[20px]">
+            <div className="text-center mb-4">
               <div className="text-ztg-12-150 sm:text-ztg-14-150">
                 <div className="mb-[10px]">
                   <span className="text-sky-600">Average Price: </span>
@@ -561,6 +565,7 @@ const TradeForm = () => {
                 </div>
               </div>
             </div>
+
             <TransactionButton
               disabled={!formState.isValid || isLoading === true}
               className="h-[56px]"

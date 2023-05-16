@@ -12,7 +12,7 @@ import Modal from "components/ui/Modal";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { extrinsicCallback } from "lib/util/tx";
+import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useState } from "react";
 
 const ReportButton = ({
@@ -61,33 +61,40 @@ const ReportButton = ({
         },
       });
 
-      return (
-        <>
-          <button
-            onClick={handleClick}
-            disabled={reportDisabled}
-            className="text-mariner font-semibold text-ztg-14-120"
-          >
-            Report Outcome
-          </button>
-
-          <Modal
-            open={scalarReportBoxOpen}
-            onClose={() => setScalarReportBoxOpen(false)}
-          >
-            <Dialog.Panel className="bg-white rounded-ztg-10 p-[15px]">
-              <div>
-                <div className="font-bold text-ztg-16-150 text-black">
-                  Report outcome
-                </div>
-                <ScalarReportBox market={market} />
-              </div>
-            </Dialog.Panel>
-          </Modal>
-        </>
-      );
+      if (isRpcSdk(sdk)) {
+        const tx = sdk.api.tx.predictionMarkets.report(market.marketId, {
+          Categorical: ID,
+        });
+        signAndSend(tx, signer, callback);
+      }
     }
   };
+
+  return (
+    <>
+      <button
+        onClick={handleClick}
+        disabled={reportDisabled}
+        className="border-gray-300 text-sm border-2 rounded-full py-2 px-5 mr-2"
+      >
+        Report Outcome
+      </button>
+
+      <Modal
+        open={scalarReportBoxOpen}
+        onClose={() => setScalarReportBoxOpen(false)}
+      >
+        <Dialog.Panel className="bg-white rounded-ztg-10 p-[15px]">
+          <div>
+            <div className="font-bold text-ztg-16-150 text-black">
+              Report outcome
+            </div>
+            <ScalarReportBox market={market} />
+          </div>
+        </Dialog.Panel>
+      </Modal>
+    </>
+  );
 };
 
 export default ReportButton;
