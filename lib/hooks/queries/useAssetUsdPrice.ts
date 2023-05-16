@@ -53,8 +53,9 @@ export const useAllAssetUsdPrices = (): {
       return {
         queryKey: [
           assetUsdPriceRootKey,
-          // parseAssetId({ ForeignAsset: foreignAssetId }).unrightOr(null),
-          foreignAssetId,
+          parseAssetId({ ForeignAsset: Number(foreignAssetId) }).unrightOr(
+            null,
+          ),
         ],
         queryFn: async () => {
           if (IOForeignAssetId.is(assetId)) {
@@ -94,7 +95,6 @@ const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
   );
 
   const json = await res.json();
-  console.log(json);
 
   return new Decimal(json[coinGeckoId].usd);
 };

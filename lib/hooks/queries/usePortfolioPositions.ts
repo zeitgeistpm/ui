@@ -492,7 +492,6 @@ export const usePortfolioPositions = (
     ) {
       return null;
     }
-    console.log(marketPositions.map((m) => m.market.baseAsset));
 
     const tradingPositionsTotal = totalPositionsValue(
       marketPositions,
