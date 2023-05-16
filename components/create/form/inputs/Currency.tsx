@@ -51,6 +51,7 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({ name, options, v
         .filter((currency) => options?.includes(currency.name) ?? true)
         .map((currency) => (
           <button 
+            type="button"
             className={`
               flex flex-col flex-1 max-w-xs rounded-md p-6 min-h-[300px] cursor-pointer transition-all 
               ${currency.name === value ? "bg-green-200" : "bg-gray-200"}

@@ -27,6 +27,7 @@ export const MarketFormSection = function <T>({
               <button
                 className={`border-gray-300 text-sm border-2 rounded-full py-4 px-8 mr-4 `}
                 onClick={onClickBack}
+                type="button"
               >
                 Go Back
               </button>
@@ -37,7 +38,7 @@ export const MarketFormSection = function <T>({
                 className={`border-gray-300 text-sm border-2 rounded-full py-4 px-8 transition-all ${
                   nextDisabled && "cursor-not-allowed opacity-70 text-gray-500"
                 }`}
-                type="submit"
+                type="button"
                 onClick={onClickNext}
               >
                 Next
