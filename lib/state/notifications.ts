@@ -80,7 +80,7 @@ export const useNotifications = (): UseNotifications => {
     content,
     options,
   ) => {
-    const [notifications, setnotifications] = atomRef.current;
+    const [notifications, setNotifications] = atomRef.current;
     let nextNotifications = [...notifications];
 
     const latestNotification = notifications[notifications.length - 1];
@@ -99,7 +99,7 @@ export const useNotifications = (): UseNotifications => {
 
     nextNotifications = [...nextNotifications, notification];
 
-    setnotifications(nextNotifications);
+    setNotifications(nextNotifications);
 
     return notification;
   };
@@ -107,8 +107,8 @@ export const useNotifications = (): UseNotifications => {
   const removeNotification: UseNotifications["removeNotification"] = (
     notification,
   ) => {
-    const [notifications, setnotifications] = atomRef.current;
-    setnotifications(
+    const [notifications, setNotifications] = atomRef.current;
+    setNotifications(
       notifications.filter((n) =>
         typeof notification === "string"
           ? n.id !== notification
