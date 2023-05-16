@@ -24,10 +24,8 @@ export const createMarketWizardSteps: WizardStepData<CreateMarketWizardStep>[] =
     { label: "Preview" },
   ];
 
-export type CreateMarketFormData = {
-  currency: CurrencySectionFormData;
-  question: QuestionSectionFormData;
-};
+export type CreateMarketFormData = CurrencySectionFormData &
+  QuestionSectionFormData;
 
 export type CurrencySectionFormData = {
   currency: SupportedCurrencyTag;

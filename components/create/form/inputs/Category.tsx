@@ -1,25 +1,31 @@
 import { SupportedTag, defaultTags } from "lib/constants/markets";
 import Image from "next/image";
 import { forwardRef } from "react";
+import { FormEvent } from "../types";
 
 export type CategorySelectProps = {
   name: string;
-  value?: SupportedTag[];
-  onChange?: (event: {
-    target: { name: string; value: SupportedTag[] };
-  }) => void;
+  value: SupportedTag[];
+  onBlur: (event: FormEvent<SupportedTag[]>) => void;
+  onChange: (event: FormEvent<SupportedTag[]>) => void;
 };
 
 export const CategorySelect = forwardRef(
-  ({ name, value, onChange }: CategorySelectProps) => {
-    const onClickHandler = (tag: SupportedTag) => () => {
-      if (onChange) {
-        if (value?.includes(tag)) {
-          onChange({ target: { name, value: value.filter((t) => t !== tag) } });
-        } else {
-          onChange({ target: { name, value: [...(value ?? []), tag] } });
-        }
+  ({ name, value, onChange, onBlur }: CategorySelectProps) => {
+    const handleSelect = (tag: SupportedTag) => () => {
+      let newTags: SupportedTag[];
+
+      if (value?.includes(tag)) {
+        newTags = value.filter((t) => t !== tag);
+      } else {
+        newTags = [...(value ?? []), tag];
       }
+
+      onChange({ target: { name, value: newTags }, type: "change" });
+
+      setTimeout(() => {
+        onBlur({ target: { name, value: newTags }, type: "blur" });
+      }, 5);
     };
 
     return (
@@ -29,7 +35,7 @@ export const CategorySelect = forwardRef(
             className={`center h-full cursor-pointer rounded-full p-2 transition-all ${
               value?.includes(tag) ? "bg-fog-of-war text-white" : "bg-platinum"
             }`}
-            onClick={onClickHandler(tag)}
+            onClick={handleSelect(tag)}
           >
             <Image
               className="rounded-full mr-2"

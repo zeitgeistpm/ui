@@ -3172,7 +3172,7 @@ __metadata:
     react-datetime: ^3.1.1
     react-dom: ^18.2.0
     react-feather: ^2.0.9
-    react-hook-form: ^7.39.5
+    react-hook-form: ^7.43.9
     react-hotjar: ^3.0.1
     react-icons: ^4.3.1
     react-intersection-observer: ^9.4.1
@@ -9965,12 +9965,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:^7.39.5":
-  version: 7.43.2
-  resolution: "react-hook-form@npm:7.43.2"
+"react-hook-form@npm:^7.43.9":
+  version: 7.43.9
+  resolution: "react-hook-form@npm:7.43.9"
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18
-  checksum: 68d4fb73fec052801d5e7840c3d0afba887676acfdefa33aef342ead0db419cb1a14a0891ed567cea58a78d544d9245445c593e25bc0564a797201cb32c91a01
+  checksum: 65b94de625f2b7921c4e856bf0abbe142bfe06c052217bd1bcc3a842e2cc37fa3a3e03758119dc038bbcf5edb49e02c29206528b80b201f9a4d601471ef78153
   languageName: node
   linkType: hard
 

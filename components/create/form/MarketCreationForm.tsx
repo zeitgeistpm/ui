@@ -1,30 +1,38 @@
 import Toggle from "components/ui/Toggle";
-import WizardStepper, { WizardStepData } from "components/wizard/WizardStepper";
+import WizardStepper from "components/wizard/WizardStepper";
 import { useCreateMarketState } from "lib/state/market-creation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
 import {
+  CreateMarketFormData,
   CurrencySectionFormData,
   QuestionSectionFormData,
 } from "lib/state/market-creation/types";
+import { Controller, useForm } from "react-hook-form";
+import CategorySelect from "./inputs/Category";
+import CurrencySelect from "./inputs/Currency";
+import { MarketFormSection } from "./inputs/Section";
 import {
-  CreateMarketWizardStep,
   createMarketWizardSteps,
   nextStepFrom,
   prevStepFrom,
 } from "./inputs/types";
-import { CreateMarketFormData } from "lib/state/market-creation/types";
-import { MarketFormSection, MarketFormSectionProps } from "./inputs/Section";
-import CurrencySelect from "./inputs/Currency";
-import { QuestionSectionForm } from "./sections/Question";
-import CategorySelect from "./inputs/Category";
+import { useEffect, useLayoutEffect } from "react";
 
 const MarketCreationForm = () => {
   const state = useCreateMarketState();
 
-  const sum = useForm<CreateMarketFormData>({
-    defaultValues: {},
+  const {
+    register,
+    watch,
+    getFieldState,
+    handleSubmit,
+    formState: { errors, isDirty, isValid, isLoading, touchedFields },
+  } = useForm<CreateMarketFormData>({
+    mode: "onChange",
   });
+
+  const currencyState = getFieldState("currency");
+  const questionState = getFieldState("question");
+  const tagsState = getFieldState("tags");
 
   const prevStep = prevStepFrom(state.step);
   const nextStep = nextStepFrom(state.step);
@@ -44,8 +52,6 @@ const MarketCreationForm = () => {
   const onSubmit = (data: any) => {
     console.log(data);
   };
-
-  console.log(sum.watch());
 
   return (
     <div>
@@ -69,72 +75,96 @@ const MarketCreationForm = () => {
         )}
       </div>
 
-      <div
-        className={`mb-16 ${
-          state.step.label == "Currency" || !state.wizardModeOn
-            ? "block"
-            : "hidden"
-        }`}
-      >
-        <MarketFormSection<CurrencySectionFormData>
-          wizard={state.wizardModeOn}
-          onComplete={(data) => {
-            sum.setValue("currency", data);
-            next();
-          }}
-          render={(form) => (
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div
+          className={`mb-16 ${
+            state.step.label == "Currency" || !state.wizardModeOn
+              ? "block"
+              : "hidden"
+          }`}
+        >
+          <MarketFormSection<CurrencySectionFormData>
+            wizard={state.wizardModeOn}
+            onClickNext={next}
+            nextDisabled={currencyState.invalid || !currencyState.isDirty}
+          >
             <CurrencySelect
               options={["ZTG", "DOT"]}
-              value={form.watch("currency")}
-              {...form.register("currency", {
+              value={watch("currency")}
+              {...register("currency", {
                 required: true,
               })}
             />
-          )}
-        />
-      </div>
+          </MarketFormSection>
+        </div>
 
-      <div
-        className={`mb-16 ${
-          state.step.label == "Question" || !state.wizardModeOn
-            ? "block"
-            : "hidden"
-        }`}
-      >
-        <MarketFormSection<QuestionSectionFormData>
-          wizard={state.wizardModeOn}
-          onClickBack={back}
-          onComplete={(data) => {
-            sum.setValue("question", data);
-            next();
-          }}
-          render={(form) => (
-            <>
-              <div className="mb-12 text-center">
-                <h2 className="mb-8 text-md">What is your question?</h2>
-                <div className="flex center mb-12">
-                  <input
-                    className="h-12 w-2/3 text-center bg-green-100 rounded-md"
-                    placeholder="When do I send it?"
-                    {...form.register("question", {
-                      required: true,
-                      minLength: 10,
-                      maxLength: 240,
-                    })}
-                    type="text"
-                  />
+        <div
+          className={`mb-16 ${
+            state.step.label == "Question" || !state.wizardModeOn
+              ? "block"
+              : "hidden"
+          }`}
+        >
+          <MarketFormSection<QuestionSectionFormData>
+            wizard={state.wizardModeOn}
+            onClickNext={next}
+            onClickBack={back}
+            nextDisabled={
+              !isDirty || questionState.invalid || tagsState.invalid
+            }
+          >
+            <div className="mb-8 text-center">
+              <h2 className="mb-8 text-md">What is your question?</h2>
+              <div>
+                <input
+                  className="h-12 w-2/3 text-center bg-green-100 rounded-md mb-2"
+                  placeholder="When do I send it?"
+                  type="text"
+                  {...register("question", {
+                    required: {
+                      value: true,
+                      message: "Question is required.",
+                    },
+                    maxLength: {
+                      value: 240,
+                      message: "Question must be less than 240 characters.",
+                    },
+                    minLength: {
+                      value: 10,
+                      message: "Question must be more than 10 characters.",
+                    },
+                  })}
+                />
+                <div className="flex center h-5 text-xs text-red-400">
+                  {questionState.isDirty &&
+                    questionState.error &&
+                    questionState.error.message}
                 </div>
               </div>
+            </div>
+            <div className="mb-6">
               <CategorySelect
-                value={form.watch("tags")}
-                {...form.register("tags", {
-                  required: true,
+                value={watch("tags")}
+                {...register("tags", {
+                  required: {
+                    value: true,
+                    message: "Please select at least one category.",
+                  },
                 })}
               />
-            </>
-          )}
-        />
-      </div>
+            </div>
+            <div className="flex center h-5 text-xs text-red-400">
+              {tagsState.isDirty && tagsState.error && tagsState.error.message}
+            </div>
+          </MarketFormSection>
+        </div>
+
+        <div className="flex center mt-24">
+          <button className="bg-blue-300 rounded-sm p-2 mx-auto" type="submit">
+            Test Submit
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

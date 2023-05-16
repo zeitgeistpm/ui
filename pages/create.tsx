@@ -1,6 +1,3 @@
-import { SupportedCurrencyTag } from "components/create/form/inputs/Currency";
-import { WizardStepData } from "components/wizard/WizardStepper";
-import { SupportedTag } from "lib/constants/markets";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 
