@@ -26,7 +26,6 @@ const ExitPoolForm = ({
   poolId,
   totalPoolShares,
   userPoolShares,
-  poolStatus,
   baseAssetTicker,
   onSuccess,
 }: {
@@ -34,7 +33,6 @@ const ExitPoolForm = ({
   poolId: number;
   totalPoolShares: Decimal;
   userPoolShares: Decimal;
-  poolStatus: string;
   baseAssetTicker: string;
   onSuccess?: () => void;
 }) => {
