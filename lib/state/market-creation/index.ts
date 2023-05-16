@@ -45,8 +45,6 @@ export const useCreateMarketState = () => {
     },
   };
 
-  console.log(fieldsState);
-
   const isValid = Object.values(fieldsState).every((field) => field.isValid);
 
   const steps = marketCreationSteps.map((step) => {
