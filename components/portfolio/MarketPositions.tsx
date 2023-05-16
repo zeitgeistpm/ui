@@ -2,9 +2,11 @@
 import Skeleton from "components/ui/Skeleton";
 import {
   IndexerContext,
+  IOForeignAssetId,
   IOMarketOutcomeAssetId,
   IOPoolShareAssetId,
   Market,
+  parseAssetId,
   ZTG,
 } from "@zeitgeistpm/sdk-next";
 import DisputeButton from "components/assets/AssetActionButtons/DisputeButton";
@@ -18,6 +20,7 @@ import { Position } from "lib/hooks/queries/usePortfolioPositions";
 import { useWallet } from "lib/state/wallet";
 import Link from "next/link";
 import MarketPositionHeader from "./MarketPositionHeader";
+import { useAllAssetUsdPrices } from "lib/hooks/queries/useAssetUsdPrice";
 
 export type MarketPositionsProps = {
   usdZtgPrice: Decimal;
@@ -33,6 +36,7 @@ export const MarketPositions = ({
   className,
 }: MarketPositionsProps) => {
   const { data: marketStage } = useMarketStage(market);
+  const { data: foreignAssetPrices } = useAllAssetUsdPrices();
 
   const wallet = useWallet();
   const userAddress = wallet.getActiveSigner()?.address;
@@ -78,19 +82,31 @@ export const MarketPositions = ({
           },
         ]}
         data={positions.map<TableData>(
-          ({ assetId, price, userBalance, outcome, changePercentage }) => {
+          ({
+            assetId,
+            price,
+            userBalance,
+            outcome,
+            changePercentage,
+            market,
+          }) => {
+            const baseAssetId = parseAssetId(market.baseAsset).unrightOr(null);
+            const baseAssetUsdPrice = IOForeignAssetId.is(baseAssetId)
+              ? foreignAssetPrices[baseAssetId.ForeignAsset.toString()]
+              : usdZtgPrice;
+
             return {
               outcome: outcome,
               userBalance: userBalance.div(ZTG).toNumber(),
               price: {
                 value: price.toNumber(),
-                usdValue: price.mul(usdZtgPrice).toNumber(),
+                usdValue: price.mul(baseAssetUsdPrice).toNumber(),
               },
               value: {
                 value: userBalance.mul(price).div(ZTG).toNumber(),
                 usdValue: userBalance
                   .mul(price)
-                  .mul(usdZtgPrice)
+                  .mul(baseAssetUsdPrice)
                   .div(ZTG)
                   .toNumber(),
               },
