@@ -50,10 +50,13 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({ name, options, v
       {supportedCurrencies
         .filter((currency) => options?.includes(currency.name) ?? true)
         .map((currency) => (
-          <div 
-            className={`flex flex-col flex-1 max-w-xs rounded-md p-6 min-h-[300px] cursor-pointer transition-all ${currency.name === value ? "bg-green-200" : "bg-gray-200"}`} 
+          <button 
+            className={`
+              flex flex-col flex-1 max-w-xs rounded-md p-6 min-h-[300px] cursor-pointer transition-all 
+              ${currency.name === value ? "bg-green-200" : "bg-gray-200"}
+            `} 
             onClick={handleSelect(currency.name)}>
-            <div className="flex center mb-6">
+            <div className="w-full flex center mb-6">
               <div className="relative w-20 h-20">
                 <Image
                   alt={`Currency token logo for ${currency.name}`}
@@ -67,7 +70,7 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({ name, options, v
               <h3 className="text-2xl mb-4">{currency.name}</h3>
               <p className="w-3/4 mx-auto">{currency.description}</p>
             </div>
-          </div>
+          </button>
         ))}
     </div>
   );

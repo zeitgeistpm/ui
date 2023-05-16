@@ -1,9 +1,6 @@
-import { SupportedCurrencyTag } from "components/create/form/inputs/Currency";
-import { atom, useAtom } from "jotai";
-import { atomWithStorage, useHydrateAtoms } from "jotai/utils";
-import { SupportedTag } from "lib/constants/markets";
-import { persistentAtom } from "../util/persistent-atom";
 import { WizardStepData } from "components/wizard/WizardStepper";
+import { useAtom } from "jotai";
+import { persistentAtom } from "../util/persistent-atom";
 import { CreateMarketWizardStep } from "./types";
 
 export type CreateMarketState = {

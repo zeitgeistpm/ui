@@ -53,6 +53,8 @@ const MarketCreationForm = () => {
     console.log(data);
   };
 
+  console.log(tagsState);
+
   return (
     <div>
       <div className="flex center mb-12">
@@ -86,7 +88,7 @@ const MarketCreationForm = () => {
           <MarketFormSection<CurrencySectionFormData>
             wizard={state.wizardModeOn}
             onClickNext={next}
-            nextDisabled={currencyState.invalid || !currencyState.isDirty}
+            nextDisabled={currencyState.invalid || !currencyState.isTouched}
           >
             <CurrencySelect
               options={["ZTG", "DOT"]}
@@ -110,7 +112,11 @@ const MarketCreationForm = () => {
             onClickNext={next}
             onClickBack={back}
             nextDisabled={
-              !isDirty || questionState.invalid || tagsState.invalid
+              !isDirty ||
+              questionState.invalid ||
+              tagsState.invalid ||
+              !questionState.isTouched ||
+              !tagsState.isTouched
             }
           >
             <div className="mb-8 text-center">

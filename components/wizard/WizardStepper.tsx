@@ -1,8 +1,3 @@
-import { useWindowSize } from "lib/hooks/useWindowSize";
-import { clamp } from "lodash-es";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import medianRange from "median-range";
-
 export type WizardStepData<T extends string> = { label: T };
 
 export type WizardStepperProps<
