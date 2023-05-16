@@ -45,6 +45,10 @@ export const useCreateMarketState = () => {
     },
   };
 
+  console.log(fieldsState);
+
+  const isValid = Object.values(fieldsState).every((field) => field.isValid);
+
   const steps = marketCreationSteps.map((step) => {
     const keys = getSectionFormKeys(step.label);
     const isValid =
@@ -91,5 +95,6 @@ export const useCreateMarketState = () => {
     setWizard,
     register,
     fieldsState,
+    isValid,
   };
 };
