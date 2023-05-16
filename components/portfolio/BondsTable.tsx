@@ -1,7 +1,13 @@
+import { IOForeignAssetId, parseAssetId } from "@zeitgeistpm/sdk-next";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useAccountBonds } from "lib/hooks/queries/useAccountBonds";
+import {
+  ForeignAssetPrices,
+  useAllAssetUsdPrices,
+} from "lib/hooks/queries/useAssetUsdPrice";
+import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import EmptyPortfolio from "./EmptyPortfolio";
 import MarketPositionHeader from "./MarketPositionHeader";
 
@@ -17,7 +23,7 @@ const columns: TableColumn[] = [
     type: "address",
   },
   {
-    header: "Value(ZTG)",
+    header: "Value",
     accessor: "value",
     type: "currency",
   },
@@ -28,8 +34,22 @@ const columns: TableColumn[] = [
   },
 ];
 
+const lookUpBaseAssetPrice = (
+  baseAsset: string,
+  foreignAssetPrices: ForeignAssetPrices,
+  ztgPrice: Decimal,
+) => {
+  const assetId = parseAssetId(baseAsset).unwrap();
+
+  return IOForeignAssetId.is(assetId)
+    ? foreignAssetPrices[assetId.ForeignAsset.toString()]?.div(ztgPrice)
+    : ztgPrice;
+};
+
 const BondsTable = ({ address }: { address: string }) => {
   const { data: marketBonds, isLoading } = useAccountBonds(address);
+  const { data: foreignAssetPrices } = useAllAssetUsdPrices();
+  const { data: ztgPrice } = useZtgPrice();
 
   return (
     <div>
@@ -59,7 +79,16 @@ const BondsTable = ({ address }: { address: string }) => {
                       value: new Decimal(market.bonds.creation.value)
                         .div(ZTG)
                         .toNumber(),
-                      usdValue: null,
+                      usdValue: new Decimal(market.bonds.creation.value)
+                        .div(ZTG)
+                        .mul(
+                          lookUpBaseAssetPrice(
+                            market.baseAsset,
+                            foreignAssetPrices,
+                            ztgPrice,
+                          ),
+                        )
+                        .toNumber(),
                     },
                     settled:
                       market.bonds.creation.isSettled === true ? "Yes" : "No",
@@ -71,7 +100,16 @@ const BondsTable = ({ address }: { address: string }) => {
                       value: new Decimal(market.bonds.oracle.value)
                         .div(ZTG)
                         .toNumber(),
-                      usdValue: null,
+                      usdValue: new Decimal(market.bonds.oracle.value)
+                        .div(ZTG)
+                        .mul(
+                          lookUpBaseAssetPrice(
+                            market.baseAsset,
+                            foreignAssetPrices,
+                            ztgPrice,
+                          ),
+                        )
+                        .toNumber(),
                     },
                     settled:
                       market.bonds.oracle.isSettled === true ? "Yes" : "No",
