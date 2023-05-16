@@ -3,19 +3,19 @@ import WizardStepper from "components/wizard/WizardStepper";
 import { useCreateMarketState } from "lib/state/market-creation";
 import {
   CreateMarketFormData,
+  CreateMarketStep,
+  CreateMarketWizardStep,
   CurrencySectionFormData,
   QuestionSectionFormData,
+  createMarketWizardSteps,
+  nextStepFrom,
+  prevStepFrom,
 } from "lib/state/market-creation/types";
 import { Controller, UseFormGetFieldState, useForm } from "react-hook-form";
 import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
 import { MarketFormSection } from "./inputs/Section";
-import {
-  createMarketWizardSteps,
-  nextStepFrom,
-  prevStepFrom,
-} from "./inputs/types";
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useMemo } from "react";
 
 type FieldState = Omit<ReturnType<UseFormGetFieldState<any>>, "error">;
 
@@ -63,15 +63,44 @@ const MarketCreationForm = () => {
     tagsState,
   ]);
 
+  const sectionValidityIndex: {
+    [key in CreateMarketWizardStep]: boolean;
+  } = {
+    Currency: sectionCompleted(currencySection),
+    Question: sectionCompleted(questionAndCategorySectionState),
+    Answers: false,
+    "Time Period": false,
+    Oracle: false,
+    Description: false,
+    Moderation: false,
+    Preview: true,
+  };
+
+  const steps = useMemo(() => {
+    return createMarketWizardSteps.map((step) => {
+      return {
+        ...step,
+        isValid: sectionValidityIndex[step.label],
+      };
+    });
+  }, [watch()]);
+
+  const step = useMemo(() => {
+    return {
+      ...state.step,
+      isValid: sectionValidityIndex[state.step.label],
+    };
+  }, [steps]);
+
   const back = () => {
-    const prevStep = prevStepFrom(state.step);
+    const prevStep = prevStepFrom(steps, step);
     if (prevStep) {
       state.merge({ step: prevStep });
     }
   };
 
   const next = () => {
-    const nextStep = nextStepFrom(state.step);
+    const nextStep = nextStepFrom(steps, step);
     if (nextStep) {
       state.merge({ step: nextStep });
     }
@@ -96,9 +125,9 @@ const MarketCreationForm = () => {
       <div className="mb-12">
         {state.wizardModeOn && (
           <WizardStepper
-            steps={createMarketWizardSteps}
-            current={state.step}
-            onChange={(step) => state.merge({ step })}
+            steps={steps}
+            current={step}
+            onChange={(step: CreateMarketStep) => state.merge({ step })}
           />
         )}
       </div>
@@ -106,15 +135,13 @@ const MarketCreationForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div
           className={`mb-16 ${
-            state.step.label == "Currency" || !state.wizardModeOn
-              ? "block"
-              : "hidden"
+            step.label == "Currency" || !state.wizardModeOn ? "block" : "hidden"
           }`}
         >
           <MarketFormSection<CurrencySectionFormData>
             wizard={state.wizardModeOn}
             onClickNext={next}
-            nextDisabled={!sectionCompleted(currencySection)}
+            nextDisabled={!sectionValidityIndex["Currency"]}
           >
             <CurrencySelect
               options={["ZTG", "DOT"]}
@@ -128,16 +155,14 @@ const MarketCreationForm = () => {
 
         <div
           className={`mb-16 ${
-            state.step.label == "Question" || !state.wizardModeOn
-              ? "block"
-              : "hidden"
+            step.label == "Question" || !state.wizardModeOn ? "block" : "hidden"
           }`}
         >
           <MarketFormSection<QuestionSectionFormData>
             wizard={state.wizardModeOn}
             onClickNext={next}
             onClickBack={back}
-            nextDisabled={!sectionCompleted(questionAndCategorySectionState)}
+            nextDisabled={!sectionValidityIndex["Question"]}
           >
             <div className="mb-8 text-center">
               <h2 className="mb-8 text-md">What is your question?</h2>

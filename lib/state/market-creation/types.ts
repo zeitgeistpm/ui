@@ -1,6 +1,6 @@
 import { SupportedCurrencyTag } from "components/create/form/inputs/Currency";
-import { WizardStepData } from "components/wizard/WizardStepper";
 import { SupportedTag } from "lib/constants/markets";
+import { WizardStepData } from "components/wizard/WizardStepper";
 
 export type CreateMarketWizardStep =
   | "Currency"
@@ -12,17 +12,34 @@ export type CreateMarketWizardStep =
   | "Moderation"
   | "Preview";
 
-export const createMarketWizardSteps: WizardStepData<CreateMarketWizardStep>[] =
-  [
-    { label: "Currency" },
-    { label: "Question" },
-    { label: "Answers" },
-    { label: "Time Period" },
-    { label: "Oracle" },
-    { label: "Description" },
-    { label: "Moderation" },
-    { label: "Preview" },
-  ];
+export type CreateMarketStep = WizardStepData<CreateMarketWizardStep>;
+
+export const createMarketWizardSteps: CreateMarketStep[] = [
+  { label: "Currency", isValid: false },
+  { label: "Question", isValid: false },
+  { label: "Answers", isValid: false },
+  { label: "Time Period", isValid: false },
+  { label: "Oracle", isValid: false },
+  { label: "Description", isValid: false },
+  { label: "Moderation", isValid: false },
+  { label: "Preview", isValid: false },
+];
+
+export const nextStepFrom = (
+  steps: CreateMarketStep[],
+  step: CreateMarketStep,
+): CreateMarketStep => {
+  const index = steps.findIndex((s) => s.label === step.label) + 1;
+  return steps[index];
+};
+
+export const prevStepFrom = (
+  steps: CreateMarketStep[],
+  step: CreateMarketStep,
+): CreateMarketStep => {
+  const index = steps.findIndex((s) => s.label === step.label) - 1;
+  return steps[index];
+};
 
 export type CreateMarketFormData = CurrencySectionFormData &
   QuestionSectionFormData;

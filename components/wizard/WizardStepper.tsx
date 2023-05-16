@@ -1,4 +1,4 @@
-export type WizardStepData<T extends string> = { label: T };
+export type WizardStepData<T extends string> = { label: T; isValid: boolean };
 
 export type WizardStepperProps<
   T extends string,
@@ -14,6 +14,7 @@ function WizardStepper<T extends string, S extends WizardStepData<T>[]>({
   steps,
   onChange,
 }: WizardStepperProps<T, S>) {
+  console.log(current, steps);
   const stepIndex = steps.findIndex((s) => s.label === current.label);
   const progress = (stepIndex / (steps.length - 1)) * 100;
 

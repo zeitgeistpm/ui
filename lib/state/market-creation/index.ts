@@ -1,16 +1,15 @@
-import { WizardStepData } from "components/wizard/WizardStepper";
 import { useAtom } from "jotai";
 import { persistentAtom } from "../util/persistent-atom";
-import { CreateMarketWizardStep } from "./types";
+import { CreateMarketStep } from "./types";
 
 export type CreateMarketState = {
   wizardModeOn: boolean;
-  step: WizardStepData<CreateMarketWizardStep>;
+  step: CreateMarketStep;
 };
 
 export const defaultState: CreateMarketState = {
   wizardModeOn: true,
-  step: { label: "Currency" },
+  step: { label: "Currency", isValid: false },
 };
 
 const createMarketStateAtom = persistentAtom<CreateMarketState>({
