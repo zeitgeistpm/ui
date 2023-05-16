@@ -152,9 +152,7 @@ export const usePortfolioPositions = (
   const block24HoursAgo = Math.floor(now?.block - 7200);
   const { data: marketBonds, isLoading: isBondsLoading } =
     useAccountBonds(address);
-  const data = useAllAssetUsdPrices();
-
-  console.log(data);
+  const { data: foreignAssetPrices } = useAllAssetUsdPrices();
 
   const rawPositions = useAccountTokenPositions({
     where: {
@@ -485,14 +483,28 @@ export const usePortfolioPositions = (
   );
 
   const breakdown = useMemo<PorfolioBreakdown>(() => {
-    if (!ztgPrice || !marketPositions || !subsidyPositions || isBondsLoading) {
+    if (
+      !ztgPrice ||
+      !marketPositions ||
+      !subsidyPositions ||
+      isBondsLoading ||
+      !foreignAssetPrices
+    ) {
       return null;
     }
+    console.log(marketPositions.map((m) => m.market.baseAsset));
 
-    const tradingPositionsTotal = totalPositionsValue(marketPositions, "price");
+    const tradingPositionsTotal = totalPositionsValue(
+      marketPositions,
+      "price",
+      foreignAssetPrices,
+      ztgPrice,
+    );
     const tradingPositionsTotal24HoursAgo = totalPositionsValue(
       marketPositions,
       "price24HoursAgo",
+      foreignAssetPrices,
+      ztgPrice,
     );
 
     const tradingPositionsChange = diffChange(
@@ -503,10 +515,14 @@ export const usePortfolioPositions = (
     const subsidyPositionsTotal = totalPositionsValue(
       subsidyPositions,
       "price",
+      foreignAssetPrices,
+      ztgPrice,
     );
     const subsidyPositionsTotal24HoursAgo = totalPositionsValue(
       subsidyPositions,
       "price24HoursAgo",
+      foreignAssetPrices,
+      ztgPrice,
     );
 
     const subsidyPositionsChange = diffChange(
@@ -554,6 +570,7 @@ export const usePortfolioPositions = (
     };
   }, [
     ztgPrice,
+    foreignAssetPrices,
     subsidyPositions,
     marketPositions,
     isBondsLoading,
@@ -583,18 +600,17 @@ export const totalPositionsValue = <
   foreignAssetPrices: ForeignAssetPrices,
   ztgPrice: Decimal,
 ): Decimal => {
-  // console.log(positions);
-
-  // console.log(positions.map((p) => p.market.baseAsset));
-
   return positions.reduce((acc, position) => {
     const assetId = parseAssetId(position.market.baseAsset).unwrap();
-    //todo convert to usd then to ztg
-    const priceMultiplier = IOForeignAssetId.is(assetId) ? 1 : 1;
+
+    const priceMultiplier = IOForeignAssetId.is(assetId)
+      ? foreignAssetPrices[assetId.ForeignAsset.toString()]?.div(ztgPrice)
+      : 1;
+
     if (position.userBalance.isNaN() || position[key].isNaN()) {
-      return acc.mul(priceMultiplier);
+      return acc;
     }
-    const value = position.userBalance.mul(position[key]);
+    const value = position.userBalance.mul(position[key]).mul(priceMultiplier);
     return !value.isNaN() ? acc.plus(value) : acc;
   }, new Decimal(0));
 };

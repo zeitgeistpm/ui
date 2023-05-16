@@ -53,7 +53,8 @@ export const useAllAssetUsdPrices = (): {
       return {
         queryKey: [
           assetUsdPriceRootKey,
-          parseAssetId({ ForeignAsset: foreignAssetId }).unrightOr(null),
+          // parseAssetId({ ForeignAsset: foreignAssetId }).unrightOr(null),
+          foreignAssetId,
         ],
         queryFn: async () => {
           if (IOForeignAssetId.is(assetId)) {
@@ -69,12 +70,16 @@ export const useAllAssetUsdPrices = (): {
     }),
   });
 
+  const data = queries?.reduce((prices, query, index) => {
+    const key = Object.keys(FORIEGN_ASSET_METADATA)[index];
+    if (query.data && key) {
+      prices[key] = query.data;
+    }
+    return prices;
+  }, {});
+
   return {
-    data: queries?.reduce((prices, query, index) => {
-      return query.data
-        ? (prices[Object.keys(FORIEGN_ASSET_METADATA)[index]] = query.data)
-        : prices;
-    }, {}),
+    data: data,
     isLoading: queries.some((query) => query.isLoading === true),
     queries,
   };
