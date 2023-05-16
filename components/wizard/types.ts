@@ -1,0 +1,17 @@
+export type WizardStepData<T extends string> = { label: T; isValid: boolean };
+
+export const nextStepFrom = <T extends string>(
+  steps: WizardStepData<T>[],
+  step: WizardStepData<T>,
+): WizardStepData<T> => {
+  const index = steps.findIndex((s) => s.label === step.label) + 1;
+  return steps[index];
+};
+
+export const prevStepFrom = <T extends string>(
+  steps: WizardStepData<T>[],
+  step: WizardStepData<T>,
+): WizardStepData<T> => {
+  const index = steps.findIndex((s) => s.label === step.label) - 1;
+  return steps[index];
+};

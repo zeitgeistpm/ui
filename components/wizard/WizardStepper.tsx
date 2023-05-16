@@ -1,4 +1,4 @@
-export type WizardStepData<T extends string> = { label: T; isValid: boolean };
+import { WizardStepData, nextStepFrom, prevStepFrom } from "./types";
 
 export type WizardStepperProps<
   T extends string,
@@ -14,7 +14,6 @@ function WizardStepper<T extends string, S extends WizardStepData<T>[]>({
   steps,
   onChange,
 }: WizardStepperProps<T, S>) {
-  console.log(current, steps);
   const stepIndex = steps.findIndex((s) => s.label === current.label);
   const progress = (stepIndex / (steps.length - 1)) * 100;
 
@@ -41,16 +40,24 @@ function WizardStepper<T extends string, S extends WizardStepData<T>[]>({
         />
 
         {steps.map((step, index) => {
+          const prevStep = prevStepFrom(steps, step);
+          const canNavigate =
+            index < stepIndex || step.isValid || prevStep?.isValid;
+          const shouldHiglight = canNavigate && stepIndex + 1 === index;
+
           return (
-            <div
+            <button
               key={index}
               className={`w-24 cursor-pointer transition-all group`}
+              disabled={!canNavigate}
               onClick={() => onChange(step)}
             >
               <div className="flex center mb-2">
                 <div
                   className={`flex center h-8 w-8  rounded-full text-white text-sm duration-200 ease-in-out group-active:scale-[1.1]
                   ${stepIndex >= index ? "bg-black" : "bg-gray-400"}
+                  ${shouldHiglight && "!bg-blue-500"}
+                  ${step.isValid && "!bg-green-500"}
                 `}
                 >
                   {index + 1}
@@ -63,7 +70,7 @@ function WizardStepper<T extends string, S extends WizardStepData<T>[]>({
               >
                 {step.label}
               </div>
-            </div>
+            </button>
           );
         })}
       </div>

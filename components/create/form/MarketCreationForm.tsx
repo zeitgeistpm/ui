@@ -8,14 +8,13 @@ import {
   CurrencySectionFormData,
   QuestionSectionFormData,
   createMarketWizardSteps,
-  nextStepFrom,
-  prevStepFrom,
 } from "lib/state/market-creation/types";
 import { Controller, UseFormGetFieldState, useForm } from "react-hook-form";
 import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
 import { MarketFormSection } from "./inputs/Section";
 import { useEffect, useLayoutEffect, useMemo } from "react";
+import { nextStepFrom, prevStepFrom } from "components/wizard/types";
 
 type FieldState = Omit<ReturnType<UseFormGetFieldState<any>>, "error">;
 
@@ -73,7 +72,7 @@ const MarketCreationForm = () => {
     Oracle: false,
     Description: false,
     Moderation: false,
-    Preview: true,
+    Preview: false,
   };
 
   const steps = useMemo(() => {
