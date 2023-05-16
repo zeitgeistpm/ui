@@ -21,6 +21,10 @@ export const defaultState: CreateMarketState = {
 const createMarketStateAtom = persistentAtom<CreateMarketState>({
   key: "market-creation-form",
   defaultValue: defaultState,
+  /**
+   * Todo: remove reset migrations before merge to staging, only for resetting state between preview builds
+   */
+  migrations: [() => defaultState],
 });
 
 export const useCreateMarketState = () => {
