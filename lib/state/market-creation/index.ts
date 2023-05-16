@@ -1,10 +1,11 @@
 import { useAtom } from "jotai";
 import { persistentAtom } from "../util/persistent-atom";
-import { CreateMarketStep } from "./types";
+import { CreateMarketFormData, CreateMarketStep } from "./types";
 
 export type CreateMarketState = {
   wizardModeOn: boolean;
   step: CreateMarketStep;
+  formData?: CreateMarketFormData;
 };
 
 export const defaultState: CreateMarketState = {

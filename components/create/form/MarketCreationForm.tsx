@@ -21,6 +21,7 @@ type FieldState = Omit<ReturnType<UseFormGetFieldState<any>>, "error">;
 const getSectionFieldsState = (sections: Array<FieldState>): FieldState => {
   return sections.reduce(
     (acc, section) => {
+      console.log(section);
       return {
         invalid: acc.invalid || section.invalid,
         isDirty: acc.isDirty || section.isDirty,
@@ -46,9 +47,12 @@ const MarketCreationForm = () => {
     watch,
     getFieldState,
     handleSubmit,
+    getValues,
+    trigger,
     formState: { errors, isDirty, isValid, isLoading, touchedFields },
   } = useForm<CreateMarketFormData>({
     mode: "all",
+    defaultValues: state.formData,
   });
 
   const currencyState = getFieldState("currency");
