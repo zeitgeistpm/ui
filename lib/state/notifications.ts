@@ -118,7 +118,7 @@ export const useNotifications = (): UseNotifications => {
   };
 
   return {
-    notifications: atomRef.current[0],
+    notifications: atom[0],
     pushNotification,
     removeNotification,
   };
