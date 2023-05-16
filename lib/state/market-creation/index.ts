@@ -13,7 +13,7 @@ import {
 
 export const defaultState: CreateMarketState = {
   isWizard: true,
-  step: { label: "Currency", isValid: false },
+  currentStep: { label: "Currency", isValid: false },
   form: {},
   touchState: {},
 };
@@ -56,7 +56,8 @@ export const useCreateMarketState = () => {
 
   const setWizard = (on: boolean) => setState({ ...state, isWizard: on });
 
-  const setStep = (step: MarketCreationStep) => setState({ ...state, step });
+  const setStep = (step: MarketCreationStep) =>
+    setState({ ...state, currentStep: step });
 
   const register = <K extends keyof MarketCreationFormData>(key: K) => {
     const mode = fieldsState.question.isTouched ? "onChange" : "onBlur";

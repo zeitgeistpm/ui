@@ -19,8 +19,8 @@ const MarketCreationForm = () => {
   const {
     isWizard,
     setWizard,
+    currentStep,
     steps,
-    step,
     setStep,
     form,
     register,
@@ -28,14 +28,14 @@ const MarketCreationForm = () => {
   } = useCreateMarketState();
 
   const back = () => {
-    const prevStep = prevStepFrom(steps, step);
+    const prevStep = prevStepFrom(steps, currentStep);
     if (prevStep) {
       setStep(prevStep);
     }
   };
 
   const next = () => {
-    const nextStep = nextStepFrom(steps, step);
+    const nextStep = nextStepFrom(steps, currentStep);
     if (nextStep) {
       setStep(nextStep);
     }
@@ -62,7 +62,7 @@ const MarketCreationForm = () => {
         {isWizard && (
           <WizardStepper
             steps={steps}
-            current={step}
+            current={currentStep}
             onChange={(step: MarketCreationStep) => setStep(step)}
           />
         )}
@@ -71,7 +71,7 @@ const MarketCreationForm = () => {
       <form onSubmit={onSubmit}>
         <MarketFormSection<CurrencySectionFormData>
           wizard={isWizard}
-          isCurrent={step.label == "Currency"}
+          isCurrent={currentStep.label == "Currency"}
           onClickNext={next}
           nextDisabled={!fieldsState.currency.isValid}
         >
@@ -80,7 +80,7 @@ const MarketCreationForm = () => {
 
         <MarketFormSection<QuestionAndCategorySectionFormData>
           wizard={isWizard}
-          isCurrent={step.label == "Question"}
+          isCurrent={currentStep.label == "Question"}
           onClickNext={next}
           onClickBack={back}
           nextDisabled={

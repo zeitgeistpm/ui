@@ -4,7 +4,7 @@ import { SupportedTag } from "lib/constants/markets";
 import {} from "io-ts";
 
 export type CreateMarketState = {
-  step: MarketCreationStep;
+  currentStep: MarketCreationStep;
   isWizard: boolean;
   form: Partial<MarketCreationFormData>;
   touchState: Partial<Record<keyof MarketCreationFormData, boolean>>;
