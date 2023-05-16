@@ -2,6 +2,7 @@ import React, { ReactNode } from "react";
 
 export type MarketFormSectionProps<T> = {
   wizard?: boolean;
+  isCurrent: boolean;
   onClickNext?: () => void;
   onClickBack?: () => void;
   nextDisabled?: boolean;
@@ -10,13 +11,14 @@ export type MarketFormSectionProps<T> = {
 
 export const MarketFormSection = function <T>({
   wizard,
+  isCurrent,
   children,
   onClickNext,
   onClickBack,
   nextDisabled,
 }: MarketFormSectionProps<T>) {
   return (
-    <>
+    <div className={`mb-16 ${isCurrent || !wizard ? "block" : "hidden"}`}>
       {!wizard ? (
         children
       ) : (
@@ -47,6 +49,6 @@ export const MarketFormSection = function <T>({
           </div>
         </>
       )}
-    </>
+    </div>
   );
 };

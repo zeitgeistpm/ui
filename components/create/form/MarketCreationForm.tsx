@@ -46,8 +46,6 @@ const MarketCreationForm = () => {
     console.log("submit");
   };
 
-  console.log(fieldsState.tags);
-
   return (
     <div>
       <div className="flex center mb-12">
@@ -71,58 +69,45 @@ const MarketCreationForm = () => {
       </div>
 
       <form onSubmit={onSubmit}>
-        <div
-          className={`mb-16 ${
-            step.label == "Currency" || !isWizard ? "block" : "hidden"
-          }`}
+        <MarketFormSection<CurrencySectionFormData>
+          wizard={isWizard}
+          isCurrent={step.label == "Currency"}
+          onClickNext={next}
+          nextDisabled={!fieldsState.currency.isValid}
         >
-          <MarketFormSection<CurrencySectionFormData>
-            wizard={isWizard}
-            onClickNext={next}
-            nextDisabled={!fieldsState.currency.isValid}
-          >
-            <CurrencySelect
-              options={["ZTG", "DOT"]}
-              {...register("currency")}
-            />
-          </MarketFormSection>
-        </div>
+          <CurrencySelect options={["ZTG", "DOT"]} {...register("currency")} />
+        </MarketFormSection>
 
-        <div
-          className={`mb-16 ${
-            step.label == "Question" || !isWizard ? "block" : "hidden"
-          }`}
+        <MarketFormSection<QuestionAndCategorySectionFormData>
+          wizard={isWizard}
+          isCurrent={step.label == "Question"}
+          onClickNext={next}
+          onClickBack={back}
+          nextDisabled={
+            !fieldsState.question.isValid || !fieldsState.tags.isValid
+          }
         >
-          <MarketFormSection<QuestionAndCategorySectionFormData>
-            wizard={isWizard}
-            onClickNext={next}
-            onClickBack={back}
-            nextDisabled={
-              !fieldsState.question.isValid || !fieldsState.tags.isValid
-            }
-          >
-            <div className="mb-8 text-center">
-              <h2 className="mb-8 text-md">What is your question?</h2>
-              <div>
-                <input
-                  className="h-12 w-2/3 text-center bg-green-100 rounded-md mb-2"
-                  placeholder="When do I send it?"
-                  type="text"
-                  {...register("question")}
-                />
-                <div className="flex center h-5 text-xs text-red-400">
-                  <ErrorMessage field={fieldsState.question} />
-                </div>
+          <div className="mb-8 text-center">
+            <h2 className="mb-8 text-md">What is your question?</h2>
+            <div>
+              <input
+                className="h-12 w-2/3 text-center bg-green-100 rounded-md mb-2"
+                placeholder="When do I send it?"
+                type="text"
+                {...register("question")}
+              />
+              <div className="flex center h-5 text-xs text-red-400">
+                <ErrorMessage field={fieldsState.question} />
               </div>
             </div>
-            <div className="mb-6">
-              <CategorySelect {...register("tags")} />
-            </div>
-            <div className="flex center h-5 text-xs text-red-400">
-              <ErrorMessage field={fieldsState.tags} />
-            </div>
-          </MarketFormSection>
-        </div>
+          </div>
+          <div className="mb-6">
+            <CategorySelect {...register("tags")} />
+          </div>
+          <div className="flex center h-5 text-xs text-red-400">
+            <ErrorMessage field={fieldsState.tags} />
+          </div>
+        </MarketFormSection>
       </form>
     </div>
   );
