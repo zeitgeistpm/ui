@@ -214,6 +214,17 @@ const MarketCard = ({
     parseAssetId(baseAsset).unrightOr(null),
   );
 
+  const isYesNoMarket =
+    outcomes.length === 2 &&
+    outcomes.some((outcome) => outcome.name.toLowerCase() === "yes") &&
+    outcomes.some((outcome) => outcome.name.toLowerCase() === "no");
+
+  //always show "Yes" prediction percentage
+  prediction =
+    isYesNoMarket === true && prediction.name.toLowerCase() === "no"
+      ? { price: 1 - prediction.price, name: "Yes" }
+      : prediction;
+
   const infoRows = {
     marketType: marketType,
     endDate: endDate,

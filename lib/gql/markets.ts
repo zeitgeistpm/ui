@@ -1,4 +1,5 @@
 import { MarketStatus } from "@zeitgeistpm/sdk-next";
+import { MarketDispute, Report } from "@zeitgeistpm/sdk/dist/types";
 import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS } from "lib/constants";
@@ -39,11 +40,29 @@ const marketQuery = gql`
       creator
       oracle
       disputeMechanism
+      resolvedOutcome
       marketType {
         scalar
         categorical
       }
+      disputes {
+        at
+        by
+        outcome {
+          scalar
+          categorical
+        }
+      }
+      report {
+        at
+        by
+        outcome {
+          scalar
+          categorical
+        }
+      }
       period {
+        block
         start
         end
       }
@@ -64,11 +83,13 @@ export interface MarketPageIndexedData {
   description: string;
   status: MarketStatus;
   period: {
+    block: string[];
     start: string;
     end: string;
   };
   categories: { name: string; color: string }[];
   outcomeAssets: string[];
+  resolvedOutcome: string;
   pool: {
     poolId: number;
     volume: string;
@@ -80,6 +101,8 @@ export interface MarketPageIndexedData {
     scalar: string[];
     categorical: string;
   };
+  disputes: MarketDispute[];
+  report: Report;
   creator: string;
   oracle: string;
   tags: [];
