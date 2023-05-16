@@ -10,7 +10,6 @@ import PoolDeployer from "components/markets/PoolDeployer";
 import { MarketPromotionCallout } from "components/markets/PromotionCallout";
 import MarketMeta from "components/meta/MarketMeta";
 import MarketImage from "components/ui/MarketImage";
-import { filters } from "components/ui/TimeFilters";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
 import { GraphQLClient } from "graphql-request";
 import {
@@ -28,15 +27,10 @@ import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
-import {
-  PriceHistory,
-  getPriceHistory,
-} from "lib/hooks/queries/useMarketPriceHistory";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
-import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
@@ -80,37 +74,17 @@ export async function getStaticProps({ params }) {
     },
   );
 
-  let priceHistory: PriceHistory[];
   let resolutionTimestamp: string;
-  if (market?.pool) {
-    const chartFilter = filters[1];
+  if (market) {
+    const { timestamp } = await getResolutionTimestamp(client, market.marketId);
 
-    const { timestamp: resolutionTimestamp } = await getResolutionTimestamp(
-      client,
-      market.marketId,
-    );
-
-    const chartStartDate = calcPriceHistoryStartDate(
-      market.status,
-      chartFilter,
-      new Date(market.pool.createdAt),
-      new Date(resolutionTimestamp),
-    );
-
-    priceHistory = await getPriceHistory(
-      client,
-      market.marketId,
-      chartFilter.intervalUnit,
-      chartFilter.intervalValue,
-      chartStartDate.toISOString(),
-    );
+    resolutionTimestamp = timestamp;
   }
 
   return {
     props: {
       indexedMarket: market ?? null,
       chartSeries: chartSeries ?? null,
-      priceHistory: priceHistory ?? null,
       resolutionTimestamp: resolutionTimestamp ?? null,
       promotionData,
     },
@@ -121,7 +95,6 @@ export async function getStaticProps({ params }) {
 type MarketPageProps = {
   indexedMarket: MarketPageIndexedData;
   chartSeries: ChartSeries[];
-  priceHistory: PriceHistory[];
   resolutionTimestamp: string;
   promotionData: PromotedMarket | null;
 };
@@ -129,7 +102,6 @@ type MarketPageProps = {
 const Market: NextPage<MarketPageProps> = ({
   indexedMarket,
   chartSeries,
-  priceHistory,
   resolutionTimestamp,
   promotionData,
 }) => {
@@ -238,7 +210,6 @@ const Market: NextPage<MarketPageProps> = ({
           <MarketChart
             marketId={indexedMarket.marketId}
             chartSeries={chartSeries}
-            initialData={priceHistory}
             baseAsset={indexedMarket.pool.baseAsset}
             poolCreationDate={new Date(indexedMarket.pool.createdAt)}
             marketStatus={indexedMarket.status}
