@@ -43,7 +43,7 @@ function WizardStepper<T extends string, S extends WizardStepData<T>[]>({
           const prevStep = prevStepFrom(steps, step);
           const canNavigate =
             index < stepIndex || step.isValid || prevStep?.isValid;
-          const shouldHiglight = canNavigate && stepIndex + 1 === index;
+          const shouldHiglight = canNavigate && prevStep?.isValid;
 
           return (
             <button
@@ -55,7 +55,8 @@ function WizardStepper<T extends string, S extends WizardStepData<T>[]>({
               <div className="flex center mb-2">
                 <div
                   className={`flex center h-8 w-8  rounded-full text-white text-sm duration-200 ease-in-out group-active:scale-[1.1]
-                  ${stepIndex >= index ? "bg-black" : "bg-gray-400"}
+                  ${!step.isValid && "bg-red-500"}
+                  ${stepIndex >= index ? "!bg-black" : "!bg-gray-400"}
                   ${shouldHiglight && "!bg-blue-500"}
                   ${step.isValid && "!bg-green-500"}
                 `}
