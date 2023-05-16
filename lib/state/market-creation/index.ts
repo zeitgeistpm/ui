@@ -32,7 +32,7 @@ export const useCreateMarketState = () => {
 
   const fieldsState: FieldsState = {
     currency: {
-      isValid: !!state.form.currency,
+      ...validate("currency", state.form),
       isTouched: state.touchState.currency,
     },
     question: {
@@ -44,7 +44,7 @@ export const useCreateMarketState = () => {
       isTouched: state.touchState.tags,
     },
     answers: {
-      isValid: !!state.form.answers,
+      ...validate("answers", state.form),
       isTouched: state.touchState.answers,
     },
   };
