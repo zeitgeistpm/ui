@@ -1,27 +1,26 @@
 import Toggle from "components/ui/Toggle";
 import WizardStepper from "components/wizard/WizardStepper";
+import { nextStepFrom, prevStepFrom } from "components/wizard/types";
 import { useCreateMarketState } from "lib/state/market-creation";
 import {
-  CreateMarketFormData,
-  CreateMarketStep,
-  CreateMarketWizardStep,
-  CurrencySectionFormData,
-  QuestionSectionFormData,
-  createMarketWizardSteps,
+  MarketCreationForm,
+  MarketCreationStep,
+  MarketCreationStepType,
+  CurrencySectionForm,
+  QuestionAndCategorySectionForm,
+  marketCreationSteps,
 } from "lib/state/market-creation/types";
-import { Controller, UseFormGetFieldState, useForm } from "react-hook-form";
+import { useEffect, useMemo, useState } from "react";
+import { UseFormGetFieldState, useForm } from "react-hook-form";
 import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
 import { MarketFormSection } from "./inputs/Section";
-import { useEffect, useLayoutEffect, useMemo } from "react";
-import { nextStepFrom, prevStepFrom } from "components/wizard/types";
 
 type FieldState = Omit<ReturnType<UseFormGetFieldState<any>>, "error">;
 
 const getSectionFieldsState = (sections: Array<FieldState>): FieldState => {
   return sections.reduce(
     (acc, section) => {
-      console.log(section);
       return {
         invalid: acc.invalid || section.invalid,
         isDirty: acc.isDirty || section.isDirty,
@@ -47,17 +46,26 @@ const MarketCreationForm = () => {
     watch,
     getFieldState,
     handleSubmit,
-    getValues,
+    setValue,
     trigger,
+    reset,
     formState: { errors, isDirty, isValid, isLoading, touchedFields },
-  } = useForm<CreateMarketFormData>({
+  } = useForm<MarketCreationForm>({
     mode: "all",
-    defaultValues: state.formData,
   });
+
+  const [currentStep, setCurrentStep] = useState<MarketCreationStep>({
+    label: "Currency",
+    isValid: false,
+  });
+
+  const [wizardModeOn, setWizardModeOn] = useState(true);
 
   const currencyState = getFieldState("currency");
   const questionState = getFieldState("question");
   const tagsState = getFieldState("tags");
+
+  console.log(currencyState);
 
   const currencySection = getSectionFieldsState([currencyState]);
 
@@ -67,7 +75,7 @@ const MarketCreationForm = () => {
   ]);
 
   const sectionValidityIndex: {
-    [key in CreateMarketWizardStep]: boolean;
+    [key in MarketCreationStepType]: boolean;
   } = {
     Currency: sectionCompleted(currencySection),
     Question: sectionCompleted(questionAndCategorySectionState),
@@ -80,7 +88,7 @@ const MarketCreationForm = () => {
   };
 
   const steps = useMemo(() => {
-    return createMarketWizardSteps.map((step) => {
+    return marketCreationSteps.map((step) => {
       return {
         ...step,
         isValid: sectionValidityIndex[step.label],
@@ -90,22 +98,22 @@ const MarketCreationForm = () => {
 
   const step = useMemo(() => {
     return {
-      ...state.step,
-      isValid: sectionValidityIndex[state.step.label],
+      ...currentStep,
+      isValid: sectionValidityIndex[currentStep.label],
     };
   }, [steps]);
 
   const back = () => {
     const prevStep = prevStepFrom(steps, step);
     if (prevStep) {
-      state.merge({ step: prevStep });
+      setCurrentStep(prevStep);
     }
   };
 
   const next = () => {
     const nextStep = nextStepFrom(steps, step);
     if (nextStep) {
-      state.merge({ step: nextStep });
+      setCurrentStep(nextStep);
     }
   };
 
@@ -118,19 +126,19 @@ const MarketCreationForm = () => {
       <div className="flex center mb-12">
         <div className="mr-3 font-light">One Page</div>
         <Toggle
-          checked={state.wizardModeOn}
-          onChange={(wizardModeOn) => state.merge({ wizardModeOn })}
+          checked={wizardModeOn}
+          onChange={(wizardModeOn) => setWizardModeOn(wizardModeOn)}
           activeClassName="bg-green-400"
         />
         <div className="ml-3 font-light">Wizard</div>
       </div>
 
       <div className="mb-12">
-        {state.wizardModeOn && (
+        {wizardModeOn && (
           <WizardStepper
             steps={steps}
             current={step}
-            onChange={(step: CreateMarketStep) => state.merge({ step })}
+            onChange={(step: MarketCreationStep) => setCurrentStep(step)}
           />
         )}
       </div>
@@ -138,11 +146,11 @@ const MarketCreationForm = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div
           className={`mb-16 ${
-            step.label == "Currency" || !state.wizardModeOn ? "block" : "hidden"
+            step.label == "Currency" || !wizardModeOn ? "block" : "hidden"
           }`}
         >
-          <MarketFormSection<CurrencySectionFormData>
-            wizard={state.wizardModeOn}
+          <MarketFormSection<CurrencySectionForm>
+            wizard={wizardModeOn}
             onClickNext={next}
             nextDisabled={!sectionValidityIndex["Currency"]}
           >
@@ -158,11 +166,11 @@ const MarketCreationForm = () => {
 
         <div
           className={`mb-16 ${
-            step.label == "Question" || !state.wizardModeOn ? "block" : "hidden"
+            step.label == "Question" || !wizardModeOn ? "block" : "hidden"
           }`}
         >
-          <MarketFormSection<QuestionSectionFormData>
-            wizard={state.wizardModeOn}
+          <MarketFormSection<QuestionAndCategorySectionForm>
+            wizard={wizardModeOn}
             onClickNext={next}
             onClickBack={back}
             nextDisabled={!sectionValidityIndex["Question"]}

@@ -1,15 +1,15 @@
 import { useAtom } from "jotai";
 import { persistentAtom } from "../util/persistent-atom";
-import { CreateMarketFormData, CreateMarketStep } from "./types";
+import { MarketCreationForm, MarketCreationStep } from "./types";
 
 export type CreateMarketState = {
-  wizardModeOn: boolean;
-  step: CreateMarketStep;
-  formData?: CreateMarketFormData;
+  step: MarketCreationStep;
+  wizard: boolean;
+  formData?: MarketCreationForm;
 };
 
 export const defaultState: CreateMarketState = {
-  wizardModeOn: true,
+  wizard: true,
   step: { label: "Currency", isValid: false },
 };
 
