@@ -6,7 +6,7 @@ import {
   CurrencySectionFormData,
   QuestionSectionFormData,
 } from "lib/state/market-creation/types";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, UseFormGetFieldState, useForm } from "react-hook-form";
 import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
 import { MarketFormSection } from "./inputs/Section";
@@ -16,6 +16,28 @@ import {
   prevStepFrom,
 } from "./inputs/types";
 import { useEffect, useLayoutEffect } from "react";
+
+type FieldState = Omit<ReturnType<UseFormGetFieldState<any>>, "error">;
+
+const getSectionFieldsState = (sections: Array<FieldState>): FieldState => {
+  return sections.reduce(
+    (acc, section) => {
+      return {
+        invalid: acc.invalid || section.invalid,
+        isDirty: acc.isDirty || section.isDirty,
+        isTouched: acc.isTouched || section.isTouched,
+      };
+    },
+    {
+      invalid: false,
+      isDirty: false,
+      isTouched: false,
+    },
+  );
+};
+
+const sectionCompleted = (section: FieldState) =>
+  !(!section.isDirty || !section.isTouched || section.invalid);
 
 const MarketCreationForm = () => {
   const state = useCreateMarketState();
@@ -27,23 +49,29 @@ const MarketCreationForm = () => {
     handleSubmit,
     formState: { errors, isDirty, isValid, isLoading, touchedFields },
   } = useForm<CreateMarketFormData>({
-    mode: "onChange",
+    mode: "all",
   });
 
   const currencyState = getFieldState("currency");
   const questionState = getFieldState("question");
   const tagsState = getFieldState("tags");
 
-  const prevStep = prevStepFrom(state.step);
-  const nextStep = nextStepFrom(state.step);
+  const currencySection = getSectionFieldsState([currencyState]);
+
+  const questionAndCategorySectionState = getSectionFieldsState([
+    questionState,
+    tagsState,
+  ]);
 
   const back = () => {
+    const prevStep = prevStepFrom(state.step);
     if (prevStep) {
       state.merge({ step: prevStep });
     }
   };
 
   const next = () => {
+    const nextStep = nextStepFrom(state.step);
     if (nextStep) {
       state.merge({ step: nextStep });
     }
@@ -52,8 +80,6 @@ const MarketCreationForm = () => {
   const onSubmit = (data: any) => {
     console.log(data);
   };
-
-  console.log(tagsState);
 
   return (
     <div>
@@ -88,7 +114,7 @@ const MarketCreationForm = () => {
           <MarketFormSection<CurrencySectionFormData>
             wizard={state.wizardModeOn}
             onClickNext={next}
-            nextDisabled={currencyState.invalid || !currencyState.isTouched}
+            nextDisabled={!sectionCompleted(currencySection)}
           >
             <CurrencySelect
               options={["ZTG", "DOT"]}
@@ -111,13 +137,7 @@ const MarketCreationForm = () => {
             wizard={state.wizardModeOn}
             onClickNext={next}
             onClickBack={back}
-            nextDisabled={
-              !isDirty ||
-              questionState.invalid ||
-              tagsState.invalid ||
-              !questionState.isTouched ||
-              !tagsState.isTouched
-            }
+            nextDisabled={!sectionCompleted(questionAndCategorySectionState)}
           >
             <div className="mb-8 text-center">
               <h2 className="mb-8 text-md">What is your question?</h2>
@@ -163,12 +183,6 @@ const MarketCreationForm = () => {
               {tagsState.isDirty && tagsState.error && tagsState.error.message}
             </div>
           </MarketFormSection>
-        </div>
-
-        <div className="flex center mt-24">
-          <button className="bg-blue-300 rounded-sm p-2 mx-auto" type="submit">
-            Test Submit
-          </button>
         </div>
       </form>
     </div>
