@@ -36,6 +36,7 @@ import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { useMemo } from "react";
 import { MarketBond, useAccountBonds } from "./useAccountBonds";
 import { useChainTime } from "lib/state/chaintime";
+import { ForeignAssetPrices, useAllAssetUsdPrices } from "./useAssetUsdPrice";
 
 export type UsePortfolioPositions = {
   /**
@@ -151,6 +152,9 @@ export const usePortfolioPositions = (
   const block24HoursAgo = Math.floor(now?.block - 7200);
   const { data: marketBonds, isLoading: isBondsLoading } =
     useAccountBonds(address);
+  const data = useAllAssetUsdPrices();
+
+  console.log(data);
 
   const rawPositions = useAccountTokenPositions({
     where: {
@@ -565,7 +569,7 @@ export const usePortfolioPositions = (
 };
 
 /**
- * Calculates the total value of a set of positions.
+ * Calculates the total value of a set of positions in ZTG
  *
  * @param positions positions: Position[]
  * @param key "price" | "price24HoursAgo"
@@ -576,10 +580,19 @@ export const totalPositionsValue = <
 >(
   positions: Position[],
   key: K,
+  foreignAssetPrices: ForeignAssetPrices,
+  ztgPrice: Decimal,
 ): Decimal => {
+  // console.log(positions);
+
+  // console.log(positions.map((p) => p.market.baseAsset));
+
   return positions.reduce((acc, position) => {
+    const assetId = parseAssetId(position.market.baseAsset).unwrap();
+    //todo convert to usd then to ztg
+    const priceMultiplier = IOForeignAssetId.is(assetId) ? 1 : 1;
     if (position.userBalance.isNaN() || position[key].isNaN()) {
-      return acc;
+      return acc.mul(priceMultiplier);
     }
     const value = position.userBalance.mul(position[key]);
     return !value.isNaN() ? acc.plus(value) : acc;
