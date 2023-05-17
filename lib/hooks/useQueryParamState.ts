@@ -11,21 +11,21 @@ const getQueryParams = (path: string) => {
   return queryParams;
 };
 
-export type UseQueryParamsStateResult = [
+export type UseQueryParamStateResult = [
   string,
   (value: string) => void,
   () => void,
 ];
 
-export type UseQueryParamsState = (key: string) => UseQueryParamsStateResult;
+export type UseQueryParamState = (key: string) => UseQueryParamStateResult;
 
 /**
 Hook for storing state as a query parameter. It can only handle strings for state value.
 Hook's main purpose is to store state of the UI as a query parameter so navigation would show correct part of the page
 @param key - The key of the query parameter to manage.
-@returns @type {UseQueryParamsStateResult} An array containing the value of the query parameter, a function to set the query parameter state, and a function to unset the query parameter state.
+@returns @type {UseQueryParamStateResult} An array containing the value of the query parameter, a function to set the query parameter state, and a function to unset the query parameter state.
 */
-export const useQueryParamState: UseQueryParamsState = (key: string) => {
+export const useQueryParamState: UseQueryParamState = (key: string) => {
   const router = useRouter();
   const route = router.asPath.split("?")[0];
 
