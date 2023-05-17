@@ -23,7 +23,7 @@ import {
 } from "lib/hooks/queries/useMarketEventHistory";
 import Modal from "components/ui/Modal";
 import { getMarketStatusDetails } from "lib/util/market-status-details";
-import { getScalarOutcome } from "lib/util/get-scalar-outcome";
+import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import { Dialog } from "@headlessui/react";
 
 const UserIdentity: FC<
@@ -145,7 +145,7 @@ const MarketHistory: FC<
     if (marketType.scalar === null) {
       return categories[outcome["categorical"]]?.name;
     } else {
-      return getScalarOutcome(outcome["scalar"], scalarType);
+      return formatScalarOutcome(outcome["scalar"], scalarType);
     }
   };
 
@@ -243,7 +243,7 @@ const MarketHistory: FC<
                   <span className="font-bold">
                     {marketType.scalar === null
                       ? categories[marketHistory?.resolved?.outcome]?.name
-                      : getScalarOutcome(
+                      : formatScalarOutcome(
                           marketHistory?.resolved?.outcome,
                           scalarType,
                         )}
