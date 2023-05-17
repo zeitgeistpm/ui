@@ -63,11 +63,7 @@ export const AnswersInput = ({
         </button>
         <button
           type="button"
-          className={`text-sm rounded-full py-4 px-8 mr-4 ${
-            value?.type === "yes/no"
-              ? "bg-fog-of-war text-white"
-              : "bg-platinum"
-          }`}
+          className={`text-sm rounded-full py-4 px-8 mr-4 `}
           onClick={() => {
             onChange({ target: { name, value: undefined }, type: "change" });
           }}
