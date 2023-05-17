@@ -1,15 +1,5 @@
+import { getQueryParams } from "lib/util/get-query-params";
 import { useRouter } from "next/router";
-import { parse as parseUri } from "uri-js";
-
-const getQueryParams = (path: string) => {
-  const url = parseUri(path);
-  let queryParams = {};
-  const queryParamsArr = [...Array.from(new URLSearchParams(url.query))];
-  for (const pair of queryParamsArr) {
-    queryParams[pair[0]] = pair[1];
-  }
-  return queryParams;
-};
 
 export type UseQueryParamStateResult = [
   string,
