@@ -125,6 +125,6 @@ const PROD_CHAINS: Chain[] = [
 ];
 
 export const CHAINS: Chain[] =
-  process.env.NEXT_PUBLIC_VERCEL_ENV === "NEXT_PUBLIC_VERCEL_ENV"
+  process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
     ? PROD_CHAINS
     : BATTERY_STATION_CHAINS;

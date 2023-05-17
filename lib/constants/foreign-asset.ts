@@ -41,6 +41,6 @@ const PROD_FORIEGN_ASSET_METADATA: ForeignAssetMetadata = {
 };
 
 export const FORIEGN_ASSET_METADATA: ForeignAssetMetadata =
-  process.env.NEXT_PUBLIC_VERCEL_ENV === "NEXT_PUBLIC_VERCEL_ENV"
+  process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
     ? PROD_FORIEGN_ASSET_METADATA
     : BATTERY_STATION_FORIEGN_ASSET_METADATA;
