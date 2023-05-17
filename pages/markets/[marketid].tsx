@@ -27,7 +27,6 @@ import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
-import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
@@ -117,7 +116,6 @@ const Market: NextPage<MarketPageProps> = ({
   const { data: disputes } = useMarketDisputes(marketId);
 
   const { data: marketStage } = useMarketStage(marketSdkv2);
-  const { data: spotPrices } = useMarketSpotPrices(marketId);
   const { data: liquidity } = usePoolLiquidity({ marketId });
   const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
   const baseAsset = parseAssetId(indexedMarket?.pool?.baseAsset).unrightOr(
