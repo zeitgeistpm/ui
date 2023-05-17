@@ -11,8 +11,9 @@ const Transfer = ({
 }) => {
   return (
     <div className="flex items-center gap-6">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center justify-center gap-4 md:w-[170px]">
         <Image
+          className="w-[30px] h-[30px] sm:w-[50px] sm:h-[50px]"
           src={CHAIN_IMAGES[sourceChain]}
           alt={sourceChain}
           width={50}
@@ -21,8 +22,9 @@ const Transfer = ({
         <div>{sourceChain}</div>
       </div>
       <ArrowRight />
-      <div className="flex items-center gap-4">
+      <div className="flex items-center justify-center gap-4 md:w-[170px]">
         <Image
+          className="w-[30px] h-[30px] sm:w-[50px] sm:h-[50px]"
           src={CHAIN_IMAGES[destinationChain]}
           alt={destinationChain}
           width={50}

@@ -21,7 +21,12 @@ const WithdrawButton = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
 
   return (
     <>
-      <button onClick={() => setIsOpen(true)}>Withdraw</button>
+      <button
+        className="border-gray-300 text-sm border-2 rounded-full py-2 w-[110px] mr-2"
+        onClick={() => setIsOpen(true)}
+      >
+        Withdraw
+      </button>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <WithdrawModal
           toChain={toChain}
@@ -58,7 +63,7 @@ const createWithdrawExtrinsic = (
 const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
   const { register, handleSubmit, getValues, formState } = useForm({
     reValidateMode: "onChange",
-    mode: "all",
+    mode: "onChange",
   });
 
   const notificationStore = useNotifications();
@@ -95,11 +100,14 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
 
   return (
     <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
-      <h3>Withdraw</h3>
+      <h3 className="text-center mb-8">Withdraw</h3>
       <div className="flex flex-col w-full items-center gap-8 mt-[20px] text-ztg-18-150 font-semibold">
-        <Transfer sourceChain="Zeitgeist" destinationChain={toChain} />
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 relative font-normal">
+        <Transfer destinationChain={toChain} sourceChain="Zeitgeist" />
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-full flex flex-col items-center"
+        >
+          <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 relative font-normal w-full">
             <input
               {...register("amount", {
                 required: {
@@ -121,8 +129,14 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
             />
             <div className="mr-[10px] absolute right-0">{tokenSymbol}</div>
           </div>
-          <div className="text-vermilion text-ztg-12-120 mt-[4px]">
+          <div className="text-vermilion text-ztg-12-120 my-[4px] h-[16px]">
             <>{formState.errors["amount"]?.message}</>
+          </div>
+          <div className="center font-normal text-ztg-12-120 mb-[16px] text-sky-600">
+            Zeitgeist fee:
+          </div>
+          <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
+            {toChain} fee:
           </div>
           <FormTransactionButton
             className="w-full max-w-[250px]"

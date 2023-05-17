@@ -64,7 +64,6 @@ const Portfolio: NextPage = () => {
               />
             </div>
             <div className="mb-12">
-              <h2 className="text-2xl mb-6 text-center">Predictions</h2>
               <Tab.Group>
                 <Tab.List className="flex center mb-14">
                   {["By Markets", "Subsidy", "Bonds", "Currencies"].map(

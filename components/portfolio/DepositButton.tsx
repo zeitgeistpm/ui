@@ -26,7 +26,12 @@ const DepositButton = ({
 
   return (
     <>
-      <button onClick={() => setIsOpen(true)}>Deposit</button>
+      <button
+        className="border-gray-300 text-sm border-2 rounded-full py-2 w-[110px] mr-2"
+        onClick={() => setIsOpen(true)}
+      >
+        Deposit
+      </button>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <DepositModal
           sourceChain={sourceChain}
@@ -89,7 +94,7 @@ const DepositModal = ({
 
   return (
     <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
-      <h3>Deposit</h3>
+      <h3 className="text-center mb-8">Deposit</h3>
       <div className="flex flex-col w-full items-center gap-8 mt-[20px] text-ztg-18-150 font-semibold">
         <Transfer sourceChain={sourceChain} destinationChain="Zeitgeist" />
         <form
@@ -121,10 +126,10 @@ const DepositModal = ({
           <div className="text-vermilion text-ztg-12-120 my-[4px] h-[16px]">
             <>{formState.errors["amount"]?.message}</>
           </div>
-          <div className="center font-normal text-ztg-12-120 mb-[4px]">
+          <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
             {sourceChain} fee:
           </div>
-          <div className="center font-normal text-ztg-12-120 mb-[4px]">
+          <div className="center font-normal text-ztg-12-120 mb-[16px] text-sky-600">
             Zeitgeist fee:
           </div>
           <FormTransactionButton
