@@ -30,6 +30,7 @@ import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
+import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
@@ -109,6 +110,12 @@ const Market: NextPage<MarketPageProps> = ({
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
+
+  const [showLiquidityParam, setShowLiquidityParam, unsetShowLiquidityParam] =
+    useQueryParamState("showLiquidity");
+
+  const showLiquidity = showLiquidityParam != null;
+
   const { data: prizePool } = usePrizePool(marketId);
   const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
     marketId,
@@ -123,7 +130,14 @@ const Market: NextPage<MarketPageProps> = ({
   );
   const { data: metadata } = useAssetMetadata(baseAsset);
 
-  const [liquidityOpen, setLiquidityOpen] = useState(false);
+  const toggleLiquiditySection = () => {
+    const nextState = !showLiquidity;
+    if (nextState) {
+      setShowLiquidityParam("");
+    } else {
+      unsetShowLiquidityParam();
+    }
+  };
 
   if (indexedMarket == null) {
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
@@ -254,13 +268,13 @@ const Market: NextPage<MarketPageProps> = ({
         <div className="mb-12">
           <div
             className="flex center mb-8 text-mariner cursor-pointer"
-            onClick={() => setLiquidityOpen(!liquidityOpen)}
+            onClick={() => toggleLiquiditySection()}
           >
             <div>Show Liquidity</div>
             <ChevronDown
               size={12}
               viewBox="6 6 12 12"
-              className={`box-content px-2 ${liquidityOpen && "rotate-180"}`}
+              className={`box-content px-2 ${showLiquidity && "rotate-180"}`}
             />
           </div>
 
@@ -271,7 +285,7 @@ const Market: NextPage<MarketPageProps> = ({
             leave="transition ease-in duration-75"
             leaveFrom="transform opacity-100 "
             leaveTo="transform opacity-0 "
-            show={liquidityOpen && Boolean(marketSdkv2?.pool)}
+            show={showLiquidity && Boolean(marketSdkv2?.pool)}
           >
             <MarketLiquiditySection market={marketSdkv2} />
           </Transition>
