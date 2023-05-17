@@ -38,7 +38,7 @@ export const poolRowDataFromOutcomes = (
     ...outcomes.map((outcome) => {
       return {
         assetColor: outcome.color,
-        asset: outcome.ticker,
+        asset: outcome.name,
         weight: weight.toFixed(0),
         amount: "100",
         price: {
