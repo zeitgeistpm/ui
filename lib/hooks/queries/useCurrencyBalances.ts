@@ -7,7 +7,7 @@ import { useCrossChainApis } from "lib/state/cross-chain";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";
 
-export const balanceRootKey = "currency-balances";
+export const currencyBalanceRootKey = "currency-balances";
 
 export type CurrencyBalance = {
   symbol: string;
@@ -23,7 +23,7 @@ export const useCurrencyBalances = (address: string) => {
   const { data: constants } = useChainConstants();
 
   const query = useQuery(
-    [id, balanceRootKey, address, Object.values(apis ?? {}).length],
+    [id, currencyBalanceRootKey, address, Object.values(apis ?? {}).length],
     async () => {
       if (isRpcSdk(sdk)) {
         const assetIds = Object.keys(FORIEGN_ASSET_METADATA);

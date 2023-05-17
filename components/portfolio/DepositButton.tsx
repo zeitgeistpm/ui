@@ -1,12 +1,16 @@
 import { Dialog } from "@headlessui/react";
+import { useQueryClient } from "@tanstack/react-query";
 import { ZTG } from "@zeitgeistpm/sdk-next";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
 import { CHAINS } from "lib/constants/chains";
+import { balanceRootKey } from "lib/hooks/queries/useBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { currencyBalanceRootKey } from "lib/hooks/queries/useCurrencyBalances";
 import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useCrossChainApis } from "lib/state/cross-chain";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
@@ -57,6 +61,8 @@ const DepositModal = ({
     reValidateMode: "onChange",
     mode: "onChange",
   });
+  const [_, id] = useSdkv2();
+  const queryClient = useQueryClient();
   const { apis } = useCrossChainApis();
   const { data: constants } = useChainConstants();
   const notificationStore = useNotifications();
@@ -93,6 +99,11 @@ const DepositModal = ({
             type: "Success",
           },
         );
+        queryClient.invalidateQueries([
+          id,
+          currencyBalanceRootKey,
+          wallet.activeAccount.address,
+        ]);
       },
     },
   );

@@ -1,5 +1,6 @@
 import { Dialog } from "@headlessui/react";
 import type { ApiPromise } from "@polkadot/api";
+import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
@@ -7,6 +8,8 @@ import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { CHAINS } from "lib/constants/chains";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { balanceRootKey } from "lib/hooks/queries/useBalance";
+import { currencyBalanceRootKey } from "lib/hooks/queries/useCurrencyBalances";
 import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -70,7 +73,8 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
 
   const notificationStore = useNotifications();
   const wallet = useWallet();
-  const [sdk] = useSdkv2();
+  const [sdk, id] = useSdkv2();
+  const queryClient = useQueryClient();
   const chain = CHAINS.find((chain) => chain.name === toChain);
 
   const { data: fee } = useExtrinsicFee(
@@ -101,9 +105,17 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
     },
     {
       onSuccess: () => {
-        notificationStore.pushNotification("Joined pool", {
-          type: "Success",
-        });
+        notificationStore.pushNotification(
+          `Successfully moved ${tokenSymbol} to ${toChain}`,
+          {
+            type: "Success",
+          },
+        );
+        queryClient.invalidateQueries([
+          id,
+          currencyBalanceRootKey,
+          wallet.activeAccount.address,
+        ]);
       },
     },
   );
