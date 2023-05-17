@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import {
-  AssetId,
   parseAssetId,
   getMarketIdOf,
   isIndexedSdk,
@@ -49,7 +48,6 @@ type Action = typeof humanReadableEventMap[keyof typeof humanReadableEventMap];
 
 export type TradeEvent = {
   marketId: number;
-  assetId: AssetId;
   question: string;
   action: Action;
   time: string;
@@ -69,7 +67,7 @@ export const useTransactionHistory = (address: string) => {
       if (isIndexedSdk(sdk) && address) {
         const { historicalAssets } = await sdk.indexer.client.request<{
           historicalAssets: {
-            assetId: string | AssetId;
+            assetId: string;
             dAmountInPool: string;
             baseAssetTraded: string;
             timestamp: string;

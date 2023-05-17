@@ -11,6 +11,7 @@ import {
   IOMarketOutcomeAssetId,
   IOPoolShareAssetId,
   IOZtgAssetId,
+  ZTG,
   PoolShareAssetId,
   ScalarAssetId,
   IOForeignAssetId,
@@ -36,6 +37,8 @@ import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { useMemo } from "react";
 import { MarketBond, useAccountBonds } from "./useAccountBonds";
 import { useChainTime } from "lib/state/chaintime";
+import { useTransactionHistory } from "./useTransactionHistory";
+import { useTradeHistory } from "./useTradeHistory";
 
 export type UsePortfolioPositions = {
   /**
@@ -243,6 +246,9 @@ export const usePortfolioPositions = (
   const { data: transactionHistory, isLoading } =
     useTransactionHistory(address);
 
+  const { data: tradeHistory, isLoading: isTradeHistoryLoading } =
+    useTradeHistory(address);
+
   const positions = useMemo<Position[] | null>(() => {
     let positionsData: Position[] = [];
 
@@ -435,28 +441,20 @@ export const usePortfolioPositions = (
         color = "#DF0076";
       }
 
-      const totalCost = transactionHistory
-        .filter((transaction) => {
-          const scalarTransaction = transaction?.assetId["ScalarOutcome"];
-          const scalarAsset = assetId?.["ScalarOutcome"];
-          const categoricalTransaction =
-            transaction?.assetId["CategoricalOutcome"];
-          const categoricalAsset = assetId?.["CategoricalOutcome"];
-          if (scalarTransaction && scalarAsset) {
-            return (
-              scalarTransaction[1] === scalarAsset[1] &&
-              scalarTransaction[0] === scalarAsset[0]
-            );
-          }
-          if (categoricalTransaction && categoricalAsset) {
-            return (
-              categoricalTransaction[1] === categoricalAsset[1] &&
-              categoricalTransaction[0] === categoricalAsset[0]
-            );
-          }
-        })
+      const totalCost = tradeHistory
+        .filter((transaction) => transaction.marketId === marketId)
         .reduce((acc, transaction) => {
-          return acc + transaction.value;
+          const assetIn = transaction.assetAmountIn.div(ZTG).toNumber();
+          const assetOut = transaction.assetAmountOut.div(ZTG).toNumber();
+          const price = transaction.price.toNumber();
+          if (transaction.assetOut === outcome) {
+            acc += assetOut * price;
+          } else if (transaction.assetIn === outcome) {
+            acc -= assetIn * price;
+          } else {
+            0;
+          }
+          return acc;
         }, 0);
 
       const change = diffChange(price, price24HoursAgo);
