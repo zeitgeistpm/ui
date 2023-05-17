@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 
-export type MarketFormSectionProps<T> = {
+export type MarketFormSectionProps = {
   wizard?: boolean;
   isCurrent: boolean;
   onClickNext?: () => void;
@@ -9,14 +9,14 @@ export type MarketFormSectionProps<T> = {
   children: React.ReactNode;
 };
 
-export const MarketFormSection = function <T>({
+export const MarketFormSection = ({
   wizard,
   isCurrent,
   children,
   onClickNext,
   onClickBack,
   nextDisabled,
-}: MarketFormSectionProps<T>) {
+}: MarketFormSectionProps) => {
   return (
     <div className={`mb-16 ${isCurrent || !wizard ? "block" : "hidden"}`}>
       {!wizard ? (
@@ -37,9 +37,8 @@ export const MarketFormSection = function <T>({
             {onClickNext && (
               <button
                 disabled={nextDisabled}
-                className={`border-gray-300 text-sm border-2 rounded-full py-4 px-8 transition-all ${
-                  nextDisabled && "cursor-not-allowed opacity-70 text-gray-500"
-                }`}
+                className={`border-gray-300 text-sm border-2 rounded-full py-4 px-8 transition-all ${nextDisabled && "cursor-not-allowed opacity-70 text-gray-500"
+                  }`}
                 type="button"
                 onClick={onClickNext}
               >

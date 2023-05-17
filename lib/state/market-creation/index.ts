@@ -10,7 +10,6 @@ import {
   marketCreationSteps,
   validate,
 } from "./types";
-import { useEffect } from "react";
 
 export const defaultState: CreateMarketState = {
   isWizard: true,
@@ -63,7 +62,7 @@ export const useCreateMarketState = () => {
 
   const setWizard = (on: boolean) => {
     let newState = { ...state, isWizard: on };
-    if (state.isWizard) {
+    if (on) {
       const firstInvalidStep = steps.find((step) => !step.isValid);
       newState.currentStep = firstInvalidStep || state.currentStep;
     }

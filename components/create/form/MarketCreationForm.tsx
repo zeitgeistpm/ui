@@ -2,23 +2,20 @@ import Toggle from "components/ui/Toggle";
 import WizardStepper from "components/wizard/WizardStepper";
 import {
   nextInvalidStepFrom,
-  nextStepFrom,
-  prevStepFrom,
+  prevStepFrom
 } from "components/wizard/types";
 import { useCreateMarketState } from "lib/state/market-creation";
 import {
   CurrencySectionFormData,
   FieldState,
-  FieldsState,
-  MarketCreationFormData,
   MarketCreationStep,
-  QuestionAndCategorySectionFormData,
+  QuestionAndCategorySectionFormData
 } from "lib/state/market-creation/types";
+import { FormEventHandler } from "react";
+import { MarketFormSection } from "./MarketFormSection";
+import { AnswersInput } from "./inputs/Answers";
 import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
-import { MarketFormSection } from "./MarketFormSection";
-import { FormEventHandler } from "react";
-import { AnswersInput } from "./inputs/Answers";
 
 const MarketCreationForm = () => {
   const {
@@ -51,8 +48,6 @@ const MarketCreationForm = () => {
     console.log("submit");
   };
 
-  console.log(fieldsState);
-
   return (
     <div>
       <div className="flex center mb-4">
@@ -76,7 +71,7 @@ const MarketCreationForm = () => {
       </div>
 
       <form onSubmit={onSubmit}>
-        <MarketFormSection<CurrencySectionFormData>
+        <MarketFormSection
           wizard={isWizard}
           isCurrent={currentStep.label == "Currency"}
           onClickNext={next}
@@ -88,7 +83,7 @@ const MarketCreationForm = () => {
           <CurrencySelect options={["ZTG", "DOT"]} {...register("currency")} />
         </MarketFormSection>
 
-        <MarketFormSection<QuestionAndCategorySectionFormData>
+        <MarketFormSection
           wizard={isWizard}
           isCurrent={currentStep.label == "Question"}
           onClickNext={next}
@@ -119,7 +114,7 @@ const MarketCreationForm = () => {
           </div>
         </MarketFormSection>
 
-        <MarketFormSection<CurrencySectionFormData>
+        <MarketFormSection
           wizard={isWizard}
           isCurrent={currentStep.label == "Answers"}
           onClickNext={next}
