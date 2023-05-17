@@ -128,7 +128,7 @@ const CreatePage: NextPage = () => {
   const [sdk, setSdk] = useState<SDK>();
 
   useEffect(() => {
-    SDK.initialize(endpointOptions[0].value, {
+    SDK.initialize(endpointOptions[1]?.value ?? endpointOptions[0].value, {
       graphQlEndpoint,
     }).then(setSdk);
   }, []);

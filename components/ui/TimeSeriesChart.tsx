@@ -19,6 +19,7 @@ interface TimeSeriesChartProps {
   series: ChartSeries[];
   yDomain?: AxisDomain;
   yUnits: string;
+  isLoading: boolean;
 }
 
 export interface ChartSeries {
@@ -92,6 +93,7 @@ const TimeSeriesChart = ({
   series,
   yDomain,
   yUnits,
+  isLoading,
 }: TimeSeriesChartProps) => {
   const [refAreaLeft, setRefAreaLeft] = useState("");
   const [refAreaRight, setRefAreaRight] = useState("");
@@ -160,7 +162,7 @@ const TimeSeriesChart = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {data ? (
+      {isLoading === false ? (
         <ResponsiveContainer>
           <LineChart
             width={500}
