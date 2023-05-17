@@ -20,7 +20,7 @@ export const getOutcomesForMarkets = async (
     pool?: { poolId: number };
     marketId: number;
     marketType: { categorical?: string; scalar?: string[] };
-    categories?: { color?: string; name?: string; ticker?: string }[];
+    categories?: { color?: string; name?: string }[];
   }[],
 ): Promise<{ [marketId: number]: MarketOutcomes }> => {
   if (markets.length === 0) {
