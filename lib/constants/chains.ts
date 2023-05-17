@@ -16,6 +16,7 @@ interface Chain {
   name: ChainName;
   isRelayChain: boolean;
   endpoints: string[];
+  withdrawFee: string;
   fetchCurrencies: (
     api: ApiPromise,
     address: string,
@@ -31,6 +32,7 @@ const BATTERY_STATION_CHAINS: Chain[] = [
   {
     name: "Rococo",
     isRelayChain: true,
+    withdrawFee: "0.01 ROC", // this is made up
     endpoints: ["wss://rococo-rpc.polkadot.io"],
     fetchCurrencies: async (api, address) => {
       const account = await api.query.system.account(address);
@@ -77,6 +79,7 @@ const PROD_CHAINS: Chain[] = [
   {
     name: "Polkadot",
     isRelayChain: true,
+    withdrawFee: "0.0421 DOT", // informed from testing
     endpoints: [
       "wss://polkadot.api.onfinality.io/public-ws",
       "wss://polkadot-rpc.dwellir.com",

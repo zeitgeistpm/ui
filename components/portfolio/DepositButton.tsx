@@ -5,6 +5,7 @@ import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
 import { CHAINS } from "lib/constants/chains";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useCrossChainApis } from "lib/state/cross-chain";
 import { useNotifications } from "lib/state/notifications";
@@ -62,6 +63,14 @@ const DepositModal = ({
   const wallet = useWallet();
   const chain = CHAINS.find((chain) => chain.name === sourceChain);
   const api = apis[chain.name];
+  const { data: fee } = useExtrinsicFee(
+    chain.createDepositExtrinsic(
+      api,
+      wallet.activeAccount.address,
+      "10000000000",
+      constants.parachainId,
+    ),
+  );
 
   const { send: transfer, isLoading } = useExtrinsic(
     () => {
@@ -128,9 +137,9 @@ const DepositModal = ({
           </div>
           <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
             {sourceChain} fee:
-          </div>
-          <div className="center font-normal text-ztg-12-120 mb-[16px] text-sky-600">
-            Zeitgeist fee:
+            <span className="text-black ml-1">
+              {new Decimal(fee.partialFee.toString()).div(ZTG).toFixed(3)}
+            </span>
           </div>
           <FormTransactionButton
             className="w-full max-w-[250px]"

@@ -5,7 +5,9 @@ import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { CHAINS } from "lib/constants/chains";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
@@ -68,8 +70,20 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
 
   const notificationStore = useNotifications();
   const wallet = useWallet();
-
   const [sdk] = useSdkv2();
+  const chain = CHAINS.find((chain) => chain.name === toChain);
+
+  const { data: fee } = useExtrinsicFee(
+    isRpcSdk(sdk)
+      ? createWithdrawExtrinsic(
+          sdk.api,
+          "100000000000",
+          wallet.activeAccount.address,
+          foreignAssetId,
+        )
+      : null,
+  );
+
   const { send: transfer, isLoading } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk)) {
@@ -134,9 +148,13 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
           </div>
           <div className="center font-normal text-ztg-12-120 mb-[16px] text-sky-600">
             Zeitgeist fee:
+            <span className="text-black ml-1">
+              {new Decimal(fee.partialFee.toString()).div(ZTG).toFixed(3)}
+            </span>
           </div>
           <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
             {toChain} fee:
+            <span className="text-black ml-1">{chain.withdrawFee}</span>
           </div>
           <FormTransactionButton
             className="w-full max-w-[250px]"
