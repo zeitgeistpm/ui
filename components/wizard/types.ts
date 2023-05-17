@@ -15,3 +15,11 @@ export const prevStepFrom = <T extends string>(
   const index = steps.findIndex((s) => s.label === step.label) - 1;
   return steps[index];
 };
+
+export const nextInvalidStepFrom = <T extends string>(
+  steps: WizardStepData<T>[],
+  step: WizardStepData<T>,
+): WizardStepData<T> => {
+  const index = steps.findIndex((s) => s.label === step.label) + 1;
+  return steps.slice(index).find((s) => !s.isValid);
+};

@@ -14,8 +14,8 @@ export const WizardStepper = <T extends string, S extends WizardStepData<T>[]>({
   steps,
   onChange,
 }: WizardStepperProps<T, S>) => {
-  const stepIndex = steps.findIndex((s) => s.label === current.label);
-  const progress = (stepIndex / (steps.length - 1)) * 100;
+  const currentStepIndex = steps.findIndex((s) => s.label === current.label);
+  const progress = (currentStepIndex / (steps.length - 1)) * 100;
 
   return (
     <div
@@ -42,7 +42,7 @@ export const WizardStepper = <T extends string, S extends WizardStepData<T>[]>({
         {steps.map((step, index) => {
           const prevStep = prevStepFrom(steps, step);
           const canNavigate =
-            index < stepIndex || step.isValid || prevStep?.isValid;
+            index < currentStepIndex || step.isValid || prevStep?.isValid;
           const shouldHiglight = canNavigate && canNavigate;
 
           return (
@@ -55,9 +55,10 @@ export const WizardStepper = <T extends string, S extends WizardStepData<T>[]>({
               <div className="flex center mb-2">
                 <div
                   className={`flex center h-8 w-8  rounded-full text-white text-sm duration-200 ease-in-out group-active:scale-[1.1]
-                  ${stepIndex >= index ? "!bg-blue-500" : "bg-gray-400"}
+                  ${currentStepIndex >= index ? "!bg-blue-500" : "bg-gray-400"}
                   ${shouldHiglight && "!bg-black"}
                   ${step.isValid && "!bg-green-500"}
+                  ${index < currentStepIndex && !step.isValid && "!bg-red-500"}
                 `}
                 >
                   {index + 1}
@@ -65,8 +66,10 @@ export const WizardStepper = <T extends string, S extends WizardStepData<T>[]>({
               </div>
               <div
                 className={`flex center py-2 ${
-                  current === step ? "font-bold" : "font-light"
-                } ${stepIndex >= index ? "text-black" : "text-gray-400"}`}
+                  currentStepIndex === index ? "font-semibold" : "font-light"
+                } ${
+                  currentStepIndex >= index ? "text-black" : "text-gray-400"
+                }`}
               >
                 {step.label}
               </div>

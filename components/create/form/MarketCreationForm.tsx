@@ -1,6 +1,10 @@
 import Toggle from "components/ui/Toggle";
 import WizardStepper from "components/wizard/WizardStepper";
-import { nextStepFrom, prevStepFrom } from "components/wizard/types";
+import {
+  nextInvalidStepFrom,
+  nextStepFrom,
+  prevStepFrom,
+} from "components/wizard/types";
 import { useCreateMarketState } from "lib/state/market-creation";
 import {
   CurrencySectionFormData,
@@ -12,8 +16,9 @@ import {
 } from "lib/state/market-creation/types";
 import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
-import { MarketFormSection } from "./inputs/Section";
+import { MarketFormSection } from "./MarketFormSection";
 import { FormEventHandler } from "react";
+import { AnswersInput } from "./inputs/Answers";
 
 const MarketCreationForm = () => {
   const {
@@ -35,7 +40,7 @@ const MarketCreationForm = () => {
   };
 
   const next = () => {
-    const nextStep = nextStepFrom(steps, currentStep);
+    const nextStep = nextInvalidStepFrom(steps, currentStep);
     if (nextStep) {
       setStep(nextStep);
     }
@@ -45,6 +50,8 @@ const MarketCreationForm = () => {
     event.preventDefault();
     console.log("submit");
   };
+
+  console.log(fieldsState);
 
   return (
     <div>
@@ -75,6 +82,9 @@ const MarketCreationForm = () => {
           onClickNext={next}
           nextDisabled={!fieldsState.currency.isValid}
         >
+          <div className="mb-8 text-center">
+            <h2 className="text-md">Market Currency</h2>
+          </div>
           <CurrencySelect options={["ZTG", "DOT"]} {...register("currency")} />
         </MarketFormSection>
 
@@ -109,12 +119,17 @@ const MarketCreationForm = () => {
           </div>
         </MarketFormSection>
 
-        <div
-          className="text-blue text-xs flex center cursor-pointer"
-          onClick={reset}
+        <MarketFormSection<CurrencySectionFormData>
+          wizard={isWizard}
+          isCurrent={currentStep.label == "Answers"}
+          onClickNext={next}
+          nextDisabled={!fieldsState.answers.isValid}
         >
-          debugging: reset form
-        </div>
+          <div className="mb-8 text-center">
+            <h2 className="text-md">Answers</h2>
+          </div>
+          <AnswersInput {...register("answers", { mode: "onChange" })} />
+        </MarketFormSection>
       </form>
     </div>
   );

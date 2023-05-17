@@ -10,6 +10,7 @@ import {
   marketCreationSteps,
   validate,
 } from "./types";
+import { useEffect } from "react";
 
 export const defaultState: CreateMarketState = {
   isWizard: true,
@@ -60,13 +61,27 @@ export const useCreateMarketState = () => {
 
   const reset = () => setState(defaultState);
 
-  const setWizard = (on: boolean) => setState({ ...state, isWizard: on });
+  const setWizard = (on: boolean) => {
+    let newState = { ...state, isWizard: on };
+    if (state.isWizard) {
+      const firstInvalidStep = steps.find((step) => !step.isValid);
+      newState.currentStep = firstInvalidStep || state.currentStep;
+    }
+    setState(newState);
+  };
 
   const setStep = (step: MarketCreationStep) =>
     setState({ ...state, currentStep: step });
 
-  const register = <K extends keyof MarketCreationFormData>(key: K) => {
-    const mode = fieldsState[key].isTouched ? "onChange" : "onBlur";
+  const register = <K extends keyof MarketCreationFormData>(
+    key: K,
+    options?: {
+      mode: "onChange" | "onBlur" | "all";
+    },
+  ) => {
+    const mode =
+      options?.mode || fieldsState[key].isTouched ? "onChange" : "onBlur";
+
     return {
       name: key,
       value: state.form?.[key],

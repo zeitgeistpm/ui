@@ -44,15 +44,24 @@ export type QuestionAndCategorySectionFormData = {
 };
 
 export type AnswersSectionFormData = {
-  answers:
-    | {
-        type: "categorical";
-        answers: string[];
-      }
-    | {
-        type: "scalar";
-        bounds: [number, number];
-      };
+  answers: Answers;
+};
+
+export type Answers = YesNoAnswers | CategoricalAnswers | ScalarAnswers;
+
+export type YesNoAnswers = {
+  type: "yes/no";
+  answers: ["Yes", "No"];
+};
+
+export type CategoricalAnswers = {
+  type: "categorical";
+  answers: string[];
+};
+
+export type ScalarAnswers = {
+  type: "scalar";
+  answers: [number, number];
 };
 
 export const validate = (
@@ -63,12 +72,13 @@ export const validate = (
     case "currency":
       return { isValid: !!form.currency };
     case "question":
+      const errors =
+        !form.question || form.question.length < 10
+          ? ["Question must be at least 10 characters"]
+          : undefined;
       return {
-        isValid: !!form.question,
-        errors:
-          !form.question || form.question.length < 10
-            ? ["Question must be at least 10 characters"]
-            : undefined,
+        isValid: !errors,
+        errors: errors,
       };
     case "tags":
       return {
