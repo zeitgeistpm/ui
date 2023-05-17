@@ -6,7 +6,7 @@ import { useWallet } from "lib/state/wallet";
 import DisputeButton from "./DisputeButton";
 import RedeemButton from "./RedeemButton";
 import ReportButton from "./ReportButton";
-import TradeButton from "./TradeButton";
+import AssetTradingButtons from "./AssetTradingButtons";
 
 interface AssetActionButtonsProps {
   marketId: number;
@@ -45,7 +45,7 @@ const AssetActionButtons = ({ marketId, assetId }: AssetActionButtonsProps) => {
   }
 
   if (marketStage.type === "Trading") {
-    return <TradeButton assetId={assetId} />;
+    return <AssetTradingButtons assetId={assetId} />;
   }
 };
 

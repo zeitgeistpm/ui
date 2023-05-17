@@ -1,5 +1,3 @@
-import { ZTG } from "lib/constants";
-import Decimal from "decimal.js";
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { MarketStatus } from "@zeitgeistpm/sdk-next";
 import {

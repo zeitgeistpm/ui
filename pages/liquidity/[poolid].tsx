@@ -106,7 +106,7 @@ const PoolDetails: NextPage = () => {
     router.push("/liquidity");
   };
 
-  if (!sdk || poolId == null || isInitialLoading) {
+  if (!sdk || poolId == null || market == null || isInitialLoading) {
     return null;
   }
 

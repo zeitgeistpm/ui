@@ -26,7 +26,14 @@ const poolChangesQuery = gql`
 
 const marketQuery = gql`
   query Market($poolId: Int) {
-    markets(where: { pool: { poolId_eq: $poolId } }) {
+    markets(
+      where: {
+        pool: { poolId_eq: $poolId }
+        question_not_eq: ""
+        question_isNull: false
+        isMetaComplete_eq: true
+      }
+    ) {
       marketId
       outcomeAssets
       question

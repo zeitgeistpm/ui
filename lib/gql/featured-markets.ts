@@ -12,7 +12,14 @@ import { getCurrentPrediction } from "lib/util/assets";
 
 const marketQuery = gql`
   query Market($marketId: Int) {
-    markets(where: { marketId_eq: $marketId }) {
+    markets(
+      where: {
+        marketId_eq: $marketId
+        question_not_eq: ""
+        question_isNull: false
+        isMetaComplete_eq: true
+      }
+    ) {
       marketId
       baseAsset
       pool {

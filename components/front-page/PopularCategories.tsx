@@ -33,7 +33,10 @@ const Category = ({
       data-testid="category"
     >
       <div className="relative max-w-[230px] max-h-[230px] w-full h-full aspect-square">
-        <Link href={`/markets/?tag=${title}#market-list`}>
+        <Link
+          href={`/markets/?tag=${title}#market-list`}
+          className="w-full h-full relative block"
+        >
           <Image
             className="rounded-ztg-10 cursor-pointer"
             src={imgURL}

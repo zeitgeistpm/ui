@@ -15,6 +15,8 @@ export const useMarketsByIds = (marketQueries?: UseMarketFilter[]) => {
       if (marketQueries && isIndexedSdk(sdk)) {
         return sdk.model.markets.list({
           where: {
+            question_isNull: false,
+            question_not_eq: "",
             OR: [
               {
                 pool: {
