@@ -116,9 +116,9 @@ const PROD_CHAINS: Chain[] = [
       ];
 
       const tx = api.tx.xcmPallet.reserveTransferAssets(
-        { V2: destination },
-        { V2: account },
-        { V2: asset },
+        { V1: destination },
+        { V1: account },
+        { V1: asset },
         0,
       );
 
