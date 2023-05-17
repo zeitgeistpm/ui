@@ -188,8 +188,8 @@ const AccountButton: FC<{
                         </span>
                         <div className="pr-1">
                           <ChevronDown
-                            size={12}
-                            viewBox="6 6 12 12"
+                            size={16}
+                            viewBox="4 3 16 16"
                             className={`box-content px-2 ${
                               open && "rotate-180"
                             }`}
