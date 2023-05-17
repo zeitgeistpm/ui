@@ -22,9 +22,9 @@ const MarketCreationForm = () => {
     currentStep,
     steps,
     setStep,
-    form,
     register,
     fieldsState,
+    reset,
   } = useCreateMarketState();
 
   const back = () => {
@@ -48,7 +48,7 @@ const MarketCreationForm = () => {
 
   return (
     <div>
-      <div className="flex center mb-12">
+      <div className="flex center mb-4">
         <div className="mr-3 font-light">One Page</div>
         <Toggle
           checked={isWizard}
@@ -108,6 +108,13 @@ const MarketCreationForm = () => {
             <ErrorMessage field={fieldsState.tags} />
           </div>
         </MarketFormSection>
+
+        <div
+          className="text-blue text-xs flex center cursor-pointer"
+          onClick={reset}
+        >
+          debugging: reset form
+        </div>
       </form>
     </div>
   );

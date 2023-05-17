@@ -58,13 +58,15 @@ export const useCreateMarketState = () => {
     return { ...step, isValid };
   });
 
+  const reset = () => setState(defaultState);
+
   const setWizard = (on: boolean) => setState({ ...state, isWizard: on });
 
   const setStep = (step: MarketCreationStep) =>
     setState({ ...state, currentStep: step });
 
   const register = <K extends keyof MarketCreationFormData>(key: K) => {
-    const mode = fieldsState.question.isTouched ? "onChange" : "onBlur";
+    const mode = fieldsState[key].isTouched ? "onChange" : "onBlur";
     return {
       name: key,
       value: state.form?.[key],
@@ -93,6 +95,7 @@ export const useCreateMarketState = () => {
 
   return {
     ...state,
+    reset,
     steps,
     setStep,
     setWizard,
