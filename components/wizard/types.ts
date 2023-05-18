@@ -1,4 +1,8 @@
-export type WizardStepData<T extends string> = { label: T; isValid: boolean };
+export type WizardStepData<T extends string> = {
+  label: T;
+  isValid: boolean;
+  isTouched: boolean;
+};
 
 export const nextStepFrom = <T extends string>(
   steps: WizardStepData<T>[],

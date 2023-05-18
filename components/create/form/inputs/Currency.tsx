@@ -1,7 +1,8 @@
-import { AssetId, ZtgAssetId } from "@zeitgeistpm/sdk-next";
-import { Unpacked } from "@zeitgeistpm/utility/dist/array";
+import {
+  SupportedCurrencyTag,
+  supportedCurrencies,
+} from "lib/state/market-creation/types/currency";
 import Image from "next/image";
-import { forwardRef } from "react";
 import { FormEvent } from "../types";
 
 export type CurrencySelectProps = {
@@ -12,51 +13,31 @@ export type CurrencySelectProps = {
   options: Array<SupportedCurrencyTag>;
 };
 
-export type CurrencySpec = {
-  name: string
-  description: string
-  image: string
-  assetId: AssetId,
-}
-
-export const ztg = {
-  name: "ZTG" as const,
-  description:
-    "Create market with the native Zeitgeist token as the base asset.",
-  image: "/currencies/ztg_neue.png",
-  assetId: { Ztg: null } as const,
-} satisfies CurrencySpec
-
-export const dot = {
-  name: "DOT" as const,
-  description: "Create market with DOT as the base asset.",
-  image: "/currencies/dot_filled.png",
-  assetId: { ForeignAsset: 0 } as const,
-} satisfies CurrencySpec
-
-export const supportedCurrencies = [ztg, dot];
-
-export type SupportedCurrencyTag = Unpacked<typeof supportedCurrencies>["name"]
-
-export const CurrencySelect: React.FC<CurrencySelectProps> = ({ name, options, value, onChange, onBlur}) => {
-
+export const CurrencySelect: React.FC<CurrencySelectProps> = ({
+  name,
+  options,
+  value,
+  onChange,
+  onBlur,
+}) => {
   const handleSelect = (tag: SupportedCurrencyTag) => () => {
     onChange({ target: { name, value: tag }, type: "change" });
     onBlur({ target: { name, value: tag }, type: "blur" });
-  }
+  };
 
   return (
-    <div className="flex center gap-6" >
+    <div className="flex center gap-6">
       {supportedCurrencies
         .filter((currency) => options?.includes(currency.name) ?? true)
         .map((currency) => (
-          <button 
+          <button
             type="button"
             className={`
               flex flex-col flex-1 max-w-xs rounded-md p-6 min-h-[300px] cursor-pointer transition-all 
               ${currency.name === value ? "bg-green-200" : "bg-gray-200"}
-            `} 
-            onClick={handleSelect(currency.name)}>
+            `}
+            onClick={handleSelect(currency.name)}
+          >
             <div className="w-full flex center mb-6">
               <div className="relative w-20 h-20">
                 <Image
@@ -75,6 +56,6 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({ name, options, v
         ))}
     </div>
   );
-}
+};
 
 export default CurrencySelect;

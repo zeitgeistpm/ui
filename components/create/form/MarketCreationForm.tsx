@@ -2,24 +2,21 @@ import Toggle from "components/ui/Toggle";
 import WizardStepper from "components/wizard/WizardStepper";
 import {
   nextInvalidStepFrom,
-  prevStepFrom
+  nextStepFrom,
+  prevStepFrom,
 } from "components/wizard/types";
-import { useCreateMarketState } from "lib/state/market-creation";
-import {
-  CurrencySectionFormData,
-  FieldState,
-  MarketCreationStep,
-  QuestionAndCategorySectionFormData
-} from "lib/state/market-creation/types";
+import { FieldState, useCreateMarketState } from "lib/state/market-creation";
 import { FormEventHandler } from "react";
 import { MarketFormSection } from "./MarketFormSection";
 import { AnswersInput } from "./inputs/Answers";
 import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
+import { MarketCreationStep } from "lib/state/market-creation/types/step";
 
 const MarketCreationForm = () => {
   const {
     isWizard,
+    form,
     setWizard,
     currentStep,
     steps,
@@ -37,7 +34,7 @@ const MarketCreationForm = () => {
   };
 
   const next = () => {
-    const nextStep = nextInvalidStepFrom(steps, currentStep);
+    const nextStep = nextStepFrom(steps, currentStep);
     if (nextStep) {
       setStep(nextStep);
     }
@@ -123,7 +120,12 @@ const MarketCreationForm = () => {
           <div className="mb-8 text-center">
             <h2 className="text-md">Answers</h2>
           </div>
-          <AnswersInput {...register("answers", { mode: "onChange" })} />
+          <div className="mb-6">
+            <AnswersInput {...register("answers", { mode: "onChange" })} />
+          </div>
+          <div className="flex center h-5 text-xs text-red-400">
+            <ErrorMessage field={fieldsState.answers} />
+          </div>
         </MarketFormSection>
       </form>
     </div>
@@ -131,7 +133,7 @@ const MarketCreationForm = () => {
 };
 
 const ErrorMessage = ({ field }: { field: FieldState }) => {
-  return <>{field.errors && field.isTouched && field.errors[0]}</>;
+  return <>{field.errors && field.isTouched && field.errors.join(", ")}</>;
 };
 
 export default MarketCreationForm;

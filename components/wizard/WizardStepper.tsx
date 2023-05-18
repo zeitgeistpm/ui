@@ -17,6 +17,8 @@ export const WizardStepper = <T extends string, S extends WizardStepData<T>[]>({
   const currentStepIndex = steps.findIndex((s) => s.label === current.label);
   const progress = (currentStepIndex / (steps.length - 1)) * 100;
 
+  const lastValidStep = steps.findLast((s) => s.isValid);
+
   return (
     <div
       className={`flex relative justify-center transition-transform md:!transform-none`}
@@ -41,9 +43,16 @@ export const WizardStepper = <T extends string, S extends WizardStepData<T>[]>({
 
         {steps.map((step, index) => {
           const prevStep = prevStepFrom(steps, step);
+          const nextStep = nextStepFrom(steps, step);
+
           const canNavigate =
-            index < currentStepIndex || step.isValid || prevStep?.isValid;
-          const shouldHiglight = canNavigate && canNavigate;
+            (step.isTouched && step.isValid) ||
+            (index < currentStepIndex && prevStep?.isValid) ||
+            (prevStep?.isValid && index === currentStepIndex + 1) ||
+            lastValidStep?.label === prevStep?.label;
+
+          const showCompleted = index <= currentStepIndex && step?.isValid;
+          const showError = index < currentStepIndex && !step?.isValid;
 
           return (
             <button
@@ -55,10 +64,10 @@ export const WizardStepper = <T extends string, S extends WizardStepData<T>[]>({
               <div className="flex center mb-2">
                 <div
                   className={`flex center h-8 w-8  rounded-full text-white text-sm duration-200 ease-in-out group-active:scale-[1.1]
-                  ${currentStepIndex >= index ? "!bg-blue-500" : "bg-gray-400"}
-                  ${shouldHiglight && "!bg-black"}
-                  ${step.isValid && "!bg-green-500"}
-                  ${index < currentStepIndex && !step.isValid && "!bg-red-500"}
+                  bg-gray-400
+                  ${(canNavigate || index === currentStepIndex) && "!bg-black"}
+                  ${showError && "!bg-red-500"}
+                  ${showCompleted && "!bg-green-400"}
                 `}
                 >
                   {index + 1}

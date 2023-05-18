@@ -1,61 +1,94 @@
 import { FormEvent } from "components/create/form/types";
 import { useAtom } from "jotai";
 import { persistentAtom } from "../util/persistent-atom";
+import { MarketCreationStep, marketCreationSteps } from "./types/step";
 import {
-  CreateMarketState,
-  FieldsState,
   MarketCreationFormData,
-  MarketCreationStep,
+  ZMarketCreationFormData,
   getSectionFormKeys,
-  marketCreationSteps,
-  validate,
-} from "./types";
+} from "./types/form";
+import { useMemo } from "react";
+
+export type CreateMarketState = {
+  currentStep: MarketCreationStep;
+  isWizard: boolean;
+  form: Partial<MarketCreationFormData>;
+  touchState: Partial<Record<keyof MarketCreationFormData, boolean>>;
+};
+
+export type FieldState = {
+  isValid: boolean;
+  isTouched?: boolean;
+  errors?: string[];
+};
+
+export type FieldsState = Record<keyof MarketCreationFormData, FieldState>;
 
 export const defaultState: CreateMarketState = {
   isWizard: true,
-  currentStep: { label: "Currency", isValid: false },
-  form: {},
+  currentStep: { label: "Currency", isValid: false, isTouched: false },
+  form: {
+    answers: {
+      type: "yes/no",
+      answers: ["Yes", "No"],
+    },
+  },
   touchState: {},
 };
 
 const createMarketStateAtom = persistentAtom<CreateMarketState>({
   key: "market-creation-form",
   defaultValue: defaultState,
-  /**
-   * Todo: remove reset migrations before merge to staging, only for resetting state between preview builds
-   */
   migrations: [() => defaultState],
 });
 
 export const useCreateMarketState = () => {
   const [state, setState] = useAtom(createMarketStateAtom);
 
-  const fieldsState: FieldsState = {
-    currency: {
-      ...validate("currency", state.form),
-      isTouched: state.touchState.currency,
-    },
-    question: {
-      ...validate("question", state.form),
-      isTouched: state.touchState.question,
-    },
-    tags: {
-      ...validate("tags", state.form),
-      isTouched: state.touchState.tags,
-    },
-    answers: {
-      ...validate("answers", state.form),
-      isTouched: state.touchState.answers,
-    },
-  };
+  const fieldsState = useMemo<FieldsState>(() => {
+    const parsed = ZMarketCreationFormData.safeParse(state.form);
+
+    let fieldsState: FieldsState = {
+      currency: {
+        isValid: true,
+        isTouched: state.touchState.currency,
+      },
+      question: {
+        isValid: true,
+        isTouched: state.touchState.question,
+      },
+      tags: {
+        isValid: true,
+        isTouched: state.touchState.tags,
+      },
+      answers: {
+        isValid: true,
+        isTouched: state.touchState.answers,
+      },
+    };
+
+    if (parsed.success !== true) {
+      parsed.error.issues.forEach((issue) => {
+        const key = issue.path[0] as keyof MarketCreationFormData;
+        const fieldState = fieldsState[key];
+        if (!fieldState) return;
+        fieldState.isValid = false;
+        fieldState.errors = [...(fieldState.errors || []), issue.message];
+      });
+    }
+
+    return fieldsState;
+  }, [state]);
 
   const isValid = Object.values(fieldsState).every((field) => field.isValid);
 
   const steps = marketCreationSteps.map((step) => {
     const keys = getSectionFormKeys(step.label);
     const isValid =
-      keys.length && keys.every((key) => fieldsState[key].isValid);
-    return { ...step, isValid };
+      (keys.length && keys.every((key) => fieldsState[key].isValid)) || false;
+    const isTouched =
+      (keys.length && keys.some((key) => state.touchState[key])) || false;
+    return { ...step, isValid, isTouched };
   });
 
   const reset = () => setState(defaultState);
