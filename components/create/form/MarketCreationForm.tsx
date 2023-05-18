@@ -11,6 +11,7 @@ import BlockPeriodPicker from "./inputs/BlockPeriod";
 import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
 import DateTimePicker from "./inputs/DateTime";
+import { Transition } from "@headlessui/react";
 
 const MarketCreationForm = () => {
   const {
@@ -93,7 +94,7 @@ const MarketCreationForm = () => {
             <h2 className="mb-8 text-base">What is your question?</h2>
             <div>
               <input
-                className="h-12 w-2/3 text-center bg-nyanza-base rounded-md mb-2"
+                className="h-12 w-2/3 text-center bg-nyanza-base rounded-md mb-4"
                 placeholder="When do I send it?"
                 type="text"
                 {...register("question")}
@@ -137,12 +138,14 @@ const MarketCreationForm = () => {
           <div className="mb-8 text-center">
             <h2 className="text-base">When does the market end?</h2>
           </div>
-          <div className="mb-12 flex center">
-            <DateTimePicker
-              placeholder="Set End Date"
-              isValid={fieldsState.endDate.isValid}
-              {...register("endDate", { mode: "all" })}
-            />
+          <div className="mb-12 ">
+            <div className="flex center mb-3">
+              <DateTimePicker
+                placeholder="Set End Date"
+                isValid={fieldsState.endDate.isValid}
+                {...register("endDate", { mode: "all" })}
+              />
+            </div>
             <div className="flex center h-5  text-xs text-red-400">
               <ErrorMessage field={fieldsState.endDate} />
             </div>
@@ -235,7 +238,19 @@ const MarketCreationForm = () => {
 };
 
 const ErrorMessage = ({ field }: { field: FieldState }) => {
-  return <>{field.errors && field.isTouched && field.errors[0]}</>;
+  return (
+    <Transition
+      show={Boolean(field.errors && field.isTouched)}
+      enter="transition-opacity duration-250"
+      enterFrom="opacity-0"
+      enterTo="opacity-100"
+      leave="transition-opacity duration-250"
+      leaveFrom="opacity-100"
+      leaveTo="opacity-0"
+    >
+      <span>{field?.errors?.[0]}</span>
+    </Transition>
+  );
 };
 
 export default MarketCreationForm;
