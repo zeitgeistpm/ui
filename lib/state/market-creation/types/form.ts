@@ -1,14 +1,10 @@
-import { MarketCreationStepType } from "./step";
+import { ChainTime, dateBlock } from "@zeitgeistpm/utility/dist/time";
 import {} from "io-ts";
 import { defaultTags } from "lib/constants/markets";
-import * as zod from "zod";
-import { SupportedCurrencyTag, supportedCurrencies } from "./currency";
 import { MarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
-import {
-  ChainTime,
-  blockDate,
-  dateBlock,
-} from "@zeitgeistpm/utility/dist/time";
+import * as zod from "zod";
+import { SupportedCurrencyTag } from "./currency";
+import { MarketCreationStepType } from "./step";
 
 export type MarketCreationFormData = {
   currency: SupportedCurrencyTag;
