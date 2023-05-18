@@ -1,6 +1,5 @@
 import { FC, PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
-import grill from "@subsocial/grill-widget";
 
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import TopBar from "components/menu";
@@ -30,20 +29,6 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   } = useResizeDetector({ refreshMode: "debounce", refreshRate: 50 });
 
   const contentRef = useRef<HTMLDivElement>();
-
-  useEffect(() => {
-    grill.init({
-      channel: {
-        type: "channel",
-        id: "polkadot-754",
-        settings: {
-          enableInputAutofocus: false, // doesn't work
-          enableBackButton: false,
-          enableLoginButton: true,
-        },
-      },
-    });
-  }, []);
 
   return (
     <div className="relative flex min-h-screen justify-evenly overflow-hidden">
