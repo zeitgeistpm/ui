@@ -1,7 +1,9 @@
+import { ChainName } from "./chains";
+
 type ForeignAssetMetadata = {
   [foreignAssetId: number]: {
     coinGeckoId: string;
-    originChain?: string;
+    originChain?: ChainName;
     image?: string;
     withdrawSupported: boolean;
     withdrawDestinationFee?: string;
