@@ -4,7 +4,11 @@ import { defaultTags } from "lib/constants/markets";
 import * as zod from "zod";
 import { SupportedCurrencyTag, supportedCurrencies } from "./currency";
 import { MarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
-import { ChainTime } from "@zeitgeistpm/utility/dist/time";
+import {
+  ChainTime,
+  blockDate,
+  dateBlock,
+} from "@zeitgeistpm/utility/dist/time";
 
 export type MarketCreationFormData = {
   currency: SupportedCurrencyTag;
@@ -117,13 +121,66 @@ export const ZMarketCreationFormData = ({
         message: "End date must be in the future",
       }),
     gracePeriod: ZBlockPeriodOption.refine(
-      (period) =>
-        period.type === "date"
-          ? new Date(period?.value) > new Date(form?.endDate)
-          : true,
+      (gracePeriod) =>
+        gracePeriod.type !== "date" ||
+        new Date(gracePeriod?.value) > new Date(form?.endDate),
       { message: "Grace period must be before end date" },
+    ).refine(
+      (gracePeriod) => {
+        const delta =
+          dateBlock(chainTime, new Date(gracePeriod.value)) - chainTime.block;
+        if (delta > deadlineConstants?.maxGracePeriod) {
+          return false;
+        }
+        return true;
+      },
+      {
+        message: `Grace period exceeds maximum of ${deadlineConstants?.maxGracePeriod} blocks.`,
+      },
     ),
-    reportingPeriod: ZBlockPeriodOption,
+    reportingPeriod: ZBlockPeriodOption.refine(
+      (reportingPeriod) => {
+        if (
+          Boolean(
+            reportingPeriod?.type === "blocks" &&
+              form?.gracePeriod?.type === "blocks",
+          ) ||
+          Boolean(
+            form?.gracePeriod?.type === "date" &&
+              reportingPeriod?.type === "blocks",
+          )
+        ) {
+          return true;
+        }
+
+        const graceEndDate =
+          form?.gracePeriod?.type === "blocks"
+            ? blockDate(chainTime, chainTime?.block + form?.gracePeriod.value)
+            : blockDate(
+                chainTime,
+                dateBlock(chainTime, new Date(form?.gracePeriod.value)),
+              );
+        console.log({ graceEndDate });
+
+        // const reportEndDate =
+        //   reportingPeriod?.type === "blocks"
+        //     ? blockDate(chainTime, chainTime?.block + reportingPeriod?.value)
+        //     : blockDate(
+        //         chainTime,
+        //         dateBlock(chainTime, new Date(reportingPeriod?.value)),
+        //       );
+
+        if (form?.gracePeriod?.type === "blocks") {
+          const delta =
+            dateBlock(chainTime, new Date(form?.gracePeriod.value)) -
+            chainTime.block;
+        }
+
+        //new Date(reportingPeriod?.value) > new Date(form?.gracePeriod?.value)
+        return true;
+      },
+      { message: "Reporting must end later than the grace period." },
+    ),
     disputePeriod: ZBlockPeriodOption,
   });
 };
