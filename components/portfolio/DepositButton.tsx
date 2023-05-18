@@ -92,7 +92,7 @@ const DepositModal = ({
     {
       onSuccess: () => {
         notificationStore.pushNotification(
-          `Deposited ${tokenSymbol} to Zeitgeist`,
+          `Transferred ${tokenSymbol} to Zeitgeist`,
           {
             type: "Success",
           },
@@ -138,6 +138,7 @@ const DepositModal = ({
               })}
               type="number"
               className="w-full bg-transparent outline-none !text-center"
+              step="any"
             />
             <div className="mr-[10px] absolute right-0">{tokenSymbol}</div>
           </div>
