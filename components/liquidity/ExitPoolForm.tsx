@@ -237,7 +237,7 @@ const ExitPoolForm = ({
                       market.status.toLowerCase() !== "resolved" &&
                       poolAssetBalance.minus(value).lessThanOrEqualTo(0.01)
                     ) {
-                      return "Pool cannot be emptied completely before market gets resolved";
+                      return "Pool cannot be emptied completely before the market resolves";
                     }
                   },
                 })}
