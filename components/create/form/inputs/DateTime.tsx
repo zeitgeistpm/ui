@@ -1,11 +1,6 @@
-import {
-  SupportedCurrencyTag,
-  supportedCurrencies,
-} from "lib/state/market-creation/types/currency";
-import Image from "next/image";
-import { FormEvent } from "../types";
-import { ChangeEventHandler, FocusEventHandler, useRef } from "react";
 import moment from "moment";
+import { ChangeEventHandler, FocusEventHandler, useRef } from "react";
+import { FormEvent } from "../types";
 
 export type DateTimePickerProps = {
   name: string;

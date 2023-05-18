@@ -1,14 +1,6 @@
-import {
-  SupportedCurrencyTag,
-  supportedCurrencies,
-} from "lib/state/market-creation/types/currency";
-import Image from "next/image";
-import { FormEvent } from "../types";
-import { ChangeEventHandler, FocusEventHandler, useRef } from "react";
-import moment from "moment";
-import { Duration, isDuration } from "@zeitgeistpm/utility/dist/time";
-import DateTimePicker from "./DateTime";
 import { BlockPeriodOption } from "lib/state/market-creation/types/form";
+import { FormEvent } from "../types";
+import DateTimePicker from "./DateTime";
 
 export type BlockPeriodPickerProps = {
   name: string;

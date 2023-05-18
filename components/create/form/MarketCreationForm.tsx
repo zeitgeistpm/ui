@@ -1,16 +1,16 @@
 import Toggle from "components/ui/Toggle";
 import WizardStepper from "components/wizard/WizardStepper";
 import { nextStepFrom, prevStepFrom } from "components/wizard/types";
+import { NUM_BLOCKS_IN_DAY } from "lib/constants";
 import { FieldState, useCreateMarketState } from "lib/state/market-creation";
+import { MarketCreationStep } from "lib/state/market-creation/types/step";
 import { FormEventHandler } from "react";
 import { MarketFormSection } from "./MarketFormSection";
 import { AnswersInput } from "./inputs/Answers";
+import BlockPeriodPicker from "./inputs/BlockPeriod";
 import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
-import { MarketCreationStep } from "lib/state/market-creation/types/step";
 import DateTimePicker from "./inputs/DateTime";
-import BlockPeriodPicker from "./inputs/BlockPeriod";
-import { NUM_BLOCKS_IN_DAY } from "lib/constants";
 
 const MarketCreationForm = () => {
   const {
