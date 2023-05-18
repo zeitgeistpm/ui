@@ -79,7 +79,7 @@ const PROD_CHAINS: Chain[] = [
   {
     name: "Polkadot",
     isRelayChain: true,
-    withdrawFee: "0.0421 DOT", // informed from testing
+    withdrawFee: "0.0422 DOT", // informed from testing
     endpoints: [
       "wss://polkadot.api.onfinality.io/public-ws",
       "wss://polkadot-rpc.dwellir.com",

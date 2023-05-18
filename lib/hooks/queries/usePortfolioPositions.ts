@@ -146,7 +146,6 @@ export const usePortfolioPositions = (
 ): UsePortfolioPositions => {
   const now = useChainTime();
 
-  //todo: needs to base asset balance?
   const { data: ztgPrice } = useZtgPrice();
   const block24HoursAgo = Math.floor(now?.block - 7200);
   const { data: marketBonds, isLoading: isBondsLoading } =

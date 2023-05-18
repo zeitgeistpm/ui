@@ -27,7 +27,6 @@ const Portfolio: NextPage = () => {
 
   const { markets, subsidy, breakdown } = usePortfolioPositions(address);
 
-  //todo: needs to base asset balance?
   const { data: ztgPrice } = useZtgPrice();
 
   const marketPositionsByMarket = useMemo(

@@ -66,7 +66,6 @@ export const useCurrencyBalances = (address: string) => {
             foreignAssetId: null,
             symbol: constants.tokenSymbol,
           },
-          //todo do these need a different type?
           ...chainBalances.flat(),
         ];
       }
