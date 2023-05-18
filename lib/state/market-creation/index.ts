@@ -29,8 +29,8 @@ export const defaultState: CreateMarketState = {
   currentStep: { label: "Currency", isValid: false, isTouched: false },
   form: {
     answers: {
-      type: "yes/no",
-      answers: ["Yes", "No"],
+      type: "categorical",
+      answers: ["", ""],
     },
   },
   touchState: {},
@@ -46,7 +46,8 @@ export const useCreateMarketState = () => {
   const [state, setState] = useAtom(createMarketStateAtom);
 
   const fieldsState = useMemo<FieldsState>(() => {
-    const parsed = ZMarketCreationFormData.safeParse(state.form);
+    const validator = ZMarketCreationFormData();
+    const parsed = validator.safeParse(state.form);
 
     let fieldsState: FieldsState = {
       currency: {
@@ -65,6 +66,10 @@ export const useCreateMarketState = () => {
         isValid: true,
         isTouched: state.touchState.answers,
       },
+      endDate: {
+        isValid: true,
+        isTouched: state.touchState.endDate,
+      },
     };
 
     if (parsed.success !== true) {
@@ -72,6 +77,7 @@ export const useCreateMarketState = () => {
         const key = issue.path[0] as keyof MarketCreationFormData;
         const fieldState = fieldsState[key];
         if (!fieldState) return;
+        console.log(issue);
         fieldState.isValid = false;
         fieldState.errors = [...(fieldState.errors || []), issue.message];
       });
@@ -135,6 +141,7 @@ export const useCreateMarketState = () => {
           form: { ...state.form, [key]: value },
           touchState: { ...state.touchState, [key]: true },
         };
+
         setState(newState);
       },
     };

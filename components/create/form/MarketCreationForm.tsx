@@ -1,10 +1,6 @@
 import Toggle from "components/ui/Toggle";
 import WizardStepper from "components/wizard/WizardStepper";
-import {
-  nextInvalidStepFrom,
-  nextStepFrom,
-  prevStepFrom,
-} from "components/wizard/types";
+import { nextStepFrom, prevStepFrom } from "components/wizard/types";
 import { FieldState, useCreateMarketState } from "lib/state/market-creation";
 import { FormEventHandler } from "react";
 import { MarketFormSection } from "./MarketFormSection";
@@ -12,6 +8,7 @@ import { AnswersInput } from "./inputs/Answers";
 import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
 import { MarketCreationStep } from "lib/state/market-creation/types/step";
+import DateTimePicker from "./inputs/DateTime";
 
 const MarketCreationForm = () => {
   const {
@@ -75,7 +72,7 @@ const MarketCreationForm = () => {
           nextDisabled={!fieldsState.currency.isValid}
         >
           <div className="mb-8 text-center">
-            <h2 className="text-md">Market Currency</h2>
+            <h2 className="text-base">Market Currency</h2>
           </div>
           <CurrencySelect options={["ZTG", "DOT"]} {...register("currency")} />
         </MarketFormSection>
@@ -90,7 +87,7 @@ const MarketCreationForm = () => {
           }
         >
           <div className="mb-8 text-center">
-            <h2 className="mb-8 text-md">What is your question?</h2>
+            <h2 className="mb-8 text-base">What is your question?</h2>
             <div>
               <input
                 className="h-12 w-2/3 text-center bg-green-100 rounded-md mb-2"
@@ -118,7 +115,7 @@ const MarketCreationForm = () => {
           nextDisabled={!fieldsState.answers.isValid}
         >
           <div className="mb-8 text-center">
-            <h2 className="text-md">Answers</h2>
+            <h2 className="text-base">Answers</h2>
           </div>
           <div className="mb-6">
             <AnswersInput {...register("answers", { mode: "onChange" })} />
@@ -127,13 +124,30 @@ const MarketCreationForm = () => {
             <ErrorMessage field={fieldsState.answers} />
           </div>
         </MarketFormSection>
+
+        <MarketFormSection
+          wizard={isWizard}
+          isCurrent={currentStep.label == "Time Period"}
+          onClickNext={next}
+          nextDisabled={!fieldsState.endDate.isValid}
+        >
+          <div className="mb-8 text-center">
+            <h2 className="text-base">When does the market end?</h2>
+          </div>
+          <div className="mb-6 flex center">
+            <DateTimePicker {...register("endDate", { mode: "all" })} />
+          </div>
+          <div className="flex center h-5 text-xs text-red-400">
+            <ErrorMessage field={fieldsState.endDate} />
+          </div>
+        </MarketFormSection>
       </form>
     </div>
   );
 };
 
 const ErrorMessage = ({ field }: { field: FieldState }) => {
-  return <>{field.errors && field.isTouched && field.errors.join(", ")}</>;
+  return <>{field.errors && field.isTouched && field.errors[0]}</>;
 };
 
 export default MarketCreationForm;

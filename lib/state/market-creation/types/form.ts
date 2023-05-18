@@ -4,7 +4,9 @@ import { defaultTags } from "lib/constants/markets";
 import * as zod from "zod";
 import { SupportedCurrencyTag, supportedCurrencies } from "./currency";
 
-export type MarketCreationFormData = zod.infer<typeof ZMarketCreationFormData>;
+export type MarketCreationFormData = zod.infer<
+  ReturnType<typeof ZMarketCreationFormData>
+>;
 
 export const ZCurrencyTag = zod.enum<SupportedCurrencyTag, ["ZTG", "DOT"]>([
   "ZTG",
@@ -47,26 +49,33 @@ export const ZCategoricalAnswers = zod
 
 export const ZScalarAnswers = zod.object({
   type: zod.literal("scalar"),
-  answers: zod.tuple([zod.number(), zod.number()]),
+  answers: zod
+    .tuple([zod.number(), zod.number()])
+    .refine((schema) => schema[0] < schema[1], {
+      message: "Lower bound must be less than upper bound",
+    }),
 });
 
 export const ZAnswers = zod.union(
   [ZYesNoAnswers, ZCategoricalAnswers, ZScalarAnswers],
   {
-    errorMap: () => {
+    errorMap: (error) => {
+      console.log(error);
       return { message: "Field is required" };
     },
   },
 );
 
-export const ZMarketCreationFormData = zod
-  .object({
-    currency: ZCurrencyTag,
-    question: ZQuestion,
-    tags: ZTags,
-    answers: ZAnswers,
-  })
-  .required();
+export const ZMarketCreationFormData = () =>
+  zod
+    .object({
+      currency: ZCurrencyTag,
+      question: ZQuestion,
+      tags: ZTags,
+      answers: ZAnswers,
+      endDate: zod.string().datetime(),
+    })
+    .required();
 
 export const getSectionFormKeys = (
   section: MarketCreationStepType,
@@ -78,6 +87,8 @@ export const getSectionFormKeys = (
       return ["question", "tags"];
     case "Answers":
       return ["answers"];
+    case "Time Period":
+      return ["endDate"];
     default:
       return [];
   }

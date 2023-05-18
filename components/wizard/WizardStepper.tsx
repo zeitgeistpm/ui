@@ -17,8 +17,6 @@ export const WizardStepper = <T extends string, S extends WizardStepData<T>[]>({
   const currentStepIndex = steps.findIndex((s) => s.label === current.label);
   const progress = (currentStepIndex / (steps.length - 1)) * 100;
 
-  const lastValidStep = steps.findLast((s) => s.isValid);
-
   return (
     <div
       className={`flex relative justify-center transition-transform md:!transform-none`}
@@ -47,10 +45,9 @@ export const WizardStepper = <T extends string, S extends WizardStepData<T>[]>({
           const canNavigate =
             (step.isTouched && step.isValid) ||
             (index < currentStepIndex && prevStep?.isValid) ||
-            (prevStep?.isValid && index === currentStepIndex + 1) ||
-            lastValidStep?.label === prevStep?.label;
+            (prevStep?.isValid && index === currentStepIndex + 1);
 
-          const showCompleted = index <= currentStepIndex && step?.isValid;
+          const showCompleted = step?.isValid;
           const showError = index < currentStepIndex && !step?.isValid;
 
           return (

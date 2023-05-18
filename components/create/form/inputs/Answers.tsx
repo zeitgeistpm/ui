@@ -6,6 +6,7 @@ import {
 } from "lib/state/market-creation/types/form";
 import { FormEvent } from "../types";
 import { ChangeEvent, ChangeEventHandler, useEffect } from "react";
+import { Transition } from "@headlessui/react";
 
 export type AnswersInputProps = {
   name: string;
@@ -75,7 +76,7 @@ export const AnswersInput = ({
         >
           Scalar
         </button>
-        <button
+        {/* <button
           type="button"
           className={`text-sm rounded-full py-4 px-8 mr-4 `}
           onClick={() => {
@@ -83,8 +84,19 @@ export const AnswersInput = ({
           }}
         >
           Clear
-        </button>
+        </button> */}
       </div>
+      <Transition
+        show={!true}
+        enter="transition-opacity duration-75"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="transition-opacity duration-150"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        I will fade in and out
+      </Transition>
       <div className="">
         {value?.type === "categorical" && (
           <CategoricalAnswersInput
@@ -153,10 +165,21 @@ const CategoricalAnswersInput = ({
         name,
         value: {
           type: "categorical",
-          answers: [
-            ...(value?.answers ?? []),
-            `option ${value?.answers?.length ?? 0 + 1}`,
-          ] as string[],
+          answers: [...(value?.answers ?? []), ""] as string[],
+        },
+      },
+    });
+  };
+
+  const handleClearClick = (index: number) => () => {
+    onChange?.({
+      type: "change",
+      target: {
+        name,
+        value: {
+          type: "categorical",
+          answers: (value?.answers.filter((_, i) => i !== index) ??
+            []) as string[],
         },
       },
     });
@@ -165,7 +188,7 @@ const CategoricalAnswersInput = ({
   return (
     <div className="mb-6">
       <div className="mb-6">
-        <div className="flex center gap-6">
+        <div className="flex flex-wrap center gap-6">
           {value?.answers.map((answer: string, index: number) => {
             const bg =
               value?.type === "yes/no" && answer === "Yes"
@@ -174,15 +197,27 @@ const CategoricalAnswersInput = ({
                 ? "bg-orange-200"
                 : "bg-gray-200";
             return (
-              <div>
+              <div className={`relative ${bg} rounded-md  w-1/3 py-3 px-5`}>
                 <input
                   disabled={disabled}
                   key={index}
-                  className={`${bg} rounded-md py-3 px-5`}
+                  className={`h-full w-full bg-transparent outline-none`}
                   value={answer}
                   onChange={handleChange(index, onChange)}
                   onBlur={handleChange(index, onBlur)}
+                  placeholder={`Answer ${index + 1}`}
                 />
+                <div className="absolute flex gap-2 z-10 right-2 top-[50%] translate-y-[-50%] ">
+                  {index > 1 && (
+                    <button
+                      type="button"
+                      className=" bg-white rounded-md py-1 px-2"
+                      onClick={handleClearClick(index)}
+                    >
+                      clear
+                    </button>
+                  )}
+                </div>
               </div>
             );
           })}
@@ -244,22 +279,28 @@ const ScalarAnswersInput = ({
 
   return (
     <div className="flex center gap-6">
-      <input
-        type="number"
-        inputMode="numeric"
-        className="bg-gray-200 rounded-md py-3 px-5"
-        value={value?.answers[0]}
-        onChange={handleChange(0, onChange)}
-        onBlur={handleChange(0, onBlur)}
-      />
-      <input
-        type="number"
-        inputMode="numeric"
-        className="bg-gray-200 rounded-md py-3 px-5"
-        value={value?.answers[1]}
-        onChange={handleChange(1, onChange)}
-        onBlur={handleChange(1, onBlur)}
-      />
+      <div>
+        <input
+          type="number"
+          inputMode="numeric"
+          className="bg-gray-200 rounded-md py-3 px-5"
+          value={value?.answers[0]}
+          onChange={handleChange(0, onChange)}
+          onBlur={handleChange(0, onBlur)}
+        />
+        <h4 className="text-xs text-center mt-2 ml-1">Lower bound</h4>
+      </div>
+      <div>
+        <input
+          type="number"
+          inputMode="numeric"
+          className="bg-gray-200 rounded-md py-3 px-5"
+          value={value?.answers[1]}
+          onChange={handleChange(1, onChange)}
+          onBlur={handleChange(1, onBlur)}
+        />
+        <h4 className="text-xs mt-2 ml-1 text-center">Upper bound</h4>
+      </div>
     </div>
   );
 };
