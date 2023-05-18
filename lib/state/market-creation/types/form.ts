@@ -124,7 +124,7 @@ export const ZMarketCreationFormData = ({
       (gracePeriod) =>
         gracePeriod.type !== "date" ||
         new Date(gracePeriod?.value) > new Date(form?.endDate),
-      { message: "Grace period must be before end date" },
+      { message: "Grace period must end after market ends." },
     ).refine(
       (gracePeriod) => {
         const delta =
@@ -153,30 +153,10 @@ export const ZMarketCreationFormData = ({
           return true;
         }
 
-        const graceEndDate =
-          form?.gracePeriod?.type === "blocks"
-            ? blockDate(chainTime, chainTime?.block + form?.gracePeriod.value)
-            : blockDate(
-                chainTime,
-                dateBlock(chainTime, new Date(form?.gracePeriod.value)),
-              );
-        console.log({ graceEndDate });
+        // todo: check if reporting period is after grace period
 
-        // const reportEndDate =
-        //   reportingPeriod?.type === "blocks"
-        //     ? blockDate(chainTime, chainTime?.block + reportingPeriod?.value)
-        //     : blockDate(
-        //         chainTime,
-        //         dateBlock(chainTime, new Date(reportingPeriod?.value)),
-        //       );
+        const gracePeriodEnd = new Date(form?.gracePeriod?.value);
 
-        if (form?.gracePeriod?.type === "blocks") {
-          const delta =
-            dateBlock(chainTime, new Date(form?.gracePeriod.value)) -
-            chainTime.block;
-        }
-
-        //new Date(reportingPeriod?.value) > new Date(form?.gracePeriod?.value)
         return true;
       },
       { message: "Reporting must end later than the grace period." },
