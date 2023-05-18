@@ -9,6 +9,8 @@ import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
 import { MarketCreationStep } from "lib/state/market-creation/types/step";
 import DateTimePicker from "./inputs/DateTime";
+import BlockPeriodPicker from "./inputs/BlockPeriod";
+import { NUM_BLOCKS_IN_DAY } from "lib/constants";
 
 const MarketCreationForm = () => {
   const {
@@ -21,6 +23,7 @@ const MarketCreationForm = () => {
     register,
     fieldsState,
     reset,
+    touchState,
   } = useCreateMarketState();
 
   const back = () => {
@@ -90,7 +93,7 @@ const MarketCreationForm = () => {
             <h2 className="mb-8 text-base">What is your question?</h2>
             <div>
               <input
-                className="h-12 w-2/3 text-center bg-green-100 rounded-md mb-2"
+                className="h-12 w-2/3 text-center bg-nyanza-base rounded-md mb-2"
                 placeholder="When do I send it?"
                 type="text"
                 {...register("question")}
@@ -134,11 +137,96 @@ const MarketCreationForm = () => {
           <div className="mb-8 text-center">
             <h2 className="text-base">When does the market end?</h2>
           </div>
-          <div className="mb-6 flex center">
-            <DateTimePicker {...register("endDate", { mode: "all" })} />
+          <div className="mb-12 flex center">
+            <DateTimePicker
+              placeholder="Set End Date"
+              isValid={fieldsState.endDate.isValid}
+              {...register("endDate", { mode: "all" })}
+            />
+            <div className="flex center h-5  text-xs text-red-400">
+              <ErrorMessage field={fieldsState.endDate} />
+            </div>
           </div>
-          <div className="flex center h-5 text-xs text-red-400">
-            <ErrorMessage field={fieldsState.endDate} />
+          <div className="mb-12">
+            <div className="mb-4 text-center">
+              <h2 className="text-base">Set Grace Period</h2>
+            </div>
+            <div className="flex center">
+              <BlockPeriodPicker
+                isValid={fieldsState.gracePeriod.isValid}
+                options={[
+                  { type: "blocks", label: "None", value: 0 },
+                  {
+                    type: "blocks",
+                    label: "1 Day",
+                    value: NUM_BLOCKS_IN_DAY * 1,
+                  },
+                  {
+                    type: "blocks",
+                    label: "3 Days",
+                    value: NUM_BLOCKS_IN_DAY * 3,
+                  },
+                ]}
+                {...register("gracePeriod", { mode: "all" })}
+              />
+            </div>
+            <div className="flex center h-5 mt-4 text-xs text-red-400">
+              <ErrorMessage field={fieldsState.gracePeriod} />
+            </div>
+          </div>
+          <div className="mb-12">
+            <div className="mb-4 text-center">
+              <h2 className="text-base">Set Report Period</h2>
+            </div>
+            <div className="flex center">
+              <BlockPeriodPicker
+                isValid={fieldsState.reportingPeriod.isValid}
+                options={[
+                  { type: "blocks", label: "None", value: 0 },
+                  {
+                    type: "blocks",
+                    label: "1 Day",
+                    value: NUM_BLOCKS_IN_DAY * 1,
+                  },
+                  {
+                    type: "blocks",
+                    label: "3 Days",
+                    value: NUM_BLOCKS_IN_DAY * 3,
+                  },
+                ]}
+                {...register("reportingPeriod", { mode: "all" })}
+              />
+            </div>
+            <div className="flex center h-5 mt-4 text-xs text-red-400">
+              <ErrorMessage field={fieldsState.reportingPeriod} />
+            </div>
+          </div>
+          <div className="mb-0">
+            <div className="mb-4 text-center">
+              <h2 className="text-base">Set Dispute Period</h2>
+            </div>
+            <div className="flex center">
+              <BlockPeriodPicker
+                isValid={fieldsState.disputePeriod.isValid}
+                options={[
+                  { type: "blocks", label: "None", value: 0 },
+                  {
+                    type: "blocks",
+                    label: "1 Day",
+                    value: NUM_BLOCKS_IN_DAY * 1,
+                  },
+                  {
+                    type: "blocks",
+                    label: "3 Days",
+                    value: NUM_BLOCKS_IN_DAY * 3,
+                  },
+                ]}
+                {...register("disputePeriod", { mode: "all" })}
+              />
+            </div>
+            <div className="flex center h-5 mt-4 text-xs text-red-400">
+              <ErrorMessage field={fieldsState.disputePeriod} />
+            </div>
           </div>
         </MarketFormSection>
       </form>

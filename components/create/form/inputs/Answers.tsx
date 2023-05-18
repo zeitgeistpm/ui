@@ -192,9 +192,9 @@ const CategoricalAnswersInput = ({
           {value?.answers.map((answer: string, index: number) => {
             const bg =
               value?.type === "yes/no" && answer === "Yes"
-                ? "bg-green-200"
+                ? "bg-nyanza-base"
                 : value?.type === "yes/no" && answer === "No"
-                ? "bg-orange-200"
+                ? "bg-orange-100"
                 : "bg-gray-200";
             return (
               <div className={`relative ${bg} rounded-md  w-1/3 py-3 px-5`}>
@@ -283,7 +283,7 @@ const ScalarAnswersInput = ({
         <input
           type="number"
           inputMode="numeric"
-          className="bg-gray-200 rounded-md py-3 px-5"
+          className="bg-orange-100 rounded-md py-3 px-5"
           value={value?.answers[0]}
           onChange={handleChange(0, onChange)}
           onBlur={handleChange(0, onBlur)}
@@ -294,7 +294,7 @@ const ScalarAnswersInput = ({
         <input
           type="number"
           inputMode="numeric"
-          className="bg-gray-200 rounded-md py-3 px-5"
+          className="bg-nyanza-base rounded-md py-3 px-5"
           value={value?.answers[1]}
           onChange={handleChange(1, onChange)}
           onBlur={handleChange(1, onBlur)}

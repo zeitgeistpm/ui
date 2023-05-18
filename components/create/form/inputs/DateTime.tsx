@@ -12,6 +12,9 @@ export type DateTimePickerProps = {
   value?: string;
   onChange: (event: FormEvent<string>) => void;
   onBlur: (event: FormEvent<string>) => void;
+  placeholder?: string;
+  isValid?: boolean;
+  className?: string;
 };
 
 export const DateTimePicker: React.FC<DateTimePickerProps> = ({
@@ -19,10 +22,14 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   value,
   onChange,
   onBlur,
+  placeholder,
+  isValid,
+  className,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    console.log("handleChange", name);
     onChange?.({
       type: "change",
       target: {
@@ -33,6 +40,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   };
 
   const handleBlur: FocusEventHandler<HTMLInputElement> = (event) => {
+    console.log("handleBlur", name);
     onBlur?.({
       type: "blur",
       target: {
@@ -45,22 +53,22 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   return (
     <button
       type="button"
-      className={`flex center rounded-full bg-gray-200 py-3 px-6 ${
-        !value && "bg-green-200"
-      }`}
-      onClick={() => {
-        console.log(inputRef.current?.showPicker());
-      }}
+      className={`flex center rounded-full  bg-gray-200 py-3 px-6 ${
+        isValid && "!bg-nyanza-base"
+      } ${className}`}
+      onClick={() => inputRef.current?.showPicker()}
     >
       <div>
-        {!value ? "Set end date" : moment(value).format("MMM Do, YYYY hh:mm a")}
+        {!value
+          ? placeholder ?? "Set Date"
+          : moment(value).format("MMM Do, YYYY hh:mm a")}
       </div>
       <input
         className="opacity-0 h-0 w-0"
         ref={inputRef}
         name={name}
         type="datetime-local"
-        value={moment(value).format("YYYY-MM-DDThh:mm")}
+        value={moment(value).format("YYYY-MM-DDTHH:mm")}
         onChange={handleChange}
         onBlurCapture={handleBlur}
       />

@@ -8,6 +8,8 @@ import {
   getSectionFormKeys,
 } from "./types/form";
 import { useMemo } from "react";
+import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
+import { useChainTime } from "../chaintime";
 
 export type CreateMarketState = {
   currentStep: MarketCreationStep;
@@ -44,9 +46,16 @@ const createMarketStateAtom = persistentAtom<CreateMarketState>({
 
 export const useCreateMarketState = () => {
   const [state, setState] = useAtom(createMarketStateAtom);
+  const { data: deadlineConstants } = useMarketDeadlineConstants();
+  const chainTime = useChainTime();
 
   const fieldsState = useMemo<FieldsState>(() => {
-    const validator = ZMarketCreationFormData();
+    const validator = ZMarketCreationFormData({
+      form: state.form,
+      deadlineConstants,
+      chainTime,
+    });
+
     const parsed = validator.safeParse(state.form);
 
     let fieldsState: FieldsState = {
@@ -70,6 +79,18 @@ export const useCreateMarketState = () => {
         isValid: true,
         isTouched: state.touchState.endDate,
       },
+      gracePeriod: {
+        isValid: true,
+        isTouched: state.touchState.gracePeriod,
+      },
+      disputePeriod: {
+        isValid: true,
+        isTouched: state.touchState.disputePeriod,
+      },
+      reportingPeriod: {
+        isValid: true,
+        isTouched: state.touchState.reportingPeriod,
+      },
     };
 
     if (parsed.success !== true) {
@@ -77,14 +98,13 @@ export const useCreateMarketState = () => {
         const key = issue.path[0] as keyof MarketCreationFormData;
         const fieldState = fieldsState[key];
         if (!fieldState) return;
-        console.log(issue);
         fieldState.isValid = false;
         fieldState.errors = [...(fieldState.errors || []), issue.message];
       });
     }
 
     return fieldsState;
-  }, [state]);
+  }, [state, chainTime, deadlineConstants]);
 
   const isValid = Object.values(fieldsState).every((field) => field.isValid);
 
@@ -93,7 +113,9 @@ export const useCreateMarketState = () => {
     const isValid =
       (keys.length && keys.every((key) => fieldsState[key].isValid)) || false;
     const isTouched =
-      (keys.length && keys.some((key) => state.touchState[key])) || false;
+      (keys.length && keys.every((key) => Boolean(state.touchState[key]))) ||
+      false;
+
     return { ...step, isValid, isTouched };
   });
 
@@ -126,6 +148,7 @@ export const useCreateMarketState = () => {
       onChange: (event: FormEvent<MarketCreationFormData[K]>) => {
         if (mode === "onBlur") return;
         const { value } = event.target;
+        console.log("onBlur", key);
         const newState = {
           ...state,
           form: { ...state.form, [key]: value },
@@ -136,6 +159,7 @@ export const useCreateMarketState = () => {
       onBlur: (event: FormEvent<MarketCreationFormData[K]>) => {
         if (mode === "onChange") return;
         const { value } = event.target;
+        console.log("onChange", key);
         const newState = {
           ...state,
           form: { ...state.form, [key]: value },
