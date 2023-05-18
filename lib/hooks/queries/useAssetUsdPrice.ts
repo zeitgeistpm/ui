@@ -40,7 +40,7 @@ export type ForeignAssetPrices = {
   [key: string]: Decimal;
 };
 
-export const useAllAssetUsdPrices = (): {
+export const useAllForeignAssetUsdPrices = (): {
   data: ForeignAssetPrices;
   isLoading: boolean;
   queries: UseQueryResult[];

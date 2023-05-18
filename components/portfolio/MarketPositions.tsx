@@ -20,7 +20,8 @@ import { Position } from "lib/hooks/queries/usePortfolioPositions";
 import { useWallet } from "lib/state/wallet";
 import Link from "next/link";
 import MarketPositionHeader from "./MarketPositionHeader";
-import { useAllAssetUsdPrices } from "lib/hooks/queries/useAssetUsdPrice";
+import { useAllForeignAssetUsdPrices } from "lib/hooks/queries/useAssetUsdPrice";
+import { lookUpAssetPrice } from "lib/util/lookup-price";
 
 export type MarketPositionsProps = {
   usdZtgPrice: Decimal;
@@ -36,7 +37,7 @@ export const MarketPositions = ({
   className,
 }: MarketPositionsProps) => {
   const { data: marketStage } = useMarketStage(market);
-  const { data: foreignAssetPrices } = useAllAssetUsdPrices();
+  const { data: foreignAssetPrices } = useAllForeignAssetUsdPrices();
 
   const wallet = useWallet();
   const userAddress = wallet.getActiveSigner()?.address;
@@ -90,10 +91,11 @@ export const MarketPositions = ({
             changePercentage,
             market,
           }) => {
-            const baseAssetId = parseAssetId(market.baseAsset).unrightOr(null);
-            const baseAssetUsdPrice = IOForeignAssetId.is(baseAssetId)
-              ? foreignAssetPrices[baseAssetId.ForeignAsset.toString()]
-              : usdZtgPrice;
+            const baseAssetUsdPrice = lookUpAssetPrice(
+              market.baseAsset,
+              foreignAssetPrices,
+              usdZtgPrice,
+            );
 
             return {
               outcome: outcome,

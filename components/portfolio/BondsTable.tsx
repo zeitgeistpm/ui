@@ -1,13 +1,10 @@
-import { IOForeignAssetId, parseAssetId } from "@zeitgeistpm/sdk-next";
-import Table, { TableColumn, TableData } from "components/ui/Table";
+import Table, { TableColumn } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useAccountBonds } from "lib/hooks/queries/useAccountBonds";
-import {
-  ForeignAssetPrices,
-  useAllAssetUsdPrices,
-} from "lib/hooks/queries/useAssetUsdPrice";
+import { useAllForeignAssetUsdPrices } from "lib/hooks/queries/useAssetUsdPrice";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
+import { lookUpAssetPrice } from "lib/util/lookup-price";
 import EmptyPortfolio from "./EmptyPortfolio";
 import MarketPositionHeader from "./MarketPositionHeader";
 
@@ -34,21 +31,9 @@ const columns: TableColumn[] = [
   },
 ];
 
-const lookUpBaseAssetPrice = (
-  baseAsset: string,
-  foreignAssetPrices: ForeignAssetPrices,
-  ztgPrice: Decimal,
-) => {
-  const assetId = parseAssetId(baseAsset).unwrap();
-
-  return IOForeignAssetId.is(assetId)
-    ? foreignAssetPrices[assetId.ForeignAsset.toString()]?.div(ztgPrice)
-    : ztgPrice;
-};
-
 const BondsTable = ({ address }: { address: string }) => {
   const { data: marketBonds, isLoading } = useAccountBonds(address);
-  const { data: foreignAssetPrices } = useAllAssetUsdPrices();
+  const { data: foreignAssetPrices } = useAllForeignAssetUsdPrices();
   const { data: ztgPrice } = useZtgPrice();
 
   return (
@@ -82,7 +67,7 @@ const BondsTable = ({ address }: { address: string }) => {
                       usdValue: new Decimal(market.bonds.creation.value)
                         .div(ZTG)
                         .mul(
-                          lookUpBaseAssetPrice(
+                          lookUpAssetPrice(
                             market.baseAsset,
                             foreignAssetPrices,
                             ztgPrice,
@@ -103,7 +88,7 @@ const BondsTable = ({ address }: { address: string }) => {
                       usdValue: new Decimal(market.bonds.oracle.value)
                         .div(ZTG)
                         .mul(
-                          lookUpBaseAssetPrice(
+                          lookUpAssetPrice(
                             market.baseAsset,
                             foreignAssetPrices,
                             ztgPrice,
