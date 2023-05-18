@@ -43,7 +43,6 @@ export const WizardStepper = <T extends string, S extends WizardStepData<T>[]>({
 
         {steps.map((step, index) => {
           const prevStep = prevStepFrom(steps, step);
-          const nextStep = nextStepFrom(steps, step);
 
           const canNavigate =
             (step.isTouched && step.isValid) ||
