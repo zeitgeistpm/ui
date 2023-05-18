@@ -7,7 +7,7 @@ import DepositButton from "./DepositButton";
 import WithdrawButton from "./WithdrawButton";
 import Image from "next/image";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
-import { CHAIN_IMAGES } from "lib/constants/chains";
+import { ChainName, CHAIN_IMAGES } from "lib/constants/chains";
 
 const columns: TableColumn[] = [
   {
@@ -56,8 +56,8 @@ const MoveButton = ({
   balance,
   nativeToken,
 }: {
-  chain: string;
-  sourceChain: string;
+  chain: ChainName;
+  sourceChain: ChainName;
   token: string;
   foreignAssetId: number;
   balance: Decimal;

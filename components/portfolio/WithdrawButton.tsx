@@ -6,13 +6,12 @@ import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import { CHAINS } from "lib/constants/chains";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
-import { balanceRootKey } from "lib/hooks/queries/useBalance";
 import { currencyBalanceRootKey } from "lib/hooks/queries/useCurrencyBalances";
 import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useChain } from "lib/state/cross-chain";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useState } from "react";
@@ -75,7 +74,7 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
   const wallet = useWallet();
   const [sdk, id] = useSdkv2();
   const queryClient = useQueryClient();
-  const chain = CHAINS.find((chain) => chain.name === toChain);
+  const { chain } = useChain(toChain);
 
   const { data: fee } = useExtrinsicFee(
     isRpcSdk(sdk)

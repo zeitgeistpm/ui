@@ -4,14 +4,13 @@ import { ZTG } from "@zeitgeistpm/sdk-next";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
-import { CHAINS } from "lib/constants/chains";
-import { balanceRootKey } from "lib/hooks/queries/useBalance";
+import { ChainName } from "lib/constants/chains";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { currencyBalanceRootKey } from "lib/hooks/queries/useCurrencyBalances";
 import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useCrossChainApis } from "lib/state/cross-chain";
+import { useChain } from "lib/state/cross-chain";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useState } from "react";
@@ -23,7 +22,7 @@ const DepositButton = ({
   tokenSymbol,
   balance,
 }: {
-  sourceChain: string;
+  sourceChain: ChainName;
   tokenSymbol: string;
   balance: Decimal;
 }) => {
@@ -53,7 +52,7 @@ const DepositModal = ({
   tokenSymbol,
   balance,
 }: {
-  sourceChain: string;
+  sourceChain: ChainName;
   tokenSymbol: string;
   balance: Decimal;
 }) => {
@@ -63,12 +62,11 @@ const DepositModal = ({
   });
   const [_, id] = useSdkv2();
   const queryClient = useQueryClient();
-  const { apis } = useCrossChainApis();
   const { data: constants } = useChainConstants();
   const notificationStore = useNotifications();
   const wallet = useWallet();
-  const chain = CHAINS.find((chain) => chain.name === sourceChain);
-  const api = apis[chain.name];
+  const { chain, api } = useChain(sourceChain);
+
   const { data: fee } = useExtrinsicFee(
     chain.createDepositExtrinsic(
       api,

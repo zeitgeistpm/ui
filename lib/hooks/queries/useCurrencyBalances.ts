@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
-import { CHAINS } from "lib/constants/chains";
+import { ChainName, CHAINS } from "lib/constants/chains";
 import { FORIEGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { useCrossChainApis } from "lib/state/cross-chain";
 import { useSdkv2 } from "../useSdkv2";
@@ -12,9 +12,9 @@ export const currencyBalanceRootKey = "currency-balances";
 export type CurrencyBalance = {
   symbol: string;
   balance: Decimal;
-  chain: string;
+  chain: ChainName;
   foreignAssetId?: number;
-  sourceChain: string;
+  sourceChain: ChainName;
 };
 
 export const useCurrencyBalances = (address: string) => {
@@ -41,7 +41,8 @@ export const useCurrencyBalances = (address: string) => {
             symbol: metadata[index].unwrap().symbol.toPrimitive() as string,
             balance: new Decimal(account.free.toString()),
             chain: "Zeitgeist",
-            sourceChain: FORIEGN_ASSET_METADATA[assetIds[index]].originChain,
+            sourceChain: FORIEGN_ASSET_METADATA[assetIds[index]]
+              .originChain as ChainName,
             foreignAssetId: Number(assetIds[index]),
           }),
         );
@@ -61,8 +62,8 @@ export const useCurrencyBalances = (address: string) => {
           ...foreignAssetBalances,
           {
             balance: nativeBalance,
-            chain: "Zeitgeist",
-            sourceChain: "Zeitgeist",
+            chain: "Zeitgeist" as ChainName,
+            sourceChain: "Zeitgeist" as ChainName,
             foreignAssetId: null,
             symbol: constants.tokenSymbol,
           },

@@ -1,7 +1,7 @@
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { atom, useAtom } from "jotai";
 import { loadable } from "jotai/utils";
-import { CHAINS } from "lib/constants/chains";
+import { ChainName, CHAINS } from "lib/constants/chains";
 
 type Apis = { [key: string]: ApiPromise };
 
@@ -35,4 +35,13 @@ export const useCrossChainApis = () => {
   } else {
     return { apis: null, isLoading: value.state === "loading" };
   }
+};
+
+export const useChain = (chainName: ChainName) => {
+  const { apis } = useCrossChainApis();
+
+  const chain = CHAINS.find((chain) => chain.name === chainName);
+  const api = apis[chain.name];
+
+  return { api, chain };
 };
