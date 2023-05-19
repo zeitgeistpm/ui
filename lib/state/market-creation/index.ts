@@ -1,5 +1,5 @@
 import { FormEvent } from "components/create/form/types";
-import { useAtom } from "jotai";
+import { atom, useAtom } from "jotai";
 import { persistentAtom } from "../util/persistent-atom";
 import { MarketCreationStep, marketCreationSteps } from "./types/step";
 import {
@@ -48,6 +48,8 @@ export const useCreateMarketState = () => {
   const [state, setState] = useAtom(createMarketStateAtom);
   const { data: deadlineConstants } = useMarketDeadlineConstants();
   const chainTime = useChainTime();
+
+  console.log(state);
 
   const fieldsState = useMemo<FieldsState>(() => {
     const validator = ZMarketCreationFormData({
@@ -119,7 +121,15 @@ export const useCreateMarketState = () => {
     return { ...step, isValid, isTouched };
   });
 
-  const reset = () => setState(defaultState);
+  const reset = () => {
+    setState({
+      ...defaultState,
+      form: {
+        ...defaultState.form,
+        question: "",
+      },
+    });
+  };
 
   const setWizard = (on: boolean) => {
     let newState = { ...state, isWizard: on };
@@ -133,39 +143,40 @@ export const useCreateMarketState = () => {
   const setStep = (step: MarketCreationStep) =>
     setState({ ...state, currentStep: step });
 
-  const register = <K extends keyof MarketCreationFormData>(
+  const input = <K extends keyof MarketCreationFormData>(
     key: K,
     options?: {
-      mode: "onChange" | "onBlur" | "all";
+      type?: "text" | "number";
+      mode?: "onChange" | "onBlur" | "all";
     },
   ) => {
-    const mode =
+    let mode =
       options?.mode || fieldsState[key].isTouched ? "onChange" : "onBlur";
+
+    if (options?.type === "text" || options?.type === "number") {
+      const value = state.form?.[key];
+      if (value === "") mode = "onChange";
+    }
 
     return {
       name: key,
       value: state.form?.[key],
       onChange: (event: FormEvent<MarketCreationFormData[K]>) => {
         if (mode === "onBlur") return;
-        const { value } = event.target;
-        console.log("onBlur", key);
         const newState = {
           ...state,
-          form: { ...state.form, [key]: value },
+          form: { ...state.form, [key]: event.target.value },
           touchState: { ...state.touchState, [key]: true },
         };
         setState(newState);
       },
       onBlur: (event: FormEvent<MarketCreationFormData[K]>) => {
         if (mode === "onChange") return;
-        const { value } = event.target;
-        console.log("onChange", key);
         const newState = {
           ...state,
-          form: { ...state.form, [key]: value },
+          form: { ...state.form, [key]: event.target.value },
           touchState: { ...state.touchState, [key]: true },
         };
-
         setState(newState);
       },
     };
@@ -177,7 +188,7 @@ export const useCreateMarketState = () => {
     steps,
     setStep,
     setWizard,
-    register,
+    input,
     fieldsState,
     isValid,
   };

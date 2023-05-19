@@ -16,15 +16,13 @@ import { Transition } from "@headlessui/react";
 const MarketCreationForm = () => {
   const {
     isWizard,
-    form,
     setWizard,
     currentStep,
     steps,
     setStep,
-    register,
+    input,
     fieldsState,
     reset,
-    touchState,
   } = useCreateMarketState();
 
   const back = () => {
@@ -78,7 +76,7 @@ const MarketCreationForm = () => {
           <div className="mb-8 text-center">
             <h2 className="text-base">Market Currency</h2>
           </div>
-          <CurrencySelect options={["ZTG", "DOT"]} {...register("currency")} />
+          <CurrencySelect options={["ZTG", "DOT"]} {...input("currency")} />
         </MarketFormSection>
 
         <MarketFormSection
@@ -96,8 +94,7 @@ const MarketCreationForm = () => {
               <input
                 className="h-12 w-2/3 text-center bg-nyanza-base rounded-md mb-4"
                 placeholder="When do I send it?"
-                type="text"
-                {...register("question")}
+                {...input("question", { type: "text" })}
               />
               <div className="flex center h-5 text-xs text-red-400">
                 <ErrorMessage field={fieldsState.question} />
@@ -105,7 +102,7 @@ const MarketCreationForm = () => {
             </div>
           </div>
           <div className="mb-6">
-            <CategorySelect {...register("tags")} />
+            <CategorySelect {...input("tags")} />
           </div>
           <div className="flex center h-5 text-xs text-red-400">
             <ErrorMessage field={fieldsState.tags} />
@@ -122,7 +119,7 @@ const MarketCreationForm = () => {
             <h2 className="text-base">Answers</h2>
           </div>
           <div className="mb-6">
-            <AnswersInput {...register("answers", { mode: "onChange" })} />
+            <AnswersInput {...input("answers", { mode: "onChange" })} />
           </div>
           <div className="flex center h-5 text-xs text-red-400">
             <ErrorMessage field={fieldsState.answers} />
@@ -143,7 +140,7 @@ const MarketCreationForm = () => {
               <DateTimePicker
                 placeholder="Set End Date"
                 isValid={fieldsState.endDate.isValid}
-                {...register("endDate", { mode: "all" })}
+                {...input("endDate", { mode: "all" })}
               />
             </div>
             <div className="flex center h-5  text-xs text-red-400">
@@ -171,7 +168,7 @@ const MarketCreationForm = () => {
                     value: NUM_BLOCKS_IN_DAY * 3,
                   },
                 ]}
-                {...register("gracePeriod", { mode: "all" })}
+                {...input("gracePeriod", { mode: "all" })}
               />
             </div>
             <div className="flex center h-5 mt-4 text-xs text-red-400">
@@ -203,7 +200,7 @@ const MarketCreationForm = () => {
                     value: NUM_BLOCKS_IN_DAY * 3,
                   },
                 ]}
-                {...register("reportingPeriod", { mode: "all" })}
+                {...input("reportingPeriod", { mode: "all" })}
               />
             </div>
             <div className="flex center h-5 mt-4 text-xs text-red-400">
@@ -230,7 +227,7 @@ const MarketCreationForm = () => {
                     value: NUM_BLOCKS_IN_DAY * 3,
                   },
                 ]}
-                {...register("disputePeriod", { mode: "all" })}
+                {...input("disputePeriod", { mode: "all" })}
               />
             </div>
             <div className="flex center h-5 mt-4 text-xs text-red-400">
@@ -238,6 +235,11 @@ const MarketCreationForm = () => {
             </div>
           </div>
         </MarketFormSection>
+        <div className="flex center">
+          <button type="button" className="text-blue-500" onClick={reset}>
+            reset form
+          </button>
+        </div>
       </form>
     </div>
   );

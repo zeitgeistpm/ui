@@ -1,5 +1,5 @@
-import { getDefaultStore, createStore } from "jotai";
-import { atomWithStorage } from "jotai/utils";
+import { atom, getDefaultStore, createStore } from "jotai";
+import { RESET, atomWithStorage } from "jotai/utils";
 import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 
 export type PersistentAtomConfig<T> = {
@@ -50,13 +50,13 @@ export const persistentAtom = <T>(opts: PersistentAtomConfig<Versioned<T>>) => {
       JSON.parse(globalThis.localStorage?.getItem(opts.key)) as Versioned<T>,
   ).unwrapOr(opts.defaultValue);
 
-  const atom = atomWithStorage<Versioned<T>>(
+  const storageAtom = atomWithStorage<Versioned<T>>(
     opts.key,
     (parsedStorageValue ?? opts.defaultValue) as Versioned<T>,
   );
 
   const store = opts.store ?? getDefaultStore();
-  const initialState = store.get(atom);
+  const initialState = store.get(storageAtom);
   const initialVersion = initialState?.__version ?? 0;
   const nextVersion = opts.migrations?.length ?? 0;
 
@@ -81,8 +81,23 @@ export const persistentAtom = <T>(opts: PersistentAtomConfig<Versioned<T>>) => {
 
     console.groupEnd();
 
-    store.set(atom, { ...newState, __version: nextVersion });
+    store.set(storageAtom, { ...newState, __version: nextVersion });
   }
 
-  return atom;
+  const proxy = atom<Versioned<T>, [Versioned<T>], void>(
+    (get) => get(storageAtom),
+    (get, set, update) => {
+      const version = get(storageAtom).__version ?? 0;
+      const nextValue =
+        typeof update === "function"
+          ? (update as (prev: T) => T | typeof RESET)(get(storageAtom))
+          : update;
+      if (nextValue === RESET) {
+        set(storageAtom, opts.defaultValue);
+      }
+      set(storageAtom, { ...(nextValue as Versioned<T>), __version: version });
+    },
+  );
+
+  return proxy;
 };
