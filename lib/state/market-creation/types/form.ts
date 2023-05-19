@@ -1,24 +1,25 @@
-import {
-  ChainTime,
-  blockDate,
-  dateBlock,
-} from "@zeitgeistpm/utility/dist/time";
-import {} from "io-ts";
+import { ChainTime, dateBlock } from "@zeitgeistpm/utility/dist/time";
+import { encodeAddress } from "@polkadot/util-crypto";
 import { defaultTags } from "lib/constants/markets";
 import { MarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import * as zod from "zod";
 import { SupportedCurrencyTag } from "./currency";
 import { MarketCreationStepType } from "./step";
+import { tryCatch } from "@zeitgeistpm/utility/dist/option";
+import { ZeitgeistPrimitivesMarketMarketCreation } from "@polkadot/types/lookup";
 
 export type MarketCreationFormData = {
   currency: SupportedCurrencyTag;
-  question: string;
+  question: Question;
   tags: Tags;
   answers: Answers;
   endDate: EndDate;
   gracePeriod: BlockPeriodOption;
   reportingPeriod: BlockPeriodOption;
   disputePeriod: BlockPeriodOption;
+  oracle: Oracle;
+  description?: Description;
+  moderation: Moderation;
 };
 
 export type CurrencyTag = zod.infer<typeof ZCurrencyTag>;
@@ -30,6 +31,15 @@ export type CategoricalAnswers = zod.infer<typeof ZCategoricalAnswers>;
 export type ScalarAnswers = zod.infer<typeof ZScalarAnswers>;
 export type EndDate = zod.infer<typeof ZEndDate>;
 export type BlockPeriodOption = zod.infer<typeof ZBlockPeriodOption>;
+export type Oracle = zod.infer<typeof ZOracle>;
+export type Description = zod.infer<typeof ZDescription>;
+export type Moderation = zod.infer<typeof ZModerationMode>;
+
+globalThis.t = () => {
+  return tryCatch(() =>
+    encodeAddress("dE2cVL9QAgh3MZEK3ZhPG5S2YSqZET8V1Qa36epaU4pQG4pd8", 74),
+  ).isNone();
+};
 
 export const ZCurrencyTag = zod.enum<SupportedCurrencyTag, ["ZTG", "DOT"]>([
   "ZTG",
@@ -97,6 +107,19 @@ export const ZBlockPeriodOption = zod.union([
     value: zod.string().datetime(),
   }),
 ]);
+
+export const ZOracle = zod
+  .string()
+  .refine((oracle) => !tryCatch(() => encodeAddress(oracle, 74)).isNone(), {
+    message: "Oracle must be a valid polkadot address",
+  });
+
+export const ZDescription = zod.string().optional();
+
+export const ZModerationMode = zod.enum<
+  ZeitgeistPrimitivesMarketMarketCreation["type"],
+  ["Permissionless", "Advised"]
+>(["Permissionless", "Advised"]);
 
 export type ValidationDependencies = {
   form: Partial<MarketCreationFormData>;
@@ -222,6 +245,9 @@ export const ZMarketCreationFormData = ({
 
       return true;
     }),
+    oracle: ZOracle,
+    description: ZDescription,
+    moderation: ZModerationMode,
   });
 };
 
@@ -237,6 +263,26 @@ export const getSectionFormKeys = (
       return ["answers"];
     case "Time Period":
       return ["endDate", "gracePeriod", "reportingPeriod", "disputePeriod"];
+    case "Oracle":
+      return ["oracle"];
+    case "Description":
+      return ["description"];
+    case "Moderation":
+      return ["moderation"];
+    case "Preview":
+      return [
+        "currency",
+        "question",
+        "tags",
+        "answers",
+        "endDate",
+        "gracePeriod",
+        "reportingPeriod",
+        "disputePeriod",
+        "description",
+        "moderation",
+        "oracle",
+      ];
     default:
       return [];
   }

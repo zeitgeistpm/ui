@@ -12,6 +12,10 @@ import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
 import DateTimePicker from "./inputs/DateTime";
 import { Transition } from "@headlessui/react";
+import QuillEditor from "components/ui/QuillEditor";
+import ModerationModeSelect from "./inputs/Moderation";
+import { ErrorMessage } from "./ErrorMessage";
+import MarketPreview from "./Preview";
 
 const MarketCreationForm = () => {
   const {
@@ -23,6 +27,7 @@ const MarketCreationForm = () => {
     input,
     fieldsState,
     reset,
+    form,
   } = useCreateMarketState();
 
   const back = () => {
@@ -130,7 +135,12 @@ const MarketCreationForm = () => {
           wizard={isWizard}
           isCurrent={currentStep.label == "Time Period"}
           onClickNext={next}
-          nextDisabled={!fieldsState.endDate.isValid}
+          nextDisabled={
+            !fieldsState.endDate.isValid ||
+            !fieldsState.gracePeriod.isValid ||
+            !fieldsState.reportingPeriod.isValid ||
+            !fieldsState.disputePeriod.isValid
+          }
         >
           <div className="mb-8 text-center">
             <h2 className="text-base">When does the market end?</h2>
@@ -235,6 +245,95 @@ const MarketCreationForm = () => {
             </div>
           </div>
         </MarketFormSection>
+
+        <MarketFormSection
+          wizard={isWizard}
+          isCurrent={currentStep.label == "Oracle"}
+          onClickNext={next}
+          onClickBack={back}
+          nextDisabled={
+            !fieldsState.oracle.isValid || !fieldsState.oracle.isValid
+          }
+        >
+          <div className="mb-8 text-center">
+            <h2 className="mb-8 text-base">Set Up Oracle</h2>
+            <p className="mb-12 text-sm text-gray-500 font-light">
+              This is the account that will be{" "}
+              <b className="font-semibold text-gray-600">
+                responsible for submitting the outcome
+              </b>{" "}
+              when the market ends. <br /> If the Oracle fails to submit, you
+              will lose some of your deposit.
+            </p>
+            <div>
+              <input
+                className="h-12 w-2/3 text-center bg-nyanza-base rounded-md mb-4"
+                placeholder="0x78e0e162...D3FFd434F7"
+                {...input("oracle", { type: "text" })}
+              />
+              <div className="flex center h-5 text-xs text-red-400">
+                <ErrorMessage field={fieldsState.oracle} />
+              </div>
+            </div>
+          </div>
+        </MarketFormSection>
+
+        <MarketFormSection
+          wizard={isWizard}
+          isCurrent={currentStep.label == "Description"}
+          onClickNext={next}
+          onClickBack={back}
+          nextDisabled={!fieldsState.description.isValid}
+        >
+          <div className="mb-8 text-center">
+            <h2 className="mb-8 text-base">Market Description</h2>
+            <div>
+              <div className="flex center min-w-full">
+                <QuillEditor
+                  className="max-w-full w-full md:w-2/3 h-48"
+                  placeHolder={
+                    "Additional information you want to provide about the market, such as resolution source, special cases, or other details."
+                  }
+                  {...input("description")}
+                />
+              </div>
+              <div className="flex center h-5 text-xs text-red-400">
+                <ErrorMessage field={fieldsState.description} />
+              </div>
+            </div>
+          </div>
+        </MarketFormSection>
+
+        <MarketFormSection
+          wizard={isWizard}
+          isCurrent={currentStep.label == "Moderation"}
+          onClickNext={next}
+          onClickBack={back}
+          nextDisabled={!fieldsState.moderation.isValid}
+        >
+          <div className="mb-8 text-center">
+            <h2 className="mb-8 text-base">Market Moderation</h2>
+            <div>
+              <div className="flex center min-w-full">
+                <ModerationModeSelect {...input("moderation")} />
+              </div>
+              <div className="flex center h-5 text-xs text-red-400">
+                <ErrorMessage field={fieldsState.moderation} />
+              </div>
+            </div>
+          </div>
+        </MarketFormSection>
+
+        <MarketFormSection
+          wizard={isWizard}
+          isCurrent={currentStep.label == "Preview"}
+          onClickBack={back}
+        >
+          <div className="flex center mb-8">
+            <MarketPreview form={form} />
+          </div>
+        </MarketFormSection>
+
         <div className="flex center">
           <button type="button" className="text-blue-500" onClick={reset}>
             reset form
@@ -242,22 +341,6 @@ const MarketCreationForm = () => {
         </div>
       </form>
     </div>
-  );
-};
-
-const ErrorMessage = ({ field }: { field: FieldState }) => {
-  return (
-    <Transition
-      show={Boolean(field.errors && field.isTouched)}
-      enter="transition-opacity duration-250"
-      enterFrom="opacity-0"
-      enterTo="opacity-100"
-      leave="transition-opacity duration-250"
-      leaveFrom="opacity-100"
-      leaveTo="opacity-0"
-    >
-      <span>{field?.errors?.[0]}</span>
-    </Transition>
   );
 };
 

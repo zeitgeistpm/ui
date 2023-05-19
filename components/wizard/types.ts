@@ -2,6 +2,7 @@ export type WizardStepData<T extends string> = {
   label: T;
   isValid: boolean;
   isTouched: boolean;
+  reached: boolean;
 };
 
 export const nextStepFrom = <T extends string>(

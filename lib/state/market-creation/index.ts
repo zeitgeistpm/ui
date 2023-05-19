@@ -1,7 +1,11 @@
 import { FormEvent } from "components/create/form/types";
 import { atom, useAtom } from "jotai";
 import { persistentAtom } from "../util/persistent-atom";
-import { MarketCreationStep, marketCreationSteps } from "./types/step";
+import {
+  MarketCreationStep,
+  MarketCreationStepType,
+  marketCreationSteps,
+} from "./types/step";
 import {
   MarketCreationFormData,
   ZMarketCreationFormData,
@@ -16,6 +20,7 @@ export type CreateMarketState = {
   isWizard: boolean;
   form: Partial<MarketCreationFormData>;
   touchState: Partial<Record<keyof MarketCreationFormData, boolean>>;
+  stepReachState: Partial<Record<MarketCreationStepType, boolean>>;
 };
 
 export type FieldState = {
@@ -28,7 +33,12 @@ export type FieldsState = Record<keyof MarketCreationFormData, FieldState>;
 
 export const defaultState: CreateMarketState = {
   isWizard: true,
-  currentStep: { label: "Currency", isValid: false, isTouched: false },
+  currentStep: {
+    label: "Currency",
+    isValid: false,
+    isTouched: false,
+    reached: true,
+  },
   form: {
     answers: {
       type: "categorical",
@@ -36,6 +46,9 @@ export const defaultState: CreateMarketState = {
     },
   },
   touchState: {},
+  stepReachState: {
+    Currency: true,
+  },
 };
 
 const createMarketStateAtom = persistentAtom<CreateMarketState>({
@@ -48,8 +61,6 @@ export const useCreateMarketState = () => {
   const [state, setState] = useAtom(createMarketStateAtom);
   const { data: deadlineConstants } = useMarketDeadlineConstants();
   const chainTime = useChainTime();
-
-  console.log(state);
 
   const fieldsState = useMemo<FieldsState>(() => {
     const validator = ZMarketCreationFormData({
@@ -93,6 +104,18 @@ export const useCreateMarketState = () => {
         isValid: true,
         isTouched: state.touchState.reportingPeriod,
       },
+      oracle: {
+        isValid: true,
+        isTouched: state.touchState.oracle,
+      },
+      description: {
+        isValid: true,
+        isTouched: state.touchState.description,
+      },
+      moderation: {
+        isValid: true,
+        isTouched: state.touchState.moderation,
+      },
     };
 
     if (parsed.success !== true) {
@@ -115,10 +138,12 @@ export const useCreateMarketState = () => {
     const isValid =
       (keys.length && keys.every((key) => fieldsState[key].isValid)) || false;
     const isTouched =
-      (keys.length && keys.every((key) => Boolean(state.touchState[key]))) ||
+      (keys.length &&
+        Boolean(keys.find((key) => Boolean(state.touchState[key])))) ||
       false;
+    const reached = state.stepReachState[step.label] || false;
 
-    return { ...step, isValid, isTouched };
+    return { ...step, isValid, isTouched, reached };
   });
 
   const reset = () => {
@@ -127,6 +152,7 @@ export const useCreateMarketState = () => {
       form: {
         ...defaultState.form,
         question: "",
+        oracle: "",
       },
     });
   };
@@ -141,7 +167,14 @@ export const useCreateMarketState = () => {
   };
 
   const setStep = (step: MarketCreationStep) =>
-    setState({ ...state, currentStep: step });
+    setState({
+      ...state,
+      currentStep: step,
+      stepReachState: {
+        ...state.stepReachState,
+        [step.label]: true,
+      },
+    });
 
   const input = <K extends keyof MarketCreationFormData>(
     key: K,
@@ -155,7 +188,9 @@ export const useCreateMarketState = () => {
 
     if (options?.type === "text" || options?.type === "number") {
       const value = state.form?.[key];
-      if (value === "") mode = "onChange";
+      if (value === "") {
+        mode = "onChange";
+      }
     }
 
     return {

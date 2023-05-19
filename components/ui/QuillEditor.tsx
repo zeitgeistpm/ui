@@ -2,22 +2,23 @@ import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "react-quill/dist/quill.bubble.css";
+import { FormEvent } from "components/create/form/types";
 
 const QuillEditor = ({
+  name,
+  value,
   onChange,
-  placeholder,
+  onBlur,
+  placeHolder,
   className,
 }: {
-  onChange: (value: string) => void;
-  placeholder?: string;
+  name?: string;
+  value?: string;
+  onChange: (value: FormEvent<string>) => void;
+  onBlur: (value: FormEvent<string>) => void;
+  placeHolder?: string;
   className?: string;
 }) => {
-  const [value, setValue] = useState("");
-
-  useEffect(() => {
-    onChange(value);
-  }, [value]);
-
   const modules = {
     toolbar: [
       ["bold", "italic", "underline"],
@@ -29,12 +30,34 @@ const QuillEditor = ({
 
   const formats = ["bold", "underline", "italic", "link", "list"];
 
+  const handleChange = (value: string) => {
+    console.log("handleChange", value);
+    onChange?.({
+      type: "change",
+      target: {
+        name,
+        value,
+      },
+    });
+  };
+
+  const handleBlur = (a, b, c: ReactQuill.UnprivilegedEditor) => {
+    onBlur?.({
+      type: "blur",
+      target: {
+        name,
+        value: c.getHTML(),
+      },
+    });
+  };
+
   return (
     <ReactQuill
       className={className}
       value={value}
-      onChange={setValue}
-      placeholder={placeholder}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      placeholder={placeHolder}
       modules={modules}
       formats={formats}
     />

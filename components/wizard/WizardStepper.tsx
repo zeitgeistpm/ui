@@ -41,13 +41,14 @@ export const WizardStepper = <T extends string, S extends WizardStepData<T>[]>({
 
         {steps.map((step, index) => {
           const prevStep = prevStepFrom(steps, step);
-
+          console.log(step?.label, step?.reached, step?.isValid);
           const canNavigate =
+            step?.reached ||
             (step.isTouched && step.isValid) ||
             (index < currentStepIndex && prevStep?.isValid) ||
             (prevStep?.isValid && index === currentStepIndex + 1);
 
-          const showCompleted = step?.isValid;
+          const showCompleted = step?.reached && step?.isValid;
           const showError = index < currentStepIndex && !step?.isValid;
 
           return (
