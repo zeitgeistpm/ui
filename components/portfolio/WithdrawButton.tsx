@@ -5,6 +5,7 @@ import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { ChainName } from "lib/constants/chains";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useCrossChainExtrinsic } from "lib/hooks/useCrossChainExtrinsic";
@@ -18,8 +19,6 @@ import Transfer from "./Transfer";
 
 const WithdrawButton = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
   const [isOpen, setIsOpen] = useState(false);
-
-  const { data: metadata } = useAssetMetadata({ ForeignAsset: foreignAssetId });
 
   return (
     <>
@@ -35,6 +34,7 @@ const WithdrawButton = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
           tokenSymbol={tokenSymbol}
           balance={balance}
           foreignAssetId={foreignAssetId}
+          onSuccess={() => setIsOpen(false)}
         />
       </Modal>
     </>
@@ -62,7 +62,19 @@ const createWithdrawExtrinsic = (
   );
 };
 
-const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
+const WithdrawModal = ({
+  toChain,
+  tokenSymbol,
+  balance,
+  foreignAssetId,
+  onSuccess,
+}: {
+  toChain: ChainName;
+  tokenSymbol: string;
+  balance: Decimal;
+  foreignAssetId: number;
+  onSuccess: () => void;
+}) => {
   const { register, handleSubmit, getValues, formState } = useForm({
     reValidateMode: "onChange",
     mode: "onChange",
@@ -70,7 +82,7 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
 
   const notificationStore = useNotifications();
   const wallet = useWallet();
-  const [sdk, id] = useSdkv2();
+  const [sdk] = useSdkv2();
   const { chain } = useChain(toChain);
 
   const { data: fee } = useExtrinsicFee(
@@ -118,6 +130,7 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
             type: "Success",
           },
         );
+        onSuccess();
       },
     },
   );

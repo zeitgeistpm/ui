@@ -38,6 +38,7 @@ const DepositButton = ({
           sourceChain={sourceChain}
           tokenSymbol={tokenSymbol}
           balance={balance}
+          onSuccess={() => setIsOpen(false)}
         />
       </Modal>
     </>
@@ -48,10 +49,12 @@ const DepositModal = ({
   sourceChain,
   tokenSymbol,
   balance,
+  onSuccess,
 }: {
   sourceChain: ChainName;
   tokenSymbol: string;
   balance: Decimal;
+  onSuccess: () => void;
 }) => {
   const { register, handleSubmit, getValues, formState } = useForm({
     reValidateMode: "onChange",
@@ -103,6 +106,7 @@ const DepositModal = ({
             type: "Success",
           },
         );
+        onSuccess();
       },
     },
   );
