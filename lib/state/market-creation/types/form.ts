@@ -79,7 +79,7 @@ export const ZAnswers = zod.union(
   {
     errorMap: (error) => {
       console.log(error);
-      return { message: "Field is required" };
+      return { message: "All fields are required" };
     },
   },
 );

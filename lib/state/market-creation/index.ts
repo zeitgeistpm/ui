@@ -41,7 +41,7 @@ export const defaultState: CreateMarketState = {
 const createMarketStateAtom = persistentAtom<CreateMarketState>({
   key: "market-creation-form",
   defaultValue: defaultState,
-  migrations: [() => defaultState],
+  migrations: [() => defaultState, () => defaultState],
 });
 
 export const useCreateMarketState = () => {
