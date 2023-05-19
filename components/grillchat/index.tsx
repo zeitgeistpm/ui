@@ -12,6 +12,7 @@ type GrillChatProps = {
 const GrillChat: React.FC<GrillChatProps> = ({ open, setOpen }) => {
   useEffect(() => {
     grill.init({
+      theme: "light",
       channel: {
         type: "channel",
         id: "polkadot-754",
@@ -25,12 +26,10 @@ const GrillChat: React.FC<GrillChatProps> = ({ open, setOpen }) => {
   }, []);
 
   return (
-    <div
-      className={"fixed bottom-0 right-0 px-4 mt-2 " + (open ? "w-full" : "")}
-    >
+    <div className={"fixed flex flex-col bottom-0 right-0 p-4 mt-2 gap-4 "}>
       <motion.div
         key="grillchat"
-        className="p-4 w-full absolute right-0 top-[-500px] sm:w-[500px] h-[500px] "
+        className="w-full rounded-md shadow-xl bg-white overflow-hidden"
         layout={false}
         initial={{ opacity: 0 }}
         animate={
@@ -39,8 +38,12 @@ const GrillChat: React.FC<GrillChatProps> = ({ open, setOpen }) => {
             : { opacity: 0, transitionEnd: { display: "none" } }
         }
         transition={{ ease: "easeInOut", duration: 0.2 }}
+        style={{
+          height: "min(570px, 90vh - 120px)",
+          width: "min(400px, 100vw - 60px)",
+        }}
       >
-        <div id="grill" className="h-full p-1"></div>,
+        <div id="grill" className="h-full"></div>,
       </motion.div>
       <Image
         src="/icons/grillchat.svg"
