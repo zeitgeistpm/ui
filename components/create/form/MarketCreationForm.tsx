@@ -2,22 +2,25 @@ import Toggle from "components/ui/Toggle";
 import WizardStepper from "components/wizard/WizardStepper";
 import { nextStepFrom, prevStepFrom } from "components/wizard/types";
 import { NUM_BLOCKS_IN_DAY, NUM_BLOCKS_IN_HOUR } from "lib/constants";
-import { FieldState, useCreateMarketState } from "lib/state/market-creation";
+import { useCreateMarketState } from "lib/state/market-creation";
 import { MarketCreationStep } from "lib/state/market-creation/types/step";
 import { FormEventHandler } from "react";
+import { ErrorMessage } from "./ErrorMessage";
 import { MarketFormSection } from "./MarketFormSection";
-import { AnswersInput } from "./inputs/Answers";
+import MarketPreview from "./Preview";
 import BlockPeriodPicker from "./inputs/BlockPeriod";
 import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
 import DateTimePicker from "./inputs/DateTime";
-import { Transition } from "@headlessui/react";
-import QuillEditor from "components/ui/QuillEditor";
 import ModerationModeSelect from "./inputs/Moderation";
-import { ErrorMessage } from "./ErrorMessage";
-import MarketPreview from "./Preview";
+import { AnswersInput } from "./inputs/answers";
+import dynamic from "next/dynamic";
 
-const MarketCreationForm = () => {
+const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
+  ssr: false,
+});
+
+export const MarketCreationForm = () => {
   const {
     isWizard,
     setWizard,

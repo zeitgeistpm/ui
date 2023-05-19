@@ -251,39 +251,19 @@ export const ZMarketCreationFormData = ({
   });
 };
 
-export const getSectionFormKeys = (
-  section: MarketCreationStepType,
-): Array<keyof MarketCreationFormData> => {
-  switch (section) {
-    case "Currency":
-      return ["currency"];
-    case "Question":
-      return ["question", "tags"];
-    case "Answers":
-      return ["answers"];
-    case "Time Period":
-      return ["endDate", "gracePeriod", "reportingPeriod", "disputePeriod"];
-    case "Oracle":
-      return ["oracle"];
-    case "Description":
-      return ["description"];
-    case "Moderation":
-      return ["moderation"];
-    case "Preview":
-      return [
-        "currency",
-        "question",
-        "tags",
-        "answers",
-        "endDate",
-        "gracePeriod",
-        "reportingPeriod",
-        "disputePeriod",
-        "description",
-        "moderation",
-        "oracle",
-      ];
-    default:
-      return [];
+export const sections: Record<MarketCreationStepType,Array<keyof MarketCreationFormData>> = {
+  "Currency": ["currency"],
+  "Question":  ["question", "tags"],
+  "Answers": ["answers"],
+  "Time Period": ["endDate", "gracePeriod", "reportingPeriod", "disputePeriod"],
+  "Oracle": ["oracle"],
+  "Description": ["description"],
+  "Moderation": ["moderation"],
+  "Preview": []
+}
+
+export const sectionOfFormKey = (key: keyof MarketCreationFormData): MarketCreationStepType => {
+  for (const sectionKey in sections) {
+    if(sections[sectionKey].includes(key)) return sectionKey as MarketCreationStepType
   }
-};
+}

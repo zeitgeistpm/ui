@@ -1,7 +1,11 @@
-import QuillViewer from "components/ui/QuillViewer";
 import { MarketCreationFormData } from "lib/state/market-creation/types/form";
 import { shortenAddress } from "lib/util";
+import dynamic from "next/dynamic";
 import React from "react";
+
+const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
+  ssr: false,
+});
 
 export type MarketPreviewProps = {
   form: Partial<MarketCreationFormData>;

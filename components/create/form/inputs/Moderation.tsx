@@ -15,7 +15,7 @@ export const options: Array<{
 }> = [
   {
     mode: "Permissionless",
-    description: "More expensive, but goes live as soon as you need",
+    description: "More expensive, but goes live as soon as you need.",
     cost: 120,
   },
   {

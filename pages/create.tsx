@@ -1,5 +1,6 @@
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
+import { Suspense } from "react";
 
 const MarketCreationForm = dynamic(
   () => import("components/create/form/MarketCreationForm"),

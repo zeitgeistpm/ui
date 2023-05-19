@@ -9,7 +9,8 @@ import {
 import {
   MarketCreationFormData,
   ZMarketCreationFormData,
-  getSectionFormKeys,
+  sectionOfFormKey,
+  sections,
 } from "./types/form";
 import { useMemo } from "react";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
@@ -134,13 +135,16 @@ export const useCreateMarketState = () => {
   const isValid = Object.values(fieldsState).every((field) => field.isValid);
 
   const steps = marketCreationSteps.map((step) => {
-    const keys = getSectionFormKeys(step.label);
+    const keys = sections[step.label];
+
     const isValid =
-      (keys.length && keys.every((key) => fieldsState[key].isValid)) || false;
+      keys.length ? keys.every((key) => fieldsState[key].isValid) : true;
+
     const isTouched =
-      (keys.length &&
-        Boolean(keys.find((key) => Boolean(state.touchState[key])))) ||
+      keys.length ?
+        Boolean(keys.find((key) => Boolean(state.touchState[key]))) :
       false;
+
     const reached = state.stepReachState[step.label] || false;
 
     return { ...step, isValid, isTouched, reached };
@@ -198,20 +202,28 @@ export const useCreateMarketState = () => {
       value: state.form?.[key],
       onChange: (event: FormEvent<MarketCreationFormData[K]>) => {
         if (mode === "onBlur") return;
-        const newState = {
+        let newState = {
           ...state,
           form: { ...state.form, [key]: event.target.value },
           touchState: { ...state.touchState, [key]: true },
         };
+        if(!state.isWizard) {
+          const section = sectionOfFormKey(key)
+          newState.stepReachState[section] = true
+        }
         setState(newState);
       },
       onBlur: (event: FormEvent<MarketCreationFormData[K]>) => {
         if (mode === "onChange") return;
-        const newState = {
+        let newState = {
           ...state,
           form: { ...state.form, [key]: event.target.value },
           touchState: { ...state.touchState, [key]: true },
         };
+        if(!state.isWizard) {
+          const section = sectionOfFormKey(key)
+          newState.stepReachState[section] = true
+        }
         setState(newState);
       },
     };

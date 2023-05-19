@@ -49,7 +49,8 @@ export const WizardStepper = <T extends string, S extends WizardStepData<T>[]>({
             (prevStep?.isValid && index === currentStepIndex + 1);
 
           const showCompleted = step?.reached && step?.isValid;
-          const showError = index < currentStepIndex && !step?.isValid;
+          const showError =
+            index !== currentStepIndex && step?.reached && !step?.isValid;
 
           return (
             <button
