@@ -1,7 +1,7 @@
 import Toggle from "components/ui/Toggle";
 import WizardStepper from "components/wizard/WizardStepper";
 import { nextStepFrom, prevStepFrom } from "components/wizard/types";
-import { NUM_BLOCKS_IN_DAY } from "lib/constants";
+import { NUM_BLOCKS_IN_DAY, NUM_BLOCKS_IN_HOUR } from "lib/constants";
 import { FieldState, useCreateMarketState } from "lib/state/market-creation";
 import { MarketCreationStep } from "lib/state/market-creation/types/step";
 import { FormEventHandler } from "react";
@@ -150,6 +150,7 @@ const MarketCreationForm = () => {
               <ErrorMessage field={fieldsState.endDate} />
             </div>
           </div>
+
           <div className="mb-12">
             <div className="mb-4 text-center">
               <h2 className="text-base">Set Grace Period</h2>
@@ -177,6 +178,7 @@ const MarketCreationForm = () => {
               <ErrorMessage field={fieldsState.gracePeriod} />
             </div>
           </div>
+
           <div className="mb-12">
             <div className="mb-4 text-center">
               <h2 className="text-base">Set Report Period</h2>
@@ -185,7 +187,11 @@ const MarketCreationForm = () => {
               <BlockPeriodPicker
                 isValid={fieldsState.reportingPeriod.isValid}
                 options={[
-                  { type: "blocks", label: "None", value: 0 },
+                  {
+                    type: "blocks",
+                    label: "1 Hour",
+                    value: NUM_BLOCKS_IN_HOUR,
+                  },
                   {
                     type: "blocks",
                     label: "1 Day",
@@ -204,6 +210,7 @@ const MarketCreationForm = () => {
               <ErrorMessage field={fieldsState.reportingPeriod} />
             </div>
           </div>
+
           <div className="mb-0">
             <div className="mb-4 text-center">
               <h2 className="text-base">Set Dispute Period</h2>
@@ -212,7 +219,6 @@ const MarketCreationForm = () => {
               <BlockPeriodPicker
                 isValid={fieldsState.disputePeriod.isValid}
                 options={[
-                  { type: "blocks", label: "None", value: 0 },
                   {
                     type: "blocks",
                     label: "1 Day",

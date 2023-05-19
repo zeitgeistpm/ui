@@ -144,18 +144,7 @@ export const ZMarketCreationFormData = ({
       },
     ),
     reportingPeriod: ZBlockPeriodOption.superRefine((reportingPeriod, ctx) => {
-      if (
-        !chainTime ||
-        !deadlineConstants ||
-        Boolean(
-          reportingPeriod?.type === "blocks" &&
-            form?.gracePeriod?.type === "blocks",
-        ) ||
-        Boolean(
-          form?.gracePeriod?.type === "date" &&
-            reportingPeriod?.type === "blocks",
-        )
-      ) {
+      if (!chainTime || !deadlineConstants) {
         return true;
       }
 
@@ -192,26 +181,20 @@ export const ZMarketCreationFormData = ({
       return true;
     }),
     disputePeriod: ZBlockPeriodOption.superRefine((disputePeriod, ctx) => {
-      if (
-        !chainTime ||
-        !deadlineConstants ||
-        Boolean(
-          disputePeriod?.type === "blocks" &&
-            form?.gracePeriod?.type === "blocks",
-        ) ||
-        Boolean(
-          form?.gracePeriod?.type === "date" &&
-            disputePeriod?.type === "blocks",
-        )
-      ) {
+      if (!chainTime || !deadlineConstants) {
         return true;
       }
+
+      const gracePeriodEnd =
+        form?.gracePeriod?.type === "date"
+          ? dateBlock(chainTime, new Date(form?.gracePeriod?.value))
+          : dateBlock(chainTime, new Date(form?.endDate)) +
+            form?.gracePeriod?.value;
 
       const reportingPeriodEnd =
         form?.reportingPeriod?.type === "date"
           ? dateBlock(chainTime, new Date(form?.reportingPeriod?.value))
-          : dateBlock(chainTime, new Date(form?.endDate)) +
-            form?.reportingPeriod?.value;
+          : gracePeriodEnd + form?.reportingPeriod?.value;
 
       const disputePeriodEnd =
         disputePeriod?.type === "date"
