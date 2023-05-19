@@ -148,7 +148,8 @@ const DepositModal = ({
           <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
             {sourceChain} fee:
             <span className="text-black ml-1">
-              {new Decimal(fee?.partialFee.toString() ?? 0).div(ZTG).toFixed(3)}
+              {new Decimal(fee?.partialFee.toString() ?? 0).div(ZTG).toFixed(3)}{" "}
+              {tokenSymbol}
             </span>
           </div>
           <FormTransactionButton

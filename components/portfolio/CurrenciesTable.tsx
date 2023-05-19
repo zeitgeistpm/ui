@@ -11,13 +11,13 @@ import { ChainName, CHAIN_IMAGES } from "lib/constants/chains";
 
 const columns: TableColumn[] = [
   {
-    header: "Chain",
-    accessor: "chain",
+    header: "Asset",
+    accessor: "asset",
     type: "component",
   },
   {
-    header: "Asset",
-    accessor: "asset",
+    header: "Chain",
+    accessor: "chain",
     type: "component",
   },
   {
