@@ -165,7 +165,10 @@ const CategoricalAnswersInput = ({
         name,
         value: {
           type: "categorical",
-          answers: [...(value?.answers ?? []), ""] as string[],
+          answers: [
+            ...(value?.answers ?? []),
+            `Answer ${value?.answers.length + 1}`,
+          ] as string[],
         },
       },
     });

@@ -1,4 +1,8 @@
-import { ChainTime, dateBlock } from "@zeitgeistpm/utility/dist/time";
+import {
+  ChainTime,
+  blockDate,
+  dateBlock,
+} from "@zeitgeistpm/utility/dist/time";
 import {} from "io-ts";
 import { defaultTags } from "lib/constants/markets";
 import { MarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
@@ -123,8 +127,13 @@ export const ZMarketCreationFormData = ({
       { message: "Grace period must end after market ends." },
     ).refine(
       (gracePeriod) => {
+        if (!chainTime || !deadlineConstants) {
+          return true;
+        }
+
         const delta =
           dateBlock(chainTime, new Date(gracePeriod.value)) - chainTime.block;
+
         if (delta > deadlineConstants?.maxGracePeriod) {
           return false;
         }
@@ -134,30 +143,102 @@ export const ZMarketCreationFormData = ({
         message: `Grace period exceeds maximum of ${deadlineConstants?.maxGracePeriod} blocks.`,
       },
     ),
-    reportingPeriod: ZBlockPeriodOption.refine(
-      (reportingPeriod) => {
-        if (
-          Boolean(
-            reportingPeriod?.type === "blocks" &&
-              form?.gracePeriod?.type === "blocks",
-          ) ||
-          Boolean(
-            form?.gracePeriod?.type === "date" &&
-              reportingPeriod?.type === "blocks",
-          )
-        ) {
-          return true;
-        }
-
-        // todo: check if reporting period is after grace period
-
-        const gracePeriodEnd = new Date(form?.gracePeriod?.value);
-
+    reportingPeriod: ZBlockPeriodOption.superRefine((reportingPeriod, ctx) => {
+      if (
+        !chainTime ||
+        !deadlineConstants ||
+        Boolean(
+          reportingPeriod?.type === "blocks" &&
+            form?.gracePeriod?.type === "blocks",
+        ) ||
+        Boolean(
+          form?.gracePeriod?.type === "date" &&
+            reportingPeriod?.type === "blocks",
+        )
+      ) {
         return true;
-      },
-      { message: "Reporting must end later than the grace period." },
-    ),
-    disputePeriod: ZBlockPeriodOption,
+      }
+
+      const gracePeriodEnd =
+        form?.gracePeriod?.type === "date"
+          ? dateBlock(chainTime, new Date(form?.gracePeriod?.value))
+          : dateBlock(chainTime, new Date(form?.endDate)) +
+            form?.gracePeriod?.value;
+
+      const reportingPeriodEnd =
+        reportingPeriod?.type === "date"
+          ? dateBlock(chainTime, new Date(reportingPeriod?.value))
+          : gracePeriodEnd + reportingPeriod?.value;
+
+      const delta = reportingPeriodEnd - gracePeriodEnd;
+
+      if (reportingPeriodEnd <= gracePeriodEnd) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: "Reporting period must end after grace period.",
+        });
+      } else if (delta > deadlineConstants?.maxOracleDuration) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: `Reporting period exceeds maximum of ${deadlineConstants?.maxOracleDuration} blocks.`,
+        });
+      } else if (delta < deadlineConstants?.minOracleDuration) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: `Reporting period is less than minimum of ${deadlineConstants?.minOracleDuration} blocks.`,
+        });
+      }
+
+      return true;
+    }),
+    disputePeriod: ZBlockPeriodOption.superRefine((disputePeriod, ctx) => {
+      if (
+        !chainTime ||
+        !deadlineConstants ||
+        Boolean(
+          disputePeriod?.type === "blocks" &&
+            form?.gracePeriod?.type === "blocks",
+        ) ||
+        Boolean(
+          form?.gracePeriod?.type === "date" &&
+            disputePeriod?.type === "blocks",
+        )
+      ) {
+        return true;
+      }
+
+      const reportingPeriodEnd =
+        form?.reportingPeriod?.type === "date"
+          ? dateBlock(chainTime, new Date(form?.reportingPeriod?.value))
+          : dateBlock(chainTime, new Date(form?.endDate)) +
+            form?.reportingPeriod?.value;
+
+      const disputePeriodEnd =
+        disputePeriod?.type === "date"
+          ? dateBlock(chainTime, new Date(disputePeriod?.value))
+          : reportingPeriodEnd + disputePeriod?.value;
+
+      const delta = disputePeriodEnd - reportingPeriodEnd;
+
+      if (disputePeriodEnd <= reportingPeriodEnd) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: "Dispute period must end after the report period.",
+        });
+      } else if (delta > deadlineConstants?.maxOracleDuration) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: `Dispute period exceeds maximum of ${deadlineConstants?.maxDisputeDuration} blocks.`,
+        });
+      } else if (delta < deadlineConstants?.minOracleDuration) {
+        ctx.addIssue({
+          code: zod.ZodIssueCode.custom,
+          message: `Dispute period is less than minimum of ${deadlineConstants?.minDisputeDuration} blocks.`,
+        });
+      }
+
+      return true;
+    }),
   });
 };
 

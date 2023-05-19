@@ -48,25 +48,27 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   return (
     <button
       type="button"
-      className={`flex center rounded-full  bg-gray-200 py-3 px-6 ${
+      className={`flex center rounded-full  bg-gray-200  ${
         isValid && "!bg-nyanza-base"
       } ${className}`}
       onClick={() => inputRef.current?.showPicker()}
     >
-      <div>
-        {!value
-          ? placeholder ?? "Set Date"
-          : moment(value).format("MMM Do, YYYY hh:mm a")}
+      <div className="relative py-3 px-8">
+        <div>
+          {!value
+            ? placeholder ?? "Set Date"
+            : moment(value).format("MMM Do, YYYY hh:mm a")}
+        </div>
+        <input
+          className="opacity-0 h-0 w-0 absolute -bottom-2 left-0"
+          ref={inputRef}
+          name={name}
+          type="datetime-local"
+          value={moment(value).format("YYYY-MM-DDTHH:mm")}
+          onChange={handleChange}
+          onBlurCapture={handleBlur}
+        />
       </div>
-      <input
-        className="opacity-0 h-0 w-0"
-        ref={inputRef}
-        name={name}
-        type="datetime-local"
-        value={moment(value).format("YYYY-MM-DDTHH:mm")}
-        onChange={handleChange}
-        onBlurCapture={handleBlur}
-      />
     </button>
   );
 };
