@@ -2,9 +2,11 @@
 import Skeleton from "components/ui/Skeleton";
 import {
   IndexerContext,
+  IOForeignAssetId,
   IOMarketOutcomeAssetId,
   IOPoolShareAssetId,
   Market,
+  parseAssetId,
   ZTG,
 } from "@zeitgeistpm/sdk-next";
 import DisputeButton from "components/assets/AssetActionButtons/DisputeButton";
@@ -18,6 +20,8 @@ import { Position } from "lib/hooks/queries/usePortfolioPositions";
 import { useWallet } from "lib/state/wallet";
 import Link from "next/link";
 import MarketPositionHeader from "./MarketPositionHeader";
+import { useAllForeignAssetUsdPrices } from "lib/hooks/queries/useAssetUsdPrice";
+import { lookUpAssetPrice } from "lib/util/lookup-price";
 
 export type MarketPositionsProps = {
   usdZtgPrice: Decimal;
@@ -33,6 +37,7 @@ export const MarketPositions = ({
   className,
 }: MarketPositionsProps) => {
   const { data: marketStage } = useMarketStage(market);
+  const { data: foreignAssetPrices } = useAllForeignAssetUsdPrices();
 
   const wallet = useWallet();
   const userAddress = wallet.getActiveSigner()?.address;
@@ -78,17 +83,34 @@ export const MarketPositions = ({
           },
         ]}
         data={positions.map<TableData>(
-          ({ assetId, price, userBalance, outcome, changePercentage }) => {
+          ({
+            assetId,
+            price,
+            userBalance,
+            outcome,
+            changePercentage,
+            market,
+          }) => {
+            const baseAssetUsdPrice = lookUpAssetPrice(
+              market.baseAsset,
+              foreignAssetPrices,
+              usdZtgPrice,
+            );
+
             return {
               outcome: outcome,
               userBalance: userBalance.div(ZTG).toNumber(),
               price: {
                 value: price.toNumber(),
-                usdValue: usdZtgPrice.toNumber(),
+                usdValue: price.mul(baseAssetUsdPrice).toNumber(),
               },
               value: {
                 value: userBalance.mul(price).div(ZTG).toNumber(),
-                usdValue: usdZtgPrice.toNumber(),
+                usdValue: userBalance
+                  .mul(price)
+                  .mul(baseAssetUsdPrice)
+                  .div(ZTG)
+                  .toNumber(),
               },
               change: isNaN(changePercentage) ? 0 : changePercentage.toFixed(1),
               actions: (
