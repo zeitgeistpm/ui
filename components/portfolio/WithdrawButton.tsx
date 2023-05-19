@@ -1,15 +1,13 @@
 import { Dialog } from "@headlessui/react";
 import type { ApiPromise } from "@polkadot/api";
-import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
-import { currencyBalanceRootKey } from "lib/hooks/queries/useCurrencyBalances";
 import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
-import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useCrossChainExtrinsic } from "lib/hooks/useCrossChainExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChain } from "lib/state/cross-chain";
 import { useNotifications } from "lib/state/notifications";
@@ -73,7 +71,6 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
   const notificationStore = useNotifications();
   const wallet = useWallet();
   const [sdk, id] = useSdkv2();
-  const queryClient = useQueryClient();
   const { chain } = useChain(toChain);
 
   const { data: fee } = useExtrinsicFee(
@@ -87,7 +84,7 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
       : null,
   );
 
-  const { send: transfer, isLoading } = useExtrinsic(
+  const { send: transfer, isLoading } = useCrossChainExtrinsic(
     () => {
       if (isRpcSdk(sdk)) {
         const formValue = getValues();
@@ -102,19 +99,25 @@ const WithdrawModal = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
         return tx;
       }
     },
+    "Zeitgeist",
+    toChain,
     {
-      onSuccess: () => {
+      onSourceSuccess: () => {
+        notificationStore.pushNotification(
+          `Moving ${tokenSymbol} to ${toChain}`,
+          {
+            type: "Info",
+            autoRemove: true,
+          },
+        );
+      },
+      onDestinationSuccess: () => {
         notificationStore.pushNotification(
           `Successfully moved ${tokenSymbol} to ${toChain}`,
           {
             type: "Success",
           },
         );
-        queryClient.invalidateQueries([
-          id,
-          currencyBalanceRootKey,
-          wallet.activeAccount.address,
-        ]);
       },
     },
   );
