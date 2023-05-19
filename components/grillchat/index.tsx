@@ -15,7 +15,7 @@ const GrillChat: React.FC<GrillChatProps> = ({ open, setOpen }) => {
       theme: "light",
       channel: {
         type: "channel",
-        id: "polkadot-754",
+        id: "zeitgeist-2052",
         settings: {
           enableInputAutofocus: false, // doesn't work
           enableBackButton: false,
