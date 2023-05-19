@@ -25,7 +25,7 @@ export const MarketPreview = ({ form }: MarketPreviewProps) => {
           <>
             <div className="flex center gap-4">
               {form.answers.answers.map((answer, index) => (
-                <div>{answer}</div>
+                <div className="bg-gray-200 rounded-md py-1 px-2">{answer}</div>
               ))}
             </div>
           </>
