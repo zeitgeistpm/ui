@@ -84,7 +84,15 @@ export const persistentAtom = <T>(opts: PersistentAtomConfig<Versioned<T>>) => {
     store.set(storageAtom, { ...newState, __version: nextVersion });
   }
 
-  const proxy = atom<Versioned<T>, [Versioned<T>], void>(
+  const proxy = atom<
+    Versioned<T>,
+    [
+      | Versioned<T>
+      | typeof RESET
+      | ((prev: Versioned<T>) => Versioned<T> | typeof RESET),
+    ],
+    void
+  >(
     (get) => get(storageAtom),
     (get, set, update) => {
       const version = get(storageAtom).__version ?? 0;
@@ -94,8 +102,9 @@ export const persistentAtom = <T>(opts: PersistentAtomConfig<Versioned<T>>) => {
           : update;
       if (nextValue === RESET) {
         set(storageAtom, opts.defaultValue);
+      } else {
+        set(storageAtom, { ...nextValue, __version: version });
       }
-      set(storageAtom, { ...(nextValue as Versioned<T>), __version: version });
     },
   );
 
