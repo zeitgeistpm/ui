@@ -48,8 +48,7 @@ export const useCrossChainExtrinsic = <T>(
         api: sourceChainApi,
         notifications,
         successCallback: async (data) => {
-          setIsLoading(false);
-          setIsSuccess(true);
+          callbacks?.onSourceSuccess && callbacks.onSourceSuccess(data);
 
           const unsub = await destinationChainApi.query.system.events(
             (events) => {
@@ -69,6 +68,8 @@ export const useCrossChainExtrinsic = <T>(
 
                 if (destinationChainActivityDetected) {
                   unsub();
+                  setIsLoading(false);
+                  setIsSuccess(true);
                   callbacks?.onDestinationSuccess &&
                     callbacks.onDestinationSuccess();
 
@@ -81,8 +82,6 @@ export const useCrossChainExtrinsic = <T>(
               });
             },
           );
-
-          callbacks?.onSourceSuccess && callbacks.onSourceSuccess(data);
         },
         failCallback: (error) => {
           setIsLoading(false);
