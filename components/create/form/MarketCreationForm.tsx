@@ -3,7 +3,7 @@ import WizardStepper from "components/wizard/WizardStepper";
 import { nextStepFrom, prevStepFrom } from "components/wizard/types";
 import { NUM_BLOCKS_IN_DAY, NUM_BLOCKS_IN_HOUR } from "lib/constants";
 import { useCreateMarketState } from "lib/state/market-creation";
-import { MarketCreationStep } from "lib/state/market-creation/types/step";
+import dynamic from "next/dynamic";
 import { FormEventHandler } from "react";
 import { ErrorMessage } from "./ErrorMessage";
 import { MarketFormSection } from "./MarketFormSection";
@@ -14,7 +14,6 @@ import CurrencySelect from "./inputs/Currency";
 import DateTimePicker from "./inputs/DateTime";
 import ModerationModeSelect from "./inputs/Moderation";
 import { AnswersInput } from "./inputs/answers";
-import dynamic from "next/dynamic";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,

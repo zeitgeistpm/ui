@@ -4,63 +4,63 @@ import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { ChainTime, dateBlock } from "@zeitgeistpm/utility/dist/time";
 import { defaultTags } from "lib/constants/markets";
 import { MarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
-import * as zod from "zod";
+import * as z from "zod";
 import { SupportedCurrencyTag } from "./currency";
 
 export type MarketCreationFormData = {
-  currency: SupportedCurrencyTag;
+  currency: CurrencyTag;
   question: Question;
   tags: Tags;
   answers: Answers;
   endDate: EndDate;
-  gracePeriod: BlockPeriodOption;
-  reportingPeriod: BlockPeriodOption;
-  disputePeriod: BlockPeriodOption;
+  gracePeriod: PeriodOption;
+  reportingPeriod: PeriodOption;
+  disputePeriod: PeriodOption;
   oracle: Oracle;
   description?: Description;
   moderation: Moderation;
 };
 
-export type CurrencyTag = zod.infer<typeof ZCurrencyTag>;
-export type Question = zod.infer<typeof ZQuestion>;
-export type Tags = zod.infer<typeof ZTags>;
-export type Answers = zod.infer<typeof ZAnswers>;
-export type YesNoAnswers = zod.infer<typeof ZYesNoAnswers>;
-export type CategoricalAnswers = zod.infer<typeof ZCategoricalAnswers>;
-export type ScalarAnswers = zod.infer<typeof ZScalarAnswers>;
-export type EndDate = zod.infer<typeof ZEndDate>;
-export type BlockPeriodOption = zod.infer<typeof ZBlockPeriodOption>;
-export type Oracle = zod.infer<typeof ZOracle>;
-export type Description = zod.infer<typeof ZDescription>;
-export type Moderation = zod.infer<typeof ZModerationMode>;
+export type CurrencyTag = z.infer<typeof ZCurrencyTag>;
+export type Question = z.infer<typeof ZQuestion>;
+export type Tags = z.infer<typeof ZTags>;
+export type Answers = z.infer<typeof ZAnswers>;
+export type YesNoAnswers = z.infer<typeof ZYesNoAnswers>;
+export type CategoricalAnswers = z.infer<typeof ZCategoricalAnswers>;
+export type ScalarAnswers = z.infer<typeof ZScalarAnswers>;
+export type EndDate = z.infer<typeof ZEndDate>;
+export type PeriodOption = z.infer<typeof ZPeriodOption>;
+export type Oracle = z.infer<typeof ZOracle>;
+export type Description = z.infer<typeof ZDescription>;
+export type Moderation = z.infer<typeof ZModerationMode>;
 
-export const ZCurrencyTag = zod.enum<SupportedCurrencyTag, ["ZTG", "DOT"]>([
+export const ZCurrencyTag = z.enum<SupportedCurrencyTag, ["ZTG", "DOT"]>([
   "ZTG",
   "DOT",
 ]);
 
-export const ZQuestion = zod
+export const ZQuestion = z
   .string()
   .min(10, { message: "Must be 10 or more characters long" })
   .max(100, { message: "Must be 100 or fewer characters long" });
 
-export const ZTags = zod
-  .array(zod.enum(defaultTags))
+export const ZTags = z
+  .array(z.enum(defaultTags))
   .min(1, { message: "Must select atleast one category" });
 
-export const ZYesNoAnswers = zod
+export const ZYesNoAnswers = z
   .object({
-    type: zod.literal("yes/no"),
-    answers: zod.tuple([zod.literal("Yes"), zod.literal("No")]),
+    type: z.literal("yes/no"),
+    answers: z.tuple([z.literal("Yes"), z.literal("No")]),
   })
   .required();
 
-export const ZCategoricalAnswers = zod
+export const ZCategoricalAnswers = z
   .object({
-    type: zod.literal("categorical"),
-    answers: zod
+    type: z.literal("categorical"),
+    answers: z
       .array(
-        zod
+        z
           .string()
           .min(1, { message: "Answers must be atleast one character long." }),
       )
@@ -68,48 +68,47 @@ export const ZCategoricalAnswers = zod
   })
   .required();
 
-export const ZScalarAnswers = zod.object({
-  type: zod.literal("scalar"),
-  answers: zod
-    .tuple([zod.number(), zod.number()])
+export const ZScalarAnswers = z.object({
+  type: z.literal("scalar"),
+  answers: z
+    .tuple([z.number(), z.number()])
     .refine((schema) => schema[0] < schema[1], {
       message: "Lower bound must be less than upper bound",
     }),
 });
 
-export const ZAnswers = zod.union(
+export const ZAnswers = z.union(
   [ZYesNoAnswers, ZCategoricalAnswers, ZScalarAnswers],
   {
     errorMap: (error) => {
-      console.log(error);
       return { message: "All fields are required" };
     },
   },
 );
 
-export const ZEndDate = zod.string().datetime();
+export const ZEndDate = z.string().datetime();
 
-export const ZBlockPeriodOption = zod.union([
-  zod.object({
-    type: zod.literal("blocks"),
-    label: zod.string(),
-    value: zod.number(),
+export const ZPeriodOption = z.union([
+  z.object({
+    type: z.literal("blocks"),
+    label: z.string(),
+    value: z.number(),
   }),
-  zod.object({
-    type: zod.literal("date"),
-    value: zod.string().datetime(),
+  z.object({
+    type: z.literal("date"),
+    value: z.string().datetime(),
   }),
 ]);
 
-export const ZOracle = zod
+export const ZOracle = z
   .string()
   .refine((oracle) => !tryCatch(() => encodeAddress(oracle, 74)).isNone(), {
     message: "Oracle must be a valid polkadot address",
   });
 
-export const ZDescription = zod.string().optional();
+export const ZDescription = z.string().optional();
 
-export const ZModerationMode = zod.enum<
+export const ZModerationMode = z.enum<
   ZeitgeistPrimitivesMarketMarketCreation["type"],
   ["Permissionless", "Advised"]
 >(["Permissionless", "Advised"]);
@@ -125,18 +124,18 @@ export const ZMarketCreationFormData = ({
   deadlineConstants,
   chainTime,
 }: ValidationDependencies) => {
-  return zod.object({
+  return z.object({
     currency: ZCurrencyTag,
     question: ZQuestion,
     tags: ZTags,
     answers: ZAnswers,
-    endDate: zod
+    endDate: z
       .string()
       .datetime()
       .refine((date) => new Date(date) > new Date(), {
         message: "End date must be in the future",
       }),
-    gracePeriod: ZBlockPeriodOption.refine(
+    gracePeriod: ZPeriodOption.refine(
       (gracePeriod) =>
         gracePeriod.type !== "date" ||
         new Date(gracePeriod?.value) > new Date(form?.endDate),
@@ -159,7 +158,7 @@ export const ZMarketCreationFormData = ({
         message: `Grace period exceeds maximum of ${deadlineConstants?.maxGracePeriod} blocks.`,
       },
     ),
-    reportingPeriod: ZBlockPeriodOption.superRefine((reportingPeriod, ctx) => {
+    reportingPeriod: ZPeriodOption.superRefine((reportingPeriod, ctx) => {
       if (!chainTime || !deadlineConstants) {
         return true;
       }
@@ -179,24 +178,24 @@ export const ZMarketCreationFormData = ({
 
       if (reportingPeriodEnd <= gracePeriodEnd) {
         ctx.addIssue({
-          code: zod.ZodIssueCode.custom,
+          code: z.ZodIssueCode.custom,
           message: "Reporting period must end after grace period.",
         });
       } else if (delta > deadlineConstants?.maxOracleDuration) {
         ctx.addIssue({
-          code: zod.ZodIssueCode.custom,
+          code: z.ZodIssueCode.custom,
           message: `Reporting period exceeds maximum of ${deadlineConstants?.maxOracleDuration} blocks.`,
         });
       } else if (delta < deadlineConstants?.minOracleDuration) {
         ctx.addIssue({
-          code: zod.ZodIssueCode.custom,
+          code: z.ZodIssueCode.custom,
           message: `Reporting period is less than minimum of ${deadlineConstants?.minOracleDuration} blocks.`,
         });
       }
 
       return true;
     }),
-    disputePeriod: ZBlockPeriodOption.superRefine((disputePeriod, ctx) => {
+    disputePeriod: ZPeriodOption.superRefine((disputePeriod, ctx) => {
       if (!chainTime || !deadlineConstants) {
         return true;
       }
@@ -221,17 +220,17 @@ export const ZMarketCreationFormData = ({
 
       if (disputePeriodEnd <= reportingPeriodEnd) {
         ctx.addIssue({
-          code: zod.ZodIssueCode.custom,
+          code: z.ZodIssueCode.custom,
           message: "Dispute period must end after the report period.",
         });
       } else if (delta > deadlineConstants?.maxOracleDuration) {
         ctx.addIssue({
-          code: zod.ZodIssueCode.custom,
+          code: z.ZodIssueCode.custom,
           message: `Dispute period exceeds maximum of ${deadlineConstants?.maxDisputeDuration} blocks.`,
         });
       } else if (delta < deadlineConstants?.minOracleDuration) {
         ctx.addIssue({
-          code: zod.ZodIssueCode.custom,
+          code: z.ZodIssueCode.custom,
           message: `Dispute period is less than minimum of ${deadlineConstants?.minDisputeDuration} blocks.`,
         });
       }

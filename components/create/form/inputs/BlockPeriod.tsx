@@ -1,13 +1,13 @@
-import { BlockPeriodOption } from "lib/state/market-creation/types/form";
+import { PeriodOption } from "lib/state/market-creation/types/form";
 import { FormEvent } from "../types";
 import DateTimePicker from "./DateTime";
 
 export type BlockPeriodPickerProps = {
   name: string;
-  value?: BlockPeriodOption;
-  options: Array<BlockPeriodOption>;
-  onChange: (event: FormEvent<BlockPeriodOption>) => void;
-  onBlur: (event: FormEvent<BlockPeriodOption>) => void;
+  value?: PeriodOption;
+  options: Array<PeriodOption>;
+  onChange: (event: FormEvent<PeriodOption>) => void;
+  onBlur: (event: FormEvent<PeriodOption>) => void;
   isValid?: boolean;
 };
 
@@ -19,7 +19,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
   options,
   isValid,
 }) => {
-  const handleOnClickOption = (option: BlockPeriodOption) => {
+  const handleOnClickOption = (option: PeriodOption) => {
     onChange?.({
       type: "change",
       target: {

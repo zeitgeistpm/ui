@@ -1,6 +1,12 @@
 import { Transition } from "@headlessui/react";
 import { FieldState } from "lib/state/market-creation";
 
+/**
+ * Displayes a error message when a field has an error and
+ * has been touched by the user.
+ *
+ * @param props.field - the field to display the error message for.
+ */
 export const ErrorMessage = ({ field }: { field: FieldState }) => {
   return (
     <Transition
