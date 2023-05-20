@@ -120,6 +120,7 @@ export const MarketCreationForm = () => {
           wizard={isWizard}
           isCurrent={currentStep.label == "Answers"}
           onClickNext={next}
+          onClickBack={back}
           nextDisabled={!fieldsState.answers.isValid}
         >
           <div className="mb-8 text-center">
@@ -137,6 +138,7 @@ export const MarketCreationForm = () => {
           wizard={isWizard}
           isCurrent={currentStep.label == "Time Period"}
           onClickNext={next}
+          onClickBack={back}
           nextDisabled={
             !fieldsState.endDate.isValid ||
             !fieldsState.gracePeriod.isValid ||

@@ -1,20 +1,19 @@
 import { FormEvent } from "components/create/form/types";
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
+import { useMemo } from "react";
 import { persistentAtom } from "../util/persistent-atom";
+import {
+  MarketCreationFormData,
+  marketCreationFormKeys,
+  useMarketCreationFormValidator,
+} from "./types/form";
+import { sectionOfFormKey, sections } from "./types/section";
 import {
   MarketCreationStep,
   MarketCreationStepType,
   marketCreationSteps,
 } from "./types/step";
-import {
-  MarketCreationFormData,
-  createMarketFormValidator,
-  useMarketCreationFormValidator,
-} from "./types/form";
-import { useMemo } from "react";
-import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
-import { useChainTime } from "../chaintime";
-import { sectionOfFormKey, sections } from "./types/section";
+import { FieldsState, initialFieldsState } from "./types/field-state";
 
 export type CreateMarketState = {
   currentStep: MarketCreationStep;
@@ -23,14 +22,6 @@ export type CreateMarketState = {
   touchState: Partial<Record<keyof MarketCreationFormData, boolean>>;
   stepReachState: Partial<Record<MarketCreationStepType, boolean>>;
 };
-
-export type FieldState = {
-  isValid: boolean;
-  isTouched?: boolean;
-  errors?: string[];
-};
-
-export type FieldsState = Record<keyof MarketCreationFormData, FieldState>;
 
 export const defaultState: CreateMarketState = {
   isWizard: true,
@@ -66,62 +57,33 @@ export const useCreateMarketState = () => {
   const fieldsState = useMemo<FieldsState>(() => {
     const parsed = validator.safeParse(state.form);
 
-    let fieldsState: FieldsState = {
-      currency: {
-        isValid: true,
-        isTouched: state.touchState.currency,
-      },
-      question: {
-        isValid: true,
-        isTouched: state.touchState.question,
-      },
-      tags: {
-        isValid: true,
-        isTouched: state.touchState.tags,
-      },
-      answers: {
-        isValid: true,
-        isTouched: state.touchState.answers,
-      },
-      endDate: {
-        isValid: true,
-        isTouched: state.touchState.endDate,
-      },
-      gracePeriod: {
-        isValid: true,
-        isTouched: state.touchState.gracePeriod,
-      },
-      disputePeriod: {
-        isValid: true,
-        isTouched: state.touchState.disputePeriod,
-      },
-      reportingPeriod: {
-        isValid: true,
-        isTouched: state.touchState.reportingPeriod,
-      },
-      oracle: {
-        isValid: true,
-        isTouched: state.touchState.oracle,
-      },
-      description: {
-        isValid: true,
-        isTouched: state.touchState.description,
-      },
-      moderation: {
-        isValid: true,
-        isTouched: state.touchState.moderation,
-      },
-    };
+    const fieldsState: FieldsState = marketCreationFormKeys.reduce<FieldsState>(
+      (fieldsState, key) => {
+        let isValid = true;
+        let isTouched = state.touchState[key];
+        let errors = [...(fieldsState[key].errors ?? [])];
 
-    if (parsed.success !== true) {
-      parsed.error.issues.forEach((issue) => {
-        const key = issue.path[0] as keyof MarketCreationFormData;
-        const fieldState = fieldsState[key];
-        if (!fieldState) return;
-        fieldState.isValid = false;
-        fieldState.errors = [...(fieldState.errors || []), issue.message];
-      });
-    }
+        if (parsed.success !== true) {
+          const issue = parsed.error.issues.find(
+            (issue) => issue.path[0] === key,
+          );
+          if (issue) {
+            errors = [...(fieldsState[key].errors || []), issue.message];
+            isValid = false;
+          }
+        }
+
+        return {
+          ...fieldsState,
+          [key]: {
+            isValid,
+            isTouched,
+            errors,
+          },
+        };
+      },
+      initialFieldsState,
+    );
 
     return fieldsState;
   }, [validator]);

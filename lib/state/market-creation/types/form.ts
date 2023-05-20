@@ -11,6 +11,7 @@ import * as z from "zod";
 import { SupportedCurrencyTag } from "./currency";
 import { useMemo } from "react";
 import { useChainTime } from "lib/state/chaintime";
+import { DeepReadonlyArray } from "lib/types/deep-readonly";
 
 /**
  * This is the type of the full market creation form data that is used to create a market.
@@ -29,6 +30,20 @@ export type MarketCreationFormData = {
   description?: Description;
   moderation: Moderation;
 };
+
+export const marketCreationFormKeys = [
+  "currency",
+  "question",
+  "tags",
+  "answers",
+  "endDate",
+  "gracePeriod",
+  "reportingPeriod",
+  "disputePeriod",
+  "oracle",
+  "description",
+  "moderation",
+] as const satisfies DeepReadonlyArray<keyof MarketCreationFormData>
 
 /**
  * These are the individual market form field types.
