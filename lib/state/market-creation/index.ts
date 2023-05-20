@@ -7,15 +7,75 @@ import {
   marketCreationFormKeys,
   useMarketCreationFormValidator,
 } from "./types/form";
-import { sectionOfFormKey, sections } from "./types/section";
 import {
   MarketCreationStep,
   MarketCreationStepType,
   marketCreationSteps,
+  stepForFormKey,
+  stepFormKeys,
 } from "./types/step";
 import { FieldsState, initialFieldsState } from "./types/field-state";
 
-export type CreateMarketState = {
+export type UseCreateMarketState = {
+  /**
+   * Is the market creation mode in wizard mode or not.
+   */
+  isWizard: boolean;
+  /**
+   * The current state of the form data.
+   * Can be partial data.
+   */
+  form: Partial<MarketCreationFormData>;
+  /**
+   * The steps of the market creation process.
+   * Has state regarding if the step is valid, if it has been touched(edited) by the user and if it
+   * has been reached in the current editing session.
+   */
+  steps: MarketCreationStep[];
+  /**
+   * The current step the user is on.
+   */
+  currentStep: MarketCreationStep;
+  /**
+   * State pr field.
+   * Has state regarding if the input is valid, if it has been touched(edited) by the user
+   * and potential validation errors.
+   */
+  fieldsState: FieldsState;
+  /**
+   * Is the form as a whole valid.
+   */
+  isValid: boolean;
+  /**
+   * Reset the form state.
+   */
+  reset: () => void;
+  /**
+   * Set the step the user is on.
+   */
+  setStep: (step: MarketCreationStep) => void;
+  /**
+   * Toggle the wizard mode on or off.
+   */
+  setWizard: (on: boolean) => void;
+  /**
+   * Register a input to a form key.
+   */
+  input: <K extends keyof MarketCreationFormData>(
+    key: K,
+    options?: {
+      type?: "text" | "number";
+      mode?: "onChange" | "onBlur" | "all";
+    },
+  ) => {
+    name: K;
+    value: Partial<MarketCreationFormData>[K];
+    onChange: (event: FormEvent<MarketCreationFormData[K]>) => void;
+    onBlur: (event: FormEvent<MarketCreationFormData[K]>) => void;
+  };
+};
+
+export type CreateMarketAtom = {
   currentStep: MarketCreationStep;
   isWizard: boolean;
   form: Partial<MarketCreationFormData>;
@@ -23,7 +83,7 @@ export type CreateMarketState = {
   stepReachState: Partial<Record<MarketCreationStepType, boolean>>;
 };
 
-export const defaultState: CreateMarketState = {
+export const defaultState: CreateMarketAtom = {
   isWizard: true,
   currentStep: {
     label: "Currency",
@@ -43,13 +103,13 @@ export const defaultState: CreateMarketState = {
   },
 };
 
-const createMarketStateAtom = persistentAtom<CreateMarketState>({
+const createMarketStateAtom = persistentAtom<CreateMarketAtom>({
   key: "market-creation-form",
   defaultValue: defaultState,
   migrations: [() => defaultState, () => defaultState, () => defaultState],
 });
 
-export const useCreateMarketState = () => {
+export const useCreateMarketState = (): UseCreateMarketState => {
   const [state, setState] = useAtom(createMarketStateAtom);
 
   const validator = useMarketCreationFormValidator(state.form);
@@ -91,7 +151,7 @@ export const useCreateMarketState = () => {
   const isValid = Object.values(fieldsState).every((field) => field.isValid);
 
   const steps = marketCreationSteps.map((step) => {
-    const keys = sections[step.label];
+    const keys = stepFormKeys[step.label];
 
     const isValid = keys.length
       ? keys.every((key) => fieldsState[key].isValid)
@@ -164,7 +224,7 @@ export const useCreateMarketState = () => {
           touchState: { ...state.touchState, [key]: true },
         };
         if (!state.isWizard) {
-          const section = sectionOfFormKey(key);
+          const section = stepForFormKey(key);
           newState.stepReachState[section] = true;
         }
         setState(newState);
@@ -177,7 +237,7 @@ export const useCreateMarketState = () => {
           touchState: { ...state.touchState, [key]: true },
         };
         if (!state.isWizard) {
-          const section = sectionOfFormKey(key);
+          const section = stepForFormKey(key);
           newState.stepReachState[section] = true;
         }
         setState(newState);
@@ -186,13 +246,15 @@ export const useCreateMarketState = () => {
   };
 
   return {
-    ...state,
-    reset,
+    form: state.form,
+    currentStep: state.currentStep,
+    isWizard: state.isWizard,
     steps,
+    fieldsState,
+    isValid,
+    reset,
     setStep,
     setWizard,
     input,
-    fieldsState,
-    isValid,
   };
 };

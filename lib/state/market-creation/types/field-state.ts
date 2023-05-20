@@ -1,16 +1,33 @@
 import { DeepReadonly } from "lib/types/deep-readonly";
-import { MarketCreationFormData } from "./form";
+import { MarketCreationFormData, marketCreationFormKeys } from "./form";
+import { SafeParseReturnType } from "zod";
 
+/**
+ * State of a field input.
+ */
 export type FieldState = {
+  /**
+   * Did the input value pass the validation.
+   */
   isValid: boolean;
+  /**
+   * Has the input been touched by the user.
+   */
   isTouched?: boolean;
+  /**
+   * Validation errors for the input.
+   */
   errors?: string[];
 };
 
-export type FieldsState = DeepReadonly<
-  Record<keyof MarketCreationFormData, FieldState>
->;
+/**
+ * A record of field states for all inputs in the market creation form.
+ */
+export type FieldsState = Record<keyof MarketCreationFormData, FieldState>;
 
+/**
+ * Initial state of the market creation form fields state.
+ */
 export const initialFieldsState: FieldsState = {
   currency: {
     isValid: false,
