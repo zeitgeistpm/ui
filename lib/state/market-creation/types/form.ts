@@ -3,10 +3,19 @@ import { encodeAddress } from "@polkadot/util-crypto";
 import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { ChainTime, dateBlock } from "@zeitgeistpm/utility/dist/time";
 import { defaultTags } from "lib/constants/markets";
-import { MarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
+import {
+  MarketDeadlineConstants,
+  useMarketDeadlineConstants,
+} from "lib/hooks/queries/useMarketDeadlineConstants";
 import * as z from "zod";
 import { SupportedCurrencyTag } from "./currency";
+import { useMemo } from "react";
+import { useChainTime } from "lib/state/chaintime";
 
+/**
+ * This is the type of the full market creation form data that is used to create a market.
+ * It is infered from the zod schema validation types below.
+ */
 export type MarketCreationFormData = {
   currency: CurrencyTag;
   question: Question;
@@ -21,41 +30,45 @@ export type MarketCreationFormData = {
   moderation: Moderation;
 };
 
-export type CurrencyTag = z.infer<typeof ZCurrencyTag>;
-export type Question = z.infer<typeof ZQuestion>;
-export type Tags = z.infer<typeof ZTags>;
-export type Answers = z.infer<typeof ZAnswers>;
-export type YesNoAnswers = z.infer<typeof ZYesNoAnswers>;
-export type CategoricalAnswers = z.infer<typeof ZCategoricalAnswers>;
-export type ScalarAnswers = z.infer<typeof ZScalarAnswers>;
-export type EndDate = z.infer<typeof ZEndDate>;
-export type PeriodOption = z.infer<typeof ZPeriodOption>;
-export type Oracle = z.infer<typeof ZOracle>;
-export type Description = z.infer<typeof ZDescription>;
-export type Moderation = z.infer<typeof ZModerationMode>;
+/**
+ * These are the individual market form field types.
+ * They are infered from the individual field zod schema validation types below.
+ */
+export type CurrencyTag = z.infer<typeof IOCurrency>;
+export type Question = z.infer<typeof IOQuestion>;
+export type Tags = z.infer<typeof IOTags>;
+export type Answers = z.infer<typeof IOAnswers>;
+export type YesNoAnswers = z.infer<typeof IOYesNoAnswers>;
+export type CategoricalAnswers = z.infer<typeof IOCategoricalAnswers>;
+export type ScalarAnswers = z.infer<typeof IOScalarAnswers>;
+export type EndDate = z.infer<typeof IOEndDate>;
+export type PeriodOption = z.infer<typeof IOPeriodOption>;
+export type Oracle = z.infer<typeof IOOracle>;
+export type Description = z.infer<typeof IODescription>;
+export type Moderation = z.infer<typeof IOModerationMode>;
 
-export const ZCurrencyTag = z.enum<SupportedCurrencyTag, ["ZTG", "DOT"]>([
+export const IOCurrency = z.enum<SupportedCurrencyTag, ["ZTG", "DOT"]>([
   "ZTG",
   "DOT",
 ]);
 
-export const ZQuestion = z
+export const IOQuestion = z
   .string()
   .min(10, { message: "Must be 10 or more characters long" })
   .max(100, { message: "Must be 100 or fewer characters long" });
 
-export const ZTags = z
+export const IOTags = z
   .array(z.enum(defaultTags))
   .min(1, { message: "Must select atleast one category" });
 
-export const ZYesNoAnswers = z
+export const IOYesNoAnswers = z
   .object({
     type: z.literal("yes/no"),
     answers: z.tuple([z.literal("Yes"), z.literal("No")]),
   })
   .required();
 
-export const ZCategoricalAnswers = z
+export const IOCategoricalAnswers = z
   .object({
     type: z.literal("categorical"),
     answers: z
@@ -68,7 +81,7 @@ export const ZCategoricalAnswers = z
   })
   .required();
 
-export const ZScalarAnswers = z.object({
+export const IOScalarAnswers = z.object({
   type: z.literal("scalar"),
   answers: z
     .tuple([z.number(), z.number()])
@@ -77,8 +90,8 @@ export const ZScalarAnswers = z.object({
     }),
 });
 
-export const ZAnswers = z.union(
-  [ZYesNoAnswers, ZCategoricalAnswers, ZScalarAnswers],
+export const IOAnswers = z.union(
+  [IOYesNoAnswers, IOCategoricalAnswers, IOScalarAnswers],
   {
     errorMap: (error) => {
       return { message: "All fields are required" };
@@ -86,9 +99,9 @@ export const ZAnswers = z.union(
   },
 );
 
-export const ZEndDate = z.string().datetime();
+export const IOEndDate = z.string().datetime();
 
-export const ZPeriodOption = z.union([
+export const IOPeriodOption = z.union([
   z.object({
     type: z.literal("blocks"),
     label: z.string(),
@@ -100,15 +113,15 @@ export const ZPeriodOption = z.union([
   }),
 ]);
 
-export const ZOracle = z
+export const IOOracle = z
   .string()
   .refine((oracle) => !tryCatch(() => encodeAddress(oracle, 74)).isNone(), {
     message: "Oracle must be a valid polkadot address",
   });
 
-export const ZDescription = z.string().optional();
+export const IODescription = z.string().optional();
 
-export const ZModerationMode = z.enum<
+export const IOModerationMode = z.enum<
   ZeitgeistPrimitivesMarketMarketCreation["type"],
   ["Permissionless", "Advised"]
 >(["Permissionless", "Advised"]);
@@ -119,23 +132,23 @@ export type ValidationDependencies = {
   chainTime?: ChainTime;
 };
 
-export const ZMarketCreationFormData = ({
+export const createMarketFormValidator = ({
   form,
   deadlineConstants,
   chainTime,
 }: ValidationDependencies) => {
   return z.object({
-    currency: ZCurrencyTag,
-    question: ZQuestion,
-    tags: ZTags,
-    answers: ZAnswers,
+    currency: IOCurrency,
+    question: IOQuestion,
+    tags: IOTags,
+    answers: IOAnswers,
     endDate: z
       .string()
       .datetime()
       .refine((date) => new Date(date) > new Date(), {
         message: "End date must be in the future",
       }),
-    gracePeriod: ZPeriodOption.refine(
+    gracePeriod: IOPeriodOption.refine(
       (gracePeriod) =>
         gracePeriod.type !== "date" ||
         new Date(gracePeriod?.value) > new Date(form?.endDate),
@@ -158,7 +171,7 @@ export const ZMarketCreationFormData = ({
         message: `Grace period exceeds maximum of ${deadlineConstants?.maxGracePeriod} blocks.`,
       },
     ),
-    reportingPeriod: ZPeriodOption.superRefine((reportingPeriod, ctx) => {
+    reportingPeriod: IOPeriodOption.superRefine((reportingPeriod, ctx) => {
       if (!chainTime || !deadlineConstants) {
         return true;
       }
@@ -195,7 +208,7 @@ export const ZMarketCreationFormData = ({
 
       return true;
     }),
-    disputePeriod: ZPeriodOption.superRefine((disputePeriod, ctx) => {
+    disputePeriod: IOPeriodOption.superRefine((disputePeriod, ctx) => {
       if (!chainTime || !deadlineConstants) {
         return true;
       }
@@ -237,8 +250,24 @@ export const ZMarketCreationFormData = ({
 
       return true;
     }),
-    oracle: ZOracle,
-    description: ZDescription,
-    moderation: ZModerationMode,
+    oracle: IOOracle,
+    description: IODescription,
+    moderation: IOModerationMode,
   });
+};
+
+export const useMarketCreationFormValidator = (
+  form: Partial<MarketCreationFormData>,
+): ReturnType<typeof createMarketFormValidator> => {
+  const { data: deadlineConstants } = useMarketDeadlineConstants();
+  const chainTime = useChainTime();
+  return useMemo(
+    () =>
+      createMarketFormValidator({
+        form,
+        deadlineConstants,
+        chainTime,
+      }),
+    [form, deadlineConstants, chainTime],
+  );
 };

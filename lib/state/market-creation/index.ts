@@ -6,7 +6,11 @@ import {
   MarketCreationStepType,
   marketCreationSteps,
 } from "./types/step";
-import { MarketCreationFormData, ZMarketCreationFormData } from "./types/form";
+import {
+  MarketCreationFormData,
+  createMarketFormValidator,
+  useMarketCreationFormValidator,
+} from "./types/form";
 import { useMemo } from "react";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { useChainTime } from "../chaintime";
@@ -56,16 +60,10 @@ const createMarketStateAtom = persistentAtom<CreateMarketState>({
 
 export const useCreateMarketState = () => {
   const [state, setState] = useAtom(createMarketStateAtom);
-  const { data: deadlineConstants } = useMarketDeadlineConstants();
-  const chainTime = useChainTime();
+
+  const validator = useMarketCreationFormValidator(state.form);
 
   const fieldsState = useMemo<FieldsState>(() => {
-    const validator = ZMarketCreationFormData({
-      form: state.form,
-      deadlineConstants,
-      chainTime,
-    });
-
     const parsed = validator.safeParse(state.form);
 
     let fieldsState: FieldsState = {
@@ -126,7 +124,7 @@ export const useCreateMarketState = () => {
     }
 
     return fieldsState;
-  }, [state, chainTime, deadlineConstants]);
+  }, [validator]);
 
   const isValid = Object.values(fieldsState).every((field) => field.isValid);
 
