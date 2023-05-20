@@ -6,15 +6,11 @@ import {
   MarketCreationStepType,
   marketCreationSteps,
 } from "./types/step";
-import {
-  MarketCreationFormData,
-  ZMarketCreationFormData,
-  sectionOfFormKey,
-  sections,
-} from "./types/form";
+import { MarketCreationFormData, ZMarketCreationFormData } from "./types/form";
 import { useMemo } from "react";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { useChainTime } from "../chaintime";
+import { sectionOfFormKey, sections } from "./types/section";
 
 export type CreateMarketState = {
   currentStep: MarketCreationStep;
@@ -137,13 +133,13 @@ export const useCreateMarketState = () => {
   const steps = marketCreationSteps.map((step) => {
     const keys = sections[step.label];
 
-    const isValid =
-      keys.length ? keys.every((key) => fieldsState[key].isValid) : true;
+    const isValid = keys.length
+      ? keys.every((key) => fieldsState[key].isValid)
+      : true;
 
-    const isTouched =
-      keys.length ?
-        Boolean(keys.find((key) => Boolean(state.touchState[key]))) :
-      false;
+    const isTouched = keys.length
+      ? Boolean(keys.find((key) => Boolean(state.touchState[key])))
+      : false;
 
     const reached = state.stepReachState[step.label] || false;
 
@@ -207,9 +203,9 @@ export const useCreateMarketState = () => {
           form: { ...state.form, [key]: event.target.value },
           touchState: { ...state.touchState, [key]: true },
         };
-        if(!state.isWizard) {
-          const section = sectionOfFormKey(key)
-          newState.stepReachState[section] = true
+        if (!state.isWizard) {
+          const section = sectionOfFormKey(key);
+          newState.stepReachState[section] = true;
         }
         setState(newState);
       },
@@ -220,9 +216,9 @@ export const useCreateMarketState = () => {
           form: { ...state.form, [key]: event.target.value },
           touchState: { ...state.touchState, [key]: true },
         };
-        if(!state.isWizard) {
-          const section = sectionOfFormKey(key)
-          newState.stepReachState[section] = true
+        if (!state.isWizard) {
+          const section = sectionOfFormKey(key);
+          newState.stepReachState[section] = true;
         }
         setState(newState);
       },

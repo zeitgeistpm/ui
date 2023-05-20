@@ -1,4 +1,5 @@
 import { WizardStepData } from "components/wizard/types";
+import { DeepReadonly } from "lib/types/deep-readonly";
 
 export type MarketCreationStepType =
   | "Currency"
@@ -12,7 +13,7 @@ export type MarketCreationStepType =
 
 export type MarketCreationStep = WizardStepData<MarketCreationStepType>;
 
-export const marketCreationSteps: MarketCreationStep[] = [
+export const marketCreationSteps: DeepReadonly<MarketCreationStep[]> = [
   { label: "Currency", isValid: false, isTouched: false, reached: true },
   { label: "Question", isValid: false, isTouched: false, reached: false },
   { label: "Answers", isValid: false, isTouched: false, reached: false },

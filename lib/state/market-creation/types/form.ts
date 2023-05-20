@@ -1,12 +1,11 @@
-import { ChainTime, dateBlock } from "@zeitgeistpm/utility/dist/time";
+import { ZeitgeistPrimitivesMarketMarketCreation } from "@polkadot/types/lookup";
 import { encodeAddress } from "@polkadot/util-crypto";
+import { tryCatch } from "@zeitgeistpm/utility/dist/option";
+import { ChainTime, dateBlock } from "@zeitgeistpm/utility/dist/time";
 import { defaultTags } from "lib/constants/markets";
 import { MarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import * as zod from "zod";
 import { SupportedCurrencyTag } from "./currency";
-import { MarketCreationStepType } from "./step";
-import { tryCatch } from "@zeitgeistpm/utility/dist/option";
-import { ZeitgeistPrimitivesMarketMarketCreation } from "@polkadot/types/lookup";
 
 export type MarketCreationFormData = {
   currency: SupportedCurrencyTag;
@@ -34,12 +33,6 @@ export type BlockPeriodOption = zod.infer<typeof ZBlockPeriodOption>;
 export type Oracle = zod.infer<typeof ZOracle>;
 export type Description = zod.infer<typeof ZDescription>;
 export type Moderation = zod.infer<typeof ZModerationMode>;
-
-globalThis.t = () => {
-  return tryCatch(() =>
-    encodeAddress("dE2cVL9QAgh3MZEK3ZhPG5S2YSqZET8V1Qa36epaU4pQG4pd8", 74),
-  ).isNone();
-};
 
 export const ZCurrencyTag = zod.enum<SupportedCurrencyTag, ["ZTG", "DOT"]>([
   "ZTG",
@@ -250,20 +243,3 @@ export const ZMarketCreationFormData = ({
     moderation: ZModerationMode,
   });
 };
-
-export const sections: Record<MarketCreationStepType,Array<keyof MarketCreationFormData>> = {
-  "Currency": ["currency"],
-  "Question":  ["question", "tags"],
-  "Answers": ["answers"],
-  "Time Period": ["endDate", "gracePeriod", "reportingPeriod", "disputePeriod"],
-  "Oracle": ["oracle"],
-  "Description": ["description"],
-  "Moderation": ["moderation"],
-  "Preview": []
-}
-
-export const sectionOfFormKey = (key: keyof MarketCreationFormData): MarketCreationStepType => {
-  for (const sectionKey in sections) {
-    if(sections[sectionKey].includes(key)) return sectionKey as MarketCreationStepType
-  }
-}

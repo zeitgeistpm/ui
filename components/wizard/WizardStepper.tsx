@@ -1,19 +1,16 @@
 import { WizardStepData, nextStepFrom, prevStepFrom } from "./types";
 
-export type WizardStepperProps<
-  T extends string,
-  S extends WizardStepData<T>[],
-> = {
-  steps: S;
-  current: WizardStepData<T>;
-  onChange?: (step: WizardStepData<T>) => void;
+export type WizardStepperProps<T extends WizardStepData<any>> = {
+  steps: T[];
+  current: T;
+  onChange?: (step: T) => void;
 };
 
-export const WizardStepper = <T extends string, S extends WizardStepData<T>[]>({
+export const WizardStepper = <T extends WizardStepData<any>>({
   current,
   steps,
   onChange,
-}: WizardStepperProps<T, S>) => {
+}: WizardStepperProps<T>) => {
   const currentStepIndex = steps.findIndex((s) => s.label === current.label);
   const progress = (currentStepIndex / (steps.length - 1)) * 100;
 

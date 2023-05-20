@@ -1,7 +1,5 @@
 import {
-  Answers,
   CategoricalAnswers,
-  ScalarAnswers,
   YesNoAnswers,
 } from "lib/state/market-creation/types/form";
 import { ChangeEventHandler } from "react";

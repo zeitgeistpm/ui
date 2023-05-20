@@ -69,7 +69,7 @@ export const MarketCreationForm = () => {
           <WizardStepper
             steps={steps}
             current={currentStep}
-            onChange={(step: MarketCreationStep) => setStep(step)}
+            onChange={(step) => setStep(step)}
           />
         )}
       </div>
