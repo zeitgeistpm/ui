@@ -37,9 +37,8 @@ export type UseCreateMarketState = {
    */
   currentStep: MarketCreationStep;
   /**
-   * State pr field.
-   * Has state regarding if the input is valid, if it has been touched(edited) by the user
-   * and potential validation errors.
+   * State pr field input.
+   * Has state regarding if the input is valid, if it has been touched(edited) by the user and potential validation errors.
    */
   fieldsState: FieldsState;
   /**
@@ -75,15 +74,21 @@ export type UseCreateMarketState = {
   };
 };
 
-export type CreateMarketAtom = {
-  currentStep: MarketCreationStep;
-  isWizard: boolean;
+/**
+ * The base state of a market creation session.
+ *
+ * @note - If we need to safe multiple drafts in a list of drafts, this is the state that represents one
+ *  market creation session draft.
+ */
+export type MarketCreationState = {
   form: Partial<MarketCreationFormData>;
+  isWizard: boolean;
+  currentStep: MarketCreationStep;
   touchState: Partial<Record<keyof MarketCreationFormData, boolean>>;
   stepReachState: Partial<Record<MarketCreationStepType, boolean>>;
 };
 
-export const defaultState: CreateMarketAtom = {
+export const defaultState: MarketCreationState = {
   isWizard: true,
   currentStep: {
     label: "Currency",
@@ -103,7 +108,7 @@ export const defaultState: CreateMarketAtom = {
   },
 };
 
-const createMarketStateAtom = persistentAtom<CreateMarketAtom>({
+const createMarketStateAtom = persistentAtom<MarketCreationState>({
   key: "market-creation-form",
   defaultValue: defaultState,
   migrations: [() => defaultState, () => defaultState, () => defaultState],
@@ -153,11 +158,9 @@ export const useCreateMarketState = (): UseCreateMarketState => {
   const steps = marketCreationSteps.map((step) => {
     const keys = stepFormKeys[step.label];
 
-    const isValid = keys.every((key) => fieldsState[key].isValid);
     const reached = state.stepReachState[step.label] || false;
-    const isTouched = Boolean(
-      keys.find((key) => Boolean(state.touchState[key])),
-    );
+    const isValid = keys.every((key) => fieldsState[key].isValid);
+    const isTouched = keys.some((key) => state.touchState[key]);
 
     return { ...step, isValid, isTouched, reached };
   });

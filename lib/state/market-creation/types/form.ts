@@ -94,7 +94,10 @@ export const IOCategoricalAnswers = z
           .string()
           .min(1, { message: "Answers must be atleast one character long." }),
       )
-      .min(2, { message: "Must have atleast two answers" }),
+      .min(2, { message: "Must have atleast two answers" })
+      .refine((items) => new Set(items).size === items.length, {
+        message: "Answers must be unique.",
+      }),
   })
   .required();
 
