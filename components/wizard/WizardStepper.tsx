@@ -1,12 +1,12 @@
-import { WizardStepData, nextStepFrom, prevStepFrom } from "./types";
+import { WizardStep, nextStepFrom, prevStepFrom } from "./types";
 
-export type WizardStepperProps<T extends WizardStepData<any>> = {
+export type WizardStepperProps<T extends WizardStep<any>> = {
   steps: T[];
   current: T;
   onChange?: (step: T) => void;
 };
 
-export const WizardStepper = <T extends WizardStepData<any>>({
+export const WizardStepper = <T extends WizardStep<any>>({
   current,
   steps,
   onChange,

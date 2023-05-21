@@ -10,6 +10,7 @@ import {
 import {
   MarketCreationStep,
   MarketCreationStepType,
+  MarketCreationSteps,
   marketCreationSteps,
   stepForFormKey,
   stepFormKeys,
@@ -31,7 +32,7 @@ export type UseCreateMarketState = {
    * Has state regarding if the step is valid, if it has been touched(edited) by the user and if it
    * has been reached in the current editing session.
    */
-  steps: MarketCreationStep[];
+  steps: MarketCreationSteps;
   /**
    * The current step the user is on.
    */
@@ -163,7 +164,7 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     const isTouched = keys.some((key) => state.touchState[key]);
 
     return { ...step, isValid, isTouched, reached };
-  });
+  }) as MarketCreationSteps;
 
   const reset = () => {
     setState({

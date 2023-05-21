@@ -1,9 +1,9 @@
+import Image from "next/image";
+import { FormEvent } from "../types";
 import {
   SupportedCurrencyTag,
   supportedCurrencies,
-} from "lib/constants/currency";
-import Image from "next/image";
-import { FormEvent } from "../types";
+} from "lib/constants/supported-currencies";
 
 export type CurrencySelectProps = {
   name: string;

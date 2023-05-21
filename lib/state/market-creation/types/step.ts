@@ -1,6 +1,7 @@
-import { WizardStepData } from "components/wizard/types";
+import { WizardStep } from "components/wizard/types";
 import { DeepReadonly } from "lib/types/deep-readonly";
 import { MarketCreationFormData } from "./form";
+import { UnionToArray } from "lib/types/union";
 
 /**
  * Type of a market creation wizard step or section.
@@ -19,12 +20,18 @@ export type MarketCreationStepType =
  * Market creation step that extends the wizard stepper data by the market creation
  * specific step types.
  */
-export type MarketCreationStep = WizardStepData<MarketCreationStepType>;
+export type MarketCreationStep = WizardStep<MarketCreationStepType>;
+
+/**
+ * Type safe list of all market creation step from
+ * all possible step union types.
+ */
+export type MarketCreationSteps = UnionToArray<MarketCreationStep>;
 
 /**
  * All steps in the market creation form.
  */
-export const marketCreationSteps: DeepReadonly<MarketCreationStep[]> = [
+export const marketCreationSteps: MarketCreationSteps = [
   { label: "Currency", isValid: false, isTouched: false, reached: true },
   { label: "Question", isValid: false, isTouched: false, reached: false },
   { label: "Answers", isValid: false, isTouched: false, reached: false },
