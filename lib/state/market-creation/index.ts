@@ -153,15 +153,11 @@ export const useCreateMarketState = (): UseCreateMarketState => {
   const steps = marketCreationSteps.map((step) => {
     const keys = stepFormKeys[step.label];
 
-    const isValid = keys.length
-      ? keys.every((key) => fieldsState[key].isValid)
-      : true;
-
-    const isTouched = keys.length
-      ? Boolean(keys.find((key) => Boolean(state.touchState[key])))
-      : false;
-
+    const isValid = keys.every((key) => fieldsState[key].isValid);
     const reached = state.stepReachState[step.label] || false;
+    const isTouched = Boolean(
+      keys.find((key) => Boolean(state.touchState[key])),
+    );
 
     return { ...step, isValid, isTouched, reached };
   });
