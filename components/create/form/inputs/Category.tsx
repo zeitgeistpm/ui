@@ -32,19 +32,21 @@ export const CategorySelect = forwardRef(
       <div className="flex flex-row flex-wrap mx-auto gap-3 justify-center">
         {defaultTags.map((tag) => (
           <div
-            className={`center h-full cursor-pointer rounded-full p-2 transition-all ${
+            className={`flex gap-2 center h-full cursor-pointer rounded-full p-2 transition-all ${
               value?.includes(tag) ? "bg-fog-of-war text-white" : "bg-platinum"
             }`}
             onClick={handleSelect(tag)}
           >
-            <Image
-              className="rounded-full mr-2"
-              src={`/category/${tag.toLowerCase()}.png`}
-              alt={`${tag} button icon}`}
-              width={48}
-              height={48}
-              quality={100}
-            />
+            <div className="relative h-8 w-8 md:w-14 md:h-14">
+              <Image
+                className="rounded-full mr-2"
+                src={`/category/${tag.toLowerCase()}.png`}
+                alt={`${tag} button icon}`}
+                fill
+                sizes="100vw"
+                quality={100}
+              />
+            </div>
             <div>{tag}</div>
           </div>
         ))}

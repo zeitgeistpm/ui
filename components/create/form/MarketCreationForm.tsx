@@ -80,7 +80,7 @@ export const MarketCreationForm = () => {
           onClickNext={next}
           nextDisabled={!fieldsState.currency.isValid}
         >
-          <div className="mb-8 text-center">
+          <div className="mb-4 md:mb-8 text-center">
             <h2 className="text-base">Market Currency</h2>
           </div>
           <CurrencySelect options={["ZTG", "DOT"]} {...input("currency")} />
@@ -95,11 +95,11 @@ export const MarketCreationForm = () => {
             !fieldsState.question.isValid || !fieldsState.tags.isValid
           }
         >
-          <div className="mb-8 text-center">
-            <h2 className="mb-8 text-base">What is your question?</h2>
+          <div className="mb-4 md:mb-8 text-center">
+            <h2 className="mb-4 md:mb-8 text-base">What is your question?</h2>
             <div>
               <input
-                className="h-12 w-2/3 text-center bg-nyanza-base rounded-md mb-4"
+                className="h-12 w-full md:w-2/3 text-center bg-nyanza-base rounded-md mb-4 px-4 py-7"
                 placeholder="When do I send it?"
                 {...input("question", { type: "text" })}
               />
@@ -123,7 +123,7 @@ export const MarketCreationForm = () => {
           onClickBack={back}
           nextDisabled={!fieldsState.answers.isValid}
         >
-          <div className="mb-8 text-center">
+          <div className="mb-4 md:mb-8 text-center">
             <h2 className="text-base">Answers</h2>
           </div>
           <div className="mb-6">
@@ -146,7 +146,7 @@ export const MarketCreationForm = () => {
             !fieldsState.disputePeriod.isValid
           }
         >
-          <div className="mb-8 text-center">
+          <div className="mb-4 md:mb-8 text-center">
             <h2 className="text-base">When does the market end?</h2>
           </div>
           <div className="mb-12 ">
@@ -259,8 +259,8 @@ export const MarketCreationForm = () => {
             !fieldsState.oracle.isValid || !fieldsState.oracle.isValid
           }
         >
-          <div className="mb-8 text-center">
-            <h2 className="mb-8 text-base">Set Up Oracle</h2>
+          <div className="mb-4 md:mb-8 text-center">
+            <h2 className="mb-4 md:mb-8 text-base">Set Up Oracle</h2>
             <p className="mb-12 text-sm text-gray-500 font-light">
               This is the account that will be{" "}
               <b className="font-semibold text-gray-600">
@@ -289,8 +289,8 @@ export const MarketCreationForm = () => {
           onClickBack={back}
           nextDisabled={!fieldsState.description.isValid}
         >
-          <div className="mb-8 text-center">
-            <h2 className="mb-8 text-base">Market Description</h2>
+          <div className="mb-4 md:mb-8 text-center">
+            <h2 className="mb-4 md:mb-8 text-base">Market Description</h2>
             <div>
               <div className="flex center min-w-full">
                 <QuillEditor
@@ -315,8 +315,8 @@ export const MarketCreationForm = () => {
           onClickBack={back}
           nextDisabled={!fieldsState.moderation.isValid}
         >
-          <div className="mb-8 text-center">
-            <h2 className="mb-8 text-base">Market Moderation</h2>
+          <div className="mb-4 md:mb-8 text-center">
+            <h2 className="mb-4 md:mb-8 text-base">Market Moderation</h2>
             <div>
               <div className="flex center min-w-full">
                 <ModerationModeSelect {...input("moderation")} />
@@ -333,7 +333,7 @@ export const MarketCreationForm = () => {
           isCurrent={currentStep.label == "Preview"}
           onClickBack={back}
         >
-          <div className="flex center mb-8">
+          <div className="flex center mb-4 md:mb-8">
             <MarketPreview form={form} />
           </div>
         </MarketFormSection>

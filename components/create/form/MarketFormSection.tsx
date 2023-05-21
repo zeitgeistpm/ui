@@ -23,7 +23,7 @@ export const MarketFormSection = ({
         children
       ) : (
         <>
-          <div className="mb-16">{children}</div>
+          <div className="mb-6 md:mb-16">{children}</div>
           <div className="flex center">
             {onClickBack && (
               <button
@@ -37,8 +37,9 @@ export const MarketFormSection = ({
             {onClickNext && (
               <button
                 disabled={nextDisabled}
-                className={`border-gray-300 text-sm border-2 rounded-full py-4 px-8 transition-all ${nextDisabled && "cursor-not-allowed opacity-70 text-gray-500"
-                  }`}
+                className={`border-gray-300 text-sm border-2 rounded-full py-4 px-8 transition-all ${
+                  nextDisabled && "cursor-not-allowed opacity-70 text-gray-500"
+                }`}
                 type="button"
                 onClick={onClickNext}
               >
