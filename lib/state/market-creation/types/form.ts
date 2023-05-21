@@ -95,7 +95,7 @@ export const IOCategoricalAnswers = z
           .min(1, { message: "Answers must be atleast one character long." }),
       )
       .min(2, { message: "Must have atleast two answers" })
-      .refine((items) => new Set(items).size === items.length, {
+      .refine((answers) => new Set(answers).size === answers.length, {
         message: "Answers must be unique.",
       }),
   })
@@ -121,17 +121,18 @@ export const IOAnswers = z.union(
 
 export const IOEndDate = z.string().datetime();
 
-export const IOPeriodOption = z.union([
-  z.object({
-    type: z.literal("blocks"),
-    label: z.string(),
-    value: z.number(),
-  }),
-  z.object({
-    type: z.literal("date"),
-    value: z.string().datetime(),
-  }),
-]);
+export const IOBlockPeriod = z.object({
+  type: z.literal("blocks"),
+  label: z.string(),
+  value: z.number(),
+});
+
+export const IODatePeriod = z.object({
+  type: z.literal("date"),
+  value: z.string().datetime(),
+});
+
+export const IOPeriodOption = z.union([IOBlockPeriod, IODatePeriod]);
 
 export const IOOracle = z
   .string()
