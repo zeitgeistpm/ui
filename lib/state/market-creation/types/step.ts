@@ -1,10 +1,10 @@
 import { WizardStep } from "components/wizard/types";
-import { DeepReadonly } from "lib/types/deep-readonly";
 import { MarketCreationFormData } from "./form";
 import { UnionToArray } from "lib/types/union";
 
 /**
  * Type of a market creation wizard step or section.
+ * @note a step represents a group of FieldStates.
  */
 export type MarketCreationStepType =
   | "Currency"
@@ -23,8 +23,8 @@ export type MarketCreationStepType =
 export type MarketCreationStep = WizardStep<MarketCreationStepType>;
 
 /**
- * Type safe list of all market creation step from
- * all possible step union types.
+ * Type safe list of all market creation steps inferred from all
+ * possible step union types.
  */
 export type MarketCreationSteps = UnionToArray<MarketCreationStep>;
 

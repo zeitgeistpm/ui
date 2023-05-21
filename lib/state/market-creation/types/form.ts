@@ -119,7 +119,12 @@ export const IOAnswers = z.union(
   },
 );
 
-export const IOEndDate = z.string().datetime();
+export const IOEndDate = z
+  .string()
+  .datetime()
+  .refine((date) => new Date(date) > new Date(), {
+    message: "End date must be in the future",
+  });
 
 export const IOBlockPeriod = z.object({
   type: z.literal("blocks"),
@@ -163,12 +168,7 @@ export const createMarketFormValidator = ({
     question: IOQuestion,
     tags: IOTags,
     answers: IOAnswers,
-    endDate: z
-      .string()
-      .datetime()
-      .refine((date) => new Date(date) > new Date(), {
-        message: "End date must be in the future",
-      }),
+    endDate: IOEndDate,
     gracePeriod: IOPeriodOption.refine(
       (gracePeriod) =>
         gracePeriod.type !== "date" ||
