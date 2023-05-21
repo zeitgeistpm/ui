@@ -67,8 +67,6 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
   const prediction =
     market && getCurrentPrediction(market?.pool?.assets, market);
 
-  console.log(prediction);
-
   const [manageLiquidityOpen, setManageLiquidityOpen] = useState(false);
 
   return (
