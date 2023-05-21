@@ -85,7 +85,7 @@ export const CategoricalAnswersInput = ({
                 ? "bg-orange-100"
                 : "bg-gray-200";
             return (
-              <div className={`relative ${bg} rounded-md  w-1/3 py-3 px-5`}>
+              <div className={`flex-1 ${bg} rounded-md  py-3 px-5`}>
                 <input
                   disabled={disabled}
                   key={index}

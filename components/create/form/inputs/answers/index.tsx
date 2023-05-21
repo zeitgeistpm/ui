@@ -76,7 +76,7 @@ export const AnswersInput = ({
         </button>
       </div>
 
-      <div className="">
+      <div className="flex justify-center">
         {value?.type === "categorical" && (
           <CategoricalAnswersInput
             value={value}

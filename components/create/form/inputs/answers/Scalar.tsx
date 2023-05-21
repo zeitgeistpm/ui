@@ -41,28 +41,30 @@ export const ScalarAnswersInput = ({
     };
 
   return (
-    <div className="flex center gap-6">
-      <div>
-        <input
-          type="number"
-          inputMode="numeric"
-          className="bg-orange-100 rounded-md py-3 px-5"
-          value={value?.answers[0]}
-          onChange={handleChange(0, onChange)}
-          onBlur={handleChange(0, onBlur)}
-        />
-        <h4 className="text-xs text-center mt-2 ml-1">Lower bound</h4>
-      </div>
-      <div>
-        <input
-          type="number"
-          inputMode="numeric"
-          className="bg-nyanza-base rounded-md py-3 px-5"
-          value={value?.answers[1]}
-          onChange={handleChange(1, onChange)}
-          onBlur={handleChange(1, onBlur)}
-        />
-        <h4 className="text-xs mt-2 ml-1 text-center">Upper bound</h4>
+    <div>
+      <div className="flex justify-center gap-6">
+        <div className="">
+          <input
+            type="number"
+            inputMode="numeric"
+            className="w-full flex-1 bg-orange-100 rounded-md py-3 px-5"
+            value={value?.answers[0]}
+            onChange={handleChange(0, onChange)}
+            onBlur={handleChange(0, onBlur)}
+          />
+          <h4 className="text-xs text-center mt-2 ml-1">Lower bound</h4>
+        </div>
+        <div className="">
+          <input
+            type="number"
+            inputMode="numeric"
+            className=" w-full flex-1 bg-nyanza-base rounded-md py-3 px-5"
+            value={value?.answers[1]}
+            onChange={handleChange(1, onChange)}
+            onBlur={handleChange(1, onBlur)}
+          />
+          <h4 className="text-xs mt-2 ml-1 text-center">Upper bound</h4>
+        </div>
       </div>
     </div>
   );
