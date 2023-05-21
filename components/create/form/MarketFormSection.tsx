@@ -7,6 +7,7 @@ export type MarketFormSectionProps = {
   onClickBack?: () => void;
   nextDisabled?: boolean;
   children: React.ReactNode;
+  disabled?: boolean;
 };
 
 export const MarketFormSection = ({
@@ -16,10 +17,13 @@ export const MarketFormSection = ({
   onClickNext,
   onClickBack,
   nextDisabled,
+  disabled,
 }: MarketFormSectionProps) => {
   return (
     <div className={`mb-16 ${isCurrent || !wizard ? "block" : "hidden"}`}>
-      {!wizard ? (
+      {disabled ? (
+        <></>
+      ) : !wizard ? (
         children
       ) : (
         <>

@@ -16,7 +16,15 @@ export const MarketPreview = ({ form }: MarketPreviewProps) => {
     <div className="flex-1 text-center">
       <div className="mb-10">
         <Label className="mb-2">Question</Label>
-        <h2 className="text-[1.4em]">{form?.question}</h2>
+        <h2 className="text-[1.4em]">
+          {form?.question ? (
+            form?.question
+          ) : (
+            <span className="text-orange-300 font-normal">
+              No question given.
+            </span>
+          )}
+        </h2>
       </div>
       <div className="mb-10">
         <Label className="mb-2">Answers</Label>

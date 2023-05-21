@@ -49,7 +49,18 @@ export const stepFormKeys: Record<
   Oracle: ["oracle"],
   Description: ["description"],
   Moderation: ["moderation"],
-  Preview: [],
+  Preview: [
+    "currency",
+    "question",
+    "tags",
+    "answers",
+    "endDate",
+    "gracePeriod",
+    "reportingPeriod",
+    "disputePeriod",
+    "oracle",
+    "moderation",
+  ],
 };
 
 /**

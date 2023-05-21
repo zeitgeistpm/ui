@@ -333,6 +333,7 @@ export const MarketCreationForm = () => {
         <MarketFormSection
           wizard={isWizard}
           isCurrent={currentStep.label == "Preview"}
+          disabled={!isWizard}
           onClickBack={back}
         >
           <div className="flex center mb-4 md:mb-8">
