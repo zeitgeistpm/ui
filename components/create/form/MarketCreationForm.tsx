@@ -63,7 +63,7 @@ export const MarketCreationForm = () => {
         <div className="ml-3 font-light">Wizard</div>
       </div>
 
-      <div className="mb-12">
+      <div className="mb-6 md:mb-12">
         {isWizard && (
           <WizardStepper
             steps={steps}
@@ -149,7 +149,7 @@ export const MarketCreationForm = () => {
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="text-base">When does the market end?</h2>
           </div>
-          <div className="mb-12 ">
+          <div className="mb-6 md:mb-12">
             <div className="flex center mb-3">
               <DateTimePicker
                 placeholder="Set End Date"
@@ -162,7 +162,7 @@ export const MarketCreationForm = () => {
             </div>
           </div>
 
-          <div className="mb-12">
+          <div className="mb-6 md:mb-12">
             <div className="mb-4 text-center">
               <h2 className="text-base">Set Grace Period</h2>
             </div>
@@ -190,7 +190,7 @@ export const MarketCreationForm = () => {
             </div>
           </div>
 
-          <div className="mb-12">
+          <div className="mb-6 md:mb-12">
             <div className="mb-4 text-center">
               <h2 className="text-base">Set Report Period</h2>
             </div>
@@ -261,7 +261,7 @@ export const MarketCreationForm = () => {
         >
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="mb-4 md:mb-8 text-base">Set Up Oracle</h2>
-            <p className="mb-12 text-sm text-gray-500 font-light">
+            <p className="mb-6 md:mb-12 text-sm text-gray-500 font-light">
               This is the account that will be{" "}
               <b className="font-semibold text-gray-600">
                 responsible for submitting the outcome
@@ -271,7 +271,7 @@ export const MarketCreationForm = () => {
             </p>
             <div>
               <input
-                className="h-12 w-2/3 text-center bg-nyanza-base rounded-md mb-4"
+                className="h-12 w-full md:w-2/3 text-center bg-nyanza-base rounded-md mb-4 px-4 py-7"
                 placeholder="0x78e0e162...D3FFd434F7"
                 {...input("oracle", { type: "text" })}
               />
@@ -294,7 +294,7 @@ export const MarketCreationForm = () => {
             <div>
               <div className="flex center min-w-full">
                 <QuillEditor
-                  className="max-w-full w-full md:w-2/3 h-48"
+                  className="max-w-full w-full md:w-2/3 h-48 mb-6 md:mb-0"
                   placeHolder={
                     "Additional information you want to provide about the market, such as resolution source, special cases, or other details."
                   }

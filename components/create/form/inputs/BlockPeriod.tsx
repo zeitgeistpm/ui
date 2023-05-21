@@ -56,25 +56,27 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
   };
 
   return (
-    <div className="flex center gap-3">
-      {options.map((option, index) => (
-        <>
-          {option.type === "blocks" && (
-            <button
-              type="button"
-              className={`flex center rounded-full bg-gray-200 py-3 px-6 ${
-                value?.type === "blocks" &&
-                option.label === value.label &&
-                "bg-nyanza-base"
-              }`}
-              onClick={() => handleOnClickOption(option)}
-            >
-              {option.label}
-            </button>
-          )}
-        </>
-      ))}
-      <div className="">
+    <div className="md:flex justify-center items-center gap-3">
+      <div className="flex justify-center gap-3 mb-4 md:mb-0">
+        {options.map((option, index) => (
+          <>
+            {option.type === "blocks" && (
+              <button
+                type="button"
+                className={`flex center rounded-full bg-gray-200 py-3 px-6 ${
+                  value?.type === "blocks" &&
+                  option.label === value.label &&
+                  "bg-nyanza-base"
+                }`}
+                onClick={() => handleOnClickOption(option)}
+              >
+                {option.label}
+              </button>
+            )}
+          </>
+        ))}
+      </div>
+      <div className="flex justify-center">
         <DateTimePicker
           name={name}
           className="min-w-[300px]"
