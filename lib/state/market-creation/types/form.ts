@@ -10,7 +10,7 @@ import {
 import { useChainTime } from "lib/state/chaintime";
 import { useMemo } from "react";
 import * as z from "zod";
-import { SupportedCurrencyTag } from "./currency";
+import { SupportedCurrencyTag } from "../../../constants/supported-currencies";
 
 /**
  * This is the type of the full market creation form data that is used to create a market.

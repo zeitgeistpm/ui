@@ -1,7 +1,7 @@
 import {
   SupportedCurrencyTag,
   supportedCurrencies,
-} from "lib/state/market-creation/types/currency";
+} from "lib/constants/currency";
 import Image from "next/image";
 import { FormEvent } from "../types";
 
