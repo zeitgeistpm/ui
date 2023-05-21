@@ -69,6 +69,11 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
 
   const [manageLiquidityOpen, setManageLiquidityOpen] = useState(false);
 
+  const predictionDisplay =
+    market?.marketType.scalar != null
+      ? `${Number(prediction?.name).toFixed(2)}`
+      : `${prediction?.name} ${prediction?.percentage}%`;
+
   return (
     <div className="md:flex md:justify-between">
       <div className="flex flex-col mb-8 sm:flex-row md:w-full md:mb-0">
@@ -89,7 +94,7 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
           label="Prediction"
           className="border-b-1 sm:border-b-0 md:border-r-1"
         >
-          {prediction.name} {prediction.percentage} %
+          {predictionDisplay}
         </LiquidityHeaderTextItem>
       </div>
       <div className="flex md:w-full">
