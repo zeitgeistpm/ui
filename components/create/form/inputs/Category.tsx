@@ -37,7 +37,7 @@ export const CategorySelect = forwardRef(
             }`}
             onClick={handleSelect(tag)}
           >
-            <div className="relative h-8 w-8 md:w-14 md:h-14">
+            <div className="relative h-8 w-8 md:w-12 md:h-12">
               <Image
                 className="rounded-full mr-2"
                 src={`/category/${tag.toLowerCase()}.png`}

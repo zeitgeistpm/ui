@@ -53,7 +53,7 @@ export const MarketCreationForm = () => {
 
   return (
     <div>
-      <div className="flex center mb-4">
+      <div className="flex center mb-6">
         <div className="mr-3 font-light">One Page</div>
         <Toggle
           checked={isWizard}
@@ -63,7 +63,7 @@ export const MarketCreationForm = () => {
         <div className="ml-3 font-light">Wizard</div>
       </div>
 
-      <div className="mb-6 md:mb-12">
+      <div className="mb-8 md:mb-12">
         {isWizard && (
           <WizardStepper
             steps={steps}
@@ -108,8 +108,10 @@ export const MarketCreationForm = () => {
               </div>
             </div>
           </div>
-          <div className="mb-6">
-            <CategorySelect {...input("tags")} />
+          <div className="flex justify-center">
+            <div className="mb-6 max-w-4xl">
+              <CategorySelect {...input("tags")} />
+            </div>
           </div>
           <div className="flex center h-5 text-xs text-red-400">
             <ErrorMessage field={fieldsState.tags} />
