@@ -26,31 +26,33 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({
   };
 
   return (
-    <div className="flex center gap-6">
+    <div className="md:flex md:justify-center md:gap-6">
       {supportedCurrencies
         .filter((currency) => options?.includes(currency.name) ?? true)
         .map((currency) => (
           <button
             type="button"
             className={`
-              flex flex-col flex-1 max-w-xs rounded-md p-6 min-h-[300px] cursor-pointer transition-all 
+              flex flex-col flex-1 w-full md:max-w-xs rounded-md p-6 md:min-h-[300px] cursor-pointer transition-all mb-4
               ${currency.name === value ? "bg-nyanza-base" : "bg-gray-200"}
             `}
             onClick={handleSelect(currency.name)}
           >
-            <div className="w-full flex center mb-6">
-              <div className="relative w-20 h-20">
-                <Image
-                  alt={`Currency token logo for ${currency.name}`}
-                  fill
-                  sizes="100vw"
-                  src={currency.image}
-                />
+            <div className="flex md:block items-center gap-6">
+              <div className="flex w-20 md:justify-center md:items-center md:mb-6 md:w-auto">
+                <div className="relative w-20 h-20">
+                  <Image
+                    alt={`Currency token logo for ${currency.name}`}
+                    fill
+                    sizes="100vw"
+                    src={currency.image}
+                  />
+                </div>
               </div>
-            </div>
-            <div className="flex-1 text-center">
-              <h3 className="text-2xl mb-4">{currency.name}</h3>
-              <p className="w-3/4 mx-auto">{currency.description}</p>
+              <div className="text-left md:text-center">
+                <h3 className="text-2xl mb-2 md:mb-4">{currency.name}</h3>
+                <p className="text-sm md:text-base">{currency.description}</p>
+              </div>
             </div>
           </button>
         ))}
