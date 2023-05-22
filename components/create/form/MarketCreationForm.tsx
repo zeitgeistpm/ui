@@ -292,7 +292,7 @@ export const MarketCreationForm = () => {
             </p>
             <div>
               <input
-                className="h-12 w-full md:w-2/3 text-center bg-nyanza-base rounded-md mb-4 px-4 py-7"
+                className="h-12 w-full md:w-2/3 text-center !bg-nyanza-base rounded-md mb-4 px-4 py-7 "
                 placeholder="0x78e0e162...D3FFd434F7"
                 {...input("oracle", { type: "text" })}
               />
