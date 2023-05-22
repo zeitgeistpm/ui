@@ -65,23 +65,26 @@ const Portfolio: NextPage = () => {
             <div className="mb-12">
               <Tab.Group>
                 <Tab.List className="flex center mb-14">
-                  {["By Markets", "Subsidy", "Bonds", "Currencies"].map(
-                    (title, index) => (
-                      <Tab className="px-4" key={index}>
-                        {({ selected }) => (
-                          <div
-                            className={
-                              selected
-                                ? "font-semibold text-black transition-all"
-                                : "text-sky-600 transition-all"
-                            }
-                          >
-                            {title}
-                          </div>
-                        )}
-                      </Tab>
-                    ),
-                  )}
+                  {[
+                    ...["By Markets", "Subsidy", "Bonds"],
+                    ...(process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true"
+                      ? ["Currencies"]
+                      : []),
+                  ].map((title, index) => (
+                    <Tab className="px-4" key={index}>
+                      {({ selected }) => (
+                        <div
+                          className={
+                            selected
+                              ? "font-semibold text-black transition-all"
+                              : "text-sky-600 transition-all"
+                          }
+                        >
+                          {title}
+                        </div>
+                      )}
+                    </Tab>
+                  ))}
                 </Tab.List>
 
                 <Tab.Panels>
