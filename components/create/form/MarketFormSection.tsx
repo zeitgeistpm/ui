@@ -31,7 +31,7 @@ export const MarketFormSection = ({
           <div className="flex center">
             {onClickBack && (
               <button
-                className={`border-gray-300 text-sm border-2 rounded-full py-4 px-8 mr-4 `}
+                className={`border-gray-300 text-sm border-2 rounded-full py-4 px-8 mr-4 ease-in-out active:scale-95 duration-200 `}
                 onClick={onClickBack}
                 type="button"
               >
@@ -41,9 +41,10 @@ export const MarketFormSection = ({
             {onClickNext && (
               <button
                 disabled={nextDisabled}
-                className={`border-gray-300 text-sm border-2 rounded-full py-4 px-8 transition-all ${
+                className={`border-gray-300 text-sm border-2 rounded-full py-4 px-8 transition-all ease-in-out duration-200 ${
                   nextDisabled && "cursor-not-allowed opacity-70 text-gray-500"
-                }`}
+                }
+                ${!nextDisabled && "active:scale-95"}`}
                 type="button"
                 onClick={onClickNext}
               >

@@ -58,7 +58,7 @@ export const WizardStepper = <T extends WizardStep<any>>({
             >
               <div className="flex center mb-2">
                 <div
-                  className={`flex center h-8 w-8  rounded-full text-white text-sm duration-200 ease-in-out group-active:scale-[1.1]
+                  className={`flex center h-8 w-8  rounded-full text-white text-sm duration-200 ease-in-out group-active:scale-95
                   bg-gray-400
                   ${(canNavigate || index === currentStepIndex) && "!bg-black"}
                   ${showError && "!bg-red-500"}

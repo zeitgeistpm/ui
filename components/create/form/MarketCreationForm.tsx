@@ -152,9 +152,7 @@ export const MarketCreationForm = () => {
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="text-base">Answers</h2>
           </div>
-          <div className="mb-6">
-            <AnswersInput {...input("answers", { mode: "onChange" })} />
-          </div>
+          <AnswersInput {...input("answers", { mode: "onChange" })} />
           <div className="flex center h-5 text-xs text-red-400">
             <ErrorMessage field={fieldsState.answers} />
           </div>

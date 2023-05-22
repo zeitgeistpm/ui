@@ -85,11 +85,13 @@ export const AnswersInput = ({
           />
         )}
         {value?.type === "scalar" && (
-          <ScalarAnswersInput
-            value={value}
-            onBlur={handleBlur}
-            onChange={handleChange}
-          />
+          <div className="mb-3">
+            <ScalarAnswersInput
+              value={value}
+              onBlur={handleBlur}
+              onChange={handleChange}
+            />
+          </div>
         )}
         {value?.type === "yes/no" && (
           <CategoricalAnswersInput disabled={true} value={value} />

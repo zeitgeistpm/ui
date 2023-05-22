@@ -39,6 +39,7 @@ export const CategorySelect = forwardRef(
             <div
               className={`
               relative flex gap-2 center h-full cursor-pointer rounded-full py-2 px-4 transition-all 
+              ease-in-out active:scale-95 duration-200
               ${isSelected ? "bg-fog-of-war text-white" : "bg-platinum"}
               ${isMainCategory && "bg-nyanza-base !text-gray-700"}
             `}
