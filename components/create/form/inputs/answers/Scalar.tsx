@@ -85,12 +85,12 @@ export const ScalarAnswersInput = ({
   return (
     <div>
       <div className="flex center mb-6">
-        <div className="mr-3 font-light">Numbers</div>
+        <div className="mr-3 font-light text-sm">Numbers</div>
         <Toggle
           checked={value?.numberType === "timestamp"}
           onChange={handleNumberTypeChange}
         />
-        <div className="ml-3 font-light">Dates</div>
+        <div className="ml-3 font-light text-sm">Dates</div>
       </div>
       <div className="flex justify-center gap-6">
         <div className="">
