@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import Image from "next/image";
 import { MessageSquare } from "react-feather";
 import { motion } from "framer-motion";
 import grill from "@subsocial/grill-widget";
