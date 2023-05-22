@@ -23,7 +23,7 @@ export const AnswersInput = ({
         ? { type: "yes/no", answers: ["Yes", "No"] }
         : type === "categorical"
         ? { type: "categorical", answers: ["A", "B"] }
-        : { type: "scalar", answers: [0, 1] };
+        : { type: "scalar", numberType: "number", answers: [0, 1] };
 
     onChange({ target: { name, value: newValue }, type: "change" });
   };

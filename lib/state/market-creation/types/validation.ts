@@ -206,6 +206,7 @@ export const IOCategoricalAnswers = z
 
 export const IOScalarAnswers = z.object({
   type: z.literal("scalar"),
+  numberType: z.union([z.literal("number"), z.literal("timestamp")]),
   answers: z
     .tuple([z.number(), z.number()])
     .refine((schema) => schema[0] < schema[1], {
