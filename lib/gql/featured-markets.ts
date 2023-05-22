@@ -37,7 +37,6 @@ const marketQuery = gql`
       categories {
         color
         name
-        ticker
       }
       tags
       period {
@@ -81,7 +80,7 @@ const getFeaturedMarkets = async (
           creation: MarketCreation;
           marketType: { [key: string]: string };
           scalarType: ScalarRangeType;
-          categories: { color: string; name: string; ticker: string }[];
+          categories: { color: string; name: string }[];
           outcomeAssets: string[];
           tags: [];
           status: string;

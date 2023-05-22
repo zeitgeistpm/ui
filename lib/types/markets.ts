@@ -1,6 +1,5 @@
 export type MarketOutcome = {
   name: string;
-  ticker: string;
   color: string;
   price: number;
   assetId?: string;
