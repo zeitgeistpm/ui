@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
+import { MessageSquare } from "react-feather";
 import { motion } from "framer-motion";
 import grill from "@subsocial/grill-widget";
 
@@ -45,14 +46,12 @@ const GrillChat: React.FC<GrillChatProps> = ({ open, setOpen }) => {
       >
         <div id="grill" className="h-full"></div>,
       </motion.div>
-      <Image
-        src="/icons/grillchat.svg"
-        width={58}
-        height={58}
-        alt="Open chat"
-        className="ml-auto cursor-pointer"
+      <div
+        className="ml-auto rounded-full cursor-pointer border-1 border-gray-300 w-14 h-14 center shadow-ztg-5"
         onClick={() => setOpen(!open)}
-      />
+      >
+        <MessageSquare size={28} />
+      </div>
     </div>
   );
 };
