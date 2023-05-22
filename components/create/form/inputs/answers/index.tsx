@@ -38,10 +38,10 @@ export const AnswersInput = ({
 
   return (
     <>
-      <div className="flex center mb-12">
+      <div className="flex justify-center items-center mb-12 gap-2">
         <button
           type="button"
-          className={`text-sm rounded-full py-4 px-8 mr-4 ${
+          className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8  ${
             value?.type === "yes/no"
               ? "bg-fog-of-war text-white"
               : "bg-platinum"
@@ -53,7 +53,7 @@ export const AnswersInput = ({
 
         <button
           type="button"
-          className={`text-sm rounded-full py-4 px-8 mr-4 ${
+          className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8 ${
             value?.type === "categorical"
               ? "bg-fog-of-war text-white"
               : "bg-platinum"
@@ -65,7 +65,7 @@ export const AnswersInput = ({
 
         <button
           type="button"
-          className={`text-sm rounded-full py-4 px-8 mr-4 ${
+          className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8 ${
             value?.type === "scalar"
               ? "bg-fog-of-war text-white"
               : "bg-platinum"

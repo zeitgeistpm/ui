@@ -47,8 +47,6 @@ export const MarketCreationForm = () => {
     fieldsState,
     reset,
     form,
-    showAdvancedDeadlineControls,
-    setAdvancedDeadlineControls,
   } = useCreateMarketState();
 
   const back = () => {
@@ -100,7 +98,14 @@ export const MarketCreationForm = () => {
           nextDisabled={!fieldsState.currency.isValid}
         >
           <div className="mb-4 md:mb-8 text-center">
-            <h2 className="text-base">Market Currency</h2>
+            <h2 className="text-base flex justify-center items-center gap-2">
+              Market Currency
+              <InfoPopover title="Market Base Asset">
+                <p className="text-gray-500 font-light text-sm">
+                  The base asset used to provide liquidity to the market.
+                </p>
+              </InfoPopover>
+            </h2>
           </div>
           <CurrencySelect options={["ZTG", "DOT"]} {...input("currency")} />
         </MarketFormSection>
@@ -183,107 +188,82 @@ export const MarketCreationForm = () => {
             </div>
           </div>
 
-          <div
-            className="flex justify-center items-center mb-8 text-mariner cursor-pointer"
-            onClick={() =>
-              setAdvancedDeadlineControls(!showAdvancedDeadlineControls)
-            }
-          >
-            Advanced Deadline Options
-            <ChevronDown
-              size={12}
-              viewBox="6 6 12 12"
-              className={`box-content px-2 ${open && "rotate-180"}`}
-            />
-          </div>
-
-          <Transition
-            show={showAdvancedDeadlineControls ?? false}
-            as={Fragment}
-            enter="ease-out duration-200"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0 hidden"
-          >
-            <div>
-              <div className="mb-6">
-                <div className="mb-4 text-center">
-                  <h2 className="flex text-base justify-center items-center gap-2">
-                    Set Grace Period
-                    <InfoPopover title="Grace Period">
-                      <p className="text-gray-500 font-light text-sm">
-                        Grace period starts after the market ends. During this
-                        period, trading, reporting and disputing is disabled.
-                      </p>
-                    </InfoPopover>
-                  </h2>
-                </div>
-                <div className="flex justify-center">
-                  <BlockPeriodPicker
-                    isValid={fieldsState.gracePeriod.isValid}
-                    options={gracePeriodOptions}
-                    {...input("gracePeriod", { mode: "all" })}
-                  />
-                </div>
-                <div className="flex center h-5 mt-4 text-xs text-red-400">
-                  <ErrorMessage field={fieldsState.gracePeriod} />
-                </div>
+          <div>
+            <div className="mb-6">
+              <div className="mb-4 text-center">
+                <h2 className="flex text-base justify-center items-center gap-2">
+                  Set Grace Period
+                  <InfoPopover title="Grace Period">
+                    <p className="text-gray-500 font-light text-sm">
+                      Grace period starts after the market ends. During this
+                      period, trading, reporting and disputing is disabled.
+                    </p>
+                  </InfoPopover>
+                </h2>
               </div>
-
-              <div className="mb-6 ">
-                <div className="mb-4 text-center">
-                  <h2 className="flex text-base justify-center items-center gap-2">
-                    Set Report Period
-                    <InfoPopover title="Report Period">
-                      <p className="text-gray-500 font-light text-sm">
-                        Reporting starts after the market ends and grace period
-                        has finished. In this period the market outcome can only
-                        be resolved by the designated oracle. If the oracle
-                        fails to report the market goes into open reporting
-                        where anyone can submit the outcome.
-                      </p>
-                    </InfoPopover>
-                  </h2>
-                </div>
-                <div className="flex justify-center">
-                  <BlockPeriodPicker
-                    isValid={fieldsState.reportingPeriod.isValid}
-                    options={reportingPeriodOptions}
-                    {...input("reportingPeriod", { mode: "all" })}
-                  />
-                </div>
-                <div className="flex center h-5 mt-4 text-xs text-red-400">
-                  <ErrorMessage field={fieldsState.reportingPeriod} />
-                </div>
+              <div className="flex justify-center">
+                <BlockPeriodPicker
+                  isValid={fieldsState.gracePeriod.isValid}
+                  options={gracePeriodOptions}
+                  {...input("gracePeriod", { mode: "all" })}
+                />
               </div>
-
-              <div className="mb-0">
-                <div className="mb-4 text-center">
-                  <h2 className="flex text-base justify-center items-center gap-2">
-                    Set Dispute Period
-                    <InfoPopover title="Report Period">
-                      <p className="text-gray-500 font-light text-sm">
-                        The dispute period starts when the market has been
-                        reported.
-                      </p>
-                    </InfoPopover>
-                  </h2>
-                </div>
-                <div className="flex justify-center">
-                  <BlockPeriodPicker
-                    isValid={fieldsState.disputePeriod.isValid}
-                    options={disputePeriodOptions}
-                    {...input("disputePeriod", { mode: "all" })}
-                  />
-                </div>
-                <div className="flex center h-5 mt-4 text-xs text-red-400">
-                  <ErrorMessage field={fieldsState.disputePeriod} />
-                </div>
+              <div className="flex center h-5 mt-4 text-xs text-red-400">
+                <ErrorMessage field={fieldsState.gracePeriod} />
               </div>
             </div>
-          </Transition>
+
+            <div className="mb-6 ">
+              <div className="mb-4 text-center">
+                <h2 className="flex text-base justify-center items-center gap-2">
+                  Set Report Period
+                  <InfoPopover title="Report Period">
+                    <p className="text-gray-500 font-light text-sm">
+                      Reporting starts after the market ends and grace period
+                      has finished. In this period the market outcome can only
+                      be resolved by the designated oracle. If the oracle fails
+                      to report the market goes into open reporting where anyone
+                      can submit the outcome.
+                    </p>
+                  </InfoPopover>
+                </h2>
+              </div>
+              <div className="flex justify-center">
+                <BlockPeriodPicker
+                  isValid={fieldsState.reportingPeriod.isValid}
+                  options={reportingPeriodOptions}
+                  {...input("reportingPeriod", { mode: "all" })}
+                />
+              </div>
+              <div className="flex center h-5 mt-4 text-xs text-red-400">
+                <ErrorMessage field={fieldsState.reportingPeriod} />
+              </div>
+            </div>
+
+            <div className="mb-0">
+              <div className="mb-4 text-center">
+                <h2 className="flex text-base justify-center items-center gap-2">
+                  Set Dispute Period
+                  <InfoPopover title="Report Period">
+                    <p className="text-gray-500 font-light text-sm">
+                      The dispute period starts when the market has been
+                      reported.
+                    </p>
+                  </InfoPopover>
+                </h2>
+              </div>
+              <div className="flex justify-center">
+                <BlockPeriodPicker
+                  isValid={fieldsState.disputePeriod.isValid}
+                  options={disputePeriodOptions}
+                  {...input("disputePeriod", { mode: "all" })}
+                />
+              </div>
+              <div className="flex center h-5 mt-4 text-xs text-red-400">
+                <ErrorMessage field={fieldsState.disputePeriod} />
+              </div>
+            </div>
+          </div>
         </MarketFormSection>
 
         <MarketFormSection
