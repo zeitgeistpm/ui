@@ -48,6 +48,10 @@ export type UseCreateMarketState = {
    */
   isValid: boolean;
   /**
+   * Show the advanced deadline controls in the time period section.
+   */
+  showAdvancedDeadlineControls: boolean;
+  /**
    * Reset the form state.
    */
   reset: () => void;
@@ -59,6 +63,10 @@ export type UseCreateMarketState = {
    * Toggle the wizard mode on or off.
    */
   setWizard: (on: boolean) => void;
+  /**
+   * Toggle the advanced deadline controls on or off.
+   */
+  setAdvancedDeadlineControls: (on: boolean) => void;
   /**
    * Register a input to a form key.
    */
@@ -88,6 +96,7 @@ export type MarketCreationState = {
   currentStep: MarketCreationStep;
   touchState: Partial<Record<keyof MarketCreationFormData, boolean>>;
   stepReachState: Partial<Record<MarketCreationStepType, boolean>>;
+  showAdvancedDeadlineControls: boolean;
 };
 
 export const defaultState: MarketCreationState = {
@@ -111,6 +120,7 @@ export const defaultState: MarketCreationState = {
   stepReachState: {
     Currency: true,
   },
+  showAdvancedDeadlineControls: false,
 };
 
 const createMarketStateAtom = persistentAtom<MarketCreationState>({
@@ -190,6 +200,13 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     setState(newState);
   };
 
+  const setAdvancedDeadlineControls = (on: boolean) => {
+    setState({
+      ...state,
+      showAdvancedDeadlineControls: on,
+    });
+  };
+
   const setStep = (step: MarketCreationStep) =>
     setState({
       ...state,
@@ -253,6 +270,7 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     form: state.form,
     currentStep: state.currentStep,
     isWizard: state.isWizard,
+    showAdvancedDeadlineControls: state.showAdvancedDeadlineControls,
     steps,
     fieldsState,
     isValid,
@@ -260,5 +278,6 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     setStep,
     setWizard,
     input,
+    setAdvancedDeadlineControls,
   };
 };
