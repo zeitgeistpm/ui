@@ -1,7 +1,7 @@
 import { PeriodOption } from "lib/state/market-creation/types/form";
+import { DeepReadonly } from "lib/types/deep-readonly";
 import { FormEvent } from "../types";
 import DateTimePicker from "./DateTime";
-import { DeepReadonly } from "lib/types/deep-readonly";
 
 export type BlockPeriodPickerProps = {
   name: string;
@@ -77,6 +77,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
           </>
         ))}
       </div>
+
       <div className="flex justify-center">
         <DateTimePicker
           name={name}

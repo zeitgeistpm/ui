@@ -38,7 +38,7 @@ export const AnswersInput = ({
 
   return (
     <>
-      <div className="flex justify-center items-center mb-12 gap-2">
+      <div className="flex justify-center items-center mb-8 gap-2">
         <button
           type="button"
           className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8  ${
@@ -76,7 +76,7 @@ export const AnswersInput = ({
         </button>
       </div>
 
-      <div className="flex justify-center">
+      <div className="">
         {value?.type === "categorical" && (
           <CategoricalAnswersInput
             value={value}

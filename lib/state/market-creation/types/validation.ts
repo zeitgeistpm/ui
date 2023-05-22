@@ -208,7 +208,14 @@ export const IOScalarAnswers = z.object({
   type: z.literal("scalar"),
   numberType: z.union([z.literal("number"), z.literal("timestamp")]),
   answers: z
-    .tuple([z.number(), z.number()])
+    .tuple([
+      z.number().gte(0, {
+        message: "Scalar values must be greater than or equal to 0",
+      }),
+      z.number().gte(0, {
+        message: "Scalar values must be greater than or equal to 0",
+      }),
+    ])
     .refine((schema) => schema[0] < schema[1], {
       message: "Lower bound must be less than upper bound",
     }),

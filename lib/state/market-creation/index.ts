@@ -2,6 +2,11 @@ import { FormEvent } from "components/create/form/types";
 import { useAtom } from "jotai";
 import { useMemo } from "react";
 import { persistentAtom } from "../util/persistent-atom";
+import {
+  gracePeriodOptions,
+  reportingPeriodOptions,
+} from "./constants/deadline-options";
+import { FieldsState, initialFieldsState } from "./types/fieldstate";
 import { MarketCreationFormData, marketCreationFormKeys } from "./types/form";
 import {
   MarketCreationStep,
@@ -11,12 +16,7 @@ import {
   stepForFormKey,
   stepFormKeys,
 } from "./types/step";
-import { FieldsState, initialFieldsState } from "./types/fieldstate";
 import { useMarketCreationFormValidator } from "./types/validation";
-import {
-  gracePeriodOptions,
-  reportingPeriodOptions,
-} from "./constants/deadline-options";
 
 export type UseCreateMarketState = {
   /**

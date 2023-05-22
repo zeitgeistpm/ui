@@ -50,10 +50,7 @@ export const CategoricalAnswersInput = ({
         name,
         value: {
           type: "categorical",
-          answers: [
-            ...(value?.answers ?? []),
-            `Answer ${value?.answers.length + 1}`,
-          ] as string[],
+          answers: [...(value?.answers ?? []), ""] as string[],
         },
       },
     });
@@ -75,30 +72,30 @@ export const CategoricalAnswersInput = ({
 
   return (
     <div className="mb-6">
-      <div className="mb-6">
-        <div className="flex flex-wrap center gap-6">
-          {value?.answers.map((answer: string, index: number) => {
-            const bg =
-              value?.type === "yes/no" && answer === "Yes"
-                ? "bg-nyanza-base"
-                : value?.type === "yes/no" && answer === "No"
-                ? "bg-orange-100"
-                : "bg-gray-200";
-            return (
-              <div
-                className={`relative flex-1 ${bg} rounded-md min-w-[150px] py-3 px-5`}
-              >
-                <input
-                  disabled={disabled}
-                  key={index}
-                  className={`h-full w-full bg-transparent outline-none`}
-                  value={answer}
-                  onChange={handleChange(index, onChange)}
-                  onBlur={handleChange(index, onBlur)}
-                  placeholder={`Answer ${index + 1}`}
-                />
-                <div className="absolute flex gap-2 z-10 right-2 top-[50%] translate-y-[-50%] ">
-                  {index > 1 && (
+      <div className="mb-6 md:flex justify-center items-center">
+        <div className="flex-1 md:flex justify-center">
+          <div>
+            {value?.answers.map((answer: string, index: number) => {
+              const bg =
+                value?.type === "yes/no" && answer === "Yes"
+                  ? "bg-nyanza-base"
+                  : value?.type === "yes/no" && answer === "No"
+                  ? "bg-orange-100"
+                  : "bg-gray-200";
+              return (
+                <div
+                  className={`relative flex-1 ${bg} w-full rounded-md md:min-w-[520px] md:max-w-[420px] py-3 px-5 mb-3`}
+                >
+                  <input
+                    disabled={disabled}
+                    key={index}
+                    className={`h-full w-full bg-transparent outline-none`}
+                    value={answer}
+                    onChange={handleChange(index, onChange)}
+                    onBlur={handleChange(index, onBlur)}
+                    placeholder={`Answer ${index + 1}`}
+                  />
+                  <div className="absolute flex gap-2 z-10 right-2 top-[50%] translate-y-[-50%] ">
                     <button
                       type="button"
                       className=" bg-white rounded-md py-1 px-2"
@@ -106,11 +103,11 @@ export const CategoricalAnswersInput = ({
                     >
                       clear
                     </button>
-                  )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
 

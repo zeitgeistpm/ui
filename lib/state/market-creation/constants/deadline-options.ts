@@ -4,16 +4,6 @@ import { PeriodOption } from "../types/form";
 
 export const gracePeriodOptions = [
   { type: "blocks", label: "None", value: 0 },
-  {
-    type: "blocks",
-    label: "1 Day",
-    value: NUM_BLOCKS_IN_DAY * 1,
-  },
-  {
-    type: "blocks",
-    label: "3 Days",
-    value: NUM_BLOCKS_IN_DAY * 3,
-  },
 ] as const satisfies DeepReadonly<PeriodOption[]>
 
 export const reportingPeriodOptions = [
