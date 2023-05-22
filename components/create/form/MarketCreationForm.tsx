@@ -132,8 +132,14 @@ export const MarketCreationForm = () => {
               </div>
             </div>
           </div>
+          <h2 className="flex justify-center mb-4 md:mb-8 text-base text-center">
+            <span className="hidden md:block">
+              Which categories does the market relate to?
+            </span>
+            <span className="block md:hidden">Select market categories.</span>
+          </h2>
           <div className="flex justify-center">
-            <div className="mb-6 max-w-4xl">
+            <div className="mb-6 max-w-2xl">
               <CategorySelect {...input("tags")} />
             </div>
           </div>
