@@ -1,5 +1,5 @@
 import { Transition } from "@headlessui/react";
-import { FieldState } from "lib/state/market-creation/types/field-state";
+import { FieldState } from "lib/state/market-creation/types/fieldstate";
 
 /**
  * Displayes a error message when a field has an error and

@@ -4,7 +4,7 @@ import { nextStepFrom, prevStepFrom } from "components/wizard/types";
 import { NUM_BLOCKS_IN_DAY, NUM_BLOCKS_IN_HOUR } from "lib/constants";
 import { useCreateMarketState } from "lib/state/market-creation";
 import dynamic from "next/dynamic";
-import { FormEventHandler } from "react";
+import React, { FormEventHandler, Fragment, useState } from "react";
 import { ErrorMessage } from "./ErrorMessage";
 import { MarketFormSection } from "./MarketFormSection";
 import MarketPreview from "./Preview";
@@ -14,6 +14,23 @@ import CurrencySelect from "./inputs/Currency";
 import DateTimePicker from "./inputs/DateTime";
 import ModerationModeSelect from "./inputs/Moderation";
 import { AnswersInput } from "./inputs/answers";
+import { PeriodOption } from "lib/state/market-creation/types/form";
+import { DeepReadonly } from "lib/types/deep-readonly";
+import {
+  disputePeriodOptions,
+  gracePeriodOptions,
+  reportingPeriodOptions,
+} from "lib/state/market-creation/constants/deadline-options";
+import { ChevronDown } from "react-feather";
+import { Dialog, Disclosure, Popover, Transition } from "@headlessui/react";
+import { BsInfo } from "react-icons/bs";
+import {
+  AiFillInfoCircle,
+  AiOutlineInfo,
+  AiOutlineInfoCircle,
+} from "react-icons/ai";
+import Modal from "components/ui/Modal";
+import InfoPopover from "./InfoPopover";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -151,7 +168,7 @@ export const MarketCreationForm = () => {
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="text-base">When does the market end?</h2>
           </div>
-          <div className="mb-6 md:mb-12">
+          <div className="mb-4">
             <div className="flex center mb-3">
               <DateTimePicker
                 placeholder="Set End Date"
@@ -164,92 +181,102 @@ export const MarketCreationForm = () => {
             </div>
           </div>
 
-          <div className="mb-6 md:mb-12">
-            <div className="mb-4 text-center">
-              <h2 className="text-base">Set Grace Period</h2>
-            </div>
-            <div className="flex center">
-              <BlockPeriodPicker
-                isValid={fieldsState.gracePeriod.isValid}
-                options={[
-                  { type: "blocks", label: "None", value: 0 },
-                  {
-                    type: "blocks",
-                    label: "1 Day",
-                    value: NUM_BLOCKS_IN_DAY * 1,
-                  },
-                  {
-                    type: "blocks",
-                    label: "3 Days",
-                    value: NUM_BLOCKS_IN_DAY * 3,
-                  },
-                ]}
-                {...input("gracePeriod", { mode: "all" })}
-              />
-            </div>
-            <div className="flex center h-5 mt-4 text-xs text-red-400">
-              <ErrorMessage field={fieldsState.gracePeriod} />
-            </div>
-          </div>
+          <Disclosure>
+            {({ open }) => (
+              <>
+                <div className="flex justify-center">
+                  <Disclosure.Button className="flex justify-center items-center mb-8 text-mariner cursor-pointer">
+                    Advanced Deadline Options
+                    <ChevronDown
+                      size={12}
+                      viewBox="6 6 12 12"
+                      className={`box-content px-2 ${open && "rotate-180"}`}
+                    />
+                  </Disclosure.Button>
+                </div>
+                <Disclosure.Panel>
+                  <>
+                    <div className="mb-6">
+                      <div className="mb-4 text-center">
+                        <h2 className="flex text-base justify-center items-center gap-2">
+                          Set Grace Period
+                          <InfoPopover title="Grace Period">
+                            <p className="text-gray-500 font-light text-sm">
+                              Grace period starts after the market ends. During
+                              this period, trading, reporting and disputing is
+                              disabled.
+                            </p>
+                          </InfoPopover>
+                        </h2>
+                      </div>
+                      <div className="flex justify-center">
+                        <BlockPeriodPicker
+                          isValid={fieldsState.gracePeriod.isValid}
+                          options={gracePeriodOptions}
+                          {...input("gracePeriod", { mode: "all" })}
+                        />
+                      </div>
+                      <div className="flex center h-5 mt-4 text-xs text-red-400">
+                        <ErrorMessage field={fieldsState.gracePeriod} />
+                      </div>
+                    </div>
 
-          <div className="mb-6 md:mb-12">
-            <div className="mb-4 text-center">
-              <h2 className="text-base">Set Report Period</h2>
-            </div>
-            <div className="flex center">
-              <BlockPeriodPicker
-                isValid={fieldsState.reportingPeriod.isValid}
-                options={[
-                  {
-                    type: "blocks",
-                    label: "1 Hour",
-                    value: NUM_BLOCKS_IN_HOUR,
-                  },
-                  {
-                    type: "blocks",
-                    label: "1 Day",
-                    value: NUM_BLOCKS_IN_DAY * 1,
-                  },
-                  {
-                    type: "blocks",
-                    label: "3 Days",
-                    value: NUM_BLOCKS_IN_DAY * 3,
-                  },
-                ]}
-                {...input("reportingPeriod", { mode: "all" })}
-              />
-            </div>
-            <div className="flex center h-5 mt-4 text-xs text-red-400">
-              <ErrorMessage field={fieldsState.reportingPeriod} />
-            </div>
-          </div>
+                    <div className="mb-6 ">
+                      <div className="mb-4 text-center">
+                        <h2 className="flex text-base justify-center items-center gap-2">
+                          Set Report Period
+                          <InfoPopover title="Report Period">
+                            <p className="text-gray-500 font-light text-sm">
+                              Reporting starts after the market ends and grace
+                              period has finished. In this period the market
+                              outcome can only be resolved by the designated
+                              oracle. If the oracle fails to report the market
+                              goes into open reporting where anyone can submit
+                              the outcome.
+                            </p>
+                          </InfoPopover>
+                        </h2>
+                      </div>
+                      <div className="flex justify-center">
+                        <BlockPeriodPicker
+                          isValid={fieldsState.reportingPeriod.isValid}
+                          options={reportingPeriodOptions}
+                          {...input("reportingPeriod", { mode: "all" })}
+                        />
+                      </div>
+                      <div className="flex center h-5 mt-4 text-xs text-red-400">
+                        <ErrorMessage field={fieldsState.reportingPeriod} />
+                      </div>
+                    </div>
 
-          <div className="mb-0">
-            <div className="mb-4 text-center">
-              <h2 className="text-base">Set Dispute Period</h2>
-            </div>
-            <div className="flex center">
-              <BlockPeriodPicker
-                isValid={fieldsState.disputePeriod.isValid}
-                options={[
-                  {
-                    type: "blocks",
-                    label: "1 Day",
-                    value: NUM_BLOCKS_IN_DAY * 1,
-                  },
-                  {
-                    type: "blocks",
-                    label: "3 Days",
-                    value: NUM_BLOCKS_IN_DAY * 3,
-                  },
-                ]}
-                {...input("disputePeriod", { mode: "all" })}
-              />
-            </div>
-            <div className="flex center h-5 mt-4 text-xs text-red-400">
-              <ErrorMessage field={fieldsState.disputePeriod} />
-            </div>
-          </div>
+                    <div className="mb-0">
+                      <div className="mb-4 text-center">
+                        <h2 className="flex text-base justify-center items-center gap-2">
+                          Set Dispute Period
+                          <InfoPopover title="Report Period">
+                            <p className="text-gray-500 font-light text-sm">
+                              The dispute period starts when the market has been
+                              reported.
+                            </p>
+                          </InfoPopover>
+                        </h2>
+                      </div>
+                      <div className="flex justify-center">
+                        <BlockPeriodPicker
+                          isValid={fieldsState.disputePeriod.isValid}
+                          options={disputePeriodOptions}
+                          {...input("disputePeriod", { mode: "all" })}
+                        />
+                      </div>
+                      <div className="flex center h-5 mt-4 text-xs text-red-400">
+                        <ErrorMessage field={fieldsState.disputePeriod} />
+                      </div>
+                    </div>
+                  </>
+                </Disclosure.Panel>
+              </>
+            )}
+          </Disclosure>
         </MarketFormSection>
 
         <MarketFormSection

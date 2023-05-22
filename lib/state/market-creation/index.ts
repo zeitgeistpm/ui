@@ -2,11 +2,7 @@ import { FormEvent } from "components/create/form/types";
 import { useAtom } from "jotai";
 import { useMemo } from "react";
 import { persistentAtom } from "../util/persistent-atom";
-import {
-  MarketCreationFormData,
-  marketCreationFormKeys,
-  useMarketCreationFormValidator,
-} from "./types/form";
+import { MarketCreationFormData, marketCreationFormKeys } from "./types/form";
 import {
   MarketCreationStep,
   MarketCreationStepType,
@@ -15,7 +11,12 @@ import {
   stepForFormKey,
   stepFormKeys,
 } from "./types/step";
-import { FieldsState, initialFieldsState } from "./types/field-state";
+import { FieldsState, initialFieldsState } from "./types/fieldstate";
+import { useMarketCreationFormValidator } from "./types/validation";
+import {
+  gracePeriodOptions,
+  reportingPeriodOptions,
+} from "./constants/deadline-options";
 
 export type UseCreateMarketState = {
   /**
@@ -102,6 +103,9 @@ export const defaultState: MarketCreationState = {
       type: "categorical",
       answers: ["", ""],
     },
+    gracePeriod: gracePeriodOptions.find((o) => o.label === "None"),
+    reportingPeriod: reportingPeriodOptions.find((o) => o.label === "1 Day"),
+    disputePeriod: reportingPeriodOptions.find((o) => o.label === "1 Day"),
   },
   touchState: {},
   stepReachState: {

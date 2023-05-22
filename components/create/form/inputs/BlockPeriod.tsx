@@ -1,11 +1,12 @@
 import { PeriodOption } from "lib/state/market-creation/types/form";
 import { FormEvent } from "../types";
 import DateTimePicker from "./DateTime";
+import { DeepReadonly } from "lib/types/deep-readonly";
 
 export type BlockPeriodPickerProps = {
   name: string;
   value?: PeriodOption;
-  options: Array<PeriodOption>;
+  options: DeepReadonly<PeriodOption[]>;
   onChange: (event: FormEvent<PeriodOption>) => void;
   onBlur: (event: FormEvent<PeriodOption>) => void;
   isValid?: boolean;
