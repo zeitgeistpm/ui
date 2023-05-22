@@ -168,9 +168,6 @@ const Market: NextPage<MarketPageProps> = ({
   //data for MarketHeader
   const token = metadata?.symbol;
 
-  const subsidy =
-    marketSdkv2?.pool?.poolId == null ? 0 : liquidity?.div(ZTG).toNumber();
-
   return (
     <>
       <MarketMeta market={indexedMarket} />
@@ -199,7 +196,6 @@ const Market: NextPage<MarketPageProps> = ({
           disputes={lastDispute}
           token={token}
           prizePool={prizePool?.div(ZTG).toNumber()}
-          subsidy={subsidy}
           marketStage={marketStage}
           rejectReason={marketSdkv2?.rejectReason}
         />
