@@ -251,7 +251,8 @@ export const MarketCreationForm = () => {
                   <InfoPopover title="Report Period">
                     <p className="text-gray-500 font-light text-sm">
                       The dispute period starts when the market has been
-                      reported.
+                      reported. If no dispute is raised during this period the
+                      market is resolved to the reported outcome.
                     </p>
                   </InfoPopover>
                 </h2>
