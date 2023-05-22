@@ -239,7 +239,7 @@ export const IOEndDate = z
 
 export const IOBlockPeriod = z.object({
   type: z.literal("blocks"),
-  label: z.string(),
+  label: z.union([z.literal("custom"), z.string()]),
   value: z.number(),
 });
 

@@ -6,11 +6,15 @@ import DateTimePicker from "./DateTime";
 export type BlockPeriodPickerProps = {
   name: string;
   value?: PeriodOption;
-  options: DeepReadonly<PeriodOption[]>;
+  options: BlockPeriodPickerOptions;
   onChange: (event: FormEvent<PeriodOption>) => void;
   onBlur: (event: FormEvent<PeriodOption>) => void;
   isValid?: boolean;
 };
+
+export type BlockPeriodPickerOptions = DeepReadonly<
+  Array<PeriodOption | { type: "custom-duration" } | { type: "custom-date" }>
+>;
 
 export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
   name,
@@ -59,7 +63,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
   return (
     <div className="md:flex justify-center items-center gap-3">
       <div className="flex justify-center gap-3 mb-4 md:mb-0">
-        {options.map((option, index) => (
+        {options.map((option) => (
           <>
             {option.type === "blocks" && (
               <button
@@ -78,16 +82,22 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
         ))}
       </div>
 
-      <div className="flex justify-center">
-        <DateTimePicker
-          name={name}
-          className="min-w-[300px]"
-          placeholder="Set Custom Date"
-          isValid={value?.type === "date" && isValid}
-          value={value?.type === "date" ? value.value : undefined}
-          onChange={handleDateChange}
-          onBlur={handleDateBlur}
-        />
+      <div className="flex justify-center gap-3">
+        {Boolean(options.find((o) => o.type === "custom-duration")) && (
+          <div>duration input</div>
+        )}
+
+        {Boolean(options.find((o) => o.type === "custom-date")) && (
+          <DateTimePicker
+            name={name}
+            className="min-w-[300px]"
+            placeholder="Set Custom Date"
+            isValid={value?.type === "date" && isValid}
+            value={value?.type === "date" ? value.value : undefined}
+            onChange={handleDateChange}
+            onBlur={handleDateBlur}
+          />
+        )}
       </div>
     </div>
   );
