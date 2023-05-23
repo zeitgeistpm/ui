@@ -1,4 +1,12 @@
-import { PeriodOption } from "lib/state/market-creation/types/form";
+import {
+  ChainTime,
+  blockDate,
+  dateBlock,
+} from "@zeitgeistpm/utility/dist/time";
+import {
+  PeriodOption,
+  PeriodPresetOption,
+} from "lib/state/market-creation/types/form";
 import { DeepReadonly } from "lib/types/deep-readonly";
 import { FormEvent } from "../types";
 import DateTimePicker from "./DateTime";
@@ -10,10 +18,13 @@ export type BlockPeriodPickerProps = {
   onChange: (event: FormEvent<PeriodOption>) => void;
   onBlur: (event: FormEvent<PeriodOption>) => void;
   isValid?: boolean;
+  chainTime: ChainTime;
 };
 
 export type BlockPeriodPickerOptions = DeepReadonly<
-  Array<PeriodOption | { type: "custom-duration" } | { type: "custom-date" }>
+  Array<
+    PeriodPresetOption | { type: "custom-duration" } | { type: "custom-date" }
+  >
 >;
 
 export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
@@ -22,6 +33,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
   onChange,
   onBlur,
   options,
+  chainTime,
   isValid,
 }) => {
   const handleOnClickOption = (option: PeriodOption) => {
@@ -40,8 +52,8 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
       target: {
         name,
         value: {
-          type: "date",
-          value: event.target.value,
+          type: "custom-date",
+          block: dateBlock(chainTime, new Date(event.target.value)),
         },
       },
     });
@@ -53,8 +65,8 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
       target: {
         name,
         value: {
-          type: "date",
-          value: event.target.value,
+          type: "custom-date",
+          block: dateBlock(chainTime, new Date(event.target.value)),
         },
       },
     });
@@ -65,11 +77,11 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
       <div className="flex justify-center gap-3 mb-4 md:mb-0">
         {options.map((option) => (
           <>
-            {option.type === "blocks" && (
+            {option.type === "preset" && (
               <button
                 type="button"
                 className={`flex center rounded-full bg-gray-200 py-3 px-6 ${
-                  value?.type === "blocks" &&
+                  value?.type === "preset" &&
                   option.label === value.label &&
                   "bg-nyanza-base"
                 }`}
@@ -90,10 +102,16 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
         {Boolean(options.find((o) => o.type === "custom-date")) && (
           <DateTimePicker
             name={name}
-            className="min-w-[300px]"
+            className={`min-w-[300px] ${
+              value?.type === "custom-date" && "bg-nyanza-base"
+            }`}
             placeholder="Set Custom Date"
-            isValid={value?.type === "date" && isValid}
-            value={value?.type === "date" ? value.value : undefined}
+            isValid={value?.type === "custom-date" && isValid}
+            value={
+              chainTime && value?.type === "custom-date"
+                ? blockDate(chainTime, value.block).toISOString()
+                : undefined
+            }
             onChange={handleDateChange}
             onBlur={handleDateBlur}
           />

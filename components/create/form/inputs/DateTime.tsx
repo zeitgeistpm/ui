@@ -24,7 +24,6 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    console.log("handleChange", name);
     onChange?.({
       type: "change",
       target: {
@@ -35,7 +34,6 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   };
 
   const handleBlur: FocusEventHandler<HTMLInputElement> = (event) => {
-    console.log("handleBlur", name);
     onBlur?.({
       type: "blur",
       target: {

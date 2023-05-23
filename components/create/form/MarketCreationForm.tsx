@@ -31,6 +31,8 @@ import {
 } from "react-icons/ai";
 import Modal from "components/ui/Modal";
 import InfoPopover from "./InfoPopover";
+import { useChainTime } from "lib/state/chaintime";
+import { dateBlock } from "@zeitgeistpm/utility/dist/time";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -48,6 +50,8 @@ export const MarketCreationForm = () => {
     reset,
     form,
   } = useCreateMarketState();
+
+  const chainTime = useChainTime();
 
   const back = () => {
     const prevStep = prevStepFrom(steps, currentStep);
@@ -209,6 +213,7 @@ export const MarketCreationForm = () => {
                 <BlockPeriodPicker
                   isValid={fieldsState.gracePeriod.isValid}
                   options={gracePeriodOptions}
+                  chainTime={chainTime}
                   {...input("gracePeriod", { mode: "all" })}
                 />
               </div>
@@ -236,6 +241,7 @@ export const MarketCreationForm = () => {
                 <BlockPeriodPicker
                   isValid={fieldsState.reportingPeriod.isValid}
                   options={reportingPeriodOptions}
+                  chainTime={chainTime}
                   {...input("reportingPeriod", { mode: "all" })}
                 />
               </div>
@@ -261,6 +267,7 @@ export const MarketCreationForm = () => {
                 <BlockPeriodPicker
                   isValid={fieldsState.disputePeriod.isValid}
                   options={disputePeriodOptions}
+                  chainTime={chainTime}
                   {...input("disputePeriod", { mode: "all" })}
                 />
               </div>

@@ -7,7 +7,10 @@ import {
   IOEndDate,
   IOModerationMode,
   IOOracle,
+  IOPeriodCustomDateOption,
+  IOPeriodCustomDurationOption,
   IOPeriodOption,
+  IOPeriodPresetOption,
   IOQuestion,
   IOScalarAnswers,
   IOTags,
@@ -65,6 +68,13 @@ export type CategoricalAnswers = Required<z.infer<typeof IOCategoricalAnswers>>;
 export type ScalarAnswers = Required<z.infer<typeof IOScalarAnswers>>;
 export type EndDate = z.infer<typeof IOEndDate>;
 export type PeriodOption = Required<z.infer<typeof IOPeriodOption>>;
+export type PeriodPresetOption = Required<z.infer<typeof IOPeriodPresetOption>>;
+export type PeriodCustomDateOption = Required<
+  z.infer<typeof IOPeriodCustomDateOption>
+>;
+export type PeriodCustomDurationOption = Required<
+  z.infer<typeof IOPeriodCustomDurationOption>
+>;
 export type Oracle = z.infer<typeof IOOracle>;
 export type Description = z.infer<typeof IODescription>;
 export type Moderation = z.infer<typeof IOModerationMode>;

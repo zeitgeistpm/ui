@@ -104,9 +104,9 @@ export const defaultState: MarketCreationState = {
       type: "categorical",
       answers: ["", ""],
     },
-    gracePeriod: gracePeriodOptions.find((o) => o.label === "None"),
-    reportingPeriod: reportingPeriodOptions.find((o) => o.label === "1 Day"),
-    disputePeriod: reportingPeriodOptions.find((o) => o.label === "1 Day"),
+    gracePeriod: gracePeriodOptions[0],
+    reportingPeriod: reportingPeriodOptions[1],
+    disputePeriod: reportingPeriodOptions[1],
   },
   touchState: {},
   stepReachState: {

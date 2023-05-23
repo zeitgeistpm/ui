@@ -3,40 +3,40 @@ import { DeepReadonly } from "lib/types/deep-readonly";
 import { PeriodOption } from "../types/form";
 import { BlockPeriodPickerOptions } from "components/create/form/inputs/BlockPeriod";
 
-export const gracePeriodOptions = [
-  { type: "blocks", label: "None", value: 0 },
-  {type: "custom-date"}
+export const gracePeriodOptions =  [
+  { type: "preset", label: "None", blocks: 0 },
+  { type: "custom-date"}
 ] as const satisfies DeepReadonly<BlockPeriodPickerOptions>
 
 export const reportingPeriodOptions = [
   {
-    type: "blocks",
+    type: "preset",
     label: "1 Hour",
-    value: NUM_BLOCKS_IN_HOUR,
+    blocks: NUM_BLOCKS_IN_HOUR,
   },
   {
-    type: "blocks",
+    type: "preset",
     label: "1 Day",
-    value: NUM_BLOCKS_IN_DAY * 1,
+    blocks: NUM_BLOCKS_IN_DAY * 1,
   },
   {
-    type: "blocks",
+    type: "preset",
     label: "3 Days",
-    value: NUM_BLOCKS_IN_DAY * 3,
+    blocks: NUM_BLOCKS_IN_DAY * 3,
   },
-  {type: "custom-duration"}
+  { type: "custom-duration" }
 ] as const satisfies DeepReadonly<BlockPeriodPickerOptions>
 
 export const disputePeriodOptions = [
   {
-    type: "blocks",
+    type: "preset",
     label: "1 Day",
-    value: NUM_BLOCKS_IN_DAY * 1,
+    blocks: NUM_BLOCKS_IN_DAY * 1,
   },
   {
-    type: "blocks",
+    type: "preset",
     label: "3 Days",
-    value: NUM_BLOCKS_IN_DAY * 3,
+    blocks: NUM_BLOCKS_IN_DAY * 3,
   },
-  {type: "custom-duration"}
+  { type: "custom-duration" }
 ] as const satisfies DeepReadonly<BlockPeriodPickerOptions>

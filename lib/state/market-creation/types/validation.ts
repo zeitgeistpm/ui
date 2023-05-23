@@ -1,7 +1,11 @@
 import { ZeitgeistPrimitivesMarketMarketCreation } from "@polkadot/types/lookup";
 import { encodeAddress } from "@polkadot/util-crypto";
 import { tryCatch } from "@zeitgeistpm/utility/dist/option";
-import { ChainTime, dateBlock } from "@zeitgeistpm/utility/dist/time";
+import {
+  ChainTime,
+  blockDate,
+  dateBlock,
+} from "@zeitgeistpm/utility/dist/time";
 import { defaultTags } from "lib/constants/markets";
 import {
   MarketDeadlineConstants,
@@ -33,58 +37,57 @@ export const createMarketFormValidator = ({
     tags: IOTags,
     answers: IOAnswers,
     endDate: IOEndDate,
-    gracePeriod: IOPeriodOption.refine(
-      (gracePeriod) =>
-        gracePeriod.type !== "date" ||
-        new Date(gracePeriod?.value) > new Date(form?.endDate),
-      { message: "Grace period must end after market ends." },
-    ).refine(
-      (gracePeriod) => {
-        if (!chainTime || !deadlineConstants) {
-          return true;
-        }
+    gracePeriod: IOPeriodOption.superRefine((gracePeriod, ctx) => {
+      if (!chainTime || !deadlineConstants) return true;
 
-        const delta =
-          dateBlock(chainTime, new Date(gracePeriod.value)) - chainTime.block;
-
-        if (delta > deadlineConstants?.maxGracePeriod) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: `Grace period exceeds maximum of ${deadlineConstants?.maxGracePeriod} blocks.`,
-      },
-    ),
-    reportingPeriod: IOPeriodOption.superRefine((reportingPeriod, ctx) => {
-      if (!chainTime || !deadlineConstants) {
-        return true;
-      }
-
-      const gracePeriodEnd =
-        form?.gracePeriod?.type === "date"
-          ? dateBlock(chainTime, new Date(form?.gracePeriod?.value))
-          : dateBlock(chainTime, new Date(form?.endDate)) +
-            form?.gracePeriod?.value;
-
-      const reportingPeriodEnd =
-        reportingPeriod?.type === "date"
-          ? dateBlock(chainTime, new Date(reportingPeriod?.value))
-          : gracePeriodEnd + reportingPeriod?.value;
-
-      const delta = reportingPeriodEnd - gracePeriodEnd;
-
-      if (reportingPeriodEnd <= gracePeriodEnd) {
+      const marketEndDate = new Date(form?.endDate);
+      const marketEndBlock = dateBlock(chainTime, marketEndDate);
+      const gracePeriodEndBlock =
+        gracePeriod?.type === "custom-date"
+          ? gracePeriod?.block
+          : marketEndBlock + gracePeriod?.blocks;
+      const gracePeriodEndDate = blockDate(chainTime, gracePeriodEndBlock);
+      const delta = gracePeriodEndBlock - marketEndBlock;
+      if (delta !== 0 && gracePeriodEndDate < marketEndDate) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Reporting period must end after grace period.",
+          message: "Grace period must end after market ends.",
         });
-      } else if (delta > deadlineConstants?.maxOracleDuration) {
+      }
+
+      if (delta > deadlineConstants?.maxGracePeriod) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Grace period exceeds maximum of ${deadlineConstants?.maxGracePeriod} blocks.`,
+        });
+      }
+    }),
+    reportingPeriod: IOPeriodOption.superRefine((reportingPeriod, ctx) => {
+      if (!chainTime || !deadlineConstants) return true;
+
+      const marketEndDate = new Date(form?.endDate);
+      const marketEndBlock = dateBlock(chainTime, marketEndDate);
+
+      const gracePeriodEndBlock =
+        form?.gracePeriod?.type === "custom-date"
+          ? form?.gracePeriod?.block
+          : marketEndBlock + form?.gracePeriod?.blocks;
+
+      const reportingPeriodEndBlock =
+        reportingPeriod?.type === "custom-date"
+          ? reportingPeriod?.block
+          : gracePeriodEndBlock + reportingPeriod?.blocks;
+
+      const delta = reportingPeriodEndBlock - gracePeriodEndBlock;
+
+      if (delta > deadlineConstants?.maxOracleDuration) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: `Reporting period exceeds maximum of ${deadlineConstants?.maxOracleDuration} blocks.`,
         });
-      } else if (delta < deadlineConstants?.minOracleDuration) {
+      }
+
+      if (delta < deadlineConstants?.minOracleDuration) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: `Reporting period is less than minimum of ${deadlineConstants?.minOracleDuration} blocks.`,
@@ -94,39 +97,36 @@ export const createMarketFormValidator = ({
       return true;
     }),
     disputePeriod: IOPeriodOption.superRefine((disputePeriod, ctx) => {
-      if (!chainTime || !deadlineConstants) {
-        return true;
-      }
+      if (!chainTime || !deadlineConstants) return true;
 
-      const gracePeriodEnd =
-        form?.gracePeriod?.type === "date"
-          ? dateBlock(chainTime, new Date(form?.gracePeriod?.value))
-          : dateBlock(chainTime, new Date(form?.endDate)) +
-            form?.gracePeriod?.value;
+      const marketEndDate = new Date(form?.endDate);
+      const marketEndBlock = dateBlock(chainTime, marketEndDate);
 
-      const reportingPeriodEnd =
-        form?.reportingPeriod?.type === "date"
-          ? dateBlock(chainTime, new Date(form?.reportingPeriod?.value))
-          : gracePeriodEnd + form?.reportingPeriod?.value;
+      const gracePeriodEndBlock =
+        form?.gracePeriod?.type === "custom-date"
+          ? form?.gracePeriod?.block
+          : marketEndBlock + form?.gracePeriod?.blocks;
 
-      const disputePeriodEnd =
-        disputePeriod?.type === "date"
-          ? dateBlock(chainTime, new Date(disputePeriod?.value))
-          : reportingPeriodEnd + disputePeriod?.value;
+      const reportingPeriodEndBlock =
+        form.reportingPeriod?.type === "custom-date"
+          ? form.reportingPeriod?.block
+          : gracePeriodEndBlock + form.reportingPeriod?.blocks;
 
-      const delta = disputePeriodEnd - reportingPeriodEnd;
+      const disputePeriodEndBlock =
+        disputePeriod?.type === "custom-date"
+          ? disputePeriod?.block
+          : reportingPeriodEndBlock + disputePeriod?.blocks;
 
-      if (disputePeriodEnd <= reportingPeriodEnd) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Dispute period must end after the report period.",
-        });
-      } else if (delta > deadlineConstants?.maxOracleDuration) {
+      const delta = disputePeriodEndBlock - reportingPeriodEndBlock;
+
+      if (delta > deadlineConstants?.maxDisputeDuration) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: `Dispute period exceeds maximum of ${deadlineConstants?.maxDisputeDuration} blocks.`,
         });
-      } else if (delta < deadlineConstants?.minOracleDuration) {
+      }
+
+      if (delta < deadlineConstants?.minDisputeDuration) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: `Dispute period is less than minimum of ${deadlineConstants?.minDisputeDuration} blocks.`,
@@ -224,7 +224,7 @@ export const IOScalarAnswers = z.object({
 export const IOAnswers = z.union(
   [IOYesNoAnswers, IOCategoricalAnswers, IOScalarAnswers],
   {
-    errorMap: (error) => {
+    errorMap: () => {
       return { message: "All fields are required" };
     },
   },
@@ -237,18 +237,27 @@ export const IOEndDate = z
     message: "End date must be in the future",
   });
 
-export const IOBlockPeriod = z.object({
-  type: z.literal("blocks"),
-  label: z.union([z.literal("custom"), z.string()]),
-  value: z.number(),
+export const IOPeriodPresetOption = z.object({
+  type: z.literal("preset"),
+  label: z.string(),
+  blocks: z.number(),
 });
 
-export const IODatePeriod = z.object({
-  type: z.literal("date"),
-  value: z.string().datetime(),
+export const IOPeriodCustomDateOption = z.object({
+  type: z.literal("custom-date"),
+  block: z.number(),
 });
 
-export const IOPeriodOption = z.union([IOBlockPeriod, IODatePeriod]);
+export const IOPeriodCustomDurationOption = z.object({
+  type: z.literal("custom-duration"),
+  blocks: z.number(),
+});
+
+export const IOPeriodOption = z.union([
+  IOPeriodPresetOption,
+  IOPeriodCustomDateOption,
+  IOPeriodCustomDurationOption,
+]);
 
 export const IOOracle = z
   .string()
