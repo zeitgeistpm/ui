@@ -39,6 +39,10 @@ import { MarketBond, useAccountBonds } from "./useAccountBonds";
 import { useChainTime } from "lib/state/chaintime";
 import { useTransactionHistory } from "./useTransactionHistory";
 import { useTradeHistory } from "./useTradeHistory";
+import {
+  ForeignAssetPrices,
+  useAllForeignAssetUsdPrices,
+} from "./useAssetUsdPrice";
 
 export type UsePortfolioPositions = {
   /**
@@ -153,11 +157,11 @@ export const usePortfolioPositions = (
 ): UsePortfolioPositions => {
   const now = useChainTime();
 
-  //todo: needs to base asset balance?
   const { data: ztgPrice } = useZtgPrice();
   const block24HoursAgo = Math.floor(now?.block - 7200);
   const { data: marketBonds, isLoading: isBondsLoading } =
     useAccountBonds(address);
+  const { data: foreignAssetPrices } = useAllForeignAssetUsdPrices();
 
   const rawPositions = useAccountTokenPositions({
     where: {
@@ -510,14 +514,27 @@ export const usePortfolioPositions = (
   );
 
   const breakdown = useMemo<PorfolioBreakdown>(() => {
-    if (!ztgPrice || !marketPositions || !subsidyPositions || isBondsLoading) {
+    if (
+      !ztgPrice ||
+      !marketPositions ||
+      !subsidyPositions ||
+      isBondsLoading ||
+      !foreignAssetPrices
+    ) {
       return null;
     }
 
-    const tradingPositionsTotal = totalPositionsValue(marketPositions, "price");
+    const tradingPositionsTotal = totalPositionsValue(
+      marketPositions,
+      "price",
+      foreignAssetPrices,
+      ztgPrice,
+    );
     const tradingPositionsTotal24HoursAgo = totalPositionsValue(
       marketPositions,
       "price24HoursAgo",
+      foreignAssetPrices,
+      ztgPrice,
     );
 
     const tradingPositionsChange = diffChange(
@@ -528,10 +545,14 @@ export const usePortfolioPositions = (
     const subsidyPositionsTotal = totalPositionsValue(
       subsidyPositions,
       "price",
+      foreignAssetPrices,
+      ztgPrice,
     );
     const subsidyPositionsTotal24HoursAgo = totalPositionsValue(
       subsidyPositions,
       "price24HoursAgo",
+      foreignAssetPrices,
+      ztgPrice,
     );
 
     const subsidyPositionsChange = diffChange(
@@ -541,7 +562,7 @@ export const usePortfolioPositions = (
 
     const bondsTotal =
       marketBonds?.length > 0
-        ? calcTotalBondsValue(marketBonds)
+        ? calcTotalBondsValue(marketBonds, foreignAssetPrices, ztgPrice)
         : new Decimal(0);
 
     const positionsTotal = tradingPositionsTotal
@@ -579,6 +600,7 @@ export const usePortfolioPositions = (
     };
   }, [
     ztgPrice,
+    foreignAssetPrices,
     subsidyPositions,
     marketPositions,
     isBondsLoading,
@@ -594,23 +616,27 @@ export const usePortfolioPositions = (
 };
 
 /**
- * Calculates the total value of a set of positions.
- *
- * @param positions positions: Position[]
- * @param key "price" | "price24HoursAgo"
- * @returns Decimal
+ * Calculates the total value of a set of positions in ZTG
  */
 export const totalPositionsValue = <
   K extends keyof Pick<Position, "price" | "price24HoursAgo">,
 >(
   positions: Position[],
   key: K,
+  foreignAssetPrices: ForeignAssetPrices,
+  ztgPrice: Decimal,
 ): Decimal => {
   return positions.reduce((acc, position) => {
+    const assetId = parseAssetId(position.market.baseAsset).unwrap();
+
+    const priceMultiplier = IOForeignAssetId.is(assetId)
+      ? foreignAssetPrices[assetId.ForeignAsset.toString()]?.div(ztgPrice)
+      : 1;
+
     if (position.userBalance.isNaN() || position[key].isNaN()) {
       return acc;
     }
-    const value = position.userBalance.mul(position[key]);
+    const value = position.userBalance.mul(position[key]).mul(priceMultiplier);
     return !value.isNaN() ? acc.plus(value) : acc;
   }, new Decimal(0));
 };
@@ -628,16 +654,25 @@ const diffChange = (a: Decimal, b: Decimal) => {
   return priceChange.mul(100).toNumber();
 };
 
-const calcTotalBondsValue = (marketBonds: MarketBond[]) => {
+const calcTotalBondsValue = (
+  marketBonds: MarketBond[],
+  foreignAssetPrices: ForeignAssetPrices,
+  ztgPrice: Decimal,
+) => {
   const bondTotal = marketBonds?.reduce((total, marketBond) => {
+    const assetId = parseAssetId(marketBond.baseAsset).unwrap();
+    const priceMultiplier = IOForeignAssetId.is(assetId)
+      ? foreignAssetPrices[assetId.ForeignAsset.toString()]?.div(ztgPrice)
+      : 1;
+
     const creationBond = marketBond.bonds.creation;
     if (creationBond.isSettled === false) {
-      total = total.plus(creationBond.value);
+      total = total.plus(creationBond.value).mul(priceMultiplier);
     }
 
     const oracleBond = marketBond.bonds.oracle;
     if (oracleBond.isSettled === false) {
-      total = total.plus(oracleBond.value);
+      total = total.plus(oracleBond.value).mul(priceMultiplier);
     }
 
     return total;

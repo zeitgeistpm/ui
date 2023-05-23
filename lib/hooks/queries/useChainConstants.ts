@@ -22,7 +22,6 @@ export type ChainConstants = {
     stakeWeight: number; // increase in juror stake per juror
   };
   swaps: {
-    minLiquidity: number;
     exitFee: number;
   };
   identity: {
@@ -75,7 +74,6 @@ export const useChainConstants = () => {
           stakeWeight: consts.court.stakeWeight.toNumber() / ZTG,
         },
         swaps: {
-          minLiquidity: consts.swaps.minLiquidity.toNumber() / ZTG,
           exitFee: consts.swaps.exitFee.toNumber() / ZTG,
         },
         identity: {

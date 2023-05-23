@@ -34,7 +34,7 @@ const Category = ({
     >
       <div className="relative max-w-[230px] max-h-[230px] w-full h-full aspect-square">
         <Link
-          href={`/markets/?tag=${title}#market-list`}
+          href={`/markets?status=Active&tag=${title}#market-list`}
           className="w-full h-full relative block"
         >
           <Image

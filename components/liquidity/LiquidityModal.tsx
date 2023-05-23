@@ -146,7 +146,6 @@ const LiquidityModal = ({
             <Tab.Panel>
               <ExitPoolForm
                 poolId={poolId}
-                poolStatus={pool?.poolStatus}
                 poolBalances={allBalances}
                 totalPoolShares={
                   new Decimal(totalPoolIssuance?.toString() ?? 0)
