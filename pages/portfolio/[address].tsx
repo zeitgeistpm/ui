@@ -1,5 +1,6 @@
 import { Tab } from "@headlessui/react";
 import { getIndexOf } from "@zeitgeistpm/sdk-next";
+import BadgesList from "components/avatar/BadgesList";
 import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
 import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
@@ -165,7 +166,9 @@ const Portfolio: NextPage = () => {
                 </Tab.Panels>
               </Tab.Group>
             </Tab.Panel>
-            <Tab.Panel>badges</Tab.Panel>
+            <Tab.Panel>
+              <BadgesList address={address} />
+            </Tab.Panel>
             <Tab.Panel>
               <HistoryTabGroup address={address} />
             </Tab.Panel>
