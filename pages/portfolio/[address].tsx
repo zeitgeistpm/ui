@@ -8,6 +8,7 @@ import {
   MarketPositions,
   MarketPositionsSkeleton,
 } from "components/portfolio/MarketPositions";
+import PortfolioIdentity from "components/portfolio/PortfolioIdentity";
 import InfoBoxes from "components/ui/InfoBoxes";
 import SubTabsList from "components/ui/SubTabsList";
 import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
@@ -40,9 +41,10 @@ const Portfolio: NextPage = () => {
 
   return (
     <>
+      <PortfolioIdentity address={address} />
       <InfoBoxes />
       <div className="mb-12">
-        <h2 className="text-2xl mb-6 text-center">Summary</h2>
+        <h2 className="text-2xl my-6 text-center">Summary</h2>
         <PortfolioBreakdown
           {...(breakdown ?? {
             loading: true,
