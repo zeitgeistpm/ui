@@ -19,7 +19,10 @@ import { useRouter } from "next/router";
 import React, { FC, useState } from "react";
 import { ChevronDown, DollarSign, Frown, Settings, User } from "react-feather";
 import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
-import OnBoardingModal from "./OnboardingModal";
+import {
+  DesktopOnboardingModal,
+  MobileOnboardingModal,
+} from "./OnboardingModal";
 
 const BalanceRow = ({
   imgPath,
@@ -70,6 +73,11 @@ const AccountButton: FC<{
   });
 
   const { data: constants } = useChainConstants();
+
+  const isMobileDevice =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    );
 
   const connect = async () => {
     if (isNovaWallet) {
@@ -310,12 +318,23 @@ const AccountButton: FC<{
           </Menu>
         </div>
       )}
-      <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
-        <OnBoardingModal />
-      </Modal>
-      <Modal open={showGetZtgModal} onClose={() => setShowGetZtgModal(false)}>
-        <OnBoardingModal step={4} />
-      </Modal>
+      {isMobileDevice ? (
+        <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
+          <MobileOnboardingModal />
+        </Modal>
+      ) : (
+        <>
+          <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
+            <DesktopOnboardingModal />
+          </Modal>
+          <Modal
+            open={showGetZtgModal}
+            onClose={() => setShowGetZtgModal(false)}
+          >
+            <DesktopOnboardingModal step={4} />
+          </Modal>
+        </>
+      )}
     </>
   );
 };

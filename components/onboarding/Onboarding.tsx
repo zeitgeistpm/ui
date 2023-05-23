@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useOnboarding } from "lib/state/onboarding";
-import OnBoardingModal from "components/account/OnboardingModal";
+import { DesktopOnboardingModal } from "components/account/OnboardingModal";
 import Modal from "components/ui/Modal";
 
 export const Onboarding = () => {
@@ -23,7 +23,7 @@ export const Onboarding = () => {
         onboarding.setWalletInstallConfirmed(false);
       }}
     >
-      <OnBoardingModal
+      <DesktopOnboardingModal
         step={step}
         notice={
           step === 2
