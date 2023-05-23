@@ -1,4 +1,6 @@
-import React, { ReactNode } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import Modal from "components/ui/Modal";
+import React, { ReactNode, useState } from "react";
 
 export type MarketFormSectionProps = {
   wizard?: boolean;
@@ -8,6 +10,8 @@ export type MarketFormSectionProps = {
   nextDisabled?: boolean;
   children: React.ReactNode;
   disabled?: boolean;
+  className?: string;
+  resetForm?: () => void;
 };
 
 export const MarketFormSection = ({
@@ -18,9 +22,15 @@ export const MarketFormSection = ({
   onClickBack,
   nextDisabled,
   disabled,
+  className,
+  resetForm,
 }: MarketFormSectionProps) => {
   return (
-    <div className={`mb-16 ${isCurrent || !wizard ? "block" : "hidden"}`}>
+    <div
+      className={`mb-16 ${
+        isCurrent || !wizard ? "block" : "hidden"
+      } ${className}`}
+    >
       {disabled ? (
         <></>
       ) : !wizard ? (
@@ -28,10 +38,10 @@ export const MarketFormSection = ({
       ) : (
         <>
           <div className="mb-6 md:mb-16">{children}</div>
-          <div className="flex center">
+          <div className="flex center mb-6 gap-4">
             {onClickBack && (
               <button
-                className={`border-gray-300 text-sm border-2 rounded-full py-4 px-8 mr-4 ease-in-out active:scale-95 duration-200 `}
+                className={`border-gray-300 text-sm border-2 rounded-full py-4 px-8 ease-in-out active:scale-95 duration-200 `}
                 onClick={onClickBack}
                 type="button"
               >

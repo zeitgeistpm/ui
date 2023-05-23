@@ -71,7 +71,7 @@ export const CategoricalAnswersInput = ({
   };
 
   return (
-    <div className="mb-6">
+    <div>
       <div className="mb-6 md:flex justify-center items-center">
         <div className="flex-1 md:flex justify-center">
           <div>

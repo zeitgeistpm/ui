@@ -6,6 +6,7 @@ import {
   gracePeriodOptions,
   reportingPeriodOptions,
 } from "./constants/deadline-options";
+import { cloneDeep, merge } from "lodash-es";
 import { FieldsState, initialFieldsState } from "./types/fieldstate";
 import { MarketCreationFormData, marketCreationFormKeys } from "./types/form";
 import {
@@ -47,6 +48,10 @@ export type UseCreateMarketState = {
    * Is the form as a whole valid.
    */
   isValid: boolean;
+  /**
+   * Has any of the form fields been touched(edited) by the user.
+   */
+  isTouched: boolean;
   /**
    * Reset the form state.
    */
@@ -116,7 +121,7 @@ export const defaultState: MarketCreationState = {
 
 const createMarketStateAtom = persistentAtom<MarketCreationState>({
   key: "market-creation-form",
-  defaultValue: defaultState,
+  defaultValue: cloneDeep(defaultState),
   migrations: [() => defaultState, () => defaultState, () => defaultState],
 });
 
@@ -159,6 +164,7 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     return fieldsState;
   }, [validator]);
 
+  const isTouched = Object.values(fieldsState).some((field) => field.isTouched);
   const isValid = Object.values(fieldsState).every((field) => field.isValid);
 
   const steps = marketCreationSteps.map((step) => {
@@ -172,14 +178,15 @@ export const useCreateMarketState = (): UseCreateMarketState => {
   }) as MarketCreationSteps;
 
   const reset = () => {
-    setState({
-      ...defaultState,
-      form: {
-        ...defaultState.form,
-        question: "",
-        oracle: "",
-      },
-    });
+    setState(
+      merge(cloneDeep(defaultState), {
+        isWizard: state.isWizard,
+        form: {
+          question: "",
+          oracle: "",
+        },
+      }),
+    );
   };
 
   const setWizard = (on: boolean) => {
@@ -257,6 +264,7 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     steps,
     fieldsState,
     isValid,
+    isTouched,
     reset,
     setStep,
     setWizard,

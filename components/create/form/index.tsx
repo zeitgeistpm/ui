@@ -9,7 +9,7 @@ import {
   reportingPeriodOptions,
 } from "lib/state/market-creation/constants/deadline-options";
 import dynamic from "next/dynamic";
-import { FormEventHandler } from "react";
+import { FormEventHandler, useState } from "react";
 import { ErrorMessage } from "./ErrorMessage";
 import InfoPopover from "./InfoPopover";
 import { MarketFormSection } from "./MarketFormSection";
@@ -20,8 +20,9 @@ import CurrencySelect from "./inputs/Currency";
 import DateTimePicker from "./inputs/DateTime";
 import ModerationModeSelect from "./inputs/Moderation";
 import { AnswersInput } from "./inputs/answers";
-import { Transition } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
+import Modal from "components/ui/Modal";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -38,10 +39,12 @@ export const MarketCreationForm = () => {
     fieldsState,
     reset,
     form,
+    isTouched,
   } = useCreateMarketState();
 
   const chainTime = useChainTime();
   const { isFetched } = useMarketDeadlineConstants();
+  const [showResetConfirmation, setShowResetConfirmation] = useState(false);
 
   const back = () => {
     const prevStep = prevStepFrom(steps, currentStep);
@@ -54,6 +57,12 @@ export const MarketCreationForm = () => {
     const nextStep = nextStepFrom(steps, currentStep);
     if (nextStep) {
       setStep(nextStep);
+    }
+  };
+
+  const handleResetForm = () => {
+    if (reset) {
+      setShowResetConfirmation(true);
     }
   };
 
@@ -72,6 +81,31 @@ export const MarketCreationForm = () => {
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
+      <h2 className="font-3xl text-center flex justify-center items-center gap-3">
+        <span>Create Market</span>
+      </h2>
+
+      <div className="h-4 mb-8">
+        <Transition
+          show={Boolean(isTouched)}
+          className={`flex center text-sm text-gray-400 font-medium `}
+          enter="transition-opacity duration-100"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="transition-opacity duration-100"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <button
+            type="button"
+            className="text-xs underline"
+            onClick={handleResetForm}
+          >
+            clear form
+          </button>
+        </Transition>
+      </div>
+
       <div className="flex center mb-6">
         <div className="mr-3 font-light">One Page</div>
         <Toggle
@@ -98,6 +132,7 @@ export const MarketCreationForm = () => {
           isCurrent={currentStep.label == "Currency"}
           onClickNext={next}
           nextDisabled={!fieldsState.currency.isValid}
+          resetForm={isTouched && reset}
         >
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="text-base flex justify-center items-center gap-2">
@@ -120,6 +155,7 @@ export const MarketCreationForm = () => {
           nextDisabled={
             !fieldsState.question.isValid || !fieldsState.tags.isValid
           }
+          resetForm={isTouched && reset}
         >
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="mb-4 md:mb-8 text-base">What is your question?</h2>
@@ -156,6 +192,7 @@ export const MarketCreationForm = () => {
           onClickNext={next}
           onClickBack={back}
           nextDisabled={!fieldsState.answers.isValid}
+          resetForm={isTouched && reset}
         >
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="text-base">Answers</h2>
@@ -177,6 +214,7 @@ export const MarketCreationForm = () => {
             !fieldsState.reportingPeriod.isValid ||
             !fieldsState.disputePeriod.isValid
           }
+          resetForm={isTouched && reset}
         >
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="text-base">When does the market end?</h2>
@@ -284,6 +322,7 @@ export const MarketCreationForm = () => {
           nextDisabled={
             !fieldsState.oracle.isValid || !fieldsState.oracle.isValid
           }
+          resetForm={isTouched && reset}
         >
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="mb-4 md:mb-8 text-base">Set Up Oracle</h2>
@@ -314,6 +353,7 @@ export const MarketCreationForm = () => {
           onClickNext={next}
           onClickBack={back}
           nextDisabled={!fieldsState.description.isValid}
+          resetForm={isTouched && reset}
         >
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="mb-4 md:mb-8 text-base">Market Description</h2>
@@ -340,6 +380,7 @@ export const MarketCreationForm = () => {
           onClickNext={next}
           onClickBack={back}
           nextDisabled={!fieldsState.moderation.isValid}
+          resetForm={isTouched && reset}
         >
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="mb-4 md:mb-8 text-base">Market Moderation</h2>
@@ -359,17 +400,44 @@ export const MarketCreationForm = () => {
           isCurrent={currentStep.label == "Preview"}
           disabled={!isWizard}
           onClickBack={back}
+          resetForm={isTouched && reset}
         >
           <div className="flex center mb-4 md:mb-8">
             <MarketPreview form={form} />
           </div>
         </MarketFormSection>
 
-        <div className="flex center">
-          <button type="button" className="text-blue-500" onClick={reset}>
-            reset form
-          </button>
-        </div>
+        <Modal
+          open={showResetConfirmation}
+          onClose={() => setShowResetConfirmation(false)}
+        >
+          <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-8 cursor-pointer">
+            <div className="text-center mb-6">
+              Are you sure you want to clear the form?
+            </div>
+            <div className="flex justify-center gap-4">
+              <button
+                type="button"
+                className="border-gray-300 text-sm  rounded-full py-3 px-6 transition-all ease-in-out duration-200 active:scale-95"
+                onClick={() => {
+                  setShowResetConfirmation(false);
+                }}
+              >
+                cancel
+              </button>
+              <button
+                type="button"
+                className="border-gray-300 text-sm border-2 rounded-full py-3 px-6 transition-all ease-in-out duration-200 active:scale-95"
+                onClick={() => {
+                  reset();
+                  setShowResetConfirmation(false);
+                }}
+              >
+                clear
+              </button>
+            </div>
+          </Dialog.Panel>
+        </Modal>
       </form>
     </Transition>
   );
