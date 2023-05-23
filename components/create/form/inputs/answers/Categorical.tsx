@@ -95,15 +95,17 @@ export const CategoricalAnswersInput = ({
                     onBlur={handleChange(index, onBlur)}
                     placeholder={`Answer ${index + 1}`}
                   />
-                  <div className="absolute flex gap-2 z-10 right-2 top-[50%] translate-y-[-50%] ">
-                    <button
-                      type="button"
-                      className=" bg-white rounded-md py-1 px-2"
-                      onClick={handleClearClick(index)}
-                    >
-                      clear
-                    </button>
-                  </div>
+                  {!disabled && (
+                    <div className="absolute flex gap-2 z-10 right-2 top-[50%] translate-y-[-50%] ">
+                      <button
+                        type="button"
+                        className=" bg-white rounded-md py-1 px-2"
+                        onClick={handleClearClick(index)}
+                      >
+                        clear
+                      </button>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -112,7 +114,7 @@ export const CategoricalAnswersInput = ({
       </div>
 
       {!disabled && (
-        <div className="flex center">
+        <div className="flex center mb-4">
           <button
             type="button"
             className="border-gray-300 text-sm border-2 rounded-full py-4 px-8 transition-all false"
