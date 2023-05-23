@@ -160,7 +160,7 @@ const Portfolio: NextPage = () => {
                       )
                     ) : (
                       <EmptyPortfolio
-                        headerText="You don't have any subsidy"
+                        headerText="You don't have any liquidity"
                         bodyText="View liquidity pools to find places to provide liquidity"
                         buttonText="View Pools"
                         buttonLink="/liquidity"

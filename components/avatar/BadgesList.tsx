@@ -1,5 +1,6 @@
 import { Badge } from "@zeitgeistpm/avatara-nft-sdk";
 import { cidToUrl, sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
+import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
 import { AnimatePresence, motion } from "framer-motion";
 import { useBadges } from "lib/hooks/queries/useBadges";
 import { capitalize } from "lodash-es";
@@ -7,13 +8,24 @@ import { useState } from "react";
 import { AiFillInfoCircle } from "react-icons/ai";
 
 const BadgesList = ({ address }: { address: string }) => {
-  const { data: badges } = useBadges(address);
+  const { data: badges, isLoading } = useBadges(address);
   return (
-    <div className="mb-ztg-38 grid gap-4 grid-cols-2 sm:grid-cols-4 md:grid-cols-6 grid-rows-4">
-      {badges?.map((item) => (
-        <BadgeItem item={item} />
-      ))}
-    </div>
+    <>
+      {isLoading === false && badges?.length > 0 ? (
+        <div className="mb-ztg-38 grid gap-4 grid-cols-2 sm:grid-cols-4 md:grid-cols-6 grid-rows-4">
+          {badges?.map((item, index) => (
+            <BadgeItem key={index} item={item} />
+          ))}
+        </div>
+      ) : (
+        <EmptyPortfolio
+          headerText="You don't have any badges"
+          bodyText="Trade markets to earn badges"
+          buttonText="View Markets"
+          buttonLink="/markets"
+        />
+      )}
+    </>
   );
 };
 
