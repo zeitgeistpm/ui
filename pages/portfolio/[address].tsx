@@ -54,25 +54,27 @@ const Portfolio: NextPage = () => {
       </div>
       <div className="mb-12">
         <Tab.Group>
-          <Tab.List className="flex center mb-4">
-            {["Predictions", "Balances", "Markets", "Badges", "History"].map(
-              (title, index) => (
-                <Tab className="px-4" key={index}>
-                  {({ selected }) => (
-                    <div
-                      className={
-                        selected
-                          ? "font-semibold text-black transition-all"
-                          : "text-sky-600 transition-all"
-                      }
-                    >
-                      {title}
-                    </div>
-                  )}
-                </Tab>
-              ),
-            )}
-          </Tab.List>
+          <div className="overflow-auto">
+            <Tab.List className="flex sm:justify-center mb-4">
+              {["Predictions", "Balances", "Markets", "Badges", "History"].map(
+                (title, index) => (
+                  <Tab className="px-4" key={index}>
+                    {({ selected }) => (
+                      <div
+                        className={
+                          selected
+                            ? "font-semibold text-black transition-all"
+                            : "text-sky-600 transition-all"
+                        }
+                      >
+                        {title}
+                      </div>
+                    )}
+                  </Tab>
+                ),
+              )}
+            </Tab.List>
+          </div>
 
           <Tab.Panels>
             <Tab.Panel>
@@ -127,7 +129,9 @@ const Portfolio: NextPage = () => {
             <Tab.Panel>Add currencies table here</Tab.Panel>
             <Tab.Panel>
               <Tab.Group>
-                <SubTabsList titles={["Created Markets", "Liquidity"]} />
+                <div className="overflow-auto">
+                  <SubTabsList titles={["Created Markets", "Liquidity"]} />
+                </div>
                 <Tab.Panels>
                   <Tab.Panel>
                     <BondsTable address={address} />
