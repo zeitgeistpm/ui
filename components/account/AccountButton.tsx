@@ -16,7 +16,7 @@ import { formatNumberLocalized, shortenAddress } from "lib/util";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { FC, useState } from "react";
+import React, { FC, PropsWithChildren, useState } from "react";
 import { ChevronDown, DollarSign, Frown, Settings, User } from "react-feather";
 import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
 import {
@@ -45,6 +45,29 @@ const BalanceRow = ({
           )} ${units}`}
       </div>
     </div>
+  );
+};
+
+const HeaderActionButton: FC<
+  PropsWithChildren<{
+    onClick: () => void;
+    disabled: boolean;
+  }>
+> = ({ onClick, disabled, children }) => {
+  const { pathname } = useRouter();
+
+  return (
+    <button
+      className={`flex border-2 rounded-full px-6 leading-[40px] ${
+        pathname === "/"
+          ? "text-black border-black sm:text-white sm:bg-transparent sm:border-white"
+          : "text-black border-black"
+      } rounded-full font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-30`}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      {children}
+    </button>
   );
 };
 
@@ -107,10 +130,6 @@ const AccountButton: FC<{
         ),
     );
 
-  const handleOnboardingClick = () => {
-    hasWallet ? connect() : setShowOnboarding(true);
-  };
-
   return (
     <>
       {!connected ? (
@@ -119,20 +138,23 @@ const AccountButton: FC<{
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <button
-            className={
-              connectButtonClassname ||
-              `flex border-2 rounded-full px-6 leading-[40px] ${
-                pathname === "/"
-                  ? "text-black border-black sm:text-white sm:bg-transparent sm:border-white"
-                  : "text-black border-black"
-              } rounded-full font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-30`
-            }
-            onClick={() => handleOnboardingClick()}
-            disabled={locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)}
-          >
-            {hasWallet === true ? "Connect Wallet" : "Get Started"}
-          </button>
+          {hasWallet === true ? (
+            <HeaderActionButton
+              disabled={
+                locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)
+              }
+              onClick={() => connect()}
+            >
+              Connect Wallet
+            </HeaderActionButton>
+          ) : (
+            <HeaderActionButton
+              disabled={locationAllowed !== true || isUsingVPN}
+              onClick={() => setShowOnboarding(true)}
+            >
+              Get Started
+            </HeaderActionButton>
+          )}
 
           {hovering === true &&
           (locationAllowed !== true || isUsingVPN === true) ? (
