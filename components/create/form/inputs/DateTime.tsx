@@ -49,7 +49,10 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
       className={`flex center rounded-full  bg-gray-200  ${
         isValid && "!bg-nyanza-base"
       } ${className}`}
-      onClick={() => inputRef.current?.showPicker()}
+      onClick={() => {
+        inputRef.current?.focus();
+        inputRef.current?.showPicker();
+      }}
     >
       <div className="relative py-3 px-8">
         <div>

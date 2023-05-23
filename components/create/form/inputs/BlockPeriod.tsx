@@ -138,7 +138,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
       <div className="flex justify-center gap-3">
         {hasCustomDurationOption && (
           <DurationInput
-            className=""
+            className="rounded-full overflow-hidden md:w-72"
             value={value?.type === "duration" ? value : undefined}
             onChange={handleDurationChange}
             onBlur={handleDurationBlur}
@@ -229,22 +229,22 @@ const DurationInput = ({
   };
 
   return (
-    <div className={className}>
+    <div className={`flex ${className}`}>
       <div
-        className={`flex relative h-full rounded-md transition-all duration-200 ${
+        className={`flex flex-1 relative flex-shrink rounded-md transition-all duration-200 ${
           isSelected ? "bg-nyanza-base" : "bg-gray-200"
         }`}
       >
         <input
           type="number"
-          className={`flex-1 rounded-l-md py-3 px-6 text-right bg-transparent outline-none`}
+          className={`flex-2 rounded-l-md py-3 px-6 text-right bg-transparent outline-none w-full`}
           value={value?.value}
           onChange={handleValueChange}
           onBlur={handleValueBlur}
         />
 
         <div
-          className={`w-1/3 h-full py-3 px-6 rounded-r-md flex justify-center items-center gap-2 transition-all duration-200
+          className={`flex-1 py-3 px-6 rounded-r-md flex justify-center items-center gap-2 transition-all duration-200
           ${isSelected ? "bg-gray-100 bg-opacity-50" : "bg-gray-100"}
         `}
         >
