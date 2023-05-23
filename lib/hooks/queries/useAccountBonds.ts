@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import { BaseAssetId, isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { gql } from "graphql-request";
 import { useSdkv2 } from "../useSdkv2";
 
@@ -26,6 +26,7 @@ const accountBondsQuery = gql`
       creator
       question
       marketId
+      baseAsset
       period {
         end
       }
@@ -50,6 +51,7 @@ export type MarketBond = {
   period: {
     end: string;
   };
+  baseAsset: string;
 };
 
 export const useAccountBonds = (address: string) => {

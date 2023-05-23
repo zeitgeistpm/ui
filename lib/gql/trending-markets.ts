@@ -47,7 +47,6 @@ const marketQuery = gql`
       categories {
         color
         name
-        ticker
       }
       pool {
         volume
@@ -104,7 +103,7 @@ const getTrendingMarkets = async (
           question: string;
           creation: MarketCreation;
           marketType: { [key: string]: string };
-          categories: { color: string; name: string; ticker: string }[];
+          categories: { color: string; name: string }[];
           outcomeAssets: string[];
           baseAsset: string;
           pool: {

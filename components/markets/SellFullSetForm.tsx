@@ -98,8 +98,8 @@ const SellFullSetForm = ({
 
   const disabled =
     isLoading ||
-    Number(amount) > maxTokenSet.toNumber() ||
-    Number(amount) === 0;
+    new Decimal(amount).gt(maxTokenSet.div(ZTG)) ||
+    new Decimal(amount).eq(0);
 
   return (
     <div>

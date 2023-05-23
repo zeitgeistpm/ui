@@ -1,9 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery, UseQueryResult } from "@tanstack/react-query";
 import {
   AssetId,
   IOZtgAssetId,
   IOForeignAssetId,
   ForeignAssetId,
+  parseAssetId,
 } from "@zeitgeistpm/sdk-next";
 import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
 import Decimal from "decimal.js";
@@ -33,6 +34,56 @@ export const useAssetUsdPrice = (assetId: AssetId) => {
   );
 
   return query;
+};
+
+export type ForeignAssetPrices = {
+  [key: string]: Decimal;
+};
+
+export const useAllForeignAssetUsdPrices = (): {
+  data: ForeignAssetPrices;
+  isLoading: boolean;
+  queries: UseQueryResult[];
+} => {
+  const queries = useQueries({
+    queries: Object.keys(FORIEGN_ASSET_METADATA)?.map((foreignAssetId) => {
+      const assetId = parseAssetId({
+        ForeignAsset: Number(foreignAssetId),
+      }).unwrap();
+      return {
+        queryKey: [
+          assetUsdPriceRootKey,
+          parseAssetId({ ForeignAsset: Number(foreignAssetId) }).unrightOr(
+            null,
+          ),
+        ],
+        queryFn: async () => {
+          if (IOForeignAssetId.is(assetId)) {
+            return await getForeignAssetPrice(assetId);
+          } else {
+            return null;
+          }
+        },
+        refetchInterval: 1000 * 60,
+        keepPreviousData: true,
+        staleTime: Infinity,
+      };
+    }),
+  });
+
+  const data = queries?.reduce((prices, query, index) => {
+    const key = Object.keys(FORIEGN_ASSET_METADATA)[index];
+    if (query.data && key) {
+      prices[key] = query.data;
+    }
+    return prices;
+  }, {});
+
+  return {
+    data: data,
+    isLoading: queries.some((query) => query.isLoading === true),
+    queries,
+  };
 };
 
 const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
