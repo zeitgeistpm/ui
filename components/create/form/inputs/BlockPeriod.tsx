@@ -4,12 +4,18 @@ import {
   dateBlock,
 } from "@zeitgeistpm/utility/dist/time";
 import {
+  PeriodDurationOption,
   PeriodOption,
-  PeriodPresetOption,
 } from "lib/state/market-creation/types/form";
 import { DeepReadonly } from "lib/types/deep-readonly";
 import { FormEvent } from "../types";
 import DateTimePicker from "./DateTime";
+import { ChevronDown } from "react-feather";
+import { ChangeEventHandler, FocusEventHandler, useState } from "react";
+import { Listbox } from "@headlessui/react";
+import { UnionToArray } from "lib/types/union";
+import moment from "moment";
+import { BLOCK_TIME_SECONDS, NUM_BLOCKS_IN_DAY } from "lib/constants";
 
 export type BlockPeriodPickerProps = {
   name: string;
@@ -23,7 +29,7 @@ export type BlockPeriodPickerProps = {
 
 export type BlockPeriodPickerOptions = DeepReadonly<
   Array<
-    PeriodPresetOption | { type: "custom-duration" } | { type: "custom-date" }
+    PeriodDurationOption | { type: "custom-duration" } | { type: "custom-date" }
   >
 >;
 
@@ -36,6 +42,13 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
   chainTime,
   isValid,
 }) => {
+  const hasCustomDurationOption = Boolean(
+    options.find((o) => o.type === "custom-duration"),
+  );
+  const hasCustomDateOption = Boolean(
+    options.find((o) => o.type === "custom-date"),
+  );
+
   const handleOnClickOption = (option: PeriodOption) => {
     onChange?.({
       type: "change",
@@ -52,7 +65,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
       target: {
         name,
         value: {
-          type: "custom-date",
+          type: "date",
           block: dateBlock(chainTime, new Date(event.target.value)),
         },
       },
@@ -65,8 +78,34 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
       target: {
         name,
         value: {
-          type: "custom-date",
+          type: "date",
           block: dateBlock(chainTime, new Date(event.target.value)),
+        },
+      },
+    });
+  };
+
+  const handleDurationChange = (event: FormEvent<DurationValue>) => {
+    onChange?.({
+      type: "change",
+      target: {
+        name,
+        value: {
+          type: "duration",
+          ...event.target.value,
+        },
+      },
+    });
+  };
+
+  const handleDurationBlur = (event: FormEvent<DurationValue>) => {
+    onBlur?.({
+      type: "blur",
+      target: {
+        name,
+        value: {
+          type: "duration",
+          ...event.target.value,
         },
       },
     });
@@ -77,17 +116,17 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
       <div className="flex justify-center gap-3 mb-4 md:mb-0">
         {options.map((option) => (
           <>
-            {option.type === "preset" && (
+            {option.type === "duration" && option.preset && (
               <button
                 type="button"
                 className={`flex center rounded-full bg-gray-200 py-3 px-6 ${
-                  value?.type === "preset" &&
-                  option.label === value.label &&
+                  value?.type === "duration" &&
+                  value?.preset === option.preset &&
                   "bg-nyanza-base"
                 }`}
                 onClick={() => handleOnClickOption(option)}
               >
-                {option.label}
+                {option.preset}
               </button>
             )}
           </>
@@ -95,20 +134,25 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
       </div>
 
       <div className="flex justify-center gap-3">
-        {Boolean(options.find((o) => o.type === "custom-duration")) && (
-          <div>duration input</div>
+        {hasCustomDurationOption && (
+          <DurationInput
+            className=""
+            value={value?.type === "duration" ? value : undefined}
+            onChange={handleDurationChange}
+            onBlur={handleDurationBlur}
+          />
         )}
 
-        {Boolean(options.find((o) => o.type === "custom-date")) && (
+        {hasCustomDateOption && (
           <DateTimePicker
             name={name}
             className={`min-w-[300px] ${
-              value?.type === "custom-date" && "bg-nyanza-base"
+              value?.type === "date" && "bg-nyanza-base"
             }`}
             placeholder="Set Custom Date"
-            isValid={value?.type === "custom-date" && isValid}
+            isValid={value?.type === "date" && isValid}
             value={
-              chainTime && value?.type === "custom-date"
+              chainTime && value?.type === "date"
                 ? blockDate(chainTime, value.block).toISOString()
                 : undefined
             }
@@ -116,6 +160,93 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
             onBlur={handleDateBlur}
           />
         )}
+      </div>
+    </div>
+  );
+};
+
+type DurationValue = Omit<PeriodDurationOption, "type">;
+
+type DurationInputProps = {
+  className?: string;
+  name?: string;
+  value?: DurationValue;
+  onChange: (event: FormEvent<DurationValue>) => void;
+  onBlur: (event: FormEvent<DurationValue>) => void;
+};
+
+const DurationInput = ({
+  className,
+  value,
+  onChange,
+  onBlur,
+}: DurationInputProps) => {
+  const handleUnitChange: ChangeEventHandler<HTMLSelectElement> = (event) => {
+    const unit = event.target.value as DurationValue["unit"];
+    onChange?.({
+      type: "change",
+      target: {
+        name: "duration",
+        value: {
+          ...value,
+          unit,
+        },
+      },
+    });
+  };
+
+  const handleValueChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const newValue = Number(event.target.value);
+    onChange?.({
+      type: "change",
+      target: {
+        name: "duration",
+        value: {
+          ...value,
+          value: newValue,
+        },
+      },
+    });
+  };
+
+  const handleValueBlur: FocusEventHandler<HTMLInputElement> = (event) => {
+    const newValue = Number(event.target.value);
+    onBlur?.({
+      type: "blur",
+      target: {
+        name: "duration",
+        value: {
+          ...value,
+          value: newValue,
+        },
+      },
+    });
+  };
+
+  return (
+    <div className={className}>
+      <div className="flex relative h-full">
+        <input
+          type="number"
+          className="flex-1 rounded-l-md bg-gray-200 py-3 px-6 text-right"
+          value={value?.value}
+          onChange={handleValueChange}
+          onBlur={handleValueBlur}
+        />
+
+        <div className="w-1/3 h-full py-3 px-6 border-t-1 border-r-1 border-b-1 rounded-r-md flex justify-center items-center gap-2">
+          <select
+            className="outline-none"
+            onChange={handleUnitChange}
+            value={value?.unit}
+          >
+            {["days", "hours"].map((unit) => (
+              <option className="text-right py-2 px-4" value={unit}>
+                {unit}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
     </div>
   );

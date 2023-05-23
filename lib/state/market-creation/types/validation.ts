@@ -15,7 +15,16 @@ import { useChainTime } from "lib/state/chaintime";
 import { useMemo } from "react";
 import * as z from "zod";
 import { SupportedCurrencyTag } from "../../../constants/supported-currencies";
-import { MarketCreationFormData } from "./form";
+import { MarketCreationFormData, timelineAsBlocks } from "./form";
+import moment from "moment";
+import { BLOCK_TIME_SECONDS } from "lib/constants";
+import { chain } from "lodash-es";
+
+export type MarketValidationDependencies = {
+  form: Partial<MarketCreationFormData>;
+  deadlineConstants: MarketDeadlineConstants;
+  chainTime: ChainTime;
+};
 
 /**
  * Creates a zod schema validator for the market creation form.
@@ -30,111 +39,53 @@ export const createMarketFormValidator = ({
   form,
   deadlineConstants,
   chainTime,
-}: ValidationDependencies) => {
+}: MarketValidationDependencies) => {
+  const timeline = timelineAsBlocks(
+    {
+      marketEndDate: new Date(form.endDate),
+      gracePeriod: form.gracePeriod,
+      reportingPeriod: form.reportingPeriod,
+      disputePeriod: form.disputePeriod,
+    },
+    chainTime,
+  ).unwrap();
+
   return z.object({
     currency: IOCurrency,
     question: IOQuestion,
     tags: IOTags,
     answers: IOAnswers,
     endDate: IOEndDate,
-    gracePeriod: IOPeriodOption.superRefine((gracePeriod, ctx) => {
-      if (!chainTime || !deadlineConstants) return true;
-
-      const marketEndDate = new Date(form?.endDate);
-      const marketEndBlock = dateBlock(chainTime, marketEndDate);
-      const gracePeriodEndBlock =
-        gracePeriod?.type === "custom-date"
-          ? gracePeriod?.block
-          : marketEndBlock + gracePeriod?.blocks;
-      const gracePeriodEndDate = blockDate(chainTime, gracePeriodEndBlock);
-      const delta = gracePeriodEndBlock - marketEndBlock;
-      if (delta !== 0 && gracePeriodEndDate < marketEndDate) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Grace period must end after market ends.",
-        });
-      }
-
-      if (delta > deadlineConstants?.maxGracePeriod) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Grace period exceeds maximum of ${deadlineConstants?.maxGracePeriod} blocks.`,
-        });
-      }
-    }),
-    reportingPeriod: IOPeriodOption.superRefine((reportingPeriod, ctx) => {
-      if (!chainTime || !deadlineConstants) return true;
-
-      const marketEndDate = new Date(form?.endDate);
-      const marketEndBlock = dateBlock(chainTime, marketEndDate);
-
-      const gracePeriodEndBlock =
-        form?.gracePeriod?.type === "custom-date"
-          ? form?.gracePeriod?.block
-          : marketEndBlock + form?.gracePeriod?.blocks;
-
-      const reportingPeriodEndBlock =
-        reportingPeriod?.type === "custom-date"
-          ? reportingPeriod?.block
-          : gracePeriodEndBlock + reportingPeriod?.blocks;
-
-      const delta = reportingPeriodEndBlock - gracePeriodEndBlock;
-
-      if (delta > deadlineConstants?.maxOracleDuration) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Reporting period exceeds maximum of ${deadlineConstants?.maxOracleDuration} blocks.`,
-        });
-      }
-
-      if (delta < deadlineConstants?.minOracleDuration) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Reporting period is less than minimum of ${deadlineConstants?.minOracleDuration} blocks.`,
-        });
-      }
-
-      return true;
-    }),
-    disputePeriod: IOPeriodOption.superRefine((disputePeriod, ctx) => {
-      if (!chainTime || !deadlineConstants) return true;
-
-      const marketEndDate = new Date(form?.endDate);
-      const marketEndBlock = dateBlock(chainTime, marketEndDate);
-
-      const gracePeriodEndBlock =
-        form?.gracePeriod?.type === "custom-date"
-          ? form?.gracePeriod?.block
-          : marketEndBlock + form?.gracePeriod?.blocks;
-
-      const reportingPeriodEndBlock =
-        form.reportingPeriod?.type === "custom-date"
-          ? form.reportingPeriod?.block
-          : gracePeriodEndBlock + form.reportingPeriod?.blocks;
-
-      const disputePeriodEndBlock =
-        disputePeriod?.type === "custom-date"
-          ? disputePeriod?.block
-          : reportingPeriodEndBlock + disputePeriod?.blocks;
-
-      const delta = disputePeriodEndBlock - reportingPeriodEndBlock;
-
-      if (delta > deadlineConstants?.maxDisputeDuration) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Dispute period exceeds maximum of ${deadlineConstants?.maxDisputeDuration} blocks.`,
-        });
-      }
-
-      if (delta < deadlineConstants?.minDisputeDuration) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: `Dispute period is less than minimum of ${deadlineConstants?.minDisputeDuration} blocks.`,
-        });
-      }
-
-      return true;
-    }),
+    gracePeriod: IOPeriodOption.refine(() => !(timeline?.grace.period < 0), {
+      message: "Grace period must be after market end date",
+    }).refine(
+      () => !(timeline?.grace.period > deadlineConstants?.maxGracePeriod),
+      {
+        message: `Grace period must be less than ${deadlineConstants?.maxGracePeriod} blocks.`,
+      },
+    ),
+    reportingPeriod: IOPeriodOption.refine(
+      () => timeline?.report.period < deadlineConstants?.maxOracleDuration,
+      {
+        message: `Reporting period must be less than ${deadlineConstants?.maxOracleDuration} blocks.`,
+      },
+    ).refine(
+      () => !(timeline?.report.period < deadlineConstants?.minOracleDuration),
+      {
+        message: `Reporting period must be greater than ${deadlineConstants?.minOracleDuration} blocks.`,
+      },
+    ),
+    disputePeriod: IOPeriodOption.refine(
+      () => !(timeline?.dispute.period > deadlineConstants?.maxDisputeDuration),
+      {
+        message: `Dispute period must be less than ${deadlineConstants?.maxDisputeDuration} blocks.`,
+      },
+    ).refine(
+      () => !(timeline?.dispute.period < deadlineConstants?.minDisputeDuration),
+      {
+        message: `Dispute period must be greater than ${deadlineConstants?.minDisputeDuration} blocks.`,
+      },
+    ),
     oracle: IOOracle,
     description: IODescription,
     moderation: IOModerationMode,
@@ -150,15 +101,13 @@ export const useMarketCreationFormValidator = (
 ): ReturnType<typeof createMarketFormValidator> => {
   const { data: deadlineConstants } = useMarketDeadlineConstants();
   const chainTime = useChainTime();
-  return useMemo(
-    () =>
-      createMarketFormValidator({
-        form,
-        deadlineConstants,
-        chainTime,
-      }),
-    [form, deadlineConstants, chainTime],
-  );
+  return useMemo(() => {
+    return createMarketFormValidator({
+      form,
+      deadlineConstants,
+      chainTime,
+    });
+  }, [form, deadlineConstants, chainTime]);
 };
 
 /**
@@ -237,26 +186,21 @@ export const IOEndDate = z
     message: "End date must be in the future",
   });
 
-export const IOPeriodPresetOption = z.object({
-  type: z.literal("preset"),
-  label: z.string(),
-  blocks: z.number(),
-});
-
-export const IOPeriodCustomDateOption = z.object({
-  type: z.literal("custom-date"),
+export const IOPeriodDateOption = z.object({
+  type: z.literal("date"),
   block: z.number(),
 });
 
-export const IOPeriodCustomDurationOption = z.object({
-  type: z.literal("custom-duration"),
-  blocks: z.number(),
+export const IOPeriodDurationOption = z.object({
+  type: z.literal("duration"),
+  preset: z.string().optional(),
+  unit: z.enum(["days", "hours"]),
+  value: z.number(),
 });
 
 export const IOPeriodOption = z.union([
-  IOPeriodPresetOption,
-  IOPeriodCustomDateOption,
-  IOPeriodCustomDurationOption,
+  IOPeriodDateOption,
+  IOPeriodDurationOption,
 ]);
 
 export const IOOracle = z
@@ -271,9 +215,3 @@ export const IOModerationMode = z.enum<
   ZeitgeistPrimitivesMarketMarketCreation["type"],
   ["Permissionless", "Advised"]
 >(["Permissionless", "Advised"]);
-
-export type ValidationDependencies = {
-  form: Partial<MarketCreationFormData>;
-  deadlineConstants?: MarketDeadlineConstants;
-  chainTime?: ChainTime;
-};

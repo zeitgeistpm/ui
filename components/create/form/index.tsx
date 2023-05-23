@@ -1,11 +1,17 @@
 import Toggle from "components/ui/Toggle";
 import WizardStepper from "components/wizard/WizardStepper";
 import { nextStepFrom, prevStepFrom } from "components/wizard/types";
-import { NUM_BLOCKS_IN_DAY, NUM_BLOCKS_IN_HOUR } from "lib/constants";
+import { useChainTime } from "lib/state/chaintime";
 import { useCreateMarketState } from "lib/state/market-creation";
+import {
+  disputePeriodOptions,
+  gracePeriodOptions,
+  reportingPeriodOptions,
+} from "lib/state/market-creation/constants/deadline-options";
 import dynamic from "next/dynamic";
-import React, { FormEventHandler, Fragment, useState } from "react";
+import { FormEventHandler } from "react";
 import { ErrorMessage } from "./ErrorMessage";
+import InfoPopover from "./InfoPopover";
 import { MarketFormSection } from "./MarketFormSection";
 import MarketPreview from "./Preview";
 import BlockPeriodPicker from "./inputs/BlockPeriod";
@@ -14,25 +20,8 @@ import CurrencySelect from "./inputs/Currency";
 import DateTimePicker from "./inputs/DateTime";
 import ModerationModeSelect from "./inputs/Moderation";
 import { AnswersInput } from "./inputs/answers";
-import { PeriodOption } from "lib/state/market-creation/types/form";
-import { DeepReadonly } from "lib/types/deep-readonly";
-import {
-  disputePeriodOptions,
-  gracePeriodOptions,
-  reportingPeriodOptions,
-} from "lib/state/market-creation/constants/deadline-options";
-import { ChevronDown } from "react-feather";
-import { Dialog, Disclosure, Popover, Transition } from "@headlessui/react";
-import { BsInfo } from "react-icons/bs";
-import {
-  AiFillInfoCircle,
-  AiOutlineInfo,
-  AiOutlineInfoCircle,
-} from "react-icons/ai";
-import Modal from "components/ui/Modal";
-import InfoPopover from "./InfoPopover";
-import { useChainTime } from "lib/state/chaintime";
-import { dateBlock } from "@zeitgeistpm/utility/dist/time";
+import { Transition } from "@headlessui/react";
+import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -52,6 +41,7 @@ export const MarketCreationForm = () => {
   } = useCreateMarketState();
 
   const chainTime = useChainTime();
+  const { isFetched } = useMarketDeadlineConstants();
 
   const back = () => {
     const prevStep = prevStepFrom(steps, currentStep);
@@ -73,7 +63,15 @@ export const MarketCreationForm = () => {
   };
 
   return (
-    <div>
+    <Transition
+      show={Boolean(chainTime && isFetched)}
+      enter="transition-opacity duration-100"
+      enterFrom="opacity-0"
+      enterTo="opacity-100"
+      leave="transition-opacity duration-100"
+      leaveFrom="opacity-100"
+      leaveTo="opacity-0"
+    >
       <div className="flex center mb-6">
         <div className="mr-3 font-light">One Page</div>
         <Toggle
@@ -373,7 +371,7 @@ export const MarketCreationForm = () => {
           </button>
         </div>
       </form>
-    </div>
+    </Transition>
   );
 };
 

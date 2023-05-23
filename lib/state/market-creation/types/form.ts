@@ -7,15 +7,18 @@ import {
   IOEndDate,
   IOModerationMode,
   IOOracle,
-  IOPeriodCustomDateOption,
-  IOPeriodCustomDurationOption,
+  IOPeriodDateOption,
+  IOPeriodDurationOption,
   IOPeriodOption,
-  IOPeriodPresetOption,
   IOQuestion,
   IOScalarAnswers,
   IOTags,
   IOYesNoAnswers,
 } from "./validation";
+import { ChainTime, dateBlock } from "@zeitgeistpm/utility/dist/time";
+import * as O from "@zeitgeistpm/utility/dist/option";
+import moment from "moment";
+import { BLOCK_TIME_SECONDS } from "lib/constants";
 
 /**
  * This is the type of the full market creation form data that is used to create a market.
@@ -68,13 +71,67 @@ export type CategoricalAnswers = Required<z.infer<typeof IOCategoricalAnswers>>;
 export type ScalarAnswers = Required<z.infer<typeof IOScalarAnswers>>;
 export type EndDate = z.infer<typeof IOEndDate>;
 export type PeriodOption = Required<z.infer<typeof IOPeriodOption>>;
-export type PeriodPresetOption = Required<z.infer<typeof IOPeriodPresetOption>>;
-export type PeriodCustomDateOption = Required<
-  z.infer<typeof IOPeriodCustomDateOption>
->;
-export type PeriodCustomDurationOption = Required<
-  z.infer<typeof IOPeriodCustomDurationOption>
+export type PeriodDateOption = Required<z.infer<typeof IOPeriodDateOption>>;
+export type PeriodDurationOption = Required<
+  z.infer<typeof IOPeriodDurationOption>
 >;
 export type Oracle = z.infer<typeof IOOracle>;
 export type Description = z.infer<typeof IODescription>;
 export type Moderation = z.infer<typeof IOModerationMode>;
+
+export type BlockTimeline = {
+  market: { end: number };
+  grace: { period: number; end: number };
+  report: { period: number; end: number };
+  dispute: { period: number; end: number };
+};
+
+export const timelineAsBlocks = (
+  periods: {
+    marketEndDate?: Date;
+    gracePeriod: Partial<PeriodOption>;
+    reportingPeriod: Partial<PeriodOption>;
+    disputePeriod: Partial<PeriodOption>;
+  },
+  chainTime?: ChainTime,
+): O.IOption<BlockTimeline> => {
+  return O.tryCatch(() => {
+    if (!chainTime) return null;
+
+    const marketEndDate = new Date(periods.marketEndDate);
+    const marketEndBlock = dateBlock(chainTime, marketEndDate);
+
+    const gracePeriodEndBlock =
+      periods.gracePeriod?.type === "date"
+        ? periods.gracePeriod?.block
+        : marketEndBlock + durationasBlocks(periods.gracePeriod);
+
+    const reportPeriodEndBlock =
+      periods.reportingPeriod?.type === "date"
+        ? periods.reportingPeriod?.block
+        : gracePeriodEndBlock + durationasBlocks(periods.reportingPeriod);
+
+    const disputePeriodEndBlock =
+      periods.disputePeriod?.type === "date"
+        ? periods.disputePeriod?.block
+        : reportPeriodEndBlock + durationasBlocks(periods.disputePeriod);
+
+    const graceDelta = gracePeriodEndBlock - marketEndBlock;
+    const reportDelta = reportPeriodEndBlock - gracePeriodEndBlock;
+    const disputeDelta = disputePeriodEndBlock - reportPeriodEndBlock;
+
+    return {
+      market: { end: marketEndBlock },
+      grace: { period: graceDelta, end: gracePeriodEndBlock },
+      report: { period: reportDelta, end: reportPeriodEndBlock },
+      dispute: { period: disputeDelta, end: disputePeriodEndBlock },
+    };
+  }).bind(O.fromNullable);
+};
+
+export const durationasBlocks = (duration: Partial<PeriodDurationOption>) => {
+  return (
+    moment.duration(duration.value, duration.unit).asSeconds() /
+    BLOCK_TIME_SECONDS
+  );
+};

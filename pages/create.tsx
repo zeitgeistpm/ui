@@ -1,12 +1,9 @@
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 
-const MarketCreationForm = dynamic(
-  () => import("components/create/form/MarketCreationForm"),
-  {
-    ssr: false,
-  },
-);
+const MarketCreationForm = dynamic(() => import("components/create/form"), {
+  ssr: false,
+});
 
 const CreateMarketPage: NextPage = () => {
   return (
