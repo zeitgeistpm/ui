@@ -26,7 +26,7 @@ const GrillChat: React.FC<GrillChatProps> = ({ open, setOpen }) => {
   }, []);
 
   return (
-    <div className={"fixed flex flex-col bottom-0 right-0 p-4 mt-2 gap-4 "}>
+    <div className={"fixed flex flex-col bottom-0 right-0 p-4 mt-2 gap-4 z-40"}>
       <motion.div
         key="grillchat"
         className="w-full rounded-md shadow-xl bg-white overflow-hidden"
@@ -46,7 +46,7 @@ const GrillChat: React.FC<GrillChatProps> = ({ open, setOpen }) => {
         <div id="grill" className="h-full"></div>,
       </motion.div>
       <div
-        className="ml-auto rounded-full cursor-pointer border-1 border-gray-300 w-14 h-14 center shadow-ztg-5"
+        className="ml-auto rounded-full cursor-pointer border-1 border-gray-300 w-14 h-14 center shadow-ztg-5 bg-white"
         onClick={() => setOpen(!open)}
       >
         <MessageSquare size={28} />
