@@ -6,7 +6,7 @@ import {
   MarketStatusFilter,
   MarketTagFilter,
 } from "lib/types/market-filter";
-import { FORIEGN_ASSET_METADATA } from "./foreign-asset";
+import { FOREIGN_ASSET_METADATA } from "./foreign-asset";
 import { defaultTags, marketStatuses } from "./markets";
 
 export const filterTypes = ["status", "tag", "currency"] as const;
@@ -41,7 +41,7 @@ export const marketTagFilterOptions: MarketTagFilter[] = defaultTags.map(
 
 const createCurrencyFilters = () => {
   const filters: MarketCurrencyFilter[] = [];
-  for (const [id, asset] of Object.entries(FORIEGN_ASSET_METADATA)) {
+  for (const [id, asset] of Object.entries(FOREIGN_ASSET_METADATA)) {
     filters.push({
       type: "currency",
       value: `{"foreignAsset":${id}}`,

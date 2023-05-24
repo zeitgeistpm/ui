@@ -15,11 +15,11 @@ export const lookupAssetImagePath = (foreignAssetId?: number) => {
   if (foreignAssetId == null) {
     return "/currencies/ztg.jpg";
   } else {
-    return FORIEGN_ASSET_METADATA[foreignAssetId].image;
+    return FOREIGN_ASSET_METADATA[foreignAssetId].image;
   }
 };
 
-const BATTERY_STATION_FORIEGN_ASSET_METADATA: ForeignAssetMetadata = {
+const BATTERY_STATION_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
   0: {
     originChain: null,
     image: "/currencies/dot.png",
@@ -36,7 +36,7 @@ const BATTERY_STATION_FORIEGN_ASSET_METADATA: ForeignAssetMetadata = {
   },
 };
 
-const PROD_FORIEGN_ASSET_METADATA: ForeignAssetMetadata = {
+const PROD_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
   0: {
     originChain: "Polkadot",
     image: "/currencies/dot.png",
@@ -46,7 +46,7 @@ const PROD_FORIEGN_ASSET_METADATA: ForeignAssetMetadata = {
   },
 };
 
-export const FORIEGN_ASSET_METADATA: ForeignAssetMetadata =
+export const FOREIGN_ASSET_METADATA: ForeignAssetMetadata =
   process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
-    ? PROD_FORIEGN_ASSET_METADATA
-    : BATTERY_STATION_FORIEGN_ASSET_METADATA;
+    ? PROD_FOREIGN_ASSET_METADATA
+    : BATTERY_STATION_FOREIGN_ASSET_METADATA;

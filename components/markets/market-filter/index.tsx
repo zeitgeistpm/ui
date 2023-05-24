@@ -1,5 +1,5 @@
 import Skeleton from "components/ui/Skeleton";
-import { FORIEGN_ASSET_METADATA } from "lib/constants/foreign-asset";
+import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { filterTypes } from "lib/constants/market-filter";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import {
@@ -17,10 +17,10 @@ import MarketFiltersDropdowns from "./MarketFiltersDropdowns";
 import MarketFiltersSort from "./MarketFiltersSort";
 import MobileDialog from "./mobile-dialog";
 
-const foreignAssetMap = Object.keys(FORIEGN_ASSET_METADATA).reduce(
+const foreignAssetMap = Object.keys(FOREIGN_ASSET_METADATA).reduce(
   (data, id) => {
     return {
-      [`{"foreignAsset":${id}}`]: FORIEGN_ASSET_METADATA[id].tokenSymbol,
+      [`{"foreignAsset":${id}}`]: FOREIGN_ASSET_METADATA[id].tokenSymbol,
       ...data,
     };
   },
