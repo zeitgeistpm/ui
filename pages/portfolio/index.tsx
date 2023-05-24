@@ -11,7 +11,7 @@ const PortfolioIndex: NextPage = () => {
 
   useEffect(() => {
     if (wallet.activeAccount?.address) {
-      router.push(
+      router.replace(
         `portfolio/${wallet.activeAccount.address ?? ""}`,
         undefined,
         {
