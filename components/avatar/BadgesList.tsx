@@ -9,21 +9,22 @@ import { AiFillInfoCircle } from "react-icons/ai";
 
 const BadgesList = ({ address }: { address: string }) => {
   const { data: badges, isLoading } = useBadges(address);
+
   return (
     <>
-      {isLoading === false && badges?.length > 0 ? (
-        <div className="mb-ztg-38 grid gap-4 grid-cols-2 sm:grid-cols-4 md:grid-cols-6 grid-rows-4">
-          {badges?.map((item, index) => (
-            <BadgeItem key={index} item={item} />
-          ))}
-        </div>
-      ) : (
+      {isLoading === false && badges?.length === 0 ? (
         <EmptyPortfolio
           headerText="You don't have any badges"
           bodyText="Trade to earn badges"
           buttonText="View Markets"
           buttonLink="/markets"
         />
+      ) : (
+        <div className="mb-ztg-38 grid gap-4 grid-cols-2 sm:grid-cols-4 md:grid-cols-6 grid-rows-4">
+          {badges?.map((item, index) => (
+            <BadgeItem key={index} item={item} />
+          ))}
+        </div>
       )}
     </>
   );
