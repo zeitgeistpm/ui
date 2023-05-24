@@ -1,4 +1,3 @@
-import capitalize from "lodash-es/capitalize";
 import {
   MarketCurrencyFilter,
   MarketOrderByOption,
@@ -7,8 +6,8 @@ import {
   MarketStatusFilter,
   MarketTagFilter,
 } from "lib/types/market-filter";
+import { FORIEGN_ASSET_METADATA } from "./foreign-asset";
 import { defaultTags, marketStatuses } from "./markets";
-import { allCurrencies } from ".";
 
 export const filterTypes = ["status", "tag", "currency"] as const;
 
@@ -31,11 +30,6 @@ export const categoryImages: Record<typeof defaultTags[number], string> = {
   News: "/category/news.png",
 } as const;
 
-export const currencyImages: Record<typeof allCurrencies[number], string> = {
-  ZTG: "/currencies/ztg.jpg",
-  // "aUSD": "/currencies/ausd.jpg
-} as const;
-
 export const marketTagFilterOptions: MarketTagFilter[] = defaultTags.map(
   (tag) => ({
     type: "tag",
@@ -45,13 +39,29 @@ export const marketTagFilterOptions: MarketTagFilter[] = defaultTags.map(
   }),
 );
 
-export const marketCurrencyFilterOptions: MarketCurrencyFilter[] =
-  allCurrencies.map((currency) => ({
+const createCurrencyFilters = () => {
+  const filters: MarketCurrencyFilter[] = [];
+  for (const [id, asset] of Object.entries(FORIEGN_ASSET_METADATA)) {
+    filters.push({
+      type: "currency",
+      value: `{\"foreignAsset\":${id}}`,
+      label: asset.tokenSymbol,
+      imageUrl: asset.image,
+    });
+  }
+
+  filters.push({
     type: "currency",
-    value: capitalize(currency),
-    label: currency,
-    imageUrl: currencyImages[currency],
-  }));
+    value: "Ztg",
+    label: "ZTG",
+    imageUrl: "/currencies/ztg.jpg",
+  });
+
+  return filters;
+};
+
+export const marketCurrencyFilterOptions: MarketCurrencyFilter[] =
+  createCurrencyFilters();
 
 export const defaultMarketFilters = [
   ...marketStatusFilterOptions.filter((f) => f.value === "Active"),

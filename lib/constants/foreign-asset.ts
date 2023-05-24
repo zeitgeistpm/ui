@@ -7,6 +7,7 @@ type ForeignAssetMetadata = {
     image?: string;
     withdrawSupported: boolean;
     withdrawDestinationFee?: string;
+    tokenSymbol: string;
   };
 };
 
@@ -24,12 +25,14 @@ const BATTERY_STATION_FORIEGN_ASSET_METADATA: ForeignAssetMetadata = {
     image: "/currencies/dot.png",
     withdrawSupported: false,
     coinGeckoId: "polkadot",
+    tokenSymbol: "DOT",
   },
   1: {
     originChain: "Rococo",
     image: "/currencies/rococo.png",
     withdrawSupported: true,
     coinGeckoId: "polkadot",
+    tokenSymbol: "ROC",
   },
 };
 
@@ -39,6 +42,7 @@ const PROD_FORIEGN_ASSET_METADATA: ForeignAssetMetadata = {
     image: "/currencies/dot.png",
     withdrawSupported: true,
     coinGeckoId: "polkadot",
+    tokenSymbol: "DOT",
   },
 };
 
