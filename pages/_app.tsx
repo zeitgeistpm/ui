@@ -81,10 +81,10 @@ const MyApp = ({ Component, pageProps }) => {
           <title>Zeitgeist - Prediction Markets</title>
         </Head>
         <DefaultLayout>
+          <Account />
+          <Onboarding />
           <Layout>
             <Component {...pageProps} />
-            <Account />
-            <Onboarding />
           </Layout>
         </DefaultLayout>
         <Devtools />

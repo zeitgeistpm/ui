@@ -11,15 +11,15 @@ import {
 import TradeHistoryTable from "components/portfolio/TradeHistoryTable";
 import TransactionHistoryTable from "components/portfolio/TransactionHistoryTable";
 import InfoBoxes from "components/ui/InfoBoxes";
+import PortfolioLayout from "layouts/PortfolioLayout";
+import { NextPageWithLayout } from "layouts/types";
 import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
-import { useCrossChainApis } from "lib/state/cross-chain";
 import { groupBy, range } from "lodash-es";
-import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 
-const Portfolio: NextPage = () => {
+const Portfolio: NextPageWithLayout = () => {
   const router = useRouter();
   const address = Array.isArray(router.query.address)
     ? router.query.address[0]
@@ -213,5 +213,7 @@ const Portfolio: NextPage = () => {
     </>
   );
 };
+
+Portfolio.Layout = PortfolioLayout;
 
 export default Portfolio;
