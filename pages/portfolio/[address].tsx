@@ -2,6 +2,7 @@ import { Tab } from "@headlessui/react";
 import { getIndexOf } from "@zeitgeistpm/sdk-next";
 import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
+import CurrenciesTable from "components/portfolio/CurrenciesTable";
 import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
 import {
   MarketPositions,
@@ -12,6 +13,7 @@ import TransactionHistoryTable from "components/portfolio/TransactionHistoryTabl
 import InfoBoxes from "components/ui/InfoBoxes";
 import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
+import { useCrossChainApis } from "lib/state/cross-chain";
 import { groupBy, range } from "lodash-es";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -25,7 +27,6 @@ const Portfolio: NextPage = () => {
 
   const { markets, subsidy, breakdown } = usePortfolioPositions(address);
 
-  //todo: needs to base asset balance?
   const { data: ztgPrice } = useZtgPrice();
 
   const marketPositionsByMarket = useMemo(
@@ -62,10 +63,14 @@ const Portfolio: NextPage = () => {
               />
             </div>
             <div className="mb-12">
-              <h2 className="text-2xl mb-6 text-center">Predictions</h2>
               <Tab.Group>
                 <Tab.List className="flex center mb-14">
-                  {["By Markets", "Subsidy", "Bonds"].map((title, index) => (
+                  {[
+                    ...["By Markets", "Subsidy", "Bonds"],
+                    ...(process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true"
+                      ? ["Currencies"]
+                      : []),
+                  ].map((title, index) => (
                     <Tab className="px-4" key={index}>
                       {({ selected }) => (
                         <div
@@ -166,6 +171,9 @@ const Portfolio: NextPage = () => {
                   </Tab.Panel>
                   <Tab.Panel>
                     <BondsTable address={address} />
+                  </Tab.Panel>
+                  <Tab.Panel>
+                    <CurrenciesTable address={address} />
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>
