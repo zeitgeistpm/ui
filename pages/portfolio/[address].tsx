@@ -57,23 +57,29 @@ const Portfolio: NextPage = () => {
         <Tab.Group>
           <div className="overflow-auto">
             <Tab.List className="flex sm:justify-center mb-4">
-              {["Predictions", "Balances", "Markets", "Badges", "History"].map(
-                (title, index) => (
-                  <Tab className="px-4" key={index}>
-                    {({ selected }) => (
-                      <div
-                        className={
-                          selected
-                            ? "font-semibold text-black transition-all"
-                            : "text-sky-600 transition-all"
-                        }
-                      >
-                        {title}
-                      </div>
-                    )}
-                  </Tab>
-                ),
-              )}
+              {[
+                "Predictions",
+                ...(process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true"
+                  ? ["Balances"]
+                  : []),
+                "Markets",
+                "Badges",
+                "History",
+              ].map((title, index) => (
+                <Tab className="px-4" key={index}>
+                  {({ selected }) => (
+                    <div
+                      className={
+                        selected
+                          ? "font-semibold text-black transition-all"
+                          : "text-sky-600 transition-all"
+                      }
+                    >
+                      {title}
+                    </div>
+                  )}
+                </Tab>
+              ))}
             </Tab.List>
           </div>
 
@@ -127,9 +133,11 @@ const Portfolio: NextPage = () => {
                 />
               )}
             </Tab.Panel>
-            <Tab.Panel>
-              <CurrenciesTable address={address} />
-            </Tab.Panel>
+            {process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true" && (
+              <Tab.Panel>
+                <CurrenciesTable address={address} />
+              </Tab.Panel>
+            )}
             <Tab.Panel>
               <Tab.Group>
                 <div className="overflow-auto">

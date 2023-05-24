@@ -20,7 +20,7 @@ const BadgesList = ({ address }: { address: string }) => {
       ) : (
         <EmptyPortfolio
           headerText="You don't have any badges"
-          bodyText="Trade markets to earn badges"
+          bodyText="Trade to earn badges"
           buttonText="View Markets"
           buttonLink="/markets"
         />
