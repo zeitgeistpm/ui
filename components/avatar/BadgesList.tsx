@@ -89,6 +89,7 @@ const BadgeItem = (props: { item: Badge.IndexedBadge }) => {
               <a
                 href={`${process.env.NEXT_PUBLIC_SINGULAR_URL}/collectibles/${item.id}`}
                 target="_blank"
+                rel="noreferrer"
               >
                 <div
                   className="inline-flex items-center py-1 px-2 rounded-md border-2 cursor-pointer"
