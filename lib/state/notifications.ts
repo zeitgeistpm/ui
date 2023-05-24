@@ -39,7 +39,7 @@ export type UseNotifications = {
    */
   readonly notifications: Readonly<Notification>[];
   /**
-   * Pushe a new notification to the notification list.
+   * Pushes a new notification to the notification list.
    *
    * @param content - Content of the notification.
    * @param options - Options for the notification.
@@ -53,7 +53,7 @@ export type UseNotifications = {
     },
   ): Readonly<Notification>;
   /**
-   * Remove a noptification from the notification list, you can pass the notification object or the id.
+   * Remove a notification from the notification list, you can pass the notification object or the id.
    *
    * @param notification - Notification to remove.
    */

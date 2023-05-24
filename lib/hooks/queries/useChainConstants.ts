@@ -7,6 +7,7 @@ export type ChainConstants = {
   tokenSymbol: string;
   ss58Prefix: number;
   blockTimeSec: number;
+  parachainId: number;
   markets: {
     maxDisputes: number;
     disputeBond: number; // initial dispute amount
@@ -41,9 +42,10 @@ export const useChainConstants = () => {
     async () => {
       if (!isRpcSdk(sdk)) return null;
 
-      const [consts, properties] = await Promise.all([
+      const [consts, properties, parachainId] = await Promise.all([
         sdk.api.consts,
         sdk.api.rpc.system.properties(),
+        sdk.api.query.parachainInfo.parachainId(),
       ]);
 
       // minimumPeriod * 2 is fair assumption for now but need to make sure this stays up
@@ -57,6 +59,7 @@ export const useChainConstants = () => {
           .replace("]", ""),
         ss58Prefix: consts.system.ss58Prefix.toNumber(),
         blockTimeSec: blockTimeSec,
+        parachainId: parachainId.toNumber(),
         markets: {
           maxDisputes: consts.predictionMarkets.maxDisputes.toNumber(),
           disputeBond: consts.predictionMarkets.disputeBond.toNumber() / ZTG,
