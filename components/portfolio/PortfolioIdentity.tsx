@@ -10,11 +10,11 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
     <div className="flex flex-col items-center justify-center w-full gap-y-3 min-h-[200px]">
       {address && <Avatar address={address} size={120} />}
       {identity?.twitter && (
-        <div className=" font-extrabold text-[38px]">
+        <div className=" font-extrabold text-[28px] sm:text-[38px]">
           {identity.displayName}
         </div>
       )}
-      <div>{address}</div>
+      <div className="text-ztg-12-150 sm:text-ztg-16-150">{address}</div>
       <div className="flex gap-3 text-ztg-14-110 text-white">
         {identity?.twitter && (
           <a

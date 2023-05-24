@@ -114,7 +114,7 @@ export const BreakdownSlot = ({
   return (
     <>
       <h4 className="font-medium text-sky-600 text-ztg-12-150 mb-1">{title}</h4>
-      <div className="flex text-lg mb-1">
+      <div className="flex text-lg mb-1 items-center">
         <div className="w-2/3 font-semibold text-ztg-16-150">
           {formatNumberLocalized(value.div(ZTG).toNumber())} ZTG
         </div>
