@@ -35,7 +35,7 @@ const LiquidityHeaderTextItem: FC<
   return (
     <div className={"w-full border-gray-300 text-xs " + className}>
       <div className="center py-3 md:justify-start md:flex-col md:items-start">
-        <div className="center mr-2 text-sky-400 font-semibold md:justify-start">
+        <div className="center mr-2 text-sky-600 font-semibold md:justify-start">
           {label}
         </div>
         <div className="font-semibold center">{children}</div>
