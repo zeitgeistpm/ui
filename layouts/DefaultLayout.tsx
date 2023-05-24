@@ -41,10 +41,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
             }
           `}
         </style>
-        <div
-          ref={contentRef}
-          className="overflow-y-a1uto overflow-x-hidden flex-grow"
-        >
+        <div ref={contentRef} className="overflow-x-hidden flex-grow">
           <TopBar />
           {/* hide notification bar */}
           {NOTIFICATION_MESSAGE && (
