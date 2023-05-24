@@ -84,7 +84,7 @@ const Portfolio: NextPage = () => {
           </div>
 
           <Tab.Panels>
-            <Tab.Panel>
+            <Tab.Panel className="mt-[40px]">
               {!marketPositionsByMarket || !ztgPrice ? (
                 range(0, 8).map((i) => (
                   <MarketPositionsSkeleton className="mb-14" key={i} />
@@ -181,7 +181,7 @@ const Portfolio: NextPage = () => {
                 </Tab.Panels>
               </Tab.Group>
             </Tab.Panel>
-            <Tab.Panel>
+            <Tab.Panel className="mt-[40px]">
               <BadgesList address={address} />
             </Tab.Panel>
             <Tab.Panel>

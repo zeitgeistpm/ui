@@ -127,7 +127,7 @@ export const BreakdownSlot = ({
               : "text-green-500"
           }`}
         >
-          {changePercentage.toFixed(1)}%
+          {Math.abs(changePercentage).toFixed(1)}%
         </div>
       </div>
       <div className="text-sky-600 mb-1 text-ztg-14-150">
