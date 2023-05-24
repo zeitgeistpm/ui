@@ -9,7 +9,6 @@ const PortfolioLayout: React.FC<PropsWithChildren> = ({ children }) => {
   const [noAddress, setNoAddress] = useState<boolean>();
 
   useEffect(() => {
-    console.log("useEffect", router.asPath, wallet.activeAccount?.address);
     if (wallet.activeAccount?.address) {
       router.replace(
         `/portfolio/${wallet.activeAccount.address ?? ""}`,
