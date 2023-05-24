@@ -1,7 +1,7 @@
 import React, { ChangeEvent, FC, MouseEvent } from "react";
 import { MultipleOutcomeEntry } from "lib/types/create-market";
 import Table, { TableColumn, TableData } from "components/ui/Table";
-import { ZTG, ZTG_BLUE_COLOR } from "lib/constants";
+import { ZTG, ZTG_BLUE_COLOR, ZTG_MIN_LIQUIDITY } from "lib/constants";
 import { motion } from "framer-motion";
 import PoolFeesSelect from "./PoolFeesSelect";
 import Decimal from "decimal.js";
@@ -190,7 +190,7 @@ const PoolSettings: FC<{
       },
       amount: {
         value: d.amount,
-        min: constants?.swaps.minLiquidity.toString(),
+        min: ZTG_MIN_LIQUIDITY.toString(),
         onChange: (amount: string) => {
           changeOutcomeRow(amount);
         },

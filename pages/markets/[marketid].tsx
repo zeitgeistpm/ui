@@ -8,9 +8,12 @@ import MarketChart from "components/markets/MarketChart";
 import MarketHeader from "components/markets/MarketHeader";
 import PoolDeployer from "components/markets/PoolDeployer";
 import { MarketPromotionCallout } from "components/markets/PromotionCallout";
+import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
 import MarketImage from "components/ui/MarketImage";
+import Skeleton from "components/ui/Skeleton";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
+import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
 import {
   PromotedMarket,
@@ -164,9 +167,6 @@ const Market: NextPage<MarketPageProps> = ({
 
   const token = metadata?.symbol;
 
-  const subsidy =
-    market?.pool?.poolId == null ? 0 : liquidity?.div(ZTG).toNumber();
-
   return (
     <>
       <MarketMeta market={indexedMarket} />
@@ -195,7 +195,6 @@ const Market: NextPage<MarketPageProps> = ({
           disputes={lastDispute}
           token={token}
           prizePool={prizePool?.div(ZTG).toNumber()}
-          subsidy={subsidy}
           marketStage={marketStage}
           rejectReason={market?.rejectReason}
         />
@@ -231,9 +230,30 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           </div>
         )}
-
         <div className="mb-8">
           <h3 className="text-center text-2xl mt-10 mb-8">Predictions</h3>
+          {indexedMarket?.marketType?.scalar !== null && (
+            <div className="mb-8 max-w-[800px] mx-auto">
+              {marketIsLoading ||
+              (!spotPrices?.get(1) && indexedMarket.status !== "Proposed") ||
+              (!spotPrices?.get(0) && indexedMarket.status !== "Proposed") ? (
+                <Skeleton height="40px" width="100%" />
+              ) : (
+                <ScalarPriceRange
+                  scalarType={indexedMarket.scalarType}
+                  lowerBound={new Decimal(indexedMarket.marketType.scalar[0])
+                    .div(ZTG)
+                    .toNumber()}
+                  upperBound={new Decimal(indexedMarket.marketType.scalar[1])
+                    .div(ZTG)
+                    .toNumber()}
+                  shortPrice={spotPrices?.get(1).toNumber()}
+                  longPrice={spotPrices?.get(0).toNumber()}
+                  status={indexedMarket.status}
+                />
+              )}
+            </div>
+          )}
           <MarketAssetDetails marketId={Number(marketid)} />
         </div>
 
