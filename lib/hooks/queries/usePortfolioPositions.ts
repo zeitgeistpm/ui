@@ -95,6 +95,10 @@ export type Position<T extends AssetId = AssetId> = {
   /**
    * The average cost of acquiring the position of the asset.
    */
+  pnl: number;
+  /**
+   * The total cost of acquisition from the total amount received from selling.
+   */
   price24HoursAgo: Decimal;
   /**
    * The balance the user has of the positions asset.
@@ -447,7 +451,7 @@ export const usePortfolioPositions = (
         continue;
       }
       console.log(tradeHistory);
-      let avgPrice = tradeHistory
+      const avgPrice = tradeHistory
         .filter((transaction) => transaction.marketId === marketId)
         .reduce((acc, transaction) => {
           const assetIn = transaction.assetAmountOut.div(ZTG).toNumber();
@@ -466,6 +470,25 @@ export const usePortfolioPositions = (
           return acc;
         }, 0);
 
+      const pnl = tradeHistory
+        .filter((transaction) => transaction.marketId === marketId)
+        .reduce((acc, transaction) => {
+          const assetIn = transaction.assetAmountIn.div(ZTG).toNumber();
+          const assetOut = transaction.assetAmountOut.div(ZTG).toNumber();
+          const price = transaction.price.toNumber();
+          let totalCost = 0;
+          let totalSells = 0;
+          if (transaction.assetOut === outcome) {
+            totalSells += assetOut * price;
+          } else if (transaction.assetIn === outcome) {
+            totalCost += assetIn * price;
+          } else {
+            0;
+          }
+          acc = totalCost - totalSells;
+          return acc;
+        }, 0);
+
       const change = diffChange(price, price24HoursAgo);
 
       positionsData.push({
@@ -474,6 +497,7 @@ export const usePortfolioPositions = (
         pool,
         price,
         avgPrice,
+        pnl,
         price24HoursAgo,
         outcome,
         color,

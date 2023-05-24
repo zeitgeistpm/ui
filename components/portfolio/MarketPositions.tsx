@@ -101,6 +101,7 @@ export const MarketPositions = ({
             changePercentage,
             market,
             avgPrice,
+            pnl,
           }) => {
             const baseAssetUsdPrice = lookUpAssetPrice(
               market.baseAsset,
@@ -117,6 +118,10 @@ export const MarketPositions = ({
               },
               cost: {
                 value: avgPrice,
+                usdValue: usdZtgPrice.toNumber(),
+              },
+              pnl: {
+                value: pnl,
                 usdValue: usdZtgPrice.toNumber(),
               },
               value: {
