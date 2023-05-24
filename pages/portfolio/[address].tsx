@@ -3,6 +3,7 @@ import { getIndexOf } from "@zeitgeistpm/sdk-next";
 import BadgesList from "components/avatar/BadgesList";
 import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
+import CurrenciesTable from "components/portfolio/CurrenciesTable";
 import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
 import HistoryTabGroup from "components/portfolio/HistoryTabGroup";
 import {
@@ -14,6 +15,7 @@ import InfoBoxes from "components/ui/InfoBoxes";
 import SubTabsList from "components/ui/SubTabsList";
 import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
+import { useCrossChainApis } from "lib/state/cross-chain";
 import { groupBy, range } from "lodash-es";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -27,7 +29,6 @@ const Portfolio: NextPage = () => {
 
   const { markets, subsidy, breakdown } = usePortfolioPositions(address);
 
-  //todo: needs to base asset balance?
   const { data: ztgPrice } = useZtgPrice();
 
   const marketPositionsByMarket = useMemo(
@@ -126,7 +127,9 @@ const Portfolio: NextPage = () => {
                 />
               )}
             </Tab.Panel>
-            <Tab.Panel>Add currencies table here</Tab.Panel>
+            <Tab.Panel>
+              <CurrenciesTable address={address} />
+            </Tab.Panel>
             <Tab.Panel>
               <Tab.Group>
                 <div className="overflow-auto">

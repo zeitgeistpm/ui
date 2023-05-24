@@ -15,26 +15,33 @@ export const useMarketsByIds = (marketQueries?: UseMarketFilter[]) => {
       if (marketQueries && isIndexedSdk(sdk)) {
         return sdk.model.markets.list({
           where: {
-            question_isNull: false,
-            question_not_eq: "",
-            OR: [
+            AND: [
               {
-                pool: {
-                  poolId_in: marketQueries
-                    .filter(
-                      (filter): filter is { poolId: number } =>
-                        "poolId" in filter,
-                    )
-                    .map((filter) => filter.poolId),
-                },
+                question_isNull: false,
+                question_not_eq: "",
+                isMetaComplete_eq: true,
               },
               {
-                marketId_in: marketQueries
-                  .filter(
-                    (filter): filter is { marketId: number } =>
-                      "marketId" in filter,
-                  )
-                  .map((filter) => filter.marketId),
+                OR: [
+                  {
+                    pool: {
+                      poolId_in: marketQueries
+                        .filter(
+                          (filter): filter is { poolId: number } =>
+                            "poolId" in filter,
+                        )
+                        .map((filter) => filter.poolId),
+                    },
+                  },
+                  {
+                    marketId_in: marketQueries
+                      .filter(
+                        (filter): filter is { marketId: number } =>
+                          "marketId" in filter,
+                      )
+                      .map((filter) => filter.marketId),
+                  },
+                ],
               },
             ],
           },
