@@ -44,7 +44,7 @@ const createCurrencyFilters = () => {
   for (const [id, asset] of Object.entries(FORIEGN_ASSET_METADATA)) {
     filters.push({
       type: "currency",
-      value: `{\"foreignAsset\":${id}}`,
+      value: `{"foreignAsset":${id}}`,
       label: asset.tokenSymbol,
       imageUrl: asset.image,
     });
