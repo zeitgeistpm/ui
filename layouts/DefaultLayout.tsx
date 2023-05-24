@@ -88,8 +88,8 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
           <Footer />
         </div>
         <NotificationCenter />
-        <GrillChat open={showChat} setOpen={setShowChat} />
       </TradeItemContext.Provider>
+      <GrillChat open={showChat} setOpen={setShowChat} />
     </div>
   );
 };
