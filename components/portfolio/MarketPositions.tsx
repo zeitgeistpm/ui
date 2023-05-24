@@ -67,8 +67,13 @@ export const MarketPositions = ({
             type: "currency",
           },
           {
-            header: "Total Cost",
+            header: "Avg. Cost",
             accessor: "cost",
+            type: "currency",
+          },
+          {
+            header: "PnL",
+            accessor: "pnl",
             type: "currency",
           },
           {
@@ -95,7 +100,7 @@ export const MarketPositions = ({
             outcome,
             changePercentage,
             market,
-            totalCost,
+            avgPrice,
           }) => {
             const baseAssetUsdPrice = lookUpAssetPrice(
               market.baseAsset,
@@ -111,7 +116,7 @@ export const MarketPositions = ({
                 usdValue: price.mul(baseAssetUsdPrice).toNumber(),
               },
               cost: {
-                value: totalCost,
+                value: avgPrice,
                 usdValue: usdZtgPrice.toNumber(),
               },
               value: {

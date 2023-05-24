@@ -91,9 +91,9 @@ export type Position<T extends AssetId = AssetId> = {
   /**
    * The price of the position 24 hours ago.
    */
-  totalCost: number;
+  avgPrice: number;
   /**
-   * The total spent to acquire all positions of the asset.
+   * The average cost of acquiring the position of the asset.
    */
   price24HoursAgo: Decimal;
   /**
@@ -162,6 +162,9 @@ export const usePortfolioPositions = (
   const { data: marketBonds, isLoading: isBondsLoading } =
     useAccountBonds(address);
   const { data: foreignAssetPrices } = useAllForeignAssetUsdPrices();
+
+  const { data: tradeHistory, isLoading: isTradeHistoryLoading } =
+    useTradeHistory(address);
 
   const rawPositions = useAccountTokenPositions({
     where: {
@@ -246,12 +249,6 @@ export const usePortfolioPositions = (
       account: address,
     })) ?? [],
   );
-
-  const { data: transactionHistory, isLoading } =
-    useTransactionHistory(address);
-
-  const { data: tradeHistory, isLoading: isTradeHistoryLoading } =
-    useTradeHistory(address);
 
   const positions = useMemo<Position[] | null>(() => {
     let positionsData: Position[] = [];
@@ -445,18 +442,26 @@ export const usePortfolioPositions = (
         color = "#DF0076";
       }
 
-      const totalCost = tradeHistory
+      if (isTradeHistoryLoading) {
+        stillLoading = true;
+        continue;
+      }
+      console.log(tradeHistory);
+      let avgPrice = tradeHistory
         .filter((transaction) => transaction.marketId === marketId)
         .reduce((acc, transaction) => {
-          const assetIn = transaction.assetAmountIn.div(ZTG).toNumber();
-          const assetOut = transaction.assetAmountOut.div(ZTG).toNumber();
+          const assetIn = transaction.assetAmountOut.div(ZTG).toNumber();
+          let totalAssets = 0;
+          let totalCost = 0;
           const price = transaction.price.toNumber();
           if (transaction.assetOut === outcome) {
-            acc += assetOut * price;
-          } else if (transaction.assetIn === outcome) {
-            acc -= assetIn * price;
-          } else {
-            0;
+            if (transaction.assetIn === transaction.baseAssetName) {
+              totalCost += assetIn * price;
+              totalAssets += assetIn;
+            }
+            if (totalAssets > 0 && totalCost > 0) {
+              acc = totalCost / totalAssets;
+            }
           }
           return acc;
         }, 0);
@@ -468,7 +473,7 @@ export const usePortfolioPositions = (
         market,
         pool,
         price,
-        totalCost,
+        avgPrice,
         price24HoursAgo,
         outcome,
         color,
