@@ -13,7 +13,6 @@ import {
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 export interface PoolAssetRowData {
-  assetColor: string;
   asset: string;
   weight: string;
   amount: string;
@@ -37,7 +36,6 @@ export const poolRowDataFromOutcomes = (
   return [
     ...outcomes.map((outcome) => {
       return {
-        assetColor: outcome.color,
         asset: outcome.name,
         weight: weight.toFixed(0),
         amount: "100",
@@ -49,7 +47,6 @@ export const poolRowDataFromOutcomes = (
       };
     }),
     {
-      assetColor: ZTG_BLUE_COLOR,
       asset: tokenSymbol,
       weight: baseWeight.toString(),
       amount: "100",
@@ -115,7 +112,7 @@ const PriceSetter = ({
 const PoolSettings: FC<{
   data: PoolAssetRowData[];
   onChange: (data: PoolAssetRowData[]) => void;
-  onFeeChange: (data: Decimal) => void;
+  onFeeChange?: (data: Decimal) => void;
 }> = ({ data, onChange, onFeeChange }) => {
   const changeOutcomeRow = (amount: string) => {
     onChange(
@@ -170,7 +167,7 @@ const PoolSettings: FC<{
   const tableData: TableData[] = data.map((d, index) => {
     return {
       token: {
-        color: d.assetColor,
+        token: true,
         label: d.asset,
       },
       weights: d.weight,
@@ -226,17 +223,20 @@ const PoolSettings: FC<{
   };
 
   return (
-    <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+    <div className="md:min-w-[720px]">
       <Table data={tableData} columns={columns} />
-      <div className="mt-[20px] mb-[40px]">
-        <div className="text-ztg-16-150 font-bold ">Pool Fees*</div>
-        <p className="text-ztg-14-150 mb-[30px] mt-[10px] text-sky-600 ">
-          High fees will allow liquidity providers to collect more value from a
-          given trade. However, high fees may also reduce market participants.
-        </p>
-        <PoolFeesSelect onFeeChange={handleFeeChange} />
-      </div>
-    </motion.div>
+      {onFeeChange && (
+        <div className="mt-[20px] mb-[40px]">
+          <div className="text-ztg-16-150 font-bold ">Pool Fees*</div>
+          <p className="text-ztg-14-150 mb-[30px] mt-[10px] text-sky-600 ">
+            High fees will allow liquidity providers to collect more value from
+            a given trade. However, high fees may also reduce market
+            participants.
+          </p>
+          <PoolFeesSelect onFeeChange={handleFeeChange} />
+        </div>
+      )}
+    </div>
   );
 };
 

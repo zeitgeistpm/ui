@@ -1,3 +1,7 @@
+import * as O from "@zeitgeistpm/utility/dist/option";
+import { ChainTime, dateBlock } from "@zeitgeistpm/utility/dist/time";
+import { BLOCK_TIME_SECONDS } from "lib/constants";
+import moment from "moment";
 import * as z from "zod";
 import {
   IOAnswers,
@@ -5,6 +9,7 @@ import {
   IOCurrency,
   IODescription,
   IOEndDate,
+  IOLiquidity,
   IOModerationMode,
   IOOracle,
   IOPeriodDateOption,
@@ -15,14 +20,13 @@ import {
   IOTags,
   IOYesNoAnswers,
 } from "./validation";
-import { ChainTime, dateBlock } from "@zeitgeistpm/utility/dist/time";
-import * as O from "@zeitgeistpm/utility/dist/option";
-import moment from "moment";
-import { BLOCK_TIME_SECONDS } from "lib/constants";
 
 /**
  * This is the type of the full market creation form data that is used to create a market.
  * It is infered from the zod schema validation types below.
+ *
+ * @note - Because we are not in strict ts mode zod allways infers partial form fields.
+ *  When we move to strict null checks we can do ```z.infer<ReturnType<typeof createMarketFormValidator>>```
  */
 export type MarketCreationFormData = {
   currency: CurrencyTag;
@@ -36,6 +40,7 @@ export type MarketCreationFormData = {
   oracle: Oracle;
   description?: Description;
   moderation: Moderation;
+  liquidity: Liquidity;
 };
 
 /**
@@ -53,6 +58,7 @@ export const marketCreationFormKeys = [
   "oracle",
   "description",
   "moderation",
+  "liquidity",
 ] as const;
 
 /**
@@ -78,6 +84,7 @@ export type PeriodDurationOption = Required<
 export type Oracle = z.infer<typeof IOOracle>;
 export type Description = z.infer<typeof IODescription>;
 export type Moderation = z.infer<typeof IOModerationMode>;
+export type Liquidity = z.infer<typeof IOLiquidity>;
 
 export type BlockTimeline = {
   market: { end: number };

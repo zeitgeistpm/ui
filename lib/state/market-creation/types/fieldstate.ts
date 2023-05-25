@@ -71,4 +71,8 @@ export const initialFieldsState: FieldsState = {
     isValid: true,
     isTouched: false,
   },
+  liquidity: {
+    isValid: true,
+    isTouched: false,
+  },
 };

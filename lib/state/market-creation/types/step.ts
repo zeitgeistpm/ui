@@ -14,6 +14,7 @@ export type MarketCreationStepType =
   | "Oracle"
   | "Description"
   | "Moderation"
+  | "Liquidity"
   | "Preview";
 
 /**
@@ -39,6 +40,7 @@ export const marketCreationSteps: MarketCreationSteps = [
   { label: "Oracle", isValid: false, isTouched: false, reached: false },
   { label: "Description", isValid: false, isTouched: false, reached: false },
   { label: "Moderation", isValid: false, isTouched: false, reached: false },
+  { label: "Liquidity", isValid: false, isTouched: false, reached: false },
   { label: "Preview", isValid: false, isTouched: false, reached: false },
 ];
 
@@ -56,6 +58,7 @@ export const stepFormKeys: Record<
   Oracle: ["oracle"],
   Description: ["description"],
   Moderation: ["moderation"],
+  Liquidity: ["liquidity"],
   Preview: [
     "currency",
     "question",

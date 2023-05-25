@@ -112,6 +112,32 @@ export const defaultState: MarketCreationState = {
     gracePeriod: gracePeriodOptions[0],
     reportingPeriod: reportingPeriodOptions[1],
     disputePeriod: reportingPeriodOptions[1],
+    liquidity: {
+      deploy: true,
+      rows: [
+        {
+          amount: "100",
+          asset: "A",
+          price: { price: "1", locked: false },
+          value: "100",
+          weight: "50",
+        },
+        {
+          amount: "100",
+          asset: "B",
+          price: { price: "1", locked: false },
+          value: "100",
+          weight: "50",
+        },
+        {
+          amount: "100",
+          asset: "DOT",
+          price: { price: "1", locked: true },
+          value: "100",
+          weight: "50",
+        },
+      ],
+    },
   },
   touchState: {},
   stepReachState: {

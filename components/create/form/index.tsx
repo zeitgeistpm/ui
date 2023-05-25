@@ -23,6 +23,7 @@ import { AnswersInput } from "./inputs/answers";
 import { Dialog, Transition } from "@headlessui/react";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import Modal from "components/ui/Modal";
+import { LiquidityInput } from "./inputs/Liquidity";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -392,6 +393,23 @@ export const MarketCreationForm = () => {
                 <ErrorMessage field={fieldsState.moderation} />
               </div>
             </div>
+          </div>
+        </MarketFormSection>
+
+        <MarketFormSection
+          wizard={isWizard}
+          isCurrent={currentStep.label == "Liquidity"}
+          onClickNext={next}
+          onClickBack={back}
+          nextDisabled={!fieldsState.liquidity.isValid}
+          resetForm={isTouched && reset}
+        >
+          <div className="mb-2 md:mb-4 text-center">
+            <h2 className="text-base mb-0">Market Liquidity</h2>
+          </div>
+
+          <div>
+            <LiquidityInput {...input("liquidity", { mode: "all" })} />
           </div>
         </MarketFormSection>
 

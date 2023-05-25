@@ -89,6 +89,7 @@ export const createMarketFormValidator = ({
     oracle: IOOracle,
     description: IODescription,
     moderation: IOModerationMode,
+    liquidity: IOLiquidity,
   });
 };
 
@@ -215,3 +216,19 @@ export const IOModerationMode = z.enum<
   ZeitgeistPrimitivesMarketMarketCreation["type"],
   ["Permissionless", "Advised"]
 >(["Permissionless", "Advised"]);
+
+export const IOLiquidity = z.object({
+  deploy: z.boolean(),
+  rows: z.array(
+    z.object({
+      asset: z.string(),
+      weight: z.string(),
+      amount: z.string(),
+      price: z.object({
+        price: z.string(),
+        locked: z.boolean(),
+      }),
+      value: z.string(),
+    }),
+  ),
+});

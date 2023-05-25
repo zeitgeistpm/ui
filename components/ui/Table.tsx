@@ -78,8 +78,8 @@ interface CurrencyData {
 }
 
 interface TokenData {
+  token: true;
   label: string;
-  color: string;
 }
 
 interface MarketData {
@@ -99,7 +99,7 @@ const isCurrencyData = (cellValue: CellValue): cellValue is CurrencyData => {
 };
 
 const isTokenData = (cellValue: CellValue): cellValue is TokenData => {
-  return (cellValue as TokenData).color !== undefined;
+  return (cellValue as TokenData).token !== undefined;
 };
 
 const isMarketData = (cellValue: CellValue): cellValue is MarketData => {
@@ -241,10 +241,6 @@ const Cell = ({
         return (
           <td className={` ${base}`} onClick={onClick} style={style}>
             <div className="flex items-center">
-              <div
-                className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2"
-                style={{ background: value.color }}
-              ></div>
               <div
                 className="font-semibold text-ztg-16-150 uppercase"
                 data-test="tokenText"
