@@ -245,6 +245,8 @@ module.exports = {
         mariner: "#3056D3",
         platinum: "#DFE0E6",
         powderblue: "#ECFAFF",
+        discord: "#5364E6",
+        twitter: "#479BE9",
         purple: {
           light: "#FCE8F3",
           DEFAULT: "#99154B",
