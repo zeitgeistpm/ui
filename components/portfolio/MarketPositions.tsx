@@ -10,7 +10,7 @@ import DisputeButton from "components/assets/AssetActionButtons/DisputeButton";
 import RedeemButton from "components/assets/AssetActionButtons/RedeemButton";
 import ReportButton from "components/assets/AssetActionButtons/ReportButton";
 import AssetTradingButtons from "components/assets/AssetActionButtons/AssetTradingButtons";
-import Table, { TableData } from "components/ui/Table";
+import Table, { TableData, TableColumn } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { Position } from "lib/hooks/queries/usePortfolioPositions";
@@ -19,6 +19,49 @@ import Link from "next/link";
 import MarketPositionHeader from "./MarketPositionHeader";
 import { useAllForeignAssetUsdPrices } from "lib/hooks/queries/useAssetUsdPrice";
 import { lookUpAssetPrice } from "lib/util/lookup-price";
+
+const COLUMNS: TableColumn[] = [
+  {
+    header: "Outcomes",
+    accessor: "outcome",
+    type: "text",
+  },
+  {
+    header: "Balance",
+    accessor: "userBalance",
+    type: "number",
+  },
+  {
+    header: "Price",
+    accessor: "price",
+    type: "currency",
+  },
+  {
+    header: "Avg. Cost",
+    accessor: "cost",
+    type: "currency",
+  },
+  {
+    header: "Total Value",
+    accessor: "value",
+    type: "currency",
+  },
+  {
+    header: "PnL",
+    accessor: "pnl",
+    type: "currency",
+  },
+  {
+    header: "24 Hrs",
+    accessor: "change",
+    type: "change",
+  },
+  {
+    header: "",
+    accessor: "actions",
+    type: "component",
+  },
+];
 
 export type MarketPositionsProps = {
   usdZtgPrice: Decimal;
@@ -47,48 +90,7 @@ export const MarketPositions = ({
         question={market.question}
       />
       <Table
-        columns={[
-          {
-            header: "Outcomes",
-            accessor: "outcome",
-            type: "text",
-          },
-          {
-            header: "Balance",
-            accessor: "userBalance",
-            type: "number",
-          },
-          {
-            header: "Price",
-            accessor: "price",
-            type: "currency",
-          },
-          {
-            header: "Avg. Cost",
-            accessor: "cost",
-            type: "currency",
-          },
-          {
-            header: "PnL",
-            accessor: "pnl",
-            type: "currency",
-          },
-          {
-            header: "Total Value",
-            accessor: "value",
-            type: "currency",
-          },
-          {
-            header: "24 Hrs",
-            accessor: "change",
-            type: "change",
-          },
-          {
-            header: "",
-            accessor: "actions",
-            type: "component",
-          },
-        ]}
+        columns={COLUMNS}
         data={positions.map<TableData>(
           ({
             assetId,
