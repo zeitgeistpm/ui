@@ -1,12 +1,9 @@
-// import { Skeleton } from "@material-ui/lab";
 import Skeleton from "components/ui/Skeleton";
 import {
   IndexerContext,
-  IOForeignAssetId,
   IOMarketOutcomeAssetId,
   IOPoolShareAssetId,
   Market,
-  parseAssetId,
   ZTG,
 } from "@zeitgeistpm/sdk-next";
 import DisputeButton from "components/assets/AssetActionButtons/DisputeButton";
@@ -118,11 +115,13 @@ export const MarketPositions = ({
               },
               cost: {
                 value: avgPrice,
-                usdValue: usdZtgPrice.toNumber(),
+                usdValue: new Decimal(avgPrice)
+                  .mul(baseAssetUsdPrice)
+                  .toNumber(),
               },
               pnl: {
                 value: pnl,
-                usdValue: usdZtgPrice.toNumber(),
+                usdValue: new Decimal(pnl).mul(baseAssetUsdPrice).toNumber(),
               },
               value: {
                 value: userBalance.mul(price).div(ZTG).toNumber(),
