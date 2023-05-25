@@ -68,7 +68,7 @@ const COLUMNS: TableColumn[] = [
   },
 ];
 
-const COLUMNS_SUBSIDY: TableColumn[] = [
+const COLUMNS_LIQUIDITY: TableColumn[] = [
   {
     header: "Outcomes",
     accessor: "outcome",
@@ -121,7 +121,9 @@ export const MarketPositions = ({
   const userAddress = wallet.getActiveSigner()?.address;
   const isOracle = market?.oracle === userAddress;
 
-  const isSubsidy = positions.some((pos) => pos.outcome == "Pool Share");
+  const isLiquidityMarket = positions.some(
+    (pos) => pos.outcome == "Pool Share",
+  );
 
   return (
     <div className={`${className}`}>
@@ -130,7 +132,7 @@ export const MarketPositions = ({
         question={market.question}
       />
       <Table
-        columns={isSubsidy ? COLUMNS_SUBSIDY : COLUMNS}
+        columns={isLiquidityMarket ? COLUMNS_LIQUIDITY : COLUMNS}
         data={positions.map<TableData>(
           ({
             assetId,
