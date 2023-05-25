@@ -8,14 +8,9 @@ import {
   PeriodOption,
 } from "lib/state/market-creation/types/form";
 import { DeepReadonly } from "lib/types/deep-readonly";
+import { ChangeEventHandler, FocusEventHandler } from "react";
 import { FormEvent } from "../types";
 import DateTimePicker from "./DateTime";
-import { ChevronDown } from "react-feather";
-import { ChangeEventHandler, FocusEventHandler, useState } from "react";
-import { Listbox } from "@headlessui/react";
-import { UnionToArray } from "lib/types/union";
-import moment from "moment";
-import { BLOCK_TIME_SECONDS, NUM_BLOCKS_IN_DAY } from "lib/constants";
 
 export type BlockPeriodPickerProps = {
   name: string;

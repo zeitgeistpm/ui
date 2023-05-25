@@ -117,8 +117,6 @@ const PoolSettings: FC<{
   onChange: (data: PoolAssetRowData[]) => void;
   onFeeChange: (data: Decimal) => void;
 }> = ({ data, onChange, onFeeChange }) => {
-  const { data: constants } = useChainConstants();
-
   const changeOutcomeRow = (amount: string) => {
     onChange(
       data.map((row) => {
