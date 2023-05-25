@@ -25,6 +25,7 @@ import Modal from "components/ui/Modal";
 import { getMarketStatusDetails } from "lib/util/market-status-details";
 import { getScalarOutcome } from "lib/util/get-scalar-outcome";
 import { Dialog } from "@headlessui/react";
+import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 
 const UserIdentity: FC<
   PropsWithChildren<{ user: string; className?: string }>
@@ -272,7 +273,6 @@ const MarketHeader: FC<{
   disputes: MarketDispute;
   resolvedOutcome: string;
   prizePool: number;
-  subsidy: number;
   token: string;
   marketStage: MarketStage;
   rejectReason?: string;
@@ -282,7 +282,6 @@ const MarketHeader: FC<{
   disputes,
   resolvedOutcome,
   prizePool,
-  subsidy,
   token,
   marketStage,
   rejectReason,
@@ -317,6 +316,9 @@ const MarketHeader: FC<{
   const { data: marketHistory } = useMarketEventHistory(
     market.marketId.toString(),
   );
+  const { data: liquidity, isLoading: isLiqudityLoading } = usePoolLiquidity({
+    marketId: market.marketId,
+  });
 
   return (
     <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
@@ -372,9 +374,9 @@ const MarketHeader: FC<{
         ) : (
           <Skeleton width="150px" height="20px" />
         )}
-        {subsidy >= 0 && token ? (
-          <HeaderStat label="Subsidy" border={false}>
-            {formatNumberCompact(subsidy)}
+        {isLiqudityLoading === false && token ? (
+          <HeaderStat label="Liquidity" border={false}>
+            {formatNumberCompact(liquidity.div(ZTG).toNumber())}
             &nbsp;
             {token}
           </HeaderStat>
