@@ -114,12 +114,12 @@ const Market: NextPage<MarketPageProps> = ({
   const { marketid } = router.query;
   const marketId = Number(marketid);
   const { data: prizePool } = usePrizePool(marketId);
-  const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
+  const { data: market, isLoading: marketIsLoading } = useMarket({
     marketId,
   });
   const { data: disputes } = useMarketDisputes(marketId);
 
-  const { data: marketStage } = useMarketStage(marketSdkv2);
+  const { data: marketStage } = useMarketStage(market);
   const { data: spotPrices } = useMarketSpotPrices(marketId);
   const { data: liquidity } = usePoolLiquidity({ marketId });
   const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
@@ -135,11 +135,11 @@ const Market: NextPage<MarketPageProps> = ({
   }
 
   useEffect(() => {
-    if (disputes && marketSdkv2?.status === "Disputed") {
+    if (disputes && market?.status === "Disputed") {
       const lastDispute = disputes?.[disputes.length - 1];
       const at = lastDispute.at.toNumber();
       const by = lastDispute.by.toString();
-      const outcome = marketSdkv2?.marketType.scalar
+      const outcome = market?.marketType.scalar
         ? lastDispute?.outcome?.asScalar.toNumber()
         : lastDispute?.outcome?.asCategorical.toNumber();
       const marketDispute: MarketDispute = {
@@ -152,20 +152,19 @@ const Market: NextPage<MarketPageProps> = ({
       };
       setLastDispute(marketDispute);
     }
-    if (marketSdkv2?.report && marketSdkv2?.status === "Reported") {
+    if (market?.report && market?.status === "Reported") {
       const report: Report = {
-        at: marketSdkv2?.report?.at,
-        by: marketSdkv2?.report?.by,
+        at: market?.report?.at,
+        by: market?.report?.by,
         outcome: {
-          categorical: marketSdkv2?.report?.outcome?.categorical,
-          scalar: marketSdkv2?.report?.outcome?.scalar,
+          categorical: market?.report?.outcome?.categorical,
+          scalar: market?.report?.outcome?.scalar,
         },
       };
       setReport(report);
     }
-  }, [disputes, marketSdkv2?.report]);
+  }, [disputes, market?.report]);
 
-  //data for MarketHeader
   const token = metadata?.symbol;
 
   return (
@@ -191,17 +190,17 @@ const Market: NextPage<MarketPageProps> = ({
 
         <MarketHeader
           market={indexedMarket}
-          resolvedOutcome={marketSdkv2?.resolvedOutcome}
+          resolvedOutcome={market?.resolvedOutcome}
           report={report}
           disputes={lastDispute}
           token={token}
           prizePool={prizePool?.div(ZTG).toNumber()}
           marketStage={marketStage}
-          rejectReason={marketSdkv2?.rejectReason}
+          rejectReason={market?.rejectReason}
         />
-        {marketSdkv2?.rejectReason && marketSdkv2.rejectReason.length > 0 && (
+        {market?.rejectReason && market.rejectReason.length > 0 && (
           <div className="mt-[10px] text-ztg-14-150">
-            Market rejected: {marketSdkv2.rejectReason}
+            Market rejected: {market.rejectReason}
           </div>
         )}
 
@@ -293,9 +292,9 @@ const Market: NextPage<MarketPageProps> = ({
             leave="transition ease-in duration-75"
             leaveFrom="transform opacity-100 "
             leaveTo="transform opacity-0 "
-            show={liquidityOpen && Boolean(marketSdkv2?.pool)}
+            show={liquidityOpen && Boolean(market?.pool)}
           >
-            <MarketLiquiditySection market={marketSdkv2} />
+            <MarketLiquiditySection market={market} />
           </Transition>
         </div>
       </div>
