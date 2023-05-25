@@ -68,6 +68,39 @@ const COLUMNS: TableColumn[] = [
   },
 ];
 
+const COLUMNS_SUBSIDY: TableColumn[] = [
+  {
+    header: "Outcomes",
+    accessor: "outcome",
+    type: "text",
+  },
+  {
+    header: "Balance",
+    accessor: "userBalance",
+    type: "number",
+  },
+  {
+    header: "Price",
+    accessor: "price",
+    type: "currency",
+  },
+  {
+    header: "Total Value",
+    accessor: "value",
+    type: "currency",
+  },
+  {
+    header: "24 Hrs",
+    accessor: "change",
+    type: "change",
+  },
+  {
+    header: "",
+    accessor: "actions",
+    type: "component",
+  },
+];
+
 export type MarketPositionsProps = {
   usdZtgPrice: Decimal;
   positions: Position[];
@@ -88,6 +121,8 @@ export const MarketPositions = ({
   const userAddress = wallet.getActiveSigner()?.address;
   const isOracle = market?.oracle === userAddress;
 
+  const isSubsidy = positions.some((pos) => pos.outcome == "Pool Share");
+
   return (
     <div className={`${className}`}>
       <MarketPositionHeader
@@ -95,7 +130,7 @@ export const MarketPositions = ({
         question={market.question}
       />
       <Table
-        columns={COLUMNS}
+        columns={isSubsidy ? COLUMNS_SUBSIDY : COLUMNS}
         data={positions.map<TableData>(
           ({
             assetId,
