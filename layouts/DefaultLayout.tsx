@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useRef, useState } from "react";
+import { FC, PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -7,6 +7,7 @@ import { ContentDimensionsProvider } from "components/context/ContentDimensionsC
 import TopBar from "components/menu";
 import Footer from "components/ui/Footer";
 import NotificationCenter from "components/ui/NotificationCenter";
+import GrillChat from "components/grillchat";
 import { TradeItem, TradeItemContext } from "lib/hooks/trade";
 import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
 import { useRouter } from "next/router";
@@ -28,6 +29,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   useSubscribeBlockEvents();
   const [tradeItem, setTradeItem] = useState<TradeItem | null>(null);
+  const [showChat, setShowChat] = useState(false);
 
   const {
     width,
@@ -98,6 +100,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
       </TradeItemContext.Provider>
       <Account />
       <Onboarding />
+      <GrillChat open={showChat} setOpen={setShowChat} />
     </div>
   );
 };
