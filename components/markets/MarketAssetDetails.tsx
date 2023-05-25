@@ -120,7 +120,7 @@ const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
             outcome: outcomeName,
             totalValue: {
               value: currentPrice,
-              usdValue: usdPrice?.mul(currentPrice),
+              usdValue: usdPrice?.mul(currentPrice ?? 0),
             },
             pre:
               currentPrice != null

@@ -96,7 +96,7 @@ export const useTradeItemState = (item: TradeItem) => {
         baseWeight,
         poolAssetBalance,
         assetWeight,
-        swapFee,
+        0,
       );
 
       return {

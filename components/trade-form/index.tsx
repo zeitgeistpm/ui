@@ -129,7 +129,7 @@ const TradeForm = () => {
             new Decimal(assetAmount).mul(ZTG),
           ),
           tradeItemState.assetWeight,
-          tradeItemState.swapFee,
+          0,
         );
       } else {
         return calcSpotPrice(
@@ -139,7 +139,7 @@ const TradeForm = () => {
             new Decimal(assetAmount).mul(ZTG),
           ),
           tradeItemState.assetWeight,
-          tradeItemState.swapFee,
+          0,
         );
       }
     }
@@ -575,7 +575,7 @@ const TradeForm = () => {
                 Confirm {`${capitalize(tradeItem.action)}`}
               </div>
               <div className="center font-normal text-ztg-12-120 h-[20px]">
-                Trading fee: {fee} {baseSymbol}
+                Transaction fee: {fee} {baseSymbol}
               </div>
             </TransactionButton>
           </div>
