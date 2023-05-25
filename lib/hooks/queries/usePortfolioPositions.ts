@@ -43,6 +43,7 @@ import {
   ForeignAssetPrices,
   useAllForeignAssetUsdPrices,
 } from "./useAssetUsdPrice";
+import { transaction } from "mobx";
 
 export type UsePortfolioPositions = {
   /**
@@ -450,7 +451,7 @@ export const usePortfolioPositions = (
         stillLoading = true;
         continue;
       }
-      console.log(tradeHistory);
+
       const avgPrice = tradeHistory
         .filter((transaction) => transaction.marketId === marketId)
         .reduce((acc, transaction) => {
@@ -470,24 +471,59 @@ export const usePortfolioPositions = (
           return acc;
         }, 0);
 
-      const pnl = tradeHistory
-        .filter((transaction) => transaction.marketId === marketId)
-        .reduce((acc, transaction) => {
-          const assetIn = transaction.assetAmountIn.div(ZTG).toNumber();
-          const assetOut = transaction.assetAmountOut.div(ZTG).toNumber();
-          const price = transaction.price.toNumber();
-          let totalCost = 0;
-          let totalSells = 0;
-          if (transaction.assetOut === outcome) {
-            totalSells += assetOut * price;
-          } else if (transaction.assetIn === outcome) {
-            totalCost += assetIn * price;
-          } else {
-            0;
-          }
-          acc = totalCost - totalSells;
-          return acc;
-        }, 0);
+      const calculateFifoPnl = (transactions) => {
+        let buys = [];
+        let pnl = 0;
+
+        transactions
+          .filter(
+            (transaction) =>
+              transaction.marketId === marketId &&
+              (transaction.assetIn === outcome ||
+                transaction.assetOut === outcome),
+          )
+          .sort(
+            (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
+          )
+          .forEach(
+            ({
+              assetIn,
+              assetAmountIn,
+              assetAmountOut,
+              price,
+              baseAssetName,
+            }) => {
+              const quantity = assetAmountIn.div(ZTG).toNumber();
+              const transactionPrice = price.toNumber();
+
+              if (assetIn === baseAssetName) {
+                buys.push({ quantity, price: transactionPrice });
+              } else {
+                let remainingToSell = assetAmountOut.div(ZTG).toNumber();
+
+                while (remainingToSell > 0 && buys.length > 0) {
+                  const [currentBuy] = buys;
+                  const sellQuantityFromThisBuy = Math.min(
+                    currentBuy.quantity,
+                    remainingToSell,
+                  );
+
+                  pnl +=
+                    sellQuantityFromThisBuy *
+                    (transactionPrice - currentBuy.price);
+
+                  remainingToSell -= sellQuantityFromThisBuy;
+                  currentBuy.quantity -= sellQuantityFromThisBuy;
+
+                  if (currentBuy.quantity === 0) {
+                    buys = buys.slice(1);
+                  }
+                }
+              }
+            },
+          );
+        return pnl;
+      };
 
       const change = diffChange(price, price24HoursAgo);
 
@@ -497,7 +533,7 @@ export const usePortfolioPositions = (
         pool,
         price,
         avgPrice,
-        pnl,
+        pnl: calculateFifoPnl(tradeHistory),
         price24HoursAgo,
         outcome,
         color,
