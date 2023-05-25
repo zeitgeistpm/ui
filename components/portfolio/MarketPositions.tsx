@@ -47,8 +47,13 @@ const COLUMNS: TableColumn[] = [
     type: "currency",
   },
   {
-    header: "PnL",
-    accessor: "pnl",
+    header: "uPnL",
+    accessor: "upnl",
+    type: "currency",
+  },
+  {
+    header: "rPnL",
+    accessor: "rpnl",
     type: "currency",
   },
   {
@@ -99,8 +104,9 @@ export const MarketPositions = ({
             outcome,
             changePercentage,
             market,
-            avgPrice,
-            pnl,
+            avgCost,
+            rpnl,
+            upnl,
           }) => {
             const baseAssetUsdPrice = lookUpAssetPrice(
               market.baseAsset,
@@ -116,14 +122,18 @@ export const MarketPositions = ({
                 usdValue: price.mul(baseAssetUsdPrice).toNumber(),
               },
               cost: {
-                value: avgPrice,
-                usdValue: new Decimal(avgPrice)
+                value: avgCost,
+                usdValue: new Decimal(avgCost)
                   .mul(baseAssetUsdPrice)
                   .toNumber(),
               },
-              pnl: {
-                value: pnl,
-                usdValue: new Decimal(pnl).mul(baseAssetUsdPrice).toNumber(),
+              upnl: {
+                value: upnl,
+                usdValue: new Decimal(upnl).mul(baseAssetUsdPrice).toNumber(),
+              },
+              rpnl: {
+                value: rpnl,
+                usdValue: new Decimal(rpnl).mul(baseAssetUsdPrice).toNumber(),
               },
               value: {
                 value: userBalance.mul(price).div(ZTG).toNumber(),

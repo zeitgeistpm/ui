@@ -37,12 +37,12 @@ import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { useMemo } from "react";
 import { MarketBond, useAccountBonds } from "./useAccountBonds";
 import { useChainTime } from "lib/state/chaintime";
-import { useTransactionHistory } from "./useTransactionHistory";
 import { useTradeHistory } from "./useTradeHistory";
 import {
   ForeignAssetPrices,
   useAllForeignAssetUsdPrices,
 } from "./useAssetUsdPrice";
+import { useMarketSpotPrices } from "./useMarketSpotPrices";
 import { transaction } from "mobx";
 
 export type UsePortfolioPositions = {
@@ -92,11 +92,15 @@ export type Position<T extends AssetId = AssetId> = {
   /**
    * The price of the position 24 hours ago.
    */
-  avgPrice: number;
+  avgCost: number;
   /**
    * The average cost of acquiring the position of the asset.
    */
-  pnl: number;
+  upnl: number;
+  /**
+   * The total cost of acquisition from the total unrealized amount from selling based off current price.
+   */
+  rpnl: number;
   /**
    * The total cost of acquisition from the total amount received from selling.
    */
@@ -452,7 +456,7 @@ export const usePortfolioPositions = (
         continue;
       }
 
-      const avgPrice = tradeHistory
+      const avgCost = tradeHistory
         .filter((transaction) => transaction.marketId === marketId)
         .reduce((acc, transaction) => {
           const assetIn = transaction.assetAmountOut.div(ZTG).toNumber();
@@ -525,6 +529,38 @@ export const usePortfolioPositions = (
         return pnl;
       };
 
+      const calculateUnrealizedPnL = (
+        transactions,
+        avgCost,
+        currentMarketPrice,
+      ) => {
+        const filteredTransactions = transactions.filter(
+          (transaction) =>
+            transaction.marketId === marketId &&
+            (transaction.assetIn === outcome ||
+              transaction.assetOut === outcome),
+        );
+        const { totalQuantity } = filteredTransactions.reduce(
+          (acc, transaction) => {
+            if (transaction.assetIn === transaction.baseAssetName) {
+              const quantity = transaction.assetAmountOut.div(ZTG).toNumber();
+              return {
+                totalQuantity: acc.totalQuantity + quantity,
+              };
+            } else if (transaction.assetIn === outcome) {
+              const quantity = transaction.assetAmountIn.div(ZTG).toNumber();
+              return {
+                totalQuantity: acc.totalQuantity - quantity,
+              };
+            } else {
+              return acc;
+            }
+          },
+          { totalQuantity: 0 },
+        );
+        return (currentMarketPrice - avgCost) * totalQuantity;
+      };
+
       const change = diffChange(price, price24HoursAgo);
 
       positionsData.push({
@@ -532,8 +568,9 @@ export const usePortfolioPositions = (
         market,
         pool,
         price,
-        avgPrice,
-        pnl: calculateFifoPnl(tradeHistory),
+        avgCost,
+        upnl: calculateUnrealizedPnL(tradeHistory, avgCost, price.toNumber()),
+        rpnl: calculateFifoPnl(tradeHistory),
         price24HoursAgo,
         outcome,
         color,
