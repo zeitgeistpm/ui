@@ -19,26 +19,24 @@ const BuySellFullSetsButton = ({
   const enabled = useMarketIsTradingEnabled(market);
 
   const [isOpen, setIsOpen] = useState(false);
-  const [tabIndex, setTabIndex] = useState(0);
+
   return (
-    <div>
-      <>
-        <button
-          disabled={!enabled}
-          onClick={() => setIsOpen(true)}
-          className={`
+    <>
+      <button
+        disabled={!enabled}
+        onClick={() => setIsOpen(true)}
+        className={`
           ${
             buttonClassName ??
             `h-ztg-19 text-sky-600 border-sky-600 rounded-ztg-100 border-2 text-ztg-10-150 px-ztg-10 font-bold`
           } ${!enabled && "opacity-50 cursor-not-allowed"}"}`}
-        >
-          Buy/Sell Fullset
-        </button>
-      </>
+      >
+        Buy/Sell Full Set
+      </button>
 
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
-          <Tab.Group onChange={setTabIndex}>
+          <Tab.Group>
             <Tab.List className="flex h-[71px] text-center font-medium text-ztg-18-150">
               <Tab className="ui-selected:font-bold ui-selected:bg-white bg-anti-flash-white transition-all w-1/2 rounded-tl-[10px]">
                 Buy
@@ -65,7 +63,7 @@ const BuySellFullSetsButton = ({
           </Tab.Group>
         </Dialog.Panel>
       </Modal>
-    </div>
+    </>
   );
 };
 
