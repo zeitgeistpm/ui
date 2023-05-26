@@ -65,15 +65,7 @@ export const LiquidityInput = ({
         </div>
 
         <div>
-          {errorMessage ? (
-            <div>{errorMessage}</div>
-          ) : value?.deploy ? (
-            <PoolSettings
-              data={transformRows(value?.rows ?? [])}
-              onChange={handleRowsChange}
-              noDataMessage={errorMessage}
-            />
-          ) : (
+          {!value?.deploy ? (
             <div>
               <div className="mb-4 center text-gray-500">
                 <AiOutlineWarning size={32} />
@@ -83,6 +75,14 @@ export const LiquidityInput = ({
                 deploy a pool after you create the market from the market page.
               </p>
             </div>
+          ) : errorMessage ? (
+            <div>{errorMessage}</div>
+          ) : (
+            <PoolSettings
+              data={transformRows(value?.rows ?? [])}
+              onChange={handleRowsChange}
+              noDataMessage={errorMessage}
+            />
           )}
         </div>
       </div>
