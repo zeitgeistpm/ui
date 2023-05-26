@@ -20,6 +20,7 @@ import {
 import { useMarketCreationFormValidator } from "./types/validation";
 import Decimal from "decimal.js";
 import moment from "moment";
+import { usePrevious } from "lib/hooks/usePrevious";
 
 export type UseCreateMarketState = {
   /**
@@ -285,6 +286,8 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     };
   };
 
+  const prevAnswersLength = usePrevious(state.form.answers?.answers?.length);
+
   useEffect(() => {
     const baseWeight = 64;
 
@@ -299,12 +302,20 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     const scalarNumberType =
       state.form.answers.type === "scalar" && state.form.answers.numberType;
 
+    const resetPrices = prevAnswersLength !== numOutcomes;
+
     const rows = [
       ...state.form.answers.answers.map((answer, index) => {
         const liquidity = state.form.liquidity?.rows[index];
         const amount = new Decimal(
-          state.form.liquidity?.rows[index]?.amount ?? "100",
+          resetPrices
+            ? "100"
+            : state.form.liquidity?.rows[index]?.amount ?? "100",
         );
+
+        const price = resetPrices
+          ? ratio.toString()
+          : liquidity?.price?.price ?? ratio.toString();
 
         return {
           asset: !isScalar
@@ -317,7 +328,7 @@ export const useCreateMarketState = (): UseCreateMarketState => {
           weight: weight.toFixed(0),
           amount: amount.toString(),
           price: {
-            price: liquidity?.price?.price ?? ratio.toString(),
+            price: price,
             locked: liquidity?.price?.locked ?? false,
           },
           value: `${amount.mul(ratio).toFixed(4)}`,
@@ -326,9 +337,9 @@ export const useCreateMarketState = (): UseCreateMarketState => {
       {
         asset: state.form.currency,
         weight: baseWeight.toString(),
-        amount: baseAssetLiquidty?.amount ?? "100",
+        amount: resetPrices ? "100" : baseAssetLiquidty?.amount ?? "100",
         price: {
-          price: baseAssetLiquidty?.price?.price ?? "1",
+          price: resetPrices ? "1" : baseAssetLiquidty?.price?.price ?? "1",
           locked: true,
         },
         value: "100",
