@@ -4,10 +4,9 @@ import PoolSettings, {
 import Toggle from "components/ui/Toggle";
 import Decimal from "decimal.js";
 import { Liquidity } from "lib/state/market-creation/types/form";
-import { ReactNode, useState } from "react";
-import { DeepRequired } from "react-hook-form";
+import { ReactNode } from "react";
+import { AiOutlineWarning } from "react-icons/ai";
 import { FormEvent } from "../types";
-import { AiFillWarning, AiOutlineWarning } from "react-icons/ai";
 
 export type LiquidityInputProps = {
   name: string;
