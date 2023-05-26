@@ -77,11 +77,11 @@ export async function getStaticProps({ params }) {
     },
   );
 
-  let resolutionTimestamp: string;
+  let resolutionTimestamp: string | undefined;
   if (market) {
     const { timestamp } = await getResolutionTimestamp(client, market.marketId);
 
-    resolutionTimestamp = timestamp;
+    resolutionTimestamp = timestamp ?? undefined;
   }
 
   return {

@@ -17,6 +17,7 @@ export const useMarket = (filter?: UseMarketFilter) => {
     async () => {
       if (
         isIndexedSdk(sdk) &&
+        filter &&
         (("marketId" in filter && filter.marketId != null) ||
           ("poolId" in filter && filter.poolId != null))
       ) {

@@ -20,7 +20,9 @@ export const useExtrinsicFee = (
   const query = useQuery(
     [id, extrinsicFeeKey, extrinsic.hash, activeAccount],
     async () => {
-      return extrinsic.paymentInfo(activeAccount.address);
+      if (activeAccount) {
+        return extrinsic.paymentInfo(activeAccount?.address);
+      }
     },
     {
       enabled: Boolean(sdk && extrinsic && activeAccount),

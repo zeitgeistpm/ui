@@ -43,7 +43,7 @@ const Portfolio: NextPage = () => {
 
   return (
     <>
-      <PortfolioIdentity address={address} />
+      {address && <PortfolioIdentity address={address} />}
       <InfoBoxes />
       <div className="mb-12">
         <h2 className="text-2xl my-6 text-center">Summary</h2>
@@ -135,7 +135,7 @@ const Portfolio: NextPage = () => {
             </Tab.Panel>
             {process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true" && (
               <Tab.Panel>
-                <CurrenciesTable address={address} />
+                {address && <CurrenciesTable address={address} />}
               </Tab.Panel>
             )}
             <Tab.Panel>
@@ -145,7 +145,7 @@ const Portfolio: NextPage = () => {
                 </div>
                 <Tab.Panels>
                   <Tab.Panel>
-                    <BondsTable address={address} />
+                    {address && <BondsTable address={address} />}
                   </Tab.Panel>
                   <Tab.Panel>
                     {!subsidyPositionsByMarket || !ztgPrice ? (
@@ -182,10 +182,10 @@ const Portfolio: NextPage = () => {
               </Tab.Group>
             </Tab.Panel>
             <Tab.Panel className="mt-[40px]">
-              <BadgesList address={address} />
+              {address && <BadgesList address={address} />}
             </Tab.Panel>
             <Tab.Panel>
-              <HistoryTabGroup address={address} />
+              {address && <HistoryTabGroup address={address} />}
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>

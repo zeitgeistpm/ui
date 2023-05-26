@@ -12,7 +12,7 @@ const NotFoundPage = ({
   const src = "/light-404.png";
 
   const handleClick = () => {
-    router.push(backLink);
+    if (backLink) router.push(backLink);
   };
 
   return (

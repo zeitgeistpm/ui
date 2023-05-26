@@ -65,7 +65,9 @@ const LiquidityModal = ({
     })
     ?.data.balance.free.toString();
 
-  const baseAsset = parseAssetId(pool?.baseAsset).unrightOr(null);
+  const baseAsset = pool?.baseAsset
+    ? parseAssetId(pool?.baseAsset).unrightOr(undefined)
+    : undefined;
   const { data: metadata } = useAssetMetadata(baseAsset);
 
   //user balances outside of pool

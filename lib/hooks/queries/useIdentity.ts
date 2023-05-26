@@ -5,7 +5,7 @@ import { useSdkv2 } from "../useSdkv2";
 
 export const identityRootKey = "identity";
 
-export const useIdentity = (address: string) => {
+export const useIdentity = (address?: string) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
@@ -23,7 +23,7 @@ export const useIdentity = (address: string) => {
         if (indentityInfo) {
           const textDecoder = new TextDecoder();
 
-          let discordHandle: string;
+          let discordHandle: string | undefined;
           indentityInfo.get("additional").forEach((element) => {
             if (
               element[0].value?.isEmpty === false &&

@@ -30,8 +30,8 @@ const BalanceRow = ({
   units,
 }: {
   imgPath: string;
-  balance: Decimal;
   units: string;
+  balance?: Decimal;
 }) => {
   return (
     <div className="flex items-center mb-3 ">
@@ -202,11 +202,13 @@ const AccountButton: FC<{
                             e.stopPropagation();
                           }}
                         >
-                          <Avatar
-                            zoomed
-                            address={activeAccount?.address}
-                            deps={avatarDeps}
-                          />
+                          {activeAccount?.address && (
+                            <Avatar
+                              zoomed
+                              address={activeAccount?.address}
+                              deps={avatarDeps}
+                            />
+                          )}
                         </div>
                         <span
                           className={`font-medium pl-2 text-sm h-full leading-[40px] ${
@@ -246,14 +248,14 @@ const AccountButton: FC<{
                           <BalanceRow
                             imgPath="/currencies/ztg.jpg"
                             units={constants?.tokenSymbol}
-                            balance={activeBalance}
+                            balance={activeBalance ?? undefined}
                           />
                         </div>
                         <div className="px-4">
                           <BalanceRow
                             imgPath="/currencies/dot.png"
                             units="DOT"
-                            balance={polkadotBalance}
+                            balance={polkadotBalance ?? undefined}
                           />
                         </div>
                         <div className="px-4">
