@@ -30,8 +30,8 @@ const QuillEditor = ({
 
   const formats = ["bold", "underline", "italic", "link", "list"];
 
-  const handleChange = (value: string) => {
-    console.log("handleChange", value);
+  const handleChange = (value: string, delta) => {
+    console.log("handleChange", value, delta);
     onChange?.({
       type: "change",
       target: {
@@ -50,6 +50,8 @@ const QuillEditor = ({
       },
     });
   };
+
+  console.log(value);
 
   return (
     <ReactQuill

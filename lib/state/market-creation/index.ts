@@ -117,29 +117,7 @@ export const defaultState: MarketCreationState = {
     disputePeriod: reportingPeriodOptions[1],
     liquidity: {
       deploy: true,
-      rows: [
-        // {
-        //   amount: "100",
-        //   asset: "A",
-        //   price: { price: "1", locked: false },
-        //   value: "100",
-        //   weight: "50",
-        // },
-        // {
-        //   amount: "100",
-        //   asset: "B",
-        //   price: { price: "1", locked: false },
-        //   value: "100",
-        //   weight: "50",
-        // },
-        // {
-        //   amount: "100",
-        //   asset: "DOT",
-        //   price: { price: "1", locked: true },
-        //   value: "100",
-        //   weight: "50",
-        // },
-      ],
+      rows: [],
     },
   },
   touchState: {},
@@ -152,6 +130,9 @@ const createMarketStateAtom = persistentAtom<MarketCreationState>({
   key: "market-creation-form",
   defaultValue: cloneDeep(defaultState),
   migrations: [
+    /**
+     * TODO: remove before merging to staging.
+     */
     () => defaultState,
     () => defaultState,
     () => defaultState,
@@ -293,7 +274,14 @@ export const useCreateMarketState = (): UseCreateMarketState => {
 
   const prevAnswersLength = usePrevious(state.form.answers?.answers?.length);
 
+  /**
+   * Update liquidity rows when answers changes.
+   *
+   * If only answer values(option strings or scalar values) have changes it will not reset the liquidity amounts or prices.
+   * If the number of answers changes it will reset the liquidity amounts and prices.
+   */
   useEffect(() => {
+    const baseAmmount = "100";
     const baseWeight = 64;
 
     const numOutcomes = state.form.answers.answers.length;
@@ -314,8 +302,8 @@ export const useCreateMarketState = (): UseCreateMarketState => {
         const liquidity = state.form.liquidity?.rows[index];
         const amount = new Decimal(
           resetPrices
-            ? "100"
-            : state.form.liquidity?.rows[index]?.amount ?? "100",
+            ? baseAmmount
+            : state.form.liquidity?.rows[index]?.amount ?? baseAmmount,
         );
 
         const price = resetPrices
@@ -342,12 +330,14 @@ export const useCreateMarketState = (): UseCreateMarketState => {
       {
         asset: state.form.currency,
         weight: baseWeight.toString(),
-        amount: resetPrices ? "100" : baseAssetLiquidty?.amount ?? "100",
+        amount: resetPrices
+          ? baseAmmount
+          : baseAssetLiquidty?.amount ?? baseAmmount,
         price: {
           price: resetPrices ? "1" : baseAssetLiquidty?.price?.price ?? "1",
           locked: true,
         },
-        value: "100",
+        value: baseAmmount,
       },
     ];
 

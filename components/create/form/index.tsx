@@ -361,11 +361,11 @@ export const MarketCreationForm = () => {
             <div>
               <div className="flex center min-w-full">
                 <QuillEditor
-                  className="max-w-full w-full md:w-2/3 h-48 mb-6 md:mb-0"
+                  className="max-w-full w-full md:w-2/3 h-full mb-6 md:mb-0"
                   placeHolder={
                     "Additional information you want to provide about the market, such as resolution source, special cases, or other details."
                   }
-                  {...input("description")}
+                  {...input("description", { mode: "all" })}
                 />
               </div>
               <div className="flex center h-5 text-xs text-red-400">

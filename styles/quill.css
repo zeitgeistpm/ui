@@ -17,6 +17,13 @@
   @apply !rounded-b-lg;
 }
 
+.ql-editor {
+  overflow-y: scroll;
+  resize: vertical;
+  min-height: 18em;
+  @apply font-sans text-base leading-8;
+}
+
 /* .dark > * .ql-toolbar .ql-stroke {
   fill: none;
   stroke: #fff;
