@@ -1,13 +1,15 @@
 import { getQueryParams } from "lib/util/get-query-params";
 import { useRouter } from "next/router";
 
-export type UseQueryParamStateResult = [
-  string,
-  (value: string) => void,
+export type UseQueryParamStateResult<T extends string> = [
+  T,
+  (value: T) => void,
   () => void,
 ];
 
-export type UseQueryParamState = (key: string) => UseQueryParamStateResult;
+export type UseQueryParamState = <T extends string>(
+  key: string,
+) => UseQueryParamStateResult<T>;
 
 /**
 Hook for storing state as a query parameter. It can only handle strings for state value.
