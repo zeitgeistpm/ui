@@ -1,12 +1,12 @@
 import { FormEvent } from "components/create/form/types";
 import { useAtom } from "jotai";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { persistentAtom } from "../util/persistent-atom";
 import {
   gracePeriodOptions,
   reportingPeriodOptions,
 } from "./constants/deadline-options";
-import { cloneDeep, merge } from "lodash-es";
+import { cloneDeep, last, merge } from "lodash-es";
 import { FieldsState, initialFieldsState } from "./types/fieldstate";
 import { MarketCreationFormData, marketCreationFormKeys } from "./types/form";
 import {
@@ -18,6 +18,8 @@ import {
   stepFormKeys,
 } from "./types/step";
 import { useMarketCreationFormValidator } from "./types/validation";
+import Decimal from "decimal.js";
+import moment from "moment";
 
 export type UseCreateMarketState = {
   /**
@@ -115,27 +117,27 @@ export const defaultState: MarketCreationState = {
     liquidity: {
       deploy: true,
       rows: [
-        {
-          amount: "100",
-          asset: "A",
-          price: { price: "1", locked: false },
-          value: "100",
-          weight: "50",
-        },
-        {
-          amount: "100",
-          asset: "B",
-          price: { price: "1", locked: false },
-          value: "100",
-          weight: "50",
-        },
-        {
-          amount: "100",
-          asset: "DOT",
-          price: { price: "1", locked: true },
-          value: "100",
-          weight: "50",
-        },
+        // {
+        //   amount: "100",
+        //   asset: "A",
+        //   price: { price: "1", locked: false },
+        //   value: "100",
+        //   weight: "50",
+        // },
+        // {
+        //   amount: "100",
+        //   asset: "B",
+        //   price: { price: "1", locked: false },
+        //   value: "100",
+        //   weight: "50",
+        // },
+        // {
+        //   amount: "100",
+        //   asset: "DOT",
+        //   price: { price: "1", locked: true },
+        //   value: "100",
+        //   weight: "50",
+        // },
       ],
     },
   },
@@ -282,6 +284,68 @@ export const useCreateMarketState = (): UseCreateMarketState => {
       },
     };
   };
+
+  useEffect(() => {
+    const baseWeight = 64;
+
+    const numOutcomes = state.form.answers.answers.length;
+
+    const ratio = 1 / numOutcomes;
+    const weight = ratio * baseWeight;
+
+    const baseAssetLiquidty = last(state.form.liquidity?.rows);
+
+    const isScalar = state.form.answers.type === "scalar";
+    const scalarNumberType =
+      state.form.answers.type === "scalar" && state.form.answers.numberType;
+
+    const rows = [
+      ...state.form.answers.answers.map((answer, index) => {
+        const liquidity = state.form.liquidity?.rows[index];
+        const amount = new Decimal(
+          state.form.liquidity?.rows[index]?.amount ?? "100",
+        );
+
+        return {
+          asset: !isScalar
+            ? answer
+            : `${index === 0 ? "SHORT-" : "LONG-"}[${
+                scalarNumberType === "timestamp"
+                  ? moment(answer).format("MMM Do, YYYY hh:mm a")
+                  : answer
+              }]`,
+          weight: weight.toFixed(0),
+          amount: amount.toString(),
+          price: {
+            price: liquidity?.price?.price ?? ratio.toString(),
+            locked: liquidity?.price?.locked ?? false,
+          },
+          value: `${amount.mul(ratio).toFixed(4)}`,
+        };
+      }),
+      {
+        asset: state.form.currency,
+        weight: baseWeight.toString(),
+        amount: baseAssetLiquidty?.amount ?? "100",
+        price: {
+          price: baseAssetLiquidty?.price?.price ?? "1",
+          locked: true,
+        },
+        value: "100",
+      },
+    ];
+
+    setState({
+      ...state,
+      form: {
+        ...state.form,
+        liquidity: {
+          ...state.form.liquidity,
+          rows,
+        },
+      },
+    });
+  }, [state.form.answers, state.form.currency]);
 
   return {
     form: state.form,

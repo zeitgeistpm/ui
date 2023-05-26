@@ -23,7 +23,7 @@ interface TableProps {
   onPaginate?: (pageIndex: number) => void;
   onLoadMore?: () => void;
   hideLoadMore?: boolean;
-  noDataMessage?: string;
+  noDataMessage?: string | ReactNode;
   loadingMore?: boolean;
   loadingNumber?: number;
   loadMoreThreshold?: number;

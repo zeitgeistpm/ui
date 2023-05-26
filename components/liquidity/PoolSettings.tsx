@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC, MouseEvent } from "react";
+import React, { ChangeEvent, FC, MouseEvent, ReactNode } from "react";
 import { MultipleOutcomeEntry } from "lib/types/create-market";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import { ZTG, ZTG_BLUE_COLOR, ZTG_MIN_LIQUIDITY } from "lib/constants";
@@ -113,7 +113,8 @@ const PoolSettings: FC<{
   data: PoolAssetRowData[];
   onChange: (data: PoolAssetRowData[]) => void;
   onFeeChange?: (data: Decimal) => void;
-}> = ({ data, onChange, onFeeChange }) => {
+  noDataMessage?: string | ReactNode;
+}> = ({ data, onChange, onFeeChange, noDataMessage }) => {
   const changeOutcomeRow = (amount: string) => {
     onChange(
       data.map((row) => {
@@ -224,7 +225,7 @@ const PoolSettings: FC<{
 
   return (
     <div className="md:min-w-[720px]">
-      <Table data={tableData} columns={columns} />
+      <Table data={tableData} columns={columns} noDataMessage={noDataMessage} />
       {onFeeChange && (
         <div className="mt-[20px] mb-[40px]">
           <div className="text-ztg-16-150 font-bold ">Pool Fees*</div>

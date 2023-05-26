@@ -217,18 +217,22 @@ export const IOModerationMode = z.enum<
   ["Permissionless", "Advised"]
 >(["Permissionless", "Advised"]);
 
-export const IOLiquidity = z.object({
-  deploy: z.boolean(),
-  rows: z.array(
-    z.object({
-      asset: z.string(),
-      weight: z.string(),
-      amount: z.string(),
-      price: z.object({
-        price: z.string(),
-        locked: z.boolean(),
+export const IOLiquidity = z
+  .object({
+    deploy: z.boolean(),
+    rows: z.array(
+      z.object({
+        asset: z.string(),
+        weight: z.string(),
+        amount: z.string(),
+        price: z.object({
+          price: z.string(),
+          locked: z.boolean(),
+        }),
+        value: z.string(),
       }),
-      value: z.string(),
-    }),
-  ),
-});
+    ),
+  })
+  .refine((liquidity) => !liquidity.deploy || liquidity.rows.length >= 3, {
+    message: "Answers section must have a minimum of two valid answers.",
+  });

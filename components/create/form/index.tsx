@@ -409,7 +409,14 @@ export const MarketCreationForm = () => {
           </div>
 
           <div>
-            <LiquidityInput {...input("liquidity", { mode: "all" })} />
+            <LiquidityInput
+              {...input("liquidity", { mode: "all" })}
+              errorMessage={
+                !fieldsState.answers.isValid
+                  ? "Answers must be filled out correcty before adding liquidity"
+                  : ""
+              }
+            />
           </div>
         </MarketFormSection>
 

@@ -4,7 +4,7 @@ import PoolSettings, {
 import Toggle from "components/ui/Toggle";
 import Decimal from "decimal.js";
 import { Liquidity } from "lib/state/market-creation/types/form";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { DeepRequired } from "react-hook-form";
 import { FormEvent } from "../types";
 import { AiFillWarning, AiOutlineWarning } from "react-icons/ai";
@@ -14,6 +14,7 @@ export type LiquidityInputProps = {
   value: Liquidity;
   onChange: (event: FormEvent<Liquidity>) => void;
   onBlur: (event: FormEvent<Liquidity>) => void;
+  errorMessage?: string | ReactNode;
 };
 
 export const LiquidityInput = ({
@@ -21,6 +22,7 @@ export const LiquidityInput = ({
   value,
   onChange,
   onBlur,
+  errorMessage,
 }: LiquidityInputProps) => {
   const handleRowsChange = (data: PoolAssetRowData[]) => {
     onChange({
@@ -63,10 +65,13 @@ export const LiquidityInput = ({
         </div>
 
         <div>
-          {value?.deploy ? (
+          {errorMessage ? (
+            <div>{errorMessage}</div>
+          ) : value?.deploy ? (
             <PoolSettings
               data={transformRows(value?.rows ?? [])}
               onChange={handleRowsChange}
+              noDataMessage={errorMessage}
             />
           ) : (
             <div>
