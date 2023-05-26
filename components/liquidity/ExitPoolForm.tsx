@@ -26,7 +26,6 @@ const ExitPoolForm = ({
   poolId,
   totalPoolShares,
   userPoolShares,
-  poolStatus,
   baseAssetTicker,
   onSuccess,
 }: {
@@ -34,7 +33,6 @@ const ExitPoolForm = ({
   poolId: number;
   totalPoolShares: Decimal;
   userPoolShares: Decimal;
-  poolStatus: string;
   baseAssetTicker: string;
   onSuccess?: () => void;
 }) => {
@@ -236,10 +234,10 @@ const ExitPoolForm = ({
                     } else if (value <= 0) {
                       return "Value cannot be zero or less";
                     } else if (
-                      poolStatus.toLowerCase() === "active" &&
+                      market.status.toLowerCase() !== "resolved" &&
                       poolAssetBalance.minus(value).lessThanOrEqualTo(0.01)
                     ) {
-                      return "Pool cannot be emptied completely whilst it's active";
+                      return "Pool cannot be emptied completely before the market resolves";
                     }
                   },
                 })}

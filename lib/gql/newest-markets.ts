@@ -33,7 +33,6 @@ const marketsQuery = gql`
       categories {
         color
         name
-        ticker
       }
       pool {
         volume
@@ -72,7 +71,7 @@ const getNewestMarkets = async (
       creation: MarketCreation;
       baseAsset: string;
       marketType: { [key: string]: string };
-      categories: { color: string; name: string; ticker: string }[];
+      categories: { color: string; name: string }[];
       outcomeAssets: string[];
       pool: { volume: string; poolId: number };
       tags: [];

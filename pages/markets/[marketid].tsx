@@ -8,9 +8,12 @@ import MarketChart from "components/markets/MarketChart";
 import MarketHeader from "components/markets/MarketHeader";
 import PoolDeployer from "components/markets/PoolDeployer";
 import { MarketPromotionCallout } from "components/markets/PromotionCallout";
+import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
 import MarketImage from "components/ui/MarketImage";
+import Skeleton from "components/ui/Skeleton";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
+import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
 import {
   PromotedMarket,
@@ -27,6 +30,7 @@ import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
+import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
@@ -117,12 +121,13 @@ const Market: NextPage<MarketPageProps> = ({
   const showLiquidity = showLiquidityParam != null;
 
   const { data: prizePool } = usePrizePool(marketId);
-  const { data: marketSdkv2, isLoading: marketIsLoading } = useMarket({
+  const { data: market, isLoading: marketIsLoading } = useMarket({
     marketId,
   });
   const { data: disputes } = useMarketDisputes(marketId);
 
-  const { data: marketStage } = useMarketStage(marketSdkv2);
+  const { data: marketStage } = useMarketStage(market);
+  const { data: spotPrices } = useMarketSpotPrices(marketId);
   const { data: liquidity } = usePoolLiquidity({ marketId });
   const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
   const baseAsset = parseAssetId(indexedMarket?.pool?.baseAsset).unrightOr(
@@ -144,11 +149,11 @@ const Market: NextPage<MarketPageProps> = ({
   }
 
   useEffect(() => {
-    if (disputes && marketSdkv2?.status === "Disputed") {
+    if (disputes && market?.status === "Disputed") {
       const lastDispute = disputes?.[disputes.length - 1];
       const at = lastDispute.at.toNumber();
       const by = lastDispute.by.toString();
-      const outcome = marketSdkv2?.marketType.scalar
+      const outcome = market?.marketType.scalar
         ? lastDispute?.outcome?.asScalar.toNumber()
         : lastDispute?.outcome?.asCategorical.toNumber();
       const marketDispute: MarketDispute = {
@@ -161,24 +166,20 @@ const Market: NextPage<MarketPageProps> = ({
       };
       setLastDispute(marketDispute);
     }
-    if (marketSdkv2?.report && marketSdkv2?.status === "Reported") {
+    if (market?.report && market?.status === "Reported") {
       const report: Report = {
-        at: marketSdkv2?.report?.at,
-        by: marketSdkv2?.report?.by,
+        at: market?.report?.at,
+        by: market?.report?.by,
         outcome: {
-          categorical: marketSdkv2?.report?.outcome?.categorical,
-          scalar: marketSdkv2?.report?.outcome?.scalar,
+          categorical: market?.report?.outcome?.categorical,
+          scalar: market?.report?.outcome?.scalar,
         },
       };
       setReport(report);
     }
-  }, [disputes, marketSdkv2?.report]);
+  }, [disputes, market?.report]);
 
-  //data for MarketHeader
   const token = metadata?.symbol;
-
-  const subsidy =
-    marketSdkv2?.pool?.poolId == null ? 0 : liquidity?.div(ZTG).toNumber();
 
   return (
     <>
@@ -203,18 +204,17 @@ const Market: NextPage<MarketPageProps> = ({
 
         <MarketHeader
           market={indexedMarket}
-          resolvedOutcome={marketSdkv2?.resolvedOutcome}
+          resolvedOutcome={market?.resolvedOutcome}
           report={report}
           disputes={lastDispute}
           token={token}
           prizePool={prizePool?.div(ZTG).toNumber()}
-          subsidy={subsidy}
           marketStage={marketStage}
-          rejectReason={marketSdkv2?.rejectReason}
+          rejectReason={market?.rejectReason}
         />
-        {marketSdkv2?.rejectReason && marketSdkv2.rejectReason.length > 0 && (
+        {market?.rejectReason && market.rejectReason.length > 0 && (
           <div className="mt-[10px] text-ztg-14-150">
-            Market rejected: {marketSdkv2.rejectReason}
+            Market rejected: {market.rejectReason}
           </div>
         )}
 
@@ -244,9 +244,30 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           </div>
         )}
-
         <div className="mb-8">
           <h3 className="text-center text-2xl mt-10 mb-8">Predictions</h3>
+          {indexedMarket?.marketType?.scalar !== null && (
+            <div className="mb-8 max-w-[800px] mx-auto">
+              {marketIsLoading ||
+              (!spotPrices?.get(1) && indexedMarket.status !== "Proposed") ||
+              (!spotPrices?.get(0) && indexedMarket.status !== "Proposed") ? (
+                <Skeleton height="40px" width="100%" />
+              ) : (
+                <ScalarPriceRange
+                  scalarType={indexedMarket.scalarType}
+                  lowerBound={new Decimal(indexedMarket.marketType.scalar[0])
+                    .div(ZTG)
+                    .toNumber()}
+                  upperBound={new Decimal(indexedMarket.marketType.scalar[1])
+                    .div(ZTG)
+                    .toNumber()}
+                  shortPrice={spotPrices?.get(1).toNumber()}
+                  longPrice={spotPrices?.get(0).toNumber()}
+                  status={indexedMarket.status}
+                />
+              )}
+            </div>
+          )}
           <MarketAssetDetails marketId={Number(marketid)} />
         </div>
 
@@ -285,9 +306,9 @@ const Market: NextPage<MarketPageProps> = ({
             leave="transition ease-in duration-75"
             leaveFrom="transform opacity-100 "
             leaveTo="transform opacity-0 "
-            show={showLiquidity && Boolean(marketSdkv2?.pool)}
+            show={showLiquidity && Boolean(market?.pool)}
           >
-            <MarketLiquiditySection market={marketSdkv2} />
+            <MarketLiquiditySection market={market} />
           </Transition>
         </div>
       </div>

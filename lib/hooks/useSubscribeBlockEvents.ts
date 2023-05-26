@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { accountAssetBalanceRootKey } from "./queries/useAccountAssetBalances";
 import { accountPoolAssetBalancesRootKey } from "./queries/useAccountPoolAssetBalances";
 import { balanceRootKey } from "./queries/useBalance";
+import { currencyBalanceRootKey } from "./queries/useCurrencyBalances";
 import { tradeItemStateRootQueryKey } from "./queries/useTradeItemState";
 import { useSdkv2 } from "./useSdkv2";
 
@@ -22,7 +23,7 @@ export const useSubscribeBlockEvents = () => {
 
           event.data.forEach((data, index) => {
             if (
-              event.section === "balances" &&
+              (event.section === "balances" || event.section === "tokens") &&
               types[index].type === "AccountId32"
             ) {
               accounts.add(data.toString());
@@ -47,6 +48,7 @@ export const useSubscribeBlockEvents = () => {
             tradeItemStateRootQueryKey,
             account,
           ]);
+          queryClient.invalidateQueries([id, currencyBalanceRootKey, account]);
         });
       });
     }

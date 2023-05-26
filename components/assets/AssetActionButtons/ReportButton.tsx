@@ -29,7 +29,7 @@ const ReportButton = ({
 
   if (!market) return null;
 
-  const ticker = market.categories?.[getIndexOf(assetId)].ticker;
+  const outcomeName = market.categories?.[getIndexOf(assetId)].name;
 
   const reportDisabled = !sdk || !isRpcSdk(sdk);
 
@@ -48,7 +48,7 @@ const ReportButton = ({
         notifications: notificationStore,
         successCallback: async () => {
           notificationStore.pushNotification(
-            `Reported market outcome: ${ticker}`,
+            `Reported market outcome: ${outcomeName}`,
             {
               type: "Success",
             },
