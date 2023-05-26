@@ -68,7 +68,7 @@ type PriceSetterProps = {
   price: string;
   isLocked: boolean;
   disabled: boolean;
-  onChange?: (priceLock: PriceInfo) => void;
+  onChange: (priceLock: PriceInfo) => void;
 };
 
 const PriceSetter = ({

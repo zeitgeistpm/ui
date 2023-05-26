@@ -13,7 +13,7 @@ import { isEmpty } from "lodash";
 
 export const assetUsdPriceRootKey = "asset-usd-price";
 
-export const useAssetUsdPrice = (assetId: AssetId) => {
+export const useAssetUsdPrice = (assetId?: AssetId) => {
   const query = useQuery(
     [assetUsdPriceRootKey, assetId],
     async () => {
