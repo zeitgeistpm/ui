@@ -18,12 +18,11 @@
 }
 
 .ql-editor {
-  overflow-y: scroll;
-  resize: vertical;
   @apply font-sans text-base leading-8;
 }
 
 .ql-editor[contenteditable="true"] {
+  resize: vertical;
   min-height: 18em;
 }
 
