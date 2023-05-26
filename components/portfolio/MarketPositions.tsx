@@ -47,12 +47,12 @@ const COLUMNS: TableColumn[] = [
     type: "currency",
   },
   {
-    header: "uPnL",
+    header: "Unrealized PnL",
     accessor: "upnl",
     type: "currency",
   },
   {
-    header: "rPnL",
+    header: "Realized PnL",
     accessor: "rpnl",
     type: "currency",
   },
