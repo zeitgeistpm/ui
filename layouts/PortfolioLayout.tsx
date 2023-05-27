@@ -6,29 +6,33 @@ import React, { PropsWithChildren, useEffect, useState } from "react";
 const PortfolioLayout: React.FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   const wallet = useWallet();
-  const [noAddress, setNoAddress] = useState<boolean>();
+  const [hasAddress, setHasAddress] = useState<boolean>();
+
+  const isAddressRoute = router.query.address !== undefined;
+  const addressFromRoute = isAddressRoute
+    ? Array.isArray(router.query.address)
+      ? router.query.address[0]
+      : router.query.address
+    : undefined;
+
+  const address = wallet.activeAccount?.address ?? addressFromRoute;
 
   useEffect(() => {
-    if (wallet.activeAccount?.address) {
-      router.replace(
-        `/portfolio/${wallet.activeAccount.address ?? ""}`,
-        undefined,
-        {
-          shallow: true,
-        },
-      );
-      setNoAddress(false);
+    if (!router.isReady) return;
+    if (address) {
+      router.replace(`/portfolio/${address}`, undefined, { shallow: true });
+      setHasAddress(true);
     } else {
       router.replace(`/portfolio`, undefined, {
         shallow: true,
       });
-      setNoAddress(true);
+      setHasAddress(false);
     }
-  }, [wallet.activeAccount, router.asPath]);
+  }, [address, router.isReady]);
 
   return (
     <>
-      {noAddress === true ? (
+      {hasAddress === false ? (
         <EmptyPortfolio
           headerText="No wallet connected"
           bodyText="Connect your wallet to view your Portfolio"
