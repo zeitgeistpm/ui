@@ -1,19 +1,56 @@
-export type UnionToIntersection<U> = (
-  U extends any ? (k: U) => void : never
-) extends (k: infer I) => void
-  ? I
-  : never;
+import { Unpacked } from "@zeitgeistpm/utility/dist/array";
 
-export type UnionToOvlds<U> = UnionToIntersection<
-  U extends any ? (f: U) => void : never
->;
+/**
+ * Union helper for type asserting that constant arrays or records
+ * include all union values.
+ * @note - See marketCreationSteps and stepFormKeys for example usage.
+ */
+export const union = <T>() => ({
+  /**
+   * Narrow the union helper to a distinct union set field.
+   * Useful for unions of records with a 'type', 'label' or '_tag' on them (see branded types.)
+   */
+  by: <K extends keyof T>(key: K) => ({
+    exhaust: <U extends T[]>(
+      array: U &
+        ([T[K]] extends [U[number][K]]
+          ? unknown
+          : Exclude<Unpacked<T[]>[K], Unpacked<U>[K]> extends
+              | string
+              | number
+              | boolean
+          ? `MissingKey<${Exclude<Unpacked<T[]>[K], Unpacked<U>[K]>}>`
+          : never) &
+        NonEmptyArray<T>,
+    ): T[] => array,
+  }),
 
-export type PopUnion<U> = UnionToOvlds<U> extends (a: infer A) => void
-  ? A
-  : never;
+  /**
+   * Assert that given array includes all union types.
+   */
+  exhaust: <U extends T[]>(
+    array: U &
+      ([T] extends [U[number]]
+        ? unknown
+        : Exclude<Unpacked<T[]>, Unpacked<U>> extends string | number | boolean
+        ? `MissingKey<${Exclude<Unpacked<T[]>, Unpacked<U>>}>`
+        : never) &
+      NonEmptyArray<T>,
+  ): T[] => array,
 
-export type IsUnion<T> = [T] extends [UnionToIntersection<T>] ? false : true;
+  /**
+   * Assert that a given record uses all union types as keys at least once.
+   */
+  exhaustAsRecord: <R>(
+    record: [T] extends [keyof R]
+      ? R
+      : Exclude<T, keyof R> extends string | number | boolean
+      ? `MissingKey<${Exclude<T, keyof R>}>`
+      : never,
+  ) => record,
+});
 
-export type UnionToArray<T, A extends unknown[] = []> = IsUnion<T> extends true
-  ? UnionToArray<Exclude<T, PopUnion<T>>, [PopUnion<T>, ...A]>
-  : [T, ...A];
+/**
+ * Type helper that ensures value on index one in a indexed type, like arrays.
+ */
+export type NonEmptyArray<T> = { 0: T };
