@@ -148,7 +148,9 @@ export const MarketPreview = ({
                 </p>
                 <button
                   type="button"
-                  className="rounded-md py-1 px-3 bg-blue-500 text-white"
+                  className={`rounded-md py-1 px-3 ${
+                    form.currency === "ZTG" ? "bg-ztg-blue" : "bg-polkadot"
+                  }  text-white`}
                   onClick={() => {
                     provideFormData({
                       liquidity: {

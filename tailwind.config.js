@@ -244,6 +244,7 @@ module.exports = {
         "pastel-blue": "#B5C1CA",
         "fog-of-war": "#0F1A2D",
         mariner: "#3056D3",
+        polkadot: "rgb(230, 0, 122)",
         platinum: "#DFE0E6",
         powderblue: "#ECFAFF",
         purple: {

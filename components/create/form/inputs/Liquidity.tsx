@@ -3,7 +3,7 @@ import PoolSettings, {
 } from "components/liquidity/PoolSettings";
 import Toggle from "components/ui/Toggle";
 import Decimal from "decimal.js";
-import { Liquidity } from "lib/state/market-creation/types/form";
+import { CurrencyTag, Liquidity } from "lib/state/market-creation/types/form";
 import { ReactNode } from "react";
 import { AiOutlineWarning } from "react-icons/ai";
 import { FormEvent } from "../types";
@@ -14,6 +14,7 @@ export type LiquidityInputProps = {
   onChange: (event: FormEvent<Liquidity>) => void;
   onBlur: (event: FormEvent<Liquidity>) => void;
   errorMessage?: string | ReactNode;
+  currency: CurrencyTag;
 };
 
 export const LiquidityInput = ({
@@ -22,6 +23,7 @@ export const LiquidityInput = ({
   onChange,
   onBlur,
   errorMessage,
+  currency,
 }: LiquidityInputProps) => {
   const handleRowsChange = (data: PoolAssetRowData[]) => {
     onChange({
@@ -57,7 +59,9 @@ export const LiquidityInput = ({
             <div className="font-light text-sm mb-2">Deploy Pool?</div>
             <Toggle
               checked={value?.deploy}
-              activeClassName="bg-blue-500"
+              activeClassName={
+                currency === "ZTG" ? "bg-ztg-blue" : "bg-polkadot"
+              }
               onChange={handleDeploymentToggle}
             />
           </div>
