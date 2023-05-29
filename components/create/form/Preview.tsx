@@ -130,7 +130,7 @@ export const MarketPreview = ({
                   {new Decimal(baseAssetLiquidityRow?.value).toFixed(1)}{" "}
                   <span className="text-gray-400">≈</span>{" "}
                   {baseAssetPrice?.mul(baseAssetLiquidityRow?.value).toFixed(2)}{" "}
-                  $
+                  USD
                 </div>
               </>
             ) : (
@@ -142,6 +142,9 @@ export const MarketPreview = ({
                   No liquidity pool will be deployed for the market. You can
                   deploy a pool after you create the market from the market
                   page.
+                </p>
+                <p className="mb-2 italic text-gray-400 text-xs">
+                  Or you can add it now as part of the market creation process
                 </p>
                 <button
                   type="button"
@@ -301,7 +304,7 @@ const Answers = ({
                             {baseAssetPrice
                               ?.mul(answerLiquidity?.value)
                               .toFixed(2)}{" "}
-                            $
+                            USD
                           </>
                         ) : (
                           ""
