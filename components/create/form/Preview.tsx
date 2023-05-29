@@ -10,11 +10,16 @@ import {
   blocksAsDuration,
   timelineAsBlocks,
 } from "lib/state/market-creation/types/form";
+import {
+  MarketCreationStep,
+  MarketCreationStepType,
+} from "lib/state/market-creation/types/step";
 import { formatDuration } from "lib/util/format-duration";
 import moment from "moment";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { useMemo } from "react";
+import { AiOutlineWarning } from "react-icons/ai";
 
 const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
   ssr: false,
@@ -22,9 +27,15 @@ const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
 
 export type MarketPreviewProps = {
   form: Partial<MarketCreationFormData>;
+  goToSection: (step: MarketCreationStepType) => void;
+  provideFormData: (data: Partial<MarketCreationFormData>) => void;
 };
 
-export const MarketPreview = ({ form }: MarketPreviewProps) => {
+export const MarketPreview = ({
+  form,
+  goToSection,
+  provideFormData,
+}: MarketPreviewProps) => {
   const chainTime = useChainTime();
 
   const timeline = useMemo(() => {
@@ -46,8 +57,6 @@ export const MarketPreview = ({ form }: MarketPreviewProps) => {
   const baseAssetLiquidityRow = form?.liquidity?.rows.find(
     (row) => row.asset === form.currency,
   );
-
-  console.log(form.answers.answers);
 
   return (
     <div className="flex-1 text-center">
@@ -106,7 +115,7 @@ export const MarketPreview = ({ form }: MarketPreviewProps) => {
             </div>
           </div>
           <div className="flex justify-center gap-4">
-            {baseAssetLiquidityRow ? (
+            {baseAssetLiquidityRow && form?.liquidity?.deploy ? (
               <>
                 <div className="flex justify-center gap-2 items-center">
                   <Label>Amount</Label>{" "}
@@ -125,7 +134,30 @@ export const MarketPreview = ({ form }: MarketPreviewProps) => {
                 </div>
               </>
             ) : (
-              <div></div>
+              <div className="mt-4">
+                <div className="mb-2 center text-gray-500">
+                  <AiOutlineWarning size={22} />
+                </div>
+                <p className="center text-center md:max-w-lg text-gray-400 mb-3">
+                  No liquidity pool will be deployed for the market. You can
+                  deploy a pool after you create the market from the market
+                  page.
+                </p>
+                <button
+                  type="button"
+                  className="rounded-md py-1 px-3 bg-blue-500 text-white"
+                  onClick={() => {
+                    provideFormData({
+                      liquidity: {
+                        deploy: true,
+                      },
+                    });
+                    goToSection("Liquidity");
+                  }}
+                >
+                  Add Liquidity
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -233,11 +265,11 @@ const Answers = ({
         return (
           <>
             <div className="rounded-md bg-gray-50 py-3 px-5">
-              <div className="mb-3 text-xl font-semibold">
+              <div className="text-xl font-semibold">
                 {answerLiquidity?.asset}
               </div>
-              {liquidity ? (
-                <div className="!text-sm">
+              {liquidity && liquidity.deploy ? (
+                <div className="!text-sm mt-3">
                   <div className="table-row mb-1">
                     <div className="table-cell text-left pr-4">
                       <Label className="text-xs">Amount</Label>{" "}
@@ -272,14 +304,14 @@ const Answers = ({
                             $
                           </>
                         ) : (
-                          "--"
+                          ""
                         )}
                       </div>
                     </div>
                   </div>
                 </div>
               ) : (
-                "--"
+                ""
               )}
             </div>
           </>

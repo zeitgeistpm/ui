@@ -25,6 +25,9 @@ import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineC
 import Modal from "components/ui/Modal";
 import { LiquidityInput } from "./inputs/Liquidity";
 import { BsEraser } from "react-icons/bs";
+import { MarketCreationStepType } from "lib/state/market-creation/types/step";
+import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
+import { MarketCreationStep } from "lib/state/market-creation/types/step";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -37,11 +40,13 @@ export const MarketCreationForm = () => {
     currentStep,
     steps,
     setStep,
+    goToSection,
     input,
     fieldsState,
     reset,
     form,
     isTouched,
+    provideFormData,
   } = useCreateMarketState();
 
   const chainTime = useChainTime();
@@ -426,7 +431,11 @@ export const MarketCreationForm = () => {
           resetForm={isTouched && reset}
         >
           <div className="flex center mb-4 md:mb-8">
-            <MarketPreview form={form} />
+            <MarketPreview
+              form={form}
+              goToSection={goToSection}
+              provideFormData={provideFormData}
+            />
           </div>
         </MarketFormSection>
 

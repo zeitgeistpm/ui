@@ -63,6 +63,12 @@ export type UseCreateMarketState = {
    */
   setStep: (step: MarketCreationStep) => void;
   /**
+   * Set the step the user is on by the section name.
+   */
+  goToSection: (stepType: MarketCreationStepType) => void;
+
+  provideFormData: (data: Partial<MarketCreationFormData>) => void;
+  /**
    * Toggle the wizard mode on or off.
    */
   setWizard: (on: boolean) => void;
@@ -190,6 +196,20 @@ export const useCreateMarketState = (): UseCreateMarketState => {
 
     return { ...step, isValid, isTouched, reached };
   });
+
+  const goToSection = (stepType: MarketCreationStepType) => {
+    const step = steps.find((s) => s.label === stepType);
+    if (step) {
+      setStep(step);
+    }
+  };
+
+  const provideFormData = (data: Partial<MarketCreationFormData>) => {
+    setState({
+      ...state,
+      form: merge(state.form, data),
+    });
+  };
 
   const reset = () => {
     setState(
@@ -362,6 +382,8 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     isTouched,
     reset,
     setStep,
+    goToSection,
+    provideFormData,
     setWizard,
     input,
   };
