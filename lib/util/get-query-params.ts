@@ -7,7 +7,9 @@ Router from next.js does not provide a way to get only the query parameters from
 @param path - The path containing the query parameters.
 @returns An object representing the extracted query parameters.
 */
-export const getQueryParams = (path: string): { [key: string]: any } => {
+export const getQueryParams = <T extends string>(
+  path: string,
+): { [key: string]: T } => {
   const url = parseUri(path);
   let queryParams = {};
   const queryParamsArr = [...Array.from(new URLSearchParams(url.query))];

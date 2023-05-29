@@ -17,11 +17,13 @@ Hook's main purpose is to store state of the UI as a query parameter so correct 
 @param key - The key of the query parameter to manage.
 @returns @type {UseQueryParamStateResult} An array containing the value of the query parameter, a function to set the query parameter state, and a function to unset the query parameter state.
 */
-export const useQueryParamState: UseQueryParamState = (key: string) => {
+export const useQueryParamState: UseQueryParamState = <T extends string>(
+  key: string,
+) => {
   const router = useRouter();
   const route = router.asPath.split("?")[0];
 
-  const queryParams = getQueryParams(router.asPath);
+  const queryParams = getQueryParams<T>(router.asPath);
 
   const value = queryParams[key];
 
