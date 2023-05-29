@@ -89,19 +89,25 @@ export const MarketPreview = ({ form }: MarketPreviewProps) => {
           <div className="flex justify-center gap-2 items-center mb-2">
             <Label>Currency</Label>{" "}
             <div className="flex center gap-1">
-              {form.currency}
-              <div className="relative h-5 w-5">
-                <Image
-                  alt="Currency token logo"
-                  fill
-                  sizes="100vw"
-                  src={
-                    supportedCurrencies.find(
-                      (currency) => currency.name === form.currency,
-                    ).image
-                  }
-                />
-              </div>
+              {form.currency ? (
+                <>
+                  {form.currency}
+                  <div className="relative h-5 w-5">
+                    <Image
+                      alt="Currency token logo"
+                      fill
+                      sizes="100vw"
+                      src={
+                        supportedCurrencies.find(
+                          (currency) => currency.name === form.currency,
+                        )?.image
+                      }
+                    />
+                  </div>
+                </>
+              ) : (
+                "--"
+              )}
             </div>
           </div>
           <div className="flex justify-center gap-4">

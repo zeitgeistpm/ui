@@ -109,11 +109,7 @@ export const MarketCreationForm = () => {
 
       <div className="flex center mb-6">
         <div className="mr-3 font-light">One Page</div>
-        <Toggle
-          checked={isWizard}
-          onChange={setWizard}
-          activeClassName="bg-green-400"
-        />
+        <Toggle checked={isWizard} onChange={setWizard} />
         <div className="ml-3 font-light">Wizard</div>
       </div>
 
