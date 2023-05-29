@@ -24,6 +24,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import Modal from "components/ui/Modal";
 import { LiquidityInput } from "./inputs/Liquidity";
+import { BsEraser } from "react-icons/bs";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -82,32 +83,32 @@ export const MarketCreationForm = () => {
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
-      <h2 className="font-3xl text-center flex justify-center items-center gap-3">
-        <span>Create Market</span>
+      <h2 className="relative font-3xl text-center flex justify-center items-center gap-3 mb-6">
+        <div className="relative md:flex justify-center items-center">
+          Create Market
+          <Transition
+            show={Boolean(isTouched)}
+            className={`flex center text-sm text-gray-400 font-medium `}
+            enter="transition-opacity duration-100"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity duration-100"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <button
+              type="button"
+              className="text-xs center gap-1 rounded-md border-1 py-1 px-2 md:absolute md:right-0 md:translate-x-[125%] md:translate-y-[-50%] md:top-[50%]"
+              onClick={handleResetForm}
+            >
+              clear form
+              <BsEraser />
+            </button>
+          </Transition>
+        </div>
       </h2>
 
-      <div className="h-4 mb-8">
-        <Transition
-          show={Boolean(isTouched)}
-          className={`flex center text-sm text-gray-400 font-medium `}
-          enter="transition-opacity duration-100"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="transition-opacity duration-100"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <button
-            type="button"
-            className="text-xs underline"
-            onClick={handleResetForm}
-          >
-            clear form
-          </button>
-        </Transition>
-      </div>
-
-      <div className="flex center mb-6">
+      <div className="flex center mb-8">
         <div className="mr-3 font-light">One Page</div>
         <Toggle checked={isWizard} onChange={setWizard} />
         <div className="ml-3 font-light">Wizard</div>
