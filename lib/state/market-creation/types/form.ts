@@ -10,6 +10,7 @@ import {
   IODescription,
   IOEndDate,
   IOLiquidity,
+  IOLiquidityRow,
   IOModerationMode,
   IOOracle,
   IOPeriodDateOption,
@@ -85,6 +86,7 @@ export type Oracle = z.infer<typeof IOOracle>;
 export type Description = z.infer<typeof IODescription>;
 export type Moderation = z.infer<typeof IOModerationMode>;
 export type Liquidity = z.infer<typeof IOLiquidity>;
+export type LiquidityRow = z.infer<typeof IOLiquidityRow>;
 
 export type BlockTimeline = {
   market: { end: number };
@@ -141,4 +143,8 @@ export const durationasBlocks = (duration: Partial<PeriodDurationOption>) => {
     moment.duration(duration.value, duration.unit).asSeconds() /
     BLOCK_TIME_SECONDS
   );
+};
+
+export const blocksAsDuration = (blocks: number) => {
+  return moment.duration(blocks * BLOCK_TIME_SECONDS * 1000, "milliseconds");
 };

@@ -15,7 +15,7 @@ export type MarketCreationStepType =
   | "Description"
   | "Moderation"
   | "Liquidity"
-  | "Preview";
+  | "Summary";
 
 /**
  * Market creation step that extends the wizard stepper data by the market creation
@@ -38,7 +38,7 @@ export const marketCreationSteps = union<MarketCreationStep>()
     { label: "Description", isValid: false, isTouched: false, reached: false },
     { label: "Moderation", isValid: false, isTouched: false, reached: false },
     { label: "Liquidity", isValid: false, isTouched: false, reached: false },
-    { label: "Preview", isValid: false, isTouched: false, reached: false },
+    { label: "Summary", isValid: false, isTouched: false, reached: false },
   ]);
 
 /**
@@ -57,7 +57,7 @@ export const stepFormKeys: Record<
   Description: ["description"],
   Moderation: ["moderation"],
   Liquidity: ["liquidity"],
-  Preview: [
+  Summary: [
     "currency",
     "question",
     "tags",

@@ -99,7 +99,7 @@ const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
   return new Decimal(json[coinGeckoId].usd);
 };
 
-const getZTGPrice = async () => {
+const getZTGPrice = async (): Promise<Decimal> => {
   try {
     const ztgInfo = await fetchZTGInfo();
     window.localStorage.setItem("ztgInfo", JSON.stringify(ztgInfo));

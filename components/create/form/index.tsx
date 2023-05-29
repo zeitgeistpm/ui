@@ -423,7 +423,7 @@ export const MarketCreationForm = () => {
 
         <MarketFormSection
           wizard={isWizard}
-          isCurrent={currentStep.label == "Preview"}
+          isCurrent={currentStep.label == "Summary"}
           disabled={!isWizard}
           onClickBack={back}
           resetForm={isTouched && reset}

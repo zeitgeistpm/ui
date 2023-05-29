@@ -244,7 +244,7 @@ const DurationInput = ({
         `}
         >
           <select
-            className="outline-none bg-transparent"
+            className="outline-none bg-transparent min-w-[70px]"
             onChange={handleUnitChange}
             value={value?.unit}
           >
