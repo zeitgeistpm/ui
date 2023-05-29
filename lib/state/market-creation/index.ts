@@ -142,6 +142,7 @@ const createMarketStateAtom = persistentAtom<MarketCreationState>({
     () => defaultState,
     () => defaultState,
     () => defaultState,
+    () => defaultState,
   ],
 });
 
