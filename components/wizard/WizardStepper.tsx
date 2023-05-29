@@ -68,8 +68,8 @@ export const WizardStepper = <T extends WizardStep<any>>({
                 `}
                 >
                   <div
-                    className={`absolute h-[70%] w-[70%] bg-red-500 rounded-full transition-all duration-200 ${
-                      showError ? "scale-110" : "scale-0"
+                    className={`absolute h-full w-full bg-red-500 rounded-full transition-all duration-200 ${
+                      showError ? "scale-75" : "scale-0"
                     }`}
                   ></div>
                   <div className="z-30">{index + 1}</div>

@@ -2,7 +2,9 @@ import Decimal from "decimal.js";
 import { supportedCurrencies } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { useChainTime } from "lib/state/chaintime";
+import { Liquidity } from "lib/state/market-creation/types/form";
 import {
+  Answers,
   LiquidityRow,
   MarketCreationFormData,
   blocksAsDuration,
@@ -45,6 +47,8 @@ export const MarketPreview = ({ form }: MarketPreviewProps) => {
     (row) => row.asset === form.currency,
   );
 
+  console.log(form.answers.answers);
+
   return (
     <div className="flex-1 text-center">
       <div className="mb-10">
@@ -62,26 +66,17 @@ export const MarketPreview = ({ form }: MarketPreviewProps) => {
 
       <div className="mb-10">
         <Label className="mb-2">Answers</Label>
-        {(form?.answers?.type === "categorical" ||
-          form?.answers?.type === "yes/no") && (
-          <>
-            <div className="flex center gap-4">
-              {form.answers?.answers?.length === 0 ? (
-                <div className="italic text-gray-500">No answers supplied</div>
-              ) : (
-                form.answers.answers.map((answer, index) => (
-                  <Answer
-                    answer={answer}
-                    baseAssetPrice={baseAssetPrice}
-                    liquidity={form?.liquidity.rows.find(
-                      (row) => row.asset === answer,
-                    )}
-                  />
-                ))
-              )}
-            </div>
-          </>
-        )}
+        <div className="flex center gap-4">
+          {form.answers?.answers?.length === 0 ? (
+            <div className="italic text-gray-500">No answers supplied</div>
+          ) : (
+            <Answers
+              answers={form.answers}
+              baseAssetPrice={baseAssetPrice}
+              liquidity={form?.liquidity}
+            />
+          )}
+        </div>
       </div>
 
       <div className="mb-10">
@@ -216,55 +211,81 @@ export const MarketPreview = ({ form }: MarketPreviewProps) => {
   );
 };
 
-const Answer = ({
-  answer,
+const Answers = ({
+  answers,
   liquidity,
   baseAssetPrice,
 }: {
-  answer: string;
-  liquidity?: LiquidityRow;
+  answers: Answers;
+  liquidity?: Liquidity;
   baseAssetPrice?: Decimal;
 }) => {
   return (
-    <div className="rounded-md bg-gray-100 py-3 px-5">
-      <div className="mb-3 text-xl font-semibold">{answer}</div>
-      {liquidity ? (
-        <div className="!text-sm">
-          <div className="table-row mb-1">
-            <div className="table-cell text-left pr-4">
-              <Label className="text-xs">Amount</Label>{" "}
-            </div>
-            <div className="table-cell text-left">
-              <div>{liquidity?.amount}</div>
-            </div>
-          </div>
+    <>
+      {answers?.answers.map((answer, answerIndex) => {
+        const answerLiquidity = liquidity.rows.find((r, rowIndex) => {
+          if (answers.type === "scalar") {
+            return answerIndex === rowIndex;
+          }
+          return r.asset === answer;
+        });
 
-          <div className="table-row mb-1">
-            <div className="table-cell text-left pr-4">
-              <Label className="text-xs">Weight</Label>{" "}
-            </div>
-            <div className="table-cell text-left">
-              <div>{liquidity?.weight}</div>
-            </div>
-          </div>
-
-          <div className="table-row">
-            <div className="table-cell text-left pr-4">
-              <Label className="text-xs">Value</Label>{" "}
-            </div>
-            <div className="table-cell text-left">
-              <div>
-                {new Decimal(liquidity?.value).toFixed(1)}{" "}
-                <span className="text-gray-400">≈</span>{" "}
-                {baseAssetPrice?.mul(liquidity?.value).toFixed(2)} $
+        return (
+          <>
+            <div className="rounded-md bg-gray-100 py-3 px-5">
+              <div className="mb-3 text-xl font-semibold">
+                {answerLiquidity?.asset}
               </div>
+              {liquidity ? (
+                <div className="!text-sm">
+                  <div className="table-row mb-1">
+                    <div className="table-cell text-left pr-4">
+                      <Label className="text-xs">Amount</Label>{" "}
+                    </div>
+                    <div className="table-cell text-left">
+                      <div>{answerLiquidity?.amount ?? "--"}</div>
+                    </div>
+                  </div>
+
+                  <div className="table-row mb-1">
+                    <div className="table-cell text-left pr-4">
+                      <Label className="text-xs">Weight</Label>{" "}
+                    </div>
+                    <div className="table-cell text-left">
+                      <div>{answerLiquidity?.weight ?? "--"}</div>
+                    </div>
+                  </div>
+
+                  <div className="table-row">
+                    <div className="table-cell text-left pr-4">
+                      <Label className="text-xs">Value</Label>{" "}
+                    </div>
+                    <div className="table-cell text-left">
+                      <div>
+                        {answerLiquidity ? (
+                          <>
+                            {new Decimal(answerLiquidity?.value).toFixed(1)}{" "}
+                            <span className="text-gray-400">≈</span>{" "}
+                            {baseAssetPrice
+                              ?.mul(answerLiquidity?.value)
+                              .toFixed(2)}{" "}
+                            $
+                          </>
+                        ) : (
+                          "--"
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                "--"
+              )}
             </div>
-          </div>
-        </div>
-      ) : (
-        "--"
-      )}
-    </div>
+          </>
+        );
+      })}
+    </>
   );
 };
 

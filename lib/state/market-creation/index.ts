@@ -312,7 +312,7 @@ export const useCreateMarketState = (): UseCreateMarketState => {
         return {
           asset: !isScalar
             ? answer
-            : `${index === 0 ? "SHORT-" : "LONG-"}[${
+            : `${index === 0 ? "S" : "L"}[${
                 scalarNumberType === "timestamp"
                   ? moment(answer).format("MMM Do, YYYY hh:mm a")
                   : answer
