@@ -55,7 +55,11 @@ export const LiquidityInput = ({
         <div className="mb-10 flex justify-center">
           <div className="flex flex-col justify-center items-center">
             <div className="font-light text-sm mb-2">Deploy Pool?</div>
-            <Toggle checked={value?.deploy} onChange={handleDeploymentToggle} />
+            <Toggle
+              checked={value?.deploy}
+              activeClassName="bg-blue-500"
+              onChange={handleDeploymentToggle}
+            />
           </div>
         </div>
 
