@@ -7,6 +7,7 @@ const PortfolioLayout: React.FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   const wallet = useWallet();
   const [hasAddress, setHasAddress] = useState<boolean>();
+  const [isAccountAddress, setIsAccountAddress] = useState<boolean>();
 
   const isAddressRoute = router.query.address !== undefined;
   const addressFromRoute = isAddressRoute
@@ -15,20 +16,25 @@ const PortfolioLayout: React.FC<PropsWithChildren> = ({ children }) => {
       : router.query.address
     : undefined;
 
-  const address = wallet.activeAccount?.address ?? addressFromRoute;
-
   useEffect(() => {
     if (!router.isReady) return;
-    if (address) {
-      router.replace(`/portfolio/${address}`, undefined, { shallow: true });
+
+    if (addressFromRoute && !isAccountAddress) {
       setHasAddress(true);
-    } else {
-      router.replace(`/portfolio`, undefined, {
+      setIsAccountAddress(addressFromRoute === wallet.activeAccount?.address);
+      router.replace(`/portfolio/${addressFromRoute}`, undefined, {
         shallow: true,
       });
+    } else if (wallet.activeAccount?.address) {
+      setHasAddress(true);
+      setIsAccountAddress(true);
+      router.replace(`/portfolio/${wallet.activeAccount.address}`, undefined, {
+        shallow: true,
+      });
+    } else {
       setHasAddress(false);
     }
-  }, [address, router.isReady]);
+  }, [addressFromRoute, router.isReady, wallet.activeAccount?.address]);
 
   return (
     <>

@@ -20,6 +20,8 @@ import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { groupBy, range } from "lodash-es";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
+import NotFoundPage from "pages/404";
+import { isValidPolkadotAddress } from "lib/util";
 
 const Portfolio: NextPageWithLayout = () => {
   const router = useRouter();
@@ -40,6 +42,14 @@ const Portfolio: NextPageWithLayout = () => {
     () => subsidy && groupBy(subsidy, (position) => position.market.marketId),
     [subsidy],
   );
+
+  if (!address) {
+    return null;
+  }
+
+  if (isValidPolkadotAddress(address) === false) {
+    return <NotFoundPage />;
+  }
 
   return (
     <>
