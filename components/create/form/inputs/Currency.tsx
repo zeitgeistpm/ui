@@ -34,7 +34,7 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({
             type="button"
             className={`
               flex flex-col justify-center flex-1 w-full md:max-w-xs rounded-md p-6 md:min-h-[300px] min-h-[150px] cursor-pointer transition-all mb-4
-              ${currency.name === value ? "bg-nyanza-base" : "bg-gray-200"}
+              ${currency.name === value ? "bg-nyanza-base" : "bg-gray-100"}
             `}
             onClick={handleSelect(currency.name)}
           >

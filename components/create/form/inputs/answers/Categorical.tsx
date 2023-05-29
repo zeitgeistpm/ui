@@ -202,7 +202,7 @@ const AnswerInput = ({
   return (
     <div
       style={style}
-      className={`relative flex-1 w-full bg-gray-200 rounded-md md:min-w-[520px] md:max-w-[420px] py-3 px-5 mb-3`}
+      className={`relative flex-1 w-full bg-gray-100 rounded-md md:min-w-[520px] md:max-w-[420px] py-3 px-5 mb-3`}
     >
       <input
         disabled={disabled}

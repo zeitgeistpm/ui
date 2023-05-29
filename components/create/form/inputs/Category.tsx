@@ -37,7 +37,7 @@ export const CategorySelect = forwardRef(
               className={`
               relative flex gap-2 center h-full cursor-pointer rounded-full py-2 px-4 transition-all 
               ease-in-out active:scale-95 duration-200
-              ${isSelected ? "bg-fog-of-war text-white" : "bg-platinum"}
+              ${isSelected ? "bg-fog-of-war text-white" : "bg-gray-100"}
             `}
               onClick={handleSelect(tag)}
             >

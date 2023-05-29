@@ -44,7 +44,7 @@ export const AnswersInput = ({
           className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8  ${
             value?.type === "yes/no"
               ? "bg-fog-of-war text-white"
-              : "bg-platinum"
+              : "bg-gray-100"
           }`}
           onClick={handleSelectType("yes/no")}
         >
@@ -56,7 +56,7 @@ export const AnswersInput = ({
           className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8 ${
             value?.type === "categorical"
               ? "bg-fog-of-war text-white"
-              : "bg-platinum"
+              : "bg-gray-100"
           }`}
           onClick={handleSelectType("categorical")}
         >
@@ -68,7 +68,7 @@ export const AnswersInput = ({
           className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8 ${
             value?.type === "scalar"
               ? "bg-fog-of-war text-white"
-              : "bg-platinum"
+              : "bg-gray-100"
           }`}
           onClick={handleSelectType("scalar")}
         >

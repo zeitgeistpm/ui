@@ -13,7 +13,7 @@
 
 .ql-container.ql-snow {
   @apply !border-none;
-  @apply bg-gray-100;
+  
   @apply !rounded-b-lg;
 }
 
@@ -24,6 +24,8 @@
 .ql-editor[contenteditable="true"] {
   resize: vertical;
   min-height: 18em;
+  @apply bg-gray-100;
+  @apply !rounded-b-lg;
 }
 
 /* .dark > * .ql-toolbar .ql-stroke {

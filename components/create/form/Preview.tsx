@@ -193,7 +193,7 @@ export const MarketPreview = ({ form }: MarketPreviewProps) => {
         <Label className="mb-2">Description</Label>
         <div className="flex center ">
           {form?.description ? (
-            <div className="w-full md:w-2/3 max-w-2xl bg-gray-100 rounded-md p-4 h-fit">
+            <div className="w-full md:w-2/3 max-w-2xl bg-gray-50 rounded-md p-4 h-fit">
               <QuillViewer value={form?.description} />
             </div>
           ) : (
@@ -232,7 +232,7 @@ const Answers = ({
 
         return (
           <>
-            <div className="rounded-md bg-gray-100 py-3 px-5">
+            <div className="rounded-md bg-gray-50 py-3 px-5">
               <div className="mb-3 text-xl font-semibold">
                 {answerLiquidity?.asset}
               </div>

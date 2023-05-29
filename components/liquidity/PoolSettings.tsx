@@ -88,14 +88,14 @@ const PriceSetter = ({
   return (
     <div className="flex items-center">
       <input
-        className="h-ztg-40 w-[100px] rounded-ztg-5 bg-sky-200 text-right p-ztg-8 focus:outline-none"
+        className="h-ztg-40 w-[100px] rounded-ztg-5 bg-gray-100 text-right p-ztg-8 focus:outline-none"
         value={price}
         type="number"
         disabled={disabled}
         onChange={handlePriceChange}
       />
       <button
-        className="flex items-center justify-center w-[30px] h-[30px] bg-sky-200 rounded-full ml-[20px] flex-grow-0"
+        className="flex items-center justify-center w-[30px] h-[30px] bg-gray-100 rounded-full ml-[20px] flex-grow-0"
         onClick={handleLockClick}
         disabled={disabled}
       >

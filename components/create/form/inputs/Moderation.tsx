@@ -44,7 +44,7 @@ export const ModerationModeSelect: React.FC<ModerationModeSelectProps> = ({
           type="button"
           className={`
               flex flex-col flex-1 max-w-sm rounded-md p-6 md:min-h-[230px] cursor-pointer transition-all 
-              ${value === option.mode ? "bg-nyanza-base" : "bg-gray-200"}
+              ${value === option.mode ? "bg-nyanza-base" : "bg-gray-100"}
             `}
           onClick={handleSelect(option.mode)}
         >

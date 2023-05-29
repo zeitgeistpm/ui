@@ -116,7 +116,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
             {option.type === "duration" && option.preset && (
               <button
                 type="button"
-                className={`flex center rounded-full bg-gray-200 py-3 px-6 ${
+                className={`flex center rounded-full bg-gray-100 py-3 px-6 ${
                   value?.type === "duration" &&
                   value?.preset === option.preset &&
                   "bg-nyanza-base"
@@ -227,7 +227,7 @@ const DurationInput = ({
     <div className={`flex ${className}`}>
       <div
         className={`flex flex-1 relative flex-shrink rounded-md transition-all duration-200 ${
-          isSelected ? "bg-nyanza-base" : "bg-gray-200"
+          isSelected ? "bg-nyanza-base" : "bg-gray-100"
         }`}
       >
         <input
@@ -239,17 +239,21 @@ const DurationInput = ({
         />
 
         <div
-          className={`flex-1 py-3 px-6 rounded-r-md flex justify-center items-center gap-2 transition-all duration-200
-          ${isSelected ? "bg-gray-100 bg-opacity-50" : "bg-gray-100"}
+          className={`flex-1 py-3 px-6 rounded-r-md flex justify-center items-center gap-2 transition-all rounded-full duration-200
+          ${
+            isSelected
+              ? "bg-gray-100 bg-opacity-50"
+              : "bg-black bg-opacity-[3%]"
+          }
         `}
         >
           <select
-            className="outline-none bg-transparent min-w-[70px]"
+            className="outline-none bg-transparent min-w-[70px] text-center"
             onChange={handleUnitChange}
             value={value?.unit}
           >
             {["days", "hours"].map((unit) => (
-              <option className="text-right py-2 px-4" value={unit}>
+              <option className="py-2 px-4" value={unit}>
                 {value?.value <= 1 ? unit.replace("s", "") : unit}
               </option>
             ))}

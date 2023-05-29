@@ -287,7 +287,7 @@ const Cell = ({
             style={style}
           >
             <AmountInput
-              className="h-ztg-40 w-full rounded-ztg-5 bg-sky-200 !pr-ztg-8 dark:bg-sky-800"
+              className="h-ztg-40 w-full rounded-ztg-5 !bg-gray-100 border-0 !pr-ztg-8 "
               value={value.value}
               onChange={value.onChange}
               min={value.min}
@@ -426,7 +426,7 @@ const Table = ({
               }
             >
               <thead>
-                <tr className="bg-sky-100 h-[50px]">
+                <tr className="bg-gray-100 h-[50px]">
                   {columns
                     .filter((col) => columnIsCollapsed(col.accessor) == false)
                     .map((column, index) => (

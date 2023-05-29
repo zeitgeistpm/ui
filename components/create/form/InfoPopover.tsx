@@ -33,22 +33,22 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
               show={open}
               enter="ease-out duration-200"
               enterFrom="opacity-0"
-              enterTo="opacity-100"
+              enterTo="opacity-30"
               leave="ease-in duration-200"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0 hidden"
+              leaveFrom="opacity-30"
+              leaveTo="opacity-0"
             >
-              <Popover.Overlay className="fixed z-50 inset-0 bg-black opacity-30" />
+              <Popover.Overlay className="fixed z-50 inset-0 bg-black " />
             </Transition>
 
             <Transition
               as={Fragment}
               enter="transition ease-out duration-200"
-              enterFrom="opacity-0 translate-y-1"
-              enterTo="opacity-100 translate-y-0"
+              enterFrom="opacity-0 scale-1"
+              enterTo="opacity-100 scale-95"
               leave="transition ease-in duration-150"
-              leaveFrom="opacity-100 translate-y-0"
-              leaveTo="opacity-0 translate-y-1"
+              leaveFrom="opacity-100 scale-95"
+              leaveTo="opacity-0 scale-1"
             >
               <Popover.Panel className="absolute z-[100] bg-white top-[100%] right-0 translate-x-[50%] mt-2 ml-2 w-screen md:w-96 rounded-md">
                 <div className="overflow-hidden p-4 rounded-md shadow-xs ring-2 ring-black ring-opacity-5 text-center">
