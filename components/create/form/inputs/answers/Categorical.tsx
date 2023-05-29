@@ -1,8 +1,25 @@
 import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  TouchSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
   CategoricalAnswers,
   YesNoAnswers,
 } from "lib/state/market-creation/types/form";
-import { ChangeEventHandler } from "react";
+import { uniq } from "lodash-es";
+import { MdOutlineDragIndicator } from "react-icons/md";
 import { FormEvent } from "../../types";
 
 export type CategoricalAnswersInputProps = {
@@ -26,8 +43,8 @@ export const CategoricalAnswersInput = ({
       cb?:
         | CategoricalAnswersInputProps["onChange"]
         | CategoricalAnswersInputProps["onBlur"],
-    ): ChangeEventHandler<HTMLInputElement> =>
-    (event) => {
+    ) =>
+    (answer: string) => {
       cb?.({
         type: "change",
         target: {
@@ -35,9 +52,7 @@ export const CategoricalAnswersInput = ({
           value: {
             type: "categorical",
             answers:
-              value?.answers.map((v, i) =>
-                i === index ? event.target.value : v,
-              ) ?? [],
+              value?.answers.map((v, i) => (i === index ? answer : v)) ?? [],
           },
         },
       });
@@ -70,46 +85,66 @@ export const CategoricalAnswersInput = ({
     });
   };
 
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      const oldIndex = value?.answers.findIndex((v) => v === active.id);
+      const newIndex = value?.answers.findIndex((v) => v === over.id);
+
+      onChange?.({
+        type: "change",
+        target: {
+          name,
+          value: {
+            type: "categorical",
+            answers: arrayMove(value?.answers, oldIndex, newIndex) as string[],
+          },
+        },
+      });
+    }
+  };
+
+  const draggingDisabled =
+    disabled ||
+    value?.answers.length < 2 ||
+    uniq(value?.answers).length < value?.answers.length;
+
   return (
     <div>
       <div className="mb-6 md:flex justify-center items-center">
         <div className="flex-1 md:flex justify-center">
-          <div>
-            {value?.answers.map((answer: string, index: number) => {
-              const bg =
-                value?.type === "yes/no" && answer === "Yes"
-                  ? "bg-nyanza-base"
-                  : value?.type === "yes/no" && answer === "No"
-                  ? "bg-orange-100"
-                  : "bg-gray-200";
-              return (
-                <div
-                  className={`relative flex-1 ${bg} w-full rounded-md md:min-w-[520px] md:max-w-[420px] py-3 px-5 mb-3`}
-                >
-                  <input
-                    disabled={disabled}
-                    key={index}
-                    className={`h-full w-full bg-transparent outline-none`}
-                    value={answer}
-                    onChange={handleChange(index, onChange)}
-                    onBlur={handleChange(index, onBlur)}
-                    placeholder={`Answer ${index + 1}`}
-                  />
-                  {!disabled && (
-                    <div className="absolute flex gap-2 z-10 right-2 top-[50%] translate-y-[-50%] ">
-                      <button
-                        type="button"
-                        className=" bg-white rounded-md py-1 px-2"
-                        onClick={handleClearClick(index)}
-                      >
-                        clear
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <div>
+              <SortableContext
+                items={value?.answers as string[]}
+                strategy={verticalListSortingStrategy}
+                disabled={draggingDisabled}
+              >
+                {value?.answers.map((answer: string, index: number) => {
+                  return (
+                    <AnswerInput
+                      key={index}
+                      id={answer}
+                      disabled={disabled}
+                      value={answer}
+                      onChange={handleChange(index, onChange)}
+                      onBlur={handleChange(index, onBlur)}
+                      placeholder={`Answer ${index + 1}`}
+                      onClear={handleClearClick(index)}
+                      draggingDisabled={draggingDisabled || answer === ""}
+                    />
+                  );
+                })}
+              </SortableContext>
+            </div>
+          </DndContext>
         </div>
       </div>
 
@@ -124,6 +159,78 @@ export const CategoricalAnswersInput = ({
           </button>
         </div>
       )}
+    </div>
+  );
+};
+
+const AnswerInput = ({
+  id,
+  value,
+  disabled,
+  placeholder,
+  onChange,
+  onBlur,
+  onClear,
+  draggingDisabled,
+}: {
+  id: string;
+  value: string;
+  disabled: boolean;
+  placeholder?: string;
+  onChange: (answer: string) => void;
+  onBlur: (answer: string) => void;
+  onClear: () => void;
+  draggingDisabled?: boolean;
+}) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({
+      id,
+      disabled: disabled || draggingDisabled,
+      animateLayoutChanges: () => {
+        return false;
+      },
+    });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      style={style}
+      className={`relative flex-1 w-full bg-gray-200 rounded-md md:min-w-[520px] md:max-w-[420px] py-3 px-5 mb-3`}
+    >
+      <input
+        disabled={disabled}
+        className={`h-full w-full bg-transparent outline-none`}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        onBlur={(event) => onBlur(event.target.value)}
+        placeholder={placeholder}
+      />
+
+      {!disabled && (
+        <div className="absolute flex gap-2 z-10 right-8 top-[50%] translate-y-[-50%]">
+          <button
+            type="button"
+            className=" bg-white rounded-md py-1 px-2"
+            onClick={onClear}
+          >
+            clear
+          </button>
+        </div>
+      )}
+      <div
+        className={`absolute flex gap-2 z-10 right-2 top-[50%] translate-y-[-50%] transition-opacity duration-300 ${
+          draggingDisabled && "opacity-25 cursor-not-allowed"
+        }`}
+        ref={setNodeRef}
+        {...attributes}
+        {...listeners}
+      >
+        <MdOutlineDragIndicator />
+      </div>
     </div>
   );
 };

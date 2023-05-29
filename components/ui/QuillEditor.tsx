@@ -31,7 +31,6 @@ const QuillEditor = ({
   const formats = ["bold", "underline", "italic", "link", "list"];
 
   const handleChange = (value: string, delta) => {
-    console.log("handleChange", value, delta);
     onChange?.({
       type: "change",
       target: {

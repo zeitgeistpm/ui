@@ -13,7 +13,7 @@ import { queryClient } from "lib/query-client";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { hotjar } from "react-hotjar";
 
 const Onboarding = dynamic(
