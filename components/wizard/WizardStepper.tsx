@@ -52,7 +52,9 @@ export const WizardStepper = <T extends WizardStep<any>>({
           return (
             <button
               key={index}
-              className={`w-24 cursor-pointer transition-all group`}
+              className={`w-24 ${
+                canNavigate ? "cursor-pointer" : "cursor-not-allowed"
+              } transition-all group`}
               disabled={!canNavigate}
               onClick={() => onChange(step)}
             >

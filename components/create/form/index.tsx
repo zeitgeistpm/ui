@@ -162,6 +162,7 @@ export const MarketCreationForm = () => {
             <h2 className="mb-4 md:mb-8 text-base">What is your question?</h2>
             <div>
               <input
+                autoComplete="off"
                 className="h-12 w-full md:w-2/3 text-center bg-nyanza-base rounded-md mb-4 px-4 py-7"
                 placeholder="When do I send it?"
                 {...input("question", { type: "text" })}

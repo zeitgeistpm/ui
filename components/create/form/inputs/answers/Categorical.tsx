@@ -37,6 +37,11 @@ export const CategoricalAnswersInput = ({
   onBlur,
   disabled,
 }: CategoricalAnswersInputProps) => {
+  const dragSensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor),
+  );
+
   const handleChange =
     (
       index: number,
@@ -85,8 +90,6 @@ export const CategoricalAnswersInput = ({
     });
   };
 
-  const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -117,7 +120,7 @@ export const CategoricalAnswersInput = ({
       <div className="mb-6 md:flex justify-center items-center">
         <div className="flex-1 md:flex justify-center">
           <DndContext
-            sensors={sensors}
+            sensors={dragSensors}
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
           >
@@ -208,6 +211,7 @@ const AnswerInput = ({
         onChange={(event) => onChange(event.target.value)}
         onBlur={(event) => onBlur(event.target.value)}
         placeholder={placeholder}
+        autoComplete="off"
       />
 
       {!disabled && (
