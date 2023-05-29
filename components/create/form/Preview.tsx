@@ -1,8 +1,6 @@
-import { PoolAssetRowData } from "components/liquidity/PoolSettings";
 import Decimal from "decimal.js";
 import { supportedCurrencies } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
-import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { useChainTime } from "lib/state/chaintime";
 import {
   LiquidityRow,
@@ -10,7 +8,6 @@ import {
   blocksAsDuration,
   timelineAsBlocks,
 } from "lib/state/market-creation/types/form";
-import { shortenAddress } from "lib/util";
 import { formatDuration } from "lib/util/format-duration";
 import moment from "moment";
 import dynamic from "next/dynamic";
