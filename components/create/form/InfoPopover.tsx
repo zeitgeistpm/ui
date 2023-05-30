@@ -1,18 +1,22 @@
 import { Dialog, Popover, Transition } from "@headlessui/react";
 import Modal from "components/ui/Modal";
-import { Fragment, useState } from "react";
+import { Fragment, ReactNode, useState } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 
-export type InfoPopoverProps = React.PropsWithChildren<{ title: string }>;
+export type InfoPopoverProps = React.PropsWithChildren<{
+  title?: ReactNode;
+  className?: string;
+}>;
 
 export const InfoPopover: React.FC<InfoPopoverProps> = ({
   title,
   children,
+  className,
 }) => {
   let [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div>
+    <div className={className}>
       <button
         type="button"
         onClick={() => setIsOpen(true)}
@@ -63,13 +67,10 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Panel
           onClick={() => setIsOpen(false)}
-          className="w-full max-w-[462px] rounded-[10px] bg-white p-6 cursor-pointer"
+          className={`w-full max-w-[462px] rounded-[10px] bg-white p-6 cursor-pointer ${className}`}
         >
-          <h3 className="flex justify-center items-center mb-4 gap-2">
-            <AiOutlineInfoCircle />
-            {title}
-          </h3>
-          <div className="!text-center">{children}</div>
+          {title}
+          <div className="text-center">{children}</div>
         </Dialog.Panel>
       </Modal>
     </div>

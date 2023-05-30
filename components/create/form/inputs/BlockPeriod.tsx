@@ -137,7 +137,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
             value={value?.type === "duration" ? value : undefined}
             onChange={handleDurationChange}
             onBlur={handleDurationBlur}
-            isSelected={value?.type === "duration" && !value?.preset}
+            isSelected={isValid && value?.type === "duration" && !value?.preset}
           />
         )}
 

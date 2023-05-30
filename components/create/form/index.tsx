@@ -1,6 +1,9 @@
+import { Dialog, Transition } from "@headlessui/react";
+import Modal from "components/ui/Modal";
 import Toggle from "components/ui/Toggle";
 import WizardStepper from "components/wizard/WizardStepper";
 import { nextStepFrom, prevStepFrom } from "components/wizard/types";
+import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { useChainTime } from "lib/state/chaintime";
 import { useCreateMarketState } from "lib/state/market-creation";
 import {
@@ -10,6 +13,7 @@ import {
 } from "lib/state/market-creation/constants/deadline-options";
 import dynamic from "next/dynamic";
 import { FormEventHandler, useState } from "react";
+import { BsEraser } from "react-icons/bs";
 import { ErrorMessage } from "./ErrorMessage";
 import InfoPopover from "./InfoPopover";
 import { MarketFormSection } from "./MarketFormSection";
@@ -18,16 +22,10 @@ import BlockPeriodPicker from "./inputs/BlockPeriod";
 import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
 import DateTimePicker from "./inputs/DateTime";
+import { LiquidityInput } from "./inputs/Liquidity";
 import ModerationModeSelect from "./inputs/Moderation";
 import { AnswersInput } from "./inputs/answers";
-import { Dialog, Transition } from "@headlessui/react";
-import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
-import Modal from "components/ui/Modal";
-import { LiquidityInput } from "./inputs/Liquidity";
-import { BsEraser } from "react-icons/bs";
-import { MarketCreationStepType } from "lib/state/market-creation/types/step";
-import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
-import { MarketCreationStep } from "lib/state/market-creation/types/step";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -140,7 +138,14 @@ export const MarketCreationForm = () => {
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="text-base flex justify-center items-center gap-2">
               Market Currency
-              <InfoPopover title="Market Base Asset">
+              <InfoPopover
+                title={
+                  <h3 className="flex justify-center items-center mb-4 gap-2">
+                    <AiOutlineInfoCircle />
+                    Market Base Asset
+                  </h3>
+                }
+              >
                 <p className="text-gray-500 font-light text-sm">
                   The base asset used to provide liquidity to the market.
                 </p>
@@ -165,8 +170,15 @@ export const MarketCreationForm = () => {
             <div>
               <input
                 autoComplete="off"
-                className="h-12 w-full md:w-2/3 text-center bg-nyanza-base rounded-md mb-4 px-4 py-7"
-                placeholder="When do I send it?"
+                className={`h-12 w-full md:w-2/3 text-center rounded-md mb-4 px-4 py-7
+                  ${
+                    fieldsState.question.isTouched &&
+                    !fieldsState.question.isValid
+                      ? "bg-gray-100"
+                      : "bg-nyanza-base "
+                  }
+                `}
+                placeholder="Ask a question that is specific and has a timeframe."
                 {...input("question", { type: "text" })}
               />
               <div className="flex center h-5 text-xs text-red-400">
@@ -198,10 +210,52 @@ export const MarketCreationForm = () => {
           nextDisabled={!fieldsState.answers.isValid}
           resetForm={isTouched && reset}
         >
-          <div className="mb-4 md:mb-8 text-center">
-            <h2 className="text-base">Answers</h2>
+          <div className="relative mb-4 md:mb-8 text-center">
+            <h2 className="text-base center gap-2">
+              Answers
+              <InfoPopover
+                title={<h4 className="answer-types mb-4">Answer Types</h4>}
+                className="!text-left"
+              >
+                <h4 className="text-base text-left mb-1">
+                  Options (Categorical)
+                </h4>
+                <p className="text-gray-500 font-light text-sm text-left mb-4">
+                  Options will create a categorical market from the options you
+                  specify.{" "}
+                  <a
+                    className="text-ztg-blue"
+                    href="https://docs.zeitgeist.pm/docs/learn/prediction-markets#categorical-prediction-markets"
+                    target="_blank"
+                  >
+                    Learn more.
+                  </a>
+                </p>
+                <h4 className="text-base text-left mb-1">Scalar</h4>
+                <p className="text-gray-500 font-light text-sm text-left mb-4">
+                  A scalar market is a market where the outcome is a number in a
+                  the range specified by the lower(<b>short</b>) and upper(
+                  <b>long</b>) bound.{" "}
+                  <a
+                    className="text-ztg-blue"
+                    href="https://docs.zeitgeist.pm/docs/learn/prediction-markets#scalar-prediction-markets"
+                    target="_blank"
+                  >
+                    Learn more.
+                  </a>
+                </p>
+                <h4 className="text-base text-left mb-1">Yes/No</h4>
+                <p className="text-gray-500 font-light text-sm text-left">
+                  Choosing yes/no will create a categorical market with two
+                  preset outcomes, yes and no.
+                </p>
+              </InfoPopover>
+            </h2>
           </div>
-          <AnswersInput {...input("answers", { mode: "onChange" })} />
+          <AnswersInput
+            {...input("answers", { mode: "onChange" })}
+            fieldState={fieldsState.answers}
+          />
           <div className="flex center h-5 text-xs text-red-400">
             <ErrorMessage field={fieldsState.answers} />
           </div>
@@ -241,7 +295,14 @@ export const MarketCreationForm = () => {
               <div className="mb-4 text-center">
                 <h2 className="flex text-base justify-center items-center gap-2">
                   Set Grace Period
-                  <InfoPopover title="Grace Period">
+                  <InfoPopover
+                    title={
+                      <h3 className="flex justify-center items-center mb-4 gap-2">
+                        <AiOutlineInfoCircle />
+                        Grace Period
+                      </h3>
+                    }
+                  >
                     <p className="text-gray-500 font-light text-sm">
                       Grace period starts after the market ends. During this
                       period, trading, reporting and disputing is disabled.
@@ -266,7 +327,14 @@ export const MarketCreationForm = () => {
               <div className="mb-4 text-center">
                 <h2 className="flex text-base justify-center items-center gap-2">
                   Set Report Period
-                  <InfoPopover title="Report Period">
+                  <InfoPopover
+                    title={
+                      <h3 className="flex justify-center items-center mb-4 gap-2">
+                        <AiOutlineInfoCircle />
+                        Report Period
+                      </h3>
+                    }
+                  >
                     <p className="text-gray-500 font-light text-sm">
                       Reporting starts after the market ends and grace period
                       has finished. In this period the market outcome can only
@@ -294,7 +362,14 @@ export const MarketCreationForm = () => {
               <div className="mb-4 text-center">
                 <h2 className="flex text-base justify-center items-center gap-2">
                   Set Dispute Period
-                  <InfoPopover title="Report Period">
+                  <InfoPopover
+                    title={
+                      <h3 className="flex justify-center items-center mb-4 gap-2">
+                        <AiOutlineInfoCircle />
+                        Dispute Period
+                      </h3>
+                    }
+                  >
                     <p className="text-gray-500 font-light text-sm">
                       The dispute period starts when the market has been
                       reported. If no dispute is raised during this period the
@@ -340,7 +415,12 @@ export const MarketCreationForm = () => {
             </p>
             <div>
               <input
-                className="h-12 w-full md:w-2/3 text-center !bg-nyanza-base rounded-md mb-4 px-4 py-7 "
+                className={`h-12 w-full md:w-2/3 text-center rounded-md mb-4 px-4 py-7
+                  ${
+                    fieldsState.oracle.isTouched && !fieldsState.oracle.isValid
+                      ? "bg-gray-100"
+                      : "!bg-nyanza-base "
+                  }`}
                 placeholder="0x78e0e162...D3FFd434F7"
                 {...input("oracle", { type: "text" })}
               />

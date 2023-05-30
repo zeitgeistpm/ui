@@ -158,7 +158,7 @@ export const CategoricalAnswersInput = ({
             className="border-gray-300 text-sm border-2 rounded-full py-4 px-8 transition-all false"
             onClick={handleAddOptionClick}
           >
-            +
+            Add Option
           </button>
         </div>
       )}
@@ -221,7 +221,7 @@ const AnswerInput = ({
             className=" bg-white rounded-md py-1 px-2"
             onClick={onClear}
           >
-            clear
+            remove
           </button>
         </div>
       )}

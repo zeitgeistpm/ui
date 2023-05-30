@@ -54,7 +54,10 @@ export const MarketFormSection = ({
                 className={`border-gray-300 text-sm border-2 rounded-full py-4 px-8 transition-all ease-in-out duration-200 ${
                   nextDisabled && "cursor-not-allowed opacity-70 text-gray-500"
                 }
-                ${!nextDisabled && "active:scale-95"}`}
+                ${
+                  !nextDisabled &&
+                  "active:scale-95 bg-nyanza-base border-nyanza-base"
+                }`}
                 type="button"
                 onClick={onClickNext}
               >
