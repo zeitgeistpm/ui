@@ -33,16 +33,14 @@ const getFiltersFromQueryState = (
     }
     res = [
       ...res,
-      ...[
-        ...queryStateFilters.map((qsf) => ({
-          type: filterType,
-          value: qsf,
-          label:
-            filterType === "currency"
-              ? marketCurrencyFilterOptions.find((v) => v.value === qsf).label
-              : qsf,
-        })),
-      ],
+      ...queryStateFilters.map((qsf) => ({
+        type: filterType,
+        value: qsf,
+        label:
+          filterType === "currency"
+            ? marketCurrencyFilterOptions.find((v) => v.value === qsf).label
+            : qsf,
+      })),
     ];
   }
   return res;
