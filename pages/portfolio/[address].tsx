@@ -12,14 +12,17 @@ import {
 } from "components/portfolio/MarketPositions";
 import PortfolioIdentity from "components/portfolio/PortfolioIdentity";
 import InfoBoxes from "components/ui/InfoBoxes";
+import PortfolioLayout from "layouts/PortfolioLayout";
+import { NextPageWithLayout } from "layouts/types";
 import SubTabsList from "components/ui/SubTabsList";
 import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { groupBy, range } from "lodash-es";
-import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
+import NotFoundPage from "pages/404";
+import { isValidPolkadotAddress } from "lib/util";
 
 type MainTabItem =
   | "Predictions"
@@ -39,7 +42,7 @@ const mainTabItems: MainTabItem[] = [
 type MarketsTabItem = "Created Markets" | "Liquidity";
 const marketsTabItems: MarketsTabItem[] = ["Created Markets", "Liquidity"];
 
-const Portfolio: NextPage = () => {
+const Portfolio: NextPageWithLayout = () => {
   const router = useRouter();
   const address = Array.isArray(router.query.address)
     ? router.query.address[0]
@@ -64,6 +67,14 @@ const Portfolio: NextPage = () => {
     () => subsidy && groupBy(subsidy, (position) => position.market.marketId),
     [subsidy],
   );
+
+  if (!address) {
+    return null;
+  }
+
+  if (isValidPolkadotAddress(address) === false) {
+    return <NotFoundPage />;
+  }
 
   return (
     <>
@@ -232,5 +243,7 @@ const Portfolio: NextPage = () => {
     </>
   );
 };
+
+Portfolio.Layout = PortfolioLayout;
 
 export default Portfolio;

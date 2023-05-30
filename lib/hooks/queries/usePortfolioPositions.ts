@@ -314,7 +314,7 @@ export const usePortfolioPositions = (
 
       if (IOPoolShareAssetId.is(assetId)) {
         pool = pools.data.find((pool) => pool.poolId === assetId.PoolShare);
-        marketId = pool.marketId;
+        marketId = pool?.marketId;
         market = markets.data?.find((m) => m.marketId === marketId);
       }
 

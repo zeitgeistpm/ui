@@ -1,5 +1,7 @@
 import { FC, PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
+import Image from "next/image";
+import dynamic from "next/dynamic";
 
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import TopBar from "components/menu";
@@ -12,9 +14,16 @@ import { useRouter } from "next/router";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
-import Image from "next/image";
+import { Account } from "components/account/Account";
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
+
+const Onboarding = dynamic(
+  () => import("../components/onboarding/Onboarding"),
+  {
+    ssr: false,
+  },
+);
 
 const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
@@ -89,6 +98,8 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
         </div>
         <NotificationCenter />
       </TradeItemContext.Provider>
+      <Account />
+      <Onboarding />
       <GrillChat open={showChat} setOpen={setShowChat} />
     </div>
   );
