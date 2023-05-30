@@ -26,6 +26,7 @@ import { LiquidityInput } from "./inputs/Liquidity";
 import ModerationModeSelect from "./inputs/Moderation";
 import { AnswersInput } from "./inputs/answers";
 import { AiOutlineInfoCircle } from "react-icons/ai";
+import OracleInput from "./inputs/Oracle";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -172,7 +173,6 @@ export const MarketCreationForm = () => {
                 autoComplete="off"
                 className={`h-12 w-full md:w-2/3 text-center rounded-md mb-4 px-4 py-7
                   ${
-                    fieldsState.question.isTouched &&
                     !fieldsState.question.isValid
                       ? "bg-gray-100"
                       : "bg-nyanza-base "
@@ -398,9 +398,7 @@ export const MarketCreationForm = () => {
           isCurrent={currentStep.label == "Oracle"}
           onClickNext={next}
           onClickBack={back}
-          nextDisabled={
-            !fieldsState.oracle.isValid || !fieldsState.oracle.isValid
-          }
+          nextDisabled={!fieldsState.oracle.isValid}
           resetForm={isTouched && reset}
         >
           <div className="mb-4 md:mb-8 text-center">
@@ -414,16 +412,12 @@ export const MarketCreationForm = () => {
               will lose some of your deposit.
             </p>
             <div>
-              <input
-                className={`h-12 w-full md:w-2/3 text-center rounded-md mb-4 px-4 py-7
-                  ${
-                    fieldsState.oracle.isTouched && !fieldsState.oracle.isValid
-                      ? "bg-gray-100"
-                      : "!bg-nyanza-base "
-                  }`}
-                placeholder="0x78e0e162...D3FFd434F7"
-                {...input("oracle", { type: "text" })}
-              />
+              <div className="center">
+                <OracleInput
+                  className="md:w-2/3"
+                  {...input("oracle", { mode: "all" })}
+                />
+              </div>
               <div className="flex center h-5 text-xs text-red-400">
                 <ErrorMessage field={fieldsState.oracle} />
               </div>

@@ -87,6 +87,7 @@ export type UseCreateMarketState = {
     value: Partial<MarketCreationFormData>[K];
     onChange: (event: FormEvent<MarketCreationFormData[K]>) => void;
     onBlur: (event: FormEvent<MarketCreationFormData[K]>) => void;
+    fieldState: FieldsState[K];
   };
 };
 
@@ -117,6 +118,7 @@ export const defaultState: MarketCreationState = {
       type: "categorical",
       answers: ["", ""],
     },
+    oracle: "",
     gracePeriod: gracePeriodOptions[0],
     reportingPeriod: reportingPeriodOptions[1],
     disputePeriod: reportingPeriodOptions[1],
@@ -263,6 +265,7 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     return {
       name: key,
       value: state.form?.[key],
+      fieldState: fieldsState[key],
       onChange: (event: FormEvent<MarketCreationFormData[K]>) => {
         if (mode === "onBlur") return;
         let newState = {
