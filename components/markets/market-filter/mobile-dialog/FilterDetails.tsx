@@ -35,7 +35,7 @@ const FilterToggle = ({ option }: { option: MarketFilter }) => {
           toggle();
         }}
       >
-        {option.value}{" "}
+        {option.label}{" "}
         {isActive ? <X className="text-gray-600 inline" size={14} /> : ""}
       </a>
     </div>
