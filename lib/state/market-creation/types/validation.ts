@@ -232,6 +232,12 @@ export const IOLiquidity = z
   .object({
     deploy: z.boolean(),
     rows: z.array(IOLiquidityRow),
+    swapFee: z
+      .number()
+      .min(0, {
+        message: "Swap fee must be a postive number.",
+      })
+      .max(100, { message: "Swap fee cannot exceed 100%." }),
   })
   .refine((liquidity) => !liquidity.deploy || liquidity.rows.length >= 3, {
     message: "Answers section must have a minimum of two valid answers.",

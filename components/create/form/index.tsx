@@ -485,7 +485,7 @@ export const MarketCreationForm = () => {
             <h2 className="text-base mb-0">Market Liquidity</h2>
           </div>
 
-          <div>
+          <div className="mb-6">
             <LiquidityInput
               {...input("liquidity", { mode: "all" })}
               currency={form.currency}

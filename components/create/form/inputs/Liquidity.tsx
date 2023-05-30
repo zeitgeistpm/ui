@@ -4,9 +4,11 @@ import PoolSettings, {
 import Toggle from "components/ui/Toggle";
 import Decimal from "decimal.js";
 import { CurrencyTag, Liquidity } from "lib/state/market-creation/types/form";
-import { ReactNode } from "react";
+import { ChangeEventHandler, ReactNode } from "react";
 import { AiOutlineWarning } from "react-icons/ai";
 import { FormEvent } from "../types";
+import { FieldState } from "lib/state/market-creation/types/fieldstate";
+import { clamp } from "lodash-es";
 
 export type LiquidityInputProps = {
   name: string;
@@ -15,6 +17,7 @@ export type LiquidityInputProps = {
   onBlur: (event: FormEvent<Liquidity>) => void;
   errorMessage?: string | ReactNode;
   currency: CurrencyTag;
+  fieldState: FieldState;
 };
 
 export const LiquidityInput = ({
@@ -24,6 +27,7 @@ export const LiquidityInput = ({
   onBlur,
   errorMessage,
   currency,
+  fieldState,
 }: LiquidityInputProps) => {
   const handleRowsChange = (data: PoolAssetRowData[]) => {
     onChange({
@@ -51,6 +55,19 @@ export const LiquidityInput = ({
     });
   };
 
+  const handleSwapFeeChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    onChange({
+      type: "change",
+      target: {
+        name,
+        value: {
+          ...value,
+          swapFee: clamp(parseFloat(event.target.value), 0, 100),
+        },
+      },
+    });
+  };
+
   return (
     <div className="center">
       <div className="md:max-w-4xl">
@@ -67,27 +84,46 @@ export const LiquidityInput = ({
           </div>
         </div>
 
-        <div>
-          {!value?.deploy ? (
-            <div>
-              <div className="mb-4 center text-gray-500">
-                <AiOutlineWarning size={32} />
-              </div>
-              <p className="center text-center md:max-w-lg text-gray-400">
-                No liquidity pool will be deployed for the market. You can
-                deploy a pool after you create the market from the market page.
-              </p>
+        {!value?.deploy ? (
+          <div>
+            <div className="mb-4 center text-gray-500">
+              <AiOutlineWarning size={32} />
             </div>
-          ) : errorMessage ? (
-            <div>{errorMessage}</div>
-          ) : (
-            <PoolSettings
-              data={transformRows(value?.rows ?? [])}
-              onChange={handleRowsChange}
-              noDataMessage={errorMessage}
-            />
-          )}
-        </div>
+            <p className="center text-center md:max-w-lg text-gray-400">
+              No liquidity pool will be deployed for the market. You can deploy
+              a pool after you create the market from the market page.
+            </p>
+          </div>
+        ) : errorMessage ? (
+          <div>{errorMessage}</div>
+        ) : (
+          <>
+            <div className="mb-4">
+              <PoolSettings
+                data={transformRows(value?.rows ?? [])}
+                onChange={handleRowsChange}
+                noDataMessage={errorMessage}
+              />
+            </div>
+            <div className="relative flex justify-end pr-8">
+              <div className="flex items-center gap-2">
+                <div className="relative inline-block">
+                  <input
+                    type="number"
+                    max={100}
+                    min={0}
+                    className="rounded-md bg-gray-100 py-3 pl-4 pr-34 text-right w-64 outline-none"
+                    value={value.swapFee}
+                    onChange={handleSwapFeeChange}
+                  />
+                  <div className="absolute bottom-[50%] center text-gray-600 right-0 rounded-r-md border-2 border-gray-100 border-l-0 px-4 bg-white h-full translate-y-[50%] translate-x-[0%] pointer-events-none">
+                    % swap fee
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

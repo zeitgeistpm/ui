@@ -1,3 +1,4 @@
+import { ZodIssue } from "zod";
 import { MarketCreationFormData } from "./form";
 
 /**
@@ -15,7 +16,7 @@ export type FieldState = {
   /**
    * Validation errors for the input.
    */
-  errors?: string[];
+  errors?: ZodIssue[];
 };
 
 /**

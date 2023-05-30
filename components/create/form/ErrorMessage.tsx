@@ -18,7 +18,7 @@ export const ErrorMessage = ({ field }: { field: FieldState }) => {
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
-      <span>{field?.errors?.[0]}</span>
+      <span>{field?.errors?.[0]?.message}</span>
     </Transition>
   );
 };

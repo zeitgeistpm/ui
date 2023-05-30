@@ -1,6 +1,13 @@
 import { SupportedTag, defaultTags } from "lib/constants/markets";
 import Image from "next/image";
-import { ChangeEventHandler, forwardRef } from "react";
+import {
+  ChangeEventHandler,
+  forwardRef,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { FormEvent } from "../types";
 import { FieldState } from "lib/state/market-creation/types/fieldstate";
 import { useWallet } from "lib/state/wallet";
@@ -86,13 +93,21 @@ export const OracleInput = forwardRef(
             ${!isSelectedAccount && " border-orange-300"}
           `}
             >
-              {!isSelectedAccount ? (
-                <div className="py-2 px-3 text-orange-300">
-                  Use connected wallet
+              <div
+                className={`relative flex-1 h-full py-2 px-3 transition-all duration-300 ease-[cubic-bezier(.57,.42,.25,1.57)] ${
+                  isSelectedAccount ? "w-[120px]" : "w-[200px]"
+                }`}
+              >
+                <div
+                  className={`absolute left-0 top-[50%] translate-y-[-50%] ${
+                    !isSelectedAccount
+                      ? "min-w-[200px]  text-orange-300"
+                      : "min-w-[120px]"
+                  }`}
+                >
+                  {!isSelectedAccount ? "Use connected wallet" : "Connected"}
                 </div>
-              ) : (
-                <div className="py-2 px-3">Connected</div>
-              )}
+              </div>
 
               <div
                 className={`center gap-2 bg-gray-200 py-2 px-3 rounded-full ${

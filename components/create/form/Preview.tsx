@@ -132,6 +132,9 @@ export const MarketPreview = ({
                   {baseAssetPrice?.mul(baseAssetLiquidityRow?.value).toFixed(2)}{" "}
                   USD
                 </div>
+                <div className="flex justify-center gap-2 items-center">
+                  <Label>Swap Fee</Label> {form.liquidity?.swapFee ?? "--"}%
+                </div>
               </>
             ) : (
               <div className="mt-4">

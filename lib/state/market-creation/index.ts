@@ -125,6 +125,7 @@ export const defaultState: MarketCreationState = {
     liquidity: {
       deploy: true,
       rows: [],
+      swapFee: 0.1,
     },
   },
   touchState: {},
@@ -167,7 +168,7 @@ export const useCreateMarketState = (): UseCreateMarketState => {
             (issue) => issue.path[0] === key,
           );
           if (issue) {
-            errors = [...(fieldsState[key].errors || []), issue.message];
+            errors = [...(fieldsState[key].errors || []), issue];
             isValid = false;
           }
         }
