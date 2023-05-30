@@ -15,17 +15,41 @@ import InfoBoxes from "components/ui/InfoBoxes";
 import SubTabsList from "components/ui/SubTabsList";
 import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
-import { useCrossChainApis } from "lib/state/cross-chain";
+import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { groupBy, range } from "lodash-es";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
+
+type MainTabItem =
+  | "Predictions"
+  | "Balances"
+  | "Markets"
+  | "Badges"
+  | "History";
+
+const mainTabItems: MainTabItem[] = [
+  "Predictions",
+  ...(process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true" ? ["Balances"] : []),
+  "Markets",
+  "Badges",
+  "History",
+] as MainTabItem[];
+
+type MarketsTabItem = "Created Markets" | "Liquidity";
+const marketsTabItems: MarketsTabItem[] = ["Created Markets", "Liquidity"];
 
 const Portfolio: NextPage = () => {
   const router = useRouter();
   const address = Array.isArray(router.query.address)
     ? router.query.address[0]
     : router.query.address;
+
+  const [mainTabSelection, setMainTabSelection] =
+    useQueryParamState<MainTabItem>("mainTab");
+
+  const [marketsTabSelection, setMarketsTabSelection] =
+    useQueryParamState<MarketsTabItem>("marketsTab");
 
   const { markets, subsidy, breakdown } = usePortfolioPositions(address);
 
@@ -54,7 +78,13 @@ const Portfolio: NextPage = () => {
         />
       </div>
       <div className="mb-12">
-        <Tab.Group>
+        <Tab.Group
+          defaultIndex={0}
+          selectedIndex={
+            mainTabSelection && mainTabItems.indexOf(mainTabSelection)
+          }
+          onChange={(index) => setMainTabSelection(mainTabItems[index])}
+        >
           <div className="overflow-auto">
             <Tab.List className="flex sm:justify-center mb-4">
               {[
@@ -139,9 +169,18 @@ const Portfolio: NextPage = () => {
               </Tab.Panel>
             )}
             <Tab.Panel>
-              <Tab.Group>
+              <Tab.Group
+                defaultIndex={0}
+                selectedIndex={
+                  marketsTabSelection &&
+                  marketsTabItems.indexOf(marketsTabSelection)
+                }
+                onChange={(index) =>
+                  setMarketsTabSelection(marketsTabItems[index])
+                }
+              >
                 <div className="overflow-auto">
-                  <SubTabsList titles={["Created Markets", "Liquidity"]} />
+                  <SubTabsList titles={marketsTabItems} />
                 </div>
                 <Tab.Panels>
                   <Tab.Panel>
