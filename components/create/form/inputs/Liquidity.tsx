@@ -3,13 +3,13 @@ import PoolSettings, {
 } from "components/liquidity/PoolSettings";
 import Toggle from "components/ui/Toggle";
 import Decimal from "decimal.js";
-import { CurrencyTag, Liquidity } from "lib/state/market-creation/types/form";
-import { ChangeEventHandler, ReactNode, useMemo } from "react";
-import { AiOutlineWarning } from "react-icons/ai";
-import { FormEvent } from "../types";
-import { FieldState } from "lib/state/market-creation/types/fieldstate";
-import { clamp } from "lodash-es";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
+import { FieldState } from "lib/state/market-creation/types/fieldstate";
+import { CurrencyTag, Liquidity } from "lib/state/market-creation/types/form";
+import { clamp } from "lodash-es";
+import { ChangeEventHandler, ReactNode } from "react";
+import { LuFileWarning } from "react-icons/lu";
+import { FormEvent } from "../types";
 
 export type LiquidityInputProps = {
   name: string;
@@ -92,7 +92,7 @@ export const LiquidityInput = ({
         {!value?.deploy ? (
           <div>
             <div className="mb-4 center text-gray-500">
-              <AiOutlineWarning size={32} />
+              <LuFileWarning size={32} />
             </div>
             <p className="center text-center md:max-w-lg text-gray-400">
               No liquidity pool will be deployed for the market. You can deploy

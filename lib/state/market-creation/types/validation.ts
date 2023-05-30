@@ -19,6 +19,7 @@ import { MarketCreationFormData, timelineAsBlocks } from "./form";
 import moment from "moment";
 import { BLOCK_TIME_SECONDS } from "lib/constants";
 import { chain } from "lodash-es";
+import { minBaseLiquidity } from "../constants/currency";
 
 export type MarketValidationDependencies = {
   form: Partial<MarketCreationFormData>;
@@ -50,47 +51,66 @@ export const createMarketFormValidator = ({
     chainTime,
   ).unwrap();
 
-  return z.object({
-    currency: IOCurrency,
-    question: IOQuestion,
-    tags: IOTags,
-    answers: IOAnswers,
-    endDate: IOEndDate,
-    gracePeriod: IOPeriodOption.refine(() => !(timeline?.grace.period < 0), {
-      message: "Grace period must be after market end date",
-    }).refine(
-      () => !(timeline?.grace.period > deadlineConstants?.maxGracePeriod),
-      {
-        message: `Grace period must be less than ${deadlineConstants?.maxGracePeriod} blocks.`,
-      },
-    ),
-    reportingPeriod: IOPeriodOption.refine(
-      () => timeline?.report.period < deadlineConstants?.maxOracleDuration,
-      {
-        message: `Reporting period must be less than ${deadlineConstants?.maxOracleDuration} blocks.`,
-      },
-    ).refine(
-      () => !(timeline?.report.period < deadlineConstants?.minOracleDuration),
-      {
-        message: `Reporting period must be greater than ${deadlineConstants?.minOracleDuration} blocks.`,
-      },
-    ),
-    disputePeriod: IOPeriodOption.refine(
-      () => !(timeline?.dispute.period > deadlineConstants?.maxDisputeDuration),
-      {
-        message: `Dispute period must be less than ${deadlineConstants?.maxDisputeDuration} blocks.`,
-      },
-    ).refine(
-      () => !(timeline?.dispute.period < deadlineConstants?.minDisputeDuration),
-      {
-        message: `Dispute period must be greater than ${deadlineConstants?.minDisputeDuration} blocks.`,
-      },
-    ),
-    oracle: IOOracle,
-    description: IODescription,
-    moderation: IOModerationMode,
-    liquidity: IOLiquidity,
-  });
+  return z
+    .object({
+      currency: IOCurrency,
+      question: IOQuestion,
+      tags: IOTags,
+      answers: IOAnswers,
+      endDate: IOEndDate,
+      gracePeriod: IOPeriodOption.refine(() => !(timeline?.grace.period < 0), {
+        message: "Grace period must be after market end date",
+      }).refine(
+        () => !(timeline?.grace.period > deadlineConstants?.maxGracePeriod),
+        {
+          message: `Grace period must be less than ${deadlineConstants?.maxGracePeriod} blocks.`,
+        },
+      ),
+      reportingPeriod: IOPeriodOption.refine(
+        () => timeline?.report.period < deadlineConstants?.maxOracleDuration,
+        {
+          message: `Reporting period must be less than ${deadlineConstants?.maxOracleDuration} blocks.`,
+        },
+      ).refine(
+        () => !(timeline?.report.period < deadlineConstants?.minOracleDuration),
+        {
+          message: `Reporting period must be greater than ${deadlineConstants?.minOracleDuration} blocks.`,
+        },
+      ),
+      disputePeriod: IOPeriodOption.refine(
+        () =>
+          !(timeline?.dispute.period > deadlineConstants?.maxDisputeDuration),
+        {
+          message: `Dispute period must be less than ${deadlineConstants?.maxDisputeDuration} blocks.`,
+        },
+      ).refine(
+        () =>
+          !(timeline?.dispute.period < deadlineConstants?.minDisputeDuration),
+        {
+          message: `Dispute period must be greater than ${deadlineConstants?.minDisputeDuration} blocks.`,
+        },
+      ),
+      oracle: IOOracle,
+      description: IODescription,
+      moderation: IOModerationMode,
+      liquidity: IOLiquidity,
+    })
+    .superRefine((form, ctx) => {
+      const baseLiquidityRow =
+        form.liquidity?.rows?.[form.liquidity?.rows.length - 1];
+      if (form?.liquidity?.deploy) {
+        const min = minBaseLiquidity[form.currency];
+        const amount = parseFloat(baseLiquidityRow.amount) * 2;
+        console.log(amount);
+        if (!amount || amount < min) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["liquidity", "base"],
+            message: `Minimum base liquidity is ${min} ${form.currency}`,
+          });
+        }
+      }
+    });
 };
 
 /**

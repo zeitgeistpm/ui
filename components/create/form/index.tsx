@@ -13,7 +13,9 @@ import {
 } from "lib/state/market-creation/constants/deadline-options";
 import dynamic from "next/dynamic";
 import { FormEventHandler, useState } from "react";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 import { BsEraser } from "react-icons/bs";
+import { LuFileWarning } from "react-icons/lu";
 import { ErrorMessage } from "./ErrorMessage";
 import InfoPopover from "./InfoPopover";
 import { MarketFormSection } from "./MarketFormSection";
@@ -25,7 +27,7 @@ import DateTimePicker from "./inputs/DateTime";
 import { LiquidityInput } from "./inputs/Liquidity";
 import ModerationModeSelect from "./inputs/Moderation";
 import { AnswersInput } from "./inputs/answers";
-import { AiOutlineInfoCircle } from "react-icons/ai";
+
 import OracleInput from "./inputs/Oracle";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
@@ -76,6 +78,9 @@ export const MarketCreationForm = () => {
     event.preventDefault();
     console.log("submit");
   };
+
+  const showLiquidityWarning =
+    fieldsState.liquidity.isTouched && form.liquidity?.deploy && isWizard;
 
   return (
     <Transition
@@ -154,6 +159,15 @@ export const MarketCreationForm = () => {
             </h2>
           </div>
           <CurrencySelect options={["ZTG", "DOT"]} {...input("currency")} />
+          {showLiquidityWarning && (
+            <div className="center mt-4">
+              <div className="w-full md:max-w-lg text-center text-sm text-gray-400">
+                <LuFileWarning size={22} className="inline mr-2" />
+                You have already added liquidity to this market. If you change
+                the base currency liquidity settings will be reset to defaults.
+              </div>
+            </div>
+          )}
         </MarketFormSection>
 
         <MarketFormSection
@@ -256,6 +270,18 @@ export const MarketCreationForm = () => {
             {...input("answers", { mode: "onChange" })}
             fieldState={fieldsState.answers}
           />
+          {showLiquidityWarning && (
+            <div className="mt-8 mb-4">
+              <div className="center">
+                <div className="w-full md:max-w-xl text-center text-sm text-gray-400">
+                  <LuFileWarning size={22} className="inline mr-2" />
+                  You have already added liquidity to this market. If you change
+                  the number of answers the liquidity settings will be reset to
+                  defaults.
+                </div>
+              </div>
+            </div>
+          )}
           <div className="flex center h-5 text-xs text-red-400">
             <ErrorMessage field={fieldsState.answers} />
           </div>
@@ -495,6 +521,9 @@ export const MarketCreationForm = () => {
                   : ""
               }
             />
+            <div className="flex center h-5 text-xs mt-6 text-red-400">
+              <ErrorMessage field={fieldsState.liquidity} />
+            </div>
           </div>
         </MarketFormSection>
 

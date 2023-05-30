@@ -2,24 +2,20 @@ import Decimal from "decimal.js";
 import { supportedCurrencies } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { useChainTime } from "lib/state/chaintime";
-import { Liquidity } from "lib/state/market-creation/types/form";
 import {
   Answers,
-  LiquidityRow,
+  Liquidity,
   MarketCreationFormData,
   blocksAsDuration,
   timelineAsBlocks,
 } from "lib/state/market-creation/types/form";
-import {
-  MarketCreationStep,
-  MarketCreationStepType,
-} from "lib/state/market-creation/types/step";
+import { MarketCreationStepType } from "lib/state/market-creation/types/step";
 import { formatDuration } from "lib/util/format-duration";
 import moment from "moment";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { useMemo } from "react";
-import { AiOutlineWarning } from "react-icons/ai";
+import { LuFileWarning } from "react-icons/lu";
 
 const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
   ssr: false,
@@ -139,14 +135,14 @@ export const MarketPreview = ({
             ) : (
               <div className="mt-4">
                 <div className="mb-2 center text-gray-500">
-                  <AiOutlineWarning size={22} />
+                  <LuFileWarning size={22} />
                 </div>
                 <p className="center text-center md:max-w-lg text-gray-400 mb-3">
                   No liquidity pool will be deployed for the market. You can
                   deploy a pool after you create the market from the market
                   page.
                 </p>
-                <p className="mb-2 italic text-gray-400 text-xs">
+                <p className="mb-4 italic text-gray-400 text-xs">
                   Or you can add it now as part of the market creation process
                 </p>
                 <button
@@ -163,7 +159,7 @@ export const MarketPreview = ({
                     goToSection("Liquidity");
                   }}
                 >
-                  Add Liquidity
+                  Add Liquidity?
                 </button>
               </div>
             )}

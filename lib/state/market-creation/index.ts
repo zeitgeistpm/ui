@@ -20,6 +20,7 @@ import { useMarketCreationFormValidator } from "./types/validation";
 import Decimal from "decimal.js";
 import moment from "moment";
 import { usePrevious } from "lib/hooks/usePrevious";
+import { minBaseLiquidity } from "./constants/currency";
 
 export type UseCreateMarketState = {
   /**
@@ -296,6 +297,7 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     };
   };
 
+  const prevCurrency = usePrevious(state.form.currency);
   const prevAnswersLength = usePrevious(state.form.answers?.answers?.length);
 
   /**
@@ -305,7 +307,10 @@ export const useCreateMarketState = (): UseCreateMarketState => {
    * If the number of answers changes it will reset the liquidity amounts and prices.
    */
   useEffect(() => {
-    const baseAmmount = "100";
+    const baseAmmount = minBaseLiquidity[state.form.currency]
+      ? `${minBaseLiquidity[state.form.currency] / 2}`
+      : "100";
+
     const baseWeight = 64;
 
     const numOutcomes = state.form.answers.answers.length;
@@ -319,7 +324,8 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     const scalarNumberType =
       state.form.answers.type === "scalar" && state.form.answers.numberType;
 
-    const resetPrices = prevAnswersLength !== numOutcomes;
+    const resetPrices =
+      prevAnswersLength !== numOutcomes || prevCurrency !== state.form.currency;
 
     const rows = [
       ...state.form.answers.answers.map((answer, index) => {

@@ -117,7 +117,7 @@ export const CategoricalAnswersInput = ({
 
   return (
     <div>
-      <div className="mb-6 md:flex justify-center items-center">
+      <div className="mb-2 md:flex justify-center items-center">
         <div className="flex-1 md:flex justify-center">
           <DndContext
             sensors={dragSensors}
