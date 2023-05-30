@@ -1,6 +1,8 @@
 import Skeleton from "components/ui/Skeleton";
-import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
-import { filterTypes } from "lib/constants/market-filter";
+import {
+  filterTypes,
+  marketCurrencyFilterOptions,
+} from "lib/constants/market-filter";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import {
   MarketFilter,
@@ -16,21 +18,6 @@ import MarketFiltersContainer, { SelectedMenu } from "./MarketFiltersContainer";
 import MarketFiltersDropdowns from "./MarketFiltersDropdowns";
 import MarketFiltersSort from "./MarketFiltersSort";
 import MobileDialog from "./mobile-dialog";
-
-const foreignAssetMap = Object.keys(FOREIGN_ASSET_METADATA).reduce(
-  (data, id) => {
-    return {
-      [`{"foreignAsset":${id}}`]: FOREIGN_ASSET_METADATA[id].tokenSymbol,
-      ...data,
-    };
-  },
-  {},
-);
-
-const filterValueLabelMap = {
-  Ztg: "ZTG",
-  ...foreignAssetMap,
-};
 
 const getFiltersFromQueryState = (
   queryState: MarketsListQuery,
@@ -50,7 +37,10 @@ const getFiltersFromQueryState = (
         ...queryStateFilters.map((qsf) => ({
           type: filterType,
           value: qsf,
-          label: filterValueLabelMap[qsf] ?? qsf,
+          label:
+            filterType === "currency"
+              ? marketCurrencyFilterOptions.find((v) => v.value === qsf).label
+              : qsf,
         })),
       ],
     ];
