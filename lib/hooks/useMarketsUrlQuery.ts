@@ -3,24 +3,14 @@ import type { ParsedUrlQuery } from "querystring";
 import { useCallback } from "react";
 import { isUndefined, isEmpty } from "lodash";
 import { DeepPartial } from "lib/types/DeepPartial";
-import { parse as parseUri } from "uri-js";
 import { MarketsListQuery, MarketsOrderBy } from "lib/types/market-filter";
 import { defaultMarketsQueryState } from "lib/constants/market-filter";
 import { filterTypes } from "lib/constants/market-filter";
+import { getQueryParams } from "lib/util/get-query-params";
 
 export type MarketListQueryUpdater = (
   update: DeepPartial<MarketsListQuery>,
 ) => void;
-
-const getQueryParams = (path: string) => {
-  const url = parseUri(path);
-  let queryParams = {};
-  const queryParamsArr = [...Array.from(new URLSearchParams(url.query))];
-  for (const pair of queryParamsArr) {
-    queryParams[pair[0]] = pair[1];
-  }
-  return queryParams;
-};
 
 const parseQuery = (queryParams: {}) => {
   try {

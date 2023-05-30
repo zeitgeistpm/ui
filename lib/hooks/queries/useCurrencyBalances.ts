@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { ChainName, CHAINS } from "lib/constants/chains";
-import { FORIEGN_ASSET_METADATA } from "lib/constants/foreign-asset";
+import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { useCrossChainApis } from "lib/state/cross-chain";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";
@@ -26,7 +26,7 @@ export const useCurrencyBalances = (address: string) => {
     [id, currencyBalanceRootKey, address, Object.values(apis ?? {}).length],
     async () => {
       if (isRpcSdk(sdk)) {
-        const assetIds = Object.keys(FORIEGN_ASSET_METADATA);
+        const assetIds = Object.keys(FOREIGN_ASSET_METADATA);
 
         const metadata = await sdk.api.query.assetRegistry.metadata.multi(
           assetIds.map((assetId) => ({ ForeignAsset: assetId })),
@@ -41,7 +41,7 @@ export const useCurrencyBalances = (address: string) => {
             symbol: metadata[index].unwrap().symbol.toPrimitive() as string,
             balance: new Decimal(account.free.toString()),
             chain: "Zeitgeist",
-            sourceChain: FORIEGN_ASSET_METADATA[assetIds[index]]
+            sourceChain: FOREIGN_ASSET_METADATA[assetIds[index]]
               .originChain as ChainName,
             foreignAssetId: Number(assetIds[index]),
           }),
