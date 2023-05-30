@@ -324,10 +324,11 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     const rows = [
       ...state.form.answers.answers.map((answer, index) => {
         const liquidity = state.form.liquidity?.rows[index];
+
         const amount = new Decimal(
           resetPrices
             ? baseAmmount
-            : state.form.liquidity?.rows[index]?.amount ?? baseAmmount,
+            : state.form.liquidity?.rows[index]?.amount || baseAmmount,
         );
 
         const price = resetPrices

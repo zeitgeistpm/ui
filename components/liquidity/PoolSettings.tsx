@@ -11,6 +11,8 @@ import {
   PriceLock,
 } from "lib/util/weight-math";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import Image from "next/image";
+import { supportedCurrencies } from "lib/constants/supported-currencies";
 
 export interface PoolAssetRowData {
   asset: string;
@@ -114,7 +116,8 @@ const PoolSettings: FC<{
   onChange: (data: PoolAssetRowData[]) => void;
   onFeeChange?: (data: Decimal) => void;
   noDataMessage?: string | ReactNode;
-}> = ({ data, onChange, onFeeChange, noDataMessage }) => {
+  baseAssetPrice?: Decimal;
+}> = ({ data, onChange, onFeeChange, noDataMessage, baseAssetPrice }) => {
   const changeOutcomeRow = (amount: string) => {
     onChange(
       data.map((row) => {
@@ -182,15 +185,9 @@ const PoolSettings: FC<{
       ),
       total: {
         value: Number(d.value),
-        usdValue: null,
+        usdValue: baseAssetPrice?.toNumber(),
       },
-      amount: {
-        value: d.amount,
-        min: ZTG_MIN_LIQUIDITY.toString(),
-        onChange: (amount: string) => {
-          changeOutcomeRow(amount);
-        },
-      },
+      amount: d.amount,
     };
   });
 
@@ -206,7 +203,7 @@ const PoolSettings: FC<{
       type: "number",
       width: "10%",
     },
-    { header: "Amount", accessor: "amount", type: "amountInput", width: "25%" },
+    { header: "Amount", accessor: "amount", type: "number", width: "25%" },
     {
       header: "Price",
       accessor: "price",
@@ -223,9 +220,48 @@ const PoolSettings: FC<{
     onFeeChange(fee.div(100).mul(ZTG));
   };
 
+  const baseAssetRow = data[data.length - 1];
+
   return (
     <div className="md:min-w-[720px]">
+      <div className="mb-8 flex justify-center">
+        <div className=" gap-2">
+          <h2 className="text-center text-base mb-2">Base Liqudity</h2>
+          <div className="relative inline-block">
+            <input
+              type="number"
+              className="rounded-md bg-gray-100 py-3 pl-4 pr-28 text-right w-64 outline-none"
+              value={`${parseFloat(baseAssetRow.amount) * 2}`}
+              onChange={(event) => {
+                const value = parseFloat(event.target.value) / 2;
+                if (!isNaN(value)) {
+                  changeOutcomeRow(`${value}`);
+                } else {
+                  changeOutcomeRow("");
+                }
+              }}
+            />
+            <div className="absolute bottom-[50%] center gap-2 text-gray-600 right-0 rounded-r-md border-2 border-gray-100 border-l-0 px-5 bg-white h-full translate-y-[50%] translate-x-[0%] pointer-events-none">
+              {baseAssetRow.asset}
+              <div className="relative h-4 w-4">
+                <Image
+                  alt="Currency token logo"
+                  fill
+                  sizes="100vw"
+                  src={
+                    supportedCurrencies.find(
+                      (currency) => currency.name === baseAssetRow.asset,
+                    )?.image
+                  }
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <Table data={tableData} columns={columns} noDataMessage={noDataMessage} />
+
       {onFeeChange && (
         <div className="mt-[20px] mb-[40px]">
           <div className="text-ztg-16-150 font-bold ">Pool Fees*</div>

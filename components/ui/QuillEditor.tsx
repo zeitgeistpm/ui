@@ -50,8 +50,6 @@ const QuillEditor = ({
     });
   };
 
-  console.log(value);
-
   return (
     <ReactQuill
       className={className}

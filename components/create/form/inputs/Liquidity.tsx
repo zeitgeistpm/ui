@@ -4,11 +4,12 @@ import PoolSettings, {
 import Toggle from "components/ui/Toggle";
 import Decimal from "decimal.js";
 import { CurrencyTag, Liquidity } from "lib/state/market-creation/types/form";
-import { ChangeEventHandler, ReactNode } from "react";
+import { ChangeEventHandler, ReactNode, useMemo } from "react";
 import { AiOutlineWarning } from "react-icons/ai";
 import { FormEvent } from "../types";
 import { FieldState } from "lib/state/market-creation/types/fieldstate";
 import { clamp } from "lodash-es";
+import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 
 export type LiquidityInputProps = {
   name: string;
@@ -68,6 +69,10 @@ export const LiquidityInput = ({
     });
   };
 
+  const { data: baseAssetPrice } = useAssetUsdPrice(
+    currency === "ZTG" ? { Ztg: null } : { ForeignAsset: 0 },
+  );
+
   return (
     <div className="center">
       <div className="md:max-w-4xl">
@@ -100,6 +105,7 @@ export const LiquidityInput = ({
           <>
             <div className="mb-4">
               <PoolSettings
+                baseAssetPrice={baseAssetPrice}
                 data={transformRows(value?.rows ?? [])}
                 onChange={handleRowsChange}
                 noDataMessage={errorMessage}
