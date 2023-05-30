@@ -8,7 +8,7 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
 import Decimal from "decimal.js";
-import { FORIEGN_ASSET_METADATA } from "lib/constants/foreign-asset";
+import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { isEmpty } from "lodash";
 
 export const assetUsdPriceRootKey = "asset-usd-price";
@@ -46,7 +46,7 @@ export const useAllForeignAssetUsdPrices = (): {
   queries: UseQueryResult[];
 } => {
   const queries = useQueries({
-    queries: Object.keys(FORIEGN_ASSET_METADATA)?.map((foreignAssetId) => {
+    queries: Object.keys(FOREIGN_ASSET_METADATA)?.map((foreignAssetId) => {
       const assetId = parseAssetId({
         ForeignAsset: Number(foreignAssetId),
       }).unwrap();
@@ -72,7 +72,7 @@ export const useAllForeignAssetUsdPrices = (): {
   });
 
   const data = queries?.reduce((prices, query, index) => {
-    const key = Object.keys(FORIEGN_ASSET_METADATA)[index];
+    const key = Object.keys(FOREIGN_ASSET_METADATA)[index];
     if (query.data && key) {
       prices[key] = query.data;
     }
@@ -88,7 +88,7 @@ export const useAllForeignAssetUsdPrices = (): {
 
 const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
   const coinGeckoId =
-    FORIEGN_ASSET_METADATA[foreignAsset.ForeignAsset].coinGeckoId;
+    FOREIGN_ASSET_METADATA[foreignAsset.ForeignAsset].coinGeckoId;
 
   const res = await fetch(
     `https://api.coingecko.com/api/v3/simple/price?ids=${coinGeckoId}&vs_currencies=usd`,
