@@ -108,7 +108,7 @@ export const ScalarAnswersInput = ({
             <input
               type="number"
               inputMode="numeric"
-              className={`w-full flex-1 bg-gray-100 rounded-md py-3 px-5`}
+              className={`w-full flex-1 bg-gray-100 rounded-md py-3 px-5 outline-none`}
               value={value?.answers[0]}
               onChange={handleNumberChange(0, onChange)}
               onBlur={handleNumberChange(0, onBlur)}
@@ -130,7 +130,7 @@ export const ScalarAnswersInput = ({
             <input
               type="number"
               inputMode="numeric"
-              className={` w-full flex-1 bg-gray-100 rounded-md py-3 px-5`}
+              className={` w-full flex-1 bg-gray-100 rounded-md py-3 px-5 outline-none`}
               value={value?.answers[1]}
               onChange={handleNumberChange(1, onChange)}
               onBlur={handleNumberChange(1, onBlur)}

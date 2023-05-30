@@ -152,7 +152,7 @@ export const MarketPreview = ({
                 </p>
                 <button
                   type="button"
-                  className={`rounded-md py-1 px-3 ${
+                  className={`rounded-md py-1 px-3 transition-all active:scale-95 ${
                     form.currency === "ZTG" ? "bg-ztg-blue" : "bg-polkadot"
                   }  text-white`}
                   onClick={() => {

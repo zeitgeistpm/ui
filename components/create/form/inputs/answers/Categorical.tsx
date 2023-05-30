@@ -155,7 +155,7 @@ export const CategoricalAnswersInput = ({
         <div className="flex center mb-4">
           <button
             type="button"
-            className="border-gray-300 text-sm border-2 rounded-full py-4 px-8 transition-all false"
+            className="border-gray-300 text-sm border-2 rounded-full py-4 px-8 transition-all active:scale-95"
             onClick={handleAddOptionClick}
           >
             Add Option

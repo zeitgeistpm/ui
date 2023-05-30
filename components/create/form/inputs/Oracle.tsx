@@ -14,6 +14,7 @@ import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
 import Avatar from "components/ui/Avatar";
 import { usePrevious } from "lib/hooks/usePrevious";
+import { useAccountModals } from "lib/state/account";
 
 export type OracleInputProps = {
   name: string;
@@ -34,6 +35,7 @@ export const OracleInput = forwardRef(
     onBlur,
   }: OracleInputProps) => {
     const wallet = useWallet();
+    const accountModals = useAccountModals();
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
       onChange?.({
@@ -82,7 +84,7 @@ export const OracleInput = forwardRef(
           onChange={handleChange}
           onBlur={handleBlur}
         />
-        {wallet?.activeAccount?.address && (
+        {wallet?.activeAccount?.address ? (
           <div className="center">
             <button
               type="button"
@@ -118,6 +120,23 @@ export const OracleInput = forwardRef(
                 <span className="font-semibold center gap-4">
                   {shortenAddress(wallet.activeAccount?.address, 6, 6)}
                 </span>
+              </div>
+            </button>
+          </div>
+        ) : (
+          <div className="center">
+            <button
+              type="button"
+              onClick={() => accountModals.openWalletSelect()}
+              className="flex border-gray-300 text-sm bg-gray-100 rounded-full transition-all active:scale-95"
+            >
+              <div className="py-2 px-4 text-gray-600">
+                Connect to use wallet account
+              </div>
+              <div
+                className={`bg-orange-400 text-white py-2 px-4 rounded-full`}
+              >
+                Connect
               </div>
             </button>
           </div>

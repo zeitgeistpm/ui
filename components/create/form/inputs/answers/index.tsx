@@ -43,7 +43,7 @@ export const AnswersInput = ({
       <div className="flex justify-center items-center mb-8 gap-2">
         <button
           type="button"
-          className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8  ${
+          className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8 transition-all active:scale-95  ${
             value?.type === "yes/no" ? "bg-nyanza-base" : "bg-gray-100"
           }`}
           onClick={handleSelectType("yes/no")}
@@ -53,7 +53,7 @@ export const AnswersInput = ({
 
         <button
           type="button"
-          className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8 ${
+          className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8 transition-all active:scale-95 ${
             value?.type === "categorical"
               ? `${
                   fieldState.isTouched && fieldState.isValid
@@ -69,7 +69,7 @@ export const AnswersInput = ({
 
         <button
           type="button"
-          className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8 ${
+          className={`text-sm rounded-full py-3 px-6 md:py-4 md:px-8 transition-all active:scale-95 ${
             value?.type === "scalar"
               ? `${
                   fieldState.isTouched && fieldState.isValid

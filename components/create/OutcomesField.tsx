@@ -482,7 +482,7 @@ const OutcomeTypeSelection: FC<{
             ? "border-gray-600 dark:border-white"
             : "border-sky-200 dark:border-sky-800"
         } py-2 px-4 mr-3 rounded-3xl ztg-transition
-        bg-sky-200 dark:bg-sky-800 text-sky-600`}
+        bg-sky-200 dark:bg-sky-800 text-sky-600 transition-all active:scale-95`}
         onClick={() => onChange("yesno")}
       >
         Yes/No
@@ -493,7 +493,7 @@ const OutcomeTypeSelection: FC<{
             ? "border-gray-600 dark:border-white"
             : "border-sky-200 dark:border-sky-800"
         } py-2 px-4 mr-3 rounded-3xl ztg-transition
-        bg-sky-200 dark:bg-sky-800 text-sky-600`}
+        bg-sky-200 dark:bg-sky-800 text-sky-600 transition-all active:scale-95`}
         onClick={() => onChange("multiple")}
       >
         Options
@@ -504,7 +504,7 @@ const OutcomeTypeSelection: FC<{
             ? "border-gray-600 dark:border-white"
             : "border-sky-200 dark:border-sky-800"
         } py-2 px-4 mr-3 rounded-3xl ztg-transition
-        bg-sky-200 dark:bg-sky-800 text-sky-600`}
+        bg-sky-200 dark:bg-sky-800 text-sky-600 transition-all active:scale-95`}
         onClick={() => onChange("range")}
       >
         Range

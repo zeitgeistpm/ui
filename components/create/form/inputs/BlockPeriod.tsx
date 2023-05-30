@@ -116,7 +116,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
             {option.type === "duration" && option.preset && (
               <button
                 type="button"
-                className={`flex center rounded-full bg-gray-100 py-3 px-6 ${
+                className={`flex center rounded-full bg-gray-100 py-3 px-6 transition-all active:scale-95 ${
                   value?.type === "duration" &&
                   value?.preset === option.preset &&
                   "bg-nyanza-base"

@@ -46,7 +46,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   return (
     <button
       type="button"
-      className={`flex center rounded-full  bg-gray-100  ${
+      className={`flex center rounded-full  bg-gray-100 transition-all active:scale-95  ${
         isValid && "!bg-nyanza-base"
       } ${className}`}
       onClick={() => {
