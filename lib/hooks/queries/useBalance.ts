@@ -27,7 +27,6 @@ export const useBalance = (
           return new Decimal(balance.free.toString());
         }
       }
-      return null;
     },
     {
       keepPreviousData: true,

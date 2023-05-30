@@ -26,10 +26,9 @@ export const useAccountPoolAssetBalances = (
         const assets = isIndexedData(pool)
           ? pool.weights
               .filter((weight) => weight?.assetId !== "Ztg")
-              .map((weight) =>
-                weight?.assetId
-                  ? parseAssetId(weight?.assetId).unrightOr(undefined)
-                  : undefined,
+              .map(
+                (weight) =>
+                  weight && parseAssetId(weight.assetId).unrightOr(undefined),
               )
           : pool.assets;
 

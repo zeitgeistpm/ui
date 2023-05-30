@@ -248,14 +248,14 @@ const AccountButton: FC<{
                           <BalanceRow
                             imgPath="/currencies/ztg.jpg"
                             units={constants?.tokenSymbol}
-                            balance={activeBalance ?? undefined}
+                            balance={activeBalance}
                           />
                         </div>
                         <div className="px-4">
                           <BalanceRow
                             imgPath="/currencies/dot.png"
                             units="DOT"
-                            balance={polkadotBalance ?? undefined}
+                            balance={polkadotBalance}
                           />
                         </div>
                         <div className="px-4">
