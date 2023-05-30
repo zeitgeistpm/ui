@@ -37,7 +37,7 @@ export const MarketFormSection = ({
         children
       ) : (
         <>
-          <div className="mb-6 md:mb-16">{children}</div>
+          <div className="mb-6 md:mb-4">{children}</div>
           <div className="flex center mb-6 gap-4">
             {onClickBack && (
               <button

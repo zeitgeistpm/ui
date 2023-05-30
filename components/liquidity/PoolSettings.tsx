@@ -13,6 +13,8 @@ import {
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import Image from "next/image";
 import { supportedCurrencies } from "lib/constants/supported-currencies";
+import InfoPopover from "components/create/form/InfoPopover";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 
 export interface PoolAssetRowData {
   asset: string;
@@ -226,11 +228,38 @@ const PoolSettings: FC<{
     <div className="md:min-w-[720px]">
       <div className="mb-8 flex justify-center">
         <div className=" gap-2">
-          <h2 className="text-center text-base mb-2">Base Liqudity</h2>
+          <h2 className="flex text-base justify-center items-center gap-2 mb-3">
+            Base Liquidity
+            <InfoPopover
+              title={
+                <h3 className="flex justify-center items-center mb-4 gap-2">
+                  <AiOutlineInfoCircle />
+                  Market Base Liquidity
+                </h3>
+              }
+            >
+              <p className="text-gray-500 font-light text-sm mb-4">
+                This is the amount of liquidity that will be provided to the
+                market. Half of this amount will be provided to the base asset
+                token and the other half spread across the outcome tokens
+                according to weights/prices.
+              </p>
+              <p className="text-gray-500 font-light text-sm">
+                <b className="font-bold">
+                  Note that this is the exact amount of {baseAssetRow?.asset}{" "}
+                  you will spend on liquidity.
+                  <i className="font-normal">
+                    This does not include the bond amount or the transaction
+                    fees.
+                  </i>
+                </b>
+              </p>
+            </InfoPopover>
+          </h2>
           <div className="relative inline-block">
             <input
               type="number"
-              className="rounded-md bg-gray-100 py-3 pl-4 pr-28 text-right w-64 outline-none"
+              className="rounded-md bg-gray-100 py-4 pl-5 pr-28 text-right text-base font-base w-64 outline-none"
               value={`${parseFloat(baseAssetRow.amount) * 2}`}
               onChange={(event) => {
                 const value = parseFloat(event.target.value) / 2;

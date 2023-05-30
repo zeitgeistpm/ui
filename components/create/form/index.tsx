@@ -160,7 +160,7 @@ export const MarketCreationForm = () => {
           </div>
           <CurrencySelect options={["ZTG", "DOT"]} {...input("currency")} />
           {showLiquidityWarning && (
-            <div className="center mt-4">
+            <div className="center mt-4 mb-8">
               <div className="w-full md:max-w-lg text-center text-sm text-gray-400">
                 <LuFileWarning size={22} className="inline mr-2" />
                 You have already added liquidity to this market. If you change
@@ -504,27 +504,54 @@ export const MarketCreationForm = () => {
           isCurrent={currentStep.label == "Liquidity"}
           onClickNext={next}
           onClickBack={back}
-          nextDisabled={!fieldsState.liquidity.isValid}
+          nextDisabled={
+            !fieldsState.liquidity.isValid || !fieldsState.answers.isValid
+          }
           resetForm={isTouched && reset}
         >
-          <div className="mb-2 md:mb-4 text-center">
-            <h2 className="text-base mb-0">Market Liquidity</h2>
-          </div>
+          {form.moderation === "Permissionless" ? (
+            <>
+              <div className="mb-2 md:mb-4 text-center">
+                <h2 className="text-base mb-0">Market Liquidity</h2>
+              </div>
 
-          <div className="mb-6">
-            <LiquidityInput
-              {...input("liquidity", { mode: "all" })}
-              currency={form.currency}
-              errorMessage={
-                !fieldsState.answers.isValid
-                  ? "Answers must be filled out correcty before adding liquidity"
-                  : ""
-              }
-            />
-            <div className="flex center h-5 text-xs mt-6 text-red-400">
-              <ErrorMessage field={fieldsState.liquidity} />
-            </div>
-          </div>
+              <div className="mb-6">
+                <LiquidityInput
+                  {...input("liquidity", { mode: "all" })}
+                  currency={form.currency}
+                  errorMessage={
+                    !fieldsState.answers.isValid
+                      ? "Answers must be filled out correctly before adding liquidity."
+                      : ""
+                  }
+                />
+                <div className="flex center h-5 text-xs mt-6 text-red-400">
+                  <ErrorMessage field={fieldsState.liquidity} />
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="mt-4">
+                <div className="mb-2 center text-gray-500">
+                  <LuFileWarning size={22} />
+                </div>
+                <div className="center mb-12">
+                  <div className="text-center text-lg md:max-w-xl text-gray-500">
+                    You have selected <b>advised</b> moderation. This means that
+                    the market could be rejected by the moderators. If the
+                    market is rejected, you will be refunded your bonded
+                    deposit.
+                    <br />
+                    <br />
+                    If the market is <b>approved</b>, you will be able to{" "}
+                    <b>add liquidity </b>
+                    or request it from the community.
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
         </MarketFormSection>
 
         <MarketFormSection

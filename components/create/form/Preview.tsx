@@ -111,7 +111,9 @@ export const MarketPreview = ({
             </div>
           </div>
           <div className="flex justify-center gap-4">
-            {baseAssetLiquidityRow && form?.liquidity?.deploy ? (
+            {baseAssetLiquidityRow &&
+            form?.liquidity?.deploy &&
+            form?.moderation === "Permissionless" ? (
               <>
                 <div className="flex justify-center gap-2 items-center">
                   <Label>Amount</Label>{" "}
@@ -132,15 +134,18 @@ export const MarketPreview = ({
                   <Label>Swap Fee</Label> {form.liquidity?.swapFee ?? "--"}%
                 </div>
               </>
-            ) : (
+            ) : !form?.liquidity?.deploy &&
+              form?.moderation === "Permissionless" ? (
               <div className="mt-4">
                 <div className="mb-2 center text-gray-500">
                   <LuFileWarning size={22} />
                 </div>
-                <p className="center text-center md:max-w-lg text-gray-400 mb-3">
-                  No liquidity pool will be deployed for the market. You can
-                  deploy a pool after you create the market from the market
-                  page.
+                <p className="text-center md:max-w-lg text-gray-400 mb-3">
+                  No liquidity pool will be deployed for the market.
+                  <b className="inline">
+                    You can deploy a pool after you create the market
+                  </b>{" "}
+                  from the market page.
                 </p>
                 <p className="mb-4 italic text-gray-400 text-xs">
                   Or you can add it now as part of the market creation process
@@ -162,6 +167,8 @@ export const MarketPreview = ({
                   Add Liquidity?
                 </button>
               </div>
+            ) : (
+              ""
             )}
           </div>
         </div>

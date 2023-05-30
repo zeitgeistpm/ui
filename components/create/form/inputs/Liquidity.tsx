@@ -94,9 +94,12 @@ export const LiquidityInput = ({
             <div className="mb-4 center text-gray-500">
               <LuFileWarning size={32} />
             </div>
-            <p className="center text-center md:max-w-lg text-gray-400">
-              No liquidity pool will be deployed for the market. You can deploy
-              a pool after you create the market from the market page.
+            <p className="text-center md:max-w-lg text-gray-400">
+              No liquidity pool will be deployed for the market.
+              <b className="inline">
+                You can deploy a pool after you create the market
+              </b>{" "}
+              from the market page.
             </p>
           </div>
         ) : errorMessage ? (
