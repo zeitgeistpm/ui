@@ -11,6 +11,7 @@ import {
   IOMarketOutcomeAssetId,
   IOPoolShareAssetId,
   IOZtgAssetId,
+  ZTG,
   PoolShareAssetId,
   ScalarAssetId,
   IOForeignAssetId,
@@ -36,10 +37,13 @@ import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { useMemo } from "react";
 import { MarketBond, useAccountBonds } from "./useAccountBonds";
 import { useChainTime } from "lib/state/chaintime";
+import { useTradeHistory } from "./useTradeHistory";
 import {
   ForeignAssetPrices,
   useAllForeignAssetUsdPrices,
 } from "./useAssetUsdPrice";
+import { useMarketSpotPrices } from "./useMarketSpotPrices";
+import { transaction } from "mobx";
 
 export type UsePortfolioPositions = {
   /**
@@ -87,6 +91,18 @@ export type Position<T extends AssetId = AssetId> = {
   price: Decimal;
   /**
    * The price of the position 24 hours ago.
+   */
+  avgCost: number;
+  /**
+   * The average cost of acquiring the position of the asset.
+   */
+  upnl: number;
+  /**
+   * The total cost of acquisition from the total unrealized amount from selling based off current price.
+   */
+  rpnl: number;
+  /**
+   * The total cost of acquisition from the total amount received from selling.
    */
   price24HoursAgo: Decimal;
   /**
@@ -155,6 +171,9 @@ export const usePortfolioPositions = (
   const { data: marketBonds, isLoading: isBondsLoading } =
     useAccountBonds(address);
   const { data: foreignAssetPrices } = useAllForeignAssetUsdPrices();
+
+  const { data: tradeHistory, isLoading: isTradeHistoryLoading } =
+    useTradeHistory(address);
 
   const rawPositions = useAccountTokenPositions({
     where: {
@@ -295,7 +314,7 @@ export const usePortfolioPositions = (
 
       if (IOPoolShareAssetId.is(assetId)) {
         pool = pools.data.find((pool) => pool.poolId === assetId.PoolShare);
-        marketId = pool.marketId;
+        marketId = pool?.marketId;
         market = markets.data?.find((m) => m.marketId === marketId);
       }
 
@@ -313,7 +332,6 @@ export const usePortfolioPositions = (
       const balance = userAssetBalances.get(address, assetId)?.data.balance;
       const totalIssuanceForPoolQuery = poolsTotalIssuance[pool.poolId];
       const totalIssuanceData = poolsTotalIssuance[pool.poolId]?.data;
-
       if (!balance || !totalIssuanceForPoolQuery.data || !totalIssuanceData) {
         stillLoading = true;
         continue;
@@ -433,6 +451,116 @@ export const usePortfolioPositions = (
         color = "#DF0076";
       }
 
+      if (isTradeHistoryLoading) {
+        stillLoading = true;
+        continue;
+      }
+
+      const avgCost = tradeHistory
+        .filter((transaction) => transaction.marketId === marketId)
+        .reduce((acc, transaction) => {
+          const assetIn = transaction.assetAmountOut.div(ZTG).toNumber();
+          let totalAssets = 0;
+          let totalCost = 0;
+          const price = transaction.price.toNumber();
+          if (transaction.assetOut === outcome) {
+            if (transaction.assetIn === transaction.baseAssetName) {
+              totalCost += assetIn * price;
+              totalAssets += assetIn;
+            }
+            if (totalAssets > 0 && totalCost > 0) {
+              acc = totalCost / totalAssets;
+            }
+          }
+          return acc;
+        }, 0);
+
+      const calculateFifoPnl = (transactions) => {
+        let buys = [];
+        let pnl = 0;
+
+        transactions
+          .filter(
+            (transaction) =>
+              transaction.marketId === marketId &&
+              (transaction.assetIn === outcome ||
+                transaction.assetOut === outcome),
+          )
+          .sort(
+            (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
+          )
+          .forEach(
+            ({
+              assetIn,
+              assetAmountIn,
+              assetAmountOut,
+              price,
+              baseAssetName,
+            }) => {
+              const quantity = assetAmountIn.div(ZTG).toNumber();
+              const transactionPrice = price.toNumber();
+
+              if (assetIn === baseAssetName) {
+                buys.push({ quantity, price: transactionPrice });
+              } else {
+                let remainingToSell = assetAmountOut.div(ZTG).toNumber();
+
+                while (remainingToSell > 0 && buys.length > 0) {
+                  const [currentBuy] = buys;
+                  const sellQuantityFromThisBuy = Math.min(
+                    currentBuy.quantity,
+                    remainingToSell,
+                  );
+
+                  pnl +=
+                    sellQuantityFromThisBuy *
+                    (transactionPrice - currentBuy.price);
+
+                  remainingToSell -= sellQuantityFromThisBuy;
+                  currentBuy.quantity -= sellQuantityFromThisBuy;
+
+                  if (currentBuy.quantity === 0) {
+                    buys = buys.slice(1);
+                  }
+                }
+              }
+            },
+          );
+        return pnl;
+      };
+
+      const calculateUnrealizedPnL = (
+        transactions,
+        avgCost,
+        currentMarketPrice,
+      ) => {
+        const filteredTransactions = transactions.filter(
+          (transaction) =>
+            transaction.marketId === marketId &&
+            (transaction.assetIn === outcome ||
+              transaction.assetOut === outcome),
+        );
+        const { totalQuantity } = filteredTransactions.reduce(
+          (acc, transaction) => {
+            if (transaction.assetIn === transaction.baseAssetName) {
+              const quantity = transaction.assetAmountOut.div(ZTG).toNumber();
+              return {
+                totalQuantity: acc.totalQuantity + quantity,
+              };
+            } else if (transaction.assetIn === outcome) {
+              const quantity = transaction.assetAmountIn.div(ZTG).toNumber();
+              return {
+                totalQuantity: acc.totalQuantity - quantity,
+              };
+            } else {
+              return acc;
+            }
+          },
+          { totalQuantity: 0 },
+        );
+        return (currentMarketPrice - avgCost) * totalQuantity;
+      };
+
       const change = diffChange(price, price24HoursAgo);
 
       positionsData.push({
@@ -440,6 +568,9 @@ export const usePortfolioPositions = (
         market,
         pool,
         price,
+        avgCost,
+        upnl: calculateUnrealizedPnL(tradeHistory, avgCost, price.toNumber()),
+        rpnl: calculateFifoPnl(tradeHistory),
         price24HoursAgo,
         outcome,
         color,
