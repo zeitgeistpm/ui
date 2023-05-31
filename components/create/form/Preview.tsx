@@ -1,20 +1,15 @@
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { supportedCurrencies } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChainTime } from "lib/state/chaintime";
 import { MarketDraftEditor } from "lib/state/market-creation/editor";
-import { MarketDraftState } from "lib/state/market-creation/types/draft";
 import {
   Answers,
   Liquidity,
-  MarketFormData,
   Moderation,
   blocksAsDuration,
-  timelineAsBlocks,
 } from "lib/state/market-creation/types/form";
-import { MarketCreationStepType } from "lib/state/market-creation/types/step";
+import { timelineAsBlocks } from "lib/state/market-creation/types/timeline";
 import { formatDuration } from "lib/util/format-duration";
 import moment from "moment";
 import dynamic from "next/dynamic";

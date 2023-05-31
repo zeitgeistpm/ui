@@ -1,11 +1,7 @@
 import { ZeitgeistPrimitivesMarketMarketCreation } from "@polkadot/types/lookup";
 import { encodeAddress } from "@polkadot/util-crypto";
 import { tryCatch } from "@zeitgeistpm/utility/dist/option";
-import {
-  ChainTime,
-  blockDate,
-  dateBlock,
-} from "@zeitgeistpm/utility/dist/time";
+import { ChainTime } from "@zeitgeistpm/utility/dist/time";
 import { defaultTags } from "lib/constants/markets";
 import {
   MarketDeadlineConstants,
@@ -15,11 +11,9 @@ import { useChainTime } from "lib/state/chaintime";
 import { useMemo } from "react";
 import * as z from "zod";
 import { SupportedCurrencyTag } from "../../../constants/supported-currencies";
-import { MarketFormData, timelineAsBlocks } from "./form";
-import moment from "moment";
-import { BLOCK_TIME_SECONDS } from "lib/constants";
-import { chain } from "lodash-es";
 import { minBaseLiquidity } from "../constants/currency";
+import { MarketFormData } from "./form";
+import { timelineAsBlocks } from "./timeline";
 
 export type MarketValidationDependencies = {
   form: Partial<MarketFormData>;
