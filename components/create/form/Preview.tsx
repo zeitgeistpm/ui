@@ -132,8 +132,9 @@ export const MarketPreview = ({
                 </div>
 
                 <div>
-                  <Label>Value</Label>{" "}
+                  <Label>Total Base Liquidity</Label>{" "}
                   {new Decimal(baseAssetLiquidityRow?.value).mul(2).toFixed(1)}{" "}
+                  {baseAssetLiquidityRow?.asset}{" "}
                   <span className="text-gray-400">≈</span>{" "}
                   {baseAssetPrice
                     ?.mul(baseAssetLiquidityRow?.value)
