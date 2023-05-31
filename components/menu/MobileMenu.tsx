@@ -2,13 +2,11 @@ import AccountButton from "components/account/AccountButton";
 import { FC } from "react";
 import Navigation from "./Navigation";
 import { NAVIGATION_ITEMS } from "./navigation-items";
-import { useDisableScroll } from "lib/hooks/useDisableScroll";
 
 const MobileMenu: FC<{ menuOpen: boolean; setMenuOpen: (boolean) => void }> = ({
   menuOpen,
   setMenuOpen,
 }) => {
-  useDisableScroll(menuOpen);
   return (
     <div
       className={`${
