@@ -52,7 +52,7 @@ export const usePoolBaseBalances = (
                   pool,
                   balance: new Decimal(balance.data.free.toString()),
                 };
-              } else {
+              } else if (baseAssetId) {
                 const balance = await api.query.tokens.accounts(
                   accountId,
                   baseAssetId,

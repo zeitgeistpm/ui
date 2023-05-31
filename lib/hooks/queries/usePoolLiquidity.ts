@@ -29,12 +29,14 @@ export const usePoolLiquidity = (filter?: UseMarketFilter) => {
   const query = useQuery(
     [id, poolsLiqudityRootKey, filter, spotPrices, balances, baseAssetBalance],
     async () => {
-      return balances
-        .reduce((totalLiquidty, balance, index) => {
-          const spotPrice = spotPrices.get(index) ?? new Decimal(1);
-          return totalLiquidty.plus(spotPrice.mul(balance.free.toString()));
-        }, new Decimal(0))
-        .add(baseAssetBalance);
+      if (balances && spotPrices && baseAssetBalance) {
+        return balances
+          .reduce((totalLiquidty, balance, index) => {
+            const spotPrice = spotPrices.get(index) ?? new Decimal(1);
+            return totalLiquidty.plus(spotPrice.mul(balance.free.toString()));
+          }, new Decimal(0))
+          .add(baseAssetBalance);
+      }
     },
     {
       enabled: Boolean(

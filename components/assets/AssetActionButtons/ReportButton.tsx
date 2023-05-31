@@ -9,6 +9,7 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
 import Modal from "components/ui/Modal";
+import SecondaryButton from "components/ui/SecondaryButton";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
@@ -29,7 +30,7 @@ const ReportButton = ({
 
   if (!market) return null;
 
-  const outcomeName = market.categories?.[getIndexOf(assetId)].name;
+  const outcomeName = market.categories?.[getIndexOf(assetId)]?.name;
 
   const reportDisabled = !sdk || !isRpcSdk(sdk);
 
@@ -42,6 +43,7 @@ const ReportButton = ({
       //@ts-ignore
       const ID = assetId.CategoricalOutcome[1];
       const signer = wallet.getActiveSigner();
+      if (!signer) return;
 
       const callback = extrinsicCallback({
         api: sdk.api,
@@ -72,13 +74,9 @@ const ReportButton = ({
 
   return (
     <>
-      <button
-        onClick={handleClick}
-        disabled={reportDisabled}
-        className="border-gray-300 text-sm border-2 rounded-full py-2 px-5 mr-2"
-      >
+      <SecondaryButton onClick={handleClick} disabled={reportDisabled}>
         Report Outcome
-      </button>
+      </SecondaryButton>
 
       <Modal
         open={scalarReportBoxOpen}

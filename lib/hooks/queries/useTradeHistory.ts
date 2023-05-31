@@ -47,7 +47,7 @@ const lookupAssetName = (
     const marketId = getMarketIdOf(assetId);
     const index = getIndexOf(assetId);
     const market = marketsMap.get(marketId);
-    return market && marketsMap.get(marketId).categories[index].name;
+    return market && market.categories[index].name;
   } else if (IOForeignAssetId.is(assetId)) {
     return foreignAssetMap.get(assetId.ForeignAsset);
   } else {

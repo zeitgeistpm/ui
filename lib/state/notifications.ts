@@ -92,9 +92,9 @@ export const useNotifications = (): UseNotifications => {
     const notification: Notification = {
       id: generateGUID(),
       content,
-      autoRemove: options.autoRemove ?? false,
-      lifetime: options.lifetime ?? 100,
-      type: options.type ?? "Info",
+      autoRemove: options?.autoRemove ?? false,
+      lifetime: options?.lifetime ?? 100,
+      type: options?.type ?? "Info",
     };
 
     nextNotifications = [...nextNotifications, notification];

@@ -33,7 +33,7 @@ export const useTradeItemState = (item: TradeItem) => {
   const pool = pools?.[0];
   const baseAsset = pool?.baseAsset
     ? parseAssetId(pool.baseAsset).unwrap()
-    : null;
+    : undefined;
 
   const { data: traderBaseBalance } = useBalance(
     wallet.activeAccount?.address,
@@ -42,14 +42,18 @@ export const useTradeItemState = (item: TradeItem) => {
 
   const { data: poolBaseBalance } = usePoolBaseBalance(pool?.poolId);
 
+  if (!pool || !market || !baseAsset || !poolBaseBalance) return;
+
   const traderAssets = useAccountAssetBalances([
     { account: signer?.address, assetId: item.assetId },
   ]);
-  const traderAssetBalance = new Decimal(
-    (
-      traderAssets?.get(signer?.address, item.assetId)?.data?.balance as any
-    )?.free?.toString() ?? 0,
-  );
+  const traderAssetBalance = signer?.address
+    ? new Decimal(
+        (
+          traderAssets?.get(signer?.address, item.assetId)?.data?.balance as any
+        )?.free?.toString() ?? 0,
+      )
+    : new Decimal(0);
 
   const poolAccountIds = usePoolAccountIds(pools ?? []);
   const poolAccountId = poolAccountIds[pool?.poolId];

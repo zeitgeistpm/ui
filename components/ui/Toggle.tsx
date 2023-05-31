@@ -25,7 +25,10 @@ const Toggle: FC<ToggleProps> = ({
   };
   return (
     <div className="relative">
-      <div className={classes} onClick={() => !disabled && onChange(!active)}>
+      <div
+        className={classes}
+        onClick={() => !disabled && onChange && onChange(!active)}
+      >
         {["on", "off"].map((label, idx) => {
           const isActive =
             !disabled &&
