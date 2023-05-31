@@ -153,7 +153,8 @@ export const MarketCreationForm = () => {
                 }
               >
                 <p className="text-gray-500 font-light text-sm">
-                  The base asset used to provide liquidity to the market.
+                  The base asset used to provide liquidity to the market and
+                  what you use when making trades for market outcome tokens.
                 </p>
               </InfoPopover>
             </h2>
@@ -540,8 +541,13 @@ export const MarketCreationForm = () => {
                   <div className="text-center text-lg md:max-w-xl text-gray-500">
                     You have selected <b>advised</b> moderation. This means that
                     the market could be rejected by the moderators. If the
-                    market is rejected, you will be refunded your bonded
-                    deposit.
+                    market is rejected, you will be refunded part of your bonded
+                    deposit{" "}
+                    <i>
+                      (minus a slash percentage depending on chain
+                      configuration)
+                    </i>
+                    .
                     <br />
                     <br />
                     If the market is <b>approved</b>, you will be able to{" "}

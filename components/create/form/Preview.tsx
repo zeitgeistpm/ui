@@ -149,13 +149,15 @@ export const MarketPreview = ({
                 <div className="mb-2 center text-gray-500">
                   <LuFileWarning size={22} />
                 </div>
-                <p className="text-center md:max-w-lg text-gray-400 mb-3">
-                  No liquidity pool will be deployed for the market.
-                  <b className="inline">
-                    You can deploy a pool after you create the market
-                  </b>{" "}
-                  from the market page.
-                </p>
+                <div className="center">
+                  <p className="text-center md:max-w-lg text-gray-400 mb-3">
+                    No liquidity pool will be deployed for the market.
+                    <b className="inline">
+                      You can deploy a pool after you create the market
+                    </b>{" "}
+                    from the market page.
+                  </p>
+                </div>
                 <p className="mb-4 italic text-gray-400 text-xs">
                   Or you can add it now as part of the market creation process
                 </p>
