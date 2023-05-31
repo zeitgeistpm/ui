@@ -142,7 +142,7 @@ export default async function GenerateOgImage(request: NextRequest) {
               {prediction.name != null
                 ? market.marketType.categorical
                   ? `${prediction.name} (${prediction.percentage}%)`
-                  : `${Intl.NumberFormat("default", {
+                  : `${Intl.NumberFormat("en-US", {
                       maximumSignificantDigits: 3,
                     }).format(Number(prediction.name))}`
                 : "No Prediction"}
