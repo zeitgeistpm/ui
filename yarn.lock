@@ -2246,6 +2246,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@subsocial/grill-widget@npm:^0.0.5":
+  version: 0.0.5
+  resolution: "@subsocial/grill-widget@npm:0.0.5"
+  checksum: 077c11cb35ffd796637224fc88292a13cee73e6c471ae801318b81af6996d79ce3c58b3b640bff10b7ccd6f1e64cef06f3437d04517850fe6c71b00556a2a571
+  languageName: node
+  linkType: hard
+
 "@substrate/connect-extension-protocol@npm:^1.0.1":
   version: 1.0.1
   resolution: "@substrate/connect-extension-protocol@npm:1.0.1"
@@ -3159,6 +3166,7 @@ __metadata:
     "@polkadot/extension-dapp": ^0.44.6
     "@polkadot/ui-keyring": ^2.4.1
     "@polkadot/wasm-crypto": ^6.3.1
+    "@subsocial/grill-widget": ^0.0.5
     "@tailwindcss/container-queries": ^0.1.1
     "@tailwindcss/line-clamp": ^0.4.2
     "@talismn/connect-wallets": ^1.2.3

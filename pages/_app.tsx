@@ -16,13 +16,6 @@ import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { hotjar } from "react-hotjar";
 
-const Onboarding = dynamic(
-  () => import("../components/onboarding/Onboarding"),
-  {
-    ssr: false,
-  },
-);
-
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
 const domain = process.env["NEXT_PUBLIC_DOMAIN"];
@@ -83,8 +76,6 @@ const MyApp = ({ Component, pageProps }) => {
         <DefaultLayout>
           <Layout>
             <Component {...pageProps} />
-            <Account />
-            <Onboarding />
           </Layout>
         </DefaultLayout>
         <Devtools />
