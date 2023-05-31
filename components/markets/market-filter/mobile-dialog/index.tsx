@@ -4,6 +4,7 @@ import { X } from "react-feather";
 import { SelectedMenu } from "../MarketFiltersContainer";
 import FiltersList from "./FiltersList";
 import FilterDetails from "./FilterDetails";
+import { useDisableScroll } from "lib/hooks/useDisableScroll";
 
 const TRANSITION_DURATION = 300;
 
@@ -18,6 +19,8 @@ const MobileDialog = ({ open, setOpen }: MobileDialogProps) => {
     useState<SelectedMenu>("None");
   const [step, setStep] = useState(0);
   const focusRef = useRef<HTMLDivElement>(null);
+
+  useDisableScroll(open);
 
   const close = () => {
     setTimeout(() => {
