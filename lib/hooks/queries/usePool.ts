@@ -10,9 +10,9 @@ export const usePool = (getPoolQuery?: PoolGetQuery) => {
   const query = useQuery(
     [id, poolsRootKey, getPoolQuery],
     async () => {
-      if (isIndexedSdk(sdk)) {
+      if (isIndexedSdk(sdk) && getPoolQuery) {
         const pool = await sdk.model.swaps.getPool(getPoolQuery);
-        return pool.unwrap();
+        return pool.unwrapOr(undefined);
       }
     },
     {

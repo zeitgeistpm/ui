@@ -69,7 +69,9 @@ export const RedeemButtonByAssetId = ({
       const resolvedAssetIdString =
         market.outcomeAssets[Number(market.resolvedOutcome)];
 
-      const resolvedAssetId = parseAssetId(resolvedAssetIdString).unwrap();
+      const resolvedAssetId = resolvedAssetIdString
+        ? parseAssetId(resolvedAssetIdString).unrightOr(undefined)
+        : undefined;
 
       const balance = assetBalances?.get(signer?.address, resolvedAssetId)?.data
         .balance;
@@ -121,7 +123,7 @@ export const RedeemButtonByValue = ({
   const [isRedeemed, setIsRedeemed] = useState(false);
 
   const handleClick = async () => {
-    if (!isRpcSdk(sdk)) return;
+    if (!isRpcSdk(sdk) || !signer) return;
 
     setIsRedeeming(true);
 

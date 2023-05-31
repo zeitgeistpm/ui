@@ -14,7 +14,7 @@ interface StepperProps {
   start: number;
   end: number;
   currentStep: number;
-  onStepClick?: (step: number) => void;
+  onStepClick: (step: number) => void;
 }
 
 const Stepper = ({ start, end, currentStep, onStepClick }: StepperProps) => {

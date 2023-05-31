@@ -29,11 +29,10 @@ const DisputeButton = ({
   const [isOpen, setOpen] = useState(false);
 
   const disputeDisabled = useMemo(() => {
-    const assetAlreadyReported =
-      market.marketType.categorical &&
-      market.report.outcome.categorical === assetIndex;
+    const isCategorical = market.marketType.categorical != null;
+    const assetIsReported = market.report?.outcome.categorical === assetIndex;
 
-    return (sdk && !isRpcSdk(sdk)) || assetAlreadyReported;
+    return (sdk && !isRpcSdk(sdk)) || (isCategorical && assetIsReported);
   }, [sdk, disputes?.length, market, assetIndex]);
 
   return (

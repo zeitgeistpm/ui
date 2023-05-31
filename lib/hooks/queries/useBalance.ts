@@ -7,8 +7,8 @@ import { useSdkv2 } from "../useSdkv2";
 export const balanceRootKey = "balance";
 
 export const useBalance = (
-  address: string,
-  assetId: AssetId,
+  address?: string,
+  assetId?: AssetId,
   blockNumber?: number,
 ) => {
   const [sdk, id] = useSdkv2();
@@ -27,7 +27,6 @@ export const useBalance = (
           return new Decimal(balance.free.toString());
         }
       }
-      return null;
     },
     {
       keepPreviousData: true,
