@@ -166,7 +166,9 @@ const Cell = ({
           onClick={onClick}
           style={style}
         >
-          {formatNumberLocalized(Number(value))}
+          {Number(value) < 0.01
+            ? "< 0.01"
+            : formatNumberLocalized(Number(value))}
         </td>
       );
     case "change":

@@ -23,6 +23,7 @@ import { useRouter } from "next/router";
 import { useMemo } from "react";
 import NotFoundPage from "pages/404";
 import { isValidPolkadotAddress } from "lib/util";
+import { ZTG } from "lib/constants";
 
 type MainTabItem =
   | "Predictions"
@@ -135,8 +136,10 @@ const Portfolio: NextPageWithLayout = () => {
                   (marketPositions) => {
                     const market = marketPositions[0].market;
 
-                    marketPositions = marketPositions.filter((position) =>
-                      position.userBalance.gt(0),
+                    marketPositions = marketPositions.filter(
+                      (position) =>
+                        position.userBalance.gt(0) &&
+                        !position.userBalance.div(ZTG).lessThan(0.0001),
                     );
 
                     if (
@@ -212,8 +215,12 @@ const Portfolio: NextPageWithLayout = () => {
                               className="mb-14 border-b-4 border-gray-200"
                               market={market}
                               usdZtgPrice={ztgPrice}
-                              positions={subsidyPositions.filter((position) =>
-                                position.userBalance.gt(0),
+                              positions={subsidyPositions.filter(
+                                (position) =>
+                                  position.userBalance.gt(0) &&
+                                  !position.userBalance
+                                    .div(ZTG)
+                                    .lessThan(0.0001),
                               )}
                             />
                           );
