@@ -5,12 +5,12 @@ import WizardStepper from "components/wizard/WizardStepper";
 import { nextStepFrom, prevStepFrom } from "components/wizard/types";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { useChainTime } from "lib/state/chaintime";
-import { useMarketDraftEditor } from "lib/state/market-creation/editor";
 import {
   disputePeriodOptions,
   gracePeriodOptions,
   reportingPeriodOptions,
 } from "lib/state/market-creation/constants/deadline-options";
+import { useMarketDraftEditor } from "lib/state/market-creation/editor";
 import dynamic from "next/dynamic";
 import { FormEventHandler, useState } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
@@ -27,12 +27,10 @@ import DateTimePicker from "./inputs/DateTime";
 import { LiquidityInput } from "./inputs/Liquidity";
 import ModerationModeSelect from "./inputs/Moderation";
 import { AnswersInput } from "./inputs/answers";
-
-import OracleInput from "./inputs/Oracle";
-import { persistentAtom } from "lib/state/util/persistent-atom";
-import * as MarketDraft from "lib/state/market-creation/types/draft";
-import { cloneDeep } from "lodash-es";
 import { useAtom } from "jotai";
+import * as MarketDraft from "lib/state/market-creation/types/draft";
+import { persistentAtom } from "lib/state/util/persistent-atom";
+import OracleInput from "./inputs/Oracle";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
