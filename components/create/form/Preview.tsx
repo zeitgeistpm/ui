@@ -25,13 +25,13 @@ const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
 export type MarketPreviewProps = {
   form: Partial<MarketCreationFormData>;
   goToSection: (step: MarketCreationStepType) => void;
-  provideFormData: (data: Partial<MarketCreationFormData>) => void;
+  mergeFormData: (data: Partial<MarketCreationFormData>) => void;
 };
 
 export const MarketPreview = ({
   form,
   goToSection,
-  provideFormData,
+  mergeFormData,
 }: MarketPreviewProps) => {
   const chainTime = useChainTime();
 
@@ -167,7 +167,7 @@ export const MarketPreview = ({
                     form.currency === "ZTG" ? "bg-ztg-blue" : "bg-polkadot"
                   }  text-white`}
                   onClick={() => {
-                    provideFormData({
+                    mergeFormData({
                       liquidity: {
                         deploy: true,
                       },
@@ -213,9 +213,9 @@ export const MarketPreview = ({
           <div className="flex justify-center gap-2 items-center">
             <Label>Grace</Label>{" "}
             <div>
-              {timeline.grace
-                ? timeline.grace.period > 0
-                  ? formatDuration(blocksAsDuration(timeline.grace.period))
+              {timeline?.grace
+                ? timeline?.grace.period > 0
+                  ? formatDuration(blocksAsDuration(timeline?.grace.period))
                   : "None"
                 : "--"}
             </div>
@@ -223,9 +223,9 @@ export const MarketPreview = ({
           <div className="flex justify-center gap-2 items-center">
             <Label>Reporting</Label>{" "}
             <div>
-              {timeline.report
-                ? timeline.report.period > 0
-                  ? formatDuration(blocksAsDuration(timeline.report.period))
+              {timeline?.report
+                ? timeline?.report.period > 0
+                  ? formatDuration(blocksAsDuration(timeline?.report.period))
                   : "None"
                 : "--"}
             </div>
@@ -233,9 +233,9 @@ export const MarketPreview = ({
           <div className="flex justify-center gap-2 items-center">
             <Label>Dispute</Label>{" "}
             <div>
-              {timeline.dispute
-                ? timeline.dispute.period > 0
-                  ? formatDuration(blocksAsDuration(timeline.dispute.period))
+              {timeline?.dispute
+                ? timeline?.dispute.period > 0
+                  ? formatDuration(blocksAsDuration(timeline?.dispute.period))
                   : "None"
                 : "--"}
             </div>

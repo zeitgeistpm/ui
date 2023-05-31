@@ -5,7 +5,7 @@ import WizardStepper from "components/wizard/WizardStepper";
 import { nextStepFrom, prevStepFrom } from "components/wizard/types";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { useChainTime } from "lib/state/chaintime";
-import { useCreateMarketState } from "lib/state/market-creation";
+import { useMarketDraftEditor } from "lib/state/market-creation/editor";
 import {
   disputePeriodOptions,
   gracePeriodOptions,
@@ -29,26 +29,48 @@ import ModerationModeSelect from "./inputs/Moderation";
 import { AnswersInput } from "./inputs/answers";
 
 import OracleInput from "./inputs/Oracle";
+import { persistentAtom } from "lib/state/util/persistent-atom";
+import * as MarketDraft from "lib/state/market-creation/types/draft";
+import { cloneDeep } from "lodash-es";
+import { useAtom } from "jotai";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
 });
 
+const createMarketStateAtom = persistentAtom<MarketDraft.MarketDraftState>({
+  key: "market-creation-form",
+  defaultValue: MarketDraft.empty(),
+  migrations: [
+    /**
+     * TODO: remove before merging to staging.
+     */
+    () => MarketDraft.empty(),
+    () => MarketDraft.empty(),
+    () => MarketDraft.empty(),
+    () => MarketDraft.empty(),
+    () => MarketDraft.empty(),
+  ],
+});
+
 export const MarketCreationForm = () => {
+  const [state, setState] = useAtom(createMarketStateAtom);
+
   const {
-    isWizard,
-    setWizard,
-    currentStep,
+    form,
     steps,
+    currentStep,
     setStep,
     goToSection,
+    isWizard,
+    toggleWizard,
     input,
     fieldsState,
-    reset,
-    form,
+    mergeFormData,
     isTouched,
-    provideFormData,
-  } = useCreateMarketState();
+    isValid,
+    reset,
+  } = useMarketDraftEditor({ state, setState });
 
   const chainTime = useChainTime();
   const { isFetched } = useMarketDeadlineConstants();
@@ -119,7 +141,7 @@ export const MarketCreationForm = () => {
 
       <div className="flex center mb-8">
         <div className="mr-3 font-light">One Page</div>
-        <Toggle checked={isWizard} onChange={setWizard} />
+        <Toggle checked={isWizard} onChange={toggleWizard} />
         <div className="ml-3 font-light">Wizard</div>
       </div>
 
@@ -571,7 +593,7 @@ export const MarketCreationForm = () => {
             <MarketPreview
               form={form}
               goToSection={goToSection}
-              provideFormData={provideFormData}
+              mergeFormData={mergeFormData}
             />
           </div>
         </MarketFormSection>

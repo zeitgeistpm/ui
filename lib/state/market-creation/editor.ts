@@ -1,12 +1,11 @@
 import { FormEvent } from "components/create/form/types";
-import { useAtom } from "jotai";
+import Decimal from "decimal.js";
+import { usePrevious } from "lib/hooks/usePrevious";
+import { last, merge } from "lodash-es";
+import moment from "moment";
 import { useEffect, useMemo } from "react";
-import { persistentAtom } from "../util/persistent-atom";
-import {
-  gracePeriodOptions,
-  reportingPeriodOptions,
-} from "./constants/deadline-options";
-import { cloneDeep, last, merge } from "lodash-es";
+import { minBaseLiquidity } from "./constants/currency";
+import * as MarketDraft from "./types/draft";
 import { FieldsState, initialFieldsState } from "./types/fieldstate";
 import { MarketCreationFormData, marketCreationFormKeys } from "./types/form";
 import {
@@ -17,16 +16,8 @@ import {
   stepFormKeys,
 } from "./types/step";
 import { useMarketCreationFormValidator } from "./types/validation";
-import Decimal from "decimal.js";
-import moment from "moment";
-import { usePrevious } from "lib/hooks/usePrevious";
-import { minBaseLiquidity } from "./constants/currency";
 
-export type UseCreateMarketState = {
-  /**
-   * Is the market creation mode in wizard mode or not.
-   */
-  isWizard: boolean;
+export type UseMarketEditor = {
   /**
    * The current state of the form data.
    * Can be partial data.
@@ -56,6 +47,10 @@ export type UseCreateMarketState = {
    */
   isTouched: boolean;
   /**
+   * Is the market creation mode in wizard mode or not.
+   */
+  isWizard: boolean;
+  /**
    * Reset the form state.
    */
   reset: () => void;
@@ -67,13 +62,14 @@ export type UseCreateMarketState = {
    * Set the step the user is on by the section name.
    */
   goToSection: (stepType: MarketCreationStepType) => void;
-
-  provideFormData: (data: Partial<MarketCreationFormData>) => void;
+  /**
+   * Merge partial form data into the form state.
+   */
+  mergeFormData: (data: Partial<MarketCreationFormData>) => void;
   /**
    * Toggle the wizard mode on or off.
    */
-  setWizard: (on: boolean) => void;
-
+  toggleWizard: (on: boolean) => void;
   /**
    * Register a input to a form key.
    */
@@ -92,67 +88,15 @@ export type UseCreateMarketState = {
   };
 };
 
-/**
- * The base state of a market creation session.
- *
- * @note - If we need to safe multiple drafts in a list of drafts, this is the state that represents one
- *  market creation session draft.
- */
-export type MarketCreationState = {
-  form: Partial<MarketCreationFormData>;
-  isWizard: boolean;
-  currentStep: MarketCreationStep;
-  touchState: Partial<Record<keyof MarketCreationFormData, boolean>>;
-  stepReachState: Partial<Record<MarketCreationStepType, boolean>>;
+export type MarketDraftConfig = {
+  state: MarketDraft.MarketDraftState;
+  setState: (state: MarketDraft.MarketDraftState) => void;
 };
 
-export const defaultState: MarketCreationState = {
-  isWizard: true,
-  currentStep: {
-    label: "Currency",
-    isValid: false,
-    isTouched: false,
-    reached: true,
-  },
-  form: {
-    answers: {
-      type: "categorical",
-      answers: ["", ""],
-    },
-    oracle: "",
-    gracePeriod: gracePeriodOptions[0],
-    reportingPeriod: reportingPeriodOptions[1],
-    disputePeriod: reportingPeriodOptions[1],
-    liquidity: {
-      deploy: true,
-      rows: [],
-      swapFee: 0.1,
-    },
-  },
-  touchState: {},
-  stepReachState: {
-    Currency: true,
-  },
-};
-
-const createMarketStateAtom = persistentAtom<MarketCreationState>({
-  key: "market-creation-form",
-  defaultValue: cloneDeep(defaultState),
-  migrations: [
-    /**
-     * TODO: remove before merging to staging.
-     */
-    () => defaultState,
-    () => defaultState,
-    () => defaultState,
-    () => defaultState,
-    () => defaultState,
-  ],
-});
-
-export const useCreateMarketState = (): UseCreateMarketState => {
-  const [state, setState] = useAtom(createMarketStateAtom);
-
+export const useMarketDraftEditor = ({
+  state,
+  setState,
+}: MarketDraftConfig): UseMarketEditor => {
   const validator = useMarketCreationFormValidator(state.form);
 
   const fieldsState = useMemo<FieldsState>(() => {
@@ -209,7 +153,7 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     }
   };
 
-  const provideFormData = (data: Partial<MarketCreationFormData>) => {
+  const mergeFormData = (data: Partial<MarketCreationFormData>) => {
     setState({
       ...state,
       form: merge(state.form, data),
@@ -217,8 +161,9 @@ export const useCreateMarketState = (): UseCreateMarketState => {
   };
 
   const reset = () => {
+    structuredClone;
     setState(
-      merge(cloneDeep(defaultState), {
+      merge(MarketDraft.empty(), {
         isWizard: state.isWizard,
         form: {
           question: "",
@@ -228,7 +173,7 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     );
   };
 
-  const setWizard = (on: boolean) => {
+  const toggleWizard = (on: boolean) => {
     let newState = { ...state, isWizard: on };
     if (on) {
       const firstInvalidStep = steps.find((step) => !step.isValid);
@@ -397,8 +342,8 @@ export const useCreateMarketState = (): UseCreateMarketState => {
     reset,
     setStep,
     goToSection,
-    provideFormData,
-    setWizard,
+    mergeFormData,
+    toggleWizard,
     input,
   };
 };
