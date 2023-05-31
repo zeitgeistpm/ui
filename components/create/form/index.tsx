@@ -589,11 +589,7 @@ export const MarketCreationForm = () => {
           resetForm={isTouched && reset}
         >
           <div className="flex center mb-4 md:mb-8">
-            <MarketPreview
-              editor={editor}
-              goToSection={goToSection}
-              mergeFormData={mergeFormData}
-            />
+            <MarketPreview editor={editor} />
           </div>
         </MarketFormSection>
 

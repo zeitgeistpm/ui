@@ -28,18 +28,11 @@ const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
 
 export type MarketPreviewProps = {
   editor: MarketDraftEditor;
-  goToSection: (step: MarketCreationStepType) => void;
-  mergeFormData: (data: Partial<MarketFormData>) => void;
 };
 
-export const MarketPreview = ({
-  editor,
-  goToSection,
-  mergeFormData,
-}: MarketPreviewProps) => {
+export const MarketPreview = ({ editor }: MarketPreviewProps) => {
   const { form } = editor;
   const chainTime = useChainTime();
-
   const timeline = useMemo(() => {
     return timelineAsBlocks(
       {
@@ -172,12 +165,12 @@ export const MarketPreview = ({
                     form.currency === "ZTG" ? "bg-ztg-blue" : "bg-polkadot"
                   }  text-white`}
                   onClick={() => {
-                    mergeFormData({
+                    editor.mergeFormData({
                       liquidity: {
                         deploy: true,
                       },
                     });
-                    goToSection("Liquidity");
+                    editor.goToSection("Liquidity");
                   }}
                 >
                   Add Liquidity?
