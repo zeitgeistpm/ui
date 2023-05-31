@@ -6,6 +6,7 @@ import {
   Answers,
   Liquidity,
   MarketCreationFormData,
+  Moderation,
   blocksAsDuration,
   timelineAsBlocks,
 } from "lib/state/market-creation/types/form";
@@ -79,6 +80,7 @@ export const MarketPreview = ({
               answers={form.answers}
               baseAssetPrice={baseAssetPrice}
               liquidity={form?.liquidity}
+              moderation={form.moderation}
             />
           )}
         </div>
@@ -110,28 +112,34 @@ export const MarketPreview = ({
               )}
             </div>
           </div>
-          <div className="flex justify-center gap-4">
+          <div>
             {baseAssetLiquidityRow &&
             form?.liquidity?.deploy &&
             form?.moderation === "Permissionless" ? (
               <>
-                <div className="flex justify-center gap-2 items-center">
-                  <Label>Amount</Label>{" "}
-                  <div>{baseAssetLiquidityRow?.amount ?? "--"}</div>
+                <div className="flex justify-center gap-4 mb-4">
+                  <div className="flex justify-center gap-2 items-center">
+                    <Label>Amount</Label>{" "}
+                    <div>{baseAssetLiquidityRow?.amount ?? "--"}</div>
+                  </div>
+                  <div className="flex justify-center gap-2 items-center">
+                    <Label>Weight</Label>{" "}
+                    <div>{baseAssetLiquidityRow?.weight ?? "--"}</div>
+                  </div>
+                  <div className="flex justify-center gap-2 items-center">
+                    <Label>Swap Fee</Label> {form.liquidity?.swapFee ?? "--"}%
+                  </div>
                 </div>
-                <div className="flex justify-center gap-2 items-center">
-                  <Label>Weight</Label>{" "}
-                  <div>{baseAssetLiquidityRow?.weight ?? "--"}</div>
-                </div>
-                <div className="flex justify-center gap-2 items-center">
+
+                <div>
                   <Label>Value</Label>{" "}
-                  {new Decimal(baseAssetLiquidityRow?.value).toFixed(1)}{" "}
+                  {new Decimal(baseAssetLiquidityRow?.value).mul(2).toFixed(1)}{" "}
                   <span className="text-gray-400">≈</span>{" "}
-                  {baseAssetPrice?.mul(baseAssetLiquidityRow?.value).toFixed(2)}{" "}
+                  {baseAssetPrice
+                    ?.mul(baseAssetLiquidityRow?.value)
+                    .mul(2)
+                    .toFixed(2)}{" "}
                   USD
-                </div>
-                <div className="flex justify-center gap-2 items-center">
-                  <Label>Swap Fee</Label> {form.liquidity?.swapFee ?? "--"}%
                 </div>
               </>
             ) : !form?.liquidity?.deploy &&
@@ -258,10 +266,12 @@ const Answers = ({
   answers,
   liquidity,
   baseAssetPrice,
+  moderation,
 }: {
   answers: Answers;
   liquidity?: Liquidity;
   baseAssetPrice?: Decimal;
+  moderation: Moderation;
 }) => {
   return (
     <>
@@ -279,7 +289,9 @@ const Answers = ({
               <div className="text-xl font-semibold">
                 {answerLiquidity?.asset}
               </div>
-              {liquidity && liquidity.deploy ? (
+              {liquidity &&
+              liquidity.deploy &&
+              moderation === "Permissionless" ? (
                 <div className="!text-sm mt-3">
                   <div className="table-row mb-1">
                     <div className="table-cell text-left pr-4">
