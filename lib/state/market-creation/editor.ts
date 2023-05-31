@@ -16,13 +16,9 @@ import {
   stepFormKeys,
 } from "./types/step";
 import { useMarketCreationFormValidator } from "./types/validation";
+import { DeepRequired } from "react-hook-form";
 
-export type UseMarketEditor = {
-  /**
-   * The current state of the form data.
-   * Can be partial data.
-   */
-  form: Partial<MarketCreationFormData>;
+export type UseMarketEditor = (ValidFormState | InvalidFormState) & {
   /**
    * The steps of the market creation process.
    * Has state regarding if the step is valid, if it has been touched(edited) by the user and if it
@@ -38,10 +34,6 @@ export type UseMarketEditor = {
    * Has state regarding if the input is valid, if it has been touched(edited) by the user and potential validation errors.
    */
   fieldsState: FieldsState;
-  /**
-   * Is the form as a whole valid.
-   */
-  isValid: boolean;
   /**
    * Has any of the form fields been touched(edited) by the user.
    */
@@ -86,6 +78,32 @@ export type UseMarketEditor = {
     onBlur: (event: FormEvent<MarketCreationFormData[K]>) => void;
     fieldState: FieldsState[K];
   };
+};
+
+export type ValidFormState = {
+  /**
+   * The current state of the form data.
+   * Ensured to be full data in valid state.
+   */
+  form: DeepRequired<MarketCreationFormData>;
+  /**
+   * Is the form as a whole valid.
+   * Ensured to be true in valid state.
+   */
+  isValid: true;
+};
+
+export type InvalidFormState = {
+  /**
+   * The current state of the form data.
+   * Can be partial data.
+   */
+  form: Partial<MarketCreationFormData>;
+  /**
+   * Is the form as a whole valid.
+   * Ensured to be false in invalid state.
+   */
+  isValid: false;
 };
 
 export type MarketDraftConfig = {
@@ -331,7 +349,7 @@ export const useMarketDraftEditor = ({
     });
   }, [state.form.answers, state.form.currency]);
 
-  return {
+  const editor = {
     form: state.form,
     currentStep: state.currentStep,
     isWizard: state.isWizard,
@@ -345,5 +363,7 @@ export const useMarketDraftEditor = ({
     mergeFormData,
     toggleWizard,
     input,
-  };
+  } as UseMarketEditor & (ValidFormState | InvalidFormState);
+
+  return editor;
 };

@@ -1,7 +1,11 @@
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { supportedCurrencies } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChainTime } from "lib/state/chaintime";
+import { UseMarketEditor } from "lib/state/market-creation/editor";
+import { MarketDraftState } from "lib/state/market-creation/types/draft";
 import {
   Answers,
   Liquidity,
@@ -23,16 +27,17 @@ const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
 });
 
 export type MarketPreviewProps = {
-  form: Partial<MarketCreationFormData>;
+  editor: UseMarketEditor;
   goToSection: (step: MarketCreationStepType) => void;
   mergeFormData: (data: Partial<MarketCreationFormData>) => void;
 };
 
 export const MarketPreview = ({
-  form,
+  editor,
   goToSection,
   mergeFormData,
 }: MarketPreviewProps) => {
+  const { form } = editor;
   const chainTime = useChainTime();
 
   const timeline = useMemo(() => {

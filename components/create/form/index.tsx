@@ -53,6 +53,7 @@ const createMarketStateAtom = persistentAtom<MarketDraft.MarketDraftState>({
 
 export const MarketCreationForm = () => {
   const [state, setState] = useAtom(createMarketStateAtom);
+  const editor = useMarketDraftEditor({ state, setState });
 
   const {
     form,
@@ -68,7 +69,7 @@ export const MarketCreationForm = () => {
     isTouched,
     isValid,
     reset,
-  } = useMarketDraftEditor({ state, setState });
+  } = editor;
 
   const chainTime = useChainTime();
   const { isFetched } = useMarketDeadlineConstants();
@@ -589,7 +590,7 @@ export const MarketCreationForm = () => {
         >
           <div className="flex center mb-4 md:mb-8">
             <MarketPreview
-              form={form}
+              editor={editor}
               goToSection={goToSection}
               mergeFormData={mergeFormData}
             />
