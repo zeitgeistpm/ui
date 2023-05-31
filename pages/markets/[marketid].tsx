@@ -154,8 +154,12 @@ const Market: NextPage<MarketPageProps> = ({
       const at = lastDispute.at.toNumber();
       const by = lastDispute.by.toString();
       const outcome = market?.marketType.scalar
-        ? lastDispute?.outcome?.asScalar.toNumber()
-        : lastDispute?.outcome?.asCategorical.toNumber();
+        ? new Decimal(lastDispute?.outcome?.asScalar.toString())
+            .div(ZTG)
+            .toNumber()
+        : new Decimal(
+            lastDispute?.outcome?.asCategorical.toString(),
+          ).toNumber();
       const marketDispute: MarketDispute = {
         at,
         by,
@@ -171,8 +175,12 @@ const Market: NextPage<MarketPageProps> = ({
         at: market?.report?.at,
         by: market?.report?.by,
         outcome: {
-          categorical: market?.report?.outcome?.categorical,
-          scalar: market?.report?.outcome?.scalar,
+          categorical: new Decimal(
+            market?.report?.outcome?.categorical.toString(),
+          ).toNumber(),
+          scalar: new Decimal(
+            market?.report?.outcome?.scalar.toString(),
+          ).toNumber(),
         },
       };
       setReport(report);
