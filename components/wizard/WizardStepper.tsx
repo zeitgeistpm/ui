@@ -40,7 +40,6 @@ export const WizardStepper = <T extends WizardStep<any>>({
           const prevStep = prevStepFrom(steps, step);
 
           const canNavigate =
-            true ||
             step?.reached ||
             (step.isTouched && step.isValid) ||
             (index < currentStepIndex && prevStep?.isValid) ||
