@@ -4,12 +4,12 @@ import { supportedCurrencies } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChainTime } from "lib/state/chaintime";
-import { UseMarketEditor } from "lib/state/market-creation/editor";
+import { MarketDraftEditor } from "lib/state/market-creation/editor";
 import { MarketDraftState } from "lib/state/market-creation/types/draft";
 import {
   Answers,
   Liquidity,
-  MarketCreationFormData,
+  MarketFormData,
   Moderation,
   blocksAsDuration,
   timelineAsBlocks,
@@ -27,9 +27,9 @@ const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
 });
 
 export type MarketPreviewProps = {
-  editor: UseMarketEditor;
+  editor: MarketDraftEditor;
   goToSection: (step: MarketCreationStepType) => void;
-  mergeFormData: (data: Partial<MarketCreationFormData>) => void;
+  mergeFormData: (data: Partial<MarketFormData>) => void;
 };
 
 export const MarketPreview = ({

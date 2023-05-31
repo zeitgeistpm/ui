@@ -21,6 +21,7 @@ import {
   IOTags,
   IOYesNoAnswers,
 } from "./validation";
+import { DeepRequired } from "react-hook-form";
 
 /**
  * This is the type of the full market creation form data that is used to create a market.
@@ -29,7 +30,7 @@ import {
  * @note - Because we are not in strict ts mode zod allways infers partial form fields.
  *  When we move to strict null checks we can do ```z.infer<ReturnType<typeof createMarketFormValidator>>```
  */
-export type MarketCreationFormData = {
+export type MarketFormData = {
   currency: CurrencyTag;
   question: Question;
   tags: Tags;
@@ -43,6 +44,9 @@ export type MarketCreationFormData = {
   moderation: Moderation;
   liquidity: Liquidity;
 };
+
+export type ValidMarketFormData = DeepRequired<MarketFormData>;
+export type PartialMarketFormData = Partial<MarketFormData>;
 
 /**
  * Array of all form keys in the market creation form.

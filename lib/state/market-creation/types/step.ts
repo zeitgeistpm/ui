@@ -1,5 +1,5 @@
 import { WizardStep } from "components/wizard/types";
-import { MarketCreationFormData } from "./form";
+import { MarketFormData } from "./form";
 import { union } from "lib/types/union";
 
 /**
@@ -47,7 +47,7 @@ export const marketCreationSteps = union<MarketCreationStep>()
  */
 export const stepFormKeys: Record<
   MarketCreationStepType,
-  Array<keyof MarketCreationFormData>
+  Array<keyof MarketFormData>
 > = union<MarketCreationStepType>().exhaustAsRecord({
   Currency: ["currency"],
   Question: ["question", "tags"],
@@ -76,7 +76,7 @@ export const stepFormKeys: Record<
  * @param key - the form key to get the section for
  */
 export const stepForFormKey = (
-  key: keyof MarketCreationFormData,
+  key: keyof MarketFormData,
 ): MarketCreationStepType => {
   for (const sectionKey in stepFormKeys) {
     if (stepFormKeys[sectionKey].includes(key))

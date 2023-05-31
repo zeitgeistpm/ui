@@ -1,5 +1,5 @@
 import { ZodIssue } from "zod";
-import { MarketCreationFormData } from "./form";
+import { MarketFormData } from "./form";
 
 /**
  * State of a field input.
@@ -22,7 +22,7 @@ export type FieldState = {
 /**
  * A record of field states for all inputs in the market creation form.
  */
-export type FieldsState = Record<keyof MarketCreationFormData, FieldState>;
+export type FieldsState = Record<keyof MarketFormData, FieldState>;
 
 /**
  * Initial state of the market creation form fields state.

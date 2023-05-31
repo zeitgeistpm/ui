@@ -2,7 +2,7 @@ import {
   gracePeriodOptions,
   reportingPeriodOptions,
 } from "../constants/deadline-options";
-import { MarketCreationFormData } from "./form";
+import { MarketFormData } from "./form";
 import { MarketCreationStep, MarketCreationStepType } from "./step";
 
 /**
@@ -12,10 +12,10 @@ import { MarketCreationStep, MarketCreationStepType } from "./step";
  *  market creation session draft.
  */
 export type MarketDraftState = {
-  form: Partial<MarketCreationFormData>;
+  form: Partial<MarketFormData>;
   isWizard: boolean;
   currentStep: MarketCreationStep;
-  touchState: Partial<Record<keyof MarketCreationFormData, boolean>>;
+  touchState: Partial<Record<keyof MarketFormData, boolean>>;
   stepReachState: Partial<Record<MarketCreationStepType, boolean>>;
 };
 

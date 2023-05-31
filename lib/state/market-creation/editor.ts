@@ -7,7 +7,12 @@ import { useEffect, useMemo } from "react";
 import { minBaseLiquidity } from "./constants/currency";
 import * as MarketDraft from "./types/draft";
 import { FieldsState, initialFieldsState } from "./types/fieldstate";
-import { MarketCreationFormData, marketCreationFormKeys } from "./types/form";
+import {
+  MarketFormData,
+  PartialMarketFormData,
+  ValidMarketFormData,
+  marketCreationFormKeys,
+} from "./types/form";
 import {
   MarketCreationStep,
   MarketCreationStepType,
@@ -18,7 +23,7 @@ import {
 import { useMarketCreationFormValidator } from "./types/validation";
 import { DeepRequired } from "react-hook-form";
 
-export type UseMarketEditor = (ValidFormState | InvalidFormState) & {
+export type MarketDraftEditor = (ValidFormState | InvalidFormState) & {
   /**
    * The steps of the market creation process.
    * Has state regarding if the step is valid, if it has been touched(edited) by the user and if it
@@ -57,7 +62,7 @@ export type UseMarketEditor = (ValidFormState | InvalidFormState) & {
   /**
    * Merge partial form data into the form state.
    */
-  mergeFormData: (data: Partial<MarketCreationFormData>) => void;
+  mergeFormData: (data: Partial<MarketFormData>) => void;
   /**
    * Toggle the wizard mode on or off.
    */
@@ -65,7 +70,7 @@ export type UseMarketEditor = (ValidFormState | InvalidFormState) & {
   /**
    * Register a input to a form key.
    */
-  input: <K extends keyof MarketCreationFormData>(
+  input: <K extends keyof MarketFormData>(
     key: K,
     options?: {
       type?: "text" | "number";
@@ -73,9 +78,9 @@ export type UseMarketEditor = (ValidFormState | InvalidFormState) & {
     },
   ) => {
     name: K;
-    value: Partial<MarketCreationFormData>[K];
-    onChange: (event: FormEvent<MarketCreationFormData[K]>) => void;
-    onBlur: (event: FormEvent<MarketCreationFormData[K]>) => void;
+    value: Partial<MarketFormData>[K];
+    onChange: (event: FormEvent<MarketFormData[K]>) => void;
+    onBlur: (event: FormEvent<MarketFormData[K]>) => void;
     fieldState: FieldsState[K];
   };
 };
@@ -85,7 +90,7 @@ export type ValidFormState = {
    * The current state of the form data.
    * Ensured to be full data in valid state.
    */
-  form: DeepRequired<MarketCreationFormData>;
+  form: ValidMarketFormData;
   /**
    * Is the form as a whole valid.
    * Ensured to be true in valid state.
@@ -98,7 +103,7 @@ export type InvalidFormState = {
    * The current state of the form data.
    * Can be partial data.
    */
-  form: Partial<MarketCreationFormData>;
+  form: PartialMarketFormData;
   /**
    * Is the form as a whole valid.
    * Ensured to be false in invalid state.
@@ -114,7 +119,7 @@ export type MarketDraftConfig = {
 export const useMarketDraftEditor = ({
   state,
   setState,
-}: MarketDraftConfig): UseMarketEditor => {
+}: MarketDraftConfig): MarketDraftEditor => {
   const validator = useMarketCreationFormValidator(state.form);
 
   const fieldsState = useMemo<FieldsState>(() => {
@@ -171,7 +176,7 @@ export const useMarketDraftEditor = ({
     }
   };
 
-  const mergeFormData = (data: Partial<MarketCreationFormData>) => {
+  const mergeFormData = (data: Partial<MarketFormData>) => {
     setState({
       ...state,
       form: merge(state.form, data),
@@ -210,7 +215,7 @@ export const useMarketDraftEditor = ({
       },
     });
 
-  const input = <K extends keyof MarketCreationFormData>(
+  const input = <K extends keyof MarketFormData>(
     key: K,
     options?: {
       type?: "text" | "number";
@@ -231,7 +236,7 @@ export const useMarketDraftEditor = ({
       name: key,
       value: state.form?.[key],
       fieldState: fieldsState[key],
-      onChange: (event: FormEvent<MarketCreationFormData[K]>) => {
+      onChange: (event: FormEvent<MarketFormData[K]>) => {
         if (mode === "onBlur") return;
         let newState = {
           ...state,
@@ -244,7 +249,7 @@ export const useMarketDraftEditor = ({
         }
         setState(newState);
       },
-      onBlur: (event: FormEvent<MarketCreationFormData[K]>) => {
+      onBlur: (event: FormEvent<MarketFormData[K]>) => {
         if (mode === "onChange") return;
         let newState = {
           ...state,
@@ -363,7 +368,7 @@ export const useMarketDraftEditor = ({
     mergeFormData,
     toggleWizard,
     input,
-  } as UseMarketEditor & (ValidFormState | InvalidFormState);
+  } as MarketDraftEditor & (ValidFormState | InvalidFormState);
 
   return editor;
 };

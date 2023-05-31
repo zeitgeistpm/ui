@@ -15,14 +15,14 @@ import { useChainTime } from "lib/state/chaintime";
 import { useMemo } from "react";
 import * as z from "zod";
 import { SupportedCurrencyTag } from "../../../constants/supported-currencies";
-import { MarketCreationFormData, timelineAsBlocks } from "./form";
+import { MarketFormData, timelineAsBlocks } from "./form";
 import moment from "moment";
 import { BLOCK_TIME_SECONDS } from "lib/constants";
 import { chain } from "lodash-es";
 import { minBaseLiquidity } from "../constants/currency";
 
 export type MarketValidationDependencies = {
-  form: Partial<MarketCreationFormData>;
+  form: Partial<MarketFormData>;
   deadlineConstants: MarketDeadlineConstants;
   chainTime: ChainTime;
 };
@@ -134,7 +134,7 @@ export const createMarketFormValidator = ({
  * and on chain constants + chain time.
  */
 export const useMarketCreationFormValidator = (
-  form: Partial<MarketCreationFormData>,
+  form: Partial<MarketFormData>,
 ): ReturnType<typeof createMarketFormValidator> => {
   const { data: deadlineConstants } = useMarketDeadlineConstants();
   const chainTime = useChainTime();
