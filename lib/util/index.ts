@@ -124,9 +124,13 @@ export const formatNumberLocalized = (
   num: number,
   locale: string = "default",
 ) => {
-  return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(
-    num,
-  );
+  if (num > 0 && num < 0.01) {
+    return "<0.01";
+  } else {
+    return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(
+      num,
+    );
+  }
 };
 
 export const paramsForBlocksArray = (
