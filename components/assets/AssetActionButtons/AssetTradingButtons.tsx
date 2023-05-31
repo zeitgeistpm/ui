@@ -1,10 +1,9 @@
 import { Dialog } from "@headlessui/react";
 import { ScalarAssetId, CategoricalAssetId } from "@zeitgeistpm/sdk-next";
 import TradeForm from "components/trade-form";
-import { TradeTabType } from "components/trade-form/TradeTab";
 import Modal from "components/ui/Modal";
+import SecondaryButton from "components/ui/SecondaryButton";
 import { useTradeItem } from "lib/hooks/trade";
-import { TradeType } from "lib/types";
 import { useState } from "react";
 
 const AssetTradingButtons = ({
@@ -17,9 +16,8 @@ const AssetTradingButtons = ({
 
   return (
     <>
-      <div className="flex justify-end">
-        <button
-          className="border-gray-300 text-sm border-2 rounded-full py-2 px-5 mr-2"
+      <div className="flex justify-end gap-x-2">
+        <SecondaryButton
           onClick={() => {
             setTradeItem({
               assetId: assetId,
@@ -29,9 +27,8 @@ const AssetTradingButtons = ({
           }}
         >
           Buy
-        </button>
-        <button
-          className="border-gray-300 text-sm border-2 rounded-full py-2 px-5"
+        </SecondaryButton>
+        <SecondaryButton
           onClick={() => {
             setTradeItem({
               assetId: assetId,
@@ -41,7 +38,7 @@ const AssetTradingButtons = ({
           }}
         >
           Sell
-        </button>
+        </SecondaryButton>
       </div>
       {tradeItem && (
         <Modal open={isOpen} onClose={() => setIsOpen(false)}>

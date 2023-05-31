@@ -1,8 +1,9 @@
-import { FullMarketFragment, FullPoolFragment } from "@zeitgeistpm/indexer";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import LiquidityModal from "components/liquidity/LiquidityModal";
 import PoolTable from "components/liquidity/PoolTable";
 import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
+import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
@@ -109,12 +110,12 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
           />
         </LiquidityHeaderButtonItem>
         <LiquidityHeaderButtonItem className="lg:-ml-14">
-          <button
-            className="h-8 border-gray-300 border-1 rounded-full text-ztg-10-150 px-1 w-full md:w-auto sm:px-6 mx-auto md:ml-auto md:mr-0"
+          <SecondaryButton
             onClick={() => setManageLiquidityOpen(true)}
+            className="max-w-[160px]"
           >
-            Add/Remove Liquidity
-          </button>
+            Manage Liquidity
+          </SecondaryButton>
         </LiquidityHeaderButtonItem>
       </div>
       <LiquidityModal
