@@ -21,10 +21,12 @@ export const MarketLiquiditySection = ({
       <div className="mb-8">
         <LiquidityHeader market={market} />
       </div>
-      <PoolTable
-        poolId={market?.pool?.poolId}
-        marketId={Number(market?.marketId)}
-      />
+      {market?.pool?.poolId && (
+        <PoolTable
+          poolId={market.pool.poolId}
+          marketId={Number(market.marketId)}
+        />
+      )}
     </>
   );
 };
@@ -61,11 +63,13 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
   const { pool } = market;
   const { data: liquidity } = usePoolLiquidity({ poolId: pool.poolId });
   const swapFee = Number(pool?.swapFee ?? 0);
-  const baseAssetId = parseAssetId(pool?.baseAsset).unrightOr(null);
+  const baseAssetId = pool?.baseAsset
+    ? parseAssetId(pool.baseAsset).unrightOr(undefined)
+    : undefined;
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
   const prediction =
-    market && getCurrentPrediction(market?.pool?.assets, market);
+    market?.pool?.assets && getCurrentPrediction(market.pool.assets, market);
 
   const [manageLiquidityOpen, setManageLiquidityOpen] = useState(false);
 
@@ -100,7 +104,7 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
       <div className="flex md:w-full">
         <LiquidityHeaderButtonItem className="border-r-1 md:mx-0">
           <BuySellFullSetsButton
-            marketId={pool.marketId}
+            marketId={market.marketId}
             buttonClassName="h-8 border-gray-300 border-1 rounded-full text-ztg-10-150 px-1 w-full md:w-auto sm:px-6 mx-auto"
           />
         </LiquidityHeaderButtonItem>

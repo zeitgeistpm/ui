@@ -30,7 +30,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
 
   const click = (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (preventDefault) {
-      event.preventDefault();
+      event?.preventDefault();
     }
     if (!wallet.connected) {
       accountModals.openWalletSelect();

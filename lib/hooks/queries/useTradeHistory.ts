@@ -37,7 +37,7 @@ const lookupAssetName = (
   if (IOMarketOutcomeAssetId.is(assetId)) {
     const marketId = getMarketIdOf(assetId);
     const index = getIndexOf(assetId);
-    return marketsMap.get(marketId).categories[index].name;
+    return marketsMap.get(marketId)?.categories[index].name;
   } else if (IOForeignAssetId.is(assetId)) {
     return foreignAssetMap.get(assetId.ForeignAsset);
   } else {
@@ -50,7 +50,7 @@ const lookupMarket = (asset: string, marketsMap: Map<number, MarketHeader>) => {
 
   if (IOMarketOutcomeAssetId.is(assetId)) {
     const marketId = getMarketIdOf(assetId);
-    return { question: marketsMap.get(marketId).question, marketId: marketId };
+    return { question: marketsMap.get(marketId)?.question, marketId: marketId };
   } else {
     return null;
   }

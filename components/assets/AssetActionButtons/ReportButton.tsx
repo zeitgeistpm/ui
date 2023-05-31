@@ -29,7 +29,7 @@ const ReportButton = ({
 
   if (!market) return null;
 
-  const outcomeName = market.categories?.[getIndexOf(assetId)].name;
+  const outcomeName = market.categories?.[getIndexOf(assetId)]?.name;
 
   const reportDisabled = !sdk || !isRpcSdk(sdk);
 
@@ -42,6 +42,7 @@ const ReportButton = ({
       //@ts-ignore
       const ID = assetId.CategoricalOutcome[1];
       const signer = wallet.getActiveSigner();
+      if (!signer) return;
 
       const callback = extrinsicCallback({
         api: sdk.api,

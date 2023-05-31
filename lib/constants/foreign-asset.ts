@@ -21,7 +21,6 @@ export const lookupAssetImagePath = (foreignAssetId?: number) => {
 
 const BATTERY_STATION_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
   0: {
-    originChain: null,
     image: "/currencies/dot.png",
     withdrawSupported: false,
     coinGeckoId: "polkadot",
