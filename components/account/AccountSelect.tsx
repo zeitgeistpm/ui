@@ -7,6 +7,7 @@ import Select, { components, ControlProps } from "react-select";
 import CopyIcon from "../ui/CopyIcon";
 import AccountSelectOption from "./AccountSelectOption";
 import AccountSelectValue from "./AccountSelectValue";
+import { useAccountModals } from "lib/state/account";
 
 const Control = ({ children, ...rest }) => {
   return (
@@ -75,6 +76,7 @@ const customStyles = {
 
 const AccountSelect: FC = () => {
   const wallet = useWallet();
+  const accountModals = useAccountModals();
 
   const options = useMemo(() => {
     return wallet.accounts.map((account, id) => {
@@ -97,6 +99,8 @@ const AccountSelect: FC = () => {
 
   const onSelectChange = (opt: Unpacked<typeof options>) => {
     wallet.selectAccount(opt.value);
+    accountModals.accountSelectedCallbacks.forEach((cb) => cb(opt.value));
+    accountModals.closeAccountSelect();
   };
 
   return (

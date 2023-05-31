@@ -67,6 +67,16 @@ export const OracleInput = forwardRef(
       });
     };
 
+    const handleChangeAccount = (address: string) => {
+      onChange?.({
+        type: "change",
+        target: {
+          name,
+          value: address,
+        },
+      });
+    };
+
     const isSelectedAccount = wallet.activeAccount?.address === value;
 
     return (
@@ -86,42 +96,63 @@ export const OracleInput = forwardRef(
         />
         {wallet?.activeAccount?.address ? (
           <div className="center">
-            <button
-              type="button"
-              onClick={handleUseConnectedAccount}
-              className={`
-            flex justify-center items-center
-            border-gray-300 text-sm bg-gray-100 rounded-full transition-all ease-in-out duration-200 mb-4 border-2 border-transparent
+            <div className="relative flex justify-center items-center">
+              <button
+                type="button"
+                onClick={handleUseConnectedAccount}
+                className={`
+            
+            border-gray-300 text-sm relative flex justify-center items-center bg-gray-100 rounded-full transition-all ease-in-out duration-200 
+            border-2 border-transparent
             ${!isSelectedAccount && " border-orange-300"}
           `}
-            >
-              <div
-                className={`relative flex-1 h-full py-2 px-3 transition-all duration-300 ease-[cubic-bezier(.57,.42,.25,1.57)] ${
-                  isSelectedAccount ? "w-[120px]" : "w-[200px]"
-                }`}
               >
                 <div
-                  className={`absolute left-0 top-[50%] translate-y-[-50%] ${
-                    !isSelectedAccount
-                      ? "min-w-[200px]  text-orange-300"
-                      : "min-w-[120px]"
+                  className={`relative flex-1 h-full py-2 px-3 transition-all duration-300 ease-[cubic-bezier(.57,.42,.25,1.57)] ${
+                    isSelectedAccount ? "w-[120px]" : "w-[200px]"
                   }`}
                 >
-                  {!isSelectedAccount ? "Use connected wallet" : "Connected"}
+                  <div
+                    className={`absolute left-0 top-[50%] translate-y-[-50%] ${
+                      !isSelectedAccount
+                        ? "min-w-[200px]  text-orange-300"
+                        : "min-w-[120px]"
+                    }`}
+                  >
+                    {!isSelectedAccount ? "Use connected wallet" : "Connected"}
+                  </div>
                 </div>
-              </div>
 
-              <div
-                className={`center gap-2 bg-gray-200 py-2 px-3 rounded-full ${
-                  isSelectedAccount ? "bg-nyanza-base" : "bg-gray-200"
-                }`}
+                <div
+                  className={`center gap-2 bg-gray-200 py-2 px-3 rounded-full ${
+                    isSelectedAccount ? "bg-nyanza-base" : "bg-gray-200"
+                  }`}
+                >
+                  <div className="pointer-events-none">
+                    <Avatar address={wallet.activeAccount?.address} size={18} />
+                  </div>
+                  <span className="font-semibold center gap-4">
+                    {wallet.activeAccount?.name ? (
+                      <>
+                        {wallet.activeAccount?.name}{" "}
+                        {shortenAddress(wallet.activeAccount?.address, 0, 6)}
+                      </>
+                    ) : (
+                      <>{shortenAddress(wallet.activeAccount?.address, 6, 6)}</>
+                    )}
+                  </span>
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  accountModals.openAccountSelect(handleChangeAccount)
+                }
+                className="absolute top-[50%] right-0 translate-y-[-50%] translate-x-[100%] pl-4 text-sm text-gray-400"
               >
-                <Avatar address={wallet.activeAccount?.address} size={18} />
-                <span className="font-semibold center gap-4">
-                  {shortenAddress(wallet.activeAccount?.address, 6, 6)}
-                </span>
-              </div>
-            </button>
+                Use Other
+              </button>
+            </div>
           </div>
         ) : (
           <div className="center">

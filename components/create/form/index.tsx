@@ -438,7 +438,7 @@ export const MarketCreationForm = () => {
               will lose some of your deposit.
             </p>
             <div>
-              <div className="center">
+              <div className="center mb-6">
                 <OracleInput
                   className="md:w-2/3"
                   {...input("oracle", { mode: "all" })}
