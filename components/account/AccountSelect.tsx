@@ -99,7 +99,6 @@ const AccountSelect: FC = () => {
 
   const onSelectChange = (opt: Unpacked<typeof options>) => {
     wallet.selectAccount(opt.value);
-    accountModals.accountSelectedCallbacks.forEach((cb) => cb(opt.value));
     accountModals.closeAccountSelect();
   };
 

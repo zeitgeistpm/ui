@@ -326,7 +326,7 @@ export const useCreateMarketState = (): UseCreateMarketState => {
 
     const resetPrices =
       prevAnswersLength !== numOutcomes || prevCurrency !== state.form.currency;
-    console.log({ resetPrices });
+
     const rows = [
       ...state.form.answers.answers.map((answer, index) => {
         const liquidity = state.form.liquidity?.rows[index];

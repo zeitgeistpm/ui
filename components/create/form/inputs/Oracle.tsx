@@ -1,20 +1,10 @@
-import { SupportedTag, defaultTags } from "lib/constants/markets";
-import Image from "next/image";
-import {
-  ChangeEventHandler,
-  forwardRef,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
-import { FormEvent } from "../types";
+import Avatar from "components/ui/Avatar";
+import { useAccountModals } from "lib/state/account";
 import { FieldState } from "lib/state/market-creation/types/fieldstate";
 import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
-import Avatar from "components/ui/Avatar";
-import { usePrevious } from "lib/hooks/usePrevious";
-import { useAccountModals } from "lib/state/account";
+import { ChangeEventHandler, forwardRef } from "react";
+import { FormEvent } from "../types";
 
 export type OracleInputProps = {
   name: string;
@@ -142,15 +132,6 @@ export const OracleInput = forwardRef(
                     )}
                   </span>
                 </div>
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  accountModals.openAccountSelect(handleChangeAccount)
-                }
-                className="absolute top-[50%] right-0 translate-y-[-50%] translate-x-[100%] pl-4 text-sm text-gray-400"
-              >
-                Use Other
               </button>
             </div>
           </div>
