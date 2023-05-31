@@ -1,6 +1,5 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { useDisableScroll } from "lib/hooks/useDisableScroll";
-import { ReactNode, Fragment, useEffect } from "react";
+import { ReactNode, Fragment } from "react";
 
 const Modal = ({
   open,
@@ -11,7 +10,6 @@ const Modal = ({
   open: boolean;
   onClose: () => void;
 }) => {
-  useDisableScroll(open);
   return (
     <Transition appear show={open} as={Fragment}>
       <Dialog open={true} onClose={onClose} className="relative z-ztg-40">
