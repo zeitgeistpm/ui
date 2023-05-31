@@ -9,6 +9,7 @@ import {
 import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
 import Modal from "components/ui/Modal";
+import SecondaryButton from "components/ui/SecondaryButton";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 
@@ -38,13 +39,9 @@ const DisputeButton = ({
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        disabled={disputeDisabled}
-        className="border-gray-300 text-sm border-2 rounded-full py-2 px-5 mr-2"
-      >
+      <SecondaryButton onClick={() => setOpen(true)} disabled={disputeDisabled}>
         Dispute Outcome
-      </button>
+      </SecondaryButton>
 
       <Modal open={isOpen} onClose={() => setOpen(false)}>
         <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">

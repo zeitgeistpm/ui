@@ -3,6 +3,7 @@ import type { ApiPromise } from "@polkadot/api";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
+import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { ChainName } from "lib/constants/chains";
@@ -22,12 +23,9 @@ const WithdrawButton = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
 
   return (
     <>
-      <button
-        className="border-gray-300 text-sm border-2 rounded-full py-2 w-[110px] mr-2"
-        onClick={() => setIsOpen(true)}
-      >
+      <SecondaryButton onClick={() => setIsOpen(true)}>
         Withdraw
-      </button>
+      </SecondaryButton>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <WithdrawModal
           toChain={toChain}

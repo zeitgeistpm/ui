@@ -477,6 +477,18 @@ const Inner = ({ sdkv1 }: { sdkv1: SDK }) => {
 
     const deadlines = getMarketDeadlines();
 
+    console.log(
+      marketType,
+      signer,
+      oracle,
+      period,
+      deadlines,
+      creationType,
+      scoringRule,
+      metadata,
+      callbackOrPaymentInfo,
+    );
+
     return {
       marketType,
       signer,
@@ -590,6 +602,8 @@ const Inner = ({ sdkv1 }: { sdkv1: SDK }) => {
   };
 
   const createMarket = async () => {
+    console.log(form);
+
     if (!form.isValid) {
       return;
     }

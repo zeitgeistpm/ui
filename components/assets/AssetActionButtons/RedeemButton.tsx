@@ -8,6 +8,7 @@ import {
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
 import * as AE from "@zeitgeistpm/utility/dist/aeither";
+import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import {
@@ -155,13 +156,12 @@ export const RedeemButtonByValue = ({
       {isRedeemed ? (
         <span className="text-green-500 font-bold">Redeemed Tokens!</span>
       ) : (
-        <button
+        <SecondaryButton
           onClick={handleClick}
-          className={`border-gray-300 text-sm border-2 rounded-full py-2 px-5 mr-2`}
           disabled={isRedeeming || value.eq(0)}
         >
           Redeem Tokens
-        </button>
+        </SecondaryButton>
       )}
     </>
   );
