@@ -23,6 +23,7 @@ import { useRouter } from "next/router";
 import { useMemo } from "react";
 import NotFoundPage from "pages/404";
 import { isValidPolkadotAddress } from "lib/util";
+import { useCrossChainApis } from "lib/state/cross-chain";
 
 type MainTabItem =
   | "Predictions"
@@ -47,6 +48,9 @@ const Portfolio: NextPageWithLayout = () => {
   const address = Array.isArray(router.query.address)
     ? router.query.address[0]
     : router.query.address;
+
+  //init cross chain apis early
+  useCrossChainApis();
 
   const [mainTabSelection, setMainTabSelection] =
     useQueryParamState<MainTabItem>("mainTab");
