@@ -73,6 +73,15 @@ export const useTradeItemState = (item: TradeItem) => {
     traderAssetBalance: traderAssetBalance?.toString(),
   };
 
+  const enabled =
+    !!sdk &&
+    !!item &&
+    !!pool &&
+    !!poolBaseBalance &&
+    !!poolAssetBalance &&
+    !!baseAsset &&
+    !!market;
+
   const query = useQuery(
     [
       id,
@@ -84,54 +93,45 @@ export const useTradeItemState = (item: TradeItem) => {
       JSON.stringify(item.assetId),
     ],
     () => {
-      if (pool && market && poolBaseBalance && baseAsset) {
-        const baseWeight = getAssetWeight(pool, baseAsset).unwrap();
-        const assetWeight = getAssetWeight(pool, item.assetId).unwrap();
-        const assetIndex = getIndexOf(item.assetId);
-        const asset = market.categories?.[assetIndex];
-        const swapFee = new Decimal(
-          pool.swapFee === "" ? "0" : pool.swapFee,
-        ).div(ZTG);
-        const tradeablePoolAssetBalance =
-          poolAssetBalance.mul(MAX_IN_OUT_RATIO);
+      if (!enabled) return;
+      const baseWeight = getAssetWeight(pool, baseAsset).unwrap();
+      const assetWeight = getAssetWeight(pool, item.assetId).unwrap();
+      const assetIndex = getIndexOf(item.assetId);
+      const asset = market.categories?.[assetIndex];
+      const swapFee = new Decimal(pool.swapFee === "" ? "0" : pool.swapFee).div(
+        ZTG,
+      );
+      const tradeablePoolAssetBalance = poolAssetBalance.mul(MAX_IN_OUT_RATIO);
 
-        const spotPrice = calcSpotPrice(
-          poolBaseBalance,
-          baseWeight,
-          poolAssetBalance,
-          assetWeight,
-          swapFee,
-        );
+      const spotPrice = calcSpotPrice(
+        poolBaseBalance,
+        baseWeight,
+        poolAssetBalance,
+        assetWeight,
+        swapFee,
+      );
 
-        return {
-          asset,
-          pool,
-          market,
-          spotPrice,
-          baseAssetId: baseAsset,
-          poolAccountId,
-          poolBaseBalance,
-          poolAssetBalance,
-          assetId: item.assetId,
-          tradeablePoolAssetBalance,
-          traderBaseBalance,
-          traderAssetBalance,
-          baseWeight,
-          assetWeight,
-          swapFee,
-          slippage,
-        };
-      }
+      return {
+        asset,
+        pool,
+        market,
+        spotPrice,
+        baseAssetId: baseAsset,
+        poolAccountId,
+        poolBaseBalance,
+        poolAssetBalance,
+        assetId: item.assetId,
+        tradeablePoolAssetBalance,
+        traderBaseBalance,
+        traderAssetBalance,
+        baseWeight,
+        assetWeight,
+        swapFee,
+        slippage,
+      };
     },
     {
-      enabled:
-        !!sdk &&
-        !!item &&
-        !!pool &&
-        !!poolBaseBalance &&
-        !!poolAssetBalance &&
-        !!baseAsset &&
-        !!market,
+      enabled: enabled,
       keepPreviousData: true,
     },
   );
