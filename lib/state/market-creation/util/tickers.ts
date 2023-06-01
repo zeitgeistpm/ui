@@ -1,8 +1,12 @@
 import { MarketMetadata } from "@zeitgeistpm/sdk-next";
-import { Unpacked } from "@zeitgeistpm/utility/dist/array";
 import { Answers } from "../types/form";
 
-export const tickersFor = (answers: Answers): MarketMetadata["categories"] => {
+/**
+ * Generate tickers and appropriate names for answers form data.
+ */
+export const tickersForAnswers = (
+  answers: Answers,
+): MarketMetadata["categories"] => {
   let metadataCategories: MarketMetadata["categories"] = [];
 
   if (answers.type === "scalar") {
@@ -28,6 +32,9 @@ export const tickersFor = (answers: Answers): MarketMetadata["categories"] => {
   return metadataCategories;
 };
 
+/**
+ * Generate appropriate tickers for categorical answers.
+ */
 export const createCategoricalTickers = (
   answers: string[],
 ): { [key: string]: string } => {
@@ -37,12 +44,10 @@ export const createCategoricalTickers = (
   for (const description of answers) {
     const words = description.split(" ");
 
-    // Generate initial ticker
     let ticker = (
       words[0].slice(0, 3) + words[words.length - 1].slice(0, 3)
     ).toUpperCase();
 
-    // Check if ticker already exists or is a reserved keyword
     if (usedTickers[ticker]) {
       let count = 1;
       let newTicker = ticker;

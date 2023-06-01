@@ -5,6 +5,7 @@ import {
   MetadataStorage,
   RpcContext,
   ZTG,
+  swapFeeFromFloat,
 } from "@zeitgeistpm/sdk-next";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { ChainTime } from "@zeitgeistpm/utility/dist/time";
@@ -32,7 +33,7 @@ import {
   IOTags,
   IOYesNoAnswers,
 } from "./validation";
-import { tickersFor } from "../util/tickers";
+import { tickersForAnswers } from "../util/tickers";
 
 /**
  * This is the type of the full market creation form data that is used to create a market.
@@ -142,7 +143,7 @@ export const marketFormDataToExtrinsicParams = (
       question: form.question,
       slug: form.question,
       tags: form.tags,
-      categories: tickersFor(form.answers),
+      categories: tickersForAnswers(form.answers),
     },
     baseAsset: form.currency === "ZTG" ? { Ztg: null } : { ForeignAsset: 0 },
   };
@@ -156,7 +157,7 @@ export const marketFormDataToExtrinsicParams = (
             amount: new Decimal(form.liquidity.rows[0].amount)
               .mul(ZTG)
               .toString(),
-            swapFee: form.liquidity.swapFee.toString(),
+            swapFee: swapFeeFromFloat(form.liquidity.swapFee).toString(),
             weights: form.liquidity.rows.map((row) => row.weight),
           }
         : undefined,

@@ -21,7 +21,7 @@ import {
   stepFormKeys,
 } from "./types/step";
 import { useMarketCreationFormValidator } from "./types/validation";
-import { tickersFor } from "./util/tickers";
+import { tickersForAnswers } from "./util/tickers";
 
 export type MarketDraftEditor = (ValidFormState | InvalidFormState) & {
   /**
@@ -291,7 +291,7 @@ export const useMarketDraftEditor = ({
     const resetPrices =
       prevAnswersLength !== numOutcomes || prevCurrency !== state.form.currency;
 
-    const tickers = tickersFor(state.form.answers);
+    const tickers = tickersForAnswers(state.form.answers);
 
     const rows = [
       ...state.form.answers.answers.map((answer, index) => {
