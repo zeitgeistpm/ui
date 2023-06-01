@@ -18,7 +18,16 @@ export const transactionHistoryKey = "trade-history";
 
 const marketHeaderQuery = gql`
   query MarketTransactionHeader($marketIds: [Int!]) {
-    markets(where: { marketId_in: $marketIds }, orderBy: marketId_ASC) {
+    markets(
+      where: {
+        marketId_in: $marketIds
+        isMetaComplete_eq: true
+        question_isNull: false
+        question_not_eq: ""
+      }
+      orderBy: marketId_ASC
+    ) {
+      marketId
       question
       categories {
         name
@@ -37,7 +46,8 @@ const lookupAssetName = (
   if (IOMarketOutcomeAssetId.is(assetId)) {
     const marketId = getMarketIdOf(assetId);
     const index = getIndexOf(assetId);
-    return marketsMap.get(marketId).categories[index].name;
+    const market = marketsMap.get(marketId);
+    return market && market.categories[index].name;
   } else if (IOForeignAssetId.is(assetId)) {
     return foreignAssetMap.get(assetId.ForeignAsset);
   } else {
@@ -50,9 +60,10 @@ const lookupMarket = (asset: string, marketsMap: Map<number, MarketHeader>) => {
 
   if (IOMarketOutcomeAssetId.is(assetId)) {
     const marketId = getMarketIdOf(assetId);
-    return { question: marketsMap.get(marketId).question, marketId: marketId };
+    const market = marketsMap.get(marketId);
+    return market && { question: market.question, marketId: marketId };
   } else {
-    return null;
+    return;
   }
 };
 
@@ -80,6 +91,7 @@ const calculatePrice = (
 };
 
 type MarketHeader = {
+  marketId: number;
   question: string;
   categories: { name: string }[];
 };
@@ -127,8 +139,11 @@ export const useTradeHistory = (address: string) => {
         });
 
         const marketsMap: Map<number, MarketHeader> = new Map();
-        marketIdsArray.forEach((marketId, index) => {
-          marketsMap.set(marketId, markets[index]);
+        marketIdsArray.forEach((marketId) => {
+          const market = markets.find((m) => m.marketId === marketId);
+          if (market) {
+            marketsMap.set(marketId, market);
+          }
         });
 
         const foreignAssetIdsArray = Array.from(foreignAssetIds);
@@ -144,34 +159,40 @@ export const useTradeHistory = (address: string) => {
           metadataMap.set(foreignAssetIdsArray[index], symbol);
         });
 
-        const trades = historicalSwaps.map((swap) => {
-          const market =
-            lookupMarket(swap.assetIn, marketsMap) ??
-            lookupMarket(swap.assetOut, marketsMap);
+        const trades = historicalSwaps
+          .map((swap) => {
+            const market =
+              lookupMarket(swap.assetIn, marketsMap) ??
+              lookupMarket(swap.assetOut, marketsMap);
 
-          const priceInfo = calculatePrice(
-            swap.assetIn,
-            swap.assetOut,
-            swap.assetAmountIn,
-            swap.assetAmountOut,
-          );
+            if (!market) {
+              return;
+            }
 
-          return {
-            marketId: market?.marketId,
-            question: market?.question,
-            assetIn: lookupAssetName(swap.assetIn, marketsMap, metadataMap),
-            assetOut: lookupAssetName(swap.assetOut, marketsMap, metadataMap),
-            assetAmountIn: new Decimal(swap.assetAmountIn),
-            assetAmountOut: new Decimal(swap.assetAmountOut),
-            price: priceInfo.price,
-            baseAssetName: lookupAssetName(
-              priceInfo.baseAsset,
-              marketsMap,
-              metadataMap,
-            ),
-            time: swap.timestamp,
-          };
-        });
+            const priceInfo = calculatePrice(
+              swap.assetIn,
+              swap.assetOut,
+              swap.assetAmountIn,
+              swap.assetAmountOut,
+            );
+
+            return {
+              marketId: market?.marketId,
+              question: market?.question,
+              assetIn: lookupAssetName(swap.assetIn, marketsMap, metadataMap),
+              assetOut: lookupAssetName(swap.assetOut, marketsMap, metadataMap),
+              assetAmountIn: new Decimal(swap.assetAmountIn),
+              assetAmountOut: new Decimal(swap.assetAmountOut),
+              price: priceInfo.price,
+              baseAssetName: lookupAssetName(
+                priceInfo.baseAsset,
+                marketsMap,
+                metadataMap,
+              ),
+              time: swap.timestamp,
+            };
+          })
+          .filter((trade) => trade != null);
 
         return trades;
       }

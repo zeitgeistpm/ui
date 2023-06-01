@@ -23,7 +23,13 @@ export const useCurrencyBalances = (address: string) => {
   const { data: constants } = useChainConstants();
 
   const query = useQuery(
-    [id, currencyBalanceRootKey, address, Object.values(apis ?? {}).length],
+    [
+      id,
+      currencyBalanceRootKey,
+      address,
+      Object.values(apis ?? {}).length,
+      constants,
+    ],
     async () => {
       if (isRpcSdk(sdk)) {
         const assetIds = Object.keys(FOREIGN_ASSET_METADATA);

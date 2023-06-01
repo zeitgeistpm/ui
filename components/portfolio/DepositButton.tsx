@@ -2,6 +2,7 @@ import { Dialog } from "@headlessui/react";
 import { ZTG } from "@zeitgeistpm/sdk-next";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
+import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
 import { ChainName } from "lib/constants/chains";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
@@ -27,12 +28,7 @@ const DepositButton = ({
 
   return (
     <>
-      <button
-        className="border-gray-300 text-sm border-2 rounded-full py-2 w-[110px] mr-2"
-        onClick={() => setIsOpen(true)}
-      >
-        Deposit
-      </button>
+      <SecondaryButton onClick={() => setIsOpen(true)}>Deposit</SecondaryButton>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <DepositModal
           sourceChain={sourceChain}

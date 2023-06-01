@@ -33,7 +33,7 @@ const MarketChart = ({
 }) => {
   const [chartFilter, setChartFilter] = useState<TimeFilter>(filters[1]);
 
-  const baseAssetId = parseAssetId(baseAsset).unrightOr(null);
+  const baseAssetId = parseAssetId(baseAsset).unrightOr(undefined);
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
   const startDateISOString = useMemo(() => {

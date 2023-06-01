@@ -39,7 +39,9 @@ const PoolTable = ({
 }) => {
   const { data: pool } = usePool({ poolId });
   const { data: market } = useMarket({ marketId });
-  const baseAssetId = parseAssetId(pool?.baseAsset).unrightOr(null);
+  const baseAssetId = pool?.baseAsset
+    ? parseAssetId(pool.baseAsset).unrightOr(undefined)
+    : undefined;
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
   const { data: balances } = useAccountPoolAssetBalances(pool?.accountId, pool);
@@ -48,13 +50,13 @@ const PoolTable = ({
   const { data: spotPrices } = useMarketSpotPrices(marketId);
 
   const tableData: TableData[] = pool?.weights?.map((asset, index) => {
-    let amount: Decimal;
-    let usdValue: Decimal;
+    let amount: Decimal | undefined;
+    let usdValue: Decimal | undefined;
     let category: { color?: string; name?: string };
     const assetId = parseAssetId(asset.assetId).unrightOr(null);
 
     if (IOBaseAssetId.is(assetId)) {
-      amount = basePoolBalance;
+      amount = basePoolBalance ?? undefined;
       usdValue = basePoolBalance?.mul(baseAssetUsdPrice ?? 0);
       category = { color: "#ffffff", name: metadata?.symbol };
     } else {

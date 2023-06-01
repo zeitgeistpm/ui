@@ -12,12 +12,12 @@ import { XcmVersionedMultiLocation } from "@polkadot/types/lookup";
 export type AssetMetadata = {
   symbol: string;
   name: string;
-  location: XcmVersionedMultiLocation;
+  location: XcmVersionedMultiLocation | null;
 };
 
 export const assetMetadataRootKey = "asset-metadata";
 
-export const useAssetMetadata = (assetId: AssetId) => {
+export const useAssetMetadata = (assetId?: AssetId) => {
   const [sdk, id] = useSdkv2();
   const { data: constants } = useChainConstants();
 
@@ -34,8 +34,7 @@ export const useAssetMetadata = (assetId: AssetId) => {
           return assetMetadata;
         } else if (IOForeignAssetId.is(assetId)) {
           const metadata = await sdk.api.query.assetRegistry.metadata(assetId);
-          const location: XcmVersionedMultiLocation = metadata.unwrapOr(null)
-            .location.isSome
+          const location = metadata.unwrapOr(null)?.location.isSome
             ? metadata.unwrap().location.unwrap()
             : null;
 

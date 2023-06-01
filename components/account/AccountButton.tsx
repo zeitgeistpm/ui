@@ -30,8 +30,8 @@ const BalanceRow = ({
   units,
 }: {
   imgPath: string;
-  balance: Decimal;
   units: string;
+  balance?: Decimal;
 }) => {
   return (
     <div className="flex items-center mb-3 ">
@@ -202,11 +202,13 @@ const AccountButton: FC<{
                             e.stopPropagation();
                           }}
                         >
-                          <Avatar
-                            zoomed
-                            address={activeAccount?.address}
-                            deps={avatarDeps}
-                          />
+                          {activeAccount?.address && (
+                            <Avatar
+                              zoomed
+                              address={activeAccount?.address}
+                              deps={avatarDeps}
+                            />
+                          )}
                         </div>
                         <span
                           className={`font-medium pl-2 text-sm h-full leading-[40px] ${

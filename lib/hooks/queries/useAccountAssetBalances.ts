@@ -28,6 +28,11 @@ export type UseAccountAssetBalances = {
     },
     unknown
   >[];
+
+  /**
+   * Will be true if any of the queries are loading
+   */
+  isLoading: boolean;
 };
 
 /**
@@ -97,5 +102,5 @@ export const useAccountAssetBalances = (
     return query;
   };
 
-  return { get, query: queries };
+  return { get, query: queries, isLoading: queries.some((q) => q.isLoading) };
 };
