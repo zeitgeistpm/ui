@@ -63,7 +63,7 @@ export const LiquidityInput = ({
         name,
         value: {
           ...value,
-          swapFee: clamp(parseFloat(event.target.value), 0, 100),
+          swapFee: clamp(parseFloat(event.target.value), 0, 10),
         },
       },
     });
@@ -119,7 +119,7 @@ export const LiquidityInput = ({
                 <div className="relative inline-block">
                   <input
                     type="number"
-                    max={100}
+                    max={10}
                     min={0}
                     className="rounded-md bg-gray-100 py-3 pl-4 pr-34 text-right w-64 outline-none"
                     value={value.swapFee}

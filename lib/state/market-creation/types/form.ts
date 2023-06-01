@@ -158,7 +158,11 @@ export const marketFormDataToExtrinsicParams = (
               .mul(ZTG)
               .toString(),
             swapFee: swapFeeFromFloat(form.liquidity.swapFee).toString(),
-            weights: form.liquidity.rows.map((row) => row.weight),
+            weights: form.liquidity.rows.slice(0, -1).map((row) => {
+              return new Decimal(row.weight)
+                .mul(ZTG)
+                .toFixed(0, Decimal.ROUND_DOWN);
+            }),
           }
         : undefined,
     };

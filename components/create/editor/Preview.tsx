@@ -1,8 +1,10 @@
 import { Dialog } from "@headlessui/react";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
 import { supportedCurrencies } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChainTime } from "lib/state/chaintime";
 import { MarketDraftEditor } from "lib/state/market-creation/editor";
 import {
@@ -35,6 +37,7 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
   const { form } = editor;
   const chainTime = useChainTime();
   const wallet = useWallet();
+  const [sdk] = useSdkv2();
   const timeline = useMemo(() => {
     return timelineAsBlocks(form, chainTime).unwrap();
   }, [form, chainTime]);
@@ -56,10 +59,24 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
       );
     }
     return;
-  }, [form]);
+  }, [form, wallet.activeAccount]);
+
+  const sendIt = async () => {
+    if (params && isRpcSdk(sdk)) {
+      try {
+        const result = await sdk.model.markets.create(params);
+        console.log({ result });
+      } catch (error) {
+        console.log({ error });
+      }
+    }
+  };
 
   return (
     <div className="flex-1 text-center">
+      <button type="button" onClick={sendIt}>
+        Send it
+      </button>
       <div className="mb-10">
         <Label className="mb-2">Question</Label>
         <h2 className="text-[1.4em]">
@@ -297,7 +314,7 @@ const Answers = ({
           <>
             <div className="rounded-md bg-gray-50 py-3 px-5">
               <div className="text-xl font-semibold">
-                {answerLiquidity.asset}
+                {answerLiquidity?.asset}
               </div>
               {answers.type === "categorical" && (
                 <div className="text-sm text-gray-400">{answer}</div>

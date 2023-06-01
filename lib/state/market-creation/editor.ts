@@ -284,7 +284,6 @@ export const useMarketDraftEditor = ({
     const numOutcomes = state.form.answers.answers.length;
 
     const ratio = 1 / numOutcomes;
-    const weight = ratio * baseWeight;
 
     const baseAssetLiquidty = last(state.form.liquidity?.rows);
 
@@ -307,9 +306,11 @@ export const useMarketDraftEditor = ({
           ? ratio.toString()
           : liquidity?.price?.price ?? ratio.toString();
 
+        const weight = resetPrices ? ratio * baseWeight : liquidity.weight;
+
         return {
           asset: tickers[index].ticker,
-          weight: weight.toFixed(0),
+          weight: weight.toString(),
           amount: amount.toString(),
           price: {
             price: price,

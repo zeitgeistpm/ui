@@ -258,5 +258,5 @@ export const IOLiquidity = z.object({
     .min(0, {
       message: "Swap fee must be a postive number.",
     })
-    .max(100, { message: "Swap fee cannot exceed 100%." }),
+    .max(10, { message: "Swap fee cannot exceed 10%." }),
 });
