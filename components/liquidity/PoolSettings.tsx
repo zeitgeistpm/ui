@@ -92,7 +92,9 @@ const PriceSetter = ({
   return (
     <div className="flex items-center">
       <input
-        className="h-ztg-40 w-[100px] rounded-ztg-5 bg-gray-100 text-right p-ztg-8 focus:outline-none"
+        className={`h-ztg-40 w-[100px] rounded-ztg-5 bg-gray-100 text-right p-ztg-8 focus:outline-none ${
+          disabled && "!bg-transparent"
+        }`}
         value={price}
         type="number"
         disabled={disabled}

@@ -326,7 +326,7 @@ export const useMarketDraftEditor = ({
           ? baseAmmount
           : baseAssetLiquidty?.amount || baseAmmount,
         price: {
-          price: resetPrices ? "1" : baseAssetLiquidty?.price?.price ?? "1",
+          price: "1",
           locked: true,
         },
         value: resetPrices
