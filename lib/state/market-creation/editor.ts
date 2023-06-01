@@ -1,4 +1,4 @@
-import { FormEvent } from "components/create/form/types";
+import { FormEvent } from "components/create/editor/types";
 import Decimal from "decimal.js";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { last, merge } from "lodash-es";
@@ -21,7 +21,7 @@ import {
   stepFormKeys,
 } from "./types/step";
 import { useMarketCreationFormValidator } from "./types/validation";
-import { DeepRequired } from "react-hook-form";
+import { tickersFor } from "./util/tickers";
 
 export type MarketDraftEditor = (ValidFormState | InvalidFormState) & {
   /**
@@ -288,12 +288,10 @@ export const useMarketDraftEditor = ({
 
     const baseAssetLiquidty = last(state.form.liquidity?.rows);
 
-    const isScalar = state.form.answers.type === "scalar";
-    const scalarNumberType =
-      state.form.answers.type === "scalar" && state.form.answers.numberType;
-
     const resetPrices =
       prevAnswersLength !== numOutcomes || prevCurrency !== state.form.currency;
+
+    const tickers = tickersFor(state.form.answers);
 
     const rows = [
       ...state.form.answers.answers.map((answer, index) => {
@@ -310,13 +308,7 @@ export const useMarketDraftEditor = ({
           : liquidity?.price?.price ?? ratio.toString();
 
         return {
-          asset: !isScalar
-            ? answer
-            : `${index === 0 ? "S" : "L"}[${
-                scalarNumberType === "timestamp"
-                  ? moment(answer).format("MMM Do, YYYY hh:mm a")
-                  : answer
-              }]`,
+          asset: tickers[index].ticker,
           weight: weight.toFixed(0),
           amount: amount.toString(),
           price: {

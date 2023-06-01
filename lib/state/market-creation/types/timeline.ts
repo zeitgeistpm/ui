@@ -1,6 +1,6 @@
 import * as O from "@zeitgeistpm/utility/dist/option";
 import { ChainTime, dateBlock } from "@zeitgeistpm/utility/dist/time";
-import { PeriodOption, durationasBlocks } from "./form";
+import { PartialMarketFormData, PeriodOption, durationasBlocks } from "./form";
 
 export type BlockTimeline = {
   market: { end: number };
@@ -10,38 +10,53 @@ export type BlockTimeline = {
 };
 
 export const timelineAsBlocks = (
-  periods: {
-    marketEndDate?: Date;
-    gracePeriod: Partial<PeriodOption>;
-    reportingPeriod: Partial<PeriodOption>;
-    disputePeriod: Partial<PeriodOption>;
-  },
+  form: Pick<
+    PartialMarketFormData,
+    "endDate" | "gracePeriod" | "disputePeriod" | "reportingPeriod"
+  >,
   chainTime?: ChainTime,
 ): O.IOption<BlockTimeline> => {
   return O.tryCatch(() => {
     if (!chainTime) return null;
 
-    const marketEndDate = new Date(periods.marketEndDate);
+    const marketEndDate = new Date(form.endDate);
     const marketEndBlock = dateBlock(chainTime, marketEndDate);
 
     const gracePeriodEndBlock =
-      periods.gracePeriod?.type === "date"
-        ? periods.gracePeriod?.block
-        : marketEndBlock + durationasBlocks(periods.gracePeriod);
+      form.gracePeriod?.type === "date"
+        ? form.gracePeriod?.block
+        : marketEndBlock + durationasBlocks(form.gracePeriod);
 
     const reportPeriodEndBlock =
-      periods.reportingPeriod?.type === "date"
-        ? periods.reportingPeriod?.block
-        : gracePeriodEndBlock + durationasBlocks(periods.reportingPeriod);
+      form.reportingPeriod?.type === "date"
+        ? form.reportingPeriod?.block
+        : gracePeriodEndBlock + durationasBlocks(form.reportingPeriod);
 
     const disputePeriodEndBlock =
-      periods.disputePeriod?.type === "date"
-        ? periods.disputePeriod?.block
-        : reportPeriodEndBlock + durationasBlocks(periods.disputePeriod);
+      form.disputePeriod?.type === "date"
+        ? form.disputePeriod?.block
+        : reportPeriodEndBlock + durationasBlocks(form.disputePeriod);
 
     const graceDelta = gracePeriodEndBlock - marketEndBlock;
     const reportDelta = reportPeriodEndBlock - gracePeriodEndBlock;
     const disputeDelta = disputePeriodEndBlock - reportPeriodEndBlock;
+
+    // if (!form.endDate) {
+    //   console.group("timelineAsBlocks");
+    //   console.log("chainTime", chainTime);
+    //   console.log("periods.marketEndDate", form.endDate);
+    //   console.log("marketEndDate", marketEndDate);
+    //   console.log("marketEndBlock", marketEndBlock);
+    //   console.log("gracePeriodEndBlock", gracePeriodEndBlock);
+    //   console.log("reportPeriodEndBlock", reportPeriodEndBlock);
+    //   console.log("disputePeriodEndBlock", disputePeriodEndBlock);
+    //   console.log("graceDelta", graceDelta);
+    //   console.log("reportDelta", reportDelta);
+    //   console.log("disputeDelta", disputeDelta);
+    //   console.groupEnd();
+    // } else {
+    //   console.log("timelineAsBlocks success");
+    // }
 
     return {
       market: { end: marketEndBlock },

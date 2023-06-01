@@ -35,15 +35,7 @@ export const createMarketFormValidator = ({
   deadlineConstants,
   chainTime,
 }: MarketValidationDependencies) => {
-  const timeline = timelineAsBlocks(
-    {
-      marketEndDate: new Date(form.endDate),
-      gracePeriod: form.gracePeriod,
-      reportingPeriod: form.reportingPeriod,
-      disputePeriod: form.disputePeriod,
-    },
-    chainTime,
-  ).unwrap();
+  const timeline = timelineAsBlocks(form, chainTime).unwrap();
 
   return z
     .object({

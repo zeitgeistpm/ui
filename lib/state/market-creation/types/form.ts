@@ -1,12 +1,19 @@
 import {
+  CreateMarketBaseParams,
   CreateMarketParams,
+  MarketMetadata,
   MetadataStorage,
   RpcContext,
+  ZTG,
 } from "@zeitgeistpm/sdk-next";
+import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import { ChainTime } from "@zeitgeistpm/utility/dist/time";
+import Decimal from "decimal.js";
 import { BLOCK_TIME_SECONDS } from "lib/constants";
 import moment from "moment";
 import { DeepRequired } from "react-hook-form";
 import * as z from "zod";
+import { timelineAsBlocks } from "./timeline";
 import {
   IOAnswers,
   IOCategoricalAnswers,
@@ -25,6 +32,7 @@ import {
   IOTags,
   IOYesNoAnswers,
 } from "./validation";
+import { tickersFor } from "../util/tickers";
 
 /**
  * This is the type of the full market creation form data that is used to create a market.
@@ -100,8 +108,65 @@ export type LiquidityRow = z.infer<typeof IOLiquidityRow>;
  */
 export const marketFormDataToExtrinsicParams = (
   form: ValidMarketFormData,
+  signer: KeyringPairOrExtSigner,
+  chainTime: ChainTime,
 ): CreateMarketParams<RpcContext<MetadataStorage>, MetadataStorage> => {
-  throw new Error("Not implemented");
+  const timeline = timelineAsBlocks(form, chainTime).unwrap();
+
+  const base: CreateMarketBaseParams<
+    RpcContext<MetadataStorage>,
+    MetadataStorage
+  > = {
+    signer,
+    disputeMechanism: "Authorized",
+    oracle: form.oracle,
+    period: {
+      Timestamp: [Date.now(), new Date(form.endDate).getTime()],
+    },
+    deadlines: {
+      gracePeriod: timeline.grace.period,
+      oracleDuration: timeline.report.period,
+      disputeDuration: timeline.dispute.period,
+    },
+    marketType:
+      form.answers.type === "scalar"
+        ? {
+            Scalar: [form.answers.answers[0], form.answers.answers[1]],
+          }
+        : {
+            Categorical: form.answers.answers.length,
+          },
+    metadata: {
+      __meta: "markets",
+      description: form.description,
+      question: form.question,
+      slug: form.question,
+      tags: form.tags,
+      categories: tickersFor(form.answers),
+    },
+    baseAsset: form.currency === "ZTG" ? { Ztg: null } : { ForeignAsset: 0 },
+  };
+
+  if (form.moderation === "Permissionless") {
+    return {
+      ...base,
+      creationType: form.moderation,
+      pool: form.liquidity.deploy
+        ? {
+            amount: new Decimal(form.liquidity.rows[0].amount)
+              .mul(ZTG)
+              .toString(),
+            swapFee: form.liquidity.swapFee.toString(),
+            weights: form.liquidity.rows.map((row) => row.weight),
+          }
+        : undefined,
+    };
+  } else {
+    return {
+      ...base,
+      creationType: form.moderation,
+    };
+  }
 };
 
 export const durationasBlocks = (duration: Partial<PeriodDurationOption>) => {

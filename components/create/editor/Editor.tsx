@@ -48,10 +48,11 @@ const createMarketStateAtom = persistentAtom<MarketDraft.MarketDraftState>({
     () => MarketDraft.empty(),
     () => MarketDraft.empty(),
     () => MarketDraft.empty(),
+    () => MarketDraft.empty(),
   ],
 });
 
-export const MarketCreationForm = () => {
+export const MarketEditor = () => {
   const [state, setState] = useAtom(createMarketStateAtom);
   const editor = useMarketDraftEditor({ state, setState });
 
@@ -629,4 +630,4 @@ export const MarketCreationForm = () => {
   );
 };
 
-export default MarketCreationForm;
+export default MarketEditor;

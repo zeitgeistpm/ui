@@ -1,4 +1,4 @@
-import { BlockPeriodPickerOptions } from "components/create/form/inputs/BlockPeriod";
+import { BlockPeriodPickerOptions } from "components/create/editor/inputs/BlockPeriod";
 import { DeepReadonly } from "lib/types/deep-readonly";
 
 export const gracePeriodOptions =  [

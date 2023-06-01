@@ -1,3 +1,5 @@
+import { Dialog } from "@headlessui/react";
+import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
 import { supportedCurrencies } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
@@ -8,14 +10,18 @@ import {
   Liquidity,
   Moderation,
   blocksAsDuration,
+  marketFormDataToExtrinsicParams,
 } from "lib/state/market-creation/types/form";
 import { timelineAsBlocks } from "lib/state/market-creation/types/timeline";
+import { useWallet } from "lib/state/wallet";
 import { formatDuration } from "lib/util/format-duration";
 import moment from "moment";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { useMemo } from "react";
 import { LuFileWarning } from "react-icons/lu";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { colorBrewer } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
   ssr: false,
@@ -28,16 +34,9 @@ export type MarketPreviewProps = {
 export const MarketPreview = ({ editor }: MarketPreviewProps) => {
   const { form } = editor;
   const chainTime = useChainTime();
+  const wallet = useWallet();
   const timeline = useMemo(() => {
-    return timelineAsBlocks(
-      {
-        marketEndDate: new Date(form.endDate),
-        gracePeriod: form.gracePeriod,
-        reportingPeriod: form.reportingPeriod,
-        disputePeriod: form.disputePeriod,
-      },
-      chainTime,
-    ).unwrap();
+    return timelineAsBlocks(form, chainTime).unwrap();
   }, [form, chainTime]);
 
   const { data: baseAssetPrice } = useAssetUsdPrice(
@@ -47,6 +46,17 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
   const baseAssetLiquidityRow = form?.liquidity?.rows.find(
     (row) => row.asset === form.currency,
   );
+
+  const params = useMemo(() => {
+    if (editor.isValid && chainTime) {
+      return marketFormDataToExtrinsicParams(
+        editor.form,
+        wallet.getActiveSigner(),
+        chainTime,
+      );
+    }
+    return;
+  }, [form]);
 
   return (
     <div className="flex-1 text-center">
@@ -249,7 +259,16 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
         </div>
       </div>
 
-      <div className="mb-10"></div>
+      <div className="mb-10">
+        <Label className="mb-2">Extrinsic debug</Label>
+        <div className="flex center">
+          <div className="text-left">
+            <SyntaxHighlighter style={colorBrewer} language="json">
+              {params ? JSON.stringify(params, undefined, 2) : "---"}
+            </SyntaxHighlighter>
+          </div>
+        </div>
+      </div>
 
       <div className="italic font-light text-gray-400">
         Work in progress. To be continued...
@@ -272,19 +291,18 @@ const Answers = ({
   return (
     <>
       {answers?.answers.map((answer, answerIndex) => {
-        const answerLiquidity = liquidity.rows.find((r, rowIndex) => {
-          if (answers.type === "scalar") {
-            return answerIndex === rowIndex;
-          }
-          return r.asset === answer;
-        });
+        const answerLiquidity = liquidity.rows[answerIndex];
 
         return (
           <>
             <div className="rounded-md bg-gray-50 py-3 px-5">
               <div className="text-xl font-semibold">
-                {answerLiquidity?.asset}
+                {answerLiquidity.asset}
               </div>
+              {answers.type === "categorical" && (
+                <div className="text-sm text-gray-400">{answer}</div>
+              )}
+
               {liquidity &&
               liquidity.deploy &&
               moderation === "Permissionless" ? (

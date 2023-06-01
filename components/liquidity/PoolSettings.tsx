@@ -13,7 +13,7 @@ import {
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import Image from "next/image";
 import { supportedCurrencies } from "lib/constants/supported-currencies";
-import InfoPopover from "components/create/form/InfoPopover";
+import InfoPopover from "components/create/editor/InfoPopover";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 
 export interface PoolAssetRowData {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "react-quill/dist/quill.bubble.css";
-import { FormEvent } from "components/create/form/types";
+import { FormEvent } from "components/create/editor/types";
 
 const QuillEditor = ({
   name,

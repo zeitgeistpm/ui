@@ -1,12 +1,12 @@
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 
-const MarketCreationForm = dynamic(() => import("components/create/form"), {
+const MarketEditor = dynamic(() => import("components/create/editor/Editor"), {
   ssr: false,
 });
 
 const CreateMarketPage: NextPage = () => {
-  return <MarketCreationForm />;
+  return <MarketEditor />;
 };
 
 export default CreateMarketPage;
