@@ -18,7 +18,8 @@ import { formatDuration } from "lib/util/format-duration";
 import moment from "moment";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import React, { useMemo } from "react";
+import { useRouter } from "next/router";
+import React, { useMemo, useState } from "react";
 import { LuFileWarning } from "react-icons/lu";
 import { RiSendPlaneLine } from "react-icons/ri";
 
@@ -31,10 +32,15 @@ export type MarketPreviewProps = {
 };
 
 export const MarketPreview = ({ editor }: MarketPreviewProps) => {
-  const { form } = editor;
-  const chainTime = useChainTime();
-  const wallet = useWallet();
   const [sdk] = useSdkv2();
+  const wallet = useWallet();
+  const chainTime = useChainTime();
+  const router = useRouter();
+
+  const { form } = editor;
+
+  const [isTransacting, setIsTransacting] = useState(false);
+
   const timeline = useMemo(() => {
     return timelineAsBlocks(form, chainTime).unwrap();
   }, [form, chainTime]);
@@ -62,12 +68,18 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
 
   const submit = async () => {
     if (params && isRpcSdk(sdk)) {
+      setIsTransacting(true);
       try {
         const result = await sdk.model.markets.create(params);
-        console.log({ result });
+        alert(
+          `(placeholder ui). Market created. /markets/${
+            result.saturate().unwrap().market.marketId
+          }`,
+        );
       } catch (error) {
         console.log({ error });
       }
+      setIsTransacting(false);
     }
   };
 
@@ -299,15 +311,23 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
             </button>
             <button
               type="button"
-              disabled={!editor.isValid}
+              disabled={!editor.isValid || isTransacting}
               className={`
-                bg-ztg-blue py-4 px-6 text-white rounded-full text-xl center gap-2  transition-transform
-                ${editor.isValid && "active:scale-95"}
+                bg-ztg-blue py-4 px-6 text-white rounded-full text-xl center gap-2 transition-all opacity-70 w-60
+                ${
+                  editor.isValid &&
+                  !isTransacting &&
+                  "active:scale-95 !opacity-100"
+                }
               `}
               onClick={submit}
             >
-              Publish Market
-              <RiSendPlaneLine />
+              <div className="flex-1">
+                {isTransacting ? "Transacting.." : "Publish Market"}
+              </div>
+              <div className={`${isTransacting && "animate-ping"}`}>
+                <RiSendPlaneLine />
+              </div>
             </button>
           </div>
         </div>
