@@ -1,6 +1,4 @@
-import { Dialog, Popover, Transition } from "@headlessui/react";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
-import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
 import { supportedCurrencies } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
@@ -20,10 +18,8 @@ import { formatDuration } from "lib/util/format-duration";
 import moment from "moment";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import React, { Fragment, useMemo } from "react";
+import React, { useMemo } from "react";
 import { LuFileWarning } from "react-icons/lu";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { colorBrewer } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { RiSendPlaneLine } from "react-icons/ri";
 
 const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
@@ -61,6 +57,8 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
     }
     return;
   }, [form, wallet.activeAccount]);
+
+  const firstInvalidStep = editor.steps.find((step) => !step.isValid);
 
   const submit = async () => {
     if (params && isRpcSdk(sdk)) {
@@ -281,49 +279,37 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
               className={`
               absolute left-0 top-[50%] translate-x-[-110%] translate-y-[-50%] border-gray-100 text-sm border-2 
               rounded-full py-2 px-6 ease-in-out active:scale-95 duration-200
+              ${
+                firstInvalidStep && "bg-orange-300 border-orange-400 text-white"
+              }
             `}
-              onClick={() => editor.goToSection("Liquidity")}
+              onClick={() => {
+                editor.goToSection(firstInvalidStep?.label ?? "Liquidity");
+              }}
               type="button"
             >
-              Go Back
+              {firstInvalidStep ? (
+                <div className="center gap-2">
+                  {" "}
+                  <LuFileWarning /> {`Fix ${firstInvalidStep?.label}`}
+                </div>
+              ) : (
+                "Go Back"
+              )}
             </button>
             <button
               type="button"
-              className="bg-ztg-blue py-4 px-6 text-white rounded-full text-xl center gap-2 active:scale-95 transition-transform"
+              disabled={!editor.isValid}
+              className={`
+                bg-ztg-blue py-4 px-6 text-white rounded-full text-xl center gap-2  transition-transform
+                ${editor.isValid && "active:scale-95"}
+              `}
               onClick={submit}
             >
               Publish Market
               <RiSendPlaneLine />
             </button>
           </div>
-        </div>
-
-        <div className="mb-10 ">
-          <Popover className="relative">
-            <Popover.Button>
-              <Label className="mb-2">Extrinsic debug</Label>
-            </Popover.Button>
-
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-200"
-              enterFrom="opacity-0 translate-y-1"
-              enterTo="opacity-100 translate-y-0"
-              leave="transition ease-in duration-150"
-              leaveFrom="opacity-100 translate-y-0"
-              leaveTo="opacity-0 translate-y-1"
-            >
-              <Popover.Panel>
-                <div className="flex center">
-                  <div className="text-left">
-                    <SyntaxHighlighter style={colorBrewer} language="json">
-                      {params ? JSON.stringify(params, undefined, 2) : "---"}
-                    </SyntaxHighlighter>
-                  </div>
-                </div>
-              </Popover.Panel>
-            </Transition>
-          </Popover>
         </div>
       </div>
     </div>
@@ -383,7 +369,7 @@ const Answers = ({
                       <Label className="text-xs">Value</Label>{" "}
                     </div>
                     <div className="table-cell text-left">
-                      <div>
+                      <div className="mb-1">
                         {answerLiquidity ? (
                           <>
                             {new Decimal(answerLiquidity?.value).toFixed(1)}{" "}
