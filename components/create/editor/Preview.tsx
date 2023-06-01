@@ -1,4 +1,4 @@
-import { Dialog } from "@headlessui/react";
+import { Dialog, Popover, Transition } from "@headlessui/react";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
@@ -20,10 +20,11 @@ import { formatDuration } from "lib/util/format-duration";
 import moment from "moment";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import React, { useMemo } from "react";
+import React, { Fragment, useMemo } from "react";
 import { LuFileWarning } from "react-icons/lu";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { colorBrewer } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { RiSendPlaneLine } from "react-icons/ri";
 
 const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
   ssr: false,
@@ -61,7 +62,7 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
     return;
   }, [form, wallet.activeAccount]);
 
-  const sendIt = async () => {
+  const submit = async () => {
     if (params && isRpcSdk(sdk)) {
       try {
         const result = await sdk.model.markets.create(params);
@@ -74,9 +75,6 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
 
   return (
     <div className="flex-1 text-center">
-      <button type="button" onClick={sendIt}>
-        Send it
-      </button>
       <div className="mb-10">
         <Label className="mb-2">Question</Label>
         <h2 className="text-[1.4em]">
@@ -263,7 +261,7 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
         </div>
       </div>
 
-      <div className="mb-10">
+      <div className="mb-20">
         <Label className="mb-2">Description</Label>
         <div className="flex center ">
           {form?.description ? (
@@ -276,19 +274,57 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
         </div>
       </div>
 
-      <div className="mb-10">
-        <Label className="mb-2">Extrinsic debug</Label>
-        <div className="flex center">
-          <div className="text-left">
-            <SyntaxHighlighter style={colorBrewer} language="json">
-              {params ? JSON.stringify(params, undefined, 2) : "---"}
-            </SyntaxHighlighter>
+      <div className="">
+        <div className="mb-2 center w-full">
+          <div className="relative">
+            <button
+              className={`
+              absolute left-0 top-[50%] translate-x-[-110%] translate-y-[-50%] border-gray-100 text-sm border-2 
+              rounded-full py-2 px-6 ease-in-out active:scale-95 duration-200
+            `}
+              onClick={() => editor.goToSection("Liquidity")}
+              type="button"
+            >
+              Go Back
+            </button>
+            <button
+              type="button"
+              className="bg-ztg-blue py-4 px-6 text-white rounded-full text-xl center gap-2 active:scale-95 transition-transform"
+              onClick={submit}
+            >
+              Publish Market
+              <RiSendPlaneLine />
+            </button>
           </div>
         </div>
-      </div>
 
-      <div className="italic font-light text-gray-400">
-        Work in progress. To be continued...
+        <div className="mb-10 ">
+          <Popover className="relative">
+            <Popover.Button>
+              <Label className="mb-2">Extrinsic debug</Label>
+            </Popover.Button>
+
+            <Transition
+              as={Fragment}
+              enter="transition ease-out duration-200"
+              enterFrom="opacity-0 translate-y-1"
+              enterTo="opacity-100 translate-y-0"
+              leave="transition ease-in duration-150"
+              leaveFrom="opacity-100 translate-y-0"
+              leaveTo="opacity-0 translate-y-1"
+            >
+              <Popover.Panel>
+                <div className="flex center">
+                  <div className="text-left">
+                    <SyntaxHighlighter style={colorBrewer} language="json">
+                      {params ? JSON.stringify(params, undefined, 2) : "---"}
+                    </SyntaxHighlighter>
+                  </div>
+                </div>
+              </Popover.Panel>
+            </Transition>
+          </Popover>
+        </div>
       </div>
     </div>
   );

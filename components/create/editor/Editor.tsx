@@ -586,7 +586,6 @@ export const MarketEditor = () => {
           wizard={isWizard}
           isCurrent={currentStep.label == "Summary"}
           disabled={!isWizard}
-          onClickBack={back}
           resetForm={isTouched && reset}
         >
           <div className="flex center mb-4 md:mb-8">
