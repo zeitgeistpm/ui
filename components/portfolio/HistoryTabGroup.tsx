@@ -11,12 +11,13 @@ const HistoryTabGroup = ({ address }: { address: string }) => {
   const [historyTabSelection, setHistoryTabSelection] =
     useQueryParamState<HistoryTabItem>("historyTab");
 
+  const historyTabIndex = historyTabItems.indexOf(historyTabSelection);
+  const selectedIndex = historyTabIndex !== -1 ? historyTabIndex : 0;
+
   return (
     <Tab.Group
       defaultIndex={0}
-      selectedIndex={
-        historyTabItems && historyTabItems.indexOf(historyTabSelection)
-      }
+      selectedIndex={selectedIndex}
       onChange={(index) => setHistoryTabSelection(historyTabItems[index])}
     >
       <SubTabsList titles={historyTabItems} />
