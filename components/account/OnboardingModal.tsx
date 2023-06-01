@@ -165,7 +165,9 @@ export const ExchangeTypeSelection = (props: {
       name: "With Crypto (DEX)",
       disabled: false,
       onClick: () => {
-        window.open("https://app.hydradx.io/trade?assetOut=12&assetIn=5");
+        window.open(
+          "https://blog.zeitgeist.pm/how-to-buy-ztg-on-hydradxs-omnipool/",
+        );
       },
     },
     {
