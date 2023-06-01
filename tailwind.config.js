@@ -390,18 +390,6 @@ module.exports = {
         // NEW
         "ztg-96": "96px",
       },
-      keyframes: {
-        sendplane: {
-          "0%": { transform: "translateX(0%) translateY(0%)", opacity: 1 },
-          "100%": {
-            transform: "translateX(100%) translateY(-100%)",
-            opacity: 0,
-          },
-        },
-      },
-      animation: {
-        sendplane: "sendplane 0.8s ease-out infinite",
-      },
     },
   },
   variants: {
