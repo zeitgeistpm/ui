@@ -20,7 +20,6 @@ const TopBar = () => {
     useState<NavbarColor>("transparent");
 
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
-  const [scrollPosition, setScrollPosition] = useState<number>(0);
 
   const changeNavBG = () => {
     if (menuOpen) {
