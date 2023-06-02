@@ -17,25 +17,48 @@ import { poolTotalIssuanceRootQueryKey } from "lib/hooks/queries/useTotalIssuanc
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
 
-const ExitPoolForm = ({
-  poolBalances,
-  poolId,
-  totalPoolShares,
-  userPoolShares,
-  baseAssetTicker,
-  onSuccess,
-}: {
+export type ExitPoolFormProps = {
   poolBalances: PoolBalances;
   poolId: number;
   totalPoolShares: Decimal;
   userPoolShares: Decimal;
   baseAssetTicker: string;
   onSuccess?: () => void;
-}) => {
+};
+
+const ExitPoolForm: FC<ExitPoolFormProps> = (props) => {
+  const formContext = {
+    ...props,
+    userPercentageOwnership: props.userPoolShares.div(props.totalPoolShares),
+  };
+
+  if (
+    formContext.userPercentageOwnership.eq(0) ||
+    formContext.userPercentageOwnership.isNaN()
+  ) {
+    return (
+      <div className="text-center">Account has no pool shares to withdraw.</div>
+    );
+  } else {
+    return <ExitPoolFormInputs {...formContext} />;
+  }
+};
+
+const ExitPoolFormInputs: FC<
+  ExitPoolFormProps & { userPercentageOwnership: Decimal }
+> = (props) => {
+  const {
+    poolId,
+    userPercentageOwnership,
+    userPoolShares,
+    poolBalances,
+    baseAssetTicker,
+    onSuccess,
+  } = props;
   const { data: constants } = useChainConstants();
   const {
     register,
@@ -52,7 +75,6 @@ const ExitPoolForm = ({
   const { data: pool } = usePool({ poolId });
   const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();
-  const userPercentageOwnership = userPoolShares.div(totalPoolShares);
   const { data: market } = useMarket({ poolId });
   const queryClient = useQueryClient();
 
@@ -183,6 +205,7 @@ const ExitPoolForm = ({
   const onSubmit: SubmitHandler<any> = () => {
     exitPool();
   };
+
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-y-6 max-h-[200px] md:max-h-[400px] overflow-y-auto py-5">
@@ -193,8 +216,6 @@ const ExitPoolForm = ({
               ? baseAssetTicker
               : market?.categories[index]?.name;
 
-          if (!userPercentageOwnership || userPercentageOwnership.isNaN())
-            return null;
           const poolAssetBalance =
             poolBalances?.[id]?.pool.div(ZTG) ?? new Decimal(0);
           const userBalanceInPool = poolAssetBalance
@@ -210,13 +231,11 @@ const ExitPoolForm = ({
                 {assetName}
               </div>
               <input
-                className={`bg-anti-flash-white text-right rounded-[5px] h-[56px] px-[15px] w-full outline-none
-              ${
-                formState.errors[id.toString()]?.message
-                  ? "border-2 border-vermilion text-vermilion"
-                  : ""
-              }
-              `}
+                className={`bg-anti-flash-white text-right rounded-[5px] h-[56px] px-[15px] w-full outline-none ${
+                  formState.errors[id.toString()]?.message
+                    ? "border-2 border-vermilion text-vermilion"
+                    : ""
+                }`}
                 key={index}
                 type="number"
                 step="any"
