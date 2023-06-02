@@ -10,8 +10,8 @@ import { useSdkv2 } from "./useSdkv2";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
-    params: T,
-  ) => SubmittableExtrinsic<"promise", ISubmittableResult>,
+    params?: T,
+  ) => SubmittableExtrinsic<"promise", ISubmittableResult> | undefined,
   callbacks?: {
     onSuccess?: (data: ISubmittableResult) => void;
     onError?: () => void;
@@ -33,6 +33,7 @@ export const useExtrinsic = <T>(
     setIsLoading(true);
 
     const extrinsic = extrinsicFn(params);
+    if (!extrinsic) return;
     const signer = wallet.getActiveSigner() as ExtSigner;
 
     signAndSend(

@@ -62,7 +62,7 @@ export default async function GenerateOgImage(request: NextRequest) {
     url.href,
   ).then((r) => r.json());
 
-  const marketImageUrl = await getImageUrl(market.img);
+  const marketImageUrl = await getImageUrl(market.img ?? null);
 
   const boldFont = await fetch(
     new URL(
@@ -77,6 +77,8 @@ export default async function GenerateOgImage(request: NextRequest) {
       import.meta.url,
     ).href,
   ).then((res) => res.arrayBuffer());
+
+  if (!market?.question) return;
 
   const questionClass = market.question.length > 90 ? "text-4xl" : "text-5xl";
 
@@ -142,7 +144,7 @@ export default async function GenerateOgImage(request: NextRequest) {
               {prediction.name != null
                 ? market.marketType.categorical
                   ? `${prediction.name} (${prediction.percentage}%)`
-                  : `${Intl.NumberFormat("default", {
+                  : `${Intl.NumberFormat("en-US", {
                       maximumSignificantDigits: 3,
                     }).format(Number(prediction.name))}`
                 : "No Prediction"}

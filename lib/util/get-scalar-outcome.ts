@@ -1,6 +1,7 @@
 import { Decimal } from "decimal.js";
 import { ZTG } from "../constants";
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
+import { formatNumberCompact } from "./format-compact";
 
 export const getScalarOutcome = (
   outcome: string | number,
@@ -8,10 +9,7 @@ export const getScalarOutcome = (
 ) => {
   const inferedType: ScalarRangeType = scalarType ?? "number";
   return inferedType === "number"
-    ? new Intl.NumberFormat("default", {
-        maximumSignificantDigits: 3,
-        notation: "compact",
-      }).format(
+    ? formatNumberCompact(
         typeof outcome === "string"
           ? new Decimal(outcome).div(ZTG).toNumber()
           : outcome,

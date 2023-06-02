@@ -15,7 +15,7 @@ import {
 import { AxisDomain } from "recharts/types/util/types";
 
 interface TimeSeriesChartProps {
-  data: ChartData[];
+  data?: ChartData[];
   series: ChartSeries[];
   yDomain?: AxisDomain;
   yUnits: string;
@@ -104,7 +104,7 @@ const TimeSeriesChart = ({
   const roundingThreshold = 0.3;
 
   const lessThanTwoDays =
-    data?.length > 0
+    data && data.length > 0
       ? Math.abs(data[data.length - 1].t - data[0].t) < 172800
       : false;
 
@@ -249,7 +249,8 @@ const TimeSeriesChart = ({
               animationEasing={"linear"}
               animationDuration={0}
               content={
-                data?.length > 0 && (
+                data &&
+                data.length > 0 && (
                   <ChartToolTip series={series} yUnits={yUnits} />
                 )
               }

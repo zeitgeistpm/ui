@@ -1,5 +1,6 @@
 import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
 import { useWallet } from "lib/state/wallet";
+import { getQueryParams } from "lib/util/get-query-params";
 import { useRouter } from "next/router";
 import React, { PropsWithChildren, useEffect, useState } from "react";
 
@@ -16,21 +17,34 @@ const PortfolioLayout: React.FC<PropsWithChildren> = ({ children }) => {
       : router.query.address
     : undefined;
 
+  const queryParams = getQueryParams(router.asPath);
+
   useEffect(() => {
     if (!router.isReady) return;
 
     if (addressFromRoute && !isAccountAddress) {
       setHasAddress(true);
       setIsAccountAddress(addressFromRoute === wallet.activeAccount?.address);
-      router.replace(`/portfolio/${addressFromRoute}`, undefined, {
-        shallow: true,
-      });
+      router.replace(
+        { pathname: `/portfolio/${addressFromRoute}`, query: queryParams },
+        undefined,
+        {
+          shallow: true,
+        },
+      );
     } else if (wallet.activeAccount?.address) {
       setHasAddress(true);
       setIsAccountAddress(true);
-      router.replace(`/portfolio/${wallet.activeAccount.address}`, undefined, {
-        shallow: true,
-      });
+      router.replace(
+        {
+          pathname: `/portfolio/${wallet.activeAccount.address}`,
+          query: queryParams,
+        },
+        undefined,
+        {
+          shallow: true,
+        },
+      );
     } else {
       setHasAddress(false);
     }
