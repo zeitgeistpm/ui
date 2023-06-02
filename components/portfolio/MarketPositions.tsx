@@ -132,11 +132,6 @@ export const MarketPositions = ({
       foreignAssetPrices,
       usdZtgPrice,
     );
-    console.log(
-      pos.userBalance.mul(pos.price).mul(baseAssetUsdPrice).div(ZTG).toNumber(),
-      pos.outcome,
-      market.marketId,
-    );
     return (
       pos.userBalance
         .mul(pos.price)
