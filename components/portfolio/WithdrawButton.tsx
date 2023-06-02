@@ -14,7 +14,7 @@ import { useChain } from "lib/state/cross-chain";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
 
 const WithdrawButton = ({
@@ -82,11 +82,19 @@ const WithdrawModal = ({
   foreignAssetId: number;
   onSuccess: () => void;
 }) => {
-  const { register, handleSubmit, getValues, formState, watch, setValue } =
-    useForm({
-      reValidateMode: "onChange",
-      mode: "onChange",
-    });
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState,
+    watch,
+    setValue,
+    control,
+    trigger,
+  } = useForm({
+    reValidateMode: "onChange",
+    mode: "onChange",
+  });
 
   const notificationStore = useNotifications();
   const wallet = useWallet();
@@ -154,6 +162,7 @@ const WithdrawModal = ({
           "amount",
           balance.mul(value.percentage).div(100).div(ZTG).toNumber(),
         );
+        trigger("amount");
       } else if (name === "amount" && value.amount !== "") {
         setValue(
           "percentage",
@@ -178,8 +187,21 @@ const WithdrawModal = ({
           className="w-full flex flex-col items-center"
         >
           <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 relative font-normal w-full">
-            <input
-              {...register("amount", {
+            <Controller
+              render={({ field }) => {
+                return (
+                  <input
+                    {...field}
+                    type="number"
+                    className="w-full bg-transparent outline-none !text-center"
+                    step="any"
+                    value={Number(Number(field.value).toFixed(3))}
+                  />
+                );
+              }}
+              control={control}
+              name="amount"
+              rules={{
                 required: {
                   value: true,
                   message: "Value is required",
@@ -193,10 +215,7 @@ const WithdrawModal = ({
                     return "Value cannot be zero or less";
                   }
                 },
-              })}
-              type="number"
-              className="w-full bg-transparent outline-none !text-center"
-              step="any"
+              }}
             />
             <div className="mr-[10px] absolute right-0">{tokenSymbol}</div>
           </div>
