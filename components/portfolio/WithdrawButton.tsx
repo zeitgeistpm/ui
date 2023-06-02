@@ -18,7 +18,17 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Transfer from "./Transfer";
 
-const WithdrawButton = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
+const WithdrawButton = ({
+  toChain,
+  tokenSymbol,
+  balance,
+  foreignAssetId,
+}: {
+  toChain: ChainName;
+  tokenSymbol: string;
+  balance: Decimal;
+  foreignAssetId: number;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
