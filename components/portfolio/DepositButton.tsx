@@ -11,7 +11,7 @@ import { useCrossChainExtrinsic } from "lib/hooks/useCrossChainExtrinsic";
 import { useChain } from "lib/state/cross-chain";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Transfer from "./Transfer";
 
@@ -52,10 +52,11 @@ const DepositModal = ({
   balance: Decimal;
   onSuccess: () => void;
 }) => {
-  const { register, handleSubmit, getValues, formState } = useForm({
-    reValidateMode: "onChange",
-    mode: "onChange",
-  });
+  const { register, handleSubmit, getValues, formState, watch, setValue } =
+    useForm({
+      reValidateMode: "onChange",
+      mode: "onChange",
+    });
   const { data: constants } = useChainConstants();
   const notificationStore = useNotifications();
   const wallet = useWallet();
@@ -107,6 +108,27 @@ const DepositModal = ({
     },
   );
 
+  useEffect(() => {
+    const subscription = watch((value, { name, type }) => {
+      const changedByUser = type != null;
+
+      if (!changedByUser) return;
+
+      if (name === "percentage") {
+        setValue(
+          "amount",
+          balance.mul(value.percentage).div(100).div(ZTG).toNumber(),
+        );
+      } else if (name === "amount" && value.amount !== "") {
+        setValue(
+          "percentage",
+          new Decimal(value.amount).mul(ZTG).div(balance).mul(100).toString(),
+        );
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
   const onSubmit = () => {
     transfer();
   };
@@ -143,6 +165,11 @@ const DepositModal = ({
             />
             <div className="mr-[10px] absolute right-0">{tokenSymbol}</div>
           </div>
+          <input
+            className="mt-[30px] mb-[10px] w-full"
+            type="range"
+            {...register("percentage", { value: "0" })}
+          />
           <div className="text-vermilion text-ztg-12-120 my-[4px] h-[16px]">
             <>{formState.errors["amount"]?.message}</>
           </div>
