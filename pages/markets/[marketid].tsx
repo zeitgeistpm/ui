@@ -153,12 +153,11 @@ const Market: NextPage<MarketPageProps> = ({
       const lastDispute = disputes?.[disputes.length - 1];
       const at = lastDispute.at.toNumber();
       const by = lastDispute.by.toString();
-      console.log(market);
       const outcome = market?.marketType.scalar
         ? market.scalarType === "date"
           ? new Decimal(lastDispute?.outcome?.asScalar.toString()).toNumber()
-          : lastDispute?.outcome?.asScalar
-        : lastDispute?.outcome?.asCategorical;
+          : Number(lastDispute?.outcome?.asScalar)
+        : Number(lastDispute?.outcome?.asCategorical);
       const marketDispute: MarketDispute = {
         at,
         by,
@@ -169,19 +168,19 @@ const Market: NextPage<MarketPageProps> = ({
       };
       setLastDispute(marketDispute);
     }
-    if (market?.report && market?.status === "Reported") {
-      console.log(market);
 
+    if (market?.report && market?.status === "Reported") {
       const report: Report = {
         at: market?.report?.at,
         by: market?.report?.by,
         outcome: {
-          categorical: new Decimal(
-            market?.report?.outcome?.categorical.toString(),
-          ).toNumber(),
-          scalar: new Decimal(
-            market?.report?.outcome?.scalar.toString(),
-          ).toNumber(),
+          categorical: market?.report?.outcome?.categorical,
+          scalar:
+            market.scalarType === "date"
+              ? new Decimal(
+                  market?.report?.outcome?.categorical.toString(),
+                ).toNumber()
+              : market?.report?.outcome?.categorical,
         },
       };
       setReport(report);
