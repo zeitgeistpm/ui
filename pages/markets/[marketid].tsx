@@ -153,13 +153,12 @@ const Market: NextPage<MarketPageProps> = ({
       const lastDispute = disputes?.[disputes.length - 1];
       const at = lastDispute.at.toNumber();
       const by = lastDispute.by.toString();
+      console.log(market);
       const outcome = market?.marketType.scalar
-        ? new Decimal(lastDispute?.outcome?.asScalar.toString())
-            .div(ZTG)
-            .toNumber()
-        : new Decimal(
-            lastDispute?.outcome?.asCategorical.toString(),
-          ).toNumber();
+        ? market.scalarType === "date"
+          ? new Decimal(lastDispute?.outcome?.asScalar.toString()).toNumber()
+          : lastDispute?.outcome?.asScalar
+        : lastDispute?.outcome?.asCategorical;
       const marketDispute: MarketDispute = {
         at,
         by,
@@ -171,6 +170,8 @@ const Market: NextPage<MarketPageProps> = ({
       setLastDispute(marketDispute);
     }
     if (market?.report && market?.status === "Reported") {
+      console.log(market);
+
       const report: Report = {
         at: market?.report?.at,
         by: market?.report?.by,
