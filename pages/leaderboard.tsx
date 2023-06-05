@@ -8,8 +8,9 @@ import {
   ZeitgeistIpfs,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
-import { endpointOptions, graphQlEndpoint } from "lib/constants";
+import { endpointOptions, graphQlEndpoint, ZTG } from "lib/constants";
 import { NextPage } from "next";
+import Link from "next/link";
 
 type Trade = {
   marketId: number;
@@ -42,9 +43,9 @@ type TradersByMarket = {
   [key: AccountId]: MarketTotals;
 };
 
-type Ranked = {
+type Rank = {
   accountId: string;
-  profit: Decimal;
+  profit: number;
 };
 
 export async function getStaticProps() {
@@ -56,6 +57,11 @@ export async function getStaticProps() {
     storage: ZeitgeistIpfs(),
   });
 
+  const { markets } = await sdk.indexer.markets();
+
+  // const marketsMap = markets.reduce((mMap, market) => {
+  //   return { ...mMap, [market.marketId]: market };
+  // }, {});
   const { historicalSwaps } = await sdk.indexer.historicalSwaps({
     where: {
       // accountId_eq: "dDywmamjrDkaT18ybCRJBfax65CoxJNSWGZfwiQrbkAe95wq3",
@@ -191,7 +197,32 @@ export async function getStaticProps() {
 
   console.log(tradersAggregatedByMarket);
 
-  const rankings = [];
+  const tradeProfits = Object.keys(tradersAggregatedByMarket).reduce(
+    (ranks, accountId) => {
+      const trader = tradersAggregatedByMarket[accountId];
+
+      const profit = Object.keys(trader).reduce<Decimal>((total, marketId) => {
+        const market = trader[marketId];
+
+        return total.plus(market.baseAssetOut).minus(market.baseAssetIn);
+      }, new Decimal(0));
+
+      return { ...ranks, [accountId]: profit.div(ZTG).toNumber() };
+    },
+    {},
+  );
+
+  console.log(tradeProfits);
+
+  const rankings = Object.keys(tradeProfits)
+    .reduce<Rank[]>((rankings, accountId) => {
+      rankings.push({ accountId, profit: tradeProfits[accountId] });
+      return rankings;
+    }, [])
+    .sort((a, b) => b.profit - a.profit);
+
+  console.log(rankings);
+
   return {
     props: {
       rankings,
@@ -201,9 +232,31 @@ export async function getStaticProps() {
 }
 
 const Leaderboard: NextPage<{
-  rankings: any[];
+  rankings: Rank[];
 }> = ({ rankings }) => {
-  return <div>Leaderboard</div>;
+  return (
+    <div>
+      <div className="font-bold text-xl mb-[20px]">Most Profit</div>
+      <div>
+        {rankings.map((rank, index) => (
+          <div key={index} className="flex">
+            <div className="mr-[20px] w-[20px]">{index + 1}</div>
+            <Link
+              className="flex"
+              href={`/portfolio/${rank.accountId}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span className="ml-ztg-10">{rank.accountId}</span>
+            </Link>
+            <div className="ml-auto font-bold">
+              {rank.profit.toFixed(0)} ZTG
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default Leaderboard;
