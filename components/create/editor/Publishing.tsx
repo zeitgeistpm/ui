@@ -38,8 +38,6 @@ export const Publishing = ({ editor }: PublishingProps) => {
     return;
   }, [editor.form, chainTime, wallet.activeAccount]);
 
-  useEffect(() => {}, [editor.isPublished, editor.marketId]);
-
   const submit = async () => {
     if (params && isFullSdk(sdk)) {
       setIsTransacting(true);
@@ -91,7 +89,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
         let errorMessage = "Unknown error occurred.";
 
         if (StorageError.is(error)) {
-          errorMessage = "Uploading market metadata to IPFS failed.";
+          errorMessage = "IPFS metadata upload failed.";
         }
 
         notifications.pushNotification(errorMessage, {
