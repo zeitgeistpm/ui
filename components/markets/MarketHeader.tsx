@@ -167,7 +167,7 @@ const MarketHistory: FC<
               <p> Market opened</p>
               <p className="pb-1 text-sm text-gray-500">
                 {marketStart}{" "}
-                {marketHistory?.start.blockNumber > 0 &&
+                {marketHistory?.start?.blockNumber > 0 &&
                   `(block: ${marketHistory?.start.blockNumber})`}
               </p>
             </li>
@@ -175,7 +175,7 @@ const MarketHistory: FC<
               <p> Market closed</p>
               <p className="pb-1 text-sm text-gray-500">
                 {marketClosed}{" "}
-                {marketHistory?.end.blockNumber > 0 &&
+                {marketHistory?.end?.blockNumber > 0 &&
                   `(block: ${marketHistory?.end.blockNumber})`}
               </p>
             </li>
@@ -185,10 +185,14 @@ const MarketHistory: FC<
                   {oracleReported && "Oracle "}
                   <span className="inline font-medium">
                     <span className="font-bold">
-                      <UserIdentity
-                        user={marketHistory?.reported.by}
-                        className="items-baseline"
-                      />
+                      {marketHistory?.reported?.by ? (
+                        <UserIdentity
+                          user={marketHistory.reported.by}
+                          className="items-baseline"
+                        />
+                      ) : (
+                        "Unknown"
+                      )}
                     </span>{" "}
                     reported{" "}
                     <span className="font-bold">
@@ -197,14 +201,12 @@ const MarketHistory: FC<
                   </span>
                 </div>
                 <p className="pb-1 text-sm text-gray-500">
-                  {new Date(marketHistory?.reported.timestamp).getTime() > 0 &&
+                  {marketHistory?.reported.timestamp > 0 &&
                     new Intl.DateTimeFormat("default", {
                       dateStyle: "medium",
                       timeStyle: "short",
-                    }).format(
-                      new Date(marketHistory?.reported.timestamp).getTime(),
-                    )}{" "}
-                  (block: {marketHistory?.reported.blockNumber})
+                    }).format(marketHistory?.reported.timestamp)}{" "}
+                  (block: {marketHistory?.reported?.blockNumber})
                 </p>
               </li>
             )}
@@ -217,10 +219,14 @@ const MarketHistory: FC<
                       <span className="flex items-center ">
                         <span className="inline font-medium">
                           <span className="font-bold">
-                            <UserIdentity
-                              user={dispute.by}
-                              className="items-baseline"
-                            />
+                            {dispute?.by ? (
+                              <UserIdentity
+                                user={dispute?.by}
+                                className="items-baseline"
+                              />
+                            ) : (
+                              "Unknown"
+                            )}
                           </span>{" "}
                           disputed and suggested{" "}
                           <span className="font-bold">
@@ -234,7 +240,7 @@ const MarketHistory: FC<
                             dateStyle: "medium",
                             timeStyle: "short",
                           }).format(dispute.timestamp)}{" "}
-                        (block: {dispute.blockNumber})
+                        (block: {dispute?.blockNumber})
                       </span>
                     </div>
                   </li>
@@ -255,7 +261,7 @@ const MarketHistory: FC<
                   </span>
                 </p>
                 <span className="text-sm text-gray-500">
-                  {marketHistory?.resolved?.timestamp &&
+                  {marketHistory?.resolved?.timestamp > 0 &&
                     new Intl.DateTimeFormat("default", {
                       dateStyle: "medium",
                       timeStyle: "short",
