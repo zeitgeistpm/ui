@@ -306,7 +306,7 @@ export const useMarketDraftEditor = ({
           ? ratio.toString()
           : liquidity?.price?.price ?? ratio.toString();
 
-        const weight = resetPrices ? ratio * baseWeight : liquidity.weight;
+        const weight = resetPrices ? ratio * baseWeight : liquidity?.weight || ratio * baseWeight;
 
         return {
           asset: tickers[index].ticker,
