@@ -12,6 +12,15 @@ import { endpointOptions, graphQlEndpoint, ZTG } from "lib/constants";
 import { NextPage } from "next";
 import Link from "next/link";
 
+//todo:
+// wait for market resolution to count profit
+// convert to $
+// support different base assets
+// display most profitable market?
+// include buy/sell full set events
+// styling
+// identity
+
 type Trade = {
   marketId: number;
   // baseAsset: AssetId;
@@ -241,12 +250,7 @@ const Leaderboard: NextPage<{
         {rankings.map((rank, index) => (
           <div key={index} className="flex">
             <div className="mr-[20px] w-[20px]">{index + 1}</div>
-            <Link
-              className="flex"
-              href={`/portfolio/${rank.accountId}`}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <Link className="flex" href={`/portfolio/${rank.accountId}`}>
               <span className="ml-ztg-10">{rank.accountId}</span>
             </Link>
             <div className="ml-auto font-bold">
