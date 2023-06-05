@@ -1,5 +1,4 @@
-import { Dialog, Transition } from "@headlessui/react";
-import Modal from "components/ui/Modal";
+import { Transition } from "@headlessui/react";
 import Toggle from "components/ui/Toggle";
 import WizardStepper from "components/wizard/WizardStepper";
 import { nextStepFrom, prevStepFrom } from "components/wizard/types";
@@ -15,14 +14,14 @@ import { useMarketDraftEditor } from "lib/state/market-creation/editor";
 import * as MarketDraft from "lib/state/market-creation/types/draft";
 import { persistentAtom } from "lib/state/util/persistent-atom";
 import dynamic from "next/dynamic";
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
-import { BsEraser } from "react-icons/bs";
 import { LuFileWarning } from "react-icons/lu";
 import { ErrorMessage } from "./ErrorMessage";
 import InfoPopover from "./InfoPopover";
 import { MarketFormSection } from "./MarketFormSection";
 import MarketPreview from "./Preview";
+import { EditorResetButton } from "./ResetButton";
 import BlockPeriodPicker from "./inputs/BlockPeriod";
 import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
@@ -31,6 +30,7 @@ import { LiquidityInput } from "./inputs/Liquidity";
 import ModerationModeSelect from "./inputs/Moderation";
 import OracleInput from "./inputs/Oracle";
 import { AnswersInput } from "./inputs/answers";
+import { Publishing } from "./Publishing";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -54,27 +54,23 @@ const createMarketStateAtom = persistentAtom<MarketDraft.MarketDraftState>({
 
 export const MarketEditor = () => {
   const [state, setState] = useAtom(createMarketStateAtom);
-  const editor = useMarketDraftEditor({ state, setState });
+  const editor = useMarketDraftEditor({ draft: state, update: setState });
 
   const {
     form,
     steps,
     currentStep,
     setStep,
-    goToSection,
     isWizard,
     toggleWizard,
     input,
     fieldsState,
-    mergeFormData,
     isTouched,
-    isValid,
     reset,
   } = editor;
 
   const chainTime = useChainTime();
   const { isFetched } = useMarketDeadlineConstants();
-  const [showResetConfirmation, setShowResetConfirmation] = useState(false);
 
   const back = () => {
     const prevStep = prevStepFrom(steps, currentStep);
@@ -87,12 +83,6 @@ export const MarketEditor = () => {
     const nextStep = nextStepFrom(steps, currentStep);
     if (nextStep) {
       setStep(nextStep);
-    }
-  };
-
-  const handleResetForm = () => {
-    if (reset) {
-      setShowResetConfirmation(true);
     }
   };
 
@@ -117,25 +107,7 @@ export const MarketEditor = () => {
       <h2 className="relative font-3xl text-center flex justify-center items-center gap-3 mb-6">
         <div className="relative md:flex justify-center items-center">
           Create Market
-          <Transition
-            show={Boolean(isTouched)}
-            className={`flex center text-sm text-gray-400 font-medium `}
-            enter="transition-opacity duration-100"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="transition-opacity duration-100"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <button
-              type="button"
-              className="text-xs center gap-1 rounded-md border-1 py-1 px-2 md:absolute md:right-0 md:translate-x-[125%] md:translate-y-[-50%] md:top-[50%]"
-              onClick={handleResetForm}
-            >
-              clear form
-              <BsEraser />
-            </button>
-          </Transition>
+          <EditorResetButton editor={editor} />
         </div>
       </h2>
 
@@ -588,42 +560,14 @@ export const MarketEditor = () => {
           disabled={!isWizard}
           resetForm={isTouched && reset}
         >
-          <div className="flex center mb-4 md:mb-8">
+          <div className="flex center">
             <MarketPreview editor={editor} />
           </div>
         </MarketFormSection>
 
-        <Modal
-          open={showResetConfirmation}
-          onClose={() => setShowResetConfirmation(false)}
-        >
-          <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-8 cursor-pointer">
-            <div className="text-center mb-6">
-              Are you sure you want to clear the form?
-            </div>
-            <div className="flex justify-center gap-4">
-              <button
-                type="button"
-                className="border-gray-300 text-sm  rounded-full py-3 px-6 transition-all ease-in-out duration-200 active:scale-95"
-                onClick={() => {
-                  setShowResetConfirmation(false);
-                }}
-              >
-                cancel
-              </button>
-              <button
-                type="button"
-                className="border-gray-300 text-sm border-2 rounded-full py-3 px-6 transition-all ease-in-out duration-200 active:scale-95"
-                onClick={() => {
-                  reset();
-                  setShowResetConfirmation(false);
-                }}
-              >
-                clear
-              </button>
-            </div>
-          </Dialog.Panel>
-        </Modal>
+        {(!editor.isWizard || currentStep.label == "Summary") && (
+          <Publishing editor={editor} />
+        )}
       </form>
     </Transition>
   );

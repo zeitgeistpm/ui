@@ -48,7 +48,19 @@ export type MarketDraftEditor = (ValidFormState | InvalidFormState) & {
    */
   isWizard: boolean;
   /**
-   * Reset the form state.
+   * Is the market created on chain?
+   */
+  isPublished: boolean;
+  /**
+   * The market id of the market. Will be set when its published succesfully.
+   */
+  marketId?: number;
+  /**
+   * Set the market draft as published.
+   */
+  published: (marketId: number) => void;
+  /**
+   * Reset the form draft.
    */
   reset: () => void;
   /**
@@ -60,7 +72,7 @@ export type MarketDraftEditor = (ValidFormState | InvalidFormState) & {
    */
   goToSection: (stepType: MarketCreationStepType) => void;
   /**
-   * Merge partial form data into the form state.
+   * Merge partial form data into the form draft.
    */
   mergeFormData: (data: Partial<MarketFormData>) => void;
   /**
@@ -88,12 +100,12 @@ export type MarketDraftEditor = (ValidFormState | InvalidFormState) & {
 export type ValidFormState = {
   /**
    * The current state of the form data.
-   * Ensured to be full data in valid state.
+   * Ensured to be full data in valid draft.
    */
   form: ValidMarketFormData;
   /**
    * Is the form as a whole valid.
-   * Ensured to be true in valid state.
+   * Ensured to be true in valid draft.
    */
   isValid: true;
 };
@@ -106,29 +118,29 @@ export type InvalidFormState = {
   form: PartialMarketFormData;
   /**
    * Is the form as a whole valid.
-   * Ensured to be false in invalid state.
+   * Ensured to be false in invalid draft.
    */
   isValid: false;
 };
 
 export type MarketDraftConfig = {
-  state: MarketDraft.MarketDraftState;
-  setState: (state: MarketDraft.MarketDraftState) => void;
+  draft: MarketDraft.MarketDraftState;
+  update: (state: MarketDraft.MarketDraftState) => void;
 };
 
 export const useMarketDraftEditor = ({
-  state,
-  setState,
+  draft,
+  update,
 }: MarketDraftConfig): MarketDraftEditor => {
-  const validator = useMarketCreationFormValidator(state.form);
+  const validator = useMarketCreationFormValidator(draft.form);
 
   const fieldsState = useMemo<FieldsState>(() => {
-    const parsed = validator.safeParse(state.form);
+    const parsed = validator.safeParse(draft.form);
 
     const fieldsState: FieldsState = marketCreationFormKeys.reduce<FieldsState>(
       (fieldsState, key) => {
         let isValid = true;
-        let isTouched = state.touchState[key];
+        let isTouched = draft.touchState[key];
         let errors = [...(fieldsState[key].errors ?? [])];
 
         if (parsed.success !== true) {
@@ -162,9 +174,9 @@ export const useMarketDraftEditor = ({
   const steps = marketCreationSteps.map((step) => {
     const keys = stepFormKeys[step.label];
 
-    const reached = state.stepReachState[step.label] || false;
+    const reached = draft.stepReachState[step.label] || false;
     const isValid = keys.every((key) => fieldsState[key].isValid);
-    const isTouched = keys.some((key) => state.touchState[key]);
+    const isTouched = keys.some((key) => draft.touchState[key]);
 
     return { ...step, isValid, isTouched, reached };
   });
@@ -177,17 +189,16 @@ export const useMarketDraftEditor = ({
   };
 
   const mergeFormData = (data: Partial<MarketFormData>) => {
-    setState({
-      ...state,
-      form: merge(state.form, data),
+    update({
+      ...draft,
+      form: merge(draft.form, data),
     });
   };
 
   const reset = () => {
-    structuredClone;
-    setState(
+    update(
       merge(MarketDraft.empty(), {
-        isWizard: state.isWizard,
+        isWizard: draft.isWizard,
         form: {
           question: "",
           oracle: "",
@@ -197,20 +208,20 @@ export const useMarketDraftEditor = ({
   };
 
   const toggleWizard = (on: boolean) => {
-    let newState = { ...state, isWizard: on };
+    let newDraft = { ...draft, isWizard: on };
     if (on) {
       const firstInvalidStep = steps.find((step) => !step.isValid);
-      newState.currentStep = firstInvalidStep || state.currentStep;
+      newDraft.currentStep = firstInvalidStep || draft.currentStep;
     }
-    setState(newState);
+    update(newDraft);
   };
 
   const setStep = (step: MarketCreationStep) =>
-    setState({
-      ...state,
+    update({
+      ...draft,
       currentStep: step,
       stepReachState: {
-        ...state.stepReachState,
+        ...draft.stepReachState,
         [step.label]: true,
       },
     });
@@ -226,7 +237,7 @@ export const useMarketDraftEditor = ({
       options?.mode || fieldsState[key].isTouched ? "onChange" : "onBlur";
 
     if (options?.type === "text" || options?.type === "number") {
-      const value = state.form?.[key];
+      const value = draft.form?.[key];
       if (value === "") {
         mode = "onChange";
       }
@@ -234,39 +245,47 @@ export const useMarketDraftEditor = ({
 
     return {
       name: key,
-      value: state.form?.[key],
+      value: draft.form?.[key],
       fieldState: fieldsState[key],
       onChange: (event: FormEvent<MarketFormData[K]>) => {
         if (mode === "onBlur") return;
-        let newState = {
-          ...state,
-          form: { ...state.form, [key]: event.target.value },
-          touchState: { ...state.touchState, [key]: true },
+        let newDraft = {
+          ...draft,
+          form: { ...draft.form, [key]: event.target.value },
+          touchState: { ...draft.touchState, [key]: true },
         };
-        if (!state.isWizard) {
+        if (!draft.isWizard) {
           const section = stepForFormKey(key);
-          newState.stepReachState[section] = true;
+          newDraft.stepReachState[section] = true;
         }
-        setState(newState);
+        update(newDraft);
       },
       onBlur: (event: FormEvent<MarketFormData[K]>) => {
         if (mode === "onChange") return;
-        let newState = {
-          ...state,
-          form: { ...state.form, [key]: event.target.value },
-          touchState: { ...state.touchState, [key]: true },
+        let newDraft = {
+          ...draft,
+          form: { ...draft.form, [key]: event.target.value },
+          touchState: { ...draft.touchState, [key]: true },
         };
-        if (!state.isWizard) {
+        if (!draft.isWizard) {
           const section = stepForFormKey(key);
-          newState.stepReachState[section] = true;
+          newDraft.stepReachState[section] = true;
         }
-        setState(newState);
+        update(newDraft);
       },
     };
   };
 
-  const prevCurrency = usePrevious(state.form.currency);
-  const prevAnswersLength = usePrevious(state.form.answers?.answers?.length);
+  /**
+   * Set the market as published.
+   */
+  const published = (marketId: number) => {
+    update({
+      ...draft,
+      marketId,
+      isPublished: true,
+    });
+  };
 
   /**
    * Update liquidity rows when answers changes.
@@ -274,39 +293,44 @@ export const useMarketDraftEditor = ({
    * If only answer values(option strings or scalar values) have changes it will not reset the liquidity amounts or prices.
    * If the number of answers changes it will reset the liquidity amounts and prices.
    */
+  const prevCurrency = usePrevious(draft.form.currency);
+  const prevAnswersLength = usePrevious(draft.form.answers?.answers?.length);
+
   useEffect(() => {
-    const baseAmmount = minBaseLiquidity[state.form.currency]
-      ? `${minBaseLiquidity[state.form.currency] / 2}`
+    const baseAmmount = minBaseLiquidity[draft.form.currency]
+      ? `${minBaseLiquidity[draft.form.currency] / 2}`
       : "100";
 
     const baseWeight = 64;
 
-    const numOutcomes = state.form.answers.answers.length;
+    const numOutcomes = draft.form.answers.answers.length;
 
     const ratio = 1 / numOutcomes;
 
-    const baseAssetLiquidty = last(state.form.liquidity?.rows);
+    const baseAssetLiquidty = last(draft.form.liquidity?.rows);
 
     const resetPrices =
-      prevAnswersLength !== numOutcomes || prevCurrency !== state.form.currency;
+      prevAnswersLength !== numOutcomes || prevCurrency !== draft.form.currency;
 
-    const tickers = tickersForAnswers(state.form.answers);
+    const tickers = tickersForAnswers(draft.form.answers);
 
     const rows = [
-      ...state.form.answers.answers.map((answer, index) => {
-        const liquidity = state.form.liquidity?.rows[index];
+      ...draft.form.answers.answers.map((answer, index) => {
+        const liquidity = draft.form.liquidity?.rows[index];
 
         const amount = new Decimal(
           resetPrices
             ? baseAmmount
-            : state.form.liquidity?.rows[index]?.amount || baseAmmount,
+            : draft.form.liquidity?.rows[index]?.amount || baseAmmount,
         );
 
         const price = resetPrices
           ? ratio.toString()
           : liquidity?.price?.price ?? ratio.toString();
 
-        const weight = resetPrices ? ratio * baseWeight : liquidity?.weight || ratio * baseWeight;
+        const weight = resetPrices
+          ? ratio * baseWeight
+          : liquidity?.weight || ratio * baseWeight;
 
         return {
           asset: tickers[index].ticker,
@@ -320,7 +344,7 @@ export const useMarketDraftEditor = ({
         };
       }),
       {
-        asset: state.form.currency,
+        asset: draft.form.currency,
         weight: baseWeight.toString(),
         amount: resetPrices
           ? baseAmmount
@@ -335,22 +359,24 @@ export const useMarketDraftEditor = ({
       },
     ];
 
-    setState({
-      ...state,
+    update({
+      ...draft,
       form: {
-        ...state.form,
+        ...draft.form,
         liquidity: {
-          ...state.form.liquidity,
+          ...draft.form.liquidity,
           rows,
         },
       },
     });
-  }, [state.form.answers, state.form.currency]);
+  }, [draft.form.answers, draft.form.currency]);
 
   const editor = {
-    form: state.form,
-    currentStep: state.currentStep,
-    isWizard: state.isWizard,
+    form: draft.form,
+    currentStep: draft.currentStep,
+    isWizard: draft.isWizard,
+    isPublished: draft.isPublished,
+    marketId: draft.marketId,
     steps,
     fieldsState,
     isValid,
@@ -361,6 +387,7 @@ export const useMarketDraftEditor = ({
     mergeFormData,
     toggleWizard,
     input,
+    published,
   } as MarketDraftEditor & (ValidFormState | InvalidFormState);
 
   return editor;

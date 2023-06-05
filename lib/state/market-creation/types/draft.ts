@@ -17,6 +17,8 @@ export type MarketDraftState = {
   currentStep: MarketCreationStep;
   touchState: Partial<Record<keyof MarketFormData, boolean>>;
   stepReachState: Partial<Record<MarketCreationStepType, boolean>>;
+  marketId?: number;
+  isPublished: boolean;
 };
 
 /**
@@ -49,4 +51,5 @@ export const empty = (): MarketDraftState => ({
   stepReachState: {
     Currency: true,
   },
+  isPublished: false,
 });

@@ -1,4 +1,3 @@
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { supportedCurrencies } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
@@ -10,7 +9,6 @@ import {
   Liquidity,
   Moderation,
   blocksAsDuration,
-  marketFormDataToExtrinsicParams,
 } from "lib/state/market-creation/types/form";
 import { timelineAsBlocks } from "lib/state/market-creation/types/timeline";
 import { useWallet } from "lib/state/wallet";
@@ -18,10 +16,8 @@ import { formatDuration } from "lib/util/format-duration";
 import moment from "moment";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import React, { useMemo, useState } from "react";
 import { LuFileWarning } from "react-icons/lu";
-import { RiSendPlaneLine } from "react-icons/ri";
 
 const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
   ssr: false,
@@ -31,11 +27,12 @@ export type MarketPreviewProps = {
   editor: MarketDraftEditor;
 };
 
+type TransactionStatus = "idle" | "pending" | "success" | "error";
+
 export const MarketPreview = ({ editor }: MarketPreviewProps) => {
   const [sdk] = useSdkv2();
   const wallet = useWallet();
   const chainTime = useChainTime();
-  const router = useRouter();
 
   const { form } = editor;
 
@@ -52,36 +49,6 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
   const baseAssetLiquidityRow = form?.liquidity?.rows.find(
     (row) => row.asset === form.currency,
   );
-
-  const params = useMemo(() => {
-    if (editor.isValid && chainTime) {
-      return marketFormDataToExtrinsicParams(
-        editor.form,
-        wallet.getActiveSigner(),
-        chainTime,
-      );
-    }
-    return;
-  }, [form, wallet.activeAccount]);
-
-  const firstInvalidStep = editor.steps.find((step) => !step.isValid);
-
-  const submit = async () => {
-    if (params && isRpcSdk(sdk)) {
-      setIsTransacting(true);
-      try {
-        const result = await sdk.model.markets.create(params);
-        alert(
-          `(placeholder ui). Market created. /markets/${
-            result.saturate().unwrap().market.marketId
-          }`,
-        );
-      } catch (error) {
-        console.log({ error });
-      }
-      setIsTransacting(false);
-    }
-  };
 
   return (
     <div className="flex-1 text-center">
@@ -271,7 +238,7 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
         </div>
       </div>
 
-      <div className="mb-20">
+      <div>
         <Label className="mb-2">Description</Label>
         <div className="flex center ">
           {form?.description ? (
@@ -281,55 +248,6 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
           ) : (
             <span className="italic text-gray-500">No description given.</span>
           )}
-        </div>
-      </div>
-
-      <div className="">
-        <div className="mb-2 center w-full">
-          <div className="relative">
-            <button
-              className={`
-              absolute left-0 top-[50%] translate-x-[-110%] translate-y-[-50%] border-gray-100 text-sm border-2 
-              rounded-full py-2 px-6 ease-in-out active:scale-95 duration-200
-              ${
-                firstInvalidStep && "bg-orange-300 border-orange-400 text-white"
-              }
-            `}
-              onClick={() => {
-                editor.goToSection(firstInvalidStep?.label ?? "Liquidity");
-              }}
-              type="button"
-            >
-              {firstInvalidStep ? (
-                <div className="center gap-2">
-                  {" "}
-                  <LuFileWarning /> {`Fix ${firstInvalidStep?.label}`}
-                </div>
-              ) : (
-                "Go Back"
-              )}
-            </button>
-            <button
-              type="button"
-              disabled={!editor.isValid || isTransacting}
-              className={`
-                bg-ztg-blue py-4 px-6 text-white rounded-full text-xl center gap-2 transition-all opacity-70 w-60
-                ${
-                  editor.isValid &&
-                  !isTransacting &&
-                  "active:scale-95 !opacity-100"
-                }
-              `}
-              onClick={submit}
-            >
-              <div className="flex-1">
-                {isTransacting ? "Transacting.." : "Publish Market"}
-              </div>
-              <div className={`${isTransacting && "animate-ping"}`}>
-                <RiSendPlaneLine />
-              </div>
-            </button>
-          </div>
         </div>
       </div>
     </div>
