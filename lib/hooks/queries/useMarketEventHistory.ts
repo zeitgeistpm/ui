@@ -5,6 +5,7 @@ import { Report, MarketDispute } from "@zeitgeistpm/sdk/dist/types";
 import { getApiAtBlock } from "lib/util/get-api-at";
 import { useMarket } from "./useMarket";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
+import { getMarketHistory } from "lib/gql/market-history";
 
 export const marketsEventsRootQuery = "marketsEvents";
 interface ReportWithTimestamp extends Report {
@@ -45,6 +46,11 @@ export const useMarketEventHistory = (
     [marketsEventsRootQuery, id, marketId],
     async () => {
       if (isIndexedSdk(sdk) && isRpcSdk(sdk) && market) {
+        const response = await getMarketHistory(
+          sdk.indexer.client,
+          Number(marketId),
+        );
+        console.log(response);
         const disputes = market.disputes;
         const report = market.report;
         const start = {
