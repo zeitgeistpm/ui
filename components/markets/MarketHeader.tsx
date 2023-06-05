@@ -212,7 +212,7 @@ const MarketHistory: FC<
               marketHistory?.disputes.map((dispute) => {
                 return (
                   <li key={dispute.timestamp} className="mb-8">
-                    <p className="pb-1">
+                    <div className="pb-1">
                       {oracleReported ?? "Oracle"}
                       <span className="flex items-center ">
                         <span className="inline font-medium">
@@ -236,7 +236,7 @@ const MarketHistory: FC<
                           }).format(dispute.timestamp)}{" "}
                         (block: {dispute.blockNumber})
                       </span>
-                    </p>
+                    </div>
                   </li>
                 );
               })}
@@ -324,7 +324,7 @@ const MarketHeader: FC<{
     marketId: market.marketId,
   });
 
-  const oracleReported = marketHistory?.reported.by === market.oracle;
+  const oracleReported = marketHistory?.reported?.by === market.oracle;
 
   return (
     <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
