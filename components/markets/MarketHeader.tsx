@@ -134,16 +134,14 @@ const MarketHistory: FC<
   scalarType,
 }) => {
   console.log(marketHistory);
-  const startTime = new Date(marketHistory?.start.timestamp);
-  const endTime = new Date(marketHistory?.end.timestamp);
   const marketStart = new Intl.DateTimeFormat("default", {
     dateStyle: "medium",
     timeStyle: "short",
-  }).format(startTime.getTime());
+  }).format(marketHistory?.start?.timestamp);
   const marketClosed = new Intl.DateTimeFormat("default", {
     dateStyle: "medium",
     timeStyle: "short",
-  }).format(endTime.getTime());
+  }).format(marketHistory?.end?.timestamp);
 
   const getOutcome = (outcome: OutcomeReport) => {
     if (marketType.scalar === null) {
@@ -199,12 +197,14 @@ const MarketHistory: FC<
                   </span>
                 </div>
                 <p className="pb-1 text-sm text-gray-500">
-                  {marketHistory?.reported.timestamp > 0 &&
+                  {new Date(marketHistory?.reported.timestamp).getTime() > 0 &&
                     new Intl.DateTimeFormat("default", {
                       dateStyle: "medium",
                       timeStyle: "short",
-                    }).format(marketHistory?.reported.timestamp)}{" "}
-                  (block: {marketHistory?.reported.at})
+                    }).format(
+                      new Date(marketHistory?.reported.timestamp).getTime(),
+                    )}{" "}
+                  (block: {marketHistory?.reported.blockNumber})
                 </p>
               </li>
             )}
@@ -234,7 +234,7 @@ const MarketHistory: FC<
                             dateStyle: "medium",
                             timeStyle: "short",
                           }).format(dispute.timestamp)}{" "}
-                        (block: {dispute.at})
+                        (block: {dispute.blockNumber})
                       </span>
                     </p>
                   </li>
@@ -259,7 +259,7 @@ const MarketHistory: FC<
                       dateStyle: "medium",
                       timeStyle: "short",
                     }).format(marketHistory?.resolved?.timestamp)}{" "}
-                  (block: {marketHistory?.resolved?.block})
+                  (block: {marketHistory?.resolved?.blockNumber})
                 </span>{" "}
               </li>
             )}

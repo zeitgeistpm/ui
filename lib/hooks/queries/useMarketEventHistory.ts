@@ -1,10 +1,12 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { isRpcSdk, isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
-import { Report, MarketDispute } from "@zeitgeistpm/sdk/dist/types";
-import { getApiAtBlock } from "lib/util/get-api-at";
+import {
+  Report,
+  MarketDispute,
+  OutcomeReport,
+} from "@zeitgeistpm/sdk/dist/types";
 import { useMarket } from "./useMarket";
-import { getResolutionTimestamp } from "lib/gql/resolution-date";
 import { getMarketHistory } from "lib/gql/market-history";
 
 export const marketsEventsRootQuery = "marketsEvents";
@@ -28,7 +30,7 @@ export type MarketHistory = {
   reported: ReportWithTimestamp;
   disputes: DisputesWithTimestamp[];
   resolved: {
-    outcome: number;
+    outcome: OutcomeReport;
     timestamp: Date;
     blockNumber: number;
   };
@@ -52,15 +54,26 @@ export const useMarketEventHistory = (
         );
         console.log(response);
 
-        const start = response.filter((e) => e.event === "MarketCreated")[0];
-        const end = response.filter((e) => e.event === "MarketClosed")[0];
-        const disputes = response.filter((e) => e.event === "MarketDisputed");
-        const reported = response.filter(
-          (e) => e.event === "MarketReported",
-        )[0];
-        const resolved = response.filter(
-          (e) => e.event === "MarketResolved",
-        )[0];
+        const start = response.filter((e) => {
+          e.timestamp = new Date(e.timestamp).getTime();
+          return e.event === "MarketCreated";
+        })[0];
+        const end = response.filter((e) => {
+          e.timestamp = new Date(e.timestamp).getTime();
+          return e.event === "MarketClosed";
+        })[0];
+        const disputes = response.filter((e) => {
+          e.timestamp = new Date(e.timestamp).getTime();
+          return e.event === "MarketDisputed";
+        });
+        const reported = response.filter((e) => {
+          e.timestamp = new Date(e.timestamp).getTime();
+          return e.event === "MarketReported";
+        })[0];
+        const resolved = response.filter((e) => {
+          e.timestamp = new Date(e.timestamp).getTime();
+          return e.event === "MarketResolved";
+        })[0];
         const oracleReported = reported[0]?.by === market.oracle;
 
         // const disputes = market.disputes;
