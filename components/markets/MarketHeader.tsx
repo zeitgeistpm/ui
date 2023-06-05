@@ -162,7 +162,7 @@ const MarketHistory: FC<
         />
         <h3 className="font-bold mb-10 text-center">Market History</h3>
         <div className="sm:overflow-hidden">
-          <ol className="list-decimal pl-8 overflow-y-auto h-[500px] w-[calc(100%+16px)]">
+          <ol className="list-decimal pl-8 overflow-y-auto h-[500px]">
             <li className="mb-8 list-item">
               <p> Market opened</p>
               <p className="pb-1 text-sm text-gray-500">
