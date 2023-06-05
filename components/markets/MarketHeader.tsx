@@ -133,14 +133,17 @@ const MarketHistory: FC<
   setShowMarketHistory,
   scalarType,
 }) => {
+  console.log(marketHistory);
+  const startTime = new Date(marketHistory?.start.timestamp);
+  const endTime = new Date(marketHistory?.end.timestamp);
   const marketStart = new Intl.DateTimeFormat("default", {
     dateStyle: "medium",
     timeStyle: "short",
-  }).format(marketHistory?.start.timestamp);
+  }).format(startTime.getTime());
   const marketClosed = new Intl.DateTimeFormat("default", {
     dateStyle: "medium",
     timeStyle: "short",
-  }).format(marketHistory?.end.timestamp);
+  }).format(endTime.getTime());
 
   const getOutcome = (outcome: OutcomeReport) => {
     if (marketType.scalar === null) {
@@ -166,16 +169,16 @@ const MarketHistory: FC<
               <p> Market opened</p>
               <p className="pb-1 text-sm text-gray-500">
                 {marketStart}{" "}
-                {marketHistory?.start.block > 0 &&
-                  `(block: ${marketHistory?.start.block})`}
+                {marketHistory?.start.blockNumber > 0 &&
+                  `(block: ${marketHistory?.start.blockNumber})`}
               </p>
             </li>
             <li className="mb-8 list-item">
               <p> Market closed</p>
               <p className="pb-1 text-sm text-gray-500">
                 {marketClosed}{" "}
-                {marketHistory?.end.block > 0 &&
-                  `(block: ${marketHistory?.end.block})`}
+                {marketHistory?.end.blockNumber > 0 &&
+                  `(block: ${marketHistory?.end.blockNumber})`}
               </p>
             </li>
             {marketHistory?.reported && (

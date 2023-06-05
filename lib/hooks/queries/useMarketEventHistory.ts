@@ -18,11 +18,11 @@ interface DisputesWithTimestamp extends MarketDispute {
 
 export type MarketHistory = {
   start: {
-    block: number;
+    blockNumber: number;
     timestamp: number;
   };
   end: {
-    block: number;
+    blockNumber: number;
     timestamp: number;
   };
   reported: ReportWithTimestamp;
@@ -30,7 +30,7 @@ export type MarketHistory = {
   resolved: {
     outcome: number;
     timestamp: Date;
-    block: number;
+    blockNumber: number;
   };
   oracleReported: boolean;
 };
@@ -51,80 +51,88 @@ export const useMarketEventHistory = (
           Number(marketId),
         );
         console.log(response);
-        const disputes = market.disputes;
-        const report = market.report;
-        const start = {
-          block:
-            market.period?.block !== null ? Number(market.period?.block[0]) : 0,
-          timestamp: Number(market.period?.start),
-        };
-        const end = {
-          block:
-            market.period?.block !== null ? Number(market.period?.block[1]) : 0,
-          timestamp: Number(market.period?.end),
-        };
-        const resolvedOutcome = market?.resolvedOutcome;
-        const oracleReported = report?.by === market.oracle;
 
-        let disputesWithTimestamp;
-        let reportWithTimestamp;
-        let resolutionBlock;
-        let resolutionTimestamp;
+        const start = response.filter((e) => e.event === "MarketCreated")[0];
+        const end = response.filter((e) => e.event === "MarketClosed")[0];
+        const disputes = response.filter((e) => e.event === "MarketDisputed");
+        const reported = response.filter(
+          (e) => e.event === "MarketReported",
+        )[0];
+        const resolved = response.filter(
+          (e) => e.event === "MarketResolved",
+        )[0];
+        const oracleReported = reported[0]?.by === market.oracle;
 
-        if (resolvedOutcome) {
-          const { timestamp, blockNumber } = await getResolutionTimestamp(
-            sdk.indexer.client,
-            Number(marketId),
-          );
-          resolutionTimestamp = new Date(timestamp);
-          resolutionBlock = blockNumber;
-        }
+        // const disputes = market.disputes;
+        // const report = market.report;
+        // const start = {
+        //   block:
+        //     market.period?.block !== null ? Number(market.period?.block[0]) : 0,
+        //   timestamp: Number(market.period?.start),
+        // };
+        // const end = {
+        //   block:
+        //     market.period?.block !== null ? Number(market.period?.block[1]) : 0,
+        //   timestamp: Number(market.period?.end),
+        // };
+        // const resolvedOutcome = market?.resolvedOutcome;
+        // const oracleReported = report?.by === market.oracle;
 
-        const getTimeStampForBlock = async (blockNumber: number) => {
-          try {
-            const api = await getApiAtBlock(sdk.api, blockNumber);
-            return await (await api.query.timestamp.now()).toNumber();
-          } catch (error) {
-            return 0;
-          }
-        };
+        // let disputesWithTimestamp;
+        // let reportWithTimestamp;
+        // let resolutionBlock;
+        // let resolutionTimestamp;
 
-        if (disputes) {
-          const updateDisputesWithTimestamp = async (disputes) => {
-            const promises = disputes.map(async (dispute) => {
-              const timestamp = await getTimeStampForBlock(dispute.at);
-              dispute.timestamp = timestamp;
-              return dispute;
-            });
+        // if (resolvedOutcome) {
+        //   const { timestamp, blockNumber } = await getResolutionTimestamp(
+        //     sdk.indexer.client,
+        //     Number(marketId),
+        //   );
+        //   resolutionTimestamp = new Date(timestamp);
+        //   resolutionBlock = blockNumber;
+        // }
 
-            const updatedDisputes = await Promise.all(promises);
+        // const getTimeStampForBlock = async (blockNumber: number) => {
+        //   try {
+        //     const api = await getApiAtBlock(sdk.api, blockNumber);
+        //     return await (await api.query.timestamp.now()).toNumber();
+        //   } catch (error) {
+        //     return 0;
+        //   }
+        // };
 
-            return updatedDisputes;
-          };
-          disputesWithTimestamp = await updateDisputesWithTimestamp(disputes);
-        }
-        if (report) {
-          const updateReportWithTimestamp = async (report) => {
-            const timestamp = await getTimeStampForBlock(report.at);
-            reportWithTimestamp = {
-              ...report,
-              ["timestamp"]: timestamp,
-            };
-          };
-          await updateReportWithTimestamp(report);
-        }
+        // if (disputes) {
+        //   const updateDisputesWithTimestamp = async (disputes) => {
+        //     const promises = disputes.map(async (dispute) => {
+        //       const timestamp = await getTimeStampForBlock(dispute.at);
+        //       dispute.timestamp = timestamp;
+        //       return dispute;
+        //     });
+
+        //     const updatedDisputes = await Promise.all(promises);
+
+        //     return updatedDisputes;
+        //   };
+        //   disputesWithTimestamp = await updateDisputesWithTimestamp(disputes);
+        // }
+        // if (report) {
+        //   const updateReportWithTimestamp = async (report) => {
+        //     const timestamp = await getTimeStampForBlock(report.at);
+        //     reportWithTimestamp = {
+        //       ...report,
+        //       ["timestamp"]: timestamp,
+        //     };
+        //   };
+        //   await updateReportWithTimestamp(report);
+        // }
 
         const marketHistory = {
           start,
           end,
-          reported: reportWithTimestamp,
-          disputes: disputesWithTimestamp,
-          resolved: {
-            outcome: resolvedOutcome,
-            timestamp: resolutionTimestamp,
-            block: resolutionBlock,
-          },
-          oracleReported: oracleReported,
+          reported,
+          disputes,
+          resolved,
+          oracleReported,
         };
         return marketHistory;
       }
