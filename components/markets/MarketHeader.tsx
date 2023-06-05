@@ -18,7 +18,7 @@ import { MarketTimer } from "./MarketTimer";
 import { MarketTimerSkeleton } from "./MarketTimer";
 import { MarketDispute, OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
 import {
-  MarketHistory,
+  MarketEventHistory,
   useMarketEventHistory,
 } from "lib/hooks/queries/useMarketEventHistory";
 import Modal from "components/ui/Modal";
@@ -67,7 +67,7 @@ const Tag: FC<PropsWithChildren<{ className?: string }>> = ({
 const MarketOutcome: FC<
   PropsWithChildren<{
     setShowMarketHistory: (show: boolean) => void;
-    marketHistory: MarketHistory;
+    marketHistory: MarketEventHistory;
     status: MarketStatus;
     outcome: string | number;
     by?: string;
@@ -118,7 +118,7 @@ const MarketHistory: FC<
     setShowMarketHistory: (show: boolean) => void;
     starts: number;
     ends: number;
-    marketHistory: MarketHistory;
+    marketHistory: MarketEventHistory;
     categories: { name: string; color: string }[];
     marketType: {
       scalar: string[];
@@ -240,15 +240,16 @@ const MarketHistory: FC<
                   </li>
                 );
               })}
-            {marketHistory?.resolved?.outcome && (
+            {marketHistory?.resolved?.resolvedOutcome && (
               <li className="mb-8 list-item">
                 <p className="pb-1">
                   Market resolved to{" "}
                   <span className="font-bold">
                     {marketType.scalar === null
-                      ? categories[marketHistory?.resolved?.outcome]?.name
+                      ? categories[marketHistory?.resolved?.resolvedOutcome]
+                          ?.name
                       : getScalarOutcome(
-                          marketHistory?.resolved?.outcome,
+                          marketHistory?.resolved?.resolvedOutcome,
                           scalarType,
                         )}
                   </span>

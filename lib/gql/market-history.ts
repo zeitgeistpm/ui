@@ -1,5 +1,4 @@
 import { gql, GraphQLClient } from "graphql-request";
-import { MarketStatus } from "@zeitgeistpm/sdk-next";
 import { OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
 
 const historicalMarketQuery = gql`
@@ -8,36 +7,38 @@ const historicalMarketQuery = gql`
       by
       blockNumber
       event
-      id
       outcome {
         categorical
         scalar
       }
       resolvedOutcome
-      status
       timestamp
     }
   }
 `;
 
-export type MarketHistory = {
-  by: string;
+export type MarketEventStatus =
+  | "MarketCreated"
+  | "MarketClosed"
+  | "MarketDisputed"
+  | "MarketResolved"
+  | "MarketReported";
+export type MarketEvent = {
   blockNumber: number;
-  event: string;
-  id: number;
+  by: string;
+  event: MarketEventStatus;
   outcome: OutcomeReport;
   resolvedOutcome: string;
-  status: MarketStatus;
-  timestamp: string;
+  timestamp: number;
 };
 
 export const getMarketHistory = async (
   client: GraphQLClient,
   marketId: number,
-): Promise<MarketHistory[]> => {
+): Promise<MarketEvent[]> => {
   if (!marketId) return [];
   const response = await client.request<{
-    historicalMarkets: MarketHistory[];
+    historicalMarkets: MarketEvent[];
   }>(historicalMarketQuery, { marketId });
   return response.historicalMarkets;
 };
