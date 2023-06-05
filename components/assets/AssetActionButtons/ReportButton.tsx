@@ -10,6 +10,7 @@ import {
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";
+import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
@@ -29,10 +30,17 @@ const ReportButton = ({
   const [scalarReportBoxOpen, setScalarReportBoxOpen] = useState(false);
 
   if (!market) return null;
+  const { data: stage } = useMarketStage(market);
 
   const outcomeName = market.categories?.[getIndexOf(assetId)]?.name;
 
-  const reportDisabled = !sdk || !isRpcSdk(sdk);
+  const connectedWalletIsOracle =
+    market.oracle === wallet.activeAccount?.address;
+
+  const reportDisabled =
+    !isRpcSdk(sdk) ||
+    !stage ||
+    (stage.type === "OracleReportingPeriod" && !connectedWalletIsOracle);
 
   const handleClick = async () => {
     if (!isRpcSdk(sdk)) return;
