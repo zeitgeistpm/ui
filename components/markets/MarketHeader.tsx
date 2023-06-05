@@ -119,6 +119,7 @@ const MarketHistory: FC<
     starts: number;
     ends: number;
     marketHistory: MarketEventHistory;
+    oracleReported: boolean;
     categories: { name: string; color: string }[];
     marketType: {
       scalar: string[];
@@ -128,12 +129,12 @@ const MarketHistory: FC<
   }>
 > = ({
   marketHistory,
+  oracleReported,
   categories,
   marketType,
   setShowMarketHistory,
   scalarType,
 }) => {
-  console.log(marketHistory);
   const marketStart = new Intl.DateTimeFormat("default", {
     dateStyle: "medium",
     timeStyle: "short",
@@ -142,7 +143,6 @@ const MarketHistory: FC<
     dateStyle: "medium",
     timeStyle: "short",
   }).format(marketHistory?.end?.timestamp);
-
   const getOutcome = (outcome: OutcomeReport) => {
     if (marketType.scalar === null) {
       return categories[outcome["categorical"]]?.name;
@@ -182,7 +182,7 @@ const MarketHistory: FC<
             {marketHistory?.reported && (
               <li className="mb-8 list-item">
                 <div>
-                  {marketHistory?.oracleReported && "Oracle "}
+                  {oracleReported && "Oracle "}
                   <span className="inline font-medium">
                     <span className="font-bold">
                       <UserIdentity
@@ -213,7 +213,7 @@ const MarketHistory: FC<
                 return (
                   <li key={dispute.timestamp} className="mb-8">
                     <p className="pb-1">
-                      {marketHistory.oracleReported ?? "Oracle"}
+                      {oracleReported ?? "Oracle"}
                       <span className="flex items-center ">
                         <span className="inline font-medium">
                           <span className="font-bold">
@@ -324,6 +324,8 @@ const MarketHeader: FC<{
     marketId: market.marketId,
   });
 
+  const oracleReported = marketHistory?.reported.by === market.oracle;
+
   return (
     <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
       <h1 className="text-4xl font-extrabold my-5 text-center">{question}</h1>
@@ -408,6 +410,7 @@ const MarketHeader: FC<{
           starts={starts}
           ends={ends}
           marketHistory={marketHistory}
+          oracleReported={oracleReported}
           categories={categories}
           marketType={marketType}
           setShowMarketHistory={setShowMarketHistory}

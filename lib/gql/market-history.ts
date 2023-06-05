@@ -23,6 +23,7 @@ export type MarketEventStatus =
   | "MarketDisputed"
   | "MarketResolved"
   | "MarketReported";
+
 export type MarketEvent = {
   blockNumber: number;
   by: string;

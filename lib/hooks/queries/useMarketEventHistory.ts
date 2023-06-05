@@ -13,7 +13,6 @@ export type MarketEventHistory = {
   reported: MarketEvent;
   disputes: MarketEvent[];
   resolved: MarketEvent;
-  oracleReported: boolean;
 };
 
 export const useMarketEventHistory = (
@@ -52,7 +51,6 @@ export const useMarketEventHistory = (
           e.timestamp = new Date(e.timestamp).getTime();
           return e.event === "MarketResolved";
         })[0];
-        const oracleReported = reported[0]?.by === market.oracle;
 
         const marketHistory = {
           start,
@@ -60,7 +58,6 @@ export const useMarketEventHistory = (
           reported,
           disputes,
           resolved,
-          oracleReported,
         };
         return marketHistory;
       }
