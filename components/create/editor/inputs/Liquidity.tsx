@@ -57,13 +57,14 @@ export const LiquidityInput = ({
   };
 
   const handleSwapFeeChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+    const swapFee = parseFloat(event.target.value);
     onChange({
       type: "change",
       target: {
         name,
         value: {
           ...value,
-          swapFee: clamp(parseFloat(event.target.value), 0, 10),
+          swapFee: isNaN(swapFee) ? 0 : parseFloat(event.target.value),
         },
       },
     });
@@ -103,7 +104,7 @@ export const LiquidityInput = ({
             </p>
           </div>
         ) : errorMessage ? (
-          <div>{errorMessage}</div>
+          <div className="text-red-500">{errorMessage}</div>
         ) : (
           <>
             <div className="mb-4">
@@ -119,10 +120,9 @@ export const LiquidityInput = ({
                 <div className="relative inline-block">
                   <input
                     type="number"
-                    max={10}
                     min={0}
                     className="rounded-md bg-gray-100 py-3 pl-4 pr-34 text-right w-64 outline-none"
-                    value={value.swapFee}
+                    value={Number(value.swapFee).toString()}
                     onChange={handleSwapFeeChange}
                   />
                   <div className="absolute bottom-[50%] center text-gray-600 right-0 rounded-r-md border-2 border-gray-100 border-l-0 px-4 bg-white h-full translate-y-[50%] translate-x-[0%] pointer-events-none">

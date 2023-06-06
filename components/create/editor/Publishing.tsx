@@ -10,7 +10,7 @@ import { NotificationType, useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { isArray } from "lodash-es";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { LuFileWarning } from "react-icons/lu";
 import { RiSendPlaneLine } from "react-icons/ri";
 
