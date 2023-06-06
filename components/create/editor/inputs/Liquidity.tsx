@@ -6,7 +6,6 @@ import Decimal from "decimal.js";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { FieldState } from "lib/state/market-creation/types/fieldstate";
 import { CurrencyTag, Liquidity } from "lib/state/market-creation/types/form";
-import { clamp } from "lodash-es";
 import { ChangeEventHandler, ReactNode } from "react";
 import { LuFileWarning } from "react-icons/lu";
 import { FormEvent } from "../types";

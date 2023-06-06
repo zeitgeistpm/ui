@@ -1,4 +1,6 @@
-import React, {
+import { runInAction } from "mobx";
+import Form from "mobx-react-form";
+import {
   createContext,
   FC,
   useContext,
@@ -6,18 +8,14 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { runInAction } from "mobx";
-import Form from "mobx-react-form";
-
-import { Minus, Plus, ArrowDownCircle, ArrowUpCircle } from "react-feather";
-import { Color, HuePicker as ColorPicker } from "react-color";
-import LabeledToggle from "components/ui/LabeledToggle";
 import { DateTimeInput, Input } from "components/ui/inputs";
-
-import { randomHexColor } from "lib/util";
+import LabeledToggle from "components/ui/LabeledToggle";
+import { Color, HuePicker as ColorPicker } from "react-color";
+import { ArrowDownCircle, ArrowUpCircle, Minus, Plus } from "react-feather";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEvent } from "lib/hooks";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import {
-  isDateRangeOutcomeEntry,
   isMultipleOutcomeEntries,
   isRangeOutcomeEntry,
   MultipleOutcomeEntry,
@@ -27,8 +25,7 @@ import {
   RangeType,
   YesNoOutcome,
 } from "lib/types/create-market";
-import { AnimatePresence, motion } from "framer-motion";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { randomHexColor } from "lib/util";
 
 const FormContext = createContext(null);
 
