@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import {
   AssetId,
   getScalarBounds,
@@ -119,6 +120,11 @@ export const RedeemButtonByValue = ({
   const wallet = useWallet();
   const signer = wallet?.getActiveSigner();
   const notificationStore = useNotifications();
+  const router = useRouter();
+  const walletAddress = wallet?.selectedAddress;
+  const addressFromUrl = Array.isArray(router.query.address)
+    ? router.query.address[0]
+    : router.query.address;
 
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [isRedeemed, setIsRedeemed] = useState(false);
@@ -160,7 +166,9 @@ export const RedeemButtonByValue = ({
       ) : (
         <SecondaryButton
           onClick={handleClick}
-          disabled={isRedeeming || value.eq(0)}
+          disabled={
+            isRedeeming || value.eq(0) || walletAddress !== addressFromUrl
+          }
         >
           Redeem Tokens
         </SecondaryButton>
