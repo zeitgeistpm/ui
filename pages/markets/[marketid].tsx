@@ -78,11 +78,11 @@ export async function getStaticProps({ params }) {
     },
   );
 
-  let resolutionTimestamp: string;
+  let resolutionTimestamp: string | undefined;
   if (market) {
     const { timestamp } = await getResolutionTimestamp(client, market.marketId);
 
-    resolutionTimestamp = timestamp;
+    resolutionTimestamp = timestamp ?? undefined;
   }
 
   return {
@@ -154,8 +154,10 @@ const Market: NextPage<MarketPageProps> = ({
       const at = lastDispute.at.toNumber();
       const by = lastDispute.by.toString();
       const outcome = market?.marketType.scalar
-        ? lastDispute?.outcome?.asScalar.toNumber()
-        : lastDispute?.outcome?.asCategorical.toNumber();
+        ? market.scalarType === "date"
+          ? new Decimal(lastDispute?.outcome?.asScalar.toString()).toNumber()
+          : Number(lastDispute?.outcome?.asScalar)
+        : Number(lastDispute?.outcome?.asCategorical);
       const marketDispute: MarketDispute = {
         at,
         by,
@@ -166,13 +168,19 @@ const Market: NextPage<MarketPageProps> = ({
       };
       setLastDispute(marketDispute);
     }
+
     if (market?.report && market?.status === "Reported") {
       const report: Report = {
         at: market?.report?.at,
         by: market?.report?.by,
         outcome: {
           categorical: market?.report?.outcome?.categorical,
-          scalar: market?.report?.outcome?.scalar,
+          scalar:
+            market.scalarType === "date"
+              ? new Decimal(
+                  market?.report?.outcome?.categorical.toString(),
+                ).toNumber()
+              : market?.report?.outcome?.categorical,
         },
       };
       setReport(report);

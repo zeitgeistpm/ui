@@ -10,7 +10,9 @@ export const useBadges = (address: string) => {
   const query = useQuery(
     [badgesRootKey, address],
     async () => {
-      return Avatar.fetchEarnedBadgesForAddress(avatarContext, address);
+      if (avatarContext) {
+        return Avatar.fetchEarnedBadgesForAddress(avatarContext, address);
+      }
     },
     {
       enabled: Boolean(avatarContext && address),

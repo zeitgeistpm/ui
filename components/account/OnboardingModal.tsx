@@ -14,7 +14,7 @@ interface StepperProps {
   start: number;
   end: number;
   currentStep: number;
-  onStepClick?: (step: number) => void;
+  onStepClick: (step: number) => void;
 }
 
 const Stepper = ({ start, end, currentStep, onStepClick }: StepperProps) => {
@@ -165,7 +165,9 @@ export const ExchangeTypeSelection = (props: {
       name: "With Crypto (DEX)",
       disabled: false,
       onClick: () => {
-        window.open("https://app.hydradx.io/trade?assetOut=12&assetIn=5");
+        window.open(
+          "https://blog.zeitgeist.pm/how-to-buy-ztg-on-hydradxs-omnipool/",
+        );
       },
     },
     {

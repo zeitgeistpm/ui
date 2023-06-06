@@ -34,7 +34,9 @@ const Modal = ({
           leaveFrom="opacity-100 scale-100"
           leaveTo="opacity-0 scale-95"
         >
-          <div className={`fixed inset-0 flex items-center justify-center p-4`}>
+          <div
+            className={`fixed w-screen inset-0 flex items-center justify-center p-4`}
+          >
             {children}
           </div>
         </Transition.Child>

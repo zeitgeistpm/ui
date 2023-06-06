@@ -40,7 +40,7 @@ const processEvents = (
         errorInfo = dispatchError.toString();
       }
 
-      failCallback(errorInfo);
+      failCallback && failCallback(errorInfo);
     } else if (successCallback && method === successMethod) {
       const res = data.toHuman();
       successCallback(res);

@@ -42,8 +42,6 @@ import {
   ForeignAssetPrices,
   useAllForeignAssetUsdPrices,
 } from "./useAssetUsdPrice";
-import { useMarketSpotPrices } from "./useMarketSpotPrices";
-import { transaction } from "mobx";
 
 export type UsePortfolioPositions = {
   /**
@@ -260,11 +258,24 @@ export const usePortfolioPositions = (
   );
 
   const positions = useMemo<Position[] | null>(() => {
-    let positionsData: Position[] = [];
+    const stillLoading =
+      rawPositions.isLoading ||
+      pools.isLoading ||
+      markets.isLoading ||
+      !ztgPrice ||
+      poolAssetBalances.isLoading ||
+      poolsZtgBalances.isLoading ||
+      !poolsTotalIssuance ||
+      userAssetBalances.isLoading ||
+      poolsZtgBalances24HoursAgo.isLoading ||
+      poolAssetBalances24HoursAgo.isLoading ||
+      isTradeHistoryLoading;
 
-    if (!rawPositions.data || !pools.data || !markets.data) {
+    if (stillLoading) {
       return null;
     }
+
+    let positionsData: Position[] = [];
 
     const calculatePrice = (
       pool: IndexedPool<Context>,
@@ -273,10 +284,6 @@ export const usePortfolioPositions = (
       poolAssetBalances: UseAccountAssetBalances,
     ): null | Decimal => {
       const poolZtgBalance = poolsZtgBalances[pool.poolId]?.toNumber();
-
-      if (typeof poolZtgBalance === "undefined") {
-        return null;
-      }
 
       const poolAssetBalance = poolAssetBalances.get(
         poolAccountIds[pool.poolId],
@@ -296,10 +303,6 @@ export const usePortfolioPositions = (
         0,
       );
     };
-
-    if (!rawPositions.data) return null;
-
-    let stillLoading = false;
 
     for (const position of rawPositions.data) {
       const assetId = parseAssetId(position.assetId).unwrap();
@@ -325,19 +328,14 @@ export const usePortfolioPositions = (
       }
 
       if (!market || !pool) {
-        stillLoading = true;
         continue;
       }
 
       const balance = userAssetBalances.get(address, assetId)?.data.balance;
       const totalIssuanceForPoolQuery = poolsTotalIssuance[pool.poolId];
       const totalIssuanceData = poolsTotalIssuance[pool.poolId]?.data;
-      if (!balance || !totalIssuanceForPoolQuery.data || !totalIssuanceData) {
-        stillLoading = true;
-        continue;
-      }
 
-      const userBalance = new Decimal(balance.free.toNumber());
+      const userBalance = new Decimal(balance?.free.toNumber() ?? 0);
 
       const totalIssuance = new Decimal(
         totalIssuanceForPoolQuery.data.totalIssuance.toString(),
@@ -354,14 +352,14 @@ export const usePortfolioPositions = (
           price = calculatePrice(
             pool,
             assetId,
-            poolsZtgBalances,
+            poolsZtgBalances.data,
             poolAssetBalances,
           );
 
           price24HoursAgo = calculatePrice(
             pool,
             assetId,
-            poolsZtgBalances24HoursAgo,
+            poolsZtgBalances24HoursAgo.data,
             poolAssetBalances24HoursAgo,
           );
         }
@@ -382,14 +380,14 @@ export const usePortfolioPositions = (
             const price = calculatePrice(
               pool,
               assetId,
-              poolsZtgBalances,
+              poolsZtgBalances.data,
               poolAssetBalances,
             );
 
             const price24HoursAgo = calculatePrice(
               pool,
               assetId,
-              poolsZtgBalances24HoursAgo,
+              poolsZtgBalances24HoursAgo.data,
               poolAssetBalances24HoursAgo,
             );
 
@@ -410,22 +408,12 @@ export const usePortfolioPositions = (
           },
         );
 
-        if (!poolTotalValue) {
-          stillLoading = true;
-          continue;
-        }
-
         const totalIssuance = new Decimal(
           totalIssuanceData.totalIssuance.toString(),
         );
 
         price = poolTotalValue.total.div(totalIssuance);
         price24HoursAgo = poolTotalValue.total24HoursAgo.div(totalIssuance);
-      }
-
-      if (!price || !price24HoursAgo) {
-        stillLoading = true;
-        continue;
       }
 
       let outcome: string;
@@ -449,11 +437,6 @@ export const usePortfolioPositions = (
       if (IOPoolShareAssetId.is(assetId)) {
         outcome = "Pool Share";
         color = "#DF0076";
-      }
-
-      if (isTradeHistoryLoading) {
-        stillLoading = true;
-        continue;
       }
 
       const avgCost = tradeHistory
@@ -580,13 +563,11 @@ export const usePortfolioPositions = (
       });
     }
 
-    if (stillLoading) return null;
-
     return positionsData;
   }, [
-    rawPositions.data,
-    pools.data,
-    markets.data,
+    rawPositions,
+    pools,
+    markets,
     ztgPrice,
     poolsTotalIssuance,
     userAssetBalances,
@@ -594,6 +575,7 @@ export const usePortfolioPositions = (
     poolAssetBalances,
     poolsZtgBalances24HoursAgo,
     poolAssetBalances24HoursAgo,
+    isTradeHistoryLoading,
   ]);
 
   const marketPositions = useMemo<

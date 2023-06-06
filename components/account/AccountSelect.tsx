@@ -89,7 +89,9 @@ const AccountSelect: FC = () => {
 
   useEffect(() => {
     if (wallet.activeAccount) {
-      const def = options.find((o) => o.value === wallet.activeAccount.address);
+      const def = options.find(
+        (o) => o.value === wallet.activeAccount?.address,
+      );
       setDefaultOption(def);
     }
   }, [wallet.activeAccount, options]);
@@ -119,11 +121,13 @@ const AccountSelect: FC = () => {
         onChange={onSelectChange}
       />
 
-      <CopyIcon
-        copyText={wallet.activeAccount?.address}
-        className="flex-grow pr-ztg-8"
-        size={16}
-      />
+      {wallet.activeAccount?.address && (
+        <CopyIcon
+          copyText={wallet.activeAccount.address}
+          className="flex-grow pr-ztg-8"
+          size={16}
+        />
+      )}
     </div>
   );
 };

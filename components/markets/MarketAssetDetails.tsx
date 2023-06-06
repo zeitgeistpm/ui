@@ -36,7 +36,7 @@ const columns: TableColumn[] = [
     header: "",
     accessor: "buttons",
     type: "component",
-    width: "120px",
+    width: "180px",
   },
 ];
 

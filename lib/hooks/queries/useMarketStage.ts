@@ -20,7 +20,7 @@ export const useMarketStage = (market?: Market<Context>) => {
   return useQuery(
     [id, marketsRootQuery, market?.marketId, marketStageRootKey],
     async () => {
-      if (sdk && isRpcSdk(sdk) && market) {
+      if (sdk && isRpcSdk(sdk) && market && now) {
         return await sdk.model.markets.getStage(market, now);
       }
       return null;

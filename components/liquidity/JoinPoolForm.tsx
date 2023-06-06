@@ -38,7 +38,7 @@ const JoinPoolForm = ({
 
   const { send: joinPool, isLoading } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk) && pool) {
+      if (isRpcSdk(sdk) && pool && poolSharesToReceive) {
         const formValue = getValues();
         const maxAmountsIn = pool?.weights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);

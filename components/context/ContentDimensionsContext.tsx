@@ -7,7 +7,9 @@ export type ContentDimensions = {
   width: number;
 };
 
-export const ContentDimensionsContext = createContext<ContentDimensions>(null);
+export const ContentDimensionsContext = createContext<ContentDimensions | null>(
+  null,
+);
 
 export const ContentDimensionsProvider: FC<
   PropsWithChildren<ContentDimensions>
