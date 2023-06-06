@@ -44,6 +44,12 @@ export const Publishing = ({ editor }: PublishingProps) => {
       setIsTransacting(true);
 
       try {
+        notifications.pushNotification("Transacting..", {
+          autoRemove: true,
+          type: "Info",
+          lifetime: 20,
+        });
+
         const result = await sdk.model.markets.create(params);
         const marketId = result.saturate().unwrap().market.marketId;
 
