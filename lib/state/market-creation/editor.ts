@@ -2,7 +2,6 @@ import { FormEvent } from "components/create/editor/types";
 import Decimal from "decimal.js";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { last, merge } from "lodash-es";
-import moment from "moment";
 import { useEffect, useMemo } from "react";
 import { minBaseLiquidity } from "./constants/currency";
 import * as MarketDraft from "./types/draft";
@@ -22,10 +21,9 @@ import {
 } from "./types/step";
 import { useMarketCreationFormValidator } from "./types/validation";
 import { tickersForAnswers } from "./util/tickers";
-import { DeepRequired } from "@dnd-kit/utilities";
 
-export type MarketDraftEditor = (ValidFormState | InvalidFormState) &
-  BaseMarketDraftEditor;
+export type MarketDraftEditor = BaseMarketDraftEditor &
+  (ValidFormState | InvalidFormState);
 
 export type BaseMarketDraftEditor = {
   /**
@@ -395,7 +393,7 @@ export const useMarketDraftEditor = ({
   if (isValid) {
     formState = {
       form: draft.form as ValidMarketFormData,
-      isValid: true,
+      isValid,
     };
   } else {
     formState = {
