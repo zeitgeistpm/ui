@@ -22,8 +22,12 @@ import {
 } from "./types/step";
 import { useMarketCreationFormValidator } from "./types/validation";
 import { tickersForAnswers } from "./util/tickers";
+import { DeepRequired } from "@dnd-kit/utilities";
 
-export type MarketDraftEditor = (ValidFormState | InvalidFormState) & {
+export type MarketDraftEditor = (ValidFormState | InvalidFormState) &
+  BaseMarketDraftEditor;
+
+export type BaseMarketDraftEditor = {
   /**
    * The steps of the market creation process.
    * Has state regarding if the step is valid, if it has been touched(edited) by the user and if it
@@ -369,15 +373,13 @@ export const useMarketDraftEditor = ({
     });
   }, [draft.form.answers, draft.form.currency]);
 
-  const editor = {
-    form: draft.form,
+  const editor: BaseMarketDraftEditor = {
     currentStep: draft.currentStep,
     isWizard: draft.isWizard,
     isPublished: draft.isPublished,
     marketId: draft.marketId,
     steps,
     fieldsState,
-    isValid,
     isTouched,
     reset,
     setStep,
@@ -386,7 +388,24 @@ export const useMarketDraftEditor = ({
     toggleWizard,
     input,
     published,
-  } as MarketDraftEditor & (ValidFormState | InvalidFormState);
+  };
 
-  return editor;
+  let formState: ValidFormState | InvalidFormState;
+
+  if (isValid) {
+    formState = {
+      form: draft.form as ValidMarketFormData,
+      isValid: true,
+    };
+  } else {
+    formState = {
+      form: draft.form,
+      isValid: false,
+    };
+  }
+
+  return {
+    ...editor,
+    ...formState,
+  };
 };
