@@ -48,7 +48,7 @@ export const EditorResetButton = ({ editor }: EditorResetButtonProps) => {
                 setShowResetConfirmation(false);
               }}
             >
-              cancel
+              Cancel
             </button>
             <button
               type="button"
@@ -58,7 +58,7 @@ export const EditorResetButton = ({ editor }: EditorResetButtonProps) => {
                 setShowResetConfirmation(false);
               }}
             >
-              clear
+              Clear
             </button>
           </div>
         </Dialog.Panel>
