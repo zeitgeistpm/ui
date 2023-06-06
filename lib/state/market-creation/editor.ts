@@ -123,7 +123,7 @@ export type InvalidFormState = {
   isValid: false;
 };
 
-export type MarketDraftConfig = {
+export type MarketDraftEditorConfig = {
   draft: MarketDraft.MarketDraftState;
   update: (state: MarketDraft.MarketDraftState) => void;
 };
@@ -131,7 +131,7 @@ export type MarketDraftConfig = {
 export const useMarketDraftEditor = ({
   draft,
   update,
-}: MarketDraftConfig): MarketDraftEditor => {
+}: MarketDraftEditorConfig): MarketDraftEditor => {
   const validator = useMarketCreationFormValidator(draft.form);
 
   const fieldsState = useMemo<FieldsState>(() => {
