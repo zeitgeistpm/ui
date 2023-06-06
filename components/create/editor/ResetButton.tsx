@@ -27,7 +27,7 @@ export const EditorResetButton = ({ editor }: EditorResetButtonProps) => {
           className="text-xs center gap-1 rounded-md border-1 py-1 px-2 md:absolute md:right-0 md:translate-x-[125%] md:translate-y-[-50%] md:top-[50%]"
           onClick={() => setShowResetConfirmation(true)}
         >
-          clear form
+          Clear form
           <BsEraser />
         </button>
       </Transition>

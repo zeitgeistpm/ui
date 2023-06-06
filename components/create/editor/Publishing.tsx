@@ -6,7 +6,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChainTime } from "lib/state/chaintime";
 import { MarketDraftEditor } from "lib/state/market-creation/editor";
 import { marketFormDataToExtrinsicParams } from "lib/state/market-creation/types/form";
-import { useNotifications } from "lib/state/notifications";
+import { NotificationType, useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { isArray } from "lodash-es";
 import { useRouter } from "next/router";
@@ -87,6 +87,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
           editor.reset();
         }, 2000);
       } catch (error) {
+        let type: NotificationType = "Error";
         let errorMessage = "Unknown error occurred.";
 
         if (StorageError.is(error)) {
@@ -97,9 +98,14 @@ export const Publishing = ({ editor }: PublishingProps) => {
           errorMessage = error.docs[0];
         }
 
+        if (error?.message === "Cancelled") {
+          type = "Info";
+          errorMessage = "Transaction cancelled";
+        }
+
         notifications.pushNotification(errorMessage, {
           autoRemove: true,
-          type: "Error",
+          type: type,
           lifetime: 15,
         });
       }
