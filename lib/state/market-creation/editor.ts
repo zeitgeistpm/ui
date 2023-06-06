@@ -123,6 +123,12 @@ export type InvalidFormState = {
   isValid: false;
 };
 
+/**
+ * The config for the market draft editor.
+ * Simple interface for the current state of the market draft and a function to update the state.
+ *
+ * @note Usefull if we want to have editing of multiple drafts from a list of drafts and can change the current draft.
+ */
 export type MarketDraftEditorConfig = {
   draft: MarketDraft.MarketDraftState;
   update: (state: MarketDraft.MarketDraftState) => void;
@@ -302,14 +308,10 @@ export const useMarketDraftEditor = ({
       : "100";
 
     const baseWeight = 64;
-
     const numOutcomes = draft.form.answers.answers.length;
-
     const ratio = 1 / numOutcomes;
-
     const baseAssetLiquidty = last(draft.form.liquidity?.rows);
-
-    const resetPrices =
+    const reset =
       prevAnswersLength !== numOutcomes || prevCurrency !== draft.form.currency;
 
     const tickers = tickersForAnswers(draft.form.answers);
@@ -319,16 +321,16 @@ export const useMarketDraftEditor = ({
         const liquidity = draft.form.liquidity?.rows[index];
 
         const amount = new Decimal(
-          resetPrices
+          reset
             ? baseAmmount
             : draft.form.liquidity?.rows[index]?.amount || baseAmmount,
         );
 
-        const price = resetPrices
+        const price = reset
           ? ratio.toString()
           : liquidity?.price?.price ?? ratio.toString();
 
-        const weight = resetPrices
+        const weight = reset
           ? ratio * baseWeight
           : liquidity?.weight || ratio * baseWeight;
 
@@ -346,16 +348,12 @@ export const useMarketDraftEditor = ({
       {
         asset: draft.form.currency,
         weight: baseWeight.toString(),
-        amount: resetPrices
-          ? baseAmmount
-          : baseAssetLiquidty?.amount || baseAmmount,
+        amount: reset ? baseAmmount : baseAssetLiquidty?.amount || baseAmmount,
         price: {
           price: "1",
           locked: true,
         },
-        value: resetPrices
-          ? baseAmmount
-          : baseAssetLiquidty?.value || baseAmmount,
+        value: reset ? baseAmmount : baseAssetLiquidty?.value || baseAmmount,
       },
     ];
 
