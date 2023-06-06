@@ -30,7 +30,7 @@ const BalanceRow = ({
   units,
 }: {
   imgPath: string;
-  units: string;
+  units?: string;
   balance?: Decimal;
 }) => {
   return (
@@ -40,9 +40,9 @@ const BalanceRow = ({
         className={`group font-bold flex w-full items-center rounded-md px-2 py-2 text-sm`}
       >
         {balance &&
-          `${formatNumberLocalized(
-            balance?.div(ZTG).abs().toNumber(),
-          )} ${units}`}
+          `${formatNumberLocalized(balance?.div(ZTG).abs().toNumber())} ${
+            units ?? ""
+          }`}
       </div>
     </div>
   );

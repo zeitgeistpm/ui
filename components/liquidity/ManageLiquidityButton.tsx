@@ -1,4 +1,3 @@
-import Modal from "components/ui/Modal";
 import { useState } from "react";
 import LiquidityModal from "./LiquidityModal";
 
