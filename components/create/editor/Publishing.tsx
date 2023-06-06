@@ -8,6 +8,7 @@ import { MarketDraftEditor } from "lib/state/market-creation/editor";
 import { marketFormDataToExtrinsicParams } from "lib/state/market-creation/types/form";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
+import { isArray } from "lodash-es";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { LuFileWarning } from "react-icons/lu";
@@ -90,6 +91,10 @@ export const Publishing = ({ editor }: PublishingProps) => {
 
         if (StorageError.is(error)) {
           errorMessage = "IPFS metadata upload failed.";
+        }
+
+        if (isArray(error?.docs)) {
+          errorMessage = error.docs[0];
         }
 
         notifications.pushNotification(errorMessage, {
