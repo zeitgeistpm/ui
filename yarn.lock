@@ -3082,29 +3082,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/rpc@npm:^2.7.2":
-  version: 2.7.2
-  resolution: "@zeitgeistpm/rpc@npm:2.7.2"
+"@zeitgeistpm/rpc@npm:^2.7.3":
+  version: 2.7.3
+  resolution: "@zeitgeistpm/rpc@npm:2.7.3"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.11.4
-    "@zeitgeistpm/utility": ^2.18.9
+    "@zeitgeistpm/utility": ^2.18.10
   peerDependencies:
     "@polkadot/api": "*"
     "@polkadot/keyring": "*"
     "@polkadot/types": "*"
-  checksum: cf79198df231a007355a79c6888ac1183fd6743c250abbbf124601f64de19e5a34d927d08405ef9ee85c0940707a7b973bb3c4bd1ccfdf42f5451a33848c6b6a
+  checksum: 80cdf940026081a0a8a843501e512fe203ea3c6145d02149b43a511ba4f9b18eec5663aa99195856d0e17af9630ffdea346f3141193b515fdc767b384276d7d9
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.29.11":
-  version: 2.29.11
-  resolution: "@zeitgeistpm/sdk@npm:2.29.11"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.29.12":
+  version: 2.29.12
+  resolution: "@zeitgeistpm/sdk@npm:2.29.12"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.11.4
     "@zeitgeistpm/indexer": ^3.0.9
-    "@zeitgeistpm/rpc": ^2.7.2
-    "@zeitgeistpm/utility": ^2.18.9
-    "@zeitgeistpm/web3.storage": ^2.9.5
+    "@zeitgeistpm/rpc": ^2.7.3
+    "@zeitgeistpm/utility": ^2.18.10
+    "@zeitgeistpm/web3.storage": ^2.9.6
     cids: ^1.1.9
     decimal.js: ^10.4.3
     lodash-es: ^4.17.21
@@ -3117,7 +3117,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: 74bd83590a0949031384b1111678455e429a06ef2f54c5eb96ea8de84c717cbf8ccac45059a1f9466ac763976b787f5c9cbc2abbc7f130e3e5e80fda63176ffa
+  checksum: 03084b5848a40f5c622267f8ac297bb7af56baf0264b8e1e06d781603e78be3424b2e776ae855d1c827f93509fc106942c99d3493cbec86beeb4e767110c5d4b
   languageName: node
   linkType: hard
 
@@ -3216,8 +3216,8 @@ __metadata:
     "@zeitgeistpm/avatara-react": ^1.3.2
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^1.0.3
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.29.11"
-    "@zeitgeistpm/utility": ^2.18.9
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.29.12"
+    "@zeitgeistpm/utility": ^2.18.10
     autoprefixer: 10.2.5
     axios: ^0.21.4
     boring-avatars: ^1.6.1
@@ -3284,9 +3284,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@zeitgeistpm/utility@npm:^2.18.9":
-  version: 2.18.9
-  resolution: "@zeitgeistpm/utility@npm:2.18.9"
+"@zeitgeistpm/utility@npm:^2.18.10":
+  version: 2.18.10
+  resolution: "@zeitgeistpm/utility@npm:2.18.10"
   dependencies:
     decimal.js: ^10.4.3
     lodash.omit: ^4.5.0
@@ -3296,15 +3296,15 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: 556fd61654c5d7808f45fddf767bb9521dd025af2e86a457eafc88de827647cefc530aa0dc56dc0eca0610e36d3809b5560072072fa8307983cde149fa1c36ec
+  checksum: ad9eb3db0877a0869a1537ddbbe4210385cc833c2545895c29dcd26119e646d73b775d49bf79ecbc46ff223a5ce08197efdbaa593e2876700a48f0703ad3022c
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/web3.storage@npm:^2.9.5":
-  version: 2.9.5
-  resolution: "@zeitgeistpm/web3.storage@npm:2.9.5"
+"@zeitgeistpm/web3.storage@npm:^2.9.6":
+  version: 2.9.6
+  resolution: "@zeitgeistpm/web3.storage@npm:2.9.6"
   dependencies:
-    "@zeitgeistpm/utility": ^2.18.9
+    "@zeitgeistpm/utility": ^2.18.10
     cids: ^1.1.9
     ipfs-http-client: ^60.0.0
     ipfs-only-hash: ^4.0.0
@@ -3313,7 +3313,7 @@ __metadata:
     up: ^1.0.2
   peerDependencies:
     "@polkadot/util": "*"
-  checksum: 96c18ec148babe88b2ac29ac5690b0fd1a3893cb47a2d56c624f4997a1c01387d3c47dc13efdf6cb6ee05d021ba50ada6a30f6b78fcef02e51b9c583572ca68d
+  checksum: 3d5cb7196be11598ebd42b31d57cf8142f445044511ce396792b67f954e505929cf09d0bad342e06a1bb6fb1bd73a7a65b4a58c163e4d746d7ab8e68e228dadf
   languageName: node
   linkType: hard
 
