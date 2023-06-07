@@ -11,7 +11,7 @@ const MenuLogo: FC<{
 
   return (
     <Link
-      onClick={() => setMenuOpen(false)}
+      onClick={() => setMenuOpen && setMenuOpen(false)}
       className="flex items-center gap-4"
       href="/"
       role="button"

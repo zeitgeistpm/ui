@@ -12,6 +12,7 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -91,9 +92,8 @@ const PoolDetails: NextPage = () => {
   const { data: pool, isInitialLoading, isFetched } = usePool({ poolId });
   const { data: market } = useMarket({ poolId });
 
-  const baseAssetId = parseAssetId(pool?.baseAsset).unrightOr(null);
+  const baseAssetId = parseAssetIdString(pool?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAssetId);
-  const { data: baseAssetUsdPrice } = useAssetUsdPrice(baseAssetId);
   const { data: liquidity } = usePoolLiquidity({ poolId });
 
   const volume = isIndexedData(pool)
@@ -149,7 +149,7 @@ const PoolDetails: NextPage = () => {
             title="Volume"
             value={`${volume ? volume : "0"} ${metadata?.symbol}`}
           />
-          <Pill title="Status" value={pool?.poolStatus} />
+          <Pill title="Status" value={pool?.poolStatus ?? ""} />
         </div>
       </div>
       <div className="">

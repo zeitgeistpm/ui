@@ -87,7 +87,7 @@ export const environment = getEnvironment();
 
 const getGraphQlEndpoint = (): string => {
   const endpoint = graphQlEndpoints.find((e) => e.environment === environment);
-  return endpoint.value;
+  return endpoint!.value;
 };
 
 export const graphQlEndpoint = getGraphQlEndpoint();

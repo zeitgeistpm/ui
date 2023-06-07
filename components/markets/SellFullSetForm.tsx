@@ -14,6 +14,7 @@ import { useGlobalKeyPress } from "lib/hooks/useGlobalKeyPress";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
 
@@ -29,9 +30,9 @@ const SellFullSetForm = ({
   const [sdk] = useSdkv2();
 
   const { data: market } = useMarket({ marketId });
-  const { data: saturatedMarket } = useSaturatedMarket(market);
+  const { data: saturatedMarket } = useSaturatedMarket(market ?? undefined);
   const { data: pool } = usePool({ marketId: marketId });
-  const baseAssetId = parseAssetId(pool?.baseAsset).unrightOr(null);
+  const baseAssetId = parseAssetIdString(pool?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
   const { data: baseAssetBalance } = useBalance(
