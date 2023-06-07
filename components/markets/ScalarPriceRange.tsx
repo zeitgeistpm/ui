@@ -2,6 +2,7 @@ import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { useMemo } from "react";
 import { useResizeDetector } from "react-resize-detector";
+import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 
 interface ScalarPriceRangeProps {
   scalarType: ScalarRangeType;
@@ -29,22 +30,12 @@ const ScalarPriceRange = ({
   const inferedType: ScalarRangeType = scalarType ?? "number";
 
   const lower = useMemo(
-    () =>
-      inferedType === "number"
-        ? formatNumberCompact(Number(lowerBound))
-        : new Intl.DateTimeFormat("default", {
-            dateStyle: "medium",
-          }).format(lowerBound),
+    () => formatScalarOutcome(lowerBound, inferedType),
     [lowerBound],
   );
 
   const upper = useMemo(
-    () =>
-      inferedType === "number"
-        ? formatNumberCompact(Number(upperBound))
-        : new Intl.DateTimeFormat("default", {
-            dateStyle: "medium",
-          }).format(upperBound),
+    () => formatScalarOutcome(upperBound, inferedType),
     [upperBound],
   );
 
@@ -52,11 +43,7 @@ const ScalarPriceRange = ({
     const pos =
       (upperBound - lowerBound) * ((1 - shortPrice + longPrice) / 2) +
       lowerBound;
-    return inferedType === "number"
-      ? formatNumberCompact(Number(pos))
-      : new Intl.DateTimeFormat("default", {
-          dateStyle: "medium",
-        }).format(pos);
+    return formatScalarOutcome(pos, inferedType);
   }, [upperBound, lowerBound, shortPrice, longPrice]);
 
   const getMinMaxPosition = (position) => {
