@@ -31,8 +31,7 @@ export const useMarketEventHistory = (
           Number(marketId),
         );
         const start = response.filter((e) => {
-          const timestamp = new Date(e.timestamp).getTime();
-          e.timestamp = timestamp;
+          e.timestamp = new Date(e.timestamp).getTime();
           return e.event === "MarketCreated";
         })[0];
         const end = response.filter((e) => {
