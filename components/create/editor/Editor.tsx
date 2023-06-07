@@ -90,11 +90,6 @@ export const MarketEditor = () => {
     headerRef.current?.scrollIntoView({ behavior: "auto" });
   };
 
-  const onSubmit: FormEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault();
-    console.log("submit");
-  };
-
   const showLiquidityWarning =
     fieldsState.liquidity.isTouched && form.liquidity?.deploy && isWizard;
 
@@ -134,7 +129,7 @@ export const MarketEditor = () => {
         )}
       </div>
 
-      <form onSubmit={onSubmit}>
+      <form>
         <MarketFormSection
           wizard={isWizard}
           isCurrent={currentStep.label == "Currency"}
