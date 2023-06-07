@@ -67,7 +67,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
           )}
           <main
             className={`flex flex-col dark:text-white mb-12 ${
-              router.pathname !== "/" && "main-container mt-32"
+              router.pathname !== "/" && "main-container mt-24 md:mt-32"
             }`}
             ref={mainRef}
           >

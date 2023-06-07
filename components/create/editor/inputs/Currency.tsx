@@ -26,7 +26,7 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({
   };
 
   return (
-    <div className="md:flex md:justify-center md:gap-6">
+    <div className="md:flex md:justify-center md:gap-6 mb-6">
       {supportedCurrencies
         .filter((currency) => options?.includes(currency.name) ?? true)
         .map((currency) => (

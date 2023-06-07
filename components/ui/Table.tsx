@@ -42,6 +42,7 @@ export interface TableColumn {
   // if specified the table will hide this column if it is overflowing
   // lower number columns will be hidden first
   collapseOrder?: number;
+  hideMobile?: boolean;
 }
 
 export interface TableData {

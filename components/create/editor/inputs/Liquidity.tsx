@@ -106,7 +106,7 @@ export const LiquidityInput = ({
           <div className="text-red-500">{errorMessage}</div>
         ) : (
           <>
-            <div className="mb-4">
+            <div className="mb-4 ">
               <PoolSettings
                 baseAssetPrice={baseAssetPrice}
                 data={transformRows(value?.rows ?? [])}
@@ -114,7 +114,7 @@ export const LiquidityInput = ({
                 noDataMessage={errorMessage}
               />
             </div>
-            <div className="relative flex justify-end pr-8">
+            <div className="relative flex justify-end pr-8 mr-4 md:mr-0">
               <div className="flex items-center gap-2">
                 <div className="relative inline-block">
                   <input

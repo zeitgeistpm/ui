@@ -14,7 +14,7 @@ import { useMarketDraftEditor } from "lib/state/market-creation/editor";
 import * as MarketDraft from "lib/state/market-creation/types/draft";
 import { persistentAtom } from "lib/state/util/persistent-atom";
 import dynamic from "next/dynamic";
-import { FormEventHandler } from "react";
+import { FormEventHandler, useEffect, useRef } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { LuFileWarning } from "react-icons/lu";
 import { ErrorMessage } from "./ErrorMessage";
@@ -56,6 +56,8 @@ export const MarketEditor = () => {
   const [state, setState] = useAtom(createMarketStateAtom);
   const editor = useMarketDraftEditor({ draft: state, update: setState });
 
+  const headerRef = useRef<HTMLDivElement>(null);
+
   const {
     form,
     steps,
@@ -77,6 +79,7 @@ export const MarketEditor = () => {
     if (prevStep) {
       setStep(prevStep);
     }
+    headerRef.current?.scrollIntoView({ behavior: "auto" });
   };
 
   const next = () => {
@@ -84,6 +87,7 @@ export const MarketEditor = () => {
     if (nextStep) {
       setStep(nextStep);
     }
+    headerRef.current?.scrollIntoView({ behavior: "auto" });
   };
 
   const onSubmit: FormEventHandler<HTMLFormElement> = (event) => {
@@ -104,7 +108,10 @@ export const MarketEditor = () => {
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
-      <h2 className="relative font-3xl text-center flex justify-center items-center gap-3 mb-6">
+      <h2
+        className="relative font-3xl text-center flex justify-center items-center gap-3 mb-6"
+        ref={headerRef}
+      >
         <div className="relative md:flex justify-center items-center">
           Create Market
           <EditorResetButton editor={editor} />

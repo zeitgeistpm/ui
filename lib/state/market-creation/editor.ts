@@ -5,7 +5,7 @@ import { last, merge } from "lodash-es";
 import { useEffect, useMemo } from "react";
 import { minBaseLiquidity } from "./constants/currency";
 import * as MarketDraft from "./types/draft";
-import { FieldsState, initialFieldsState } from "./types/fieldstate";
+import * as FieldsState from "./types/fieldstate";
 import {
   MarketFormData,
   PartialMarketFormData,
@@ -40,7 +40,7 @@ export type BaseMarketDraftEditor = {
    * State pr field input.
    * Has state regarding if the input is valid, if it has been touched(edited) by the user and potential validation errors.
    */
-  fieldsState: FieldsState;
+  fieldsState: FieldsState.FieldsState;
   /**
    * Has any of the form fields been touched(edited) by the user.
    */
@@ -95,7 +95,7 @@ export type BaseMarketDraftEditor = {
     value: Partial<MarketFormData>[K];
     onChange: (event: FormEvent<MarketFormData[K]>) => void;
     onBlur: (event: FormEvent<MarketFormData[K]>) => void;
-    fieldState: FieldsState[K];
+    fieldState: FieldsState.FieldsState[K];
   };
 };
 
@@ -142,10 +142,10 @@ export const useMarketDraftEditor = ({
 }: MarketDraftEditorConfig): MarketDraftEditor => {
   const validator = useMarketCreationFormValidator(draft.form);
 
-  const fieldsState = useMemo<FieldsState>(() => {
+  const fieldsState = useMemo<FieldsState.FieldsState>(() => {
     const parsed = validator.safeParse(draft.form);
 
-    const fieldsState: FieldsState = marketCreationFormKeys.reduce<FieldsState>(
+    const fieldsState = marketCreationFormKeys.reduce<FieldsState.FieldsState>(
       (fieldsState, key) => {
         let isValid = true;
         let isTouched = draft.touchState[key];
@@ -170,7 +170,7 @@ export const useMarketDraftEditor = ({
           },
         };
       },
-      initialFieldsState,
+      FieldsState.empty(),
     );
 
     return fieldsState;

@@ -125,32 +125,6 @@ export const Publishing = ({ editor }: PublishingProps) => {
       <div className="">
         <div className="mb-2 center w-full">
           <div className="relative">
-            {editor.isWizard && (
-              <button
-                className={`
-                    absolute left-0 top-[50%] translate-x-[-110%] translate-y-[-50%] border-gray-100 text-sm border-2 
-                    rounded-full py-2 px-6 ease-in-out active:scale-95 duration-200
-                    ${
-                      firstInvalidStep &&
-                      "bg-orange-300 border-orange-400 text-white"
-                    }
-                  `}
-                onClick={() => {
-                  editor.goToSection(firstInvalidStep?.label ?? "Liquidity");
-                }}
-                type="button"
-              >
-                {firstInvalidStep ? (
-                  <div className="center gap-2">
-                    {" "}
-                    <LuFileWarning /> {`Fix ${firstInvalidStep?.label}`}
-                  </div>
-                ) : (
-                  "Go Back"
-                )}
-              </button>
-            )}
-
             <button
               type="button"
               disabled={!editor.isValid || isTransacting || editor.isPublished}
@@ -172,6 +146,35 @@ export const Publishing = ({ editor }: PublishingProps) => {
                 <RiSendPlaneLine />
               </div>
             </button>
+
+            {editor.isWizard && (
+              <div className="mt-4 md:mt-0 flex justify-center">
+                <button
+                  className={`
+                    md:absolute left-0 top-[50%] md:translate-x-[-110%] md:translate-y-[-50%] border-gray-100 text-sm border-2 
+                    rounded-full py-2 px-6 ease-in-out active:scale-95 duration-200
+                    ${
+                      firstInvalidStep &&
+                      "bg-orange-300 border-orange-400 text-white"
+                    }
+                  `}
+                  onClick={() => {
+                    editor.goToSection(firstInvalidStep?.label ?? "Liquidity");
+                    window.scrollTo(0, 0);
+                  }}
+                  type="button"
+                >
+                  {firstInvalidStep ? (
+                    <div className="center gap-2">
+                      {" "}
+                      <LuFileWarning /> {`Fix ${firstInvalidStep?.label}`}
+                    </div>
+                  ) : (
+                    "Go Back"
+                  )}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -291,7 +291,13 @@ const PoolSettings: FC<{
         </div>
       </div>
 
-      <Table data={tableData} columns={columns} noDataMessage={noDataMessage} />
+      <div className="scale-[80%] md:scale-100">
+        <Table
+          data={tableData}
+          columns={columns}
+          noDataMessage={noDataMessage}
+        />
+      </div>
 
       {onFeeChange && (
         <div className="mt-[20px] mb-[40px]">

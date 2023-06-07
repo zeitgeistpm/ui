@@ -17,8 +17,9 @@ export const NUM_BLOCKS_IN_DAY = NUM_BLOCKS_IN_HOUR * 24;
 export const DAY_SECONDS = 86400;
 export const ZTG_MIN_LIQUIDITY = 100;
 
-export const ZTG_BLUE_COLOR = resolveTailwindConfig(tailwindConfig as any).theme
-  .colors["ztg-blue"];
+export const TAILWIND = resolveTailwindConfig(tailwindConfig as any);
+
+export const ZTG_BLUE_COLOR = TAILWIND.theme.colors["ztg-blue"];
 
 export const SUPPORTED_WALLET_NAMES = [
   "talisman",

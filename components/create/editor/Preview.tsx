@@ -12,6 +12,7 @@ import {
 } from "lib/state/market-creation/types/form";
 import { timelineAsBlocks } from "lib/state/market-creation/types/timeline";
 import { useWallet } from "lib/state/wallet";
+import { shortenAddress } from "lib/util";
 import { formatDuration } from "lib/util/format-duration";
 import moment from "moment";
 import dynamic from "next/dynamic";
@@ -67,7 +68,7 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
 
       <div className="mb-10">
         <Label className="mb-2">Answers</Label>
-        <div className="flex center gap-4">
+        <div className="md:flex md:justify-center gap-4 md:px-0">
           {form.answers?.answers?.length === 0 ? (
             <div className="italic text-gray-500">No answers supplied</div>
           ) : (
@@ -188,8 +189,11 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
 
       <div className="mb-10">
         <Label className="mb-2">Oracle</Label>
-        <h3 className="text-base font-normal">
+        <h3 className="text-base font-normal hidden md:block">
           {form?.oracle ? form?.oracle : "--"}
+        </h3>
+        <h3 className="text-base font-normal block md:hidden">
+          {form?.oracle ? shortenAddress(form?.oracle, 6, 6) : "--"}
         </h3>
       </div>
 
@@ -204,8 +208,8 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
             </div>
           </div>
         </div>
-        <div className="flex justify-center items-center gap-6">
-          <div className="flex justify-center gap-2 items-center">
+        <div className="md:flex justify-center items-center gap-6">
+          <div className="flex justify-center gap-2 items-center mb-2 md:mb-0">
             <Label>Grace</Label>{" "}
             <div>
               {timeline?.grace
@@ -215,7 +219,7 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
                 : "--"}
             </div>
           </div>
-          <div className="flex justify-center gap-2 items-center">
+          <div className="flex justify-center gap-2 items-center mb-2 md:mb-0">
             <Label>Reporting</Label>{" "}
             <div>
               {timeline?.report
@@ -225,7 +229,7 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
                 : "--"}
             </div>
           </div>
-          <div className="flex justify-center gap-2 items-center">
+          <div className="flex justify-center gap-2 items-center mb-2 md:mb-0">
             <Label>Dispute</Label>{" "}
             <div>
               {timeline?.dispute
@@ -272,7 +276,7 @@ const Answers = ({
 
         return (
           <>
-            <div className="rounded-md bg-gray-50 py-3 px-5">
+            <div className="rounded-md bg-gray-50 py-3 px-5 mb-4 md:mb-0">
               <div className="text-xl font-semibold">
                 {answerLiquidity?.asset}
               </div>

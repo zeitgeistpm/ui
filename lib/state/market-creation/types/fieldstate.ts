@@ -25,55 +25,55 @@ export type FieldState = {
 export type FieldsState = Record<keyof MarketFormData, FieldState>;
 
 /**
- * Initial state of the market creation form fields state.
+ * Create Initial state of the market creation form fields state.
  */
-export const initialFieldsState: FieldsState = {
+export const empty = (): FieldsState => ({
   currency: {
     isValid: false,
     isTouched: false,
   },
   question: {
-    isValid: true,
+    isValid: false,
     isTouched: false,
   },
   tags: {
-    isValid: true,
+    isValid: false,
     isTouched: false,
   },
   answers: {
-    isValid: true,
+    isValid: false,
     isTouched: false,
   },
   endDate: {
-    isValid: true,
+    isValid: false,
     isTouched: false,
   },
   gracePeriod: {
-    isValid: true,
+    isValid: false,
     isTouched: false,
   },
   disputePeriod: {
-    isValid: true,
+    isValid: false,
     isTouched: false,
   },
   reportingPeriod: {
-    isValid: true,
+    isValid: false,
     isTouched: false,
   },
   oracle: {
-    isValid: true,
+    isValid: false,
     isTouched: false,
   },
   description: {
-    isValid: true,
+    isValid: false,
     isTouched: false,
   },
   moderation: {
-    isValid: true,
+    isValid: false,
     isTouched: false,
   },
   liquidity: {
-    isValid: true,
+    isValid: false,
     isTouched: false,
   },
-};
+});
