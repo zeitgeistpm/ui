@@ -9,14 +9,7 @@ export const accountBondsKey = "account-bonds";
 const accountBondsQuery = gql`
   query AccountBonds($address: String) {
     markets(
-      where: {
-        creator_eq: $address
-        bonds_isNull: false
-        question_not_eq: ""
-        question_isNull: false
-        isMetaComplete_eq: true
-        marketId_not_in: ${hiddenMarketIds}
-      }
+      where: { creator_eq: $address, bonds_isNull: false }
       orderBy: marketId_DESC
     ) {
       bonds {

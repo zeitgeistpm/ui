@@ -124,6 +124,7 @@ const Market: NextPage<MarketPageProps> = ({
   const { data: market, isLoading: marketIsLoading } = useMarket({
     marketId,
   });
+
   const { data: disputes } = useMarketDisputes(marketId);
 
   const { data: marketStage } = useMarketStage(market);
