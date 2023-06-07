@@ -103,7 +103,7 @@ export const LiquidityInput = ({
             </p>
           </div>
         ) : errorMessage ? (
-          <div className="text-red-500">{errorMessage}</div>
+          <div className="text-red-500 text-center">{errorMessage}</div>
         ) : (
           <>
             <div className="mb-4 ">
