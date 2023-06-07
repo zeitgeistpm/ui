@@ -126,9 +126,9 @@ export const MarketPositions = ({
   );
 
   //display balance if any of the positions is greater than 0.01 USD
-  const displayBalance = positions.some((pos) => {
+  const displayBalance = (pos) => {
     const baseAssetUsdPrice = lookUpAssetPrice(
-      market.baseAsset,
+      pos.market.baseAsset,
       foreignAssetPrices,
       usdZtgPrice,
     );
@@ -139,9 +139,9 @@ export const MarketPositions = ({
         .div(ZTG)
         .toNumber() >= 0.01
     );
-  });
+  };
 
-  if (displayBalance) {
+  if (positions.some(displayBalance)) {
     return (
       <div className={`${className}`}>
         <MarketPositionHeader
@@ -150,87 +150,93 @@ export const MarketPositions = ({
         />
         <Table
           columns={isLiquidityMarket ? COLUMNS_LIQUIDITY : COLUMNS}
-          data={positions.map<TableData>(
-            ({
-              assetId,
-              price,
-              userBalance,
-              outcome,
-              changePercentage,
-              market,
-              avgCost,
-              rpnl,
-              upnl,
-            }) => {
-              const baseAssetUsdPrice = lookUpAssetPrice(
-                market.baseAsset,
-                foreignAssetPrices,
-                usdZtgPrice,
-              );
-              return {
-                outcome: outcome,
-                userBalance: userBalance.div(ZTG).toNumber(),
-                price: {
-                  value: price.toNumber(),
-                  usdValue: price.mul(baseAssetUsdPrice).toNumber(),
-                },
-                cost: {
-                  value: avgCost,
-                  usdValue: new Decimal(avgCost)
-                    .mul(baseAssetUsdPrice)
-                    .toNumber(),
-                },
-                upnl: {
-                  value: upnl,
-                  usdValue: new Decimal(upnl).mul(baseAssetUsdPrice).toNumber(),
-                },
-                rpnl: {
-                  value: rpnl,
-                  usdValue: new Decimal(rpnl).mul(baseAssetUsdPrice).toNumber(),
-                },
-                value: {
-                  value: userBalance.mul(price).div(ZTG).toNumber(),
-                  usdValue: userBalance
-                    .mul(price)
-                    .mul(baseAssetUsdPrice)
-                    .div(ZTG)
-                    .toNumber(),
-                },
-                change: isNaN(changePercentage)
-                  ? 0
-                  : changePercentage.toFixed(1),
-                actions: (
-                  <div className="text-right">
-                    {IOPoolShareAssetId.is(assetId) ? (
-                      <Link href={`/liquidity/${market.pool?.poolId}`}>
-                        <span className="text-mariner font-semibold text-ztg-14-120">
-                          View Pool
-                        </span>
-                      </Link>
-                    ) : marketStage?.type === "Trading" &&
-                      IOMarketOutcomeAssetId.is(assetId) ? (
-                      <AssetTradingButtons assetId={assetId} />
-                    ) : marketStage?.type === "Resolved" ? (
-                      <RedeemButton
-                        market={market}
-                        value={userBalance.mul(price).div(ZTG)}
-                      />
-                    ) : IOMarketOutcomeAssetId.is(assetId) &&
-                      marketStage?.type === "Reported" ? (
-                      <DisputeButton market={market} assetId={assetId} />
-                    ) : IOMarketOutcomeAssetId.is(assetId) &&
-                      (marketStage?.type === "OpenReportingPeriod" ||
-                        (marketStage?.type === "OracleReportingPeriod" &&
-                          isOracle)) ? (
-                      <ReportButton market={market} assetId={assetId} />
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                ),
-              };
-            },
-          )}
+          data={positions
+            .filter((pos) => displayBalance(pos))
+            .map<TableData>(
+              ({
+                assetId,
+                price,
+                userBalance,
+                outcome,
+                changePercentage,
+                market,
+                avgCost,
+                rpnl,
+                upnl,
+              }) => {
+                const baseAssetUsdPrice = lookUpAssetPrice(
+                  market.baseAsset,
+                  foreignAssetPrices,
+                  usdZtgPrice,
+                );
+                return {
+                  outcome: outcome,
+                  userBalance: userBalance.div(ZTG).toNumber(),
+                  price: {
+                    value: price.toNumber(),
+                    usdValue: price.mul(baseAssetUsdPrice).toNumber(),
+                  },
+                  cost: {
+                    value: avgCost,
+                    usdValue: new Decimal(avgCost)
+                      .mul(baseAssetUsdPrice)
+                      .toNumber(),
+                  },
+                  upnl: {
+                    value: upnl,
+                    usdValue: new Decimal(upnl)
+                      .mul(baseAssetUsdPrice)
+                      .toNumber(),
+                  },
+                  rpnl: {
+                    value: rpnl,
+                    usdValue: new Decimal(rpnl)
+                      .mul(baseAssetUsdPrice)
+                      .toNumber(),
+                  },
+                  value: {
+                    value: userBalance.mul(price).div(ZTG).toNumber(),
+                    usdValue: userBalance
+                      .mul(price)
+                      .mul(baseAssetUsdPrice)
+                      .div(ZTG)
+                      .toNumber(),
+                  },
+                  change: isNaN(changePercentage)
+                    ? 0
+                    : changePercentage.toFixed(1),
+                  actions: (
+                    <div className="text-right">
+                      {IOPoolShareAssetId.is(assetId) ? (
+                        <Link href={`/liquidity/${market.pool?.poolId}`}>
+                          <span className="text-mariner font-semibold text-ztg-14-120">
+                            View Pool
+                          </span>
+                        </Link>
+                      ) : marketStage?.type === "Trading" &&
+                        IOMarketOutcomeAssetId.is(assetId) ? (
+                        <AssetTradingButtons assetId={assetId} />
+                      ) : marketStage?.type === "Resolved" ? (
+                        <RedeemButton
+                          market={market}
+                          value={userBalance.mul(price).div(ZTG)}
+                        />
+                      ) : IOMarketOutcomeAssetId.is(assetId) &&
+                        marketStage?.type === "Reported" ? (
+                        <DisputeButton market={market} assetId={assetId} />
+                      ) : IOMarketOutcomeAssetId.is(assetId) &&
+                        (marketStage?.type === "OpenReportingPeriod" ||
+                          (marketStage?.type === "OracleReportingPeriod" &&
+                            isOracle)) ? (
+                        <ReportButton market={market} assetId={assetId} />
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  ),
+                };
+              },
+            )}
         />
         {/* <table className="table-auto w-full">
           <thead className="border-b-1 border-gray-300 ">
