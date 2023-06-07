@@ -1,6 +1,7 @@
 import { Decimal } from "decimal.js";
 import { ZTG } from "../constants";
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
+import { formatNumberCompact } from "./format-compact";
 
 export const formatScalarOutcome = (
   outcome: string | number,

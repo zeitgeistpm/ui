@@ -14,7 +14,7 @@ interface StepperProps {
   start: number;
   end: number;
   currentStep: number;
-  onStepClick?: (step: number) => void;
+  onStepClick: (step: number) => void;
 }
 
 const Stepper = ({ start, end, currentStep, onStepClick }: StepperProps) => {
@@ -165,7 +165,9 @@ export const ExchangeTypeSelection = (props: {
       name: "With Crypto (DEX)",
       disabled: false,
       onClick: () => {
-        window.open("https://app.hydradx.io/trade?assetOut=12&assetIn=5");
+        window.open(
+          "https://blog.zeitgeist.pm/how-to-buy-ztg-on-hydradxs-omnipool/",
+        );
       },
     },
     {
@@ -196,7 +198,76 @@ export const ExchangeTypeSelection = (props: {
   );
 };
 
-const OnBoardingModal = (props: { step?: number; notice?: string }) => {
+export const MobileOnboardingModal = () => {
+  const [step, setStep] = useState(0);
+
+  const screens = [
+    <TextSection
+      headerText="Welcome to Zeitgeist"
+      bodyText="Hey, it looks like you don’t have a wallet installed. Let me be your Guide and help you get one, so you can get started making predictions."
+      rightButton={{
+        text: "Continue",
+        onClick: () => setStep(1),
+      }}
+    />,
+    <TextSection
+      headerText="Download a wallet"
+      bodyText="First thing you need to do is install a mobile wallet, we recommend Nova wallet. Once you've downloaded it you'll be able to find this site in the app and start making predictions. See you over there!"
+      leftButton={{
+        text: "Back",
+        onClick: () => setStep(0),
+      }}
+      rightButton={{
+        text: "Continue",
+        onClick: () => setStep(2),
+      }}
+    />,
+    <a
+      href="https://novawallet.io/"
+      className="flex items-center justify-center h-[56px] border border-pastel-blue rounded-ztg-10 text-center w-full"
+    >
+      <Image
+        src="/icons/nova.png"
+        alt={"wallet.logo.alt"}
+        width={30}
+        height={30}
+        quality={100}
+      />
+      <div className="relative font-medium text-ztg-18-150 ml-[15px]">
+        <span>Nova Wallet</span>
+      </div>
+    </a>,
+  ];
+  return (
+    <Dialog.Panel
+      className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
+    w-full max-w-[526px] p-[30px] rounded-ztg-10"
+    >
+      <div className="rounded-full w-[120px] h-[120px] mb-auto">
+        <Image
+          alt="AI Logan?"
+          src={"/misc/face.png"}
+          width={120}
+          height={120}
+        />
+      </div>
+
+      {screens[step]}
+
+      <Stepper
+        start={0}
+        end={screens.length}
+        currentStep={step}
+        onStepClick={setStep}
+      />
+    </Dialog.Panel>
+  );
+};
+
+export const DesktopOnboardingModal = (props: {
+  step?: number;
+  notice?: string;
+}) => {
   const [step, setStep] = useState(props.step ?? 0);
 
   const screens = [
@@ -285,5 +356,3 @@ const OnBoardingModal = (props: { step?: number; notice?: string }) => {
     </Dialog.Panel>
   );
 };
-
-export default OnBoardingModal;

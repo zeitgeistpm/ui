@@ -9,6 +9,8 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
 import Modal from "components/ui/Modal";
+import SecondaryButton from "components/ui/SecondaryButton";
+import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
@@ -28,10 +30,17 @@ const ReportButton = ({
   const [scalarReportBoxOpen, setScalarReportBoxOpen] = useState(false);
 
   if (!market) return null;
+  const { data: stage } = useMarketStage(market);
 
-  const ticker = market.categories?.[getIndexOf(assetId)].ticker;
+  const outcomeName = market.categories?.[getIndexOf(assetId)]?.name;
 
-  const reportDisabled = !sdk || !isRpcSdk(sdk);
+  const connectedWalletIsOracle =
+    market.oracle === wallet.activeAccount?.address;
+
+  const reportDisabled =
+    !isRpcSdk(sdk) ||
+    !stage ||
+    (stage.type === "OracleReportingPeriod" && !connectedWalletIsOracle);
 
   const handleClick = async () => {
     if (!isRpcSdk(sdk)) return;
@@ -42,13 +51,14 @@ const ReportButton = ({
       //@ts-ignore
       const ID = assetId.CategoricalOutcome[1];
       const signer = wallet.getActiveSigner();
+      if (!signer) return;
 
       const callback = extrinsicCallback({
         api: sdk.api,
         notifications: notificationStore,
         successCallback: async () => {
           notificationStore.pushNotification(
-            `Reported market outcome: ${ticker}`,
+            `Reported market outcome: ${outcomeName}`,
             {
               type: "Success",
             },
@@ -72,13 +82,9 @@ const ReportButton = ({
 
   return (
     <>
-      <button
-        onClick={handleClick}
-        disabled={reportDisabled}
-        className="border-gray-300 text-sm border-2 rounded-full py-2 px-5 mr-2"
-      >
+      <SecondaryButton onClick={handleClick} disabled={reportDisabled}>
         Report Outcome
-      </button>
+      </SecondaryButton>
 
       <Modal
         open={scalarReportBoxOpen}

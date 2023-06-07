@@ -181,7 +181,7 @@ const TradeForm = () => {
         `Successfully ${
           tradeItem.action === "buy" ? "bought" : "sold"
         } ${assetAmount} ${
-          tradeItemState.asset.ticker
+          tradeItemState.asset.name
         } for ${baseAmount} ${baseSymbol}`,
         { type: "Success", lifetime: 60 },
       );

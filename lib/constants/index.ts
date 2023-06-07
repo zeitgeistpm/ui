@@ -1,5 +1,4 @@
 import Decimal from "decimal.js";
-import { GraphQLClient } from "graphql-request";
 import resolveTailwindConfig from "tailwindcss/resolveConfig";
 import tailwindConfig from "../../tailwind.config";
 import { EndpointOption, Environment } from "../types";
@@ -16,6 +15,7 @@ export const BLOCK_TIME_SECONDS = Number(
 export const NUM_BLOCKS_IN_HOUR = 3600 / BLOCK_TIME_SECONDS;
 export const NUM_BLOCKS_IN_DAY = NUM_BLOCKS_IN_HOUR * 24;
 export const DAY_SECONDS = 86400;
+export const ZTG_MIN_LIQUIDITY = 100;
 
 export const ZTG_BLUE_COLOR = resolveTailwindConfig(tailwindConfig as any).theme
   .colors["ztg-blue"];
@@ -101,5 +101,3 @@ export const endpointsStaging = getEndpointOptions("staging");
 
 export const endpointOptions =
   environment === "production" ? endpointsProduction : endpointsStaging;
-
-export const allCurrencies = ["ZTG"];

@@ -22,9 +22,6 @@ export type PoolZtgBalanceLookup = {
 
 /**
  * Fetch pool ZTG balances for a list of pools.
- *
- * @param pools PoolList<Context>
- * @returns PoolZtgBalanceLookup
  */
 export const usePoolBaseBalances = (
   pools?: PoolList<Context>,
@@ -32,7 +29,7 @@ export const usePoolBaseBalances = (
   opts?: {
     enabled?: boolean;
   },
-): PoolZtgBalanceLookup => {
+): { data: PoolZtgBalanceLookup; isLoading: boolean } => {
   const [sdk, id] = useSdkv2();
 
   const poolAccountIds = usePoolAccountIds(pools);
@@ -55,7 +52,7 @@ export const usePoolBaseBalances = (
                   pool,
                   balance: new Decimal(balance.data.free.toString()),
                 };
-              } else {
+              } else if (baseAssetId) {
                 const balance = await api.query.tokens.accounts(
                   accountId,
                   baseAssetId,
@@ -79,11 +76,16 @@ export const usePoolBaseBalances = (
       }) ?? [],
   });
 
-  return query.reduce<PoolZtgBalanceLookup>((index, query) => {
+  const data = query.reduce<PoolZtgBalanceLookup>((index, query) => {
     if (!query.data) return index;
     return {
       ...index,
       [query.data.pool.poolId]: query.data.balance,
     };
   }, {});
+
+  return {
+    data,
+    isLoading: query.some((q) => q.isLoading),
+  };
 };

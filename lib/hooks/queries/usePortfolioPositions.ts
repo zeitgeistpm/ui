@@ -11,6 +11,7 @@ import {
   IOMarketOutcomeAssetId,
   IOPoolShareAssetId,
   IOZtgAssetId,
+  ZTG,
   PoolShareAssetId,
   ScalarAssetId,
   IOForeignAssetId,
@@ -36,6 +37,11 @@ import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { useMemo } from "react";
 import { MarketBond, useAccountBonds } from "./useAccountBonds";
 import { useChainTime } from "lib/state/chaintime";
+import { useTradeHistory } from "./useTradeHistory";
+import {
+  ForeignAssetPrices,
+  useAllForeignAssetUsdPrices,
+} from "./useAssetUsdPrice";
 
 export type UsePortfolioPositions = {
   /**
@@ -83,6 +89,18 @@ export type Position<T extends AssetId = AssetId> = {
   price: Decimal;
   /**
    * The price of the position 24 hours ago.
+   */
+  avgCost: number;
+  /**
+   * The average cost of acquiring the position of the asset.
+   */
+  upnl: number;
+  /**
+   * The total cost of acquisition from the total unrealized amount from selling based off current price.
+   */
+  rpnl: number;
+  /**
+   * The total cost of acquisition from the total amount received from selling.
    */
   price24HoursAgo: Decimal;
   /**
@@ -146,11 +164,14 @@ export const usePortfolioPositions = (
 ): UsePortfolioPositions => {
   const now = useChainTime();
 
-  //todo: needs to base asset balance?
   const { data: ztgPrice } = useZtgPrice();
   const block24HoursAgo = Math.floor(now?.block - 7200);
   const { data: marketBonds, isLoading: isBondsLoading } =
     useAccountBonds(address);
+  const { data: foreignAssetPrices } = useAllForeignAssetUsdPrices();
+
+  const { data: tradeHistory, isLoading: isTradeHistoryLoading } =
+    useTradeHistory(address);
 
   const rawPositions = useAccountTokenPositions({
     where: {
@@ -237,11 +258,24 @@ export const usePortfolioPositions = (
   );
 
   const positions = useMemo<Position[] | null>(() => {
-    let positionsData: Position[] = [];
+    const stillLoading =
+      rawPositions.isLoading ||
+      pools.isLoading ||
+      markets.isLoading ||
+      !ztgPrice ||
+      poolAssetBalances.isLoading ||
+      poolsZtgBalances.isLoading ||
+      !poolsTotalIssuance ||
+      userAssetBalances.isLoading ||
+      poolsZtgBalances24HoursAgo.isLoading ||
+      poolAssetBalances24HoursAgo.isLoading ||
+      isTradeHistoryLoading;
 
-    if (!rawPositions.data || !pools.data || !markets.data) {
+    if (stillLoading) {
       return null;
     }
+
+    let positionsData: Position[] = [];
 
     const calculatePrice = (
       pool: IndexedPool<Context>,
@@ -250,10 +284,6 @@ export const usePortfolioPositions = (
       poolAssetBalances: UseAccountAssetBalances,
     ): null | Decimal => {
       const poolZtgBalance = poolsZtgBalances[pool.poolId]?.toNumber();
-
-      if (typeof poolZtgBalance === "undefined") {
-        return null;
-      }
 
       const poolAssetBalance = poolAssetBalances.get(
         poolAccountIds[pool.poolId],
@@ -274,10 +304,6 @@ export const usePortfolioPositions = (
       );
     };
 
-    if (!rawPositions.data) return null;
-
-    let stillLoading = false;
-
     for (const position of rawPositions.data) {
       const assetId = parseAssetId(position.assetId).unwrap();
 
@@ -291,7 +317,7 @@ export const usePortfolioPositions = (
 
       if (IOPoolShareAssetId.is(assetId)) {
         pool = pools.data.find((pool) => pool.poolId === assetId.PoolShare);
-        marketId = pool.marketId;
+        marketId = pool?.marketId;
         market = markets.data?.find((m) => m.marketId === marketId);
       }
 
@@ -302,7 +328,6 @@ export const usePortfolioPositions = (
       }
 
       if (!market || !pool) {
-        stillLoading = true;
         continue;
       }
 
@@ -310,12 +335,7 @@ export const usePortfolioPositions = (
       const totalIssuanceForPoolQuery = poolsTotalIssuance[pool.poolId];
       const totalIssuanceData = poolsTotalIssuance[pool.poolId]?.data;
 
-      if (!balance || !totalIssuanceForPoolQuery.data || !totalIssuanceData) {
-        stillLoading = true;
-        continue;
-      }
-
-      const userBalance = new Decimal(balance.free.toNumber());
+      const userBalance = new Decimal(balance?.free.toNumber() ?? 0);
 
       const totalIssuance = new Decimal(
         totalIssuanceForPoolQuery.data.totalIssuance.toString(),
@@ -332,14 +352,14 @@ export const usePortfolioPositions = (
           price = calculatePrice(
             pool,
             assetId,
-            poolsZtgBalances,
+            poolsZtgBalances.data,
             poolAssetBalances,
           );
 
           price24HoursAgo = calculatePrice(
             pool,
             assetId,
-            poolsZtgBalances24HoursAgo,
+            poolsZtgBalances24HoursAgo.data,
             poolAssetBalances24HoursAgo,
           );
         }
@@ -360,14 +380,14 @@ export const usePortfolioPositions = (
             const price = calculatePrice(
               pool,
               assetId,
-              poolsZtgBalances,
+              poolsZtgBalances.data,
               poolAssetBalances,
             );
 
             const price24HoursAgo = calculatePrice(
               pool,
               assetId,
-              poolsZtgBalances24HoursAgo,
+              poolsZtgBalances24HoursAgo.data,
               poolAssetBalances24HoursAgo,
             );
 
@@ -388,22 +408,12 @@ export const usePortfolioPositions = (
           },
         );
 
-        if (!poolTotalValue) {
-          stillLoading = true;
-          continue;
-        }
-
         const totalIssuance = new Decimal(
           totalIssuanceData.totalIssuance.toString(),
         );
 
         price = poolTotalValue.total.div(totalIssuance);
         price24HoursAgo = poolTotalValue.total24HoursAgo.div(totalIssuance);
-      }
-
-      if (!price || !price24HoursAgo) {
-        stillLoading = true;
-        continue;
       }
 
       let outcome: string;
@@ -429,6 +439,111 @@ export const usePortfolioPositions = (
         color = "#DF0076";
       }
 
+      const avgCost = tradeHistory
+        .filter((transaction) => transaction.marketId === marketId)
+        .reduce((acc, transaction) => {
+          const assetIn = transaction.assetAmountOut.div(ZTG).toNumber();
+          let totalAssets = 0;
+          let totalCost = 0;
+          const price = transaction.price.toNumber();
+          if (transaction.assetOut === outcome) {
+            if (transaction.assetIn === transaction.baseAssetName) {
+              totalCost += assetIn * price;
+              totalAssets += assetIn;
+            }
+            if (totalAssets > 0 && totalCost > 0) {
+              acc = totalCost / totalAssets;
+            }
+          }
+          return acc;
+        }, 0);
+
+      const calculateFifoPnl = (transactions) => {
+        let buys = [];
+        let pnl = 0;
+
+        transactions
+          .filter(
+            (transaction) =>
+              transaction.marketId === marketId &&
+              (transaction.assetIn === outcome ||
+                transaction.assetOut === outcome),
+          )
+          .sort(
+            (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
+          )
+          .forEach(
+            ({
+              assetIn,
+              assetAmountIn,
+              assetAmountOut,
+              price,
+              baseAssetName,
+            }) => {
+              const quantity = assetAmountIn.div(ZTG).toNumber();
+              const transactionPrice = price.toNumber();
+
+              if (assetIn === baseAssetName) {
+                buys.push({ quantity, price: transactionPrice });
+              } else {
+                let remainingToSell = assetAmountOut.div(ZTG).toNumber();
+
+                while (remainingToSell > 0 && buys.length > 0) {
+                  const [currentBuy] = buys;
+                  const sellQuantityFromThisBuy = Math.min(
+                    currentBuy.quantity,
+                    remainingToSell,
+                  );
+
+                  pnl +=
+                    sellQuantityFromThisBuy *
+                    (transactionPrice - currentBuy.price);
+
+                  remainingToSell -= sellQuantityFromThisBuy;
+                  currentBuy.quantity -= sellQuantityFromThisBuy;
+
+                  if (currentBuy.quantity === 0) {
+                    buys = buys.slice(1);
+                  }
+                }
+              }
+            },
+          );
+        return pnl;
+      };
+
+      const calculateUnrealizedPnL = (
+        transactions,
+        avgCost,
+        currentMarketPrice,
+      ) => {
+        const filteredTransactions = transactions.filter(
+          (transaction) =>
+            transaction.marketId === marketId &&
+            (transaction.assetIn === outcome ||
+              transaction.assetOut === outcome),
+        );
+        const { totalQuantity } = filteredTransactions.reduce(
+          (acc, transaction) => {
+            if (transaction.assetIn === transaction.baseAssetName) {
+              const quantity = transaction.assetAmountOut.div(ZTG).toNumber();
+              return {
+                totalQuantity: acc.totalQuantity + quantity,
+              };
+            } else if (transaction.assetIn === outcome) {
+              const quantity = transaction.assetAmountIn.div(ZTG).toNumber();
+              return {
+                totalQuantity: acc.totalQuantity - quantity,
+              };
+            } else {
+              return acc;
+            }
+          },
+          { totalQuantity: 0 },
+        );
+        return (currentMarketPrice - avgCost) * totalQuantity;
+      };
+
       const change = diffChange(price, price24HoursAgo);
 
       positionsData.push({
@@ -436,6 +551,9 @@ export const usePortfolioPositions = (
         market,
         pool,
         price,
+        avgCost,
+        upnl: calculateUnrealizedPnL(tradeHistory, avgCost, price.toNumber()),
+        rpnl: calculateFifoPnl(tradeHistory),
         price24HoursAgo,
         outcome,
         color,
@@ -445,13 +563,11 @@ export const usePortfolioPositions = (
       });
     }
 
-    if (stillLoading) return null;
-
     return positionsData;
   }, [
-    rawPositions.data,
-    pools.data,
-    markets.data,
+    rawPositions,
+    pools,
+    markets,
     ztgPrice,
     poolsTotalIssuance,
     userAssetBalances,
@@ -459,6 +575,7 @@ export const usePortfolioPositions = (
     poolAssetBalances,
     poolsZtgBalances24HoursAgo,
     poolAssetBalances24HoursAgo,
+    isTradeHistoryLoading,
   ]);
 
   const marketPositions = useMemo<
@@ -481,14 +598,27 @@ export const usePortfolioPositions = (
   );
 
   const breakdown = useMemo<PorfolioBreakdown>(() => {
-    if (!ztgPrice || !marketPositions || !subsidyPositions || isBondsLoading) {
+    if (
+      !ztgPrice ||
+      !marketPositions ||
+      !subsidyPositions ||
+      isBondsLoading ||
+      !foreignAssetPrices
+    ) {
       return null;
     }
 
-    const tradingPositionsTotal = totalPositionsValue(marketPositions, "price");
+    const tradingPositionsTotal = totalPositionsValue(
+      marketPositions,
+      "price",
+      foreignAssetPrices,
+      ztgPrice,
+    );
     const tradingPositionsTotal24HoursAgo = totalPositionsValue(
       marketPositions,
       "price24HoursAgo",
+      foreignAssetPrices,
+      ztgPrice,
     );
 
     const tradingPositionsChange = diffChange(
@@ -499,10 +629,14 @@ export const usePortfolioPositions = (
     const subsidyPositionsTotal = totalPositionsValue(
       subsidyPositions,
       "price",
+      foreignAssetPrices,
+      ztgPrice,
     );
     const subsidyPositionsTotal24HoursAgo = totalPositionsValue(
       subsidyPositions,
       "price24HoursAgo",
+      foreignAssetPrices,
+      ztgPrice,
     );
 
     const subsidyPositionsChange = diffChange(
@@ -512,7 +646,7 @@ export const usePortfolioPositions = (
 
     const bondsTotal =
       marketBonds?.length > 0
-        ? calcTotalBondsValue(marketBonds)
+        ? calcTotalBondsValue(marketBonds, foreignAssetPrices, ztgPrice)
         : new Decimal(0);
 
     const positionsTotal = tradingPositionsTotal
@@ -550,6 +684,7 @@ export const usePortfolioPositions = (
     };
   }, [
     ztgPrice,
+    foreignAssetPrices,
     subsidyPositions,
     marketPositions,
     isBondsLoading,
@@ -565,23 +700,27 @@ export const usePortfolioPositions = (
 };
 
 /**
- * Calculates the total value of a set of positions.
- *
- * @param positions positions: Position[]
- * @param key "price" | "price24HoursAgo"
- * @returns Decimal
+ * Calculates the total value of a set of positions in ZTG
  */
 export const totalPositionsValue = <
   K extends keyof Pick<Position, "price" | "price24HoursAgo">,
 >(
   positions: Position[],
   key: K,
+  foreignAssetPrices: ForeignAssetPrices,
+  ztgPrice: Decimal,
 ): Decimal => {
   return positions.reduce((acc, position) => {
+    const assetId = parseAssetId(position.market.baseAsset).unwrap();
+
+    const priceMultiplier = IOForeignAssetId.is(assetId)
+      ? foreignAssetPrices[assetId.ForeignAsset.toString()]?.div(ztgPrice)
+      : 1;
+
     if (position.userBalance.isNaN() || position[key].isNaN()) {
       return acc;
     }
-    const value = position.userBalance.mul(position[key]);
+    const value = position.userBalance.mul(position[key]).mul(priceMultiplier);
     return !value.isNaN() ? acc.plus(value) : acc;
   }, new Decimal(0));
 };
@@ -599,16 +738,25 @@ const diffChange = (a: Decimal, b: Decimal) => {
   return priceChange.mul(100).toNumber();
 };
 
-const calcTotalBondsValue = (marketBonds: MarketBond[]) => {
+const calcTotalBondsValue = (
+  marketBonds: MarketBond[],
+  foreignAssetPrices: ForeignAssetPrices,
+  ztgPrice: Decimal,
+) => {
   const bondTotal = marketBonds?.reduce((total, marketBond) => {
+    const assetId = parseAssetId(marketBond.baseAsset).unwrap();
+    const priceMultiplier = IOForeignAssetId.is(assetId)
+      ? foreignAssetPrices[assetId.ForeignAsset.toString()]?.div(ztgPrice)
+      : 1;
+
     const creationBond = marketBond.bonds.creation;
     if (creationBond.isSettled === false) {
-      total = total.plus(creationBond.value);
+      total = total.plus(creationBond.value).mul(priceMultiplier);
     }
 
     const oracleBond = marketBond.bonds.oracle;
     if (oracleBond.isSettled === false) {
-      total = total.plus(oracleBond.value);
+      total = total.plus(oracleBond.value).mul(priceMultiplier);
     }
 
     return total;

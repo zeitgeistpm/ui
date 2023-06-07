@@ -796,15 +796,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@headlessui/react@npm:^1.7.7":
-  version: 1.7.11
-  resolution: "@headlessui/react@npm:1.7.11"
+"@headlessui/react@npm:^1.7.15":
+  version: 1.7.15
+  resolution: "@headlessui/react@npm:1.7.15"
   dependencies:
     client-only: ^0.0.1
   peerDependencies:
     react: ^16 || ^17 || ^18
     react-dom: ^16 || ^17 || ^18
-  checksum: 3c9abbc5eaf039fccd309b34269aad761f518c4863e482afddf47579384243ecc0d7b69ecd2f05997e4e079237efa8846c568f5ed8d32df358814a239600de1f
+  checksum: f2d11d58499ddf1362a40d84d92b7db932adaccc3596f44f1eead642258280f124497f2b329cee6e04801818bb2e66c42d752ee05f40f8b5239c2f692128e568
   languageName: node
   linkType: hard
 
@@ -2197,6 +2197,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@subsocial/grill-widget@npm:^0.0.5":
+  version: 0.0.5
+  resolution: "@subsocial/grill-widget@npm:0.0.5"
+  checksum: 077c11cb35ffd796637224fc88292a13cee73e6c471ae801318b81af6996d79ce3c58b3b640bff10b7ccd6f1e64cef06f3437d04517850fe6c71b00556a2a571
+  languageName: node
+  linkType: hard
+
 "@substrate/connect-extension-protocol@npm:^1.0.1":
   version: 1.0.1
   resolution: "@substrate/connect-extension-protocol@npm:1.0.1"
@@ -3099,7 +3106,7 @@ __metadata:
   resolution: "@zeitgeistpm/ui@workspace:."
   dependencies:
     "@babel/helper-compilation-targets": ^7.19.3
-    "@headlessui/react": ^1.7.7
+    "@headlessui/react": ^1.7.15
     "@headlessui/tailwindcss": ^0.1.2
     "@next/bundle-analyzer": ^12.3.1
     "@notionhq/client": ^2.2.3
@@ -3108,6 +3115,7 @@ __metadata:
     "@polkadot/extension-dapp": ^0.44.6
     "@polkadot/ui-keyring": ^2.4.1
     "@polkadot/wasm-crypto": ^6.3.1
+    "@subsocial/grill-widget": ^0.0.5
     "@tailwindcss/container-queries": ^0.1.1
     "@tailwindcss/line-clamp": ^0.4.2
     "@talismn/connect-wallets": ^1.2.3

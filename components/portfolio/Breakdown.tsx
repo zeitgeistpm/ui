@@ -114,7 +114,7 @@ export const BreakdownSlot = ({
   return (
     <>
       <h4 className="font-medium text-sky-600 text-ztg-12-150 mb-1">{title}</h4>
-      <div className="flex text-lg mb-1">
+      <div className="flex text-lg mb-1 items-center">
         <div className="w-2/3 font-semibold text-ztg-16-150">
           {formatNumberLocalized(value.div(ZTG).toNumber())} ZTG
         </div>
@@ -127,7 +127,7 @@ export const BreakdownSlot = ({
               : "text-green-500"
           }`}
         >
-          {changePercentage.toFixed(1)}%
+          {Math.abs(changePercentage).toFixed(1)}%
         </div>
       </div>
       <div className="text-sky-600 mb-1 text-ztg-14-150">

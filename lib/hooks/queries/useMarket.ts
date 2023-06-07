@@ -17,6 +17,7 @@ export const useMarket = (filter?: UseMarketFilter) => {
     async () => {
       if (
         isIndexedSdk(sdk) &&
+        filter &&
         (("marketId" in filter && filter.marketId != null) ||
           ("poolId" in filter && filter.poolId != null))
       ) {
@@ -38,26 +39,34 @@ export const useMarket = (filter?: UseMarketFilter) => {
 };
 
 const batcher = memoize((sdk: Sdk<IndexerContext>) => {
-  return batshit.create<FullMarketFragment, UseMarketFilter>({
+  return batshit.create<FullMarketFragment | undefined, UseMarketFilter>({
     name: marketsRootQuery,
     fetcher: async (ids) => {
       const { markets } = await sdk.indexer.markets({
         where: {
-          question_isNull: false,
-          question_not_eq: "",
-          isMetaComplete_eq: true,
-          OR: [
+          AND: [
             {
-              marketId_in: ids
-                .filter((id): id is { marketId: number } => "marketId" in id)
-                .map((id) => id.marketId),
+              question_isNull: false,
+              question_not_eq: "",
+              isMetaComplete_eq: true,
             },
             {
-              pool: {
-                poolId_in: ids
-                  .filter((id): id is { poolId: number } => "poolId" in id)
-                  .map((id) => id.poolId),
-              },
+              OR: [
+                {
+                  marketId_in: ids
+                    .filter(
+                      (id): id is { marketId: number } => "marketId" in id,
+                    )
+                    .map((id) => id.marketId),
+                },
+                {
+                  pool: {
+                    poolId_in: ids
+                      .filter((id): id is { poolId: number } => "poolId" in id)
+                      .map((id) => id.poolId),
+                  },
+                },
+              ],
             },
           ],
         },
@@ -67,10 +76,10 @@ const batcher = memoize((sdk: Sdk<IndexerContext>) => {
     scheduler: batshit.windowScheduler(10),
     resolver: (data, query) => {
       if ("marketId" in query) {
-        return data.find((m) => m.marketId === query.marketId);
+        return data.find((m) => m?.marketId === query.marketId);
       }
       if ("poolId" in query) {
-        return data.find((m) => m.pool?.poolId === query.poolId);
+        return data.find((m) => m?.pool?.poolId === query.poolId);
       }
     },
   });

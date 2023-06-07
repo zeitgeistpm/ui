@@ -1,4 +1,3 @@
-// import { Skeleton } from "@material-ui/lab";
 import Skeleton from "components/ui/Skeleton";
 import {
   IndexerContext,
@@ -11,13 +10,96 @@ import DisputeButton from "components/assets/AssetActionButtons/DisputeButton";
 import RedeemButton from "components/assets/AssetActionButtons/RedeemButton";
 import ReportButton from "components/assets/AssetActionButtons/ReportButton";
 import AssetTradingButtons from "components/assets/AssetActionButtons/AssetTradingButtons";
-import Table, { TableData } from "components/ui/Table";
+import Table, { TableData, TableColumn } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { Position } from "lib/hooks/queries/usePortfolioPositions";
 import { useWallet } from "lib/state/wallet";
 import Link from "next/link";
 import MarketPositionHeader from "./MarketPositionHeader";
+import { useAllForeignAssetUsdPrices } from "lib/hooks/queries/useAssetUsdPrice";
+import { lookUpAssetPrice } from "lib/util/lookup-price";
+
+const COLUMNS: TableColumn[] = [
+  {
+    header: "Outcomes",
+    accessor: "outcome",
+    type: "text",
+  },
+  {
+    header: "Balance",
+    accessor: "userBalance",
+    type: "number",
+  },
+  {
+    header: "Price",
+    accessor: "price",
+    type: "currency",
+  },
+  {
+    header: "Avg. Cost",
+    accessor: "cost",
+    type: "currency",
+  },
+  {
+    header: "Total Value",
+    accessor: "value",
+    type: "currency",
+  },
+  {
+    header: "Unrealized PnL",
+    accessor: "upnl",
+    type: "currency",
+  },
+  {
+    header: "Realized PnL",
+    accessor: "rpnl",
+    type: "currency",
+  },
+  {
+    header: "24 Hrs",
+    accessor: "change",
+    type: "change",
+  },
+  {
+    header: "",
+    accessor: "actions",
+    type: "component",
+  },
+];
+
+const COLUMNS_LIQUIDITY: TableColumn[] = [
+  {
+    header: "Outcomes",
+    accessor: "outcome",
+    type: "text",
+  },
+  {
+    header: "Balance",
+    accessor: "userBalance",
+    type: "number",
+  },
+  {
+    header: "Price",
+    accessor: "price",
+    type: "currency",
+  },
+  {
+    header: "Total Value",
+    accessor: "value",
+    type: "currency",
+  },
+  {
+    header: "24 Hrs",
+    accessor: "change",
+    type: "change",
+  },
+  {
+    header: "",
+    accessor: "actions",
+    type: "component",
+  },
+];
 
 export type MarketPositionsProps = {
   usdZtgPrice: Decimal;
@@ -33,10 +115,15 @@ export const MarketPositions = ({
   className,
 }: MarketPositionsProps) => {
   const { data: marketStage } = useMarketStage(market);
+  const { data: foreignAssetPrices } = useAllForeignAssetUsdPrices();
 
   const wallet = useWallet();
   const userAddress = wallet.getActiveSigner()?.address;
   const isOracle = market?.oracle === userAddress;
+
+  const isLiquidityMarket = positions.some(
+    (pos) => pos.outcome == "Pool Share",
+  );
 
   return (
     <div className={`${className}`}>
@@ -45,50 +132,53 @@ export const MarketPositions = ({
         question={market.question}
       />
       <Table
-        columns={[
-          {
-            header: "Outcomes",
-            accessor: "outcome",
-            type: "text",
-          },
-          {
-            header: "Balance",
-            accessor: "userBalance",
-            type: "number",
-          },
-          {
-            header: "Price",
-            accessor: "price",
-            type: "currency",
-          },
-          {
-            header: "Total Value",
-            accessor: "value",
-            type: "currency",
-          },
-          {
-            header: "24 Hrs",
-            accessor: "change",
-            type: "change",
-          },
-          {
-            header: "",
-            accessor: "actions",
-            type: "component",
-          },
-        ]}
+        columns={isLiquidityMarket ? COLUMNS_LIQUIDITY : COLUMNS}
         data={positions.map<TableData>(
-          ({ assetId, price, userBalance, outcome, changePercentage }) => {
+          ({
+            assetId,
+            price,
+            userBalance,
+            outcome,
+            changePercentage,
+            market,
+            avgCost,
+            rpnl,
+            upnl,
+          }) => {
+            const baseAssetUsdPrice = lookUpAssetPrice(
+              market.baseAsset,
+              foreignAssetPrices,
+              usdZtgPrice,
+            );
+
             return {
               outcome: outcome,
               userBalance: userBalance.div(ZTG).toNumber(),
               price: {
                 value: price.toNumber(),
-                usdValue: usdZtgPrice.toNumber(),
+                usdValue: price.mul(baseAssetUsdPrice).toNumber(),
+              },
+              cost: {
+                value: avgCost,
+                usdValue: new Decimal(avgCost)
+                  .mul(baseAssetUsdPrice)
+                  .toNumber(),
+              },
+              upnl: {
+                value: upnl,
+                usdValue: new Decimal(upnl).mul(baseAssetUsdPrice).toNumber(),
+              },
+              rpnl: {
+                value: rpnl,
+                usdValue: new Decimal(rpnl).mul(baseAssetUsdPrice).toNumber(),
               },
               value: {
                 value: userBalance.mul(price).div(ZTG).toNumber(),
-                usdValue: usdZtgPrice.toNumber(),
+                usdValue: userBalance
+                  .mul(price)
+                  .mul(baseAssetUsdPrice)
+                  .div(ZTG)
+                  .toNumber(),
               },
               change: isNaN(changePercentage) ? 0 : changePercentage.toFixed(1),
               actions: (

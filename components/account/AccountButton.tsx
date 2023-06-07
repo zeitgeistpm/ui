@@ -16,10 +16,13 @@ import { formatNumberLocalized, shortenAddress } from "lib/util";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { FC, useState } from "react";
+import React, { FC, PropsWithChildren, useState } from "react";
 import { ChevronDown, DollarSign, Frown, Settings, User } from "react-feather";
 import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
-import OnBoardingModal from "./OnboardingModal";
+import {
+  DesktopOnboardingModal,
+  MobileOnboardingModal,
+} from "./OnboardingModal";
 
 const BalanceRow = ({
   imgPath,
@@ -27,8 +30,8 @@ const BalanceRow = ({
   units,
 }: {
   imgPath: string;
-  balance: Decimal;
   units: string;
+  balance?: Decimal;
 }) => {
   return (
     <div className="flex items-center mb-3 ">
@@ -42,6 +45,29 @@ const BalanceRow = ({
           )} ${units}`}
       </div>
     </div>
+  );
+};
+
+const HeaderActionButton: FC<
+  PropsWithChildren<{
+    onClick: () => void;
+    disabled: boolean;
+  }>
+> = ({ onClick, disabled, children }) => {
+  const { pathname } = useRouter();
+
+  return (
+    <button
+      className={`flex border-2 rounded-full px-6 leading-[40px] ${
+        pathname === "/"
+          ? "text-black border-black sm:text-white sm:bg-transparent sm:border-white"
+          : "text-black border-black"
+      } rounded-full font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-30`}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      {children}
+    </button>
   );
 };
 
@@ -71,6 +97,11 @@ const AccountButton: FC<{
 
   const { data: constants } = useChainConstants();
 
+  const isMobileDevice =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    );
+
   const connect = async () => {
     if (isNovaWallet) {
       selectWallet("polkadot-js");
@@ -99,10 +130,6 @@ const AccountButton: FC<{
         ),
     );
 
-  const handleOnboardingClick = () => {
-    hasWallet ? connect() : setShowOnboarding(true);
-  };
-
   return (
     <>
       {!connected ? (
@@ -111,20 +138,23 @@ const AccountButton: FC<{
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <button
-            className={
-              connectButtonClassname ||
-              `flex border-2 rounded-full px-6 leading-[40px] ${
-                pathname === "/"
-                  ? "text-black border-black sm:text-white sm:bg-transparent sm:border-white"
-                  : "text-black border-black"
-              } rounded-full font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-30`
-            }
-            onClick={() => handleOnboardingClick()}
-            disabled={locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)}
-          >
-            {hasWallet === true ? "Connect Wallet" : "Get Started"}
-          </button>
+          {hasWallet === true ? (
+            <HeaderActionButton
+              disabled={
+                locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)
+              }
+              onClick={() => connect()}
+            >
+              Connect Wallet
+            </HeaderActionButton>
+          ) : (
+            <HeaderActionButton
+              disabled={locationAllowed !== true || isUsingVPN}
+              onClick={() => setShowOnboarding(true)}
+            >
+              Get Started
+            </HeaderActionButton>
+          )}
 
           {hovering === true &&
           (locationAllowed !== true || isUsingVPN === true) ? (
@@ -172,11 +202,13 @@ const AccountButton: FC<{
                             e.stopPropagation();
                           }}
                         >
-                          <Avatar
-                            zoomed
-                            address={activeAccount?.address}
-                            deps={avatarDeps}
-                          />
+                          {activeAccount?.address && (
+                            <Avatar
+                              zoomed
+                              address={activeAccount?.address}
+                              deps={avatarDeps}
+                            />
+                          )}
                         </div>
                         <span
                           className={`font-medium pl-2 text-sm h-full leading-[40px] ${
@@ -188,8 +220,8 @@ const AccountButton: FC<{
                         </span>
                         <div className="pr-1">
                           <ChevronDown
-                            size={12}
-                            viewBox="6 6 12 12"
+                            size={16}
+                            viewBox="4 3 16 16"
                             className={`box-content px-2 ${
                               open && "rotate-180"
                             }`}
@@ -310,12 +342,23 @@ const AccountButton: FC<{
           </Menu>
         </div>
       )}
-      <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
-        <OnBoardingModal />
-      </Modal>
-      <Modal open={showGetZtgModal} onClose={() => setShowGetZtgModal(false)}>
-        <OnBoardingModal step={4} />
-      </Modal>
+      {isMobileDevice ? (
+        <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
+          <MobileOnboardingModal />
+        </Modal>
+      ) : (
+        <>
+          <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
+            <DesktopOnboardingModal />
+          </Modal>
+          <Modal
+            open={showGetZtgModal}
+            onClose={() => setShowGetZtgModal(false)}
+          >
+            <DesktopOnboardingModal step={4} />
+          </Modal>
+        </>
+      )}
     </>
   );
 };

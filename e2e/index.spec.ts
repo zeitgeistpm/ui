@@ -109,7 +109,7 @@ test.describe("index page", () => {
       await button.locator("> div").click();
       await page.waitForNavigation();
 
-      expect(page.url()).toContain(`/markets?tag=${category}`);
+      expect(page.url()).toContain(`/markets?status=Active&tag=${category}`);
 
       if (index < buttonCount) {
         await indexPage.goto();
