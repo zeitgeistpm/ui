@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@babel/helper-compilation-targets": "^7.19.3",
-    "@headlessui/react": "^1.7.7",
+    "@headlessui/react": "^1.7.15",
     "@headlessui/tailwindcss": "^0.1.2",
     "@notionhq/client": "^2.2.3",
     "@plaiceholder/next": "^2.5.0",
