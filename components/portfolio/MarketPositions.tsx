@@ -19,6 +19,7 @@ import Link from "next/link";
 import MarketPositionHeader from "./MarketPositionHeader";
 import { useAllForeignAssetUsdPrices } from "lib/hooks/queries/useAssetUsdPrice";
 import { lookUpAssetPrice } from "lib/util/lookup-price";
+import { USD_ONE_CENT } from "lib/constants";
 
 const COLUMNS: TableColumn[] = [
   {
@@ -137,7 +138,7 @@ export const MarketPositions = ({
         .mul(pos.price)
         .mul(baseAssetUsdPrice)
         .div(ZTG)
-        .toNumber() >= 0.01
+        .toNumber() >= USD_ONE_CENT
     );
   };
 
