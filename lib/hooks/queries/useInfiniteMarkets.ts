@@ -65,9 +65,9 @@ export const useInfiniteMarkets = (
         status_in: statuses.length === 0 ? undefined : statuses,
         tags_containsAny: tags?.length === 0 ? undefined : tags,
         pool_isNull: withLiquidityOnly ? false : undefined,
+        baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
         pool: {
           baseAssetQty_gt: withLiquidityOnly ? 0 : undefined,
-          baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
         },
       },
       offset: !pageParam ? 0 : limit * pageParam,
