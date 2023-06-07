@@ -2,13 +2,21 @@ import { useQuery } from "@tanstack/react-query";
 import { BaseAssetId, isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { gql } from "graphql-request";
 import { useSdkv2 } from "../useSdkv2";
+import { hiddenMarketIds } from "lib/constants/markets";
 
 export const accountBondsKey = "account-bonds";
 
 const accountBondsQuery = gql`
   query AccountBonds($address: String) {
     markets(
-      where: { creator_eq: $address, bonds_isNull: false }
+      where: {
+        creator_eq: $address
+        bonds_isNull: false
+        question_not_eq: ""
+        question_isNull: false
+        isMetaComplete_eq: true
+        marketId_not_in: ${hiddenMarketIds}
+      }
       orderBy: marketId_DESC
     ) {
       bonds {

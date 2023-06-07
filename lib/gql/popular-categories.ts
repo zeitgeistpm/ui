@@ -1,4 +1,5 @@
 import { gql, GraphQLClient } from "graphql-request";
+import { hiddenMarketIds } from "lib/constants/markets";
 
 const tagsQuery = gql`
   query MarketTags($tag: [String!]) {
@@ -9,6 +10,7 @@ const tagsQuery = gql`
         question_not_eq: ""
         question_isNull: false
         isMetaComplete_eq: true
+        marketId_not_in: ${hiddenMarketIds}
       }
     ) {
       marketId
