@@ -13,6 +13,7 @@ import Decimal from "decimal.js";
 import { gql } from "graphql-request";
 import { useSdkv2 } from "../useSdkv2";
 import { HistoricalSwapOrderByInput } from "@zeitgeistpm/indexer";
+import { hiddenMarketIds } from "lib/constants/markets";
 
 export const transactionHistoryKey = "trade-history";
 
@@ -21,6 +22,7 @@ const marketHeaderQuery = gql`
     markets(
       where: {
         marketId_in: $marketIds
+        marketId_not_in: ${hiddenMarketIds}
         isMetaComplete_eq: true
         question_isNull: false
         question_not_eq: ""

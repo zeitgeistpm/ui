@@ -11,6 +11,7 @@ import { marketsRootQuery } from "./useMarket";
 import { useSdkv2 } from "../useSdkv2";
 import { MarketOutcomes } from "lib/types/markets";
 import { MarketStatus } from "@zeitgeistpm/indexer";
+import { hiddenMarketIds } from "lib/constants/markets";
 
 export const rootKey = "markets-filtered";
 
@@ -25,6 +26,7 @@ const validMarketWhereInput: MarketWhereInput = {
   question_isNull: false,
   question_not_eq: "",
   isMetaComplete_eq: true,
+  marketId_not_in: JSON.parse(hiddenMarketIds),
 };
 
 export type QueryMarketData = Market<IndexerContext> & {
