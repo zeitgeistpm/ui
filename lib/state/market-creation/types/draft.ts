@@ -44,7 +44,7 @@ export const empty = (): MarketDraftState => ({
     liquidity: {
       deploy: true,
       rows: [],
-      swapFee: 0.1,
+      swapFee: 1,
     },
   },
   touchState: {},
