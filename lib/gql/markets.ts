@@ -15,15 +15,7 @@ const marketIdsQuery = gql`
 
 const marketQuery = gql`
   query Market($marketId: Int) {
-    markets(
-      where: {
-        marketId_eq: $marketId
-        marketId_not_in: ${hiddenMarketIds}
-        isMetaComplete_eq: true
-        question_not_eq: ""
-        question_isNull: false
-      }
-    ) {
+    markets(where: { marketId_eq: $marketId }) {
       marketId
       description
       baseAsset

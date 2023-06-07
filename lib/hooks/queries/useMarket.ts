@@ -44,29 +44,18 @@ const batcher = memoize((sdk: Sdk<IndexerContext>) => {
     fetcher: async (ids) => {
       const { markets } = await sdk.indexer.markets({
         where: {
-          AND: [
+          OR: [
             {
-              question_isNull: false,
-              question_not_eq: "",
-              isMetaComplete_eq: true,
+              marketId_in: ids
+                .filter((id): id is { marketId: number } => "marketId" in id)
+                .map((id) => id.marketId),
             },
             {
-              OR: [
-                {
-                  marketId_in: ids
-                    .filter(
-                      (id): id is { marketId: number } => "marketId" in id,
-                    )
-                    .map((id) => id.marketId),
-                },
-                {
-                  pool: {
-                    poolId_in: ids
-                      .filter((id): id is { poolId: number } => "poolId" in id)
-                      .map((id) => id.poolId),
-                  },
-                },
-              ],
+              pool: {
+                poolId_in: ids
+                  .filter((id): id is { poolId: number } => "poolId" in id)
+                  .map((id) => id.poolId),
+              },
             },
           ],
         },
