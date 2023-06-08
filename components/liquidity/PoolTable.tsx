@@ -8,9 +8,6 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { usePool } from "lib/hooks/queries/usePool";
 import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
-import ManageLiquidityButton from "./ManageLiquidityButton";
-import { Unpacked } from "@zeitgeistpm/utility/dist/array";
-import { useMemo } from "react";
 
 const poolTableColums: TableColumn[] = [
   {
