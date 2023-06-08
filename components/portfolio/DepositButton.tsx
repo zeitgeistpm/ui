@@ -123,21 +123,27 @@ const DepositModal = ({
 
       if (!changedByUser) return;
 
+      //assumes source chain fee is paid in currency that is being transferred
+      const maxTransferAmount = balance.minus(fee.mul(1.01)); //add 1% buffer to fee
       if (name === "percentage") {
         setValue(
           "amount",
-          balance.mul(value.percentage).div(100).div(ZTG).toNumber(),
+          maxTransferAmount.mul(value.percentage).div(100).div(ZTG).toNumber(),
         );
         trigger("amount");
       } else if (name === "amount" && value.amount !== "") {
         setValue(
           "percentage",
-          new Decimal(value.amount).mul(ZTG).div(balance).mul(100).toString(),
+          new Decimal(value.amount)
+            .mul(ZTG)
+            .div(maxTransferAmount)
+            .mul(100)
+            .toString(),
         );
       }
     });
     return () => subscription.unsubscribe();
-  }, [watch]);
+  }, [watch, balance, fee]);
 
   const onSubmit = () => {
     transfer();
@@ -201,8 +207,7 @@ const DepositModal = ({
           <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
             {sourceChain} fee:
             <span className="text-black ml-1">
-              {new Decimal(fee?.partialFee.toString() ?? 0).div(ZTG).toFixed(3)}{" "}
-              {tokenSymbol}
+              {fee.div(ZTG).toFixed(3)} {tokenSymbol}
             </span>
           </div>
           <FormTransactionButton
