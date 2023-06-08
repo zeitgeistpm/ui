@@ -465,10 +465,7 @@ const Table = ({
                             <></>
                           )}
                           {column.infobox && (
-                            <InfoPopover
-                              title="Test"
-                              children={column.infobox}
-                            />
+                            <InfoPopover children={column.infobox} />
                           )}
                         </div>
                       </th>
