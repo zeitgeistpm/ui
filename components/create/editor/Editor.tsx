@@ -31,6 +31,7 @@ import ModerationModeSelect from "./inputs/Moderation";
 import OracleInput from "./inputs/Oracle";
 import { AnswersInput } from "./inputs/answers";
 import { Publishing } from "./Publishing";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -73,6 +74,7 @@ export const MarketEditor = () => {
 
   const chainTime = useChainTime();
   const { isFetched } = useMarketDeadlineConstants();
+  const { data: constants } = useChainConstants();
 
   const back = () => {
     const prevStep = prevStepFrom(steps, currentStep);
@@ -426,14 +428,23 @@ export const MarketEditor = () => {
         >
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="mb-4 md:mb-8 text-base">Set Up Oracle</h2>
-            <p className="mb-6 md:mb-12 text-sm text-gray-500 font-light">
-              This is the account that will be{" "}
-              <b className="font-semibold text-gray-600">
-                responsible for submitting the outcome
-              </b>{" "}
-              when the market ends. <br /> If the Oracle fails to submit, you
-              will lose some of your deposit.
-            </p>
+            <div className="center">
+              <p className="mb-6 md:mb-12 text-sm text-gray-500 font-light md:max-w-2xl">
+                This is the account that will be{" "}
+                <b className="font-semibold text-gray-600">
+                  responsible for submitting the outcome
+                </b>{" "}
+                when the market ends.
+                <br />
+                If the Oracle fails to submit; or submits an answer that turns
+                out to be wrong according to a dispute, you will lose your
+                bonded oracle deposit of{" "}
+                <span className="font-bold">
+                  {constants?.markets.oracleBond} ZTG
+                </span>
+              </p>
+            </div>
+
             <div>
               <div className="center mb-6">
                 <OracleInput
@@ -536,14 +547,16 @@ export const MarketEditor = () => {
                 <div className="center mb-12">
                   <div className="text-center text-lg md:max-w-xl text-gray-500">
                     You have selected <b>advised</b> moderation. This means that
-                    the market could be rejected by the moderators. If the
-                    market is rejected, you will be refunded part of your bonded
-                    deposit{" "}
+                    the market could be rejected by the moderators.
+                    <br />
+                    <br />
+                    If the market is rejected, you will be refunded most of your
+                    bonded deposit{" "}
                     <i>
-                      (minus a slash percentage depending on chain
-                      configuration)
+                      (the refunded amount might incur a slash depending on the
+                      chain configuration, currently at{" "}
+                      {constants?.markets.advisoryBondSlashPercentage}%)
                     </i>
-                    .
                     <br />
                     <br />
                     If the market is <b>approved</b>, you will be able to{" "}

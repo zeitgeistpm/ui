@@ -1,5 +1,6 @@
 import { Moderation } from "lib/state/market-creation/types/form";
 import { FormEvent } from "../types";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 export type ModerationModeSelectProps = {
   name: string;
@@ -11,18 +12,15 @@ export type ModerationModeSelectProps = {
 export const options: Array<{
   mode: Moderation;
   description: string;
-  cost: number;
 }> = [
   {
     mode: "Permissionless",
     description: "More expensive, but goes live as soon as you need.",
-    cost: 120,
   },
   {
     mode: "Advised",
     description:
       "Cheaper, but but requires approval from the advisory committee before becoming active.",
-    cost: 100,
   },
 ];
 
@@ -32,6 +30,8 @@ export const ModerationModeSelect: React.FC<ModerationModeSelectProps> = ({
   onChange,
   onBlur,
 }) => {
+  const { data: constants } = useChainConstants();
+
   const handleSelect = (mode: Moderation) => () => {
     onChange({ target: { name, value: mode }, type: "change" });
     onBlur({ target: { name, value: mode }, type: "blur" });
@@ -56,7 +56,12 @@ export const ModerationModeSelect: React.FC<ModerationModeSelectProps> = ({
               </p>
               <p className="">
                 <span className="text-xs text-gray-500">Bond Cost: </span>
-                <span className="text-xs text-gray-900">{option.cost} ZTG</span>
+                <span className="text-xs text-gray-900">
+                  {option.mode === "Permissionless"
+                    ? constants?.markets.validityBond
+                    : constants?.markets.advisoryBond}
+                  ZTG
+                </span>
               </p>
             </div>
           </div>

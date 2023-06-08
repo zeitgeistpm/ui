@@ -17,6 +17,7 @@ export type ChainConstants = {
     validityBond: number;
     maxCategories: number;
     minCategories: number;
+    advisoryBondSlashPercentage: number;
   };
   court: {
     caseDurationSec: number;
@@ -70,6 +71,8 @@ export const useChainConstants = () => {
           validityBond: consts.predictionMarkets.validityBond.toNumber() / ZTG,
           maxCategories: consts.predictionMarkets.maxCategories.toNumber(),
           minCategories: consts.predictionMarkets.minCategories.toNumber(),
+          advisoryBondSlashPercentage:
+            consts.predictionMarkets.advisoryBondSlashPercentage.toNumber(),
         },
         court: {
           caseDurationSec:
