@@ -13,7 +13,7 @@ export const supportedCurrencies = [
     name: "ZTG" as const,
     description:
       "Create market with the native Zeitgeist token as the base asset.",
-    image: "/currencies/ztg_neue.png",
+    image: "/currencies/ztg.svg",
     assetId: { Ztg: null } as const,
   } satisfies CurrencyMetadata,
   {
