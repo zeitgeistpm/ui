@@ -201,7 +201,7 @@ const MarketHistory: FC<
                   </span>
                 </div>
                 <p className="pb-1 text-sm text-gray-500">
-                  {marketHistory?.reported.timestamp > 0 &&
+                  {marketHistory?.reported.timestamp &&
                     new Intl.DateTimeFormat("default", {
                       dateStyle: "medium",
                       timeStyle: "short",
@@ -235,7 +235,7 @@ const MarketHistory: FC<
                         </span>
                       </span>
                       <span className="text-sm text-gray-500">
-                        {dispute.timestamp > 0 &&
+                        {dispute.timestamp &&
                           new Intl.DateTimeFormat("default", {
                             dateStyle: "medium",
                             timeStyle: "short",
@@ -261,7 +261,7 @@ const MarketHistory: FC<
                   </span>
                 </p>
                 <span className="text-sm text-gray-500">
-                  {marketHistory?.resolved?.timestamp > 0 &&
+                  {marketHistory?.resolved?.timestamp &&
                     new Intl.DateTimeFormat("default", {
                       dateStyle: "medium",
                       timeStyle: "short",
