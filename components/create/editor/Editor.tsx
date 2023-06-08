@@ -20,7 +20,7 @@ import { LuFileWarning } from "react-icons/lu";
 import { ErrorMessage } from "./ErrorMessage";
 import InfoPopover from "./InfoPopover";
 import { MarketFormSection } from "./MarketFormSection";
-import MarketPreview from "./Preview";
+import MarketSummary from "./Summary";
 import { EditorResetButton } from "./ResetButton";
 import BlockPeriodPicker from "./inputs/BlockPeriod";
 import CategorySelect from "./inputs/Category";
@@ -577,7 +577,7 @@ export const MarketEditor = () => {
           resetForm={isTouched && reset}
         >
           <div className="flex center">
-            <MarketPreview editor={editor} />
+            <MarketSummary editor={editor} />
           </div>
         </MarketFormSection>
 

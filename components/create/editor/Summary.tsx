@@ -4,7 +4,6 @@ import {
   supportedCurrencies,
 } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChainTime } from "lib/state/chaintime";
 import { MarketDraftEditor } from "lib/state/market-creation/editor";
 import {
@@ -14,45 +13,39 @@ import {
   blocksAsDuration,
 } from "lib/state/market-creation/types/form";
 import { timelineAsBlocks } from "lib/state/market-creation/types/timeline";
-import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
 import { formatDuration } from "lib/util/format-duration";
 import moment from "moment";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { LuFileWarning } from "react-icons/lu";
 
 const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
   ssr: false,
 });
 
-export type MarketPreviewProps = {
+export type MarketSummaryProps = {
   editor: MarketDraftEditor;
 };
 
-type TransactionStatus = "idle" | "pending" | "success" | "error";
-
-export const MarketPreview = ({ editor }: MarketPreviewProps) => {
-  const [sdk] = useSdkv2();
-  const wallet = useWallet();
+export const MarketSummary = ({ editor }: MarketSummaryProps) => {
   const chainTime = useChainTime();
-
   const { form } = editor;
-
-  const [isTransacting, setIsTransacting] = useState(false);
 
   const timeline = useMemo(() => {
     return timelineAsBlocks(form, chainTime).unwrap();
   }, [form, chainTime]);
 
   const { data: baseAssetPrice } = useAssetUsdPrice(
-    getMetadataForCurrency(form.currency).assetId,
+    getMetadataForCurrency(form.currency)?.assetId,
   );
 
   const baseAssetLiquidityRow = form?.liquidity?.rows.find(
     (row) => row.asset === form.currency,
   );
+
+  const currencyMetadata = getMetadataForCurrency(editor.form.currency);
 
   return (
     <div className="flex-1 text-center">
@@ -98,11 +91,7 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
                       alt="Currency token logo"
                       fill
                       sizes="100vw"
-                      src={
-                        supportedCurrencies.find(
-                          (currency) => currency.name === form.currency,
-                        )?.image
-                      }
+                      src={currencyMetadata?.image}
                     />
                   </div>
                 </>
@@ -162,9 +151,7 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
                 </p>
                 <button
                   type="button"
-                  className={`rounded-md py-1 px-3 transition-all active:scale-95 ${
-                    form.currency === "ZTG" ? "bg-ztg-blue" : "bg-polkadot"
-                  }  text-white`}
+                  className={`rounded-md py-1 px-3 transition-all active:scale-95 ${`bg-${currencyMetadata?.twColor}`}  text-white`}
                   onClick={() => {
                     editor.mergeFormData({
                       liquidity: {
@@ -349,4 +336,4 @@ const Label: React.FC<React.PropsWithChildren<{ className?: string }>> = ({
   return <div className={`text-sm text-gray-400 ${className}`}>{children}</div>;
 };
 
-export default MarketPreview;
+export default MarketSummary;

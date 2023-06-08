@@ -5,11 +5,13 @@ import { AiOutlineInfoCircle } from "react-icons/ai";
 
 export type InfoPopoverProps = React.PropsWithChildren<{
   title?: ReactNode;
+  icon?: ReactNode;
   className?: string;
 }>;
 
 export const InfoPopover: React.FC<InfoPopoverProps> = ({
   title,
+  icon,
   children,
   className,
 }) => {
@@ -29,7 +31,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
         {({ open }) => (
           <>
             <Popover.Button className="relative justify-center items-center hidden md:flex">
-              <AiOutlineInfoCircle />
+              {icon ?? <AiOutlineInfoCircle />}
             </Popover.Button>
 
             <Transition

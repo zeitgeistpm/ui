@@ -70,9 +70,9 @@ export const LiquidityInput = ({
     });
   };
 
-  const { data: baseAssetPrice } = useAssetUsdPrice(
-    getMetadataForCurrency(currency).assetId,
-  );
+  const currencyMetadata = getMetadataForCurrency(currency);
+
+  const { data: baseAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
 
   return (
     <div className="center">
@@ -82,9 +82,7 @@ export const LiquidityInput = ({
             <div className="font-light text-sm mb-2">Deploy Pool?</div>
             <Toggle
               checked={value?.deploy}
-              activeClassName={
-                currency === "ZTG" ? "bg-ztg-blue" : "bg-polkadot"
-              }
+              activeClassName={`bg-${currencyMetadata?.twColor}`}
               onChange={handleDeploymentToggle}
             />
           </div>
