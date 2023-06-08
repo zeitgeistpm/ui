@@ -1,6 +1,7 @@
 import { PollingTimeout, poll } from "@zeitgeistpm/avatara-util";
 import { isFullSdk } from "@zeitgeistpm/sdk-next";
 import { StorageError } from "@zeitgeistpm/web3.storage";
+import TransactionButton from "components/ui/TransactionButton";
 import { checkMarketExists } from "lib/gql/markets";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChainTime } from "lib/state/chaintime";
@@ -125,17 +126,11 @@ export const Publishing = ({ editor }: PublishingProps) => {
       <div className="">
         <div className="mb-2 center w-full">
           <div className="relative">
-            <button
+            <TransactionButton
               type="button"
               disabled={!editor.isValid || isTransacting || editor.isPublished}
               className={`
-                 bg-gray-100 text-gray-400 py-4 px-6 rounded-full text-xl center gap-2 transition-all opacity-70 w-60
-                ${
-                  editor.isValid &&
-                  !isTransacting &&
-                  !editor.isPublished &&
-                  "active:scale-95 !opacity-100 bg-ztg-blue text-white"
-                }
+                 !py-4 !px-7 !h-auto rounded-full !text-xl center font-normal !gap-2 transition-all !w-60
               `}
               onClick={submit}
             >
@@ -145,7 +140,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
               <div className={`${isTransacting && "animate-ping"}`}>
                 <RiSendPlaneLine />
               </div>
-            </button>
+            </TransactionButton>
 
             {editor.isWizard && (
               <div className="mt-4 md:mt-0 flex justify-center">
