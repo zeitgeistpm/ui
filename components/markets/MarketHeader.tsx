@@ -23,7 +23,7 @@ import {
 } from "lib/hooks/queries/useMarketEventHistory";
 import Modal from "components/ui/Modal";
 import { getMarketStatusDetails } from "lib/util/market-status-details";
-import { getScalarOutcome } from "lib/util/get-scalar-outcome";
+import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import { Dialog } from "@headlessui/react";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 
@@ -147,7 +147,7 @@ const MarketHistory: FC<
     if (marketType.scalar === null) {
       return categories[outcome["categorical"]]?.name;
     } else {
-      return getScalarOutcome(outcome["scalar"], scalarType);
+      return formatScalarOutcome(outcome["scalar"], scalarType);
     }
   };
 
@@ -254,7 +254,7 @@ const MarketHistory: FC<
                     {marketType.scalar === null
                       ? categories[marketHistory?.resolved?.resolvedOutcome]
                           ?.name
-                      : getScalarOutcome(
+                      : formatScalarOutcome(
                           marketHistory?.resolved?.resolvedOutcome,
                           scalarType,
                         )}

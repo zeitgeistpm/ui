@@ -26,10 +26,12 @@ const GrillChat: React.FC<GrillChatProps> = ({ open, setOpen }) => {
   }, []);
 
   return (
-    <div className={"fixed flex flex-col bottom-0 right-0 p-4 mt-2 gap-4 z-40"}>
+    <div
+      className={"fixed bottom-0 w-screen mr-10 mb-4 pointer-events-none z-30"}
+    >
       <motion.div
         key="grillchat"
-        className="w-full rounded-md shadow-xl bg-white overflow-hidden"
+        className="w-screen rounded-md shadow-xl bg-white overflow-hidden ml-auto pointer-events-auto"
         layout={false}
         initial={{ opacity: 0 }}
         animate={
@@ -43,10 +45,10 @@ const GrillChat: React.FC<GrillChatProps> = ({ open, setOpen }) => {
           width: "min(400px, 100vw - 60px)",
         }}
       >
-        <div id="grill" className="h-full"></div>,
+        <div id="grill" className="h-full"></div>
       </motion.div>
       <div
-        className="ml-auto rounded-full cursor-pointer border-1 border-gray-300 w-14 h-14 center shadow-ztg-5 bg-white"
+        className="ml-auto rounded-full cursor-pointer border-1 border-gray-300 w-14 h-14 center shadow-ztg-5 bg-white pointer-events-auto mt-4"
         onClick={() => setOpen(!open)}
       >
         <MessageSquare size={28} />
