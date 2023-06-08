@@ -56,7 +56,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
         editor.published(marketId);
 
         notifications.pushNotification(
-          "Transaction succesfull! Awaiting indexer.",
+          "Transaction successful! Awaiting indexer.",
           {
             autoRemove: true,
             type: "Info",
