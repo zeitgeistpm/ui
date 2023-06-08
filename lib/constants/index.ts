@@ -5,7 +5,7 @@ import { EndpointOption, Environment } from "../types";
 
 export const ZTG = 10 ** 10;
 
-export const USD_ONE_CENT = 0.01;
+export const MIN_USD_DISPLAY_AMOUNT = 0.01;
 
 export const MAX_IN_OUT_RATIO = new Decimal(1).div(3).toString();
 
