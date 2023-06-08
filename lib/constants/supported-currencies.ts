@@ -24,6 +24,10 @@ export const supportedCurrencies = [
   } satisfies CurrencyMetadata,
 ] as const;
 
+
 export type SupportedCurrencyTag = Unpacked<
   typeof supportedCurrencies
 >[number]["name"];
+
+export const getMetadataForCurrency = (currency: SupportedCurrencyTag) => 
+  supportedCurrencies.find((c) => c.name === currency);

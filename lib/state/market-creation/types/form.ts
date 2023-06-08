@@ -34,6 +34,7 @@ import {
   IOYesNoAnswers,
 } from "./validation";
 import { tickersForAnswers } from "../util/tickers";
+import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 
 /**
  * This is the type of the full market creation form data that is used to create a market.
@@ -148,7 +149,7 @@ export const marketFormDataToExtrinsicParams = (
       tags: form.tags,
       categories: tickersForAnswers(form.answers),
     },
-    baseAsset: form.currency === "ZTG" ? { Ztg: null } : { ForeignAsset: 0 },
+    baseAsset: getMetadataForCurrency(form.currency).assetId,
   };
 
   if (form.moderation === "Permissionless") {

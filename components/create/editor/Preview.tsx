@@ -1,5 +1,8 @@
 import Decimal from "decimal.js";
-import { supportedCurrencies } from "lib/constants/supported-currencies";
+import {
+  getMetadataForCurrency,
+  supportedCurrencies,
+} from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChainTime } from "lib/state/chaintime";
@@ -44,7 +47,7 @@ export const MarketPreview = ({ editor }: MarketPreviewProps) => {
   }, [form, chainTime]);
 
   const { data: baseAssetPrice } = useAssetUsdPrice(
-    form.currency === "ZTG" ? { Ztg: null } : { ForeignAsset: 0 },
+    getMetadataForCurrency(form.currency).assetId,
   );
 
   const baseAssetLiquidityRow = form?.liquidity?.rows.find(

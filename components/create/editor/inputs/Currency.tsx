@@ -41,7 +41,7 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({
           >
             <div className="flex md:block items-center gap-6">
               <div className="flex w-20 md:justify-center md:items-center md:mb-6 md:w-auto">
-                <div className="relative w-20 h-20">
+                <div className="relative w-20 h-20 rounded-full overflow-hidden">
                   <Image
                     alt={`Currency token logo for ${currency.name}`}
                     fill

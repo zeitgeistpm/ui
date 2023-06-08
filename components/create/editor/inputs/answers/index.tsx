@@ -64,7 +64,7 @@ export const AnswersInput = ({
           }`}
           onClick={handleSelectType("categorical")}
         >
-          Options
+          Categorical
         </button>
 
         <button

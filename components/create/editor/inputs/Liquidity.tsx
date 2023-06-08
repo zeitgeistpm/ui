@@ -9,6 +9,7 @@ import { CurrencyTag, Liquidity } from "lib/state/market-creation/types/form";
 import { ChangeEventHandler, ReactNode } from "react";
 import { LuFileWarning } from "react-icons/lu";
 import { FormEvent } from "../types";
+import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 
 export type LiquidityInputProps = {
   name: string;
@@ -70,7 +71,7 @@ export const LiquidityInput = ({
   };
 
   const { data: baseAssetPrice } = useAssetUsdPrice(
-    currency === "ZTG" ? { Ztg: null } : { ForeignAsset: 0 },
+    getMetadataForCurrency(currency).assetId,
   );
 
   return (

@@ -231,10 +231,10 @@ export const MarketEditor = () => {
                 className="!text-left"
               >
                 <h4 className="text-base text-left mb-1">
-                  Options (Categorical)
+                  Outcomes (Categorical)
                 </h4>
                 <p className="text-gray-500 font-light text-sm text-left mb-4">
-                  Options will create a categorical market from the options you
+                  Outcomes will create a categorical market from the options you
                   specify.{" "}
                   <a
                     className="text-ztg-blue"
@@ -246,8 +246,9 @@ export const MarketEditor = () => {
                 </p>
                 <h4 className="text-base text-left mb-1">Scalar</h4>
                 <p className="text-gray-500 font-light text-sm text-left mb-4">
-                  A scalar market is a market where the outcome is a number or date in a
-                  the range specified by the lower(<b>short</b>) and upper(
+                  A scalar market is a market where the outcome is a number or
+                  date in a the range specified by the lower(<b>short</b>) and
+                  upper(
                   <b>long</b>) bound.{" "}
                   <a
                     className="text-ztg-blue"
