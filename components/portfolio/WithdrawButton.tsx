@@ -13,6 +13,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChain } from "lib/state/cross-chain";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
+import { countDecimals } from "lib/util/count-decimals";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
@@ -195,7 +196,11 @@ const WithdrawModal = ({
                     type="number"
                     className="w-full bg-transparent outline-none !text-center"
                     step="any"
-                    value={Number(Number(field.value).toFixed(3))}
+                    value={
+                      countDecimals(field.value ? Number(field.value) : 0) > 3
+                        ? Number(field.value).toFixed(3)
+                        : field.value
+                    }
                   />
                 );
               }}
