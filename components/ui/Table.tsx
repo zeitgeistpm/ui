@@ -406,7 +406,6 @@ const Table = ({
 
   const columnIsCollapsed = (columnAccessor: string) =>
     collapsedAccessors.has(columnAccessor);
-  console.log(columns);
   return (
     <>
       {data == null ? (
@@ -449,7 +448,9 @@ const Table = ({
                           className={`${
                             column.onSort
                               ? "flex justify-center"
-                              : "flex items-center gap-1"
+                              : column.infobox
+                              ? "flex items-center gap-1"
+                              : ""
                           }`}
                         >
                           {column.header}
