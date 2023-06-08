@@ -24,17 +24,13 @@ import { extrinsicCallback, signAndSend } from "lib/util/tx";
 
 import { useMemo, useState } from "react";
 
-export type RedeemButtonProps = { market: Market<IndexerContext> } & (
-  | { assetId: AssetId }
-  | { value: Decimal }
-);
+export type RedeemButtonProps = {
+  market: Market<IndexerContext>;
+  assetId: AssetId;
+};
 
 export const RedeemButton = (props: RedeemButtonProps) => {
-  if ("assetId" in props) {
-    return <RedeemButtonByAssetId {...props} />;
-  } else {
-    return <RedeemButtonByValue {...props} />;
-  }
+  return <RedeemButtonByAssetId {...props} />;
 };
 
 export default RedeemButton;
@@ -109,7 +105,7 @@ export const RedeemButtonByAssetId = ({
   return <RedeemButtonByValue market={market} value={value} />;
 };
 
-export const RedeemButtonByValue = ({
+const RedeemButtonByValue = ({
   market,
   value,
 }: {
@@ -120,11 +116,6 @@ export const RedeemButtonByValue = ({
   const wallet = useWallet();
   const signer = wallet?.getActiveSigner();
   const notificationStore = useNotifications();
-  const router = useRouter();
-  const walletAddress = wallet?.selectedAddress;
-  const addressFromUrl = Array.isArray(router.query.address)
-    ? router.query.address[0]
-    : router.query.address;
 
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [isRedeemed, setIsRedeemed] = useState(false);
@@ -166,9 +157,7 @@ export const RedeemButtonByValue = ({
       ) : (
         <SecondaryButton
           onClick={handleClick}
-          disabled={
-            isRedeeming || value.eq(0) || walletAddress !== addressFromUrl
-          }
+          disabled={isRedeeming || value.eq(0)}
         >
           Redeem Tokens
         </SecondaryButton>
