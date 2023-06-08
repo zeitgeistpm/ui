@@ -2614,6 +2614,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/js-priority-queue@npm:^0.0.6":
+  version: 0.0.6
+  resolution: "@types/js-priority-queue@npm:0.0.6"
+  checksum: 8850d3c648cd7fdfcbe1fbf063643acae6cbcf532ae1c6d4ee4759eed3d15201e1f6e6450708cf8c89c77c259a878de240dc70098247872abf82faf9b4a26f36
+  languageName: node
+  linkType: hard
+
 "@types/jsdom@npm:^20.0.0":
   version: 20.0.1
   resolution: "@types/jsdom@npm:20.0.1"
@@ -3126,6 +3133,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@types/flexsearch": ^0.7.2
     "@types/jest": ^29.5.0
+    "@types/js-priority-queue": ^0.0.6
     "@types/lodash-es": ^4.17.6
     "@types/lodash.merge": ^4.6.6
     "@types/object-hash": ^2.2.1
@@ -3159,6 +3167,7 @@ __metadata:
     jest-environment-jsdom: ^29.5.0
     jotai: ^2.0.4
     jotai-tanstack-query: ^0.7.0
+    js-priority-queue: ^0.1.5
     lodash.merge: ^4.6.2
     mobx: ^6.3.12
     mobx-react: ^7.2.1
@@ -7777,6 +7786,13 @@ __metadata:
     react:
       optional: true
   checksum: 8e32fa126ef18850a1ac9c25e1260bebf0cb79c704ed9c564236904c0a5f28064de9b6a901c395dfbf2aa47f5ae7600ae97e3acadcc79778eda94d92da3a0ded
+  languageName: node
+  linkType: hard
+
+"js-priority-queue@npm:^0.1.5":
+  version: 0.1.5
+  resolution: "js-priority-queue@npm:0.1.5"
+  checksum: 741a54456101e5625b8b19080b4e5cc329ebc443b21221f809afa807a2a2f7c0cbf717649166de079013753adc89e82b60cb3eeb02bb9250808ff8fc36bd7a00
   languageName: node
   linkType: hard
 
