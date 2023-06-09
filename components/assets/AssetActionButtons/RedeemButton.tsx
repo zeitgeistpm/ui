@@ -62,6 +62,8 @@ export const RedeemButtonByAssetId = ({
   const assetBalances = useAccountAssetBalances(balanceQueries);
 
   const value = useMemo(() => {
+    if (!signer?.address) return new Decimal(0);
+
     if (market.marketType.categorical) {
       const resolvedAssetIdString =
         market.outcomeAssets[Number(market.resolvedOutcome)];
@@ -70,8 +72,10 @@ export const RedeemButtonByAssetId = ({
         ? parseAssetId(resolvedAssetIdString).unrightOr(undefined)
         : undefined;
 
+      if (!resolvedAssetId) return new Decimal(0);
+
       const balance = assetBalances?.get(signer?.address, resolvedAssetId)?.data
-        .balance;
+        ?.balance;
       if (!balance) return new Decimal(0);
 
       return new Decimal(balance?.free.toString()).div(ZTG);

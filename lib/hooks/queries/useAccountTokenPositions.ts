@@ -17,7 +17,7 @@ export const useAccountTokenPositions = (filter?: {
 }) => {
   const [sdk, id] = useSdkv2();
 
-  return useQuery<AccountBalancesQuery["accountBalances"]>(
+  return useQuery(
     [id, rootKey, filter],
     async () => {
       if (sdk && isIndexedSdk(sdk) && filter) {

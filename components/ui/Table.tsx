@@ -322,7 +322,7 @@ const Table = ({
   testId,
 }: TableProps) => {
   const { rows, prepareRow } = useTable({ columns, data: data ?? [] });
-  const tableRef = useRef<HTMLTableElement>();
+  const tableRef = useRef<HTMLTableElement>(null);
   const [isOverflowing, setIsOverflowing] = useState<boolean>();
   const windowResizeEvent = useEvent(
     typeof window !== "undefined" ? window : undefined,
@@ -367,7 +367,7 @@ const Table = ({
   const handleSortClick = () => {};
 
   const handleLoadMore = () => {
-    onLoadMore();
+    onLoadMore && onLoadMore();
   };
 
   useEffect(() => {
@@ -377,6 +377,7 @@ const Table = ({
   const calcOverflow = () => {
     if (tableRef?.current) {
       const { clientWidth, scrollWidth, parentElement } = tableRef.current;
+      if (!parentElement) return;
       const isOverflowing =
         scrollWidth > parentElement.scrollWidth ||
         clientWidth > parentElement.clientWidth;
@@ -385,7 +386,11 @@ const Table = ({
       if (isOverflowing) {
         const collapseNext = columns
           .filter((col) => col.collapseOrder != null)
-          .sort((a, b) => a.collapseOrder - b.collapseOrder)
+          .sort((a, b) =>
+            a.collapseOrder && b.collapseOrder
+              ? a.collapseOrder - b.collapseOrder
+              : -1,
+          )
           .map((col) => col.accessor)
           .filter((accessor) => !collapsedAccessors.has(accessor))[0];
 
@@ -491,9 +496,8 @@ const Table = ({
                               value={cell.value}
                               rowHeight={rowHeightPx}
                               onClick={
-                                cell.column.onClick
-                                  ? () => cell.column.onClick(row.original)
-                                  : null
+                                cell.column.onClick &&
+                                cell.column.onClick(row.original)
                               }
                             />
                           );
