@@ -40,7 +40,7 @@ const JoinPoolForm = ({
     () => {
       if (isRpcSdk(sdk) && pool && poolSharesToReceive) {
         const formValue = getValues();
-        const maxAmountsIn = pool?.weights.map((asset, index) => {
+        const maxAmountsIn = pool?.weights.map((asset) => {
           const id = assetObjStringToId(asset.assetId);
           const assetAmount = formValue[id] ?? 0;
           return assetAmount === ""
@@ -76,8 +76,8 @@ const JoinPoolForm = ({
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       const changedByUser = type != null;
-
       const changedAsset = name;
+      if (!changedAsset) return;
       const userInput = value[changedAsset];
 
       if (name === "baseAssetPercentage" && changedByUser) {
@@ -150,7 +150,8 @@ const JoinPoolForm = ({
       <div className="flex flex-col gap-y-6 max-h-[250px] md:max-h-[400px] overflow-y-auto py-5">
         {pool?.weights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
-          const assetName = market?.categories[index]?.name ?? baseAssetTicker;
+          const assetName =
+            market?.categories?.[index]?.name ?? baseAssetTicker;
           const userAssetBalance =
             poolBalances?.[id]?.user.div(ZTG).toNumber() ?? 0;
 
@@ -202,14 +203,16 @@ const JoinPoolForm = ({
         type="range"
         {...register("baseAssetPercentage", { min: 0, value: "0" })}
       />
-      {market.status !== "Active" && (
+      {market?.status !== "Active" && (
         <div className="bg-provincial-pink p-4 rounded-md text-sm">
           Market is closed. Cannot provide liquidity for closed market
         </div>
       )}
       <FormTransactionButton
         disabled={
-          formState.isValid === false || isLoading || market.status !== "Active"
+          formState.isValid === false ||
+          isLoading ||
+          market?.status !== "Active"
         }
       >
         Join Pool

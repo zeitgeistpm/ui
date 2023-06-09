@@ -58,7 +58,7 @@ const ExitPoolForm = ({
 
   // filter out non-winning assets as they are deleted on chain
   const poolWeights =
-    market.status === "Resolved" && market.marketType.categorical
+    market?.status === "Resolved" && market.marketType.categorical
       ? pool?.weights.filter((weight) => {
           const assetId = parseAssetId(weight.assetId).unwrap();
 
@@ -72,7 +72,7 @@ const ExitPoolForm = ({
 
   const { send: exitPool, isLoading } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk) && pool) {
+      if (isRpcSdk(sdk) && pool && constants && poolWeights) {
         const formValue = getValues();
         const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
         const feeMultiplier = 1 - constants.swaps.exitFee;
@@ -135,6 +135,7 @@ const ExitPoolForm = ({
       } else {
         const changedAsset = name;
 
+        if (!changedAsset) return;
         const userInput = value[changedAsset];
         if (
           changedAsset != null &&
@@ -186,12 +187,12 @@ const ExitPoolForm = ({
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-y-6 max-h-[200px] md:max-h-[400px] overflow-y-auto py-5">
-        {poolWeights.map((asset, index) => {
+        {poolWeights?.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
           const assetName =
             poolWeights.length - 1 === index
               ? baseAssetTicker
-              : market?.categories[index]?.name;
+              : market?.categories?.[index]?.name;
 
           const poolAssetBalance =
             poolBalances?.[id]?.pool.div(ZTG) ?? new Decimal(0);
@@ -232,7 +233,7 @@ const ExitPoolForm = ({
                     } else if (value <= 0) {
                       return "Value cannot be zero or less";
                     } else if (
-                      market.status.toLowerCase() !== "resolved" &&
+                      market?.status.toLowerCase() !== "resolved" &&
                       poolAssetBalance.minus(value).lessThanOrEqualTo(0.01)
                     ) {
                       return "Pool cannot be emptied completely before the market resolves";
