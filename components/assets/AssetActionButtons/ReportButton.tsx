@@ -22,7 +22,7 @@ const ReportButton = ({
   assetId,
 }: {
   market: Market<IndexerContext>;
-  assetId: ScalarAssetId | CategoricalAssetId;
+  assetId?: ScalarAssetId | CategoricalAssetId;
 }) => {
   const [sdk] = useSdkv2();
   const wallet = useWallet();
@@ -32,7 +32,9 @@ const ReportButton = ({
   if (!market) return null;
   const { data: stage } = useMarketStage(market);
 
-  const outcomeName = market.categories?.[getIndexOf(assetId)]?.name;
+  const outcomeName = assetId
+    ? market.categories?.[getIndexOf(assetId)]?.name
+    : "";
 
   const connectedWalletIsOracle =
     market.oracle === wallet.activeAccount?.address;

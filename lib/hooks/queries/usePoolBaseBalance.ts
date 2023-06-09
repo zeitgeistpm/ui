@@ -3,7 +3,7 @@ import { useBalance } from "./useBalance";
 import { usePool } from "./usePool";
 
 export const usePoolBaseBalance = (poolId?: number, blockNumber?: number) => {
-  const { data: pool } = usePool({ poolId });
+  const { data: pool } = usePool(poolId != null ? { poolId } : undefined);
 
   const balanceQuery = useBalance(
     pool?.accountId,

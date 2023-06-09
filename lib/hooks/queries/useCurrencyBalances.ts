@@ -22,6 +22,7 @@ export const useCurrencyBalances = (address: string) => {
   const { apis } = useCrossChainApis();
   const { data: constants } = useChainConstants();
 
+  const enabled = !!sdk && !!address && !!constants && isRpcSdk(sdk);
   const query = useQuery(
     [
       id,
@@ -31,7 +32,7 @@ export const useCurrencyBalances = (address: string) => {
       constants,
     ],
     async () => {
-      if (isRpcSdk(sdk)) {
+      if (enabled) {
         const assetIds = Object.keys(FOREIGN_ASSET_METADATA);
 
         const metadata = await sdk.api.query.assetRegistry.metadata.multi(
@@ -80,7 +81,7 @@ export const useCurrencyBalances = (address: string) => {
     },
     {
       keepPreviousData: true,
-      enabled: Boolean(sdk && address && isRpcSdk(sdk)),
+      enabled: enabled,
     },
   );
 

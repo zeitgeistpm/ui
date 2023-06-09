@@ -17,7 +17,7 @@ const BuySellFullSetsButton = ({
   buttonClassName?: string;
 }) => {
   const { data: market } = useMarket({ marketId });
-  const enabled = useMarketIsTradingEnabled(market);
+  const enabled = useMarketIsTradingEnabled(market ?? undefined);
 
   const [isOpen, setIsOpen] = useState(false);
 

@@ -5,7 +5,7 @@ import { Icon } from "react-feather";
 
 export interface MenuItemMobileProps {
   textLabel?: string;
-  href?: string;
+  href: string;
   active?: boolean;
   open?: boolean;
   setMenuOpen?: (boolean) => void;
@@ -58,7 +58,7 @@ export const MenuItemMobile: FC<MenuItemMobileProps> = ({
     <WrapComponent href={href}>
       <button
         className="flex flex-col center"
-        onClick={() => setMenuOpen(false)}
+        onClick={() => setMenuOpen && setMenuOpen(false)}
       >
         <div className="whitespace-nowrap text-black text-lg">{textLabel}</div>
       </button>
