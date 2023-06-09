@@ -13,6 +13,7 @@ import { AmountInput } from "./inputs";
 import Paginator from "./Paginator";
 import PercentageChange from "./PercentageChange";
 import { ChartData } from "./TimeSeriesChart";
+import { InfoPopover } from "components/ui/InfoPopover";
 
 interface TableProps {
   data: TableData[];
@@ -39,6 +40,7 @@ export interface TableColumn {
   initialSort?: "asc" | "desc";
   onClick?: (row: TableData) => void;
   alignment?: string;
+  infobox?: string;
   // if specified the table will hide this column if it is overflowing
   // lower number columns will be hidden first
   collapseOrder?: number;
@@ -409,7 +411,6 @@ const Table = ({
 
   const columnIsCollapsed = (columnAccessor: string) =>
     collapsedAccessors.has(columnAccessor);
-
   return (
     <>
       {data == null ? (
@@ -450,7 +451,11 @@ const Table = ({
                       >
                         <div
                           className={`${
-                            column.onSort ? "flex justify-center" : ""
+                            column.onSort
+                              ? "flex justify-center"
+                              : column.infobox
+                              ? "flex items-center gap-1"
+                              : ""
                           }`}
                         >
                           {column.header}
@@ -463,6 +468,9 @@ const Table = ({
                             />
                           ) : (
                             <></>
+                          )}
+                          {column.infobox && (
+                            <InfoPopover children={column.infobox} />
                           )}
                         </div>
                       </th>
