@@ -218,10 +218,7 @@ export const MarketPositions = ({
                         IOMarketOutcomeAssetId.is(assetId) ? (
                         <AssetTradingButtons assetId={assetId} />
                       ) : marketStage?.type === "Resolved" ? (
-                        <RedeemButton
-                          market={market}
-                          value={userBalance.mul(price).div(ZTG)}
-                        />
+                        <RedeemButton market={market} assetId={assetId} />
                       ) : IOMarketOutcomeAssetId.is(assetId) &&
                         marketStage?.type === "Reported" ? (
                         <DisputeButton market={market} assetId={assetId} />
