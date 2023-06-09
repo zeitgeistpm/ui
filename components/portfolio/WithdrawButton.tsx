@@ -199,7 +199,7 @@ const WithdrawModal = ({
                     value={
                       countDecimals(field.value ? Number(field.value) : 0) > 3
                         ? Number(field.value).toFixed(3)
-                        : field.value
+                        : field.value ?? 0
                     }
                   />
                 );
