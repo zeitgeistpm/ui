@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useSdkv2 } from "../useSdkv2";
 import { useAccountPoolAssetBalances } from "./useAccountPoolAssetBalances";
 import { useBalance } from "./useBalance";
@@ -17,10 +18,10 @@ export const usePoolLiquidity = (filter?: UseMarketFilter) => {
   const { data: spotPrices } = useMarketSpotPrices(market?.marketId);
   const { data: balances } = useAccountPoolAssetBalances(
     market?.pool?.accountId,
-    market?.pool,
+    market?.pool ?? undefined,
   );
 
-  const baseAssetId = parseAssetId(market?.baseAsset).unrightOr(null);
+  const baseAssetId = parseAssetIdString(market?.baseAsset);
   const { data: baseAssetBalance } = useBalance(
     market?.pool?.accountId,
     baseAssetId,

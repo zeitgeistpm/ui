@@ -13,6 +13,7 @@ import Skeleton from "components/ui/Skeleton";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { parseAssetId } from "@zeitgeistpm/sdk-next";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -210,9 +211,7 @@ const MarketCard = ({
   const isProposed = () => {
     return creation === "Advised" && status === "Proposed" ? true : false;
   };
-  const { data: metadata } = useAssetMetadata(
-    parseAssetId(baseAsset).unrightOr(null),
-  );
+  const { data: metadata } = useAssetMetadata(parseAssetIdString(baseAsset));
 
   const isYesNoMarket =
     outcomes.length === 2 &&

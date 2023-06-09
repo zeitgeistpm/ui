@@ -37,7 +37,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
     ref: mainRef,
   } = useResizeDetector({ refreshMode: "debounce", refreshRate: 50 });
 
-  const contentRef = useRef<HTMLDivElement>();
+  const contentRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="relative flex min-h-screen justify-evenly overflow-hidden">

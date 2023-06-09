@@ -10,6 +10,7 @@ import {
 import TradeResult from "components/markets/TradeResult";
 import Decimal from "decimal.js";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
 import {
   useTradeItem,
@@ -77,6 +78,8 @@ const TradeForm = () => {
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
 
   const { data: tradeItemState } = useTradeItemState(tradeItem);
+
+  const { data: constants } = useChainConstants();
 
   const {
     poolBaseBalance,
@@ -575,7 +578,7 @@ const TradeForm = () => {
                 Confirm {`${capitalize(tradeItem.action)}`}
               </div>
               <div className="center font-normal text-ztg-12-120 h-[20px]">
-                Trading fee: {fee} {baseSymbol}
+                Trading fee: {fee} {constants.tokenSymbol}
               </div>
             </TransactionButton>
           </div>

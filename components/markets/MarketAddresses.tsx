@@ -20,10 +20,10 @@ const AddressInspectContent = ({
   identity,
 }: {
   address: string;
-  identity: UserIdentity;
+  identity?: UserIdentity;
 }) => {
   const showSocialMediaRow: boolean =
-    identity.twitter?.length > 0 || identity.discord?.length > 0;
+    identity?.twitter?.length !== 0 || identity?.discord?.length !== 0;
 
   return (
     <div>
@@ -45,7 +45,7 @@ const AddressInspectContent = ({
       </div>
       {showSocialMediaRow ? (
         <div className="flex flex-row  border-sky-600 border-b-1 py-ztg-15">
-          {identity.twitter?.length > 0 ? (
+          {identity && identity.twitter?.length > 0 ? (
             <a
               className="flex items-center mr-ztg-40"
               href={`https://twitter.com/${identity.twitter}`}
@@ -53,12 +53,12 @@ const AddressInspectContent = ({
               rel="noreferrer"
             >
               <TwitterIcon />
-              <span className="ml-ztg-10 ">{identity.twitter}</span>
+              <span className="ml-ztg-10 ">{identity?.twitter}</span>
             </a>
           ) : (
             <></>
           )}
-          {identity.discord?.length > 0 ? (
+          {identity && identity?.discord?.length > 0 ? (
             <div className="flex items-center">
               <DiscordIcon />
               <span className="ml-ztg-10">{identity.discord}</span>
@@ -115,7 +115,7 @@ const AddressDetails = ({
   const { data: identity } = useIdentity(address);
 
   const displayName =
-    identity?.displayName?.length > 0
+    identity?.displayName?.length !== 0
       ? identity?.displayName
       : shortenAddress(address, 8, 8);
 
@@ -147,7 +147,10 @@ const AddressDetails = ({
               name={identity?.displayName ?? ""}
               judgement={identity?.judgement}
             />
-            <AddressInspectContent address={address} identity={identity} />
+            <AddressInspectContent
+              address={address}
+              identity={identity ?? undefined}
+            />
           </div>
         </Dialog.Panel>
       </Modal>

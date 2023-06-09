@@ -38,7 +38,7 @@ export type ChainConstants = {
 export const useChainConstants = () => {
   const [sdk, id] = useSdkv2();
 
-  return useQuery<ChainConstants>(
+  return useQuery(
     [id, "chain-constants"],
     async () => {
       if (!isRpcSdk(sdk)) return null;

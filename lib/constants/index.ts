@@ -5,6 +5,8 @@ import { EndpointOption, Environment } from "../types";
 
 export const ZTG = 10 ** 10;
 
+export const MIN_USD_DISPLAY_AMOUNT = 0.01;
+
 export const MAX_IN_OUT_RATIO = new Decimal(1).div(3).toString();
 
 export const DEFAULT_SLIPPAGE_PERCENTAGE = 1;
@@ -88,7 +90,7 @@ export const environment = getEnvironment();
 
 const getGraphQlEndpoint = (): string => {
   const endpoint = graphQlEndpoints.find((e) => e.environment === environment);
-  return endpoint.value;
+  return endpoint!.value;
 };
 
 export const graphQlEndpoint = getGraphQlEndpoint();
