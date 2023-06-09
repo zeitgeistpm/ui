@@ -5,7 +5,7 @@ const MarketPositionHeader = ({
   question,
 }: {
   marketId: number;
-  question: string;
+  question?: string;
 }) => {
   return (
     <h2 className="text-ztg-16-150 text-center mb-6">

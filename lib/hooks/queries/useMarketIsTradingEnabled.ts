@@ -15,14 +15,16 @@ export const useMarketIsTradingEnabled = (
 ) => {
   const [sdk, id] = useSdkv2();
 
+  const enabled = !!sdk && !!market;
   const { data: isEnabled } = useQuery(
     [id, rootKey, market?.marketId],
     async () => {
+      if (!enabled) return;
       const status = isIndexedData(market)
         ? market.status
-        : market.status.toString();
+        : market?.status.toString();
       return (
-        status.toLowerCase() === "active" &&
+        status?.toLowerCase() === "active" &&
         (await hasPool<Context>(sdk, market))
       );
     },

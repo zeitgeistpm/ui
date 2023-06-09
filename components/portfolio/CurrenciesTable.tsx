@@ -94,33 +94,42 @@ const CurrenciesTable = ({ address }: { address: string }) => {
   const { data: balances } = useCurrencyBalances(address);
   const { data: constants } = useChainConstants();
 
-  const tableData: TableData[] = balances
-    ?.sort((a, b) => b.balance.minus(a.balance).toNumber())
-    .map((balance) => ({
-      chain: (
-        <ImageAndText
-          name={balance.chain}
-          imagePath={CHAIN_IMAGES[balance.chain]}
-        />
-      ),
-      asset: (
-        <ImageAndText
-          name={balance.symbol}
-          imagePath={lookupAssetImagePath(balance.foreignAssetId)}
-        />
-      ),
-      balance: balance.balance.div(ZTG).toFixed(3),
-      button: (
-        <MoveButton
-          chain={balance.chain}
-          sourceChain={balance.sourceChain}
-          token={balance.symbol}
-          foreignAssetId={balance.foreignAssetId}
-          balance={balance.balance}
-          nativeToken={constants.tokenSymbol}
-        />
-      ),
-    }));
+  const tableData: TableData[] =
+    balances
+      ?.sort((a, b) => b.balance.minus(a.balance).toNumber())
+      .map((balance) => ({
+        chain: (
+          <ImageAndText
+            name={balance.chain}
+            imagePath={CHAIN_IMAGES[balance.chain]}
+          />
+        ),
+        asset: (
+          <>
+            {balance.foreignAssetId && (
+              <ImageAndText
+                name={balance.symbol}
+                imagePath={lookupAssetImagePath(balance.foreignAssetId)!}
+              />
+            )}
+          </>
+        ),
+        balance: balance.balance.div(ZTG).toFixed(3),
+        button: (
+          <>
+            {balance.foreignAssetId && constants && (
+              <MoveButton
+                chain={balance.chain}
+                sourceChain={balance.sourceChain}
+                token={balance.symbol}
+                foreignAssetId={balance.foreignAssetId}
+                balance={balance.balance}
+                nativeToken={constants.tokenSymbol}
+              />
+            )}
+          </>
+        ),
+      })) ?? [];
 
   return (
     <div>

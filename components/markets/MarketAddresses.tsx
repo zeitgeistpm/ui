@@ -23,7 +23,7 @@ const AddressInspectContent = ({
   identity?: UserIdentity;
 }) => {
   const showSocialMediaRow: boolean =
-    identity?.twitter?.length !== 0 || identity?.discord?.length !== 0;
+    !!identity?.twitter || !!identity?.discord;
 
   return (
     <div>
@@ -45,7 +45,7 @@ const AddressInspectContent = ({
       </div>
       {showSocialMediaRow ? (
         <div className="flex flex-row  border-sky-600 border-b-1 py-ztg-15">
-          {identity && identity.twitter?.length > 0 ? (
+          {identity?.twitter && identity.twitter.length > 0 ? (
             <a
               className="flex items-center mr-ztg-40"
               href={`https://twitter.com/${identity.twitter}`}
@@ -58,7 +58,7 @@ const AddressInspectContent = ({
           ) : (
             <></>
           )}
-          {identity && identity?.discord?.length > 0 ? (
+          {identity?.discord && identity.discord.length > 0 ? (
             <div className="flex items-center">
               <DiscordIcon />
               <span className="ml-ztg-10">{identity.discord}</span>
@@ -119,6 +119,8 @@ const AddressDetails = ({
       ? identity?.displayName
       : shortenAddress(address, 8, 8);
 
+  console.log(identity);
+
   return (
     <>
       <div
@@ -143,10 +145,12 @@ const AddressDetails = ({
         <Dialog.Panel className="bg-white rounded-ztg-10 p-[15px]">
           <div>
             Address Details
-            <AddressModalHeader
-              name={identity?.displayName ?? ""}
-              judgement={identity?.judgement}
-            />
+            {identity?.judgement && (
+              <AddressModalHeader
+                name={identity.displayName}
+                judgement={identity.judgement}
+              />
+            )}
             <AddressInspectContent
               address={address}
               identity={identity ?? undefined}

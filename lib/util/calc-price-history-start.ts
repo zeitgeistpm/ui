@@ -9,7 +9,7 @@ export const calcPriceHistoryStartDate = (
 ) => {
   if (chartFilter.label === "All") return poolCreationDate;
   if (marketStatus === "Resolved" && resolutionDate) {
-    const startDate = resolutionDate.getTime() - chartFilter.timePeriodMS;
+    const startDate = resolutionDate.getTime() - chartFilter.timePeriodMS!;
 
     return startDate > poolCreationDate.getTime()
       ? new Date(startDate)
@@ -17,7 +17,7 @@ export const calcPriceHistoryStartDate = (
   } else {
     const now = new Date();
 
-    const startDate = now.getTime() - chartFilter.timePeriodMS;
+    const startDate = now.getTime() - chartFilter.timePeriodMS!;
 
     return startDate > poolCreationDate.getTime()
       ? new Date(startDate)

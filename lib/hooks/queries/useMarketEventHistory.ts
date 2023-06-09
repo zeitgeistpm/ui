@@ -49,12 +49,12 @@ export const useMarketEventHistory = (
         const report = market.report;
         const start = {
           block:
-            market.period?.block !== null ? Number(market.period?.block[0]) : 0,
+            market.period?.block != null ? Number(market.period?.block[0]) : 0,
           timestamp: Number(market.period?.start),
         };
         const end = {
           block:
-            market.period?.block !== null ? Number(market.period?.block[1]) : 0,
+            market.period?.block != null ? Number(market.period?.block[1]) : 0,
           timestamp: Number(market.period?.end),
         };
         const resolvedOutcome = market?.resolvedOutcome;
@@ -70,7 +70,7 @@ export const useMarketEventHistory = (
             sdk.indexer.client,
             Number(marketId),
           );
-          resolutionTimestamp = new Date(timestamp);
+          if (timestamp) resolutionTimestamp = new Date(timestamp);
           resolutionBlock = blockNumber;
         }
 
