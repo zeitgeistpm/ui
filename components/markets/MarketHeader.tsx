@@ -32,7 +32,7 @@ const UserIdentity: FC<
 > = ({ user, className }) => {
   const { data: identity } = useIdentity(user ?? "");
   const displayName =
-    identity?.displayName?.length > 0
+    identity && identity.displayName?.length !== 0
       ? identity.displayName
       : shortenAddress(user, 10, 10);
   return (

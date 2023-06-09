@@ -11,5 +11,5 @@ export interface UserIdentity {
   displayName: string;
   discord: string;
   twitter: string;
-  judgement: Judgement;
+  judgement?: Judgement;
 }
