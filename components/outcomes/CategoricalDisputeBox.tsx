@@ -80,43 +80,43 @@ const CategoricalDisputeBox = ({
   };
 
   return (
-    <>
-      <div className="text-ztg-12-150 mb-ztg-5">
+    <div className="p-[30px] flex flex-col items-center gap-y-3">
+      <div className="font-bold text-[22px]">Dispute Outcome</div>
+      <div className="text-center mb-[20px]">
         Bond will start at {disputeBond} {tokenSymbol}, increasing by{" "}
-        {disputeFactor} {tokenSymbol} for each dispute
-      </div>
-      <div className="text-ztg-12-150 mb-ztg-5 font-bold">
-        Bonds will be slashed if the reported outcome is deemed to be incorrect
+        {disputeFactor} {tokenSymbol} for each dispute.{" "}
+        <span className="font-bold">
+          Bonds will be slashed if the reported outcome is deemed to be
+          incorrect
+        </span>
       </div>
 
-      <div className="my-ztg-10">
-        <div className="h-ztg-18 flex justify-between text-ztg-12-150 font-bold text-sky-600">
-          <span>Previous Report:</span>
-          <span className="font-mono">{getPreviousReportName()}</span>
-        </div>
-        <div className="h-ztg-18 flex justify-between text-ztg-12-150 font-bold text-sky-600">
-          <span>New Report:</span>
-          <span className="font-mono">{assetName}</span>
-        </div>
-        {bondAmount !== disputeBond &&
-        bondAmount !== undefined &&
-        disputeFactor !== undefined ? (
-          <div className="h-ztg-18 flex justify-between text-ztg-12-150 font-bold text-sky-600 ">
-            <span>Previous Bond:</span>
-            <span className="font-mono">{bondAmount - disputeFactor}</span>
-          </div>
-        ) : (
-          <></>
-        )}
+      <div className="flex flex-col item-center text-center">
+        <span className="text-sky-600 text-[14px]">Previous Report:</span>
+        <span className="">{getPreviousReportName()}</span>
       </div>
+      <div className="flex flex-col item-center text-center">
+        <span className="text-sky-600 text-[14px]">New Report:</span>
+        <span className="">{assetName}</span>
+      </div>
+      {bondAmount !== disputeBond &&
+      bondAmount !== undefined &&
+      disputeFactor !== undefined ? (
+        <div className="flex flex-col item-center text-center">
+          <span className="text-sky-600 text-[14px]">Previous Bond:</span>
+          <span className="">{bondAmount - disputeFactor}</span>
+        </div>
+      ) : (
+        <></>
+      )}
       <TransactionButton
-        className="my-ztg-10 shadow-ztg-2"
+        className="mb-ztg-10 mt-[20px]"
         onClick={dispute}
         disabled={isLoading}
       >
         Confirm Dispute
       </TransactionButton>
-    </>
+    </div>
   );
 };
 
