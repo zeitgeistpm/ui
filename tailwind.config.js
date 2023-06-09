@@ -25,6 +25,7 @@ module.exports = {
     "./layouts/**/*.{js,ts,jsx,tsx}",
     "./campaigns/**/*.{js,ts,jsx,tsx}",
   ],
+  safelist: ["bg-polkadot", "text-polkadot"],
   darkMode: "class",
   theme: {
     fontFamily: {
