@@ -115,7 +115,7 @@ const WithdrawModal = ({
 
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
     () => {
-      if (isRpcSdk(sdk)) {
+      if (isRpcSdk(sdk) && wallet.activeAccount) {
         const formValue = getValues();
         const amount = formValue.amount;
 
@@ -234,11 +234,11 @@ const WithdrawModal = ({
           </div>
           <div className="center font-normal text-ztg-12-120 mb-[16px] text-sky-600">
             Zeitgeist fee:
-            <span className="text-black ml-1">{fee.div(ZTG).toFixed(3)}</span>
+            <span className="text-black ml-1">{fee?.div(ZTG).toFixed(3)}</span>
           </div>
           <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
             {toChain} fee:
-            <span className="text-black ml-1">{chain.withdrawFee}</span>
+            <span className="text-black ml-1">{chain?.withdrawFee}</span>
           </div>
           <FormTransactionButton
             className="w-full max-w-[250px]"

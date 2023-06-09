@@ -124,7 +124,7 @@ const DepositModal = ({
       if (!changedByUser) return;
 
       //assumes source chain fee is paid in currency that is being transferred
-      const maxTransferAmount = balance.minus(fee.mul(1.01)); //add 1% buffer to fee
+      const maxTransferAmount = balance.minus(fee?.mul(1.01) ?? 0); //add 1% buffer to fee
       if (name === "percentage") {
         setValue(
           "amount",
@@ -207,7 +207,7 @@ const DepositModal = ({
           <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
             {sourceChain} fee:
             <span className="text-black ml-1">
-              {fee.div(ZTG).toFixed(3)} {tokenSymbol}
+              {fee ? fee.div(ZTG).toFixed(3) : 0} {tokenSymbol}
             </span>
           </div>
           <FormTransactionButton
