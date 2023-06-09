@@ -38,9 +38,10 @@ const ScalarDisputeBox = ({
   const wallet = useWallet();
   const signer = wallet.getActiveSigner();
 
-  const bondAmount = disputes
-    ? disputeBond + disputes.length * disputeFactor
-    : disputeBond;
+  const bondAmount =
+    disputes && disputeBond && disputeFactor
+      ? disputeBond + disputes.length * disputeFactor
+      : disputeBond;
 
   const bounds = getScalarBounds(market).unwrap();
 
@@ -68,7 +69,7 @@ const ScalarDisputeBox = ({
   };
 
   const handleSignTransaction = async () => {
-    if (!isRpcSdk(sdk)) return;
+    if (!isRpcSdk(sdk) || !signer) return;
     const outcomeReport = {
       Scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
     };
