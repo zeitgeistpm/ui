@@ -47,7 +47,7 @@ export const WizardStepper = <T extends WizardStep<any>>({
           }}
         />
         <div
-          className={`absolute -z-20 transiton-all ease-in-out duration-300 bg-gray-200 left-[calc(0px+theme(space.12))] top-4 w-[calc(100%-theme(space.24))]`}
+          className={`absolute -z-20 transition-all ease-in-out duration-300 bg-gray-200 left-[calc(0px+theme(space.12))] top-4 w-[calc(100%-theme(space.24))]`}
           style={{
             height: "1px",
             transform: `scaleX(100%)`,
