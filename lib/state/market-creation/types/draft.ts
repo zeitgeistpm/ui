@@ -12,13 +12,35 @@ import { MarketCreationStep, MarketCreationStepType } from "./step";
  *  market creation session draft.
  */
 export type MarketDraftState = {
+  /**
+   * The form data of the draft.
+   */
   form: Partial<MarketFormData>;
+  /**
+   * Whether the draft is in wizard mode or not.
+   */
   isWizard: boolean;
+  /**
+   * The current step of the draft in wizard mode.
+   */
   currentStep: MarketCreationStep;
+  /**
+   * The touch state of the form pr field.
+   */
   touchState: Partial<Record<keyof MarketFormData, boolean>>;
+  /**
+   * The reach state of the steps.
+   * Has a step in the editing process been reached.
+   */
   stepReachState: Partial<Record<MarketCreationStepType, boolean>>;
-  marketId?: number;
+  /**
+   * Whether the market has been published or not.
+   */
   isPublished: boolean;
+  /**
+   * The id of the market if it has been published.
+   */
+  marketId?: number;
 };
 
 /**

@@ -22,6 +22,10 @@ import {
 import { useMarketCreationFormValidator } from "./types/validation";
 import { tickersForAnswers } from "./util/tickers";
 
+/**
+ * The market draft editor.
+ * Is a union of the base editor and the current state of the form which can be partial and invalid or full data and valid.
+ */
 export type MarketDraftEditor = BaseMarketDraftEditor &
   (ValidFormState | InvalidFormState);
 
@@ -54,7 +58,7 @@ export type BaseMarketDraftEditor = {
    */
   isPublished: boolean;
   /**
-   * The market id of the market. Will be set when its published succesfully.
+   * The market id of the market. Will be set when its published successfully.
    */
   marketId?: number;
   /**
@@ -129,7 +133,7 @@ export type InvalidFormState = {
  * The config for the market draft editor.
  * Simple interface for the current state of the market draft and a function to update the state.
  *
- * @note Usefull if we want to have editing of multiple drafts from a list of drafts and can change the current draft.
+ * @note Useful if we want to have editing of multiple drafts from a list of drafts and can change the current draft.
  */
 export type MarketDraftEditorConfig = {
   draft: MarketDraft.MarketDraftState;
@@ -181,7 +185,6 @@ export const useMarketDraftEditor = ({
 
   const steps = marketCreationSteps.map((step) => {
     const keys = stepFormKeys[step.label];
-
     const reached = draft.stepReachState[step.label] || false;
     const isValid = keys.every((key) => fieldsState[key].isValid);
     const isTouched = keys.some((key) => draft.touchState[key]);
@@ -221,7 +224,7 @@ export const useMarketDraftEditor = ({
       const firstInvalidStep = steps.find((step) => !step.isValid);
       newDraft.currentStep = firstInvalidStep || draft.currentStep;
     }
-    update(newDraft);
+    update({ ...newDraft });
   };
 
   const setStep = (step: MarketCreationStep) =>
@@ -305,27 +308,27 @@ export const useMarketDraftEditor = ({
   const prevAnswersLength = usePrevious(draft.form.answers?.answers?.length);
 
   useEffect(() => {
-    const baseAmmount = minBaseLiquidity[draft.form.currency]
+    const baseAmount = minBaseLiquidity[draft.form.currency]
       ? `${minBaseLiquidity[draft.form.currency] / 2}`
       : "100";
 
     const baseWeight = 64;
     const numOutcomes = draft.form.answers.answers.length;
     const ratio = 1 / numOutcomes;
-    const baseAssetLiquidty = last(draft.form.liquidity?.rows);
+    const baseAssetLiquidity = last(draft.form.liquidity?.rows);
     const reset =
       prevAnswersLength !== numOutcomes || prevCurrency !== draft.form.currency;
 
     const tickers = tickersForAnswers(draft.form.answers);
 
     const rows = [
-      ...draft.form.answers.answers.map((answer, index) => {
+      ...draft.form.answers.answers.map((_, index) => {
         const liquidity = draft.form.liquidity?.rows[index];
 
         const amount = new Decimal(
           reset
-            ? baseAmmount
-            : draft.form.liquidity?.rows[index]?.amount || baseAmmount,
+            ? baseAmount
+            : draft.form.liquidity?.rows[index]?.amount || baseAmount,
         );
 
         const price = reset
@@ -350,12 +353,12 @@ export const useMarketDraftEditor = ({
       {
         asset: draft.form.currency,
         weight: baseWeight.toString(),
-        amount: reset ? baseAmmount : baseAssetLiquidty?.amount || baseAmmount,
+        amount: reset ? baseAmount : baseAssetLiquidity?.amount || baseAmount,
         price: {
           price: "1",
           locked: true,
         },
-        value: reset ? baseAmmount : baseAssetLiquidty?.value || baseAmmount,
+        value: reset ? baseAmount : baseAssetLiquidity?.value || baseAmount,
       },
     ];
 

@@ -277,7 +277,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
               </div>
 
               {editor.isWizard && (
-                <div className="mt-4 md:mt-0 flex justify-center">
+                <div className="mt-14 md:mt-0 flex justify-center">
                   <button
                     className={`
                     md:absolute left-0 top-[50%] md:translate-x-[-110%] md:translate-y-[-50%] border-gray-100 text-sm border-2 
