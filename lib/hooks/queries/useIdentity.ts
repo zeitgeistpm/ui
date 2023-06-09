@@ -19,7 +19,7 @@ export const useIdentity = (address?: string) => {
         const indentityInfo =
           identity.isNone === false
             ? (identity.value as any).get("info")
-            : null;
+            : undefined;
         if (indentityInfo) {
           const textDecoder = new TextDecoder();
 
@@ -56,7 +56,6 @@ export const useIdentity = (address?: string) => {
             displayName: "",
             twitter: "",
             discord: "",
-            judgement: null,
           };
         }
       }

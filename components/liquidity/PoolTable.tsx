@@ -8,9 +8,7 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { usePool } from "lib/hooks/queries/usePool";
 import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
-import ManageLiquidityButton from "./ManageLiquidityButton";
-import { Unpacked } from "@zeitgeistpm/utility/dist/array";
-import { useMemo } from "react";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 
 const poolTableColums: TableColumn[] = [
   {
@@ -53,7 +51,7 @@ const PoolTable = ({
     let amount: Decimal | undefined;
     let usdValue: Decimal | undefined;
     let category: { color?: string; name?: string };
-    const assetId = parseAssetId(asset.assetId).unrightOr(null);
+    const assetId = parseAssetIdString(asset?.assetId);
 
     if (IOBaseAssetId.is(assetId)) {
       amount = basePoolBalance ?? undefined;

@@ -68,6 +68,7 @@ import { calculateMarketCost } from "lib/util/market";
 import { extrinsicCallback } from "lib/util/tx";
 import dynamic from "next/dynamic";
 import Skeleton from "components/ui/Skeleton";
+import { observer } from "mobx-react";
 
 const QuillEditor = dynamic(() => import("../components/ui/QuillEditor"), {
   ssr: false,
@@ -138,7 +139,7 @@ const CreatePage: NextPage = () => {
   return <Inner sdkv1={sdk} />;
 };
 
-const Inner = ({ sdkv1 }: { sdkv1: SDK }) => {
+const Inner = observer(({ sdkv1 }: { sdkv1: SDK }) => {
   const chainTime = useChainTime();
   const notificationStore = useNotifications();
   const [sdk] = useSdkv2();
@@ -886,6 +887,6 @@ const Inner = ({ sdkv1 }: { sdkv1: SDK }) => {
       </Modal>
     </form>
   );
-};
+});
 
 export default CreatePage;

@@ -202,6 +202,11 @@ const JoinPoolForm = ({
         type="range"
         {...register("baseAssetPercentage", { min: 0, value: "0" })}
       />
+      {market.status !== "Active" && (
+        <div className="bg-provincial-pink p-4 rounded-md text-sm">
+          Market is closed. Cannot provide liquidity for closed market
+        </div>
+      )}
       <FormTransactionButton
         disabled={
           formState.isValid === false || isLoading || market.status !== "Active"

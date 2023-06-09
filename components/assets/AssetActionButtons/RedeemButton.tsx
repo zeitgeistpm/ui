@@ -23,17 +23,13 @@ import { extrinsicCallback, signAndSend } from "lib/util/tx";
 
 import { useMemo, useState } from "react";
 
-export type RedeemButtonProps = { market: Market<IndexerContext> } & (
-  | { assetId: AssetId }
-  | { value: Decimal }
-);
+export type RedeemButtonProps = {
+  market: Market<IndexerContext>;
+  assetId: AssetId;
+};
 
 export const RedeemButton = (props: RedeemButtonProps) => {
-  if ("assetId" in props) {
-    return <RedeemButtonByAssetId {...props} />;
-  } else {
-    return <RedeemButtonByValue {...props} />;
-  }
+  return <RedeemButtonByAssetId {...props} />;
 };
 
 export default RedeemButton;
@@ -66,6 +62,8 @@ export const RedeemButtonByAssetId = ({
   const assetBalances = useAccountAssetBalances(balanceQueries);
 
   const value = useMemo(() => {
+    if (!signer?.address) return new Decimal(0);
+
     if (market.marketType.categorical) {
       const resolvedAssetIdString =
         market.outcomeAssets[Number(market.resolvedOutcome)];
@@ -74,8 +72,10 @@ export const RedeemButtonByAssetId = ({
         ? parseAssetId(resolvedAssetIdString).unrightOr(undefined)
         : undefined;
 
+      if (!resolvedAssetId) return new Decimal(0);
+
       const balance = assetBalances?.get(signer?.address, resolvedAssetId)?.data
-        .balance;
+        ?.balance;
       if (!balance) return new Decimal(0);
 
       return new Decimal(balance?.free.toString()).div(ZTG);
@@ -108,7 +108,7 @@ export const RedeemButtonByAssetId = ({
   return <RedeemButtonByValue market={market} value={value} />;
 };
 
-export const RedeemButtonByValue = ({
+const RedeemButtonByValue = ({
   market,
   value,
 }: {

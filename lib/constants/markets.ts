@@ -13,3 +13,6 @@ export const defaultTags = [
 ] as const;
 
 export const marketStatuses = Object.keys(EMarketStatus) as MarketStatus[];
+
+export const hiddenMarketIds =
+  process.env.NEXT_PUBLIC_HIDDEN_MARKET_IDS ?? "[]";
