@@ -256,7 +256,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
                               </div>
                               {foreignCurrencyCost && (
                                 <>
-                                  <div> / </div>
+                                  <div> + </div>
                                   <div
                                     className={`text-${
                                       getMetadataForCurrency(
