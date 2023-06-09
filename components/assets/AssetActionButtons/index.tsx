@@ -22,7 +22,7 @@ const AssetActionButtons = ({ marketId, assetId }: AssetActionButtonsProps) => {
   const isOracle = market?.oracle === userAddress;
 
   if (!market || !marketStage) {
-    return null;
+    return <></>;
   }
 
   if (
@@ -33,7 +33,7 @@ const AssetActionButtons = ({ marketId, assetId }: AssetActionButtonsProps) => {
   }
 
   if (marketStage.type === "Disputed") {
-    return null;
+    return <></>;
   }
 
   if (marketStage.type === "Reported") {
