@@ -9,10 +9,6 @@
 html {
   font-size: 100%;
 }
-body {
-  overflow-x: hidden;
-  width: 100vh;
-}
 /* hide number input arrows */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
