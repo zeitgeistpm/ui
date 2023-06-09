@@ -284,7 +284,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
                     rounded-full py-2 px-6 ease-in-out active:scale-95 duration-200
                     ${
                       firstInvalidStep &&
-                      "bg-orange-300 border-orange-400 text-white"
+                      "bg-white border-orange-200 text-orange-500"
                     }
                   `}
                     onClick={() => {
