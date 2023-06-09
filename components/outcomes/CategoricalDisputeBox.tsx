@@ -29,17 +29,19 @@ const CategoricalDisputeBox = ({
   const { data: disputes } = useMarketDisputes(market);
   const notificationStore = useNotifications();
   const queryClient = useQueryClient();
-  const { data: constants } = useChainConstants();
+  const { data: constants, isLoading: isConstantsLoading } =
+    useChainConstants();
 
   const disputeBond = constants?.markets.disputeBond;
   const disputeFactor = constants?.markets.disputeFactor;
   const tokenSymbol = constants?.tokenSymbol;
 
   const lastDispute = disputes?.[disputes.length - 1];
-  const assetName = market.categories[getIndexOf(assetId)].name;
-  const bondAmount = disputes
-    ? disputeBond + disputes.length * disputeFactor
-    : disputeBond;
+  const assetName = market.categories?.[getIndexOf(assetId)]?.name;
+  const bondAmount =
+    disputes && isConstantsLoading === false
+      ? disputeBond! + disputes.length * disputeFactor!
+      : disputeBond;
 
   const { send: dispute, isLoading } = useExtrinsic(
     () => {
@@ -72,7 +74,9 @@ const CategoricalDisputeBox = ({
       lastDispute?.outcome.asCategorical.toNumber() ??
       market.report?.outcome.categorical;
 
-    return market.categories[reportIndex].name;
+    if (reportIndex == null) return;
+
+    return market?.categories?.[reportIndex]?.name;
   };
 
   return (
@@ -94,7 +98,9 @@ const CategoricalDisputeBox = ({
           <span>New Report:</span>
           <span className="font-mono">{assetName}</span>
         </div>
-        {bondAmount !== disputeBond && bondAmount !== undefined ? (
+        {bondAmount !== disputeBond &&
+        bondAmount !== undefined &&
+        disputeFactor !== undefined ? (
           <div className="h-ztg-18 flex justify-between text-ztg-12-150 font-bold text-sky-600 ">
             <span>Previous Bond:</span>
             <span className="font-mono">{bondAmount - disputeFactor}</span>
