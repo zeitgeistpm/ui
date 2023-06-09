@@ -191,49 +191,43 @@ export const Publishing = ({ editor }: PublishingProps) => {
                       <h2 className="text-lg mb-4">Cost Breakdown</h2>
                       <div className="mb-4">
                         <div className="flex-1">
-                          <h3 className="text-base font-normal text-gray-500">
+                          <h3 className="text-base font-normal ">
                             {editor.form.moderation} Bond
                           </h3>
                           <div className="flex justify-start items-center gap-6">
-                            <h4 className="text-sm flex-1 text-gray-400 font-light">
+                            <h4 className="text-sm flex-1 text-gray-500 font-light">
                               {editor.form.moderation === "Permissionless"
                                 ? "Returned if the market isn't deleted by the committee."
                                 : "Returned if the market is approved or ends before being approved by the committee."}
                             </h4>
-                            <div className="flex self-end text-gray-400">
-                              {bondCost} ZTG
-                            </div>
+                            <div className="flex self-end ">{bondCost} ZTG</div>
                           </div>
                         </div>
                       </div>
                       <div className="flex">
                         <div className="flex-1">
-                          <h3 className="text-base font-normal text-gray-500">
-                            Oracle Bond
-                          </h3>
+                          <h3 className="text-base font-normal">Oracle Bond</h3>
                           <div className="flex justify-start items-center gap-6">
-                            <h4 className="text-sm flex-1 text-gray-400 font-light">
+                            <h4 className="text-sm flex-1 text-gray-500 font-light">
                               Returned if oracle reports the market outcome on
                               time.
                             </h4>
-                            <div className="text-gray-400">
-                              {oracleBond} ZTG
-                            </div>
+                            <div className="">{oracleBond} ZTG</div>
                           </div>
                         </div>
                       </div>
                       {editor.form.liquidity?.deploy && (
                         <div className="mt-4 flex">
                           <div className="flex-1">
-                            <h3 className="text-base font-normal text-gray-500">
+                            <h3 className="text-base font-normal ">
                               Liquidity
                             </h3>
                             <div className="flex justify-start items-center gap-6">
-                              <h4 className="text-sm flex-1 text-gray-400 font-light">
+                              <h4 className="text-sm flex-1 text-gray-500 font-light">
                                 Can be withdrawn at any time, will collect fees
                                 but subject to impermanent loss.
                               </h4>
-                              <div className="text-gray-400">
+                              <div className="">
                                 {new Decimal(baseAssetLiquidityRow?.value)
                                   .mul(2)
                                   .toFixed(1)}{" "}
@@ -243,11 +237,11 @@ export const Publishing = ({ editor }: PublishingProps) => {
                           </div>
                         </div>
                       )}
-                      <div className="mt-4 flex">
+                      <div className="mt-8 flex border-t-1 pt-4">
                         <div className="flex-1">
                           <h3 className="text-base font-normal">Total</h3>
                           <div className="flex justify-start gap-6">
-                            <h4 className="text-sm flex-1 text-gray-600 font-light">
+                            <h4 className="text-sm flex-1 text-gray-500 font-light">
                               Total cost for creating the market.
                             </h4>
                             <div className="center font-semibold gap-1">
