@@ -191,7 +191,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
                       <h2 className="text-lg mb-4">Cost Breakdown</h2>
                       <div className="mb-4">
                         <div className="flex-1">
-                          <h3 className="text-base font-normal ">
+                          <h3 className="text-base font-normal text-black">
                             {editor.form.moderation} Bond
                           </h3>
                           <div className="flex justify-start items-center gap-6">
@@ -206,7 +206,9 @@ export const Publishing = ({ editor }: PublishingProps) => {
                       </div>
                       <div className="flex">
                         <div className="flex-1">
-                          <h3 className="text-base font-normal">Oracle Bond</h3>
+                          <h3 className="text-base font-normal text-black">
+                            Oracle Bond
+                          </h3>
                           <div className="flex justify-start items-center gap-6">
                             <h4 className="text-sm flex-1 text-gray-500 font-light">
                               Returned if oracle reports the market outcome on
@@ -219,7 +221,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
                       {editor.form.liquidity?.deploy && (
                         <div className="mt-4 flex">
                           <div className="flex-1">
-                            <h3 className="text-base font-normal ">
+                            <h3 className="text-base font-normal text-black">
                               Liquidity
                             </h3>
                             <div className="flex justify-start items-center gap-6">
@@ -239,7 +241,9 @@ export const Publishing = ({ editor }: PublishingProps) => {
                       )}
                       <div className="mt-8 flex border-t-1 pt-4">
                         <div className="flex-1">
-                          <h3 className="text-base font-normal">Total</h3>
+                          <h3 className="text-base font-normal text-black">
+                            Total
+                          </h3>
                           <div className="flex justify-start gap-6">
                             <h4 className="text-sm flex-1 text-gray-500 font-light">
                               Total cost for creating the market.
