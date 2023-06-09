@@ -178,7 +178,7 @@ export const IOCategoricalAnswers = z
 
 export const IOScalarAnswers = z.object({
   type: z.literal("scalar"),
-  numberType: z.union([z.literal("number"), z.literal("timestamp")]),
+  numberType: z.union([z.literal("number"), z.literal("date")]),
   answers: z
     .tuple([
       z.number().gte(0, {

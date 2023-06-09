@@ -148,6 +148,8 @@ export const marketFormDataToExtrinsicParams = (
       slug: form.question,
       tags: form.tags,
       categories: tickersForAnswers(form.answers),
+      scalarType:
+        form.answers?.type === "scalar" ? form.answers.numberType : undefined,
     },
     baseAsset: getMetadataForCurrency(form.currency).assetId,
   };

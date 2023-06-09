@@ -27,7 +27,7 @@ export const ScalarAnswersInput = ({
         name,
         value: {
           type: "scalar",
-          numberType: checked ? "timestamp" : "number",
+          numberType: checked ? "date" : "number",
           answers: value?.answers ?? [0, 1],
         },
       },
@@ -89,14 +89,14 @@ export const ScalarAnswersInput = ({
       <div className="flex center mb-6">
         <div className="mr-3 font-light text-sm">Numbers</div>
         <Toggle
-          checked={value?.numberType === "timestamp"}
+          checked={value?.numberType === "date"}
           onChange={handleNumberTypeChange}
         />
         <div className="ml-3 font-light text-sm">Dates</div>
       </div>
       <div className="flex justify-center gap-6">
         <div className="">
-          {value?.numberType === "timestamp" ? (
+          {value?.numberType === "date" ? (
             <DateTimePicker
               name="lower-bound"
               className={`rounded-md bg-gray-100`}
@@ -118,7 +118,7 @@ export const ScalarAnswersInput = ({
           <h4 className="text-xs text-center mt-2 ml-1">Short</h4>
         </div>
         <div className="">
-          {value?.numberType === "timestamp" ? (
+          {value?.numberType === "date" ? (
             <DateTimePicker
               className={`rounded-md bg-gray-100`}
               name="upper-bound"
