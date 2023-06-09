@@ -193,8 +193,6 @@ const ExitPoolForm = ({
               ? baseAssetTicker
               : market?.categories[index]?.name;
 
-          if (!userPercentageOwnership || userPercentageOwnership.isNaN())
-            return null;
           const poolAssetBalance =
             poolBalances?.[id]?.pool.div(ZTG) ?? new Decimal(0);
           const userBalanceInPool = poolAssetBalance
