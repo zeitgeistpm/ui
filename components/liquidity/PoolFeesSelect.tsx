@@ -1,7 +1,7 @@
 import { AmountInput } from "components/ui/inputs";
 import Decimal from "decimal.js";
 
-import { useEffect, useState } from "react";
+import { MouseEventHandler, useEffect, useState } from "react";
 
 const PoolFeeOption = ({
   label,
@@ -14,7 +14,7 @@ const PoolFeeOption = ({
   selected: boolean;
   onSelected: (fee: number) => void;
 }) => {
-  const handleClick = (event) => {
+  const handleClick: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.preventDefault();
     event.stopPropagation();
     onSelected(value);

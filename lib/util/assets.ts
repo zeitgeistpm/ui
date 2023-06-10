@@ -7,10 +7,13 @@ import {
 import Decimal from "decimal.js";
 
 export const getCurrentPrediction = (
-  assets: { price: number; assetId?: string }[],
+  assets: { price: number; assetId: string }[],
   market: {
-    marketType: { categorical?: string; scalar?: string[] };
-    categories?: { name?: string }[];
+    marketType: {
+      categorical?: string | null;
+      scalar?: (string | null)[] | null;
+    };
+    categories?: ({ name?: string | null } | null)[] | null;
   },
 ): { name: string; price: number; percentage: number } => {
   const totalPrice = assets.reduce((acc, asset) => acc + asset.price, 0);
@@ -33,12 +36,16 @@ export const getCurrentPrediction = (
     const percentage = Math.round((highestPrice / totalPrice) * 100);
 
     return {
-      name: market.categories[highestPriceIndex].name,
+      name:
+        market.categories == null
+          ? ""
+          : market.categories[highestPriceIndex]?.name ?? "",
       price: highestPrice,
       percentage,
     };
   } else {
-    const bounds: number[] = market.marketType.scalar.map((b) => Number(b));
+    const bounds: number[] =
+      market.marketType.scalar?.map((b) => Number(b)) ?? [];
 
     const range = bounds[1] - bounds[0];
     const longPrice = assets[0].price;

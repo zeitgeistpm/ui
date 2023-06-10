@@ -11,23 +11,28 @@ export type UseAccountAssetBalances = {
   get: (
     account: string,
     assetId: AssetId,
-  ) => UseQueryResult<
-    {
-      pair: AccountAssetIdPair;
-      balance?: OrmlTokensAccountData;
-    },
-    unknown
-  >;
+  ) =>
+    | UseQueryResult<
+        | {
+            pair: AccountAssetIdPair;
+            balance: OrmlTokensAccountData | undefined;
+          }
+        | undefined,
+        unknown
+      >
+    | undefined;
   /**
    * Raw react query access.
    */
-  query: UseQueryResult<
-    {
-      pair: AccountAssetIdPair;
-      balance?: OrmlTokensAccountData;
-    },
-    unknown
-  >[];
+  query?:
+    | UseQueryResult<
+        | {
+            pair: AccountAssetIdPair;
+            balance?: OrmlTokensAccountData;
+          }
+        | undefined,
+        unknown
+      >[];
 
   /**
    * Will be true if any of the queries are loading
@@ -73,9 +78,13 @@ export const useAccountAssetBalances = (
         queryFn: async () => {
           if (sdk && isRpcSdk(sdk)) {
             const api = await getApiAtBlock(sdk.api, blockNumber);
-            const balance = !pair.account
-              ? null
-              : await api.query.tokens.accounts(pair.account, pair.assetId);
+            let balance;
+            if (pair.account) {
+              balance = await api.query.tokens.accounts(
+                pair.account,
+                pair.assetId,
+              );
+            }
 
             return {
               pair,
@@ -95,7 +104,7 @@ export const useAccountAssetBalances = (
   const get = (account: string, assetId: AssetId) => {
     const query = queries.find(
       (q) =>
-        q.data &&
+        q.data != null &&
         q.data.pair.account === account &&
         JSON.stringify(q.data.pair.assetId) === JSON.stringify(assetId),
     );

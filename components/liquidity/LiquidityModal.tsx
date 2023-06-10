@@ -59,11 +59,11 @@ const LiquidityModal = ({
       : [],
   );
 
-  const userPoolTokens: string = userPoolTokensQuery
-    ?.get(connectedAddress, {
+  const userPoolTokens: string | undefined = userPoolTokensQuery
+    ?.get(connectedAddress ?? "", {
       PoolShare: poolId,
     })
-    ?.data.balance.free.toString();
+    ?.data?.balance?.free.toString();
 
   const baseAsset = pool && parseAssetId(pool.baseAsset).unrightOr(undefined);
 
@@ -79,7 +79,7 @@ const LiquidityModal = ({
     pool,
   );
 
-  const allBalances: PoolBalances = useMemo(() => {
+  const allBalances: PoolBalances | undefined = useMemo(() => {
     if (
       pool?.weights &&
       userBaseBalance &&
@@ -93,12 +93,20 @@ const LiquidityModal = ({
 
           const userBalance = isBaseAsset
             ? userBaseBalance
-            : new Decimal(userAssetBalances[index].free.toString());
+            : new Decimal(
+                userAssetBalances == null
+                  ? 0
+                  : userAssetBalances[index].free.toString(),
+              );
           const poolBalance = isBaseAsset
             ? new Decimal(poolBaseBalance.toString())
-            : new Decimal(poolAssetBalances[index].free.toString());
+            : new Decimal(
+                poolAssetBalances == null
+                  ? 0
+                  : poolAssetBalances[index].free.toString(),
+              );
 
-          const id = assetObjStringToId(weight.assetId);
+          const id = assetObjStringToId(weight!.assetId);
 
           balances[id] = {
             pool: poolBalance,
@@ -106,7 +114,7 @@ const LiquidityModal = ({
           };
           return balances;
         },
-        {},
+        {} as Record<number | "base", { pool: Decimal; user: Decimal }>,
       );
 
       return allBalances;
@@ -136,7 +144,7 @@ const LiquidityModal = ({
             <Tab.Panel>
               <JoinPoolForm
                 poolId={poolId}
-                poolBalances={allBalances}
+                poolBalances={allBalances!}
                 totalPoolShares={
                   new Decimal(totalPoolIssuance?.toString() ?? 0)
                 }
@@ -147,7 +155,7 @@ const LiquidityModal = ({
             <Tab.Panel>
               <ExitPoolForm
                 poolId={poolId}
-                poolBalances={allBalances}
+                poolBalances={allBalances!}
                 totalPoolShares={
                   new Decimal(totalPoolIssuance?.toString() ?? 0)
                 }
