@@ -7,7 +7,7 @@ import {
 import Decimal from "decimal.js";
 
 export const getCurrentPrediction = (
-  assets: { price: number; assetId: string }[],
+  assets: { price: number; assetId?: string }[],
   market: {
     marketType: {
       categorical?: string | null;
