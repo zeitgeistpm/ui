@@ -101,6 +101,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
           editor.reset();
         }, 2000);
       } catch (error) {
+        console.error(error);
         let type: NotificationType = "Error";
         let errorMessage = "Unknown error occurred.";
 
