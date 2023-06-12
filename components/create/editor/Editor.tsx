@@ -51,6 +51,7 @@ const createMarketStateAtom = persistentAtom<MarketDraft.MarketDraftState>({
     () => MarketDraft.empty(),
     () => MarketDraft.empty(),
     () => MarketDraft.empty(),
+    () => MarketDraft.empty(),
   ],
 });
 

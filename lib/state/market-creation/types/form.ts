@@ -30,6 +30,7 @@ import {
   IOPeriodOption,
   IOQuestion,
   IOScalarAnswers,
+  IOSwappFee,
   IOTags,
   IOYesNoAnswers,
 } from "./validation";
@@ -102,6 +103,7 @@ export type PeriodDurationOption = Required<
 export type Oracle = z.infer<typeof IOOracle>;
 export type Description = z.infer<typeof IODescription>;
 export type Moderation = z.infer<typeof IOModerationMode>;
+export type SwapFee = z.infer<typeof IOSwappFee>;
 export type Liquidity = z.infer<typeof IOLiquidity>;
 export type LiquidityRow = z.infer<typeof IOLiquidityRow>;
 
@@ -163,7 +165,7 @@ export const marketFormDataToExtrinsicParams = (
             amount: new Decimal(form.liquidity.rows[0].amount)
               .mul(ZTG)
               .toString(),
-            swapFee: swapFeeFromFloat(form.liquidity.swapFee).toString(),
+            swapFee: swapFeeFromFloat(form.liquidity.swapFee?.value).toString(),
             weights: form.liquidity.rows.slice(0, -1).map((row) => {
               return new Decimal(row.weight)
                 .mul(ZTG)

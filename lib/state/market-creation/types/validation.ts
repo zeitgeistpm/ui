@@ -250,13 +250,24 @@ export const IOLiquidityRow = z.object({
   value: z.string(),
 });
 
+export const IOSwappFee = z
+  .number()
+  .min(0, {
+    message: "Swap fee must be a postive number.",
+  })
+  .max(10, { message: "Swap fee cannot exceed 10%." });
+
 export const IOLiquidity = z.object({
   deploy: z.boolean(),
   rows: z.array(IOLiquidityRow),
-  swapFee: z
-    .number()
-    .min(0, {
-      message: "Swap fee must be a postive number.",
-    })
-    .max(10, { message: "Swap fee cannot exceed 10%." }),
+  swapFee: z.union([
+    z.object({
+      type: z.literal("preset"),
+      value: IOSwappFee,
+    }),
+    z.object({
+      type: z.literal("custom"),
+      value: IOSwappFee,
+    }),
+  ]),
 });

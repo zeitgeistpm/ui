@@ -47,8 +47,6 @@ export const Publishing = ({ editor }: PublishingProps) => {
     return;
   }, [editor.form, chainTime, wallet.activeAccount]);
 
-  console.log(params?.marketType);
-
   const submit = async () => {
     if (params && isFullSdk(sdk)) {
       setIsTransacting(true);

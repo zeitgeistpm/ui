@@ -116,7 +116,8 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
                     <div>{baseAssetLiquidityRow?.weight ?? "--"}</div>
                   </div>
                   <div className="flex justify-center gap-2 items-center">
-                    <Label>Swap Fee</Label> {form.liquidity?.swapFee ?? "--"}%
+                    <Label>Swap Fee</Label>{" "}
+                    {form.liquidity?.swapFee?.value ?? "--"}%
                   </div>
                 </div>
 
