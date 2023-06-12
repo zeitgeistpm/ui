@@ -47,6 +47,8 @@ export const Publishing = ({ editor }: PublishingProps) => {
     return;
   }, [editor.form, chainTime, wallet.activeAccount]);
 
+  console.log(params?.marketType);
+
   const submit = async () => {
     if (params && isFullSdk(sdk)) {
       setIsTransacting(true);
@@ -55,7 +57,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
         notifications.pushNotification("Transacting..", {
           autoRemove: true,
           type: "Info",
-          lifetime: 20,
+          lifetime: 60,
         });
 
         const result = await sdk.model.markets.create(params);
@@ -101,7 +103,6 @@ export const Publishing = ({ editor }: PublishingProps) => {
           editor.reset();
         }, 2000);
       } catch (error) {
-        console.error(error);
         let type: NotificationType = "Error";
         let errorMessage = "Unknown error occurred.";
 
@@ -123,6 +124,8 @@ export const Publishing = ({ editor }: PublishingProps) => {
           type: type,
           lifetime: 15,
         });
+
+        console.error(error);
       }
 
       setIsTransacting(false);
