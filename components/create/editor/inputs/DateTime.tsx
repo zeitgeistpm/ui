@@ -58,7 +58,10 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
         <div>
           {!value
             ? placeholder ?? "Set Date"
-            : moment(value).format("MMM Do, YYYY hh:mm a")}
+            : Intl.DateTimeFormat("default", {
+                dateStyle: "medium",
+                timeStyle: "medium",
+              }).format(new Date(value))}
         </div>
         <input
           className="opacity-0 h-0 w-0 absolute -bottom-2 left-0"

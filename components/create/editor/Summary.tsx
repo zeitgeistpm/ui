@@ -1,3 +1,4 @@
+import { blockDate } from "@zeitgeistpm/utility/dist/time";
 import Decimal from "decimal.js";
 import {
   getMetadataForCurrency,
@@ -193,7 +194,10 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             <Label className="mb-2">Ends</Label>
             <div>
               {form.endDate
-                ? moment(form.endDate).format("MMM Do, YYYY hh:mm a")
+                ? Intl.DateTimeFormat("default", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  }).format(new Date(form.endDate))
                 : "--"}
             </div>
           </div>
@@ -202,11 +206,18 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
           <div className="flex justify-center gap-2 items-center mb-2 md:mb-0">
             <Label>Grace</Label>{" "}
             <div>
-              {timeline?.grace
-                ? timeline?.grace.period > 0
-                  ? formatDuration(blocksAsDuration(timeline?.grace.period))
-                  : "None"
-                : "--"}
+              {form.gracePeriod?.type === "duration"
+                ? timeline?.grace
+                  ? timeline?.grace.period > 0
+                    ? formatDuration(blocksAsDuration(timeline?.grace.period))
+                    : "None"
+                  : "--"
+                : Intl.DateTimeFormat("default", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  }).format(
+                    blockDate(chainTime, form.gracePeriod?.block).getTime(),
+                  )}
             </div>
           </div>
           <div className="flex justify-center gap-2 items-center mb-2 md:mb-0">
