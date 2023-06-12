@@ -47,8 +47,8 @@ const PoolTable = ({
   const { data: baseAssetUsdPrice } = useAssetUsdPrice(baseAssetId);
   const { data: spotPrices } = useMarketSpotPrices(marketId);
 
-  const tableData: TableData[] | undefined = pool?.weights?.map(
-    (asset, index) => {
+  const tableData: TableData[] =
+    pool?.weights?.map((asset, index) => {
       let amount: Decimal | undefined;
       let usdValue: Decimal | undefined;
       let category:
@@ -83,10 +83,9 @@ const PoolTable = ({
           usdValue: usdValue?.div(ZTG).toDecimalPlaces(2).toNumber(),
         },
       };
-    },
-  );
+    }) ?? [];
 
-  return <Table data={tableData!} columns={poolTableColums} />;
+  return <Table data={tableData} columns={poolTableColums} />;
 };
 
 export default PoolTable;

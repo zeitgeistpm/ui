@@ -77,7 +77,7 @@ const LiquidityModal = ({
     pool,
   );
 
-  const allBalances: PoolBalances | undefined = useMemo(() => {
+  const allBalances: PoolBalances = useMemo(() => {
     if (
       pool?.weights &&
       userBaseBalance &&
@@ -117,6 +117,7 @@ const LiquidityModal = ({
 
       return allBalances;
     }
+    return {};
   }, [
     pool?.weights,
     userAssetBalances,
@@ -142,7 +143,7 @@ const LiquidityModal = ({
             <Tab.Panel>
               <JoinPoolForm
                 poolId={poolId}
-                poolBalances={allBalances!}
+                poolBalances={allBalances}
                 totalPoolShares={
                   new Decimal(totalPoolIssuance?.toString() ?? 0)
                 }
@@ -153,7 +154,7 @@ const LiquidityModal = ({
             <Tab.Panel>
               <ExitPoolForm
                 poolId={poolId}
-                poolBalances={allBalances!}
+                poolBalances={allBalances}
                 totalPoolShares={
                   new Decimal(totalPoolIssuance?.toString() ?? 0)
                 }
