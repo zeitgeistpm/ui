@@ -119,8 +119,6 @@ const AddressDetails = ({
       ? identity?.displayName
       : shortenAddress(address, 8, 8);
 
-  console.log(identity);
-
   return (
     <>
       <div
