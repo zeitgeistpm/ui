@@ -53,11 +53,9 @@ const LiquidityModal = ({
 
   const data = useTotalIssuanceForPools([poolId]);
   const totalPoolIssuance = data?.[poolId]?.data?.totalIssuance;
-  const userPoolTokensQuery = useAccountAssetBalances(
-    connectedAddress && pool != null
-      ? [{ account: connectedAddress, assetId: { PoolShare: poolId } }]
-      : [],
-  );
+  const userPoolTokensQuery = useAccountAssetBalances([
+    { account: connectedAddress, assetId: { PoolShare: poolId } },
+  ]);
 
   const userPoolTokens: string | undefined = userPoolTokensQuery
     ?.get(connectedAddress ?? "", {

@@ -1,8 +1,9 @@
 import { OrmlTokensAccountData } from "@polkadot/types/lookup";
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
-import { AssetId, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { AssetId, isRpcSdk, RpcContext } from "@zeitgeistpm/sdk-next";
 import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
+import { useMemo } from "react";
 
 export type UseAccountAssetBalances = {
   /**
@@ -11,28 +12,23 @@ export type UseAccountAssetBalances = {
   get: (
     account: string,
     assetId: AssetId,
-  ) =>
-    | UseQueryResult<
-        | {
-            pair: AccountAssetIdPair;
-            balance: OrmlTokensAccountData | undefined;
-          }
-        | undefined,
-        unknown
-      >
-    | undefined;
+  ) => UseQueryResult<
+    {
+      pair: AccountAssetIdPair;
+      balance: OrmlTokensAccountData | undefined;
+    },
+    unknown
+  >;
   /**
    * Raw react query access.
    */
-  query?:
-    | UseQueryResult<
-        | {
-            pair: AccountAssetIdPair;
-            balance?: OrmlTokensAccountData;
-          }
-        | undefined,
-        unknown
-      >[];
+  query: UseQueryResult<
+    {
+      pair: AccountAssetIdPair;
+      balance?: OrmlTokensAccountData;
+    },
+    unknown
+  >[];
 
   /**
    * Will be true if any of the queries are loading
@@ -76,40 +72,52 @@ export const useAccountAssetBalances = (
           blockNumber,
         ],
         queryFn: async () => {
-          if (sdk && isRpcSdk(sdk)) {
-            const api = await getApiAtBlock(sdk.api, blockNumber);
-            let balance;
-            if (pair.account) {
-              balance = await api.query.tokens.accounts(
-                pair.account,
-                pair.assetId,
-              );
-            }
-
-            return {
-              pair,
-              balance,
-            };
+          const api = await getApiAtBlock(
+            (sdk as RpcContext)!.api,
+            blockNumber,
+          );
+          let balance;
+          if (pair.account) {
+            balance = await api.query.tokens.accounts(
+              pair.account,
+              pair.assetId,
+            );
           }
+
+          return {
+            pair,
+            balance,
+          };
         },
         enabled:
           Boolean(sdk) &&
           isRpcSdk(sdk) &&
           (typeof opts?.enabled === "undefined" ? true : opts?.enabled),
         keepPreviousData: true,
+        initialData: { pair, balance: undefined },
       };
     }),
   });
 
-  const get = (account: string, assetId: AssetId) => {
-    const query = queries.find(
-      (q) =>
-        q.data != null &&
-        q.data.pair.account === account &&
-        JSON.stringify(q.data.pair.assetId) === JSON.stringify(assetId),
-    );
-    return query;
-  };
+  const get = useMemo(
+    () => (account: string, assetId: AssetId) => {
+      const query = queries.find(
+        (q) =>
+          q.data != null &&
+          q.data.pair.account === account &&
+          JSON.stringify(q.data.pair.assetId) === JSON.stringify(assetId),
+      );
+      if (query?.data === undefined) {
+        throw new Error(
+          `Could not find query for account ${account} and asset id ${JSON.stringify(
+            assetId,
+          )}`,
+        );
+      }
+      return query;
+    },
+    [queries],
+  );
 
   return { get, query: queries, isLoading: queries.some((q) => q.isLoading) };
 };
