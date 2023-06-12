@@ -23,17 +23,13 @@ import { extrinsicCallback, signAndSend } from "lib/util/tx";
 
 import { useMemo, useState } from "react";
 
-export type RedeemButtonProps = { market: Market<IndexerContext> } & (
-  | { assetId: AssetId }
-  | { value: Decimal }
-);
+export type RedeemButtonProps = {
+  market: Market<IndexerContext>;
+  assetId: AssetId;
+};
 
 export const RedeemButton = (props: RedeemButtonProps) => {
-  if ("assetId" in props) {
-    return <RedeemButtonByAssetId {...props} />;
-  } else {
-    return <RedeemButtonByValue {...props} />;
-  }
+  return <RedeemButtonByAssetId {...props} />;
 };
 
 export default RedeemButton;
@@ -112,7 +108,7 @@ export const RedeemButtonByAssetId = ({
   return <RedeemButtonByValue market={market} value={value} />;
 };
 
-export const RedeemButtonByValue = ({
+const RedeemButtonByValue = ({
   market,
   value,
 }: {

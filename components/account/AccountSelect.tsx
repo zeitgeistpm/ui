@@ -2,14 +2,23 @@ import { Unpacked } from "@zeitgeistpm/utility/dist/array";
 import { useWallet } from "lib/state/wallet";
 
 import React, { FC, useEffect, useMemo, useState } from "react";
-import Select, { components, ControlProps } from "react-select";
+import Select, {
+  components,
+  ControlProps,
+  OnChangeValue,
+  OptionProps,
+  SingleValueProps,
+  StylesConfig,
+} from "react-select";
 
 import CopyIcon from "../ui/CopyIcon";
 import AccountSelectOption from "./AccountSelectOption";
 import AccountSelectValue from "./AccountSelectValue";
 import { useAccountModals } from "lib/state/account";
 
-const Control = ({ children, ...rest }) => {
+type AccountOption = { label: string; value: string };
+
+const Control = ({ children, ...rest }: ControlProps<AccountOption, false>) => {
   return (
     <components.Control {...(rest as ControlProps)}>
       <div className="flex items-center bg-sky-100 dark:bg-black justify-between cursor-pointer rounded-ztg-10">
@@ -19,7 +28,7 @@ const Control = ({ children, ...rest }) => {
   );
 };
 
-const Option = (props) => {
+const Option = (props: OptionProps<AccountOption, false>) => {
   const { label, value } = props.data;
 
   return (
@@ -29,7 +38,7 @@ const Option = (props) => {
   );
 };
 
-const SingleValue = (props) => {
+const SingleValue = (props: SingleValueProps<AccountOption, false>) => {
   return (
     <AccountSelectValue name={props.data.label} address={props.data.value} />
   );
@@ -43,7 +52,7 @@ const IndicatorSeparator = () => {
   return <></>;
 };
 
-const customStyles = {
+const customStyles: StylesConfig<AccountOption> = {
   valueContainer: () => {
     return {
       "input[readonly]": {
@@ -52,7 +61,7 @@ const customStyles = {
       height: "50px",
     };
   },
-  control: (provided) => {
+  control: () => {
     return {
       borderWidth: 0,
       outline: 0,
@@ -78,7 +87,7 @@ const AccountSelect: FC = () => {
   const wallet = useWallet();
   const accountModals = useAccountModals();
 
-  const options = useMemo(() => {
+  const options = useMemo<AccountOption[]>(() => {
     return wallet.accounts.map((account, id) => {
       return {
         label: account.name ?? `Account #${id}`,
@@ -96,12 +105,12 @@ const AccountSelect: FC = () => {
     }
   }, [wallet.activeAccount, options]);
 
-  const [defaultOption, setDefaultOption] =
-    useState<{ value: string; label: string }>();
+  const [defaultOption, setDefaultOption] = useState<AccountOption>();
 
-  const onSelectChange = (opt: Unpacked<typeof options>) => {
-    wallet.selectAccount(opt.value);
-    accountModals.closeAccountSelect();
+  const onSelectChange = (
+    opt: OnChangeValue<Unpacked<typeof options>, false>,
+  ) => {
+    opt && wallet.selectAccount(opt.value);
   };
 
   return (
@@ -111,6 +120,7 @@ const AccountSelect: FC = () => {
         options={options}
         styles={customStyles}
         value={defaultOption}
+        isMulti={false}
         components={{
           Control,
           Option,
