@@ -102,6 +102,7 @@ const BuyFullSetForm = ({
   };
 
   useGlobalKeyPress("Enter", handleSignTransaction);
+
   return (
     <div>
       <div>

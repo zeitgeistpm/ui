@@ -6,8 +6,6 @@ describe("color calculation", () => {
       const colors = calcMarketColors(0, 2);
 
       expect(colors.length).toEqual(2);
-      console.log(colors);
-
       expect(colors).toStrictEqual(["#ff0000", "#00ffff"]); // blue and red
     });
     test("should work with large markets", () => {
