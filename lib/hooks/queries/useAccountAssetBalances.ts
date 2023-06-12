@@ -12,13 +12,15 @@ export type UseAccountAssetBalances = {
   get: (
     account: string,
     assetId: AssetId,
-  ) => UseQueryResult<
-    {
-      pair: AccountAssetIdPair;
-      balance?: OrmlTokensAccountData;
-    },
-    unknown
-  >;
+  ) =>
+    | UseQueryResult<
+        {
+          pair: AccountAssetIdPair;
+          balance?: OrmlTokensAccountData;
+        },
+        unknown
+      >
+    | undefined;
   /**
    * Raw react query access.
    */
@@ -103,13 +105,6 @@ export const useAccountAssetBalances = (
         q.data.pair.account === account &&
         JSON.stringify(q.data.pair.assetId) === JSON.stringify(assetId),
     );
-    if (query?.data === undefined) {
-      throw new Error(
-        `Could not find query for account ${account} and asset id ${JSON.stringify(
-          assetId,
-        )}`,
-      );
-    }
     return query;
   };
 

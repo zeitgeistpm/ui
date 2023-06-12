@@ -76,19 +76,17 @@ export const RedeemButtonByAssetId = ({
 
       if (!resolvedAssetId || resolvedAssetId !== assetId) return zero;
 
-      const { balance } = getAccountAssetBalance(
-        signer.address,
-        resolvedAssetId,
-      ).data!;
-      return new Decimal(balance!.free.toString() ?? 0).div(ZTG);
+      const balance = getAccountAssetBalance(signer.address, resolvedAssetId)
+        ?.data?.balance;
+      return new Decimal(balance?.free.toString() ?? 0).div(ZTG);
     } else {
       const shortBalance = getAccountAssetBalance(signer.address, {
         ScalarOutcome: [market.marketId as MarketId, "Short"],
-      }).data?.balance;
+      })?.data?.balance;
 
       const longBalance = getAccountAssetBalance(signer.address, {
         ScalarOutcome: [market.marketId as MarketId, "Long"],
-      }).data?.balance;
+      })?.data?.balance;
 
       if (!shortBalance || !longBalance) return zero;
 
