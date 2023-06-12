@@ -112,7 +112,7 @@ const LiquidityModal = ({
           };
           return balances;
         },
-        {} as Record<number | "base", { pool: Decimal; user: Decimal }>,
+        {} as PoolBalances,
       );
 
       return allBalances;

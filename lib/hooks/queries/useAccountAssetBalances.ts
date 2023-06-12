@@ -15,7 +15,7 @@ export type UseAccountAssetBalances = {
   ) => UseQueryResult<
     {
       pair: AccountAssetIdPair;
-      balance: OrmlTokensAccountData | undefined;
+      balance?: OrmlTokensAccountData;
     },
     unknown
   >;
@@ -72,10 +72,7 @@ export const useAccountAssetBalances = (
           blockNumber,
         ],
         queryFn: async () => {
-          const api = await getApiAtBlock(
-            (sdk as RpcContext)!.api,
-            blockNumber,
-          );
+          const api = await getApiAtBlock(sdk!.asRpc().api, blockNumber);
           let balance;
           if (pair.account) {
             balance = await api.query.tokens.accounts(
@@ -99,25 +96,22 @@ export const useAccountAssetBalances = (
     }),
   });
 
-  const get = useMemo(
-    () => (account: string, assetId: AssetId) => {
-      const query = queries.find(
-        (q) =>
-          q.data != null &&
-          q.data.pair.account === account &&
-          JSON.stringify(q.data.pair.assetId) === JSON.stringify(assetId),
+  const get = (account: string, assetId: AssetId) => {
+    const query = queries.find(
+      (q) =>
+        q.data != null &&
+        q.data.pair.account === account &&
+        JSON.stringify(q.data.pair.assetId) === JSON.stringify(assetId),
+    );
+    if (query?.data === undefined) {
+      throw new Error(
+        `Could not find query for account ${account} and asset id ${JSON.stringify(
+          assetId,
+        )}`,
       );
-      if (query?.data === undefined) {
-        throw new Error(
-          `Could not find query for account ${account} and asset id ${JSON.stringify(
-            assetId,
-          )}`,
-        );
-      }
-      return query;
-    },
-    [queries],
-  );
+    }
+    return query;
+  };
 
   return { get, query: queries, isLoading: queries.some((q) => q.isLoading) };
 };

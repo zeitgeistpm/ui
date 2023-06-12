@@ -62,7 +62,7 @@ const PoolTable = ({
         usdValue = basePoolBalance?.mul(baseAssetUsdPrice ?? 0);
         category = { color: "#ffffff", name: metadata?.symbol };
       } else {
-        amount = new Decimal(balances![index]?.free.toString() ?? 0);
+        amount = new Decimal(balances?.[index]?.free.toString() ?? 0);
         usdValue = amount
           .mul(spotPrices?.get(index) ?? 0)
           ?.mul(baseAssetUsdPrice ?? 0);
