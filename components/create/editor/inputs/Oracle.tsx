@@ -74,7 +74,7 @@ export const OracleInput = forwardRef(
         <input
           value={value}
           spellCheck={false}
-          className={`h-12 w-full text-center rounded-md mb-2 px-4 py-8
+          className={`h-12 w-full text-center rounded-md mb-2 px-4 py-8 transition-all duration-300
                   ${
                     !fieldState.isTouched || !fieldState.isValid
                       ? "bg-gray-100"

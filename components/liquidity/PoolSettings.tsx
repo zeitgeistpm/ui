@@ -1,20 +1,18 @@
-import React, { ChangeEvent, FC, MouseEvent, ReactNode } from "react";
-import { MultipleOutcomeEntry } from "lib/types/create-market";
+import InfoPopover from "components/create/editor/InfoPopover";
 import Table, { TableColumn, TableData } from "components/ui/Table";
-import { ZTG, ZTG_BLUE_COLOR, ZTG_MIN_LIQUIDITY } from "lib/constants";
-import { motion } from "framer-motion";
-import PoolFeesSelect from "./PoolFeesSelect";
 import Decimal from "decimal.js";
+import { ZTG } from "lib/constants";
+import { supportedCurrencies } from "lib/constants/supported-currencies";
+import { MultipleOutcomeEntry } from "lib/types/create-market";
 import {
+  PriceLock,
   calcPrices,
   calcWeightGivenSpotPrice,
-  PriceLock,
 } from "lib/util/weight-math";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import Image from "next/image";
-import { supportedCurrencies } from "lib/constants/supported-currencies";
-import InfoPopover from "components/create/editor/InfoPopover";
+import { ChangeEvent, FC, MouseEvent, ReactNode } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
+import PoolFeesSelect from "./PoolFeesSelect";
 
 export interface PoolAssetRowData {
   asset: string;
