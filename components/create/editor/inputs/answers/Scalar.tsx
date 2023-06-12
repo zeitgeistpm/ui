@@ -28,7 +28,7 @@ export const ScalarAnswersInput = ({
         value: {
           type: "scalar",
           numberType: checked ? "date" : "number",
-          answers: value?.answers ?? [0, 1],
+          answers: checked ? [Date.now(), Date.now() + 604800000] : [0, 1],
         },
       },
     });
