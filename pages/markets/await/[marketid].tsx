@@ -1,11 +1,9 @@
 import { PollingTimeout, poll } from "@zeitgeistpm/avatara-util";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
-import { checkMarketExists } from "lib/gql/markets";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import Loader from "react-spinners/BarLoader";
 
 export const MarketAwait: NextPage = () => {
   const router = useRouter();
@@ -41,14 +39,20 @@ export const MarketAwait: NextPage = () => {
   return (
     <div className="center py-20">
       <div className="center gap-4 md:min-w-[600px]">
-        <div
-          className="h-20 w-20 rounded-full animate-spin"
-          style={{
-            background:
-              "linear-gradient(218deg, rgba(49,196,141,1) 35%, rgba(173,255,0,1) 100%)",
-          }}
-        >
-          <div className="h-[90%] w-[90%] bg-white rounded-full mt-[5%] ml-[5%]"></div>
+        <div className="relative h-20 w-20 bg-inherit rounded-full bg-white">
+          <div
+            className="h-full w-full rounded-full animate-spin z-10"
+            style={{
+              background:
+                "linear-gradient(218deg, rgba(49,196,141,1) 35%, rgba(173,255,0,1) 100%)",
+            }}
+          ></div>
+          <div
+            className="absolute top-0 left-0 h-[90%] w-[90%] bg-inherit rounded-full mt-[5%] ml-[5%] z-20 "
+            style={{
+              maskOrigin: "content-box",
+            }}
+          ></div>
         </div>
         <div className="flex-1">
           <div>
