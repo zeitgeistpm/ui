@@ -61,7 +61,7 @@ const ScalarPriceRange = ({
       ? new Intl.DateTimeFormat("default", {
           dateStyle: "medium",
         }).format(new Date(position))
-      : position;
+      : position.toFixed(2);
 
   return (
     <div ref={ref}>

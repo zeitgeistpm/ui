@@ -217,11 +217,14 @@ export const Publishing = ({ editor }: PublishingProps) => {
                 </TransactionButton>
                 <div className="absolute -bottom-8 left-[50%] translate-x-[-50%]">
                   <div
-                    className={`cursor-pointer text-sm underline font-semibold w-40 text-center ${hasEnoughLiquidty ? "text-ztg-blue" : "text-vermilion"}`}
+                    className={`cursor-pointer text-sm underline font-semibold w-40 text-center ${
+                      hasEnoughLiquidty ? "text-ztg-blue" : "text-vermilion"
+                    }`}
                     onClick={() => setTotalCostIsOpen(true)}
                   >
-                    {hasEnoughLiquidty ? "View Cost Breakdown" : "View Insufficiency"}
-                    
+                    {hasEnoughLiquidty
+                      ? "View Cost Breakdown"
+                      : "View Insufficiency Balance"}
                   </div>
                   <Modal
                     open={totalCostIsOpen}
@@ -312,41 +315,40 @@ export const Publishing = ({ editor }: PublishingProps) => {
                           </div>
                         </div>
                       </div>
-                      {
-                        !hasEnoughLiquidty && (
-                          <div className="flex-1">
-                        <h3 className="text-base font-normal text-red-400">
-                          Insufficient Balance
-                        </h3>
-                        <div className="flex justify-start gap-6">
-                          <h4 className="text-sm flex-1 font-light text-gray-500">
-                            Missing balance needed to create the market.
-                          </h4>
-                          <div className="center font-semibold gap-1">
-                            {ztgBalanceDelta.lessThan(0) && (
-                              <div className="text-ztg-blue">
-                                {ztgBalanceDelta.toFixed(1)} ZTG
-                              </div>
-                            )}
-                          </div>
-                          {foreignCurrencyCost &&
-                            foreignAssetBalanceDelta?.lessThan(0) && (
-                              <>
-                                <div
-                                  className={`text-${
-                                    getMetadataForCurrency(editor.form.currency)
-                                      ?.twColor
-                                  }`}
-                                >
-                                  {foreignAssetBalanceDelta.toNumber()}{" "}
-                                  {baseAssetLiquidityRow?.asset}
+                      {!hasEnoughLiquidty && (
+                        <div className="flex-1">
+                          <h3 className="text-base font-normal text-red-400">
+                            Insufficient Balance
+                          </h3>
+                          <div className="flex justify-start gap-6">
+                            <h4 className="text-sm flex-1 font-light text-gray-500">
+                              Missing balance needed to create the market.
+                            </h4>
+                            <div className="center font-semibold gap-1">
+                              {ztgBalanceDelta.lessThan(0) && (
+                                <div className="text-ztg-blue">
+                                  {ztgBalanceDelta.toFixed(1)} ZTG
                                 </div>
-                              </>,
-                            )}
+                              )}
+                            </div>
+                            {foreignCurrencyCost &&
+                              foreignAssetBalanceDelta?.lessThan(0) && (
+                                <>
+                                  <div
+                                    className={`text-${
+                                      getMetadataForCurrency(
+                                        editor.form.currency,
+                                      )?.twColor
+                                    }`}
+                                  >
+                                    {foreignAssetBalanceDelta.toNumber()}{" "}
+                                    {baseAssetLiquidityRow?.asset}
+                                  </div>
+                                </>
+                              )}
+                          </div>
                         </div>
-                      </div>
-                        )
-                      }
+                      )}
                     </Dialog.Panel>
                   </Modal>
                 </div>
