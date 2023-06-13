@@ -14,11 +14,16 @@ export const marketSpotPricesKey = "market-spot-prices";
 
 export type MarketPrices = Map<number, Decimal>;
 
-export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
+export const useMarketSpotPrices = (
+  marketId?: number,
+  blockNumber?: number,
+) => {
   const [sdk, id] = useSdkv2();
 
-  const { data: market } = useMarket({ marketId });
-  const pool = market?.pool;
+  const { data: market } = useMarket(
+    marketId != null ? { marketId } : undefined,
+  );
+  const pool = market?.pool ?? undefined;
   const { data: balances } = useAccountPoolAssetBalances(
     pool?.accountId,
     pool,
@@ -29,27 +34,28 @@ export const useMarketSpotPrices = (marketId: number, blockNumber?: number) => {
     blockNumber,
   );
 
+  const enabled =
+    isRpcSdk(sdk) &&
+    marketId != null &&
+    !!pool &&
+    !!market &&
+    !!basePoolBalance &&
+    !!balances &&
+    balances.length !== 0;
+
   const query = useQuery(
     [id, marketSpotPricesKey, pool, blockNumber, balances, basePoolBalance],
     async () => {
-      if (isRpcSdk(sdk) && basePoolBalance) {
-        const spotPrices: MarketPrices =
-          market.status !== "Resolved"
-            ? calcMarketPrices(market, basePoolBalance, balances)
-            : calcResolvedMarketPrices(market);
+      if (!enabled) return;
+      const spotPrices: MarketPrices =
+        market?.status !== "Resolved"
+          ? calcMarketPrices(market, basePoolBalance, balances)
+          : calcResolvedMarketPrices(market);
 
-        return spotPrices;
-      }
+      return spotPrices;
     },
     {
-      enabled: Boolean(
-        sdk &&
-          isRpcSdk(sdk) &&
-          marketId != null &&
-          pool &&
-          basePoolBalance &&
-          balances?.length > 0,
-      ),
+      enabled: enabled,
     },
   );
 
@@ -63,10 +69,12 @@ const calcMarketPrices = (
 ) => {
   const spotPrices: MarketPrices = new Map();
 
+  if (!market.pool) return spotPrices;
+
   const outcomeWeights = market.pool.weights.filter(
     (weight) =>
       weight.assetId.toLocaleLowerCase() !==
-      market.pool.baseAsset.toLocaleLowerCase(),
+      market.pool?.baseAsset.toLocaleLowerCase(),
   );
 
   //base weight is equal to the sum of all other assets
@@ -81,7 +89,9 @@ const calcMarketPrices = (
       0,
     );
 
-    spotPrices.set(index, spotPrice.isNaN() ? null : spotPrice);
+    if (!spotPrice.isNaN()) {
+      spotPrices.set(index, spotPrice);
+    }
   });
 
   return spotPrices;

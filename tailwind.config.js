@@ -242,6 +242,7 @@ module.exports = {
         mystic: "#E5EAF1",
         "pastel-blue": "#B5C1CA",
         "fog-of-war": "#0F1A2D",
+        "provincial-pink": "#FEF2F2",
         mariner: "#3056D3",
         platinum: "#DFE0E6",
         powderblue: "#ECFAFF",

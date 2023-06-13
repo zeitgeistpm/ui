@@ -112,7 +112,7 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
         <LiquidityHeaderButtonItem className="lg:-ml-14">
           <SecondaryButton
             onClick={() => setManageLiquidityOpen(true)}
-            className="max-w-[160px]"
+            className="max-w-[160px] md:ml-auto md:mr-0"
           >
             Manage Liquidity
           </SecondaryButton>

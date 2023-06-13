@@ -11,6 +11,7 @@ export const useInfinitePoolsList = () => {
   const limit = 20;
 
   const fetcher = async ({ pageParam = 0 }) => {
+    if (!enabled) return { data: [] };
     const pools = await sdk.model.swaps.listPools({
       offset: !pageParam ? 0 : limit * pageParam,
       limit: limit,
@@ -22,10 +23,11 @@ export const useInfinitePoolsList = () => {
     };
   };
 
+  const enabled = !!sdk;
   const query = useInfiniteQuery({
     queryKey: [id, rootKey],
     queryFn: fetcher,
-    enabled: Boolean(sdk),
+    enabled: enabled,
     getNextPageParam: (lastPage) => lastPage.next,
     onSuccess(data) {
       data.pages

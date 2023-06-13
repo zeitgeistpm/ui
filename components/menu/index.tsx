@@ -20,7 +20,6 @@ const TopBar = () => {
     useState<NavbarColor>("transparent");
 
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
-  const [scrollPosition, setScrollPosition] = useState<number>(0);
 
   const changeNavBG = () => {
     if (menuOpen) {
@@ -44,19 +43,22 @@ const TopBar = () => {
   }, [changeNavBG]);
 
   useEffect(() => {
+    const scrollBarWidth = window.innerWidth - document.body.offsetWidth;
     if (menuOpen) {
       document.body.style.height = `100%`;
       document.body.style.overflow = `hidden`;
+      document.body.style.paddingRight = `${scrollBarWidth}px`;
     } else {
       document.body.style.height = `auto`;
       document.body.style.overflow = `initial`;
+      document.body.style.paddingRight = `0px`;
     }
     changeNavBG();
   }, [menuOpen]);
 
   return (
     <div
-      className={`w-full py-3.5 fixed z-40 transition-all duration-300 bg-${navbarBGColor} ${
+      className={`w-screen py-3.5 fixed z-40 transition-all duration-300 bg-${navbarBGColor} ${
         pathname === "/" ? "border-b-0" : "border-b border-gray-200"
       }`}
     >

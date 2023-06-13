@@ -13,6 +13,7 @@ import { AmountInput } from "./inputs";
 import Paginator from "./Paginator";
 import PercentageChange from "./PercentageChange";
 import { ChartData } from "./TimeSeriesChart";
+import { InfoPopover } from "components/ui/InfoPopover";
 
 interface TableProps {
   data: TableData[];
@@ -39,6 +40,7 @@ export interface TableColumn {
   initialSort?: "asc" | "desc";
   onClick?: (row: TableData) => void;
   alignment?: string;
+  infobox?: string;
   // if specified the table will hide this column if it is overflowing
   // lower number columns will be hidden first
   collapseOrder?: number;
@@ -322,7 +324,7 @@ const Table = ({
   testId,
 }: TableProps) => {
   const { rows, prepareRow } = useTable({ columns, data: data ?? [] });
-  const tableRef = useRef<HTMLTableElement>();
+  const tableRef = useRef<HTMLTableElement>(null);
   const [isOverflowing, setIsOverflowing] = useState<boolean>();
   const windowResizeEvent = useEvent(
     typeof window !== "undefined" ? window : undefined,
@@ -367,7 +369,7 @@ const Table = ({
   const handleSortClick = () => {};
 
   const handleLoadMore = () => {
-    onLoadMore();
+    onLoadMore && onLoadMore();
   };
 
   useEffect(() => {
@@ -377,6 +379,7 @@ const Table = ({
   const calcOverflow = () => {
     if (tableRef?.current) {
       const { clientWidth, scrollWidth, parentElement } = tableRef.current;
+      if (!parentElement) return;
       const isOverflowing =
         scrollWidth > parentElement.scrollWidth ||
         clientWidth > parentElement.clientWidth;
@@ -385,7 +388,11 @@ const Table = ({
       if (isOverflowing) {
         const collapseNext = columns
           .filter((col) => col.collapseOrder != null)
-          .sort((a, b) => a.collapseOrder - b.collapseOrder)
+          .sort((a, b) =>
+            a.collapseOrder && b.collapseOrder
+              ? a.collapseOrder - b.collapseOrder
+              : -1,
+          )
           .map((col) => col.accessor)
           .filter((accessor) => !collapsedAccessors.has(accessor))[0];
 
@@ -404,7 +411,6 @@ const Table = ({
 
   const columnIsCollapsed = (columnAccessor: string) =>
     collapsedAccessors.has(columnAccessor);
-
   return (
     <>
       {data == null ? (
@@ -445,7 +451,11 @@ const Table = ({
                       >
                         <div
                           className={`${
-                            column.onSort ? "flex justify-center" : ""
+                            column.onSort
+                              ? "flex justify-center"
+                              : column.infobox
+                              ? "flex items-center gap-1"
+                              : ""
                           }`}
                         >
                           {column.header}
@@ -458,6 +468,9 @@ const Table = ({
                             />
                           ) : (
                             <></>
+                          )}
+                          {column.infobox && (
+                            <InfoPopover children={column.infobox} />
                           )}
                         </div>
                       </th>
@@ -491,9 +504,8 @@ const Table = ({
                               value={cell.value}
                               rowHeight={rowHeightPx}
                               onClick={
-                                cell.column.onClick
-                                  ? () => cell.column.onClick(row.original)
-                                  : null
+                                cell.column.onClick &&
+                                cell.column.onClick(row.original)
                               }
                             />
                           );

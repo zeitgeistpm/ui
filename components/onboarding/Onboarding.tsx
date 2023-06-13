@@ -28,7 +28,7 @@ export const Onboarding = () => {
         notice={
           step === 2
             ? "Remember to install one of the supported wallets before continuing."
-            : null
+            : undefined
         }
       />
     </Modal>

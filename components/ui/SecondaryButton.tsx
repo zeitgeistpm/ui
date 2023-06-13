@@ -6,7 +6,7 @@ const SecondaryButton: FC<
     disabled?: boolean;
     className?: string;
   }>
-> = ({ onClick, disabled, className, children }) => {
+> = ({ onClick, disabled, className = "", children }) => {
   return (
     <button
       onClick={onClick}
