@@ -331,7 +331,7 @@ const MarketHeader: FC<{
   });
 
   const oracleReported = marketHistory?.reported?.by === market.oracle;
-
+  console.log(status);
   return (
     <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
       <h1 className="text-4xl font-extrabold my-5 text-center">{question}</h1>

@@ -47,8 +47,10 @@ const Pill = ({ value, classes }: { value: string; classes: string }) => {
 
 const MarketCardInfo = ({ question }: { question: string }) => {
   return (
-    <div className="w-full h-full flex flex-col text-ztg-14-165 whitespace-normal">
-      <h5 className="font-semibold w-full h-fit line-clamp-3">{question}</h5>
+    <div className="w-full h-full flex flex-col whitespace-normal">
+      <h5 className="font-semibold w-full h-fit line-clamp-3 text-base">
+        {question}
+      </h5>
     </div>
   );
 };
@@ -82,17 +84,17 @@ const MarketCardPredictionBar = ({
 
     return (
       <>
-        <div className="text-sm flex justify-between mb-1">
-          <span className="text-blue">{name}</span>
-          <span className="group-hover:text-white text-gray-500 transition-all">
-            {impliedPercentage}%
-          </span>
-        </div>
         <div
-          className={`w-full rounded-lg h-1.5 transition-all group-hover:bg-white bg-gray-200`}
+          className={`w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative`}
         >
+          <div className="text-sm flex justify-between items-center absolute w-full h-full px-2.5">
+            <span className="text-blue">{name}</span>
+            <span className="group-hover:text-white text-gray-500 transition-all">
+              {impliedPercentage}%
+            </span>
+          </div>
           <div
-            className={`rounded-lg h-full bg-blue`}
+            className={`h-full bg-blue-lighter`}
             style={{
               width: `${isNaN(impliedPercentage) ? 0 : impliedPercentage}%`,
             }}
@@ -127,6 +129,15 @@ const MarketCardDetails = ({
     marketType: { categorical?: string; scalar?: string[] };
   };
 }) => {
+  const isEnding = () => {
+    const currentTime = new Date();
+    const endTime = Number(rows.endDate);
+    //6 hours in milliseconds
+    const sixHours = 21600000;
+    const diff = endTime - currentTime.getTime();
+    //checks if event has passed and is within 6 hours
+    return diff < sixHours && diff > 0 ? true : false;
+  };
   return (
     <div>
       <div className="text-xs mb-2.5">
@@ -141,6 +152,12 @@ const MarketCardDetails = ({
               year: "numeric",
             })}`}
         </span>
+        {!isEnding() && (
+          <span>
+            {" "}
+            | <span className="text-red">Ends Soon</span>
+          </span>
+        )}
       </div>
       <div className="flex gap-2.5 text-sm min-w-full">
         {rows.numParticipants != null && rows.baseAsset ? (
@@ -194,16 +211,6 @@ const MarketCard = ({
   liquidity,
   numParticipants,
 }: MarketCardProps) => {
-  const isEnding = () => {
-    const currentTime = new Date();
-    const endTime = Number(endDate);
-    //6 hours in milliseconds
-    const sixHours = 21600000;
-    const diff = endTime - currentTime.getTime();
-    //checks if event has passed and is within 6 hours
-    return diff < sixHours && diff > 0 ? true : false;
-  };
-
   const isVerified = () => {
     return creation === "Advised" && status === "Active" ? true : false;
   };
@@ -256,9 +263,6 @@ const MarketCard = ({
             <MarketImage image={img} alt={question} />
             <div className="flex flex-wrap gap-2.5 font-medium h-fit">
               <MarketCardTags tags={tags} />
-              {isEnding() && (
-                <Pill value="Ends Soon" classes="bg-red-light text-red" />
-              )}
               {isProposed() && (
                 <Pill value="Proposed" classes="bg-purple-light text-purple" />
               )}
