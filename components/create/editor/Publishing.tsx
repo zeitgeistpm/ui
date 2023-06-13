@@ -144,7 +144,9 @@ export const Publishing = ({ editor }: PublishingProps) => {
   const ztgCost = new Decimal(bondCost ?? 0)
     .plus(oracleBond ?? 0)
     .plus(
-      editor.form.liquidity?.deploy && editor.form.currency === "ZTG"
+      editor.form.moderation === "Permissionless" &&
+        editor.form.liquidity?.deploy &&
+        editor.form.currency === "ZTG"
         ? new Decimal(baseAssetLiquidityRow?.value).mul(2).toNumber()
         : 0,
     );
@@ -220,27 +222,28 @@ export const Publishing = ({ editor }: PublishingProps) => {
                           </div>
                         </div>
                       </div>
-                      {editor.form.liquidity?.deploy && (
-                        <div className="mt-4 flex">
-                          <div className="flex-1">
-                            <h3 className="text-base font-normal text-black">
-                              Liquidity
-                            </h3>
-                            <div className="flex justify-start items-center gap-6">
-                              <h4 className="text-sm flex-1 text-gray-500 font-light">
-                                Can be withdrawn at any time, will collect fees
-                                but subject to impermanent loss.
-                              </h4>
-                              <div className="">
-                                {new Decimal(baseAssetLiquidityRow?.value)
-                                  .mul(2)
-                                  .toFixed(1)}{" "}
-                                {baseAssetLiquidityRow?.asset}
+                      {editor.form.moderation === "Permissionless" &&
+                        editor.form.liquidity?.deploy && (
+                          <div className="mt-4 flex">
+                            <div className="flex-1">
+                              <h3 className="text-base font-normal text-black">
+                                Liquidity
+                              </h3>
+                              <div className="flex justify-start items-center gap-6">
+                                <h4 className="text-sm flex-1 text-gray-500 font-light">
+                                  Can be withdrawn at any time, will collect
+                                  fees but subject to impermanent loss.
+                                </h4>
+                                <div className="">
+                                  {new Decimal(baseAssetLiquidityRow?.value)
+                                    .mul(2)
+                                    .toFixed(1)}{" "}
+                                  {baseAssetLiquidityRow?.asset}
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                       <div className="mt-8 flex border-t-1 pt-4">
                         <div className="flex-1">
                           <h3 className="text-base font-normal text-black">
