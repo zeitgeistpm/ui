@@ -174,6 +174,9 @@ module.exports = {
         "560px": "560px",
       },
       colors: {
+        success: "#E8FFE4",
+        info: "#E4F5FF",
+        error: "#FFE6E4",
         "maroon-base": "#3C0C0C",
         "kusama-base": "#E10178",
         "kusama-green": "#00E7BD",

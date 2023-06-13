@@ -1,6 +1,6 @@
 import { atom, useAtom } from "jotai";
 import { generateGUID } from "lib/util/generate-guid";
-import { useRef } from "react";
+import { ReactNode, useRef } from "react";
 
 export type Notification = {
   /**
@@ -14,7 +14,7 @@ export type Notification = {
   /**
    * Content of the notification.
    */
-  content: string | null;
+  content: ReactNode | string | null;
   /**
    * Whether the notification should be removed automatically when a new notifications is pushed.
    */
@@ -22,7 +22,7 @@ export type Notification = {
   /**
    * Lifetime of the notification in seconds.
    */
-  lifetime: number;
+  lifetime?: number;
 };
 
 /**

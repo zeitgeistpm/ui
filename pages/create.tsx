@@ -685,6 +685,45 @@ const Inner = observer(({ sdkv1 }: { sdkv1: SDK }) => {
 
   return (
     <form data-test="createMarketForm">
+      <button
+        type="button"
+        className="mr-2 p-2 bg-gray-100"
+        onClick={() => {
+          notificationStore.pushNotification(
+            "You’ve Just Bought 102.00 Morocco Predictions for 34 500.00 ZTG",
+            {
+              type: "Success",
+            },
+          );
+        }}
+      >
+        Success
+      </button>
+      <button
+        type="button"
+        className="mr-2 p-2 bg-gray-100"
+        onClick={() => {
+          notificationStore.pushNotification("Short", {
+            type: "Info",
+          });
+        }}
+      >
+        Info
+      </button>
+      <button
+        type="button"
+        className="mr-2 p-2 bg-gray-100"
+        onClick={() => {
+          notificationStore.pushNotification(
+            "Some test content goes here I think.",
+            {
+              type: "Error",
+            },
+          );
+        }}
+      >
+        Error
+      </button>
       <InfoBoxes />
       <h2 className="mb-4" data-test="createMarketHeader">
         Create Market
