@@ -9,6 +9,7 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { endpointOptions, graphQlEndpoint, ZTG } from "lib/constants";
+import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { NextPage } from "next";
 import Link from "next/link";
 
@@ -57,6 +58,37 @@ type Rank = {
   profit: number;
 };
 
+type BasePrices = {
+  [key: string | "ztg"]: [number, number][];
+};
+
+const getBaseAssetHistoricalPrices = async (): Promise<BasePrices> => {
+  const coinGeckoIds = [
+    ...Object.values(FOREIGN_ASSET_METADATA).map((asset) => asset.coinGeckoId),
+    "zeitgeist",
+  ];
+
+  const pricesRes = await Promise.all(
+    coinGeckoIds.map((id) =>
+      fetch(
+        `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=max`,
+      ),
+    ),
+  );
+
+  const prices = await Promise.all(pricesRes.map((res) => res.json()));
+  const assetIds = Object.keys(FOREIGN_ASSET_METADATA);
+
+  const pricesObj = prices.reduce<BasePrices>((obj, assetPrices, index) => {
+    obj[assetIds[index]] = assetPrices.prices;
+    return obj;
+  }, {});
+
+  pricesObj["ztg"] = prices.at(-1).prices;
+
+  return pricesObj;
+};
+
 export async function getStaticProps() {
   // const client = new GraphQLClient(graphQlEndpoint);
   // const sdk= await create(mainnet());
@@ -65,6 +97,8 @@ export async function getStaticProps() {
     indexer: graphQlEndpoint,
     storage: ZeitgeistIpfs(),
   });
+
+  const basePrices = await getBaseAssetHistoricalPrices();
 
   const { markets } = await sdk.indexer.markets();
 
