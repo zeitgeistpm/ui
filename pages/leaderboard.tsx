@@ -53,10 +53,25 @@ type TradersByMarket = {
   [key: AccountId]: MarketTotals;
 };
 
+type MarketSummary = {
+  marketId: number;
+  question: string;
+  baseAssetId: BaseAssetId;
+  profit: number;
+};
+
+type TradersSummary = {
+  [key: AccountId]: {
+    profit: number;
+    markets: MarketSummary[];
+  };
+};
+
 type Rank = {
   accountId: string;
   profit: number;
   name?: string;
+  markets: MarketSummary[];
 };
 
 type BasePrices = {
@@ -212,6 +227,7 @@ export async function getStaticProps() {
       tradersWithSwaps[redeem.accountId] = trades;
     }
   });
+  //fetch and process buy/sell full sets
 
   //loop through accounts and trades, total up baseAsset in and out for each market
   const tradersAggregatedByMarket = Object.keys(
@@ -268,46 +284,64 @@ export async function getStaticProps() {
 
   console.log(tradersAggregatedByMarket);
 
-  const tradeProfits = Object.keys(tradersAggregatedByMarket).reduce(
-    (ranks, accountId) => {
-      const trader = tradersAggregatedByMarket[accountId];
+  const tradeProfits = Object.keys(
+    tradersAggregatedByMarket,
+  ).reduce<TradersSummary>((ranks, accountId) => {
+    const trader = tradersAggregatedByMarket[accountId];
 
-      const profit = Object.keys(trader).reduce<Decimal>((total, marketId) => {
-        const marketTotal = trader[marketId];
+    const marketsSummary: MarketSummary[] = [];
+    const profit = Object.keys(trader).reduce<Decimal>((total, marketId) => {
+      const marketTotal = trader[marketId];
 
-        const market = markets.find((m) => m.marketId === Number(marketId));
+      const market = markets.find((m) => m.marketId === Number(marketId));
 
-        if (market?.status === "Resolved") {
-          const diff = marketTotal.baseAssetOut.minus(marketTotal.baseAssetIn);
-          const endTimestamp = market.period.end;
+      if (market?.status === "Resolved") {
+        const diff = marketTotal.baseAssetOut.minus(marketTotal.baseAssetIn);
 
-          const marketEndBaseAssetPrice = lookupPrice(
-            basePrices,
-            marketTotal.baseAsset,
-            endTimestamp,
-          );
-          const usdProfitLoss = diff.mul(marketEndBaseAssetPrice);
-          return total.plus(usdProfitLoss);
-        } else {
-          return total;
-        }
-      }, new Decimal(0));
+        marketsSummary.push({
+          question: market.question,
+          marketId: market.marketId,
+          baseAssetId: marketTotal.baseAsset,
+          profit: diff.div(ZTG).toNumber(),
+        });
 
-      return { ...ranks, [accountId]: profit.div(ZTG).toNumber() };
-    },
-    {},
-  );
+        const endTimestamp = market.period.end;
+
+        const marketEndBaseAssetPrice = lookupPrice(
+          basePrices,
+          marketTotal.baseAsset,
+          endTimestamp,
+        );
+        const usdProfitLoss = diff.mul(marketEndBaseAssetPrice);
+        return total.plus(usdProfitLoss);
+      } else {
+        return total;
+      }
+    }, new Decimal(0));
+
+    return {
+      ...ranks,
+      [accountId]: {
+        profit: profit.div(ZTG).toNumber(),
+        markets: marketsSummary,
+      },
+    };
+  }, {});
 
   console.log(tradeProfits);
 
   const rankings = Object.keys(tradeProfits)
     .reduce<Rank[]>((rankings, accountId) => {
-      rankings.push({ accountId, profit: tradeProfits[accountId] });
+      rankings.push({
+        accountId,
+        profit: tradeProfits[accountId].profit,
+        markets: tradeProfits[accountId].markets,
+      });
       return rankings;
     }, [])
     .sort((a, b) => b.profit - a.profit);
 
-  const top10 = rankings.slice(0, 10);
+  const top10 = rankings.slice(0, 100);
 
   const indentities = await Promise.all(
     top10.map((player) => sdk.api.query.identity.identityOf(player.accountId)),
@@ -336,16 +370,29 @@ const Leaderboard: NextPage<{
       <div className="font-bold text-xl mb-[20px]">Most Profit</div>
       <div className="flex flex-col gap-y-5">
         {rankings.map((rank, index) => (
-          <div key={index} className="flex items-center justify-center">
-            <div className="mr-[20px] w-[20px]">{index + 1}</div>
-            <Link
-              className="flex items-center"
-              href={`/portfolio/${rank.accountId}`}
-            >
-              <Avatar size={50} address={rank.accountId} />
-              <span className="ml-ztg-10">{rank.name ?? rank.accountId}</span>
-            </Link>
-            <div className="ml-auto font-bold">${rank.profit.toFixed(0)}</div>
+          <div className="flex flex-col">
+            <div key={index} className="flex items-center justify-center">
+              <div className="mr-[20px] w-[20px]">{index + 1}</div>
+              <Link
+                className="flex items-center"
+                href={`/portfolio/${rank.accountId}`}
+              >
+                <Avatar size={50} address={rank.accountId} />
+                <span className="ml-ztg-15">{rank.name ?? rank.accountId}</span>
+              </Link>
+              <div className="ml-auto font-bold">${rank.profit.toFixed(0)}</div>
+            </div>
+            <div>
+              {rank.markets
+                .sort((a, b) => b.profit - a.profit)
+                .slice(0, 3)
+                .map((market) => (
+                  <div>
+                    <div>{market.question}</div>
+                    <div>{market.profit.toFixed()}</div>
+                  </div>
+                ))}
+            </div>
           </div>
         ))}
       </div>
