@@ -100,17 +100,6 @@ const getTopBarColor = (type: NotificationType) => {
   }
 };
 
-const getGradient = (type: NotificationType): [string, string] => {
-  switch (type) {
-    case "Success":
-      return ["#31C48D", "#ADFF00"];
-    case "Info":
-      return ["#31A1C4", "#00F0FF"];
-    case "Error":
-      return ["#C43131", "#FF6B00"];
-  }
-};
-
 const NotificationCenter = () => {
   const { notifications, removeNotification } = useNotifications();
 
