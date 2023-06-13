@@ -29,12 +29,7 @@ export const Loader = ({
           } 35%, ${gradient?.[1] ?? "rgba(0,0,0,0.1)"} 100%)`,
         }}
       ></div>
-      <div
-        className="absolute center top-[6%] left-[6%] h-[88%] w-88% bg-inherit rounded-full z-20 "
-        style={{
-          maskOrigin: "content-box",
-        }}
-      >
+      <div className="absolute center top-[6%] left-[6%] h-[88%] w-88% bg-inherit rounded-full z-20 ">
         {lineThrough && (
           <div
             className="absolute, top-0 left-0 w-[8%] h-[102%] rotate-45 bg-red"
