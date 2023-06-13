@@ -27,7 +27,9 @@ const NotificationCard: FC<{
 
   useEffect(() => {
     if (lifetime && timer <= 0) {
-      close();
+      setTimeout(() => {
+        close();
+      }, TIMER_TICK_RATE);
     }
   }, [timer, lifetime]);
 
@@ -115,16 +117,16 @@ const NotificationCenter = () => {
   return (
     <div className="fixed h-full w-full top-0 pointer-events-none z-50">
       <div className="flex flex-row justify-end pr-ztg-27 pt-20">
-        <div className="flex flex-col">
-          <AnimatePresence>
+        <div className="flex relative flex-col">
+          <AnimatePresence mode="popLayout">
             {notifications.map((notification, index) => (
               <motion.div
-                key={index}
+                key={notification.id}
                 initial={{ x: 300, opacity: 0 }}
                 exit={{ x: 300, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ type: "spring", duration: 0.7 }}
-                className="mb-4 pointer-events-auto"
+                className="mb-4 pointer-events-auto relative"
               >
                 <NotificationCard
                   dataTest="notificationMessage"
