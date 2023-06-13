@@ -14,15 +14,13 @@ import { endpointOptions, graphQlEndpoint, ZTG } from "lib/constants";
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { NextPage } from "next";
 import Link from "next/link";
+import Avatar from "components/ui/Avatar";
 
 //todo:
-// wait for market resolution to count profit
-// convert to $
-// support different base assets
 // display most profitable market?
 // include buy/sell full set events
 // styling
-// identity
+// handle staging price (no ztg price history)
 
 type Trade = {
   marketId: number;
@@ -58,6 +56,7 @@ type TradersByMarket = {
 type Rank = {
   accountId: string;
   profit: number;
+  name?: string;
 };
 
 type BasePrices = {
@@ -278,7 +277,7 @@ export async function getStaticProps() {
 
         const market = markets.find((m) => m.marketId === Number(marketId));
 
-        if (market.status === "Resolved") {
+        if (market?.status === "Resolved") {
           const diff = marketTotal.baseAssetOut.minus(marketTotal.baseAssetIn);
           const endTimestamp = market.period.end;
 
@@ -308,11 +307,22 @@ export async function getStaticProps() {
     }, [])
     .sort((a, b) => b.profit - a.profit);
 
-  console.log(rankings);
-  //take top 10 and find identities here
+  const top10 = rankings.slice(0, 10);
+
+  const indentities = await Promise.all(
+    top10.map((player) => sdk.api.query.identity.identityOf(player.accountId)),
+  );
+
+  const names: (string | undefined)[] = indentities.map(
+    (i) => (i.toHuman() as any)?.info?.display.Raw,
+  );
+
   return {
     props: {
-      rankings,
+      rankings: top10.map((player, index) => ({
+        ...player,
+        name: names[index] ?? null,
+      })),
       revalidate: 10 * 60, //10min
     },
   };
@@ -322,14 +332,18 @@ const Leaderboard: NextPage<{
   rankings: Rank[];
 }> = ({ rankings }) => {
   return (
-    <div>
+    <div className="mx-0 sm:mx-[50px]">
       <div className="font-bold text-xl mb-[20px]">Most Profit</div>
-      <div>
+      <div className="flex flex-col gap-y-5">
         {rankings.map((rank, index) => (
-          <div key={index} className="flex">
+          <div key={index} className="flex items-center justify-center">
             <div className="mr-[20px] w-[20px]">{index + 1}</div>
-            <Link className="flex" href={`/portfolio/${rank.accountId}`}>
-              <span className="ml-ztg-10">{rank.accountId}</span>
+            <Link
+              className="flex items-center"
+              href={`/portfolio/${rank.accountId}`}
+            >
+              <Avatar size={50} address={rank.accountId} />
+              <span className="ml-ztg-10">{rank.name ?? rank.accountId}</span>
             </Link>
             <div className="ml-auto font-bold">${rank.profit.toFixed(0)}</div>
           </div>
