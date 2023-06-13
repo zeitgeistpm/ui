@@ -33,10 +33,24 @@ const NotificationCard: FC<{
 
   return (
     <div
-      className={`flex gap-4 rounded-md border-t-4 px-4 min-w-[340px] ${getBgColor(
+      className={`flex relative gap-4 rounded-md px-4 min-w-[340px] ${getBgColor(
         type,
-      )} ${getTopBarColor(type)}`}
+      )}`}
     >
+      <div
+        className={`absolute top-0 left-0  h-1 w-full rounded-t-md overflow-hidden z-20 ${getBgColor(
+          type,
+        )}`}
+      >
+        <div
+          className={`${getTopBarColor(
+            type,
+          )} h-full absolute z-40 top-0 left-0 transition-all duration-500 ease-linear`}
+          style={{
+            width: `${((100 * timer) / lifetime).toFixed(2)}%`,
+          }}
+        ></div>
+      </div>
       <div className="text-white flex justify-center px-4 py-6">
         <div className={`center ${getBgColor(type)}`}>
           <Loader
@@ -76,11 +90,11 @@ const getBgColor = (type: NotificationType) => {
 const getTopBarColor = (type: NotificationType) => {
   switch (type) {
     case "Success":
-      return "border-[#31C48D]";
+      return "bg-[#31C48D]";
     case "Info":
-      return "border-[#31A1C4]";
+      return "bg-[#31A1C4]";
     case "Error":
-      return "border-[#C43131]";
+      return "bg-[#C43131]";
   }
 };
 

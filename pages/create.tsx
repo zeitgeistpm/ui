@@ -685,6 +685,46 @@ const Inner = observer(({ sdkv1 }: { sdkv1: SDK }) => {
 
   return (
     <form data-test="createMarketForm">
+      <button
+        type="button"
+        onClick={() => {
+          notificationStore.pushNotification(
+            "This feature is not yet available",
+            {
+              type: "Error",
+            },
+          );
+        }}
+      >
+        Error
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          notificationStore.pushNotification(
+            "This feature is not yet available",
+            {
+              lifetime: 5,
+              type: "Info",
+            },
+          );
+        }}
+      >
+        Info
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          notificationStore.pushNotification(
+            "This feature is not yet available",
+            {
+              type: "Success",
+            },
+          );
+        }}
+      >
+        Success
+      </button>
       <InfoBoxes />
       <h2 className="mb-4" data-test="createMarketHeader">
         Create Market
