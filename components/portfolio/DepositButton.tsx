@@ -124,7 +124,7 @@ const DepositModal = ({
       if (!changedByUser) return;
 
       //assumes source chain fee is paid in currency that is being transferred
-      const maxTransferAmount = balance.minus(fee?.mul(1.01) ?? 0); //add 1% buffer to fee
+      const maxTransferAmount = balance.minus(fee?.mul(1.001) ?? 0); //add 0.1% buffer to fee
       if (name === "percentage") {
         setValue(
           "amount",
