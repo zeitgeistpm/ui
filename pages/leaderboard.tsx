@@ -1,8 +1,10 @@
 import {
   AssetId,
+  BaseAssetId,
   create,
   getMarketIdOf,
   IOBaseAssetId,
+  IOForeignAssetId,
   IOMarketOutcomeAssetId,
   parseAssetId,
   ZeitgeistIpfs,
@@ -41,7 +43,7 @@ type Traders = {
 type MarketTotals = {
   [key: MarketId]: {
     // marketId: number;
-    baseAsset: AssetId;
+    baseAsset: BaseAssetId;
     baseAssetIn: Decimal;
     baseAssetOut: Decimal;
   };
@@ -60,6 +62,33 @@ type Rank = {
 
 type BasePrices = {
   [key: string | "ztg"]: [number, number][];
+};
+
+const datesAreOnSameDay = (first: Date, second: Date) =>
+  first.getFullYear() === second.getFullYear() &&
+  first.getMonth() === second.getMonth() &&
+  first.getDate() === second.getDate();
+
+const findPrice = (timestamp: number, prices: [number, number][]) => {
+  const date = new Date(Number(timestamp));
+
+  const price = prices.find((p) => {
+    return datesAreOnSameDay(date, new Date(p[0]));
+  });
+
+  return price[1];
+};
+
+const lookupPrice = (
+  basePrices: BasePrices,
+  baseAsset: BaseAssetId,
+  timestamp: number,
+) => {
+  const prices = IOForeignAssetId.is(baseAsset)
+    ? basePrices[baseAsset.ForeignAsset]
+    : basePrices["ztg"];
+
+  return findPrice(timestamp, prices);
 };
 
 const getBaseAssetHistoricalPrices = async (): Promise<BasePrices> => {
@@ -195,7 +224,7 @@ export async function getStaticProps() {
     const marketTotal = swaps.reduce<MarketTotals>((markets, swap) => {
       let baseAssetSwapType: "in" | "out" | undefined;
       let baseAssetAmount: Decimal | undefined;
-      let baseAsset: AssetId;
+      let baseAsset: BaseAssetId;
 
       if (IOBaseAssetId.is(swap.assetIn)) {
         baseAssetSwapType = "in";
@@ -245,9 +274,24 @@ export async function getStaticProps() {
       const trader = tradersAggregatedByMarket[accountId];
 
       const profit = Object.keys(trader).reduce<Decimal>((total, marketId) => {
-        const market = trader[marketId];
+        const marketTotal = trader[marketId];
 
-        return total.plus(market.baseAssetOut).minus(market.baseAssetIn);
+        const market = markets.find((m) => m.marketId === Number(marketId));
+
+        if (market.status === "Resolved") {
+          const diff = marketTotal.baseAssetOut.minus(marketTotal.baseAssetIn);
+          const endTimestamp = market.period.end;
+
+          const marketEndBaseAssetPrice = lookupPrice(
+            basePrices,
+            marketTotal.baseAsset,
+            endTimestamp,
+          );
+          const usdProfitLoss = diff.mul(marketEndBaseAssetPrice);
+          return total.plus(usdProfitLoss);
+        } else {
+          return total;
+        }
       }, new Decimal(0));
 
       return { ...ranks, [accountId]: profit.div(ZTG).toNumber() };
@@ -265,7 +309,7 @@ export async function getStaticProps() {
     .sort((a, b) => b.profit - a.profit);
 
   console.log(rankings);
-
+  //take top 10 and find identities here
   return {
     props: {
       rankings,
@@ -287,9 +331,7 @@ const Leaderboard: NextPage<{
             <Link className="flex" href={`/portfolio/${rank.accountId}`}>
               <span className="ml-ztg-10">{rank.accountId}</span>
             </Link>
-            <div className="ml-auto font-bold">
-              {rank.profit.toFixed(0)} ZTG
-            </div>
+            <div className="ml-auto font-bold">${rank.profit.toFixed(0)}</div>
           </div>
         ))}
       </div>
