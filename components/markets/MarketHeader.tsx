@@ -27,7 +27,7 @@ import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import { Dialog } from "@headlessui/react";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 
-const UserIdentity: FC<
+export const UserIdentity: FC<
   PropsWithChildren<{ user: string; className?: string }>
 > = ({ user, className }) => {
   const { data: identity } = useIdentity(user ?? "");

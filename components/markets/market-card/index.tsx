@@ -12,14 +12,15 @@ import { ZTG } from "lib/constants";
 import Skeleton from "components/ui/Skeleton";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
-import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { UserIdentity } from "../MarketHeader";
 
 export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
   question: string;
   creation: string;
+  creator: string;
   outcomes: MarketOutcomes;
   marketType: { categorical?: string; scalar?: string[] };
   scalarType: ScalarRangeType;
@@ -45,12 +46,19 @@ const Pill = ({ value, classes }: { value: string; classes: string }) => {
   );
 };
 
-const MarketCardInfo = ({ question }: { question: string }) => {
+const MarketCardInfo = ({
+  question,
+  img,
+}: {
+  question: string;
+  img: string;
+}) => {
   return (
-    <div className="w-full h-full flex flex-col whitespace-normal">
+    <div className="w-full h-full flex whitespace-normal gap-4">
       <h5 className="font-semibold w-full h-fit line-clamp-3 text-base">
         {question}
       </h5>
+      {question && <MarketImage image={img} alt={question} />}
     </div>
   );
 };
@@ -83,24 +91,22 @@ const MarketCardPredictionBar = ({
     const impliedPercentage = Math.round(Number(price) * 100);
 
     return (
-      <>
-        <div
-          className={`w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative`}
-        >
-          <div className="text-sm flex justify-between items-center absolute w-full h-full px-2.5">
-            <span className="text-blue">{name}</span>
-            <span className="group-hover:text-white text-gray-500 transition-all">
-              {impliedPercentage}%
-            </span>
-          </div>
-          <div
-            className={`h-full bg-blue-lighter`}
-            style={{
-              width: `${isNaN(impliedPercentage) ? 0 : impliedPercentage}%`,
-            }}
-          />
+      <div
+        className={`w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative`}
+      >
+        <div className="text-sm flex justify-between items-center absolute w-full h-full px-2.5">
+          <span className="text-blue">{name}</span>
+          <span className="group-hover:text-white text-gray-500 transition-all">
+            {impliedPercentage}%
+          </span>
         </div>
-      </>
+        <div
+          className={`h-full bg-blue-lighter`}
+          style={{
+            width: `${isNaN(impliedPercentage) ? 0 : impliedPercentage}%`,
+          }}
+        />
+      </div>
     );
   } else {
     return (
@@ -140,7 +146,7 @@ const MarketCardDetails = ({
   };
   return (
     <div>
-      <div className="text-xs mb-2.5">
+      <div className="text-xs mb-4">
         <span className="font-semibold">{rows.outcomes} outcomes</span>
         <span>
           {rows.endDate &&
@@ -197,6 +203,7 @@ const MarketCard = ({
   img,
   question,
   creation,
+  creator,
   outcomes,
   marketType,
   prediction,
@@ -248,20 +255,22 @@ const MarketCard = ({
   const upper = marketType?.scalar?.[1]
     ? new Decimal(marketType?.scalar?.[1]).div(ZTG).toNumber()
     : 0;
-
+  console.log(creator);
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
         data-testid={`marketCard-${marketId}`}
-        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)] min-h-[290px] h-auto rounded-xl p-[15px] relative bg-anti-flash-white hover:bg-pastel-blue ${className}`}
+        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)] min-h-[290px] h-[274px] rounded-[10px] p-[15px] relative bg-anti-flash-white hover:bg-pastel-blue ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
-          className="flex flex-col flex-1 gap-2.5"
+          className="flex flex-col flex-1 gap-4"
         >
           <div className="flex gap-2.5">
-            <MarketImage image={img} alt={question} />
-            <div className="flex flex-wrap gap-2.5 font-medium h-fit">
+            {creator && (
+              <UserIdentity user={creator} className="text-xs gap-2.5" />
+            )}
+            {/* <div className="flex flex-wrap gap-2.5 font-medium h-fit">
               <MarketCardTags tags={tags} />
               {isProposed() && (
                 <Pill value="Proposed" classes="bg-purple-light text-purple" />
@@ -272,9 +281,9 @@ const MarketCard = ({
                   classes="bg-green-light text-green"
                 />
               )}
-            </div>
+            </div> */}
           </div>
-          <MarketCardInfo question={question} />
+          <MarketCardInfo question={question} img={img} />
           <div className="w-full">
             {marketType.scalar === null ? (
               <MarketCardPredictionBar pool={pool} prediction={prediction} />
