@@ -1,12 +1,16 @@
 import { Dialog } from "@headlessui/react";
 import { PollingTimeout, poll } from "@zeitgeistpm/avatara-util";
-import { isFullSdk } from "@zeitgeistpm/sdk-next";
+import { ZTG, isFullSdk } from "@zeitgeistpm/sdk-next";
 import { StorageError } from "@zeitgeistpm/web3.storage";
 import Modal from "components/ui/Modal";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
-import { getMetadataForCurrency } from "lib/constants/supported-currencies";
+import {
+  getMetadataForCurrency,
+  supportedCurrencies,
+} from "lib/constants/supported-currencies";
 import { checkMarketExists } from "lib/gql/markets";
+import { useBalance } from "lib/hooks/queries/useBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChainTime } from "lib/state/chaintime";
@@ -35,6 +39,21 @@ export const Publishing = ({ editor }: PublishingProps) => {
   const { data: constants } = useChainConstants();
 
   const firstInvalidStep = editor.steps.find((step) => !step.isValid);
+
+  const baseCurrency = supportedCurrencies.find(
+    (a) => a.name === editor.form.currency,
+  );
+
+  const { data: ztgBalance } = useBalance(wallet.activeAccount?.address, {
+    Ztg: null,
+  });
+
+  const { data: foreignAssetBalance } = useBalance(
+    wallet.activeAccount?.address,
+    baseCurrency?.assetId,
+  );
+
+  console.log(ztgBalance.toNumber(), foreignAssetBalance.toNumber());
 
   const params = useMemo(() => {
     if (editor.isValid && chainTime) {
@@ -153,8 +172,17 @@ export const Publishing = ({ editor }: PublishingProps) => {
 
   const foreignCurrencyCost =
     editor.form.liquidity?.deploy && editor.form.currency !== "ZTG"
-      ? new Decimal(baseAssetLiquidityRow?.value ?? 0).mul(2).toNumber()
+      ? new Decimal(baseAssetLiquidityRow?.value ?? 0).mul(2)
       : null;
+
+  const ztgBalanceDelta = ztgBalance.div(ZTG).minus(ztgCost);
+  const foreignAssetBalanceDelta =
+    foreignCurrencyCost &&
+    foreignAssetBalance.div(ZTG).minus(foreignCurrencyCost);
+
+  const hasEnoughLiquidty =
+    ztgBalanceDelta?.gte(0) &&
+    (!foreignCurrencyCost || foreignAssetBalanceDelta?.gte(0));
 
   return (
     <>
@@ -166,15 +194,22 @@ export const Publishing = ({ editor }: PublishingProps) => {
                 <TransactionButton
                   type="button"
                   disabled={
-                    !editor.isValid || isTransacting || editor.isPublished
+                    !editor.isValid ||
+                    isTransacting ||
+                    editor.isPublished ||
+                    !hasEnoughLiquidty
                   }
                   className={`
-                 !py-4 !px-7 !h-auto rounded-full !text-xl center font-normal !gap-2 transition-all !w-60
+                 !py-4 !px-7 !h-auto rounded-full !text-xl center font-normal !gap-2 transition-all !w-72
               `}
                   onClick={submit}
                 >
                   <div className="flex-1">
-                    {isTransacting ? "Transacting.." : "Publish Market"}
+                    {!hasEnoughLiquidty
+                      ? "Insufficient Balance"
+                      : isTransacting
+                      ? "Transacting.."
+                      : "Publish Market"}
                   </div>
                   <div className={`${isTransacting && "animate-ping"}`}>
                     <RiSendPlaneLine />
@@ -182,10 +217,11 @@ export const Publishing = ({ editor }: PublishingProps) => {
                 </TransactionButton>
                 <div className="absolute -bottom-8 left-[50%] translate-x-[-50%]">
                   <div
-                    className="cursor-pointer text-ztg-blue text-sm underline font-semibold w-40 text-center"
+                    className={`cursor-pointer text-sm underline font-semibold w-40 text-center ${hasEnoughLiquidty ? "text-ztg-blue" : "text-vermilion"}`}
                     onClick={() => setTotalCostIsOpen(true)}
                   >
-                    View Cost Breakdown
+                    {hasEnoughLiquidty ? "View Cost Breakdown" : "View Insufficiency"}
+                    
                   </div>
                   <Modal
                     open={totalCostIsOpen}
@@ -244,7 +280,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
                             </div>
                           </div>
                         )}
-                      <div className="mt-8 flex border-t-1 pt-4">
+                      <div className="mt-8 mb-4 flex border-t-1 pt-4">
                         <div className="flex-1">
                           <h3 className="text-base font-normal text-black">
                             Total
@@ -267,7 +303,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
                                       )?.twColor
                                     }`}
                                   >
-                                    {foreignCurrencyCost}{" "}
+                                    {foreignCurrencyCost.toNumber()}{" "}
                                     {baseAssetLiquidityRow?.asset}
                                   </div>
                                 </>
@@ -276,6 +312,41 @@ export const Publishing = ({ editor }: PublishingProps) => {
                           </div>
                         </div>
                       </div>
+                      {
+                        !hasEnoughLiquidty && (
+                          <div className="flex-1">
+                        <h3 className="text-base font-normal text-red-400">
+                          Insufficient Balance
+                        </h3>
+                        <div className="flex justify-start gap-6">
+                          <h4 className="text-sm flex-1 font-light text-gray-500">
+                            Missing balance needed to create the market.
+                          </h4>
+                          <div className="center font-semibold gap-1">
+                            {ztgBalanceDelta.lessThan(0) && (
+                              <div className="text-ztg-blue">
+                                {ztgBalanceDelta.toFixed(1)} ZTG
+                              </div>
+                            )}
+                          </div>
+                          {foreignCurrencyCost &&
+                            foreignAssetBalanceDelta?.lessThan(0) && (
+                              <>
+                                <div
+                                  className={`text-${
+                                    getMetadataForCurrency(editor.form.currency)
+                                      ?.twColor
+                                  }`}
+                                >
+                                  {foreignAssetBalanceDelta.toNumber()}{" "}
+                                  {baseAssetLiquidityRow?.asset}
+                                </div>
+                              </>,
+                            )}
+                        </div>
+                      </div>
+                        )
+                      }
                     </Dialog.Panel>
                   </Modal>
                 </div>
