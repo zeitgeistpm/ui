@@ -1,16 +1,22 @@
+import { isString } from "lodash-es";
+
 export type LoaderProps = {
   className?: string;
   loading?: boolean;
-  gradient?: [string, string];
+  variant?: LoaderVariant | [string, string];
   lineThrough?: boolean;
 };
+
+export type LoaderVariant = "Success" | "Info" | "Error";
 
 export const Loader = ({
   className,
   loading,
-  gradient,
+  variant,
   lineThrough,
 }: LoaderProps) => {
+  const gradient = isString(variant) ? getGradient(variant) : variant;
+
   return (
     <div className={`relative bg-inherit rounded-full ${className}`}>
       <div
@@ -42,4 +48,15 @@ export const Loader = ({
       </div>
     </div>
   );
+};
+
+const getGradient = (type: LoaderVariant): [string, string] => {
+  switch (type) {
+    case "Success":
+      return ["#31C48D", "#ADFF00"];
+    case "Info":
+      return ["#31A1C4", "#00F0FF"];
+    case "Error":
+      return ["#C43131", "#FF6B00"];
+  }
 };

@@ -59,7 +59,7 @@ const NotificationCard: FC<{
             loading={Boolean(lifetime)}
             lineThrough={type === "Error"}
             className="h-12 w-12"
-            gradient={getGradient(type)}
+            variant={type}
           />
         </div>
       </div>
