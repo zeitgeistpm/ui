@@ -3,6 +3,7 @@ import Toggle from "components/ui/Toggle";
 import WizardStepper from "components/wizard/WizardStepper";
 import { nextStepFrom, prevStepFrom } from "components/wizard/types";
 import { useAtom } from "jotai";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { useChainTime } from "lib/state/chaintime";
 import {
@@ -14,14 +15,15 @@ import { useMarketDraftEditor } from "lib/state/market-creation/editor";
 import * as MarketDraft from "lib/state/market-creation/types/draft";
 import { persistentAtom } from "lib/state/util/persistent-atom";
 import dynamic from "next/dynamic";
-import { FormEventHandler, useEffect, useRef } from "react";
+import { useRef } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { LuFileWarning } from "react-icons/lu";
 import { ErrorMessage } from "./ErrorMessage";
 import InfoPopover from "./InfoPopover";
 import { MarketFormSection } from "./MarketFormSection";
-import MarketSummary from "./Summary";
+import { Publishing } from "./Publishing";
 import { EditorResetButton } from "./ResetButton";
+import MarketSummary from "./Summary";
 import BlockPeriodPicker from "./inputs/BlockPeriod";
 import CategorySelect from "./inputs/Category";
 import CurrencySelect from "./inputs/Currency";
@@ -30,8 +32,6 @@ import { LiquidityInput } from "./inputs/Liquidity";
 import ModerationModeSelect from "./inputs/Moderation";
 import OracleInput from "./inputs/Oracle";
 import { AnswersInput } from "./inputs/answers";
-import { Publishing } from "./Publishing";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -40,19 +40,7 @@ const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
 const createMarketStateAtom = persistentAtom<MarketDraft.MarketDraftState>({
   key: "market-creation-form",
   defaultValue: MarketDraft.empty(),
-  migrations: [
-    /**
-     * TODO: remove before merging to staging.
-     */
-    () => MarketDraft.empty(),
-    () => MarketDraft.empty(),
-    () => MarketDraft.empty(),
-    () => MarketDraft.empty(),
-    () => MarketDraft.empty(),
-    () => MarketDraft.empty(),
-    () => MarketDraft.empty(),
-    () => MarketDraft.empty(),
-  ],
+  migrations: [],
 });
 
 export const MarketEditor = () => {

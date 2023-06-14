@@ -1,6 +1,6 @@
 import * as O from "@zeitgeistpm/utility/dist/option";
 import { ChainTime, dateBlock } from "@zeitgeistpm/utility/dist/time";
-import { PartialMarketFormData, PeriodOption, durationasBlocks } from "./form";
+import { PartialMarketFormData, durationasBlocks } from "./form";
 
 export type BlockTimeline = {
   market: { end: number };

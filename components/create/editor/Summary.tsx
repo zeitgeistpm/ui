@@ -1,9 +1,6 @@
 import { blockDate } from "@zeitgeistpm/utility/dist/time";
 import Decimal from "decimal.js";
-import {
-  getMetadataForCurrency,
-  supportedCurrencies,
-} from "lib/constants/supported-currencies";
+import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { useChainTime } from "lib/state/chaintime";
 import { MarketDraftEditor } from "lib/state/market-creation/editor";
@@ -16,7 +13,6 @@ import {
 import { timelineAsBlocks } from "lib/state/market-creation/types/timeline";
 import { shortenAddress } from "lib/util";
 import { formatDuration } from "lib/util/format-duration";
-import moment from "moment";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { useMemo } from "react";
