@@ -10,7 +10,12 @@ import {
   ZeitgeistIpfs,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
-import { endpointOptions, graphQlEndpoint, ZTG } from "lib/constants";
+import {
+  endpointOptions,
+  environment,
+  graphQlEndpoint,
+  ZTG,
+} from "lib/constants";
 import {
   FOREIGN_ASSET_METADATA,
   lookupAssetSymbol,
@@ -23,11 +28,9 @@ import Avatar from "components/ui/Avatar";
 // display most profitable market?
 // include buy/sell full set events
 // styling
-// handle staging price (no ztg price history)
 
 type Trade = {
   marketId: number;
-  // baseAsset: AssetId;
   amountIn: Decimal;
   amountOut: Decimal;
   assetIn: AssetId;
@@ -43,7 +46,6 @@ type Traders = {
 
 type MarketTotals = {
   [key: MarketId]: {
-    // marketId: number;
     baseAsset: BaseAssetId;
     baseAssetIn: Decimal;
     baseAssetOut: Decimal;
@@ -101,6 +103,8 @@ const lookupPrice = (
   baseAsset: BaseAssetId,
   timestamp: number,
 ) => {
+  //BSR has been live before some assets existed, so no price data is available
+  if (environment === "staging") return 1;
   const prices = IOForeignAssetId.is(baseAsset)
     ? basePrices[baseAsset.ForeignAsset]
     : basePrices["ztg"];
