@@ -9,7 +9,6 @@
 html {
   font-size: 100%;
 }
-
 /* hide number input arrows */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -718,4 +717,8 @@ tr {
 
 .crystal-ball-emoji-list {
   list-style-type: crystal-ball-emoji-list;
+}
+
+input:-webkit-autofill{
+  -webkit-box-shadow: 0 0 0 30px theme('colors.nyanza-base') inset !important;
 }

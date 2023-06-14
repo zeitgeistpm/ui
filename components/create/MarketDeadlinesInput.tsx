@@ -6,7 +6,7 @@ import {
 import { DateTimeInput } from "components/ui/inputs";
 import { useMarketDeadlineConstants } from "lib/hooks/queries/useMarketDeadlineConstants";
 import { useChainTime } from "lib/state/chaintime";
-import { CreateMarketFormData } from "pages/create";
+import { CreateMarketFormData } from "pages/old_create";
 import { useEffect, useMemo, useState } from "react";
 
 export type MarketDeadlineInputType = "grace" | "oracle" | "dispute";
