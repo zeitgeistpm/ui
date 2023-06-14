@@ -72,6 +72,7 @@ const PoolTable = ({
 
     return {
       token: {
+        token: true,
         color: colors[index] || "#ffffff",
         label: category?.name,
       },
