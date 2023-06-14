@@ -1,5 +1,5 @@
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { parseAssetId } from "@zeitgeistpm/sdk-next";
+import { ScalarRangeType, parseAssetId } from "@zeitgeistpm/sdk-next";
 import LiquidityModal from "components/liquidity/LiquidityModal";
 import PoolTable from "components/liquidity/PoolTable";
 import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
@@ -10,6 +10,7 @@ import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { formatNumberLocalized } from "lib/util";
 import { getCurrentPrediction } from "lib/util/assets";
+import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import { FC, PropsWithChildren, useState } from "react";
 
 export const MarketLiquiditySection = ({
@@ -74,10 +75,12 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
 
   const [manageLiquidityOpen, setManageLiquidityOpen] = useState(false);
 
-  const predictionDisplay =
-    market?.marketType.scalar != null
-      ? `${Number(prediction?.name).toFixed(2)}`
-      : `${prediction?.name} ${prediction?.percentage}%`;
+  const predictionDisplay = market?.marketType.scalar
+    ? formatScalarOutcome(
+        prediction.price,
+        market.scalarType as ScalarRangeType,
+      )
+    : `${prediction?.name} ${prediction?.percentage}%`;
 
   return (
     <div className="md:flex md:justify-between">
