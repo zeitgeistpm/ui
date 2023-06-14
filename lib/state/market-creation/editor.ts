@@ -365,11 +365,14 @@ export const useMarketDraftEditor = ({
       },
     ];
 
-    mergeFormData({
-      ...draft.form,
-      liquidity: {
-        ...draft.form.liquidity!,
-        rows,
+    update({
+      ...draft,
+      form: {
+        ...draft.form,
+        liquidity: {
+          ...draft.form.liquidity,
+          rows,
+        },
       },
     });
   }, [draft.form.answers, draft.form.currency]);
