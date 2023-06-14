@@ -58,9 +58,13 @@ export default async function GenerateOgImage(request: NextRequest) {
   const url = request.nextUrl.clone();
   url.pathname = `/api/og/${marketId}`;
 
-  const { market, volume, prediction, ends }: MarketImageData = await fetch(
-    url.href,
-  ).then((r) => r.json());
+  const {
+    market,
+    volume,
+    prediction,
+    ends,
+    currencyMetadata,
+  }: MarketImageData = await fetch(url.href).then((r) => r.json());
 
   const marketImageUrl = await getImageUrl(market.img ?? null);
 
@@ -163,8 +167,7 @@ export default async function GenerateOgImage(request: NextRequest) {
                 tw={`flex ${"text-2xl"}  -mt-3`}
                 style={{ color: "#ABC1F9" }}
               >
-                {formatNumberCompact(Number(volume))}
-                {" ZTG"}
+                {formatNumberCompact(Number(volume))} {currencyMetadata.name}
               </div>
             </div>
           </div>
