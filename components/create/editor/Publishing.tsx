@@ -53,8 +53,6 @@ export const Publishing = ({ editor }: PublishingProps) => {
     baseCurrency?.assetId,
   );
 
-  console.log(ztgBalance.toNumber(), foreignAssetBalance.toNumber());
-
   const params = useMemo(() => {
     if (editor.isValid && chainTime) {
       return marketFormDataToExtrinsicParams(
