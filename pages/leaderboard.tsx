@@ -11,7 +11,10 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { endpointOptions, graphQlEndpoint, ZTG } from "lib/constants";
-import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
+import {
+  FOREIGN_ASSET_METADATA,
+  lookupAssetSymbol,
+} from "lib/constants/foreign-asset";
 import { NextPage } from "next";
 import Link from "next/link";
 import Avatar from "components/ui/Avatar";
@@ -389,7 +392,10 @@ const Leaderboard: NextPage<{
                 .map((market) => (
                   <div>
                     <div>{market.question}</div>
-                    <div>{market.profit.toFixed()}</div>
+                    <div>
+                      {market.profit.toFixed()}{" "}
+                      {lookupAssetSymbol(market.baseAssetId)}
+                    </div>
                   </div>
                 ))}
             </div>
