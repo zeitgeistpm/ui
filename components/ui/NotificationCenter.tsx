@@ -51,7 +51,12 @@ const NotificationCard: FC<{
           style={{
             width: `${((100 * timer) / lifetime).toFixed(2)}%`,
           }}
-        ></div>
+        />
+        <div
+          className={`${getTopBarColor(
+            type,
+          )} h-full absolute z-40 top-0 left-0  w-full opacity-10`}
+        />
       </div>
       <div className="text-white flex justify-center px-4 py-6">
         <div className={`center ${getBgColor(type)}`}>
