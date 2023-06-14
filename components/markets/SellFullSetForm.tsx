@@ -14,6 +14,7 @@ import { useGlobalKeyPress } from "lib/hooks/useGlobalKeyPress";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
+import { calcMarketColors } from "lib/util/color-calc";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
@@ -47,6 +48,10 @@ const SellFullSetForm = ({
 
   const [amount, setAmount] = useState<string>("0");
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
+
+  const colors = market?.categories
+    ? calcMarketColors(marketId, market.categories.length)
+    : [];
 
   const { send: sellSets, isLoading } = useExtrinsic(
     () => {
@@ -103,11 +108,11 @@ const SellFullSetForm = ({
     <div>
       <div>
         <div className="flex items-center mt-ztg-24 mb-ztg-8">
-          {saturatedMarket?.categories?.map((outcome, index) => (
+          {saturatedMarket?.categories?.map((_, index) => (
             <div
               key={index}
               className="rounded-full w-ztg-20 h-ztg-20 -mr-ztg-8 border-sky-600 border-2"
-              style={{ backgroundColor: outcome.color }}
+              style={{ backgroundColor: colors[index] }}
             ></div>
           ))}
           <div className="font-bold  ml-ztg-20  text-ztg-16-150 text-black dark:text-white">
