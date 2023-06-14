@@ -21,6 +21,7 @@ import {
 } from "./types/step";
 import { useMarketCreationFormValidator } from "./types/validation";
 import { tickersForAnswers } from "./util/tickers";
+import { DeepPartial } from "lib/types/deep-partial";
 
 /**
  * The market draft editor.
@@ -80,7 +81,7 @@ export type BaseMarketDraftEditor = {
   /**
    * Merge partial form data into the form draft.
    */
-  mergeFormData: (data: Partial<MarketFormData>) => void;
+  mergeFormData: (data: DeepPartial<MarketFormData>) => void;
   /**
    * Toggle the wizard mode on or off.
    */
@@ -308,8 +309,10 @@ export const useMarketDraftEditor = ({
   const prevAnswersLength = usePrevious(draft.form.answers?.answers?.length);
 
   useEffect(() => {
-    const baseAmount = minBaseLiquidity[draft.form.currency]
-      ? `${minBaseLiquidity[draft.form.currency] / 2}`
+    if (!draft.form.answers) return;
+
+    const baseAmount = minBaseLiquidity[draft.form.currency!]
+      ? `${minBaseLiquidity[draft.form.currency!] / 2}`
       : "100";
 
     const baseWeight = 64;
@@ -322,7 +325,7 @@ export const useMarketDraftEditor = ({
     const tickers = tickersForAnswers(draft.form.answers);
 
     const rows = [
-      ...draft.form.answers.answers.map((_, index) => {
+      ...draft.form.answers.answers.map((answer, index) => {
         const liquidity = draft.form.liquidity?.rows[index];
 
         const amount = new Decimal(
@@ -340,7 +343,7 @@ export const useMarketDraftEditor = ({
           : liquidity?.weight || ratio * baseWeight;
 
         return {
-          asset: tickers[index].ticker,
+          asset: tickers?.[index]?.ticker ?? answer,
           weight: weight.toString(),
           amount: amount.toString(),
           price: {
@@ -362,14 +365,11 @@ export const useMarketDraftEditor = ({
       },
     ];
 
-    update({
-      ...draft,
-      form: {
-        ...draft.form,
-        liquidity: {
-          ...draft.form.liquidity,
-          rows,
-        },
+    mergeFormData({
+      ...draft.form,
+      liquidity: {
+        ...draft.form.liquidity!,
+        rows,
       },
     });
   }, [draft.form.answers, draft.form.currency]);

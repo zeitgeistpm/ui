@@ -254,7 +254,7 @@ const DurationInput = ({
           >
             {["days", "hours"].map((unit) => (
               <option className="py-2 px-4" value={unit}>
-                {value?.value <= 1 ? unit.replace("s", "") : unit}
+                {value && value?.value <= 1 ? unit.replace("s", "") : unit}
               </option>
             ))}
           </select>

@@ -54,12 +54,9 @@ export const Publishing = ({ editor }: PublishingProps) => {
   );
 
   const params = useMemo(() => {
-    if (editor.isValid && chainTime) {
-      return marketFormDataToExtrinsicParams(
-        editor.form,
-        wallet.getActiveSigner(),
-        chainTime,
-      );
+    const signer = wallet.getActiveSigner();
+    if (editor.isValid && chainTime && signer) {
+      return marketFormDataToExtrinsicParams(editor.form, signer, chainTime);
     }
     return;
   }, [editor.form, chainTime, wallet.activeAccount]);
@@ -164,7 +161,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
       editor.form.moderation === "Permissionless" &&
         editor.form.liquidity?.deploy &&
         editor.form.currency === "ZTG"
-        ? new Decimal(baseAssetLiquidityRow?.value).mul(2).toNumber()
+        ? new Decimal(baseAssetLiquidityRow?.value ?? 0).mul(2).toNumber()
         : 0,
     );
 
@@ -173,14 +170,17 @@ export const Publishing = ({ editor }: PublishingProps) => {
       ? new Decimal(baseAssetLiquidityRow?.value ?? 0).mul(2)
       : null;
 
-  const ztgBalanceDelta = ztgBalance.div(ZTG).minus(ztgCost);
+  const ztgBalanceDelta = ztgBalance?.div(ZTG).minus(ztgCost);
   const foreignAssetBalanceDelta =
     foreignCurrencyCost &&
-    foreignAssetBalance.div(ZTG).minus(foreignCurrencyCost);
+    foreignAssetBalance?.div(ZTG).minus(foreignCurrencyCost);
 
   const hasEnoughLiquidty =
     ztgBalanceDelta?.gte(0) &&
     (!foreignCurrencyCost || foreignAssetBalanceDelta?.gte(0));
+
+  const baseCurrencyMetadata =
+    editor.form.currency && getMetadataForCurrency(editor.form.currency);
 
   return (
     <>
@@ -220,9 +220,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
                     }`}
                     onClick={() => setTotalCostIsOpen(true)}
                   >
-                    {hasEnoughLiquidty
-                      ? "View Cost Breakdown"
-                      : "View Insufficiency Balance"}
+                    View Cost Breakdown
                   </div>
                   <Modal
                     open={totalCostIsOpen}
@@ -260,7 +258,8 @@ export const Publishing = ({ editor }: PublishingProps) => {
                         </div>
                       </div>
                       {editor.form.moderation === "Permissionless" &&
-                        editor.form.liquidity?.deploy && (
+                        editor.form.liquidity?.deploy &&
+                        baseAssetLiquidityRow && (
                           <div className="mt-4 flex">
                             <div className="flex-1">
                               <h3 className="text-base font-normal text-black">
@@ -272,7 +271,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
                                   fees but subject to impermanent loss.
                                 </h4>
                                 <div className="">
-                                  {new Decimal(baseAssetLiquidityRow?.value)
+                                  {new Decimal(baseAssetLiquidityRow.value)
                                     .mul(2)
                                     .toFixed(1)}{" "}
                                   {baseAssetLiquidityRow?.asset}
@@ -298,11 +297,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
                                 <>
                                   <div> + </div>
                                   <div
-                                    className={`text-${
-                                      getMetadataForCurrency(
-                                        editor.form.currency,
-                                      )?.twColor
-                                    }`}
+                                    className={`text-${baseCurrencyMetadata?.twColor}`}
                                   >
                                     {foreignCurrencyCost.toNumber()}{" "}
                                     {baseAssetLiquidityRow?.asset}
@@ -323,21 +318,18 @@ export const Publishing = ({ editor }: PublishingProps) => {
                               Missing balance needed to create the market.
                             </h4>
                             <div className="center font-semibold gap-1">
-                              {ztgBalanceDelta.lessThan(0) && (
-                                <div className="text-ztg-blue">
-                                  {ztgBalanceDelta.toFixed(1)} ZTG
-                                </div>
-                              )}
+                              {ztgBalanceDelta &&
+                                ztgBalanceDelta.lessThan(0) && (
+                                  <div className="text-ztg-blue">
+                                    {ztgBalanceDelta.toFixed(1)} ZTG
+                                  </div>
+                                )}
                             </div>
                             {foreignCurrencyCost &&
                               foreignAssetBalanceDelta?.lessThan(0) && (
                                 <>
                                   <div
-                                    className={`text-${
-                                      getMetadataForCurrency(
-                                        editor.form.currency,
-                                      )?.twColor
-                                    }`}
+                                    className={`text-${baseCurrencyMetadata?.twColor}`}
                                   >
                                     {foreignAssetBalanceDelta.toNumber()}{" "}
                                     {baseAssetLiquidityRow?.asset}

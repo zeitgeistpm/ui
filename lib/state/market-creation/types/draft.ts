@@ -55,6 +55,7 @@ export const empty = (): MarketDraftState => ({
     reached: true,
   },
   form: {
+    currency: "ZTG",
     answers: {
       type: "categorical",
       answers: ["", ""],
@@ -63,6 +64,7 @@ export const empty = (): MarketDraftState => ({
     gracePeriod: gracePeriodOptions[0],
     reportingPeriod: reportingPeriodOptions[1],
     disputePeriod: reportingPeriodOptions[1],
+    moderation: "Permissionless",
     liquidity: {
       deploy: true,
       rows: [],

@@ -17,46 +17,33 @@ export const timelineAsBlocks = (
   chainTime?: ChainTime,
 ): O.IOption<BlockTimeline> => {
   return O.tryCatch(() => {
-    if (!chainTime) return null;
+    if (!chainTime) throw new Error("No chain time provided");
+    if (!form?.endDate) throw new Error("No end date provided");
 
-    const marketEndDate = new Date(form.endDate);
+    const marketEndDate = new Date(form?.endDate);
     const marketEndBlock = dateBlock(chainTime, marketEndDate);
 
     const gracePeriodEndBlock =
       form.gracePeriod?.type === "date"
         ? form.gracePeriod?.block
-        : marketEndBlock + durationasBlocks(form.gracePeriod);
+        : marketEndBlock +
+          (form.gracePeriod ? durationasBlocks(form.gracePeriod) : 0);
 
     const reportPeriodEndBlock =
       form.reportingPeriod?.type === "date"
         ? form.reportingPeriod?.block
-        : gracePeriodEndBlock + durationasBlocks(form.reportingPeriod);
+        : gracePeriodEndBlock +
+          (form.reportingPeriod ? durationasBlocks(form.reportingPeriod) : 0);
 
     const disputePeriodEndBlock =
       form.disputePeriod?.type === "date"
         ? form.disputePeriod?.block
-        : reportPeriodEndBlock + durationasBlocks(form.disputePeriod);
+        : reportPeriodEndBlock +
+          (form.disputePeriod ? durationasBlocks(form.disputePeriod) : 0);
 
     const graceDelta = gracePeriodEndBlock - marketEndBlock;
     const reportDelta = reportPeriodEndBlock - gracePeriodEndBlock;
     const disputeDelta = disputePeriodEndBlock - reportPeriodEndBlock;
-
-    // if (!form.endDate) {
-    //   console.group("timelineAsBlocks");
-    //   console.log("chainTime", chainTime);
-    //   console.log("periods.marketEndDate", form.endDate);
-    //   console.log("marketEndDate", marketEndDate);
-    //   console.log("marketEndBlock", marketEndBlock);
-    //   console.log("gracePeriodEndBlock", gracePeriodEndBlock);
-    //   console.log("reportPeriodEndBlock", reportPeriodEndBlock);
-    //   console.log("disputePeriodEndBlock", disputePeriodEndBlock);
-    //   console.log("graceDelta", graceDelta);
-    //   console.log("reportDelta", reportDelta);
-    //   console.log("disputeDelta", disputeDelta);
-    //   console.groupEnd();
-    // } else {
-    //   console.log("timelineAsBlocks success");
-    // }
 
     return {
       market: { end: marketEndBlock },

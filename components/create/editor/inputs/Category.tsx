@@ -5,7 +5,7 @@ import { FormEvent } from "../types";
 
 export type CategorySelectProps = {
   name: string;
-  value: SupportedTag[];
+  value?: SupportedTag[];
   onBlur: (event: FormEvent<SupportedTag[]>) => void;
   onChange: (event: FormEvent<SupportedTag[]>) => void;
 };

@@ -35,18 +35,18 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
   const { form } = editor;
 
   const timeline = useMemo(() => {
-    return timelineAsBlocks(form, chainTime).unwrap();
+    return !form || !chainTime
+      ? null
+      : timelineAsBlocks(form, chainTime).unwrap();
   }, [form, chainTime]);
 
-  const { data: baseAssetPrice } = useAssetUsdPrice(
-    getMetadataForCurrency(form.currency)?.assetId,
-  );
+  const currencyMetadata = getMetadataForCurrency(form.currency!);
+
+  const { data: baseAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
 
   const baseAssetLiquidityRow = form?.liquidity?.rows.find(
     (row) => row.asset === form.currency,
   );
-
-  const currencyMetadata = getMetadataForCurrency(editor.form.currency);
 
   return (
     <div className="flex-1 text-center">
@@ -70,10 +70,10 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             <div className="italic text-gray-500">No answers supplied</div>
           ) : (
             <Answers
-              answers={form.answers}
-              baseAssetPrice={baseAssetPrice}
+              answers={form.answers!}
+              baseAssetPrice={baseAssetPrice!}
               liquidity={form?.liquidity}
-              moderation={form.moderation}
+              moderation={form.moderation!}
             />
           )}
         </div>
@@ -92,7 +92,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
                       alt="Currency token logo"
                       fill
                       sizes="100vw"
-                      src={currencyMetadata?.image}
+                      src={currencyMetadata?.image!}
                     />
                   </div>
                 </>
@@ -217,7 +217,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
                     dateStyle: "medium",
                     timeStyle: "short",
                   }).format(
-                    blockDate(chainTime, form.gracePeriod?.block).getTime(),
+                    blockDate(chainTime!, form.gracePeriod?.block!).getTime(),
                   )}
             </div>
           </div>
@@ -274,7 +274,7 @@ const Answers = ({
   return (
     <>
       {answers?.answers.map((answer, answerIndex) => {
-        const answerLiquidity = liquidity.rows[answerIndex];
+        const answerLiquidity = liquidity?.rows[answerIndex];
 
         return (
           <>

@@ -14,7 +14,7 @@ import { swapFeePresets } from "lib/state/market-creation/constants/swap-fee";
 
 export type LiquidityInputProps = {
   name: string;
-  value: Liquidity;
+  value?: Liquidity;
   onChange: (event: FormEvent<Liquidity>) => void;
   onBlur: (event: FormEvent<Liquidity>) => void;
   errorMessage?: string | ReactNode;
@@ -31,13 +31,16 @@ export const LiquidityInput = ({
   currency,
   fieldState,
 }: LiquidityInputProps) => {
+  const currencyMetadata = getMetadataForCurrency(currency);
+  const { data: baseAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
+
   const handleRowsChange = (data: PoolAssetRowData[]) => {
     onChange({
       type: "change",
       target: {
         name,
         value: {
-          ...value,
+          ...value!,
           rows: transformRows(data),
         },
       },
@@ -50,7 +53,7 @@ export const LiquidityInput = ({
       target: {
         name,
         value: {
-          ...value,
+          ...value!,
           deploy: checked,
         },
       },
@@ -66,7 +69,7 @@ export const LiquidityInput = ({
       target: {
         name,
         value: {
-          ...value,
+          ...value!,
           swapFee: {
             type: "custom",
             value: isNaN(swapFee) ? 0 : parseFloat(event.target.value),
@@ -82,16 +85,12 @@ export const LiquidityInput = ({
       target: {
         name,
         value: {
-          ...value,
+          ...value!,
           swapFee,
         },
       },
     });
   };
-
-  const currencyMetadata = getMetadataForCurrency(currency);
-
-  const { data: baseAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
 
   return (
     <div className="center">
@@ -100,7 +99,7 @@ export const LiquidityInput = ({
           <div className="flex flex-col justify-center items-center">
             <div className="font-light text-sm mb-2">Deploy Pool?</div>
             <Toggle
-              checked={value?.deploy}
+              checked={value?.deploy ?? false}
               activeClassName={`bg-${currencyMetadata?.twColor}`}
               onChange={handleDeploymentToggle}
             />
@@ -126,7 +125,7 @@ export const LiquidityInput = ({
           <>
             <div className="mb-4 ">
               <PoolSettings
-                baseAssetPrice={baseAssetPrice}
+                baseAssetPrice={baseAssetPrice ?? undefined}
                 data={transformRows(value?.rows ?? [])}
                 onChange={handleRowsChange}
                 noDataMessage={errorMessage}

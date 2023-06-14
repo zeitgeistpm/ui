@@ -9,7 +9,6 @@ export type MarketFormSectionProps = {
   children: React.ReactNode;
   disabled?: boolean;
   className?: string;
-  resetForm?: () => void;
 };
 
 export const MarketFormSection = ({
@@ -21,7 +20,6 @@ export const MarketFormSection = ({
   nextDisabled,
   disabled,
   className,
-  resetForm,
 }: MarketFormSectionProps) => {
   return (
     <div

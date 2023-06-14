@@ -8,7 +8,7 @@ import { FormEvent } from "../types";
 
 export type OracleInputProps = {
   name: string;
-  value: string;
+  value?: string;
   fieldState: FieldState;
   className?: string;
   onBlur: (event: FormEvent<string>) => void;
@@ -52,7 +52,7 @@ export const OracleInput = forwardRef(
         type: "change",
         target: {
           name,
-          value: wallet.activeAccount?.address,
+          value: wallet.activeAccount!.address,
         },
       });
     };

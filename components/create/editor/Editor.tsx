@@ -139,7 +139,6 @@ export const MarketEditor = () => {
           isCurrent={currentStep.label == "Currency"}
           onClickNext={next}
           nextDisabled={!fieldsState.currency.isValid}
-          resetForm={isTouched && reset}
         >
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="text-base flex justify-center items-center gap-2">
@@ -179,7 +178,6 @@ export const MarketEditor = () => {
           nextDisabled={
             !fieldsState.question.isValid || !fieldsState.tags.isValid
           }
-          resetForm={isTouched && reset}
         >
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="mb-4 md:mb-8 text-base">What is your question?</h2>
@@ -223,7 +221,6 @@ export const MarketEditor = () => {
           onClickNext={next}
           onClickBack={back}
           nextDisabled={!fieldsState.answers.isValid}
-          resetForm={isTouched && reset}
         >
           <div className="relative mb-4 md:mb-8 text-center">
             <h2 className="text-base center gap-2">
@@ -300,7 +297,6 @@ export const MarketEditor = () => {
             !fieldsState.reportingPeriod.isValid ||
             !fieldsState.disputePeriod.isValid
           }
-          resetForm={isTouched && reset}
         >
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="text-base">When does the market end?</h2>
@@ -342,7 +338,7 @@ export const MarketEditor = () => {
                 <BlockPeriodPicker
                   isValid={fieldsState.gracePeriod.isValid}
                   options={gracePeriodOptions}
-                  chainTime={chainTime}
+                  chainTime={chainTime!}
                   {...input("gracePeriod", { mode: "all" })}
                 />
               </div>
@@ -377,7 +373,7 @@ export const MarketEditor = () => {
                 <BlockPeriodPicker
                   isValid={fieldsState.reportingPeriod.isValid}
                   options={reportingPeriodOptions}
-                  chainTime={chainTime}
+                  chainTime={chainTime!}
                   {...input("reportingPeriod", { mode: "all" })}
                 />
               </div>
@@ -410,7 +406,7 @@ export const MarketEditor = () => {
                 <BlockPeriodPicker
                   isValid={fieldsState.disputePeriod.isValid}
                   options={disputePeriodOptions}
-                  chainTime={chainTime}
+                  chainTime={chainTime!}
                   {...input("disputePeriod", { mode: "all" })}
                 />
               </div>
@@ -427,7 +423,6 @@ export const MarketEditor = () => {
           onClickNext={next}
           onClickBack={back}
           nextDisabled={!fieldsState.oracle.isValid}
-          resetForm={isTouched && reset}
         >
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="mb-4 md:mb-8 text-base">Set Up Oracle</h2>
@@ -468,7 +463,6 @@ export const MarketEditor = () => {
           onClickNext={next}
           onClickBack={back}
           nextDisabled={!fieldsState.description.isValid}
-          resetForm={isTouched && reset}
         >
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="mb-4 md:mb-8 text-base">Market Description</h2>
@@ -495,7 +489,6 @@ export const MarketEditor = () => {
           onClickNext={next}
           onClickBack={back}
           nextDisabled={!fieldsState.moderation.isValid}
-          resetForm={isTouched && reset}
         >
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="mb-4 md:mb-8 text-base">Market Moderation</h2>
@@ -518,9 +511,8 @@ export const MarketEditor = () => {
           nextDisabled={
             !fieldsState.liquidity.isValid || !fieldsState.answers.isValid
           }
-          resetForm={isTouched && reset}
         >
-          {form.moderation === "Permissionless" ? (
+          {form.moderation === "Permissionless" && form.currency ? (
             <>
               <div className="mb-2 md:mb-4 text-center">
                 <h2 className="text-base mb-0">Market Liquidity</h2>
@@ -536,6 +528,7 @@ export const MarketEditor = () => {
                       : ""
                   }
                 />
+
                 <div className="flex center h-5 text-xs mt-6 text-red-400">
                   <ErrorMessage field={fieldsState.liquidity} />
                 </div>
@@ -576,7 +569,6 @@ export const MarketEditor = () => {
           wizard={isWizard}
           isCurrent={currentStep.label == "Summary"}
           disabled={!isWizard}
-          resetForm={isTouched && reset}
         >
           <div className="flex center">
             <MarketSummary editor={editor} />

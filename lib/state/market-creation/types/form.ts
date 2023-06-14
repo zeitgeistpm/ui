@@ -115,7 +115,12 @@ export const marketFormDataToExtrinsicParams = (
   signer: KeyringPairOrExtSigner,
   chainTime: ChainTime,
 ): CreateMarketParams<RpcContext<MetadataStorage>, MetadataStorage> => {
+  const baseCurrencyMetadata = getMetadataForCurrency(form.currency);
   const timeline = timelineAsBlocks(form, chainTime).unwrap();
+
+  if (!baseCurrencyMetadata || !timeline) {
+    throw new Error("Invalid market creation form data");
+  }
 
   const base: CreateMarketBaseParams<
     RpcContext<MetadataStorage>,
@@ -153,7 +158,7 @@ export const marketFormDataToExtrinsicParams = (
       scalarType:
         form.answers?.type === "scalar" ? form.answers.numberType : undefined,
     },
-    baseAsset: getMetadataForCurrency(form.currency).assetId,
+    baseAsset: baseCurrencyMetadata.assetId,
   };
 
   if (form.moderation === "Permissionless") {
