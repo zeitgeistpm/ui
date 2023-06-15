@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { gql } from "graphql-request";
 import { useSdkv2 } from "../useSdkv2";
+import { marketMetaFilter } from "lib/gql/constants";
 
 export const accountBondsKey = "account-bonds";
 
@@ -11,9 +12,7 @@ const accountBondsQuery = gql`
       where: {
         creator_eq: $address
         bonds_isNull: false
-        question_not_eq: ""
-        question_isNull: false
-        isMetaComplete_eq: true
+        ${marketMetaFilter}
       }
       orderBy: marketId_DESC
     ) {
