@@ -9,14 +9,14 @@ export const extrinsicFeeKey = "extrinsic-fee";
 export type MarketPrices = Map<number, Decimal>;
 
 export const useExtrinsicFee = (
-  extrinsic: SubmittableExtrinsic<"promise", ISubmittableResult>,
+  extrinsic?: SubmittableExtrinsic<"promise", ISubmittableResult>,
 ) => {
   const { activeAccount } = useWallet();
 
   const query = useQuery(
-    [extrinsicFeeKey, extrinsic.hash, activeAccount],
+    [extrinsicFeeKey, extrinsic?.hash, activeAccount],
     async () => {
-      if (activeAccount) {
+      if (activeAccount && extrinsic) {
         const info = await extrinsic.paymentInfo(activeAccount?.address);
         return new Decimal(info?.partialFee.toString() ?? 0);
       }
