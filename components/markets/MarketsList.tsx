@@ -14,6 +14,7 @@ import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import { filterTypes } from "lib/constants/market-filter";
 import { ZTG } from "lib/constants";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
+import { Url } from "next/dist/shared/lib/router/router";
 
 export type MarketsListProps = {
   className?: string;
@@ -161,7 +162,7 @@ const MarketsSearchInfo = ({ searchText }: { searchText: string }) => {
           size={24}
           className="cursor-pointer text-sky-600"
           onClick={() => {
-            router.push("/", null, { shallow: true });
+            router.push("/", "", { shallow: true });
           }}
         />
       </div>

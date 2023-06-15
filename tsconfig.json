@@ -17,7 +17,8 @@
     "useDefineForClassFields": true,
     "baseUrl": "./",
     "incremental": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "strictNullChecks": true
   },
   "include": [
     "next-env.d.ts",
