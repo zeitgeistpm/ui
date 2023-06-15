@@ -4,6 +4,7 @@ import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { memoize } from "lodash-es";
 import * as batshit from "@yornaath/batshit";
 import { useSdkv2 } from "../useSdkv2";
+import { marketMetaFilter } from "./constants";
 
 export const marketsRootQuery = "markets";
 
@@ -45,11 +46,7 @@ const batcher = memoize((sdk: Sdk<IndexerContext>) => {
       const { markets } = await sdk.indexer.markets({
         where: {
           AND: [
-            {
-              question_isNull: false,
-              question_not_eq: "",
-              hasValidMetaCategories_eq: true,
-            },
+            marketMetaFilter,
             {
               OR: [
                 {

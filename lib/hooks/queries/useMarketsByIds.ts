@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 import { marketsRootQuery, UseMarketFilter } from "./useMarket";
+import { marketMetaFilter } from "./constants";
 
 export const rootKey = "markets-by-id";
 
@@ -16,11 +17,7 @@ export const useMarketsByIds = (marketQueries?: UseMarketFilter[]) => {
         return sdk.model.markets.list({
           where: {
             AND: [
-              {
-                question_isNull: false,
-                question_not_eq: "",
-                hasValidMetaCategories_eq: true,
-              },
+              marketMetaFilter,
               {
                 OR: [
                   {

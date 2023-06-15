@@ -10,6 +10,7 @@ import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
 import { getFeaturedMarketIds } from "lib/cms/get-featured-marketids";
 import { getCurrentPrediction } from "lib/util/assets";
 import { hiddenMarketIds } from "lib/constants/markets";
+import { marketMetaFilter } from "./constants";
 
 const marketQuery = gql`
   query Market($marketId: Int) {
@@ -17,9 +18,7 @@ const marketQuery = gql`
       where: {
         marketId_eq: $marketId
         marketId_not_in: ${hiddenMarketIds}
-        question_not_eq: ""
-        question_isNull: false
-        hasValidMetaCategories_eq: true
+        ${marketMetaFilter}
       }
     ) {
       marketId

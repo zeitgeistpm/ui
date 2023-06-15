@@ -12,6 +12,7 @@ import { useSdkv2 } from "../useSdkv2";
 import { MarketOutcomes } from "lib/types/markets";
 import { MarketStatus } from "@zeitgeistpm/indexer";
 import { hiddenMarketIds } from "lib/constants/markets";
+import { marketMetaFilter } from "./constants";
 
 export const rootKey = "markets-filtered";
 
@@ -23,10 +24,8 @@ const orderByMap = {
 };
 
 const validMarketWhereInput: MarketWhereInput = {
-  question_isNull: false,
-  question_not_eq: "",
-  hasValidMetaCategories_eq: true,
   marketId_not_in: JSON.parse(hiddenMarketIds),
+  ...marketMetaFilter,
 };
 
 export type QueryMarketData = Market<IndexerContext> & {
