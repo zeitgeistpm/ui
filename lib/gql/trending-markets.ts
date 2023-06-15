@@ -41,6 +41,7 @@ const marketQuery = gql`
       creation
       img
       baseAsset
+      creator
       marketType {
         categorical
         scalar
@@ -107,6 +108,7 @@ const getTrendingMarkets = async (
           categories: { color: string; name: string }[];
           outcomeAssets: string[];
           baseAsset: string;
+          creator: string;
           pool: {
             volume: string;
           };
@@ -153,6 +155,7 @@ const getTrendingMarkets = async (
         creation: market.creation,
         img: market.img,
         prediction: prediction,
+        creator: market.creator,
         volume: Number(new Decimal(market.pool.volume).div(ZTG).toFixed(0)),
         baseAsset: market.baseAsset,
         outcomes: marketCategories,

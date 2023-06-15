@@ -27,6 +27,7 @@ const marketsQuery = gql`
       creation
       img
       baseAsset
+      creator
       marketType {
         categorical
         scalar
@@ -76,6 +77,7 @@ const getNewestMarkets = async (
       outcomeAssets: string[];
       pool: { volume: string; poolId: number };
       tags: [];
+      creator: string;
       status: string;
       scalarType: ScalarRangeType;
       period: { end: string };
@@ -117,6 +119,7 @@ const getNewestMarkets = async (
         question: market.question,
         creation: market.creation,
         prediction: prediction,
+        creator: market.creator,
         volume: new Decimal(market.pool.volume).div(ZTG).toNumber(),
         baseAsset: market.baseAsset,
         outcomes: marketCategories,

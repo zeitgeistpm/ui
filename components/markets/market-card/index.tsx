@@ -14,7 +14,8 @@ import { hasDatePassed } from "lib/util/hasDatePassed";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { UserIdentity } from "../MarketHeader";
-
+import Image from "next/image";
+import CATEGORIES from "../../front-page/PopularCategories";
 export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
@@ -58,23 +59,41 @@ const MarketCardInfo = ({
       <h5 className="font-semibold w-full h-fit line-clamp-3 text-base">
         {question}
       </h5>
-      {question && <MarketImage image={img} alt={question} />}
+      {img && <MarketImage image={img} alt={question} className="rounded-lg" />}
     </div>
   );
 };
 
-const MarketCardTags = ({ tags }: { tags: string[] }) => {
+const MarketCardTags = ({
+  tags,
+  baseAsset,
+  isVerified,
+}: {
+  tags: string[];
+  baseAsset: string;
+  isVerified: boolean;
+}) => {
   return (
     <>
+      {baseAsset === "Ztg" && (
+        <Image width={20} height={20} src="icons/usdc-icon.svg" alt="" />
+      )}
       {tags?.map((tag, index) => {
         return (
-          <Pill
-            key={index}
-            value={tag}
-            classes="text-blue-dark bg-blue-light"
-          />
+          tag === "Politics" && (
+            <Image
+              key={index}
+              width={20}
+              height={20}
+              src="icons/politics-cat-icon.svg"
+              alt="politics"
+            />
+          )
         );
       })}
+      {isVerified && (
+        <Image width={20} height={20} src="icons/verified-icon.svg" alt="" />
+      )}
     </>
   );
 };
@@ -96,9 +115,7 @@ const MarketCardPredictionBar = ({
       >
         <div className="text-sm flex justify-between items-center absolute w-full h-full px-2.5">
           <span className="text-blue">{name}</span>
-          <span className="group-hover:text-white text-gray-500 transition-all">
-            {impliedPercentage}%
-          </span>
+          <span className="text-blue transition-all">{impliedPercentage}%</span>
         </div>
         <div
           className={`h-full bg-blue-lighter`}
@@ -158,7 +175,7 @@ const MarketCardDetails = ({
               year: "numeric",
             })}`}
         </span>
-        {!isEnding() && (
+        {isEnding() && (
           <span>
             {" "}
             | <span className="text-red">Ends Soon</span>
@@ -221,7 +238,6 @@ const MarketCard = ({
   const isVerified = () => {
     return creation === "Advised" && status === "Active" ? true : false;
   };
-
   const isProposed = () => {
     return creation === "Advised" && status === "Proposed" ? true : false;
   };
@@ -255,7 +271,7 @@ const MarketCard = ({
   const upper = marketType?.scalar?.[1]
     ? new Decimal(marketType?.scalar?.[1]).div(ZTG).toNumber()
     : 0;
-  console.log(creator);
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
@@ -266,22 +282,17 @@ const MarketCard = ({
           href={`/markets/${marketId}`}
           className="flex flex-col flex-1 gap-4"
         >
-          <div className="flex gap-2.5">
+          <div className="flex justify-between gap-2.5 w-full">
             {creator && (
               <UserIdentity user={creator} className="text-xs gap-2.5" />
             )}
-            {/* <div className="flex flex-wrap gap-2.5 font-medium h-fit">
-              <MarketCardTags tags={tags} />
-              {isProposed() && (
-                <Pill value="Proposed" classes="bg-purple-light text-purple" />
-              )}
-              {isVerified() && (
-                <Pill
-                  value="&#x2713; Verified"
-                  classes="bg-green-light text-green"
-                />
-              )}
-            </div> */}
+            <div className="flex flex-wrap gap-2.5 font-medium h-fit">
+              <MarketCardTags
+                baseAsset={baseAsset}
+                tags={tags}
+                isVerified={isVerified()}
+              />
+            </div>
           </div>
           <MarketCardInfo question={question} img={img} />
           <div className="w-full">
