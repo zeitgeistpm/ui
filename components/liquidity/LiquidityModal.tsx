@@ -83,8 +83,8 @@ const LiquidityModal = ({
     if (
       pool?.weights &&
       userBaseBalance &&
-      userAssetBalances?.length > 0 &&
-      poolAssetBalances?.length > 0 &&
+      userAssetBalances?.length !== 0 &&
+      poolAssetBalances?.length !== 0 &&
       poolBaseBalance
     ) {
       const allBalances: PoolBalances = pool.weights.reduce(

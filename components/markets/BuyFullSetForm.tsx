@@ -14,6 +14,7 @@ import { useGlobalKeyPress } from "lib/hooks/useGlobalKeyPress";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
+import { calcMarketColors } from "lib/util/color-calc";
 import { useEffect, useState } from "react";
 import Loader from "react-spinners/PulseLoader";
 
@@ -28,10 +29,16 @@ const BuyFullSetForm = ({
   const wallet = useWallet();
   const notificationStore = useNotifications();
   const { data: market } = useMarket({ marketId });
-  const { data: saturatedMarket } = useSaturatedMarket(market);
+  const { data: saturatedMarket } = useSaturatedMarket(market ?? undefined);
   const { data: pool } = usePool({ marketId: marketId });
-  const baseAssetId = parseAssetId(pool?.baseAsset).unrightOr(null);
+  const baseAssetId = pool?.baseAsset
+    ? parseAssetId(pool.baseAsset).unrightOr(undefined)
+    : undefined;
   const { data: metadata } = useAssetMetadata(baseAssetId);
+
+  const colors = market?.categories
+    ? calcMarketColors(marketId, market.categories.length)
+    : [];
 
   const [amount, setAmount] = useState<string>("0");
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
@@ -67,35 +74,32 @@ const BuyFullSetForm = ({
   );
 
   useEffect(() => {
-    let lowestTokenAmount: Decimal = null;
+    let lowestTokenAmount: Decimal = new Decimal(0);
     balances?.forEach((balance) => {
       const free = new Decimal(balance.free.toNumber());
       if (!lowestTokenAmount || free.lessThan(lowestTokenAmount)) {
         lowestTokenAmount = free;
       }
     });
-    setMaxTokenSet(lowestTokenAmount ?? new Decimal(0));
+    setMaxTokenSet(lowestTokenAmount);
   }, [balances]);
 
   const handleAmountChange = (amount: string) => {
     setAmount(amount);
   };
 
+  const disabled =
+    isLoading ||
+    !baseAssetBalance ||
+    Number(amount) > baseAssetBalance?.div(ZTG).toNumber() ||
+    Number(amount) === 0;
+
   const handleSignTransaction = async () => {
-    if (
-      Number(amount) > baseAssetBalance?.div(ZTG).toNumber() ||
-      Number(amount) === 0 ||
-      !isRpcSdk(sdk)
-    ) {
+    if (disabled || !isRpcSdk(sdk)) {
       return;
     }
     buySet();
   };
-
-  const disabled =
-    isLoading ||
-    Number(amount) > baseAssetBalance?.div(ZTG).toNumber() ||
-    Number(amount) === 0;
 
   useGlobalKeyPress("Enter", handleSignTransaction);
 
@@ -115,11 +119,11 @@ const BuyFullSetForm = ({
       </div>
       <div>
         <div className="flex items-center mt-ztg-24 mb-ztg-8">
-          {saturatedMarket?.categories.map((outcome, index) => (
+          {saturatedMarket?.categories?.map((_, index) => (
             <div
               key={index}
               className="rounded-full w-ztg-20 h-ztg-20 -mr-ztg-8 border-sky-600 border-2"
-              style={{ backgroundColor: outcome.color }}
+              style={{ backgroundColor: colors[index] }}
             ></div>
           ))}
           <div className="font-bold  ml-ztg-20  text-ztg-16-150 text-black dark:text-white">

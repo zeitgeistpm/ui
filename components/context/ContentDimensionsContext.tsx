@@ -3,8 +3,8 @@ import React, { createContext, FC, PropsWithChildren, useContext } from "react";
 export type ContentDimensions = {
   scrollTop?: number;
   scrollTo?: (scrollTop: number) => void;
-  height: number;
-  width: number;
+  height?: number;
+  width?: number;
 };
 
 export const ContentDimensionsContext = createContext<ContentDimensions | null>(

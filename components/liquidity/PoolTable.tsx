@@ -8,9 +8,8 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { usePool } from "lib/hooks/queries/usePool";
 import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
-import ManageLiquidityButton from "./ManageLiquidityButton";
-import { Unpacked } from "@zeitgeistpm/utility/dist/array";
-import { useMemo } from "react";
+import { calcMarketColors } from "lib/util/color-calc";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 
 const poolTableColums: TableColumn[] = [
   {
@@ -49,11 +48,15 @@ const PoolTable = ({
   const { data: baseAssetUsdPrice } = useAssetUsdPrice(baseAssetId);
   const { data: spotPrices } = useMarketSpotPrices(marketId);
 
+  const colors = market?.categories
+    ? calcMarketColors(marketId, market.categories.length)
+    : [];
+
   const tableData: TableData[] = pool?.weights?.map((asset, index) => {
     let amount: Decimal | undefined;
     let usdValue: Decimal | undefined;
     let category: { color?: string; name?: string };
-    const assetId = parseAssetId(asset.assetId).unrightOr(null);
+    const assetId = parseAssetIdString(asset?.assetId);
 
     if (IOBaseAssetId.is(assetId)) {
       amount = basePoolBalance ?? undefined;
@@ -69,7 +72,8 @@ const PoolTable = ({
 
     return {
       token: {
-        color: category?.color || "#ffffff",
+        token: true,
+        color: colors[index] || "#ffffff",
         label: category?.name,
       },
       weights: new Decimal(asset.weight)

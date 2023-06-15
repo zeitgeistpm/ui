@@ -17,6 +17,7 @@ export type ChainConstants = {
     validityBond: number;
     maxCategories: number;
     minCategories: number;
+    advisoryBondSlashPercentage: number;
   };
   court: {
     caseDurationSec: number;
@@ -37,7 +38,7 @@ export type ChainConstants = {
 export const useChainConstants = () => {
   const [sdk, id] = useSdkv2();
 
-  return useQuery<ChainConstants>(
+  return useQuery(
     [id, "chain-constants"],
     async () => {
       if (!isRpcSdk(sdk)) return null;
@@ -70,6 +71,8 @@ export const useChainConstants = () => {
           validityBond: consts.predictionMarkets.validityBond.toNumber() / ZTG,
           maxCategories: consts.predictionMarkets.maxCategories.toNumber(),
           minCategories: consts.predictionMarkets.minCategories.toNumber(),
+          advisoryBondSlashPercentage:
+            consts.predictionMarkets.advisoryBondSlashPercentage.toNumber(),
         },
         court: {
           caseDurationSec:

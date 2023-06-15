@@ -5,6 +5,8 @@ import { EndpointOption, Environment } from "../types";
 
 export const ZTG = 10 ** 10;
 
+export const MIN_USD_DISPLAY_AMOUNT = 0.01;
+
 export const MAX_IN_OUT_RATIO = new Decimal(1).div(3).toString();
 
 export const DEFAULT_SLIPPAGE_PERCENTAGE = 1;
@@ -17,8 +19,9 @@ export const NUM_BLOCKS_IN_DAY = NUM_BLOCKS_IN_HOUR * 24;
 export const DAY_SECONDS = 86400;
 export const ZTG_MIN_LIQUIDITY = 100;
 
-export const ZTG_BLUE_COLOR = resolveTailwindConfig(tailwindConfig as any).theme
-  .colors["ztg-blue"];
+export const TAILWIND = resolveTailwindConfig(tailwindConfig as any);
+
+export const ZTG_BLUE_COLOR = TAILWIND.theme.colors["ztg-blue"];
 
 export const SUPPORTED_WALLET_NAMES = [
   "talisman",
@@ -87,7 +90,7 @@ export const environment = getEnvironment();
 
 const getGraphQlEndpoint = (): string => {
   const endpoint = graphQlEndpoints.find((e) => e.environment === environment);
-  return endpoint.value;
+  return endpoint!.value;
 };
 
 export const graphQlEndpoint = getGraphQlEndpoint();
