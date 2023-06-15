@@ -103,14 +103,14 @@ const WithdrawModal = ({
   const { chain } = useChain(toChain);
 
   const { data: fee } = useExtrinsicFee(
-    isRpcSdk(sdk)
+    isRpcSdk(sdk) && wallet.activeAccount
       ? createWithdrawExtrinsic(
           sdk.api,
           "100000000000",
           wallet.activeAccount.address,
           foreignAssetId,
         )
-      : null,
+      : undefined,
   );
 
   const { send: transfer, isLoading } = useCrossChainExtrinsic(

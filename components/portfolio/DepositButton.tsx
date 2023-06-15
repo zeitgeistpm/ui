@@ -72,7 +72,7 @@ const DepositModal = ({
   const { chain, api } = useChain(sourceChain);
 
   const { data: fee } = useExtrinsicFee(
-    chain.createDepositExtrinsic(
+    chain?.createDepositExtrinsic(
       api,
       wallet.activeAccount.address,
       "10000000000",

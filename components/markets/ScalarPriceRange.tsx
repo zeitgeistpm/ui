@@ -1,8 +1,6 @@
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
-import { formatNumberCompact } from "lib/util/format-compact";
 import { useMemo } from "react";
 import { useResizeDetector } from "react-resize-detector";
-import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 
 interface ScalarPriceRangeProps {
   scalarType: ScalarRangeType;
@@ -27,23 +25,11 @@ const ScalarPriceRange = ({
   const averagePercentage = (shortPercentage + longPercentage) / 2;
   const averagePosition = width * averagePercentage;
 
-  const inferedType: ScalarRangeType = scalarType ?? "number";
-
-  const lower = useMemo(
-    () => formatScalarOutcome(lowerBound, inferedType),
-    [lowerBound],
-  );
-
-  const upper = useMemo(
-    () => formatScalarOutcome(upperBound, inferedType),
-    [upperBound],
-  );
-
   const position = useMemo(() => {
     const pos =
       (upperBound - lowerBound) * ((1 - shortPrice + longPrice) / 2) +
       lowerBound;
-    return formatScalarOutcome(pos, inferedType);
+    return pos;
   }, [upperBound, lowerBound, shortPrice, longPrice]);
 
   const getMinMaxPosition = (position) => {
@@ -56,15 +42,36 @@ const ScalarPriceRange = ({
     }
   };
 
+  const lowerDisplay =
+    scalarType === "date"
+      ? new Intl.DateTimeFormat("default", {
+          dateStyle: "medium",
+        }).format(new Date(lowerBound))
+      : lowerBound;
+
+  const upperDisplay =
+    scalarType === "date"
+      ? new Intl.DateTimeFormat("default", {
+          dateStyle: "medium",
+        }).format(new Date(upperBound))
+      : upperBound;
+
+  const positionDisplay =
+    scalarType === "date"
+      ? new Intl.DateTimeFormat("default", {
+          dateStyle: "medium",
+        }).format(new Date(position))
+      : position.toFixed(2);
+
   return (
     <div ref={ref}>
       <div className="relative top-1.5">
         <div className="flex justify-between">
           <div className="flex flex-col justify-start">
-            <span className="mb-2.5 text-sm text-blue">{lower}</span>
+            <span className="mb-2.5 text-sm text-blue">{lowerDisplay}</span>
           </div>
           <div className="flex flex-col justify-end items-end">
-            <span className="mb-2.5 text-sm text-red">{upper}</span>
+            <span className="mb-2.5 text-sm text-red">{upperDisplay}</span>
           </div>
         </div>
         {status !== "Proposed" && (
@@ -87,7 +94,7 @@ const ScalarPriceRange = ({
           >
             <div className="flex flex-col items-center">
               <span className="mb-2.5 px-1 bg-white rounded text-sm">
-                {position}
+                {positionDisplay}
               </span>
             </div>
           </div>
