@@ -63,7 +63,29 @@ export type UseNotifications = {
 /**
  * Atom storage of notifications.
  */
-const notificationsAtom = atom<Notification[]>([]);
+const notificationsAtom = atom<Notification[]>([
+  {
+    id: "1",
+    type: "Info",
+    content: "Some text that is a litle bit long ish.",
+    autoRemove: false,
+    lifetime: 100,
+  },
+  {
+    id: "1",
+    type: "Success",
+    content: "Some text that is a litle bit long ish.",
+    autoRemove: false,
+    lifetime: 100,
+  },
+  {
+    id: "1",
+    type: "Error",
+    content: "Some text that is a litle bit long ish.",
+    autoRemove: false,
+    lifetime: 100,
+  },
+]);
 
 /**
  * Hook to use the notification state.

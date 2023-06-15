@@ -35,7 +35,7 @@ const NotificationCard: FC<{
 
   return (
     <div
-      className={`flex relative gap-4 rounded-md px-4 min-w-[340px] ${getBgColor(
+      className={`flex relative gap-4 rounded-md px-4  flex-1 ${getBgColor(
         type,
       )}`}
     >
@@ -68,7 +68,7 @@ const NotificationCard: FC<{
           />
         </div>
       </div>
-      <div className="center w-[280px] flex-1 py-6">
+      <div className="center flex-1 py-6">
         <div className="text-base font-normal text-left w-full">{content}</div>
       </div>
       <div className="px-4 py-4">
@@ -110,8 +110,8 @@ const NotificationCenter = () => {
 
   return (
     <div className="fixed h-full w-full top-0 pointer-events-none z-50">
-      <div className="flex flex-row justify-end pr-ztg-27 pt-20">
-        <div className="flex relative flex-col">
+      <div className="flex flex-row justify-end pt-20">
+        <div className="flex relative flex-col items-end flex-1 px-4">
           <AnimatePresence mode="popLayout">
             {notifications.map((notification, index) => (
               <motion.div
@@ -120,7 +120,7 @@ const NotificationCenter = () => {
                 exit={{ x: 300, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ type: "spring", duration: 0.7 }}
-                className="mb-4 pointer-events-auto relative"
+                className="mb-4 pointer-events-auto relative flex justify-end"
               >
                 <NotificationCard
                   dataTest="notificationMessage"
