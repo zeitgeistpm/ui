@@ -1,7 +1,39 @@
-.dark > * .ql-toolbar .ql-stroke {
+@tailwind base;
+
+/* Write your own custom base styles here */
+
+/* Start purging... */
+@tailwind components;
+
+.ql-toolbar.ql-snow {
+  @apply !border-gray-300;
+  @apply !rounded-t-lg;
+  @apply !flex
+}
+
+.ql-container.ql-snow {
+  @apply !border-none;
+  
+  @apply !rounded-b-lg;
+}
+
+.ql-editor {
+  @apply font-sans text-base leading-8;
+}
+
+.ql-editor[contenteditable="true"] {
+  resize: vertical;
+  min-height: 18em;
+  @apply bg-gray-100;
+  @apply !rounded-b-lg;
+}
+
+/* .dark > * .ql-toolbar .ql-stroke {
   fill: none;
   stroke: #fff;
 }
+
+
 
 .dark > * .ql-toolbar .ql-fill {
   fill: #fff;
@@ -48,4 +80,4 @@
 
 .quill .ql-editor {
   @apply font-sans text-base leading-8;
-}
+} */

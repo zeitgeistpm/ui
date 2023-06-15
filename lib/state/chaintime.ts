@@ -2,7 +2,7 @@ import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { ChainTime } from "@zeitgeistpm/utility/dist/time";
 import { atom, getDefaultStore, useAtom } from "jotai";
 import { sdkAtom } from "lib/hooks/useSdkv2";
-import { Observable, Subscription } from "rxjs";
+import { Subscription } from "rxjs";
 
 export const chainTimeAtom = atom<ChainTime | false>(false);
 

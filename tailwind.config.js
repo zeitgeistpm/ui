@@ -25,6 +25,7 @@ module.exports = {
     "./layouts/**/*.{js,ts,jsx,tsx}",
     "./campaigns/**/*.{js,ts,jsx,tsx}",
   ],
+  safelist: ["bg-polkadot", "text-polkadot"],
   darkMode: "class",
   theme: {
     fontFamily: {
@@ -189,6 +190,7 @@ module.exports = {
         "gray-b6": "#B6B6B6",
         "gray-42": "#424242",
         "accent-1": "#333",
+        "nyanza-base": "#E7FFC9",
         "gray-light-1": "#FFF9F9",
         "gray-light-2": "#EFF4F6",
         "gray-light-3": "#E0E9EF",
@@ -244,6 +246,7 @@ module.exports = {
         "fog-of-war": "#0F1A2D",
         "provincial-pink": "#FEF2F2",
         mariner: "#3056D3",
+        polkadot: "rgb(230, 0, 122)",
         platinum: "#DFE0E6",
         powderblue: "#ECFAFF",
         discord: "#5364E6",
