@@ -24,7 +24,7 @@ interface TableProps {
   onPaginate?: (pageIndex: number) => void;
   onLoadMore?: () => void;
   hideLoadMore?: boolean;
-  noDataMessage?: string;
+  noDataMessage?: string | ReactNode;
   loadingMore?: boolean;
   loadingNumber?: number;
   loadMoreThreshold?: number;
@@ -44,6 +44,7 @@ export interface TableColumn {
   // if specified the table will hide this column if it is overflowing
   // lower number columns will be hidden first
   collapseOrder?: number;
+  hideMobile?: boolean;
 }
 
 export interface TableData {
@@ -80,8 +81,8 @@ interface CurrencyData {
 }
 
 interface TokenData {
+  token: true;
   label: string;
-  color: string;
 }
 
 interface MarketData {
@@ -101,7 +102,7 @@ const isCurrencyData = (cellValue: CellValue): cellValue is CurrencyData => {
 };
 
 const isTokenData = (cellValue: CellValue): cellValue is TokenData => {
-  return (cellValue as TokenData).color !== undefined;
+  return (cellValue as TokenData).token !== undefined;
 };
 
 const isMarketData = (cellValue: CellValue): cellValue is MarketData => {
@@ -218,7 +219,7 @@ const Cell = ({
             </div>
             <div className="text-ztg-12-150 font-light text-sky-600">
               $
-              {(value.usdValue ?? ztgPrice?.toNumber() * value.value).toFixed(
+              {((value.usdValue ?? ztgPrice?.toNumber()) * value.value).toFixed(
                 2,
               )}
             </div>
@@ -243,10 +244,6 @@ const Cell = ({
         return (
           <td className={` ${base}`} onClick={onClick} style={style}>
             <div className="flex items-center">
-              <div
-                className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2"
-                style={{ background: value.color }}
-              ></div>
               <div
                 className="font-semibold text-ztg-16-150 uppercase"
                 data-test="tokenText"
@@ -293,7 +290,7 @@ const Cell = ({
             style={style}
           >
             <AmountInput
-              className="h-ztg-40 w-full rounded-ztg-5 bg-sky-200 !pr-ztg-8 dark:bg-sky-800"
+              className="h-ztg-40 w-full rounded-ztg-5 !bg-gray-100 border-0 !pr-ztg-8 "
               value={value.value}
               onChange={value.onChange}
               min={value.min}
@@ -436,7 +433,7 @@ const Table = ({
               }
             >
               <thead>
-                <tr className="bg-sky-100 h-[50px]">
+                <tr className="bg-gray-100 h-[50px]">
                   {columns
                     .filter((col) => columnIsCollapsed(col.accessor) == false)
                     .map((column, index) => (

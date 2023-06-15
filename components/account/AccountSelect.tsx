@@ -14,6 +14,7 @@ import Select, {
 import CopyIcon from "../ui/CopyIcon";
 import AccountSelectOption from "./AccountSelectOption";
 import AccountSelectValue from "./AccountSelectValue";
+import { useAccountModals } from "lib/state/account";
 
 type AccountOption = { label: string; value: string };
 
@@ -84,6 +85,7 @@ const customStyles: StylesConfig<AccountOption> = {
 
 const AccountSelect: FC = () => {
   const wallet = useWallet();
+  const accountModals = useAccountModals();
 
   const options = useMemo<AccountOption[]>(() => {
     return wallet.accounts.map((account, id) => {
