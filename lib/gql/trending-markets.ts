@@ -33,7 +33,7 @@ const marketQuery = gql`
         marketId_not_in: ${hiddenMarketIds}
         question_not_eq: ""
         question_isNull: false
-        isMetaComplete_eq: true
+        hasValidMetaCategories_eq: true
       }
     ) {
       marketId

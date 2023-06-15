@@ -17,7 +17,7 @@ const marketQuery = gql`
     markets(
       where: {
         marketId_eq: $marketId
-        isMetaComplete_eq: true
+        hasValidMetaCategories_eq: true
         question_not_eq: ""
         question_isNull: false
       }

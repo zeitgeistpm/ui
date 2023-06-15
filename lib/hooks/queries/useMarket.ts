@@ -48,7 +48,7 @@ const batcher = memoize((sdk: Sdk<IndexerContext>) => {
             {
               question_isNull: false,
               question_not_eq: "",
-              isMetaComplete_eq: true,
+              hasValidMetaCategories_eq: true,
             },
             {
               OR: [

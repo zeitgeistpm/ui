@@ -21,7 +21,7 @@ const marketHeaderQuery = gql`
     markets(
       where: {
         marketId_in: $marketIds
-        isMetaComplete_eq: true
+        hasValidMetaCategories_eq: true
         question_isNull: false
         question_not_eq: ""
       }

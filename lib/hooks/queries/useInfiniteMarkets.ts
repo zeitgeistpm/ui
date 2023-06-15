@@ -25,7 +25,7 @@ const orderByMap = {
 const validMarketWhereInput: MarketWhereInput = {
   question_isNull: false,
   question_not_eq: "",
-  isMetaComplete_eq: true,
+  hasValidMetaCategories_eq: true,
   marketId_not_in: JSON.parse(hiddenMarketIds),
 };
 

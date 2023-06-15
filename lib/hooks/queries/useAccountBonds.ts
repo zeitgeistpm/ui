@@ -13,7 +13,7 @@ const accountBondsQuery = gql`
         bonds_isNull: false
         question_not_eq: ""
         question_isNull: false
-        isMetaComplete_eq: true
+        hasValidMetaCategories_eq: true
       }
       orderBy: marketId_DESC
     ) {

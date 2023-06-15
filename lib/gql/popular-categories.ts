@@ -9,7 +9,7 @@ const tagsQuery = gql`
         status_eq: Active
         question_not_eq: ""
         question_isNull: false
-        isMetaComplete_eq: true
+        hasValidMetaCategories_eq: true
         marketId_not_in: ${hiddenMarketIds}
       }
     ) {

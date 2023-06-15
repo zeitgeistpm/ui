@@ -18,7 +18,7 @@ const marketsQuery = gql`
         status_in: [Active, Proposed]
         question_not_eq: ""
         question_isNull: false
-        isMetaComplete_eq: true
+        hasValidMetaCategories_eq: true
         marketId_not_in: ${hiddenMarketIds}
       }
     ) {

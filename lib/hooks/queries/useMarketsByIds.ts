@@ -19,7 +19,7 @@ export const useMarketsByIds = (marketQueries?: UseMarketFilter[]) => {
               {
                 question_isNull: false,
                 question_not_eq: "",
-                isMetaComplete_eq: true,
+                hasValidMetaCategories_eq: true,
               },
               {
                 OR: [
