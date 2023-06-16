@@ -153,7 +153,8 @@ const Market: NextPage<MarketPageProps> = ({
       const lastDispute = disputes?.[disputes.length - 1];
       const at = lastDispute.at.toNumber();
       const by = lastDispute.by.toString();
-      const outcome = market?.marketType.scalar
+      const isCategorical = !market?.marketType.scalar;
+      const outcome = !isCategorical
         ? market.scalarType === "date"
           ? new Decimal(lastDispute?.outcome?.asScalar.toString()).toNumber()
           : Number(lastDispute?.outcome?.asScalar)
@@ -161,10 +162,7 @@ const Market: NextPage<MarketPageProps> = ({
       const marketDispute: MarketDispute = {
         at,
         by,
-        outcome: {
-          categorical: outcome,
-          scalar: outcome,
-        },
+        outcome: isCategorical ? { categorical: outcome } : { scalar: outcome },
       };
       setLastDispute(marketDispute);
     }
