@@ -230,7 +230,7 @@ const MarketCard = ({
     hasEnded: hasDatePassed(Number(endDate)),
     outcomes: outcomes.length,
     volume: volume,
-    baseAsset: metadata?.symbol,
+    baseAsset: metadata?.symbol ?? "",
     liquidity,
     numParticipants: numParticipants,
   };
