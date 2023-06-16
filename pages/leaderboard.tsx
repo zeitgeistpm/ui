@@ -28,6 +28,14 @@ import Avatar from "components/ui/Avatar";
 // include buy/sell full set events
 // styling
 
+// Track trades, buy full set, sell full set,
+
+// Buy Full Set events
+// Deposited includes all assets
+// DepositedEndowed includes all assets
+// EndowedBoughtCompleteSet includes all assets
+// BoughtCompleteSet only includes one asset
+
 type Trade = {
   marketId: number;
   amountIn: Decimal;
@@ -159,7 +167,7 @@ export async function getStaticProps() {
       // accountId_eq: "dDywmamjrDkaT18ybCRJBfax65CoxJNSWGZfwiQrbkAe95wq3",
     },
   });
-  console.log(historicalSwaps);
+  // console.log(historicalSwaps);
 
   const tradersWithSwaps = historicalSwaps.reduce<Traders>((traders, swap) => {
     const trades = traders[swap.accountId];
@@ -228,6 +236,29 @@ export async function getStaticProps() {
     }
   });
   //TODO: fetch and process buy/sell full sets
+
+  const { historicalAccountBalances: buyFullSetEvents } =
+    await sdk.indexer.historicalAccountBalances({
+      where: {
+        AND: [
+          {
+            event_contains: "BoughtComplete",
+          },
+          {
+            OR: [{ event_contains: "Deposited", assetId_not_contains: "pool" }],
+          },
+        ],
+      },
+    });
+
+  const { historicalAccountBalances: sellFullSetEvents } =
+    await sdk.indexer.historicalAccountBalances({
+      where: {
+        event_contains: "SoldComplete",
+      },
+    });
+
+  console.log(buyFullSetEvents);
 
   //loop through accounts and trades, total up baseAsset in and out for each market
   const tradersAggregatedByMarket = Object.keys(
