@@ -20,21 +20,22 @@ const DisputeButton = ({
   assetId,
 }: {
   market: Market<IndexerContext>;
-  assetId: MarketOutcomeAssetId;
+  assetId?: MarketOutcomeAssetId;
 }) => {
   const [sdk] = useSdkv2();
-  const assetIndex = getIndexOf(assetId);
 
   const { data: disputes } = useMarketDisputes(market);
 
   const [isOpen, setOpen] = useState(false);
 
   const disputeDisabled = useMemo(() => {
+    if (!assetId) return true;
+    const assetIndex = getIndexOf(assetId);
     const isCategorical = market.marketType.categorical != null;
     const assetIsReported = market.report?.outcome.categorical === assetIndex;
 
     return (sdk && !isRpcSdk(sdk)) || (isCategorical && assetIsReported);
-  }, [sdk, disputes?.length, market, assetIndex]);
+  }, [sdk, disputes?.length, market]);
 
   return (
     <>
@@ -52,7 +53,7 @@ const DisputeButton = ({
           ) : (
             <CategoricalDisputeBox
               market={market}
-              assetId={assetId}
+              assetId={assetId!}
               onSuccess={() => setOpen(false)}
             />
           )}

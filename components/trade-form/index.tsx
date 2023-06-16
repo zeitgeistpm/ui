@@ -10,6 +10,7 @@ import {
 import TradeResult from "components/markets/TradeResult";
 import Decimal from "decimal.js";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
 import {
   useTradeItem,
@@ -77,6 +78,8 @@ const TradeForm = () => {
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
 
   const { data: tradeItemState } = useTradeItemState(tradeItem);
+
+  const { data: constants } = useChainConstants();
 
   const {
     poolBaseBalance,
@@ -514,7 +517,7 @@ const TradeForm = () => {
               />
             </div>
             <div className="center sm:h-[48px] font-semibold capitalize text-[20px] sm:text-[28px]">
-              {tradeItemState?.asset.name}
+              {tradeItemState?.asset?.name}
             </div>
             <div className="font-semibold text-center mb-[20px]">For</div>
             <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative">
@@ -570,12 +573,13 @@ const TradeForm = () => {
               disabled={!formState.isValid || isLoading === true}
               className="h-[56px]"
               type="submit"
+              extrinsic={transaction}
             >
               <div className="center font-normal h-[20px]">
-                Confirm {`${capitalize(tradeItem.action)}`}
+                Confirm {`${capitalize(tradeItem?.action)}`}
               </div>
               <div className="center font-normal text-ztg-12-120 h-[20px]">
-                Trading fee: {fee} {baseSymbol}
+                Trading fee: {fee} {constants?.tokenSymbol}
               </div>
             </TransactionButton>
           </div>

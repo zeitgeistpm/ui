@@ -6,6 +6,8 @@ import { gql, GraphQLClient } from "graphql-request";
 import { MarketOutcomes, MarketOutcome } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
 import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
+import { hiddenMarketIds } from "lib/constants/markets";
+import { marketMetaFilter } from "./constants";
 
 const marketsQuery = gql`
   query Market {
@@ -15,9 +17,8 @@ const marketsQuery = gql`
       where: {
         pool_isNull: false
         status_in: [Active, Proposed]
-        question_not_eq: ""
-        question_isNull: false
-        isMetaComplete_eq: true
+        ${marketMetaFilter}
+        marketId_not_in: ${hiddenMarketIds}
       }
     ) {
       marketId

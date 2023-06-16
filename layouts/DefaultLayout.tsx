@@ -37,7 +37,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
     ref: mainRef,
   } = useResizeDetector({ refreshMode: "debounce", refreshRate: 50 });
 
-  const contentRef = useRef<HTMLDivElement>();
+  const contentRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="relative flex min-h-screen justify-evenly overflow-hidden">
@@ -67,7 +67,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
           )}
           <main
             className={`flex flex-col dark:text-white mb-12 ${
-              router.pathname !== "/" && "main-container mt-32"
+              router.pathname !== "/" && "main-container mt-24 md:mt-32"
             }`}
             ref={mainRef}
           >

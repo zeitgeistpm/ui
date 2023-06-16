@@ -15,6 +15,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { from } from "rxjs";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 
 const columns: TableColumn[] = [
   { header: "Outcome", accessor: "outcome", type: "text" },
@@ -47,7 +48,7 @@ const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
   const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
   const { data: market } = useMarket({ marketId });
-  const baseAsset = parseAssetId(market?.baseAsset).unrightOr(null);
+  const baseAsset = parseAssetIdString(market?.baseAsset);
   const { data: usdPrice } = useAssetUsdPrice(baseAsset);
 
   const { data: spotPrices } = useMarketSpotPrices(marketId);
@@ -120,7 +121,9 @@ const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
             outcome: outcomeName,
             totalValue: {
               value: currentPrice,
-              usdValue: currentPrice ? usdPrice?.mul(currentPrice) : 0,
+              usdValue: new Decimal(
+                currentPrice ? usdPrice?.mul(currentPrice) : 0,
+              ).toNumber(),
             },
             pre:
               currentPrice != null

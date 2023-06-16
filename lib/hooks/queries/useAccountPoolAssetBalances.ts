@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   Context,
+  IOBaseAssetId,
   isIndexedData,
   isRpcSdk,
   parseAssetId,
@@ -25,11 +26,13 @@ export const useAccountPoolAssetBalances = (
       if (isRpcSdk(sdk) && pool) {
         const assets = isIndexedData(pool)
           ? pool.weights
-              .filter((weight) => weight?.assetId !== "Ztg")
               .map(
                 (weight) =>
                   weight && parseAssetId(weight.assetId).unrightOr(undefined),
               )
+              .filter((assetId) => {
+                return IOBaseAssetId.is(assetId) === false;
+              })
           : pool.assets;
 
         const api = await getApiAtBlock(sdk.api, blockNumber);

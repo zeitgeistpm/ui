@@ -1,10 +1,8 @@
-import React, { FC, useRef } from "react";
-
-import Form from "mobx-react-form";
-
-import { EndType } from "lib/types/create-market";
-import { Input, DateTimeInput } from "components/ui/inputs";
+import { DateTimeInput, Input } from "components/ui/inputs";
 import { useChainTime } from "lib/state/chaintime";
+import { EndType } from "lib/types/create-market";
+import Form from "mobx-react-form";
+import { FC, useRef } from "react";
 
 interface EndTypeSwitchProps {
   selected: EndType;
