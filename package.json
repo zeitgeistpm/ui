@@ -54,7 +54,6 @@
     "ip-range-check": "^0.2.0",
     "jotai": "^2.0.4",
     "jotai-tanstack-query": "^0.7.0",
-    "js-priority-queue": "^0.1.5",
     "lodash.merge": "^4.6.2",
     "median-range": "^0.0.11",
     "next": "^13.2.3",

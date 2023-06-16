@@ -3243,7 +3243,6 @@ __metadata:
     jest-environment-jsdom: ^29.5.0
     jotai: ^2.0.4
     jotai-tanstack-query: ^0.7.0
-    js-priority-queue: ^0.1.5
     lodash.merge: ^4.6.2
     median-range: ^0.0.11
     moment: ^2.29.1
@@ -7980,13 +7979,6 @@ __metadata:
     react:
       optional: true
   checksum: 8e32fa126ef18850a1ac9c25e1260bebf0cb79c704ed9c564236904c0a5f28064de9b6a901c395dfbf2aa47f5ae7600ae97e3acadcc79778eda94d92da3a0ded
-  languageName: node
-  linkType: hard
-
-"js-priority-queue@npm:^0.1.5":
-  version: 0.1.5
-  resolution: "js-priority-queue@npm:0.1.5"
-  checksum: 741a54456101e5625b8b19080b4e5cc329ebc443b21221f809afa807a2a2f7c0cbf717649166de079013753adc89e82b60cb3eeb02bb9250808ff8fc36bd7a00
   languageName: node
   linkType: hard
 

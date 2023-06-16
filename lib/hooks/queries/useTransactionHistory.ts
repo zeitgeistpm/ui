@@ -5,7 +5,6 @@ import {
   isIndexedSdk,
   IOMarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk-next";
-import mergeSortedArrays from "lib/util/merge-sorted-arrays";
 import { gql } from "graphql-request";
 import { useSdkv2 } from "../useSdkv2";
 
@@ -90,23 +89,25 @@ export const useTransactionHistory = (address: string) => {
             address: address,
           });
 
-        const merged = mergeSortedArrays<EventEntry, "blockNumber">(
-          "blockNumber",
-          historicalAccountBalances,
-          historicalAssets,
+        const merged = [...historicalAssets, ...historicalAccountBalances].sort(
+          (a, b) => {
+            return b.blockNumber - a.blockNumber;
+          },
         );
 
         let transactions: TradeEvent[] = [];
 
-        const marketIds = new Set<number>(
-          merged.map((event) => {
-            const assetId = parseAssetId(event.assetId).unwrap();
+        const marketIds = new Set<number>();
 
-            return IOMarketOutcomeAssetId.is(assetId)
-              ? getMarketIdOf(assetId)
-              : null;
-          }),
-        );
+        for (const event of merged) {
+          const assetId = parseAssetId(event.assetId).unwrap();
+
+          if (!IOMarketOutcomeAssetId.is(assetId)) {
+            continue;
+          }
+          const marketId = getMarketIdOf(assetId);
+          marketIds.add(marketId);
+        }
 
         const { markets } = await sdk.indexer.client.request<{
           markets: MarketHeader[];
@@ -114,25 +115,27 @@ export const useTransactionHistory = (address: string) => {
           marketIds: Array.from(marketIds),
         });
 
-        const marketsMap: Map<number, MarketHeader> = new Map();
+        const marketsMap: Record<number, MarketHeader> = {};
+
         marketIds.forEach((marketId) => {
           const market = markets.find((m) => m.marketId === marketId);
           if (!market) return;
-          marketsMap.set(marketId, market);
+          marketsMap[marketId] = market;
         });
 
         for (const item of merged) {
           const action: Action = humanReadableEventMap[item.event];
           const assetId = parseAssetId(item.assetId).unwrap();
-          const marketId = IOMarketOutcomeAssetId.is(assetId)
-            ? getMarketIdOf(assetId)
-            : null;
+          if (!IOMarketOutcomeAssetId.is(assetId)) {
+            continue;
+          }
+          const marketId = getMarketIdOf(assetId);
 
           transactions = [
             ...transactions,
             {
               marketId: marketId,
-              question: marketsMap.get(marketId).question,
+              question: marketsMap[marketId].question,
               action: action,
               time: item.timestamp,
               blockNumber: item.blockNumber,
