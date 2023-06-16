@@ -241,7 +241,7 @@ const MarketCard = ({
   const upper = marketType?.scalar?.[1]
     ? new Decimal(marketType?.scalar?.[1]).div(ZTG).toNumber()
     : 0;
-  console.log(pool);
+
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
