@@ -14,7 +14,6 @@ import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import { filterTypes } from "lib/constants/market-filter";
 import { ZTG } from "lib/constants";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
-import { Url } from "next/dist/shared/lib/router/router";
 
 export type MarketsListProps = {
   className?: string;
@@ -110,7 +109,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
           const question = market.question ?? "";
           const image = market.img ?? "";
           //check if market is categorical or scalar
-          let { categorical = "", scalar } = market.marketType ?? {};
+          let { categorical, scalar } = market.marketType ?? {};
           if (categorical === null) {
             categorical = "";
           }
@@ -120,6 +119,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
           const pool = market.pool ?? {};
           const tags =
             market.tags?.filter((tag): tag is string => tag !== null) ?? [];
+
           return (
             <MarketCard
               marketId={market.marketId}
