@@ -42,7 +42,7 @@ type Trade = {
   amountOut: Decimal;
   assetIn: AssetId;
   assetOut: AssetId;
-  type: "trade" | "redeem";
+  type: "trade" | "redeem" | "sellFullSet" | "buyFullSet";
 };
 
 type AccountId = string;
