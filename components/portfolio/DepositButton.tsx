@@ -71,14 +71,9 @@ const DepositModal = ({
   const wallet = useWallet();
   const { chain, api } = useChain(sourceChain);
 
-  const { data: fee } = useExtrinsicFee(
-    chain.createDepositExtrinsic(
-      api,
-      wallet.activeAccount.address,
-      "10000000000",
-      constants.parachainId,
-    ),
-  );
+  const fee = chain.depositFee;
+  //assumes source chain fee is paid in currency that is being transferred
+  const maxTransferAmount = balance.minus(fee?.mul(1.01) ?? 0); //add 1% buffer to fee
 
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
     () => {
@@ -123,8 +118,6 @@ const DepositModal = ({
 
       if (!changedByUser) return;
 
-      //assumes source chain fee is paid in currency that is being transferred
-      const maxTransferAmount = balance.minus(fee?.mul(1.01) ?? 0); //add 1% buffer to fee
       if (name === "percentage") {
         setValue(
           "amount",
@@ -199,6 +192,7 @@ const DepositModal = ({
           <input
             className="mt-[30px] mb-[10px] w-full"
             type="range"
+            disabled={maxTransferAmount.lessThanOrEqualTo(0)}
             {...register("percentage", { value: "0" })}
           />
           <div className="text-vermilion text-ztg-12-120 my-[4px] h-[16px]">
