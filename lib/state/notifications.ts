@@ -74,7 +74,6 @@ const store = getDefaultStore();
  */
 export const useNotifications = (): UseNotifications => {
   const atom = useAtom(notificationsAtom);
-  const atomRef = useRef(atom);
 
   const pushNotification: UseNotifications["pushNotification"] = (
     content,
