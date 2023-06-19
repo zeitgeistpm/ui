@@ -1,4 +1,5 @@
 import { Dialog } from "@headlessui/react";
+import { useQuery } from "@tanstack/react-query";
 import { PollingTimeout, poll } from "@zeitgeistpm/avatara-util";
 import { ZTG, isFullSdk } from "@zeitgeistpm/sdk-next";
 import { StorageError } from "@zeitgeistpm/web3.storage";
@@ -38,6 +39,36 @@ export const Publishing = ({ editor }: PublishingProps) => {
   const [totalCostIsOpen, setTotalCostIsOpen] = useState(false);
   const { data: constants } = useChainConstants();
 
+  const params = useMemo(() => {
+    const signer = wallet.getActiveSigner();
+    if (editor.isValid && chainTime && signer) {
+      return marketFormDataToExtrinsicParams(editor.form, signer, chainTime);
+    }
+    return;
+  }, [editor.form, chainTime, wallet.activeAccount]);
+
+  const feesEnabled = !(
+    !sdk ||
+    !params ||
+    !editor.isValid ||
+    !wallet.activeAccount
+  );
+
+  const { data: fees } = useQuery(
+    [params, wallet.activeAccount],
+    async () => {
+      if (!feesEnabled) {
+        return new Decimal(0);
+      }
+      const paymentInfo = await sdk.model.markets.create.calculateFees(params);
+      return new Decimal(paymentInfo.partialFee.toString() ?? 0).div(ZTG);
+    },
+    {
+      initialData: new Decimal(0),
+      enabled: feesEnabled,
+    },
+  );
+
   const firstInvalidStep = editor.steps.find((step) => !step.isValid);
 
   const baseCurrency = supportedCurrencies.find(
@@ -53,13 +84,44 @@ export const Publishing = ({ editor }: PublishingProps) => {
     baseCurrency?.assetId,
   );
 
-  const params = useMemo(() => {
-    const signer = wallet.getActiveSigner();
-    if (editor.isValid && chainTime && signer) {
-      return marketFormDataToExtrinsicParams(editor.form, signer, chainTime);
-    }
-    return;
-  }, [editor.form, chainTime, wallet.activeAccount]);
+  const baseAssetLiquidityRow = editor.form?.liquidity?.rows.find(
+    (row) => row.asset === editor.form.currency,
+  );
+
+  const bondCost =
+    editor.form.moderation === "Permissionless"
+      ? constants?.markets.validityBond
+      : constants?.markets.advisoryBond;
+
+  const oracleBond = constants?.markets.oracleBond;
+
+  const ztgCost = new Decimal(bondCost ?? 0)
+    .plus(oracleBond ?? 0)
+    .plus(
+      editor.form.moderation === "Permissionless" &&
+        editor.form.liquidity?.deploy &&
+        editor.form.currency === "ZTG"
+        ? new Decimal(baseAssetLiquidityRow?.value ?? 0).mul(2).toNumber()
+        : 0,
+    )
+    .plus(fees ?? 0);
+
+  const foreignCurrencyCost =
+    editor.form.liquidity?.deploy && editor.form.currency !== "ZTG"
+      ? new Decimal(baseAssetLiquidityRow?.value ?? 0).mul(2)
+      : null;
+
+  const ztgBalanceDelta = ztgBalance?.div(ZTG).minus(ztgCost);
+  const foreignAssetBalanceDelta =
+    foreignCurrencyCost &&
+    foreignAssetBalance?.div(ZTG).minus(foreignCurrencyCost);
+
+  const hasEnoughLiquidty =
+    ztgBalanceDelta?.gte(0) &&
+    (!foreignCurrencyCost || foreignAssetBalanceDelta?.gte(0));
+
+  const baseCurrencyMetadata =
+    editor.form.currency && getMetadataForCurrency(editor.form.currency);
 
   const submit = async () => {
     if (params && isFullSdk(sdk)) {
@@ -144,44 +206,6 @@ export const Publishing = ({ editor }: PublishingProps) => {
     }
   };
 
-  const baseAssetLiquidityRow = editor.form?.liquidity?.rows.find(
-    (row) => row.asset === editor.form.currency,
-  );
-
-  const bondCost =
-    editor.form.moderation === "Permissionless"
-      ? constants?.markets.validityBond
-      : constants?.markets.advisoryBond;
-
-  const oracleBond = constants?.markets.oracleBond;
-
-  const ztgCost = new Decimal(bondCost ?? 0)
-    .plus(oracleBond ?? 0)
-    .plus(
-      editor.form.moderation === "Permissionless" &&
-        editor.form.liquidity?.deploy &&
-        editor.form.currency === "ZTG"
-        ? new Decimal(baseAssetLiquidityRow?.value ?? 0).mul(2).toNumber()
-        : 0,
-    );
-
-  const foreignCurrencyCost =
-    editor.form.liquidity?.deploy && editor.form.currency !== "ZTG"
-      ? new Decimal(baseAssetLiquidityRow?.value ?? 0).mul(2)
-      : null;
-
-  const ztgBalanceDelta = ztgBalance?.div(ZTG).minus(ztgCost);
-  const foreignAssetBalanceDelta =
-    foreignCurrencyCost &&
-    foreignAssetBalance?.div(ZTG).minus(foreignCurrencyCost);
-
-  const hasEnoughLiquidty =
-    ztgBalanceDelta?.gte(0) &&
-    (!foreignCurrencyCost || foreignAssetBalanceDelta?.gte(0));
-
-  const baseCurrencyMetadata =
-    editor.form.currency && getMetadataForCurrency(editor.form.currency);
-
   return (
     <>
       <div className="">
@@ -243,6 +267,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
                           </div>
                         </div>
                       </div>
+
                       <div className="flex">
                         <div className="flex-1">
                           <h3 className="text-base font-normal text-black">
@@ -257,10 +282,11 @@ export const Publishing = ({ editor }: PublishingProps) => {
                           </div>
                         </div>
                       </div>
+
                       {editor.form.moderation === "Permissionless" &&
                         editor.form.liquidity?.deploy &&
                         baseAssetLiquidityRow && (
-                          <div className="mt-4 flex">
+                          <div className="mt-4 mb-4 flex">
                             <div className="flex-1">
                               <h3 className="text-base font-normal text-black">
                                 Liquidity
@@ -280,6 +306,21 @@ export const Publishing = ({ editor }: PublishingProps) => {
                             </div>
                           </div>
                         )}
+
+                      <div className="flex">
+                        <div className="flex-1">
+                          <h3 className="text-base font-normal text-black">
+                            Transaction Fee
+                          </h3>
+                          <div className="flex justify-start items-center gap-6">
+                            <h4 className="text-sm flex-1 text-gray-500 font-light">
+                              Returned if oracle reports the market outcome on
+                              time.
+                            </h4>
+                            <div className="">{fees?.toFixed(4)} ZTG</div>
+                          </div>
+                        </div>
+                      </div>
                       <div className="mt-8 mb-4 flex border-t-1 pt-4">
                         <div className="flex-1">
                           <h3 className="text-base font-normal text-black">
@@ -291,7 +332,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
                             </h4>
                             <div className="center font-semibold gap-1">
                               <div className="text-ztg-blue">
-                                {ztgCost.toFixed(1)} ZTG
+                                {ztgCost.toFixed(3)} ZTG
                               </div>
                               {foreignCurrencyCost && (
                                 <>
