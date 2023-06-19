@@ -1,6 +1,6 @@
 import { atom, useAtom } from "jotai";
 import { generateGUID } from "lib/util/generate-guid";
-import { ReactNode, useRef } from "react";
+import { ReactNode, useCallback, useRef, useState } from "react";
 
 export type Notification = {
   /**
@@ -74,13 +74,12 @@ export const useNotifications = (): UseNotifications => {
   const atom = useAtom(notificationsAtom);
   const atomRef = useRef(atom);
 
-  atomRef.current = atom;
+  const buffer = useRef<Notification[]>([]);
 
-  const pushNotification: UseNotifications["pushNotification"] = (
-    content,
-    options,
-  ) => {
-    const [notifications, setNotifications] = atomRef.current;
+  const process = useRef(() => null);
+
+  process.current = () => {
+    const [notifications, setNotifications] = atom;
     let nextNotifications = [...notifications];
 
     const latestNotification = notifications[notifications.length - 1];
@@ -89,6 +88,18 @@ export const useNotifications = (): UseNotifications => {
       nextNotifications = notifications.slice(0, -1);
     }
 
+    nextNotifications = [...nextNotifications, ...buffer.current];
+    buffer.current = [];
+
+    setNotifications(nextNotifications);
+  };
+
+  const processing = useRef<NodeJS.Timeout>(null);
+
+  const pushNotification: UseNotifications["pushNotification"] = (
+    content,
+    options,
+  ) => {
     const notification: Notification = {
       id: generateGUID(),
       content,
@@ -97,9 +108,11 @@ export const useNotifications = (): UseNotifications => {
       type: options?.type ?? "Info",
     };
 
-    nextNotifications = [...nextNotifications, notification];
+    buffer.current.push(notification);
 
-    setNotifications(nextNotifications);
+    clearTimeout(processing.current);
+
+    processing.current = setTimeout(process.current, 0);
 
     return notification;
   };
