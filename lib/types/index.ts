@@ -1,3 +1,4 @@
+import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
 import { AssetId } from "@zeitgeistpm/sdk/dist/types";
 import { Asset } from "@zeitgeistpm/types/dist/interfaces";
 
@@ -42,3 +43,12 @@ export interface EndpointOption {
 }
 
 export type TradeType = "buy" | "sell";
+
+export const isScalarRangeType = (
+  val: string | null,
+): val is ScalarRangeType => {
+  if (val === null) {
+    return true;
+  }
+  return ["date", "number"].includes(val);
+};

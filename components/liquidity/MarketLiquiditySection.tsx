@@ -1,5 +1,5 @@
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { ScalarRangeType, parseAssetId } from "@zeitgeistpm/sdk-next";
+import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import LiquidityModal from "components/liquidity/LiquidityModal";
 import PoolTable from "components/liquidity/PoolTable";
 import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
@@ -8,6 +8,7 @@ import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
+import { isScalarRangeType } from "lib/types";
 import { formatNumberLocalized } from "lib/util";
 import { getCurrentPrediction } from "lib/util/assets";
 import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
@@ -75,12 +76,12 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
 
   const [manageLiquidityOpen, setManageLiquidityOpen] = useState(false);
 
-  const predictionDisplay = market?.marketType.scalar
-    ? formatScalarOutcome(
-        prediction.price,
-        market.scalarType as ScalarRangeType,
-      )
-    : `${prediction?.name} ${prediction?.percentage}%`;
+  const predictionDisplay =
+    prediction && market && market.scalarType !== undefined
+      ? market.marketType.scalar && isScalarRangeType(market.scalarType)
+        ? formatScalarOutcome(prediction.price, market.scalarType)
+        : `${prediction.name} ${prediction.percentage}%`
+      : "";
 
   return (
     <div className="md:flex md:justify-between">
