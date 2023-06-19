@@ -120,7 +120,7 @@ const NotificationCenter = () => {
                 exit={{ x: 300, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ type: "spring", duration: 0.7 }}
-                className="mb-4 pointer-events-auto relative flex justify-end"
+                className="mb-4 pointer-events-auto relative flex justify-end md:max-w-screen-sm md:w-[420px]"
               >
                 <NotificationCard
                   dataTest="notificationMessage"
