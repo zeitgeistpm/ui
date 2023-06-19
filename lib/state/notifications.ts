@@ -107,15 +107,14 @@ export const useNotifications = (): UseNotifications => {
   const removeNotification: UseNotifications["removeNotification"] = (
     notification,
   ) => {
+    const notifications = store.get(notificationsAtom);
     store.set(
       notificationsAtom,
-      store
-        .get(notificationsAtom)
-        .filter((n) =>
-          typeof notification === "string"
-            ? n.id !== notification
-            : n.id !== notification.id,
-        ),
+      notifications.filter((n) =>
+        typeof notification === "string"
+          ? n.id !== notification
+          : n.id !== notification.id,
+      ),
     );
   };
 
