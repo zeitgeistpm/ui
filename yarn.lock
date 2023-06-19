@@ -3237,9 +3237,6 @@ __metadata:
     jotai-tanstack-query: ^0.7.0
     lodash.merge: ^4.6.2
     median-range: ^0.0.11
-    mobx: ^6.3.12
-    mobx-react: ^7.2.1
-    mobx-react-form: ^3.2.0
     moment: ^2.29.1
     next: ^13.2.3
     next-absolute-url: ^1.2.2
@@ -8662,56 +8659,6 @@ __metadata:
   bin:
     mkdirp: dist/cjs/src/bin.js
   checksum: 5d7d7997e38a962e8b66dd4db1974bdcb841f084531ba8c9e1f3d52d71f5e6639677a96b2eb5d5940406d729a2153d820f396077ed3a6716058d3e75041dc1f2
-  languageName: node
-  linkType: hard
-
-"mobx-react-form@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "mobx-react-form@npm:3.2.0"
-  dependencies:
-    lodash: ^4.17.11
-  peerDependencies:
-    mobx: ^6.0.0
-  checksum: e36c01a1bed6a11da5b2fb727aac68f6617c4001b4114d4e6dddb36023c75f48f68aed1905d5a25a7af746cf10580c96d048f4c388bb5c004c75b0fcb1c71cf9
-  languageName: node
-  linkType: hard
-
-"mobx-react-lite@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "mobx-react-lite@npm:3.4.0"
-  peerDependencies:
-    mobx: ^6.1.0
-    react: ^16.8.0 || ^17 || ^18
-  peerDependenciesMeta:
-    react-dom:
-      optional: true
-    react-native:
-      optional: true
-  checksum: 9294e127e281c8b37ec7bcaf17de479f50519e6ad485b58d7b991291900511541a5a718653759d3cf6503462c70325d025e1c2ed376d4584fb1b2d3aac9d9b48
-  languageName: node
-  linkType: hard
-
-"mobx-react@npm:^7.2.1":
-  version: 7.6.0
-  resolution: "mobx-react@npm:7.6.0"
-  dependencies:
-    mobx-react-lite: ^3.4.0
-  peerDependencies:
-    mobx: ^6.1.0
-    react: ^16.8.0 || ^17 || ^18
-  peerDependenciesMeta:
-    react-dom:
-      optional: true
-    react-native:
-      optional: true
-  checksum: 07ce6eb297ddab2cc693df7350a3e2f730194cc6eb56bd912f80e28f9427237569e0bda6b30167154faf094e7c5e5ff360abd52acd2860d9a0d0e53320617ee8
-  languageName: node
-  linkType: hard
-
-"mobx@npm:^6.3.12":
-  version: 6.8.0
-  resolution: "mobx@npm:6.8.0"
-  checksum: f09bb079292ea59023a7e35a9c73ed577e3de9a0175ec3d5a2adc8192e2e3a352b29ec0981ee06d1d63f701f81bb7fc6cc19fd9089edf84a754a8a75ef00ef7f
   languageName: node
   linkType: hard
 
