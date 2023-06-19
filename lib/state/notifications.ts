@@ -65,6 +65,10 @@ export type UseNotifications = {
  */
 const notificationsAtom = atom<Notification[]>([]);
 
+/**
+ * We use the store so that we use the same global state across calls.
+ * This is needed so that we can call pushNotification at any time, in timeouts or consecutive calls.
+ */
 const store = getDefaultStore();
 
 /**
