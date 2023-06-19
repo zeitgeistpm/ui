@@ -47,20 +47,21 @@ export const Publishing = ({ editor }: PublishingProps) => {
     return;
   }, [editor.form, chainTime, wallet.activeAccount]);
 
+  const feesEnabled =
+    !sdk || !params || !editor.isValid || !wallet.activeAccount;
+
   const { data: fees } = useQuery(
     [params, wallet.activeAccount],
     async () => {
-      if (editor.isValid && wallet.activeAccount) {
-        const paymentInfo = await sdk.model.markets.create.calculateFees(
-          params,
-        );
-        return new Decimal(paymentInfo.partialFee.toString() ?? 0).div(ZTG);
+      if (feesEnabled) {
+        return new Decimal(0);
       }
-      return new Decimal(0);
+      const paymentInfo = await sdk.model.markets.create.calculateFees(params);
+      return new Decimal(paymentInfo.partialFee.toString() ?? 0).div(ZTG);
     },
     {
       initialData: new Decimal(0),
-      enabled: Boolean(params && editor.isValid && wallet.activeAccount),
+      enabled: feesEnabled,
     },
   );
 
