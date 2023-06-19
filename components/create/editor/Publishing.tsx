@@ -47,13 +47,17 @@ export const Publishing = ({ editor }: PublishingProps) => {
     return;
   }, [editor.form, chainTime, wallet.activeAccount]);
 
-  const feesEnabled =
-    !sdk || !params || !editor.isValid || !wallet.activeAccount;
+  const feesEnabled = !(
+    !sdk ||
+    !params ||
+    !editor.isValid ||
+    !wallet.activeAccount
+  );
 
   const { data: fees } = useQuery(
     [params, wallet.activeAccount],
     async () => {
-      if (feesEnabled) {
+      if (!feesEnabled) {
         return new Decimal(0);
       }
       const paymentInfo = await sdk.model.markets.create.calculateFees(params);
