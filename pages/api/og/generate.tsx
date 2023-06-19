@@ -156,15 +156,15 @@ export default async function GenerateOgImage(request: NextRequest) {
           </div>
           <div tw="flex mt-[50px] w-full">
             <div tw="flex flex-col mr-[200px]">
-              <h2 tw={`font-bold ${"text-5xl"} font-sans`}>Ends:</h2>
-              <div tw="text-4xl -mt-2" style={{ color: "#ABC1F9" }}>
+              <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Ends:</h2>
+              <div tw="text-4xl -mt-1" style={{ color: "#ABC1F9" }}>
                 {ends}
               </div>
             </div>
             <div tw="flex flex-col">
-              <h2 tw={`font-bold ${"text-5xl"} font-sans`}>Volume:</h2>
+              <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Volume:</h2>
               <div
-                tw={`flex ${"text-4xl"}  -mt-2`}
+                tw={`flex ${"text-4xl"}  -mt-1`}
                 style={{ color: "#ABC1F9" }}
               >
                 {formatNumberCompact(Number(volume))} {currencyMetadata.name}
