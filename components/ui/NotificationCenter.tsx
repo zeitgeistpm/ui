@@ -112,24 +112,26 @@ const NotificationCenter = () => {
     <div className="fixed h-full w-full top-0 pointer-events-none z-50">
       <div className="flex flex-row justify-end pt-20">
         <div className="flex relative flex-col items-end flex-1 px-4">
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence mode="sync">
             {notifications.map((notification, index) => (
               <motion.div
                 key={notification.id}
-                initial={{ x: 300, opacity: 0 }}
-                exit={{ x: 300, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
+                initial={{ x: 300, maxHeight: 0, opacity: 0 }}
+                exit={{ x: 300, maxHeight: 0, opacity: 0 }}
+                animate={{ x: 0, maxHeight: 380, opacity: 1 }}
                 transition={{ type: "spring", duration: 0.7 }}
-                className="mb-4 pointer-events-auto relative flex justify-end md:max-w-screen-sm md:w-[420px]"
+                className="pointer-events-auto relative flex justify-end md:max-w-screen-sm md:w-[420px] overflow-hidden"
               >
-                <NotificationCard
-                  dataTest="notificationMessage"
-                  key={notification.id}
-                  {...notification}
-                  close={() => {
-                    removeNotification(notification);
-                  }}
-                />
+                <div className="mb-4 flex-1">
+                  <NotificationCard
+                    dataTest="notificationMessage"
+                    key={notification.id}
+                    {...notification}
+                    close={() => {
+                      removeNotification(notification);
+                    }}
+                  />
+                </div>
               </motion.div>
             ))}
           </AnimatePresence>

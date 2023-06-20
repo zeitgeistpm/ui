@@ -6,6 +6,7 @@ import { Menu, X } from "react-feather";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import MenuLogo from "components/menu/MenuLogo";
+import { useNotifications } from "lib/state/notifications";
 
 export type NavbarColor = "black" | "white" | "transparent";
 
@@ -15,6 +16,7 @@ const AccountButton = dynamic(() => import("../account/AccountButton"), {
 
 const TopBar = () => {
   const { pathname } = useRouter();
+  const n = useNotifications();
 
   const [navbarBGColor, setNavbarBGColor] =
     useState<NavbarColor>("transparent");
@@ -86,6 +88,18 @@ const TopBar = () => {
         )}
       </div>
       <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+      <button
+        onClick={() => {
+          n.pushNotification("test", {
+            lifetime: 3,
+          });
+          n.pushNotification("test2", {
+            lifetime: 7,
+          });
+        }}
+      >
+        CLICK ME
+      </button>
     </div>
   );
 };
