@@ -1,7 +1,12 @@
 import { create } from "@zeitgeistpm/indexer";
 import type { FullMarketFragment, PoolWhereInput } from "@zeitgeistpm/indexer";
+import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { graphQlEndpoint, ZTG } from "lib/constants";
+import {
+  CurrencyMetadata,
+  getMetadataForCurrencyByAssetId,
+} from "lib/constants/supported-currencies";
 import { getCurrentPrediction } from "lib/util/assets";
 import moment from "moment";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -15,6 +20,7 @@ export type MarketImageData = {
   prediction: ReturnType<typeof getCurrentPrediction>;
   volume: string;
   ends: string;
+  currencyMetadata: CurrencyMetadata;
 };
 
 export default async function (
@@ -31,6 +37,9 @@ export default async function (
   });
 
   const market = markets[0];
+
+  const assetId = parseAssetId(market.baseAsset).unwrap();
+  const currencyMetadata = getMetadataForCurrencyByAssetId(assetId);
 
   if (!market) {
     return response
@@ -63,6 +72,7 @@ export default async function (
     prediction,
     volume,
     ends,
+    currencyMetadata,
   };
 
   return response.status(200).json(data);
