@@ -97,7 +97,6 @@
     "@testing-library/react": "^14.0.0",
     "@types/flexsearch": "^0.7.2",
     "@types/jest": "^29.5.0",
-    "@types/js-priority-queue": "^0.0.6",
     "@types/lodash-es": "^4.17.6",
     "@types/lodash.merge": "^4.6.6",
     "@types/object-hash": "^2.2.1",

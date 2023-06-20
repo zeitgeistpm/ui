@@ -2681,13 +2681,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/js-priority-queue@npm:^0.0.6":
-  version: 0.0.6
-  resolution: "@types/js-priority-queue@npm:0.0.6"
-  checksum: 8850d3c648cd7fdfcbe1fbf063643acae6cbcf532ae1c6d4ee4759eed3d15201e1f6e6450708cf8c89c77c259a878de240dc70098247872abf82faf9b4a26f36
-  languageName: node
-  linkType: hard
-
 "@types/jsdom@npm:^20.0.0":
   version: 20.0.1
   resolution: "@types/jsdom@npm:20.0.1"
@@ -3209,7 +3202,6 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@types/flexsearch": ^0.7.2
     "@types/jest": ^29.5.0
-    "@types/js-priority-queue": ^0.0.6
     "@types/lodash-es": ^4.17.6
     "@types/lodash.merge": ^4.6.6
     "@types/object-hash": ^2.2.1
