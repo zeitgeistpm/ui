@@ -1,20 +1,14 @@
-import React, { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 
-import SideMenu from "./SideMenu";
-import MobileMenu from "components/menu/MobileMenu";
-import { X } from "react-feather";
-import { createPortal } from "react-dom";
-import { Menu as MenuIcon } from "react-feather";
-import { useRouter } from "next/router";
-import dynamic from "next/dynamic";
-import MenuLogo from "components/menu/MenuLogo";
-import Image from "next/image";
 import { Menu, Transition } from "@headlessui/react";
-import Link from "next/link";
-import { FiArrowRight, FiArrowLeft } from "react-icons/fi";
 import { CATEGORIES } from "components/front-page/PopularCategories";
-
-export type NavbarColor = "black" | "white" | "transparent";
+import MenuLogo from "components/menu/MenuLogo";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { Menu as MenuIcon } from "react-feather";
+import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 
 const AccountButton = dynamic(() => import("../account/AccountButton"), {
   ssr: false,

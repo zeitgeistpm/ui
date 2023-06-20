@@ -1,11 +1,7 @@
-import Link from "next/link";
-import { useRouter } from "next/router";
 import { FC } from "react";
 import Logo from "../icons/ZeitgeistIcon";
 
 const MenuLogo: FC<{}> = () => {
-  const { pathname } = useRouter();
-
   return (
     <div className="flex items-center gap-4">
       <Logo dark={false} />
