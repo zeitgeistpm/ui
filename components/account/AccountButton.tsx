@@ -184,7 +184,7 @@ const AccountButton: FC<{
                       }`}
                     >
                       <div
-                        className={`flex items-center rounded-full h-full border-2 pl-1.5 ${
+                        className={`flex items-center rounded-full h-full border-2 pl-1.5 py-1 md:py-0 ${
                           pathname === "/"
                             ? `bg-black text-white ${
                                 open ? "border-orange-500" : "border-white"
@@ -211,7 +211,7 @@ const AccountButton: FC<{
                           )}
                         </div>
                         <span
-                          className={`font-medium pl-2 text-sm h-full leading-[40px] ${
+                          className={`font-medium pl-2 text-sm h-full hidden md:block leading-[40px] ${
                             pathname === "/" ? "text-white" : "text-black"
                           }`}
                         >
