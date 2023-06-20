@@ -29,11 +29,11 @@ const TopBar = () => {
         pathname === "/" ? "border-b-0" : "border-b border-gray-200"
       }`}
     >
-      <div className="relative flex justify-between items-center w-full max-w-screen-2xl h-[44px] mx-auto px-8">
-        <div className="border-r-1 border-blue-600 pr-3 md:pr-7">
+      <div className="relative flex justify-between items-center w-full max-w-screen-2xl h-[44px] mx-auto md:px-8 px-3">
+        <div className="hidden md:block border-r-1 border-blue-600 pr-3 md:pr-7">
           <MenuLogo />
         </div>
-        <div className="pl-3 md:pl-7 flex flex-1 gap-7">
+        <div className="md:pl-7 flex flex-1 gap-7">
           <Menu as="div" className="relative inline-block text-left">
             <div>
               <Menu.Button className="text-white font-light relative flex center gap-2">
@@ -44,18 +44,21 @@ const TopBar = () => {
                 <div className="block md:hidden">
                   <MenuIcon />
                 </div>
+                <div className="md:hidden pl-2">
+                  <MenuLogo />
+                </div>
               </Menu.Button>
             </div>
             <Transition
               as={Fragment}
               enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
+              enterFrom="transform opacity-0 translate-y-6 md:scale-95"
+              enterTo="transform opacity-100 translate-y-0 md:scale-100"
+              leave="transition ease-in translate-y-6 duration-75"
+              leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
+              leaveTo="transform opacity-0 translate-y-6 md:scale-95"
             >
-              <Menu.Items className="fixed md:absolute left-0 mt-6 md:mt-8 w-full h-full md:h-auto md:w-64 py-3 px-5 origin-top-right md:rounded-md bg-white focus:outline-none">
+              <Menu.Items className="fixed md:absolute left-0 mt-4 md:mt-8 w-full h-full md:h-auto md:w-64 py-3 px-5 origin-top-right md:rounded-md bg-white focus:outline-none">
                 <Menu.Item>
                   {({ active }) => (
                     <button

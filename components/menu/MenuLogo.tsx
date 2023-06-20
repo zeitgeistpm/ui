@@ -7,14 +7,14 @@ const MenuLogo: FC<{}> = () => {
   const { pathname } = useRouter();
 
   return (
-    <Link className="flex items-center gap-4" href="/" role="button">
+    <div className="flex items-center gap-4">
       <Logo dark={false} />
       <>
-        <div className="hidden sm:flex flex-col">
+        <div className="hidden md:flex flex-col">
           <h1 className={`font-kanit text-white text-xl `}>Zeitgeist</h1>
         </div>
       </>
-    </Link>
+    </div>
   );
 };
 
