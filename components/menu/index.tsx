@@ -6,7 +6,6 @@ import MenuLogo from "components/menu/MenuLogo";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { Menu as MenuIcon } from "react-feather";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 
@@ -15,13 +14,9 @@ const AccountButton = dynamic(() => import("../account/AccountButton"), {
 });
 
 const TopBar = () => {
-  const { pathname } = useRouter();
-
   return (
     <div
-      className={`w-screen py-3.5 fixed z-40 transition-all duration-300 bg-black ${
-        pathname === "/" ? "border-b-0" : "border-b border-gray-200"
-      }`}
+      className={`w-screen py-3.5 fixed z-40 transition-all duration-300 bg-black`}
     >
       <div className="relative flex justify-between items-center w-full max-w-screen-2xl h-[44px] mx-auto md:px-8 px-3">
         <div className="hidden md:block border-r-1 border-blue-600 pr-3 md:pr-7">

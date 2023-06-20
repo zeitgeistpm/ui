@@ -16,7 +16,7 @@ import { formatNumberLocalized, shortenAddress } from "lib/util";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { FC, PropsWithChildren, useState } from "react";
+import React, { FC, Fragment, PropsWithChildren, useState } from "react";
 import { ChevronDown, DollarSign, Frown, Settings, User } from "react-feather";
 import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
 import {
@@ -223,32 +223,32 @@ const AccountButton: FC<{
                 </div>
 
                 <Transition
-                  as={React.Fragment}
+                  as={Fragment}
                   enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
+                  enterFrom="transform opacity-0 translate-y-6 md:translate-y-0 md:scale-95"
+                  enterTo="transform opacity-100 translate-y-0 md:scale-100"
+                  leave="transition ease-in translate-y-6 md:translate-y-0 duration-75"
+                  leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
+                  leaveTo="transform opacity-0 translate-y-6 md:translate-y-0 md:scale-95"
                 >
-                  <Menu.Items className="absolute right-0 py-3 z-40 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <Menu.Items className="fixed md:absolute left-0 md:left-auto md:right-0 py-3 z-40 mt-2 w-full h-full md:h-auto md:w-64 origin-top-right divide-y divide-gray-100 md:rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="">
                       <div className="border-b-2 mb-3 py-2">
-                        <div className="px-4">
+                        <div className="px-6">
                           <BalanceRow
                             imgPath="/currencies/ztg.jpg"
                             units={constants?.tokenSymbol}
                             balance={activeBalance}
                           />
                         </div>
-                        <div className="px-4">
+                        <div className="px-6">
                           <BalanceRow
                             imgPath="/currencies/dot.png"
                             units="DOT"
                             balance={polkadotBalance}
                           />
                         </div>
-                        <div className="px-4">
+                        <div className="px-6">
                           <div className="flex items-center mb-3">
                             <img
                               src="/currencies/usdt.png"
@@ -264,12 +264,12 @@ const AccountButton: FC<{
                       <Menu.Item>
                         {({ active }) => (
                           <div
-                            className="flex items-center px-4 mb-3 hover:bg-slate-100"
+                            className="flex items-center px-6 mb-3 hover:bg-slate-100"
                             onClick={() => setShowGetZtgModal(true)}
                           >
                             <DollarSign />
                             <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
                             >
                               Get ZTG
                             </button>
@@ -280,14 +280,14 @@ const AccountButton: FC<{
                         <Menu.Item>
                           {({ active }) => (
                             <div
-                              className="flex items-center px-4 mb-3 hover:bg-slate-100"
+                              className="flex items-center px-6 mb-3 hover:bg-slate-100"
                               onClick={() => {
                                 accountModals.openAccountSelect();
                               }}
                             >
                               <User />
                               <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
                               >
                                 Select Account
                               </button>
@@ -298,10 +298,10 @@ const AccountButton: FC<{
                       <Menu.Item>
                         {({ active }) => (
                           <Link href="/settings">
-                            <div className="flex items-center px-4 mb-3 hover:bg-slate-100">
+                            <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
                               <Settings />
                               <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
                               >
                                 Settings
                               </button>
@@ -312,12 +312,12 @@ const AccountButton: FC<{
                       <Menu.Item>
                         {({ active }) => (
                           <div
-                            className="flex items-center px-4 hover:bg-slate-100"
+                            className="flex items-center px-6 hover:bg-slate-100"
                             onClick={() => disconnectWallet()}
                           >
                             <Frown />
                             <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
                             >
                               Disconnect
                             </button>
