@@ -176,9 +176,9 @@ const Market: NextPage<MarketPageProps> = ({
           scalar:
             market.scalarType === "date"
               ? new Decimal(
-                  market?.report?.outcome?.categorical.toString(),
+                  market?.report?.outcome?.scalar.toString(),
                 ).toNumber()
-              : market?.report?.outcome?.categorical,
+              : market?.report?.outcome?.scalar,
         },
       };
       setReport(report);
