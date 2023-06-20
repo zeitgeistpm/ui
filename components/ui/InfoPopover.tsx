@@ -5,11 +5,13 @@ import { AiOutlineInfoCircle } from "react-icons/ai";
 
 export type InfoPopoverProps = React.PropsWithChildren<{
   title?: ReactNode;
+  icon?: ReactNode;
   className?: string;
 }>;
 
 export const InfoPopover: React.FC<InfoPopoverProps> = ({
   title,
+  icon,
   children,
   className,
 }) => {
@@ -29,7 +31,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
         {({ open }) => (
           <>
             <Popover.Button className="relative justify-center items-center hidden md:flex">
-              <AiOutlineInfoCircle />
+              {icon ?? <AiOutlineInfoCircle />}
             </Popover.Button>
 
             <Transition
@@ -54,8 +56,8 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
               leaveFrom="opacity-100 scale-95"
               leaveTo="opacity-0 scale-1"
             >
-              <Popover.Panel className="absolute z-[100] bg-white top-[100%] right-0 translate-x-[50%] mt-2 ml-2 w-screen md:w-96 rounded-md">
-                <div className="overflow-hidden p-4 rounded-md shadow-xs ring-2 ring-black ring-opacity-5 text-center">
+              <Popover.Panel className="absolute z-[100] bg-tooltip-bg top-[100%] right-0 translate-x-[50%] mt-2 ml-2 w-screen md:w-96 rounded-md">
+                <div className="overflow-hidden p-4 rounded-md shadow-xs ring-2 text-black ring-orange-400 ring-opacity-20 text-center font-light text-sm">
                   {children}
                 </div>
               </Popover.Panel>
@@ -67,7 +69,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Panel
           onClick={() => setIsOpen(false)}
-          className={`w-full max-w-[462px] rounded-[10px] bg-white p-6 cursor-pointer ${className}`}
+          className={`w-full max-w-[462px] rounded-[10px] bg-tooltip-bg p-6 cursor-pointer ${className} font-light text-sm`}
         >
           {title}
           <div className="text-center">{children}</div>

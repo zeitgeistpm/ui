@@ -13,7 +13,8 @@ import { AmountInput } from "./inputs";
 import Paginator from "./Paginator";
 import PercentageChange from "./PercentageChange";
 import { ChartData } from "./TimeSeriesChart";
-import { InfoPopover } from "components/ui/InfoPopover";
+import InfoPopover from "components/ui/InfoPopover";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 
 interface TableProps {
   data: TableData[];
@@ -467,7 +468,15 @@ const Table = ({
                             <></>
                           )}
                           {column.infobox && (
-                            <InfoPopover children={column.infobox} />
+                            <InfoPopover
+                              title={
+                                <h3 className="flex justify-center items-center mb-4 gap-2">
+                                  <AiOutlineInfoCircle />
+                                  {column.header}
+                                </h3>
+                              }
+                              children={column.infobox}
+                            />
                           )}
                         </div>
                       </th>

@@ -1,4 +1,4 @@
-import InfoPopover from "components/create/editor/InfoPopover";
+import InfoPopover from "components/ui/InfoPopover";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -238,13 +238,13 @@ const PoolSettings: FC<{
                 </h3>
               }
             >
-              <p className="text-gray-500 font-light text-sm mb-4">
+              <p className="font-light text-sm mb-4">
                 This is the amount of liquidity that will be provided to the
                 market. Half of this amount will be provided to the base asset
                 token and the other half spread across the outcome tokens
                 according to weights/prices.
               </p>
-              <p className="text-gray-500 font-light text-sm">
+              <p className="font-light text-sm">
                 <b className="font-bold">
                   Note that this is the exact amount of {baseAssetRow?.asset}{" "}
                   you will spend on liquidity.

@@ -19,7 +19,7 @@ import { useRef } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { LuFileWarning } from "react-icons/lu";
 import { ErrorMessage } from "./ErrorMessage";
-import InfoPopover from "./InfoPopover";
+import InfoPopover from "../../ui/InfoPopover";
 import { MarketFormSection } from "./MarketFormSection";
 import { Publishing } from "./Publishing";
 import { EditorResetButton } from "./ResetButton";
@@ -139,7 +139,7 @@ export const MarketEditor = () => {
                   </h3>
                 }
               >
-                <p className="text-gray-500 font-light text-sm">
+                <p className="font-light text-sm">
                   The base asset used to provide liquidity to the market and
                   what you use when making trades for market outcome tokens.
                 </p>
@@ -220,7 +220,7 @@ export const MarketEditor = () => {
                 <h4 className="text-base text-left mb-1">
                   Outcomes (Categorical)
                 </h4>
-                <p className="text-gray-500 font-light text-sm text-left mb-4">
+                <p className="font-light text-sm text-left mb-4">
                   Outcomes will create a categorical market from the options you
                   specify.{" "}
                   <a
@@ -315,7 +315,7 @@ export const MarketEditor = () => {
                       </h3>
                     }
                   >
-                    <p className="text-gray-500 font-light text-sm">
+                    <p className="font-light text-sm">
                       Grace period starts after the market ends. During this
                       period, trading, reporting and disputing is disabled.
                     </p>
@@ -347,7 +347,7 @@ export const MarketEditor = () => {
                       </h3>
                     }
                   >
-                    <p className="text-gray-500 font-light text-sm">
+                    <p className="font-light text-sm">
                       Reporting starts after the market ends and grace period
                       has finished. In this period the market outcome can only
                       be resolved by the designated oracle. If the oracle fails
@@ -382,7 +382,7 @@ export const MarketEditor = () => {
                       </h3>
                     }
                   >
-                    <p className="text-gray-500 font-light text-sm">
+                    <p className="font-light text-sm">
                       The dispute period starts when the market has been
                       reported. If no dispute is raised during this period the
                       market is resolved to the reported outcome.
