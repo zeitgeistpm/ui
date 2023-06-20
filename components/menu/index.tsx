@@ -26,36 +26,12 @@ const TopBar = () => {
         </div>
         <div className="md:pl-7 flex flex-1 gap-7">
           <Menu as="div" className="relative inline-block text-left">
-            <div>
-              <Menu.Button className="text-white font-light relative flex center gap-2">
-                <div className="relative h-6 w-6 hidden md:block">
-                  <Image src="/menu.svg" fill alt="Markets menu" sizes="100" />
-                </div>
-                <div className="hidden md:block">Markets</div>
-                <div className="block md:hidden">
-                  <MenuIcon />
-                </div>
-                <div className="md:hidden pl-2">
-                  <MenuLogo />
-                </div>
-              </Menu.Button>
-            </div>
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 translate-y-6 md:translate-y-0 md:scale-95"
-              enterTo="transform opacity-100 translate-y-0 md:scale-100"
-              leave="transition ease-in translate-y-6 md:translate-y-0 duration-75"
-              leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
-              leaveTo="transform opacity-0 translate-y-6 md:translate-y-0 md:scale-95"
-            >
-              <Menu.Items className="fixed md:absolute left-0 mt-4 md:mt-8 w-full h-full ring-1 ring-gray-200 md:h-auto md:w-64 py-3 px-5 origin-top-right md:rounded-md bg-white focus:outline-none">
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-3 mb-4`}
-                    >
-                      <div className="relative h-6 w-6 invert">
+            {({ open, close }) => {
+              return (
+                <>
+                  <div>
+                    <Menu.Button className="text-white font-light relative flex center gap-2">
+                      <div className="relative h-6 w-6 hidden md:block">
                         <Image
                           src="/menu.svg"
                           fill
@@ -63,70 +39,129 @@ const TopBar = () => {
                           sizes="100"
                         />
                       </div>
-                      <h3 className="text-sm font-semibold">All Markets</h3>
-                    </button>
-                  )}
-                </Menu.Item>
-
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      className={`group flex w-full items-center  px-2 py-2 text-sm gap-3 mb-4 border-b-1 border-gray-300 pb-5`}
-                    >
-                      <div className="relative h-6 w-6">
-                        <Image
-                          src="/star.svg"
-                          fill
-                          alt="Markets menu"
-                          sizes="100"
-                        />
+                      <div className="hidden md:block">Markets</div>
+                      <div className="block md:hidden">
+                        <MenuIcon />
                       </div>
-                      <h3 className="text-sm font-semibold">Popular Markets</h3>
-                    </button>
-                  )}
-                </Menu.Item>
-
-                <div className="block md:hidden">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        className={`group flex w-full items-center  px-2 py-2 text-sm gap-3 mb-4`}
-                      >
-                        <div className="relative h-6 w-6 invert">
-                          <Image
-                            src="/award.svg"
-                            fill
-                            alt="Markets menu"
-                            sizes="100"
-                          />
-                        </div>
-                        <h3 className="text-sm font-semibold">Leaderboard</h3>
-                      </button>
-                    )}
-                  </Menu.Item>
-                </div>
-
-                <CategoriesMenuItem />
-
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      className={`group flex w-full items-center  rounded-md px-2 py-2 text-sm gap-3`}
-                    >
-                      <div className="relative h-6 w-6 z-10">
-                        <Image
-                          src="/plus-square.svg"
-                          fill
-                          alt="Markets menu"
-                          sizes="100"
-                        />
+                      <div className="md:hidden pl-2">
+                        <MenuLogo />
                       </div>
-                      <h3 className="text-sm font-semibold">Create Market</h3>
-                    </button>
-                  )}
-                </Menu.Item>
-              </Menu.Items>
-            </Transition>
+                    </Menu.Button>
+                  </div>
+                  <Transition
+                    as={Fragment}
+                    enter="transition ease-out duration-100"
+                    enterFrom="transform opacity-0 translate-y-6 md:translate-y-0 md:scale-95"
+                    enterTo="transform opacity-100 translate-y-0 md:scale-100"
+                    leave="transition ease-in translate-y-6 md:translate-y-0 duration-75"
+                    leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
+                    leaveTo="transform opacity-0 translate-y-6 md:translate-y-0 md:scale-95"
+                  >
+                    <Menu.Items className="fixed md:absolute left-0 mt-4 md:mt-8 w-full h-full ring-1 ring-gray-200 md:h-auto md:w-64 py-3 px-5 origin-top-right md:rounded-md bg-white focus:outline-none">
+                      <Menu.Item>
+                        {({ active, close }) => (
+                          <Link
+                            href="/markets?status=Active&ordering=Newest&liquidityOnly=true"
+                            onClick={close}
+                          >
+                            <button
+                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-3 mb-4`}
+                            >
+                              <div className="relative h-6 w-6 invert">
+                                <Image
+                                  src="/menu.svg"
+                                  fill
+                                  alt="Markets menu"
+                                  sizes="100"
+                                />
+                              </div>
+
+                              <h3 className="text-sm font-semibold">
+                                All Markets
+                              </h3>
+                            </button>
+                          </Link>
+                        )}
+                      </Menu.Item>
+
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link
+                            href="/markets?status=Active&ordering=Most%20Volume&liquidityOnly=true"
+                            onClick={close}
+                          >
+                            <button
+                              className={`group flex w-full items-center  px-2 py-2 text-sm gap-3 mb-4 border-b-1 border-gray-300 pb-5`}
+                            >
+                              <div className="relative h-6 w-6">
+                                <Image
+                                  src="/star.svg"
+                                  fill
+                                  alt="Markets menu"
+                                  sizes="100"
+                                />
+                              </div>
+
+                              <h3 className="text-sm font-semibold">
+                                Popular Markets
+                              </h3>
+                            </button>
+                          </Link>
+                        )}
+                      </Menu.Item>
+
+                      <div className="block md:hidden">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link href="/leaderboard" onClick={close}>
+                              <button
+                                className={`group flex w-full items-center  px-2 py-2 text-sm gap-3 mb-4`}
+                              >
+                                <div className="relative h-6 w-6 invert">
+                                  <Image
+                                    src="/award.svg"
+                                    fill
+                                    alt="Markets menu"
+                                    sizes="100"
+                                  />
+                                </div>
+                                <h3 className="text-sm font-semibold">
+                                  Leaderboard
+                                </h3>
+                              </button>
+                            </Link>
+                          )}
+                        </Menu.Item>
+                      </div>
+
+                      <CategoriesMenuItem onSelect={close} />
+
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link href="/create" onClick={close}>
+                            <button
+                              className={`group flex w-full items-center  rounded-md px-2 py-2 text-sm gap-3`}
+                            >
+                              <div className="relative h-6 w-6 z-10">
+                                <Image
+                                  src="/plus-square.svg"
+                                  fill
+                                  alt="Markets menu"
+                                  sizes="100"
+                                />
+                              </div>
+                              <h3 className="text-sm font-semibold">
+                                Create Market
+                              </h3>
+                            </button>
+                          </Link>
+                        )}
+                      </Menu.Item>
+                    </Menu.Items>
+                  </Transition>
+                </>
+              );
+            }}
           </Menu>
 
           <Link
@@ -146,27 +181,32 @@ const TopBar = () => {
   );
 };
 
-const CategoriesMenu = () => {
+const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 grid-flow-row-dense md:h-full">
       {CATEGORIES.map((category, index) => (
-        <div className="flex gap-3 items-center pb-6 md:pb-0" key={index}>
-          <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-gray-300">
-            <Image
-              src={category.imagePath}
-              fill
-              alt="Markets menu"
-              sizes="100"
-            />
+        <Link
+          onClick={onSelect}
+          href={`/markets?status=Active&tag=${category.name}&ordering=Newest&liquidityOnly=true`}
+        >
+          <div className="flex gap-3 items-center pb-6 md:pb-0" key={index}>
+            <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-gray-300">
+              <Image
+                src={category.imagePath}
+                fill
+                alt="Markets menu"
+                sizes="100"
+              />
+            </div>
+            <div className="font-light">{category.name}</div>
           </div>
-          <div className="font-light">{category.name}</div>
-        </div>
+        </Link>
       ))}
     </div>
   );
 };
 
-const CategoriesMenuItem = () => {
+const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   return (
     <>
@@ -209,7 +249,7 @@ const CategoriesMenuItem = () => {
             <FiArrowLeft size={26} />
             Menu
           </div>
-          <CategoriesMenu />
+          <CategoriesMenu onSelect={onSelect} />
         </div>
       </Transition>
     </>
