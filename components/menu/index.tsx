@@ -51,11 +51,11 @@ const TopBar = () => {
                   <Transition
                     as={Fragment}
                     enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 translate-y-6 md:translate-y-0 md:scale-95"
+                    enterFrom="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                     enterTo="transform opacity-100 translate-y-0 md:scale-100"
-                    leave="transition ease-in translate-y-6 md:translate-y-0 duration-75"
+                    leave="transition ease-in translate-y-2 md:translate-y-0 duration-75"
                     leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
-                    leaveTo="transform opacity-0 translate-y-6 md:translate-y-0 md:scale-95"
+                    leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                   >
                     <Menu.Items className="fixed md:absolute left-0 mt-4 md:mt-8 w-full h-full ring-1 ring-gray-200 md:h-auto md:w-64 py-3 px-5 origin-top-right md:rounded-md bg-white focus:outline-none">
                       <Menu.Item>

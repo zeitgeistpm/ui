@@ -225,11 +225,11 @@ const AccountButton: FC<{
                 <Transition
                   as={Fragment}
                   enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 translate-y-6 md:translate-y-0 md:scale-95"
+                  enterFrom="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                   enterTo="transform opacity-100 translate-y-0 md:scale-100"
-                  leave="transition ease-in translate-y-6 md:translate-y-0 duration-75"
+                  leave="transition ease-in translate-y-2 md:translate-y-0 duration-75"
                   leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
-                  leaveTo="transform opacity-0 translate-y-6 md:translate-y-0 md:scale-95"
+                  leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                 >
                   <Menu.Items className="fixed md:absolute left-0 md:left-auto md:right-0 py-3 z-40 mt-2 w-full h-full md:h-auto md:w-64 origin-top-right divide-y divide-gray-100 md:rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="">
