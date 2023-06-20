@@ -58,11 +58,7 @@ const HeaderActionButton: FC<
 
   return (
     <button
-      className={`flex border-2 rounded-full px-6 leading-[40px] ${
-        pathname === "/"
-          ? "text-black border-black sm:text-white sm:bg-transparent sm:border-white"
-          : "text-black border-black"
-      } rounded-full font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-30`}
+      className={`flex border-2 rounded-full px-6 leading-[40px] text-white font-medium items-center border-white justify-center cursor-pointer disabled:cursor-default disabled:opacity-30`}
       onClick={onClick}
       disabled={disabled}
     >
@@ -184,18 +180,12 @@ const AccountButton: FC<{
                       }`}
                     >
                       <div
-                        className={`flex items-center rounded-full h-full border-2 pl-1.5 py-1 md:py-0 ${
-                          pathname === "/"
-                            ? `bg-black text-white ${
-                                open ? "border-orange-500" : "border-white"
-                              }`
-                            : `text-black ${
-                                open ? "border-orange-500" : "border-black"
-                              }`
+                        className={`flex items-center rounded-full h-full border-2 pl-1.5 py-1 md:py-0 bg-black transition-all text-white ${
+                          open ? "border-orange-500" : "border-white"
                         }`}
                       >
                         <div
-                          className={`border-1 ${
+                          className={`border-1 transition-all ${
                             open ? "border-orange-500" : "border-transparent"
                           } rounded-full`}
                           onClick={(e) => {
@@ -211,8 +201,8 @@ const AccountButton: FC<{
                           )}
                         </div>
                         <span
-                          className={`font-medium pl-2 text-sm h-full hidden md:block leading-[40px] ${
-                            pathname === "/" ? "text-white" : "text-black"
+                          className={`font-medium pl-2 text-sm h-full transition-all hidden md:block leading-[40px] ${
+                            open ? "text-orange-500" : "text-white"
                           }`}
                         >
                           {activeAccount &&
@@ -223,7 +213,7 @@ const AccountButton: FC<{
                             size={16}
                             viewBox="4 3 16 16"
                             className={`box-content px-2 ${
-                              open && "rotate-180"
+                              open && "rotate-180 text-orange-500"
                             }`}
                           />
                         </div>
