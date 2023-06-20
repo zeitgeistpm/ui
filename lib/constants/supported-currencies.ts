@@ -1,5 +1,6 @@
 import { AssetId } from "@zeitgeistpm/sdk-next";
 import { Unpacked } from "@zeitgeistpm/utility/dist/array";
+import { isEqual } from "lodash-es";
 
 export type CurrencyMetadata = {
   name: string;
@@ -34,5 +35,8 @@ export type SupportedCurrencyTag = Unpacked<
 
 export const getMetadataForCurrency = (currency: SupportedCurrencyTag) => 
   supportedCurrencies.find((c) => c.name === currency);
+
+export const getMetadataForCurrencyByAssetId = (assetId: AssetId) => 
+  supportedCurrencies.find((c) => isEqual(c.assetId, assetId));
 
   
