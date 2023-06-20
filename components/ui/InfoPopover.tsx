@@ -56,8 +56,8 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
               leaveFrom="opacity-100 scale-95"
               leaveTo="opacity-0 scale-1"
             >
-              <Popover.Panel className="absolute z-[100] bg-tooltip-bg top-[100%] right-0 translate-x-[50%] mt-2 ml-2 w-screen md:w-96 rounded-md">
-                <div className="overflow-hidden p-4 rounded-md shadow-xs ring-2 text-black ring-orange-400 ring-opacity-20 text-center font-light text-sm">
+              <Popover.Panel className="absolute z-[100] bg-tooltip-bg top-[100%] right-0 translate-x-[50%] mt-2 ml-2 w-screen md:w-[500px] rounded-md">
+                <div className="overflow-hidden p-5 rounded-md shadow-xs ring-2 text-black ring-orange-400 ring-opacity-20 text-left font-light text-base">
                   {children}
                 </div>
               </Popover.Panel>
@@ -69,7 +69,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Panel
           onClick={() => setIsOpen(false)}
-          className={`w-full max-w-[462px] rounded-[10px] bg-tooltip-bg p-6 cursor-pointer ${className} font-light text-sm`}
+          className={`w-full max-w-[462px] rounded-[10px] bg-tooltip-bg p-6 cursor-pointer ${className} font-light text-base`}
         >
           {title}
           <div className="text-center">{children}</div>
