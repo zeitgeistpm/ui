@@ -112,15 +112,15 @@ const NotificationCenter = () => {
     <div className="fixed h-full w-full top-0 pointer-events-none z-50">
       <div className="flex flex-row justify-end pt-20">
         <div className="flex relative flex-col items-end flex-1 px-4">
-          <AnimatePresence mode="sync">
+          <AnimatePresence mode="sync" presenceAffectsLayout>
             {notifications.map((notification, index) => (
               <motion.div
                 key={notification.id}
                 initial={{ x: 300, maxHeight: 0, opacity: 0 }}
                 exit={{ x: 300, maxHeight: 0, opacity: 0 }}
-                animate={{ x: 0, maxHeight: 380, opacity: 1 }}
+                animate={{ x: 0, maxHeight: 900, opacity: 1 }}
                 transition={{ type: "spring", duration: 0.7 }}
-                className="pointer-events-auto relative flex justify-end md:max-w-screen-sm md:w-[420px] overflow-hidden"
+                className="pointer-events-auto w-full md:max-w-screen-sm md:w-[420px] overflow-hidden box-border"
               >
                 <div className="mb-4 flex-1">
                   <NotificationCard
