@@ -272,9 +272,9 @@ const MarketCard = ({
           </div>
           <MarketCardInfo question={question} />
           <div className="w-full">
-            {marketType?.categorical ? (
+            {pool && marketType?.categorical ? (
               <MarketCardPredictionBar pool={pool} prediction={prediction} />
-            ) : Object.keys(pool).length !== 0 ? (
+            ) : pool && Object.keys(pool).length !== 0 ? (
               <ScalarPriceRange
                 scalarType={scalarType}
                 lowerBound={lower}

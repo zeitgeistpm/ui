@@ -74,9 +74,9 @@ const DepositModal = ({
   const { data: fee } = useExtrinsicFee(
     chain?.createDepositExtrinsic(
       api,
-      wallet.activeAccount.address,
+      wallet?.activeAccount?.address ?? "",
       "10000000000",
-      constants.parachainId,
+      constants?.parachainId ?? 0,
     ),
   );
 
@@ -85,11 +85,11 @@ const DepositModal = ({
       const formValue = getValues();
       const amount = formValue.amount;
 
-      const tx = chain.createDepositExtrinsic(
+      const tx = chain?.createDepositExtrinsic(
         api,
-        wallet.activeAccount.address,
+        wallet?.activeAccount?.address ?? "",
         new Decimal(amount).mul(ZTG).toFixed(0),
-        constants.parachainId,
+        constants?.parachainId ?? 0,
       );
       return tx;
     },
