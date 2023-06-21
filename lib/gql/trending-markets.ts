@@ -125,6 +125,7 @@ const getTrendingMarkets = async (
         assets: {
           pool: { poolId: number };
           price: number;
+          assetId: string;
         }[];
       }>(assetsQuery, {
         poolId: Number(poolId),
