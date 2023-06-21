@@ -32,33 +32,15 @@ export interface MarketStatusFilter extends MarketFilter {
   value: MarketFilterStatusLabel;
 }
 
-export const isMarketStatusFilter = (
-  filter: MarketFilter,
-): filter is MarketStatusFilter => {
-  return filter.type === "status";
-};
-
 export interface MarketTagFilter extends MarketFilter {
   type: "tag";
   value: MarketFilterTagLabel;
 }
 
-export const isMarketTagFilter = (
-  filter: MarketFilter,
-): filter is MarketTagFilter => {
-  return filter.type === "tag";
-};
-
 export interface MarketCurrencyFilter extends MarketFilter {
   type: "currency";
   value: string;
 }
-
-export const isMarketCurrencyFilter = (
-  filter: MarketFilter,
-): filter is MarketCurrencyFilter => {
-  return filter.type === "currency";
-};
 
 export type MarketsListFiltersQuery = {
   [key in MarketFilterType]?: string[];

@@ -29,11 +29,6 @@ export const useMarketFiltersContext = () => {
   return context;
 };
 
-export type MarketFiltersContainerProps = PropsWithChildren<{
-  activeFilters: MarketFilter[];
-  portal: HTMLDivElement;
-}>;
-
 const MarketFiltersContainer: FC<PropsWithChildren<MarketFiltersProps>> = (
   props,
 ) => {

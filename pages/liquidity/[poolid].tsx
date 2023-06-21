@@ -1,13 +1,9 @@
-import { isIndexedData, parseAssetId } from "@zeitgeistpm/sdk-next";
+import { isIndexedData } from "@zeitgeistpm/sdk-next";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
-import PoolTable from "components/liquidity/PoolTable";
-import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
-import InfoBoxes from "components/ui/InfoBoxes";
 import Pill from "components/ui/Pill";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
-import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
@@ -117,7 +113,6 @@ const PoolDetails: NextPage = () => {
   return (
     <>
       <div className="mb-8">
-        <InfoBoxes />
         <div className="flex items-center mb-ztg-33">
           <h2>Market Pool</h2>
           <ChevronLeft
