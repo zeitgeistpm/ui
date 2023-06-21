@@ -1,8 +1,8 @@
-import { MarketStatus } from "@zeitgeistpm/sdk-next";
+import { MarketStatus, ScalarRangeType } from "@zeitgeistpm/sdk-next";
 import { MarketDispute, Report } from "@zeitgeistpm/sdk/dist/types";
-import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS } from "lib/constants";
+import { marketMetaFilter } from "./constants";
 
 const marketIdsQuery = gql`
   query MarketIds($end: BigInt) {
@@ -17,9 +17,7 @@ const marketQuery = gql`
     markets(
       where: {
         marketId_eq: $marketId
-        isMetaComplete_eq: true
-        question_not_eq: ""
-        question_isNull: false
+        ${marketMetaFilter}
       }
     ) {
       marketId

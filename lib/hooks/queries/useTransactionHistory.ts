@@ -10,19 +10,34 @@ import { useSdkv2 } from "../useSdkv2";
 
 export const transactionHistoryKey = "transaction-history";
 
+const humanReadableEventMap = {
+  PoolCreate: "Create Pool",
+  PoolExit: "Remove Liquidity",
+  PoolJoin: "Add Liquidity",
+  TokensRedeemed: "Redeemed Tokens",
+} as const;
+
 const transactionHistoryQuery = gql`
   query TransactionHistory($address: String) {
     historicalAssets(
       where: {
         accountId_eq: $address
-        AND: { event_not_contains: "SwapExact" }
+        event_in: ["PoolCreate", "PoolJoin", "PoolExit"]
       }
       orderBy: timestamp_DESC
     ) {
       assetId
-      baseAssetTraded
       timestamp
       event
+      blockNumber
+    }
+    historicalAccountBalances(
+      where: { accountId_eq: $address, event_eq: "TokensRedeemed" }
+      orderBy: timestamp_DESC
+    ) {
+      assetId
+      event
+      timestamp
       blockNumber
     }
   }
@@ -32,17 +47,10 @@ const marketHeaderQuery = gql`
   query MarketTransactionHeader($marketIds: [Int!]) {
     markets(where: { marketId_in: $marketIds }, orderBy: marketId_ASC) {
       question
+      marketId
     }
   }
 `;
-
-const humanReadableEventMap = {
-  PoolCreate: "Create Pool",
-  SwapExactAmountOut: "Trade",
-  SwapExactAmountIn: "Trade",
-  PoolExit: "Remove Liquidity",
-  PoolJoin: "Add Liquidity",
-} as const;
 
 type Action = typeof humanReadableEventMap[keyof typeof humanReadableEventMap];
 
@@ -56,6 +64,14 @@ export type TradeEvent = {
 
 type MarketHeader = {
   question: string;
+  marketId: number;
+};
+
+type EventEntry = {
+  assetId: string;
+  timestamp: string;
+  event: string;
+  blockNumber: number;
 };
 
 export const useTransactionHistory = (address: string) => {
@@ -65,65 +81,67 @@ export const useTransactionHistory = (address: string) => {
     [id, transactionHistoryKey, address],
     async () => {
       if (isIndexedSdk(sdk) && address) {
-        const { historicalAssets } = await sdk.indexer.client.request<{
-          historicalAssets: {
-            assetId: string;
-            dAmountInPool: string;
-            baseAssetTraded: string;
-            timestamp: string;
-            event: string;
-            blockNumber: number;
-          }[];
-        }>(transactionHistoryQuery, {
-          address: address,
-        });
+        const { historicalAssets, historicalAccountBalances } =
+          await sdk.indexer.client.request<{
+            historicalAssets: EventEntry[];
+            historicalAccountBalances: EventEntry[];
+          }>(transactionHistoryQuery, {
+            address: address,
+          });
 
-        const eventTypesToDisplay = Object.keys(humanReadableEventMap);
-
-        const eventsToDisplay = historicalAssets.filter((asset) =>
-          eventTypesToDisplay.includes(asset.event),
+        const merged = [...historicalAssets, ...historicalAccountBalances].sort(
+          (a, b) => {
+            return b.blockNumber - a.blockNumber;
+          },
         );
 
-        const marketIds = new Set<number>(
-          eventsToDisplay.map((event) => {
-            const assetId = parseAssetId(event.assetId).unwrap();
+        let transactions: TradeEvent[] = [];
 
-            return IOMarketOutcomeAssetId.is(assetId)
-              ? getMarketIdOf(assetId)
-              : null;
-          }),
-        );
+        const marketIds = new Set<number>();
 
-        const marketIdsArray = Array.from(marketIds).sort((a, b) => a - b);
+        for (const event of merged) {
+          const assetId = parseAssetId(event.assetId).unwrap();
+
+          if (!IOMarketOutcomeAssetId.is(assetId)) {
+            continue;
+          }
+          const marketId = getMarketIdOf(assetId);
+          marketIds.add(marketId);
+        }
 
         const { markets } = await sdk.indexer.client.request<{
           markets: MarketHeader[];
         }>(marketHeaderQuery, {
-          marketIds: marketIdsArray,
+          marketIds: Array.from(marketIds),
         });
 
-        const marketsMap: Map<number, MarketHeader> = new Map();
-        marketIdsArray.forEach((marketId, index) => {
-          marketsMap.set(marketId, markets[index]);
+        const marketsMap: Record<number, MarketHeader> = {};
+
+        marketIds.forEach((marketId) => {
+          const market = markets.find((m) => m.marketId === marketId);
+          if (!market) return;
+          marketsMap[marketId] = market;
         });
 
-        const transactions: TradeEvent[] = eventsToDisplay.map(
-          (transaction) => {
-            const action: Action = humanReadableEventMap[transaction.event];
-            const assetId = parseAssetId(transaction.assetId).unwrap();
-            const marketId = IOMarketOutcomeAssetId.is(assetId)
-              ? getMarketIdOf(assetId)
-              : null;
+        for (const item of merged) {
+          const action: Action = humanReadableEventMap[item.event];
+          const assetId = parseAssetId(item.assetId).unwrap();
+          if (!IOMarketOutcomeAssetId.is(assetId)) {
+            continue;
+          }
+          const marketId = getMarketIdOf(assetId);
 
-            return {
+          transactions = [
+            ...transactions,
+            {
               marketId: marketId,
-              question: marketsMap.get(marketId).question,
+              question: marketsMap[marketId].question,
               action: action,
-              time: transaction.timestamp,
-              blockNumber: transaction.blockNumber,
-            };
-          },
-        );
+              time: item.timestamp,
+              blockNumber: item.blockNumber,
+            },
+          ];
+        }
 
         return transactions;
       }

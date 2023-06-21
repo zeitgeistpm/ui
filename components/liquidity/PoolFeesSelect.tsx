@@ -1,4 +1,3 @@
-import { AmountInput } from "components/ui/inputs";
 import Decimal from "decimal.js";
 
 import { MouseEventHandler, useEffect, useState } from "react";
@@ -99,7 +98,7 @@ const PoolFeesSelect = ({
         />
       ))}
       <div
-        className={`flex justify-center items-center w-[100px] h-[40px] border-2 bg-sky-200 dark:bg-black rounded-ztg-100
+        className={`flex justify-center items-center w-[100px] h-[40px] border-2 bg-sky-200 rounded-ztg-100
               ${
                 inputSelected
                   ? "border-black dark:border-white"
@@ -108,13 +107,24 @@ const PoolFeesSelect = ({
             `}
         onClick={handleInputClick}
       >
-        <AmountInput
+        <input
+          type="number"
           min="0"
           max="10"
-          placeholder="3%"
+          placeholder="3"
           value={inputValue}
-          onChange={(value) => handleInputFeeChange(value)}
-          className="box-border flex justify-center items-center !text-center !bg-transparent !border-transparent text-black"
+          step={0.1}
+          className="bg-sky-200 outline-none text-center font-mono text-ztg-14-150"
+          onChange={(e) => handleInputFeeChange(e.target.value)}
+          onBlur={() => {
+            if (inputValue === "" || inputValue == null) {
+              setInputValue("0");
+            } else if (parseFloat(inputValue) > 10) {
+              setInputValue("10");
+            } else if (parseFloat(inputValue) < 0) {
+              setInputValue("0");
+            }
+          }}
         />
       </div>
     </div>

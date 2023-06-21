@@ -143,7 +143,7 @@ const DropDownSelect = ({
 }: {
   label: string;
   options: MarketFilter[];
-  portal: HTMLDivElement;
+  portal?: HTMLDivElement;
   isOpen?: boolean;
   add: (val: MarketFilter) => void;
 }) => {

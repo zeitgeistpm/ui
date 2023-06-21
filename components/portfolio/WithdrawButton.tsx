@@ -7,18 +7,28 @@ import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { ChainName } from "lib/constants/chains";
-import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useCrossChainExtrinsic } from "lib/hooks/useCrossChainExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChain } from "lib/state/cross-chain";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { countDecimals } from "lib/util/count-decimals";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
 
-const WithdrawButton = ({ toChain, tokenSymbol, balance, foreignAssetId }) => {
+const WithdrawButton = ({
+  toChain,
+  tokenSymbol,
+  balance,
+  foreignAssetId,
+}: {
+  toChain: ChainName;
+  tokenSymbol: string;
+  balance: Decimal;
+  foreignAssetId: number;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -73,7 +83,16 @@ const WithdrawModal = ({
   foreignAssetId: number;
   onSuccess: () => void;
 }) => {
-  const { register, handleSubmit, getValues, formState } = useForm({
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState,
+    watch,
+    setValue,
+    control,
+    trigger,
+  } = useForm({
     reValidateMode: "onChange",
     mode: "onChange",
   });
@@ -84,19 +103,19 @@ const WithdrawModal = ({
   const { chain } = useChain(toChain);
 
   const { data: fee } = useExtrinsicFee(
-    isRpcSdk(sdk)
+    isRpcSdk(sdk) && wallet.activeAccount
       ? createWithdrawExtrinsic(
           sdk.api,
           "100000000000",
           wallet.activeAccount.address,
           foreignAssetId,
         )
-      : null,
+      : undefined,
   );
 
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
     () => {
-      if (isRpcSdk(sdk)) {
+      if (isRpcSdk(sdk) && wallet.activeAccount) {
         const formValue = getValues();
         const amount = formValue.amount;
 
@@ -133,6 +152,28 @@ const WithdrawModal = ({
     },
   );
 
+  useEffect(() => {
+    const subscription = watch((value, { name, type }) => {
+      const changedByUser = type != null;
+
+      if (!changedByUser) return;
+
+      if (name === "percentage") {
+        setValue(
+          "amount",
+          balance.mul(value.percentage).div(100).div(ZTG).toNumber(),
+        );
+        trigger("amount");
+      } else if (name === "amount" && value.amount !== "") {
+        setValue(
+          "percentage",
+          new Decimal(value.amount).mul(ZTG).div(balance).mul(100).toString(),
+        );
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
   const onSubmit = () => {
     transfer();
   };
@@ -147,8 +188,25 @@ const WithdrawModal = ({
           className="w-full flex flex-col items-center"
         >
           <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 relative font-normal w-full">
-            <input
-              {...register("amount", {
+            <Controller
+              render={({ field }) => {
+                return (
+                  <input
+                    {...field}
+                    type="number"
+                    className="w-full bg-transparent outline-none !text-center"
+                    step="any"
+                    value={
+                      countDecimals(field.value ? Number(field.value) : 0) > 3
+                        ? Number(field.value).toFixed(3)
+                        : field.value ?? 0
+                    }
+                  />
+                );
+              }}
+              control={control}
+              name="amount"
+              rules={{
                 required: {
                   value: true,
                   message: "Value is required",
@@ -162,25 +220,25 @@ const WithdrawModal = ({
                     return "Value cannot be zero or less";
                   }
                 },
-              })}
-              type="number"
-              className="w-full bg-transparent outline-none !text-center"
-              step="any"
+              }}
             />
             <div className="mr-[10px] absolute right-0">{tokenSymbol}</div>
           </div>
+          <input
+            className="mt-[30px] mb-[10px] w-full"
+            type="range"
+            {...register("percentage", { value: "0" })}
+          />
           <div className="text-vermilion text-ztg-12-120 my-[4px] h-[16px]">
             <>{formState.errors["amount"]?.message}</>
           </div>
           <div className="center font-normal text-ztg-12-120 mb-[16px] text-sky-600">
             Zeitgeist fee:
-            <span className="text-black ml-1">
-              {new Decimal(fee?.partialFee.toString() ?? 0).div(ZTG).toFixed(3)}
-            </span>
+            <span className="text-black ml-1">{fee?.div(ZTG).toFixed(3)}</span>
           </div>
           <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
             {toChain} fee:
-            <span className="text-black ml-1">{chain.withdrawFee}</span>
+            <span className="text-black ml-1">{chain?.withdrawFee}</span>
           </div>
           <FormTransactionButton
             className="w-full max-w-[250px]"

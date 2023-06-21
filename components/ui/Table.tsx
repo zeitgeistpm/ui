@@ -9,11 +9,11 @@ import { ReactNode, useEffect, useRef, useState } from "react";
 import { ArrowDown } from "react-feather";
 import { useTable } from "react-table";
 import Avatar from "./Avatar";
-import { AmountInput } from "./inputs";
 import Paginator from "./Paginator";
 import PercentageChange from "./PercentageChange";
 import { ChartData } from "./TimeSeriesChart";
-import { InfoPopover } from "components/ui/InfoPopover";
+import InfoPopover from "components/ui/InfoPopover";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 
 interface TableProps {
   data: TableData[];
@@ -24,7 +24,7 @@ interface TableProps {
   onPaginate?: (pageIndex: number) => void;
   onLoadMore?: () => void;
   hideLoadMore?: boolean;
-  noDataMessage?: string;
+  noDataMessage?: string | ReactNode;
   loadingMore?: boolean;
   loadingNumber?: number;
   loadMoreThreshold?: number;
@@ -44,6 +44,7 @@ export interface TableColumn {
   // if specified the table will hide this column if it is overflowing
   // lower number columns will be hidden first
   collapseOrder?: number;
+  hideMobile?: boolean;
 }
 
 export interface TableData {
@@ -71,8 +72,7 @@ type ColumnType =
   | "address"
   | "graph"
   | "market"
-  | "component"
-  | "amountInput";
+  | "component";
 
 interface CurrencyData {
   value: number;
@@ -80,8 +80,8 @@ interface CurrencyData {
 }
 
 interface TokenData {
+  token: true;
   label: string;
-  color: string;
 }
 
 interface MarketData {
@@ -101,15 +101,11 @@ const isCurrencyData = (cellValue: CellValue): cellValue is CurrencyData => {
 };
 
 const isTokenData = (cellValue: CellValue): cellValue is TokenData => {
-  return (cellValue as TokenData).color !== undefined;
+  return (cellValue as TokenData).token !== undefined;
 };
 
 const isMarketData = (cellValue: CellValue): cellValue is MarketData => {
   return (cellValue as MarketData).url !== undefined;
-};
-
-const isAmountInput = (cellValue: CellValue): cellValue is Amount => {
-  return (cellValue as Amount).onChange !== undefined;
 };
 
 const Cell = ({
@@ -218,7 +214,7 @@ const Cell = ({
             </div>
             <div className="text-ztg-12-150 font-light text-sky-600">
               $
-              {(value.usdValue ?? ztgPrice?.toNumber() * value.value).toFixed(
+              {((value.usdValue ?? ztgPrice?.toNumber()) * value.value).toFixed(
                 2,
               )}
             </div>
@@ -243,10 +239,6 @@ const Cell = ({
         return (
           <td className={` ${base}`} onClick={onClick} style={style}>
             <div className="flex items-center">
-              <div
-                className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2"
-                style={{ background: value.color }}
-              ></div>
               <div
                 className="font-semibold text-ztg-16-150 uppercase"
                 data-test="tokenText"
@@ -284,25 +276,6 @@ const Cell = ({
           <>{value}</>%
         </td>
       );
-    case "amountInput":
-      if (isAmountInput(value)) {
-        return (
-          <td
-            className={`font-mono text-ztg-14-150 font-semibold ${base}`}
-            onClick={onClick}
-            style={style}
-          >
-            <AmountInput
-              className="h-ztg-40 w-full rounded-ztg-5 bg-sky-200 !pr-ztg-8 dark:bg-sky-800"
-              value={value.value}
-              onChange={value.onChange}
-              min={value.min}
-              max={value.max}
-            />
-          </td>
-        );
-      }
-
     default:
       return <td>default</td>;
   }
@@ -436,7 +409,7 @@ const Table = ({
               }
             >
               <thead>
-                <tr className="bg-sky-100 h-[50px]">
+                <tr className="bg-gray-100 h-[50px]">
                   {columns
                     .filter((col) => columnIsCollapsed(col.accessor) == false)
                     .map((column, index) => (
@@ -470,7 +443,15 @@ const Table = ({
                             <></>
                           )}
                           {column.infobox && (
-                            <InfoPopover children={column.infobox} />
+                            <InfoPopover
+                              title={
+                                <h3 className="flex justify-center items-center mb-4 gap-2">
+                                  <AiOutlineInfoCircle />
+                                  {column.header}
+                                </h3>
+                              }
+                              children={column.infobox}
+                            />
                           )}
                         </div>
                       </th>
