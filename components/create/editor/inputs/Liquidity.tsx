@@ -133,8 +133,9 @@ export const LiquidityInput = ({
             </div>
             <div className="relative flex justify-end pr-8 mr-4 md:mr-0">
               <div className="flex items-center gap-2">
-                {swapFeePresets.map((preset) => (
+                {swapFeePresets.map((preset, index) => (
                   <button
+                    key={index}
                     type="button"
                     onClick={handleSwapFeePresetChange(preset)}
                     className={`flex center rounded-full bg-gray-100 py-3 px-6 transition-all active:scale-9 ${
