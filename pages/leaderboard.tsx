@@ -23,6 +23,7 @@ import {
 import { NextPage } from "next";
 import Link from "next/link";
 import Avatar from "components/ui/Avatar";
+import { formatNumberCompact } from "lib/util/format-compact";
 
 //todo:
 // include buy/sell full set events
@@ -40,8 +41,8 @@ type Trade = {
   marketId: number;
   amountIn: Decimal;
   amountOut: Decimal;
-  assetIn: AssetId;
-  assetOut: AssetId;
+  assetIn?: AssetId;
+  assetOut?: AssetId;
   type: "trade" | "redeem" | "sellFullSet" | "buyFullSet";
 };
 
@@ -51,12 +52,14 @@ type Traders = {
   [key: AccountId]: Trade[];
 };
 
+type MarketBaseDetails = {
+  baseAsset: BaseAssetId;
+  baseAssetIn: Decimal;
+  baseAssetOut: Decimal;
+};
+
 type MarketTotals = {
-  [key: MarketId]: {
-    baseAsset: BaseAssetId;
-    baseAssetIn: Decimal;
-    baseAssetOut: Decimal;
-  };
+  [key: MarketId]: MarketBaseDetails;
 };
 
 type MarketId = number;
@@ -89,7 +92,35 @@ type Rank = {
 type BasePrices = {
   [key: string | "ztg"]: [number, number][];
 };
+type Event = {
+  accountId: string;
+  assetId: string;
+  blockNumber: number;
+  dBalance: any;
+  event: string;
+  id: string;
+  timestamp: any;
+};
 
+const convertEventToTrade = (event: Event) => {
+  const assetInId = parseAssetId(event.assetId).unwrap();
+
+  const marketId = IOMarketOutcomeAssetId.is(assetInId)
+    ? getMarketIdOf(assetInId)
+    : undefined;
+
+  if (marketId !== undefined) {
+    const trade: Trade = {
+      marketId,
+      assetIn: assetInId,
+      assetOut: { Ztg: null },
+      amountIn: new Decimal(event.dBalance).abs(),
+      amountOut: new Decimal(event.dBalance).abs(),
+      type: "redeem",
+    };
+    return trade;
+  }
+};
 const datesAreOnSameDay = (first: Date, second: Date) =>
   first.getFullYear() === second.getFullYear() &&
   first.getMonth() === second.getMonth() &&
@@ -208,35 +239,6 @@ export async function getStaticProps() {
       where: { event_contains: "TokensRedeemed" },
     });
 
-  redeemEvents.forEach((redeem) => {
-    const trades = tradersWithSwaps[redeem.accountId];
-
-    // probably this check is needed as accounts can aquire tokens via buy full sell or transfer
-    if (trades) {
-      const assetInId = parseAssetId(redeem.assetId).unwrap();
-
-      const marketId = IOMarketOutcomeAssetId.is(assetInId)
-        ? getMarketIdOf(assetInId)
-        : undefined;
-
-      if (marketId !== undefined) {
-        const redeemTrade: Trade = {
-          marketId,
-          assetIn: assetInId,
-          assetOut: { Ztg: null },
-          amountIn: new Decimal(redeem.dBalance).abs(),
-          amountOut: new Decimal(redeem.dBalance).abs(),
-          type: "redeem",
-        };
-
-        trades.push(redeemTrade);
-
-        tradersWithSwaps[redeem.accountId] = trades;
-      }
-    }
-  });
-  //TODO: fetch and process buy/sell full sets
-
   const { historicalAccountBalances: buyFullSetEvents } =
     await sdk.indexer.historicalAccountBalances({
       where: {
@@ -257,6 +259,19 @@ export async function getStaticProps() {
         event_contains: "SoldComplete",
       },
     });
+
+  redeemEvents.forEach((redeem) => {
+    const trades = tradersWithSwaps[redeem.accountId];
+
+    // probably this check is needed as accounts can aquire tokens via buy full sell or transfer
+    if (trades) {
+      const trade = convertEventToTrade(redeem);
+
+      if (trade) trades.push(trade);
+
+      tradersWithSwaps[redeem.accountId] = trades;
+    }
+  });
 
   console.log(buyFullSetEvents);
 
@@ -391,6 +406,7 @@ export async function getStaticProps() {
 const Leaderboard: NextPage<{
   rankings: Rank[];
 }> = ({ rankings }) => {
+  console.log(rankings[0].markets);
   return (
     <div className="mx-0 sm:mx-[50px]">
       <div className="font-bold text-xl mb-[20px]">Most Profit</div>
@@ -411,12 +427,12 @@ const Leaderboard: NextPage<{
             <div>
               {rank.markets
                 .sort((a, b) => b.profit - a.profit)
-                .slice(0, 3)
+                .slice(0, 20) // todo move this server side
                 .map((market) => (
                   <div>
                     <div>{market.question}</div>
                     <div>
-                      {market.profit.toFixed()}{" "}
+                      {formatNumberCompact(market.profit)}{" "}
                       {lookupAssetSymbol(market.baseAssetId)}
                     </div>
                   </div>
