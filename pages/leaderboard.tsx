@@ -24,6 +24,7 @@ import { NextPage } from "next";
 import Link from "next/link";
 import Avatar from "components/ui/Avatar";
 import { formatNumberCompact } from "lib/util/format-compact";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 
 //todo:
 // include buy/sell full set events
@@ -39,10 +40,10 @@ import { formatNumberCompact } from "lib/util/format-compact";
 
 type Trade = {
   marketId: number;
-  amountIn: Decimal;
-  amountOut: Decimal;
-  assetIn?: AssetId;
-  assetOut?: AssetId;
+  baseAssetIn: Decimal;
+  baseAssetOut: Decimal;
+  // assetIn?: AssetId;
+  // assetOut?: AssetId;
   type: "trade" | "redeem" | "sellFullSet" | "buyFullSet";
 };
 
@@ -53,7 +54,7 @@ type Traders = {
 };
 
 type MarketBaseDetails = {
-  baseAsset: BaseAssetId;
+  // baseAsset: BaseAssetId;
   baseAssetIn: Decimal;
   baseAssetOut: Decimal;
 };
@@ -103,22 +104,27 @@ type Event = {
 };
 
 const convertEventToTrade = (event: Event) => {
-  const assetInId = parseAssetId(event.assetId).unwrap();
+  const assetId = parseAssetId(event.assetId).unwrap();
 
-  const marketId = IOMarketOutcomeAssetId.is(assetInId)
-    ? getMarketIdOf(assetInId)
+  const marketId = IOMarketOutcomeAssetId.is(assetId)
+    ? getMarketIdOf(assetId)
     : undefined;
 
   if (marketId !== undefined) {
-    const trade: Trade = {
-      marketId,
-      assetIn: assetInId,
-      assetOut: { Ztg: null },
-      amountIn: new Decimal(event.dBalance).abs(),
-      amountOut: new Decimal(event.dBalance).abs(),
-      type: "redeem",
-    };
-    return trade;
+    if (event.event === "TokensRedeemed") {
+      const trade: Trade = {
+        marketId,
+        // assetIn: assetId,
+        // assetOut: { Ztg: null },
+        baseAssetIn: new Decimal(0),
+        baseAssetOut: new Decimal(event.dBalance).abs(),
+        type: "redeem",
+      };
+      return trade;
+    } else if (event.event === "SoldCompleteSet") {
+    } else if (event.event === "Deposited") {
+    } else if (event.event === "BoughtCompleteSet") {
+    }
   }
 };
 const datesAreOnSameDay = (first: Date, second: Date) =>
@@ -205,22 +211,33 @@ export async function getStaticProps() {
 
     const assetInId = parseAssetId(swap.assetIn).unwrap();
     const assetOutId = parseAssetId(swap.assetOut).unwrap();
+    let baseAssetSwapType: "in" | "out" | undefined;
 
     let marketId: number | undefined;
     if (IOMarketOutcomeAssetId.is(assetInId)) {
       marketId = getMarketIdOf(assetInId);
+      baseAssetSwapType = "out";
     } else if (IOMarketOutcomeAssetId.is(assetOutId)) {
       marketId = getMarketIdOf(assetOutId);
+      baseAssetSwapType = "in";
     }
 
     if (marketId === undefined) return traders;
 
     const trade: Trade = {
       marketId,
-      assetIn: assetInId,
-      assetOut: assetOutId,
-      amountIn: new Decimal(swap.assetAmountIn),
-      amountOut: new Decimal(swap.assetAmountOut),
+      // assetIn: assetInId,
+      // assetOut: assetOutId,
+      // amountIn: new Decimal(swap.assetAmountIn),
+      // amountOut: new Decimal(swap.assetAmountOut),
+      baseAssetIn:
+        baseAssetSwapType === "in"
+          ? new Decimal(swap.assetAmountIn)
+          : new Decimal(0),
+      baseAssetOut:
+        baseAssetSwapType === "out"
+          ? new Decimal(swap.assetAmountOut)
+          : new Decimal(0),
       type: "trade",
     };
 
@@ -260,20 +277,37 @@ export async function getStaticProps() {
       },
     });
 
-  redeemEvents.forEach((redeem) => {
-    const trades = tradersWithSwaps[redeem.accountId];
+  console.time("t");
+  const fullSetEvents = [...buyFullSetEvents, ...sellFullSetEvents];
+
+  const uniqueFullSetEvents = fullSetEvents.reduce<Event[]>(
+    (uniqueEvents, event) => {
+      const duplicateEvent = uniqueEvents.find(
+        (entry) => entry.id === event.id,
+      );
+
+      if (!duplicateEvent) {
+        uniqueEvents.push(event);
+      }
+
+      return uniqueEvents;
+    },
+    [],
+  );
+  console.log(uniqueFullSetEvents);
+
+  [...redeemEvents, ...uniqueFullSetEvents].forEach((event) => {
+    const trades = tradersWithSwaps[event.accountId];
 
     // probably this check is needed as accounts can aquire tokens via buy full sell or transfer
     if (trades) {
-      const trade = convertEventToTrade(redeem);
+      const trade = convertEventToTrade(event);
 
       if (trade) trades.push(trade);
 
-      tradersWithSwaps[redeem.accountId] = trades;
+      tradersWithSwaps[event.accountId] = trades;
     }
   });
-
-  console.log(buyFullSetEvents);
 
   //loop through accounts and trades, total up baseAsset in and out for each market
   const tradersAggregatedByMarket = Object.keys(
@@ -282,46 +316,39 @@ export async function getStaticProps() {
     const swaps = tradersWithSwaps[accountId];
     if (!swaps) return traders;
 
-    const marketTotal = swaps.reduce<MarketTotals>((markets, swap) => {
-      let baseAssetSwapType: "in" | "out" | undefined;
-      let baseAssetAmount: Decimal | undefined;
-      let baseAsset: BaseAssetId | undefined;
+    const marketTotal = swaps.reduce<MarketTotals>((marketTotals, swap) => {
+      // let baseAssetSwapType: "in" | "out" | undefined;
+      // let baseAssetAmount: Decimal | undefined;
+      // let baseAsset: BaseAssetId | undefined;
 
-      if (IOBaseAssetId.is(swap.assetIn)) {
-        baseAssetSwapType = "in";
-        baseAssetAmount = swap.amountIn;
-        baseAsset = swap.assetIn;
-      } else if (IOBaseAssetId.is(swap.assetOut)) {
-        baseAssetSwapType = "out";
-        baseAssetAmount = swap.amountOut;
-        baseAsset = swap.assetOut;
-      }
+      // if (IOBaseAssetId.is(swap.assetIn)) {
+      //   baseAssetSwapType = "in";
+      //   baseAssetAmount = swap.amountIn;
+      //   baseAsset = swap.assetIn;
+      // } else if (IOBaseAssetId.is(swap.assetOut)) {
+      //   baseAssetSwapType = "out";
+      //   baseAssetAmount = swap.amountOut;
+      //   baseAsset = swap.assetOut;
+      // }
 
-      if (!baseAssetSwapType || !baseAsset || !baseAssetAmount) return markets;
+      // if (!baseAssetSwapType || !baseAsset || !baseAssetAmount)
+      //   return marketTotals;
 
-      const market = markets[swap.marketId];
-      if (market != null) {
-        markets[swap.marketId] = {
-          ...market,
-          baseAssetIn: (baseAssetSwapType === "in"
-            ? baseAssetAmount
-            : new Decimal(0)
-          ).plus(market.baseAssetIn),
-          baseAssetOut: (baseAssetSwapType === "out"
-            ? baseAssetAmount
-            : new Decimal(0)
-          ).plus(market.baseAssetOut),
+      const total = marketTotals[swap.marketId];
+      if (total != null) {
+        marketTotals[swap.marketId] = {
+          ...total,
+          baseAssetIn: swap.baseAssetIn.plus(total.baseAssetIn),
+          baseAssetOut: swap.baseAssetOut.plus(total.baseAssetOut),
         };
       } else {
-        markets[swap.marketId] = {
-          baseAsset: baseAsset,
-          baseAssetIn:
-            baseAssetSwapType === "in" ? baseAssetAmount : new Decimal(0),
-          baseAssetOut:
-            baseAssetSwapType === "out" ? baseAssetAmount : new Decimal(0),
+        marketTotals[swap.marketId] = {
+          // baseAsset: baseAsset,
+          baseAssetIn: swap.baseAssetIn,
+          baseAssetOut: swap.baseAssetOut,
         };
       }
-      return markets;
+      return marketTotals;
     }, {});
 
     return { ...traders, [accountId]: marketTotal };
@@ -344,7 +371,7 @@ export async function getStaticProps() {
         marketsSummary.push({
           question: market.question!,
           marketId: market.marketId,
-          baseAssetId: marketTotal.baseAsset,
+          baseAssetId: parseAssetIdString(market.baseAsset) as BaseAssetId,
           profit: diff.div(ZTG).toNumber(),
         });
 
@@ -406,7 +433,7 @@ export async function getStaticProps() {
 const Leaderboard: NextPage<{
   rankings: Rank[];
 }> = ({ rankings }) => {
-  console.log(rankings[0].markets);
+  // console.log(rankings[0].markets);
   return (
     <div className="mx-0 sm:mx-[50px]">
       <div className="font-bold text-xl mb-[20px]">Most Profit</div>
