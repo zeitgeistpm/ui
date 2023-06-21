@@ -178,6 +178,7 @@ module.exports = {
         success: "#E8FFE4",
         info: "#E4F5FF",
         error: "#FFE6E4",
+        "tooltip-bg": "#FDF5DB",
         "maroon-base": "#3C0C0C",
         "kusama-base": "#E10178",
         "kusama-green": "#00E7BD",
