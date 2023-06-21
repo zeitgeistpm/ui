@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import SideMenu from "./SideMenu";
-import MobileMenu from "components/menu/MobileMenu";
-import { Menu, X } from "react-feather";
-import { useRouter } from "next/router";
-import dynamic from "next/dynamic";
 import MenuLogo from "components/menu/MenuLogo";
+import MobileMenu from "components/menu/MobileMenu";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
+import { Menu, X } from "react-feather";
+import SideMenu from "./SideMenu";
 
 export type NavbarColor = "black" | "white" | "transparent";
 

@@ -1,112 +1,107 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { NotificationType, useNotifications } from "lib/state/notifications";
 import React, { FC, useEffect } from "react";
-import { AlertTriangle, CheckCircle, Info, X } from "react-feather";
+import { X } from "react-feather";
+import { Loader } from "./Loader";
 
 const TIMER_TICK_RATE = 500;
 
 const NotificationCard: FC<{
   close: () => void;
-  lifetime: number;
-  content: string;
+  lifetime?: number;
+  content: string | React.ReactNode;
   type: NotificationType;
   dataTest?: string;
 }> = ({ close, lifetime, content, type, dataTest }) => {
   const [timer, setTimer] = React.useState(lifetime);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer((timer) => timer - TIMER_TICK_RATE / 1000);
-    }, TIMER_TICK_RATE);
+    if (lifetime) {
+      const interval = setInterval(() => {
+        setTimer((timer) => timer - TIMER_TICK_RATE / 1000);
+      }, TIMER_TICK_RATE);
 
-    return () => clearInterval(interval);
+      return () => clearInterval(interval);
+    }
   }, []);
 
   useEffect(() => {
-    if (timer <= 0) {
-      close();
+    if (lifetime && timer <= 0) {
+      setTimeout(() => {
+        close();
+      }, TIMER_TICK_RATE);
     }
-  }, [timer]);
+  }, [timer, lifetime]);
 
   return (
-    <>
-      <span className="text-white ml-ztg-10 mr-ztg-22 flex justify-center ">
+    <div
+      className={`flex relative gap-4 rounded-md px-4  flex-1 ${getBgColor(
+        type,
+      )}`}
+    >
+      <div
+        className={`absolute top-0 left-0  h-1 w-full rounded-t-md overflow-hidden z-20 ${getBgColor(
+          type,
+        )}`}
+      >
         <div
-          className={`p-ztg-5 rounded-ztg-5 w-ztg-34 h-ztg-34 mt-ztg-14 ${getColor(
+          className={`${getTopBarColor(
             type,
-          )}`}
-        >
-          {(() => {
-            if (type === "Error") {
-              return <AlertTriangle size={24} />;
-            }
-            if (type === "Info") {
-              return <Info size={24} />;
-            }
-            if (type === "Success") {
-              return <CheckCircle size={24} />;
-            }
-          })()}
-        </div>
-      </span>
-      <span className="w-full">
-        <div
-          className="text-black dark:text-white font-bold text-ztg-16-150 flex items-center w-full"
-          data-test={dataTest}
-        >
-          <span>{getMessage(type)}</span>
-          <X
-            className="text-sky-600 ml-auto cursor-pointer"
-            size={22}
-            onClick={close}
-            role="button"
-          />
-        </div>
-        <div
-          className={`h-ztg-2 my-ztg-5 ${getColor(
-            type,
-          )} transition-all ease-linear`}
+          )} h-full absolute z-40 top-0 left-0 transition-all duration-500 ease-linear`}
           style={{
-            transitionDuration: `${TIMER_TICK_RATE}ms`,
             width: `${((100 * timer) / lifetime).toFixed(2)}%`,
           }}
         />
-        <div className=" text-ztg-12-120 text-sky-600 mb-ztg-8">{content}</div>
-      </span>
-    </>
+        <div
+          className={`${getTopBarColor(
+            type,
+          )} h-full absolute z-40 top-0 left-0  w-full opacity-10`}
+        />
+      </div>
+      <div className="text-white flex justify-center px-4 py-6">
+        <div className={`center ${getBgColor(type)}`}>
+          <Loader
+            loading={Boolean(lifetime)}
+            lineThrough={type === "Error"}
+            className="h-12 w-12"
+            variant={type}
+          />
+        </div>
+      </div>
+      <div className="center flex-1 py-6">
+        <div className="text-base font-normal text-left w-full">{content}</div>
+      </div>
+      <div className="px-4 py-4">
+        <X
+          className="ml-auto cursor-pointer"
+          size={22}
+          onClick={close}
+          role="button"
+        />
+      </div>
+    </div>
   );
 };
 
-const getColor = (type: NotificationType) => {
+const getBgColor = (type: NotificationType) => {
   switch (type) {
     case "Success":
-      return "bg-sheen-green";
+      return "bg-success";
     case "Info":
-      return "bg-info-blue";
+      return "bg-info";
     case "Error":
-      return "bg-vermilion";
+      return "bg-error";
   }
 };
 
-const getMessage = (type: NotificationType) => {
+const getTopBarColor = (type: NotificationType) => {
   switch (type) {
     case "Success":
-      return "Success!";
+      return "bg-[#31C48D]";
     case "Info":
-      return "Info!";
+      return "bg-[#31A1C4]";
     case "Error":
-      return "Error!";
-  }
-};
-
-const getGradient = (type: NotificationType) => {
-  switch (type) {
-    case "Success":
-      return "linear-gradient(90deg, rgba(112, 199, 3, 0.2) 0%, rgba(0, 0, 0, 0) 100%),linear-gradient(0deg, #FFFFFF, #FFFFFF)";
-    case "Info":
-      return "linear-gradient(90deg, rgba(0, 160, 250, 0.2) 0%, rgba(0, 0, 0, 0) 100%),linear-gradient(0deg, #FFFFFF, #FFFFFF)";
-    case "Error":
-      return "linear-gradient(90deg, rgba(233, 3, 3, 0.2) 0%, rgba(0, 0, 0, 0) 100%),linear-gradient(0deg, #FFFFFF, #FFFFFF)";
+      return "bg-[#C43131]";
   }
 };
 
@@ -115,30 +110,28 @@ const NotificationCenter = () => {
 
   return (
     <div className="fixed h-full w-full top-0 pointer-events-none z-50">
-      <div className="flex flex-row justify-end pr-ztg-27 pt-20">
-        <div className="flex flex-col">
-          <AnimatePresence>
+      <div className="flex flex-row justify-end pt-20">
+        <div className="flex relative flex-col items-end flex-1 px-4">
+          <AnimatePresence mode="sync" presenceAffectsLayout>
             {notifications.map((notification, index) => (
               <motion.div
-                key={index}
-                initial={{ x: 300, opacity: 0 }}
-                exit={{ x: 300, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
+                key={notification.id}
+                initial={{ x: 300, maxHeight: 0, opacity: 0 }}
+                exit={{ x: 300, maxHeight: 0, opacity: 0 }}
+                animate={{ x: 0, maxHeight: 900, opacity: 1 }}
                 transition={{ type: "spring", duration: 0.7 }}
-                className="mb-[17px] flex rounded-ztg-5 border-1 border-sky-600 p-ztg-14 pointer-events-auto"
-                style={{
-                  width: "304px",
-                  background: getGradient(notification.type),
-                }}
+                className="pointer-events-auto w-full md:max-w-screen-sm md:w-[420px] overflow-hidden box-border"
               >
-                <NotificationCard
-                  dataTest="notificationMessage"
-                  key={notification.id}
-                  {...notification}
-                  close={() => {
-                    removeNotification(notification);
-                  }}
-                />
+                <div className="mb-4 flex-1">
+                  <NotificationCard
+                    dataTest="notificationMessage"
+                    key={notification.id}
+                    {...notification}
+                    close={() => {
+                      removeNotification(notification);
+                    }}
+                  />
+                </div>
               </motion.div>
             ))}
           </AnimatePresence>
