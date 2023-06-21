@@ -8,6 +8,8 @@ import WithdrawButton from "./WithdrawButton";
 import Image from "next/image";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { ChainName, CHAIN_IMAGES } from "lib/constants/chains";
+import TransferButton from "./TransferButton";
+import { AssetId } from "@zeitgeistpm/sdk-next";
 
 const columns: TableColumn[] = [
   {
@@ -64,11 +66,13 @@ const MoveButton = ({
   nativeToken: string;
 }) => {
   if (chain === "Zeitgeist") {
-    if (
-      token.toUpperCase() === nativeToken.toUpperCase() ||
-      sourceChain == null
-    ) {
-      return <></>;
+    const isNativeTokenBalance =
+      token.toUpperCase() === nativeToken.toUpperCase();
+    if (isNativeTokenBalance || sourceChain == null) {
+      const transferAssetId: AssetId = isNativeTokenBalance
+        ? { Ztg: null }
+        : { ForeignAsset: foreignAssetId };
+      return <TransferButton assetId={transferAssetId} />;
     } else {
       return (
         <WithdrawButton
