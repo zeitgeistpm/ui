@@ -108,25 +108,27 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
     });
   };
 
+  const durationPresets: PeriodDurationOption[] = options.filter(
+    (o): o is PeriodDurationOption =>
+      Boolean(o.type === "duration" && o.preset),
+  );
+
   return (
     <div className="md:flex justify-center items-center gap-3">
       <div className="flex justify-center gap-3 mb-4 md:mb-0">
-        {options.map((option) => (
-          <>
-            {option.type === "duration" && option.preset && (
-              <button
-                type="button"
-                className={`flex center rounded-full bg-gray-100 py-3 px-6 transition-all active:scale-95 ${
-                  value?.type === "duration" &&
-                  value?.preset === option.preset &&
-                  "bg-nyanza-base"
-                }`}
-                onClick={() => handleOnClickOption(option)}
-              >
-                {option.preset}
-              </button>
-            )}
-          </>
+        {durationPresets.map((option, index) => (
+          <button
+            key={index}
+            type="button"
+            className={`flex center rounded-full bg-gray-100 py-3 px-6 transition-all active:scale-95 ${
+              value?.type === "duration" &&
+              value?.preset === option.preset &&
+              "bg-nyanza-base"
+            }`}
+            onClick={() => handleOnClickOption(option)}
+          >
+            {option.preset}
+          </button>
         ))}
       </div>
 
@@ -253,7 +255,7 @@ const DurationInput = ({
             value={value?.unit}
           >
             {["days", "hours"].map((unit) => (
-              <option className="py-2 px-4" value={unit}>
+              <option key={unit} className="py-2 px-4" value={unit}>
                 {value && value?.value <= 1 ? unit.replace("s", "") : unit}
               </option>
             ))}
