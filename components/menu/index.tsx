@@ -196,20 +196,20 @@ const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
     <div className="grid grid-cols-2 md:grid-cols-3 grid-flow-row-dense md:h-full">
       {CATEGORIES.map((category, index) => (
         <Link
+          key={index}
           onClick={onSelect}
           href={`/markets?status=Active&tag=${category.name}&ordering=Newest&liquidityOnly=true`}
+          className="flex gap-3 items-center pb-6 md:pb-0"
         >
-          <div className="flex gap-3 items-center pb-6 md:pb-0" key={index}>
-            <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-gray-300">
-              <Image
-                src={category.imagePath}
-                fill
-                alt="Markets menu"
-                sizes="100"
-              />
-            </div>
-            <div className="font-light">{category.name}</div>
+          <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-gray-300">
+            <Image
+              src={category.imagePath}
+              fill
+              alt="Markets menu"
+              sizes="100"
+            />
           </div>
+          <div className="font-light">{category.name}</div>
         </Link>
       ))}
     </div>
