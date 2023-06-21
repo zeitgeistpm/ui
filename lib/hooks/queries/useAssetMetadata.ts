@@ -113,6 +113,3 @@ export const useAllAssetMetadata = () => {
 
   return query;
 };
-
-export const allAssetMetadataWithBalanceRootKey =
-  "all-asset-metadata-with-balance";
