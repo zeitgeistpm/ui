@@ -15,7 +15,7 @@ import { currencyBalanceRootKey } from "./queries/useCurrencyBalances";
 export const useCrossChainExtrinsic = <T>(
   extrinsicFn: (
     params?: T,
-  ) => SubmittableExtrinsic<"promise", ISubmittableResult>,
+  ) => SubmittableExtrinsic<"promise", ISubmittableResult> | undefined,
   sourceChain: ChainName,
   destinationChain: ChainName,
   callbacks?: {
@@ -41,6 +41,7 @@ export const useCrossChainExtrinsic = <T>(
     const extrinsic = extrinsicFn(params);
     const signer = wallet.getActiveSigner() as ExtSigner;
 
+    if (!extrinsic) return;
     signAndSend(
       extrinsic,
       signer,

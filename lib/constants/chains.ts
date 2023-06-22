@@ -46,6 +46,9 @@ const BATTERY_STATION_CHAINS: Chain[] = [
           chain: "Rococo",
           foreignAssetId: 1,
           sourceChain: "Rococo",
+          existentialDeposit: new Decimal(
+            api.consts.balances.existentialDeposit.toString(),
+          ),
         },
       ];
     },
@@ -98,6 +101,9 @@ const PROD_CHAINS: Chain[] = [
           chain: "Polkadot",
           foreignAssetId: 0,
           sourceChain: "Polkadot",
+          existentialDeposit: new Decimal(
+            api.consts.balances.existentialDeposit.toString(),
+          ),
         },
       ];
     },
