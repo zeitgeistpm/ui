@@ -15,7 +15,7 @@ export type UseSdkv2 = [
    * Id based on store settings. Usefull to pass to queries as root key so that
    * caching is per endpoint settings.
    */
-  id: string,
+  id: string | null,
 ];
 
 export const sdkAtom = atom<Sdk<Context> | false>(false);

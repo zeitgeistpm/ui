@@ -175,7 +175,7 @@ export const MarketPositions = ({
       <div className={`${className}`}>
         <MarketPositionHeader
           marketId={market.marketId}
-          question={market.question}
+          question={market.question ?? undefined}
         />
         <Table
           columns={isLiquidityMarket ? COLUMNS_LIQUIDITY : COLUMNS}

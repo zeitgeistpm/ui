@@ -5,6 +5,7 @@ import {
   MarketOutcomeAssetId,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
+import { parseAssetIdString } from "./parse-asset-id";
 
 export const getCurrentPrediction = (
   assets: { price: number; assetId?: string }[],
@@ -22,8 +23,8 @@ export const getCurrentPrediction = (
     let [highestPrice, highestPriceIndex] = [0, 0];
     assets.sort(
       (a, b) =>
-        getIndexOf(parseAssetId(a.assetId).unwrap() as MarketOutcomeAssetId) -
-        getIndexOf(parseAssetId(b.assetId).unwrap() as MarketOutcomeAssetId),
+        getIndexOf(parseAssetIdString(a?.assetId) as MarketOutcomeAssetId) -
+        getIndexOf(parseAssetIdString(b?.assetId) as MarketOutcomeAssetId),
     );
 
     assets.forEach((asset, index) => {
