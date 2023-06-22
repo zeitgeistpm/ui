@@ -78,7 +78,6 @@ const JoinPoolForm = ({
       if (!name) return;
       const changedByUser = type != null;
       const changedAsset = name;
-      if (!changedAsset) return;
       const userInput = value[changedAsset];
 
       if (name === "baseAssetPercentage" && changedByUser) {

@@ -138,7 +138,6 @@ const ExitPoolForm = ({
       } else {
         const changedAsset = name;
 
-        if (!changedAsset) return;
         const userInput = value[changedAsset];
         if (
           changedAsset != null &&
