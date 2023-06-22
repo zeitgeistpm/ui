@@ -170,6 +170,8 @@ const PoolSettings: FC<{
     onChange(newData);
   };
 
+  const baseAssetRow = data[data.length - 1];
+
   const tableData: TableData[] = data.map((d, index) => {
     return {
       token: {
@@ -187,7 +189,9 @@ const PoolSettings: FC<{
       ),
       total: {
         value: Number(d.value),
-        usdValue: baseAssetPrice?.toNumber(),
+        usdValue: new Decimal(baseAssetRow.amount ?? 0)
+          .mul(baseAssetPrice ?? 0)
+          .toNumber(),
       },
       amount: d.amount,
     };
@@ -221,8 +225,6 @@ const PoolSettings: FC<{
   const handleFeeChange = (fee: Decimal) => {
     onFeeChange?.(fee.div(100).mul(ZTG));
   };
-
-  const baseAssetRow = data[data.length - 1];
 
   const currencyImage = supportedCurrencies.find(
     (currency) => currency.name === baseAssetRow.asset,
