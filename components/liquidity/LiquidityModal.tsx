@@ -53,11 +53,9 @@ const LiquidityModal = ({
 
   const data = useTotalIssuanceForPools([poolId]);
   const totalPoolIssuance = data?.[poolId]?.data?.totalIssuance;
-  const userPoolTokensQuery = useAccountAssetBalances(
-    connectedAddress && pool != null
-      ? [{ account: connectedAddress, assetId: { PoolShare: poolId } }]
-      : [],
-  );
+  const userPoolTokensQuery = useAccountAssetBalances([
+    { account: connectedAddress, assetId: { PoolShare: poolId } },
+  ]);
 
   const userPoolTokens =
     connectedAddress &&
@@ -97,12 +95,20 @@ const LiquidityModal = ({
 
           const userBalance = isBaseAsset
             ? userBaseBalance
-            : new Decimal(userAssetBalances[index].free.toString());
+            : new Decimal(
+                userAssetBalances == null
+                  ? 0
+                  : userAssetBalances[index].free.toString(),
+              );
           const poolBalance = isBaseAsset
             ? new Decimal(poolBaseBalance.toString())
-            : new Decimal(poolAssetBalances[index].free.toString());
+            : new Decimal(
+                poolAssetBalances == null
+                  ? 0
+                  : poolAssetBalances[index].free.toString(),
+              );
 
-          const id = assetObjStringToId(weight.assetId);
+          const id = assetObjStringToId(weight!.assetId);
 
           balances[id] = {
             pool: poolBalance,
@@ -110,11 +116,12 @@ const LiquidityModal = ({
           };
           return balances;
         },
-        {},
+        {} as PoolBalances,
       );
 
       return allBalances;
     }
+    return {};
   }, [
     pool?.weights,
     userAssetBalances,

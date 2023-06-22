@@ -23,7 +23,7 @@ const JoinPoolForm = ({
   poolBalances: PoolBalances;
   poolId: number;
   totalPoolShares: Decimal;
-  baseAssetTicker: string;
+  baseAssetTicker?: string;
   onSuccess?: () => void;
 }) => {
   const { register, watch, handleSubmit, setValue, getValues, formState } =
@@ -75,6 +75,7 @@ const JoinPoolForm = ({
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
+      if (!name) return;
       const changedByUser = type != null;
       const changedAsset = name;
       if (!changedAsset) return;

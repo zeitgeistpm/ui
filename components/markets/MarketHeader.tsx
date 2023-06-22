@@ -84,7 +84,7 @@ const MarketOutcome: FC<
       }`}
     >
       <div className="flex gap-1">
-        <span>{status} Outome: </span>
+        <span>{status} Outcome: </span>
         {outcome ? (
           <span className="font-bold">{outcome}</span>
         ) : (

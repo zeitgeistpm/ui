@@ -6,23 +6,26 @@ import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
 import { ChainName } from "lib/constants/chains";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
-import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useCrossChainExtrinsic } from "lib/hooks/useCrossChainExtrinsic";
 import { useChain } from "lib/state/cross-chain";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { countDecimals } from "lib/util/count-decimals";
+import { formatNumberCompact } from "lib/util/format-compact";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
 
 const DepositButton = ({
   sourceChain,
   tokenSymbol,
   balance,
+  sourceExistentialDeposit,
 }: {
   sourceChain: ChainName;
   tokenSymbol: string;
   balance: Decimal;
+  sourceExistentialDeposit: Decimal;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -34,6 +37,7 @@ const DepositButton = ({
           sourceChain={sourceChain}
           tokenSymbol={tokenSymbol}
           balance={balance}
+          sourceExistentialDeposit={sourceExistentialDeposit}
           onSuccess={() => setIsOpen(false)}
         />
       </Modal>
@@ -46,13 +50,24 @@ const DepositModal = ({
   tokenSymbol,
   balance,
   onSuccess,
+  sourceExistentialDeposit,
 }: {
   sourceChain: ChainName;
   tokenSymbol: string;
   balance: Decimal;
+  sourceExistentialDeposit: Decimal;
   onSuccess: () => void;
 }) => {
-  const { register, handleSubmit, getValues, formState } = useForm({
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState,
+    watch,
+    setValue,
+    control,
+    trigger,
+  } = useForm({
     reValidateMode: "onChange",
     mode: "onChange",
   });
@@ -61,24 +76,25 @@ const DepositModal = ({
   const wallet = useWallet();
   const { chain, api } = useChain(sourceChain);
 
-  const { data: fee } = useExtrinsicFee(
-    chain.createDepositExtrinsic(
-      api,
-      wallet.activeAccount.address,
-      "10000000000",
-      constants.parachainId,
-    ),
-  );
+  const fee = chain?.depositFee;
+  //assumes source chain fee is paid in currency that is being transferred
+  const maxTransferAmount = balance.minus(fee?.mul(1.01) ?? 0); //add 1% buffer to fee
+
+  const existentialDepositWarningThreshold = 0.1;
+
+  const amount = getValues("amount");
+  const amountDecimal: Decimal = amount
+    ? new Decimal(amount).mul(ZTG)
+    : new Decimal(0);
+  const remainingSourceBalance = balance.minus(amountDecimal);
 
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
     () => {
-      const formValue = getValues();
-      const amount = formValue.amount;
-
+      if (!chain || !wallet.activeAccount || !constants) return;
       const tx = chain.createDepositExtrinsic(
         api,
         wallet.activeAccount.address,
-        new Decimal(amount).mul(ZTG).toFixed(0),
+        amountDecimal.toFixed(0),
         constants.parachainId,
       );
       return tx;
@@ -107,6 +123,32 @@ const DepositModal = ({
     },
   );
 
+  useEffect(() => {
+    const subscription = watch((value, { name, type }) => {
+      const changedByUser = type != null;
+
+      if (!changedByUser) return;
+
+      if (name === "percentage") {
+        setValue(
+          "amount",
+          maxTransferAmount.mul(value.percentage).div(100).div(ZTG).toNumber(),
+        );
+        trigger("amount");
+      } else if (name === "amount" && value.amount !== "") {
+        setValue(
+          "percentage",
+          new Decimal(value.amount)
+            .mul(ZTG)
+            .div(maxTransferAmount)
+            .mul(100)
+            .toString(),
+        );
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, balance, fee]);
+
   const onSubmit = () => {
     transfer();
   };
@@ -121,8 +163,26 @@ const DepositModal = ({
           className="w-full flex flex-col items-center"
         >
           <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 relative font-normal w-full">
-            <input
-              {...register("amount", {
+            <Controller
+              render={(val) => {
+                const { field } = val;
+                return (
+                  <input
+                    {...field}
+                    type="number"
+                    className="w-full bg-transparent outline-none !text-center"
+                    step="any"
+                    value={
+                      countDecimals(field.value ? Number(field.value) : 0) > 3
+                        ? Number(field.value).toFixed(3)
+                        : field.value ?? 0
+                    }
+                  />
+                );
+              }}
+              control={control}
+              name="amount"
+              rules={{
                 required: {
                   value: true,
                   message: "Value is required",
@@ -136,21 +196,32 @@ const DepositModal = ({
                     return "Value cannot be zero or less";
                   }
                 },
-              })}
-              type="number"
-              className="w-full bg-transparent outline-none !text-center"
-              step="any"
+              }}
             />
             <div className="mr-[10px] absolute right-0">{tokenSymbol}</div>
           </div>
+          <input
+            className="mt-[30px] mb-[10px] w-full"
+            type="range"
+            disabled={maxTransferAmount.lessThanOrEqualTo(0)}
+            {...register("percentage", { value: "0" })}
+          />
           <div className="text-vermilion text-ztg-12-120 my-[4px] h-[16px]">
             <>{formState.errors["amount"]?.message}</>
+            {!formState.errors["amount"]?.message &&
+              remainingSourceBalance.lessThan(sourceExistentialDeposit) &&
+              remainingSourceBalance
+                .div(ZTG)
+                .greaterThan(existentialDepositWarningThreshold) && (
+                <>{`Warning! The remaining ${formatNumberCompact(
+                  remainingSourceBalance.div(ZTG).toNumber(),
+                )} ${tokenSymbol} on ${sourceChain} will be lost`}</>
+              )}
           </div>
           <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
             {sourceChain} fee:
             <span className="text-black ml-1">
-              {new Decimal(fee?.partialFee.toString() ?? 0).div(ZTG).toFixed(3)}{" "}
-              {tokenSymbol}
+              {fee ? fee.div(ZTG).toFixed(3) : 0} {tokenSymbol}
             </span>
           </div>
           <FormTransactionButton

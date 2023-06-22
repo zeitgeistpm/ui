@@ -33,7 +33,7 @@ const ExitPoolForm = ({
   poolId: number;
   totalPoolShares: Decimal;
   userPoolShares: Decimal;
-  baseAssetTicker: string;
+  baseAssetTicker?: string;
   onSuccess?: () => void;
 }) => {
   const { data: constants } = useChainConstants();
@@ -60,7 +60,7 @@ const ExitPoolForm = ({
   const poolWeights =
     market?.status === "Resolved" && market.marketType.categorical
       ? pool?.weights.filter((weight) => {
-          const assetId = parseAssetId(weight.assetId).unwrap();
+          const assetId = weight && parseAssetId(weight.assetId).unwrap();
 
           return (
             IOZtgAssetId.is(assetId) ||
@@ -72,34 +72,36 @@ const ExitPoolForm = ({
 
   const { send: exitPool, isLoading } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk) && pool && constants && poolWeights) {
-        const formValue = getValues();
-        const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
-        const feeMultiplier = 1 - constants.swaps.exitFee;
-
-        const minAssetsOut = poolWeights.map((asset) => {
-          const id = assetObjStringToId(asset.assetId);
-
-          const assetAmount = formValue[id] ?? 0;
-          return assetAmount === ""
-            ? "0"
-            : new Decimal(assetAmount)
-                .mul(ZTG)
-                .mul(slippageMultiplier)
-                .mul(feeMultiplier)
-                .toFixed(0, Decimal.ROUND_DOWN);
-        });
-
-        const poolSharesAmount = userPoolShares.mul(
-          Number(formValue["poolSharesPercentage"]) / 100,
-        );
-
-        return sdk.api.tx.swaps.poolExit(
-          poolId,
-          poolSharesAmount.toFixed(0),
-          minAssetsOut,
-        );
+      if (!constants || !isRpcSdk(sdk) || !pool || !poolWeights) {
+        return;
       }
+      const formValue = getValues();
+      const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
+      const feeMultiplier = 1 - constants.swaps.exitFee;
+
+      const minAssetsOut = poolWeights.map((asset) => {
+        if (!asset) return "0";
+        const id = assetObjStringToId(asset.assetId);
+
+        const assetAmount = formValue[id] ?? 0;
+        return assetAmount === ""
+          ? "0"
+          : new Decimal(assetAmount)
+              .mul(ZTG)
+              .mul(slippageMultiplier)
+              .mul(feeMultiplier)
+              .toFixed(0, Decimal.ROUND_DOWN);
+      });
+
+      const poolSharesAmount = userPoolShares.mul(
+        Number(formValue["poolSharesPercentage"]) / 100,
+      );
+
+      return sdk.api.tx.swaps.poolExit(
+        poolId,
+        poolSharesAmount.toFixed(0),
+        minAssetsOut,
+      );
     },
     {
       onSuccess: () => {
@@ -119,6 +121,7 @@ const ExitPoolForm = ({
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
       const changedByUser = type != null;
+      if (!name) return;
       if (name === "poolSharesPercentage" && changedByUser) {
         const percentage = Number(value["poolSharesPercentage"]);
         for (const assetKey in poolBalances) {
@@ -188,6 +191,7 @@ const ExitPoolForm = ({
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-y-6 max-h-[200px] md:max-h-[400px] overflow-y-auto py-5">
         {poolWeights?.map((asset, index) => {
+          if (!asset) return null;
           const id = assetObjStringToId(asset.assetId);
           const assetName =
             poolWeights.length - 1 === index
