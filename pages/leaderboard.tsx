@@ -1,9 +1,7 @@
 import {
-  AssetId,
   BaseAssetId,
   create,
   getMarketIdOf,
-  IOBaseAssetId,
   IOForeignAssetId,
   IOMarketOutcomeAssetId,
   parseAssetId,
@@ -44,7 +42,7 @@ type Trade = {
   baseAssetOut: Decimal;
   // assetIn?: AssetId;
   // assetOut?: AssetId;
-  type: "trade" | "redeem" | "sellFullSet" | "buyFullSet";
+  // type: "trade" | "redeem" | "sellFullSet" | "buyFullSet";
 };
 
 type AccountId = string;
@@ -105,7 +103,7 @@ type Event = {
 
 const convertEventToTrade = (event: Event) => {
   const assetId = parseAssetId(event.assetId).unwrap();
-
+  console.log(event.event);
   const marketId = IOMarketOutcomeAssetId.is(assetId)
     ? getMarketIdOf(assetId)
     : undefined;
@@ -118,12 +116,34 @@ const convertEventToTrade = (event: Event) => {
         // assetOut: { Ztg: null },
         baseAssetIn: new Decimal(0),
         baseAssetOut: new Decimal(event.dBalance).abs(),
-        type: "redeem",
+        // type: "redeem",
       };
       return trade;
     } else if (event.event === "SoldCompleteSet") {
-    } else if (event.event === "Deposited") {
-    } else if (event.event === "BoughtCompleteSet") {
+      const trade: Trade = {
+        marketId,
+        // assetIn: assetId,
+        // assetOut: { Ztg: null },
+        baseAssetIn: new Decimal(0),
+        baseAssetOut: new Decimal(event.dBalance).abs(),
+        // type: "redeem",
+      };
+      return trade;
+    } else if (
+      event.event === "Deposited" ||
+      event.event === "DepositedEndowed" ||
+      event.event === "EndowedBoughtCompleteSet" ||
+      event.event === "BoughtCompleteSet"
+    ) {
+      const trade: Trade = {
+        marketId,
+        // assetIn: assetId,
+        // assetOut: { Ztg: null },
+        baseAssetIn: new Decimal(event.dBalance).abs(),
+        baseAssetOut: new Decimal(0),
+        // type: "redeem",
+      };
+      return trade;
     }
   }
 };
@@ -201,7 +221,7 @@ export async function getStaticProps() {
   // }, {});
   const { historicalSwaps } = await sdk.indexer.historicalSwaps({
     where: {
-      // accountId_eq: "dDywmamjrDkaT18ybCRJBfax65CoxJNSWGZfwiQrbkAe95wq3",
+      accountId_eq: "dE1CBAKzrE1C9R6NkgdEUNgv1H9x4xgT39wzSnxCtX3FpSqS8",
     },
   });
   // console.log(historicalSwaps);
@@ -238,7 +258,7 @@ export async function getStaticProps() {
         baseAssetSwapType === "out"
           ? new Decimal(swap.assetAmountOut)
           : new Decimal(0),
-      type: "trade",
+      // type: "trade",
     };
 
     if (trades) {
@@ -259,12 +279,14 @@ export async function getStaticProps() {
   const { historicalAccountBalances: buyFullSetEvents } =
     await sdk.indexer.historicalAccountBalances({
       where: {
-        AND: [
+        OR: [
           {
             event_contains: "BoughtComplete",
           },
           {
-            OR: [{ event_contains: "Deposited", assetId_not_contains: "pool" }],
+            AND: [
+              { event_contains: "Deposited", assetId_not_contains: "pool" },
+            ],
           },
         ],
       },
@@ -278,13 +300,22 @@ export async function getStaticProps() {
     });
 
   console.time("t");
-  const fullSetEvents = [...buyFullSetEvents, ...sellFullSetEvents];
+  const fullSetEvents = [
+    ...buyFullSetEvents,
+
+    // ...sellFullSetEvents
+  ];
+  console.log(fullSetEvents);
 
   const uniqueFullSetEvents = fullSetEvents.reduce<Event[]>(
     (uniqueEvents, event) => {
+      console.log("event", event);
+
       const duplicateEvent = uniqueEvents.find(
         (entry) => entry.id === event.id,
       );
+
+      console.log("duplicateEvent", duplicateEvent);
 
       if (!duplicateEvent) {
         uniqueEvents.push(event);
@@ -367,6 +398,10 @@ export async function getStaticProps() {
 
       if (market?.status === "Resolved") {
         const diff = marketTotal.baseAssetOut.minus(marketTotal.baseAssetIn);
+        console.log("marketId:", marketId);
+        console.log("diff", diff.div(ZTG).toString());
+        // console.log(marketTotal.baseAssetOut.div(ZTG).toString());
+        // console.log(marketTotal.baseAssetIn.div(ZTG).toString());
 
         marketsSummary.push({
           question: market.question!,
@@ -382,6 +417,9 @@ export async function getStaticProps() {
           marketTotal.baseAsset,
           endTimestamp,
         );
+
+        console.log("usdprice", marketEndBaseAssetPrice?.toFixed(2));
+
         const usdProfitLoss = diff.mul(marketEndBaseAssetPrice);
         return total.plus(usdProfitLoss);
       } else {
@@ -409,7 +447,8 @@ export async function getStaticProps() {
     }, [])
     .sort((a, b) => b.profit - a.profit);
 
-  const top10 = rankings.slice(0, 100);
+  const top10 = rankings;
+  // .slice(0, 100);
 
   const indentities = await Promise.all(
     top10.map((player) => sdk.api.query.identity.identityOf(player.accountId)),
@@ -454,10 +493,12 @@ const Leaderboard: NextPage<{
             <div>
               {rank.markets
                 .sort((a, b) => b.profit - a.profit)
-                .slice(0, 20) // todo move this server side
+                // .slice(0, 1000) // todo move this server side
                 .map((market) => (
                   <div>
-                    <div>{market.question}</div>
+                    <div>
+                      {market.question}-{market.marketId}
+                    </div>
                     <div>
                       {formatNumberCompact(market.profit)}{" "}
                       {lookupAssetSymbol(market.baseAssetId)}
