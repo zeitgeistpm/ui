@@ -207,6 +207,7 @@ const DepositModal = ({
           <FormTransactionButton
             className="w-full max-w-[250px]"
             disabled={formState.isValid === false || isLoading}
+            disableFeeCheck={true}
           >
             Confirm Deposit
           </FormTransactionButton>
