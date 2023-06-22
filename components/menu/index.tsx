@@ -7,7 +7,15 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu as MenuIcon } from "react-feather";
-import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiArrowRight,
+  FiGrid,
+  FiStar,
+  FiAward,
+  FiPlusSquare,
+  FiList,
+} from "react-icons/fi";
 
 const AccountButton = dynamic(() => import("../account/AccountButton"), {
   ssr: false,
@@ -32,12 +40,7 @@ const TopBar = () => {
                   <div>
                     <Menu.Button className="text-white font-light relative flex center gap-2">
                       <div className="relative h-6 w-6 hidden md:block">
-                        <Image
-                          src="/menu.svg"
-                          fill
-                          alt="Markets menu"
-                          sizes="100"
-                        />
+                        <FiGrid size={"100%"} />
                       </div>
                       <div className="hidden md:block">Markets</div>
                       <div className="block md:hidden">
@@ -67,13 +70,8 @@ const TopBar = () => {
                             <button
                               className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-3 mb-4`}
                             >
-                              <div className="relative h-6 w-6 invert">
-                                <Image
-                                  src="/menu.svg"
-                                  fill
-                                  alt="Markets menu"
-                                  sizes="100"
-                                />
+                              <div className="relative h-6 w-6">
+                                <FiGrid size={"100%"} />
                               </div>
 
                               <h3 className="text-sm font-semibold">
@@ -94,12 +92,7 @@ const TopBar = () => {
                               className={`group flex w-full items-center  px-2 py-2 text-sm gap-3 mb-4 border-b-1 border-gray-300 pb-5`}
                             >
                               <div className="relative h-6 w-6">
-                                <Image
-                                  src="/star.svg"
-                                  fill
-                                  alt="Markets menu"
-                                  sizes="100"
-                                />
+                                <FiStar size={"100%"} />
                               </div>
 
                               <h3 className="text-sm font-semibold">
@@ -124,13 +117,8 @@ const TopBar = () => {
                                 disabled
                                 className={`group flex w-full items-center  px-2 py-2 text-sm gap-3 mb-4`}
                               >
-                                <div className="relative h-6 w-6 invert opacity-30">
-                                  <Image
-                                    src="/award.svg"
-                                    fill
-                                    alt="Markets menu"
-                                    sizes="100"
-                                  />
+                                <div className="relative h-6 w-6  opacity-30">
+                                  <FiAward size={"100%"} />
                                 </div>
                                 <h3 className="text-sm font-semibold text-gray-400">
                                   Leaderboard (coming soon)
@@ -150,12 +138,7 @@ const TopBar = () => {
                               className={`group flex w-full items-center  rounded-md px-2 py-2 text-sm gap-3`}
                             >
                               <div className="relative h-6 w-6 z-10">
-                                <Image
-                                  src="/plus-square.svg"
-                                  fill
-                                  alt="Markets menu"
-                                  sizes="100"
-                                />
+                                <FiPlusSquare size={"100%"} />
                               </div>
                               <h3 className="text-sm font-semibold">
                                 Create Market
@@ -180,7 +163,7 @@ const TopBar = () => {
             }}
           >
             <div className="relative h-6 w-6 opacity-40">
-              <Image src="/award.svg" fill alt="Markets menu" sizes="100" />
+              <FiAward size={"100%"} />
             </div>
             <div className="text-gray-400">Leaderboard (coming soon)</div>
           </Link>
@@ -231,7 +214,7 @@ const CategoriesMenuItem = ({ onSelect }: { onSelect: () => void }) => {
             }}
           >
             <div className="relative h-6 w-6">
-              <Image src="/list.svg" fill alt="Markets menu" sizes="100" />
+              <FiList size={"100%"} />
             </div>
             <h3 className="text-sm font-semibold flex-1 text-left">
               Categories
