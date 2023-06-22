@@ -189,8 +189,9 @@ const PoolSettings: FC<{
       ),
       total: {
         value: Number(d.value),
-        usdValue: new Decimal(baseAssetRow.amount ?? 0)
+        usdValue: new Decimal(d.amount ?? 0)
           .mul(baseAssetPrice ?? 0)
+          .mul(d.price.price)
           .toNumber(),
       },
       amount: d.amount,
