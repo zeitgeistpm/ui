@@ -219,10 +219,14 @@ const PoolSettings: FC<{
   ];
 
   const handleFeeChange = (fee: Decimal) => {
-    onFeeChange(fee.div(100).mul(ZTG));
+    onFeeChange?.(fee.div(100).mul(ZTG));
   };
 
   const baseAssetRow = data[data.length - 1];
+
+  const currencyImage = supportedCurrencies.find(
+    (currency) => currency.name === baseAssetRow.asset,
+  )?.image;
 
   return (
     <div className="md:min-w-[720px]">
@@ -273,16 +277,14 @@ const PoolSettings: FC<{
             <div className="absolute bottom-[50%] center gap-2 text-gray-600 right-0 rounded-r-md border-2 border-gray-100 border-l-0 px-5 bg-white h-full translate-y-[50%] translate-x-[0%] pointer-events-none">
               {baseAssetRow.asset}
               <div className="relative h-4 w-4">
-                <Image
-                  alt="Currency token logo"
-                  fill
-                  sizes="100vw"
-                  src={
-                    supportedCurrencies.find(
-                      (currency) => currency.name === baseAssetRow.asset,
-                    )?.image
-                  }
-                />
+                {currencyImage && (
+                  <Image
+                    alt="Currency token logo"
+                    fill
+                    sizes="100vw"
+                    src={currencyImage}
+                  />
+                )}
               </div>
             </div>
           </div>

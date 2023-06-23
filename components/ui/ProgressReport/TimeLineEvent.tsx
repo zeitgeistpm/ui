@@ -39,7 +39,7 @@ const TimeLineEvent = ({
     clearTimeout(timerRef);
     setShowEventDetails(true);
     setHoveringEvent(true);
-    setEventId(id);
+    setEventId && setEventId(id);
   };
 
   const handleMouseLeaveEvent = () => {
