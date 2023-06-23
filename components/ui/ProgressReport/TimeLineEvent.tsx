@@ -8,7 +8,6 @@ interface TimeLineEventProps extends ProgressBarEvent {
 
 const TimeLineEvent = ({
   id,
-  percentage,
   color,
   borderColor,
   hoverComponent,

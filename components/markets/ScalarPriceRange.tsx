@@ -19,7 +19,7 @@ const ScalarPriceRange = ({
   longPrice,
   status,
 }: ScalarPriceRangeProps) => {
-  const { width, ref } = useResizeDetector();
+  const { width = 0, ref } = useResizeDetector();
   const shortPercentage = 1 - shortPrice;
   const longPercentage = longPrice;
   const averagePercentage = (shortPercentage + longPercentage) / 2;
