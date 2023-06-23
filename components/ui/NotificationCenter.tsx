@@ -12,8 +12,8 @@ const NotificationCard: FC<{
   content: string | React.ReactNode;
   type: NotificationType;
   dataTest?: string;
-}> = ({ close, lifetime = 0, content, type }) => {
-  const [timer, setTimer] = React.useState(lifetime ?? 0);
+}> = ({ close, lifetime = TIMER_TICK_RATE, content, type }) => {
+  const [timer, setTimer] = React.useState(lifetime);
 
   useEffect(() => {
     if (lifetime) {
