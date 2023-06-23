@@ -48,7 +48,7 @@ const ScalarReportBox = ({
 
     const signer = wallet.getActiveSigner();
 
-    if (isRpcSdk(sdk)) {
+    if (isRpcSdk(sdk) && signer) {
       const tx = sdk.api.tx.predictionMarkets.report(
         market.marketId,
         outcomeReport,

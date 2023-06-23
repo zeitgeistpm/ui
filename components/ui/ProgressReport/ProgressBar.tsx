@@ -26,7 +26,8 @@ const ProgressBar = ({
 }: ProgressBarProps) => {
   const [progressWidth, setProgressWidth] = useState<number>();
 
-  const { width, ref } = useResizeDetector();
+  const { width: barWidth, ref } = useResizeDetector();
+  const width = barWidth ?? 0;
 
   useEffect(() => {
     const progressbarWidth = percentage * width;

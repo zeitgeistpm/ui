@@ -37,31 +37,32 @@ const columns: TableColumn[] = [
 const TradeHistoryTable = ({ address }: { address: string }) => {
   const { data: tradeHistory, isLoading } = useTradeHistory(address);
 
-  const tableData: TableData[] = tradeHistory?.map((trade) => {
-    return {
-      question: (
-        <Link
-          href={`/markets/${trade.marketId}`}
-          className="text-[14px] line-clamp-1"
-        >
-          {trade.question}
-        </Link>
-      ),
-      bought: `${formatNumberLocalized(
-        trade.assetAmountOut.div(ZTG).toNumber(),
-      )} ${trade.assetOut}`,
-      sold: `${formatNumberLocalized(
-        trade.assetAmountIn.div(ZTG).toNumber(),
-      )} ${trade.assetIn}`,
-      price: `${formatNumberLocalized(trade.price.toNumber())} ${
-        trade.baseAssetName
-      }`,
-      time: new Intl.DateTimeFormat("default", {
-        dateStyle: "medium",
-        timeStyle: "medium",
-      }).format(new Date(trade.time)),
-    };
-  });
+  const tableData: TableData[] =
+    tradeHistory?.map((trade) => {
+      return {
+        question: (
+          <Link
+            href={`/markets/${trade?.marketId}`}
+            className="text-[14px] line-clamp-1"
+          >
+            {trade?.question}
+          </Link>
+        ),
+        bought: `${formatNumberLocalized(
+          trade?.assetAmountOut.div(ZTG).toNumber() ?? 0,
+        )} ${trade?.assetOut}`,
+        sold: `${formatNumberLocalized(
+          trade?.assetAmountIn.div(ZTG).toNumber() ?? 0,
+        )} ${trade?.assetIn}`,
+        price: `${formatNumberLocalized(trade?.price.toNumber() ?? 0)} ${
+          trade?.baseAssetName
+        }`,
+        time: new Intl.DateTimeFormat("default", {
+          dateStyle: "medium",
+          timeStyle: "medium",
+        }).format(new Date(trade?.time)),
+      };
+    }) ?? [];
 
   return (
     <div>
