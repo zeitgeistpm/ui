@@ -84,7 +84,7 @@ const MarketOutcome: FC<
       }`}
     >
       <div className="flex gap-1">
-        <span>{status} Outome: </span>
+        <span>{status} Outcome: </span>
         {outcome ? (
           <span className="font-bold">{outcome}</span>
         ) : (
@@ -386,7 +386,7 @@ const MarketHeader: FC<{
         ) : (
           <Skeleton width="150px" height="20px" />
         )}
-        {isLiqudityLoading === false && token ? (
+        {isLiqudityLoading === false && liquidity && token ? (
           <HeaderStat label="Liquidity" border={false}>
             {formatNumberCompact(liquidity.div(ZTG).toNumber())}
             &nbsp;
@@ -398,30 +398,33 @@ const MarketHeader: FC<{
       </div>
       {(status === "Reported" ||
         status === "Disputed" ||
-        status === "Resolved") && (
-        <MarketOutcome
-          setShowMarketHistory={setShowMarketHistory}
-          status={status}
-          outcome={outcome}
-          by={by}
-          marketHistory={marketHistory}
-        />
-      )}
+        status === "Resolved") &&
+        marketHistory && (
+          <MarketOutcome
+            setShowMarketHistory={setShowMarketHistory}
+            status={status}
+            outcome={outcome}
+            by={by}
+            marketHistory={marketHistory}
+          />
+        )}
 
       <Modal
         open={showMarketHistory}
         onClose={() => setShowMarketHistory(false)}
       >
-        <MarketHistory
-          starts={starts}
-          ends={ends}
-          marketHistory={marketHistory}
-          oracleReported={oracleReported}
-          categories={categories}
-          marketType={marketType}
-          setShowMarketHistory={setShowMarketHistory}
-          scalarType={scalarType}
-        />
+        {marketHistory && (
+          <MarketHistory
+            starts={starts}
+            ends={ends}
+            marketHistory={marketHistory}
+            oracleReported={oracleReported}
+            categories={categories}
+            marketType={marketType}
+            setShowMarketHistory={setShowMarketHistory}
+            scalarType={scalarType}
+          />
+        )}
       </Modal>
     </header>
   );

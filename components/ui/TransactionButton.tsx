@@ -19,6 +19,7 @@ interface TransactionButtonProps {
   dataTest?: string;
   type?: "button" | "submit" | "reset";
   extrinsic?: SubmittableExtrinsic<"promise", ISubmittableResult>;
+  disableFeeCheck?: boolean;
 }
 
 const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
@@ -30,6 +31,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   preventDefault,
   type = "button",
   extrinsic,
+  disableFeeCheck = false,
 }) => {
   const wallet = useWallet();
   const [sdk] = useSdkv2();
@@ -52,9 +54,9 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   const { data: constants } = useChainConstants();
 
   const feeEstimationFactor = extrinsic ? 1.05 : 1.5;
-  const insufficientFeeBalance = balance?.lessThan(
-    fee?.mul(feeEstimationFactor) ?? 0,
-  );
+  const insufficientFeeBalance =
+    disableFeeCheck === false &&
+    balance?.lessThan(fee?.mul(feeEstimationFactor) ?? 0);
 
   const click = (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (preventDefault) {

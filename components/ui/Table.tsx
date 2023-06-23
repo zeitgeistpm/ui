@@ -9,11 +9,11 @@ import { ReactNode, useEffect, useRef, useState } from "react";
 import { ArrowDown } from "react-feather";
 import { useTable } from "react-table";
 import Avatar from "./Avatar";
-import { AmountInput } from "./inputs";
 import Paginator from "./Paginator";
 import PercentageChange from "./PercentageChange";
 import { ChartData } from "./TimeSeriesChart";
-import { InfoPopover } from "components/ui/InfoPopover";
+import InfoPopover from "components/ui/InfoPopover";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 
 interface TableProps {
   data: TableData[];
@@ -72,8 +72,7 @@ type ColumnType =
   | "address"
   | "graph"
   | "market"
-  | "component"
-  | "amountInput";
+  | "component";
 
 interface CurrencyData {
   value: number;
@@ -107,10 +106,6 @@ const isTokenData = (cellValue: CellValue): cellValue is TokenData => {
 
 const isMarketData = (cellValue: CellValue): cellValue is MarketData => {
   return (cellValue as MarketData).url !== undefined;
-};
-
-const isAmountInput = (cellValue: CellValue): cellValue is Amount => {
-  return (cellValue as Amount).onChange !== undefined;
 };
 
 const Cell = ({
@@ -281,25 +276,6 @@ const Cell = ({
           <>{value}</>%
         </td>
       );
-    case "amountInput":
-      if (isAmountInput(value)) {
-        return (
-          <td
-            className={`font-mono text-ztg-14-150 font-semibold ${base}`}
-            onClick={onClick}
-            style={style}
-          >
-            <AmountInput
-              className="h-ztg-40 w-full rounded-ztg-5 !bg-gray-100 border-0 !pr-ztg-8 "
-              value={value.value}
-              onChange={value.onChange}
-              min={value.min}
-              max={value.max}
-            />
-          </td>
-        );
-      }
-
     default:
       return <td>default</td>;
   }
@@ -467,7 +443,15 @@ const Table = ({
                             <></>
                           )}
                           {column.infobox && (
-                            <InfoPopover children={column.infobox} />
+                            <InfoPopover
+                              title={
+                                <h3 className="flex justify-center items-center mb-4 gap-2">
+                                  <AiOutlineInfoCircle />
+                                  {column.header}
+                                </h3>
+                              }
+                              children={column.infobox}
+                            />
                           )}
                         </div>
                       </th>

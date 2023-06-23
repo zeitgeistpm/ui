@@ -4,7 +4,7 @@ import {
   isRpcSdk,
   Market,
 } from "@zeitgeistpm/sdk-next";
-import { AmountInput, DateTimeInput } from "components/ui/inputs";
+import { DateTimeInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -36,19 +36,16 @@ const ScalarReportBox = ({
   const isScalarDate = market.scalarType === "date";
 
   const [scalarReportValue, setScalarReportValue] = useState(() => {
-    if (isScalarDate) {
-      return ((bounds[1].toNumber() + bounds[0].toNumber()) / 2).toFixed(0);
-    } else {
-      return "";
-    }
+    return ((bounds[1].toNumber() + bounds[0].toNumber()) / 2).toFixed(0);
   });
 
-  const reportDisabled = !sdk || !isRpcSdk(sdk);
+  const reportDisabled = !sdk || !isRpcSdk(sdk) || scalarReportValue === "";
 
   const handleSignTransaction = async () => {
     const outcomeReport: any = {
       scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
     };
+
     const signer = wallet.getActiveSigner();
 
     if (isRpcSdk(sdk)) {
@@ -93,12 +90,23 @@ const ScalarReportBox = ({
           }}
         />
       ) : (
-        <AmountInput
+        <input
+          type="number"
           value={scalarReportValue}
+          onChange={(e) => handleNumberChange(e.target.value)}
           min={bounds[0].toString()}
           max={bounds[1].toString()}
-          onChange={handleNumberChange}
-          showErrorMessage={false}
+          className="text-ztg-14-150 p-2 bg-sky-200 rounded-md w-full outline-none text-right font-mono mt-2"
+          onBlur={() => {
+            if (
+              scalarReportValue === "" ||
+              Number(scalarReportValue) < bounds[0].toNumber()
+            ) {
+              setScalarReportValue(bounds[0].toString());
+            } else if (Number(scalarReportValue) > bounds[1].toNumber()) {
+              setScalarReportValue(bounds[1].toString());
+            }
+          }}
         />
       )}
       <TransactionButton

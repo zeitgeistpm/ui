@@ -103,6 +103,8 @@ export const useTradeItemState = (item: TradeItem) => {
       );
       const tradeablePoolAssetBalance = poolAssetBalance.mul(MAX_IN_OUT_RATIO);
 
+      if (!baseWeight || !assetWeight) return;
+
       const spotPrice = calcSpotPrice(
         poolBaseBalance,
         baseWeight,

@@ -1,6 +1,5 @@
-import { MarketStatus } from "@zeitgeistpm/sdk-next";
+import { MarketStatus, ScalarRangeType } from "@zeitgeistpm/sdk-next";
 import { MarketDispute, Report } from "@zeitgeistpm/sdk/dist/types";
-import { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS } from "lib/constants";
 import { marketMetaFilter } from "./constants";
