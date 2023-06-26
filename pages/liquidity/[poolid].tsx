@@ -149,7 +149,7 @@ const PoolDetails: NextPage = () => {
             title="Volume"
             value={`${volume ? volume : "0"} ${metadata?.symbol}`}
           />
-          <Pill title="Status" value={pool?.poolStatus ?? ""} />
+          <Pill title="Status" value={pool?.status ?? ""} />
         </div>
       </div>
       <div className="">

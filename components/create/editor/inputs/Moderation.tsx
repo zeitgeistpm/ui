@@ -41,6 +41,7 @@ export const ModerationModeSelect: React.FC<ModerationModeSelectProps> = ({
     <div className="flex flex-col md:flex-row md:justify-center md:gap-6 gap-4">
       {options.map((option, index) => (
         <button
+          key={index}
           type="button"
           className={`
               flex flex-col flex-1 max-w-sm rounded-md p-6 md:min-h-[230px] cursor-pointer transition-all active:scale-95

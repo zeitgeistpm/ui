@@ -6,12 +6,12 @@ import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
 import { ChainName } from "lib/constants/chains";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
-import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useCrossChainExtrinsic } from "lib/hooks/useCrossChainExtrinsic";
 import { useChain } from "lib/state/cross-chain";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { countDecimals } from "lib/util/count-decimals";
+import { formatNumberCompact } from "lib/util/format-compact";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
@@ -20,10 +20,12 @@ const DepositButton = ({
   sourceChain,
   tokenSymbol,
   balance,
+  sourceExistentialDeposit,
 }: {
   sourceChain: ChainName;
   tokenSymbol: string;
   balance: Decimal;
+  sourceExistentialDeposit: Decimal;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -35,6 +37,7 @@ const DepositButton = ({
           sourceChain={sourceChain}
           tokenSymbol={tokenSymbol}
           balance={balance}
+          sourceExistentialDeposit={sourceExistentialDeposit}
           onSuccess={() => setIsOpen(false)}
         />
       </Modal>
@@ -47,10 +50,12 @@ const DepositModal = ({
   tokenSymbol,
   balance,
   onSuccess,
+  sourceExistentialDeposit,
 }: {
   sourceChain: ChainName;
   tokenSymbol: string;
   balance: Decimal;
+  sourceExistentialDeposit: Decimal;
   onSuccess: () => void;
 }) => {
   const {
@@ -71,24 +76,25 @@ const DepositModal = ({
   const wallet = useWallet();
   const { chain, api } = useChain(sourceChain);
 
-  const { data: fee } = useExtrinsicFee(
-    chain?.createDepositExtrinsic(
-      api,
-      wallet.activeAccount.address,
-      "10000000000",
-      constants.parachainId,
-    ),
-  );
+  const fee = chain?.depositFee;
+  //assumes source chain fee is paid in currency that is being transferred
+  const maxTransferAmount = balance.minus(fee?.mul(1.01) ?? 0); //add 1% buffer to fee
+
+  const existentialDepositWarningThreshold = 0.1;
+
+  const amount = getValues("amount");
+  const amountDecimal: Decimal = amount
+    ? new Decimal(amount).mul(ZTG)
+    : new Decimal(0);
+  const remainingSourceBalance = balance.minus(amountDecimal);
 
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
     () => {
-      const formValue = getValues();
-      const amount = formValue.amount;
-
+      if (!chain || !wallet.activeAccount || !constants) return;
       const tx = chain.createDepositExtrinsic(
         api,
         wallet.activeAccount.address,
-        new Decimal(amount).mul(ZTG).toFixed(0),
+        amountDecimal.toFixed(0),
         constants.parachainId,
       );
       return tx;
@@ -123,8 +129,6 @@ const DepositModal = ({
 
       if (!changedByUser) return;
 
-      //assumes source chain fee is paid in currency that is being transferred
-      const maxTransferAmount = balance.minus(fee?.mul(1.01) ?? 0); //add 1% buffer to fee
       if (name === "percentage") {
         setValue(
           "amount",
@@ -199,10 +203,20 @@ const DepositModal = ({
           <input
             className="mt-[30px] mb-[10px] w-full"
             type="range"
+            disabled={maxTransferAmount.lessThanOrEqualTo(0)}
             {...register("percentage", { value: "0" })}
           />
           <div className="text-vermilion text-ztg-12-120 my-[4px] h-[16px]">
             <>{formState.errors["amount"]?.message}</>
+            {!formState.errors["amount"]?.message &&
+              remainingSourceBalance.lessThan(sourceExistentialDeposit) &&
+              remainingSourceBalance
+                .div(ZTG)
+                .greaterThan(existentialDepositWarningThreshold) && (
+                <>{`Warning! The remaining ${formatNumberCompact(
+                  remainingSourceBalance.div(ZTG).toNumber(),
+                )} ${tokenSymbol} on ${sourceChain} will be lost`}</>
+              )}
           </div>
           <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
             {sourceChain} fee:
@@ -213,6 +227,7 @@ const DepositModal = ({
           <FormTransactionButton
             className="w-full max-w-[250px]"
             disabled={formState.isValid === false || isLoading}
+            disableFeeCheck={true}
           >
             Confirm Deposit
           </FormTransactionButton>

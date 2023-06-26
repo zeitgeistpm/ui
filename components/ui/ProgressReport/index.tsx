@@ -67,7 +67,10 @@ const ProgressReport = ({
         </div>
         <TimeLine
           stages={stages}
-          currentStage={{ index: currentStageIndex, percentage: percentage }}
+          currentStage={{
+            index: currentStageIndex ?? 0,
+            percentage: percentage,
+          }}
         />
       </div>
     </div>

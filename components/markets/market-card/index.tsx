@@ -27,7 +27,7 @@ export interface IndexedMarketCardData {
   scalarType: ScalarRangeType;
   prediction: { name: string; price: number };
   volume: number;
-  pool: null | {};
+  pool: {};
   baseAsset: string;
   tags?: string[];
   status: string;
@@ -103,10 +103,10 @@ const MarketCardPredictionBar = ({
   pool,
 }: {
   prediction: { name: string; price: number };
-  pool: null | {};
+  pool: {};
 }) => {
   // check if market has liquidity
-  if (pool !== null) {
+  if (Object.keys(pool).length !== 0) {
     const impliedPercentage = Math.round(Number(price) * 100);
 
     return (
@@ -183,7 +183,7 @@ const MarketCardDetails = ({
         )}
       </div>
       <div className="flex gap-2.5 text-sm min-w-full">
-        {rows.numParticipants != null && rows.baseAsset ? (
+        {rows.numParticipants != undefined && rows.baseAsset ? (
           <div className="flex items-center gap-2">
             <Users size={18} />
             <span>{rows.numParticipants}</span>
@@ -197,7 +197,7 @@ const MarketCardDetails = ({
             {formatNumberCompact(rows.volume)} {rows.baseAsset}
           </span>
         </div>
-        {rows.liquidity != null && rows.baseAsset ? (
+        {rows.liquidity != undefined && rows.baseAsset ? (
           <div className="flex items-center gap-2">
             <Droplet size={18} />
             <span>
@@ -260,7 +260,7 @@ const MarketCard = ({
     hasEnded: hasDatePassed(Number(endDate)),
     outcomes: outcomes.length,
     volume: volume,
-    baseAsset: metadata?.symbol,
+    baseAsset: metadata?.symbol ?? "",
     liquidity,
     numParticipants: numParticipants,
   };
@@ -296,9 +296,9 @@ const MarketCard = ({
           </div>
           <MarketCardInfo question={question} img={img} />
           <div className="w-full">
-            {marketType.scalar === null ? (
+            {pool && marketType?.categorical ? (
               <MarketCardPredictionBar pool={pool} prediction={prediction} />
-            ) : pool !== null ? (
+            ) : pool && Object.keys(pool).length !== 0 ? (
               <ScalarPriceRange
                 scalarType={scalarType}
                 lowerBound={lower}

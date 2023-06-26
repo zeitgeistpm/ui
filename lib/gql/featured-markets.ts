@@ -123,6 +123,7 @@ const getFeaturedMarkets = async (
         assets: {
           pool: { poolId: number };
           price: number;
+          assetId: string;
         }[];
       }>(assetsQuery, {
         poolId: pool.poolId,

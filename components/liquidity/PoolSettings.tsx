@@ -1,4 +1,4 @@
-import InfoPopover from "components/create/editor/InfoPopover";
+import InfoPopover from "components/ui/InfoPopover";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -170,6 +170,8 @@ const PoolSettings: FC<{
     onChange(newData);
   };
 
+  const baseAssetRow = data[data.length - 1];
+
   const tableData: TableData[] = data.map((d, index) => {
     return {
       token: {
@@ -187,7 +189,7 @@ const PoolSettings: FC<{
       ),
       total: {
         value: Number(d.value),
-        usdValue: baseAssetPrice?.toNumber(),
+        usdValue: new Decimal(d.value ?? 0).mul(baseAssetPrice ?? 0).toNumber(),
       },
       amount: d.amount,
     };
@@ -219,10 +221,12 @@ const PoolSettings: FC<{
   ];
 
   const handleFeeChange = (fee: Decimal) => {
-    onFeeChange(fee.div(100).mul(ZTG));
+    onFeeChange?.(fee.div(100).mul(ZTG));
   };
 
-  const baseAssetRow = data[data.length - 1];
+  const currencyImage = supportedCurrencies.find(
+    (currency) => currency.name === baseAssetRow.asset,
+  )?.image;
 
   return (
     <div className="md:min-w-[720px]">
@@ -238,13 +242,13 @@ const PoolSettings: FC<{
                 </h3>
               }
             >
-              <p className="text-gray-500 font-light text-sm mb-4">
+              <p className="font-light mb-4">
                 This is the amount of liquidity that will be provided to the
                 market. Half of this amount will be provided to the base asset
                 token and the other half spread across the outcome tokens
                 according to weights/prices.
               </p>
-              <p className="text-gray-500 font-light text-sm">
+              <p className="font-light">
                 <b className="font-bold">
                   Note that this is the exact amount of {baseAssetRow?.asset}{" "}
                   you will spend on liquidity.
@@ -273,16 +277,14 @@ const PoolSettings: FC<{
             <div className="absolute bottom-[50%] center gap-2 text-gray-600 right-0 rounded-r-md border-2 border-gray-100 border-l-0 px-5 bg-white h-full translate-y-[50%] translate-x-[0%] pointer-events-none">
               {baseAssetRow.asset}
               <div className="relative h-4 w-4">
-                <Image
-                  alt="Currency token logo"
-                  fill
-                  sizes="100vw"
-                  src={
-                    supportedCurrencies.find(
-                      (currency) => currency.name === baseAssetRow.asset,
-                    )?.image
-                  }
-                />
+                {currencyImage && (
+                  <Image
+                    alt="Currency token logo"
+                    fill
+                    sizes="100vw"
+                    src={currencyImage}
+                  />
+                )}
               </div>
             </div>
           </div>

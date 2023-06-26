@@ -91,6 +91,7 @@ const getNewestMarkets = async (
           pool: { poolId: number };
           poolId: number;
           price: number;
+          assetId: string;
         }[];
       }>(assetsQuery, {
         poolId: market.pool.poolId,
