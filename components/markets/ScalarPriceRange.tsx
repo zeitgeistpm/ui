@@ -32,16 +32,6 @@ const ScalarPriceRange = ({
     return pos;
   }, [upperBound, lowerBound, shortPrice, longPrice]);
 
-  const getMinMaxPosition = (position) => {
-    if (position <= 55) {
-      return 55;
-    } else if (position >= width - 55) {
-      return position - 55;
-    } else {
-      return position;
-    }
-  };
-
   const lowerDisplay =
     scalarType === "date"
       ? new Intl.DateTimeFormat("default", {
@@ -64,45 +54,22 @@ const ScalarPriceRange = ({
       : position.toFixed(2);
 
   return (
-    <div ref={ref}>
-      <div className="relative top-1.5">
-        <div className="flex justify-between">
-          <div className="flex flex-col justify-start">
-            <span className="mb-2.5 text-sm text-blue">{lowerDisplay}</span>
-          </div>
-          <div className="flex flex-col justify-end items-end">
-            <span className="mb-2.5 text-sm text-red">{upperDisplay}</span>
-          </div>
+    <div
+      className="`w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative overflow-hidden"
+      ref={ref}
+    >
+      {status !== "Proposed" && (
+        <div
+          style={{
+            width: `${isNaN(averagePosition) ? 0 : averagePosition}px`,
+          }}
+          className="bg-scalar-bar h-full absolute left-0 bottom-0 rounded flex items-center"
+        >
+          <span className="text-scalar-text rounded text-sm px-2.5">
+            Current Prediction: {positionDisplay}
+          </span>
         </div>
-        {status !== "Proposed" && (
-          <div
-            style={{
-              width: `${isNaN(averagePosition) ? 0 : averagePosition}px`,
-            }}
-            className="bg-blue h-1.5 absolute left-0 bottom-0 rounded"
-          ></div>
-        )}
-        {status !== "Proposed" && (
-          <div
-            className="absolute bottom-ztg-0"
-            style={{
-              left: `${
-                isNaN(averagePosition) ? 0 : getMinMaxPosition(averagePosition)
-              }px`,
-              transform: "translateX(calc(-50% + 2px))",
-            }}
-          >
-            <div className="flex flex-col items-center">
-              <span className="mb-2.5 px-1 bg-white rounded text-sm">
-                {positionDisplay}
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
-      <div className="h-1.5 flex items-center">
-        <div className="h-1.5 w-full bg-red rounded"></div>
-      </div>
+      )}
     </div>
   );
 };
