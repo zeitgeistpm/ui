@@ -41,7 +41,7 @@ export const useCrossChainApis = () => {
 export const useChain = (chainName: ChainName) => {
   const { apis } = useCrossChainApis();
   const [sdk] = useSdkv2();
-  sdk.asRpc().api;
+
   if (chainName === "Zeitgeist") {
     return { api: sdk.asRpc().api };
   } else {

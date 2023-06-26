@@ -13,6 +13,7 @@ import Skeleton from "components/ui/Skeleton";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { parseAssetId } from "@zeitgeistpm/sdk-next";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -24,7 +25,7 @@ export interface IndexedMarketCardData {
   scalarType: ScalarRangeType;
   prediction: { name: string; price: number };
   volume: number;
-  pool: null | {};
+  pool: {};
   baseAsset: string;
   tags?: string[];
   status: string;
@@ -73,10 +74,10 @@ const MarketCardPredictionBar = ({
   pool,
 }: {
   prediction: { name: string; price: number };
-  pool: null | {};
+  pool: {};
 }) => {
   // check if market has liquidity
-  if (pool !== null) {
+  if (Object.keys(pool).length !== 0) {
     const impliedPercentage = Math.round(Number(price) * 100);
 
     return (
@@ -106,7 +107,7 @@ const MarketCardPredictionBar = ({
           <span className="text-gray-500">No liquidity in this market</span>
           <span className="text-gray-500">0%</span>
         </div>
-        <div className="w-full rounded-lg h-1.5 bg-gray-200"></div>
+        <div className="w-full rounded-lg h-1.5 bg-gray-100"></div>
       </>
     );
   }
@@ -142,7 +143,7 @@ const MarketCardDetails = ({
         </span>
       </div>
       <div className="flex gap-2.5 text-sm min-w-full">
-        {rows.numParticipants != null && rows.baseAsset ? (
+        {rows.numParticipants != undefined && rows.baseAsset ? (
           <div className="flex items-center gap-2">
             <Users size={18} />
             <span>{rows.numParticipants}</span>
@@ -156,7 +157,7 @@ const MarketCardDetails = ({
             {formatNumberCompact(rows.volume)} {rows.baseAsset}
           </span>
         </div>
-        {rows.liquidity != null && rows.baseAsset ? (
+        {rows.liquidity != undefined && rows.baseAsset ? (
           <div className="flex items-center gap-2">
             <Droplet size={18} />
             <span>
@@ -210,9 +211,7 @@ const MarketCard = ({
   const isProposed = () => {
     return creation === "Advised" && status === "Proposed" ? true : false;
   };
-  const { data: metadata } = useAssetMetadata(
-    parseAssetId(baseAsset).unrightOr(null),
-  );
+  const { data: metadata } = useAssetMetadata(parseAssetIdString(baseAsset));
 
   const isYesNoMarket =
     outcomes.length === 2 &&
@@ -231,7 +230,7 @@ const MarketCard = ({
     hasEnded: hasDatePassed(Number(endDate)),
     outcomes: outcomes.length,
     volume: volume,
-    baseAsset: metadata?.symbol,
+    baseAsset: metadata?.symbol ?? "",
     liquidity,
     numParticipants: numParticipants,
   };
@@ -273,9 +272,9 @@ const MarketCard = ({
           </div>
           <MarketCardInfo question={question} />
           <div className="w-full">
-            {marketType.scalar === null ? (
+            {pool && marketType?.categorical ? (
               <MarketCardPredictionBar pool={pool} prediction={prediction} />
-            ) : pool !== null ? (
+            ) : pool && Object.keys(pool).length !== 0 ? (
               <ScalarPriceRange
                 scalarType={scalarType}
                 lowerBound={lower}

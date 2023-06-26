@@ -1,8 +1,11 @@
-import { parseAssetId, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import {
+  isRpcSdk,
+  CategoricalAssetId,
+  ScalarAssetId,
+} from "@zeitgeistpm/sdk-next";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarket24hrPriceChanges } from "lib/hooks/queries/useMarket24hrPriceChanges";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
@@ -15,6 +18,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { from } from "rxjs";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 
 const columns: TableColumn[] = [
   { header: "Outcome", accessor: "outcome", type: "text" },
@@ -36,7 +40,7 @@ const columns: TableColumn[] = [
     header: "",
     accessor: "buttons",
     type: "component",
-    width: "120px",
+    width: "180px",
   },
 ];
 
@@ -47,7 +51,7 @@ const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
   const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
 
   const { data: market } = useMarket({ marketId });
-  const baseAsset = parseAssetId(market?.baseAsset).unrightOr(null);
+  const baseAsset = parseAssetIdString(market?.baseAsset);
   const { data: usdPrice } = useAssetUsdPrice(baseAsset);
 
   const { data: spotPrices } = useMarketSpotPrices(marketId);
@@ -108,19 +112,21 @@ const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
         : new Decimal(0);
 
       for (const [index, category] of market.categories.entries()) {
-        const outcomeName = category.name;
-        const currentPrice = spotPrices?.get(index).toNumber();
+        const outcomeName = category?.name;
+        const currentPrice = spotPrices?.get(index)?.toNumber();
 
         const priceChange = priceChanges?.get(index);
         tblData = [
           ...tblData,
           {
-            assetId: market.pool.weights[index].assetId,
+            assetId: market.pool?.weights[index]?.assetId,
             id: index,
             outcome: outcomeName,
             totalValue: {
               value: currentPrice,
-              usdValue: usdPrice?.mul(currentPrice ?? 0),
+              usdValue: new Decimal(
+                currentPrice ? usdPrice?.mul(currentPrice) : 0,
+              ).toNumber(),
             },
             pre:
               currentPrice != null
@@ -131,9 +137,9 @@ const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
               <AssetActionButtons
                 marketId={marketId}
                 assetId={
-                  parseAssetId(
-                    market.pool.weights[index].assetId,
-                  ).unwrap() as any
+                  parseAssetIdString(market.pool?.weights[index]?.assetId) as
+                    | ScalarAssetId
+                    | CategoricalAssetId
                 }
               />
             ),
@@ -142,58 +148,12 @@ const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
       }
       setTableData(tblData);
     } else {
-      tblData = market.categories.map((category) => ({
-        outcome: category.name,
-      }));
+      tblData =
+        market?.categories?.map((category) => ({
+          outcome: category?.name,
+        })) ?? [];
       setTableData(tblData);
     }
-  };
-
-  // TODO: remove once market history is implemented. may neeed this for reference
-  const getReportedCategoricalOutcome = () => {
-    if (!rpcMarket) return;
-    const outcomeIndex = rpcMarket.report
-      .unwrap()
-      .outcome.asCategorical.toNumber();
-
-    const outcome = tableData?.find((data) => data.id === outcomeIndex);
-
-    return outcome ? [outcome] : undefined;
-  };
-
-  const getDisputedCategoricalOutcome = () => {
-    const lastDisputeIndex =
-      disputes?.[disputes.length - 1].outcome.asCategorical.toNumber();
-    const outcome = tableData?.find((data) => data.id === lastDisputeIndex);
-    return outcome ? [outcome] : undefined;
-  };
-
-  const getReportedScalarOutcome = () => {
-    if (!rpcMarket) return;
-
-    const lastDispute = disputes?.[disputes.length - 1];
-
-    const reportVal = new Decimal(
-      lastDispute?.outcome.asScalar.toString() ??
-        rpcMarket.report?.unwrap().outcome.asScalar.toString(),
-    )
-      .div(ZTG)
-      .toString();
-    if (market.scalarType === "date") {
-      return moment(Number(reportVal)).format("YYYY-MM-DD HH:mm");
-    } else {
-      return reportVal;
-    }
-  };
-
-  const getWinningCategoricalOutcome = () => {
-    const resolvedOutcomeIndex = rpcMarket?.resolvedOutcome
-      .unwrap()
-      .asCategorical.toNumber();
-
-    const outcome = tableData?.find((data) => data.id === resolvedOutcomeIndex);
-
-    return outcome ? [outcome] : undefined;
   };
 
   return <Table columns={columns} data={tableData} />;

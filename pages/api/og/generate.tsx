@@ -58,11 +58,15 @@ export default async function GenerateOgImage(request: NextRequest) {
   const url = request.nextUrl.clone();
   url.pathname = `/api/og/${marketId}`;
 
-  const { market, volume, prediction, ends }: MarketImageData = await fetch(
-    url.href,
-  ).then((r) => r.json());
+  const {
+    market,
+    volume,
+    prediction,
+    ends,
+    currencyMetadata,
+  }: MarketImageData = await fetch(url.href).then((r) => r.json());
 
-  const marketImageUrl = await getImageUrl(market.img);
+  const marketImageUrl = await getImageUrl(market.img ?? null);
 
   const boldFont = await fetch(
     new URL(
@@ -77,6 +81,8 @@ export default async function GenerateOgImage(request: NextRequest) {
       import.meta.url,
     ).href,
   ).then((res) => res.arrayBuffer());
+
+  if (!market?.question) return;
 
   const questionClass = market.question.length > 90 ? "text-4xl" : "text-5xl";
 
@@ -114,7 +120,7 @@ export default async function GenerateOgImage(request: NextRequest) {
           <div tw="flex">
             <img
               style={{
-                width: 200,
+                width: 250,
               }}
               src={
                 new URL(
@@ -142,7 +148,7 @@ export default async function GenerateOgImage(request: NextRequest) {
               {prediction.name != null
                 ? market.marketType.categorical
                   ? `${prediction.name} (${prediction.percentage}%)`
-                  : `${Intl.NumberFormat("default", {
+                  : `${Intl.NumberFormat("en-US", {
                       maximumSignificantDigits: 3,
                     }).format(Number(prediction.name))}`
                 : "No Prediction"}
@@ -151,18 +157,17 @@ export default async function GenerateOgImage(request: NextRequest) {
           <div tw="flex mt-[50px] w-full">
             <div tw="flex flex-col mr-[200px]">
               <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Ends:</h2>
-              <div tw="text-2xl -mt-3" style={{ color: "#ABC1F9" }}>
+              <div tw="text-4xl -mt-1" style={{ color: "#ABC1F9" }}>
                 {ends}
               </div>
             </div>
             <div tw="flex flex-col">
               <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Volume:</h2>
               <div
-                tw={`flex ${"text-2xl"}  -mt-3`}
+                tw={`flex ${"text-4xl"}  -mt-1`}
                 style={{ color: "#ABC1F9" }}
               >
-                {formatNumberCompact(Number(volume))}
-                {" ZTG"}
+                {formatNumberCompact(Number(volume))} {currencyMetadata.name}
               </div>
             </div>
           </div>

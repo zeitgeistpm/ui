@@ -1,5 +1,8 @@
 import Skeleton from "components/ui/Skeleton";
-import { filterTypes } from "lib/constants/market-filter";
+import {
+  filterTypes,
+  marketCurrencyFilterOptions,
+} from "lib/constants/market-filter";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import {
   MarketFilter,
@@ -30,13 +33,14 @@ const getFiltersFromQueryState = (
     }
     res = [
       ...res,
-      ...[
-        ...queryStateFilters.map((qsf) => ({
-          type: filterType,
-          value: qsf,
-          label: qsf,
-        })),
-      ],
+      ...queryStateFilters.map((qsf) => ({
+        type: filterType,
+        value: qsf,
+        label:
+          filterType === "currency"
+            ? marketCurrencyFilterOptions.find((v) => v.value === qsf).label
+            : qsf,
+      })),
     ];
   }
   return res;
@@ -124,13 +128,13 @@ const MarketFilterSelection = ({
 
   return (
     <MarketFiltersContainer
-      activeFilters={activeFilters}
+      activeFilters={getFiltersFromQueryState(queryState)}
       portal={portalRef.current}
       addActiveFilter={add}
       removeActiveFilter={remove}
-      withLiquidityOnly={withLiquidityOnly}
+      withLiquidityOnly={queryState.liquidityOnly}
       setWithLiquidityOnly={setWithLiquidityOnly}
-      ordering={activeOrdering}
+      ordering={queryState.ordering}
       setOrdering={setActiveOrdering}
       clearActiveFilters={clear}
       selectedMenu={selectedMenu}

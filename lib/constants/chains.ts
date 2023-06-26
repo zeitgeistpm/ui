@@ -3,6 +3,7 @@ import Decimal from "decimal.js";
 import { CurrencyBalance } from "lib/hooks/queries/useCurrencyBalances";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
+import { ZTG } from ".";
 
 export type ChainName = "Rococo" | "Zeitgeist" | "Polkadot";
 
@@ -17,6 +18,7 @@ interface Chain {
   isRelayChain: boolean;
   endpoints: string[];
   withdrawFee: string;
+  depositFee: Decimal;
   fetchCurrencies: (
     api: ApiPromise,
     address: string,
@@ -33,6 +35,7 @@ const BATTERY_STATION_CHAINS: Chain[] = [
     name: "Rococo",
     isRelayChain: true,
     withdrawFee: "0.01 ROC", // this is made up
+    depositFee: new Decimal(0.01).mul(ZTG), // this is made up
     endpoints: ["wss://rococo-rpc.polkadot.io"],
     fetchCurrencies: async (api, address) => {
       const account = await api.query.system.account(address);
@@ -43,6 +46,9 @@ const BATTERY_STATION_CHAINS: Chain[] = [
           chain: "Rococo",
           foreignAssetId: 1,
           sourceChain: "Rococo",
+          existentialDeposit: new Decimal(
+            api.consts.balances.existentialDeposit.toString(),
+          ),
         },
       ];
     },
@@ -80,6 +86,7 @@ const PROD_CHAINS: Chain[] = [
     name: "Polkadot",
     isRelayChain: true,
     withdrawFee: "0.0422 DOT", // informed from testing
+    depositFee: new Decimal(0.02).mul(ZTG), // informed from testing
     endpoints: [
       "wss://polkadot.api.onfinality.io/public-ws",
       "wss://polkadot-rpc.dwellir.com",
@@ -94,6 +101,9 @@ const PROD_CHAINS: Chain[] = [
           chain: "Polkadot",
           foreignAssetId: 0,
           sourceChain: "Polkadot",
+          existentialDeposit: new Decimal(
+            api.consts.balances.existentialDeposit.toString(),
+          ),
         },
       ];
     },
@@ -116,9 +126,9 @@ const PROD_CHAINS: Chain[] = [
       ];
 
       const tx = api.tx.xcmPallet.reserveTransferAssets(
-        { V1: destination },
-        { V1: account },
-        { V1: asset },
+        { V2: destination },
+        { V2: account },
+        { V2: asset },
         0,
       );
 

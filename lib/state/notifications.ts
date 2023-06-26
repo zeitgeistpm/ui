@@ -1,6 +1,6 @@
-import { atom, useAtom } from "jotai";
+import { atom, getDefaultStore, useAtom } from "jotai";
 import { generateGUID } from "lib/util/generate-guid";
-import { useRef } from "react";
+import { ReactNode, useCallback, useRef, useState } from "react";
 
 export type Notification = {
   /**
@@ -14,7 +14,7 @@ export type Notification = {
   /**
    * Content of the notification.
    */
-  content: string | null;
+  content: ReactNode | string | null;
   /**
    * Whether the notification should be removed automatically when a new notifications is pushed.
    */
@@ -22,7 +22,7 @@ export type Notification = {
   /**
    * Lifetime of the notification in seconds.
    */
-  lifetime: number;
+  lifetime?: number;
 };
 
 /**
@@ -66,21 +66,33 @@ export type UseNotifications = {
 const notificationsAtom = atom<Notification[]>([]);
 
 /**
+ * We use the store so that we use the same global state across calls.
+ * This is needed so that we can call pushNotification at any time, in timeouts or consecutive calls.
+ */
+const store = getDefaultStore();
+
+/**
  * Hook to use the notification state.
  *
  * @returns UseNotifications
  */
 export const useNotifications = (): UseNotifications => {
   const atom = useAtom(notificationsAtom);
-  const atomRef = useRef(atom);
-
-  atomRef.current = atom;
 
   const pushNotification: UseNotifications["pushNotification"] = (
     content,
     options,
   ) => {
-    const [notifications, setNotifications] = atomRef.current;
+    const notification: Notification = {
+      id: generateGUID(),
+      content,
+      autoRemove: options?.autoRemove ?? false,
+      lifetime: options?.lifetime ?? 100,
+      type: options?.type ?? "Info",
+    };
+
+    const notifications = store.get(notificationsAtom);
+
     let nextNotifications = [...notifications];
 
     const latestNotification = notifications[notifications.length - 1];
@@ -89,17 +101,9 @@ export const useNotifications = (): UseNotifications => {
       nextNotifications = notifications.slice(0, -1);
     }
 
-    const notification: Notification = {
-      id: generateGUID(),
-      content,
-      autoRemove: options.autoRemove ?? false,
-      lifetime: options.lifetime ?? 100,
-      type: options.type ?? "Info",
-    };
-
     nextNotifications = [...nextNotifications, notification];
 
-    setNotifications(nextNotifications);
+    store.set(notificationsAtom, nextNotifications);
 
     return notification;
   };
@@ -107,8 +111,9 @@ export const useNotifications = (): UseNotifications => {
   const removeNotification: UseNotifications["removeNotification"] = (
     notification,
   ) => {
-    const [notifications, setNotifications] = atomRef.current;
-    setNotifications(
+    const notifications = store.get(notificationsAtom);
+    store.set(
+      notificationsAtom,
       notifications.filter((n) =>
         typeof notification === "string"
           ? n.id !== notification

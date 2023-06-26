@@ -34,49 +34,48 @@ export const useMarket24hrPriceChanges = (marketId: number) => {
   }, [chainTime?.block]);
 
   const block24hrsAgo =
-    constants?.blockTimeSec && debouncedBlockNumber
-      ? getBlock24hrsAgo(constants?.blockTimeSec, debouncedBlockNumber)
-      : null;
+    constants?.blockTimeSec &&
+    debouncedBlockNumber &&
+    getBlock24hrsAgo(constants?.blockTimeSec, debouncedBlockNumber);
 
   const { data: pricesNow } = useMarketSpotPrices(marketId);
   const { data: prices24hrsAgo } = useMarketSpotPrices(marketId, block24hrsAgo);
 
+  const enabled =
+    isRpcSdk(sdk) &&
+    marketId != null &&
+    !!block24hrsAgo &&
+    !!pricesNow &&
+    !!prices24hrsAgo;
+
   const query = useQuery(
     [id, market24hrPriceChangesKey],
     async () => {
-      if (isRpcSdk(sdk)) {
-        const priceChanges = new Map<number, number>();
+      if (!enabled) return null;
+      const priceChanges = new Map<number, number>();
 
-        for (const [key, nowPrice] of pricesNow.entries()) {
-          const pastPrice = prices24hrsAgo.get(key);
+      for (const [key, nowPrice] of pricesNow.entries()) {
+        const pastPrice = prices24hrsAgo.get(key);
 
-          if (pastPrice != null && nowPrice != null) {
-            const priceDiff = nowPrice.minus(pastPrice);
-            const priceChange = priceDiff.div(pastPrice);
+        if (pastPrice != null && nowPrice != null) {
+          const priceDiff = nowPrice.minus(pastPrice);
+          const priceChange = priceDiff.div(pastPrice);
 
-            priceChanges.set(
-              key,
-              priceChange.isNaN()
-                ? 0
-                : Math.round(priceChange.mul(100).toNumber()),
-            );
-          } else {
-            priceChanges.set(key, 0);
-          }
+          priceChanges.set(
+            key,
+            priceChange.isNaN()
+              ? 0
+              : Math.round(priceChange.mul(100).toNumber()),
+          );
+        } else {
+          priceChanges.set(key, 0);
         }
-
-        return priceChanges;
       }
+
+      return priceChanges;
     },
     {
-      enabled: Boolean(
-        sdk &&
-          isRpcSdk(sdk) &&
-          marketId != null &&
-          block24hrsAgo &&
-          pricesNow &&
-          prices24hrsAgo,
-      ),
+      enabled: enabled,
     },
   );
 

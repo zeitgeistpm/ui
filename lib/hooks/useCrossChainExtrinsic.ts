@@ -14,8 +14,8 @@ import { currencyBalanceRootKey } from "./queries/useCurrencyBalances";
 
 export const useCrossChainExtrinsic = <T>(
   extrinsicFn: (
-    params: T,
-  ) => SubmittableExtrinsic<"promise", ISubmittableResult>,
+    params?: T,
+  ) => SubmittableExtrinsic<"promise", ISubmittableResult> | undefined,
   sourceChain: ChainName,
   destinationChain: ChainName,
   callbacks?: {
@@ -41,6 +41,7 @@ export const useCrossChainExtrinsic = <T>(
     const extrinsic = extrinsicFn(params);
     const signer = wallet.getActiveSigner() as ExtSigner;
 
+    if (!extrinsic) return;
     signAndSend(
       extrinsic,
       signer,
@@ -62,7 +63,7 @@ export const useCrossChainExtrinsic = <T>(
                   (data, index) =>
                     types[index].type === "AccountId32" &&
                     encodeAddress(
-                      decodeAddress(wallet.activeAccount.address),
+                      decodeAddress(wallet.activeAccount?.address),
                     ) === encodeAddress(decodeAddress(data.toString())),
                 );
 
@@ -76,7 +77,7 @@ export const useCrossChainExtrinsic = <T>(
                   queryClient.invalidateQueries([
                     id,
                     currencyBalanceRootKey,
-                    wallet.activeAccount.address,
+                    wallet.activeAccount?.address,
                   ]);
                 }
               });

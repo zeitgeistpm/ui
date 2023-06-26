@@ -53,19 +53,20 @@ const LiquidityModal = ({
 
   const data = useTotalIssuanceForPools([poolId]);
   const totalPoolIssuance = data?.[poolId]?.data?.totalIssuance;
-  const userPoolTokensQuery = useAccountAssetBalances(
-    connectedAddress && pool != null
-      ? [{ account: connectedAddress, assetId: { PoolShare: poolId } }]
-      : [],
-  );
+  const userPoolTokensQuery = useAccountAssetBalances([
+    { account: connectedAddress, assetId: { PoolShare: poolId } },
+  ]);
 
-  const userPoolTokens: string = userPoolTokensQuery
-    ?.get(connectedAddress, {
-      PoolShare: poolId,
-    })
-    ?.data.balance.free.toString();
+  const userPoolTokens =
+    connectedAddress &&
+    userPoolTokensQuery
+      ?.get(connectedAddress, {
+        PoolShare: poolId,
+      })
+      ?.data?.balance?.free.toString();
 
-  const baseAsset = parseAssetId(pool?.baseAsset).unrightOr(null);
+  const baseAsset = pool && parseAssetId(pool.baseAsset).unrightOr(undefined);
+
   const { data: metadata } = useAssetMetadata(baseAsset);
 
   //user balances outside of pool
@@ -78,12 +79,14 @@ const LiquidityModal = ({
     pool,
   );
 
-  const allBalances: PoolBalances = useMemo(() => {
+  const allBalances: PoolBalances | undefined = useMemo(() => {
     if (
       pool?.weights &&
       userBaseBalance &&
-      userAssetBalances?.length > 0 &&
-      poolAssetBalances?.length > 0 &&
+      userAssetBalances &&
+      poolAssetBalances &&
+      userAssetBalances?.length !== 0 &&
+      poolAssetBalances?.length !== 0 &&
       poolBaseBalance
     ) {
       const allBalances: PoolBalances = pool.weights.reduce(
@@ -92,12 +95,20 @@ const LiquidityModal = ({
 
           const userBalance = isBaseAsset
             ? userBaseBalance
-            : new Decimal(userAssetBalances[index].free.toString());
+            : new Decimal(
+                userAssetBalances == null
+                  ? 0
+                  : userAssetBalances[index].free.toString(),
+              );
           const poolBalance = isBaseAsset
             ? new Decimal(poolBaseBalance.toString())
-            : new Decimal(poolAssetBalances[index].free.toString());
+            : new Decimal(
+                poolAssetBalances == null
+                  ? 0
+                  : poolAssetBalances[index].free.toString(),
+              );
 
-          const id = assetObjStringToId(weight.assetId);
+          const id = assetObjStringToId(weight!.assetId);
 
           balances[id] = {
             pool: poolBalance,
@@ -105,11 +116,12 @@ const LiquidityModal = ({
           };
           return balances;
         },
-        {},
+        {} as PoolBalances,
       );
 
       return allBalances;
     }
+    return {};
   }, [
     pool?.weights,
     userAssetBalances,

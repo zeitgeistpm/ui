@@ -19,53 +19,17 @@ const ScalarPriceRange = ({
   longPrice,
   status,
 }: ScalarPriceRangeProps) => {
-  const { width, ref } = useResizeDetector();
+  const { width = 0, ref } = useResizeDetector();
   const shortPercentage = 1 - shortPrice;
   const longPercentage = longPrice;
   const averagePercentage = (shortPercentage + longPercentage) / 2;
   const averagePosition = width * averagePercentage;
 
-  const inferedType: ScalarRangeType = scalarType ?? "number";
-
-  const lower = useMemo(
-    () =>
-      inferedType === "number"
-        ? new Intl.NumberFormat("default", {
-            maximumSignificantDigits: 3,
-            notation: "compact",
-          }).format(Number(lowerBound))
-        : new Intl.DateTimeFormat("default", {
-            dateStyle: "medium",
-          }).format(lowerBound),
-    [lowerBound],
-  );
-
-  const upper = useMemo(
-    () =>
-      inferedType === "number"
-        ? new Intl.NumberFormat("default", {
-            maximumSignificantDigits: 3,
-            notation: "compact",
-          }).format(Number(upperBound))
-        : new Intl.DateTimeFormat("default", {
-            dateStyle: "medium",
-          }).format(upperBound),
-    [upperBound],
-  );
-
   const position = useMemo(() => {
     const pos =
       (upperBound - lowerBound) * ((1 - shortPrice + longPrice) / 2) +
       lowerBound;
-    const decimals = pos > 10 ? 0 : 3;
-    return inferedType === "number"
-      ? new Intl.NumberFormat("default", {
-          maximumSignificantDigits: 3,
-          notation: "compact",
-        }).format(Number(pos))
-      : new Intl.DateTimeFormat("default", {
-          dateStyle: "medium",
-        }).format(pos);
+    return pos;
   }, [upperBound, lowerBound, shortPrice, longPrice]);
 
   const getMinMaxPosition = (position) => {
@@ -78,15 +42,36 @@ const ScalarPriceRange = ({
     }
   };
 
+  const lowerDisplay =
+    scalarType === "date"
+      ? new Intl.DateTimeFormat("default", {
+          dateStyle: "medium",
+        }).format(new Date(lowerBound))
+      : lowerBound;
+
+  const upperDisplay =
+    scalarType === "date"
+      ? new Intl.DateTimeFormat("default", {
+          dateStyle: "medium",
+        }).format(new Date(upperBound))
+      : upperBound;
+
+  const positionDisplay =
+    scalarType === "date"
+      ? new Intl.DateTimeFormat("default", {
+          dateStyle: "medium",
+        }).format(new Date(position))
+      : position.toFixed(2);
+
   return (
     <div ref={ref}>
       <div className="relative top-1.5">
         <div className="flex justify-between">
           <div className="flex flex-col justify-start">
-            <span className="mb-2.5 text-sm text-blue">{lower}</span>
+            <span className="mb-2.5 text-sm text-blue">{lowerDisplay}</span>
           </div>
           <div className="flex flex-col justify-end items-end">
-            <span className="mb-2.5 text-sm text-red">{upper}</span>
+            <span className="mb-2.5 text-sm text-red">{upperDisplay}</span>
           </div>
         </div>
         {status !== "Proposed" && (
@@ -109,7 +94,7 @@ const ScalarPriceRange = ({
           >
             <div className="flex flex-col items-center">
               <span className="mb-2.5 px-1 bg-white rounded text-sm">
-                {position}
+                {positionDisplay}
               </span>
             </div>
           </div>

@@ -11,6 +11,8 @@ import { marketsRootQuery } from "./useMarket";
 import { useSdkv2 } from "../useSdkv2";
 import { MarketOutcomes } from "lib/types/markets";
 import { MarketStatus } from "@zeitgeistpm/indexer";
+import { hiddenMarketIds } from "lib/constants/markets";
+import { marketMetaFilter } from "./constants";
 
 export const rootKey = "markets-filtered";
 
@@ -22,9 +24,8 @@ const orderByMap = {
 };
 
 const validMarketWhereInput: MarketWhereInput = {
-  question_isNull: false,
-  question_not_eq: "",
-  isMetaComplete_eq: true,
+  marketId_not_in: JSON.parse(hiddenMarketIds),
+  ...marketMetaFilter,
 };
 
 export type QueryMarketData = Market<IndexerContext> & {
@@ -63,11 +64,11 @@ export const useInfiniteMarkets = (
         ...validMarketWhereInput,
         status_not_in: [MarketStatus.Destroyed],
         status_in: statuses.length === 0 ? undefined : statuses,
-        tags_containsAny: tags.length === 0 ? undefined : tags,
+        tags_containsAny: tags?.length === 0 ? undefined : tags,
         pool_isNull: withLiquidityOnly ? false : undefined,
+        baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
         pool: {
           baseAssetQty_gt: withLiquidityOnly ? 0 : undefined,
-          baseAsset_in: currencies.length > 0 ? currencies : undefined,
         },
       },
       offset: !pageParam ? 0 : limit * pageParam,

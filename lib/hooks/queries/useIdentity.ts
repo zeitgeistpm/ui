@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
-import { Judgement } from "lib/types/user-identity";
+import { Judgement, UserIdentity } from "lib/types/user-identity";
 import { useSdkv2 } from "../useSdkv2";
 
 export const identityRootKey = "identity";
 
-export const useIdentity = (address: string) => {
+export const useIdentity = (address?: string) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
@@ -19,11 +19,11 @@ export const useIdentity = (address: string) => {
         const indentityInfo =
           identity.isNone === false
             ? (identity.value as any).get("info")
-            : null;
+            : undefined;
         if (indentityInfo) {
           const textDecoder = new TextDecoder();
 
-          let discordHandle: string;
+          let discordHandle: string | undefined;
           indentityInfo.get("additional").forEach((element) => {
             if (
               element[0].value?.isEmpty === false &&
@@ -39,7 +39,7 @@ export const useIdentity = (address: string) => {
             ? judgements[1].type
             : "Unknown";
 
-          return {
+          const userIdentity: UserIdentity = {
             displayName:
               indentityInfo.get("display").isNone === false
                 ? textDecoder.decode(indentityInfo.get("display").value)
@@ -51,13 +51,14 @@ export const useIdentity = (address: string) => {
             discord: discordHandle,
             judgement: judgementType,
           };
+
+          return userIdentity;
         } else {
-          return {
+          const userIdentity: UserIdentity = {
             displayName: "",
-            twitter: "",
-            discord: "",
-            judgement: null,
           };
+
+          return userIdentity;
         }
       }
       return null;

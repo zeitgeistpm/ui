@@ -4,6 +4,7 @@ import TimeSeriesChart, { ChartSeries } from "components/ui/TimeSeriesChart";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useMarketPriceHistory } from "lib/hooks/queries/useMarketPriceHistory";
 import { calcPriceHistoryStartDate } from "lib/util/calc-price-history-start";
+import { calcMarketColors } from "lib/util/color-calc";
 import { useMemo, useState } from "react";
 
 const setTimeToNow = (date: Date) => {
@@ -33,7 +34,7 @@ const MarketChart = ({
 }) => {
   const [chartFilter, setChartFilter] = useState<TimeFilter>(filters[1]);
 
-  const baseAssetId = parseAssetId(baseAsset).unrightOr(null);
+  const baseAssetId = parseAssetId(baseAsset).unrightOr(undefined);
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
   const startDateISOString = useMemo(() => {
@@ -72,6 +73,8 @@ const MarketChart = ({
     setChartFilter(filter);
   };
 
+  const colors = calcMarketColors(marketId, chartSeries.length);
+
   return (
     <div className="flex flex-col -ml-ztg-25">
       <div className="ml-auto">
@@ -79,7 +82,7 @@ const MarketChart = ({
       </div>
       <TimeSeriesChart
         data={chartData}
-        series={chartSeries}
+        series={chartSeries.map((s, i) => ({ ...s, color: colors[i] }))}
         yUnits={metadata?.symbol ?? ""}
         isLoading={isLoading}
       />

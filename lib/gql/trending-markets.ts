@@ -6,6 +6,8 @@ import { DAY_SECONDS, ZTG } from "lib/constants";
 import { MarketOutcomes, MarketOutcome } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
 import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
+import { hiddenMarketIds } from "lib/constants/markets";
+import { marketMetaFilter } from "./constants";
 
 const poolChangesQuery = gql`
   query PoolChanges($start: DateTime, $end: DateTime) {
@@ -29,9 +31,8 @@ const marketQuery = gql`
     markets(
       where: {
         pool: { poolId_eq: $poolId }
-        question_not_eq: ""
-        question_isNull: false
-        isMetaComplete_eq: true
+        marketId_not_in: ${hiddenMarketIds}
+        ${marketMetaFilter}
       }
     ) {
       marketId
@@ -124,6 +125,7 @@ const getTrendingMarkets = async (
         assets: {
           pool: { poolId: number };
           price: number;
+          assetId: string;
         }[];
       }>(assetsQuery, {
         poolId: Number(poolId),

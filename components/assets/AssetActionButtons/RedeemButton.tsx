@@ -8,6 +8,7 @@ import {
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
 import * as AE from "@zeitgeistpm/utility/dist/aeither";
+import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import {
@@ -22,17 +23,13 @@ import { extrinsicCallback, signAndSend } from "lib/util/tx";
 
 import { useMemo, useState } from "react";
 
-export type RedeemButtonProps = { market: Market<IndexerContext> } & (
-  | { assetId: AssetId }
-  | { value: Decimal }
-);
+export type RedeemButtonProps = {
+  market: Market<IndexerContext>;
+  assetId: AssetId;
+};
 
 export const RedeemButton = (props: RedeemButtonProps) => {
-  if ("assetId" in props) {
-    return <RedeemButtonByAssetId {...props} />;
-  } else {
-    return <RedeemButtonByValue {...props} />;
-  }
+  return <RedeemButtonByAssetId {...props} />;
 };
 
 export default RedeemButton;
@@ -62,30 +59,36 @@ export const RedeemButtonByAssetId = ({
         },
       ];
 
-  const assetBalances = useAccountAssetBalances(balanceQueries);
+  const { isLoading: isLoadingAssetBalance, get: getAccountAssetBalance } =
+    useAccountAssetBalances(balanceQueries);
 
   const value = useMemo(() => {
+    const zero = new Decimal(0);
+    if (!signer?.address || isLoadingAssetBalance) return zero;
+
     if (market.marketType.categorical) {
       const resolvedAssetIdString =
         market.outcomeAssets[Number(market.resolvedOutcome)];
 
-      const resolvedAssetId = parseAssetId(resolvedAssetIdString).unwrap();
+      const resolvedAssetId = resolvedAssetIdString
+        ? parseAssetId(resolvedAssetIdString).unrightOr(undefined)
+        : undefined;
 
-      const balance = assetBalances?.get(signer?.address, resolvedAssetId)?.data
-        .balance;
-      if (!balance) return new Decimal(0);
+      if (!resolvedAssetId || resolvedAssetId !== assetId) return zero;
 
-      return new Decimal(balance?.free.toString()).div(ZTG);
+      const balance = getAccountAssetBalance(signer.address, resolvedAssetId)
+        ?.data?.balance;
+      return new Decimal(balance?.free.toString() ?? 0).div(ZTG);
     } else {
-      const shortBalance = assetBalances?.get(signer?.address, {
+      const shortBalance = getAccountAssetBalance(signer.address, {
         ScalarOutcome: [market.marketId as MarketId, "Short"],
       })?.data?.balance;
 
-      const longBalance = assetBalances?.get(signer?.address, {
+      const longBalance = getAccountAssetBalance(signer.address, {
         ScalarOutcome: [market.marketId as MarketId, "Long"],
       })?.data?.balance;
 
-      if (!shortBalance || !longBalance) return new Decimal(0);
+      if (!shortBalance || !longBalance) return zero;
 
       const bounds = scalarBounds.unwrap();
       const lowerBound = bounds[0].toNumber();
@@ -100,12 +103,12 @@ export const RedeemButtonByAssetId = ({
         new Decimal(longBalance.free.toNumber()).div(ZTG),
       );
     }
-  }, [market, assetId, ...assetBalances.query.map((q) => q.data)]);
+  }, [market, assetId, isLoadingAssetBalance]);
 
   return <RedeemButtonByValue market={market} value={value} />;
 };
 
-export const RedeemButtonByValue = ({
+const RedeemButtonByValue = ({
   market,
   value,
 }: {
@@ -121,7 +124,7 @@ export const RedeemButtonByValue = ({
   const [isRedeemed, setIsRedeemed] = useState(false);
 
   const handleClick = async () => {
-    if (!isRpcSdk(sdk)) return;
+    if (!isRpcSdk(sdk) || !signer) return;
 
     setIsRedeeming(true);
 
@@ -155,13 +158,12 @@ export const RedeemButtonByValue = ({
       {isRedeemed ? (
         <span className="text-green-500 font-bold">Redeemed Tokens!</span>
       ) : (
-        <button
+        <SecondaryButton
           onClick={handleClick}
-          className={`border-gray-300 text-sm border-2 rounded-full py-2 px-5 mr-2`}
           disabled={isRedeeming || value.eq(0)}
         >
           Redeem Tokens
-        </button>
+        </SecondaryButton>
       )}
     </>
   );

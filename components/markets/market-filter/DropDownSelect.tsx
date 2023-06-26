@@ -56,7 +56,7 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter>) => {
         }
       >
         {data.imageUrl && (
-          <div className="h-[47px] w-[47px] rounded-full mr-[6px] bg-border-dark overflow-hidden center">
+          <div className="h-[47px] w-[47px] rounded-full mr-[6px] overflow-hidden center bg-white p-1">
             <Image
               className="rounded-full"
               src={data.imageUrl}
@@ -143,7 +143,7 @@ const DropDownSelect = ({
 }: {
   label: string;
   options: MarketFilter[];
-  portal: HTMLDivElement;
+  portal?: HTMLDivElement;
   isOpen?: boolean;
   add: (val: MarketFilter) => void;
 }) => {

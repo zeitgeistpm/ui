@@ -24,7 +24,7 @@ export const calculateMarketCost = (
   return cost;
 };
 
-export const calculatePoolCost = (poolAmounts?: number[]) => {
+export const calculatePoolCost = (poolAmounts: number[]) => {
   return poolAmounts[0] * 2;
 };
 

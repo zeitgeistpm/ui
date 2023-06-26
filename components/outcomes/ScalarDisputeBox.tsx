@@ -4,7 +4,7 @@ import {
   isRpcSdk,
   Market,
 } from "@zeitgeistpm/sdk-next";
-import { AmountInput, DateTimeInput } from "components/ui/inputs";
+import { DateTimeInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -28,7 +28,6 @@ const ScalarDisputeBox = ({
   const notificationStore = useNotifications();
   const { data: constants } = useChainConstants();
 
-  //TODO: move to react query
   const disputeBond = constants?.markets.disputeBond;
   const disputeFactor = constants?.markets.disputeFactor;
   const tokenSymbol = constants?.tokenSymbol;
@@ -39,9 +38,10 @@ const ScalarDisputeBox = ({
   const wallet = useWallet();
   const signer = wallet.getActiveSigner();
 
-  const bondAmount = disputes
-    ? disputeBond + disputes.length * disputeFactor
-    : disputeBond;
+  const bondAmount =
+    disputes && disputeBond && disputeFactor
+      ? disputeBond + disputes.length * disputeFactor
+      : disputeBond;
 
   const bounds = getScalarBounds(market).unwrap();
 
@@ -69,7 +69,7 @@ const ScalarDisputeBox = ({
   };
 
   const handleSignTransaction = async () => {
-    if (!isRpcSdk(sdk)) return;
+    if (!isRpcSdk(sdk) || !signer) return;
     const outcomeReport = {
       Scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
     };
@@ -98,10 +98,15 @@ const ScalarDisputeBox = ({
   };
 
   return (
-    <>
-      <div className=" text-ztg-10-150 mb-ztg-5">
+    <div className="p-[30px] flex flex-col items-center gap-y-3">
+      <div className="font-bold text-[22px]">Dispute Outcome</div>
+      <div className="text-center mb-[20px]">
         Bond will start at {disputeBond} {tokenSymbol}, increasing by{" "}
-        {disputeFactor} {tokenSymbol} for each dispute
+        {disputeFactor} {tokenSymbol} for each dispute.{" "}
+        <span className="font-bold">
+          Bonds will be slashed if the reported outcome is deemed to be
+          incorrect
+        </span>
       </div>
       {isScalarDate ? (
         <DateTimeInput
@@ -117,36 +122,46 @@ const ScalarDisputeBox = ({
           }}
         />
       ) : (
-        <AmountInput
+        <input
+          type="number"
           value={scalarReportValue}
-          min={bounds?.[0].toString()}
-          max={bounds?.[1].toString()}
-          onChange={(val) => setScalarReportValue(val)}
-          showErrorMessage={false}
+          onChange={(e) => setScalarReportValue(e.target.value)}
+          min={bounds[0].toString()}
+          max={bounds[1].toString()}
+          className="text-ztg-14-150 p-2 bg-sky-200 rounded-md w-full outline-none text-right font-mono mt-2"
+          onBlur={() => {
+            if (
+              scalarReportValue === "" ||
+              Number(scalarReportValue) < bounds[0].toNumber()
+            ) {
+              setScalarReportValue(bounds[0].toString());
+            } else if (Number(scalarReportValue) > bounds[1].toNumber()) {
+              setScalarReportValue(bounds[1].toString());
+            }
+          }}
         />
       )}
-      <div className="my-ztg-10">
-        <div className=" h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600">
-          <span>Previous Report:</span>
-          <span className="font-mono">{getPreviousReport()}</span>
-        </div>
-        {bondAmount !== disputeBond && bondAmount !== undefined ? (
-          <div className=" h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 font-bold text-sky-600 ">
-            <span>Previous Bond:</span>
-            <span className="font-mono">{bondAmount - disputeFactor}</span>
-          </div>
-        ) : (
-          <></>
-        )}
+      <div className="flex flex-col item-center text-center">
+        <span className="text-sky-600 text-[14px]">Previous Report:</span>
+        <span className="">{getPreviousReport()}</span>
       </div>
-
+      {bondAmount !== disputeBond &&
+      bondAmount !== undefined &&
+      disputeFactor !== undefined ? (
+        <div className="flex flex-col item-center text-center">
+          <span className="text-sky-600 text-[14px]">Previous Bond:</span>
+          <span className="">{bondAmount - disputeFactor}</span>
+        </div>
+      ) : (
+        <></>
+      )}
       <TransactionButton
-        className="my-ztg-10 shadow-ztg-2"
+        className="mb-ztg-10 mt-[20px]"
         onClick={handleSignTransaction}
       >
-        Dispute Outcome
+        Confirm Dispute
       </TransactionButton>
-    </>
+    </div>
   );
 };
 

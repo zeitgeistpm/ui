@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { ChainName, CHAINS } from "lib/constants/chains";
-import { FORIEGN_ASSET_METADATA } from "lib/constants/foreign-asset";
+import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { useCrossChainApis } from "lib/state/cross-chain";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";
@@ -15,6 +15,7 @@ export type CurrencyBalance = {
   chain: ChainName;
   foreignAssetId?: number;
   sourceChain: ChainName;
+  existentialDeposit: Decimal;
 };
 
 export const useCurrencyBalances = (address: string) => {
@@ -22,11 +23,18 @@ export const useCurrencyBalances = (address: string) => {
   const { apis } = useCrossChainApis();
   const { data: constants } = useChainConstants();
 
+  const enabled = !!sdk && !!address && !!constants && isRpcSdk(sdk);
   const query = useQuery(
-    [id, currencyBalanceRootKey, address, Object.values(apis ?? {}).length],
+    [
+      id,
+      currencyBalanceRootKey,
+      address,
+      Object.values(apis ?? {}).length,
+      constants,
+    ],
     async () => {
-      if (isRpcSdk(sdk)) {
-        const assetIds = Object.keys(FORIEGN_ASSET_METADATA);
+      if (enabled) {
+        const assetIds = Object.keys(FOREIGN_ASSET_METADATA);
 
         const metadata = await sdk.api.query.assetRegistry.metadata.multi(
           assetIds.map((assetId) => ({ ForeignAsset: assetId })),
@@ -41,9 +49,12 @@ export const useCurrencyBalances = (address: string) => {
             symbol: metadata[index].unwrap().symbol.toPrimitive() as string,
             balance: new Decimal(account.free.toString()),
             chain: "Zeitgeist",
-            sourceChain: FORIEGN_ASSET_METADATA[assetIds[index]]
+            sourceChain: FOREIGN_ASSET_METADATA[assetIds[index]]
               .originChain as ChainName,
             foreignAssetId: Number(assetIds[index]),
+            existentialDeposit: new Decimal(
+              sdk.api.consts.balances.existentialDeposit.toString(),
+            ),
           }),
         );
 
@@ -58,15 +69,19 @@ export const useCurrencyBalances = (address: string) => {
           ),
         );
 
+        const nativeBalanceDetails: CurrencyBalance = {
+          balance: nativeBalance,
+          chain: "Zeitgeist" as ChainName,
+          sourceChain: "Zeitgeist" as ChainName,
+          symbol: constants.tokenSymbol,
+          existentialDeposit: new Decimal(
+            sdk.api.consts.balances.existentialDeposit.toString(),
+          ),
+        };
+
         return [
           ...foreignAssetBalances,
-          {
-            balance: nativeBalance,
-            chain: "Zeitgeist" as ChainName,
-            sourceChain: "Zeitgeist" as ChainName,
-            foreignAssetId: null,
-            symbol: constants.tokenSymbol,
-          },
+          nativeBalanceDetails,
           ...chainBalances.flat(),
         ];
       }
@@ -74,7 +89,7 @@ export const useCurrencyBalances = (address: string) => {
     },
     {
       keepPreviousData: true,
-      enabled: Boolean(sdk && address && isRpcSdk(sdk)),
+      enabled: enabled,
     },
   );
 

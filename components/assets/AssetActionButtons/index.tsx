@@ -15,14 +15,14 @@ interface AssetActionButtonsProps {
 
 const AssetActionButtons = ({ marketId, assetId }: AssetActionButtonsProps) => {
   const { data: market } = useMarket({ marketId });
-  const { data: marketStage } = useMarketStage(market);
+  const { data: marketStage } = useMarketStage(market ?? undefined);
 
   const wallet = useWallet();
   const userAddress = wallet.getActiveSigner()?.address;
   const isOracle = market?.oracle === userAddress;
 
   if (!market || !marketStage) {
-    return null;
+    return <></>;
   }
 
   if (
@@ -33,7 +33,7 @@ const AssetActionButtons = ({ marketId, assetId }: AssetActionButtonsProps) => {
   }
 
   if (marketStage.type === "Disputed") {
-    return null;
+    return <></>;
   }
 
   if (marketStage.type === "Reported") {
@@ -41,11 +41,11 @@ const AssetActionButtons = ({ marketId, assetId }: AssetActionButtonsProps) => {
   }
 
   if (marketStage.type === "Resolved") {
-    return <RedeemButton assetId={assetId} market={market} />;
+    return <>{assetId && <RedeemButton assetId={assetId} market={market} />}</>;
   }
 
   if (marketStage.type === "Trading") {
-    return <AssetTradingButtons assetId={assetId} />;
+    return <>{assetId && <AssetTradingButtons assetId={assetId} />}</>;
   }
 };
 

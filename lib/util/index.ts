@@ -1,12 +1,5 @@
-import {
-  EndpointOption,
-  Environment,
-  JSONObject,
-  SelectOption,
-} from "../types";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { hexToU8a, isHex } from "@polkadot/util";
-import { endpoints, graphQlEndpoints, environment } from "../constants";
 
 export const padBalance = (bal: string): string => {
   const digits = bal.length;
@@ -122,7 +115,7 @@ export const isValidImageFile = (file: File): Promise<boolean> => {
 
 export const formatNumberLocalized = (
   num: number,
-  locale: string = "default",
+  locale: string = "en-US",
 ) => {
   return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(
     num,

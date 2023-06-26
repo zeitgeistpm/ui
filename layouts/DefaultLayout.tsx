@@ -1,24 +1,35 @@
-import { FC, PropsWithChildren, useRef, useState } from "react";
+import { FC, PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
+import Image from "next/image";
+import dynamic from "next/dynamic";
 
 import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import TopBar from "components/menu";
 import Footer from "components/ui/Footer";
 import NotificationCenter from "components/ui/NotificationCenter";
+import GrillChat from "components/grillchat";
 import { TradeItem, TradeItemContext } from "lib/hooks/trade";
 import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
 import { useRouter } from "next/router";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
-import Image from "next/image";
+import { Account } from "components/account/Account";
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
+
+const Onboarding = dynamic(
+  () => import("../components/onboarding/Onboarding"),
+  {
+    ssr: false,
+  },
+);
 
 const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   useSubscribeBlockEvents();
   const [tradeItem, setTradeItem] = useState<TradeItem | null>(null);
+  const [showChat, setShowChat] = useState(false);
 
   const {
     width,
@@ -26,7 +37,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
     ref: mainRef,
   } = useResizeDetector({ refreshMode: "debounce", refreshRate: 50 });
 
-  const contentRef = useRef<HTMLDivElement>();
+  const contentRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="relative flex min-h-screen justify-evenly overflow-hidden">
@@ -46,17 +57,10 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
           className="overflow-y-a1uto overflow-x-hidden flex-grow"
         >
           <TopBar />
-          {/* hide notification bar */}
-          {NOTIFICATION_MESSAGE && (
-            <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38 hidden">
-              <div className="text-ztg-12-150 font-semibold">
-                {NOTIFICATION_MESSAGE}
-              </div>
-            </div>
-          )}
+
           <main
             className={`flex flex-col dark:text-white mb-12 ${
-              router.pathname !== "/" && "main-container mt-32"
+              router.pathname !== "/" && "main-container mt-24 md:mt-32"
             }`}
             ref={mainRef}
           >
@@ -87,6 +91,9 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
         </div>
         <NotificationCenter />
       </TradeItemContext.Provider>
+      <Account />
+      <Onboarding />
+      <GrillChat open={showChat} setOpen={setShowChat} />
     </div>
   );
 };

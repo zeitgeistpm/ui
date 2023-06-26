@@ -33,7 +33,7 @@ export const useTradeItemState = (item: TradeItem) => {
   const pool = pools?.[0];
   const baseAsset = pool?.baseAsset
     ? parseAssetId(pool.baseAsset).unwrap()
-    : null;
+    : undefined;
 
   const { data: traderBaseBalance } = useBalance(
     wallet.activeAccount?.address,
@@ -45,14 +45,16 @@ export const useTradeItemState = (item: TradeItem) => {
   const traderAssets = useAccountAssetBalances([
     { account: signer?.address, assetId: item.assetId },
   ]);
-  const traderAssetBalance = new Decimal(
-    (
-      traderAssets?.get(signer?.address, item.assetId)?.data?.balance as any
-    )?.free?.toString() ?? 0,
-  );
+  const traderAssetBalance = signer?.address
+    ? new Decimal(
+        (
+          traderAssets?.get(signer?.address, item.assetId)?.data?.balance as any
+        )?.free?.toString() ?? 0,
+      )
+    : new Decimal(0);
 
   const poolAccountIds = usePoolAccountIds(pools ?? []);
-  const poolAccountId = poolAccountIds[pool?.poolId];
+  const poolAccountId = pool?.poolId ? poolAccountIds[pool.poolId] : undefined;
 
   const poolAssetBalances = useAccountAssetBalances([
     { account: poolAccountId, assetId: item.assetId },
@@ -71,6 +73,15 @@ export const useTradeItemState = (item: TradeItem) => {
     traderAssetBalance: traderAssetBalance?.toString(),
   };
 
+  const enabled =
+    !!sdk &&
+    !!item &&
+    !!pool &&
+    !!poolBaseBalance &&
+    !!poolAssetBalance &&
+    !!baseAsset &&
+    !!market;
+
   const query = useQuery(
     [
       id,
@@ -82,14 +93,17 @@ export const useTradeItemState = (item: TradeItem) => {
       JSON.stringify(item.assetId),
     ],
     () => {
+      if (!enabled) return;
       const baseWeight = getAssetWeight(pool, baseAsset).unwrap();
       const assetWeight = getAssetWeight(pool, item.assetId).unwrap();
       const assetIndex = getIndexOf(item.assetId);
-      const asset = market.categories[assetIndex];
+      const asset = market.categories?.[assetIndex];
       const swapFee = new Decimal(pool.swapFee === "" ? "0" : pool.swapFee).div(
         ZTG,
       );
       const tradeablePoolAssetBalance = poolAssetBalance.mul(MAX_IN_OUT_RATIO);
+
+      if (!baseWeight || !assetWeight) return;
 
       const spotPrice = calcSpotPrice(
         poolBaseBalance,
@@ -119,8 +133,7 @@ export const useTradeItemState = (item: TradeItem) => {
       };
     },
     {
-      enabled:
-        !!sdk && !!item && !!pool && !!poolBaseBalance && !!poolAssetBalance,
+      enabled: enabled,
       keepPreviousData: true,
     },
   );

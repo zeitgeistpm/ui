@@ -1,55 +1,46 @@
-import { motion, Variants } from "framer-motion";
-import React, { FC } from "react";
+import { Switch } from "@headlessui/react";
 
-export interface ToggleProps {
-  active: boolean;
-  onChange?: (active: boolean) => void;
-  disabled?: boolean;
-  className?: string;
-}
-
-const Toggle: FC<ToggleProps> = ({
-  active,
+export const Toggle = ({
+  className,
+  checked,
   onChange,
-  className = "",
-  disabled = false,
+  disabled,
+  activeClassName,
+  deActiveClassName,
+}: {
+  className?: string;
+  checked: boolean;
+  onChange?: (checked: boolean) => void;
+  disabled?: boolean;
+  activeClassName?: string;
+  deActiveClassName?: string;
 }) => {
-  const classes =
-    "h-ztg-40 bg-sky-300 dark:bg-sky-700  font-bold text-sky-600 uppercase flex items-center justify-between rounded-full px-ztg-8 w-ztg-100 " +
-    `${disabled ? "cursor-default" : "cursor-pointer"} ` +
-    className;
-  const activeClasses = "text-black dark:text-white";
-  const variants: Variants = {
-    left: { x: 6 },
-    right: { x: 60 },
-  };
   return (
-    <div className="relative">
-      <div className={classes} onClick={() => !disabled && onChange(!active)}>
-        {["on", "off"].map((label, idx) => {
-          const isActive =
-            !disabled &&
-            ((active && label === "on") || (!active && label === "off"));
-          return (
-            <div
-              style={{ zIndex: 10 }}
-              className={`w-ztg-30 h-ztg-30 flex-shrink-0 flex-grow-0 text-ztg-10-150 center ${
-                isActive ? activeClasses : ""
-              }`}
-              data-test="liquidityButton"
-              key={`toggle${idx}`}
-            >
-              {label}
-            </div>
-          );
-        })}
-      </div>
-      <motion.div
-        variants={variants}
-        animate={active ? "left" : "right"}
-        className="rounded-full w-ztg-34 h-ztg-34 cursor-pointer relative bottom-ztg-37 bg-white dark:bg-black"
-      ></motion.div>
-    </div>
+    <Switch
+      checked={checked}
+      onChange={onChange}
+      disabled={disabled}
+      className={`
+        relative inline-flex box-content p-[2px] h-3 w-16 shrink-0 cursor-pointer 
+        rounded-full border-2 border-transparent transition-all duration-200 ease-in-out 
+        focus:outline-none focus-visible:ring-2  focus-visible:ring-white focus-visible:ring-opacity-75 active:scale-105
+        ${disabled && "!bg-gray-400 !cursor-not-allowed"}
+        ${
+          checked
+            ? activeClassName ?? "bg-black"
+            : deActiveClassName ?? "bg-black"
+        }
+        ${className}`}
+    >
+      <span className="sr-only">Use setting</span>
+      <span
+        aria-hidden="true"
+        className={`
+            ${checked ? "translate-x-12" : "translate-x-1"}
+            pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white 
+            shadow-lg ring-0 transition duration-150 ease-[cubic-bezier(.51,.44,.4,1.35)]`}
+      />
+    </Switch>
   );
 };
 
