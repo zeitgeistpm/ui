@@ -202,7 +202,7 @@ const AccountButton: FC<{
                         </div>
                         <span
                           className={`font-medium pl-2 text-sm h-full transition-all hidden md:block leading-[40px] ${
-                            open ? "text-orange-500" : "text-white"
+                            open ? "text-sunglow-2" : "text-white"
                           }`}
                         >
                           {activeAccount &&
@@ -213,7 +213,7 @@ const AccountButton: FC<{
                             size={16}
                             viewBox="4 3 16 16"
                             className={`box-content px-2 ${
-                              open && "rotate-180 text-orange-500"
+                              open && "rotate-180 text-sunglow-2"
                             }`}
                           />
                         </div>
