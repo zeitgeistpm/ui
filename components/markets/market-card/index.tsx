@@ -75,10 +75,20 @@ const MarketCardTags = ({
 }) => {
   return (
     <>
-      {baseAsset === "Ztg" && (
-        <Image width={20} height={20} src="icons/usdc-icon.svg" alt="" />
+      {/* update later to include other assets */}
+      {baseAsset === "Ztg" ? (
+        <Image width={20} height={20} src="/currencies/ztg.svg" alt="ZTG" />
+      ) : (
+        <Image
+          width={20}
+          height={20}
+          src="/category/dotsama.png"
+          alt="DOT"
+          className="rounded-full"
+        />
       )}
-      {tags?.map((tag, index) => {
+      {/* replace later when court dispute mechanism is ready */}
+      {/* {tags?.map((tag, index) => {
         return (
           tag === "Politics" && (
             <Image
@@ -90,7 +100,7 @@ const MarketCardTags = ({
             />
           )
         );
-      })}
+      })} */}
       {isVerified && (
         <Image width={20} height={20} src="icons/verified-icon.svg" alt="" />
       )}

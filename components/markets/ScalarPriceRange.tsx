@@ -55,20 +55,21 @@ const ScalarPriceRange = ({
 
   return (
     <div
-      className="`w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative overflow-hidden"
+      className="`w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative overflow-hidden flex items-center"
       ref={ref}
     >
       {status !== "Proposed" && (
-        <div
-          style={{
-            width: `${isNaN(averagePosition) ? 0 : averagePosition}px`,
-          }}
-          className="bg-scalar-bar h-full absolute left-0 bottom-0 rounded flex items-center"
-        >
-          <span className="text-scalar-text rounded text-sm px-2.5">
+        <>
+          <div
+            style={{
+              width: `${isNaN(averagePosition) ? 0 : averagePosition}px`,
+            }}
+            className="bg-scalar-bar h-full absolute left-0 bottom-0"
+          ></div>
+          <span className="text-scalar-text text-sm px-2.5 z-10 relative">
             Current Prediction: {positionDisplay}
           </span>
-        </div>
+        </>
       )}
     </div>
   );
