@@ -645,8 +645,8 @@ export const usePortfolioPositions = (
     );
 
     const bondsTotal =
-      marketBonds?.length > 0
-        ? calcTotalBondsValue(marketBonds, foreignAssetPrices, ztgPrice)
+      marketBonds && marketBonds?.length > 0
+        ? calcTotalBondsValue(marketBonds)
         : new Decimal(0);
 
     const positionsTotal = tradingPositionsTotal
@@ -733,30 +733,21 @@ export const totalPositionsValue = <
  * @returns number
  */
 const diffChange = (a: Decimal, b: Decimal) => {
-  const priceDiff = a.minus(b);
-  const priceChange = priceDiff.div(b);
+  const priceDiff = a?.minus(b);
+  const priceChange = priceDiff?.div(b);
   return priceChange.mul(100).toNumber();
 };
 
-const calcTotalBondsValue = (
-  marketBonds: MarketBond[],
-  foreignAssetPrices: ForeignAssetPrices,
-  ztgPrice: Decimal,
-) => {
+const calcTotalBondsValue = (marketBonds: MarketBond[]) => {
   const bondTotal = marketBonds?.reduce((total, marketBond) => {
-    const assetId = parseAssetId(marketBond.baseAsset).unwrap();
-    const priceMultiplier = IOForeignAssetId.is(assetId)
-      ? foreignAssetPrices[assetId.ForeignAsset.toString()]?.div(ztgPrice)
-      : 1;
-
     const creationBond = marketBond.bonds.creation;
     if (creationBond.isSettled === false) {
-      total = total.plus(creationBond.value).mul(priceMultiplier);
+      total = total.plus(creationBond.value);
     }
 
     const oracleBond = marketBond.bonds.oracle;
     if (oracleBond.isSettled === false) {
-      total = total.plus(oracleBond.value).mul(priceMultiplier);
+      total = total.plus(oracleBond.value);
     }
 
     return total;
