@@ -33,7 +33,6 @@ const columns: TableColumn[] = [
 
 const BondsTable = ({ address }: { address: string }) => {
   const { data: marketBonds, isLoading } = useAccountBonds(address);
-  const { data: foreignAssetPrices } = useAllForeignAssetUsdPrices();
   const { data: ztgPrice } = useZtgPrice();
 
   return (
@@ -64,18 +63,10 @@ const BondsTable = ({ address }: { address: string }) => {
                       value: new Decimal(market.bonds.creation.value)
                         .div(ZTG)
                         .toNumber(),
-                      usdValue:
-                        ztgPrice &&
-                        new Decimal(market.bonds.creation.value)
-                          .div(ZTG)
-                          .mul(
-                            lookUpAssetPrice(
-                              market.baseAsset,
-                              foreignAssetPrices,
-                              ztgPrice,
-                            ),
-                          )
-                          .toNumber(),
+                      usdValue: new Decimal(market.bonds.creation.value)
+                        .div(ZTG)
+                        .mul(ztgPrice ?? 0)
+                        .toNumber(),
                     },
                     settled:
                       market.bonds.creation.isSettled === true ? "Yes" : "No",
@@ -87,18 +78,10 @@ const BondsTable = ({ address }: { address: string }) => {
                       value: new Decimal(market.bonds.oracle.value)
                         .div(ZTG)
                         .toNumber(),
-                      usdValue:
-                        ztgPrice &&
-                        new Decimal(market.bonds.oracle.value)
-                          .div(ZTG)
-                          .mul(
-                            lookUpAssetPrice(
-                              market.baseAsset,
-                              foreignAssetPrices,
-                              ztgPrice,
-                            ),
-                          )
-                          .toNumber(),
+                      usdValue: new Decimal(market.bonds.oracle.value)
+                        .div(ZTG)
+                        .mul(ztgPrice ?? 0)
+                        .toNumber(),
                     },
                     settled:
                       market.bonds.oracle.isSettled === true ? "Yes" : "No",
