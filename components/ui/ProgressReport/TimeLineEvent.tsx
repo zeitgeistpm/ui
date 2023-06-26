@@ -8,7 +8,6 @@ interface TimeLineEventProps extends ProgressBarEvent {
 
 const TimeLineEvent = ({
   id,
-  percentage,
   color,
   borderColor,
   hoverComponent,
@@ -39,7 +38,7 @@ const TimeLineEvent = ({
     clearTimeout(timerRef);
     setShowEventDetails(true);
     setHoveringEvent(true);
-    setEventId(id);
+    setEventId && setEventId(id);
   };
 
   const handleMouseLeaveEvent = () => {

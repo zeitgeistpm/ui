@@ -195,7 +195,7 @@ const ExitPoolForm = ({
           const assetName =
             poolWeights.length - 1 === index
               ? baseAssetTicker
-              : market && market.categories && market.categories[index]?.name;
+              : market?.categories?.[index]?.name;
 
           const poolAssetBalance =
             poolBalances?.[id]?.pool.div(ZTG) ?? new Decimal(0);

@@ -58,5 +58,5 @@ export const nextInvalidStepFrom = <T extends string>(
   step: WizardStep<T>,
 ): WizardStep<T> => {
   const index = steps.findIndex((s) => s.label === step.label) + 1;
-  return steps.slice(index).find((s) => !s.isValid);
+  return steps.slice(index).find((s) => !s.isValid) ?? step;
 };

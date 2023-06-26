@@ -29,7 +29,7 @@ const ReportButton = ({
   const notificationStore = useNotifications();
   const [scalarReportBoxOpen, setScalarReportBoxOpen] = useState(false);
 
-  if (!market) return null;
+  if (!market) return <></>;
   const { data: stage } = useMarketStage(market);
 
   const outcomeName = assetId

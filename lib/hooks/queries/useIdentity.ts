@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
-import { Judgement } from "lib/types/user-identity";
+import { Judgement, UserIdentity } from "lib/types/user-identity";
 import { useSdkv2 } from "../useSdkv2";
 
 export const identityRootKey = "identity";
@@ -39,7 +39,7 @@ export const useIdentity = (address?: string) => {
             ? judgements[1].type
             : "Unknown";
 
-          return {
+          const userIdentity: UserIdentity = {
             displayName:
               indentityInfo.get("display").isNone === false
                 ? textDecoder.decode(indentityInfo.get("display").value)
@@ -51,12 +51,14 @@ export const useIdentity = (address?: string) => {
             discord: discordHandle,
             judgement: judgementType,
           };
+
+          return userIdentity;
         } else {
-          return {
+          const userIdentity: UserIdentity = {
             displayName: "",
-            twitter: "",
-            discord: "",
           };
+
+          return userIdentity;
         }
       }
       return null;

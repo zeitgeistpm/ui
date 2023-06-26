@@ -17,11 +17,12 @@ const MarketScroll = ({
   markets: IndexedMarketCardData[];
   link?: string;
 }) => {
-  const scrollRef = useRef<HTMLDivElement>();
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [scrollLeft, setScrollLeft] = useState(0);
 
   const { width: windowWidth } = useWindowSize();
-  const { width: containerWidth, ref: containerRef } = useResizeDetector();
+  const { width, ref: containerRef } = useResizeDetector();
+  const containerWidth = width || 0;
 
   const { data: marketsStats } = useMarketsStats(
     markets.map((m) => m.marketId),

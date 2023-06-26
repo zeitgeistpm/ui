@@ -9,7 +9,7 @@ export type Judgement =
 
 export interface UserIdentity {
   displayName: string;
-  discord: string;
-  twitter: string;
+  discord?: string;
+  twitter?: string;
   judgement?: Judgement;
 }

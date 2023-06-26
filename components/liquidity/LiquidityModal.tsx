@@ -57,11 +57,13 @@ const LiquidityModal = ({
     { account: connectedAddress, assetId: { PoolShare: poolId } },
   ]);
 
-  const userPoolTokens: string | undefined = userPoolTokensQuery
-    ?.get(connectedAddress ?? "", {
-      PoolShare: poolId,
-    })
-    ?.data?.balance?.free.toString();
+  const userPoolTokens =
+    connectedAddress &&
+    userPoolTokensQuery
+      ?.get(connectedAddress, {
+        PoolShare: poolId,
+      })
+      ?.data?.balance?.free.toString();
 
   const baseAsset = pool && parseAssetId(pool.baseAsset).unrightOr(undefined);
 
@@ -77,10 +79,12 @@ const LiquidityModal = ({
     pool,
   );
 
-  const allBalances: PoolBalances = useMemo(() => {
+  const allBalances: PoolBalances | undefined = useMemo(() => {
     if (
       pool?.weights &&
       userBaseBalance &&
+      userAssetBalances &&
+      poolAssetBalances &&
       userAssetBalances?.length !== 0 &&
       poolAssetBalances?.length !== 0 &&
       poolBaseBalance

@@ -25,7 +25,7 @@ export const useAssetMetadata = (assetId?: AssetId) => {
     [id, assetMetadataRootKey, assetId, constants?.tokenSymbol],
     async () => {
       if (isRpcSdk(sdk)) {
-        if (IOZtgAssetId.is(assetId)) {
+        if (IOZtgAssetId.is(assetId) && constants?.tokenSymbol) {
           const assetMetadata: AssetMetadata = {
             symbol: constants?.tokenSymbol,
             name: "Zeitgeist",
@@ -51,7 +51,9 @@ export const useAssetMetadata = (assetId?: AssetId) => {
       }
     },
     {
-      enabled: Boolean(sdk && isRpcSdk(sdk) && assetId),
+      enabled: Boolean(
+        sdk && isRpcSdk(sdk) && assetId && constants?.tokenSymbol,
+      ),
       keepPreviousData: true,
       staleTime: Infinity,
     },

@@ -19,7 +19,7 @@ const RangeInput = React.forwardRef(
     ref: React.Ref<HTMLInputElement>,
   ) => {
     const componentRef = useRef<HTMLDivElement>(null);
-    const { value, onChange, min, max } = rest;
+    const { value = 0, onChange, min = 0, max = 0 } = rest;
 
     const className = rest.className ?? "";
 
