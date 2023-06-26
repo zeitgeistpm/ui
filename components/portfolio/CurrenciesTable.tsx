@@ -123,7 +123,7 @@ const CurrenciesTable = ({ address }: { address: string }) => {
           asset: (
             <ImageAndText
               name={balance.symbol}
-              imagePath={lookupAssetImagePath(balance.foreignAssetId)}
+              imagePath={lookupAssetImagePath(balance.foreignAssetId) ?? ""}
             />
           ),
           balance: balance.balance.div(ZTG).toFixed(3),
@@ -132,9 +132,9 @@ const CurrenciesTable = ({ address }: { address: string }) => {
               chain={balance.chain}
               sourceChain={balance.sourceChain}
               token={balance.symbol}
-              foreignAssetId={balance.foreignAssetId}
+              foreignAssetId={balance.foreignAssetId ?? 0}
               balance={balance.balance}
-              nativeToken={constants?.tokenSymbol}
+              nativeToken={constants?.tokenSymbol ?? ""}
               existentialDeposit={balance.existentialDeposit}
               allBalanceDetails={balances}
             />
