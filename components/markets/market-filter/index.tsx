@@ -128,13 +128,13 @@ const MarketFilterSelection = ({
 
   return (
     <MarketFiltersContainer
-      activeFilters={activeFilters}
+      activeFilters={getFiltersFromQueryState(queryState)}
       portal={portalRef.current}
       addActiveFilter={add}
       removeActiveFilter={remove}
-      withLiquidityOnly={withLiquidityOnly}
+      withLiquidityOnly={queryState.liquidityOnly}
       setWithLiquidityOnly={setWithLiquidityOnly}
-      ordering={activeOrdering}
+      ordering={queryState.ordering}
       setOrdering={setActiveOrdering}
       clearActiveFilters={clear}
       selectedMenu={selectedMenu}
