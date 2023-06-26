@@ -16,7 +16,7 @@ import { formatNumberLocalized, shortenAddress } from "lib/util";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { FC, PropsWithChildren, useState } from "react";
+import React, { FC, Fragment, PropsWithChildren, useState } from "react";
 import { ChevronDown, DollarSign, Frown, Settings, User } from "react-feather";
 import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
 import {
@@ -58,11 +58,7 @@ const HeaderActionButton: FC<
 
   return (
     <button
-      className={`flex border-2 rounded-full px-6 leading-[40px] ${
-        pathname === "/"
-          ? "text-black border-black sm:text-white sm:bg-transparent sm:border-white"
-          : "text-black border-black"
-      } rounded-full font-medium items-center justify-center cursor-pointer disabled:cursor-default disabled:opacity-30`}
+      className={`flex border-2 rounded-full px-6 leading-[40px] text-white font-medium items-center border-white justify-center cursor-pointer disabled:cursor-default disabled:opacity-30`}
       onClick={onClick}
       disabled={disabled}
     >
@@ -184,18 +180,12 @@ const AccountButton: FC<{
                       }`}
                     >
                       <div
-                        className={`flex items-center rounded-full h-full border-2 pl-1.5 ${
-                          pathname === "/"
-                            ? `bg-black text-white ${
-                                open ? "border-orange-500" : "border-white"
-                              }`
-                            : `text-black ${
-                                open ? "border-orange-500" : "border-black"
-                              }`
+                        className={`flex items-center rounded-full h-full border-2 pl-1.5 py-1 md:py-0 bg-black transition-all text-white ${
+                          open ? "border-orange-500" : "border-white"
                         }`}
                       >
                         <div
-                          className={`border-1 ${
+                          className={`border-1 transition-all ${
                             open ? "border-orange-500" : "border-transparent"
                           } rounded-full`}
                           onClick={(e) => {
@@ -211,8 +201,8 @@ const AccountButton: FC<{
                           )}
                         </div>
                         <span
-                          className={`font-medium pl-2 text-sm h-full leading-[40px] ${
-                            pathname === "/" ? "text-white" : "text-black"
+                          className={`font-medium pl-2 text-sm h-full transition-all hidden md:block leading-[40px] ${
+                            open ? "text-sunglow-2" : "text-white"
                           }`}
                         >
                           {activeAccount &&
@@ -223,7 +213,7 @@ const AccountButton: FC<{
                             size={16}
                             viewBox="4 3 16 16"
                             className={`box-content px-2 ${
-                              open && "rotate-180"
+                              open && "rotate-180 text-sunglow-2"
                             }`}
                           />
                         </div>
@@ -233,32 +223,32 @@ const AccountButton: FC<{
                 </div>
 
                 <Transition
-                  as={React.Fragment}
+                  as={Fragment}
                   enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
+                  enterFrom="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
+                  enterTo="transform opacity-100 translate-y-0 md:scale-100"
+                  leave="transition ease-in translate-y-2 md:translate-y-0 duration-75"
+                  leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
+                  leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                 >
-                  <Menu.Items className="absolute right-0 py-3 z-40 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <Menu.Items className="fixed md:absolute left-0 md:left-auto md:right-0 py-3 z-40 mt-2 w-full h-full md:h-auto md:w-64 origin-top-right divide-y divide-gray-100 md:rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="">
                       <div className="border-b-2 mb-3 py-2">
-                        <div className="px-4">
+                        <div className="px-6">
                           <BalanceRow
                             imgPath="/currencies/ztg.jpg"
                             units={constants?.tokenSymbol}
                             balance={activeBalance}
                           />
                         </div>
-                        <div className="px-4">
+                        <div className="px-6">
                           <BalanceRow
                             imgPath="/currencies/dot.png"
                             units="DOT"
                             balance={polkadotBalance}
                           />
                         </div>
-                        <div className="px-4">
+                        <div className="px-6">
                           <div className="flex items-center mb-3">
                             <img
                               src="/currencies/usdt.png"
@@ -274,12 +264,12 @@ const AccountButton: FC<{
                       <Menu.Item>
                         {({ active }) => (
                           <div
-                            className="flex items-center px-4 mb-3 hover:bg-slate-100"
+                            className="flex items-center px-6 mb-3 hover:bg-slate-100"
                             onClick={() => setShowGetZtgModal(true)}
                           >
                             <DollarSign />
                             <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
                             >
                               Get ZTG
                             </button>
@@ -290,14 +280,14 @@ const AccountButton: FC<{
                         <Menu.Item>
                           {({ active }) => (
                             <div
-                              className="flex items-center px-4 mb-3 hover:bg-slate-100"
+                              className="flex items-center px-6 mb-3 hover:bg-slate-100"
                               onClick={() => {
                                 accountModals.openAccountSelect();
                               }}
                             >
                               <User />
                               <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
                               >
                                 Select Account
                               </button>
@@ -308,10 +298,10 @@ const AccountButton: FC<{
                       <Menu.Item>
                         {({ active }) => (
                           <Link href="/settings">
-                            <div className="flex items-center px-4 mb-3 hover:bg-slate-100">
+                            <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
                               <Settings />
                               <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
                               >
                                 Settings
                               </button>
@@ -322,12 +312,12 @@ const AccountButton: FC<{
                       <Menu.Item>
                         {({ active }) => (
                           <div
-                            className="flex items-center px-4 hover:bg-slate-100"
+                            className="flex items-center px-6 hover:bg-slate-100"
                             onClick={() => disconnectWallet()}
                           >
                             <Frown />
                             <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
                             >
                               Disconnect
                             </button>

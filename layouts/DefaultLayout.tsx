@@ -57,14 +57,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
           className="overflow-y-a1uto overflow-x-hidden flex-grow"
         >
           <TopBar />
-          {/* hide notification bar */}
-          {NOTIFICATION_MESSAGE && (
-            <div className="sticky top-ztg-76 z-ztg-2 flex w-full justify-center items-center bg-yellow-100 h-ztg-38 hidden">
-              <div className="text-ztg-12-150 font-semibold">
-                {NOTIFICATION_MESSAGE}
-              </div>
-            </div>
-          )}
+
           <main
             className={`flex flex-col dark:text-white mb-12 ${
               router.pathname !== "/" && "main-container mt-24 md:mt-32"
