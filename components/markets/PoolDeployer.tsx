@@ -23,9 +23,8 @@ import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 const PoolDeployer = ({ marketId }: { marketId: number }) => {
   const [poolRows, setPoolRows] = useState<PoolAssetRowData[]>();
-  const [swapFee, setSwapFee] = useState<string>();
-  const { data: constants } = useChainConstants();
-
+  const [swapFee, setSwapFee] = useState<string>("");
+  let { data: constants } = useChainConstants();
   const wallet = useWallet();
   const { data: poolId } = useMarketPoolId(marketId);
   const { data: market } = useMarket({ marketId });
@@ -37,7 +36,7 @@ const PoolDeployer = ({ marketId }: { marketId: number }) => {
 
   const { send: deployPool, isLoading } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk)) {
+      if (isRpcSdk(sdk) && poolRows) {
         // We are assuming all rows have the same amount
         const amount = poolRows[0].amount;
 
@@ -65,13 +64,14 @@ const PoolDeployer = ({ marketId }: { marketId: number }) => {
     },
   );
 
-  const poolCost =
-    poolRows && calculatePoolCost(poolRows.map((row) => Number(row.amount)));
+  const poolCost = poolRows
+    ? calculatePoolCost(poolRows.map((row) => Number(row.amount)))
+    : "";
 
   const handleDeployClick = () => {
     const rows = poolRowDataFromOutcomes(
-      market.categories as MultipleOutcomeEntry[],
-      constants?.tokenSymbol,
+      market?.categories as MultipleOutcomeEntry[],
+      constants?.tokenSymbol ?? "",
     );
     setPoolRows(rows);
   };

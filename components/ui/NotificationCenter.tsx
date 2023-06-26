@@ -12,7 +12,7 @@ const NotificationCard: FC<{
   content: string | React.ReactNode;
   type: NotificationType;
   dataTest?: string;
-}> = ({ close, lifetime, content, type, dataTest }) => {
+}> = ({ close, lifetime = TIMER_TICK_RATE, content, type }) => {
   const [timer, setTimer] = React.useState(lifetime);
 
   useEffect(() => {

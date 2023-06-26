@@ -88,7 +88,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
         value: {
           ...event.target.value,
           type: "duration",
-          preset: undefined,
+          preset: "",
         },
       },
     });
@@ -102,7 +102,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
         value: {
           ...event.target.value,
           type: "duration",
-          preset: undefined,
+          preset: "",
         },
       },
     });
