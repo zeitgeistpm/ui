@@ -40,7 +40,7 @@ const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
   );
 };
 
-const Option = ({ children, ...props }: OptionProps<MarketFilter>) => {
+const Option = ({ children, ...props }: OptionProps<MarketFilter, false>) => {
   const { data } = props;
 
   const { activeFilters } = useMarketFiltersContext();
@@ -148,7 +148,7 @@ const DropDownSelect = ({
   add: (val: MarketFilter) => void;
 }) => {
   return (
-    <ReactSelect
+    <ReactSelect<MarketFilter>
       className="mr-[10px]"
       placeholder={label}
       options={options}

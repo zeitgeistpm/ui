@@ -47,6 +47,8 @@ const AssetActionButtons = ({ marketId, assetId }: AssetActionButtonsProps) => {
   if (marketStage.type === "Trading") {
     return <>{assetId && <AssetTradingButtons assetId={assetId} />}</>;
   }
+
+  return <></>;
 };
 
 export default AssetActionButtons;

@@ -30,11 +30,11 @@ const TwitterBird = () => {
 interface TradeResultProps {
   type: "buy" | "sell";
   amount: Decimal;
-  tokenName: string;
+  tokenName?: string;
   baseTokenAmount: Decimal;
-  baseToken: string;
+  baseToken?: string;
   marketId: number;
-  marketQuestion: string;
+  marketQuestion?: string;
 }
 
 const TradeResult = ({

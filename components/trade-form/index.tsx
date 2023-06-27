@@ -13,6 +13,7 @@ import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
 import {
+  TradeItem,
   useTradeItem,
   useTradeMaxAssetAmount,
   useTradeMaxBaseAmount,
@@ -61,7 +62,28 @@ const getTradeValuesFromExtrinsicResult = (
   };
 };
 
-const TradeForm = () => {
+const TradeForm = (
+  child: (props: {
+    tradeItem: TradeItem;
+    setTradeItem: (trade: TradeItem) => void;
+  }) => React.ReactNode,
+) => {
+  const { data: tradeItem, set: setTradeItem } = useTradeItem();
+
+  if (!tradeItem) return <></>;
+
+  return <Inner tradeItem={tradeItem} setTradeItem={setTradeItem} />;
+};
+
+export default TradeForm;
+
+const Inner = ({
+  tradeItem,
+  setTradeItem,
+}: {
+  tradeItem: TradeItem;
+  setTradeItem: (trade: TradeItem) => void;
+}) => {
   const notifications = useNotifications();
 
   const { register, formState, watch, setValue, reset } = useForm<{
@@ -74,8 +96,6 @@ const TradeForm = () => {
 
   const wallet = useWallet();
   const signer = wallet.getActiveSigner();
-
-  const { data: tradeItem, set: setTradeItem } = useTradeItem();
 
   const { data: tradeItemState } = useTradeItemState(tradeItem);
 
@@ -184,7 +204,7 @@ const TradeForm = () => {
         `Successfully ${
           tradeItem.action === "buy" ? "bought" : "sold"
         } ${assetAmount} ${
-          tradeItemState.asset.name
+          tradeItemState?.asset?.name
         } for ${baseAmount} ${baseSymbol}`,
         { type: "Success", lifetime: 60 },
       );
@@ -410,17 +430,17 @@ const TradeForm = () => {
     const sub = watch((value, { name, type }) => {
       const changedByUser = type != null;
       if (name === "percentage" && changedByUser) {
-        const percentage = new Decimal(value.percentage).div(100);
+        const percentage = new Decimal(value.percentage ?? 0).div(100);
         changeByPercentage(percentage);
       }
       if (name === "assetAmount" && changedByUser) {
         const assetAmount = value.assetAmount === "" ? "0" : value.assetAmount;
-        const assetAmountDecimal = new Decimal(assetAmount);
+        const assetAmountDecimal = new Decimal(assetAmount ?? 0);
         changeByAssetAmount(assetAmountDecimal);
       }
       if (name === "baseAmount" && changedByUser) {
         const baseAmount = value.baseAmount === "" ? "0" : value.baseAmount;
-        const baseAmountDecimal = new Decimal(baseAmount);
+        const baseAmountDecimal = new Decimal(baseAmount ?? 0);
         changeByBaseAmount(baseAmountDecimal);
       }
     });
@@ -442,15 +462,15 @@ const TradeForm = () => {
 
   return (
     <>
-      {isSuccess === true ? (
+      {isSuccess === true && tradeItemState ? (
         <TradeResult
           type={tradeItem.action}
           amount={new Decimal(finalAmounts.asset)}
-          tokenName={tradeItemState?.asset.name}
+          tokenName={tradeItemState.asset?.name ?? undefined}
           baseTokenAmount={new Decimal(finalAmounts.base)}
           baseToken={baseSymbol}
           marketId={tradeItemState?.market.marketId}
-          marketQuestion={tradeItemState?.market.question}
+          marketQuestion={tradeItemState?.market.question ?? undefined}
         />
       ) : (
         <form
@@ -509,7 +529,9 @@ const TradeForm = () => {
                   validate: (value) => Number(value) > 0,
                 })}
                 onFocus={() => {
-                  setLastEditedAssetId(tradeItemState?.assetId);
+                  if (tradeItemState?.baseAssetId) {
+                    setLastEditedAssetId(tradeItemState?.baseAssetId);
+                  }
                 }}
                 step="any"
                 className="w-full bg-transparent outline-none !text-center text-[35px] sm:text-[58px]"
@@ -529,9 +551,11 @@ const TradeForm = () => {
                   max: maxBaseAmount?.div(ZTG).toFixed(4),
                   validate: (value) => Number(value) > 0,
                 })}
-                onFocus={() =>
-                  setLastEditedAssetId(tradeItemState?.baseAssetId)
-                }
+                onFocus={() => {
+                  if (tradeItemState?.baseAssetId) {
+                    setLastEditedAssetId(tradeItemState?.baseAssetId);
+                  }
+                }}
                 step="any"
                 className="w-full bg-transparent outline-none !text-center"
               />
@@ -542,7 +566,11 @@ const TradeForm = () => {
               max="100"
               value={percentageDisplay}
               onValueChange={setPercentageDisplay}
-              onFocus={() => setLastEditedAssetId(tradeItemState?.assetId)}
+              onFocus={() => {
+                if (tradeItemState?.baseAssetId) {
+                  setLastEditedAssetId(tradeItemState?.baseAssetId);
+                }
+              }}
               minLabel="0 %"
               step="0.1"
               valueSuffix="%"
@@ -588,5 +616,3 @@ const TradeForm = () => {
     </>
   );
 };
-
-export default TradeForm;
