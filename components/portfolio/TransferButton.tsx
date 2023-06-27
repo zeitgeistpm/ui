@@ -1,7 +1,7 @@
 import { Dialog } from "@headlessui/react";
 import { AssetId, ZTG } from "@zeitgeistpm/sdk-next";
 import AssetInput from "components/ui/AssetInput";
-import AssetSelect, { AssetOption } from "components/ui/AssetSelect";
+import { AssetOption } from "components/ui/AssetSelect";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";
@@ -13,23 +13,43 @@ import { useAllAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized } from "lib/util";
-import React, { useEffect, useMemo, useState } from "react";
+import { isEmpty } from "lodash-es";
+import React, { useMemo, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 const isSupportedAsset = (id: number) => {
   return Object.keys(FOREIGN_ASSET_METADATA).includes(`${id}`);
 };
 
-const useTransferAssetOptions = (
-  assetId: AssetId,
-): {
-  options: AssetOption[];
-  selectedOption: AssetOption | undefined;
-  setSelectedOption: (opt: AssetOption) => void;
-} => {
+export type TransferButtonProps = {
+  assetId: AssetId;
+};
+
+const TransferButton: React.FC<TransferButtonProps> = ({ assetId }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const wallet = useWallet();
+  const address = wallet.activeAccount?.address;
+
+  return (
+    <>
+      <SecondaryButton onClick={() => setIsOpen(true)} disabled={!address}>
+        Transfer
+      </SecondaryButton>
+      <Modal open={isOpen} onClose={() => setIsOpen(false)}>
+        {address && <TransferModal assetId={assetId} address={address} />}
+      </Modal>
+    </>
+  );
+};
+
+const TransferModal = ({
+  assetId,
+  address,
+}: {
+  assetId: AssetId;
+  address: string;
+}) => {
   const { data: assetMetadata, isSuccess } = useAllAssetMetadata();
-  const [selectedOption, setSelectedOption] = useState<
-    AssetOption | undefined
-  >();
 
   const options = useMemo<AssetOption[]>(() => {
     if (!isSuccess) {
@@ -63,63 +83,31 @@ const useTransferAssetOptions = (
     return options;
   }, [assetMetadata, isSuccess]);
 
-  useEffect(() => {
-    if (options.length === 0 || selectedOption !== undefined) {
-      return;
-    }
-    const selected = options.find(
-      (opt) => JSON.stringify(opt.value) === JSON.stringify(assetId),
-    );
-    setSelectedOption(selected);
-  }, [options]);
-
-  return {
-    options,
-    selectedOption,
-    setSelectedOption,
-  };
-};
-
-export type TransferButtonProps = {
-  assetId: AssetId;
-};
-
-const TransferButton: React.FC<TransferButtonProps> = ({ assetId }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const wallet = useWallet();
-  const address = wallet.activeAccount?.address;
-
-  return (
-    <>
-      <SecondaryButton onClick={() => setIsOpen(true)} disabled={!address}>
-        Transfer
-      </SecondaryButton>
-      <Modal open={isOpen} onClose={() => setIsOpen(false)}>
-        {address && <TransferModal assetId={assetId} address={address} />}
-      </Modal>
-    </>
+  const defaultOption = options.find(
+    (opt) => JSON.stringify(opt.value) === JSON.stringify(assetId),
   );
-};
 
-const TransferModal = ({
-  assetId,
-  address,
-}: {
-  assetId: AssetId;
-  address: string;
-}) => {
-  const { options, selectedOption, setSelectedOption } =
-    useTransferAssetOptions(assetId);
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<{ asset: { amount: string; assetOption?: AssetOption } }>({
+    reValidateMode: "onChange",
+    mode: "all",
+  });
 
-  const [amount, setAmount] = useState<string>("");
-
-  const { data: balance } = useBalance(address, selectedOption?.value);
+  const asset = watch("asset");
+  const { data: balance } = useBalance(address, asset?.assetOption?.value);
 
   return (
     <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
       <h3 className="text-center mb-5 text-lg font-bold">On-Chain Transfers</h3>
-      <div className="flex flex-col">
-        <div className="flex justify-between mb-3 text-sm font-semibold">
+      <form
+        className="flex flex-col"
+        onSubmit={handleSubmit((data) => console.log(data))}
+      >
+        <div className="flex justify-between mb-2 text-sm font-semibold">
           <div>Select Asset and Amount</div>
           {balance && (
             <div>
@@ -127,29 +115,53 @@ const TransferModal = ({
             </div>
           )}
         </div>
-        <div className="mb-5 h-14 w-full bg-anti-flash-white rounded-md relative">
-          <AssetInput
-            options={options}
-            selectedOption={selectedOption}
-            setSelectedOption={setSelectedOption}
-            amount={amount}
-            setAmount={setAmount}
+        {defaultOption && (
+          <Controller
+            control={control}
+            name="asset"
+            defaultValue={{ amount: "", assetOption: defaultOption }}
+            rules={{
+              validate: (v) => {
+                if (v.amount === "") {
+                  return "Value is required";
+                }
+                if (v.amount === "0") {
+                  return "Values must be greater than 0";
+                }
+                if (!v.assetOption) {
+                  return "Currency selection missing";
+                }
+              },
+            }}
+            render={({ field: { onChange, value } }) => {
+              return (
+                <AssetInput
+                  options={options}
+                  error={errors.asset?.message}
+                  amount={value.amount}
+                  selectedOption={value.assetOption}
+                  onAssetChange={(opt) => {
+                    onChange({ ...value, assetOption: opt });
+                  }}
+                  onAmountChange={(amount) => {
+                    onChange({ ...value, amount });
+                  }}
+                />
+              );
+            }}
           />
-        </div>
-        <div className="mb-3 text-sm font-semibold">To Address</div>
+        )}
+        <div className="mb-2 text-sm font-semibold">To Address</div>
         <div className="mb-5 h-14 w-full bg-anti-flash-white rounded-md">
           Account Select
         </div>
         <div className="mb-3 text-sm text-center">
           <span className="text-sky-600">Transfer Fee: 0.75 ZTG</span>
         </div>
-        <FormTransactionButton
-          className="w-full max-w-[250px]"
-          // disabled={formState.isValid === false || isLoading}
-        >
+        <FormTransactionButton disabled={!isEmpty(errors)}>
           Transfer
         </FormTransactionButton>
-      </div>
+      </form>
     </Dialog.Panel>
   );
 };

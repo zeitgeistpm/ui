@@ -84,7 +84,7 @@ const MenuList = (props: MenuListProps<AssetOption, false>) => {
   return (
     <components.MenuList
       {...props}
-      className="!w-full !absolute bg-white pt-2 rounded-md"
+      className="!w-full !absolute bg-white mt-1 pt-1 rounded-md"
     >
       {props.children}
     </components.MenuList>
@@ -109,7 +109,6 @@ const AssetSelect: React.FC<AssetSelectProps> = ({
       options={options}
       unstyled={true}
       value={selectedOption}
-      // defaultValue={defaultOption}
       placeholder="Select"
       isMulti={false}
       // menuIsOpen={true}

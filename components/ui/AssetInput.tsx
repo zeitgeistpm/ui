@@ -4,25 +4,32 @@ import AssetSelect, { AssetOption } from "./AssetSelect";
 type AssetInputProps = {
   options: AssetOption[];
   selectedOption?: AssetOption;
-  setSelectedOption: (opt: AssetOption) => void;
+  onAssetChange?: (opt: AssetOption) => void;
   amount?: string;
-  setAmount: (amount: string) => void;
+  onAmountChange?: (amount: string) => void;
+  error?: string;
 };
 
 const AssetInput: React.FC<AssetInputProps> = ({
   options,
   selectedOption,
-  setSelectedOption,
+  onAssetChange,
   amount = "",
-  setAmount,
+  onAmountChange,
+  error,
 }) => {
   return (
-    <div className="mb-5 h-14 w-full bg-anti-flash-white rounded-md relative">
+    <div
+      className={
+        "mb-5 h-14 w-full bg-anti-flash-white rounded-md relative border-1 border-transparent " +
+        (error ? "border-vermilion" : "")
+      }
+    >
       <AssetSelect
         options={options}
         selectedOption={selectedOption}
         onChange={(option) => {
-          setSelectedOption(option);
+          onAssetChange?.(option);
         }}
       />
       <input
@@ -30,10 +37,13 @@ const AssetInput: React.FC<AssetInputProps> = ({
         step="any"
         value={amount}
         onChange={(e) => {
-          setAmount(e.target.value);
+          onAmountChange?.(e.target.value);
         }}
         className="absolute right-4 top-[50%] translate-y-[-50%] font-mono text-right text-lg outline-none bg-transparent"
       />
+      {error && (
+        <div className="text-vermilion text-sm text-right">{error}</div>
+      )}
     </div>
   );
 };
