@@ -19,7 +19,8 @@ export type BlockPeriodPickerProps = {
   onChange: (event: FormEvent<PeriodOption>) => void;
   onBlur: (event: FormEvent<PeriodOption>) => void;
   isValid?: boolean;
-  chainTime: ChainTime;
+  chainTime?: ChainTime | undefined;
+  disabled?: boolean;
 };
 
 export type BlockPeriodPickerOptions = DeepReadonly<
@@ -36,6 +37,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
   options,
   chainTime,
   isValid,
+  disabled,
 }) => {
   const hasCustomDurationOption = Boolean(
     options.find((o) => o.type === "custom-duration"),
@@ -55,6 +57,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
   };
 
   const handleDateChange = (event: FormEvent<string>) => {
+    if (!chainTime) return;
     onChange?.({
       type: "change",
       target: {
@@ -68,6 +71,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
   };
 
   const handleDateBlur = (event: FormEvent<string>) => {
+    if (!chainTime) return;
     onBlur?.({
       type: "blur",
       target: {
@@ -114,7 +118,11 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
   );
 
   return (
-    <div className="md:flex justify-center items-center gap-3">
+    <div
+      className={`md:flex justify-center items-center gap-3 transition-opacity ${
+        disabled && "opacity-60 !cursor-default pointer-events-none"
+      }`}
+    >
       <div className="flex justify-center gap-3 mb-4 md:mb-0">
         {durationPresets.map((option, index) => (
           <button
@@ -133,10 +141,10 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
       </div>
 
       <div className="flex justify-center gap-3">
-        {hasCustomDurationOption && (
+        {hasCustomDurationOption && value?.type === "duration" && (
           <DurationInput
             className="rounded-full overflow-hidden md:w-72"
-            value={value?.type === "duration" ? value : undefined}
+            value={value}
             onChange={handleDurationChange}
             onBlur={handleDurationBlur}
             isSelected={isValid && value?.type === "duration" && !value?.preset}
@@ -170,7 +178,7 @@ type DurationValue = Omit<PeriodDurationOption, "type">;
 type DurationInputProps = {
   className?: string;
   name?: string;
-  value?: DurationValue;
+  value: DurationValue;
   onChange: (event: FormEvent<DurationValue>) => void;
   onBlur: (event: FormEvent<DurationValue>) => void;
   isSelected?: boolean;
@@ -190,7 +198,7 @@ const DurationInput = ({
       target: {
         name: "duration",
         value: {
-          ...value,
+          ...(value ?? {}),
           unit,
         },
       },
