@@ -67,7 +67,7 @@ const ScalarPriceRange = ({
             className="bg-scalar-bar h-full absolute left-0 bottom-0"
           ></div>
           <span className="text-scalar-text text-sm px-2.5 z-10 relative">
-            Current Prediction: {positionDisplay}
+            Prediction: {positionDisplay}
           </span>
         </>
       )}

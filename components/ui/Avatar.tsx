@@ -10,11 +10,13 @@ const Avatar = ({
   zoomed = false,
   size = 30,
   deps,
+  copy = true,
 }: {
   address: string;
   zoomed?: boolean;
   size?: number;
   deps?: any[];
+  copy?: boolean;
 }) => {
   if (address === "") {
     return null;
@@ -39,6 +41,7 @@ const Avatar = ({
         address={address}
         size={size}
         deps={deps}
+        copy={copy}
         fallback={
           <BoringAvatar
             size={size}

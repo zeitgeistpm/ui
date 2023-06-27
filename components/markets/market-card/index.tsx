@@ -15,7 +15,10 @@ import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { UserIdentity } from "../MarketHeader";
 import Image from "next/image";
-import CATEGORIES from "../../front-page/PopularCategories";
+import { lookupAssetImagePath } from "lib/constants/foreign-asset";
+import { parseAssetId } from "@zeitgeistpm/sdk-next";
+import { IOBaseAssetId } from "@zeitgeistpm/sdk-next";
+import { IOForeignAssetId } from "@zeitgeistpm/sdk-next";
 export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
@@ -73,20 +76,15 @@ const MarketCardTags = ({
   baseAsset: string;
   isVerified: boolean;
 }) => {
+  const assetId = parseAssetId(baseAsset).unwrap();
+  const imagePath = IOForeignAssetId.is(assetId)
+    ? lookupAssetImagePath(assetId.ForeignAsset)
+    : IOBaseAssetId.is(assetId)
+    ? lookupAssetImagePath(assetId.Ztg)
+    : "";
   return (
     <>
-      {/* update later to include other assets */}
-      {baseAsset === "Ztg" ? (
-        <Image width={20} height={20} src="/currencies/ztg.svg" alt="ZTG" />
-      ) : (
-        <Image
-          width={20}
-          height={20}
-          src="/category/dotsama.png"
-          alt="DOT"
-          className="rounded-full"
-        />
-      )}
+      <Image width={20} height={20} src={imagePath} alt="Currency token logo" />
       {/* replace later when court dispute mechanism is ready */}
       {/* {tags?.map((tag, index) => {
         return (
@@ -102,7 +100,12 @@ const MarketCardTags = ({
         );
       })} */}
       {isVerified && (
-        <Image width={20} height={20} src="icons/verified-icon.svg" alt="" />
+        <Image
+          width={20}
+          height={20}
+          src="icons/verified-icon.svg"
+          alt="verified checkmark"
+        />
       )}
     </>
   );
