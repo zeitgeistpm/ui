@@ -73,7 +73,7 @@ export const useAllAssetMetadata = () => {
   const enabled = sdk && isRpcSdk(sdk) && constants?.tokenSymbol;
 
   const query = useQuery(
-    [id, assetMetadataRootKey, constants?.tokenSymbol],
+    [id, allAssetMetadataRootKey, constants?.tokenSymbol],
     async () => {
       if (!enabled) {
         return [];
