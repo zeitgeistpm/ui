@@ -1,5 +1,6 @@
 import { Dialog } from "@headlessui/react";
 import { AssetId, ZTG } from "@zeitgeistpm/sdk-next";
+import AddressInput from "components/ui/AddressInput";
 import AssetInput from "components/ui/AssetInput";
 import { AssetOption } from "components/ui/AssetSelect";
 import FormTransactionButton from "components/ui/FormTransactionButton";
@@ -152,9 +153,7 @@ const TransferModal = ({
           />
         )}
         <div className="mb-2 text-sm font-semibold">To Address</div>
-        <div className="mb-5 h-14 w-full bg-anti-flash-white rounded-md">
-          Account Select
-        </div>
+        <AddressInput />
         <div className="mb-3 text-sm text-center">
           <span className="text-sky-600">Transfer Fee: 0.75 ZTG</span>
         </div>
