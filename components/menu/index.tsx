@@ -37,7 +37,7 @@ const TopBar = () => {
             {({ open, close }) => {
               return (
                 <>
-                  <div>
+                  <div className="flex gap-2">
                     <Menu.Button className="text-white font-light relative flex center gap-2">
                       <div className="relative h-6 w-6 hidden md:block">
                         <FiGrid size={"100%"} />
@@ -46,10 +46,10 @@ const TopBar = () => {
                       <div className="block md:hidden">
                         <MenuIcon />
                       </div>
-                      <div className="md:hidden pl-2">
-                        <MenuLogo />
-                      </div>
                     </Menu.Button>
+                    <Link href="/" className="md:hidden pl-2">
+                      <MenuLogo />
+                    </Link>
                   </div>
                   <Transition
                     as={Fragment}
