@@ -55,14 +55,21 @@ const ScalarPriceRange = ({
 
   return (
     <div
-      className="`w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative overflow-hidden flex items-center"
+      className="`w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative flex items-center"
       ref={ref}
     >
+      <span className="absolute -top-5 left-0 text-xs text-gray-400 group-hover:text-white">
+        {lowerDisplay}
+      </span>
       {status !== "Proposed" && (
         <>
           <div
             style={{
-              width: `${isNaN(averagePosition) ? 0 : averagePosition}px`,
+              width: `${
+                isNaN(averagePosition) || Number(positionDisplay) === 0
+                  ? 0
+                  : averagePosition
+              }px`,
             }}
             className="bg-scalar-bar h-full absolute left-0 bottom-0"
           ></div>
@@ -71,6 +78,9 @@ const ScalarPriceRange = ({
           </span>
         </>
       )}
+      <span className="absolute -top-5 right-0 text-xs text-gray-400 group-hover:text-white">
+        {upperDisplay}
+      </span>
     </div>
   );
 };
