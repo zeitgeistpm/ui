@@ -62,7 +62,8 @@ const MarketCardInfo = ({
       <h5 className="font-semibold w-full h-fit line-clamp-3 text-base">
         {question}
       </h5>
-      {img && <MarketImage image={img} alt={question} className="rounded-lg" />}
+      {/* {disable for now until we can get image from CMS} */}
+      {/* {img && <MarketImage image={img} alt={question} className="rounded-lg" />} */}
     </div>
   );
 };
