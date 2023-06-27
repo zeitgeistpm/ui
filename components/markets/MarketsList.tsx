@@ -92,7 +92,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
 
   return (
     <div
-      className={"pt-ztg-46 mb-[38px] scroll-mt-[40px]" + className}
+      className={"pt-ztg-30 mb-[38px] scroll-mt-[40px]" + className}
       data-testid="marketsList"
       id={"market-list"}
     >
