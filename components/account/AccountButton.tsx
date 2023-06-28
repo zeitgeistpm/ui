@@ -17,7 +17,14 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FC, Fragment, PropsWithChildren, useState } from "react";
-import { ChevronDown, DollarSign, Frown, Settings, User } from "react-feather";
+import {
+  BarChart,
+  ChevronDown,
+  DollarSign,
+  Frown,
+  Settings,
+  User,
+} from "react-feather";
 import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
 import {
   DesktopOnboardingModal,
@@ -295,6 +302,20 @@ const AccountButton: FC<{
                           )}
                         </Menu.Item>
                       )}
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link href="/portfolio">
+                            <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
+                              <BarChart />
+                              <button
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                              >
+                                Portfolio
+                              </button>
+                            </div>
+                          </Link>
+                        )}
+                      </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
                           <Link href="/settings">
