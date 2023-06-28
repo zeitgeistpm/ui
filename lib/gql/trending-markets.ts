@@ -2,12 +2,23 @@ import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
 import { IndexedMarketCardData } from "components/markets/market-card/index";
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
-import { DAY_SECONDS, ZTG } from "lib/constants";
+import { DAY_SECONDS, environment, ZTG } from "lib/constants";
 import { MarketOutcomes, MarketOutcome } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
-import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
+import {
+  BaseAssetId,
+  IOForeignAssetId,
+  ScalarRangeType,
+} from "@zeitgeistpm/sdk-next";
 import { hiddenMarketIds } from "lib/constants/markets";
 import { marketMetaFilter } from "./constants";
+import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
+import {
+  getForeignAssetPrice,
+  getZTGPrice,
+} from "lib/hooks/queries/useAssetUsdPrice";
+import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 
 const poolChangesQuery = gql`
   query PoolChanges($start: DateTime, $end: DateTime) {
@@ -83,7 +94,7 @@ const getTrendingMarkets = async (
     new Date().getTime() - DAY_SECONDS * 7 * 1000,
   ).toISOString();
 
-  const response = await client.request<{
+  const { historicalPools } = await client.request<{
     historicalPools: {
       dVolume: string;
       poolId: number;
@@ -93,7 +104,20 @@ const getTrendingMarkets = async (
     end: now,
   });
 
-  const trendingPoolIds = calcTrendingPools(response.historicalPools);
+  const { pools } = await client.request<{
+    pools: { poolId: number; baseAsset: string }[];
+  }>(gql`
+    query Pools {
+      pools {
+        poolId
+        baseAsset
+      }
+    }
+  `);
+
+  const basePrices = await getBaseAssetPrices();
+
+  const trendingPoolIds = calcTrendingPools(historicalPools, basePrices, pools);
 
   const trendingMarkets = await Promise.all(
     trendingPoolIds.map(async (poolId) => {
@@ -171,11 +195,46 @@ const getTrendingMarkets = async (
   return trendingMarkets;
 };
 
+type BasePrices = {
+  [key: string | "ztg"]: Decimal;
+};
+
+const lookupPrice = (basePrices: BasePrices, baseAsset: BaseAssetId) => {
+  return IOForeignAssetId.is(baseAsset)
+    ? basePrices[baseAsset.ForeignAsset]
+    : basePrices["ztg"];
+};
+
+const getBaseAssetPrices = async (): Promise<BasePrices> => {
+  const assetIds = Object.keys(FOREIGN_ASSET_METADATA);
+
+  const foreignAssetPrices = await Promise.all(
+    assetIds.map((id) => getForeignAssetPrice({ ForeignAsset: Number(id) })),
+  );
+
+  const pricesObj = foreignAssetPrices.reduce<BasePrices>(
+    (obj, price, index) => {
+      obj[assetIds[index]] = price;
+      return obj;
+    },
+    {},
+  );
+
+  const ztgInfo = await fetchZTGInfo();
+
+  pricesObj["ztg"] = ztgInfo.price;
+  console.log(pricesObj);
+
+  return pricesObj;
+};
+
 const calcTrendingPools = (
   transactions: {
     poolId: number;
     dVolume: string;
   }[],
+  basePrices: BasePrices,
+  pools: { poolId: number; baseAsset: string }[],
 ) => {
   const poolVolumes: { [key: string]: Decimal } = {};
   const maxPools = 8;
@@ -190,9 +249,27 @@ const calcTrendingPools = (
     }
   });
 
+  console.log(poolVolumes);
+
   const poolIdsByVolumeDesc = Object.keys(poolVolumes).sort((a, b) => {
-    const aVol = poolVolumes[a];
-    const bVol = poolVolumes[b];
+    console.log(a, b);
+
+    const aBase = pools.find((pool) => pool.poolId === Number(a))?.baseAsset;
+    const bBase = pools.find((pool) => pool.poolId === Number(a))?.baseAsset;
+
+    const aValue = lookupPrice(
+      basePrices,
+      parseAssetIdString(aBase) as BaseAssetId,
+    );
+    const bValue = lookupPrice(
+      basePrices,
+      parseAssetIdString(bBase) as BaseAssetId,
+    );
+    console.log(aValue);
+    console.log(bValue);
+
+    const aVol = poolVolumes[a].mul(aValue);
+    const bVol = poolVolumes[b].mul(bValue);
     return bVol.minus(aVol).toNumber();
   });
 
