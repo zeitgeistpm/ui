@@ -198,7 +198,7 @@ const DurationInput = ({
       target: {
         name: "duration",
         value: {
-          ...(value ?? {}),
+          ...value,
           unit,
         },
       },
