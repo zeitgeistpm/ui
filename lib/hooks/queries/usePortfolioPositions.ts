@@ -404,7 +404,6 @@ export const usePortfolioPositions = (
             );
 
             if (!price || !price24HoursAgo) {
-              console.log(poolAssetBalances24HoursAgo.query[0]?.data);
               return acc;
             }
 
