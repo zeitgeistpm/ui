@@ -7,6 +7,7 @@ import {
   IOMarketOutcomeAssetId,
   isIndexedSdk,
   isRpcSdk,
+  MarketId,
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
@@ -95,7 +96,19 @@ type MarketHeader = {
   categories: { name: string }[];
 };
 
-export const useTradeHistory = (address: string) => {
+export type TradeHistoryItem = {
+  marketId: MarketId;
+  question: string;
+  assetIn: string | undefined;
+  assetOut: string | undefined;
+  assetAmountIn: Decimal;
+  assetAmountOut: Decimal;
+  price: Decimal;
+  baseAssetName: string | undefined;
+  time: any;
+};
+
+export const useTradeHistory = (address?: string) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
@@ -109,25 +122,25 @@ export const useTradeHistory = (address: string) => {
           order: HistoricalSwapOrderByInput.BlockNumberDesc,
         });
 
-        const foreignAssetIds = new Set<number>();
-        const marketIds = new Set<number>(
-          historicalSwaps.map((swap) => {
-            const assetInId = parseAssetId(swap.assetIn).unwrap();
-            const assetOutId = parseAssetId(swap.assetOut).unwrap();
+        let foreignAssetIds = new Set<number>();
+        let marketIds = new Set<number>();
 
-            if (IOForeignAssetId.is(assetInId)) {
-              foreignAssetIds.add(assetInId.ForeignAsset);
-            } else if (IOForeignAssetId.is(assetOutId)) {
-              foreignAssetIds.add(assetOutId.ForeignAsset);
-            }
+        historicalSwaps.forEach((swap) => {
+          const assetInId = parseAssetId(swap.assetIn).unwrap();
+          const assetOutId = parseAssetId(swap.assetOut).unwrap();
 
-            if (IOMarketOutcomeAssetId.is(assetInId)) {
-              return getMarketIdOf(assetInId);
-            } else if (IOMarketOutcomeAssetId.is(assetOutId)) {
-              return getMarketIdOf(assetOutId);
-            }
-          }),
-        );
+          if (IOForeignAssetId.is(assetInId)) {
+            foreignAssetIds.add(assetInId.ForeignAsset);
+          } else if (IOForeignAssetId.is(assetOutId)) {
+            foreignAssetIds.add(assetOutId.ForeignAsset);
+          }
+
+          if (IOMarketOutcomeAssetId.is(assetInId)) {
+            marketIds.add(getMarketIdOf(assetInId));
+          } else if (IOMarketOutcomeAssetId.is(assetOutId)) {
+            marketIds.add(getMarketIdOf(assetOutId));
+          }
+        });
 
         const marketIdsArray = Array.from(marketIds).sort((a, b) => a - b);
 
@@ -158,7 +171,7 @@ export const useTradeHistory = (address: string) => {
           metadataMap.set(foreignAssetIdsArray[index], symbol);
         });
 
-        const trades = historicalSwaps
+        const trades: TradeHistoryItem[] = historicalSwaps
           .map((swap) => {
             const market =
               lookupMarket(swap.assetIn, marketsMap) ??
@@ -191,13 +204,16 @@ export const useTradeHistory = (address: string) => {
               time: swap.timestamp,
             };
           })
-          .filter((trade) => trade != null);
+          .filter((trade): trade is TradeHistoryItem => trade != null);
 
         return trades;
       }
+
+      return [];
     },
     {
       keepPreviousData: true,
+      initialData: [],
       enabled: Boolean(sdk && isIndexedSdk(sdk) && isRpcSdk(sdk) && address),
     },
   );
