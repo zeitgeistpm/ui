@@ -622,8 +622,6 @@ export const usePortfolioPositions = (
     [positions],
   );
 
-  //console.log(subsidyPositions?.map((s) => s.price.toNumber()));
-
   const breakdown = useMemo<PorfolioBreakdown | null>(() => {
     if (
       !ztgPrice ||
@@ -671,30 +669,6 @@ export const usePortfolioPositions = (
       subsidyPositionsTotal,
       subsidyPositionsTotal24HoursAgo,
     );
-
-    // if (subsidyPositionsTotal.eq(0)) {
-    //   console.log("ZERO CASE", {
-    //     tradingPositionsTotal: tradingPositionsTotal.toNumber(),
-    //     tradingPositionsTotal24HoursAgo:
-    //       tradingPositionsTotal24HoursAgo.toNumber(),
-    //     tradingPositionsChange: tradingPositionsChange,
-    //     subsidyPositionsTotal: subsidyPositionsTotal.toNumber(),
-    //     subsidyPositionsTotal24HoursAgo:
-    //       subsidyPositionsTotal24HoursAgo.toNumber(),
-    //     subsidyPositionsChange: subsidyPositionsChange,
-    //   });
-    // } else {
-    //   console.log("Valid CASE", {
-    //     tradingPositionsTotal: tradingPositionsTotal.toNumber(),
-    //     tradingPositionsTotal24HoursAgo:
-    //       tradingPositionsTotal24HoursAgo.toNumber(),
-    //     tradingPositionsChange: tradingPositionsChange,
-    //     subsidyPositionsTotal: subsidyPositionsTotal.toNumber(),
-    //     subsidyPositionsTotal24HoursAgo:
-    //       subsidyPositionsTotal24HoursAgo.toNumber(),
-    //     subsidyPositionsChange: subsidyPositionsChange,
-    //   });
-    // }
 
     const bondsTotal =
       marketBonds && marketBonds?.length > 0
