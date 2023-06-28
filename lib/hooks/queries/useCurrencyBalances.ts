@@ -6,6 +6,7 @@ import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { useCrossChainApis } from "lib/state/cross-chain";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";
+import { calculateFreeBalance } from "lib/util/calc-free-balance";
 
 export const currencyBalanceRootKey = "currency-balances";
 
@@ -58,8 +59,12 @@ export const useCurrencyBalances = (address: string) => {
           }),
         );
 
-        const account = await sdk.api.query.system.account(address);
-        const nativeBalance = new Decimal(account.data.free.toString());
+        const { data } = await sdk.api.query.system.account(address);
+        const nativeBalance = calculateFreeBalance(
+          data.free.toString(),
+          data.miscFrozen.toString(),
+          data.feeFrozen.toString(),
+        );
 
         const apisArray = Object.values(apis ?? {});
 
