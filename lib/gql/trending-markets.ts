@@ -13,10 +13,7 @@ import {
 import { hiddenMarketIds } from "lib/constants/markets";
 import { marketMetaFilter } from "./constants";
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
-import {
-  getForeignAssetPrice,
-  getZTGPrice,
-} from "lib/hooks/queries/useAssetUsdPrice";
+import { getForeignAssetPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 
@@ -243,33 +240,31 @@ const calcTrendingPools = (
   transactions.forEach((transaction) => {
     const volume = poolVolumes[transaction.poolId];
     if (volume) {
-      poolVolumes[transaction.poolId] = volume.plus(transaction.dVolume);
+      poolVolumes[transaction.poolId] = volume
+        .plus(transaction.dVolume)
+        .div(ZTG);
     } else {
-      poolVolumes[transaction.poolId] = new Decimal(transaction.dVolume);
+      poolVolumes[transaction.poolId] = new Decimal(transaction.dVolume).div(
+        ZTG,
+      );
     }
   });
 
-  console.log(poolVolumes);
+  for (let poolId in poolVolumes) {
+    const base = pools.find(
+      (pool) => pool.poolId === Number(poolId),
+    )?.baseAsset;
+
+    const value = lookupPrice(
+      basePrices,
+      parseAssetIdString(base) as BaseAssetId,
+    );
+    poolVolumes[poolId] = poolVolumes[poolId].mul(value);
+  }
 
   const poolIdsByVolumeDesc = Object.keys(poolVolumes).sort((a, b) => {
-    console.log(a, b);
-
-    const aBase = pools.find((pool) => pool.poolId === Number(a))?.baseAsset;
-    const bBase = pools.find((pool) => pool.poolId === Number(a))?.baseAsset;
-
-    const aValue = lookupPrice(
-      basePrices,
-      parseAssetIdString(aBase) as BaseAssetId,
-    );
-    const bValue = lookupPrice(
-      basePrices,
-      parseAssetIdString(bBase) as BaseAssetId,
-    );
-    console.log(aValue);
-    console.log(bValue);
-
-    const aVol = poolVolumes[a].mul(aValue);
-    const bVol = poolVolumes[b].mul(bValue);
+    const aVol = poolVolumes[a];
+    const bVol = poolVolumes[b];
     return bVol.minus(aVol).toNumber();
   });
 
