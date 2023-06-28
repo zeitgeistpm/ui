@@ -62,15 +62,10 @@ const getTradeValuesFromExtrinsicResult = (
   };
 };
 
-const TradeForm = (
-  child: (props: {
-    tradeItem: TradeItem;
-    setTradeItem: (trade: TradeItem) => void;
-  }) => React.ReactNode,
-) => {
+const TradeForm = () => {
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
 
-  if (!tradeItem) return <></>;
+  if (!tradeItem) return <div></div>;
 
   return <Inner tradeItem={tradeItem} setTradeItem={setTradeItem} />;
 };
