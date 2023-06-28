@@ -111,7 +111,6 @@ const AssetSelect: React.FC<AssetSelectProps> = ({
       value={selectedOption}
       placeholder="Select"
       isMulti={false}
-      // menuIsOpen={true}
       components={{
         Control,
         ValueContainer,

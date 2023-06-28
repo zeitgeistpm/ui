@@ -117,7 +117,6 @@ const SingleValue = ({
 
 const Option = ({ children, ...rest }: OptionProps<AddressOption, false>) => {
   const { value: address, label } = rest.data;
-  console.log(rest);
   return (
     <components.Option
       {...rest}
@@ -133,9 +132,17 @@ const Option = ({ children, ...rest }: OptionProps<AddressOption, false>) => {
   );
 };
 
-export type AddressSelectProps = {};
+export type AddressSelectProps = {
+  onChange: (option: AddressOption | null) => void;
+  value?: AddressOption | null;
+  error?: string;
+};
 
-const AddressInput: React.FC<AddressSelectProps> = ({}) => {
+const AddressInput: React.FC<AddressSelectProps> = ({
+  onChange,
+  error,
+  value = null,
+}) => {
   const wallet = useWallet();
 
   const options = useMemo<AddressOption[]>(() => {
@@ -148,16 +155,21 @@ const AddressInput: React.FC<AddressSelectProps> = ({}) => {
   }, [wallet.accounts]);
 
   return (
-    <div className="mb-5 h-14 w-full bg-anti-flash-white rounded-md">
+    <div
+      className={
+        "mb-5 h-14 w-full bg-anti-flash-white rounded-md border-1 border-transparent " +
+        (error ? "border-vermilion" : "")
+      }
+    >
       <Select
         className="h-full"
         isSearchable={true}
         isClearable={true}
         options={options}
         unstyled={true}
-        placeholder="Enter account"
+        placeholder="Enter account address"
         isMulti={false}
-        // menuIsOpen={true}
+        value={value}
         components={{
           Control,
           IndicatorsContainer,
@@ -169,8 +181,11 @@ const AddressInput: React.FC<AddressSelectProps> = ({}) => {
           Option,
           SingleValue,
         }}
-        // onChange={onChange}
+        onChange={onChange}
       />
+      {error && (
+        <div className="text-vermilion text-sm text-right">{error}</div>
+      )}
     </div>
   );
 };
