@@ -1,8 +1,4 @@
-import {
-  DefinedUseQueryResult,
-  UseQueryResult,
-  useQuery,
-} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   AssetId,
   IOForeignAssetId,
