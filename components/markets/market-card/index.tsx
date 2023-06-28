@@ -85,7 +85,13 @@ const MarketCardTags = ({
     : "";
   return (
     <>
-      <Image width={20} height={20} src={imagePath} alt="Currency token logo" />
+      <Image
+        width={20}
+        height={20}
+        src={imagePath}
+        alt="Currency token logo"
+        className="rounded-full"
+      />
       {/* replace later when court dispute mechanism is ready */}
       {/* {tags?.map((tag, index) => {
         return (
