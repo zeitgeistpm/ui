@@ -603,21 +603,21 @@ export const usePortfolioPositions = (
   ]);
 
   const marketPositions = useMemo<
-    Position<CategoricalAssetId | ScalarAssetId>[]
+    Position<CategoricalAssetId | ScalarAssetId>[] | null
   >(
     () =>
       positions?.filter(
         (position): position is Position<CategoricalAssetId | ScalarAssetId> =>
           IOMarketOutcomeAssetId.is(position.assetId),
-      ) ?? [],
+      ) ?? null,
     [positions],
   );
 
-  const subsidyPositions = useMemo<Position<PoolShareAssetId>[]>(
+  const subsidyPositions = useMemo<Position<PoolShareAssetId>[] | null>(
     () =>
       positions?.filter((position): position is Position<PoolShareAssetId> =>
         IOPoolShareAssetId.is(position.assetId),
-      ) ?? [],
+      ) ?? null,
     [positions],
   );
 
@@ -656,6 +656,7 @@ export const usePortfolioPositions = (
       foreignAssetPrices,
       ztgPrice,
     );
+
     const subsidyPositionsTotal24HoursAgo = totalPositionsValue(
       subsidyPositions,
       "price24HoursAgo",
@@ -717,8 +718,8 @@ export const usePortfolioPositions = (
 
   return {
     all: positions ?? undefined,
-    markets: marketPositions,
-    subsidy: subsidyPositions,
+    markets: marketPositions ?? undefined,
+    subsidy: subsidyPositions ?? undefined,
     breakdown: breakdown ?? undefined,
   };
 };
@@ -741,12 +742,13 @@ export const totalPositionsValue = <
       ? foreignAssetPrices[assetId.ForeignAsset.toString()]?.div(ztgPrice)
       : 1;
 
-    if (position.userBalance.isNaN() || position[key]?.isNaN()) {
+    if (position.userBalance.isNaN() || position[key].isNaN()) {
       return acc;
     }
-    const value = position.userBalance
-      .mul(position[key] ?? 0)
-      .mul(priceMultiplier);
+    if (!position[key]) return acc;
+
+    const value = position.userBalance.mul(position[key]).mul(priceMultiplier);
+
     return !value.isNaN() ? acc.plus(value) : acc;
   }, new Decimal(0));
 };
