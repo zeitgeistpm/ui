@@ -99,12 +99,12 @@ type MarketHeader = {
 export type TradeHistoryItem = {
   marketId: MarketId;
   question: string;
-  assetIn: string | undefined;
-  assetOut: string | undefined;
+  assetIn?: string;
+  assetOut?: string;
   assetAmountIn: Decimal;
   assetAmountOut: Decimal;
   price: Decimal;
-  baseAssetName: string | undefined;
+  baseAssetName?: string;
   time: any;
 };
 
@@ -188,7 +188,7 @@ export const useTradeHistory = (address?: string) => {
               swap.assetAmountOut,
             );
 
-            return {
+            const item: TradeHistoryItem = {
               marketId: market?.marketId,
               question: market?.question,
               assetIn: lookupAssetName(swap.assetIn, marketsMap, metadataMap),
@@ -203,6 +203,8 @@ export const useTradeHistory = (address?: string) => {
               ),
               time: swap.timestamp,
             };
+
+            return item;
           })
           .filter((trade): trade is TradeHistoryItem => trade != null);
 

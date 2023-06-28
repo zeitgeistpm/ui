@@ -524,8 +524,8 @@ const Inner = ({
                   validate: (value) => Number(value) > 0,
                 })}
                 onFocus={() => {
-                  if (tradeItemState?.baseAssetId) {
-                    setLastEditedAssetId(tradeItemState?.baseAssetId);
+                  if (tradeItemState?.assetId) {
+                    setLastEditedAssetId(tradeItemState?.assetId);
                   }
                 }}
                 step="any"
@@ -562,8 +562,8 @@ const Inner = ({
               value={percentageDisplay}
               onValueChange={setPercentageDisplay}
               onFocus={() => {
-                if (tradeItemState?.baseAssetId) {
-                  setLastEditedAssetId(tradeItemState?.baseAssetId);
+                if (tradeItemState?.assetId) {
+                  setLastEditedAssetId(tradeItemState?.assetId);
                 }
               }}
               minLabel="0 %"
