@@ -1,5 +1,4 @@
-import { isRpcSdk, parseAssetId } from "@zeitgeistpm/sdk-next";
-import { AmountInput } from "components/ui/inputs";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -17,7 +16,6 @@ import { useWallet } from "lib/state/wallet";
 import { calcMarketColors } from "lib/util/color-calc";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useEffect, useState } from "react";
-import Loader from "react-spinners/PulseLoader";
 
 const SellFullSetForm = ({
   marketId,
@@ -77,7 +75,7 @@ const SellFullSetForm = ({
     let lowestTokenAmount: Decimal = new Decimal(0);
     balances?.forEach((balance) => {
       const free = new Decimal(balance.free.toNumber());
-      if (!lowestTokenAmount || free.lessThan(lowestTokenAmount)) {
+      if (lowestTokenAmount.eq(0) || free.lessThan(lowestTokenAmount)) {
         lowestTokenAmount = free;
       }
     });
@@ -122,7 +120,14 @@ const SellFullSetForm = ({
             {maxTokenSet.div(ZTG).toString()}
           </span>
         </div>
-        <AmountInput value={amount} onChange={handleAmountChange} min="0" />
+        <input
+          type="number"
+          min="0"
+          value={amount}
+          step="0.1"
+          onChange={(e) => handleAmountChange(e.target.value)}
+          className="text-ztg-14-150 font-mono text-right w-full p-2 outline-none bg-sky-200"
+        />
       </div>
       <div>
         <div className="flex items-center mt-ztg-24 mb-ztg-8">
@@ -134,11 +139,12 @@ const SellFullSetForm = ({
             {baseAssetBalance?.div(ZTG).toNumber()}
           </span>
         </div>
-        <AmountInput
+        <input
+          type="number"
           value={amount}
-          onChange={handleAmountChange}
+          step="0.1"
           disabled={true}
-          min="0"
+          className="text-ztg-14-150 font-mono text-right w-full p-2 outline-none bg-sky-200 disabled:bg-transparent disabled:border-sky-200 border-1"
         />
       </div>
       <div className="h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 my-ztg-10 text-sky-600">
@@ -150,7 +156,7 @@ const SellFullSetForm = ({
         onClick={handleSignTransaction}
         disabled={disabled}
       >
-        {isLoading ? <Loader size={8} /> : "Sell Full Set"}
+        Sell Full Set
       </TransactionButton>
     </div>
   );

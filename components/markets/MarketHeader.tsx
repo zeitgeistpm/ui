@@ -27,7 +27,7 @@ import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import { Dialog } from "@headlessui/react";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 
-const UserIdentity: FC<
+export const UserIdentity: FC<
   PropsWithChildren<{ user: string; className?: string }>
 > = ({ user, className }) => {
   const { data: identity } = useIdentity(user ?? "");
@@ -37,7 +37,7 @@ const UserIdentity: FC<
       : shortenAddress(user, 10, 10);
   return (
     <div className={`inline-flex items-center gap-1 ${className}`}>
-      <Avatar address={user} />
+      <Avatar address={user} copy={false} />
       <span className="break-all flex-1">{displayName}</span>
     </div>
   );
@@ -84,7 +84,7 @@ const MarketOutcome: FC<
       }`}
     >
       <div className="flex gap-1">
-        <span>{status} Outome: </span>
+        <span>{status} Outcome: </span>
         {outcome ? (
           <span className="font-bold">{outcome}</span>
         ) : (
@@ -331,7 +331,6 @@ const MarketHeader: FC<{
   });
 
   const oracleReported = marketHistory?.reported?.by === market.oracle;
-
   return (
     <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
       <h1 className="text-4xl font-extrabold my-5 text-center">{question}</h1>
@@ -386,7 +385,7 @@ const MarketHeader: FC<{
         ) : (
           <Skeleton width="150px" height="20px" />
         )}
-        {isLiqudityLoading === false && token ? (
+        {isLiqudityLoading === false && liquidity && token ? (
           <HeaderStat label="Liquidity" border={false}>
             {formatNumberCompact(liquidity.div(ZTG).toNumber())}
             &nbsp;
@@ -398,30 +397,33 @@ const MarketHeader: FC<{
       </div>
       {(status === "Reported" ||
         status === "Disputed" ||
-        status === "Resolved") && (
-        <MarketOutcome
-          setShowMarketHistory={setShowMarketHistory}
-          status={status}
-          outcome={outcome}
-          by={by}
-          marketHistory={marketHistory}
-        />
-      )}
+        status === "Resolved") &&
+        marketHistory && (
+          <MarketOutcome
+            setShowMarketHistory={setShowMarketHistory}
+            status={status}
+            outcome={outcome}
+            by={by}
+            marketHistory={marketHistory}
+          />
+        )}
 
       <Modal
         open={showMarketHistory}
         onClose={() => setShowMarketHistory(false)}
       >
-        <MarketHistory
-          starts={starts}
-          ends={ends}
-          marketHistory={marketHistory}
-          oracleReported={oracleReported}
-          categories={categories}
-          marketType={marketType}
-          setShowMarketHistory={setShowMarketHistory}
-          scalarType={scalarType}
-        />
+        {marketHistory && (
+          <MarketHistory
+            starts={starts}
+            ends={ends}
+            marketHistory={marketHistory}
+            oracleReported={oracleReported}
+            categories={categories}
+            marketType={marketType}
+            setShowMarketHistory={setShowMarketHistory}
+            scalarType={scalarType}
+          />
+        )}
       </Modal>
     </header>
   );

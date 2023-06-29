@@ -268,72 +268,73 @@ const Answers = ({
   moderation: Moderation;
 }) => {
   return (
-    <>
+    <div className="md:grid grid-cols-4 gap-2">
       {answers?.answers.map((answer, answerIndex) => {
         const answerLiquidity = liquidity?.rows[answerIndex];
 
         return (
-          <>
-            <div className="rounded-md bg-gray-50 py-3 px-5 mb-4 md:mb-0">
-              <div className="text-xl font-semibold">
-                {answerLiquidity?.asset}
-              </div>
-              {answers.type === "categorical" && (
-                <div className="text-sm text-gray-400">{answer}</div>
-              )}
+          <div
+            key={answerIndex}
+            className="flex-1 rounded-md bg-gray-50 py-3 px-5 mb-4 md:mb-0"
+          >
+            <div className="text-xl font-semibold">
+              {answerLiquidity?.asset}
+            </div>
+            {answers.type === "categorical" && (
+              <div className="text-sm text-gray-400">{answer}</div>
+            )}
 
-              {liquidity &&
-              liquidity.deploy &&
-              moderation === "Permissionless" ? (
-                <div className="!text-sm mt-3">
-                  <div className="table-row mb-1">
-                    <div className="table-cell text-left pr-4">
-                      <Label className="text-xs">Amount</Label>{" "}
-                    </div>
-                    <div className="table-cell text-left">
-                      <div>{answerLiquidity?.amount ?? "--"}</div>
-                    </div>
+            {liquidity &&
+            liquidity.deploy &&
+            moderation === "Permissionless" ? (
+              <div className="!text-sm mt-3">
+                <div className="table-row mb-1">
+                  <div className="table-cell text-left pr-4">
+                    <Label className="text-xs">Amount</Label>{" "}
                   </div>
-
-                  <div className="table-row mb-1">
-                    <div className="table-cell text-left pr-4">
-                      <Label className="text-xs">Weight</Label>{" "}
-                    </div>
-                    <div className="table-cell text-left">
-                      <div>{answerLiquidity?.weight ?? "--"}</div>
-                    </div>
+                  <div className="table-cell text-left">
+                    <div>{answerLiquidity?.amount ?? "--"}</div>
                   </div>
+                </div>
 
-                  <div className="table-row">
-                    <div className="table-cell text-left pr-4">
-                      <Label className="text-xs">Value</Label>{" "}
-                    </div>
-                    <div className="table-cell text-left">
-                      <div className="mb-1">
-                        {answerLiquidity ? (
-                          <>
-                            {new Decimal(answerLiquidity?.value).toFixed(1)}{" "}
-                            <span className="text-gray-400">≈</span>{" "}
-                            {baseAssetPrice
-                              ?.mul(answerLiquidity?.value)
-                              .toFixed(2)}{" "}
-                            USD
-                          </>
-                        ) : (
-                          ""
-                        )}
-                      </div>
+                <div className="table-row mb-1">
+                  <div className="table-cell text-left pr-4">
+                    <Label className="text-xs">Weight</Label>{" "}
+                  </div>
+                  <div className="table-cell text-left">
+                    <div>{answerLiquidity?.weight ?? "--"}</div>
+                  </div>
+                </div>
+
+                <div className="table-row">
+                  <div className="table-cell text-left pr-4">
+                    <Label className="text-xs">Value</Label>{" "}
+                  </div>
+                  <div className="table-cell text-left">
+                    <div className="mb-1">
+                      {answerLiquidity ? (
+                        <>
+                          {new Decimal(answerLiquidity?.value).toFixed(1)}{" "}
+                          <span className="text-gray-400">≈</span>{" "}
+                          {baseAssetPrice
+                            ?.mul(answerLiquidity?.value)
+                            .toFixed(2)}{" "}
+                          USD
+                        </>
+                      ) : (
+                        ""
+                      )}
                     </div>
                   </div>
                 </div>
-              ) : (
-                ""
-              )}
-            </div>
-          </>
+              </div>
+            ) : (
+              ""
+            )}
+          </div>
         );
       })}
-    </>
+    </div>
   );
 };
 

@@ -175,6 +175,10 @@ module.exports = {
         "560px": "560px",
       },
       colors: {
+        success: "#E8FFE4",
+        info: "#E4F5FF",
+        error: "#FFE6E4",
+        "tooltip-bg": "#FDF5DB",
         "maroon-base": "#3C0C0C",
         "kusama-base": "#E10178",
         "kusama-green": "#00E7BD",
@@ -251,11 +255,14 @@ module.exports = {
         powderblue: "#ECFAFF",
         discord: "#5364E6",
         twitter: "#479BE9",
+        "scalar-bar": "#CCF994",
+        "scalar-text": "#0C5F0B",
         purple: {
           light: "#FCE8F3",
           DEFAULT: "#99154B",
         },
         blue: {
+          lighter: "#C9DBFF",
           light: "#E1EFFE",
           DEFAULT: "#1C64F2",
           dark: "#1E429F",

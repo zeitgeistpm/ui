@@ -77,7 +77,7 @@ const SortBySelect = ({
     <ReactSelect
       value={marketsOrderByOptions.find((opt) => opt.value === ordering)}
       onChange={(v) => {
-        onOrderingChange(v.value);
+        if (v) onOrderingChange(v.value);
       }}
       options={marketsOrderByOptions}
       styles={{ ...sortBySelectStyles, ...(styles ?? {}) }}

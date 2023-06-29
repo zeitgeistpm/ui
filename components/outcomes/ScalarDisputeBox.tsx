@@ -4,7 +4,7 @@ import {
   isRpcSdk,
   Market,
 } from "@zeitgeistpm/sdk-next";
-import { AmountInput, DateTimeInput } from "components/ui/inputs";
+import { DateTimeInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -122,12 +122,23 @@ const ScalarDisputeBox = ({
           }}
         />
       ) : (
-        <AmountInput
+        <input
+          type="number"
           value={scalarReportValue}
-          min={bounds?.[0].toString()}
-          max={bounds?.[1].toString()}
-          onChange={(val) => setScalarReportValue(val)}
-          showErrorMessage={false}
+          onChange={(e) => setScalarReportValue(e.target.value)}
+          min={bounds[0].toString()}
+          max={bounds[1].toString()}
+          className="text-ztg-14-150 p-2 bg-sky-200 rounded-md w-full outline-none text-right font-mono mt-2"
+          onBlur={() => {
+            if (
+              scalarReportValue === "" ||
+              Number(scalarReportValue) < bounds[0].toNumber()
+            ) {
+              setScalarReportValue(bounds[0].toString());
+            } else if (Number(scalarReportValue) > bounds[1].toNumber()) {
+              setScalarReportValue(bounds[1].toString());
+            }
+          }}
         />
       )}
       <div className="flex flex-col item-center text-center">

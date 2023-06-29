@@ -8,8 +8,10 @@ import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
+import { isScalarRangeType } from "lib/types";
 import { formatNumberLocalized } from "lib/util";
 import { getCurrentPrediction } from "lib/util/assets";
+import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import { FC, PropsWithChildren, useState } from "react";
 
 export const MarketLiquiditySection = ({
@@ -62,7 +64,9 @@ const LiquidityHeaderButtonItem: FC<PropsWithChildren<{ className?: string }>> =
 
 const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
   const { pool } = market;
-  const { data: liquidity } = usePoolLiquidity({ poolId: pool.poolId });
+  const { data: liquidity } = usePoolLiquidity(
+    pool?.poolId ? { poolId: pool.poolId } : undefined,
+  );
   const swapFee = Number(pool?.swapFee ?? 0);
   const baseAssetId = pool?.baseAsset
     ? parseAssetId(pool.baseAsset).unrightOr(undefined)
@@ -70,14 +74,18 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
   const prediction =
-    market?.pool?.assets && getCurrentPrediction(market.pool.assets, market);
+    market &&
+    market?.pool?.assets &&
+    getCurrentPrediction(market.pool.assets, market);
 
   const [manageLiquidityOpen, setManageLiquidityOpen] = useState(false);
 
   const predictionDisplay =
-    market?.marketType.scalar != null
-      ? `${Number(prediction?.name).toFixed(2)}`
-      : `${prediction?.name} ${prediction?.percentage}%`;
+    prediction && market && market.scalarType !== undefined
+      ? market.marketType.scalar && isScalarRangeType(market.scalarType)
+        ? formatScalarOutcome(prediction.price, market.scalarType)
+        : `${prediction.name} ${prediction.percentage}%`
+      : "";
 
   return (
     <div className="md:flex md:justify-between">
@@ -118,11 +126,13 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
           </SecondaryButton>
         </LiquidityHeaderButtonItem>
       </div>
-      <LiquidityModal
-        poolId={pool.poolId}
-        open={manageLiquidityOpen}
-        onClose={() => setManageLiquidityOpen(false)}
-      />
+      {pool?.poolId && (
+        <LiquidityModal
+          poolId={pool.poolId}
+          open={manageLiquidityOpen}
+          onClose={() => setManageLiquidityOpen(false)}
+        />
+      )}
     </div>
   );
 };

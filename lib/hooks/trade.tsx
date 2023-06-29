@@ -25,7 +25,10 @@ export type TradeItem = {
 export const TradeItemContext = createContext<{
   data: TradeItem | null;
   set: (trade: TradeItem) => void;
-}>(null);
+}>({
+  data: null,
+  set: () => {},
+});
 
 export const useTradeItem = () => {
   return useContext(TradeItemContext);
@@ -49,7 +52,7 @@ export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
     traderBaseBalance,
   } = itemState;
 
-  let maxAmountBase: Decimal;
+  let maxAmountBase: Decimal = new Decimal(0);
 
   if (item.action === "buy") {
     maxAmountBase = calcInGivenOut(
@@ -105,7 +108,7 @@ export const useTradeMaxAssetAmount = (item: TradeItem): Decimal => {
     traderBaseBalance,
   } = itemState;
 
-  let maxAmountAsset: Decimal;
+  let maxAmountAsset: Decimal = new Decimal(0);
 
   if (item.action === "buy") {
     maxAmountAsset = calcOutGivenIn(

@@ -5,7 +5,7 @@ import "react-quill/dist/quill.bubble.css";
 import { FormEvent } from "components/create/editor/types";
 
 const QuillEditor = ({
-  name,
+  name = "",
   value,
   onChange,
   onBlur,
