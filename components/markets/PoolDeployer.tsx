@@ -190,7 +190,8 @@ const PoolDeployer = ({
       return {
         isTouched: true,
         isValid: false,
-        errors: parsed.error.errors,
+        //TODO: have to any since type narrowing doesnt work without strict nulls
+        errors: (parsed as any)?.error?.errors,
       };
     }
   }, [liquidity, activeBalance, poolCost]);
