@@ -255,11 +255,14 @@ module.exports = {
         powderblue: "#ECFAFF",
         discord: "#5364E6",
         twitter: "#479BE9",
+        "scalar-bar": "#CCF994",
+        "scalar-text": "#0C5F0B",
         purple: {
           light: "#FCE8F3",
           DEFAULT: "#99154B",
         },
         blue: {
+          lighter: "#C9DBFF",
           light: "#E1EFFE",
           DEFAULT: "#1C64F2",
           dark: "#1E429F",
