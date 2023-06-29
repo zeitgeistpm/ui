@@ -211,7 +211,10 @@ const TransferModal = ({
                 if (!v.assetOption) {
                   return "Currency selection missing";
                 }
-                if (isNativeCurrency && fee && balance?.sub(fee).lt(v.amount)) {
+                if (
+                  (isNativeCurrency && fee && balance?.sub(fee).lt(v.amount)) ||
+                  balance?.lt(v.amount)
+                ) {
                   return "Insufficient balance";
                 }
               },
