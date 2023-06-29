@@ -164,7 +164,7 @@ const PoolDeployer = ({
     }, "Insufficient balance to deploy pool.")
       .refine((liquidity) => {
         return new Decimal(liquidity.rows[0]?.amount || 0).greaterThan(0);
-      }, "Liquidty amount must be a positive number.")
+      }, "Liquidity amount must be a positive number.")
       .refine((liquidity) => {
         return (
           currencyMetadata &&
