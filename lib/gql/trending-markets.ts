@@ -2,7 +2,7 @@ import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
 import { IndexedMarketCardData } from "components/markets/market-card/index";
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
-import { DAY_SECONDS, environment, ZTG } from "lib/constants";
+import { DAY_SECONDS, ZTG } from "lib/constants";
 import { MarketOutcomes, MarketOutcome } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
 import {
@@ -220,7 +220,6 @@ const getBaseAssetPrices = async (): Promise<BasePrices> => {
   const ztgInfo = await fetchZTGInfo();
 
   pricesObj["ztg"] = ztgInfo.price;
-  console.log(pricesObj);
 
   return pricesObj;
 };
@@ -240,13 +239,9 @@ const calcTrendingPools = (
   transactions.forEach((transaction) => {
     const volume = poolVolumes[transaction.poolId];
     if (volume) {
-      poolVolumes[transaction.poolId] = volume
-        .plus(transaction.dVolume)
-        .div(ZTG);
+      poolVolumes[transaction.poolId] = volume.plus(transaction.dVolume);
     } else {
-      poolVolumes[transaction.poolId] = new Decimal(transaction.dVolume).div(
-        ZTG,
-      );
+      poolVolumes[transaction.poolId] = new Decimal(transaction.dVolume);
     }
   });
 
