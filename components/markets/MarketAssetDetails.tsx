@@ -45,7 +45,7 @@ const columns: TableColumn[] = [
 ];
 
 const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
-  const [tableData, setTableData] = useState<TableData[]>();
+  const [tableData, setTableData] = useState<TableData[]>([]);
   const [sdk] = useSdkv2();
 
   const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
@@ -111,43 +111,48 @@ const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
           )
         : new Decimal(0);
 
-      for (const [index, category] of market.categories.entries()) {
-        const outcomeName = category?.name;
-        const currentPrice = spotPrices?.get(index)?.toNumber();
+      const categoryEntries = market?.categories?.entries();
 
-        const priceChange = priceChanges?.get(index);
-        tblData = [
-          ...tblData,
-          {
-            assetId: market.pool?.weights[index]?.assetId,
-            id: index,
-            outcome: outcomeName,
-            totalValue: {
-              value: currentPrice,
-              usdValue: new Decimal(
-                currentPrice != null && usdPrice
-                  ? usdPrice?.mul(currentPrice)
-                  : 0,
-              ).toNumber(),
+      if (categoryEntries) {
+        for (const [index, category] of categoryEntries) {
+          const outcomeName = category?.name;
+          const currentPrice = spotPrices?.get(index)?.toNumber();
+
+          const priceChange = priceChanges?.get(index);
+          tblData = [
+            ...tblData,
+            {
+              assetId: market.pool?.weights[index]?.assetId,
+              id: index,
+              outcome: outcomeName,
+              totalValue: {
+                value: currentPrice ?? 0,
+                usdValue: new Decimal(
+                  currentPrice ? usdPrice?.mul(currentPrice) ?? 0 : 0,
+                ).toNumber(),
+              },
+              pre:
+                currentPrice != null
+                  ? Math.round(
+                      (currentPrice / totalAssetPrice.toNumber()) * 100,
+                    )
+                  : null,
+              change: priceChange,
+              buttons: (
+                <AssetActionButtons
+                  marketId={marketId}
+                  assetId={
+                    parseAssetIdString(market.pool?.weights[index]?.assetId) as
+                      | ScalarAssetId
+                      | CategoricalAssetId
+                  }
+                />
+              ),
             },
-            pre:
-              currentPrice != null
-                ? Math.round((currentPrice / totalAssetPrice.toNumber()) * 100)
-                : null,
-            change: priceChange,
-            buttons: (
-              <AssetActionButtons
-                marketId={marketId}
-                assetId={
-                  parseAssetIdString(market.pool?.weights[index]?.assetId) as
-                    | ScalarAssetId
-                    | CategoricalAssetId
-                }
-              />
-            ),
-          },
-        ];
+          ];
+        }
       }
+
       setTableData(tblData);
     } else {
       tblData =

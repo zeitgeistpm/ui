@@ -92,7 +92,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
 
   return (
     <div
-      className={"pt-ztg-46 mb-[38px] scroll-mt-[40px]" + className}
+      className={"mb-[38px] scroll-mt-[40px]" + className}
       data-testid="marketsList"
       id={"market-list"}
     >
@@ -126,6 +126,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
               outcomes={market.outcomes}
               question={question}
               creation={market.creation}
+              creator={market.creator}
               img={image}
               prediction={market.prediction}
               endDate={market.period.end}
