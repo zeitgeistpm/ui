@@ -202,7 +202,7 @@ const PoolDeployer = ({
       ) : liquidity && isBroadcasting ? (
         <div className="center">
           <div className="p-6 bg-slate-50 rounded-md center gap-4">
-            <div className="h-12 w-12 center bg-white">
+            <div className="h-12 w-12 center bg-inherit">
               <Loader variant="Info" loading className="h-12 w-12" />
             </div>
             <h4 className="text-gray-400">Deploying pool..</h4>
