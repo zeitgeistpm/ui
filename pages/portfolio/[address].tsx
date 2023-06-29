@@ -154,7 +154,7 @@ const Portfolio: NextPageWithLayout = () => {
                       );
                     }
 
-                    if (marketPositions.length === 0) return null;
+                    if (marketPositions.length === 0) return <></>;
 
                     return (
                       <MarketPositions
