@@ -147,7 +147,7 @@ const Inner = ({
             new Decimal(assetAmount).mul(ZTG),
           ),
           tradeItemState.assetWeight,
-          tradeItemState.swapFee,
+          0,
         );
       } else {
         return calcSpotPrice(
@@ -157,7 +157,7 @@ const Inner = ({
             new Decimal(assetAmount).mul(ZTG),
           ),
           tradeItemState.assetWeight,
-          tradeItemState.swapFee,
+          0,
         );
       }
     }
@@ -602,7 +602,7 @@ const Inner = ({
                 Confirm {`${capitalize(tradeItem?.action)}`}
               </div>
               <div className="center font-normal text-ztg-12-120 h-[20px]">
-                Trading fee: {fee} {constants?.tokenSymbol}
+                Transaction fee: {fee} {constants?.tokenSymbol}
               </div>
             </TransactionButton>
           </div>
