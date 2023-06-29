@@ -172,7 +172,7 @@ const PoolDeployer = ({
             .mul(2)
             .greaterThanOrEqualTo(minBaseLiquidity[currencyMetadata.name])
         );
-      }, `Liquidty amount must be greater than ${minBaseLiquidity[currencyMetadata?.name ?? "ZTG"]} ${currencyMetadata?.name ?? "ZTG"}.`);
+      }, `Value has to exceed minimum liquidity of ${minBaseLiquidity[currencyMetadata?.name ?? "ZTG"]} ${currencyMetadata?.name ?? "ZTG"}.`);
   }, [activeBalance, poolCost]);
 
   const fieldState: FieldState = useMemo(() => {
