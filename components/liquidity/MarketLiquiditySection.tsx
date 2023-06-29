@@ -24,9 +24,6 @@ export const MarketLiquiditySection = ({
 }) => {
   return (
     <>
-      <div className="mb-8">
-        <LiquidityHeader market={market} />
-      </div>
       {poll && !market?.pool?.poolId && (
         <>
           <div className="center">
@@ -38,10 +35,15 @@ export const MarketLiquiditySection = ({
         </>
       )}
       {market?.pool?.poolId && (
-        <PoolTable
-          poolId={market.pool.poolId}
-          marketId={Number(market.marketId)}
-        />
+        <>
+          <div className="mb-8">
+            <LiquidityHeader market={market} />
+          </div>
+          <PoolTable
+            poolId={market.pool.poolId}
+            marketId={Number(market.marketId)}
+          />
+        </>
       )}
     </>
   );
