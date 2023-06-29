@@ -93,7 +93,9 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
       </TradeItemContext.Provider>
       <Account />
       <Onboarding />
-      <GrillChat open={showChat} setOpen={setShowChat} />
+      {process.env.NEXT_PUBLIC_GRILLCHAT_DISABLE !== "true" && (
+        <GrillChat open={showChat} setOpen={setShowChat} />
+      )}
     </div>
   );
 };
