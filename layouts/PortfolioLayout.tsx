@@ -9,6 +9,7 @@ const PortfolioLayout: React.FC<PropsWithChildren> = ({ children }) => {
   const wallet = useWallet();
   const [hasAddress, setHasAddress] = useState<boolean>();
   const [isAccountAddress, setIsAccountAddress] = useState<boolean>();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const isAddressRoute = router.query.address !== undefined;
   const addressFromRoute = isAddressRoute
@@ -32,6 +33,7 @@ const PortfolioLayout: React.FC<PropsWithChildren> = ({ children }) => {
           shallow: true,
         },
       );
+      setIsAccountAddress(false);
     } else if (wallet.activeAccount?.address) {
       setHasAddress(true);
       setIsAccountAddress(true);
@@ -45,11 +47,12 @@ const PortfolioLayout: React.FC<PropsWithChildren> = ({ children }) => {
           shallow: true,
         },
       );
+      setIsAccountAddress(false);
     } else {
       setHasAddress(false);
     }
   }, [addressFromRoute, router.isReady, wallet.activeAccount?.address]);
-
+  console.log(isLoading);
   return (
     <>
       {hasAddress === false ? (
