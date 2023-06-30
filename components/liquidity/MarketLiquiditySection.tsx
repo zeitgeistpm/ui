@@ -64,7 +64,9 @@ const LiquidityHeaderButtonItem: FC<PropsWithChildren<{ className?: string }>> =
 
 const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
   const { pool } = market;
-  const { data: liquidity } = usePoolLiquidity({ poolId: pool.poolId });
+  const { data: liquidity } = usePoolLiquidity(
+    pool?.poolId ? { poolId: pool.poolId } : undefined,
+  );
   const swapFee = Number(pool?.swapFee ?? 0);
   const baseAssetId = pool?.baseAsset
     ? parseAssetId(pool.baseAsset).unrightOr(undefined)
@@ -72,7 +74,9 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
   const prediction =
-    market?.pool?.assets && getCurrentPrediction(market.pool.assets, market);
+    market &&
+    market?.pool?.assets &&
+    getCurrentPrediction(market.pool.assets, market);
 
   const [manageLiquidityOpen, setManageLiquidityOpen] = useState(false);
 
@@ -122,11 +126,13 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
           </SecondaryButton>
         </LiquidityHeaderButtonItem>
       </div>
-      <LiquidityModal
-        poolId={pool.poolId}
-        open={manageLiquidityOpen}
-        onClose={() => setManageLiquidityOpen(false)}
-      />
+      {pool?.poolId && (
+        <LiquidityModal
+          poolId={pool.poolId}
+          open={manageLiquidityOpen}
+          onClose={() => setManageLiquidityOpen(false)}
+        />
+      )}
     </div>
   );
 };

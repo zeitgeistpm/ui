@@ -44,8 +44,6 @@ const SellFullSetForm = ({
     pool,
   );
 
-  console.log("balances", balances);
-
   const [amount, setAmount] = useState<string>("0");
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 

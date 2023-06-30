@@ -6,6 +6,7 @@ import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { useCrossChainApis } from "lib/state/cross-chain";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";
+import { calculateFreeBalance } from "lib/util/calc-free-balance";
 
 export const currencyBalanceRootKey = "currency-balances";
 
@@ -15,6 +16,7 @@ export type CurrencyBalance = {
   chain: ChainName;
   foreignAssetId?: number;
   sourceChain: ChainName;
+  existentialDeposit: Decimal;
 };
 
 export const useCurrencyBalances = (address: string) => {
@@ -51,11 +53,18 @@ export const useCurrencyBalances = (address: string) => {
             sourceChain: FOREIGN_ASSET_METADATA[assetIds[index]]
               .originChain as ChainName,
             foreignAssetId: Number(assetIds[index]),
+            existentialDeposit: new Decimal(
+              sdk.api.consts.balances.existentialDeposit.toString(),
+            ),
           }),
         );
 
-        const account = await sdk.api.query.system.account(address);
-        const nativeBalance = new Decimal(account.data.free.toString());
+        const { data } = await sdk.api.query.system.account(address);
+        const nativeBalance = calculateFreeBalance(
+          data.free.toString(),
+          data.miscFrozen.toString(),
+          data.feeFrozen.toString(),
+        );
 
         const apisArray = Object.values(apis ?? {});
 
@@ -65,15 +74,19 @@ export const useCurrencyBalances = (address: string) => {
           ),
         );
 
+        const nativeBalanceDetails: CurrencyBalance = {
+          balance: nativeBalance,
+          chain: "Zeitgeist" as ChainName,
+          sourceChain: "Zeitgeist" as ChainName,
+          symbol: constants.tokenSymbol,
+          existentialDeposit: new Decimal(
+            sdk.api.consts.balances.existentialDeposit.toString(),
+          ),
+        };
+
         return [
           ...foreignAssetBalances,
-          {
-            balance: nativeBalance,
-            chain: "Zeitgeist" as ChainName,
-            sourceChain: "Zeitgeist" as ChainName,
-            foreignAssetId: null,
-            symbol: constants.tokenSymbol,
-          },
+          nativeBalanceDetails,
           ...chainBalances.flat(),
         ];
       }

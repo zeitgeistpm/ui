@@ -33,7 +33,6 @@ const columns: TableColumn[] = [
 
 const BondsTable = ({ address }: { address: string }) => {
   const { data: marketBonds, isLoading } = useAccountBonds(address);
-  const { data: foreignAssetPrices } = useAllForeignAssetUsdPrices();
   const { data: ztgPrice } = useZtgPrice();
 
   return (
@@ -66,13 +65,7 @@ const BondsTable = ({ address }: { address: string }) => {
                         .toNumber(),
                       usdValue: new Decimal(market.bonds.creation.value)
                         .div(ZTG)
-                        .mul(
-                          lookUpAssetPrice(
-                            market.baseAsset,
-                            foreignAssetPrices,
-                            ztgPrice,
-                          ),
-                        )
+                        .mul(ztgPrice ?? 0)
                         .toNumber(),
                     },
                     settled:
@@ -87,13 +80,7 @@ const BondsTable = ({ address }: { address: string }) => {
                         .toNumber(),
                       usdValue: new Decimal(market.bonds.oracle.value)
                         .div(ZTG)
-                        .mul(
-                          lookUpAssetPrice(
-                            market.baseAsset,
-                            foreignAssetPrices,
-                            ztgPrice,
-                          ),
-                        )
+                        .mul(ztgPrice ?? 0)
                         .toNumber(),
                     },
                     settled:

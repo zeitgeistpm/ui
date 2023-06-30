@@ -55,6 +55,7 @@ const Countdown = ({
         initialRemainingTime={secondsRemaining}
       >
         {(val) => {
+          val.remainingTime = val?.remainingTime ?? 0;
           return (
             <TimerContent
               title="Ends in"
@@ -76,6 +77,7 @@ const Countdown = ({
         initialRemainingTime={secondsRemaining}
       >
         {(val) => {
+          val.remainingTime = val?.remainingTime ?? 0;
           const days = Math.floor(val.remainingTime / DAY_SECONDS);
           const remainderFromdays = val.remainingTime % DAY_SECONDS;
           const isoString = new Date(remainderFromdays * 1000)

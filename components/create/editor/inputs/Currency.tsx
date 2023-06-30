@@ -31,6 +31,7 @@ export const CurrencySelect: React.FC<CurrencySelectProps> = ({
         .filter((currency) => options?.includes(currency.name) ?? true)
         .map((currency) => (
           <button
+            key={currency.name}
             type="button"
             className={`
               flex flex-col justify-center flex-1 w-full md:max-w-xs rounded-md p-6 md:min-h-[300px] min-h-[150px] 

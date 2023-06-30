@@ -13,7 +13,7 @@ type ForeignAssetMetadata = {
 
 export const lookupAssetImagePath = (foreignAssetId?: number | null) => {
   if (foreignAssetId == null) {
-    return "/currencies/ztg.jpg";
+    return "/currencies/ztg.png";
   } else {
     return FOREIGN_ASSET_METADATA[foreignAssetId].image;
   }

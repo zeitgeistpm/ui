@@ -19,7 +19,7 @@ import { useRef } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { LuFileWarning } from "react-icons/lu";
 import { ErrorMessage } from "./ErrorMessage";
-import InfoPopover from "./InfoPopover";
+import InfoPopover from "../../ui/InfoPopover";
 import { MarketFormSection } from "./MarketFormSection";
 import { Publishing } from "./Publishing";
 import { EditorResetButton } from "./ResetButton";
@@ -139,7 +139,7 @@ export const MarketEditor = () => {
                   </h3>
                 }
               >
-                <p className="text-gray-500 font-light text-sm">
+                <p>
                   The base asset used to provide liquidity to the market and
                   what you use when making trades for market outcome tokens.
                 </p>
@@ -220,7 +220,7 @@ export const MarketEditor = () => {
                 <h4 className="text-base text-left mb-1">
                   Outcomes (Categorical)
                 </h4>
-                <p className="text-gray-500 font-light text-sm text-left mb-4">
+                <p className="font-light text-left mb-4">
                   Outcomes will create a categorical market from the options you
                   specify.{" "}
                   <a
@@ -232,7 +232,7 @@ export const MarketEditor = () => {
                   </a>
                 </p>
                 <h4 className="text-base text-left mb-1">Scalar</h4>
-                <p className="text-gray-500 font-light text-sm text-left mb-4">
+                <p className="text-left mb-4">
                   A scalar market is a market where the outcome is a number or
                   date in a the range specified by the lower(<b>short</b>) and
                   upper(
@@ -246,7 +246,7 @@ export const MarketEditor = () => {
                   </a>
                 </p>
                 <h4 className="text-base text-left mb-1">Yes/No</h4>
-                <p className="text-gray-500 font-light text-sm text-left">
+                <p className="text-left">
                   Choosing yes/no will create a categorical market with two
                   preset outcomes, yes and no.
                 </p>
@@ -315,7 +315,7 @@ export const MarketEditor = () => {
                       </h3>
                     }
                   >
-                    <p className="text-gray-500 font-light text-sm">
+                    <p className="font-light">
                       Grace period starts after the market ends. During this
                       period, trading, reporting and disputing is disabled.
                     </p>
@@ -324,9 +324,10 @@ export const MarketEditor = () => {
               </div>
               <div className="flex justify-center">
                 <BlockPeriodPicker
+                  disabled={!fieldsState.endDate.isValid}
                   isValid={fieldsState.gracePeriod.isValid}
                   options={gracePeriodOptions}
-                  chainTime={chainTime!}
+                  chainTime={chainTime ?? undefined}
                   {...input("gracePeriod", { mode: "all" })}
                 />
               </div>
@@ -347,7 +348,7 @@ export const MarketEditor = () => {
                       </h3>
                     }
                   >
-                    <p className="text-gray-500 font-light text-sm">
+                    <p className="font-light">
                       Reporting starts after the market ends and grace period
                       has finished. In this period the market outcome can only
                       be resolved by the designated oracle. If the oracle fails
@@ -359,9 +360,10 @@ export const MarketEditor = () => {
               </div>
               <div className="flex justify-center">
                 <BlockPeriodPicker
+                  disabled={!fieldsState.endDate.isValid}
                   isValid={fieldsState.reportingPeriod.isValid}
                   options={reportingPeriodOptions}
-                  chainTime={chainTime!}
+                  chainTime={chainTime ?? undefined}
                   {...input("reportingPeriod", { mode: "all" })}
                 />
               </div>
@@ -382,7 +384,7 @@ export const MarketEditor = () => {
                       </h3>
                     }
                   >
-                    <p className="text-gray-500 font-light text-sm">
+                    <p className="font-light">
                       The dispute period starts when the market has been
                       reported. If no dispute is raised during this period the
                       market is resolved to the reported outcome.
@@ -392,9 +394,10 @@ export const MarketEditor = () => {
               </div>
               <div className="flex justify-center">
                 <BlockPeriodPicker
+                  disabled={!fieldsState.endDate.isValid}
                   isValid={fieldsState.disputePeriod.isValid}
                   options={disputePeriodOptions}
-                  chainTime={chainTime!}
+                  chainTime={chainTime ?? undefined}
                   {...input("disputePeriod", { mode: "all" })}
                 />
               </div>
