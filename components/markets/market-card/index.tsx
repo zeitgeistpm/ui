@@ -55,7 +55,7 @@ const MarketCardInfo = ({
   img,
 }: {
   question: string;
-  img: string;
+  img?: string;
 }) => {
   return (
     <div className="w-full h-full flex whitespace-normal gap-4">
@@ -85,13 +85,15 @@ const MarketCardTags = ({
     : "";
   return (
     <>
-      <Image
-        width={20}
-        height={20}
-        src={imagePath}
-        alt="Currency token logo"
-        className="rounded-full"
-      />
+      {imagePath && (
+        <Image
+          width={20}
+          height={20}
+          src={imagePath}
+          alt="Currency token logo"
+          className="rounded-full"
+        />
+      )}
       {/* replace later when court dispute mechanism is ready */}
       {/* {tags?.map((tag, index) => {
         return (
