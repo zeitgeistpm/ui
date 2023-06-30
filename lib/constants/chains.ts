@@ -41,9 +41,9 @@ const BATTERY_STATION_CHAINS: Chain[] = [
     fetchCurrencies: async (api, address) => {
       const { data } = await api.query.system.account(address);
       const free = calculateFreeBalance(
-        data.free.toString(),
-        data.miscFrozen.toString(),
-        data.feeFrozen.toString(),
+        data.free?.toString() ?? "0",
+        data.miscFrozen?.toString() ?? "0",
+        data.feeFrozen?.toString() ?? "0",
       );
 
       return [
@@ -102,9 +102,9 @@ const PROD_CHAINS: Chain[] = [
     fetchCurrencies: async (api, address) => {
       const { data } = await api.query.system.account(address);
       const free = calculateFreeBalance(
-        data.free.toString(),
-        data.miscFrozen.toString(),
-        data.feeFrozen.toString(),
+        data.free?.toString() ?? "0",
+        data.miscFrozen?.toString() ?? "0",
+        data.feeFrozen?.toString() ?? "0",
       );
 
       return [
