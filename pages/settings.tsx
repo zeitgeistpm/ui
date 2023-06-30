@@ -129,6 +129,10 @@ const IdentitySettings = () => {
     transactionPending ||
     !wallet.connected;
 
+  const indetityCost =
+    constants?.identity?.basicDeposit ??
+    0 + (constants?.identity?.fieldDeposit ?? 0);
+
   return (
     <>
       <h6 className="font-bold mb-5" data-test="displayNameLabel">
@@ -173,8 +177,7 @@ const IdentitySettings = () => {
       <div className="flex items-center border border-sky-600 rounded-ztg-5 my-5 p-5 text-sky-600">
         <AlertTriangle size={20} className="mr-5" />
         <div className="text-ztg-14-120 font-normal">
-          Setting an identity requires a deposit of up to{" "}
-          {constants?.identity.basicDeposit + constants?.identity.fieldDeposit}{" "}
+          Setting an identity requires a deposit of up to {indetityCost}{" "}
           {constants?.tokenSymbol}. This deposit can be retrieved by clearing
           your identity.
         </div>

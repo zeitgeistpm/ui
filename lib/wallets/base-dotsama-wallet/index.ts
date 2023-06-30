@@ -68,14 +68,14 @@ export class BaseDotsamaWallet implements Wallet {
     return err;
   };
 
-  enable = async (): Promise<InjectedExtension> => {
+  enable = async (): Promise<InjectedExtension | undefined> => {
     try {
       const extension = await poll(
         async () => {
           await cryptoWaitReady();
 
           const injectedExtension = this.rawExtension;
-          const rawExtension = await injectedExtension?.enable(DAPP_NAME);
+          const rawExtension = await injectedExtension?.enable?.(DAPP_NAME);
 
           if (!rawExtension) {
             return;
@@ -84,7 +84,7 @@ export class BaseDotsamaWallet implements Wallet {
           const extension: InjectedExtension = {
             ...rawExtension,
             name: this.extensionName,
-            version: injectedExtension.version,
+            version: injectedExtension.version ?? "",
           };
 
           this._extension = extension;
@@ -103,7 +103,7 @@ export class BaseDotsamaWallet implements Wallet {
         throw new Error("Wallet enabling timed out");
       }
 
-      return extension;
+      return extension ?? undefined;
     } catch (err) {
       throw this.transformError(err as WalletError);
     }
