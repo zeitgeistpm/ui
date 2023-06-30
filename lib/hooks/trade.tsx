@@ -54,6 +54,10 @@ export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
 
   let maxAmountBase: Decimal = new Decimal(0);
 
+  if (!traderBaseBalance) {
+    return maxAmountBase;
+  }
+
   if (item.action === "buy") {
     maxAmountBase = calcInGivenOut(
       poolBaseBalance,
@@ -63,6 +67,9 @@ export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
       tradeablePoolAssetBalance,
       swapFee,
     );
+    return maxAmountBase.gt(traderBaseBalance)
+      ? traderBaseBalance
+      : maxAmountBase;
   }
   if (item.action === "sell") {
     const maxAssetIn = traderAssetBalance.gt(tradeablePoolAssetBalance)
@@ -77,14 +84,8 @@ export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
       maxAssetIn,
       swapFee,
     );
+    return maxAmountBase;
   }
-
-  maxAmountBase =
-    traderBaseBalance == null
-      ? new Decimal(0)
-      : maxAmountBase.gt(traderBaseBalance)
-      ? traderBaseBalance
-      : maxAmountBase;
 
   return maxAmountBase;
 };
