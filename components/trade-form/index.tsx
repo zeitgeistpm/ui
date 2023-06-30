@@ -32,6 +32,10 @@ import { useDebounce } from "use-debounce";
 import RangeInput from "../ui/RangeInput";
 import TransactionButton from "../ui/TransactionButton";
 import TradeTab, { TradeTabType } from "./TradeTab";
+import { useQueryClient } from "@tanstack/react-query";
+import { positionsRootKey } from "lib/hooks/queries/useAccountTokenPositions";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { awaitIndexer } from "lib/util/await-indexer";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -80,6 +84,8 @@ const Inner = ({
   setTradeItem: (trade: TradeItem) => void;
 }) => {
   const notifications = useNotifications();
+  const queryClient = useQueryClient();
+  const [_, id] = useSdkv2();
 
   const { register, formState, watch, setValue, reset } = useForm<{
     percentage: string;
@@ -206,6 +212,14 @@ const Inner = ({
 
       setFinalAmounts({ asset: assetAmount, base: baseAmount });
       setPercentageDisplay("0");
+
+      awaitIndexer(() => {
+        queryClient.invalidateQueries([
+          id,
+          positionsRootKey,
+          wallet.activeAccount?.address,
+        ]);
+      });
     },
   });
 

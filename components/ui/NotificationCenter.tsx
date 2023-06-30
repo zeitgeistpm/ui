@@ -35,7 +35,7 @@ const NotificationCard: FC<{
 
   return (
     <div
-      className={`flex relative gap-4 rounded-md px-4  flex-1 ${getBgColor(
+      className={`flex relative gap-4 rounded-md px-5  flex-1 ${getBgColor(
         type,
       )}`}
     >
@@ -58,12 +58,12 @@ const NotificationCard: FC<{
           )} h-full absolute z-40 top-0 left-0  w-full opacity-10`}
         />
       </div>
-      <div className="text-white flex justify-center px-4 py-6">
+      <div className="text-white flex justify-center py-6">
         <div className={`center ${getBgColor(type)}`}>
           <Loader
             loading={Boolean(lifetime)}
             lineThrough={type === "Error"}
-            className="h-12 w-12"
+            className="h-9 w-9"
             variant={type}
           />
         </div>
@@ -71,7 +71,7 @@ const NotificationCard: FC<{
       <div className="center flex-1 py-6">
         <div className="text-base font-normal text-left w-full">{content}</div>
       </div>
-      <div className="px-4 py-4">
+      <div className="py-4">
         <X
           className="ml-auto cursor-pointer"
           size={22}

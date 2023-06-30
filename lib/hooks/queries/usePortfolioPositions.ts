@@ -36,7 +36,7 @@ import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForP
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { calcSpotPrice } from "lib/math";
 import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { MarketBond, useAccountBonds } from "./useAccountBonds";
 import { useChainTime } from "lib/state/chaintime";
 import { TradeHistoryItem, useTradeHistory } from "./useTradeHistory";
@@ -44,7 +44,6 @@ import {
   ForeignAssetPrices,
   useAllForeignAssetUsdPrices,
 } from "./useAssetUsdPrice";
-import objectHash from "object-hash";
 
 export type UsePortfolioPositions = {
   /**
@@ -177,14 +176,7 @@ export const usePortfolioPositions = (
   const { data: tradeHistory, isLoading: isTradeHistoryLoading } =
     useTradeHistory(address);
 
-  const rawPositions = useAccountTokenPositions({
-    where: {
-      account: {
-        accountId_eq: address,
-      },
-      balance_gt: 0,
-    },
-  });
+  const rawPositions = useAccountTokenPositions(address);
 
   const filter = rawPositions.data
     ?.map((position) => {
