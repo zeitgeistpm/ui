@@ -41,8 +41,9 @@ const BATTERY_STATION_CHAINS: Chain[] = [
     fetchCurrencies: async (api, address) => {
       const { data } = await api.query.system.account(address);
       const free = calculateFreeBalance(
-        data.free?.toString() ?? "0",
-        data.miscFrozen?.toString() ?? "0",
+        data.free.toString(),
+        //@ts-ignore
+        data.miscFrozen?.toString() ?? data.frozen?.toString(),
         data.feeFrozen?.toString() ?? "0",
       );
 
@@ -102,8 +103,9 @@ const PROD_CHAINS: Chain[] = [
     fetchCurrencies: async (api, address) => {
       const { data } = await api.query.system.account(address);
       const free = calculateFreeBalance(
-        data.free?.toString() ?? "0",
-        data.miscFrozen?.toString() ?? "0",
+        data.free.toString(),
+        //@ts-ignore once polkadot is upgraded to match rococo the latter half of this statement can be removed
+        data.miscFrozen?.toString() ?? data.frozen?.toString(),
         data.feeFrozen?.toString() ?? "0",
       );
 
