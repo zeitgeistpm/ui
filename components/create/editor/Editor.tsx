@@ -70,7 +70,6 @@ export const MarketEditor = () => {
   const { data: constants } = useChainConstants();
 
   const currencyMetadata = getMetadataForCurrency(form?.currency ?? "ZTG");
-  const { data: baseAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
 
   const back = () => {
     const prevStep = prevStepFrom(steps, currentStep);
