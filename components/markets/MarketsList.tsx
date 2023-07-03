@@ -126,6 +126,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
               outcomes={market.outcomes}
               question={question}
               creation={market.creation}
+              creator={market.creator}
               img={image}
               prediction={market.prediction}
               endDate={market.period.end}

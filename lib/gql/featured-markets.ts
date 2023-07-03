@@ -23,6 +23,7 @@ const marketQuery = gql`
     ) {
       marketId
       baseAsset
+      creator
       pool {
         poolId
         volume
@@ -78,6 +79,7 @@ const getFeaturedMarkets = async (
           baseAsset: string;
           img: string;
           question: string;
+          creator: string;
           creation: MarketCreation;
           marketType: { [key: string]: string };
           scalarType: ScalarRangeType;
@@ -101,6 +103,7 @@ const getFeaturedMarkets = async (
           marketId: market.marketId,
           question: market.question,
           creation: market.creation,
+          creator: market.creator,
           pool: market.pool,
           img: market.img,
           prediction: { name: "None", price: 0 },
@@ -146,6 +149,7 @@ const getFeaturedMarkets = async (
         marketId: market.marketId,
         question: market.question,
         creation: market.creation,
+        creator: market.creator,
         img: market.img,
         prediction: prediction,
         volume: new Decimal(pool.volume).div(ZTG).toNumber(),

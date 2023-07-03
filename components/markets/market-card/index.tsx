@@ -12,14 +12,19 @@ import { ZTG } from "lib/constants";
 import Skeleton from "components/ui/Skeleton";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
-import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
-
+import { UserIdentity } from "../MarketHeader";
+import Image from "next/image";
+import { lookupAssetImagePath } from "lib/constants/foreign-asset";
+import { parseAssetId } from "@zeitgeistpm/sdk-next";
+import { IOBaseAssetId } from "@zeitgeistpm/sdk-next";
+import { IOForeignAssetId } from "@zeitgeistpm/sdk-next";
 export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
   question: string;
   creation: string;
+  creator: string;
   outcomes: MarketOutcomes;
   marketType: { categorical?: string; scalar?: string[] };
   scalarType: ScalarRangeType;
@@ -45,26 +50,70 @@ const Pill = ({ value, classes }: { value: string; classes: string }) => {
   );
 };
 
-const MarketCardInfo = ({ question }: { question: string }) => {
+const MarketCardInfo = ({
+  question,
+  img,
+}: {
+  question: string;
+  img: string;
+}) => {
   return (
-    <div className="w-full h-full flex flex-col text-ztg-14-165 whitespace-normal">
-      <h5 className="font-semibold w-full h-fit line-clamp-3">{question}</h5>
+    <div className="w-full h-full flex whitespace-normal gap-4">
+      <h5 className="font-semibold w-full h-fit line-clamp-3 text-base">
+        {question}
+      </h5>
+      {/* {disable for now until we can get image from CMS} */}
+      {/* {img && <MarketImage image={img} alt={question} className="rounded-lg" />} */}
     </div>
   );
 };
 
-const MarketCardTags = ({ tags }: { tags: string[] }) => {
+const MarketCardTags = ({
+  tags,
+  baseAsset,
+  isVerified,
+}: {
+  tags: string[];
+  baseAsset: string;
+  isVerified: boolean;
+}) => {
+  const assetId = parseAssetId(baseAsset).unwrap();
+  const imagePath = IOForeignAssetId.is(assetId)
+    ? lookupAssetImagePath(assetId.ForeignAsset)
+    : IOBaseAssetId.is(assetId)
+    ? lookupAssetImagePath(assetId.Ztg)
+    : "";
   return (
     <>
-      {tags?.map((tag, index) => {
+      <Image
+        width={20}
+        height={20}
+        src={imagePath}
+        alt="Currency token logo"
+        className="rounded-full"
+      />
+      {/* replace later when court dispute mechanism is ready */}
+      {/* {tags?.map((tag, index) => {
         return (
-          <Pill
-            key={index}
-            value={tag}
-            classes="text-blue-dark bg-blue-light"
-          />
+          tag === "Politics" && (
+            <Image
+              key={index}
+              width={20}
+              height={20}
+              src="icons/politics-cat-icon.svg"
+              alt="politics"
+            />
+          )
         );
-      })}
+      })} */}
+      {isVerified && (
+        <Image
+          width={20}
+          height={20}
+          src="icons/verified-icon.svg"
+          alt="verified checkmark"
+        />
+      )}
     </>
   );
 };
@@ -81,24 +130,20 @@ const MarketCardPredictionBar = ({
     const impliedPercentage = Math.round(Number(price) * 100);
 
     return (
-      <>
-        <div className="text-sm flex justify-between mb-1">
+      <div
+        className={`w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative`}
+      >
+        <div className="text-sm flex justify-between items-center absolute w-full h-full px-2.5">
           <span className="text-blue">{name}</span>
-          <span className="group-hover:text-white text-gray-500 transition-all">
-            {impliedPercentage}%
-          </span>
+          <span className="text-blue transition-all">{impliedPercentage}%</span>
         </div>
         <div
-          className={`w-full rounded-lg h-1.5 transition-all group-hover:bg-white bg-gray-200`}
-        >
-          <div
-            className={`rounded-lg h-full bg-blue`}
-            style={{
-              width: `${isNaN(impliedPercentage) ? 0 : impliedPercentage}%`,
-            }}
-          />
-        </div>
-      </>
+          className={`h-full bg-blue-lighter`}
+          style={{
+            width: `${isNaN(impliedPercentage) ? 0 : impliedPercentage}%`,
+          }}
+        />
+      </div>
     );
   } else {
     return (
@@ -127,9 +172,18 @@ const MarketCardDetails = ({
     marketType: { categorical?: string; scalar?: string[] };
   };
 }) => {
+  const isEnding = () => {
+    const currentTime = new Date();
+    const endTime = Number(rows.endDate);
+    //6 hours in milliseconds
+    const sixHours = 21600000;
+    const diff = endTime - currentTime.getTime();
+    //checks if event has passed and is within 6 hours
+    return diff < sixHours && diff > 0 ? true : false;
+  };
   return (
     <div>
-      <div className="text-xs mb-2.5">
+      <div className="text-xs mb-4">
         <span className="font-semibold">{rows.outcomes} outcomes</span>
         <span>
           {rows.endDate &&
@@ -141,6 +195,12 @@ const MarketCardDetails = ({
               year: "numeric",
             })}`}
         </span>
+        {isEnding() && (
+          <span>
+            {" "}
+            | <span className="text-red">Ends Soon</span>
+          </span>
+        )}
       </div>
       <div className="flex gap-2.5 text-sm min-w-full">
         {rows.numParticipants != undefined && rows.baseAsset ? (
@@ -180,6 +240,7 @@ const MarketCard = ({
   img,
   question,
   creation,
+  creator,
   outcomes,
   marketType,
   prediction,
@@ -194,20 +255,9 @@ const MarketCard = ({
   liquidity,
   numParticipants,
 }: MarketCardProps) => {
-  const isEnding = () => {
-    const currentTime = new Date();
-    const endTime = Number(endDate);
-    //6 hours in milliseconds
-    const sixHours = 21600000;
-    const diff = endTime - currentTime.getTime();
-    //checks if event has passed and is within 6 hours
-    return diff < sixHours && diff > 0 ? true : false;
-  };
-
   const isVerified = () => {
     return creation === "Advised" && status === "Active" ? true : false;
   };
-
   const isProposed = () => {
     return creation === "Advised" && status === "Proposed" ? true : false;
   };
@@ -246,31 +296,25 @@ const MarketCard = ({
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
         data-testid={`marketCard-${marketId}`}
-        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)] min-h-[290px] h-auto rounded-xl p-[15px] relative bg-anti-flash-white hover:bg-pastel-blue ${className}`}
+        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)] h-[274px] rounded-[10px] p-5 relative bg-anti-flash-white hover:bg-pastel-blue ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
-          className="flex flex-col flex-1 gap-2.5"
+          className="flex flex-col flex-1 gap-4"
         >
-          <div className="flex gap-2.5">
-            <MarketImage image={img} alt={question} />
+          <div className="flex justify-between gap-2.5 w-full">
+            {creator && (
+              <UserIdentity user={creator} className="text-xs gap-2.5" />
+            )}
             <div className="flex flex-wrap gap-2.5 font-medium h-fit">
-              <MarketCardTags tags={tags} />
-              {isEnding() && (
-                <Pill value="Ends Soon" classes="bg-red-light text-red" />
-              )}
-              {isProposed() && (
-                <Pill value="Proposed" classes="bg-purple-light text-purple" />
-              )}
-              {isVerified() && (
-                <Pill
-                  value="&#x2713; Verified"
-                  classes="bg-green-light text-green"
-                />
-              )}
+              <MarketCardTags
+                baseAsset={baseAsset}
+                tags={tags}
+                isVerified={isVerified()}
+              />
             </div>
           </div>
-          <MarketCardInfo question={question} />
+          <MarketCardInfo question={question} img={img} />
           <div className="w-full">
             {pool && marketType?.categorical ? (
               <MarketCardPredictionBar pool={pool} prediction={prediction} />
