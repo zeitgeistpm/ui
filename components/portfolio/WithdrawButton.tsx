@@ -72,7 +72,8 @@ const createWithdrawExtrinsic = (
     { ForeignAsset: foreignAssetId },
     amount,
     { V1: account },
-    "100000000000",
+    //@ts-ignore sdk types need to be updated for new release
+    { Limited: "100000000000" },
   );
 };
 const WithdrawModal = ({
