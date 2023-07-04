@@ -53,8 +53,9 @@ export const useCrossChainExtrinsic = <T>(
 
           const unsub = await destinationChainApi.query.system.events(
             (events) => {
-              events.forEach((record) => {
+              for (const record of events) {
                 const { event } = record;
+                const { method } = event;
                 const types = event.typeDef;
 
                 // assumes that any activity for the connected address on the destination
@@ -62,6 +63,7 @@ export const useCrossChainExtrinsic = <T>(
                 const destinationChainActivityDetected = event.data.some(
                   (data, index) =>
                     types[index].type === "AccountId32" &&
+                    ["deposit", "deposited"].includes(method.toLowerCase()) &&
                     encodeAddress(
                       decodeAddress(wallet.activeAccount?.address),
                     ) === encodeAddress(decodeAddress(data.toString())),
@@ -79,8 +81,9 @@ export const useCrossChainExtrinsic = <T>(
                     currencyBalanceRootKey,
                     wallet.activeAccount?.address,
                   ]);
+                  break;
                 }
-              });
+              }
             },
           );
         },
