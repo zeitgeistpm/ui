@@ -33,9 +33,11 @@ const MyApp = ({ Component, pageProps }) => {
       return;
     }
 
-    Fathom.load(fathomSiteId, {
-      includedDomains: [domain],
-    });
+    if (domain) {
+      Fathom.load(fathomSiteId, {
+        includedDomains: [domain],
+      });
+    }
 
     function onRouteChangeComplete() {
       Fathom.trackPageview();
@@ -56,7 +58,7 @@ const MyApp = ({ Component, pageProps }) => {
       <AvatarContext.Provider
         value={{
           api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
-          ipfs: { node: { url: process.env.NEXT_PUBLIC_IPFS_NODE } },
+          ipfs: { node: { url: process.env.NEXT_PUBLIC_IPFS_NODE ?? "" } },
           rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
           indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
           avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,

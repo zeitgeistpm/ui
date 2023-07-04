@@ -41,7 +41,7 @@ export const useCrossChainExtrinsic = <T>(
     const extrinsic = extrinsicFn(params);
     const signer = wallet.getActiveSigner() as ExtSigner;
 
-    if (!extrinsic) return;
+    if (!extrinsic || !sourceChainApi || !destinationChainApi) return;
     signAndSend(
       extrinsic,
       signer,
