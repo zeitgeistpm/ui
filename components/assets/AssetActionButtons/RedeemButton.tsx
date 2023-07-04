@@ -1,7 +1,9 @@
 import {
   AssetId,
+  getIndexOf,
   getScalarBounds,
   IndexerContext,
+  IOCategoricalAssetId,
   isRpcSdk,
   Market,
   MarketId,
@@ -66,7 +68,7 @@ export const RedeemButtonByAssetId = ({
     const zero = new Decimal(0);
     if (!signer?.address || isLoadingAssetBalance) return zero;
 
-    if (market.marketType.categorical) {
+    if (market.marketType.categorical && IOCategoricalAssetId.is(assetId)) {
       const resolvedAssetIdString =
         market.outcomeAssets[Number(market.resolvedOutcome)];
 
@@ -74,7 +76,11 @@ export const RedeemButtonByAssetId = ({
         ? parseAssetId(resolvedAssetIdString).unrightOr(undefined)
         : undefined;
 
-      if (!resolvedAssetId || resolvedAssetId !== assetId) return zero;
+      if (
+        !resolvedAssetId ||
+        getIndexOf(resolvedAssetId) !== getIndexOf(assetId)
+      )
+        return zero;
 
       const balance = getAccountAssetBalance(signer.address, resolvedAssetId)
         ?.data?.balance;
@@ -103,7 +109,7 @@ export const RedeemButtonByAssetId = ({
         new Decimal(longBalance.free.toNumber()).div(ZTG),
       );
     }
-  }, [market, assetId, isLoadingAssetBalance]);
+  }, [market, assetId, isLoadingAssetBalance, getAccountAssetBalance]);
 
   return <RedeemButtonByValue market={market} value={value} />;
 };
