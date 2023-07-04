@@ -134,6 +134,7 @@ const DepositModal = ({
           "amount",
           maxTransferAmount.mul(value.percentage).div(100).div(ZTG).toNumber(),
         );
+        trigger("amount");
       } else if (name === "amount" && value.amount !== "") {
         setValue(
           "percentage",
@@ -144,7 +145,6 @@ const DepositModal = ({
             .toString(),
         );
       }
-      trigger("amount");
     });
     return () => subscription.unsubscribe();
   }, [watch, balance, fee]);
