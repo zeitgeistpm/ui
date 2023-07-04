@@ -3,7 +3,13 @@ import Decimal from "decimal.js";
 import React, { useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type { ApiPromise } from "@polkadot/api";
-import { AssetId, IOBaseAssetId, ZTG, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { encodeAddress } from "@polkadot/keyring";
+import {
+  AssetId,
+  IOForeignAssetId,
+  ZTG,
+  isRpcSdk,
+} from "@zeitgeistpm/sdk-next";
 import AddressInput, { AddressOption } from "components/ui/AddressInput";
 import AssetInput from "components/ui/AssetInput";
 import { AssetOption } from "components/ui/AssetSelect";
@@ -110,6 +116,7 @@ const TransferModal = ({
     control,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isValid },
     reset,
   } = useForm<{
@@ -121,7 +128,7 @@ const TransferModal = ({
   });
 
   const asset = watch("asset");
-  const isNativeCurrency = IOBaseAssetId.is(asset?.assetOption?.value);
+  const isNativeCurrency = !IOForeignAssetId.is(asset?.assetOption?.value);
 
   const { data: balanceRaw } = useBalance(address, asset?.assetOption?.value);
   const balance = balanceRaw?.div(ZTG);
@@ -130,6 +137,20 @@ const TransferModal = ({
 
   const wallet = useWallet();
   const [sdk] = useSdkv2();
+
+  // Dummy extrinsic for fee calculation since real extrinsic depends on form values
+  // Don't use this for anything else but fetching the fee
+  const feeExtrinsic = useMemo(() => {
+    if (!isRpcSdk(sdk)) {
+      return;
+    }
+    return createTransferExtrinsic(
+      sdk.api,
+      { Ztg: null },
+      "1",
+      encodeAddress(new Uint8Array(32)),
+    );
+  }, [sdk]);
 
   const extrinsic = useMemo(() => {
     if (
@@ -157,8 +178,18 @@ const TransferModal = ({
     isValid,
   ]);
 
-  const { data: feeRaw } = useExtrinsicFee(extrinsic);
+  const { data: feeRaw } = useExtrinsicFee(feeExtrinsic);
   const fee = feeRaw && new Decimal(feeRaw).div(ZTG);
+
+  let maxAmount = "";
+
+  if (balance) {
+    if (isNativeCurrency) {
+      maxAmount = balance.sub(fee ?? 0).toString();
+    } else {
+      maxAmount = balance.toString();
+    }
+  }
 
   const { send, isLoading: txIsLoading } = useExtrinsic(
     () => {
@@ -192,7 +223,19 @@ const TransferModal = ({
         <div className="flex justify-between mb-2 text-sm font-semibold">
           <div>Select Asset and Amount</div>
           {balance && (
-            <div>Balance: {formatNumberLocalized(balance?.toNumber())}</div>
+            <div
+              className="cursor-pointer"
+              onClick={() => {
+                if (!maxAmount) return;
+                setValue(
+                  "asset",
+                  { ...asset, amount: maxAmount },
+                  { shouldValidate: true },
+                );
+              }}
+            >
+              Balance: {formatNumberLocalized(balance?.toNumber())}
+            </div>
           )}
         </div>
         {defaultOption && (
