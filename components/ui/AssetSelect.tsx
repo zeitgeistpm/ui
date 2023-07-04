@@ -1,4 +1,5 @@
 import { AssetId, ZTG } from "@zeitgeistpm/sdk-next";
+import Image from "next/image";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized } from "lib/util";
@@ -51,7 +52,14 @@ const SingleValue = (props: SingleValueProps<AssetOption, false>) => {
   const { label, image } = props.data;
   return (
     <div className="flex items-center font-semibold">
-      <img src={image} className="w-9 h-9 mr-3" />
+      <Image
+        src={image}
+        width={36}
+        height={36}
+        className="mr-3"
+        alt={label}
+        quality={100}
+      />
       <span>{label}</span>
     </div>
   );
@@ -69,7 +77,14 @@ const Option = (props: OptionProps<AssetOption, false>) => {
       {...props}
       className="!flex items-center w-full bg-anti-flash-white rounded-md h-14 mb-2 last:mb-0 font-semibold px-4 !cursor-pointer"
     >
-      <img src={image} className="w-9 h-9 mr-3" />
+      <Image
+        src={image}
+        width={36}
+        height={36}
+        className="mr-3"
+        alt={label}
+        quality={100}
+      />
       <span>{label}</span>
       {balance && (
         <div className="ml-auto text-xs">

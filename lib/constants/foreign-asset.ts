@@ -13,7 +13,7 @@ type ForeignAssetMetadata = {
 
 export const lookupAssetImagePath = (foreignAssetId?: number | null) => {
   if (foreignAssetId == null) {
-    return "/currencies/ztg.png";
+    return "/currencies/ztg.svg";
   } else {
     return FOREIGN_ASSET_METADATA[foreignAssetId].image;
   }
@@ -28,7 +28,7 @@ const BATTERY_STATION_FOREIGN_ASSET_METADATA: ForeignAssetMetadata = {
   },
   1: {
     originChain: "Rococo",
-    image: "/currencies/rococo.png",
+    image: "/currencies/rococo.svg",
     withdrawSupported: true,
     coinGeckoId: "polkadot",
     tokenSymbol: "ROC",

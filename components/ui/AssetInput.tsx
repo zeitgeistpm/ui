@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import AssetSelect, { AssetOption } from "./AssetSelect";
 
 type AssetInputProps = {
@@ -40,6 +40,7 @@ const AssetInput: React.FC<AssetInputProps> = ({
           onAmountChange?.(e.target.value);
         }}
         className="absolute right-4 top-[50%] translate-y-[-50%] font-mono text-right text-lg outline-none bg-transparent"
+        style={{ width: "calc(100% - 155px)" }}
       />
       {error && (
         <div className="text-vermilion text-sm text-right">{error}</div>

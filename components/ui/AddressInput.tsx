@@ -6,6 +6,7 @@ import {
   ControlProps,
   DropdownIndicatorProps,
   IndicatorsContainerProps,
+  InputProps,
   MenuListProps,
   OptionProps,
   SingleValueProps,
@@ -83,7 +84,7 @@ const ValueContainer = (props: ValueContainerProps<AddressOption, false>) => {
   return (
     <components.ValueContainer
       {...omit(props, "children")}
-      className="!flex items-center"
+      className="!flex items-center h-full"
     >
       {props.children}
     </components.ValueContainer>
@@ -130,6 +131,10 @@ const Option = ({ children, ...rest }: OptionProps<AddressOption, false>) => {
       <div>{label}</div>
     </components.Option>
   );
+};
+
+const Input = (props: InputProps<AddressOption, false>) => {
+  return <components.Input {...props} className="absolute w-full left-0" />;
 };
 
 export type AddressSelectProps = {
@@ -180,6 +185,7 @@ const AddressInput: React.FC<AddressSelectProps> = ({
           ValueContainer,
           Option,
           SingleValue,
+          Input,
         }}
         onChange={onChange}
       />
