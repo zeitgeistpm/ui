@@ -104,12 +104,10 @@ export const createMarketFormValidator = ({
         form.liquidity?.deploy &&
         form.liquidity?.rows?.length < 3
       ) {
-        console.log("WAT");
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["liquidity"],
-          message:
-            "Answers section must have a minimum of two valid answersss.",
+          message: "Answers section must have a minimum of two valid answers.",
         });
       }
     });
