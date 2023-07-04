@@ -6,6 +6,8 @@
  * @returns boolean
  */
 export const isCurrentOrigin = (url: string) => {
+  if (!process.env.NEXT_PUBLIC_SITE_URL) return false;
+
   const currentOrigin = new URL(
     process.env.NEXT_PUBLIC_SITE_URL.match("vercel.app")
       ? `https://${process.env.NEXT_PUBLIC_SITE_URL}`
