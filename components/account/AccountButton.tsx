@@ -11,20 +11,14 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useAccountModals } from "lib/state/account";
 import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useWallet } from "lib/state/wallet";
+import SettingsButton from "components/settings/SettingsButton";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FC, Fragment, PropsWithChildren, useState } from "react";
-import {
-  BarChart,
-  ChevronDown,
-  DollarSign,
-  Frown,
-  Settings,
-  User,
-} from "react-feather";
+import { BarChart, ChevronDown, DollarSign, Frown, User } from "react-feather";
 import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
 import {
   DesktopOnboardingModal,
@@ -318,16 +312,7 @@ const AccountButton: FC<{
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
-                          <Link href="/settings">
-                            <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
-                              <Settings />
-                              <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
-                              >
-                                Settings
-                              </button>
-                            </div>
-                          </Link>
+                          <SettingsButton className="hover:bg-slate-100" />
                         )}
                       </Menu.Item>
                       <Menu.Item>
