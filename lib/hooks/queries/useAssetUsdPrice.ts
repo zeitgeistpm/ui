@@ -86,7 +86,7 @@ export const useAllForeignAssetUsdPrices = (): {
   };
 };
 
-const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
+export const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
   const coinGeckoId =
     FOREIGN_ASSET_METADATA[foreignAsset.ForeignAsset].coinGeckoId;
 

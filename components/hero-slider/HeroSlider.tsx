@@ -27,7 +27,7 @@ const HeroSlider = ({
         <Image
           key={index}
           priority
-          src={banner.imageUrl}
+          src={banner.imageUrl ?? ""}
           alt={`Image depicting ${banner.title}`}
           placeholder="blur"
           blurDataURL={bannerPlaceHolders[index]}

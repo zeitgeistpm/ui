@@ -90,7 +90,7 @@ const DepositModal = ({
 
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
     () => {
-      if (!chain || !wallet.activeAccount || !constants) return;
+      if (!chain || !api || !wallet.activeAccount || !constants) return;
       const tx = chain.createDepositExtrinsic(
         api,
         wallet.activeAccount.address,

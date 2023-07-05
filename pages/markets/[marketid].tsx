@@ -1,5 +1,4 @@
 import { Transition } from "@headlessui/react";
-import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import { MarketDispute, Report } from "@zeitgeistpm/sdk/dist/types";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 import MarketAddresses from "components/markets/MarketAddresses";
@@ -35,6 +34,7 @@ import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
@@ -109,8 +109,8 @@ const Market: NextPage<MarketPageProps> = ({
   resolutionTimestamp,
   promotionData,
 }) => {
-  const [lastDispute, setLastDispute] = useState<MarketDispute>(null);
-  const [report, setReport] = useState<Report>(null);
+  const [lastDispute, setLastDispute] = useState<MarketDispute>();
+  const [report, setReport] = useState<Report>();
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
@@ -133,13 +133,10 @@ const Market: NextPage<MarketPageProps> = ({
   );
   const { data: disputes } = useMarketDisputes(marketId);
 
-  const { data: marketStage } = useMarketStage(market);
+  const { data: marketStage } = useMarketStage(market ?? undefined);
   const { data: spotPrices } = useMarketSpotPrices(marketId);
-  const { data: liquidity } = usePoolLiquidity({ marketId });
   const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
-  const baseAsset = parseAssetId(indexedMarket?.pool?.baseAsset).unrightOr(
-    null,
-  );
+  const baseAsset = parseAssetIdString(indexedMarket?.pool?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAsset);
 
   const handlePoolDeployed = () => {

@@ -126,7 +126,7 @@ export const DateTimeInput: FC<{
   onChange: (timestamp: string) => void;
   isValidDate?: (currentDate: Moment) => boolean;
 }> = ({ className = "", onChange, timestamp, isValidDate }) => {
-  const ref = useRef();
+  const ref = useRef(null);
   const date = useMemo<Date>(() => {
     return getDateFromTimestamp(timestamp);
   }, [timestamp]);
