@@ -10,7 +10,10 @@ export const marketsRootQuery = "markets";
 
 export type UseMarketFilter = { marketId: number } | { poolId: number };
 
-export const useMarket = (filter?: UseMarketFilter) => {
+export const useMarket = (
+  filter?: UseMarketFilter,
+  opts?: { refetchInterval: number | false },
+) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
@@ -27,6 +30,7 @@ export const useMarket = (filter?: UseMarketFilter) => {
       return null;
     },
     {
+      refetchInterval: opts?.refetchInterval ?? false,
       enabled: Boolean(
         sdk &&
           isIndexedSdk(sdk) &&
