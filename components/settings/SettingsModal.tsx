@@ -1,10 +1,11 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import { Dialog, Tab } from "@headlessui/react";
 import Modal from "components/ui/Modal";
 import AcccountSettingsForm from "./AccountSettingsForm";
 import OtherSettingsForm from "./OtherSettingsForm";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { useWallet } from "lib/state/wallet";
+import { AddressOption } from "components/ui/AddressInput";
 
 export type SettingsModalProps = {
   open: boolean;
@@ -21,7 +22,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
 
   const wallet = useWallet();
   const address = wallet.activeAccount?.address;
+
   const { data: identity } = useIdentity(address);
+
+  const [proxyOptions, setProxyOptions] = useState<AddressOption[]>([]);
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -71,7 +75,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             ) : (
               <></>
             ),
-            [TabSelection.Other]: <OtherSettingsForm />,
+            [TabSelection.Other]: proxyOptions ? (
+              <OtherSettingsForm proxyOptions={proxyOptions} />
+            ) : (
+              <></>
+            ),
           }[tabSelection]
         }
       </Dialog.Panel>
