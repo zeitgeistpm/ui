@@ -1,8 +1,10 @@
+import React, { Fragment } from "react";
 import { Dialog, Tab } from "@headlessui/react";
 import Modal from "components/ui/Modal";
-import React, { Fragment } from "react";
 import AcccountSettingsForm from "./AccountSettingsForm";
 import OtherSettingsForm from "./OtherSettingsForm";
+import { useIdentity } from "lib/hooks/queries/useIdentity";
+import { useWallet } from "lib/state/wallet";
 
 export type SettingsModalProps = {
   open: boolean;
@@ -16,6 +18,10 @@ enum TabSelection {
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
   const [tabSelection, setTabSelection] = React.useState(TabSelection.Account);
+
+  const wallet = useWallet();
+  const address = wallet.activeAccount?.address;
+  const { data: identity } = useIdentity(address);
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -33,7 +39,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
                     <span
                       className={
                         "cursor-pointer text-sm " +
-                        (selected ? "font-bold text-black" : "")
+                        (selected ? "font-semibold text-black" : "")
                       }
                     >
                       Account
@@ -47,7 +53,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
                     <span
                       className={
                         "cursor-pointer text-sm " +
-                        (selected ? "font-bold text-black" : "")
+                        (selected ? "font-semibold text-black" : "")
                       }
                     >
                       Other Settings
@@ -60,7 +66,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
         </Tab.Group>
         {
           {
-            [TabSelection.Account]: <AcccountSettingsForm />,
+            [TabSelection.Account]: identity ? (
+              <AcccountSettingsForm identity={identity} />
+            ) : (
+              <></>
+            ),
             [TabSelection.Other]: <OtherSettingsForm />,
           }[tabSelection]
         }
