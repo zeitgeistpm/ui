@@ -1,4 +1,4 @@
-import { Menu, Transition } from "@headlessui/react";
+import { Menu, Popover, Transition } from "@headlessui/react";
 import { getWallets } from "@talismn/connect-wallets";
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
@@ -182,10 +182,10 @@ const AccountButton: FC<{
             {({ open }) => (
               <>
                 <div>
-                  <Menu.Button>
-                    <div className="flex h-11 relative">
+                  <div className="flex h-11 relative pr-4 md:pr-0">
+                    <Menu.Button>
                       <div
-                        className={`relative flex flex-1	items-center justify-end h-full rounded-full cursor-pointer z-20  ${
+                        className={`relative flex flex-1	items-center justify-end h-full rounded-full cursor-pointer z-30  ${
                           open
                             ? "border-orange-500"
                             : pathname === "/"
@@ -234,13 +234,53 @@ const AccountButton: FC<{
                           </div>
                         </div>
                       </div>
-                      {proxy && proxy.enabled && (
-                        <div className="h-11 -ml-4 pl-6 z-10 bg-gradient-to-r from-purple-700 to-purple-500 rounded-r-full center pr-4 text-purple-900">
-                          <FaNetworkWired size={18} />
-                        </div>
-                      )}
-                    </div>
-                  </Menu.Button>
+                    </Menu.Button>
+                    {proxy && proxy.enabled && (
+                      <Popover className={"relative"}>
+                        {({ open }) => (
+                          <>
+                            <Popover.Button className="relative z-20">
+                              <div
+                                className={`h-11 -ml-4 pl-6 z-rounded-r-full  z-50 ${
+                                  open
+                                    ? "bg-gradient-to-r from-purple-500 to-purple-500"
+                                    : "bg-gradient-to-r from-purple-700 to-purple-500"
+                                } rounded-r-full center pr-4 text-purple-900`}
+                              >
+                                <FaNetworkWired size={18} />
+                              </div>
+                            </Popover.Button>
+                            <div className="z-10">
+                              <Transition
+                                as={Fragment}
+                                enter="transition ease-out duration-100"
+                                enterFrom="transform opacity-0 scale-95"
+                                enterTo="transform opacity-100 scale-100"
+                                leave="transition ease-in duration-75"
+                                leaveFrom="transform opacity-100 scale-100"
+                                leaveTo="transform opacity-0 :scale-95"
+                              >
+                                <Popover.Panel className="absolute z-10 right-0 bottom-6 translate-y-[100%] w-64">
+                                  <div className="flex items-center hover:bg-slate-100">
+                                    <div className="flex items-center bg-purple-500 p-4 pt-8 w-full rounded-md rounded-tr-none">
+                                      <div className="flex-1">
+                                        <label className="text-purple-900 text-xs italic mb-2">
+                                          Account is acting proxy for:
+                                        </label>
+                                        <div className="text-white text-sm">
+                                          {shortenAddress(realAddress, 7, 7)}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </Popover.Panel>
+                              </Transition>
+                            </div>
+                          </>
+                        )}
+                      </Popover>
+                    )}
+                  </div>
                 </div>
 
                 <Transition
@@ -360,23 +400,6 @@ const AccountButton: FC<{
                             </div>
                           )}
                         </Menu.Item>
-                        {proxy && proxy.enabled && (
-                          <div className="flex items-center mt-4 hover:bg-slate-100 -mb-3">
-                            <div className="flex items-center bg-purple-400 pl-3 py-4 w-full">
-                              <div className="flex-1">
-                                <label className="text-purple-700 text-xs italic mb-2">
-                                  Account is acting proxy for:
-                                </label>
-                                <div className="text-purple-800 text-sm">
-                                  {shortenAddress(realAddress, 7, 7)}
-                                </div>
-                              </div>
-                              <div className="w-1/3 center text-purple-700">
-                                <FaNetworkWired size={24} />
-                              </div>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </Menu.Items>
                   </div>
