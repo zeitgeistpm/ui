@@ -13,7 +13,6 @@ import { useGlobalKeyPress } from "lib/hooks/useGlobalKeyPress";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { calcMarketColors } from "lib/util/color-calc";
 import { useEffect, useState } from "react";
 import {
   getMetadataForCurrency,
@@ -39,11 +38,10 @@ const BuyFullSetForm = ({
     : undefined;
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
-  const colors = market?.categories
-    ? calcMarketColors(marketId, market.categories.length)
-    : [];
+  console.log(saturatedMarket);
 
   const [amount, setAmount] = useState<string>("0");
+
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 
   const { data: baseAssetBalance } = useBalance(
@@ -76,16 +74,10 @@ const BuyFullSetForm = ({
     },
   );
 
-  useEffect(() => {
-    let lowestTokenAmount: Decimal = new Decimal(0);
-    balances?.forEach((balance) => {
-      const free = new Decimal(balance.free.toNumber());
-      if (!lowestTokenAmount || free.lessThan(lowestTokenAmount)) {
-        lowestTokenAmount = free;
-      }
-    });
-    setMaxTokenSet(lowestTokenAmount);
-  }, [balances]);
+  // useEffect(() => {
+  //   const { weight, partialFee } = await api.rpc.payment.queryInfo(extrinsic);
+  //   console.log(`This transaction will cost ${partialFee} units and has a weight of ${weight}`);
+  // },[])
 
   const handleAmountChange = (amount: string) => {
     setAmount(amount);
@@ -106,12 +98,13 @@ const BuyFullSetForm = ({
 
   useGlobalKeyPress("Enter", handleSignTransaction);
   const { image } = getMetadataForCurrency(
-    metadata?.symbol as SupportedCurrencyTag,
+    (metadata?.symbol as SupportedCurrencyTag) ?? "ZTG",
   );
+
   return (
     <div className="w-full">
       <div>
-        <div className="flex justify-center items-center mb-5">
+        <div className="flex justify-center items-center mb-7">
           <div className="flex items-center justify-center gap-2">
             <span>Your Balance: </span>
             <Image
@@ -127,7 +120,7 @@ const BuyFullSetForm = ({
             </span>
           </div>
         </div>
-        <div className="h-[56px] bg-anti-flash-white center mb-5 w-full">
+        <div className="h-[56px] bg-anti-flash-white center mb-7 w-full">
           <input
             type="number"
             min="0"
@@ -140,21 +133,17 @@ const BuyFullSetForm = ({
       </div>
       <div>
         <div className="text-center">
-          <p className="text-lg font-medium mb-5">
+          <p className="text-lg font-medium mb-7">
             You'll get {amount} Full Sets
           </p>
-          <p className="text-sm text-center mb-5">
+          <p className="text-sm text-center mb-7">
             <span className="text-sky-600">Price per Set: </span>1{" "}
             {metadata?.symbol}
           </p>
         </div>
       </div>
-      <TransactionButton
-        className="!rounded-full h-ztg-50"
-        onClick={handleSignTransaction}
-        disabled={disabled}
-      >
-        Buy Full Set
+      <TransactionButton onClick={handleSignTransaction} disabled={disabled}>
+        Confirm Buy
       </TransactionButton>
     </div>
   );
