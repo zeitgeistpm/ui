@@ -195,7 +195,7 @@ export const supportedWallets = [
   new TalismanWallet(),
 ];
 
-let accountsSubscriptionUnsub: VoidFunction | null = null;
+let accountsSubscriptionUnsub: VoidFunction | undefined;
 
 /**
  * Enable a wallet by enabling the extension and setting the wallet atom state to connected.
@@ -219,7 +219,7 @@ const enableWallet = async (walletId: Wallet | string) => {
       };
     });
 
-    await wallet.enable();
+    await wallet?.enable();
 
     store.set(walletAtom, (state) => {
       return {
@@ -228,7 +228,7 @@ const enableWallet = async (walletId: Wallet | string) => {
       };
     });
 
-    accountsSubscriptionUnsub = await wallet.subscribeAccounts((accounts) => {
+    accountsSubscriptionUnsub = await wallet?.subscribeAccounts((accounts) => {
       store.set(walletAtom, (state) => {
         return {
           ...state,
@@ -260,7 +260,7 @@ const enableWallet = async (walletId: Wallet | string) => {
         accounts: [],
         errors: [
           {
-            extensionName: wallet.extensionName,
+            extensionName: wallet?.extensionName,
             type: "InteractionDenied",
           },
         ],
