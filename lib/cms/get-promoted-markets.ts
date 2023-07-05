@@ -11,28 +11,6 @@ export type PromotedMarket = {
   timeSpan?: [number, number];
 };
 
-export const getPromotedMarkets = async (): Promise<PromotedMarket[]> => {
-  // Short circuit to use default if NOTION_API_KEY doesn't exist.
-  if (!process.env.NOTION_API_KEY) {
-    return [];
-  }
-
-  const { results: promotedMarketsData } = await notion.databases.query({
-    database_id: "eb2394e2272047878350217dc03bb8eb",
-    filter: {
-      property: "Environment",
-      multi_select: {
-        contains:
-          process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
-            ? "prod"
-            : "staging",
-      },
-    },
-  });
-
-  return promotedMarketsData.filter(isFullPage).map(parsePromotedMarketData);
-};
-
 export const getMarketPromotion = async (
   marketId: number,
 ): Promise<PromotedMarket | null> => {
