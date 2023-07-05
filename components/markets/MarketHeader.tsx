@@ -378,9 +378,7 @@ const MarketHeader: FC<{
             dateStyle: "medium",
           }).format(ends)}
         </HeaderStat>
-        {(market.status === "Active" ||
-          market.status === "Closed" ||
-          market.status === "Reported") && (
+        {(market.status === "Active" || market.status === "Closed") && (
           <HeaderStat label="Resolves">
             {new Intl.DateTimeFormat("default", {
               dateStyle: "medium",
@@ -388,7 +386,7 @@ const MarketHeader: FC<{
           </HeaderStat>
         )}
         {market.status === "Proposed" && (
-          <HeaderStat label="Report At">
+          <HeaderStat label="Reports Open">
             {new Intl.DateTimeFormat("default", {
               dateStyle: "medium",
             }).format(reportsOpenAt)}

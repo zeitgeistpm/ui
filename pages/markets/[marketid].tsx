@@ -18,7 +18,7 @@ import {
   PromotedMarket,
   getMarketPromotion,
 } from "lib/cms/get-promoted-markets";
-import { BLOCK_TIME_SECONDS, ZTG, graphQlEndpoint } from "lib/constants";
+import { ZTG, graphQlEndpoint } from "lib/constants";
 import {
   MarketPageIndexedData,
   getMarket,
