@@ -286,6 +286,7 @@ const MarketHeader: FC<{
   token: string;
   marketStage: MarketStage;
   rejectReason?: string;
+  estimatedResolutionTimestamp: number;
 }> = ({
   market,
   report,
@@ -295,6 +296,7 @@ const MarketHeader: FC<{
   token,
   marketStage,
   rejectReason,
+  estimatedResolutionTimestamp,
 }) => {
   const {
     tags,
@@ -367,6 +369,13 @@ const MarketHeader: FC<{
             dateStyle: "medium",
           }).format(ends)}
         </HeaderStat>
+        {market.status !== "Resolved" && (
+          <HeaderStat label="Resolves">
+            {new Intl.DateTimeFormat("default", {
+              dateStyle: "medium",
+            }).format(estimatedResolutionTimestamp)}
+          </HeaderStat>
+        )}
         {token ? (
           <HeaderStat label="Volume">
             {formatNumberCompact(volume)}
@@ -376,7 +385,7 @@ const MarketHeader: FC<{
         ) : (
           <Skeleton width="150px" height="20px" />
         )}
-        {prizePool >= 0 && token ? (
+        {/* {prizePool >= 0 && token ? (
           <HeaderStat label="Prize Pool">
             {formatNumberCompact(prizePool)}
             &nbsp;
@@ -384,7 +393,7 @@ const MarketHeader: FC<{
           </HeaderStat>
         ) : (
           <Skeleton width="150px" height="20px" />
-        )}
+        )} */}
         {isLiqudityLoading === false && liquidity && token ? (
           <HeaderStat label="Liquidity" border={false}>
             {formatNumberCompact(liquidity.div(ZTG).toNumber())}
