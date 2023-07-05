@@ -11,19 +11,26 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useAccountModals } from "lib/state/account";
 import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useWallet } from "lib/state/wallet";
-import SettingsButton from "components/settings/SettingsButton";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FC, Fragment, PropsWithChildren, useState } from "react";
-import { BarChart, ChevronDown, DollarSign, Frown, User } from "react-feather";
+import {
+  BarChart,
+  ChevronDown,
+  DollarSign,
+  Frown,
+  Settings,
+  User,
+} from "react-feather";
 import { useChainConstants } from "../../lib/hooks/queries/useChainConstants";
 import {
   DesktopOnboardingModal,
   MobileOnboardingModal,
 } from "./OnboardingModal";
+import SettingsModal from "components/settings/SettingsModal";
 
 const BalanceRow = ({
   imgPath,
@@ -86,6 +93,7 @@ const AccountButton: FC<{
   const [hovering, setHovering] = useState<boolean>(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const { data: polkadotBalance } = useBalance(activeAccount?.address, {
@@ -312,7 +320,21 @@ const AccountButton: FC<{
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
-                          <SettingsButton className="hover:bg-slate-100" />
+                          <div
+                            className={
+                              "flex items-center px-6 mb-3 cursor-pointer hover:bg-slate-100"
+                            }
+                            onClick={() => {
+                              setShowSettingsModal(true);
+                            }}
+                          >
+                            <Settings />
+                            <button
+                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                            >
+                              Settings
+                            </button>
+                          </div>
                         )}
                       </Menu.Item>
                       <Menu.Item>
@@ -338,6 +360,12 @@ const AccountButton: FC<{
           </Menu>
         </div>
       )}
+      <SettingsModal
+        open={showSettingsModal}
+        onClose={() => {
+          setShowSettingsModal(false);
+        }}
+      />
       {isMobileDevice ? (
         <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
           <MobileOnboardingModal />
