@@ -31,9 +31,7 @@ import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
-import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
-import { estimateMarketResolutionDate } from "lib/util/estimate-market-resolution";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
@@ -68,14 +66,6 @@ export async function getStaticProps({ params }) {
     getMarketPromotion(Number(params.marketid)),
   ]);
 
-  const resolutionDateEstimate = estimateMarketResolutionDate(
-    new Date(Number(market.period.end)),
-    BLOCK_TIME_SECONDS,
-    Number(market.deadlines?.gracePeriod ?? 0),
-    Number(market.deadlines?.oracleDuration ?? 0),
-    Number(market.deadlines?.disputeDuration ?? 0),
-  );
-
   const chartSeries: ChartSeries[] = market?.categories?.map(
     (category, index) => {
       return {
@@ -99,7 +89,6 @@ export async function getStaticProps({ params }) {
       chartSeries: chartSeries ?? null,
       resolutionTimestamp: resolutionTimestamp ?? null,
       promotionData,
-      estimatedResolutionTimestamp: resolutionDateEstimate.getTime(),
     },
     revalidate: 10 * 60, //10mins
   };
@@ -110,7 +99,6 @@ type MarketPageProps = {
   chartSeries: ChartSeries[];
   resolutionTimestamp: string;
   promotionData: PromotedMarket | null;
-  estimatedResolutionTimestamp: number;
 };
 
 const Market: NextPage<MarketPageProps> = ({
@@ -118,7 +106,6 @@ const Market: NextPage<MarketPageProps> = ({
   chartSeries,
   resolutionTimestamp,
   promotionData,
-  estimatedResolutionTimestamp,
 }) => {
   const [lastDispute, setLastDispute] = useState<MarketDispute>();
   const [report, setReport] = useState<Report>();
@@ -131,7 +118,6 @@ const Market: NextPage<MarketPageProps> = ({
 
   const showLiquidity = showLiquidityParam != null;
 
-  const { data: prizePool } = usePrizePool(marketId);
   const { data: market, isLoading: marketIsLoading } = useMarket({
     marketId,
   });
@@ -222,10 +208,8 @@ const Market: NextPage<MarketPageProps> = ({
           report={report}
           disputes={lastDispute}
           token={token}
-          prizePool={prizePool?.div(ZTG).toNumber()}
           marketStage={marketStage}
           rejectReason={market?.rejectReason}
-          estimatedResolutionTimestamp={estimatedResolutionTimestamp}
         />
         {market?.rejectReason && market.rejectReason.length > 0 && (
           <div className="mt-[10px] text-ztg-14-150">

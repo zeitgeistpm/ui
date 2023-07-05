@@ -6,7 +6,7 @@ import {
 import Avatar from "components/ui/Avatar";
 import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
+import { BLOCK_TIME_SECONDS, ZTG } from "lib/constants";
 import { X } from "react-feather";
 import { MarketPageIndexedData } from "lib/gql/markets";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
@@ -26,6 +26,7 @@ import { getMarketStatusDetails } from "lib/util/market-status-details";
 import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import { Dialog } from "@headlessui/react";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
+import { estimateMarketResolutionDate } from "lib/util/estimate-market-resolution";
 
 export const UserIdentity: FC<
   PropsWithChildren<{ user: string; className?: string }>
@@ -282,21 +283,17 @@ const MarketHeader: FC<{
   report: MarketDispute;
   disputes: MarketDispute;
   resolvedOutcome: string;
-  prizePool: number;
   token: string;
   marketStage: MarketStage;
   rejectReason?: string;
-  estimatedResolutionTimestamp: number;
 }> = ({
   market,
   report,
   disputes,
   resolvedOutcome,
-  prizePool,
   token,
   marketStage,
   rejectReason,
-  estimatedResolutionTimestamp,
 }) => {
   const {
     tags,
@@ -333,6 +330,18 @@ const MarketHeader: FC<{
   });
 
   const oracleReported = marketHistory?.reported?.by === market.oracle;
+
+  const gracePeriodMS =
+    Number(market.deadlines?.gracePeriod ?? 0) * BLOCK_TIME_SECONDS * 1000;
+  const reportsOpenAt = Number(market.period.end) + gracePeriodMS;
+  const resolutionDateEstimate = estimateMarketResolutionDate(
+    new Date(Number(market.period.end)),
+    BLOCK_TIME_SECONDS,
+    Number(market.deadlines?.gracePeriod ?? 0),
+    Number(market.deadlines?.oracleDuration ?? 0),
+    Number(market.deadlines?.disputeDuration ?? 0),
+  );
+
   return (
     <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
       <h1 className="text-4xl font-extrabold my-5 text-center">{question}</h1>
@@ -369,11 +378,20 @@ const MarketHeader: FC<{
             dateStyle: "medium",
           }).format(ends)}
         </HeaderStat>
-        {market.status !== "Resolved" && (
+        {(market.status === "Active" ||
+          market.status === "Closed" ||
+          market.status === "Reported") && (
           <HeaderStat label="Resolves">
             {new Intl.DateTimeFormat("default", {
               dateStyle: "medium",
-            }).format(estimatedResolutionTimestamp)}
+            }).format(resolutionDateEstimate)}
+          </HeaderStat>
+        )}
+        {market.status === "Proposed" && (
+          <HeaderStat label="Report At">
+            {new Intl.DateTimeFormat("default", {
+              dateStyle: "medium",
+            }).format(reportsOpenAt)}
           </HeaderStat>
         )}
         {token ? (
@@ -385,15 +403,6 @@ const MarketHeader: FC<{
         ) : (
           <Skeleton width="150px" height="20px" />
         )}
-        {/* {prizePool >= 0 && token ? (
-          <HeaderStat label="Prize Pool">
-            {formatNumberCompact(prizePool)}
-            &nbsp;
-            {token}
-          </HeaderStat>
-        ) : (
-          <Skeleton width="150px" height="20px" />
-        )} */}
         {isLiqudityLoading === false && liquidity && token ? (
           <HeaderStat label="Liquidity" border={false}>
             {formatNumberCompact(liquidity.div(ZTG).toNumber())}
