@@ -12,6 +12,7 @@ import { useAccountModals } from "lib/state/account";
 import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
+import { FaNetworkWired } from "react-icons/fa";
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -182,59 +183,62 @@ const AccountButton: FC<{
               <>
                 <div>
                   <Menu.Button>
-                    <div
-                      className={`flex flex-1	items-center justify-end h-full rounded-full cursor-pointer ${
-                        open
-                          ? "border-orange-500"
-                          : pathname === "/"
-                          ? " border-white"
-                          : "border-black"
-                      }`}
-                    >
+                    <div className="flex h-11 relative">
                       <div
-                        className={`flex items-center rounded-full h-full border-2 pl-1.5 py-1 md:py-0 bg-black transition-all text-white ${
-                          open ? "border-orange-500" : "border-white"
+                        className={`relative flex flex-1	items-center justify-end h-full rounded-full cursor-pointer z-20  ${
+                          open
+                            ? "border-orange-500"
+                            : pathname === "/"
+                            ? " border-white"
+                            : "border-black"
                         }`}
                       >
                         <div
-                          className={`border-1 transition-all ${
-                            open ? "border-orange-500" : "border-transparent"
-                          } rounded-full`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                          }}
-                        >
-                          {activeAccount?.address && (
-                            <Avatar
-                              zoomed
-                              address={activeAccount?.address}
-                              deps={avatarDeps}
-                            />
-                          )}
-                        </div>
-                        <span
-                          className={`font-medium pl-2 text-sm h-full transition-all hidden md:block leading-[40px] ${
-                            open ? "text-sunglow-2" : "text-white"
+                          className={`flex items-center rounded-full h-full border-2 pl-1.5 py-1 md:py-0 bg-black transition-all text-white ${
+                            open ? "border-orange-500" : "border-white"
                           }`}
                         >
-                          {activeAccount &&
-                            shortenAddress(activeAccount?.address, 6, 4)}
-                        </span>
-                        {proxy && proxy.enabled && (
-                          <div className="relative px-2 py-0.5 bg-purple-400 rounded-xl ml-2 text-sm text-white">
-                            proxy
+                          <div
+                            className={`border-1 transition-all ${
+                              open ? "border-orange-500" : "border-transparent"
+                            } rounded-full`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          >
+                            {activeAccount?.address && (
+                              <Avatar
+                                zoomed
+                                address={activeAccount?.address}
+                                deps={avatarDeps}
+                              />
+                            )}
                           </div>
-                        )}
-                        <div className="pr-1">
-                          <ChevronDown
-                            size={16}
-                            viewBox="4 3 16 16"
-                            className={`box-content px-2 ${
-                              open && "rotate-180 text-sunglow-2"
+                          <span
+                            className={`font-medium pl-2 text-sm h-full transition-all hidden md:block leading-[40px] ${
+                              open ? "text-sunglow-2" : "text-white"
                             }`}
-                          />
+                          >
+                            {activeAccount &&
+                              shortenAddress(activeAccount?.address, 6, 4)}
+                          </span>
+
+                          <div className="pr-1">
+                            <ChevronDown
+                              size={16}
+                              viewBox="4 3 16 16"
+                              className={`box-content px-2 ${
+                                open && "rotate-180 text-sunglow-2"
+                              }`}
+                            />
+                          </div>
                         </div>
                       </div>
+                      {proxy && proxy.enabled && (
+                        <div className="h-11 -ml-4 pl-6 z-10 bg-gradient-to-r from-purple-700 to-purple-500 rounded-r-full center pr-4 text-purple-900">
+                          <FaNetworkWired size={18} />
+                        </div>
+                      )}
                     </div>
                   </Menu.Button>
                 </div>
@@ -358,12 +362,17 @@ const AccountButton: FC<{
                         </Menu.Item>
                         {proxy && proxy.enabled && (
                           <div className="flex items-center mt-4 hover:bg-slate-100 -mb-3">
-                            <div className="bg-purple-400 px-2 py-4 w-full">
-                              <label className="text-white text-xs italic mb-2">
-                                Account is acting proxy for:
-                              </label>
-                              <div className="text-white text-sm">
-                                {shortenAddress(realAddress, 7, 7)}
+                            <div className="flex items-center bg-purple-400 pl-3 py-4 w-full">
+                              <div className="flex-1">
+                                <label className="text-purple-700 text-xs italic mb-2">
+                                  Account is acting proxy for:
+                                </label>
+                                <div className="text-purple-800 text-sm">
+                                  {shortenAddress(realAddress, 7, 7)}
+                                </div>
+                              </div>
+                              <div className="w-1/3 center text-purple-700">
+                                <FaNetworkWired size={24} />
                               </div>
                             </div>
                           </div>
