@@ -2,18 +2,15 @@ import { isRpcSdk, parseAssetId } from "@zeitgeistpm/sdk-next";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useBalance } from "lib/hooks/queries/useBalance";
-import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
-import { useSaturatedMarket } from "lib/hooks/queries/useSaturatedMarket";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useGlobalKeyPress } from "lib/hooks/useGlobalKeyPress";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   getMetadataForCurrency,
   SupportedCurrencyTag,
@@ -30,28 +27,17 @@ const BuyFullSetForm = ({
   const [sdk] = useSdkv2();
   const wallet = useWallet();
   const notificationStore = useNotifications();
-  const { data: market } = useMarket({ marketId });
-  const { data: saturatedMarket } = useSaturatedMarket(market ?? undefined);
   const { data: pool } = usePool({ marketId: marketId });
   const baseAssetId = pool?.baseAsset
     ? parseAssetId(pool.baseAsset).unrightOr(undefined)
     : undefined;
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
-  console.log(saturatedMarket);
-
   const [amount, setAmount] = useState<string>("0");
-
-  const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 
   const { data: baseAssetBalance } = useBalance(
     wallet.getActiveSigner()?.address,
     baseAssetId,
-  );
-
-  const { data: balances } = useAccountPoolAssetBalances(
-    wallet.getActiveSigner()?.address,
-    pool,
   );
 
   const { send: buySet, isLoading } = useExtrinsic(
@@ -73,11 +59,6 @@ const BuyFullSetForm = ({
       },
     },
   );
-
-  // useEffect(() => {
-  //   const { weight, partialFee } = await api.rpc.payment.queryInfo(extrinsic);
-  //   console.log(`This transaction will cost ${partialFee} units and has a weight of ${weight}`);
-  // },[])
 
   const handleAmountChange = (amount: string) => {
     setAmount(amount);
