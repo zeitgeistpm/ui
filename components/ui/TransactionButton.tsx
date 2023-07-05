@@ -114,9 +114,6 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
       data-test={dataTest}
     >
       {getButtonChildren()}
-      <span className="block text-xs font-normal">
-        Estimated Fees: {fee?.div(ZTG).toFixed(3)} {constants?.tokenSymbol}
-      </span>
     </button>
   );
 };

@@ -17,6 +17,7 @@ import {
 } from "lib/constants/supported-currencies";
 import Image from "next/image";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 
 const BuyFullSetForm = ({
   marketId,
@@ -28,7 +29,9 @@ const BuyFullSetForm = ({
   const [sdk] = useSdkv2();
   const wallet = useWallet();
   const notificationStore = useNotifications();
+
   const { data: pool } = usePool({ marketId: marketId });
+
   const baseAssetId = pool?.baseAsset
     ? parseAssetId(pool.baseAsset).unrightOr(undefined)
     : undefined;
@@ -36,6 +39,13 @@ const BuyFullSetForm = ({
 
   const [amount, setAmount] = useState<string>("0");
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
+
+  const extrinsicBase = wallet.activeAccount?.address
+    ? sdk
+        ?.asRpc()
+        .api.tx.balances.transfer(wallet.activeAccount?.address, ZTG.toFixed(0))
+    : undefined;
+  const { data: fee } = useExtrinsicFee(extrinsicBase);
 
   const { data: balances } = useAccountPoolAssetBalances(
     wallet.getActiveSigner()?.address,
@@ -133,16 +143,19 @@ const BuyFullSetForm = ({
       <div>
         <div className="text-center">
           <p className="text-lg font-medium mb-7">
-            You'll get {amount} Full Sets
+            You'll get {amount ? amount : 0} Full Sets
           </p>
           <p className="text-sm text-center mb-7">
-            <span className="text-sky-600">Price per Set: </span>1{" "}
+            <span className="text-sky-600">Price Per Set: </span>1{" "}
             {metadata?.symbol}
           </p>
         </div>
       </div>
       <TransactionButton onClick={handleSignTransaction} disabled={disabled}>
         Confirm Buy
+        <span className="block text-xs font-normal">
+          Transaction fee: {fee?.div(ZTG).toFixed(2)} {metadata?.symbol}
+        </span>
       </TransactionButton>
     </div>
   );

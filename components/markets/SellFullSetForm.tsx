@@ -13,7 +13,7 @@ import { useGlobalKeyPress } from "lib/hooks/useGlobalKeyPress";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { calcMarketColors } from "lib/util/color-calc";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useEffect, useState } from "react";
 
@@ -28,8 +28,6 @@ const SellFullSetForm = ({
   const notificationStore = useNotifications();
   const [sdk] = useSdkv2();
 
-  const { data: market } = useMarket({ marketId });
-  const { data: saturatedMarket } = useSaturatedMarket(market ?? undefined);
   const { data: pool } = usePool({ marketId: marketId });
   const baseAssetId = parseAssetIdString(pool?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAssetId);
@@ -47,9 +45,12 @@ const SellFullSetForm = ({
   const [amount, setAmount] = useState<string>("0");
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 
-  const colors = market?.categories
-    ? calcMarketColors(marketId, market.categories.length)
-    : [];
+  const extrinsicBase = wallet.activeAccount?.address
+    ? sdk
+        ?.asRpc()
+        .api.tx.balances.transfer(wallet.activeAccount?.address, ZTG.toFixed(0))
+    : undefined;
+  const { data: fee } = useExtrinsicFee(extrinsicBase);
 
   const { send: sellSets, isLoading } = useExtrinsic(
     () => {
@@ -107,7 +108,7 @@ const SellFullSetForm = ({
         <div className="flex justify-center items-center mb-7">
           <span>Your Balance: &nbsp;</span>
           <span className="font-medium">
-            {maxTokenSet.div(ZTG).toString()} Full Sets
+            {maxTokenSet.div(ZTG).toFixed(2)} Full Sets
           </span>
         </div>
         <div className="h-[56px] bg-anti-flash-white center mb-7 w-full">
@@ -124,17 +125,19 @@ const SellFullSetForm = ({
       <div>
         <div className="text-center">
           <p className="text-lg font-medium mb-7">
-            You'll Get {baseAssetBalance?.div(ZTG).toNumber().toFixed(2)}{" "}
-            {metadata?.symbol}
+            You'll Get {amount ? amount : 0} {metadata?.symbol}
           </p>
           <p className="text-sm text-center mb-7">
-            <span className="text-sky-600">Price per Set: </span>1{" "}
+            <span className="text-sky-600">Price Per Set: </span>1{" "}
             {metadata?.symbol}
           </p>
         </div>
       </div>
       <TransactionButton onClick={handleSignTransaction} disabled={disabled}>
         Confirm Sell
+        <span className="block text-xs font-normal">
+          Transaction fee: {fee?.div(ZTG).toFixed(2)} {metadata?.symbol}
+        </span>
       </TransactionButton>
     </div>
   );
