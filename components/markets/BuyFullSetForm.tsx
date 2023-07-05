@@ -10,12 +10,13 @@ import { useGlobalKeyPress } from "lib/hooks/useGlobalKeyPress";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   getMetadataForCurrency,
   SupportedCurrencyTag,
 } from "lib/constants/supported-currencies";
 import Image from "next/image";
+import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 
 const BuyFullSetForm = ({
   marketId,
@@ -34,6 +35,12 @@ const BuyFullSetForm = ({
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
   const [amount, setAmount] = useState<string>("0");
+  const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
+
+  const { data: balances } = useAccountPoolAssetBalances(
+    wallet.getActiveSigner()?.address,
+    pool,
+  );
 
   const { data: baseAssetBalance } = useBalance(
     wallet.getActiveSigner()?.address,
@@ -59,6 +66,17 @@ const BuyFullSetForm = ({
       },
     },
   );
+
+  useEffect(() => {
+    let lowestTokenAmount: Decimal = new Decimal(0);
+    balances?.forEach((balance) => {
+      const free = new Decimal(balance.free.toNumber());
+      if (!lowestTokenAmount || free.lessThan(lowestTokenAmount)) {
+        lowestTokenAmount = free;
+      }
+    });
+    setMaxTokenSet(lowestTokenAmount);
+  }, [balances]);
 
   const handleAmountChange = (amount: string) => {
     setAmount(amount);

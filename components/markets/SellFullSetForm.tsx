@@ -102,101 +102,42 @@ const SellFullSetForm = ({
   useGlobalKeyPress("Enter", handleSignTransaction);
 
   return (
-    <div>
+    <div className="w-full">
       <div>
-        <div className="flex items-center mt-ztg-24 mb-ztg-8">
-          {saturatedMarket?.categories?.map((_, index) => (
-            <div
-              key={index}
-              className="rounded-full w-ztg-20 h-ztg-20 -mr-ztg-8 border-sky-600 border-2"
-              style={{ backgroundColor: colors[index] }}
-            ></div>
-          ))}
-          <div className="font-bold  ml-ztg-20  text-ztg-16-150 text-black dark:text-white">
-            Full Set
-          </div>
-          <span className="font-mono text-ztg-12-150 font-medium ml-auto ">
-            {maxTokenSet.div(ZTG).toString()}
+        <div className="flex justify-center items-center mb-7">
+          <span>Your Balance: &nbsp;</span>
+          <span className="font-medium">
+            {maxTokenSet.div(ZTG).toString()} Full Sets
           </span>
         </div>
-        <input
-          type="number"
-          min="0"
-          value={amount}
-          step="0.1"
-          onChange={(e) => handleAmountChange(e.target.value)}
-          className="text-ztg-14-150 font-mono text-right w-full p-2 outline-none bg-sky-200"
-        />
+        <div className="h-[56px] bg-anti-flash-white center mb-7 w-full">
+          <input
+            type="number"
+            min="0"
+            value={amount}
+            step="0.1"
+            onChange={(e) => handleAmountChange(e.target.value)}
+            className="w-full bg-transparent outline-none text-center text-lg"
+          />
+        </div>
       </div>
       <div>
-        <div className="flex items-center mt-ztg-24 mb-ztg-8">
-          <div className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2 bg-ztg-blue"></div>
-          <div className="font-bold   text-ztg-16-150 uppercase text-black dark:text-white">
+        <div className="text-center">
+          <p className="text-lg font-medium mb-7">
+            You'll Get {baseAssetBalance?.div(ZTG).toNumber().toFixed(2)}{" "}
             {metadata?.symbol}
-          </div>
-          <span className="font-mono text-ztg-12-150 font-medium ml-auto text-sky-600">
-            {baseAssetBalance?.div(ZTG).toNumber()}
-          </span>
+          </p>
+          <p className="text-sm text-center mb-7">
+            <span className="text-sky-600">Price per Set: </span>1{" "}
+            {metadata?.symbol}
+          </p>
         </div>
-        <input
-          type="number"
-          value={amount}
-          step="0.1"
-          disabled={true}
-          className="text-ztg-14-150 font-mono text-right w-full p-2 outline-none bg-sky-200 disabled:bg-transparent disabled:border-sky-200 border-1"
-        />
       </div>
-      <div className="h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 my-ztg-10 text-sky-600">
-        <span className=" font-bold">Price per Set:</span>
-        <span className="font-mono font-medium">1 {metadata?.symbol}</span>
-      </div>
-      <TransactionButton
-        className="!rounded-ztg-10 h-ztg-50"
-        onClick={handleSignTransaction}
-        disabled={disabled}
-      >
-        Sell Full Set
+      <TransactionButton onClick={handleSignTransaction} disabled={disabled}>
+        Confirm Sell
       </TransactionButton>
     </div>
   );
 };
 
 export default SellFullSetForm;
-
-{
-  /* <div className="w-full">
-<div>
-  <div className="flex justify-center items-center mb-7">
-    <span>Your Balance: &nbsp;</span>
-    <span className="font-medium">
-      {maxTokenSet.div(ZTG).toString()} Full Sets
-    </span>
-  </div>
-  <div className="h-[56px] bg-anti-flash-white center mb-7 w-full">
-    <input
-      type="number"
-      min="0"
-      value={amount}
-      step="0.1"
-      onChange={(e) => handleAmountChange(e.target.value)}
-      className="w-full bg-transparent outline-none text-center text-lg"
-    />
-  </div>
-</div>
-<div>
-  <div className="text-center">
-    <p className="text-lg font-medium mb-7">
-      You'll Get {baseAssetBalance?.div(ZTG).toNumber().toFixed(2)}{" "}
-      {metadata?.symbol}
-    </p>
-    <p className="text-sm text-center mb-7">
-      <span className="text-sky-600">Price per Set: </span>1{" "}
-      {metadata?.symbol}
-    </p>
-  </div>
-</div>
-<TransactionButton onClick={handleSignTransaction} disabled={disabled}>
-  Confirm Sell
-</TransactionButton>
-</div> */
-}
