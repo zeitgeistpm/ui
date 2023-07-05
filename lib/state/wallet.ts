@@ -21,7 +21,7 @@ export type UseWallet = WalletState &
     /**
      * The active account of the current wallet.
      */
-    activeAccount?: { address: string };
+    activeAccount?: WalletAccount;
     /**
      * Whether the wallet is nova wallet.
      */
@@ -331,7 +331,7 @@ export const useWallet = (): UseWallet => {
     });
   };
 
-  const activeAccount: { address: string } = useMemo(() => {
+  const activeAccount = useMemo(() => {
     const userSelectedAddress = walletState.accounts.find((acc) => {
       return (
         userConfig.selectedAddress &&
