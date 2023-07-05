@@ -162,3 +162,41 @@ const SellFullSetForm = ({
 };
 
 export default SellFullSetForm;
+
+{
+  /* <div className="w-full">
+<div>
+  <div className="flex justify-center items-center mb-7">
+    <span>Your Balance: &nbsp;</span>
+    <span className="font-medium">
+      {maxTokenSet.div(ZTG).toString()} Full Sets
+    </span>
+  </div>
+  <div className="h-[56px] bg-anti-flash-white center mb-7 w-full">
+    <input
+      type="number"
+      min="0"
+      value={amount}
+      step="0.1"
+      onChange={(e) => handleAmountChange(e.target.value)}
+      className="w-full bg-transparent outline-none text-center text-lg"
+    />
+  </div>
+</div>
+<div>
+  <div className="text-center">
+    <p className="text-lg font-medium mb-7">
+      You'll Get {baseAssetBalance?.div(ZTG).toNumber().toFixed(2)}{" "}
+      {metadata?.symbol}
+    </p>
+    <p className="text-sm text-center mb-7">
+      <span className="text-sky-600">Price per Set: </span>1{" "}
+      {metadata?.symbol}
+    </p>
+  </div>
+</div>
+<TransactionButton onClick={handleSignTransaction} disabled={disabled}>
+  Confirm Sell
+</TransactionButton>
+</div> */
+}
