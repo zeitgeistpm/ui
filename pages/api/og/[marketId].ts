@@ -20,7 +20,7 @@ export type MarketImageData = {
   prediction: ReturnType<typeof getCurrentPrediction>;
   volume: string;
   ends: string;
-  currencyMetadata: CurrencyMetadata;
+  currencyMetadata?: CurrencyMetadata;
 };
 
 export default async function (
@@ -48,7 +48,7 @@ export default async function (
   }
 
   let prediction: { name: string; price: number; percentage: number } = {
-    name: null,
+    name: "",
     percentage: 0,
     price: 0,
   };

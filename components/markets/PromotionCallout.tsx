@@ -12,9 +12,14 @@ export const MarketPromotionCallout = (props: {
   promotion: PromotedMarket;
 }) => {
   const now = new Date();
-  const startDate = new Date(props.promotion.timeSpan[0]);
-  const endDate = new Date(props.promotion.timeSpan[1]);
-  const isActive = startDate < now && endDate > now;
+  const startDate = props.promotion.timeSpan
+    ? new Date(props.promotion.timeSpan[0])
+    : undefined;
+  const endDate = props.promotion.timeSpan
+    ? new Date(props.promotion.timeSpan[1])
+    : undefined;
+  const isActive =
+    (startDate && endDate && startDate < now && endDate > now) ?? false;
 
   const { open, toggle } = useMarketPromotionState(props.market.marketId, {
     defaultOpenedState: isActive,
@@ -40,14 +45,16 @@ export const MarketPromotionCallout = (props: {
     w-full max-w-[564px]  rounded-ztg-10"
             >
               <div className="w-full h-40 lg:h-52 mb-4 relative rounded-t-ztg-10 overflow-hidden">
-                <Image
-                  alt="Market Promotion Banner Image"
-                  src={props.promotion.imageUrl}
-                  fill
-                  style={{
-                    objectFit: "cover",
-                  }}
-                />
+                {props.promotion.imageUrl && (
+                  <Image
+                    alt="Market Promotion Banner Image"
+                    src={props.promotion.imageUrl}
+                    fill
+                    style={{
+                      objectFit: "cover",
+                    }}
+                  />
+                )}
               </div>
               <div className="px-8 py-4 lg:px-16 lg:py-8">
                 <h2 className="mb-8 lg:mb-12 text-xl center text-center lg:text-left">
@@ -69,15 +76,17 @@ export const MarketPromotionCallout = (props: {
                         will receive if you predict correctly.)
                       </i>
                     </li>
-                    <li className="mb-4 lg:mb-6 font-light">
-                      This promotion will run until{" "}
-                      <b>
-                        {moment(props.promotion.timeSpan[1]).format(
-                          "Do of MMMM YYYY",
-                        )}
-                      </b>
-                      , so make sure to get your trades in soon!
-                    </li>
+                    {props.promotion.timeSpan && (
+                      <li className="mb-4 lg:mb-6 font-light">
+                        This promotion will run until{" "}
+                        <b>
+                          {moment(props.promotion.timeSpan[1]).format(
+                            "Do of MMMM YYYY",
+                          )}
+                        </b>
+                        , so make sure to get your trades in soon!
+                      </li>
+                    )}
                   </ol>
                 </div>
                 <button

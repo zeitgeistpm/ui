@@ -93,9 +93,13 @@ const BadgesPage = () => {
         />
       </div>
       <div className="mb-ztg-38 grid gap-4 grid-cols-4 grid-rows-4">
-        {badges.map((item) => (
-          <BadgeItem item={item} />
-        ))}
+        {badges.map((item) => {
+          if (item) {
+            return <BadgeItem item={item} />;
+          } else {
+            return <></>;
+          }
+        })}
       </div>
     </div>
   );

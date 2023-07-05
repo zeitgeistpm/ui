@@ -6,11 +6,6 @@ export type Normalized<
   byId: Partial<Record<T[K], T>>;
 };
 
-export const empty = <T, K extends keyof T>(): Normalized<T, K> => ({
-  ids: [],
-  byId: {},
-});
-
 export const fromArray = <T extends Record<string, any>, K extends keyof T>(
   array: T[],
   key: K,
@@ -24,10 +19,6 @@ export const fromArray = <T extends Record<string, any>, K extends keyof T>(
   }, {} as any);
   return { ids: keys, byId: index };
 };
-
-export const toArray = <T extends Record<string, any>, K extends keyof T>(
-  data: Normalized<T, K>,
-): T[] => data.ids.map((id) => data.byId[id]);
 
 export const mergeR = <T extends Record<string, any>, K extends keyof T>(
   dataA: Normalized<T, K>,

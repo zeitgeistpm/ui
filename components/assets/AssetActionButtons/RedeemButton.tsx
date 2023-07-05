@@ -16,11 +16,13 @@ import {
   AccountAssetIdPair,
   useAccountAssetBalances,
 } from "lib/hooks/queries/useAccountAssetBalances";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { calcScalarWinnings } from "lib/util/calc-scalar-winnings";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 
 import { useMemo } from "react";
 
@@ -124,6 +126,8 @@ const RedeemButtonByValue = ({
   const wallet = useWallet();
   const signer = wallet?.getActiveSigner();
   const notificationStore = useNotifications();
+  const baseAsset = parseAssetIdString(market.baseAsset);
+  const { data: baseAssetMetadata } = useAssetMetadata(baseAsset);
 
   const { isLoading, isSuccess, send } = useExtrinsic(
     () => {
@@ -132,9 +136,12 @@ const RedeemButtonByValue = ({
     },
     {
       onSuccess: () => {
-        notificationStore.pushNotification(`Redeemed ${value.toFixed(2)} ZTG`, {
-          type: "Success",
-        });
+        notificationStore.pushNotification(
+          `Redeemed ${value.toFixed(2)} ${baseAssetMetadata?.symbol}`,
+          {
+            type: "Success",
+          },
+        );
       },
     },
   );
