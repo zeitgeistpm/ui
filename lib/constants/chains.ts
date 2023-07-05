@@ -4,6 +4,7 @@ import { CurrencyBalance } from "lib/hooks/queries/useCurrencyBalances";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { ZTG } from ".";
+import { calculateFreeBalance } from "lib/util/calc-free-balance";
 
 export type ChainName = "Rococo" | "Zeitgeist" | "Polkadot";
 
@@ -38,11 +39,18 @@ const BATTERY_STATION_CHAINS: Chain[] = [
     depositFee: new Decimal(0.01).mul(ZTG), // this is made up
     endpoints: ["wss://rococo-rpc.polkadot.io"],
     fetchCurrencies: async (api, address) => {
-      const account = await api.query.system.account(address);
+      const { data } = await api.query.system.account(address);
+      const free = calculateFreeBalance(
+        data.free.toString(),
+        //@ts-ignore
+        data.miscFrozen?.toString() ?? data.frozen?.toString(),
+        data.feeFrozen?.toString() ?? "0",
+      );
+
       return [
         {
           symbol: "ROC",
-          balance: new Decimal(account.data.free.toString()),
+          balance: free,
           chain: "Rococo",
           foreignAssetId: 1,
           sourceChain: "Rococo",
@@ -93,11 +101,18 @@ const PROD_CHAINS: Chain[] = [
       "wss://rpc.polkadot.io",
     ],
     fetchCurrencies: async (api, address) => {
-      const account = await api.query.system.account(address);
+      const { data } = await api.query.system.account(address);
+      const free = calculateFreeBalance(
+        data.free.toString(),
+        //@ts-ignore once polkadot is upgraded to match rococo the latter half of this statement can be removed
+        data.miscFrozen?.toString() ?? data.frozen?.toString(),
+        data.feeFrozen?.toString() ?? "0",
+      );
+
       return [
         {
           symbol: "DOT",
-          balance: new Decimal(account.data.free.toString()),
+          balance: free,
           chain: "Polkadot",
           foreignAssetId: 0,
           sourceChain: "Polkadot",

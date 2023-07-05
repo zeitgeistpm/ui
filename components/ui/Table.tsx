@@ -214,9 +214,9 @@ const Cell = ({
             </div>
             <div className="text-ztg-12-150 font-light text-sky-600">
               $
-              {((value.usdValue ?? ztgPrice?.toNumber()) * value.value).toFixed(
-                2,
-              )}
+              {(
+                value.usdValue ?? (ztgPrice?.toNumber() ?? 0) * value.value
+              ).toFixed(2)}
             </div>
           </td>
         );

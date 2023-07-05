@@ -59,7 +59,7 @@ export type MarketBond = {
   baseAsset: string;
 };
 
-export const useAccountBonds = (address: string) => {
+export const useAccountBonds = (address?: string) => {
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(

@@ -324,9 +324,10 @@ export const MarketEditor = () => {
               </div>
               <div className="flex justify-center">
                 <BlockPeriodPicker
+                  disabled={!fieldsState.endDate.isValid}
                   isValid={fieldsState.gracePeriod.isValid}
                   options={gracePeriodOptions}
-                  chainTime={chainTime!}
+                  chainTime={chainTime ?? undefined}
                   {...input("gracePeriod", { mode: "all" })}
                 />
               </div>
@@ -359,9 +360,10 @@ export const MarketEditor = () => {
               </div>
               <div className="flex justify-center">
                 <BlockPeriodPicker
+                  disabled={!fieldsState.endDate.isValid}
                   isValid={fieldsState.reportingPeriod.isValid}
                   options={reportingPeriodOptions}
-                  chainTime={chainTime!}
+                  chainTime={chainTime ?? undefined}
                   {...input("reportingPeriod", { mode: "all" })}
                 />
               </div>
@@ -392,9 +394,10 @@ export const MarketEditor = () => {
               </div>
               <div className="flex justify-center">
                 <BlockPeriodPicker
+                  disabled={!fieldsState.endDate.isValid}
                   isValid={fieldsState.disputePeriod.isValid}
                   options={disputePeriodOptions}
-                  chainTime={chainTime!}
+                  chainTime={chainTime ?? undefined}
                   {...input("disputePeriod", { mode: "all" })}
                 />
               </div>

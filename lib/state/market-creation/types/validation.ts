@@ -44,34 +44,53 @@ export const createMarketFormValidator = ({
       tags: IOTags,
       answers: IOAnswers,
       endDate: IOEndDate,
-      gracePeriod: IOPeriodOption.refine(() => !(timeline?.grace.period < 0), {
-        message: "Grace period must be after market end date",
-      }).refine(
-        () => !(timeline?.grace.period > deadlineConstants?.maxGracePeriod),
+      gracePeriod: IOPeriodOption.refine(
+        () => !(timeline?.grace.period && timeline.grace.period < 0),
+        {
+          message: "Grace period must be after market end date",
+        },
+      ).refine(
+        () =>
+          !(
+            timeline?.grace.period &&
+            timeline.grace.period > deadlineConstants?.maxGracePeriod
+          ),
         {
           message: `Grace period must be less than ${deadlineConstants?.maxGracePeriod} blocks.`,
         },
       ),
       reportingPeriod: IOPeriodOption.refine(
-        () => timeline?.report.period < deadlineConstants?.maxOracleDuration,
+        () =>
+          timeline?.grace.period &&
+          timeline.report.period < deadlineConstants?.maxOracleDuration,
         {
           message: `Reporting period must be less than ${deadlineConstants?.maxOracleDuration} blocks.`,
         },
       ).refine(
-        () => !(timeline?.report.period < deadlineConstants?.minOracleDuration),
+        () =>
+          !(
+            timeline?.grace.period &&
+            timeline.report.period < deadlineConstants?.minOracleDuration
+          ),
         {
           message: `Reporting period must be greater than ${deadlineConstants?.minOracleDuration} blocks.`,
         },
       ),
       disputePeriod: IOPeriodOption.refine(
         () =>
-          !(timeline?.dispute.period > deadlineConstants?.maxDisputeDuration),
+          !(
+            timeline?.grace.period &&
+            timeline.dispute.period > deadlineConstants?.maxDisputeDuration
+          ),
         {
           message: `Dispute period must be less than ${deadlineConstants?.maxDisputeDuration} blocks.`,
         },
       ).refine(
         () =>
-          !(timeline?.dispute.period < deadlineConstants?.minDisputeDuration),
+          !(
+            timeline?.grace.period &&
+            timeline.dispute.period < deadlineConstants?.minDisputeDuration
+          ),
         {
           message: `Dispute period must be greater than ${deadlineConstants?.minDisputeDuration} blocks.`,
         },
@@ -104,12 +123,10 @@ export const createMarketFormValidator = ({
         form.liquidity?.deploy &&
         form.liquidity?.rows?.length < 3
       ) {
-        console.log("WAT");
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["liquidity"],
-          message:
-            "Answers section must have a minimum of two valid answersss.",
+          message: "Answers section must have a minimum of two valid answers.",
         });
       }
     });

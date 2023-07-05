@@ -78,7 +78,7 @@ export const WizardStepper = <T extends WizardStep<any>>({
                 canNavigate ? "cursor-pointer" : "cursor-not-allowed"
               } transition-all group`}
               disabled={!canNavigate}
-              onClick={() => onChange(step)}
+              onClick={() => onChange?.(step)}
             >
               <div className="flex center mb-2">
                 <div

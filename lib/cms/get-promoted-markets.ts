@@ -4,11 +4,11 @@ import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
 export type PromotedMarket = {
-  marketId: number;
-  imageUrl: string;
-  tradeRequirement: number;
-  prize: number;
-  timeSpan: [number, number];
+  marketId?: number;
+  imageUrl?: string;
+  tradeRequirement?: number;
+  prize?: number;
+  timeSpan?: [number, number];
 };
 
 export const getMarketPromotion = async (
@@ -35,41 +35,34 @@ export const getMarketPromotion = async (
 };
 
 export const parsePromotedMarketData = (data: PageObjectResponse) => {
-  let marketId: number;
-  let imageUrl: string;
-  let tradeRequirement: number;
-  let prize: number;
-  let timeSpan: [number, number];
+  const promotedMarket: PromotedMarket = {};
 
   if (data.properties.MarketId.type === "number") {
-    marketId = data.properties.MarketId.number;
+    promotedMarket.marketId = data.properties.MarketId.number ?? undefined;
   }
 
   if (data.properties.Image.type === "url") {
-    imageUrl = data.properties.Image.url;
+    promotedMarket.imageUrl = data.properties.Image.url ?? undefined;
   }
 
   if (data.properties.TradeRequirement.type === "number") {
-    tradeRequirement = data.properties.TradeRequirement.number;
+    promotedMarket.tradeRequirement =
+      data.properties.TradeRequirement.number ?? undefined;
   }
 
   if (data.properties.Prize.type === "number") {
-    prize = data.properties.Prize.number;
+    promotedMarket.prize = data.properties.Prize.number ?? undefined;
   }
 
-  if (data.properties.TimeSpan.type === "date") {
-    const startDate = new Date(
-      data.properties.TimeSpan.date.start || undefined,
-    );
+  if (
+    data.properties.TimeSpan.type === "date" &&
+    data.properties.TimeSpan.date?.start &&
+    data.properties.TimeSpan.date?.end
+  ) {
+    const startDate = new Date(data.properties.TimeSpan.date.start);
     const endDate = new Date(data.properties.TimeSpan.date.end);
-    timeSpan = [startDate.getTime(), endDate.getTime()];
+    promotedMarket.timeSpan = [startDate.getTime(), endDate.getTime()];
   }
 
-  return {
-    marketId,
-    imageUrl,
-    tradeRequirement,
-    prize,
-    timeSpan,
-  };
+  return promotedMarket;
 };

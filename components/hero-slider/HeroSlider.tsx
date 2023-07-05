@@ -20,14 +20,14 @@ const HeroSlider = ({
 
   return (
     <section
-      className={`relative w-full h-[527px] mx-auto`}
+      className={`relative w-full h-[527px] mx-auto mt-[60px]`}
       data-testid="HeroSlider__container"
     >
       {banners.map((banner, index) => (
         <Image
           key={index}
           priority
-          src={banner.imageUrl}
+          src={banner.imageUrl ?? ""}
           alt={`Image depicting ${banner.title}`}
           placeholder="blur"
           blurDataURL={bannerPlaceHolders[index]}

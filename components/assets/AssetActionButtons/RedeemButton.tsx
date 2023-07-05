@@ -1,13 +1,14 @@
 import {
   AssetId,
+  getIndexOf,
   getScalarBounds,
   IndexerContext,
+  IOCategoricalAssetId,
   isRpcSdk,
   Market,
   MarketId,
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
-import * as AE from "@zeitgeistpm/utility/dist/aeither";
 import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -15,13 +16,15 @@ import {
   AccountAssetIdPair,
   useAccountAssetBalances,
 } from "lib/hooks/queries/useAccountAssetBalances";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { calcScalarWinnings } from "lib/util/calc-scalar-winnings";
-import { extrinsicCallback, signAndSend } from "lib/util/tx";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 export type RedeemButtonProps = {
   market: Market<IndexerContext>;
@@ -66,7 +69,7 @@ export const RedeemButtonByAssetId = ({
     const zero = new Decimal(0);
     if (!signer?.address || isLoadingAssetBalance) return zero;
 
-    if (market.marketType.categorical) {
+    if (market.marketType.categorical && IOCategoricalAssetId.is(assetId)) {
       const resolvedAssetIdString =
         market.outcomeAssets[Number(market.resolvedOutcome)];
 
@@ -74,7 +77,11 @@ export const RedeemButtonByAssetId = ({
         ? parseAssetId(resolvedAssetIdString).unrightOr(undefined)
         : undefined;
 
-      if (!resolvedAssetId || resolvedAssetId !== assetId) return zero;
+      if (
+        !resolvedAssetId ||
+        getIndexOf(resolvedAssetId) !== getIndexOf(assetId)
+      )
+        return zero;
 
       const balance = getAccountAssetBalance(signer.address, resolvedAssetId)
         ?.data?.balance;
@@ -103,7 +110,7 @@ export const RedeemButtonByAssetId = ({
         new Decimal(longBalance.free.toNumber()).div(ZTG),
       );
     }
-  }, [market, assetId, isLoadingAssetBalance]);
+  }, [market, assetId, isLoadingAssetBalance, getAccountAssetBalance]);
 
   return <RedeemButtonByValue market={market} value={value} />;
 };
@@ -119,48 +126,36 @@ const RedeemButtonByValue = ({
   const wallet = useWallet();
   const signer = wallet?.getActiveSigner();
   const notificationStore = useNotifications();
+  const baseAsset = parseAssetIdString(market.baseAsset);
+  const { data: baseAssetMetadata } = useAssetMetadata(baseAsset);
 
-  const [isRedeeming, setIsRedeeming] = useState(false);
-  const [isRedeemed, setIsRedeemed] = useState(false);
-
-  const handleClick = async () => {
-    if (!isRpcSdk(sdk) || !signer) return;
-
-    setIsRedeeming(true);
-
-    const callback = extrinsicCallback({
-      api: sdk.api,
-      notifications: notificationStore,
-      successCallback: async () => {
-        notificationStore.pushNotification(`Redeemed ${value.toFixed(2)} ZTG`, {
-          type: "Success",
-        });
-        setIsRedeeming(false);
-        setIsRedeemed(true);
+  const { isLoading, isSuccess, send } = useExtrinsic(
+    () => {
+      if (!isRpcSdk(sdk) || !signer) return;
+      return sdk.api.tx.predictionMarkets.redeemShares(market.marketId);
+    },
+    {
+      onSuccess: () => {
+        notificationStore.pushNotification(
+          `Redeemed ${value.toFixed(2)} ${baseAssetMetadata?.symbol}`,
+          {
+            type: "Success",
+          },
+        );
       },
-      failCallback: (error) => {
-        notificationStore.pushNotification(error, {
-          type: "Error",
-        });
-        setIsRedeeming(false);
-      },
-    });
+    },
+  );
 
-    const tx = sdk.api.tx.predictionMarkets.redeemShares(market.marketId);
-
-    await AE.from(() => signAndSend(tx, signer, callback));
-
-    setIsRedeeming(false);
-  };
+  const handleClick = () => send();
 
   return (
     <>
-      {isRedeemed ? (
+      {isSuccess ? (
         <span className="text-green-500 font-bold">Redeemed Tokens!</span>
       ) : (
         <SecondaryButton
           onClick={handleClick}
-          disabled={isRedeeming || value.eq(0)}
+          disabled={isLoading || value.eq(0)}
         >
           Redeem Tokens
         </SecondaryButton>

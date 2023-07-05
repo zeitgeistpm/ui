@@ -10,8 +10,9 @@ export interface HeroSlideProps {
 }
 
 export const HeroSlide: FC<HeroSlideProps> = ({ banner, style, className }) => {
-  const isExternalLink = !isCurrentOrigin(banner.ctaLink);
-
+  const isExternalLink = banner.ctaLink
+    ? !isCurrentOrigin(banner.ctaLink)
+    : false;
   const linkProps = {
     style: {
       backgroundColor: `${banner.buttonColor}`,
@@ -47,7 +48,17 @@ export const HeroSlide: FC<HeroSlideProps> = ({ banner, style, className }) => {
               {banner.ctaText}
             </a>
           ) : (
-            <Link {...linkProps}>{banner.ctaText}</Link>
+            <>
+              {linkProps.href && (
+                <Link
+                  href={linkProps.href}
+                  className={linkProps.className}
+                  style={linkProps.style}
+                >
+                  {banner.ctaText}
+                </Link>
+              )}
+            </>
           )}
         </div>
       </div>

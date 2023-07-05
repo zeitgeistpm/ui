@@ -27,7 +27,7 @@ import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import { Dialog } from "@headlessui/react";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 
-const UserIdentity: FC<
+export const UserIdentity: FC<
   PropsWithChildren<{ user: string; className?: string }>
 > = ({ user, className }) => {
   const { data: identity } = useIdentity(user ?? "");
@@ -37,7 +37,7 @@ const UserIdentity: FC<
       : shortenAddress(user, 10, 10);
   return (
     <div className={`inline-flex items-center gap-1 ${className}`}>
-      <Avatar address={user} />
+      <Avatar address={user} copy={false} />
       <span className="break-all flex-1">{displayName}</span>
     </div>
   );
@@ -331,7 +331,6 @@ const MarketHeader: FC<{
   });
 
   const oracleReported = marketHistory?.reported?.by === market.oracle;
-
   return (
     <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
       <h1 className="text-4xl font-extrabold my-5 text-center">{question}</h1>

@@ -8,6 +8,7 @@
 
 html {
   font-size: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 /* hide number input arrows */
 input::-webkit-outer-spin-button,

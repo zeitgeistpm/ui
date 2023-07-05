@@ -93,7 +93,6 @@ export const useAccountAssetBalances = (
           isRpcSdk(sdk) &&
           (typeof opts?.enabled === "undefined" ? true : opts?.enabled),
         keepPreviousData: true,
-        initialData: { pair, balance: undefined },
       };
     }),
   });
