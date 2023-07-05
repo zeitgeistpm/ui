@@ -5,7 +5,10 @@ import { SupportedCurrencyTag } from "lib/constants/supported-currencies";
  * pr supported currency.
  */
 
-export const minBaseLiquidity: Record<SupportedCurrencyTag, number> = {
+export const minBaseLiquidity: Record<
+  Exclude<SupportedCurrencyTag, "ZBS">,
+  number
+> = {
   ZTG: 200,
   DOT: 10,
 };
