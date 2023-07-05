@@ -86,7 +86,12 @@ const AccountButton: FC<{
     selectWallet,
     disconnectWallet,
     isNovaWallet,
+    proxyFor,
+    realAddress,
   } = useWallet();
+
+  const proxy = proxyFor?.[activeAccount?.address];
+
   const accountModals = useAccountModals();
   const { locationAllowed, isUsingVPN } = useUserLocation();
   const [hovering, setHovering] = useState<boolean>(false);
@@ -215,6 +220,11 @@ const AccountButton: FC<{
                           {activeAccount &&
                             shortenAddress(activeAccount?.address, 6, 4)}
                         </span>
+                        {proxy && proxy.enabled && (
+                          <div className="relative px-2 py-0.5 bg-purple-400 rounded-xl ml-2 text-sm text-white">
+                            proxy
+                          </div>
+                        )}
                         <div className="pr-1">
                           <ChevronDown
                             size={16}
@@ -238,115 +248,129 @@ const AccountButton: FC<{
                   leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
                   leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                 >
-                  <Menu.Items className="fixed md:absolute left-0 md:left-auto md:right-0 py-3 z-40 mt-2 w-full h-full md:h-auto md:w-64 origin-top-right divide-y divide-gray-100 md:rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <div className="">
-                      <div className="border-b-2 mb-3 py-2">
-                        <div className="px-6">
-                          <BalanceRow
-                            imgPath="/currencies/ztg.jpg"
-                            units={constants?.tokenSymbol}
-                            balance={activeBalance}
-                          />
-                        </div>
-                        <div className="px-6">
-                          <BalanceRow
-                            imgPath="/currencies/dot.png"
-                            units="DOT"
-                            balance={polkadotBalance}
-                          />
-                        </div>
-                        <div className="px-6">
-                          <div className="flex items-center mb-3">
-                            <img
-                              src="/currencies/usdt.png"
-                              height={"24px"}
-                              width="24px"
+                  <div>
+                    <Menu.Items className="fixed md:absolute left-0 md:left-auto md:right-0 py-3 z-40 mt-2 w-full overflow-hidden h-full md:h-auto md:w-64 origin-top-right divide-y divide-gray-100 md:rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <div className="">
+                        <div className="border-b-2 mb-3 py-2">
+                          <div className="px-6">
+                            <BalanceRow
+                              imgPath="/currencies/ztg.jpg"
+                              units={constants?.tokenSymbol}
+                              balance={activeBalance}
                             />
-                            <div className="bg-green-200 ml-2 text-green-900 rounded-md py-1 px-2 text-xs">
-                              USDT Coming Soon!
+                          </div>
+                          <div className="px-6">
+                            <BalanceRow
+                              imgPath="/currencies/dot.png"
+                              units="DOT"
+                              balance={polkadotBalance}
+                            />
+                          </div>
+                          <div className="px-6">
+                            <div className="flex items-center mb-3">
+                              <img
+                                src="/currencies/usdt.png"
+                                height={"24px"}
+                                width="24px"
+                              />
+                              <div className="bg-green-200 ml-2 text-green-900 rounded-md py-1 px-2 text-xs">
+                                USDT Coming Soon!
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="flex items-center px-6 mb-3 hover:bg-slate-100"
-                            onClick={() => setShowGetZtgModal(true)}
-                          >
-                            <DollarSign />
-                            <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
-                            >
-                              Get ZTG
-                            </button>
-                          </div>
-                        )}
-                      </Menu.Item>
-                      {isNovaWallet !== true && (
                         <Menu.Item>
                           {({ active }) => (
                             <div
                               className="flex items-center px-6 mb-3 hover:bg-slate-100"
-                              onClick={() => {
-                                accountModals.openAccountSelect();
-                              }}
+                              onClick={() => setShowGetZtgModal(true)}
                             >
-                              <User />
+                              <DollarSign />
                               <button
                                 className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
                               >
-                                Select Account
+                                Get ZTG
                               </button>
                             </div>
                           )}
                         </Menu.Item>
-                      )}
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link href="/portfolio">
-                            <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
-                              <BarChart />
-                              <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                        {isNovaWallet !== true && (
+                          <Menu.Item>
+                            {({ active }) => (
+                              <div
+                                className="flex items-center px-6 mb-3 hover:bg-slate-100"
+                                onClick={() => {
+                                  accountModals.openAccountSelect();
+                                }}
                               >
-                                Portfolio
-                              </button>
-                            </div>
-                          </Link>
+                                <User />
+                                <button
+                                  className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                                >
+                                  Select Account
+                                </button>
+                              </div>
+                            )}
+                          </Menu.Item>
                         )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link href="/settings">
-                            <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
-                              <Settings />
-                              <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
-                              >
-                                Settings
-                              </button>
-                            </div>
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="flex items-center px-6 hover:bg-slate-100"
-                            onClick={() => disconnectWallet()}
-                          >
-                            <Frown />
-                            <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link href="/portfolio">
+                              <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
+                                <BarChart />
+                                <button
+                                  className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                                >
+                                  Portfolio
+                                </button>
+                              </div>
+                            </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link href="/settings">
+                              <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
+                                <Settings />
+                                <button
+                                  className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                                >
+                                  Settings
+                                </button>
+                              </div>
+                            </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div
+                              className="flex items-center px-6 hover:bg-slate-100"
+                              onClick={() => disconnectWallet()}
                             >
-                              Disconnect
-                            </button>
+                              <Frown />
+                              <button
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                              >
+                                Disconnect
+                              </button>
+                            </div>
+                          )}
+                        </Menu.Item>
+                        {proxy && proxy.enabled && (
+                          <div className="flex items-center mt-4 hover:bg-slate-100 -mb-3">
+                            <div className="bg-purple-400 px-2 py-4 w-full">
+                              <label className="text-white text-xs italic mb-2">
+                                Account is acting proxy for:
+                              </label>
+                              <div className="text-white text-sm">
+                                {shortenAddress(realAddress, 7, 7)}
+                              </div>
+                            </div>
                           </div>
                         )}
-                      </Menu.Item>
-                    </div>
-                  </Menu.Items>
+                      </div>
+                    </Menu.Items>
+                  </div>
                 </Transition>
               </>
             )}

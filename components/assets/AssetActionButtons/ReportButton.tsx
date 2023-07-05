@@ -3,6 +3,7 @@ import {
   CategoricalAssetId,
   getIndexOf,
   IndexerContext,
+  IOCategoricalAssetId,
   isRpcSdk,
   Market,
   ScalarAssetId,
@@ -11,6 +12,7 @@ import ScalarReportBox from "components/outcomes/ScalarReportBox";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
@@ -29,6 +31,29 @@ const ReportButton = ({
   const notificationStore = useNotifications();
   const [scalarReportBoxOpen, setScalarReportBoxOpen] = useState(false);
 
+  const { isLoading, isSuccess, send } = useExtrinsic(
+    () => {
+      if (!isRpcSdk(sdk)) return;
+      if (!IOCategoricalAssetId.is(assetId)) return;
+
+      const ID = assetId.CategoricalOutcome[1];
+
+      return sdk.api.tx.predictionMarkets.report(market.marketId, {
+        Categorical: ID,
+      });
+    },
+    {
+      onSuccess: () => {
+        notificationStore.pushNotification(
+          `Reported market outcome: ${outcomeName}`,
+          {
+            type: "Success",
+          },
+        );
+      },
+    },
+  );
+
   if (!market) return <></>;
   const { data: stage } = useMarketStage(market);
 
@@ -44,43 +69,7 @@ const ReportButton = ({
     !stage ||
     (stage.type === "OracleReportingPeriod" && !connectedWalletIsOracle);
 
-  const handleClick = async () => {
-    if (!isRpcSdk(sdk)) return;
-
-    if (market.marketType.scalar) {
-      setScalarReportBoxOpen(true);
-    } else {
-      //@ts-ignore
-      const ID = assetId.CategoricalOutcome[1];
-      const signer = wallet.getActiveSigner();
-      if (!signer) return;
-
-      const callback = extrinsicCallback({
-        api: sdk.api,
-        notifications: notificationStore,
-        successCallback: async () => {
-          notificationStore.pushNotification(
-            `Reported market outcome: ${outcomeName}`,
-            {
-              type: "Success",
-            },
-          );
-        },
-        failCallback: (error) => {
-          notificationStore.pushNotification(error, {
-            type: "Error",
-          });
-        },
-      });
-
-      if (isRpcSdk(sdk)) {
-        const tx = sdk.api.tx.predictionMarkets.report(market.marketId, {
-          Categorical: ID,
-        });
-        signAndSend(tx, signer, callback);
-      }
-    }
-  };
+  const handleClick = async () => send();
 
   return (
     <>

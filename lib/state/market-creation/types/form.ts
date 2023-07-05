@@ -114,6 +114,7 @@ export const marketFormDataToExtrinsicParams = (
   form: ValidMarketFormData,
   signer: KeyringPairOrExtSigner,
   chainTime: ChainTime,
+  proxy?: KeyringPairOrExtSigner,
 ): CreateMarketParams<RpcContext<MetadataStorage>, MetadataStorage> => {
   const baseCurrencyMetadata = getMetadataForCurrency(form.currency);
   const timeline = timelineAsBlocks(form, chainTime).unwrap();
@@ -127,6 +128,7 @@ export const marketFormDataToExtrinsicParams = (
     MetadataStorage
   > = {
     signer,
+    proxy,
     disputeMechanism: "Authorized",
     oracle: form.oracle,
     period: {

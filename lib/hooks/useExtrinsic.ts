@@ -32,9 +32,18 @@ export const useExtrinsic = <T>(
 
     setIsLoading(true);
 
-    const extrinsic = extrinsicFn(params);
+    let extrinsic = extrinsicFn(params);
     if (!extrinsic) return;
-    const signer = wallet.getActiveSigner() as ExtSigner;
+
+    const proxy = wallet?.proxyFor?.[wallet.activeAccount?.address];
+    let signer = wallet.getSigner();
+
+    if (proxy?.enabled && proxy?.address) {
+      console.info("Proxying transaction");
+      extrinsic = sdk.api.tx.proxy.proxy(proxy?.address, "Any", extrinsic);
+    }
+
+    console.log(signer?.address, proxy?.address);
 
     signAndSend(
       extrinsic,

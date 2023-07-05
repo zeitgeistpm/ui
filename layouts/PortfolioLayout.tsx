@@ -37,7 +37,7 @@ const PortfolioLayout: React.FC<PropsWithChildren> = ({ children }) => {
       setIsAccountAddress(true);
       router.replace(
         {
-          pathname: `/portfolio/${wallet.activeAccount.address}`,
+          pathname: `/portfolio/${wallet.realAddress}`,
           query: queryParams,
         },
         undefined,

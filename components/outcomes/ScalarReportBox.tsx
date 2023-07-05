@@ -46,7 +46,7 @@ const ScalarReportBox = ({
       scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
     };
 
-    const signer = wallet.getActiveSigner();
+    const signer = wallet.getSigner();
 
     if (isRpcSdk(sdk) && signer) {
       const tx = sdk.api.tx.predictionMarkets.report(

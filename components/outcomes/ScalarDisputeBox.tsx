@@ -36,7 +36,7 @@ const ScalarDisputeBox = ({
   const lastDispute = disputes?.[disputes.length - 1];
 
   const wallet = useWallet();
-  const signer = wallet.getActiveSigner();
+  const signer = wallet.activeAccount;
 
   const bondAmount =
     disputes && disputeBond && disputeFactor

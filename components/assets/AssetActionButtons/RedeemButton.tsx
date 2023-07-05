@@ -44,19 +44,19 @@ export const RedeemButtonByAssetId = ({
   assetId: AssetId;
 }) => {
   const wallet = useWallet();
-  const signer = wallet?.getActiveSigner();
+  const activeAccount = wallet?.activeAccount;
 
   const scalarBounds = getScalarBounds(market);
 
   const balanceQueries: AccountAssetIdPair[] = market.marketType.categorical
-    ? [{ assetId, account: signer?.address }]
+    ? [{ assetId, account: activeAccount?.address }]
     : [
         {
-          account: signer?.address,
+          account: activeAccount?.address,
           assetId: { ScalarOutcome: [market.marketId as MarketId, "Short"] },
         },
         {
-          account: signer?.address,
+          account: activeAccount?.address,
           assetId: { ScalarOutcome: [market.marketId as MarketId, "Long"] },
         },
       ];
@@ -66,7 +66,7 @@ export const RedeemButtonByAssetId = ({
 
   const value = useMemo(() => {
     const zero = new Decimal(0);
-    if (!signer?.address || isLoadingAssetBalance) return zero;
+    if (!activeAccount?.address || isLoadingAssetBalance) return zero;
 
     if (market.marketType.categorical && IOCategoricalAssetId.is(assetId)) {
       const resolvedAssetIdString =
@@ -82,15 +82,17 @@ export const RedeemButtonByAssetId = ({
       )
         return zero;
 
-      const balance = getAccountAssetBalance(signer.address, resolvedAssetId)
-        ?.data?.balance;
+      const balance = getAccountAssetBalance(
+        activeAccount.address,
+        resolvedAssetId,
+      )?.data?.balance;
       return new Decimal(balance?.free.toString() ?? 0).div(ZTG);
     } else {
-      const shortBalance = getAccountAssetBalance(signer.address, {
+      const shortBalance = getAccountAssetBalance(activeAccount.address, {
         ScalarOutcome: [market.marketId as MarketId, "Short"],
       })?.data?.balance;
 
-      const longBalance = getAccountAssetBalance(signer.address, {
+      const longBalance = getAccountAssetBalance(activeAccount.address, {
         ScalarOutcome: [market.marketId as MarketId, "Long"],
       })?.data?.balance;
 
@@ -123,7 +125,7 @@ const RedeemButtonByValue = ({
 }) => {
   const [sdk] = useSdkv2();
   const wallet = useWallet();
-  const signer = wallet?.getActiveSigner();
+  const signer = wallet?.activeAccount;
   const notificationStore = useNotifications();
 
   const [isRedeeming, setIsRedeeming] = useState(false);

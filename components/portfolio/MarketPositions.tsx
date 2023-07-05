@@ -147,7 +147,7 @@ export const MarketPositions = ({
   const { data: foreignAssetPrices } = useAllForeignAssetUsdPrices();
 
   const wallet = useWallet();
-  const userAddress = wallet.getActiveSigner()?.address;
+  const userAddress = wallet.activeAccount?.address;
   const isOracle = market?.oracle === userAddress;
 
   const isLiquidityMarket = positions.some(

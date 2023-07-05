@@ -1,21 +1,29 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { Input } from "components/ui/inputs";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { identityRootKey, useIdentity } from "lib/hooks/queries/useIdentity";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
-import { useWallet } from "lib/state/wallet";
+import { ProxyConfig, useWallet } from "lib/state/wallet";
 import { NextPage } from "next";
+import { encodeAddress } from "@polkadot/util-crypto";
+
 import {
+  ChangeEventHandler,
   FC,
   MouseEventHandler,
   PropsWithChildren,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { AlertTriangle } from "react-feather";
+import { useForm } from "react-hook-form";
+import { useAccountProxies } from "lib/hooks/queries/useAccountProxies";
+import { poll } from "@zeitgeistpm/avatara-util";
 
 const SubmitButton: FC<
   PropsWithChildren<{
@@ -194,6 +202,100 @@ const IdentitySettings = () => {
   );
 };
 
+const ProxySettings = () => {
+  const [sdk] = useSdkv2();
+  const wallet = useWallet();
+
+  const proxy = wallet.proxyFor?.[wallet.activeAccount?.address];
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty, isValid },
+    watch,
+  } = useForm<ProxyConfig>({
+    mode: "all",
+    defaultValues: {
+      address: proxy?.address ?? "",
+      enabled: proxy?.enabled ?? false,
+    },
+  });
+
+  const onSubmit = (data: ProxyConfig) => {
+    wallet.setProxyFor(wallet.activeAccount?.address, data);
+    reset(data);
+  };
+
+  const address = watch("address");
+  const enabled = watch("enabled");
+
+  console.log(errors);
+
+  return (
+    <>
+      <h6 className="font-bold mb-5" data-test="displayNameLabel">
+        Proxy Account
+      </h6>
+
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="mb-3">
+          <div className="inline-flex gap-2 justify-center items-center">
+            <h4 className="text-base">Enable Proxy Execution</h4>
+            <input type="checkbox" {...register("enabled")} />
+          </div>
+        </div>
+
+        <div className={`mb-5 ${!enabled && "opacity-20"}`}>
+          <div className="w-full">
+            <input
+              type="text"
+              disabled={!enabled}
+              className={`w-full bg-sky-200 px-3 py-2 rounded-md text-sky-600 border-transparent border-1 outline-none ${
+                errors.address && " border-vermilion"
+              }`}
+              {...register("address", {
+                validate: async (value) => {
+                  if (enabled && tryCatch(() => encodeAddress(value)).isNone())
+                    return "Not a valid address";
+
+                  if (isRpcSdk(sdk)) {
+                    const proxies = await sdk.api.query.proxy.proxies(value);
+                    const isValidProxy = Boolean(
+                      proxies?.[0]?.find(
+                        (p) =>
+                          p.delegate.toString() ===
+                          wallet.activeAccount?.address,
+                      ),
+                    );
+                    if (!isValidProxy) {
+                      return "You are not a proxy for this account.";
+                    }
+                  }
+                },
+                deps: ["enabled"],
+              })}
+            />
+          </div>
+          <div className="h-3 text-vermilion text-sm font-light mt-2 pl-5">
+            {errors.address && errors.address.message}
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={!isDirty || !isValid}
+          className="flex flex-row p-ztg-8 w-ztg-266 h-ztg-37 bg-ztg-blue rounded-ztg-100 cursor-pointer text-white center disabled:cursor-default disabled:opacity-20 focus:outline-none"
+        >
+          <div className="text-ztg-14-150 font-medium text-white flex flex-grow justify-center items-center">
+            Save Proxy Settings
+          </div>
+        </button>
+      </form>
+    </>
+  );
+};
+
 const Settings: NextPage = () => {
   return (
     <>
@@ -205,51 +307,9 @@ const Settings: NextPage = () => {
       </h2>
       <div className="p-ztg-30 rounded-ztg-10 mb-ztg-32  font-bold bg-sky-100 dark:bg-sky-700">
         <IdentitySettings />
-        {/* Post beta */}
-        {/* <div className="font-bold mb-5">Email Address</div>
-        <Input
-          type="text"
-          placeholder="elite-trader@domain.com"
-          className="mb-ztg-25 bg-sky-200 dark:bg-sky-1000 text-sky-600"
-          onChange={(e) => console.log(e)}
-        /> */}
-        {/* Post beta */}
-        {/* <label className="block">
-          <Checkbox />
-          Sign up for app notifications
-        </label> */}
-        {/* <label className="flex items-center font-medium text-ztg-12-150 mb-ztg-25">
-          <Checkbox
-            value={mailingListChecked}
-            onChange={handleMailingListCheck}
-          />
-          Subscribe to the newsletter
-        </label>
-        <SubmitButton onClick={handleEmailAddressSubmit} /> */}
-        {/* <div className="font-bold mt-ztg-40">
-          Theme
-          <div className="flex flex-wrap mt-5">
-            <SubmitButton
-              onClick={handleResetTheme}
-              disabled={userStore.storedTheme === "system"}
-            >
-              Sync with computer
-            </SubmitButton>
-          </div>
-        </div> */}
-        {/* TODO */}
-        {/* <div className="p-ztg-15 bg-efefef mx-ztg-17 rounded-ztg-10 flex flex-row">
-          <div className="flex flex-col w-full">
-            <div className="flex flex-row justify-between font-bold font-medium">
-              <div>New York</div>
-              <div>6:00pm</div>
-            </div>
-            <div className="flex flex-row justify-between text-ztg-12-120 font-normal">
-              <div>Eastern Time Zone (ET)</div>
-              <div>Friday, July 9th, 2021</div>
-            </div>
-          </div>
-        </div> */}
+      </div>
+      <div className="p-ztg-30 rounded-ztg-10 mb-ztg-32  font-bold bg-sky-100 dark:bg-sky-700">
+        <ProxySettings />
       </div>
     </>
   );

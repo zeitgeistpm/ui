@@ -24,6 +24,7 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import { LuFileWarning } from "react-icons/lu";
 import { RiSendPlaneLine } from "react-icons/ri";
+import type { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 
 export type PublishingProps = {
   editor: MarketDraftEditor;
@@ -40,9 +41,20 @@ export const Publishing = ({ editor }: PublishingProps) => {
   const { data: constants } = useChainConstants();
 
   const params = useMemo(() => {
-    const signer = wallet.getActiveSigner();
+    let signer = wallet.getSigner();
+
+    const real =
+      wallet.proxyFor?.enabled && wallet.proxyFor?.address
+        ? (wallet.activeAccount as KeyringPairOrExtSigner)
+        : signer;
+
     if (editor.isValid && chainTime && signer) {
-      return marketFormDataToExtrinsicParams(editor.form, signer, chainTime);
+      return marketFormDataToExtrinsicParams(
+        editor.form,
+        real,
+        chainTime,
+        signer,
+      );
     }
     return;
   }, [editor.form, chainTime, wallet.activeAccount]);

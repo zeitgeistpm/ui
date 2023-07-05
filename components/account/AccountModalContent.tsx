@@ -1,19 +1,45 @@
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import { LogOut } from "react-feather";
-import AccountSelect from "./AccountSelect";
+import AccountSelect, { AccountOption } from "./AccountSelect";
 import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { ZTG } from "@zeitgeistpm/sdk-next";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 const AccountModalContent: FC = () => {
-  const { activeAccount, disconnectWallet } = useWallet();
+  const { activeAccount, disconnectWallet, accounts, selectAccount, proxyFor } =
+    useWallet();
+
+  const proxy = proxyFor?.[activeAccount?.address];
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const { data: constants } = useChainConstants();
 
+  const options = useMemo<AccountOption[]>(() => {
+    return accounts.map((account, id) => {
+      return {
+        label: account.name ?? `Account #${id}`,
+        value: account.address,
+      };
+    });
+  }, [accounts]);
+
+  const onAccountChange = (value: AccountOption) => {
+    value && selectAccount(value.value);
+  };
+
+  const value = useMemo(() => {
+    if (!activeAccount) return null;
+    const def = options.find((o) => o.value === activeAccount?.address);
+    return def || null;
+  }, [activeAccount, options]);
+
   return (
     <div className="flex flex-col">
-      <AccountSelect />
+      <AccountSelect
+        options={options}
+        value={value}
+        onChange={onAccountChange}
+      />
       <div className="flex items-center justify-between h-ztg-50 mt-ztg-15">
         <div className="rounded-ztg-10 h-full bg-sky-100 dark:bg-black flex items-center flex-grow">
           <div className="px-ztg-8 flex items-center">
