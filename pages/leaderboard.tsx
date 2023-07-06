@@ -99,6 +99,10 @@ type Event = {
   event: string;
   id: string;
   timestamp: any;
+  extrinsic?: {
+    hash: string;
+    name: string;
+  };
 };
 
 const convertEventToTrade = (event: Event) => {
@@ -221,7 +225,9 @@ export async function getStaticProps() {
   // }, {});
   const { historicalSwaps } = await sdk.indexer.historicalSwaps({
     where: {
-      accountId_eq: "dE1CBAKzrE1C9R6NkgdEUNgv1H9x4xgT39wzSnxCtX3FpSqS8",
+      // accountId_eq: "dE1CBAKzrE1C9R6NkgdEUNgv1H9x4xgT39wzSnxCtX3FpSqS8", //old ac
+      // accountId_eq: "dE3zfJtCC2YMHjgSifTbJg98EqhiVFeXvA8VCnCqyNty4ZYvv", //new ac creator
+      // accountId_eq: "dDyQQkwy5MmibHv5y1qQYpADS6x2x8yJjzaTRt2uTGfeSD7V9", //new ac lp
     },
   });
   // console.log(historicalSwaps);
@@ -312,7 +318,7 @@ export async function getStaticProps() {
       console.log("event", event);
 
       const duplicateEvent = uniqueEvents.find(
-        (entry) => entry.id === event.id,
+        (entry) => entry.extrinsic?.hash === event.extrinsic?.hash,
       );
 
       console.log("duplicateEvent", duplicateEvent);
@@ -339,6 +345,8 @@ export async function getStaticProps() {
       tradersWithSwaps[event.accountId] = trades;
     }
   });
+
+  console.log(tradersWithSwaps);
 
   //loop through accounts and trades, total up baseAsset in and out for each market
   const tradersAggregatedByMarket = Object.keys(
@@ -384,6 +392,8 @@ export async function getStaticProps() {
 
     return { ...traders, [accountId]: marketTotal };
   }, {});
+
+  console.log(tradersAggregatedByMarket);
 
   const tradeProfits = Object.keys(
     tradersAggregatedByMarket,
