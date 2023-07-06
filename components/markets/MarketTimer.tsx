@@ -17,25 +17,6 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
 
   const timeUntilStageEnds = moment.duration(remainingTime, "millisecond");
 
-  const format =
-    timeUntilStageEnds.asYears() > 1
-      ? "year"
-      : timeUntilStageEnds.asMonths() > 1
-      ? "month"
-      : timeUntilStageEnds.asWeeks() > 1
-      ? "week"
-      : timeUntilStageEnds.asDays() > 1
-      ? "day"
-      : timeUntilStageEnds.asHours() > 1
-      ? "hour"
-      : timeUntilStageEnds.asMinutes() > 1
-      ? "minute"
-      : timeUntilStageEnds.asSeconds() > 1
-      ? "second"
-      : "hour";
-
-  const timer = timeUntilStageEnds.as(format);
-
   return (
     <div className="inline-block w-full">
       <div className="flex mb-3 items-center">
@@ -45,8 +26,7 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
         <div className="text-sky-600">{copy[stage.type].description}</div>
         {!isInfinite(stage) && (
           <div className="ml-auto text-black text-right">
-            {timer.toFixed(0)}{" "}
-            {upperFirst(format + (Math.floor(timer) >= 1 ? "s" : ""))} left
+            {timeUntilStageEnds.humanize()} left
           </div>
         )}
       </div>
