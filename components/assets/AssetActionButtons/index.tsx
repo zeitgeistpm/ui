@@ -18,7 +18,7 @@ const AssetActionButtons = ({ marketId, assetId }: AssetActionButtonsProps) => {
   const { data: marketStage } = useMarketStage(market ?? undefined);
 
   const wallet = useWallet();
-  const isOracle = market?.oracle === wallet.activeAccount?.address;
+  const isOracle = market?.oracle === wallet.realAddress;
 
   if (!market || !marketStage) {
     return <></>;
