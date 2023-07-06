@@ -63,10 +63,6 @@ const createCurrencyFilters = () => {
 export const marketCurrencyFilterOptions: MarketCurrencyFilter[] =
   createCurrencyFilters();
 
-export const defaultMarketFilters = [
-  ...marketStatusFilterOptions.filter((f) => f.value === "Active"),
-];
-
 export const defaultMarketsQueryState: MarketsListQuery = {
   filters: {
     status: ["Active"],
