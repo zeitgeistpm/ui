@@ -31,6 +31,7 @@ import {
   DesktopOnboardingModal,
   MobileOnboardingModal,
 } from "./OnboardingModal";
+import CopyIcon from "../ui/CopyIcon";
 
 const BalanceRow = ({
   imgPath,
@@ -239,7 +240,7 @@ const AccountButton: FC<{
                       <Popover className={"relative"}>
                         {({ open }) => (
                           <>
-                            <Popover.Button className="relative z-20">
+                            <Popover.Button className="relative z-20 focus:outline-none">
                               <div
                                 className={`h-11 -ml-4 pl-6 z-rounded-r-full  z-50 ${
                                   open
@@ -261,14 +262,22 @@ const AccountButton: FC<{
                                 leaveTo="transform opacity-0 :scale-95"
                               >
                                 <Popover.Panel className="absolute z-10 right-0 bottom-6 translate-y-[100%] w-64">
-                                  <div className="flex items-center hover:bg-slate-100">
+                                  <div className="flex items-center">
                                     <div className="flex items-center bg-purple-500 p-4 pt-8 w-full rounded-md rounded-tr-none">
                                       <div className="flex-1">
                                         <label className="text-purple-900 text-xs italic mb-2">
                                           Account is acting proxy for:
                                         </label>
-                                        <div className="text-white text-sm">
-                                          {shortenAddress(realAddress, 7, 7)}
+                                        <div className="flex items-center gap-1">
+                                          <div className="text-white text-sm">
+                                            {shortenAddress(realAddress, 7, 7)}
+                                          </div>
+                                          <div className="text-purple-800">
+                                            <CopyIcon
+                                              size={14}
+                                              copyText={realAddress}
+                                            />
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
