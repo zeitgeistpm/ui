@@ -233,8 +233,6 @@ const ProxySettings = () => {
   const address = watch("address");
   const enabled = watch("enabled");
 
-  console.log(errors);
-
   return (
     <>
       <h6 className="font-bold mb-5" data-test="displayNameLabel">
