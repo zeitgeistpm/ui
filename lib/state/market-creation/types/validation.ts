@@ -36,7 +36,7 @@ export const createMarketFormValidator = ({
   chainTime,
 }: MarketValidationDependencies) => {
   const timeline = timelineAsBlocks(form, chainTime).unwrap();
-
+  console.log(timeline);
   return z
     .object({
       currency: IOCurrency,
@@ -60,9 +60,7 @@ export const createMarketFormValidator = ({
         },
       ),
       reportingPeriod: IOPeriodOption.refine(
-        () =>
-          timeline?.grace.period &&
-          timeline.report.period < deadlineConstants?.maxOracleDuration,
+        () => timeline?.report.period < deadlineConstants?.maxOracleDuration,
         {
           message: `Reporting period must be less than ${deadlineConstants?.maxOracleDuration} blocks.`,
         },
