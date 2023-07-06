@@ -145,7 +145,7 @@ export default async function GenerateOgImage(request: NextRequest) {
               tw={`font-semibold ${"text-6xl"} `}
               style={{ color: "#ABC1F9" }}
             >
-              {prediction.name != null
+              {prediction.name != null && prediction.name !== ""
                 ? market.marketType.categorical
                   ? `${prediction.name} (${prediction.percentage}%)`
                   : `${Intl.NumberFormat("en-US", {
@@ -167,7 +167,7 @@ export default async function GenerateOgImage(request: NextRequest) {
                 tw={`flex ${"text-4xl"}  -mt-1`}
                 style={{ color: "#ABC1F9" }}
               >
-                {formatNumberCompact(Number(volume))} {currencyMetadata.name}
+                {formatNumberCompact(Number(volume))} {currencyMetadata?.name}
               </div>
             </div>
           </div>

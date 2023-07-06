@@ -1,4 +1,3 @@
-import { Asset } from "@zeitgeistpm/types/dist/interfaces/index";
 interface BondPrices {
   advisedCost: number;
   permissionlessCost: number;
@@ -24,22 +23,8 @@ export const calculateMarketCost = (
   return cost;
 };
 
-export const calculatePoolCost = (poolAmounts?: number[]) => {
+export const calculatePoolCost = (poolAmounts: number[]) => {
   return poolAmounts[0] * 2;
-};
-
-export const getAssetIds = (asset: Asset) => {
-  if (asset.isCategoricalOutcome) {
-    return {
-      marketId: asset.asCategoricalOutcome[0],
-      assetId: asset.asCategoricalOutcome[1].toNumber(),
-    };
-  } else if (asset.isScalarOutcome) {
-    return {
-      marketId: asset.asScalarOutcome[0],
-      assetId: asset.asScalarOutcome[1].isShort ? 1 : 0,
-    };
-  }
 };
 
 export interface PricePoint {

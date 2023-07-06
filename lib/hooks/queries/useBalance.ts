@@ -3,6 +3,7 @@ import { AssetId, IOZtgAssetId, isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
+import { calculateFreeBalance } from "lib/util/calc-free-balance";
 
 export const balanceRootKey = "balance";
 
@@ -20,8 +21,12 @@ export const useBalance = (
         const api = await getApiAtBlock(sdk.api, blockNumber);
 
         if (IOZtgAssetId.is(assetId)) {
-          const balance = await api.query.system.account(address);
-          return new Decimal(balance.data.free.toString());
+          const { data } = await api.query.system.account(address);
+          return calculateFreeBalance(
+            data.free.toString(),
+            data.miscFrozen.toString(),
+            data.feeFrozen.toString(),
+          );
         } else {
           const balance = await api.query.tokens.accounts(address, assetId);
           return new Decimal(balance.free.toString());

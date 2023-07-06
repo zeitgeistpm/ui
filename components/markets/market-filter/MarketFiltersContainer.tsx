@@ -17,7 +17,9 @@ export type MarketFiltersProps = {
   setSelectedMenu: (menu: SelectedMenu) => void;
 };
 
-export const MarketFiltersContext = createContext<MarketFiltersProps>(null);
+export const MarketFiltersContext = createContext<MarketFiltersProps | null>(
+  null,
+);
 
 export const useMarketFiltersContext = () => {
   const context = useContext(MarketFiltersContext);
@@ -28,11 +30,6 @@ export const useMarketFiltersContext = () => {
   }
   return context;
 };
-
-export type MarketFiltersContainerProps = PropsWithChildren<{
-  activeFilters: MarketFilter[];
-  portal: HTMLDivElement;
-}>;
 
 const MarketFiltersContainer: FC<PropsWithChildren<MarketFiltersProps>> = (
   props,

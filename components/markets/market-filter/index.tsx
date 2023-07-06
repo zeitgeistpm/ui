@@ -38,7 +38,8 @@ const getFiltersFromQueryState = (
         value: qsf,
         label:
           filterType === "currency"
-            ? marketCurrencyFilterOptions.find((v) => v.value === qsf).label
+            ? (marketCurrencyFilterOptions.find((v) => v.value === qsf)
+                ?.label as string)
             : qsf,
       })),
     ];
@@ -65,10 +66,10 @@ const MarketFilterSelection = ({
   const queryState = useMarketsUrlQuery();
 
   const add = (filter: MarketFilter) => {
+    if (!activeFilters) return;
+
     if (findFilterIndex(activeFilters, filter) !== -1) return;
-
     const nextFilters = [...activeFilters, filter];
-
     setActiveFilters(nextFilters);
   };
 
@@ -84,6 +85,7 @@ const MarketFilterSelection = ({
   };
 
   const remove = (filter: MarketFilter) => {
+    if (!activeFilters) return;
     const idx = findFilterIndex(activeFilters, filter);
     const nextFilters = [
       ...activeFilters.slice(0, idx),
@@ -102,7 +104,7 @@ const MarketFilterSelection = ({
   }, [activeFilters]);
 
   useEffect(() => {
-    onWithLiquidityOnlyChange(withLiquidityOnly);
+    onWithLiquidityOnlyChange(withLiquidityOnly ?? true);
   }, [withLiquidityOnly]);
 
   useEffect(() => {
@@ -128,13 +130,13 @@ const MarketFilterSelection = ({
 
   return (
     <MarketFiltersContainer
-      activeFilters={activeFilters}
-      portal={portalRef.current}
+      activeFilters={getFiltersFromQueryState(queryState)}
+      portal={portalRef.current!}
       addActiveFilter={add}
       removeActiveFilter={remove}
-      withLiquidityOnly={withLiquidityOnly}
+      withLiquidityOnly={queryState.liquidityOnly}
       setWithLiquidityOnly={setWithLiquidityOnly}
-      ordering={activeOrdering}
+      ordering={queryState.ordering}
       setOrdering={setActiveOrdering}
       clearActiveFilters={clear}
       selectedMenu={selectedMenu}

@@ -23,11 +23,15 @@ const WithdrawButton = ({
   tokenSymbol,
   balance,
   foreignAssetId,
+  destinationExistentialDeposit,
+  destinationTokenBalance,
 }: {
   toChain: ChainName;
   tokenSymbol: string;
   balance: Decimal;
   foreignAssetId: number;
+  destinationExistentialDeposit: Decimal;
+  destinationTokenBalance: Decimal;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -42,6 +46,8 @@ const WithdrawButton = ({
           tokenSymbol={tokenSymbol}
           balance={balance}
           foreignAssetId={foreignAssetId}
+          destinationExistentialDeposit={destinationExistentialDeposit}
+          destinationTokenBalance={destinationTokenBalance}
           onSuccess={() => setIsOpen(false)}
         />
       </Modal>
@@ -66,21 +72,25 @@ const createWithdrawExtrinsic = (
     { ForeignAsset: foreignAssetId },
     amount,
     { V1: account },
-    "100000000000",
+    //@ts-ignore sdk types need to be updated for new release
+    { Limited: "100000000000" },
   );
 };
-
 const WithdrawModal = ({
   toChain,
   tokenSymbol,
   balance,
   foreignAssetId,
   onSuccess,
+  destinationExistentialDeposit,
+  destinationTokenBalance,
 }: {
   toChain: ChainName;
   tokenSymbol: string;
   balance: Decimal;
   foreignAssetId: number;
+  destinationExistentialDeposit: Decimal;
+  destinationTokenBalance: Decimal;
   onSuccess: () => void;
 }) => {
   const {
@@ -112,16 +122,17 @@ const WithdrawModal = ({
         )
       : undefined,
   );
+  const amount = getValues("amount");
+  const amountDecimal: Decimal = amount
+    ? new Decimal(amount).mul(ZTG)
+    : new Decimal(0);
 
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
     () => {
       if (isRpcSdk(sdk) && wallet.activeAccount) {
-        const formValue = getValues();
-        const amount = formValue.amount;
-
         const tx = createWithdrawExtrinsic(
           sdk.api,
-          new Decimal(amount).mul(ZTG).toFixed(0),
+          amountDecimal.toFixed(0),
           wallet.activeAccount.address,
           foreignAssetId,
         );
@@ -218,6 +229,14 @@ const WithdrawModal = ({
                       .toFixed(3)}`;
                   } else if (value <= 0) {
                     return "Value cannot be zero or less";
+                  } else if (
+                    destinationTokenBalance
+                      .plus(new Decimal(value).mul(ZTG))
+                      .lessThan(destinationExistentialDeposit)
+                  ) {
+                    return `Balance on ${toChain} must be greater than ${destinationExistentialDeposit.div(
+                      ZTG,
+                    )} ${tokenSymbol}`;
                   }
                 },
               }}

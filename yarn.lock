@@ -2994,6 +2994,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@zeitgeistpm/augment-api@npm:^2.11.5":
+  version: 2.11.5
+  resolution: "@zeitgeistpm/augment-api@npm:2.11.5"
+  peerDependencies:
+    "@polkadot/api-base": "*"
+    "@polkadot/rpc-core": "*"
+    "@polkadot/types": "*"
+  checksum: 67e0d255982e69e9d4df1e40122b4098437aeb186527897f917190d1e4b2f3e5523cceabfad1f0ceb3a203aba3e105f5fe993a567c4523e904dadbd0e7f2ef0e
+  languageName: node
+  linkType: hard
+
 "@zeitgeistpm/augment-api@npm:^2.8.1":
   version: 2.8.1
   resolution: "@zeitgeistpm/augment-api@npm:2.8.1"
@@ -3071,14 +3082,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/indexer@npm:^3.0.12":
-  version: 3.0.12
-  resolution: "@zeitgeistpm/indexer@npm:3.0.12"
+"@zeitgeistpm/indexer@npm:^3.0.13":
+  version: 3.0.13
+  resolution: "@zeitgeistpm/indexer@npm:3.0.13"
   dependencies:
     graphql: ^16.6.0
     graphql-request: ^5.0.0
     graphql-tag: ^2.12.6
-  checksum: 656248af12330dad554c003112ab404eaee3d53b970c97753d4475182ae22af0cf2fbd78f878b6536ac49ad20109301ca2e29e76ccda766a634cb754369fd8c7
+  checksum: d27deb572e1a4aca88493724b5f53b3ad4dc2722c5538e0043f6dc0af8ab9a8622a5e84960fd4810c500e267e26bb57d06d8259e05efe39474df761e2f556207
   languageName: node
   linkType: hard
 
@@ -3096,15 +3107,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.29.18":
-  version: 2.29.18
-  resolution: "@zeitgeistpm/sdk@npm:2.29.18"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.29.20":
+  version: 2.29.20
+  resolution: "@zeitgeistpm/sdk@npm:2.29.20"
   dependencies:
-    "@zeitgeistpm/augment-api": ^2.11.4
-    "@zeitgeistpm/indexer": ^3.0.12
+    "@zeitgeistpm/augment-api": ^2.11.5
+    "@zeitgeistpm/indexer": ^3.0.13
     "@zeitgeistpm/rpc": ^2.7.6
     "@zeitgeistpm/utility": ^2.18.13
-    "@zeitgeistpm/web3.storage": ^2.9.12
+    "@zeitgeistpm/web3.storage": ^2.9.13
     cids: ^1.1.9
     decimal.js: ^10.4.3
     lodash-es: ^4.17.21
@@ -3117,7 +3128,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: e5de34b3c4385a857ea62b6ddf9d14ec20fa5940118b6c914f5244345928149bfbb657cff6d4fd48456136bd0f3c5fe362ec1f737c687cc2a1965295002f28c1
+  checksum: c3d986c074e7543efd718a86a02d8c1ea53c083c54ff4ccd48c7873b709c5315ca90b43c0d3584525749e270fa1475e8745a5de7451bd946960a8baa984b335e
   languageName: node
   linkType: hard
 
@@ -3216,7 +3227,7 @@ __metadata:
     "@zeitgeistpm/avatara-react": ^1.3.2
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^1.0.3
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.29.18"
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.29.20"
     "@zeitgeistpm/utility": ^2.18.12
     autoprefixer: 10.2.5
     axios: ^0.21.4
@@ -3228,7 +3239,7 @@ __metadata:
     fathom-client: ^3.2.0
     flexsearch: ^0.7.21
     font-color-contrast: ^11.1.0
-    framer-motion: 4.1.17
+    framer-motion: ^10.12.16
     graphql-request: ^5.0.0
     ip-range-check: ^0.2.0
     jest: ^29.5.0
@@ -3313,9 +3324,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/web3.storage@npm:^2.9.12":
-  version: 2.9.12
-  resolution: "@zeitgeistpm/web3.storage@npm:2.9.12"
+"@zeitgeistpm/web3.storage@npm:^2.9.13":
+  version: 2.9.13
+  resolution: "@zeitgeistpm/web3.storage@npm:2.9.13"
   dependencies:
     "@zeitgeistpm/utility": ^2.18.13
     cids: ^1.1.9
@@ -3326,7 +3337,7 @@ __metadata:
     up: ^1.0.2
   peerDependencies:
     "@polkadot/util": "*"
-  checksum: 9a60bdf1cd84ecf75973f8dde7e497e839a5bdd4124258941db0c1c03e0356f5400bc7cda6e1f4d70fbb103a25c41cbe79efb4961c97ac1c61213952f437801c
+  checksum: 9f2483f71d7b5287aee87472d683cf28d20317dad3bcf819cb666fd5436d100e439052e85c24ebdef318a4d5d9ea0f639b1de641769b0ed30805fbb52ad44e4f
   languageName: node
   linkType: hard
 
@@ -5753,32 +5764,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:4.1.17":
-  version: 4.1.17
-  resolution: "framer-motion@npm:4.1.17"
+"framer-motion@npm:^10.12.16":
+  version: 10.12.16
+  resolution: "framer-motion@npm:10.12.16"
   dependencies:
     "@emotion/is-prop-valid": ^0.8.2
-    framesync: 5.3.0
-    hey-listen: ^1.0.8
-    popmotion: 9.3.6
-    style-value-types: 4.1.4
-    tslib: ^2.1.0
+    tslib: ^2.4.0
   peerDependencies:
-    react: ">=16.8 || ^17.0.0"
-    react-dom: ">=16.8 || ^17.0.0"
+    react: ^18.0.0
+    react-dom: ^18.0.0
   dependenciesMeta:
     "@emotion/is-prop-valid":
       optional: true
-  checksum: f6b5fc8f189e6760353aa5b67515b6576ebaa164d8df73118780a09d1d4a162e54dfeb126a05c6a28727af88f4a80f8b94900ff9510be44dada6496a99273fde
-  languageName: node
-  linkType: hard
-
-"framesync@npm:5.3.0":
-  version: 5.3.0
-  resolution: "framesync@npm:5.3.0"
-  dependencies:
-    tslib: ^2.1.0
-  checksum: 9ebbb2863e6a1cfd2e9dd1b73af427d23caa03c92dd49ea767ebdd208c3a573bba4a1026f67068d856a21704f79adcdf2f750cc852ff73bc1f0e80edaaecded8
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 0ba346fd6e64688ea5e64f9e353af6202b42d59e309ac32daca7fc07dc1dad9136dd2c18017a85ac76d01becb7f4683fc92dedbfce3e44831ea0c47bdc73e812
   languageName: node
   linkType: hard
 
@@ -6162,13 +6165,6 @@ __metadata:
     property-information: ^5.0.0
     space-separated-tokens: ^1.0.0
   checksum: 5e50b85af0d2cb7c17979cb1ddca75d6b96b53019dd999b39e7833192c9004201c3cee6445065620ea05d0087d9ae147a4844e582d64868be5bc6b0232dfe52d
-  languageName: node
-  linkType: hard
-
-"hey-listen@npm:^1.0.8":
-  version: 1.0.8
-  resolution: "hey-listen@npm:1.0.8"
-  checksum: 6bad60b367688f5348e25e7ca3276a74b59ac5a09b0455e6ff8ab7d4a9e38cd2116c708a7dcd8a954d27253ce1d8717ec891d175723ea739885b828cf44e4072
   languageName: node
   linkType: hard
 
@@ -9610,18 +9606,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"popmotion@npm:9.3.6":
-  version: 9.3.6
-  resolution: "popmotion@npm:9.3.6"
-  dependencies:
-    framesync: 5.3.0
-    hey-listen: ^1.0.8
-    style-value-types: 4.1.4
-    tslib: ^2.1.0
-  checksum: 551446ec3763790efde7a3bb8c43189122f9b559985be2efa79842138257c4e331efcff606732a4bd5ac82d9bde1b236258d69a435f4bb5e9fc5908241b5ba3f
-  languageName: node
-  linkType: hard
-
 "postcss-import@npm:^14.1.0":
   version: 14.1.0
   resolution: "postcss-import@npm:14.1.0"
@@ -11262,16 +11246,6 @@ __metadata:
   version: 2.0.1
   resolution: "strip-json-comments@npm:2.0.1"
   checksum: 1074ccb63270d32ca28edfb0a281c96b94dc679077828135141f27d52a5a398ef5e78bcf22809d23cadc2b81dfbe345eb5fd8699b385c8b1128907dec4a7d1e1
-  languageName: node
-  linkType: hard
-
-"style-value-types@npm:4.1.4":
-  version: 4.1.4
-  resolution: "style-value-types@npm:4.1.4"
-  dependencies:
-    hey-listen: ^1.0.8
-    tslib: ^2.1.0
-  checksum: 96189770076a2717bf579f7d73a49953f0c3d633b90fed9b44b8285cbbe7facd19d6d7a0d2802fb493b45995791f62b87983c3d3c24128818a69e593b6d77aed
   languageName: node
   linkType: hard
 

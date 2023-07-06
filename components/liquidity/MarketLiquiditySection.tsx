@@ -3,6 +3,7 @@ import { parseAssetId } from "@zeitgeistpm/sdk-next";
 import LiquidityModal from "components/liquidity/LiquidityModal";
 import PoolTable from "components/liquidity/PoolTable";
 import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
+import { Loader } from "components/ui/Loader";
 import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -16,19 +17,33 @@ import { FC, PropsWithChildren, useState } from "react";
 
 export const MarketLiquiditySection = ({
   market,
+  poll,
 }: {
   market: FullMarketFragment;
+  poll?: boolean;
 }) => {
   return (
     <>
-      <div className="mb-8">
-        <LiquidityHeader market={market} />
-      </div>
+      {poll && !market?.pool?.poolId && (
+        <>
+          <div className="center">
+            <div className="h-12 w-12 center bg-white mr-4">
+              <Loader variant="Success" loading className="h-12 w-12" />
+            </div>
+            <h4 className="text-gray-400">Waiting for pool to be indexed</h4>
+          </div>
+        </>
+      )}
       {market?.pool?.poolId && (
-        <PoolTable
-          poolId={market.pool.poolId}
-          marketId={Number(market.marketId)}
-        />
+        <>
+          <div className="mb-8">
+            <LiquidityHeader market={market} />
+          </div>
+          <PoolTable
+            poolId={market.pool.poolId}
+            marketId={Number(market.marketId)}
+          />
+        </>
       )}
     </>
   );
@@ -64,7 +79,9 @@ const LiquidityHeaderButtonItem: FC<PropsWithChildren<{ className?: string }>> =
 
 const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
   const { pool } = market;
-  const { data: liquidity } = usePoolLiquidity({ poolId: pool.poolId });
+  const { data: liquidity } = usePoolLiquidity(
+    pool?.poolId ? { poolId: pool.poolId } : undefined,
+  );
   const swapFee = Number(pool?.swapFee ?? 0);
   const baseAssetId = pool?.baseAsset
     ? parseAssetId(pool.baseAsset).unrightOr(undefined)
@@ -72,7 +89,9 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
   const prediction =
-    market?.pool?.assets && getCurrentPrediction(market.pool.assets, market);
+    market &&
+    market?.pool?.assets &&
+    getCurrentPrediction(market.pool.assets, market);
 
   const [manageLiquidityOpen, setManageLiquidityOpen] = useState(false);
 
@@ -122,11 +141,13 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
           </SecondaryButton>
         </LiquidityHeaderButtonItem>
       </div>
-      <LiquidityModal
-        poolId={pool.poolId}
-        open={manageLiquidityOpen}
-        onClose={() => setManageLiquidityOpen(false)}
-      />
+      {pool?.poolId && (
+        <LiquidityModal
+          poolId={pool.poolId}
+          open={manageLiquidityOpen}
+          onClose={() => setManageLiquidityOpen(false)}
+        />
+      )}
     </div>
   );
 };

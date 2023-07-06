@@ -92,7 +92,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
 
   return (
     <div
-      className={"pt-ztg-46 mb-[38px] scroll-mt-[40px]" + className}
+      className={"mb-[38px] scroll-mt-[40px]" + className}
       data-testid="marketsList"
       id={"market-list"}
     >
@@ -106,22 +106,37 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
           const volume = market.pool?.volume ?? 0;
           const scalarType = market.scalarType as ScalarRangeType;
           const stat = stats?.find((s) => s.marketId === market.marketId);
+          const question = market.question ?? "";
+          const image = market.img ?? "";
+          //check if market is categorical or scalar
+          let { categorical, scalar } = market.marketType ?? {};
+          if (categorical === null) {
+            categorical = "";
+          }
+          const filteredScalar =
+            scalar?.filter((item): item is string => item !== null) ?? [];
+          const marketType = { categorical, scalar: filteredScalar };
+          const pool = market.pool ?? {};
+          const tags =
+            market.tags?.filter((tag): tag is string => tag !== null) ?? [];
+
           return (
             <MarketCard
               marketId={market.marketId}
               outcomes={market.outcomes}
-              question={market.question}
+              question={question}
               creation={market.creation}
-              img={market.img}
+              creator={market.creator}
+              img={image}
               prediction={market.prediction}
               endDate={market.period.end}
-              marketType={market.marketType}
+              marketType={marketType}
               scalarType={scalarType}
-              pool={market.pool}
+              pool={pool}
               status={market.status}
               baseAsset={market.baseAsset}
               volume={new Decimal(volume).div(ZTG).toNumber()}
-              tags={market.tags}
+              tags={tags}
               numParticipants={stat?.participants}
               liquidity={stat?.liquidity}
               key={`market-${market.marketId}`}
@@ -161,7 +176,7 @@ const MarketsSearchInfo = ({ searchText }: { searchText: string }) => {
           size={24}
           className="cursor-pointer text-sky-600"
           onClick={() => {
-            router.push("/", null, { shallow: true });
+            router.push("/", "", { shallow: true });
           }}
         />
       </div>

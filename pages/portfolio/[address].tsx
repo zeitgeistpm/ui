@@ -11,19 +11,18 @@ import {
   MarketPositionsSkeleton,
 } from "components/portfolio/MarketPositions";
 import PortfolioIdentity from "components/portfolio/PortfolioIdentity";
-import InfoBoxes from "components/ui/InfoBoxes";
+import SubTabsList from "components/ui/SubTabsList";
 import PortfolioLayout from "layouts/PortfolioLayout";
 import { NextPageWithLayout } from "layouts/types";
-import SubTabsList from "components/ui/SubTabsList";
 import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
+import { useCrossChainApis } from "lib/state/cross-chain";
+import { isValidPolkadotAddress } from "lib/util";
 import { groupBy, range } from "lodash-es";
 import { useRouter } from "next/router";
-import { useMemo } from "react";
 import NotFoundPage from "pages/404";
-import { isValidPolkadotAddress } from "lib/util";
-import { useCrossChainApis } from "lib/state/cross-chain";
+import { useMemo } from "react";
 
 type MainTabItem =
   | "Predictions"
@@ -83,7 +82,6 @@ const Portfolio: NextPageWithLayout = () => {
   return (
     <>
       {address && <PortfolioIdentity address={address} />}
-      <InfoBoxes />
       <div className="mb-12">
         <h2 className="text-2xl my-6 text-center">Summary</h2>
         <PortfolioBreakdown
@@ -154,7 +152,7 @@ const Portfolio: NextPageWithLayout = () => {
                       );
                     }
 
-                    if (marketPositions.length === 0) return null;
+                    if (marketPositions.length === 0) return <></>;
 
                     return (
                       <MarketPositions

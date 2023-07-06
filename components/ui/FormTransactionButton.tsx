@@ -5,12 +5,14 @@ interface TransactionButtonProps {
   disabled?: boolean;
   className?: string;
   dataTest?: string;
+  disableFeeCheck?: boolean;
 }
 
 const FormTransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   disabled = false,
   className = "",
   dataTest = "",
+  disableFeeCheck = false,
   children,
 }) => {
   return (
@@ -19,6 +21,7 @@ const FormTransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
       disabled={disabled}
       className={className}
       dataTest={dataTest}
+      disableFeeCheck={disableFeeCheck}
     >
       {children}
     </TransactionButton>

@@ -44,8 +44,6 @@ const SellFullSetForm = ({
     pool,
   );
 
-  console.log("balances", balances);
-
   const [amount, setAmount] = useState<string>("0");
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 
@@ -90,9 +88,8 @@ const SellFullSetForm = ({
   const disabled =
     isLoading ||
     !baseAssetBalance ||
-    Number(amount) > baseAssetBalance?.div(ZTG).toNumber() ||
-    new Decimal(amount).gt(maxTokenSet.div(ZTG)) ||
-    new Decimal(amount).eq(0);
+    new Decimal(amount === "" ? 0 : amount).gt(maxTokenSet.div(ZTG)) ||
+    new Decimal(amount === "" ? 0 : amount).eq(0);
 
   const handleSignTransaction = async () => {
     if (disabled || !isRpcSdk(sdk)) {
