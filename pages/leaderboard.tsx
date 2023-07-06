@@ -457,11 +457,10 @@ export async function getStaticProps() {
     }, [])
     .sort((a, b) => b.profit - a.profit);
 
-  const top10 = rankings;
-  // .slice(0, 100);
+  const top20 = rankings.slice(0, 20);
 
   const indentities = await Promise.all(
-    top10.map((player) => sdk.api.query.identity.identityOf(player.accountId)),
+    top20.map((player) => sdk.api.query.identity.identityOf(player.accountId)),
   );
 
   const names: (string | undefined)[] = indentities.map(
@@ -470,7 +469,7 @@ export async function getStaticProps() {
 
   return {
     props: {
-      rankings: top10.map((player, index) => ({
+      rankings: top20.map((player, index) => ({
         ...player,
         name: names[index] ?? null,
       })),
@@ -484,23 +483,29 @@ const Leaderboard: NextPage<{
 }> = ({ rankings }) => {
   // console.log(rankings[0].markets);
   return (
-    <div className="mx-0 sm:mx-[50px]">
+    <div className="">
       <div className="font-bold text-3xl mb-[40px] w-full text-center">
         Most Profitable Traders
       </div>
       <div className="flex flex-col gap-y-5 justify-center items-center">
         {rankings.map((rank, index) => (
-          <div className="flex flex-col bg-sky-100 py-3 px-6 rounded-xl w-full max-w-[800px]">
+          <div className="flex flex-col bg-sky-100 py-3 px-4 sm:px-6 rounded-xl w-full max-w-[800px]">
             <div key={index} className="flex items-center justify-center">
-              <div className="mr-[20px] w-[20px]">{index + 1}</div>
+              <div className="mr-1 sm:mr-[20px] w-[20px] shrink-0">
+                {index + 1}
+              </div>
+              <div className="shrink-0">
+                <Avatar size={50} address={rank.accountId} />
+              </div>
               <Link
-                className="flex items-center"
+                className="mx-ztg-15 text-xs sm:text-sm md:text-base truncate shrink"
                 href={`/portfolio/${rank.accountId}`}
               >
-                <Avatar size={50} address={rank.accountId} />
-                <span className="ml-ztg-15">{rank.name ?? rank.accountId}</span>
+                {rank.name ?? rank.accountId}
               </Link>
-              <div className="ml-auto font-bold">${rank.profit.toFixed(0)}</div>
+              <div className="ml-auto font-bold text-xs sm:text-sm md:text-base">
+                ${rank.profit.toFixed(0)}
+              </div>
             </div>
             {/* <div>
               {rank.markets
