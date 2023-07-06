@@ -147,8 +147,7 @@ export const MarketPositions = ({
   const { data: foreignAssetPrices } = useAllForeignAssetUsdPrices();
 
   const wallet = useWallet();
-  const userAddress = wallet.activeAccount?.address;
-  const isOracle = market?.oracle === userAddress;
+  const isOracle = market?.oracle === wallet.activeAccount?.address;
 
   const isLiquidityMarket = positions.some(
     (pos) => pos.outcome == "Pool Share",
