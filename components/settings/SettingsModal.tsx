@@ -25,8 +25,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
 
   const { data: identity } = useIdentity(address);
 
-  const [proxyOptions, setProxyOptions] = useState<AddressOption[]>([]);
-
   return (
     <Modal open={open} onClose={onClose}>
       <Dialog.Panel className="w-full max-w-[462px] bg-white rounded-md p-8">
@@ -75,11 +73,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             ) : (
               <></>
             ),
-            [TabSelection.Other]: proxyOptions ? (
-              <OtherSettingsForm proxyOptions={proxyOptions} />
-            ) : (
-              <></>
-            ),
+            [TabSelection.Other]: <OtherSettingsForm />,
           }[tabSelection]
         }
       </Dialog.Panel>

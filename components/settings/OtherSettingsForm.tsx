@@ -2,20 +2,23 @@ import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import AddressInput, { AddressOption } from "components/ui/AddressInput";
 import FormTransactionButton from "components/ui/FormTransactionButton";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useWallet } from "lib/state/wallet";
+import { isValidPolkadotAddress } from "lib/util";
 
-export type OtherSettingsFormProps = {
-  proxyOptions: AddressOption[];
-};
+export type OtherSettingsFormProps = {};
 
-const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({
-  proxyOptions,
-}) => {
+const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
+  const [sdk] = useSdkv2();
+  const wallet = useWallet();
   const {
     register,
     control,
     trigger,
+    handleSubmit,
     reset,
-    formState: { isValid, errors, touchedFields, isDirty },
+    formState: { isValid, errors, touchedFields },
     watch,
   } = useForm<{
     proxyAddress: AddressOption | null;
@@ -36,13 +39,16 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({
     trigger();
   }, [proxyEnabled]);
 
+  const submit = (data) => {
+    // wallet.setProxyFor(wallet.activeAccount?.address, data);
+    if (!isValid) {
+      return;
+    }
+    reset(data);
+  };
+
   return (
-    <form
-      className="flex flex-col"
-      onSubmit={(e) => {
-        e.preventDefault();
-      }}
-    >
+    <form className="flex flex-col" onSubmit={handleSubmit(submit)}>
       <label className="font-bold mb-2">Proxy Account</label>
       <div className="flex flex-row p-2 mb-2">
         <input
@@ -58,12 +64,24 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({
       <Controller
         name="proxyAddress"
         rules={{
-          validate: (v, { enableProxy }) => {
+          validate: async (v, { enableProxy }) => {
             if (!enableProxy) {
               return true;
             }
             if (enableProxy && !v) {
               return "Proxy address is required";
+            }
+            if (!isValidPolkadotAddress(v.value)) {
+              return "Invalid address";
+            }
+            if (isRpcSdk(sdk) && v.value) {
+              const proxies = await sdk.api.query.proxy.proxies(v.value);
+              const proxyMatch = proxies?.[0]?.find((p) => {
+                return p.delegate.toString() === wallet.activeAccount?.address;
+              });
+              if (!Boolean(proxyMatch)) {
+                return "You are not a proxy for this account.";
+              }
             }
           },
         }}
@@ -71,7 +89,6 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({
           return (
             <AddressInput
               onChange={onChange}
-              options={proxyOptions}
               value={value}
               disabled={!proxyEnabled}
               error={!isValid ? errors.proxyAddress?.message : undefined}
