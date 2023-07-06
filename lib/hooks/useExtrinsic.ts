@@ -22,6 +22,7 @@ export const useExtrinsic = <T>(
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isBroadcasting, setIsBroadcasting] = useState(false);
 
   const notifications = useNotifications();
 
@@ -51,24 +52,33 @@ export const useExtrinsic = <T>(
       extrinsicCallback({
         api: sdk.api,
         notifications,
+        broadcastCallback: () => {
+          setIsBroadcasting(true);
+          notifications?.pushNotification("Broadcasting transaction...", {
+            autoRemove: true,
+          });
+        },
         successCallback: (data) => {
           setIsLoading(false);
           setIsSuccess(true);
+          setIsBroadcasting(false);
 
           callbacks?.onSuccess && callbacks.onSuccess(data);
         },
         failCallback: (error) => {
           setIsLoading(false);
           setIsError(true);
+          setIsBroadcasting(false);
 
           callbacks?.onError && callbacks.onError();
           notifications.pushNotification(error, { type: "Error" });
         },
       }),
     ).catch(() => {
+      setIsBroadcasting(false);
       setIsLoading(false);
     });
   };
 
-  return { send, isError, isSuccess, isLoading };
+  return { send, isError, isSuccess, isLoading, isBroadcasting };
 };

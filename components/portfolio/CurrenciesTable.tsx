@@ -112,7 +112,7 @@ const CurrenciesTable = ({ address }: { address: string }) => {
   const tableData: TableData[] =
     balances
       ?.sort((a, b) => b.balance.minus(a.balance).toNumber())
-      .map((balance) => {
+      .map((balance, index) => {
         return {
           chain: (
             <ImageAndText
