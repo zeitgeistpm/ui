@@ -36,7 +36,7 @@ export const createMarketFormValidator = ({
   chainTime,
 }: MarketValidationDependencies) => {
   const timeline = timelineAsBlocks(form, chainTime).unwrap();
-  console.log(timeline);
+
   return z
     .object({
       currency: IOCurrency,
