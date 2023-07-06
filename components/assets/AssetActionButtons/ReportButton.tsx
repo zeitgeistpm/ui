@@ -61,7 +61,8 @@ const ReportButton = ({
     ? market.categories?.[getIndexOf(assetId)]?.name
     : "";
 
-  const connectedWalletIsOracle = market.oracle === wallet.realAddress;
+  const connectedWalletIsOracle =
+    market.oracle === wallet.activeAccount?.address;
 
   const reportDisabled =
     !isRpcSdk(sdk) ||
