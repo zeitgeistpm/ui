@@ -23,6 +23,7 @@ import Link from "next/link";
 import Avatar from "components/ui/Avatar";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
 
 //todo:
 // include buy/sell full set events
@@ -91,21 +92,21 @@ type Rank = {
 type BasePrices = {
   [key: string | "ztg"]: [number, number][];
 };
-type Event = {
-  accountId: string;
-  assetId: string;
-  blockNumber: number;
-  dBalance: any;
-  event: string;
-  id: string;
-  timestamp: any;
-  extrinsic?: {
-    hash: string;
-    name: string;
-  };
-};
+// type Event = {
+//   accountId: string;
+//   assetId: string;
+//   blockNumber: number;
+//   dBalance: any;
+//   event: string;
+//   id: string;
+//   timestamp: any;
+//   extrinsic?: {
+//     hash: string;
+//     name: string;
+//   };
+// };
 
-const convertEventToTrade = (event: Event) => {
+const convertEventToTrade = (event: FullHistoricalAccountBalanceFragment) => {
   const assetId = parseAssetId(event.assetId).unwrap();
   console.log(event.event);
   const marketId = IOMarketOutcomeAssetId.is(assetId)
@@ -313,24 +314,23 @@ export async function getStaticProps() {
   ];
   console.log(fullSetEvents);
 
-  const uniqueFullSetEvents = fullSetEvents.reduce<Event[]>(
-    (uniqueEvents, event) => {
-      console.log("event", event);
+  const uniqueFullSetEvents = fullSetEvents.reduce<
+    FullHistoricalAccountBalanceFragment[]
+  >((uniqueEvents, event) => {
+    console.log("event", event);
 
-      const duplicateEvent = uniqueEvents.find(
-        (entry) => entry.extrinsic?.hash === event.extrinsic?.hash,
-      );
+    const duplicateEvent = uniqueEvents.find(
+      (entry) => entry.extrinsic?.hash === event.extrinsic?.hash,
+    );
 
-      console.log("duplicateEvent", duplicateEvent);
+    console.log("duplicateEvent", duplicateEvent);
 
-      if (!duplicateEvent) {
-        uniqueEvents.push(event);
-      }
+    if (!duplicateEvent) {
+      uniqueEvents.push(event);
+    }
 
-      return uniqueEvents;
-    },
-    [],
-  );
+    return uniqueEvents;
+  }, []);
   console.log(uniqueFullSetEvents);
 
   [...redeemEvents, ...uniqueFullSetEvents].forEach((event) => {
@@ -485,10 +485,12 @@ const Leaderboard: NextPage<{
   // console.log(rankings[0].markets);
   return (
     <div className="mx-0 sm:mx-[50px]">
-      <div className="font-bold text-xl mb-[20px]">Most Profit</div>
-      <div className="flex flex-col gap-y-5">
+      <div className="font-bold text-3xl mb-[40px] w-full text-center">
+        Most Profitable Traders
+      </div>
+      <div className="flex flex-col gap-y-5 justify-center items-center">
         {rankings.map((rank, index) => (
-          <div className="flex flex-col">
+          <div className="flex flex-col bg-sky-100 py-3 px-6 rounded-xl w-full max-w-[800px]">
             <div key={index} className="flex items-center justify-center">
               <div className="mr-[20px] w-[20px]">{index + 1}</div>
               <Link
@@ -500,7 +502,7 @@ const Leaderboard: NextPage<{
               </Link>
               <div className="ml-auto font-bold">${rank.profit.toFixed(0)}</div>
             </div>
-            <div>
+            {/* <div>
               {rank.markets
                 .sort((a, b) => b.profit - a.profit)
                 // .slice(0, 1000) // todo move this server side
@@ -515,7 +517,7 @@ const Leaderboard: NextPage<{
                     </div>
                   </div>
                 ))}
-            </div>
+            </div> */}
           </div>
         ))}
       </div>
