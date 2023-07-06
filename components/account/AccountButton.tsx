@@ -242,7 +242,7 @@ const AccountButton: FC<{
                           <>
                             <Popover.Button className="relative z-20 focus:outline-none">
                               <div
-                                className={`h-11 -ml-4 pl-6 z-rounded-r-full  z-50 ${
+                                className={`h-11 -ml-4 pl-6 z-rounded-r-full z-50 ${
                                   open
                                     ? "bg-gradient-to-r from-purple-500 to-purple-500"
                                     : "bg-gradient-to-r from-purple-700 to-purple-500"
