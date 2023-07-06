@@ -42,12 +42,12 @@ const BuyFullSetForm = ({
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 
   const { data: baseAssetBalance } = useBalance(
-    wallet.activeAccount?.address,
+    wallet.realAddress,
     baseAssetId,
   );
 
   const { data: balances } = useAccountPoolAssetBalances(
-    wallet.activeAccount?.address,
+    wallet.realAddress,
     pool,
   );
 

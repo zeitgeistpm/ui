@@ -107,7 +107,7 @@ const PoolDeployer = ({
   }, [baseAssetId]);
 
   const { data: activeBalance } = useBalance(
-    wallet.activeAccount?.address,
+    wallet.realAddress,
     currencyMetadata?.assetId,
   );
 

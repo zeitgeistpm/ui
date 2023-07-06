@@ -11,6 +11,7 @@ import { useSdkv2 } from "./useSdkv2";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { useQueryClient } from "@tanstack/react-query";
 import { currencyBalanceRootKey } from "./queries/useCurrencyBalances";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 
 export const useCrossChainExtrinsic = <T>(
   extrinsicFn: (
@@ -36,10 +37,20 @@ export const useCrossChainExtrinsic = <T>(
   const notifications = useNotifications();
 
   const send = (params?: T) => {
+    if (!isRpcSdk(sdk)) {
+      throw new Error("SDK is not RPC");
+    }
     setIsLoading(true);
 
-    const extrinsic = extrinsicFn(params);
-    const signer = wallet.activeAccount as ExtSigner;
+    let extrinsic = extrinsicFn(params);
+
+    const proxy = wallet?.proxyFor?.[wallet.activeAccount?.address];
+    let signer = wallet.getSigner();
+
+    if (proxy?.enabled && proxy?.address) {
+      console.info("Proxying cross chain transaction");
+      extrinsic = sdk.api.tx.proxy.proxy(proxy?.address, "Any", extrinsic);
+    }
 
     if (!extrinsic || !sourceChainApi || !destinationChainApi) return;
     signAndSend(
