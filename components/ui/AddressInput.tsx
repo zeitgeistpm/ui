@@ -156,7 +156,6 @@ const AddressInput: React.FC<AddressSelectProps> = ({
 
   const opts = useMemo<AddressOption[]>(() => {
     if (options) {
-      console.log("options", options);
       return options;
     }
     return wallet.accounts
