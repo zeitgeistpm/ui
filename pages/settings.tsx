@@ -262,15 +262,16 @@ const ProxySettings = () => {
 
                   if (isRpcSdk(sdk)) {
                     const proxies = await sdk.api.query.proxy.proxies(value);
-                    const isValidProxy = Boolean(
-                      proxies?.[0]?.find(
-                        (p) =>
-                          p.delegate.toString() ===
-                          wallet.activeAccount?.address,
-                      ),
-                    );
-                    if (!isValidProxy) {
+                    const proxyMatch = proxies?.[0]?.find((p) => {
+                      return (
+                        p.delegate.toString() === wallet.activeAccount?.address
+                      );
+                    });
+                    if (!Boolean(proxyMatch)) {
                       return "You are not a proxy for this account.";
+                    }
+                    if (proxyMatch.proxyType.toString() !== "Any") {
+                      return "This proxy does not have the required proxy type `Any`";
                     }
                   }
                 },
