@@ -137,7 +137,7 @@ const Input = (props: InputProps<AddressOption, false>) => {
   return <components.Input {...props} className="absolute w-full left-0" />;
 };
 
-export type AddressSelectProps = {
+export type AddressInputProps = {
   onChange: (option: AddressOption | null) => void;
   value?: AddressOption | null;
   error?: string;
@@ -145,7 +145,7 @@ export type AddressSelectProps = {
   disabled?: boolean;
 };
 
-const AddressInput: React.FC<AddressSelectProps> = ({
+const AddressInput: React.FC<AddressInputProps> = ({
   onChange,
   error,
   value = null,
