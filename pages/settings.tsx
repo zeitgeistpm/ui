@@ -270,9 +270,6 @@ const ProxySettings = () => {
                     if (!Boolean(proxyMatch)) {
                       return "You are not a proxy for this account.";
                     }
-                    if (proxyMatch.proxyType.toString() !== "Any") {
-                      return "This proxy does not have the required proxy type `Any`";
-                    }
                   }
                 },
                 deps: ["enabled"],
