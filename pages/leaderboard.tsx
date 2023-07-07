@@ -28,24 +28,14 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
 import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 
-//todo:
-// when base asset in is 0 void market
-
-// Track trades, buy full set, sell full set,
-
-// Buy Full Set events
-// Deposited includes all assets
-// DepositedEndowed includes all assets
-// EndowedBoughtCompleteSet includes all assets
-// BoughtCompleteSet only includes one asset
+// Approach: aggregate base asset movements in an out of a market
+// "In events": swaps, buy full set
+// "Out events": swaps, sell full set, redeem
 
 type Trade = {
   marketId: number;
   baseAssetIn: Decimal;
   baseAssetOut: Decimal;
-  // assetIn?: AssetId;
-  // assetOut?: AssetId;
-  // type: "trade" | "redeem" | "sellFullSet" | "buyFullSet";
 };
 
 type AccountId = string;
@@ -55,7 +45,6 @@ type Traders = {
 };
 
 type MarketBaseDetails = {
-  // baseAsset: BaseAssetId;
   baseAssetIn: Decimal;
   baseAssetOut: Decimal;
 };
@@ -94,19 +83,6 @@ type Rank = {
 type BasePrices = {
   [key: string | "ztg"]: [number, number][];
 };
-// type Event = {
-//   accountId: string;
-//   assetId: string;
-//   blockNumber: number;
-//   dBalance: any;
-//   event: string;
-//   id: string;
-//   timestamp: any;
-//   extrinsic?: {
-//     hash: string;
-//     name: string;
-//   };
-// };
 
 const convertEventToTrade = (
   event: FullHistoricalAccountBalanceFragment,
@@ -120,13 +96,6 @@ const convertEventToTrade = (
 
   if (marketId !== undefined) {
     if (event.event === "TokensRedeemed") {
-      console.log("redeemed", marketId);
-
-      console.log(shortTokenVaue, longTokenVaue);
-      console.log(IOScalarAssetId.is(assetId) && getScalarIndexOf(assetId));
-      console.log(assetId);
-
-      //todo if scalar need to calcvalues
       const assetValue = IOScalarAssetId.is(assetId)
         ? getScalarIndexOf(assetId) === 1
           ? shortTokenVaue
@@ -134,25 +103,16 @@ const convertEventToTrade = (
         : new Decimal(1);
       const trade: Trade = {
         marketId,
-        // assetIn: assetId,
-        // assetOut: { Ztg: null },
         baseAssetIn: new Decimal(0),
         baseAssetOut: new Decimal(event.dBalance).mul(assetValue ?? 1).abs(),
-        // type: "redeem",
       };
-
-      console.log("value", assetValue);
-      console.log("balance", event.dBalance);
 
       return trade;
     } else if (event.event === "SoldCompleteSet") {
       const trade: Trade = {
         marketId,
-        // assetIn: assetId,
-        // assetOut: { Ztg: null },
         baseAssetIn: new Decimal(0),
         baseAssetOut: new Decimal(event.dBalance).abs(),
-        // type: "redeem",
       };
       return trade;
     } else if (
@@ -163,11 +123,8 @@ const convertEventToTrade = (
     ) {
       const trade: Trade = {
         marketId,
-        // assetIn: assetId,
-        // assetOut: { Ztg: null },
         baseAssetIn: new Decimal(event.dBalance).abs(),
         baseAssetOut: new Decimal(0),
-        // type: "redeem",
       };
       return trade;
     }
@@ -230,8 +187,6 @@ const getBaseAssetHistoricalPrices = async (): Promise<BasePrices> => {
 };
 
 export async function getStaticProps() {
-  // const client = new GraphQLClient(graphQlEndpoint);
-  // const sdk= await create(mainnet());
   const sdk = await create({
     provider: endpointOptions.map((e) => e.value),
     indexer: graphQlEndpoint,
@@ -242,9 +197,6 @@ export async function getStaticProps() {
 
   const { markets } = await sdk.indexer.markets();
 
-  // const marketsMap = markets.reduce((mMap, market) => {
-  //   return { ...mMap, [market.marketId]: market };
-  // }, {});
   const { historicalSwaps } = await sdk.indexer.historicalSwaps({
     where: {
       // accountId_eq: "dE1CBAKzrE1C9R6NkgdEUNgv1H9x4xgT39wzSnxCtX3FpSqS8", //old ac
@@ -255,7 +207,6 @@ export async function getStaticProps() {
       // accountId_eq: "dDyQQkwy5MmibHv5y1qQYpADS6x2x8yJjzaTRt2uTGfeSD7V9",
     },
   });
-  // console.log(historicalSwaps);
 
   const tradersWithSwaps = historicalSwaps.reduce<Traders>((traders, swap) => {
     const trades = traders[swap.accountId];
@@ -277,10 +228,6 @@ export async function getStaticProps() {
 
     const trade: Trade = {
       marketId,
-      // assetIn: assetInId,
-      // assetOut: assetOutId,
-      // amountIn: new Decimal(swap.assetAmountIn),
-      // amountOut: new Decimal(swap.assetAmountOut),
       baseAssetIn:
         baseAssetSwapType === "in"
           ? new Decimal(swap.assetAmountIn)
@@ -289,7 +236,6 @@ export async function getStaticProps() {
         baseAssetSwapType === "out"
           ? new Decimal(swap.assetAmountOut)
           : new Decimal(0),
-      // type: "trade",
     };
 
     if (trades) {
@@ -330,20 +276,14 @@ export async function getStaticProps() {
       },
     });
 
-  console.time("t");
   const fullSetEvents = [...buyFullSetEvents, ...sellFullSetEvents];
-  console.log(fullSetEvents);
 
   const uniqueFullSetEvents = fullSetEvents.reduce<
     FullHistoricalAccountBalanceFragment[]
   >((uniqueEvents, event) => {
-    console.log("event", event);
-
     const duplicateEvent = uniqueEvents.find(
       (entry) => entry.extrinsic?.hash === event.extrinsic?.hash,
     );
-
-    console.log("duplicateEvent", duplicateEvent);
 
     if (!duplicateEvent) {
       uniqueEvents.push(event);
@@ -351,9 +291,8 @@ export async function getStaticProps() {
 
     return uniqueEvents;
   }, []);
-  console.log(uniqueFullSetEvents);
 
-  [...uniqueFullSetEvents].forEach((event) => {
+  uniqueFullSetEvents.forEach((event) => {
     const trades = tradersWithSwaps[event.accountId];
 
     // probably this check is needed as accounts can aquire tokens via buy full sell or transfer
@@ -366,7 +305,7 @@ export async function getStaticProps() {
     }
   });
 
-  [...redeemEvents].forEach((event) => {
+  redeemEvents.forEach((event) => {
     const trades = tradersWithSwaps[event.accountId];
 
     const assetId = parseAssetIdString(event.assetId);
@@ -398,8 +337,6 @@ export async function getStaticProps() {
     }
   });
 
-  console.log(tradersWithSwaps);
-
   //loop through accounts and trades, total up baseAsset in and out for each market
   const tradersAggregatedByMarket = Object.keys(
     tradersWithSwaps,
@@ -408,23 +345,6 @@ export async function getStaticProps() {
     if (!swaps) return traders;
 
     const marketTotal = swaps.reduce<MarketTotals>((marketTotals, swap) => {
-      // let baseAssetSwapType: "in" | "out" | undefined;
-      // let baseAssetAmount: Decimal | undefined;
-      // let baseAsset: BaseAssetId | undefined;
-
-      // if (IOBaseAssetId.is(swap.assetIn)) {
-      //   baseAssetSwapType = "in";
-      //   baseAssetAmount = swap.amountIn;
-      //   baseAsset = swap.assetIn;
-      // } else if (IOBaseAssetId.is(swap.assetOut)) {
-      //   baseAssetSwapType = "out";
-      //   baseAssetAmount = swap.amountOut;
-      //   baseAsset = swap.assetOut;
-      // }
-
-      // if (!baseAssetSwapType || !baseAsset || !baseAssetAmount)
-      //   return marketTotals;
-
       const total = marketTotals[swap.marketId];
       if (total != null) {
         marketTotals[swap.marketId] = {
@@ -434,7 +354,6 @@ export async function getStaticProps() {
         };
       } else {
         marketTotals[swap.marketId] = {
-          // baseAsset: baseAsset,
           baseAssetIn: swap.baseAssetIn,
           baseAssetOut: swap.baseAssetOut,
         };
@@ -445,8 +364,6 @@ export async function getStaticProps() {
     return { ...traders, [accountId]: marketTotal };
   }, {});
 
-  console.log("tradersAggregatedByMarket", tradersAggregatedByMarket);
-
   const tradeProfits = Object.keys(
     tradersAggregatedByMarket,
   ).reduce<TradersSummary>((ranks, accountId) => {
@@ -455,7 +372,6 @@ export async function getStaticProps() {
     const marketsSummary: MarketSummary[] = [];
     const profit = Object.keys(trader).reduce<Decimal>((total, marketId) => {
       const marketTotal: MarketBaseDetails = trader[marketId];
-      console.log("marketTotal", marketTotal);
 
       const market = markets.find((m) => m.marketId === Number(marketId));
 
@@ -463,10 +379,6 @@ export async function getStaticProps() {
 
       if (market?.status === "Resolved" && !suspiciousActivity) {
         const diff = marketTotal.baseAssetOut.minus(marketTotal.baseAssetIn);
-        // console.log("marketId:", marketId);
-        // console.log("diff", diff.div(ZTG).toString());
-        // console.log(marketTotal.baseAssetOut.div(ZTG).toString());
-        // console.log(marketTotal.baseAssetIn.div(ZTG).toString());
 
         marketsSummary.push({
           question: market.question!,
@@ -482,9 +394,6 @@ export async function getStaticProps() {
           parseAssetIdString(market.baseAsset) as BaseAssetId,
           endTimestamp,
         );
-
-        // console.log("usdprice", marketEndBaseAssetPrice?.toFixed(2));
-        console.log(marketEndBaseAssetPrice);
 
         const usdProfitLoss = diff.mul(marketEndBaseAssetPrice ?? 0);
         return total.plus(usdProfitLoss);
@@ -502,8 +411,6 @@ export async function getStaticProps() {
     };
   }, {});
 
-  console.log("tradeProfits", tradeProfits);
-
   const rankings = Object.keys(tradeProfits)
     .reduce<Rank[]>((rankings, accountId) => {
       rankings.push({
@@ -515,8 +422,7 @@ export async function getStaticProps() {
     }, [])
     .sort((a, b) => b.profitUsd - a.profitUsd);
 
-  const top20 = rankings;
-  // .slice(0, 20);
+  const top20 = rankings.slice(0, 20);
 
   const indentities = await Promise.all(
     top20.map((player) => sdk.api.query.identity.identityOf(player.accountId)),
@@ -540,7 +446,6 @@ export async function getStaticProps() {
 const Leaderboard: NextPage<{
   rankings: Rank[];
 }> = ({ rankings }) => {
-  // console.log(rankings[0].markets);
   return (
     <div className="">
       <div className="font-bold text-3xl mb-[40px] w-full text-center">
