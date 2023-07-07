@@ -26,13 +26,10 @@ import Avatar from "components/ui/Avatar";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
-import {
-  calcScalarWinnings,
-  calcScalarResolvedPrices,
-} from "lib/util/calc-scalar-winnings";
+import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 
 //todo:
-// handle scalar market redeems
+// when base asset in is 0 void market
 
 // Track trades, buy full set, sell full set,
 
@@ -82,14 +79,14 @@ type MarketSummary = {
 
 type TradersSummary = {
   [key: AccountId]: {
-    profit: number;
+    profitUsd: number;
     markets: MarketSummary[];
   };
 };
 
 type Rank = {
   accountId: string;
-  profit: number;
+  profitUsd: number;
   name?: string;
   markets: MarketSummary[];
 };
@@ -254,6 +251,8 @@ export async function getStaticProps() {
       // accountId_eq: "dE3zfJtCC2YMHjgSifTbJg98EqhiVFeXvA8VCnCqyNty4ZYvv", //new ac creator
       // accountId_eq: "dDyQQkwy5MmibHv5y1qQYpADS6x2x8yJjzaTRt2uTGfeSD7V9", //new ac lp
       // accountId_eq: "dDywmamjrDkaT18ybCRJBfax65CoxJNSWGZfwiQrbkAe95wq3",
+      // accountId_eq: "dDyDMpv3YqFYdDmhqEdq8ZYnPU4gfXMSjqK6375CmTYF2Jt5W",
+      // accountId_eq: "dDyQQkwy5MmibHv5y1qQYpADS6x2x8yJjzaTRt2uTGfeSD7V9",
     },
   });
   // console.log(historicalSwaps);
@@ -446,7 +445,7 @@ export async function getStaticProps() {
     return { ...traders, [accountId]: marketTotal };
   }, {});
 
-  console.log(tradersAggregatedByMarket);
+  console.log("tradersAggregatedByMarket", tradersAggregatedByMarket);
 
   const tradeProfits = Object.keys(
     tradersAggregatedByMarket,
@@ -455,11 +454,14 @@ export async function getStaticProps() {
 
     const marketsSummary: MarketSummary[] = [];
     const profit = Object.keys(trader).reduce<Decimal>((total, marketId) => {
-      const marketTotal = trader[marketId];
+      const marketTotal: MarketBaseDetails = trader[marketId];
+      console.log("marketTotal", marketTotal);
 
       const market = markets.find((m) => m.marketId === Number(marketId));
 
-      if (market?.status === "Resolved") {
+      const suspiciousActivity = marketTotal.baseAssetIn.eq(0);
+
+      if (market?.status === "Resolved" && !suspiciousActivity) {
         const diff = marketTotal.baseAssetOut.minus(marketTotal.baseAssetIn);
         // console.log("marketId:", marketId);
         // console.log("diff", diff.div(ZTG).toString());
@@ -477,13 +479,14 @@ export async function getStaticProps() {
 
         const marketEndBaseAssetPrice = lookupPrice(
           basePrices,
-          marketTotal.baseAsset,
+          parseAssetIdString(market.baseAsset) as BaseAssetId,
           endTimestamp,
         );
 
         // console.log("usdprice", marketEndBaseAssetPrice?.toFixed(2));
+        console.log(marketEndBaseAssetPrice);
 
-        const usdProfitLoss = diff.mul(marketEndBaseAssetPrice);
+        const usdProfitLoss = diff.mul(marketEndBaseAssetPrice ?? 0);
         return total.plus(usdProfitLoss);
       } else {
         return total;
@@ -493,22 +496,24 @@ export async function getStaticProps() {
     return {
       ...ranks,
       [accountId]: {
-        profit: profit.div(ZTG).toNumber(),
+        profitUsd: profit.div(ZTG).toNumber(),
         markets: marketsSummary,
       },
     };
   }, {});
 
+  console.log("tradeProfits", tradeProfits);
+
   const rankings = Object.keys(tradeProfits)
     .reduce<Rank[]>((rankings, accountId) => {
       rankings.push({
         accountId,
-        profit: tradeProfits[accountId].profit,
+        profitUsd: tradeProfits[accountId].profitUsd,
         markets: tradeProfits[accountId].markets,
       });
       return rankings;
     }, [])
-    .sort((a, b) => b.profit - a.profit);
+    .sort((a, b) => b.profitUsd - a.profitUsd);
 
   const top20 = rankings;
   // .slice(0, 20);
@@ -558,10 +563,10 @@ const Leaderboard: NextPage<{
                 {rank.name ?? rank.accountId}
               </Link>
               <div className="ml-auto font-bold text-xs sm:text-sm md:text-base">
-                ${rank.profit.toFixed(0)}
+                ${rank.profitUsd.toFixed(0)}
               </div>
             </div>
-            <div>
+            {/* <div>
               {rank.markets
                 .sort((a, b) => b.profit - a.profit)
                 // .slice(0, 1000) // todo move this server side
@@ -576,7 +581,7 @@ const Leaderboard: NextPage<{
                     </div>
                   </div>
                 ))}
-            </div>
+            </div> */}
           </div>
         ))}
       </div>
