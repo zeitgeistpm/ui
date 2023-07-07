@@ -197,16 +197,7 @@ export async function getStaticProps() {
 
   const { markets } = await sdk.indexer.markets();
 
-  const { historicalSwaps } = await sdk.indexer.historicalSwaps({
-    where: {
-      // accountId_eq: "dE1CBAKzrE1C9R6NkgdEUNgv1H9x4xgT39wzSnxCtX3FpSqS8", //old ac
-      // accountId_eq: "dE3zfJtCC2YMHjgSifTbJg98EqhiVFeXvA8VCnCqyNty4ZYvv", //new ac creator
-      // accountId_eq: "dDyQQkwy5MmibHv5y1qQYpADS6x2x8yJjzaTRt2uTGfeSD7V9", //new ac lp
-      // accountId_eq: "dDywmamjrDkaT18ybCRJBfax65CoxJNSWGZfwiQrbkAe95wq3",
-      // accountId_eq: "dDyDMpv3YqFYdDmhqEdq8ZYnPU4gfXMSjqK6375CmTYF2Jt5W",
-      // accountId_eq: "dDyQQkwy5MmibHv5y1qQYpADS6x2x8yJjzaTRt2uTGfeSD7V9",
-    },
-  });
+  const { historicalSwaps } = await sdk.indexer.historicalSwaps();
 
   const tradersWithSwaps = historicalSwaps.reduce<Traders>((traders, swap) => {
     const trades = traders[swap.accountId];
@@ -295,7 +286,7 @@ export async function getStaticProps() {
   uniqueFullSetEvents.forEach((event) => {
     const trades = tradersWithSwaps[event.accountId];
 
-    // probably this check is needed as accounts can aquire tokens via buy full sell or transfer
+    // this check is needed as accounts can aquire tokens via buy full sell or transfer
     if (trades) {
       const trade = convertEventToTrade(event);
 
