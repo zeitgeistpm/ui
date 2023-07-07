@@ -117,16 +117,21 @@ const convertEventToTrade = (
   shortTokenVaue?: Decimal,
 ) => {
   const assetId = parseAssetId(event.assetId).unwrap();
-  console.log(event.event);
   const marketId = IOMarketOutcomeAssetId.is(assetId)
     ? getMarketIdOf(assetId)
     : undefined;
 
   if (marketId !== undefined) {
     if (event.event === "TokensRedeemed") {
+      console.log("redeemed", marketId);
+
+      console.log(shortTokenVaue, longTokenVaue);
+      console.log(IOScalarAssetId.is(assetId) && getScalarIndexOf(assetId));
+      console.log(assetId);
+
       //todo if scalar need to calcvalues
       const assetValue = IOScalarAssetId.is(assetId)
-        ? getScalarIndexOf(assetId) === 0
+        ? getScalarIndexOf(assetId) === 1
           ? shortTokenVaue
           : longTokenVaue
         : new Decimal(1);
@@ -138,6 +143,10 @@ const convertEventToTrade = (
         baseAssetOut: new Decimal(event.dBalance).mul(assetValue ?? 1).abs(),
         // type: "redeem",
       };
+
+      console.log("value", assetValue);
+      console.log("balance", event.dBalance);
+
       return trade;
     } else if (event.event === "SoldCompleteSet") {
       const trade: Trade = {
@@ -243,7 +252,8 @@ export async function getStaticProps() {
     where: {
       // accountId_eq: "dE1CBAKzrE1C9R6NkgdEUNgv1H9x4xgT39wzSnxCtX3FpSqS8", //old ac
       // accountId_eq: "dE3zfJtCC2YMHjgSifTbJg98EqhiVFeXvA8VCnCqyNty4ZYvv", //new ac creator
-      accountId_eq: "dDyQQkwy5MmibHv5y1qQYpADS6x2x8yJjzaTRt2uTGfeSD7V9", //new ac lp
+      // accountId_eq: "dDyQQkwy5MmibHv5y1qQYpADS6x2x8yJjzaTRt2uTGfeSD7V9", //new ac lp
+      // accountId_eq: "dDywmamjrDkaT18ybCRJBfax65CoxJNSWGZfwiQrbkAe95wq3",
     },
   });
   // console.log(historicalSwaps);
@@ -451,8 +461,8 @@ export async function getStaticProps() {
 
       if (market?.status === "Resolved") {
         const diff = marketTotal.baseAssetOut.minus(marketTotal.baseAssetIn);
-        console.log("marketId:", marketId);
-        console.log("diff", diff.div(ZTG).toString());
+        // console.log("marketId:", marketId);
+        // console.log("diff", diff.div(ZTG).toString());
         // console.log(marketTotal.baseAssetOut.div(ZTG).toString());
         // console.log(marketTotal.baseAssetIn.div(ZTG).toString());
 
@@ -471,7 +481,7 @@ export async function getStaticProps() {
           endTimestamp,
         );
 
-        console.log("usdprice", marketEndBaseAssetPrice?.toFixed(2));
+        // console.log("usdprice", marketEndBaseAssetPrice?.toFixed(2));
 
         const usdProfitLoss = diff.mul(marketEndBaseAssetPrice);
         return total.plus(usdProfitLoss);
@@ -500,7 +510,8 @@ export async function getStaticProps() {
     }, [])
     .sort((a, b) => b.profit - a.profit);
 
-  const top20 = rankings.slice(0, 20);
+  const top20 = rankings;
+  // .slice(0, 20);
 
   const indentities = await Promise.all(
     top20.map((player) => sdk.api.query.identity.identityOf(player.accountId)),
