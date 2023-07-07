@@ -1,3 +1,4 @@
+import { encodeAddress } from "@polkadot/util-crypto";
 import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { tryCatch } from "@zeitgeistpm/utility/dist/option";
@@ -9,21 +10,15 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { ProxyConfig, useWallet } from "lib/state/wallet";
 import { NextPage } from "next";
-import { encodeAddress } from "@polkadot/util-crypto";
-
 import {
-  ChangeEventHandler,
   FC,
   MouseEventHandler,
   PropsWithChildren,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import { AlertTriangle } from "react-feather";
 import { useForm } from "react-hook-form";
-import { useAccountProxies } from "lib/hooks/queries/useAccountProxies";
-import { poll } from "@zeitgeistpm/avatara-util";
 
 const SubmitButton: FC<
   PropsWithChildren<{

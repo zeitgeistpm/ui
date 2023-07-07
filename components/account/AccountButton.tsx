@@ -196,13 +196,11 @@ const AccountButton: FC<{
                       >
                         <div
                           className={`flex items-center rounded-full h-full border-2 pl-1.5 py-1 md:py-0 bg-black transition-all text-white ${
-                            open ? "border-orange-500" : "border-white"
+                            open ? "border-sunglow-2" : "border-white"
                           }`}
                         >
                           <div
-                            className={`border-1 transition-all ${
-                              open ? "border-orange-500" : "border-transparent"
-                            } rounded-full`}
+                            className={`ring-2 rounded-full`}
                             onClick={(e) => {
                               e.stopPropagation();
                             }}
