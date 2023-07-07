@@ -26,8 +26,7 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
 
 //todo:
-// include buy/sell full set events
-// styling
+// handle scalar market redeems
 
 // Track trades, buy full set, sell full set,
 
@@ -106,7 +105,11 @@ type BasePrices = {
 //   };
 // };
 
-const convertEventToTrade = (event: FullHistoricalAccountBalanceFragment) => {
+const convertEventToTrade = (
+  event: FullHistoricalAccountBalanceFragment,
+  longTokenVaue?: Decimal,
+  shortTokenVaue?: Decimal,
+) => {
   const assetId = parseAssetId(event.assetId).unwrap();
   console.log(event.event);
   const marketId = IOMarketOutcomeAssetId.is(assetId)
@@ -115,6 +118,7 @@ const convertEventToTrade = (event: FullHistoricalAccountBalanceFragment) => {
 
   if (marketId !== undefined) {
     if (event.event === "TokensRedeemed") {
+      //todo if scalar need to calcvalues
       const trade: Trade = {
         marketId,
         // assetIn: assetId,
@@ -228,7 +232,7 @@ export async function getStaticProps() {
     where: {
       // accountId_eq: "dE1CBAKzrE1C9R6NkgdEUNgv1H9x4xgT39wzSnxCtX3FpSqS8", //old ac
       // accountId_eq: "dE3zfJtCC2YMHjgSifTbJg98EqhiVFeXvA8VCnCqyNty4ZYvv", //new ac creator
-      // accountId_eq: "dDyQQkwy5MmibHv5y1qQYpADS6x2x8yJjzaTRt2uTGfeSD7V9", //new ac lp
+      accountId_eq: "dDyQQkwy5MmibHv5y1qQYpADS6x2x8yJjzaTRt2uTGfeSD7V9", //new ac lp
     },
   });
   // console.log(historicalSwaps);
@@ -307,11 +311,7 @@ export async function getStaticProps() {
     });
 
   console.time("t");
-  const fullSetEvents = [
-    ...buyFullSetEvents,
-
-    // ...sellFullSetEvents
-  ];
+  const fullSetEvents = [...buyFullSetEvents, ...sellFullSetEvents];
   console.log(fullSetEvents);
 
   const uniqueFullSetEvents = fullSetEvents.reduce<
@@ -507,22 +507,22 @@ const Leaderboard: NextPage<{
                 ${rank.profit.toFixed(0)}
               </div>
             </div>
-            {/* <div>
+            <div>
               {rank.markets
                 .sort((a, b) => b.profit - a.profit)
                 // .slice(0, 1000) // todo move this server side
                 .map((market) => (
                   <div>
-                    <div>
+                    <Link href={`markets/${market.marketId}`}>
                       {market.question}-{market.marketId}
-                    </div>
+                    </Link>
                     <div>
                       {formatNumberCompact(market.profit)}{" "}
                       {lookupAssetSymbol(market.baseAssetId)}
                     </div>
                   </div>
                 ))}
-            </div> */}
+            </div>
           </div>
         ))}
       </div>
