@@ -2,8 +2,10 @@ import {
   BaseAssetId,
   create,
   getMarketIdOf,
+  getScalarIndexOf,
   IOForeignAssetId,
   IOMarketOutcomeAssetId,
+  IOScalarAssetId,
   parseAssetId,
   ZeitgeistIpfs,
 } from "@zeitgeistpm/sdk-next";
@@ -24,6 +26,10 @@ import Avatar from "components/ui/Avatar";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
+import {
+  calcScalarWinnings,
+  calcScalarResolvedPrices,
+} from "lib/util/calc-scalar-winnings";
 
 //todo:
 // handle scalar market redeems
@@ -119,12 +125,17 @@ const convertEventToTrade = (
   if (marketId !== undefined) {
     if (event.event === "TokensRedeemed") {
       //todo if scalar need to calcvalues
+      const assetValue = IOScalarAssetId.is(assetId)
+        ? getScalarIndexOf(assetId) === 0
+          ? shortTokenVaue
+          : longTokenVaue
+        : new Decimal(1);
       const trade: Trade = {
         marketId,
         // assetIn: assetId,
         // assetOut: { Ztg: null },
         baseAssetIn: new Decimal(0),
-        baseAssetOut: new Decimal(event.dBalance).abs(),
+        baseAssetOut: new Decimal(event.dBalance).mul(assetValue ?? 1).abs(),
         // type: "redeem",
       };
       return trade;
@@ -333,12 +344,44 @@ export async function getStaticProps() {
   }, []);
   console.log(uniqueFullSetEvents);
 
-  [...redeemEvents, ...uniqueFullSetEvents].forEach((event) => {
+  [...uniqueFullSetEvents].forEach((event) => {
     const trades = tradersWithSwaps[event.accountId];
 
     // probably this check is needed as accounts can aquire tokens via buy full sell or transfer
     if (trades) {
       const trade = convertEventToTrade(event);
+
+      if (trade) trades.push(trade);
+
+      tradersWithSwaps[event.accountId] = trades;
+    }
+  });
+
+  [...redeemEvents].forEach((event) => {
+    const trades = tradersWithSwaps[event.accountId];
+
+    const assetId = parseAssetIdString(event.assetId);
+
+    const market = IOMarketOutcomeAssetId.is(assetId)
+      ? markets.find((m) => m.marketId === Number(getMarketIdOf(assetId)))
+      : null;
+    if (trades && market) {
+      const values =
+        market.marketType.scalar?.[0] != null &&
+        market.marketType.scalar[1] != null &&
+        market.resolvedOutcome != null
+          ? calcScalarResolvedPrices(
+              new Decimal(market.marketType.scalar[0]),
+              new Decimal(market.marketType.scalar[1]),
+              new Decimal(market.resolvedOutcome),
+            )
+          : { longTokenValue: undefined, shortTokenValue: undefined };
+
+      const trade = convertEventToTrade(
+        event,
+        values.longTokenValue,
+        values.shortTokenValue,
+      );
 
       if (trade) trades.push(trade);
 
