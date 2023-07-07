@@ -1,8 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import {
   getIndexOf,
+  IOBaseAssetId,
   IOCategoricalAssetId,
-  IOZtgAssetId,
   isRpcSdk,
   parseAssetId,
   ZTG,
@@ -63,7 +63,7 @@ const ExitPoolForm = ({
           const assetId = weight && parseAssetId(weight.assetId).unwrap();
 
           return (
-            IOZtgAssetId.is(assetId) ||
+            IOBaseAssetId.is(assetId) ||
             (IOCategoricalAssetId.is(assetId) &&
               market.resolvedOutcome === getIndexOf(assetId).toString())
           );
