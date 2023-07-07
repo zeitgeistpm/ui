@@ -2,7 +2,6 @@ import {
   BaseAssetId,
   create,
   getMarketIdOf,
-  getScalarIndexOf,
   IOForeignAssetId,
   IOMarketOutcomeAssetId,
   IOScalarAssetId,
@@ -97,7 +96,7 @@ const convertEventToTrade = (
   if (marketId !== undefined) {
     if (event.event === "TokensRedeemed") {
       const assetValue = IOScalarAssetId.is(assetId)
-        ? getScalarIndexOf(assetId) === 1
+        ? assetId.ScalarOutcome[1] === "Short"
           ? shortTokenVaue
           : longTokenVaue
         : new Decimal(1);
