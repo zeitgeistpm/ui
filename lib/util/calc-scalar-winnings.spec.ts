@@ -38,16 +38,4 @@ describe("calcScalarWinnings", () => {
     const { shortTokenValue } = calcScalarResolvedPrices(10, 40, 0);
     expect(shortTokenValue.toNumber()).toEqual(1);
   });
-
-  describe("getScalarIndexOf integration", () => {
-    // test("should return 1 for short", () => {
-    //   const index = getScalarIndexOf({
-    //     ScalarOutcome: [1 as MarketId, "Short"],
-    //   });
-
-    //   expect(index).toEqual(1);
-    // });
-
-    test("should return 0 for long", () => {});
-  });
 });
