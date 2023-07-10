@@ -52,7 +52,7 @@ export const OracleInput = forwardRef(
         type: "change",
         target: {
           name,
-          value: wallet.activeAccount!.address,
+          value: wallet.realAddress,
         },
       });
     };
@@ -67,7 +67,12 @@ export const OracleInput = forwardRef(
       });
     };
 
-    const isSelectedAccount = wallet.activeAccount?.address === value;
+    const isSelectedAccount = wallet.realAddress === value;
+    const proxy = wallet.proxyFor[wallet.activeAccount.address];
+    const accountname =
+      proxy && proxy.enabled
+        ? "Proxied"
+        : wallet.activeAccount.name ?? "Account";
 
     return (
       <div className={`relative ${className}`}>
@@ -119,16 +124,15 @@ export const OracleInput = forwardRef(
                   }`}
                 >
                   <div className="pointer-events-none">
-                    <Avatar address={wallet.activeAccount?.address} size={18} />
+                    <Avatar address={wallet.realAddress} size={18} />
                   </div>
                   <span className="font-semibold center gap-4">
-                    {wallet.activeAccount?.name ? (
+                    {accountname ? (
                       <>
-                        {wallet.activeAccount?.name}{" "}
-                        {shortenAddress(wallet.activeAccount?.address, 0, 6)}
+                        {accountname} {shortenAddress(wallet.realAddress, 0, 6)}
                       </>
                     ) : (
-                      <>{shortenAddress(wallet.activeAccount?.address, 6, 6)}</>
+                      <>{shortenAddress(wallet.realAddress, 6, 6)}</>
                     )}
                   </span>
                 </div>

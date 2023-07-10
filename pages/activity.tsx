@@ -1,8 +1,6 @@
 import Table, { TableColumn, TableData } from "components/ui/Table";
 
 import { NextPage } from "next";
-import React from "react";
-import InfoBoxes from "../components/ui/InfoBoxes";
 
 const ActivityFeed: NextPage = () => {
   const tableData: TableData[] = [
@@ -78,7 +76,6 @@ const ActivityFeed: NextPage = () => {
 
   return (
     <div>
-      <InfoBoxes />
       <h2 className="text-ztg-18-150 font-medium mb-ztg-23">Activity Feed</h2>
       <Table data={tableData} columns={columns} />
     </div>

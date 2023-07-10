@@ -8,10 +8,10 @@ import { DateTimeInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useState } from "react";
 
 const ScalarReportBox = ({
@@ -39,40 +39,37 @@ const ScalarReportBox = ({
     return ((bounds[1].toNumber() + bounds[0].toNumber()) / 2).toFixed(0);
   });
 
-  const reportDisabled = !sdk || !isRpcSdk(sdk) || scalarReportValue === "";
+  const { send, isLoading, isSuccess } = useExtrinsic(
+    () => {
+      if (!isRpcSdk(sdk)) return;
 
-  const handleSignTransaction = async () => {
-    const outcomeReport: any = {
-      scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
-    };
+      const outcomeReport: any = {
+        scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
+      };
 
-    const signer = wallet.getActiveSigner();
-
-    if (isRpcSdk(sdk) && signer) {
-      const tx = sdk.api.tx.predictionMarkets.report(
+      return sdk.api.tx.predictionMarkets.report(
         market.marketId,
         outcomeReport,
       );
+    },
+    {
+      onSuccess: () => {
+        notificationStore.pushNotification("Outcome Reported", {
+          type: "Success",
+        });
+        onReport?.();
+      },
+    },
+  );
 
-      const callback = extrinsicCallback({
-        api: sdk.api,
-        notifications: notificationStore,
-        successCallback: async () => {
-          notificationStore.pushNotification("Outcome Reported", {
-            type: "Success",
-          });
-          onReport?.();
-        },
-        failCallback: (error) => {
-          notificationStore.pushNotification(error, {
-            type: "Error",
-          });
-        },
-      });
+  const reportDisabled =
+    !sdk ||
+    !isRpcSdk(sdk) ||
+    isLoading ||
+    isSuccess ||
+    scalarReportValue === "";
 
-      signAndSend(tx, signer, callback);
-    }
-  };
+  const handleSignTransaction = async () => send();
 
   return (
     <>
