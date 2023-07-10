@@ -2,14 +2,14 @@ import { CSSProperties, FC, useMemo } from "react";
 import Link from "next/link";
 import { Banner } from "lib/cms/get-banners";
 import { isCurrentOrigin } from "lib/util/is-current-origin";
+import { Transition } from "@headlessui/react";
 
 export interface HeroSlideProps {
-  className?: string;
-  style?: CSSProperties;
   banner: Banner;
+  isActive: boolean;
 }
 
-export const HeroSlide: FC<HeroSlideProps> = ({ banner, style, className }) => {
+export const HeroSlide: FC<HeroSlideProps> = ({ banner, isActive }) => {
   const isExternalLink = banner.ctaLink
     ? !isCurrentOrigin(banner.ctaLink)
     : false;
@@ -25,43 +25,60 @@ export const HeroSlide: FC<HeroSlideProps> = ({ banner, style, className }) => {
   };
 
   return (
-    <div
-      className={`flex items-center h-full w-full ${className}`}
-      style={style}
-    >
-      <div className="w-full pb-8">
-        <h2
-          className={`text-center sm:text-left text-white font-sans md:whitespace-pre font-extrabold text-5xl sm:text-7xl lg:text-8xl mb-4`}
-        >
-          {banner.title}
-        </h2>
-        <p
-          className={
-            "text-center sm:text-start text-white font-sans whitespace-pre font-extrabold text-3xl md:text-4xl mb-6"
-          }
-        >
-          {banner.subtitle}
-        </p>
-        <div className="flex flex-col sm:flex-row">
-          {isExternalLink ? (
-            <a {...linkProps} target="_blank">
-              {banner.ctaText}
-            </a>
-          ) : (
-            <>
-              {linkProps.href && (
-                <Link
-                  href={linkProps.href}
-                  className={linkProps.className}
-                  style={linkProps.style}
-                >
-                  {banner.ctaText}
-                </Link>
-              )}
-            </>
-          )}
+    <div className={`${isActive ? "z-30" : "z-20"}`}>
+      <Transition
+        show={isActive}
+        enter="transition-all duration-1000"
+        enterFrom="opacity-0 blur-md"
+        enterTo="opacity-100 blur-none"
+        leave="transition-all duration-1000"
+        leaveFrom="opacity-100 blur-none"
+        leaveTo="opacity-0 blur-md"
+      >
+        <div>
+          <h2
+            className={`text-center sm:text-left text-white font-sans md:whitespace-pre font-bold text-4xl lg:text-5xl mb-6`}
+          >
+            {banner.title}
+          </h2>
+          <p
+            className={
+              "text-center sm:text-start text-white font-sans whitespace-pre font-bold text-lg md:text-xl mb-8"
+            }
+          >
+            {banner.subtitle}
+          </p>
         </div>
-      </div>
+      </Transition>
+
+      <Transition
+        show={isActive}
+        enter="transition-all duration-1000"
+        enterFrom="opacity-0 blur-md"
+        enterTo="opacity-100 blur-none"
+        leave="transition-all duration-1000"
+        leaveFrom="opacity-100 blur-none"
+        leaveTo="opacity-0 blur-md"
+        className="flex flex-col sm:flex-row"
+      >
+        {isExternalLink ? (
+          <a {...linkProps} target="_blank">
+            {banner.ctaText}
+          </a>
+        ) : (
+          <>
+            {linkProps.href && (
+              <Link
+                href={linkProps.href}
+                className={linkProps.className}
+                style={linkProps.style}
+              >
+                {banner.ctaText}
+              </Link>
+            )}
+          </>
+        )}
+      </Transition>
     </div>
   );
 };

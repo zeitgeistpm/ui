@@ -10,7 +10,7 @@ export interface HeroControlsProps {
 
 export const HeroControls: FC<HeroControlsProps> = ({ slides, slider }) => {
   return (
-    <div className="flex items-center justify-center md:justify-end w-full mx-auto gap-1 pb-16 absolute bottom-0 right-0 px-[inherit]">
+    <div className="flex items-center justify-center md:justify-end gap-1">
       <button
         onClick={() => {
           slider.prev(true);
