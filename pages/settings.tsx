@@ -221,7 +221,7 @@ const ProxySettings = () => {
   });
 
   const onSubmit = (data: ProxyConfig) => {
-    wallet.setProxyFor(wallet.activeAccount?.address, data);
+    wallet.setProxy(wallet.activeAccount?.address, data);
     reset(data);
   };
 
