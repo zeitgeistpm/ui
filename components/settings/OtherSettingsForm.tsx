@@ -53,7 +53,6 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
         if (!wallet.activeAccount?.address) {
           return;
         }
-        console.log("handleSubmit", data);
         wallet.setProxyFor(wallet.activeAccount.address, {
           address: data.proxyAddress?.value ?? "",
           enabled: data.enableProxy,
