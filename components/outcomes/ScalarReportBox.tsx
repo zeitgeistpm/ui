@@ -43,9 +43,6 @@ const ScalarReportBox = ({
     () => {
       if (!isRpcSdk(sdk)) return;
 
-      const signer = wallet.getActiveSigner();
-      if (!signer) return;
-
       const outcomeReport: any = {
         scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
       };

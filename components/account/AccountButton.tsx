@@ -1,4 +1,4 @@
-import { Menu, Transition } from "@headlessui/react";
+import { Menu, Popover, Transition } from "@headlessui/react";
 import { getWallets } from "@talismn/connect-wallets";
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
@@ -12,6 +12,7 @@ import { useAccountModals } from "lib/state/account";
 import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
+import { FaNetworkWired } from "react-icons/fa";
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -30,6 +31,7 @@ import {
   DesktopOnboardingModal,
   MobileOnboardingModal,
 } from "./OnboardingModal";
+import CopyIcon from "../ui/CopyIcon";
 
 const BalanceRow = ({
   imgPath,
@@ -86,7 +88,12 @@ const AccountButton: FC<{
     selectWallet,
     disconnectWallet,
     isNovaWallet,
+    proxyFor,
+    realAddress,
   } = useWallet();
+
+  const proxy = proxyFor?.[activeAccount?.address];
+
   const accountModals = useAccountModals();
   const { locationAllowed, isUsingVPN } = useUserLocation();
   const [hovering, setHovering] = useState<boolean>(false);
@@ -176,57 +183,111 @@ const AccountButton: FC<{
             {({ open }) => (
               <>
                 <div>
-                  <Menu.Button>
-                    <div
-                      className={`flex flex-1	items-center justify-end h-full rounded-full cursor-pointer ${
-                        open
-                          ? "border-orange-500"
-                          : pathname === "/"
-                          ? " border-white"
-                          : "border-black"
-                      }`}
-                    >
+                  <div className="flex h-11 relative pr-4 md:pr-0">
+                    <Menu.Button>
                       <div
-                        className={`flex items-center rounded-full h-full border-2 pl-1.5 py-1 md:py-0 bg-black transition-all text-white ${
-                          open ? "border-orange-500" : "border-white"
+                        className={`relative flex flex-1	items-center justify-end h-full rounded-full cursor-pointer z-30  ${
+                          open
+                            ? "border-orange-500"
+                            : pathname === "/"
+                            ? " border-white"
+                            : "border-black"
                         }`}
                       >
                         <div
-                          className={`border-1 transition-all ${
-                            open ? "border-orange-500" : "border-transparent"
-                          } rounded-full`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                          }}
-                        >
-                          {activeAccount?.address && (
-                            <Avatar
-                              zoomed
-                              address={activeAccount?.address}
-                              deps={avatarDeps}
-                            />
-                          )}
-                        </div>
-                        <span
-                          className={`font-medium pl-2 text-sm h-full transition-all hidden md:block leading-[40px] ${
-                            open ? "text-sunglow-2" : "text-white"
+                          className={`flex items-center rounded-full h-full border-2 pl-1.5 py-1 md:py-0 bg-black transition-all text-white ${
+                            open ? "border-sunglow-2" : "border-white"
                           }`}
                         >
-                          {activeAccount &&
-                            shortenAddress(activeAccount?.address, 6, 4)}
-                        </span>
-                        <div className="pr-1">
-                          <ChevronDown
-                            size={16}
-                            viewBox="4 3 16 16"
-                            className={`box-content px-2 ${
-                              open && "rotate-180 text-sunglow-2"
+                          <div
+                            className={`ring-2 rounded-full`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                            }}
+                          >
+                            {activeAccount?.address && (
+                              <Avatar
+                                zoomed
+                                address={activeAccount?.address}
+                                deps={avatarDeps}
+                              />
+                            )}
+                          </div>
+                          <span
+                            className={`font-medium pl-2 text-sm h-full transition-all hidden md:block leading-[40px] ${
+                              open ? "text-sunglow-2" : "text-white"
                             }`}
-                          />
+                          >
+                            {activeAccount &&
+                              shortenAddress(activeAccount?.address, 6, 4)}
+                          </span>
+
+                          <div className="pr-1">
+                            <ChevronDown
+                              size={16}
+                              viewBox="4 3 16 16"
+                              className={`box-content px-2 ${
+                                open && "rotate-180 text-sunglow-2"
+                              }`}
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Menu.Button>
+                    </Menu.Button>
+                    {proxy && proxy.enabled && (
+                      <Popover className={"relative"}>
+                        {({ open }) => (
+                          <>
+                            <Popover.Button className="relative z-20 focus:outline-none">
+                              <div
+                                className={`h-11 -ml-4 pl-6 z-rounded-r-full z-50 ${
+                                  open
+                                    ? "bg-gradient-to-r from-purple-500 to-purple-500"
+                                    : "bg-gradient-to-r from-purple-700 to-purple-500"
+                                } rounded-r-full center pr-4 text-purple-900`}
+                              >
+                                <FaNetworkWired size={18} />
+                              </div>
+                            </Popover.Button>
+                            <div className="z-10">
+                              <Transition
+                                as={Fragment}
+                                enter="transition ease-out duration-100"
+                                enterFrom="transform opacity-0 scale-95"
+                                enterTo="transform opacity-100 scale-100"
+                                leave="transition ease-in duration-75"
+                                leaveFrom="transform opacity-100 scale-100"
+                                leaveTo="transform opacity-0 :scale-95"
+                              >
+                                <Popover.Panel className="absolute z-10 right-0 bottom-6 translate-y-[100%] w-64">
+                                  <div className="flex items-center">
+                                    <div className="flex items-center bg-purple-500 p-4 pt-8 w-full rounded-md rounded-tr-none">
+                                      <div className="flex-1">
+                                        <label className="text-purple-900 text-xs italic mb-2">
+                                          Account is acting proxy for:
+                                        </label>
+                                        <div className="flex items-center gap-1">
+                                          <div className="text-white text-sm">
+                                            {shortenAddress(realAddress, 7, 7)}
+                                          </div>
+                                          <div className="text-purple-800">
+                                            <CopyIcon
+                                              size={14}
+                                              copyText={realAddress}
+                                            />
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </Popover.Panel>
+                              </Transition>
+                            </div>
+                          </>
+                        )}
+                      </Popover>
+                    )}
+                  </div>
                 </div>
 
                 <Transition
@@ -238,115 +299,117 @@ const AccountButton: FC<{
                   leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
                   leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                 >
-                  <Menu.Items className="fixed md:absolute left-0 md:left-auto md:right-0 py-3 z-40 mt-2 w-full h-full md:h-auto md:w-64 origin-top-right divide-y divide-gray-100 md:rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <div className="">
-                      <div className="border-b-2 mb-3 py-2">
-                        <div className="px-6">
-                          <BalanceRow
-                            imgPath="/currencies/ztg.jpg"
-                            units={constants?.tokenSymbol}
-                            balance={activeBalance}
-                          />
-                        </div>
-                        <div className="px-6">
-                          <BalanceRow
-                            imgPath="/currencies/dot.png"
-                            units="DOT"
-                            balance={polkadotBalance}
-                          />
-                        </div>
-                        <div className="px-6">
-                          <div className="flex items-center mb-3">
-                            <img
-                              src="/currencies/usdt.png"
-                              height={"24px"}
-                              width="24px"
+                  <div>
+                    <Menu.Items className="fixed md:absolute left-0 md:left-auto md:right-0 py-3 z-40 mt-2 w-full overflow-hidden h-full md:h-auto md:w-64 origin-top-right divide-y divide-gray-100 md:rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <div className="">
+                        <div className="border-b-2 mb-3 py-2">
+                          <div className="px-6">
+                            <BalanceRow
+                              imgPath="/currencies/ztg.jpg"
+                              units={constants?.tokenSymbol}
+                              balance={activeBalance}
                             />
-                            <div className="bg-green-200 ml-2 text-green-900 rounded-md py-1 px-2 text-xs">
-                              USDT Coming Soon!
+                          </div>
+                          <div className="px-6">
+                            <BalanceRow
+                              imgPath="/currencies/dot.png"
+                              units="DOT"
+                              balance={polkadotBalance}
+                            />
+                          </div>
+                          <div className="px-6">
+                            <div className="flex items-center mb-3">
+                              <img
+                                src="/currencies/usdt.png"
+                                height={"24px"}
+                                width="24px"
+                              />
+                              <div className="bg-green-200 ml-2 text-green-900 rounded-md py-1 px-2 text-xs">
+                                USDT Coming Soon!
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="flex items-center px-6 mb-3 hover:bg-slate-100"
-                            onClick={() => setShowGetZtgModal(true)}
-                          >
-                            <DollarSign />
-                            <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
-                            >
-                              Get ZTG
-                            </button>
-                          </div>
-                        )}
-                      </Menu.Item>
-                      {isNovaWallet !== true && (
                         <Menu.Item>
                           {({ active }) => (
                             <div
                               className="flex items-center px-6 mb-3 hover:bg-slate-100"
-                              onClick={() => {
-                                accountModals.openAccountSelect();
-                              }}
+                              onClick={() => setShowGetZtgModal(true)}
                             >
-                              <User />
+                              <DollarSign />
                               <button
                                 className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
                               >
-                                Select Account
+                                Get ZTG
                               </button>
                             </div>
                           )}
                         </Menu.Item>
-                      )}
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link href="/portfolio">
-                            <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
-                              <BarChart />
-                              <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                        {isNovaWallet !== true && (
+                          <Menu.Item>
+                            {({ active }) => (
+                              <div
+                                className="flex items-center px-6 mb-3 hover:bg-slate-100"
+                                onClick={() => {
+                                  accountModals.openAccountSelect();
+                                }}
                               >
-                                Portfolio
-                              </button>
-                            </div>
-                          </Link>
+                                <User />
+                                <button
+                                  className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                                >
+                                  Select Account
+                                </button>
+                              </div>
+                            )}
+                          </Menu.Item>
                         )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link href="/settings">
-                            <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
-                              <Settings />
-                              <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
-                              >
-                                Settings
-                              </button>
-                            </div>
-                          </Link>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="flex items-center px-6 hover:bg-slate-100"
-                            onClick={() => disconnectWallet()}
-                          >
-                            <Frown />
-                            <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link href="/portfolio">
+                              <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
+                                <BarChart />
+                                <button
+                                  className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                                >
+                                  Portfolio
+                                </button>
+                              </div>
+                            </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link href="/settings">
+                              <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
+                                <Settings />
+                                <button
+                                  className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                                >
+                                  Settings
+                                </button>
+                              </div>
+                            </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div
+                              className="flex items-center px-6 hover:bg-slate-100"
+                              onClick={() => disconnectWallet()}
                             >
-                              Disconnect
-                            </button>
-                          </div>
-                        )}
-                      </Menu.Item>
-                    </div>
-                  </Menu.Items>
+                              <Frown />
+                              <button
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                              >
+                                Disconnect
+                              </button>
+                            </div>
+                          )}
+                        </Menu.Item>
+                      </div>
+                    </Menu.Items>
+                  </div>
                 </Transition>
               </>
             )}
