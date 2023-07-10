@@ -268,7 +268,12 @@ const Answers = ({
   moderation: Moderation;
 }) => {
   return (
-    <div className="md:grid grid-cols-4 gap-2">
+    <div
+      className="md:grid gap-3 max-w-full"
+      style={{
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+      }}
+    >
       {answers?.answers.map((answer, answerIndex) => {
         const answerLiquidity = liquidity?.rows[answerIndex];
 
