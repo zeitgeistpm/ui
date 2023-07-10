@@ -45,19 +45,19 @@ export const RedeemButtonByAssetId = ({
   assetId: AssetId;
 }) => {
   const wallet = useWallet();
-  const signer = wallet?.getActiveSigner();
+  const realAddress = wallet?.realAddress;
 
   const scalarBounds = getScalarBounds(market);
 
   const balanceQueries: AccountAssetIdPair[] = market.marketType.categorical
-    ? [{ assetId, account: signer?.address }]
+    ? [{ assetId, account: realAddress }]
     : [
         {
-          account: signer?.address,
+          account: realAddress,
           assetId: { ScalarOutcome: [market.marketId as MarketId, "Short"] },
         },
         {
-          account: signer?.address,
+          account: realAddress,
           assetId: { ScalarOutcome: [market.marketId as MarketId, "Long"] },
         },
       ];
@@ -67,7 +67,7 @@ export const RedeemButtonByAssetId = ({
 
   const value = useMemo(() => {
     const zero = new Decimal(0);
-    if (!signer?.address || isLoadingAssetBalance) return zero;
+    if (!realAddress || isLoadingAssetBalance) return zero;
 
     if (market.marketType.categorical && IOCategoricalAssetId.is(assetId)) {
       const resolvedAssetIdString =
@@ -83,15 +83,15 @@ export const RedeemButtonByAssetId = ({
       )
         return zero;
 
-      const balance = getAccountAssetBalance(signer.address, resolvedAssetId)
-        ?.data?.balance;
+      const balance = getAccountAssetBalance(realAddress, resolvedAssetId)?.data
+        ?.balance;
       return new Decimal(balance?.free.toString() ?? 0).div(ZTG);
     } else {
-      const shortBalance = getAccountAssetBalance(signer.address, {
+      const shortBalance = getAccountAssetBalance(realAddress, {
         ScalarOutcome: [market.marketId as MarketId, "Short"],
       })?.data?.balance;
 
-      const longBalance = getAccountAssetBalance(signer.address, {
+      const longBalance = getAccountAssetBalance(realAddress, {
         ScalarOutcome: [market.marketId as MarketId, "Long"],
       })?.data?.balance;
 
@@ -124,7 +124,7 @@ const RedeemButtonByValue = ({
 }) => {
   const [sdk] = useSdkv2();
   const wallet = useWallet();
-  const signer = wallet?.getActiveSigner();
+  const signer = wallet?.activeAccount;
   const notificationStore = useNotifications();
   const baseAsset = parseAssetIdString(market.baseAsset);
   const { data: baseAssetMetadata } = useAssetMetadata(baseAsset);

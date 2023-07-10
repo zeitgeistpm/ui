@@ -96,7 +96,7 @@ const DepositModal = ({
       if (!chain || !api || !wallet.activeAccount || !constants) return;
       const tx = chain.createDepositExtrinsic(
         api,
-        wallet.activeAccount.address,
+        wallet.realAddress,
         amountDecimal.toFixed(0),
         constants.parachainId,
       );

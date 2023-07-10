@@ -96,7 +96,7 @@ const Inner = ({
   });
 
   const wallet = useWallet();
-  const signer = wallet.getActiveSigner();
+  const signer = wallet.activeAccount;
 
   const { data: tradeItemState } = useTradeItemState(tradeItem);
 

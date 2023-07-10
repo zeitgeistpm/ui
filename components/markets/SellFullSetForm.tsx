@@ -35,12 +35,12 @@ const SellFullSetForm = ({
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
   const { data: baseAssetBalance } = useBalance(
-    wallet.getActiveSigner()?.address,
+    wallet.realAddress,
     baseAssetId,
   );
 
   const { data: balances } = useAccountPoolAssetBalances(
-    wallet.getActiveSigner()?.address,
+    wallet.realAddress,
     pool,
   );
 
