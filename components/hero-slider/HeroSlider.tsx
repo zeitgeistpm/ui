@@ -1,12 +1,10 @@
-import Image from "next/image";
-import { HeroControls } from "./HeroControls";
-import { HeroSlide } from "./HeroSlide";
+import { Transition } from "@headlessui/react";
 import { Banner } from "lib/cms/get-banners";
 import { useSliderControls } from "lib/hooks/slides";
-import { Transition } from "@headlessui/react";
 import { isCurrentOrigin } from "lib/util/is-current-origin";
+import Image from "next/image";
 import Link from "next/link";
-import { FC, PropsWithChildren } from "react";
+import { HeroControls } from "./HeroControls";
 
 const HeroSlider = ({
   banners,
