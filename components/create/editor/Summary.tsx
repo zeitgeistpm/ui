@@ -12,7 +12,6 @@ import {
 } from "lib/state/market-creation/types/form";
 import { timelineAsBlocks } from "lib/state/market-creation/types/timeline";
 import { shortenAddress } from "lib/util";
-import { formatDuration } from "lib/util/format-duration";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { useMemo } from "react";
@@ -206,7 +205,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
               {form.gracePeriod?.type === "duration"
                 ? timeline?.grace
                   ? timeline?.grace.period > 0
-                    ? formatDuration(blocksAsDuration(timeline?.grace.period))
+                    ? blocksAsDuration(timeline?.grace.period).humanize()
                     : "None"
                   : "--"
                 : Intl.DateTimeFormat("default", {
@@ -222,7 +221,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             <div>
               {timeline?.report
                 ? timeline?.report.period > 0
-                  ? formatDuration(blocksAsDuration(timeline?.report.period))
+                  ? blocksAsDuration(timeline?.report.period).humanize()
                   : "None"
                 : "--"}
             </div>
@@ -232,7 +231,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             <div>
               {timeline?.dispute
                 ? timeline?.dispute.period > 0
-                  ? formatDuration(blocksAsDuration(timeline?.dispute.period))
+                  ? blocksAsDuration(timeline?.dispute.period).humanize()
                   : "None"
                 : "--"}
             </div>
