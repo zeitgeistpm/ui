@@ -31,8 +31,6 @@ import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
-import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
-import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
@@ -122,7 +120,6 @@ const Market: NextPage<MarketPageProps> = ({
 
   const [poolDeployed, setPoolDeployed] = useState(false);
 
-  const { data: prizePool } = usePrizePool(marketId);
   const { data: market, isLoading: marketIsLoading } = useMarket(
     {
       marketId,
@@ -223,7 +220,6 @@ const Market: NextPage<MarketPageProps> = ({
           report={report}
           disputes={lastDispute}
           token={token}
-          prizePool={prizePool?.div(ZTG).toNumber()}
           marketStage={marketStage}
           rejectReason={market?.rejectReason}
         />

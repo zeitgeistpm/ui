@@ -64,6 +64,11 @@ const marketQuery = gql`
         start
         end
       }
+      deadlines {
+        disputeDuration
+        gracePeriod
+        oracleDuration
+      }
       categories {
         name
         color
@@ -85,6 +90,11 @@ export interface MarketPageIndexedData {
     start: string;
     end: string;
   };
+  deadlines: {
+    disputeDuration: string;
+    gracePeriod: string;
+    oracleDuration: string;
+  } | null;
   categories: { name: string; color: string }[];
   outcomeAssets: string[];
   resolvedOutcome: string;
