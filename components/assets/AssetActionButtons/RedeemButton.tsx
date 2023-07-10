@@ -79,6 +79,7 @@ export const RedeemButtonByAssetId = ({
 
       if (
         !resolvedAssetId ||
+        !IOCategoricalAssetId.is(resolvedAssetId) ||
         getIndexOf(resolvedAssetId) !== getIndexOf(assetId)
       )
         return zero;
