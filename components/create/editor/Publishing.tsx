@@ -280,7 +280,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
                         </div>
                       </div>
 
-                      <div className="flex">
+                      <div className="flex mb-4">
                         <div className="flex-1">
                           <h3 className="text-base font-normal text-black">
                             Oracle Bond
