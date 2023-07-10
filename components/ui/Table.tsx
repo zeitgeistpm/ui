@@ -16,7 +16,7 @@ import InfoPopover from "components/ui/InfoPopover";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 
 interface TableProps {
-  data: TableData[];
+  data?: TableData[] | null;
   columns: TableColumn[];
   rowColorClass?: string;
   rowHeightPx?: number;
@@ -310,9 +310,10 @@ const Table = ({
 
   const { ref: loadMoreRef, inView: loadMoreInView } = useInView();
 
-  const loadMoreThresholdIndex = loadMoreThreshold
-    ? Math.floor((data.length / 100) * loadMoreThreshold)
-    : false;
+  const loadMoreThresholdIndex =
+    loadMoreThreshold && data
+      ? Math.floor((data.length / 100) * loadMoreThreshold)
+      : false;
 
   useEffect(() => {
     if (loadMoreInView && loadMoreThresholdIndex) {
