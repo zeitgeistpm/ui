@@ -1,17 +1,20 @@
 import { Client, isFullPage } from "@notionhq/client";
+import * as z from "zod";
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
-export type Banner = {
-  title?: string;
-  subtitle?: string;
-  imageUrl?: string;
-  ctaText?: string;
-  ctaLink?: string;
-  buttonColor?: string;
-  buttonTextColor?: string;
-  imageAlignment?: "left" | "right" | "center";
-};
+export type Banner = z.infer<typeof IOBanner>;
+
+export const IOBanner = z.object({
+  title: z.string(),
+  subtitle: z.string(),
+  imageUrl: z.string(),
+  ctaText: z.string(),
+  ctaLink: z.string(),
+  buttonColor: z.string().optional(),
+  buttonTextColor: z.string().optional(),
+  imageAlignment: z.enum(["left", "right", "center"]).optional(),
+});
 
 const DEFAULT_BANNERS: Banner[] = [
   {
@@ -53,8 +56,8 @@ export const getBanners = async (): Promise<Banner[]> => {
     },
   });
 
-  return bannersData.filter(isFullPage).map((page) => {
-    const banner: Banner = {};
+  const parsed = bannersData.filter(isFullPage).map((page) => {
+    const banner: Partial<Banner> = {};
 
     if (page.properties.Title.type === "title") {
       banner.title = page.properties.Title.title[0].plain_text;
@@ -94,4 +97,16 @@ export const getBanners = async (): Promise<Banner[]> => {
 
     return banner;
   });
+
+  const validBanners: Banner[] = [];
+
+  for (const banner of parsed) {
+    try {
+      validBanners.push(IOBanner.parse(banner));
+    } catch (e) {
+      console.info("Invalid banner data: ", banner);
+    }
+  }
+
+  return validBanners;
 };
