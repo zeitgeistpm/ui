@@ -133,7 +133,7 @@ const WithdrawModal = ({
         const tx = createWithdrawExtrinsic(
           sdk.api,
           amountDecimal.toFixed(0),
-          wallet.activeAccount.address,
+          wallet.realAddress,
           foreignAssetId,
         );
         return tx;

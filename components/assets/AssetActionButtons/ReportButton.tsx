@@ -35,9 +35,6 @@ const ReportButton = ({
       if (!isRpcSdk(sdk)) return;
       if (!IOCategoricalAssetId.is(assetId)) return;
 
-      const signer = wallet.getActiveSigner();
-      if (!signer) return;
-
       const ID = assetId.CategoricalOutcome[1];
 
       return sdk.api.tx.predictionMarkets.report(market.marketId, {

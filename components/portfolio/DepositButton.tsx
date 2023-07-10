@@ -77,8 +77,9 @@ const DepositModal = ({
   const { chain, api } = useChain(sourceChain);
 
   const fee = chain?.depositFee;
+  const feeEstimate = fee?.mul(1.01) ?? 0; //add 1% buffer to fee
   //assumes source chain fee is paid in currency that is being transferred
-  const maxTransferAmount = balance.minus(fee?.mul(1.01) ?? 0); //add 1% buffer to fee
+  const maxTransferAmount = balance.minus(feeEstimate);
 
   const existentialDepositWarningThreshold = 0.1;
 
@@ -86,14 +87,16 @@ const DepositModal = ({
   const amountDecimal: Decimal = amount
     ? new Decimal(amount).mul(ZTG)
     : new Decimal(0);
-  const remainingSourceBalance = balance.minus(amountDecimal);
+  const remainingSourceBalance = balance
+    .minus(amountDecimal)
+    .minus(feeEstimate);
 
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
     () => {
       if (!chain || !api || !wallet.activeAccount || !constants) return;
       const tx = chain.createDepositExtrinsic(
         api,
-        wallet.activeAccount.address,
+        wallet.realAddress,
         amountDecimal.toFixed(0),
         constants.parachainId,
       );
@@ -188,8 +191,8 @@ const DepositModal = ({
                   message: "Value is required",
                 },
                 validate: (value) => {
-                  if (balance.div(ZTG).lessThan(value)) {
-                    return `Insufficient balance. Current balance: ${balance
+                  if (maxTransferAmount.div(ZTG).lessThan(value)) {
+                    return `Insufficient balance. Current balance: ${maxTransferAmount
                       .div(ZTG)
                       .toFixed(3)}`;
                   } else if (value <= 0) {

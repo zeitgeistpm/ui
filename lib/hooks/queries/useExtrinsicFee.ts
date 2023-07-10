@@ -9,7 +9,7 @@ export const extrinsicFeeKey = "extrinsic-fee";
 export const useExtrinsicFee = (
   extrinsic?: SubmittableExtrinsic<"promise", ISubmittableResult>,
 ) => {
-  const { activeAccount } = useWallet();
+  const { activeAccount: activeAccount } = useWallet();
 
   const query = useQuery(
     [extrinsicFeeKey, extrinsic?.hash, activeAccount],
