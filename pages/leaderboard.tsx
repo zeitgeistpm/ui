@@ -27,7 +27,7 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
 import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 
-// Approach: aggregate base asset movements in an out of a market
+// Approach: aggregate base asset movements in and out of a market
 // "In events": swaps, buy full set
 // "Out events": swaps, sell full set, redeem
 
