@@ -11,6 +11,7 @@ import { useSdkv2 } from "./useSdkv2";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { useQueryClient } from "@tanstack/react-query";
 import { currencyBalanceRootKey } from "./queries/useCurrencyBalances";
+import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 
 export const useCrossChainExtrinsic = <T>(
   extrinsicFn: (
@@ -36,12 +37,22 @@ export const useCrossChainExtrinsic = <T>(
   const notifications = useNotifications();
 
   const send = (params?: T) => {
+    if (!isRpcSdk(sdk)) {
+      throw new Error("SDK is not RPC");
+    }
     setIsLoading(true);
 
-    const extrinsic = extrinsicFn(params);
-    const signer = wallet.getActiveSigner() as ExtSigner;
+    let extrinsic = extrinsicFn(params);
 
-    if (!extrinsic) return;
+    const proxy = wallet?.proxyFor?.[wallet.activeAccount?.address];
+    let signer = wallet.getSigner();
+
+    if (proxy?.enabled && proxy?.address) {
+      console.info("Proxying cross chain transaction");
+      extrinsic = sdk.api.tx.proxy.proxy(proxy?.address, "Any", extrinsic);
+    }
+
+    if (!extrinsic || !sourceChainApi || !destinationChainApi) return;
     signAndSend(
       extrinsic,
       signer,
@@ -53,8 +64,9 @@ export const useCrossChainExtrinsic = <T>(
 
           const unsub = await destinationChainApi.query.system.events(
             (events) => {
-              events.forEach((record) => {
+              for (const record of events) {
                 const { event } = record;
+                const { method } = event;
                 const types = event.typeDef;
 
                 // assumes that any activity for the connected address on the destination
@@ -62,6 +74,7 @@ export const useCrossChainExtrinsic = <T>(
                 const destinationChainActivityDetected = event.data.some(
                   (data, index) =>
                     types[index].type === "AccountId32" &&
+                    ["deposit", "deposited"].includes(method.toLowerCase()) &&
                     encodeAddress(
                       decodeAddress(wallet.activeAccount?.address),
                     ) === encodeAddress(decodeAddress(data.toString())),
@@ -79,8 +92,9 @@ export const useCrossChainExtrinsic = <T>(
                     currencyBalanceRootKey,
                     wallet.activeAccount?.address,
                   ]);
+                  break;
                 }
-              });
+              }
             },
           );
         },

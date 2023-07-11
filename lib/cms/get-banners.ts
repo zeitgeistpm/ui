@@ -3,28 +3,29 @@ import { Client, isFullPage } from "@notionhq/client";
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
 export type Banner = {
-  title: string;
+  title?: string;
   subtitle?: string;
-  imageUrl: string;
-  ctaText: string;
-  ctaLink: string;
-  buttonColor: string;
-  buttonTextColor: string;
-  imageAlignment: "left" | "right" | "center";
+  imageUrl?: string;
+  ctaText?: string;
+  ctaLink?: string;
+  buttonColor?: string;
+  buttonTextColor?: string;
+  imageAlignment?: "left" | "right" | "center";
 };
 
 const DEFAULT_BANNERS: Banner[] = [
   {
-    title: 'Defaut Banner Title',
-    subtitle: 'Default Subtitle',
-    imageUrl: 'https://images.unsplash.com/photo-1680523127490-978b85b8bf71?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2832&q=80',
-    ctaText: 'CTA Button',
-    ctaLink: '#',
-    buttonColor: 'red',
-    buttonTextColor: 'white',
-    imageAlignment: 'center',
-  }
-]
+    title: "Defaut Banner Title",
+    subtitle: "Default Subtitle",
+    imageUrl:
+      "https://images.unsplash.com/photo-1680523127490-978b85b8bf71?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2832&q=80",
+    ctaText: "CTA Button",
+    ctaLink: "#",
+    buttonColor: "red",
+    buttonTextColor: "white",
+    imageAlignment: "center",
+  },
+];
 
 export const getBanners = async (): Promise<Banner[]> => {
   // Short circuit to use default if NOTION_API_KEY doesn't exist.
@@ -53,55 +54,44 @@ export const getBanners = async (): Promise<Banner[]> => {
   });
 
   return bannersData.filter(isFullPage).map((page) => {
-    let title: string;
-    let subtitle: string | null;
-    let imageUrl: string;
-    let ctaText: string;
-    let ctaLink: string;
-    let buttonColor: string;
-    let imageAlignment: "left" | "right" | "center";
+    const banner: Banner = {};
 
     if (page.properties.Title.type === "title") {
-      title = page.properties.Title.title[0].plain_text;
+      banner.title = page.properties.Title.title[0].plain_text;
     }
 
     if (page.properties.Subtitle.type === "rich_text") {
-      subtitle = page.properties.Subtitle.rich_text?.[0]?.plain_text ?? null;
+      banner.subtitle = page.properties.Subtitle.rich_text?.[0]?.plain_text;
     }
 
     if (page.properties.Image.type === "url") {
-      imageUrl = page.properties.Image.url;
+      banner.imageUrl = page.properties.Image.url ?? undefined;
     }
 
     if (page.properties["CTA(button text)"].type === "rich_text") {
-      ctaText = page.properties["CTA(button text)"].rich_text[0].plain_text;
+      banner.ctaText =
+        page.properties["CTA(button text)"].rich_text[0].plain_text;
     }
 
     if (page.properties["CTA(link)"].type === "url") {
-      ctaLink = page.properties["CTA(link)"].url;
+      banner.ctaLink = page.properties["CTA(link)"].url ?? undefined;
     }
 
     if (page.properties["Button Color"].type === "rich_text") {
-      buttonColor = page.properties["Button Color"].rich_text[0].plain_text;
+      banner.buttonColor =
+        page.properties["Button Color"].rich_text[0].plain_text;
     }
 
     if (page.properties["Image Align"].type === "select") {
-      imageAlignment =
+      banner.imageAlignment =
         (page.properties["Image Align"].select
-          .name as Banner["imageAlignment"]) ?? "left";
+          ?.name as Banner["imageAlignment"]) ?? "left";
     }
 
-    const buttonTextColor = contrast(buttonColor);
+    banner.buttonTextColor = banner.buttonColor
+      ? contrast(banner.buttonColor)
+      : "#000000";
 
-    return {
-      title,
-      subtitle,
-      imageUrl,
-      ctaText,
-      ctaLink,
-      buttonColor,
-      buttonTextColor,
-      imageAlignment,
-    };
+    return banner;
   });
 };

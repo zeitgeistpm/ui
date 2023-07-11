@@ -40,7 +40,7 @@ const LiquidityModal = ({
   poolId: number;
 }) => {
   const wallet = useWallet();
-  const connectedAddress = wallet.activeAccount?.address;
+  const connectedAddress = wallet.realAddress;
   const { data: pool } = usePool({ poolId });
 
   // pool balances
@@ -70,10 +70,7 @@ const LiquidityModal = ({
   const { data: metadata } = useAssetMetadata(baseAsset);
 
   //user balances outside of pool
-  const { data: userBaseBalance } = useBalance(
-    wallet.activeAccount?.address,
-    baseAsset,
-  );
+  const { data: userBaseBalance } = useBalance(connectedAddress, baseAsset);
   const { data: userAssetBalances } = useAccountPoolAssetBalances(
     connectedAddress,
     pool,

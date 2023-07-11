@@ -6,12 +6,10 @@ import { useWallet } from "lib/state/wallet";
 
 export const extrinsicFeeKey = "extrinsic-fee";
 
-export type MarketPrices = Map<number, Decimal>;
-
 export const useExtrinsicFee = (
   extrinsic?: SubmittableExtrinsic<"promise", ISubmittableResult>,
 ) => {
-  const { activeAccount } = useWallet();
+  const { activeAccount: activeAccount } = useWallet();
 
   const query = useQuery(
     [extrinsicFeeKey, extrinsic?.hash, activeAccount],

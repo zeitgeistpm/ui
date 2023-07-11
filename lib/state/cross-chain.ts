@@ -43,10 +43,10 @@ export const useChain = (chainName: ChainName) => {
   const [sdk] = useSdkv2();
 
   if (chainName === "Zeitgeist") {
-    return { api: sdk.asRpc().api };
+    return { api: sdk?.asRpc().api };
   } else {
     const chain = CHAINS.find((chain) => chain.name === chainName);
-    const api = apis[chain.name];
+    const api = chain?.name ? apis?.[chain?.name] : undefined;
 
     return { api, chain };
   }

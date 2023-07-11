@@ -92,9 +92,7 @@ const Inner = ({
     wallet.activeAccount?.address === ztgEncodedAddress;
 
   const inventory = useInventoryManagement(
-    (isOwner
-      ? (wallet.getActiveSigner() as ExtSigner) || address
-      : address) as any,
+    (isOwner ? (wallet.activeAccount as ExtSigner) || address : address) as any,
   );
 
   const loadData = async () => {
@@ -418,7 +416,7 @@ const ClaimModal = (props: {
         }
         setIsClaiming(false);
       } else {
-        const signer = wallet.getActiveSigner() as ExtSigner;
+        const signer = wallet.activeAccount as ExtSigner;
         await signAndSend(
           tx,
           signer,
@@ -555,7 +553,7 @@ const ClaimModal = (props: {
 const InventoryModal = (props: { address: string; onClose?: () => void }) => {
   const wallet = useWallet();
   const inventory = useInventoryManagement(
-    ((wallet.getActiveSigner() as ExtSigner) || props.address) as any,
+    ((wallet.activeAccount as ExtSigner) || props.address) as any,
   );
 
   const avatarSdk = useAvatarContext();
@@ -656,7 +654,7 @@ const InventoryModal = (props: { address: string; onClose?: () => void }) => {
 const PendingItemsModal = (props: { address: string }) => {
   const wallet = useWallet();
   const inventory = useInventoryManagement(
-    ((wallet.getActiveSigner() as ExtSigner) || props.address) as any,
+    ((wallet.activeAccount as ExtSigner) || props.address) as any,
   );
 
   const isAcceptingAll = inventory.items.pending.every((item) =>

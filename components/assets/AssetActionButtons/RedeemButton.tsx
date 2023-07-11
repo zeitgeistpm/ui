@@ -9,7 +9,6 @@ import {
   MarketId,
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
-import * as AE from "@zeitgeistpm/utility/dist/aeither";
 import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -17,13 +16,15 @@ import {
   AccountAssetIdPair,
   useAccountAssetBalances,
 } from "lib/hooks/queries/useAccountAssetBalances";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { calcScalarWinnings } from "lib/util/calc-scalar-winnings";
-import { extrinsicCallback, signAndSend } from "lib/util/tx";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 export type RedeemButtonProps = {
   market: Market<IndexerContext>;
@@ -44,19 +45,19 @@ export const RedeemButtonByAssetId = ({
   assetId: AssetId;
 }) => {
   const wallet = useWallet();
-  const signer = wallet?.getActiveSigner();
+  const realAddress = wallet?.realAddress;
 
   const scalarBounds = getScalarBounds(market);
 
   const balanceQueries: AccountAssetIdPair[] = market.marketType.categorical
-    ? [{ assetId, account: signer?.address }]
+    ? [{ assetId, account: realAddress }]
     : [
         {
-          account: signer?.address,
+          account: realAddress,
           assetId: { ScalarOutcome: [market.marketId as MarketId, "Short"] },
         },
         {
-          account: signer?.address,
+          account: realAddress,
           assetId: { ScalarOutcome: [market.marketId as MarketId, "Long"] },
         },
       ];
@@ -66,7 +67,7 @@ export const RedeemButtonByAssetId = ({
 
   const value = useMemo(() => {
     const zero = new Decimal(0);
-    if (!signer?.address || isLoadingAssetBalance) return zero;
+    if (!realAddress || isLoadingAssetBalance) return zero;
 
     if (market.marketType.categorical && IOCategoricalAssetId.is(assetId)) {
       const resolvedAssetIdString =
@@ -78,19 +79,20 @@ export const RedeemButtonByAssetId = ({
 
       if (
         !resolvedAssetId ||
+        !IOCategoricalAssetId.is(resolvedAssetId) ||
         getIndexOf(resolvedAssetId) !== getIndexOf(assetId)
       )
         return zero;
 
-      const balance = getAccountAssetBalance(signer.address, resolvedAssetId)
-        ?.data?.balance;
+      const balance = getAccountAssetBalance(realAddress, resolvedAssetId)?.data
+        ?.balance;
       return new Decimal(balance?.free.toString() ?? 0).div(ZTG);
     } else {
-      const shortBalance = getAccountAssetBalance(signer.address, {
+      const shortBalance = getAccountAssetBalance(realAddress, {
         ScalarOutcome: [market.marketId as MarketId, "Short"],
       })?.data?.balance;
 
-      const longBalance = getAccountAssetBalance(signer.address, {
+      const longBalance = getAccountAssetBalance(realAddress, {
         ScalarOutcome: [market.marketId as MarketId, "Long"],
       })?.data?.balance;
 
@@ -123,50 +125,38 @@ const RedeemButtonByValue = ({
 }) => {
   const [sdk] = useSdkv2();
   const wallet = useWallet();
-  const signer = wallet?.getActiveSigner();
+  const signer = wallet?.activeAccount;
   const notificationStore = useNotifications();
+  const baseAsset = parseAssetIdString(market.baseAsset);
+  const { data: baseAssetMetadata } = useAssetMetadata(baseAsset);
 
-  const [isRedeeming, setIsRedeeming] = useState(false);
-  const [isRedeemed, setIsRedeemed] = useState(false);
-
-  const handleClick = async () => {
-    if (!isRpcSdk(sdk) || !signer) return;
-
-    setIsRedeeming(true);
-
-    const callback = extrinsicCallback({
-      api: sdk.api,
-      notifications: notificationStore,
-      successCallback: async () => {
-        notificationStore.pushNotification(`Redeemed ${value.toFixed(2)} ZTG`, {
-          type: "Success",
-        });
-        setIsRedeeming(false);
-        setIsRedeemed(true);
+  const { isLoading, isSuccess, send } = useExtrinsic(
+    () => {
+      if (!isRpcSdk(sdk) || !signer) return;
+      return sdk.api.tx.predictionMarkets.redeemShares(market.marketId);
+    },
+    {
+      onSuccess: () => {
+        notificationStore.pushNotification(
+          `Redeemed ${value.toFixed(2)} ${baseAssetMetadata?.symbol}`,
+          {
+            type: "Success",
+          },
+        );
       },
-      failCallback: (error) => {
-        notificationStore.pushNotification(error, {
-          type: "Error",
-        });
-        setIsRedeeming(false);
-      },
-    });
+    },
+  );
 
-    const tx = sdk.api.tx.predictionMarkets.redeemShares(market.marketId);
-
-    await AE.from(() => signAndSend(tx, signer, callback));
-
-    setIsRedeeming(false);
-  };
+  const handleClick = () => send();
 
   return (
     <>
-      {isRedeemed ? (
+      {isSuccess ? (
         <span className="text-green-500 font-bold">Redeemed Tokens!</span>
       ) : (
         <SecondaryButton
           onClick={handleClick}
-          disabled={isRedeeming || value.eq(0)}
+          disabled={isLoading || value.eq(0)}
         >
           Redeem Tokens
         </SecondaryButton>

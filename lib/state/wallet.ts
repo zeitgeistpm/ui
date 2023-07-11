@@ -11,15 +11,25 @@ import { Wallet, WalletAccount } from "../wallets/types";
 import { persistentAtom } from "./util/persistent-atom";
 
 export type UseWallet = WalletState &
-  WalletUserConfig & {
+  Pick<WalletUserConfig, "proxyFor"> & {
     /**
-     * The selected address of the current wallet.
+     * The real address of the current wallet.
+     * Use this to read data from the blockchain or the indexer when it comes to assets and markets.
+     * It will be the address the activeAccount is proxying for if proxy execution is enabled.
      */
-    selectedAddress?: string;
+    realAddress?: string;
     /**
      * The active account of the current wallet.
      */
     activeAccount?: WalletAccount;
+    /**
+     * Whether the wallet is nova wallet.
+     */
+    isNovaWallet: boolean;
+    /**
+     * Get the active signer for transactions. Is either the real account or the proxy account.
+     */
+    getSigner: () => KeyringPairOrExtSigner | null;
     /**
      * Select a wallet.
      * @param wallet the selected wallet id or instance
@@ -33,20 +43,20 @@ export type UseWallet = WalletState &
      */
     selectAccount: (account: string) => void;
     /**
-     * Get the active signer for transactions.
-     * @returns KeyringPairOrExtSigner | null
-     */
-    getActiveSigner: () => KeyringPairOrExtSigner | null;
-    /**
      * Disconnect the wallet.
      * @returns void
      */
     disconnectWallet: () => void;
     /**
-     * Whether the wallet is nova wallet.
+     * Set if proxy execution is enabled.
      */
-    isNovaWallet: boolean;
+    setProxyFor: (real: string, conf: ProxyConfig) => void;
   };
+
+export type ProxyConfig = {
+  enabled: boolean;
+  address: string;
+};
 
 /**
  * State type of user wallet config.
@@ -54,6 +64,7 @@ export type UseWallet = WalletState &
 export type WalletUserConfig = Partial<{
   walletId: string;
   selectedAddress: string;
+  proxyFor?: Record<string, ProxyConfig | undefined>;
 }>;
 
 /**
@@ -184,7 +195,7 @@ export const supportedWallets = [
   new TalismanWallet(),
 ];
 
-let accountsSubscriptionUnsub: VoidFunction | null = null;
+let accountsSubscriptionUnsub: VoidFunction | undefined;
 
 /**
  * Enable a wallet by enabling the extension and setting the wallet atom state to connected.
@@ -208,7 +219,7 @@ const enableWallet = async (walletId: Wallet | string) => {
       };
     });
 
-    await wallet.enable();
+    await wallet?.enable();
 
     store.set(walletAtom, (state) => {
       return {
@@ -217,7 +228,7 @@ const enableWallet = async (walletId: Wallet | string) => {
       };
     });
 
-    accountsSubscriptionUnsub = await wallet.subscribeAccounts((accounts) => {
+    accountsSubscriptionUnsub = await wallet?.subscribeAccounts((accounts) => {
       store.set(walletAtom, (state) => {
         return {
           ...state,
@@ -249,7 +260,7 @@ const enableWallet = async (walletId: Wallet | string) => {
         accounts: [],
         errors: [
           {
-            extensionName: wallet.extensionName,
+            extensionName: wallet?.extensionName,
             type: "InteractionDenied",
           },
         ],
@@ -289,10 +300,10 @@ export const useWallet = (): UseWallet => {
     setUserConfig(newUserConfigState);
   };
 
-  const getActiveSigner = (): KeyringPairOrExtSigner | undefined => {
+  const getSigner = (): KeyringPairOrExtSigner | undefined => {
     if (walletState.wallet == null || !activeAccount) return;
     return {
-      address: activeAccount?.address,
+      address: activeAccount.address,
       signer: walletState.wallet.signer,
     };
   };
@@ -310,7 +321,17 @@ export const useWallet = (): UseWallet => {
     }
   };
 
-  const activeAccount: WalletAccount | undefined = useMemo(() => {
+  const setProxyFor = (address: string, proxyFor: ProxyConfig) => {
+    setUserConfig({
+      ...userConfig,
+      proxyFor: {
+        ...userConfig.proxyFor,
+        [address]: proxyFor,
+      },
+    });
+  };
+
+  const activeAccount = useMemo(() => {
     const userSelectedAddress = walletState.accounts.find((acc) => {
       return (
         userConfig.selectedAddress &&
@@ -326,17 +347,23 @@ export const useWallet = (): UseWallet => {
     return userSelectedAddress;
   }, [userConfig.selectedAddress, walletState.accounts]);
 
+  const proxy = userConfig.proxyFor?.[activeAccount?.address];
+  const realAddress =
+    proxy?.enabled && proxy?.address ? proxy?.address : activeAccount?.address;
+
   const isNovaWallet: boolean =
     typeof window === "object" && (window as any).walletExtension?.isNovaWallet;
 
   return {
     ...walletState,
     ...userConfig,
+    realAddress,
     selectAccount,
-    activeAccount,
+    activeAccount: activeAccount,
+    getSigner,
     selectWallet,
     disconnectWallet,
-    getActiveSigner,
     isNovaWallet,
+    setProxyFor,
   };
 };
