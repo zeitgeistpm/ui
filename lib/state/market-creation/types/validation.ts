@@ -228,7 +228,12 @@ export const IOEndDate = z
 
 export const IOPeriodDateOption = z.object({
   type: z.literal("date"),
-  block: z.number(),
+  date: z
+    .string()
+    .datetime()
+    .refine((date) => new Date(date) > new Date(), {
+      message: "End date must be in the future",
+    }),
 });
 
 export const IOPeriodDurationOption = z.object({
