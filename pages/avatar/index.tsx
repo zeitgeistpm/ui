@@ -8,7 +8,7 @@ const Avatar = () => {
   const wallet = useWallet();
 
   if (wallet.activeAccount) {
-    router.replace(`/avatar/${wallet.activeAccount.address}`);
+    router.replace(`/avatar/${wallet.activeAccount?.address}`);
     return <></>;
   }
 

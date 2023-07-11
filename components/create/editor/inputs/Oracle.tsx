@@ -68,7 +68,7 @@ export const OracleInput = forwardRef(
     };
 
     const isSelectedAccount = wallet.realAddress === value;
-    const proxy = wallet.proxyFor?.[wallet.activeAccount.address];
+    const proxy = wallet.proxyFor?.[wallet.activeAccount?.address];
     const accountname =
       proxy && proxy.enabled
         ? "Proxied"
