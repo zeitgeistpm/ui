@@ -120,7 +120,7 @@ const AccountSelect: FC<AccountSelectProps> = ({
 
       {wallet.activeAccount?.address && (
         <CopyIcon
-          copyText={wallet.activeAccount.address}
+          copyText={wallet.activeAccount?.address}
           className="flex-grow pr-ztg-8"
           size={16}
         />
