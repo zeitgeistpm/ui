@@ -129,7 +129,7 @@ const WithdrawModal = ({
 
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
     () => {
-      if (isRpcSdk(sdk) && wallet.activeAccount) {
+      if (isRpcSdk(sdk) && wallet.realAddress) {
         const tx = createWithdrawExtrinsic(
           sdk.api,
           amountDecimal.toFixed(0),
