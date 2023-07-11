@@ -33,37 +33,36 @@ const TransactionHistoryTable = ({ address }: { address: string }) => {
   const { data: transactionHistory, isLoading } =
     useTransactionHistory(address);
 
-  const tableData: TableData[] =
-    transactionHistory
-      ?.reduce<TradeEvent[]>((transactions, transaction) => {
-        //remove duplicate events
-        if (
-          transactions[transactions.length - 1]?.blockNumber ===
-          transaction.blockNumber
-        ) {
-          return transactions;
-        } else {
-          return [...transactions, transaction];
-        }
-      }, [])
-      .map((transaction) => {
-        return {
-          question: (
-            <Link
-              href={`/markets/${transaction.marketId}`}
-              className="text-[14px]"
-            >
-              {transaction.question}
-            </Link>
-          ),
-          action: transaction.action,
-          time: new Intl.DateTimeFormat("default", {
-            dateStyle: "medium",
-            timeStyle: "medium",
-          }).format(new Date(transaction.time)),
-          block: transaction.blockNumber,
-        };
-      }) ?? [];
+  const tableData: TableData[] | undefined = transactionHistory
+    ?.reduce<TradeEvent[]>((transactions, transaction) => {
+      //remove duplicate events
+      if (
+        transactions[transactions.length - 1]?.blockNumber ===
+        transaction.blockNumber
+      ) {
+        return transactions;
+      } else {
+        return [...transactions, transaction];
+      }
+    }, [])
+    .map((transaction) => {
+      return {
+        question: (
+          <Link
+            href={`/markets/${transaction.marketId}`}
+            className="text-[14px]"
+          >
+            {transaction.question}
+          </Link>
+        ),
+        action: transaction.action,
+        time: new Intl.DateTimeFormat("default", {
+          dateStyle: "medium",
+          timeStyle: "medium",
+        }).format(new Date(transaction.time)),
+        block: transaction.blockNumber,
+      };
+    });
 
   return (
     <div>
