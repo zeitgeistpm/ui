@@ -90,7 +90,7 @@ export async function getStaticProps({ params }) {
       resolutionTimestamp: resolutionTimestamp ?? null,
       promotionData,
     },
-    revalidate: 10 * 60, //10mins
+    revalidate: 1 * 60, //1min
   };
 }
 

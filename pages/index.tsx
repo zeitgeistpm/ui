@@ -64,7 +64,7 @@ export async function getStaticProps() {
       categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
       bannerPlaceHolders: bannerPlaceHolders.map((c) => c.base64) ?? [],
     },
-    revalidate: 10 * 60, //10min
+    revalidate: 1 * 60, //1min
   };
 }
 
