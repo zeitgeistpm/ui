@@ -32,7 +32,6 @@ const marketQuery = gql`
       question
       slug
       status
-      img
       outcomeAssets
       scalarType
       creator
@@ -80,7 +79,6 @@ const marketQuery = gql`
 
 export interface MarketPageIndexedData {
   marketId: number;
-  img: string;
   slug: string;
   question: string;
   description: string;
