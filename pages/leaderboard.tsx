@@ -250,11 +250,7 @@ export async function getStaticProps() {
           {
             event_contains: "BoughtComplete",
           },
-          {
-            AND: [
-              { event_contains: "Deposited", assetId_not_contains: "pool" },
-            ],
-          },
+          { event_contains: "Deposited", assetId_not_contains: "pool" },
         ],
       },
     });
@@ -414,19 +410,25 @@ export async function getStaticProps() {
 
   const top20 = rankings.slice(0, 20);
 
-  const indentities = await Promise.all(
+  const identities = await Promise.all(
     top20.map((player) => sdk.api.query.identity.identityOf(player.accountId)),
   );
 
-  const names: (string | undefined)[] = indentities.map(
-    (i) => (i.toHuman() as any)?.info?.display.Raw,
+  const textDecoder = new TextDecoder();
+
+  const names: (string | null)[] = identities.map((identity) =>
+    identity.isNone === false
+      ? textDecoder.decode(
+          (identity.value.get("info") as any).get("display").value,
+        )
+      : null,
   );
 
   return {
     props: {
       rankings: top20.map((player, index) => ({
         ...player,
-        name: names[index] ?? null,
+        name: names[index],
       })),
       revalidate: 10 * 60, //10min
     },
