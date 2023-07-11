@@ -92,7 +92,7 @@ const AccountButton: FC<{
     realAddress,
   } = useWallet();
 
-  const proxy = proxyFor?.[activeAccount?.address];
+  const proxy = activeAccount && proxyFor?.[activeAccount?.address];
 
   const accountModals = useAccountModals();
   const { locationAllowed, isUsingVPN } = useUserLocation();
@@ -268,7 +268,8 @@ const AccountButton: FC<{
                                         </label>
                                         <div className="flex items-center gap-1">
                                           <div className="text-white text-sm">
-                                            {shortenAddress(realAddress, 7, 7)}
+                                            {realAddress &&
+                                              shortenAddress(realAddress, 7, 7)}
                                           </div>
                                           <div className="text-purple-800">
                                             <CopyIcon

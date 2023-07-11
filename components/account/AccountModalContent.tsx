@@ -10,7 +10,6 @@ const AccountModalContent: FC = () => {
   const { activeAccount, disconnectWallet, accounts, selectAccount, proxyFor } =
     useWallet();
 
-  const proxy = proxyFor?.[activeAccount?.address];
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const { data: constants } = useChainConstants();
 
