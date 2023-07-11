@@ -443,8 +443,11 @@ const Leaderboard: NextPage<{
       </div>
       <div className="flex flex-col gap-y-5 justify-center items-center">
         {rankings.map((rank, index) => (
-          <div className="flex flex-col bg-sky-100 py-3 px-4 sm:px-6 rounded-xl w-full max-w-[800px]">
-            <div key={index} className="flex items-center justify-center">
+          <div
+            key={index}
+            className="flex flex-col bg-sky-100 py-3 px-4 sm:px-6 rounded-xl w-full max-w-[800px]"
+          >
+            <div className="flex items-center justify-center">
               <div className="mr-1 sm:mr-[20px] w-[20px] shrink-0">
                 {index + 1}
               </div>
