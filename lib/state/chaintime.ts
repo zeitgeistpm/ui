@@ -10,7 +10,7 @@ const store = getDefaultStore();
 
 let sub: Subscription;
 
-store.sub(sdkAtom, () => {
+const onSdkChange = () => {
   const sdk = store.get(sdkAtom);
   if (sub) sub.unsubscribe();
   if (isRpcSdk(sdk)) {
@@ -18,7 +18,16 @@ store.sub(sdkAtom, () => {
       store.set(chainTimeAtom, time);
     });
   }
-});
+};
+
+/**
+ * In dev the subscription is sometimes not set up on first render.
+ * So we need to check if the sdk is already set up and if so update the chaintime atom.
+ */
+const sdk = store.get(sdkAtom);
+if (sdk) onSdkChange();
+
+store.sub(sdkAtom, onSdkChange);
 
 export const useChainTime = (): ChainTime | null => {
   const [chainTime] = useAtom(chainTimeAtom);

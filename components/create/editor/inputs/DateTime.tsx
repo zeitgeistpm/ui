@@ -68,7 +68,11 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
           ref={inputRef}
           name={name}
           type="datetime-local"
-          value={moment(value).format("YYYY-MM-DDTHH:mm")}
+          value={
+            value
+              ? moment(value).format("YYYY-MM-DDTHH:mm")
+              : moment().hours(0).minutes(0).format("YYYY-MM-DDTHH:mm")
+          }
           onChange={handleChange}
           onBlurCapture={handleBlur}
         />

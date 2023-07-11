@@ -36,31 +36,36 @@ export const tickersForAnswers = (
  * Generate appropriate tickers for categorical answers.
  */
 export const createCategoricalTickers = (
-  answers: string[],
-): { [key: string]: string } => {
-  const tickers: { [key: string]: string } = {};
-  const usedTickers: { [key: string]: boolean } = {};
+  strings: string[],
+): Record<string, string> => {
+  const tokens: Record<string, string> = {};
+  const wordMap: Record<string, number> = {};
 
-  for (const description of answers) {
-    const words = description.split(" ");
+  for (const str of strings) {
+    let token = "";
+    const words = str.split(" ");
 
-    let ticker = (
-      words[0].slice(0, 3) + words[words.length - 1].slice(0, 3)
-    ).toUpperCase();
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      const truncatedWord = word.slice(0, 4);
+      const key = i === 0 ? truncatedWord : `${words[i - 1]}${truncatedWord}`;
 
-    if (usedTickers[ticker]) {
-      let count = 1;
-      let newTicker = ticker;
-      while (usedTickers[newTicker]) {
-        count++;
-        newTicker = ticker + String(count);
+      if (wordMap.hasOwnProperty(key)) {
+        const count = wordMap[key] + 1;
+        wordMap[key] = count;
+        token += `${key}${count}`;
+      } else {
+        wordMap[key] = 0;
+        token += truncatedWord;
       }
-      ticker = newTicker;
+
+      if (token.length >= 4) {
+        break;
+      }
     }
 
-    usedTickers[ticker] = true;
-    tickers[description] = ticker;
+    tokens[str] = token.toUpperCase();
   }
 
-  return tickers;
+  return tokens;
 };
