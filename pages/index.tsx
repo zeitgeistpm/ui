@@ -46,7 +46,7 @@ export async function getStaticProps() {
       { dir: `${path.join(process.cwd())}/public/` },
     ),
     getPlaiceholders(
-      banners.map((slide) => slide.imageUrl),
+      banners.map((slide) => slide.imageUrl ?? ""),
       { size: 16 },
     ),
     getCategoryCounts(

@@ -1,5 +1,6 @@
 import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
+import { DeepReadonlyObject } from "./deep-readonly";
 
 export type Primitive = null | number | string | boolean;
 export type JSONObject =
@@ -24,4 +25,32 @@ export const isScalarRangeType = (
     return true;
   }
   return ["date", "number"].includes(val);
+};
+
+export type MarketCategoricalOutcome = { categorical: number };
+export type MarketScalarOutcome = { scalar: string };
+
+export const isMarketCategoricalOutcome = (
+  val: any,
+): val is MarketCategoricalOutcome => {
+  return val.categorical != null;
+};
+
+export const isMarketScalarOutcome = (val: any): val is MarketScalarOutcome => {
+  return val.scalar != null;
+};
+
+export type MarketReport = {
+  at: number;
+  by: string;
+  outcome: MarketCategoricalOutcome | MarketScalarOutcome;
+};
+
+export const isValidMarketReport = (report: any): report is MarketReport => {
+  return (
+    report.at != null &&
+    report.by != null &&
+    report.outcome != null &&
+    (report.outcome.categorical != null || report.outcome.scalar != null)
+  );
 };
