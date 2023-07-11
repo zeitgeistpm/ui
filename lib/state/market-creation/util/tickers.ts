@@ -39,33 +39,32 @@ export const createCategoricalTickers = (
   strings: string[],
 ): Record<string, string> => {
   const tokens: Record<string, string> = {};
-  const wordMap: Record<string, number> = {};
 
   for (const str of strings) {
-    let token = "";
     const words = str.split(" ");
+    let token = "";
 
     for (let i = 0; i < words.length; i++) {
       const word = words[i];
-      const truncatedWord = word.slice(0, 4);
-      const key = i === 0 ? truncatedWord : `${words[i - 1]}${truncatedWord}`;
+      const truncatedWord = word.slice(0, 3);
 
-      if (wordMap.hasOwnProperty(key)) {
-        const count = wordMap[key] + 1;
-        wordMap[key] = count;
-        token += `${key}${count}`;
+      if (i === words.length - 1) {
+        token += truncatedWord.toUpperCase();
       } else {
-        wordMap[key] = 0;
         token += truncatedWord;
-      }
-
-      if (token.length >= 4) {
-        break;
       }
     }
 
-    tokens[str] = token.toUpperCase();
+    tokens[str] = token;
   }
 
   return tokens;
+};
+
+const input = ["foo bar", "foo bar baz", "foo bar baz qux"];
+
+const output = {
+  "foo bar": "FOOBAR",
+  "foo bar baz": "FOOBAZ",
+  "foo bar baz qux": "FOOQUX",
 };
