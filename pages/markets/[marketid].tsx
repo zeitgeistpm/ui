@@ -9,7 +9,6 @@ import PoolDeployer from "components/markets/PoolDeployer";
 import { MarketPromotionCallout } from "components/markets/PromotionCallout";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
-import MarketImage from "components/ui/MarketImage";
 import Skeleton from "components/ui/Skeleton";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
@@ -90,7 +89,7 @@ export async function getStaticProps({ params }) {
       resolutionTimestamp: resolutionTimestamp ?? null,
       promotionData,
     },
-    revalidate: 10 * 60, //10mins
+    revalidate: 1 * 60, //1min
   };
 }
 
@@ -197,14 +196,6 @@ const Market: NextPage<MarketPageProps> = ({
     <>
       <MarketMeta market={indexedMarket} />
       <div>
-        <MarketImage
-          image={indexedMarket.img}
-          alt={`Image depicting ${indexedMarket.question}`}
-          size="120px"
-          status={indexedMarket.status}
-          className="mx-auto"
-        />
-
         <div className="mt-4">
           {promotionData && (
             <MarketPromotionCallout
