@@ -19,6 +19,7 @@ import {
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
+import LatestTrades from "components/front-page/LatestTrades";
 
 const getPlaiceholders = (
   paths: string[],
@@ -116,6 +117,7 @@ const IndexPage: NextPage<{
             />
           </div>
         )}
+        <LatestTrades />
       </div>
     </>
   );
