@@ -281,9 +281,9 @@ const MarketHistory: FC<
 
 const MarketHeader: FC<{
   market: MarketPageIndexedData;
-  report: MarketReport;
-  disputes: MarketDispute;
-  resolvedOutcome: string;
+  report?: MarketReport;
+  disputes?: MarketDispute;
+  resolvedOutcome?: string;
   token: string;
   marketStage: MarketStage;
   rejectReason?: string;
@@ -317,10 +317,10 @@ const MarketHeader: FC<{
     marketType,
     categories,
     status,
+    scalarType,
     disputes,
     report,
     resolvedOutcome,
-    scalarType,
   );
 
   const { data: marketHistory } = useMarketEventHistory(

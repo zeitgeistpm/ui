@@ -1,6 +1,4 @@
 import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
-import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { DeepReadonlyObject } from "./deep-readonly";
 
 export type Primitive = null | number | string | boolean;
 export type JSONObject =
@@ -56,6 +54,7 @@ export type MarketReport = {
 
 export const isValidMarketReport = (report: any): report is MarketReport => {
   return (
+    report != null &&
     report.at != null &&
     report.by != null &&
     report.outcome != null &&

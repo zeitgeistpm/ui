@@ -12,10 +12,10 @@ export const getMarketStatusDetails = (
   marketType: MarketTypeOf,
   categories: { name: string }[],
   status: MarketStatus,
-  dispute: MarketDispute,
-  report: MarketReport,
-  resolvedOutcome: string,
   scalarType: ScalarRangeType,
+  dispute?: MarketDispute,
+  report?: MarketReport,
+  resolvedOutcome?: string,
 ): { outcome?: string | number; by?: string } => {
   if (!isValidMarketReport(dispute) || !isValidMarketReport(report)) {
     return {};

@@ -208,20 +208,15 @@ const Market: NextPage<MarketPageProps> = ({
           )}
         </div>
 
-        {market?.resolvedOutcome &&
-        report &&
-        lastDispute &&
-        token &&
-        marketStage &&
-        market?.rejectReason ? (
+        {token && marketStage ? (
           <MarketHeader
             market={indexedMarket}
-            resolvedOutcome={market?.resolvedOutcome}
+            resolvedOutcome={market?.resolvedOutcome ?? undefined}
             report={report}
             disputes={lastDispute}
             token={token}
             marketStage={marketStage}
-            rejectReason={market?.rejectReason}
+            rejectReason={market?.rejectReason ?? undefined}
           />
         ) : (
           <></>
