@@ -93,7 +93,7 @@ const DepositModal = ({
 
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
     () => {
-      if (!chain || !api || !wallet.activeAccount || !constants) return;
+      if (!chain || !api || !wallet.realAddress || !constants) return;
       const tx = chain.createDepositExtrinsic(
         api,
         wallet.realAddress,
@@ -137,7 +137,6 @@ const DepositModal = ({
           "amount",
           maxTransferAmount.mul(value.percentage).div(100).div(ZTG).toNumber(),
         );
-        trigger("amount");
       } else if (name === "amount" && value.amount !== "") {
         setValue(
           "percentage",
@@ -148,6 +147,7 @@ const DepositModal = ({
             .toString(),
         );
       }
+      trigger("amount");
     });
     return () => subscription.unsubscribe();
   }, [watch, balance, fee]);
