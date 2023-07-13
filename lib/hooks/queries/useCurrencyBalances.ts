@@ -68,11 +68,15 @@ export const useCurrencyBalances = (address: string) => {
 
         const apisArray = Object.values(apis ?? {});
 
-        const chainBalances = await Promise.all(
+        const chainBalancesRes = await Promise.allSettled(
           apisArray.map((api, index) =>
             CHAINS[index].fetchCurrencies(api, address),
           ),
         );
+        const chainBalances = chainBalancesRes
+          .map((res) => res.status === "fulfilled" && res.value)
+          .filter((res) => !!res)
+          .flat() as CurrencyBalance[];
 
         const nativeBalanceDetails: CurrencyBalance = {
           balance: nativeBalance,
