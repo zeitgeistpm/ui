@@ -77,7 +77,7 @@ export const stepFormKeys: Record<
  */
 export const stepForFormKey = (
   key: keyof MarketFormData,
-): MarketCreationStepType => {
+): MarketCreationStepType | undefined => {
   for (const sectionKey in stepFormKeys) {
     if (stepFormKeys[sectionKey].includes(key))
       return sectionKey as MarketCreationStepType;

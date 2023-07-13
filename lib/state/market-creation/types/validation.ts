@@ -138,10 +138,13 @@ export const createMarketFormValidator = ({
  */
 export const useMarketCreationFormValidator = (
   form: Partial<MarketFormData>,
-): ReturnType<typeof createMarketFormValidator> => {
+): ReturnType<typeof createMarketFormValidator> | undefined => {
   const { data: deadlineConstants } = useMarketDeadlineConstants();
   const chainTime = useChainTime();
   return useMemo(() => {
+    if (!deadlineConstants || !chainTime) {
+      return;
+    }
     return createMarketFormValidator({
       form,
       deadlineConstants,

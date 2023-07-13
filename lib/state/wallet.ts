@@ -1,6 +1,6 @@
 import { encodeAddress } from "@polkadot/util-crypto";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import { isSome, tryCatch } from "@zeitgeistpm/utility/dist/option";
+import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { atom, getDefaultStore, useAtom } from "jotai";
 import { isString } from "lodash-es";
 import { useMemo } from "react";
@@ -160,16 +160,17 @@ const userConfigAtom = persistentAtom<WalletUserConfig>({
         }
 
         if (
-          selectedAddress &&
-          tryCatch(() => encodeAddress(selectedAddress)).isNone()
+          tryCatch(
+            () => selectedAddress && encodeAddress(selectedAddress),
+          ).isNone()
         ) {
           console.log("Invalid address in localStorage, disconnecting wallet.");
           return {};
         }
 
         return {
-          walletId,
-          selectedAddress,
+          walletId: walletId ?? undefined,
+          selectedAddress: selectedAddress ?? undefined,
         };
       }
 
@@ -195,7 +196,7 @@ export const supportedWallets = [
   new TalismanWallet(),
 ];
 
-let accountsSubscriptionUnsub: VoidFunction | undefined;
+let accountsSubscriptionUnsub: VoidFunction | undefined | null;
 
 /**
  * Enable a wallet by enabling the extension and setting the wallet atom state to connected.
@@ -232,15 +233,16 @@ const enableWallet = async (walletId: Wallet | string) => {
       store.set(walletAtom, (state) => {
         return {
           ...state,
-          connected: accounts.length > 0,
-          accounts: accounts.map((account) => {
-            return {
-              ...account,
-              address: encodeAddress(account.address, 73),
-            };
-          }),
+          connected: accounts?.length !== 0,
+          accounts:
+            accounts?.map((account) => {
+              return {
+                ...account,
+                address: encodeAddress(account.address, 73),
+              };
+            }) ?? [],
           errors:
-            accounts.length === 0
+            accounts?.length === 0
               ? [
                   {
                     extensionName: wallet.extensionName,
@@ -260,7 +262,7 @@ const enableWallet = async (walletId: Wallet | string) => {
         accounts: [],
         errors: [
           {
-            extensionName: wallet?.extensionName,
+            extensionName: wallet?.extensionName ?? "",
             type: "InteractionDenied",
           },
         ],
@@ -274,7 +276,7 @@ const enableWallet = async (walletId: Wallet | string) => {
  * Enable wallet on first load if wallet id is set.
  */
 if (store.get(userConfigAtom).walletId) {
-  enableWallet(store.get(userConfigAtom).walletId);
+  enableWallet(store.get(userConfigAtom).walletId ?? "");
 }
 
 /**
@@ -300,8 +302,14 @@ export const useWallet = (): UseWallet => {
     setUserConfig(newUserConfigState);
   };
 
-  const getSigner = (): KeyringPairOrExtSigner | undefined => {
-    if (walletState.wallet == null || !activeAccount) return;
+  const getSigner = (): KeyringPairOrExtSigner | null => {
+    if (
+      walletState.wallet == null ||
+      !activeAccount ||
+      !walletState.wallet?.signer
+    ) {
+      return null;
+    }
     return {
       address: activeAccount.address,
       signer: walletState.wallet.signer,

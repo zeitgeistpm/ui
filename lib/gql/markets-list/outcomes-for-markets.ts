@@ -14,13 +14,29 @@ const assetsQuery = gql`
   }
 `;
 
+const isValidCategory = (
+  category?: {
+    color?: string | null;
+    name?: string | null;
+  } | null,
+): category is { color: string; name: string } => {
+  return (
+    category != null &&
+    typeof category.color === "string" &&
+    typeof category.name === "string"
+  );
+};
+
 export const getOutcomesForMarkets = async (
   client: GraphQLClient,
   markets: {
-    pool?: { poolId: number };
+    pool?: { poolId: number } | null;
     marketId: number;
-    marketType: { categorical?: string; scalar?: string[] };
-    categories?: { color?: string; name?: string }[];
+    marketType: {
+      categorical?: string | null;
+      scalar?: (null | string)[] | null;
+    };
+    categories?: { color?: string | null; name?: string | null }[] | null;
   }[],
 ): Promise<{ [marketId: number]: MarketOutcomes }> => {
   if (markets.length === 0) {
@@ -63,7 +79,7 @@ export const getOutcomesForMarkets = async (
 
     const res = { ...prev };
 
-    let currentOutcomes = [];
+    let currentOutcomes: MarketOutcomes = [];
 
     for (const asset of filteredAssets) {
       const assetIdJson = JSON.parse(asset.assetId);
@@ -76,6 +92,9 @@ export const getOutcomesForMarkets = async (
       }
 
       const category = categories?.[categoryIndex];
+      if (!isValidCategory(category)) {
+        continue;
+      }
       const currentOutcome = {
         ...category,
         price: asset.price,

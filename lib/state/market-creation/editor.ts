@@ -148,7 +148,7 @@ export const useMarketDraftEditor = ({
   const validator = useMarketCreationFormValidator(draft.form);
 
   const fieldsState = useMemo<FieldsState.FieldsState>(() => {
-    const parsed = validator.safeParse(draft.form);
+    const parsed = validator?.safeParse(draft.form);
 
     const fieldsState = marketCreationFormKeys.reduce<FieldsState.FieldsState>(
       (fieldsState, key) => {
@@ -156,8 +156,8 @@ export const useMarketDraftEditor = ({
         let isTouched = draft.touchState[key];
         let errors = [...(fieldsState[key].errors ?? [])];
 
-        if (parsed.success !== true) {
-          const issue = parsed.error.issues.find(
+        if (parsed?.success !== true) {
+          const issue = parsed?.error.issues.find(
             (issue) => issue.path[0] === key,
           );
           if (issue) {
@@ -268,7 +268,9 @@ export const useMarketDraftEditor = ({
         };
         if (!draft.isWizard) {
           const section = stepForFormKey(key);
-          newDraft.stepReachState[section] = true;
+          if (section) {
+            newDraft.stepReachState[section] = true;
+          }
         }
         update(newDraft);
       },
@@ -281,7 +283,9 @@ export const useMarketDraftEditor = ({
         };
         if (!draft.isWizard) {
           const section = stepForFormKey(key);
-          newDraft.stepReachState[section] = true;
+          if (section) {
+            newDraft.stepReachState[section] = true;
+          }
         }
         update(newDraft);
       },
@@ -309,7 +313,7 @@ export const useMarketDraftEditor = ({
   const prevAnswersLength = usePrevious(draft.form.answers?.answers?.length);
 
   useEffect(() => {
-    if (!draft.form.answers) return;
+    if (!draft.form.answers || !draft.form.liquidity?.deploy) return;
 
     const baseAmount = minBaseLiquidity[draft.form.currency!]
       ? `${minBaseLiquidity[draft.form.currency!] / 2}`

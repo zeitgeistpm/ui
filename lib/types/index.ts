@@ -16,6 +16,14 @@ export interface EndpointOption {
   environment: Environment;
 }
 
+export function isPresent<T>(t: T | undefined | null | void): t is T {
+  return t !== undefined && t !== null;
+}
+
+export function isDefined<T>(t: T | undefined): t is T {
+  return t !== undefined;
+}
+
 export type TradeType = "buy" | "sell";
 
 export const isScalarRangeType = (

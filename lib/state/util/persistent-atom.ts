@@ -45,10 +45,13 @@ export type Migration<A, B> = (state: A) => B;
  * @returns WritableAtom<T & {__version: number}
  */
 export const persistentAtom = <T>(opts: PersistentAtomConfig<Versioned<T>>) => {
-  const parsedStorageValue = tryCatch(
-    () =>
-      JSON.parse(globalThis.localStorage?.getItem(opts.key)) as Versioned<T>,
-  ).unwrapOr(opts.defaultValue);
+  const storageValue = globalThis.localStorage?.getItem(opts.key);
+
+  const parsedStorageValue =
+    storageValue &&
+    tryCatch(() => JSON.parse(storageValue) as Versioned<T>).unwrapOr(
+      opts.defaultValue,
+    );
 
   const storageAtom = atomWithStorage<Versioned<T>>(
     opts.key,
@@ -63,11 +66,11 @@ export const persistentAtom = <T>(opts: PersistentAtomConfig<Versioned<T>>) => {
   if (nextVersion > initialVersion) {
     console.group(`state-migration:${opts.key}`);
 
-    const migrations = opts.migrations.slice(initialVersion);
+    const migrations = opts.migrations?.slice(initialVersion);
 
     console.info(`initial [version: ${initialVersion}]`, initialState);
 
-    const newState = migrations.reduce((acc, migration, version) => {
+    const newState = migrations?.reduce((acc, migration, version) => {
       const nextVersion = initialVersion + version + 1;
       const nextState = { ...migration(acc), __version: nextVersion };
 
@@ -81,7 +84,7 @@ export const persistentAtom = <T>(opts: PersistentAtomConfig<Versioned<T>>) => {
 
     console.groupEnd();
 
-    store.set(storageAtom, { ...newState, __version: nextVersion });
+    newState && store.set(storageAtom, { ...newState, __version: nextVersion });
   }
 
   const proxy = atom<

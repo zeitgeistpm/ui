@@ -34,10 +34,12 @@ export const useExtrinsic = <T>(
     setIsLoading(true);
 
     let extrinsic = extrinsicFn(params);
-    if (!extrinsic) return;
-
-    const proxy = wallet?.proxyFor?.[wallet.activeAccount?.address];
     let signer = wallet.getSigner();
+
+    if (!extrinsic || !signer) return;
+
+    const proxy =
+      wallet.activeAccount && wallet?.proxyFor?.[wallet.activeAccount?.address];
 
     if (proxy?.enabled && proxy?.address) {
       console.info("Proxying transaction");
