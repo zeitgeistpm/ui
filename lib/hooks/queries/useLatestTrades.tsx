@@ -1,65 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
+import { HistoricalSwapOrderByInput } from "@zeitgeistpm/indexer";
 import {
   getIndexOf,
   getMarketIdOf,
   IOBaseAssetId,
   IOMarketOutcomeAssetId,
   isIndexedSdk,
-  isRpcSdk,
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
-import { gql } from "graphql-request";
-import { useSdkv2 } from "../useSdkv2";
-import { HistoricalSwapOrderByInput } from "@zeitgeistpm/indexer";
-import { marketMetaFilter } from "lib/gql/constants";
 import { BLOCK_TIME_SECONDS } from "lib/constants";
+import { getMarketHeaders, MarketHeader } from "lib/gql/market-header";
+import { useSdkv2 } from "../useSdkv2";
 
 export const transactionHistoryKey = "latest-trades";
-
-const marketHeaderQuery = gql`
-  query MarketTransactionHeader($marketIds: [Int!]) {
-    markets(
-      where: {
-        marketId_in: $marketIds
-        ${marketMetaFilter}
-      }
-      orderBy: marketId_ASC
-    ) {
-      marketId
-      question
-      categories {
-        name
-      }
-    }
-  }
-`;
-
-const lookupOutcomeAsset = (asset: string, markets: MarketHeader[]) => {
-  const assetId = parseAssetId(asset).unwrap();
-  const market = lookupMarket(asset, markets);
-
-  if (IOMarketOutcomeAssetId.is(assetId)) {
-    const index = getIndexOf(assetId);
-    return market && market.categories[index].name;
-  }
-};
-
-const lookupMarket = (asset: string, markets: MarketHeader[]) => {
-  const assetId = parseAssetId(asset).unwrap();
-
-  if (IOMarketOutcomeAssetId.is(assetId)) {
-    const marketId = getMarketIdOf(assetId);
-    const market = markets.find((market) => market.marketId === marketId);
-    return market;
-  }
-};
-
-type MarketHeader = {
-  marketId: number;
-  question: string;
-  categories: { name: string }[];
-};
 
 export type TradeItem = {
   marketId: number;
@@ -77,13 +31,13 @@ export const useLatestTrades = () => {
   const query = useQuery(
     [id, transactionHistoryKey],
     async () => {
-      if (isIndexedSdk(sdk) && isRpcSdk(sdk)) {
+      if (isIndexedSdk(sdk)) {
         const { historicalSwaps } = await sdk.indexer.historicalSwaps({
           limit: 3,
           order: HistoricalSwapOrderByInput.BlockNumberDesc,
         });
 
-        let marketIds = new Set<number>();
+        const marketIds = new Set<number>();
 
         historicalSwaps.forEach((swap) => {
           const assetInId = parseAssetId(swap.assetIn).unwrap();
@@ -98,11 +52,7 @@ export const useLatestTrades = () => {
 
         const marketIdsArray = Array.from(marketIds).sort((a, b) => a - b);
 
-        const { markets } = await sdk.indexer.client.request<{
-          markets: MarketHeader[];
-        }>(marketHeaderQuery, {
-          marketIds: marketIdsArray,
-        });
+        const markets = await getMarketHeaders(sdk, marketIdsArray);
 
         const trades: TradeItem[] = historicalSwaps
           .map((swap) => {
@@ -118,7 +68,6 @@ export const useLatestTrades = () => {
             }
 
             const assetInId = parseAssetId(swap.assetIn).unwrap();
-
             const assetInIsBaseAsset = IOBaseAssetId.is(assetInId);
 
             const item: TradeItem = {
@@ -148,11 +97,30 @@ export const useLatestTrades = () => {
     },
     {
       keepPreviousData: true,
-      initialData: [],
-      enabled: Boolean(sdk && isIndexedSdk(sdk) && isRpcSdk(sdk)),
+      enabled: Boolean(sdk && isIndexedSdk(sdk)),
       refetchInterval: BLOCK_TIME_SECONDS * 1000,
     },
   );
 
   return query;
+};
+
+const lookupOutcomeAsset = (asset: string, markets: MarketHeader[]) => {
+  const assetId = parseAssetId(asset).unwrap();
+  const market = lookupMarket(asset, markets);
+
+  if (IOMarketOutcomeAssetId.is(assetId)) {
+    const index = getIndexOf(assetId);
+    return market && market.categories[index].name;
+  }
+};
+
+const lookupMarket = (asset: string, markets: MarketHeader[]) => {
+  const assetId = parseAssetId(asset).unwrap();
+
+  if (IOMarketOutcomeAssetId.is(assetId)) {
+    const marketId = getMarketIdOf(assetId);
+    const market = markets.find((market) => market.marketId === marketId);
+    return market;
+  }
 };

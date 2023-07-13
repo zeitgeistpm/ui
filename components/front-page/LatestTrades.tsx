@@ -44,7 +44,7 @@ const TradeHistoryTable = () => {
     return {
       question: (
         <Link
-          href={`/markets/${trade?.marketId}`}
+          href={`/markets/${trade.marketId}`}
           className="text-[14px] line-clamp-1"
         >
           {trade?.question}
