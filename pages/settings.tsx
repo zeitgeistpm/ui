@@ -204,7 +204,7 @@ const ProxySettings = () => {
   const [sdk] = useSdkv2();
   const wallet = useWallet();
 
-  const proxy = wallet.proxyFor?.[wallet.activeAccount?.address];
+  const proxy = wallet.getProxyFor(wallet.activeAccount?.address);
 
   const {
     register,
@@ -221,6 +221,7 @@ const ProxySettings = () => {
   });
 
   const onSubmit = (data: ProxyConfig) => {
+    if (!wallet.activeAccount?.address) return;
     wallet.setProxyFor(wallet.activeAccount?.address, data);
     reset(data);
   };

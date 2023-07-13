@@ -54,8 +54,6 @@ export const Publishing = ({ editor }: PublishingProps) => {
     return;
   }, [editor.form, chainTime, wallet.activeAccount]);
 
-  console.log(params);
-
   const feesEnabled = !(
     !sdk ||
     !params ||
