@@ -31,8 +31,20 @@ export const calcScalarResolvedPrices = (
     .minus(lowerBound)
     .div(priceRange);
 
-  const longTokenValue = resolvedNumberAsPercentage;
-  const shortTokenValue = new Decimal(1).minus(resolvedNumberAsPercentage);
+  const longTokenValue = constrainValue(resolvedNumberAsPercentage);
+  const shortTokenValue = constrainValue(
+    new Decimal(1).minus(resolvedNumberAsPercentage),
+  );
 
   return { longTokenValue, shortTokenValue };
+};
+
+const constrainValue = (value: Decimal): Decimal => {
+  if (value.greaterThan(1)) {
+    return new Decimal(1);
+  } else if (value.lessThan(0)) {
+    return new Decimal(0);
+  } else {
+    return value;
+  }
 };
