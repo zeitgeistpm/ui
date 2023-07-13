@@ -194,7 +194,7 @@ const DepositModal = ({
                   if (maxTransferAmount.div(ZTG).lessThan(value)) {
                     return `Insufficient balance. Current balance: ${maxTransferAmount
                       .div(ZTG)
-                      .toFixed(3)}`;
+                      .toFixed(5)}`;
                   } else if (value <= 0) {
                     return "Value cannot be zero or less";
                   }
