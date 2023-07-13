@@ -1,6 +1,6 @@
 export type MarketOutcome = {
   name: string;
-  color: string;
+  color?: string;
   price: number;
   assetId?: string;
   amountInPool?: string;

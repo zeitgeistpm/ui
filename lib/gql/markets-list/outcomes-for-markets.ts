@@ -19,12 +19,8 @@ const isValidCategory = (
     color?: string | null;
     name?: string | null;
   } | null,
-): category is { color: string; name: string } => {
-  return (
-    category != null &&
-    typeof category.color === "string" &&
-    typeof category.name === "string"
-  );
+): category is { color?: string; name: string } => {
+  return category != null && typeof category.name === "string";
 };
 
 export const getOutcomesForMarkets = async (
