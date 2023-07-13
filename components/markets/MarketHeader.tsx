@@ -284,7 +284,7 @@ const MarketHeader: FC<{
   report?: MarketReport;
   disputes?: MarketDispute;
   resolvedOutcome?: string;
-  token: string;
+  token?: string;
   marketStage: MarketStage;
   rejectReason?: string;
 }> = ({

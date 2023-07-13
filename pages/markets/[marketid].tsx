@@ -208,7 +208,7 @@ const Market: NextPage<MarketPageProps> = ({
           )}
         </div>
 
-        {token && marketStage ? (
+        {marketStage ? (
           <MarketHeader
             market={indexedMarket}
             resolvedOutcome={market?.resolvedOutcome ?? undefined}
