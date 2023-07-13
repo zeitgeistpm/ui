@@ -43,21 +43,18 @@ export const Publishing = ({ editor }: PublishingProps) => {
   const params = useMemo(() => {
     let signer = wallet.getSigner();
 
-    const real =
-      wallet.proxyFor?.enabled && wallet.proxyFor?.address
-        ? (wallet.activeAccount as KeyringPairOrExtSigner)
-        : signer;
-
     if (editor.isValid && chainTime && signer) {
       return marketFormDataToExtrinsicParams(
         editor.form,
-        real,
+        { address: wallet.realAddress } as KeyringPairOrExtSigner,
         chainTime,
         signer,
       );
     }
     return;
   }, [editor.form, chainTime, wallet.activeAccount]);
+
+  console.log(params);
 
   const feesEnabled = !(
     !sdk ||
@@ -87,12 +84,12 @@ export const Publishing = ({ editor }: PublishingProps) => {
     (a) => a.name === editor.form.currency,
   );
 
-  const { data: ztgBalance } = useBalance(wallet.activeAccount?.address, {
+  const { data: ztgBalance } = useBalance(wallet.realAddress, {
     Ztg: null,
   });
 
   const { data: foreignAssetBalance } = useBalance(
-    wallet.activeAccount?.address,
+    wallet.realAddress,
     baseCurrency?.assetId,
   );
 
