@@ -45,7 +45,7 @@ const columns: TableColumn[] = [
 ];
 
 const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
-  const [tableData, setTableData] = useState<TableData[]>([]);
+  const [tableData, setTableData] = useState<TableData[] | undefined>();
   const [sdk] = useSdkv2();
 
   const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
@@ -101,7 +101,7 @@ const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
   }, [sdk, marketId, market?.status]);
 
   const getPageData = async () => {
-    let tblData: TableData[] = [];
+    let tblData: TableData[] | undefined;
 
     if (market && poolAlreadyDeployed) {
       const totalAssetPrice = spotPrices
@@ -120,7 +120,7 @@ const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
 
           const priceChange = priceChanges?.get(index);
           tblData = [
-            ...tblData,
+            ...(tblData ?? []),
             {
               assetId: market.pool?.weights[index]?.assetId,
               id: index,
@@ -155,10 +155,9 @@ const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
 
       setTableData(tblData);
     } else {
-      tblData =
-        market?.categories?.map((category) => ({
-          outcome: category?.name,
-        })) ?? [];
+      tblData = market?.categories?.map((category) => ({
+        outcome: category?.name,
+      }));
       setTableData(tblData);
     }
   };

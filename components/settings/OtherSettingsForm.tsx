@@ -13,10 +13,7 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
   const [sdk] = useSdkv2();
   const wallet = useWallet();
 
-  const proxyConfig =
-    (wallet.activeAccount &&
-      wallet.proxyFor?.[wallet.activeAccount?.address]) ??
-    null;
+  const proxyConfig = wallet.getProxyFor(wallet.activeAccount?.address);
 
   const {
     register,

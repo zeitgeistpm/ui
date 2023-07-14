@@ -36,7 +36,7 @@ export const createMarketFormValidator = ({
   chainTime,
 }: MarketValidationDependencies) => {
   const timeline = timelineAsBlocks(form, chainTime).unwrap();
-  console.log(timeline);
+
   return z
     .object({
       currency: IOCurrency,
@@ -138,10 +138,13 @@ export const createMarketFormValidator = ({
  */
 export const useMarketCreationFormValidator = (
   form: Partial<MarketFormData>,
-): ReturnType<typeof createMarketFormValidator> => {
+): ReturnType<typeof createMarketFormValidator> | undefined => {
   const { data: deadlineConstants } = useMarketDeadlineConstants();
   const chainTime = useChainTime();
+
   return useMemo(() => {
+    if (!deadlineConstants || !chainTime) return undefined;
+
     return createMarketFormValidator({
       form,
       deadlineConstants,
@@ -228,7 +231,12 @@ export const IOEndDate = z
 
 export const IOPeriodDateOption = z.object({
   type: z.literal("date"),
-  block: z.number(),
+  date: z
+    .string()
+    .datetime()
+    .refine((date) => new Date(date) > new Date(), {
+      message: "End date must be in the future",
+    }),
 });
 
 export const IOPeriodDurationOption = z.object({

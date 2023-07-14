@@ -23,7 +23,7 @@ import { MdOutlineDragIndicator } from "react-icons/md";
 import { FormEvent } from "../../types";
 
 export type CategoricalAnswersInputProps = {
-  name?: string;
+  name: string;
   value?: CategoricalAnswers | YesNoAnswers;
   onChange?: (event: FormEvent<CategoricalAnswers>) => void;
   onBlur?: (event: FormEvent<CategoricalAnswers>) => void;
@@ -57,7 +57,9 @@ export const CategoricalAnswersInput = ({
           value: {
             type: "categorical",
             answers:
-              value?.answers.map((v, i) => (i === index ? answer : v)) ?? [],
+              value?.answers.map((v: string, i: number) =>
+                i === index ? answer : v,
+              ) ?? [],
           },
         },
       });
@@ -93,9 +95,11 @@ export const CategoricalAnswersInput = ({
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (active.id !== over.id) {
+    if (over && active.id !== over.id) {
       const oldIndex = value?.answers.findIndex((v) => v === active.id);
       const newIndex = value?.answers.findIndex((v) => v === over.id);
+
+      if (!oldIndex || !newIndex || !value?.answers) return;
 
       onChange?.({
         type: "change",
@@ -112,7 +116,8 @@ export const CategoricalAnswersInput = ({
 
   const draggingDisabled =
     disabled ||
-    value?.answers.length < 2 ||
+    !value?.answers ||
+    value?.answers?.length < 2 ||
     uniq(value?.answers).length < value?.answers.length;
 
   return (
@@ -135,7 +140,7 @@ export const CategoricalAnswersInput = ({
                     <AnswerInput
                       key={index}
                       id={answer}
-                      disabled={disabled}
+                      disabled={disabled ?? false}
                       value={answer}
                       onChange={handleChange(index, onChange)}
                       onBlur={handleChange(index, onBlur)}

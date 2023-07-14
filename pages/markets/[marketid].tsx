@@ -9,7 +9,6 @@ import PoolDeployer from "components/markets/PoolDeployer";
 import { MarketPromotionCallout } from "components/markets/PromotionCallout";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
-import MarketImage from "components/ui/MarketImage";
 import Skeleton from "components/ui/Skeleton";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
@@ -31,8 +30,6 @@ import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
-import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
-import { usePrizePool } from "lib/hooks/queries/usePrizePool";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
@@ -92,7 +89,7 @@ export async function getStaticProps({ params }) {
       resolutionTimestamp: resolutionTimestamp ?? null,
       promotionData,
     },
-    revalidate: 10 * 60, //10mins
+    revalidate: 1 * 60, //1min
   };
 }
 
@@ -122,7 +119,6 @@ const Market: NextPage<MarketPageProps> = ({
 
   const [poolDeployed, setPoolDeployed] = useState(false);
 
-  const { data: prizePool } = usePrizePool(marketId);
   const { data: market, isLoading: marketIsLoading } = useMarket(
     {
       marketId,
@@ -200,14 +196,6 @@ const Market: NextPage<MarketPageProps> = ({
     <>
       <MarketMeta market={indexedMarket} />
       <div>
-        <MarketImage
-          image={indexedMarket.img}
-          alt={`Image depicting ${indexedMarket.question}`}
-          size="120px"
-          status={indexedMarket.status}
-          className="mx-auto"
-        />
-
         <div className="mt-4">
           {promotionData && (
             <MarketPromotionCallout
@@ -223,7 +211,6 @@ const Market: NextPage<MarketPageProps> = ({
           report={report}
           disputes={lastDispute}
           token={token}
-          prizePool={prizePool?.div(ZTG).toNumber()}
           marketStage={marketStage}
           rejectReason={market?.rejectReason}
         />
