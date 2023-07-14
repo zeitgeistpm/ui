@@ -1,6 +1,6 @@
 import { encodeAddress } from "@polkadot/util-crypto";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
-import { isSome, tryCatch } from "@zeitgeistpm/utility/dist/option";
+import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { atom, getDefaultStore, useAtom } from "jotai";
 import { isString } from "lodash-es";
 import { useMemo } from "react";
