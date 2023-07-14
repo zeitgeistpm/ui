@@ -41,6 +41,8 @@ export const useExtrinsic = <T>(
 
     const proxy = wallet?.getProxyFor(wallet.activeAccount?.address);
 
+    if (!extrinsic || !signer) return;
+
     if (proxy?.enabled && proxy?.address) {
       console.info("Proxying transaction");
       extrinsic = sdk.api.tx.proxy.proxy(proxy?.address, "Any", extrinsic);

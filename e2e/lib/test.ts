@@ -7,7 +7,7 @@ const IGNORED_MESSAGES = [
 
 const test = base.extend<{ consoleErrors: string[] }>({
   consoleErrors: async ({ page }, use) => {
-    const logs = [];
+    const logs: string[] = [];
 
     page.on("pageerror", (error) => {
       for (const ignoredMessage of IGNORED_MESSAGES) {

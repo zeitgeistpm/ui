@@ -60,8 +60,8 @@ test.describe("index page", () => {
 
       const numSlides = images.length;
 
-      let lastTitle: string;
-      let lastSubTitle: string;
+      let lastTitle: string | null = null;
+      let lastSubTitle: string | null = null;
       for (let index = 0; index < numSlides; index++) {
         expect(await indexPage.getActiveSlideIndex()).toBe(index);
         const title = await heroSlider.locator("h2").last().textContent();

@@ -84,7 +84,7 @@ export const persistentAtom = <T>(opts: PersistentAtomConfig<Versioned<T>>) => {
       console.groupEnd();
     }
 
-    store.set(storageAtom, { ...newState, __version: nextVersion });
+    newState && store.set(storageAtom, { ...newState, __version: nextVersion });
   }
 
   const proxy = atom<

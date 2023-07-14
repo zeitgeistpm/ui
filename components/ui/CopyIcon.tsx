@@ -3,7 +3,7 @@ import { FC, Fragment, useEffect, useState } from "react";
 import { Copy } from "react-feather";
 
 export type CopyIconProps = {
-  copyText: string;
+  copyText?: string;
   className?: string;
   size?: number;
 };
@@ -16,6 +16,9 @@ const CopyIcon: FC<CopyIconProps> = ({
   const [recentlyCopied, setRecentlyCopied] = useState(false);
 
   const copyAddressToClipboard = () => {
+    if (copyText == null) {
+      return;
+    }
     navigator.clipboard.writeText(copyText);
     setRecentlyCopied(true);
   };
