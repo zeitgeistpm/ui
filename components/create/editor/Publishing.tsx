@@ -43,7 +43,11 @@ export const Publishing = ({ editor }: PublishingProps) => {
   const params = useMemo(() => {
     let signer = wallet.getSigner();
 
-    if (editor.isValid && chainTime && signer) {
+    if (!editor.isValid || !chainTime || !signer) return;
+
+    const proxy = wallet.getProxyFor(wallet.activeAccount.address);
+
+    if (proxy && proxy.enabled) {
       return marketFormDataToExtrinsicParams(
         editor.form,
         { address: wallet.realAddress } as KeyringPairOrExtSigner,
@@ -51,7 +55,8 @@ export const Publishing = ({ editor }: PublishingProps) => {
         signer,
       );
     }
-    return;
+
+    return marketFormDataToExtrinsicParams(editor.form, signer, chainTime);
   }, [editor.form, chainTime, wallet.activeAccount]);
 
   const feesEnabled = !(
