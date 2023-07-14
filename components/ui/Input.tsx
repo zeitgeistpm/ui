@@ -34,12 +34,7 @@ const Input: React.FC<InputProps> = React.forwardRef<
     };
 
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (
-        e.key === "e" ||
-        e.key === "E" ||
-        e.key === "Up" ||
-        e.key === "Down"
-      ) {
+      if (e.key.toLowerCase() === "e") {
         e.preventDefault();
       }
     };
