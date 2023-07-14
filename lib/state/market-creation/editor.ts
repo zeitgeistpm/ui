@@ -16,7 +16,7 @@ import {
   MarketCreationStep,
   MarketCreationStepType,
   marketCreationSteps,
-  stepForFormKey,
+  sectionForFormKey,
   stepFormKeys,
 } from "./types/step";
 import { useMarketCreationFormValidator } from "./types/validation";
@@ -148,6 +148,8 @@ export const useMarketDraftEditor = ({
   const validator = useMarketCreationFormValidator(draft.form);
 
   const fieldsState = useMemo<FieldsState.FieldsState>(() => {
+    if (!validator) return FieldsState.empty();
+
     const parsed = validator.safeParse(draft.form);
 
     const fieldsState = marketCreationFormKeys.reduce<FieldsState.FieldsState>(
@@ -156,8 +158,8 @@ export const useMarketDraftEditor = ({
         let isTouched = draft.touchState[key];
         let errors = [...(fieldsState[key].errors ?? [])];
 
-        if (parsed.success !== true) {
-          const issue = parsed.error.issues.find(
+        if (parsed?.success !== true) {
+          const issue = parsed?.error.issues.find(
             (issue) => issue.path[0] === key,
           );
           if (issue) {
@@ -267,8 +269,8 @@ export const useMarketDraftEditor = ({
           touchState: { ...draft.touchState, [key]: true },
         };
         if (!draft.isWizard) {
-          const section = stepForFormKey(key);
-          newDraft.stepReachState[section] = true;
+          const section = sectionForFormKey(key);
+          section && (newDraft.stepReachState[section] = true);
         }
         update(newDraft);
       },
@@ -280,8 +282,10 @@ export const useMarketDraftEditor = ({
           touchState: { ...draft.touchState, [key]: true },
         };
         if (!draft.isWizard) {
-          const section = stepForFormKey(key);
-          newDraft.stepReachState[section] = true;
+          const section = sectionForFormKey(key);
+          if (section) {
+            newDraft.stepReachState[section] = true;
+          }
         }
         update(newDraft);
       },
@@ -309,7 +313,7 @@ export const useMarketDraftEditor = ({
   const prevAnswersLength = usePrevious(draft.form.answers?.answers?.length);
 
   useEffect(() => {
-    if (!draft.form.answers) return;
+    if (!draft.form.answers || !draft.form.liquidity) return;
 
     const baseAmount = minBaseLiquidity[draft.form.currency!]
       ? `${minBaseLiquidity[draft.form.currency!] / 2}`
