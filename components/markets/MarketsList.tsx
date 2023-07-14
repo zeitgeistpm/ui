@@ -116,7 +116,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
           const filteredScalar =
             scalar?.filter((item): item is string => item !== null) ?? [];
           const marketType = { categorical, scalar: filteredScalar };
-          const pool = market.pool ?? {};
+          const pool = market.pool ?? null;
           const tags =
             market.tags?.filter((tag): tag is string => tag !== null) ?? [];
 

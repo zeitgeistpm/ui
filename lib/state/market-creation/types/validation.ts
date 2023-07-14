@@ -143,8 +143,9 @@ export const useMarketCreationFormValidator = (
   const chainTime = useChainTime();
 
   return useMemo(() => {
-    if (!deadlineConstants || !chainTime) return undefined;
-
+    if (!deadlineConstants || !chainTime) {
+      return;
+    }
     return createMarketFormValidator({
       form,
       deadlineConstants,

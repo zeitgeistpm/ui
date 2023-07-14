@@ -11,6 +11,7 @@ import { getFeaturedMarketIds } from "lib/cms/get-featured-marketids";
 import { getCurrentPrediction } from "lib/util/assets";
 import { hiddenMarketIds } from "lib/constants/markets";
 import { marketMetaFilter } from "./constants";
+import { isPresent } from "lib/types";
 
 const marketQuery = gql`
   query Market($marketId: Int) {
@@ -167,7 +168,7 @@ const getFeaturedMarkets = async (
     }),
   );
 
-  return featuredMarkets.filter((market) => market !== undefined);
+  return featuredMarkets.filter(isPresent);
 };
 
 export default getFeaturedMarkets;

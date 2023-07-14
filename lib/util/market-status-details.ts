@@ -1,47 +1,51 @@
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import { MarketStatus } from "@zeitgeistpm/sdk-next";
-import {
-  MarketDispute,
-  MarketTypeOf,
-  Report,
-} from "@zeitgeistpm/sdk/dist/types";
+import { MarketDispute, MarketTypeOf } from "@zeitgeistpm/sdk/dist/types";
 import { formatScalarOutcome } from "./format-scalar-outcome";
+import {
+  MarketReport,
+  isMarketScalarOutcome,
+  isValidMarketReport,
+} from "lib/types";
 
 export const getMarketStatusDetails = (
   marketType: MarketTypeOf,
   categories: { name: string }[],
   status: MarketStatus,
-  disputes: MarketDispute,
-  report: Report,
-  resolvedOutcome: string,
   scalarType: ScalarRangeType,
-): { outcome: string | number; by: string } => {
-  if (status === "Disputed" && disputes) {
+  dispute?: MarketDispute,
+  report?: MarketReport,
+  resolvedOutcome?: string,
+): { outcome?: string | number; by?: string } => {
+  if (!isValidMarketReport(dispute) || !isValidMarketReport(report)) {
+    return {};
+  }
+  if (status === "Disputed" && dispute) {
     //scalar market
-    if (marketType?.["scalar"] !== null) {
+    if (isMarketScalarOutcome(dispute.outcome)) {
       return {
-        outcome: formatScalarOutcome(disputes.outcome?.["scalar"], scalarType),
-        by: disputes?.by,
+        outcome: formatScalarOutcome(dispute.outcome.scalar, scalarType),
+        by: dispute.by,
       };
       //categorical market
     } else {
       return {
-        outcome: categories[Number(disputes?.outcome?.["categorical"])].name,
-        by: disputes.by,
+        outcome: categories[Number(dispute.outcome.categorical)].name,
+        by: dispute.by,
       };
     }
   } else if (status === "Reported" && report) {
     //scalar market
-    if (marketType?.["scalar"] !== null) {
+    if (isMarketScalarOutcome(report.outcome)) {
       return {
-        outcome: formatScalarOutcome(report.outcome?.["scalar"], scalarType),
-        by: report?.by,
+        outcome: formatScalarOutcome(report.outcome.scalar, scalarType),
+        by: report.by,
       };
       //categorical market
     } else {
       return {
-        outcome: categories[report.outcome?.["categorical"]].name,
-        by: report?.by,
+        outcome: categories[report.outcome.categorical].name,
+        by: report.by,
       };
     }
   } else if (status === "Resolved" && resolvedOutcome) {
@@ -49,14 +53,12 @@ export const getMarketStatusDetails = (
     if (marketType?.["scalar"] !== null) {
       return {
         outcome: formatScalarOutcome(resolvedOutcome, scalarType),
-        by: null,
       };
       //categorical market
     } else {
       return {
         outcome: categories[resolvedOutcome].name,
-        by: null,
       };
     }
-  } else return { outcome: null, by: null };
+  } else return {};
 };

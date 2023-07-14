@@ -54,6 +54,7 @@ export const useCrossChainExtrinsic = <T>(
 
     if (!signer || !extrinsic || !sourceChainApi || !destinationChainApi)
       return;
+
     signAndSend(
       extrinsic,
       signer,
