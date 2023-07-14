@@ -1,5 +1,6 @@
 import React from "react";
 import AssetSelect, { AssetOption } from "./AssetSelect";
+import Input from "./Input";
 
 type AssetInputProps = {
   options: AssetOption[];
@@ -32,14 +33,14 @@ const AssetInput: React.FC<AssetInputProps> = ({
           onAssetChange?.(option);
         }}
       />
-      <input
+      <Input
         type="number"
         step="any"
         value={amount}
         onChange={(e) => {
           onAmountChange?.(e.target.value);
         }}
-        className="absolute right-4 top-[50%] translate-y-[-50%] font-mono text-right text-lg outline-none bg-transparent"
+        className="absolute right-4 top-[50%] translate-y-[-50%] text-right text-lg bg-transparent px-0"
         style={{ width: "calc(100% - 155px)" }}
       />
       {error && (
