@@ -1,6 +1,5 @@
 import Link from "next/link";
 import React from "react";
-import MarketImage from "components/ui/MarketImage";
 import { MarketOutcomes } from "lib/types/markets";
 import MarketCardContext from "./context";
 import ScalarPriceRange from "../ScalarPriceRange";
@@ -11,12 +10,14 @@ import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import Skeleton from "components/ui/Skeleton";
 import { hasDatePassed } from "lib/util/hasDatePassed";
-import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { UserIdentity } from "../MarketHeader";
 import Image from "next/image";
-import { lookupAssetImagePath } from "lib/constants/foreign-asset";
-import { parseAssetId } from "@zeitgeistpm/sdk-next";
+import {
+  lookupAssetImagePath,
+  lookupAssetSymbol,
+} from "lib/constants/foreign-asset";
+import { BaseAssetId, parseAssetId } from "@zeitgeistpm/sdk-next";
 import { IOBaseAssetId } from "@zeitgeistpm/sdk-next";
 import { IOForeignAssetId } from "@zeitgeistpm/sdk-next";
 export interface IndexedMarketCardData {
@@ -263,8 +264,9 @@ const MarketCard = ({
   const isProposed = () => {
     return creation === "Advised" && status === "Proposed" ? true : false;
   };
-  const { data: metadata } = useAssetMetadata(parseAssetIdString(baseAsset));
-
+  const assetSymbol = lookupAssetSymbol(
+    parseAssetIdString(baseAsset) as BaseAssetId,
+  );
   const isYesNoMarket =
     outcomes.length === 2 &&
     outcomes.some((outcome) => outcome.name.toLowerCase() === "yes") &&
@@ -282,7 +284,7 @@ const MarketCard = ({
     hasEnded: hasDatePassed(Number(endDate)),
     outcomes: outcomes.length,
     volume: volume,
-    baseAsset: metadata?.symbol ?? "",
+    baseAsset: assetSymbol ?? "",
     liquidity,
     numParticipants: numParticipants,
   };
