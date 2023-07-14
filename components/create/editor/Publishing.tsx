@@ -45,7 +45,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
 
     if (!editor.isValid || !chainTime || !signer) return;
 
-    const proxy = wallet.getProxyFor(wallet.activeAccount.address);
+    const proxy = wallet.getProxyFor(wallet.activeAccount?.address);
 
     if (proxy && proxy.enabled) {
       return marketFormDataToExtrinsicParams(
