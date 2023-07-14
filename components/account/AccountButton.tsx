@@ -88,11 +88,11 @@ const AccountButton: FC<{
     selectWallet,
     disconnectWallet,
     isNovaWallet,
-    proxyFor,
+    getProxyFor,
     realAddress,
   } = useWallet();
 
-  const proxy = activeAccount && proxyFor?.[activeAccount?.address];
+  const proxy = getProxyFor(activeAccount?.address);
 
   const accountModals = useAccountModals();
   const { locationAllowed, isUsingVPN } = useUserLocation();

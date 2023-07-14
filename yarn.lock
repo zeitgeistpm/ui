@@ -3082,14 +3082,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/indexer@npm:^3.0.13":
-  version: 3.0.13
-  resolution: "@zeitgeistpm/indexer@npm:3.0.13"
+"@zeitgeistpm/indexer@npm:^3.0.14":
+  version: 3.0.14
+  resolution: "@zeitgeistpm/indexer@npm:3.0.14"
   dependencies:
     graphql: ^16.6.0
     graphql-request: ^5.0.0
     graphql-tag: ^2.12.6
-  checksum: d27deb572e1a4aca88493724b5f53b3ad4dc2722c5538e0043f6dc0af8ab9a8622a5e84960fd4810c500e267e26bb57d06d8259e05efe39474df761e2f556207
+  checksum: a8f0b65cfc3d563f2f96bb4f2c1257466e7ca1873c136e6fcc350f37829189602958c20394ea8ad84cb1eb09f8acfa17e62279d77b44052f1f46a391e89f22c5
   languageName: node
   linkType: hard
 
@@ -3107,12 +3107,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.29.20":
-  version: 2.29.20
-  resolution: "@zeitgeistpm/sdk@npm:2.29.20"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.29.21":
+  version: 2.29.21
+  resolution: "@zeitgeistpm/sdk@npm:2.29.21"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.11.5
-    "@zeitgeistpm/indexer": ^3.0.13
+    "@zeitgeistpm/indexer": ^3.0.14
     "@zeitgeistpm/rpc": ^2.7.6
     "@zeitgeistpm/utility": ^2.18.13
     "@zeitgeistpm/web3.storage": ^2.9.13
@@ -3128,7 +3128,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: c3d986c074e7543efd718a86a02d8c1ea53c083c54ff4ccd48c7873b709c5315ca90b43c0d3584525749e270fa1475e8745a5de7451bd946960a8baa984b335e
+  checksum: 5e8f28d9fde6c22cfcf67e86661600b1447b31f19471b8ddd238e8c36d68c5d132d4490abd46f1e7db427b9fab04800d46bacbb33e3e052ad350f65b76e6ad3c
   languageName: node
   linkType: hard
 
@@ -3227,7 +3227,7 @@ __metadata:
     "@zeitgeistpm/avatara-react": ^1.3.2
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^1.0.3
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.29.20"
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.29.21"
     "@zeitgeistpm/utility": ^2.18.12
     autoprefixer: 10.2.5
     axios: ^0.21.4

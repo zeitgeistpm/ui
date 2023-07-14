@@ -106,22 +106,15 @@ const TopBar = () => {
                       <div className="block md:hidden">
                         <Menu.Item>
                           {({ active }) => (
-                            <Link
-                              href="/leaderboard"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                close();
-                              }}
-                            >
+                            <Link href="/leaderboard" onClick={close}>
                               <button
-                                disabled
                                 className={`group flex w-full items-center  px-2 py-2 text-sm gap-3 mb-4`}
                               >
-                                <div className="relative h-6 w-6  opacity-30">
+                                <div className="relative h-6 w-6">
                                   <FiAward size={"100%"} />
                                 </div>
-                                <h3 className="text-sm font-semibold text-gray-400">
-                                  Leaderboard (coming soon)
+                                <h3 className="text-sm font-semibold">
+                                  Leaderboard
                                 </h3>
                               </button>
                             </Link>
@@ -155,17 +148,13 @@ const TopBar = () => {
           </Menu>
 
           <Link
-            type="button"
-            className="text-white cursor-default font-light relative hidden md:flex md:center gap-2"
+            className="text-white font-light relative hidden md:flex md:center gap-2"
             href="/leaderboard"
-            onClick={(event) => {
-              event.preventDefault();
-            }}
           >
-            <div className="relative h-6 w-6 opacity-40">
+            <div className="relative h-6 w-6">
               <FiAward size={"100%"} />
             </div>
-            <div className="text-gray-400">Leaderboard (coming soon)</div>
+            <div>Leaderboard</div>
           </Link>
         </div>
         <AccountButton />

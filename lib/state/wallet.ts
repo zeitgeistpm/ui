@@ -10,48 +10,51 @@ import { TalismanWallet } from "../wallets/talisman-wallet";
 import { Wallet, WalletAccount } from "../wallets/types";
 import { persistentAtom } from "./util/persistent-atom";
 
-export type UseWallet = WalletState &
-  Pick<WalletUserConfig, "proxyFor"> & {
-    /**
-     * The real address of the current wallet.
-     * Use this to read data from the blockchain or the indexer when it comes to assets and markets.
-     * It will be the address the activeAccount is proxying for if proxy execution is enabled.
-     */
-    realAddress?: string;
-    /**
-     * The active account of the current wallet.
-     */
-    activeAccount?: WalletAccount;
-    /**
-     * Whether the wallet is nova wallet.
-     */
-    isNovaWallet: boolean;
-    /**
-     * Get the active signer for transactions. Is either the real account or the proxy account.
-     */
-    getSigner: () => KeyringPairOrExtSigner | null;
-    /**
-     * Select a wallet.
-     * @param wallet the selected wallet id or instance
-     * @returns void
-     */
-    selectWallet: (wallet: Wallet | string) => void;
-    /**
-     * Select an address.
-     * @param account the address to select
-     * @returns void
-     */
-    selectAccount: (account: string) => void;
-    /**
-     * Disconnect the wallet.
-     * @returns void
-     */
-    disconnectWallet: () => void;
-    /**
-     * Set if proxy execution is enabled.
-     */
-    setProxyFor: (real: string, conf: ProxyConfig) => void;
-  };
+export type UseWallet = WalletState & {
+  /**
+   * The real address of the current wallet.
+   * Use this to read data from the blockchain or the indexer when it comes to assets and markets.
+   * It will be the address the activeAccount is proxying for if proxy execution is enabled.
+   */
+  realAddress?: string;
+  /**
+   * The active account of the current wallet.
+   */
+  activeAccount?: WalletAccount;
+  /**
+   * Whether the wallet is nova wallet.
+   */
+  isNovaWallet: boolean;
+  /**
+   * Get the active signer for transactions. Is either the real account or the proxy account.
+   */
+  getSigner: () => KeyringPairOrExtSigner | undefined;
+  /**
+   * Select a wallet.
+   * @param wallet the selected wallet id or instance
+   * @returns void
+   */
+  selectWallet: (wallet: Wallet | string) => void;
+  /**
+   * Select an address.
+   * @param account the address to select
+   * @returns void
+   */
+  selectAccount: (account: string) => void;
+  /**
+   * Disconnect the wallet.
+   * @returns void
+   */
+  disconnectWallet: () => void;
+  /**
+   * Set if proxy execution is enabled.
+   */
+  setProxyFor: (real: string, conf: ProxyConfig) => void;
+  /**
+   * Get the proxy config for an address(real).
+   */
+  getProxyFor: (address?: string) => ProxyConfig | undefined;
+};
 
 export type ProxyConfig = {
   enabled: boolean;
@@ -160,9 +163,8 @@ const userConfigAtom = persistentAtom<WalletUserConfig>({
         }
 
         if (
-          tryCatch(
-            () => selectedAddress && encodeAddress(selectedAddress),
-          ).isNone()
+          selectedAddress &&
+          tryCatch(() => encodeAddress(selectedAddress!)).isNone()
         ) {
           console.log("Invalid address in localStorage, disconnecting wallet.");
           return {};
@@ -233,7 +235,7 @@ const enableWallet = async (walletId: Wallet | string) => {
       store.set(walletAtom, (state) => {
         return {
           ...state,
-          connected: accounts?.length !== 0,
+          connected: Boolean(accounts && accounts.length > 0),
           accounts:
             accounts?.map((account) => {
               return {
@@ -262,7 +264,7 @@ const enableWallet = async (walletId: Wallet | string) => {
         accounts: [],
         errors: [
           {
-            extensionName: wallet?.extensionName ?? "",
+            extensionName: wallet?.extensionName ?? "unknown wallet",
             type: "InteractionDenied",
           },
         ],
@@ -275,8 +277,9 @@ const enableWallet = async (walletId: Wallet | string) => {
 /**
  * Enable wallet on first load if wallet id is set.
  */
-if (store.get(userConfigAtom).walletId) {
-  enableWallet(store.get(userConfigAtom).walletId ?? "");
+const initialWalletId = store.get(userConfigAtom).walletId;
+if (initialWalletId) {
+  enableWallet(initialWalletId);
 }
 
 /**
@@ -302,14 +305,13 @@ export const useWallet = (): UseWallet => {
     setUserConfig(newUserConfigState);
   };
 
-  const getSigner = (): KeyringPairOrExtSigner | null => {
+  const getSigner = (): KeyringPairOrExtSigner | undefined => {
     if (
       walletState.wallet == null ||
       !activeAccount ||
-      !walletState.wallet?.signer
-    ) {
-      return null;
-    }
+      !walletState.wallet.signer
+    )
+      return;
     return {
       address: activeAccount.address,
       signer: walletState.wallet.signer,
@@ -337,6 +339,10 @@ export const useWallet = (): UseWallet => {
         [address]: proxyFor,
       },
     });
+  };
+
+  const getProxyFor = (address: string): ProxyConfig | undefined => {
+    return userConfig.proxyFor?.[address];
   };
 
   const activeAccount = useMemo(() => {
@@ -373,5 +379,6 @@ export const useWallet = (): UseWallet => {
     disconnectWallet,
     isNovaWallet,
     setProxyFor,
+    getProxyFor,
   };
 };

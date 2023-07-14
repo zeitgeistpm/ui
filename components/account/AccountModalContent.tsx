@@ -7,7 +7,7 @@ import { ZTG } from "@zeitgeistpm/sdk-next";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 const AccountModalContent: FC = () => {
-  const { activeAccount, disconnectWallet, accounts, selectAccount, proxyFor } =
+  const { activeAccount, disconnectWallet, accounts, selectAccount } =
     useWallet();
 
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);

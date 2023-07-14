@@ -10,8 +10,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
   const wallet = useWallet();
   const { data: identity } = useIdentity(address);
 
-  const proxy =
-    wallet.activeAccount && wallet.proxyFor?.[wallet.activeAccount.address];
+  const proxy = wallet.getProxyFor(wallet.activeAccount?.address);
 
   const isProxying = Boolean(
     proxy && proxy.enabled && proxy.address === address,
