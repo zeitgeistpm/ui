@@ -88,11 +88,11 @@ const AccountButton: FC<{
     selectWallet,
     disconnectWallet,
     isNovaWallet,
-    proxyFor,
+    getProxyFor,
     realAddress,
   } = useWallet();
 
-  const proxy = proxyFor?.[activeAccount?.address];
+  const proxy = getProxyFor(activeAccount?.address);
 
   const accountModals = useAccountModals();
   const { locationAllowed, isUsingVPN } = useUserLocation();
@@ -266,17 +266,23 @@ const AccountButton: FC<{
                                         <label className="text-purple-900 text-xs italic mb-2">
                                           Account is acting proxy for:
                                         </label>
-                                        <div className="flex items-center gap-1">
-                                          <div className="text-white text-sm">
-                                            {shortenAddress(realAddress, 7, 7)}
+                                        {realAddress && (
+                                          <div className="flex items-center gap-1">
+                                            <div className="text-white text-sm">
+                                              {shortenAddress(
+                                                realAddress,
+                                                7,
+                                                7,
+                                              )}
+                                            </div>
+                                            <div className="text-purple-800">
+                                              <CopyIcon
+                                                size={14}
+                                                copyText={realAddress}
+                                              />
+                                            </div>
                                           </div>
-                                          <div className="text-purple-800">
-                                            <CopyIcon
-                                              size={14}
-                                              copyText={realAddress}
-                                            />
-                                          </div>
-                                        </div>
+                                        )}
                                       </div>
                                     </div>
                                   </div>

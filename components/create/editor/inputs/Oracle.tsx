@@ -48,6 +48,7 @@ export const OracleInput = forwardRef(
     };
 
     const handleUseConnectedAccount = () => {
+      if (!wallet?.realAddress) return;
       onChange?.({
         type: "change",
         target: {
@@ -68,11 +69,11 @@ export const OracleInput = forwardRef(
     };
 
     const isSelectedAccount = wallet.realAddress === value;
-    const proxy = wallet.proxyFor?.[wallet.activeAccount?.address];
+    const proxy = wallet.getProxyFor(wallet.activeAccount?.address);
     const accountname =
-      proxy && proxy.enabled
+      proxy && proxy?.enabled
         ? "Proxied"
-        : wallet.activeAccount.name ?? "Account";
+        : wallet.activeAccount?.name ?? "Account";
 
     return (
       <div className={`relative ${className}`}>
@@ -123,18 +124,23 @@ export const OracleInput = forwardRef(
                     isSelectedAccount ? "bg-nyanza-base" : "bg-gray-200"
                   }`}
                 >
-                  <div className="pointer-events-none">
-                    <Avatar address={wallet.realAddress} size={18} />
-                  </div>
-                  <span className="font-semibold center gap-4">
-                    {accountname ? (
-                      <>
-                        {accountname} {shortenAddress(wallet.realAddress, 0, 6)}
-                      </>
-                    ) : (
-                      <>{shortenAddress(wallet.realAddress, 6, 6)}</>
-                    )}
-                  </span>
+                  {wallet.realAddress && (
+                    <>
+                      <div className="pointer-events-none">
+                        <Avatar address={wallet.realAddress} size={18} />
+                      </div>
+                      <span className="font-semibold center gap-4">
+                        {accountname ? (
+                          <>
+                            {accountname}{" "}
+                            {shortenAddress(wallet.realAddress, 0, 6)}
+                          </>
+                        ) : (
+                          <>{shortenAddress(wallet.realAddress, 6, 6)}</>
+                        )}
+                      </span>
+                    </>
+                  )}
                 </div>
               </button>
             </div>
