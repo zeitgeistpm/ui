@@ -42,7 +42,7 @@ const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
 const createMarketStateAtom = persistentAtom<MarketDraft.MarketDraftState>({
   key: "market-creation-form",
   defaultValue: MarketDraft.empty(),
-  migrations: [],
+  migrations: [() => MarketDraft.empty()],
 });
 
 export const MarketEditor = () => {
