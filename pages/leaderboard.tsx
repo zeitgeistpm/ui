@@ -26,6 +26,7 @@ import { formatNumberCompact } from "lib/util/format-compact";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
 import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
+import { getDisplayName } from "lib/gql/display-name";
 
 // Approach: aggregate base asset movements in and out of a market
 // "In events": swaps, buy full set
@@ -410,18 +411,9 @@ export async function getStaticProps() {
 
   const top20 = rankings.slice(0, 20);
 
-  const identities = await Promise.all(
-    top20.map((player) => sdk.api.query.identity.identityOf(player.accountId)),
-  );
-
-  const textDecoder = new TextDecoder();
-
-  const names: (string | null)[] = identities.map((identity) =>
-    identity.isNone === false
-      ? textDecoder.decode(
-          (identity.value.get("info") as any).get("display").value,
-        )
-      : null,
+  const names = await getDisplayName(
+    sdk,
+    top20.map((p) => p.accountId),
   );
 
   return {
