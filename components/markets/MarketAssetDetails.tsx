@@ -34,7 +34,15 @@ const columns: TableColumn[] = [
   },
 ];
 
-const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
+const MarketAssetDetails = ({
+  marketId,
+  categories,
+}: {
+  marketId: number;
+  categories?: {
+    name: string;
+  }[];
+}) => {
   const { data: market } = useMarket({ marketId });
   const baseAsset = parseAssetIdString(market?.baseAsset);
   const { data: usdPrice } = useAssetUsdPrice(baseAsset);
@@ -49,41 +57,40 @@ const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
       )
     : new Decimal(0);
 
-  const tableData: TableData[] | undefined = market?.categories?.map(
-    (category, index) => {
-      const outcomeName = category?.name;
-      const currentPrice = spotPrices?.get(index)?.toNumber();
+  const tableData: TableData[] | undefined = (
+    categories ?? market?.categories
+  )?.map((category, index) => {
+    const outcomeName = category?.name;
+    const currentPrice = spotPrices?.get(index)?.toNumber();
+    const priceChange = priceChanges?.get(index);
 
-      const priceChange = priceChanges?.get(index);
-
-      return {
-        assetId: market?.pool?.weights[index]?.assetId,
-        id: index,
-        outcome: outcomeName,
-        totalValue: {
-          value: currentPrice ?? 0,
-          usdValue: new Decimal(
-            currentPrice ? usdPrice?.mul(currentPrice) ?? 0 : 0,
-          ).toNumber(),
-        },
-        pre:
-          currentPrice != null
-            ? Math.round((currentPrice / totalAssetPrice.toNumber()) * 100)
-            : null,
-        change: priceChange,
-        buttons: (
-          <AssetActionButtons
-            marketId={marketId}
-            assetId={
-              parseAssetIdString(market?.pool?.weights[index]?.assetId) as
-                | ScalarAssetId
-                | CategoricalAssetId
-            }
-          />
-        ),
-      };
-    },
-  );
+    return {
+      assetId: market?.pool?.weights[index]?.assetId,
+      id: index,
+      outcome: outcomeName,
+      totalValue: {
+        value: currentPrice ?? 0,
+        usdValue: new Decimal(
+          currentPrice ? usdPrice?.mul(currentPrice) ?? 0 : 0,
+        ).toNumber(),
+      },
+      pre:
+        currentPrice != null
+          ? Math.round((currentPrice / totalAssetPrice.toNumber()) * 100)
+          : null,
+      change: priceChange,
+      buttons: (
+        <AssetActionButtons
+          marketId={marketId}
+          assetId={
+            parseAssetIdString(market?.pool?.weights[index]?.assetId) as
+              | ScalarAssetId
+              | CategoricalAssetId
+          }
+        />
+      ),
+    };
+  });
 
   return <Table columns={columns} data={tableData} />;
 };

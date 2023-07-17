@@ -277,7 +277,10 @@ const Market: NextPage<MarketPageProps> = ({
               )}
             </div>
           )}
-          <MarketAssetDetails marketId={Number(marketid)} />
+          <MarketAssetDetails
+            marketId={Number(marketid)}
+            categories={indexedMarket.categories}
+          />
         </div>
 
         <div className="lg:px-36 mb-12">
