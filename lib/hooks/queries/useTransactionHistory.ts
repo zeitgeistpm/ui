@@ -21,7 +21,7 @@ const transactionHistoryQuery = gql`
   query TransactionHistory($address: String) {
     historicalAssets(
       where: {
-        accountId_eq: $address
+        accountIds_eq: $address
         event_in: ["PoolCreate", "PoolJoin", "PoolExit"]
       }
       orderBy: timestamp_DESC
