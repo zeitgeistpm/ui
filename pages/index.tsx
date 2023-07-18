@@ -45,7 +45,7 @@ export async function getStaticProps() {
     bannerPlaceHolders,
     categoryCounts,
   ] = await Promise.all([
-    getFeaturedMarkets(client),
+    getFeaturedMarkets(client, sdk),
     getTrendingMarkets(client, sdk),
     getPlaiceholders(
       CATEGORIES.map((cat) => `${cat.imagePath}`),
