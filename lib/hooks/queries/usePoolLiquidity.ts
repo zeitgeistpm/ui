@@ -17,13 +17,13 @@ export const usePoolLiquidity = (filter?: UseMarketFilter) => {
 
   const { data: spotPrices } = useMarketSpotPrices(market?.marketId);
   const { data: balances } = useAccountPoolAssetBalances(
-    market?.pool?.accountId,
+    market?.pool?.account.accountId,
     market?.pool ?? undefined,
   );
 
   const baseAssetId = parseAssetIdString(market?.baseAsset);
   const { data: baseAssetBalance } = useBalance(
-    market?.pool?.accountId,
+    market?.pool?.account.accountId,
     baseAssetId,
   );
 
