@@ -21,7 +21,7 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
     trigger,
     handleSubmit,
     reset,
-    formState: { isValid, errors, touchedFields, isDirty },
+    formState: { isValid, errors, isDirty },
     watch,
   } = useForm<{
     proxyAddress: AddressOption | null;
@@ -106,7 +106,11 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
         }}
         control={control}
       />
-      <FormTransactionButton disabled={!isValid || !isDirty} className="mt-5">
+      <FormTransactionButton
+        disabled={!isValid || !isDirty}
+        className="mt-5"
+        disableFeeCheck={true}
+      >
         Save
       </FormTransactionButton>
     </form>
