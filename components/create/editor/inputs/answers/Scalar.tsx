@@ -5,7 +5,7 @@ import Toggle from "components/ui/Toggle";
 import DateTimePicker from "../DateTime";
 
 export type ScalarAnswersInputProps = {
-  name?: string;
+  name: string;
   value?: ScalarAnswers;
   onChange?: (event: FormEvent<ScalarAnswers>) => void;
   onBlur?: (event: FormEvent<ScalarAnswers>) => void;
@@ -50,7 +50,7 @@ export const ScalarAnswersInput = ({
           name,
           value: {
             type: "scalar",
-            numberType: value.numberType,
+            numberType: value?.numberType ?? "number",
             answers: (value?.answers.map((v, i) =>
               i === index ? newValue : v,
             ) ?? []) as [number, number],
@@ -75,7 +75,7 @@ export const ScalarAnswersInput = ({
           name,
           value: {
             type: "scalar",
-            numberType: value.numberType,
+            numberType: value?.numberType ?? "number",
             answers: (value?.answers.map((v, i) =>
               i === index ? newValue : v,
             ) ?? []) as [number, number],

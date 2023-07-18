@@ -28,25 +28,31 @@ export const useSliderControls = (props: UseSlidesProps): UseSliderControls => {
     const isFirstSlide = currentSlide === props.count - 1;
     const newSlide = isFirstSlide ? 0 : currentSlide + 1;
     setCurrentSlide(newSlide);
-    userOrigin && pause(props.pauseOnUserInteraction);
+    userOrigin &&
+      props.pauseOnUserInteraction &&
+      pause(props.pauseOnUserInteraction);
   };
 
   const prev = (userOrigin?: boolean) => {
     const isFirstSlide = currentSlide === 0;
     const newSlide = isFirstSlide ? props.count - 1 : currentSlide - 1;
     setCurrentSlide(newSlide);
-    userOrigin && pause(props.pauseOnUserInteraction);
+    userOrigin &&
+      props.pauseOnUserInteraction &&
+      pause(props.pauseOnUserInteraction);
   };
 
   const goto = (slide: number, userOrigin?: boolean) => {
     setCurrentSlide(slide);
-    userOrigin && pause(props.pauseOnUserInteraction);
+    userOrigin &&
+      props.pauseOnUserInteraction &&
+      pause(props.pauseOnUserInteraction);
   };
 
   const pause = (time: number) => {
-    clearTimeout(timerRef.current);
+    timerRef.current && clearTimeout(timerRef.current);
     setPaused(true);
-    clearTimeout(pauseTimerRef.current);
+    pauseTimerRef.current && clearTimeout(pauseTimerRef.current);
     pauseTimerRef.current = setTimeout(() => {
       setPaused(false);
     }, time);
@@ -64,7 +70,7 @@ export const useSliderControls = (props: UseSlidesProps): UseSliderControls => {
         next();
       }, props.autoplay);
       return () => {
-        clearTimeout(timerRef.current);
+        timerRef.current && clearTimeout(timerRef.current);
       };
     }
   }, [props.autoplay, currentSlide, paused]);

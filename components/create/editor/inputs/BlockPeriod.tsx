@@ -64,7 +64,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
         name,
         value: {
           type: "date",
-          block: dateBlock(chainTime, new Date(event.target.value)),
+          date: event.target.value,
         },
       },
     });
@@ -78,7 +78,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
         name,
         value: {
           type: "date",
-          block: dateBlock(chainTime, new Date(event.target.value)),
+          date: event.target.value,
         },
       },
     });
@@ -159,11 +159,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
             }`}
             placeholder="Set Custom Date"
             isValid={value?.type === "date" && isValid}
-            value={
-              chainTime && value?.type === "date"
-                ? blockDate(chainTime, value.block).toISOString()
-                : undefined
-            }
+            value={chainTime && value?.type === "date" ? value.date : undefined}
             onChange={handleDateChange}
             onBlur={handleDateBlur}
           />

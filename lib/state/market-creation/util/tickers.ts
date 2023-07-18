@@ -36,31 +36,35 @@ export const tickersForAnswers = (
  * Generate appropriate tickers for categorical answers.
  */
 export const createCategoricalTickers = (
-  answers: string[],
-): { [key: string]: string } => {
-  const tickers: { [key: string]: string } = {};
-  const usedTickers: { [key: string]: boolean } = {};
+  strings: string[],
+): Record<string, string> => {
+  const tokens: Record<string, string> = {};
 
-  for (const description of answers) {
-    const words = description.split(" ");
+  for (const str of strings) {
+    const words = str.split(" ");
+    let token = "";
 
-    let ticker = (
-      words[0].slice(0, 3) + words[words.length - 1].slice(0, 3)
-    ).toUpperCase();
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      const truncatedWord = word.slice(0, 3);
 
-    if (usedTickers[ticker]) {
-      let count = 1;
-      let newTicker = ticker;
-      while (usedTickers[newTicker]) {
-        count++;
-        newTicker = ticker + String(count);
+      if (i === words.length - 1) {
+        token += truncatedWord.toUpperCase();
+      } else {
+        token += truncatedWord;
       }
-      ticker = newTicker;
     }
 
-    usedTickers[ticker] = true;
-    tickers[description] = ticker;
+    tokens[str] = token;
   }
 
-  return tickers;
+  return tokens;
+};
+
+const input = ["foo bar", "foo bar baz", "foo bar baz qux"];
+
+const output = {
+  "foo bar": "FOOBAR",
+  "foo bar baz": "FOOBAZ",
+  "foo bar baz qux": "FOOQUX",
 };
