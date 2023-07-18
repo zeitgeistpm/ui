@@ -3082,14 +3082,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/indexer@npm:^3.0.14":
-  version: 3.0.14
-  resolution: "@zeitgeistpm/indexer@npm:3.0.14"
+"@zeitgeistpm/indexer@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "@zeitgeistpm/indexer@npm:3.1.1"
   dependencies:
     graphql: ^16.6.0
     graphql-request: ^5.0.0
     graphql-tag: ^2.12.6
-  checksum: a8f0b65cfc3d563f2f96bb4f2c1257466e7ca1873c136e6fcc350f37829189602958c20394ea8ad84cb1eb09f8acfa17e62279d77b44052f1f46a391e89f22c5
+  checksum: 729c82e7f61e7e1db3eaa323d8bacc4a7a98d77d5185606fb018e7a5c3ca43b108b88ae271669e0632bcb0e99d4f148c004a5c5a5ced21fa13c84cf0d79fab7d
   languageName: node
   linkType: hard
 
@@ -3107,12 +3107,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.29.21":
-  version: 2.29.21
-  resolution: "@zeitgeistpm/sdk@npm:2.29.21"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.30.1":
+  version: 2.30.1
+  resolution: "@zeitgeistpm/sdk@npm:2.30.1"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.11.5
-    "@zeitgeistpm/indexer": ^3.0.14
+    "@zeitgeistpm/indexer": ^3.1.1
     "@zeitgeistpm/rpc": ^2.7.6
     "@zeitgeistpm/utility": ^2.18.13
     "@zeitgeistpm/web3.storage": ^2.9.13
@@ -3128,7 +3128,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: 5e8f28d9fde6c22cfcf67e86661600b1447b31f19471b8ddd238e8c36d68c5d132d4490abd46f1e7db427b9fab04800d46bacbb33e3e052ad350f65b76e6ad3c
+  checksum: 6f4b34ddf4784967e2abdbe1f7bb225a69b519d9eac5367d8f76276d4929960719b31e2c8b797074e8885db551d2365cedf4a7df4ad7789f045db7c98f47230b
   languageName: node
   linkType: hard
 
@@ -3227,7 +3227,7 @@ __metadata:
     "@zeitgeistpm/avatara-react": ^1.3.2
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^1.0.3
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.29.21"
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.30.1"
     "@zeitgeistpm/utility": ^2.18.12
     autoprefixer: 10.2.5
     axios: ^0.21.4
