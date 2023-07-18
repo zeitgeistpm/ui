@@ -12,13 +12,14 @@ import getTrendingMarkets from "lib/gql/trending-markets";
 import { NextPage } from "next";
 
 import { Banner, getBanners } from "lib/cms/get-banners";
-import { graphQlEndpoint } from "lib/constants";
+import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import path from "path";
 import {
   getPlaiceholder,
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
+import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
 
 const getPlaiceholders = (
   paths: string[],
@@ -29,6 +30,11 @@ const getPlaiceholders = (
 
 export async function getStaticProps() {
   const client = new GraphQLClient(graphQlEndpoint);
+  const sdk = await create({
+    provider: endpointOptions.map((e) => e.value),
+    indexer: graphQlEndpoint,
+    storage: ZeitgeistIpfs(),
+  });
 
   const banners = await getBanners();
 
@@ -40,7 +46,7 @@ export async function getStaticProps() {
     categoryCounts,
   ] = await Promise.all([
     getFeaturedMarkets(client),
-    getTrendingMarkets(client),
+    getTrendingMarkets(client, sdk),
     getPlaiceholders(
       CATEGORIES.map((cat) => `${cat.imagePath}`),
       { dir: `${path.join(process.cwd())}/public/` },
