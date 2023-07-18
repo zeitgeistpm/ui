@@ -30,7 +30,7 @@ export interface IndexedMarketCardData {
   scalarType: ScalarRangeType;
   prediction: { name: string; price: number };
   volume: number;
-  pool: {};
+  pool: { poolId?: number; volume: string } | null;
   baseAsset: string;
   tags?: string[];
   status: string;

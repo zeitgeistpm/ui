@@ -181,7 +181,7 @@ const getTrendingMarkets = async (
         volume: Number(new Decimal(market.pool.volume).div(ZTG).toFixed(0)),
         baseAsset: market.baseAsset,
         outcomes: marketCategories,
-        pool: market.pool,
+        pool: market.pool ?? null,
         marketType: market.marketType,
         tags: market.tags,
         status: market.status,

@@ -158,8 +158,8 @@ export const useMarketDraftEditor = ({
         let isTouched = draft.touchState[key];
         let errors = [...(fieldsState[key].errors ?? [])];
 
-        if (parsed.success !== true) {
-          const issue = parsed.error.issues.find(
+        if (parsed?.success !== true) {
+          const issue = parsed?.error.issues.find(
             (issue) => issue.path[0] === key,
           );
           if (issue) {
@@ -270,7 +270,7 @@ export const useMarketDraftEditor = ({
         };
         if (!draft.isWizard) {
           const section = sectionForFormKey(key);
-          newDraft.stepReachState[section] = true;
+          section && (newDraft.stepReachState[section] = true);
         }
         update(newDraft);
       },
@@ -283,7 +283,9 @@ export const useMarketDraftEditor = ({
         };
         if (!draft.isWizard) {
           const section = sectionForFormKey(key);
-          newDraft.stepReachState[section] = true;
+          if (section) {
+            newDraft.stepReachState[section] = true;
+          }
         }
         update(newDraft);
       },
