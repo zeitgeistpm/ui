@@ -327,7 +327,7 @@ const MarketCard = ({
           className="flex flex-col flex-1 gap-4"
         >
           <div className="flex justify-between gap-2.5 w-full">
-            <div className={`inline-flex items-center gap-1 ${className}`}>
+            <div className={`inline-flex items-center text-xs gap-2.5`}>
               <Avatar address={creator} copy={false} />
               <span className="break-all flex-1">
                 {creatorDisplayName ?? shortenAddress(creator, 10, 10)}
