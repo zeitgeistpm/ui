@@ -43,7 +43,10 @@ const PoolTable = ({
     : undefined;
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
-  const { data: balances } = useAccountPoolAssetBalances(pool?.accountId, pool);
+  const { data: balances } = useAccountPoolAssetBalances(
+    pool?.account.accountId,
+    pool,
+  );
   const { data: basePoolBalance } = usePoolBaseBalance(poolId);
   const { data: baseAssetUsdPrice } = useAssetUsdPrice(baseAssetId);
   const { data: spotPrices } = useMarketSpotPrices(marketId);

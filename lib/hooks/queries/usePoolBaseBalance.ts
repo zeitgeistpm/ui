@@ -6,7 +6,7 @@ export const usePoolBaseBalance = (poolId?: number, blockNumber?: number) => {
   const { data: pool } = usePool(poolId != null ? { poolId } : undefined);
 
   const balanceQuery = useBalance(
-    pool?.accountId,
+    pool?.account.accountId,
     pool?.baseAsset ? parseAssetId(pool.baseAsset).unwrap() : undefined,
     blockNumber,
   );
