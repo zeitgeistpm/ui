@@ -45,7 +45,7 @@ const LiquidityModal = ({
 
   // pool balances
   const { data: poolAssetBalances } = useAccountPoolAssetBalances(
-    pool?.accountId,
+    pool?.account.accountId,
     pool,
   );
 
