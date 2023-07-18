@@ -45,7 +45,7 @@ const LiquidityModal = ({
 
   // pool balances
   const { data: poolAssetBalances } = useAccountPoolAssetBalances(
-    pool?.accountId,
+    pool?.account.accountId,
     pool,
   );
 
@@ -118,7 +118,6 @@ const LiquidityModal = ({
 
       return allBalances;
     }
-    return {};
   }, [
     pool?.weights,
     userAssetBalances,
@@ -142,27 +141,31 @@ const LiquidityModal = ({
 
           <Tab.Panels className="p-[30px]">
             <Tab.Panel>
-              <JoinPoolForm
-                poolId={poolId}
-                poolBalances={allBalances}
-                totalPoolShares={
-                  new Decimal(totalPoolIssuance?.toString() ?? 0)
-                }
-                baseAssetTicker={metadata?.symbol}
-                onSuccess={onClose}
-              />
+              {allBalances && (
+                <JoinPoolForm
+                  poolId={poolId}
+                  poolBalances={allBalances}
+                  totalPoolShares={
+                    new Decimal(totalPoolIssuance?.toString() ?? 0)
+                  }
+                  baseAssetTicker={metadata?.symbol}
+                  onSuccess={onClose}
+                />
+              )}
             </Tab.Panel>
             <Tab.Panel>
-              <ExitPoolForm
-                poolId={poolId}
-                poolBalances={allBalances}
-                totalPoolShares={
-                  new Decimal(totalPoolIssuance?.toString() ?? 0)
-                }
-                userPoolShares={new Decimal(userPoolTokens?.toString() ?? 0)}
-                baseAssetTicker={metadata?.symbol}
-                onSuccess={onClose}
-              />
+              {allBalances && (
+                <ExitPoolForm
+                  poolId={poolId}
+                  poolBalances={allBalances}
+                  totalPoolShares={
+                    new Decimal(totalPoolIssuance?.toString() ?? 0)
+                  }
+                  userPoolShares={new Decimal(userPoolTokens?.toString() ?? 0)}
+                  baseAssetTicker={metadata?.symbol}
+                  onSuccess={onClose}
+                />
+              )}
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>

@@ -2,6 +2,7 @@ import {
   defaultMarketsQueryState,
   filterTypes,
 } from "lib/constants/market-filter";
+import { isPresent } from "lib/types";
 import { DeepPartial } from "lib/types/deep-partial";
 import { MarketsListQuery, MarketsOrderBy } from "lib/types/market-filter";
 import { getQueryParams } from "lib/util/get-query-params";
@@ -55,13 +56,18 @@ const useMarketsUrlQuery = (): MarketsListQuery & {
   return { ...query, updateQuery };
 };
 
-const toString = (query: MarketsListQuery) => {
+const toString = (query: DeepPartial<MarketsListQuery>) => {
   const { filters, ordering, liquidityOnly } = query;
 
-  const filtersEntries = filterTypes.map((type) => [
-    type,
-    encodeURIComponent(filters[type].join(",")),
-  ]);
+  const filtersEntries = filterTypes
+    .map((type) => {
+      const f = filters?.[type];
+      if (!isPresent(f)) {
+        return;
+      }
+      return [type, encodeURIComponent(f.join(","))];
+    })
+    .filter(isPresent);
 
   const filtersQueryStr = filtersEntries
     .map(([key, value]) => {
@@ -80,7 +86,7 @@ const toString = (query: MarketsListQuery) => {
 };
 
 const parse = (rawQuery: ParsedUrlQuery): MarketsListQuery => {
-  const filters = {
+  const filters: { status: string[]; tag: string[]; currency: string[] } = {
     status: [],
     tag: [],
     currency: [],
@@ -90,7 +96,7 @@ const parse = (rawQuery: ParsedUrlQuery): MarketsListQuery => {
   const liquidityOnly = rawQuery["liquidityOnly"] === "true";
 
   for (const filterType of filterTypes) {
-    if (rawQuery[filterType]) {
+    if (rawQuery[filterType] && filters) {
       const val: string = rawQuery[filterType] as string;
       const parsedVal = val.split(",");
       filters[filterType] = parsedVal;

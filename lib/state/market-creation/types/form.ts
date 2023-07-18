@@ -1,7 +1,6 @@
 import {
   CreateMarketBaseParams,
   CreateMarketParams,
-  MarketMetadata,
   MetadataStorage,
   RpcContext,
   ZTG,
@@ -11,9 +10,11 @@ import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { ChainTime } from "@zeitgeistpm/utility/dist/time";
 import Decimal from "decimal.js";
 import { BLOCK_TIME_SECONDS } from "lib/constants";
+import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 import moment from "moment";
 import { DeepRequired } from "react-hook-form";
 import * as z from "zod";
+import { tickersForAnswers } from "../util/tickers";
 import { timelineAsBlocks } from "./timeline";
 import {
   IOAnswers,
@@ -34,8 +35,6 @@ import {
   IOTags,
   IOYesNoAnswers,
 } from "./validation";
-import { tickersForAnswers } from "../util/tickers";
-import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 
 /**
  * This is the type of the full market creation form data that is used to create a market.

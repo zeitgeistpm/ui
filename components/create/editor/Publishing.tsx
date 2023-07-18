@@ -43,20 +43,20 @@ export const Publishing = ({ editor }: PublishingProps) => {
   const params = useMemo(() => {
     let signer = wallet.getSigner();
 
-    const real =
-      wallet.proxyFor?.enabled && wallet.proxyFor?.address
-        ? (wallet.activeAccount as KeyringPairOrExtSigner)
-        : signer;
+    if (!editor.isValid || !chainTime || !signer) return;
 
-    if (editor.isValid && chainTime && signer) {
+    const proxy = wallet.getProxyFor(wallet.activeAccount?.address);
+
+    if (proxy && proxy.enabled) {
       return marketFormDataToExtrinsicParams(
         editor.form,
-        real,
+        { address: wallet.realAddress } as KeyringPairOrExtSigner,
         chainTime,
         signer,
       );
     }
-    return;
+
+    return marketFormDataToExtrinsicParams(editor.form, signer, chainTime);
   }, [editor.form, chainTime, wallet.activeAccount]);
 
   const feesEnabled = !(
@@ -87,12 +87,12 @@ export const Publishing = ({ editor }: PublishingProps) => {
     (a) => a.name === editor.form.currency,
   );
 
-  const { data: ztgBalance } = useBalance(wallet.activeAccount?.address, {
+  const { data: ztgBalance } = useBalance(wallet.realAddress, {
     Ztg: null,
   });
 
   const { data: foreignAssetBalance } = useBalance(
-    wallet.activeAccount?.address,
+    wallet.realAddress,
     baseCurrency?.assetId,
   );
 
