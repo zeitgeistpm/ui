@@ -27,6 +27,7 @@ import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import { Dialog } from "@headlessui/react";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { estimateMarketResolutionDate } from "lib/util/estimate-market-resolution";
+import { MarketReport } from "lib/types";
 
 export const UserIdentity: FC<
   PropsWithChildren<{ user: string; className?: string }>
@@ -280,11 +281,11 @@ const MarketHistory: FC<
 
 const MarketHeader: FC<{
   market: MarketPageIndexedData;
-  report: MarketDispute;
-  disputes: MarketDispute;
-  resolvedOutcome: string;
-  token: string;
-  marketStage: MarketStage;
+  report?: MarketReport;
+  disputes?: MarketDispute;
+  resolvedOutcome?: string;
+  token?: string;
+  marketStage?: MarketStage;
   rejectReason?: string;
 }> = ({
   market,
@@ -316,10 +317,10 @@ const MarketHeader: FC<{
     marketType,
     categories,
     status,
+    scalarType,
     disputes,
     report,
     resolvedOutcome,
-    scalarType,
   );
 
   const { data: marketHistory } = useMarketEventHistory(
@@ -418,7 +419,7 @@ const MarketHeader: FC<{
           <MarketOutcome
             setShowMarketHistory={setShowMarketHistory}
             status={status}
-            outcome={outcome}
+            outcome={outcome ?? ""}
             by={by}
             marketHistory={marketHistory}
           />

@@ -1,22 +1,12 @@
-import {
-  isRpcSdk,
-  CategoricalAssetId,
-  ScalarAssetId,
-} from "@zeitgeistpm/sdk-next";
+import { CategoricalAssetId, ScalarAssetId } from "@zeitgeistpm/sdk-next";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarket24hrPriceChanges } from "lib/hooks/queries/useMarket24hrPriceChanges";
-import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useRpcMarket } from "lib/hooks/queries/useRpcMarket";
 
-import moment from "moment";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
-import { from } from "rxjs";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 
@@ -44,12 +34,15 @@ const columns: TableColumn[] = [
   },
 ];
 
-const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
-  const [tableData, setTableData] = useState<TableData[] | undefined>();
-  const [sdk] = useSdkv2();
-
-  const [authReportNumberOrId, setAuthReportNumberOrId] = useState<number>();
-
+const MarketAssetDetails = ({
+  marketId,
+  categories,
+}: {
+  marketId: number;
+  categories?: {
+    name: string;
+  }[];
+}) => {
   const { data: market } = useMarket({ marketId });
   const baseAsset = parseAssetIdString(market?.baseAsset);
   const { data: usdPrice } = useAssetUsdPrice(baseAsset);
@@ -57,110 +50,47 @@ const MarketAssetDetails = ({ marketId }: { marketId: number }) => {
   const { data: spotPrices } = useMarketSpotPrices(marketId);
   const { data: priceChanges } = useMarket24hrPriceChanges(marketId);
 
-  const { data: disputes } = useMarketDisputes(marketId);
-  const { data: rpcMarket } = useRpcMarket(marketId);
-  const poolAlreadyDeployed = market?.pool?.poolId != null;
+  const totalAssetPrice = spotPrices
+    ? Array.from(spotPrices.values()).reduce(
+        (val, cur) => val.plus(cur),
+        new Decimal(0),
+      )
+    : new Decimal(0);
 
-  useEffect(() => {
-    if (market == null) {
-      return;
-    }
-    getPageData();
-  }, [market, spotPrices, priceChanges]);
+  const tableData: TableData[] | undefined = (
+    categories ?? market?.categories
+  )?.map((category, index) => {
+    const outcomeName = category?.name;
+    const currentPrice = spotPrices?.get(index)?.toNumber();
+    const priceChange = priceChanges?.get(index);
 
-  useEffect(() => {
-    if (
-      !isRpcSdk(sdk) ||
-      marketId == null ||
-      market?.status === "Active" ||
-      market?.status === "Proposed"
-    ) {
-      return;
-    }
-    const fetchAuthorizedReport = async (marketId: number) => {
-      const report = await sdk.api.query.authorized.authorizedOutcomeReports(
-        marketId,
-      );
-
-      if (report.isEmpty === true) {
-        return null;
-      } else {
-        const reportJSON: any = report.toJSON();
-        if (reportJSON.outcome.scalar) {
-          return reportJSON.outcome.scalar;
-        } else {
-          return reportJSON.outcome.categorical;
-        }
-      }
+    return {
+      assetId: market?.pool?.weights[index]?.assetId,
+      id: index,
+      outcome: outcomeName,
+      totalValue: {
+        value: currentPrice ?? 0,
+        usdValue: new Decimal(
+          currentPrice ? usdPrice?.mul(currentPrice) ?? 0 : 0,
+        ).toNumber(),
+      },
+      pre:
+        currentPrice != null
+          ? Math.round((currentPrice / totalAssetPrice.toNumber()) * 100)
+          : null,
+      change: priceChange,
+      buttons: (
+        <AssetActionButtons
+          marketId={marketId}
+          assetId={
+            parseAssetIdString(market?.pool?.weights[index]?.assetId) as
+              | ScalarAssetId
+              | CategoricalAssetId
+          }
+        />
+      ),
     };
-
-    const sub = from(fetchAuthorizedReport(marketId)).subscribe((res) => {
-      setAuthReportNumberOrId(res);
-    });
-    return () => sub.unsubscribe();
-  }, [sdk, marketId, market?.status]);
-
-  const getPageData = async () => {
-    let tblData: TableData[] | undefined;
-
-    if (market && poolAlreadyDeployed) {
-      const totalAssetPrice = spotPrices
-        ? Array.from(spotPrices.values()).reduce(
-            (val, cur) => val.plus(cur),
-            new Decimal(0),
-          )
-        : new Decimal(0);
-
-      const categoryEntries = market?.categories?.entries();
-
-      if (categoryEntries) {
-        for (const [index, category] of categoryEntries) {
-          const outcomeName = category?.name;
-          const currentPrice = spotPrices?.get(index)?.toNumber();
-
-          const priceChange = priceChanges?.get(index);
-          tblData = [
-            ...(tblData ?? []),
-            {
-              assetId: market.pool?.weights[index]?.assetId,
-              id: index,
-              outcome: outcomeName,
-              totalValue: {
-                value: currentPrice ?? 0,
-                usdValue: new Decimal(
-                  currentPrice ? usdPrice?.mul(currentPrice) ?? 0 : 0,
-                ).toNumber(),
-              },
-              pre:
-                currentPrice != null
-                  ? Math.round(
-                      (currentPrice / totalAssetPrice.toNumber()) * 100,
-                    )
-                  : null,
-              change: priceChange,
-              buttons: (
-                <AssetActionButtons
-                  marketId={marketId}
-                  assetId={
-                    parseAssetIdString(market.pool?.weights[index]?.assetId) as
-                      | ScalarAssetId
-                      | CategoricalAssetId
-                  }
-                />
-              ),
-            },
-          ];
-        }
-      }
-
-      setTableData(tblData);
-    } else {
-      tblData = market?.categories?.map((category) => ({
-        outcome: category?.name,
-      }));
-      setTableData(tblData);
-    }
-  };
+  });
 
   return <Table columns={columns} data={tableData} />;
 };

@@ -211,9 +211,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
                 : Intl.DateTimeFormat("default", {
                     dateStyle: "medium",
                     timeStyle: "short",
-                  }).format(
-                    blockDate(chainTime!, form.gracePeriod?.block!).getTime(),
-                  )}
+                  }).format(new Date(form.gracePeriod?.date!).getTime())}
             </div>
           </div>
           <div className="flex justify-center gap-2 items-center mb-2 md:mb-0">

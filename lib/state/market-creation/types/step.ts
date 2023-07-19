@@ -75,11 +75,14 @@ export const stepFormKeys: Record<
  * Get the market step type a given form key is related to.
  * @param key - the form key to get the section for
  */
-export const stepForFormKey = (
+export const sectionForFormKey = (
   key: keyof MarketFormData,
-): MarketCreationStepType => {
+): MarketCreationStepType | undefined => {
   for (const sectionKey in stepFormKeys) {
     if (stepFormKeys[sectionKey].includes(key))
       return sectionKey as MarketCreationStepType;
   }
+  throw new Error(
+    `[SHOULD BE UNREACHABLE] No section found for form key ${key}`,
+  );
 };

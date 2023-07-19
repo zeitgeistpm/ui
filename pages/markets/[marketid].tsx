@@ -1,5 +1,5 @@
 import { Transition } from "@headlessui/react";
-import { MarketDispute, Report } from "@zeitgeistpm/sdk/dist/types";
+import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 import MarketAddresses from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
@@ -31,6 +31,11 @@ import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
+import {
+  isMarketCategoricalOutcome,
+  isValidMarketReport,
+  MarketReport,
+} from "lib/types";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
@@ -107,7 +112,7 @@ const Market: NextPage<MarketPageProps> = ({
   promotionData,
 }) => {
   const [lastDispute, setLastDispute] = useState<MarketDispute>();
-  const [report, setReport] = useState<Report>();
+  const [report, setReport] = useState<MarketReport>();
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
@@ -172,19 +177,17 @@ const Market: NextPage<MarketPageProps> = ({
       setLastDispute(marketDispute);
     }
 
-    if (market?.report && market?.status === "Reported") {
-      const report: Report = {
-        at: market?.report?.at,
-        by: market?.report?.by,
-        outcome: {
-          categorical: market?.report?.outcome?.categorical,
-          scalar:
-            market.scalarType === "date"
-              ? new Decimal(
-                  market?.report?.outcome?.scalar.toString(),
-                ).toNumber()
-              : market?.report?.outcome?.scalar,
-        },
+    if (
+      market?.report &&
+      market?.status === "Reported" &&
+      isValidMarketReport(market.report)
+    ) {
+      const report: MarketReport = {
+        at: market.report.at,
+        by: market.report.by,
+        outcome: isMarketCategoricalOutcome(market.report.outcome)
+          ? { categorical: market.report.outcome.categorical }
+          : { scalar: market.report.outcome.scalar?.toString() },
       };
       setReport(report);
     }
@@ -207,12 +210,12 @@ const Market: NextPage<MarketPageProps> = ({
 
         <MarketHeader
           market={indexedMarket}
-          resolvedOutcome={market?.resolvedOutcome}
+          resolvedOutcome={market?.resolvedOutcome ?? undefined}
           report={report}
           disputes={lastDispute}
           token={token}
-          marketStage={marketStage}
-          rejectReason={market?.rejectReason}
+          marketStage={marketStage ?? undefined}
+          rejectReason={market?.rejectReason ?? undefined}
         />
         {market?.rejectReason && market.rejectReason.length > 0 && (
           <div className="mt-[10px] text-ztg-14-150">
@@ -263,14 +266,17 @@ const Market: NextPage<MarketPageProps> = ({
                   upperBound={new Decimal(indexedMarket.marketType.scalar[1])
                     .div(ZTG)
                     .toNumber()}
-                  shortPrice={spotPrices?.get(1).toNumber()}
-                  longPrice={spotPrices?.get(0).toNumber()}
+                  shortPrice={spotPrices?.get(1)?.toNumber()}
+                  longPrice={spotPrices?.get(0)?.toNumber()}
                   status={indexedMarket.status}
                 />
               )}
             </div>
           )}
-          <MarketAssetDetails marketId={Number(marketid)} />
+          <MarketAssetDetails
+            marketId={Number(marketid)}
+            categories={indexedMarket.categories}
+          />
         </div>
 
         <div className="lg:px-36 mb-12">
@@ -291,7 +297,7 @@ const Market: NextPage<MarketPageProps> = ({
           />
         </div>
 
-        {Boolean(market?.pool || poolDeployed) && (
+        {market && (market?.pool || poolDeployed) && (
           <div className="mb-12">
             <div
               className="flex center mb-8 text-mariner cursor-pointer"

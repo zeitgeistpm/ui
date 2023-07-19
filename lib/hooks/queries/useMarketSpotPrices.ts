@@ -25,7 +25,7 @@ export const useMarketSpotPrices = (
   );
   const pool = market?.pool ?? undefined;
   const { data: balances } = useAccountPoolAssetBalances(
-    pool?.accountId,
+    pool?.account.accountId,
     pool,
     blockNumber,
   );
