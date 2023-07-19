@@ -137,7 +137,6 @@ const DepositModal = ({
           "amount",
           maxTransferAmount.mul(value.percentage).div(100).div(ZTG).toNumber(),
         );
-        trigger("amount");
       } else if (name === "amount" && value.amount !== "") {
         setValue(
           "percentage",
@@ -148,6 +147,7 @@ const DepositModal = ({
             .toString(),
         );
       }
+      trigger("amount");
     });
     return () => subscription.unsubscribe();
   }, [watch, balance, fee]);
@@ -194,7 +194,7 @@ const DepositModal = ({
                   if (maxTransferAmount.div(ZTG).lessThan(value)) {
                     return `Insufficient balance. Current balance: ${maxTransferAmount
                       .div(ZTG)
-                      .toFixed(3)}`;
+                      .toFixed(5)}`;
                   } else if (value <= 0) {
                     return "Value cannot be zero or less";
                   }
