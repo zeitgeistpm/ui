@@ -56,18 +56,20 @@ const MarketChart = ({
     startDateISOString,
   );
 
-  const chartData = prices?.map((price) => {
-    const time = new Date(price.timestamp).getTime();
-    const assetPrices = price.prices.reduce((obj, val, index) => {
-      // adjust prices over 1
-      return { ...obj, ["v" + index]: (val.price > 1 ? 1 : val.price) ?? 0 };
-    }, {});
+  const chartData = prices
+    ?.filter((data) => data.prices.every((p) => p.price != null))
+    .map((price) => {
+      const time = new Date(price.timestamp).getTime();
+      const assetPrices = price.prices.reduce((obj, val, index) => {
+        // adjust prices over 1
+        return { ...obj, ["v" + index]: val.price > 1 ? 1 : val.price };
+      }, {});
 
-    return {
-      t: time,
-      ...assetPrices,
-    };
-  });
+      return {
+        t: time,
+        ...assetPrices,
+      };
+    });
 
   const handleFilterChange = (filter: TimeFilter) => {
     setChartFilter(filter);
