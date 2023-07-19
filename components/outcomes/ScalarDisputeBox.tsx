@@ -4,6 +4,7 @@ import {
   isRpcSdk,
   Market,
 } from "@zeitgeistpm/sdk-next";
+import Input from "components/ui/Input";
 import { DateTimeInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
@@ -118,7 +119,7 @@ const ScalarDisputeBox = ({
           }}
         />
       ) : (
-        <input
+        <Input
           type="number"
           value={scalarReportValue}
           onChange={(e) => setScalarReportValue(e.target.value)}

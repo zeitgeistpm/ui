@@ -12,6 +12,8 @@ import { useNotifications } from "lib/state/notifications";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
+import Input from "components/ui/Input";
+import { isEmpty } from "lodash-es";
 
 const JoinPoolForm = ({
   poolBalances,
@@ -163,7 +165,7 @@ const JoinPoolForm = ({
               <div className="absolute h-full left-[15px] top-[14px] truncate w-[40%] capitalize">
                 {assetName}
               </div>
-              <input
+              <Input
                 className={`bg-anti-flash-white text-right rounded-[5px] h-[56px] px-[15px] w-full outline-none
                             ${
                               formState.errors[id.toString()]?.message
@@ -199,7 +201,7 @@ const JoinPoolForm = ({
         })}
       </div>
       <input
-        className="my-[20px]"
+        className="my-[20px] px-0"
         type="range"
         {...register("baseAssetPercentage", { min: 0, value: "0" })}
       />

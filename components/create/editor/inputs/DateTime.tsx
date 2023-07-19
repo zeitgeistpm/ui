@@ -1,6 +1,7 @@
 import moment from "moment";
 import { ChangeEventHandler, FocusEventHandler, useRef } from "react";
 import { FormEvent } from "../types";
+import Input from "components/ui/Input";
 
 export type DateTimePickerProps = {
   name: string;
@@ -63,7 +64,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
                 timeStyle: "medium",
               }).format(new Date(value))}
         </div>
-        <input
+        <Input
           className="opacity-0 h-0 w-0 absolute -bottom-2 left-0"
           ref={inputRef}
           name={name}
