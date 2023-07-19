@@ -137,32 +137,39 @@ const Input = (props: InputProps<AddressOption, false>) => {
   return <components.Input {...props} className="absolute w-full left-0" />;
 };
 
-export type AddressSelectProps = {
+export type AddressInputProps = {
   onChange: (option: AddressOption | null) => void;
   value?: AddressOption | null;
   error?: string;
+  options?: AddressOption[];
+  disabled?: boolean;
 };
 
-const AddressInput: React.FC<AddressSelectProps> = ({
+const AddressInput: React.FC<AddressInputProps> = ({
   onChange,
   error,
   value = null,
+  options,
+  disabled = false,
 }) => {
   const wallet = useWallet();
 
-  const options = useMemo<AddressOption[]>(() => {
+  const opts = useMemo<AddressOption[]>(() => {
+    if (options) {
+      return options;
+    }
     return wallet.accounts
       .filter((acc) => acc.address !== wallet.activeAccount?.address)
       .map((account) => ({
         label: shortenAddress(account.address, 13, 13),
         value: account.address,
       }));
-  }, [wallet.accounts]);
+  }, [options, wallet.accounts]);
 
   return (
     <div
       className={
-        "mb-5 h-14 w-full bg-anti-flash-white rounded-md border-1 border-transparent " +
+        "mb-5 h-14 w-full bg-anti-flash-white rounded-md border-1 border-transparent relative " +
         (error ? "border-vermilion" : "")
       }
     >
@@ -170,7 +177,7 @@ const AddressInput: React.FC<AddressSelectProps> = ({
         className="h-full"
         isSearchable={true}
         isClearable={true}
-        options={options}
+        options={opts}
         unstyled={true}
         placeholder="Enter account address"
         isMulti={false}
@@ -189,6 +196,9 @@ const AddressInput: React.FC<AddressSelectProps> = ({
         }}
         onChange={onChange}
       />
+      {disabled && (
+        <div className="absolute w-full h-full bg-white opacity-50 top-0" />
+      )}
       {error && (
         <div className="text-vermilion text-sm text-right">{error}</div>
       )}
