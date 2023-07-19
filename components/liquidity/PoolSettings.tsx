@@ -13,6 +13,7 @@ import Image from "next/image";
 import { ChangeEvent, FC, MouseEvent, ReactNode } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import PoolFeesSelect from "./PoolFeesSelect";
+import Input from "components/ui/Input";
 
 export interface PoolAssetRowData {
   asset: string;
@@ -89,7 +90,7 @@ const PriceSetter = ({
   };
   return (
     <div className="flex items-center">
-      <input
+      <Input
         className={`h-ztg-40 w-[100px] rounded-ztg-5 bg-gray-100 text-right p-ztg-8 focus:outline-none ${
           disabled && "!bg-transparent"
         }`}
@@ -261,7 +262,7 @@ const PoolSettings: FC<{
             </InfoPopover>
           </h2>
           <div className="relative inline-block">
-            <input
+            <Input
               type="number"
               className="rounded-md bg-gray-100 py-4 pl-5 pr-28 text-right text-base font-base w-64 outline-none"
               value={`${parseFloat(baseAssetRow.amount) * 2}`}

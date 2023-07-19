@@ -21,6 +21,7 @@ import {
 import { uniq } from "lodash-es";
 import { MdOutlineDragIndicator } from "react-icons/md";
 import { FormEvent } from "../../types";
+import Input from "components/ui/Input";
 
 export type CategoricalAnswersInputProps = {
   name: string;
@@ -209,9 +210,9 @@ const AnswerInput = ({
       style={style}
       className={`relative flex-1 w-full bg-gray-100 rounded-md md:min-w-[520px] md:max-w-[420px] py-3 px-5 mb-3`}
     >
-      <input
+      <Input
         disabled={disabled}
-        className={`h-full w-full bg-transparent outline-none`}
+        className={`h-full w-full bg-transparent outline-none !p-0 !m-0`}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onBlur={(event) => onBlur(event.target.value)}
