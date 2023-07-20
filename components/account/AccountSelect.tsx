@@ -59,6 +59,7 @@ const customStyles: StylesConfig<AccountOption> = {
         display: "block",
       },
       height: "50px",
+      width: "100%",
     };
   },
   control: () => {
@@ -100,28 +101,30 @@ const AccountSelect: FC<AccountSelectProps> = ({
 
   return (
     <div className="flex h-ztg-50 items-center bg-sky-100 dark:bg-black rounded-ztg-10 w-full">
-      <Select
-        isSearchable={false}
-        options={options}
-        styles={customStyles}
-        value={value}
-        isMulti={false}
-        isDisabled={disabled}
-        placeholder="Select an account"
-        components={{
-          Control,
-          Option,
-          SingleValue,
-          DropdownIndicator,
-          IndicatorSeparator,
-        }}
-        onChange={onChange}
-      />
+      <div className="flex-1">
+        <Select
+          isSearchable={false}
+          options={options}
+          styles={customStyles}
+          value={value}
+          isMulti={false}
+          isDisabled={disabled}
+          placeholder="Select an account"
+          components={{
+            Control,
+            Option,
+            SingleValue,
+            DropdownIndicator,
+            IndicatorSeparator,
+          }}
+          onChange={onChange}
+        />
+      </div>
 
       {wallet.activeAccount?.address && (
         <CopyIcon
           copyText={wallet.activeAccount?.address}
-          className="flex-grow pr-ztg-8"
+          className="pr-ztg-8 w-auto"
           size={16}
         />
       )}
