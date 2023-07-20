@@ -10,13 +10,8 @@ const Input = React.forwardRef<HTMLInputElement | null, InputProps>(
     const inputRef = React.useRef<HTMLInputElement | null>(null);
     const [focused, setFocused] = React.useState(false);
 
-    let { className, ...restProps } = props;
-    className = `${defaultClassName} ${className ?? ""}`;
+    const { className, ...restProps } = props;
     const isNumber = props.type === "number";
-
-    if (isNumber) {
-      className += " font-mono";
-    }
 
     useEffect(() => {
       if (!isNumber || !inputRef.current) {
@@ -73,7 +68,7 @@ const Input = React.forwardRef<HTMLInputElement | null, InputProps>(
     return (
       <input
         {...restProps}
-        className={className}
+        className={`${defaultClassName} ${className ?? ""}`}
         ref={(instance) => {
           inputRef.current = instance;
           if (typeof ref === "function") {
