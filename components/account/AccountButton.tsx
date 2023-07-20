@@ -31,6 +31,7 @@ import {
   DesktopOnboardingModal,
   MobileOnboardingModal,
 } from "./OnboardingModal";
+import SettingsModal from "components/settings/SettingsModal";
 import CopyIcon from "../ui/CopyIcon";
 
 const BalanceRow = ({
@@ -99,6 +100,7 @@ const AccountButton: FC<{
   const [hovering, setHovering] = useState<boolean>(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGetZtgModal, setShowGetZtgModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const { data: polkadotBalance } = useBalance(activeAccount?.address, {
@@ -381,16 +383,17 @@ const AccountButton: FC<{
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
-                            <Link href="/settings">
-                              <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
-                                <Settings />
-                                <button
-                                  className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
-                                >
-                                  Settings
-                                </button>
-                              </div>
-                            </Link>
+                            <div
+                              className="flex items-center px-6 mb-3 cursor-pointer hover:bg-slate-100"
+                              onClick={() => setShowSettingsModal(true)}
+                            >
+                              <Settings />
+                              <button
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                              >
+                                Settings
+                              </button>
+                            </div>
                           )}
                         </Menu.Item>
                         <Menu.Item>
@@ -417,6 +420,12 @@ const AccountButton: FC<{
           </Menu>
         </div>
       )}
+      <SettingsModal
+        open={showSettingsModal}
+        onClose={() => {
+          setShowSettingsModal(false);
+        }}
+      />
       {isMobileDevice ? (
         <Modal open={showOnboarding} onClose={() => setShowOnboarding(false)}>
           <MobileOnboardingModal />
