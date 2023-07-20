@@ -43,7 +43,7 @@ const Avatar = ({
         size={size}
         deps={deps}
         copy={copy}
-        loader={<Skeleton />}
+        loader={<Skeleton className="h-full w-full" />}
         fallback={
           <BoringAvatar
             size={size}
