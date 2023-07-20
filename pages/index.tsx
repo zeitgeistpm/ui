@@ -20,6 +20,7 @@ import {
   IGetPlaiceholderReturn,
 } from "plaiceholder";
 import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
+import LatestTrades from "components/front-page/LatestTrades";
 
 const getPlaiceholders = (
   paths: string[],
@@ -122,6 +123,7 @@ const IndexPage: NextPage<{
             />
           </div>
         )}
+        <LatestTrades />
       </div>
     </>
   );
