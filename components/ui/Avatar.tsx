@@ -1,6 +1,10 @@
 import { decodeAddress } from "@polkadot/keyring";
 import { ZeitgeistAvatar } from "@zeitgeistpm/avatara-react";
+import { sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 import BoringAvatar from "boring-avatars";
+import { useAvatarParts } from "lib/hooks/queries/useAvatarParts";
+import Image from "next/image";
+import Skeleton from "./Skeleton";
 
 const blues = ["#0001fe", "#a000ff", "#70f8ff"];
 const reds = ["#fb7ce8", "#FF0054", "#FAB400"];
@@ -27,6 +31,8 @@ const Avatar = ({
   const red = reds[decodedAddressArray[6] % reds.length];
   const blueFirst = decodedAddressArray[10] % 2;
 
+  const { data: avatarParts, isFetching, isFetched } = useAvatarParts(address);
+
   return (
     <div
       style={{
@@ -36,21 +42,33 @@ const Avatar = ({
         borderRadius: "52%",
       }}
     >
-      <ZeitgeistAvatar
-        zoomed={zoomed}
-        address={address}
-        size={size}
-        deps={deps}
-        copy={copy}
-        fallback={
-          <BoringAvatar
-            size={size}
-            name={decodedAddressArray.join("")}
-            variant="beam"
-            colors={blueFirst ? [blue, red] : [red, blue]}
-          />
-        }
-      />
+      {isFetching && !isFetched ? (
+        <Skeleton className="h-full w-full bg-opacity-50" />
+      ) : avatarParts ? (
+        <div className="relative h-full w-full">
+          {avatarParts.map(
+            ({ part }, index) =>
+              part.src && (
+                <Image
+                  fill
+                  sizes="100vw"
+                  alt={"Avatar part"}
+                  key={`${address}${part.id}`}
+                  className="absolute top-0 left-0 scale-125"
+                  style={{ zIndex: index + 1 }}
+                  src={sanitizeIpfsUrl(part.src)}
+                />
+              ),
+          )}
+        </div>
+      ) : (
+        <BoringAvatar
+          size={size}
+          name={decodedAddressArray.join("")}
+          variant="beam"
+          colors={blueFirst ? [blue, red] : [red, blue]}
+        />
+      )}
     </div>
   );
 };
