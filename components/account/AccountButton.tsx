@@ -302,118 +302,116 @@ const AccountButton: FC<{
                   leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
                   leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                 >
-                  <div>
-                    <Menu.Items className="fixed md:absolute left-0 md:left-auto md:right-0 py-3 z-40 mt-2 w-full overflow-hidden h-full md:h-auto md:w-64 origin-top-right divide-y divide-gray-100 md:rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <div className="">
-                        <div className="border-b-2 mb-3 py-2">
-                          <div className="px-6">
-                            <BalanceRow
-                              imgPath="/currencies/ztg.jpg"
-                              units={constants?.tokenSymbol}
-                              balance={activeBalance}
+                  <Menu.Items className="fixed md:absolute left-0 md:left-auto md:right-0 py-3 z-40 mt-2 w-full overflow-hidden h-full md:h-auto md:w-64 origin-top-right divide-y divide-gray-100 md:rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <div className="">
+                      <div className="border-b-2 mb-3 py-2">
+                        <div className="px-6">
+                          <BalanceRow
+                            imgPath="/currencies/ztg.jpg"
+                            units={constants?.tokenSymbol}
+                            balance={activeBalance}
+                          />
+                        </div>
+                        <div className="px-6">
+                          <BalanceRow
+                            imgPath="/currencies/dot.png"
+                            units="DOT"
+                            balance={polkadotBalance}
+                          />
+                        </div>
+                        <div className="px-6">
+                          <div className="flex items-center mb-3">
+                            <img
+                              src="/currencies/usdt.png"
+                              height={"24px"}
+                              width="24px"
                             />
-                          </div>
-                          <div className="px-6">
-                            <BalanceRow
-                              imgPath="/currencies/dot.png"
-                              units="DOT"
-                              balance={polkadotBalance}
-                            />
-                          </div>
-                          <div className="px-6">
-                            <div className="flex items-center mb-3">
-                              <img
-                                src="/currencies/usdt.png"
-                                height={"24px"}
-                                width="24px"
-                              />
-                              <div className="bg-green-200 ml-2 text-green-900 rounded-md py-1 px-2 text-xs">
-                                USDT Coming Soon!
-                              </div>
+                            <div className="bg-green-200 ml-2 text-green-900 rounded-md py-1 px-2 text-xs">
+                              USDT Coming Soon!
                             </div>
                           </div>
                         </div>
+                      </div>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            className="flex items-center px-6 mb-3 hover:bg-slate-100"
+                            onClick={() => setShowGetZtgModal(true)}
+                          >
+                            <DollarSign />
+                            <button
+                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                            >
+                              Get ZTG
+                            </button>
+                          </div>
+                        )}
+                      </Menu.Item>
+                      {isNovaWallet !== true && (
                         <Menu.Item>
                           {({ active }) => (
                             <div
                               className="flex items-center px-6 mb-3 hover:bg-slate-100"
-                              onClick={() => setShowGetZtgModal(true)}
+                              onClick={() => {
+                                accountModals.openAccountSelect();
+                              }}
                             >
-                              <DollarSign />
+                              <User />
                               <button
                                 className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
                               >
-                                Get ZTG
+                                Select Account
                               </button>
                             </div>
                           )}
                         </Menu.Item>
-                        {isNovaWallet !== true && (
-                          <Menu.Item>
-                            {({ active }) => (
-                              <div
-                                className="flex items-center px-6 mb-3 hover:bg-slate-100"
-                                onClick={() => {
-                                  accountModals.openAccountSelect();
-                                }}
+                      )}
+                      <Menu.Item>
+                        {({ active }) => (
+                          <Link href="/portfolio">
+                            <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
+                              <BarChart />
+                              <button
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
                               >
-                                <User />
-                                <button
-                                  className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
-                                >
-                                  Select Account
-                                </button>
-                              </div>
-                            )}
-                          </Menu.Item>
+                                Portfolio
+                              </button>
+                            </div>
+                          </Link>
                         )}
-                        <Menu.Item>
-                          {({ active }) => (
-                            <Link href="/portfolio">
-                              <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
-                                <BarChart />
-                                <button
-                                  className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
-                                >
-                                  Portfolio
-                                </button>
-                              </div>
-                            </Link>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <div
-                              className="flex items-center px-6 mb-3 cursor-pointer hover:bg-slate-100"
-                              onClick={() => setShowSettingsModal(true)}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            className="flex items-center px-6 mb-3 cursor-pointer hover:bg-slate-100"
+                            onClick={() => setShowSettingsModal(true)}
+                          >
+                            <Settings />
+                            <button
+                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
                             >
-                              <Settings />
-                              <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
-                              >
-                                Settings
-                              </button>
-                            </div>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <div
-                              className="flex items-center px-6 hover:bg-slate-100"
-                              onClick={() => disconnectWallet()}
+                              Settings
+                            </button>
+                          </div>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            className="flex items-center px-6 hover:bg-slate-100"
+                            onClick={() => disconnectWallet()}
+                          >
+                            <Frown />
+                            <button
+                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
                             >
-                              <Frown />
-                              <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
-                              >
-                                Disconnect
-                              </button>
-                            </div>
-                          )}
-                        </Menu.Item>
-                      </div>
-                    </Menu.Items>
-                  </div>
+                              Disconnect
+                            </button>
+                          </div>
+                        )}
+                      </Menu.Item>
+                    </div>
+                  </Menu.Items>
                 </Transition>
               </>
             )}
