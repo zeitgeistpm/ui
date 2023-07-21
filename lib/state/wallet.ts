@@ -4,10 +4,6 @@ import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { atom, getDefaultStore, useAtom } from "jotai";
 import { isString } from "lodash-es";
 import { useMemo } from "react";
-// import { PolkadotjsWallet } from "../wallets/polkadotjs-wallet";
-// import { SubWallet } from "../wallets/subwallet";
-// import { TalismanWallet } from "../wallets/talisman-wallet";
-// import { WalletAccount } from "../wallets/types";
 import { persistentAtom } from "./util/persistent-atom";
 import {
   BaseDotsamaWallet,
@@ -16,13 +12,7 @@ import {
   TalismanWallet,
 } from "@talismn/connect-wallets";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
-import {
-  InjectedAccount,
-  InjectedExtension,
-  InjectedMetadata,
-  InjectedProvider,
-  InjectedWindow,
-} from "@polkadot/extension-inject/types";
+import { InjectedAccount } from "@polkadot/extension-inject/types";
 import { isPresent } from "lib/types";
 import { PollingTimeout, poll } from "@zeitgeistpm/avatara-util";
 
