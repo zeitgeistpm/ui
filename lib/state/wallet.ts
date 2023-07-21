@@ -234,7 +234,7 @@ const enableWallet = async (walletId: string) => {
     return;
   }
 
-  const enablePoll = async (): Promise<undefined> => {
+  const enablePoll = async (): Promise<void> => {
     await cryptoWaitReady();
     try {
       const extension = await poll(
