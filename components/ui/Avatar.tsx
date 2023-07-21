@@ -1,6 +1,7 @@
 import { decodeAddress } from "@polkadot/keyring";
 import { ZeitgeistAvatar } from "@zeitgeistpm/avatara-react";
 import BoringAvatar from "boring-avatars";
+import Skeleton from "./Skeleton";
 
 const blues = ["#0001fe", "#a000ff", "#70f8ff"];
 const reds = ["#fb7ce8", "#FF0054", "#FAB400"];
@@ -42,6 +43,7 @@ const Avatar = ({
         size={size}
         deps={deps}
         copy={copy}
+        loader={<Skeleton className="h-full w-full" />}
         fallback={
           <BoringAvatar
             size={size}
