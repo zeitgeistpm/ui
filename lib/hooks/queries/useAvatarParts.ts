@@ -22,9 +22,8 @@ export const useAvatarParts = (address: string) => {
       }
 
       const inventory = await Avatar.fetchInventoryForAvatar(nftSdk, avatar);
-      console.time("orderParts");
+
       const ordered = Avatar.orderParts(avatar, inventory ?? []);
-      console.timeEnd("orderParts");
 
       return ordered;
     },
