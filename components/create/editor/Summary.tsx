@@ -208,10 +208,12 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
                     ? blocksAsDuration(timeline?.grace.period).humanize()
                     : "None"
                   : "--"
-                : Intl.DateTimeFormat("default", {
+                : form.gracePeriod?.date
+                ? Intl.DateTimeFormat("default", {
                     dateStyle: "medium",
                     timeStyle: "short",
-                  }).format(new Date(form.gracePeriod?.date!).getTime())}
+                  }).format(new Date(form.gracePeriod?.date).getTime())
+                : "--"}
             </div>
           </div>
           <div className="flex justify-center gap-2 items-center mb-2 md:mb-0">
