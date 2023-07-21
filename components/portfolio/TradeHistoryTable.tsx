@@ -4,6 +4,7 @@ import EmptyPortfolio from "./EmptyPortfolio";
 import { useTradeHistory } from "lib/hooks/queries/useTradeHistory";
 import { formatNumberLocalized } from "lib/util";
 import { ZTG } from "lib/constants";
+import SubScanIcon from "components/icons/SubScanIcon";
 
 const columns: TableColumn[] = [
   {
@@ -31,6 +32,11 @@ const columns: TableColumn[] = [
     header: "Time",
     accessor: "time",
     type: "text",
+  },
+  {
+    header: "Links",
+    accessor: "links",
+    type: "component",
   },
 ];
 
@@ -60,6 +66,17 @@ const TradeHistoryTable = ({ address }: { address: string }) => {
         dateStyle: "medium",
         timeStyle: "medium",
       }).format(new Date(trade?.time)),
+      links: (
+        <div className="center">
+          <a
+            className="center"
+            target="_blank"
+            href={`https://zeitgeist.subscan.io/extrinsic/${trade?.extrinsic?.hash}`}
+          >
+            <SubScanIcon />
+          </a>
+        </div>
+      ),
     };
   });
 
