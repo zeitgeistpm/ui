@@ -1,9 +1,11 @@
 import { Dialog } from "@headlessui/react";
+import {
+  BaseDotsamaWallet,
+  PolkadotjsWallet,
+  SubWallet,
+  TalismanWallet,
+} from "@talismn/connect-wallets";
 import { useOnboarding } from "lib/state/onboarding";
-import { BaseDotsamaWallet } from "lib/wallets/base-dotsama-wallet";
-import { PolkadotjsWallet } from "lib/wallets/polkadotjs-wallet";
-import { SubWallet } from "lib/wallets/subwallet";
-import { TalismanWallet } from "lib/wallets/talisman-wallet";
 import { range } from "lodash-es";
 
 import Image from "next/image";
