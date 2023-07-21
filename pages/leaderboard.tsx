@@ -436,6 +436,7 @@ export async function getStaticProps() {
 
   return {
     props: {
+      foo: 1,
       dehydratedState: dehydrate(queryClient),
       rankings: top20.map((player, index) => ({
         ...player,
