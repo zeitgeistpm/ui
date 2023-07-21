@@ -412,7 +412,7 @@ export async function getStaticProps() {
     }, [])
     .sort((a, b) => b.profitUsd - a.profitUsd);
 
-  const top20 = rankings;
+  const top20 = rankings.slice(0, 20);
 
   const names = await getDisplayName(
     sdk,
