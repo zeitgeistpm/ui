@@ -20,7 +20,10 @@ import {
 } from "lib/constants";
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { getDisplayName } from "lib/gql/display-name";
-import { avatarPartsKey, getAvatarParts } from "lib/hooks/queries/useAvatarParts";
+import {
+  avatarPartsKey,
+  getAvatarParts,
+} from "lib/hooks/queries/useAvatarParts";
 import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 import { createAvatarSdk } from "lib/util/create-avatar-sdk";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
@@ -420,9 +423,6 @@ export async function getStaticProps() {
 
   const queryClient = new QueryClient();
 
-  // const avatarParts = await Promise.all(
-  //   top20.map((player) => getAvatarParts(avatarSdk, player.accountId)),
-  // );
   await Promise.all(
     top20.map((player) =>
       queryClient.prefetchQuery([avatarPartsKey, player.accountId], () =>
