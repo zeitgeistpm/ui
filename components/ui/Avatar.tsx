@@ -1,5 +1,4 @@
 import { decodeAddress } from "@polkadot/keyring";
-import { ZeitgeistAvatar } from "@zeitgeistpm/avatara-react";
 import { sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 import BoringAvatar from "boring-avatars";
 import { useAvatarParts } from "lib/hooks/queries/useAvatarParts";

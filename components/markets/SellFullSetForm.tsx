@@ -1,4 +1,5 @@
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import Input from "components/ui/Input";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -119,7 +120,7 @@ const SellFullSetForm = ({
             {maxTokenSet.div(ZTG).toString()}
           </span>
         </div>
-        <input
+        <Input
           type="number"
           min="0"
           value={amount}
@@ -138,7 +139,7 @@ const SellFullSetForm = ({
             {baseAssetBalance?.div(ZTG).toNumber()}
           </span>
         </div>
-        <input
+        <Input
           type="number"
           value={amount}
           step="0.1"

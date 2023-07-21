@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useNotifications } from "lib/state/notifications";
 import { useForm } from "react-hook-form";
 import { endpointOptions } from "lib/constants";
+import Input from "./Input";
 
 const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
   const notificationStore = useNotifications();
@@ -34,7 +35,7 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
     <form className="flex flex-col w-full" onSubmit={handleSubmit(subscribe)}>
       <h6 className="font-semibold mb-[26px]">{title}</h6>
       <div className="flex gap-3 items-center h-10 mb-auto w-full">
-        <input
+        <Input
           {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
           className={`h-full grow rounded-md text-sky-600 p-2 text-ztg-12-120 bg-anti-flash-white border-[1px] focus:outline-none ${
             invalid ? "border-vermilion" : "border-none"
