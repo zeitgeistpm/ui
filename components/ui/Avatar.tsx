@@ -31,7 +31,12 @@ const Avatar = ({
   const red = reds[decodedAddressArray[6] % reds.length];
   const blueFirst = decodedAddressArray[10] % 2;
 
-  const { data: avatarParts, isFetching, isFetched } = useAvatarParts(address);
+  const {
+    data: avatarParts,
+    isLoading,
+    isFetching,
+    isFetched,
+  } = useAvatarParts(address);
 
   return (
     <div
@@ -42,7 +47,7 @@ const Avatar = ({
         borderRadius: "52%",
       }}
     >
-      {isFetching && !isFetched ? (
+      {isFetching || (isLoading && !isFetched) ? (
         <Skeleton className="h-full w-full bg-opacity-50" />
       ) : avatarParts ? (
         <div className="relative h-full w-full">

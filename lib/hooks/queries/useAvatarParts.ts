@@ -1,15 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
+import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { Avatar } from "@zeitgeistpm/avatara-nft-sdk";
 import { useAvatarContext } from "@zeitgeistpm/avatara-react";
 import { encodeAddress } from "@polkadot/util-crypto";
 
-export const useAvatarParts = (address: string) => {
+export const ROOT_KEY = "avatar-parts";
+
+export const useAvatarParts = (
+  address: string,
+): UseQueryResult<ReturnType<typeof Avatar.orderParts>> => {
   const nftSdk = useAvatarContext();
 
   const enabled = !!nftSdk && !!address;
 
   return useQuery(
-    [nftSdk, address],
+    [ROOT_KEY, address],
     async () => {
       if (!enabled) return null;
 
