@@ -21,6 +21,7 @@ import {
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { getDisplayName } from "lib/gql/display-name";
 import { getAvatarParts } from "lib/gql/get-avatar";
+import { avatarPartsKey } from "lib/hooks/queries/useAvatarParts";
 import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 import { createAvatarSdk } from "lib/util/create-avatar-sdk";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
@@ -76,7 +77,6 @@ type Rank = {
   accountId: string;
   profitUsd: number;
   name?: string;
-  avatarParts;
   markets: MarketSummary[];
 };
 
@@ -426,11 +426,13 @@ export async function getStaticProps() {
   // );
   const avatarParts = await Promise.all(
     top20.map((player) =>
-      queryClient.prefetchQuery(["avatars", player.accountId], () =>
+      queryClient.prefetchQuery([avatarPartsKey, player.accountId], () =>
         getAvatarParts(avatarSdk, player.accountId),
       ),
     ),
   );
+
+  console.log(avatarParts);
 
   return {
     props: {
