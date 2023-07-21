@@ -47,7 +47,7 @@ const Avatar = ({
         borderRadius: "52%",
       }}
     >
-      {isFetching || (isLoading && !isFetched) ? (
+      {(isFetching || isLoading) && !isFetched ? (
         <Skeleton className="h-full w-full bg-opacity-50" />
       ) : avatarParts ? (
         <div className="relative h-full w-full">
