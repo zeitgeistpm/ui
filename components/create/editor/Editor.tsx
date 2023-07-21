@@ -33,7 +33,7 @@ import ModerationModeSelect from "./inputs/Moderation";
 import OracleInput from "./inputs/Oracle";
 import { AnswersInput } from "./inputs/answers";
 import { getMetadataForCurrency } from "lib/constants/supported-currencies";
-import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
+import Input from "components/ui/Input";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -183,12 +183,12 @@ export const MarketEditor = () => {
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="mb-4 md:mb-8 text-base">What is your question?</h2>
             <div>
-              <input
+              <Input
                 autoComplete="off"
                 className={`h-12 w-full md:w-2/3 text-center rounded-md mb-4 px-4 py-7
                   ${
                     !fieldsState.question.isValid
-                      ? "bg-gray-100"
+                      ? "bg-gray-100 border-vermilion"
                       : "bg-nyanza-base "
                   }
                 `}

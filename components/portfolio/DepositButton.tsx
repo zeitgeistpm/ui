@@ -15,6 +15,7 @@ import { formatNumberCompact } from "lib/util/format-compact";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
+import Input from "components/ui/Input";
 
 const DepositButton = ({
   sourceChain,
@@ -170,7 +171,7 @@ const DepositModal = ({
               render={(val) => {
                 const { field } = val;
                 return (
-                  <input
+                  <Input
                     {...field}
                     type="number"
                     className="w-full bg-transparent outline-none !text-center"

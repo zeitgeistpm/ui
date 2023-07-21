@@ -1,3 +1,4 @@
+import Input from "components/ui/Input";
 import Decimal from "decimal.js";
 
 import { MouseEventHandler, useEffect, useState } from "react";
@@ -107,7 +108,7 @@ const PoolFeesSelect = ({
             `}
         onClick={handleInputClick}
       >
-        <input
+        <Input
           type="number"
           min="0"
           max="10"

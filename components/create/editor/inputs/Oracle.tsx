@@ -5,6 +5,7 @@ import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
 import { ChangeEventHandler, forwardRef } from "react";
 import { FormEvent } from "../types";
+import Input from "components/ui/Input";
 
 export type OracleInputProps = {
   name: string;
@@ -77,7 +78,7 @@ export const OracleInput = forwardRef(
 
     return (
       <div className={`relative ${className}`}>
-        <input
+        <Input
           value={value}
           spellCheck={false}
           className={`h-12 w-full text-center rounded-md mb-2 px-4 py-8 transition-all duration-300

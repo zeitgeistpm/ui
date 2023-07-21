@@ -9,6 +9,7 @@ import { FieldState } from "lib/state/market-creation/types/fieldstate";
 import { CurrencyTag, Liquidity } from "lib/state/market-creation/types/form";
 import { ChangeEventHandler, ReactNode } from "react";
 import { FormEvent } from "../types";
+import Input from "components/ui/Input";
 
 export type LiquidityInputProps = {
   name: string;
@@ -106,7 +107,7 @@ export const LiquidityInput = ({
                 </button>
               ))}
               <div className="relative inline-block">
-                <input
+                <Input
                   type="number"
                   min={0}
                   className={`rounded-md bg-gray-100 py-3 pl-4 pr-34 text-right w-64 outline-none ${
