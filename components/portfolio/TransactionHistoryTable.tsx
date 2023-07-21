@@ -72,6 +72,7 @@ const TransactionHistoryTable = ({ address }: { address: string }) => {
             <a
               className="center"
               target="_blank"
+              rel="noopener noreferrer"
               href={`https://zeitgeist.subscan.io/extrinsic/${transaction.extrinsic.hash}`}
             >
               <SubScanIcon />
