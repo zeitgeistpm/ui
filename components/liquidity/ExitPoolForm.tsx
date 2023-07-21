@@ -20,6 +20,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
+import Input from "components/ui/Input";
 
 const ExitPoolForm = ({
   poolBalances,
@@ -211,7 +212,7 @@ const ExitPoolForm = ({
               <div className="absolute h-full left-[15px] top-[14px] truncate w-[40%] capitalize">
                 {assetName}
               </div>
-              <input
+              <Input
                 className={`bg-anti-flash-white text-right rounded-[5px] h-[56px] px-[15px] w-full outline-none
               ${
                 formState.errors[id.toString()]?.message

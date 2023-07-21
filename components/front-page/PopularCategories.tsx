@@ -1,7 +1,6 @@
 import { FC } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 
 export const CATEGORIES = [
   { name: "Sports", imagePath: "/category/sports.png" },

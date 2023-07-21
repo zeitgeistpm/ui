@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { HistoricalSwapOrderByInput } from "@zeitgeistpm/indexer";
 import {
   getIndexOf,
   getMarketIdOf,
@@ -11,30 +12,10 @@ import {
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
-import { gql } from "graphql-request";
+import { getMarketHeaders, MarketHeader } from "lib/gql/market-header";
 import { useSdkv2 } from "../useSdkv2";
-import { HistoricalSwapOrderByInput } from "@zeitgeistpm/indexer";
-import { marketMetaFilter } from "lib/gql/constants";
 
 export const transactionHistoryKey = "trade-history";
-
-const marketHeaderQuery = gql`
-  query MarketTransactionHeader($marketIds: [Int!]) {
-    markets(
-      where: {
-        marketId_in: $marketIds
-        ${marketMetaFilter}
-      }
-      orderBy: marketId_ASC
-    ) {
-      marketId
-      question
-      categories {
-        name
-      }
-    }
-  }
-`;
 
 const lookupAssetName = (
   asset: string,
@@ -90,12 +71,6 @@ const calculatePrice = (
   }
 };
 
-type MarketHeader = {
-  marketId: number;
-  question: string;
-  categories: { name: string }[];
-};
-
 export type TradeHistoryItem = {
   marketId: MarketId;
   question: string;
@@ -144,11 +119,7 @@ export const useTradeHistory = (address?: string) => {
 
         const marketIdsArray = Array.from(marketIds).sort((a, b) => a - b);
 
-        const { markets } = await sdk.indexer.client.request<{
-          markets: MarketHeader[];
-        }>(marketHeaderQuery, {
-          marketIds: marketIdsArray,
-        });
+        const markets = await getMarketHeaders(sdk, marketIdsArray);
 
         const marketsMap: Map<number, MarketHeader> = new Map();
         marketIdsArray.forEach((marketId) => {
