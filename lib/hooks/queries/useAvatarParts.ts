@@ -1,5 +1,5 @@
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
-import { Avatar } from "@zeitgeistpm/avatara-nft-sdk";
+import { Avatar, SdkContext } from "@zeitgeistpm/avatara-nft-sdk";
 import { useAvatarContext } from "@zeitgeistpm/avatara-react";
 import { encodeAddress } from "@polkadot/util-crypto";
 
@@ -17,23 +17,31 @@ export const useAvatarParts = (
     async () => {
       if (!enabled) return null;
 
-      address = encodeAddress(address, nftSdk.chainProperties.ss58Format);
-
-      const avatar = await Avatar.fetchIndexedAvatarForAccount(nftSdk, address);
-
-      if (!Avatar.isAvatarWithBase(avatar)) {
-        return null;
-      }
-
-      const inventory = await Avatar.fetchInventoryForAvatar(nftSdk, avatar);
-
-      const ordered = Avatar.orderParts(avatar, inventory ?? []);
-
-      return ordered;
+      return getAvatarParts(nftSdk, address);
     },
     {
       enabled,
       keepPreviousData: true,
     },
   );
+};
+
+export const getAvatarParts = async (
+  avatarSdk: SdkContext,
+  address: string,
+) => {
+  const encodedAddress = encodeAddress(
+    address,
+    avatarSdk.chainProperties.ss58Format,
+  );
+  const avatar = await Avatar.fetchIndexedAvatarForAccount(
+    avatarSdk,
+    encodedAddress,
+  );
+
+  if (!Avatar.isAvatarWithBase(avatar)) return null;
+  const inventory = await Avatar.fetchInventoryForAvatar(avatarSdk, avatar);
+
+  const orderedParts = await Avatar.orderParts(avatar, inventory ?? []);
+  return orderedParts;
 };

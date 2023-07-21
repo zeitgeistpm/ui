@@ -36,7 +36,6 @@ const Avatar = ({
     isFetching,
     isFetched,
   } = useAvatarParts(address);
-  console.log(avatarParts, isLoading, isFetching, isFetched);
 
   return (
     <div
