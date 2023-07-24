@@ -11,8 +11,8 @@ export const tickersForAnswers = (
 
   if (answers.type === "scalar") {
     metadataCategories = [
-      { name: "Short", ticker: "SRT" },
       { name: "Long", ticker: "LNG" },
+      { name: "Short", ticker: "SRT" },
     ];
   } else if (answers.type === "yes/no") {
     metadataCategories = [
