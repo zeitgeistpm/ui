@@ -1,4 +1,5 @@
 import Avatar from "components/ui/Avatar";
+import { shortenAddress } from "lib/util";
 
 import React, { FC } from "react";
 
@@ -17,7 +18,12 @@ const AccountSelectOption: FC<AccountSelectRowProps> = ({ name, address }) => {
       </div>
       <div className="flex flex-col mr-ztg-10">
         <div className="text-ztg-12-120 font-medium">{name}</div>
-        <div className="font-mono text-ztg-12-120 font-semibold">{address}</div>
+        <div className="font-mono text-ztg-12-120 font-semibold md:hidden">
+          {shortenAddress(address, 12, 12)}
+        </div>
+        <div className="font-mono text-ztg-12-120 font-semibold hidden md:block">
+          {address}
+        </div>
       </div>
     </div>
   );

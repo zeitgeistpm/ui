@@ -1,3 +1,5 @@
+import { dehydrate, QueryClient } from "@tanstack/react-query";
+import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
 import {
   BaseAssetId,
   create,
@@ -8,6 +10,7 @@ import {
   parseAssetId,
   ZeitgeistIpfs,
 } from "@zeitgeistpm/sdk-next";
+import Avatar from "components/ui/Avatar";
 import Decimal from "decimal.js";
 import {
   endpointOptions,
@@ -15,17 +18,17 @@ import {
   graphQlEndpoint,
   ZTG,
 } from "lib/constants";
+import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
+import { getDisplayName } from "lib/gql/display-name";
 import {
-  FOREIGN_ASSET_METADATA,
-  lookupAssetSymbol,
-} from "lib/constants/foreign-asset";
+  avatarPartsKey,
+  getAvatarParts,
+} from "lib/hooks/queries/useAvatarParts";
+import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
+import { createAvatarSdk } from "lib/util/create-avatar-sdk";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import Link from "next/link";
-import Avatar from "components/ui/Avatar";
-import { formatNumberCompact } from "lib/util/format-compact";
-import { parseAssetIdString } from "lib/util/parse-asset-id";
-import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
-import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 
 // Approach: aggregate base asset movements in and out of a market
 // "In events": swaps, buy full set
@@ -186,11 +189,14 @@ const getBaseAssetHistoricalPrices = async (): Promise<BasePrices> => {
 };
 
 export async function getStaticProps() {
-  const sdk = await create({
-    provider: endpointOptions.map((e) => e.value),
-    indexer: graphQlEndpoint,
-    storage: ZeitgeistIpfs(),
-  });
+  const [sdk, avatarSdk] = await Promise.all([
+    create({
+      provider: endpointOptions.map((e) => e.value),
+      indexer: graphQlEndpoint,
+      storage: ZeitgeistIpfs(),
+    }),
+    createAvatarSdk(),
+  ]);
 
   const basePrices = await getBaseAssetHistoricalPrices();
 
@@ -410,22 +416,24 @@ export async function getStaticProps() {
 
   const top20 = rankings.slice(0, 20);
 
-  const identities = await Promise.all(
-    top20.map((player) => sdk.api.query.identity.identityOf(player.accountId)),
+  const names = await getDisplayName(
+    sdk,
+    top20.map((p) => p.accountId),
   );
 
-  const textDecoder = new TextDecoder();
+  const queryClient = new QueryClient();
 
-  const names: (string | null)[] = identities.map((identity) =>
-    identity.isNone === false
-      ? textDecoder.decode(
-          (identity.value.get("info") as any).get("display").value,
-        )
-      : null,
+  await Promise.all(
+    top20.map((player) =>
+      queryClient.prefetchQuery([avatarPartsKey, player.accountId], () =>
+        getAvatarParts(avatarSdk, player.accountId),
+      ),
+    ),
   );
 
   return {
     props: {
+      dehydratedState: dehydrate(queryClient),
       rankings: top20.map((player, index) => ({
         ...player,
         name: names[index],

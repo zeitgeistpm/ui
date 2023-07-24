@@ -1,4 +1,5 @@
 import React, { ChangeEventHandler, useRef } from "react";
+import Input from "./Input";
 
 export type RangeInputProps = {
   minLabel?: string;
@@ -16,9 +17,9 @@ const RangeInput = React.forwardRef(
       onValueChange,
       ...rest
     }: RangeInputProps,
-    ref: React.Ref<HTMLInputElement>,
+    ref: React.ForwardedRef<HTMLInputElement | null>,
   ) => {
-    const componentRef = useRef<HTMLDivElement>(null);
+    const componentRef = useRef<HTMLDivElement | null>(null);
     const { value = 0, onChange, min = 0, max = 0 } = rest;
 
     const className = rest.className ?? "";
@@ -36,16 +37,19 @@ const RangeInput = React.forwardRef(
     const maxVisible = percentage < 0.9;
 
     return (
-      <div
-        className={`relative overflow-hidden ${className}`}
-        ref={componentRef}
-      >
-        <input
-          ref={ref}
+      <div className={`relative overflow-hidden`} ref={componentRef}>
+        <Input
           type="range"
           {...rest}
+          ref={(instance) => {
+            if (typeof ref === "function") {
+              ref(instance);
+            } else if (ref) {
+              ref.current = instance;
+            }
+          }}
           onChange={change}
-          className={`w-full`}
+          className={`w-full !px-0`}
         />
         <div className="w-full justify-between">
           <div

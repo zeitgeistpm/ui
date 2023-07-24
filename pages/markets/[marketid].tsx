@@ -208,19 +208,15 @@ const Market: NextPage<MarketPageProps> = ({
           )}
         </div>
 
-        {marketStage ? (
-          <MarketHeader
-            market={indexedMarket}
-            resolvedOutcome={market?.resolvedOutcome ?? undefined}
-            report={report}
-            disputes={lastDispute}
-            token={token}
-            marketStage={marketStage}
-            rejectReason={market?.rejectReason ?? undefined}
-          />
-        ) : (
-          <></>
-        )}
+        <MarketHeader
+          market={indexedMarket}
+          resolvedOutcome={market?.resolvedOutcome ?? undefined}
+          report={report}
+          disputes={lastDispute}
+          token={token}
+          marketStage={marketStage ?? undefined}
+          rejectReason={market?.rejectReason ?? undefined}
+        />
         {market?.rejectReason && market.rejectReason.length > 0 && (
           <div className="mt-[10px] text-ztg-14-150">
             Market rejected: {market.rejectReason}
@@ -277,7 +273,10 @@ const Market: NextPage<MarketPageProps> = ({
               )}
             </div>
           )}
-          <MarketAssetDetails marketId={Number(marketid)} />
+          <MarketAssetDetails
+            marketId={Number(marketid)}
+            categories={indexedMarket.categories}
+          />
         </div>
 
         <div className="lg:px-36 mb-12">

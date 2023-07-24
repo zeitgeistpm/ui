@@ -1,6 +1,5 @@
 import Link from "next/link";
 import React from "react";
-import MarketImage from "components/ui/MarketImage";
 import { MarketOutcomes } from "lib/types/markets";
 import MarketCardContext from "./context";
 import ScalarPriceRange from "../ScalarPriceRange";
@@ -11,20 +10,26 @@ import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import Skeleton from "components/ui/Skeleton";
 import { hasDatePassed } from "lib/util/hasDatePassed";
-import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
-import { UserIdentity } from "../MarketHeader";
+import Avatar from "components/ui/Avatar";
+
 import Image from "next/image";
-import { lookupAssetImagePath } from "lib/constants/foreign-asset";
-import { parseAssetId } from "@zeitgeistpm/sdk-next";
+import {
+  lookupAssetImagePath,
+  lookupAssetSymbol,
+} from "lib/constants/foreign-asset";
+import { BaseAssetId, parseAssetId } from "@zeitgeistpm/sdk-next";
 import { IOBaseAssetId } from "@zeitgeistpm/sdk-next";
 import { IOForeignAssetId } from "@zeitgeistpm/sdk-next";
+import { shortenAddress } from "lib/util";
+import { useIdentity } from "lib/hooks/queries/useIdentity";
 export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
   question: string;
   creation: string;
   creator: string;
+  creatorDisplayName?: string | null;
   outcomes: MarketOutcomes;
   marketType: { categorical?: string; scalar?: string[] };
   scalarType: ScalarRangeType;
@@ -237,12 +242,28 @@ const MarketCardDetails = ({
   );
 };
 
+export const MarketCardClientWrapper = (props: MarketCardProps) => {
+  const { data: identity } = useIdentity(props.creator);
+
+  return (
+    <MarketCard
+      {...props}
+      creatorDisplayName={
+        identity?.displayName && identity.displayName.length > 0
+          ? identity.displayName
+          : undefined
+      }
+    />
+  );
+};
+
 const MarketCard = ({
   marketId,
   img,
   question,
   creation,
   creator,
+  creatorDisplayName,
   outcomes,
   marketType,
   prediction,
@@ -263,8 +284,9 @@ const MarketCard = ({
   const isProposed = () => {
     return creation === "Advised" && status === "Proposed" ? true : false;
   };
-  const { data: metadata } = useAssetMetadata(parseAssetIdString(baseAsset));
-
+  const assetSymbol = lookupAssetSymbol(
+    parseAssetIdString(baseAsset) as BaseAssetId,
+  );
   const isYesNoMarket =
     outcomes.length === 2 &&
     outcomes.some((outcome) => outcome.name.toLowerCase() === "yes") &&
@@ -282,7 +304,7 @@ const MarketCard = ({
     hasEnded: hasDatePassed(Number(endDate)),
     outcomes: outcomes.length,
     volume: volume,
-    baseAsset: metadata?.symbol ?? "",
+    baseAsset: assetSymbol ?? "",
     liquidity,
     numParticipants: numParticipants,
   };
@@ -305,9 +327,12 @@ const MarketCard = ({
           className="flex flex-col flex-1 gap-4"
         >
           <div className="flex justify-between gap-2.5 w-full">
-            {creator && (
-              <UserIdentity user={creator} className="text-xs gap-2.5" />
-            )}
+            <div className={`inline-flex items-center text-xs gap-2.5`}>
+              <Avatar address={creator} copy={false} />
+              <span className="break-all flex-1">
+                {creatorDisplayName ?? shortenAddress(creator, 10, 10)}
+              </span>
+            </div>
             <div className="flex flex-wrap gap-2.5 font-medium h-fit">
               <MarketCardTags
                 baseAsset={baseAsset}

@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { useInfiniteMarkets } from "lib/hooks/queries/useInfiniteMarkets";
 import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
 import MarketFilterSelection from "./market-filter";
-import MarketCard from "./market-card/index";
+import { MarketCardClientWrapper } from "./market-card/index";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import { filterTypes } from "lib/constants/market-filter";
 import { ZTG } from "lib/constants";
@@ -121,7 +121,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
             market.tags?.filter((tag): tag is string => tag !== null) ?? [];
 
           return (
-            <MarketCard
+            <MarketCardClientWrapper
               marketId={market.marketId}
               outcomes={market.outcomes}
               question={question}

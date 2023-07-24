@@ -15,6 +15,7 @@ import { formatNumberCompact } from "lib/util/format-compact";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
+import Input from "components/ui/Input";
 
 const DepositButton = ({
   sourceChain,
@@ -137,7 +138,6 @@ const DepositModal = ({
           "amount",
           maxTransferAmount.mul(value.percentage).div(100).div(ZTG).toNumber(),
         );
-        trigger("amount");
       } else if (name === "amount" && value.amount !== "") {
         setValue(
           "percentage",
@@ -148,6 +148,7 @@ const DepositModal = ({
             .toString(),
         );
       }
+      trigger("amount");
     });
     return () => subscription.unsubscribe();
   }, [watch, balance, fee]);
@@ -170,7 +171,7 @@ const DepositModal = ({
               render={(val) => {
                 const { field } = val;
                 return (
-                  <input
+                  <Input
                     {...field}
                     type="number"
                     className="w-full bg-transparent outline-none !text-center"
@@ -194,7 +195,7 @@ const DepositModal = ({
                   if (maxTransferAmount.div(ZTG).lessThan(value)) {
                     return `Insufficient balance. Current balance: ${maxTransferAmount
                       .div(ZTG)
-                      .toFixed(3)}`;
+                      .toFixed(5)}`;
                   } else if (value <= 0) {
                     return "Value cannot be zero or less";
                   }
