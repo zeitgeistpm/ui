@@ -71,7 +71,8 @@ const TradeHistoryTable = ({ address }: { address: string }) => {
           <a
             className="center"
             target="_blank"
-            rel="noopener noreferrer"
+            referrerPolicy="no-referrer"
+            rel="noopener"
             href={`https://zeitgeist.subscan.io/extrinsic/${trade?.extrinsic?.hash}`}
           >
             <SubScanIcon />
