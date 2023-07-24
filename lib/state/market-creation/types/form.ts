@@ -142,8 +142,8 @@ export const marketFormDataToExtrinsicParams = (
       form.answers.type === "scalar"
         ? {
             Scalar: [
-              new Decimal(form.answers.answers[0]).mul(ZTG).toFixed(),
               new Decimal(form.answers.answers[1]).mul(ZTG).toFixed(),
+              new Decimal(form.answers.answers[0]).mul(ZTG).toFixed(),
             ],
           }
         : {
