@@ -4,11 +4,19 @@ import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { atom, getDefaultStore, useAtom } from "jotai";
 import { isString } from "lodash-es";
 import { useMemo } from "react";
-import { PolkadotjsWallet } from "../wallets/polkadotjs-wallet";
-import { SubWallet } from "../wallets/subwallet";
-import { TalismanWallet } from "../wallets/talisman-wallet";
-import { Wallet, WalletAccount } from "../wallets/types";
 import { persistentAtom } from "./util/persistent-atom";
+import {
+  BaseDotsamaWallet,
+  PolkadotjsWallet,
+  SubWallet,
+  TalismanWallet,
+} from "@talismn/connect-wallets";
+import { cryptoWaitReady } from "@polkadot/util-crypto";
+import { InjectedAccount } from "@polkadot/extension-inject/types";
+import { isPresent } from "lib/types";
+import { PollingTimeout, poll } from "@zeitgeistpm/avatara-util";
+
+const DAPP_NAME = "zeitgeist";
 
 export type UseWallet = WalletState & {
   /**
@@ -20,7 +28,7 @@ export type UseWallet = WalletState & {
   /**
    * The active account of the current wallet.
    */
-  activeAccount?: WalletAccount;
+  activeAccount?: InjectedAccount;
   /**
    * Whether the wallet is nova wallet.
    */
@@ -34,7 +42,7 @@ export type UseWallet = WalletState & {
    * @param wallet the selected wallet id or instance
    * @returns void
    */
-  selectWallet: (wallet: Wallet | string) => void;
+  selectWallet: (wallet: string) => void;
   /**
    * Select an address.
    * @param account the address to select
@@ -81,11 +89,11 @@ export type WalletState = {
   /**
    * Instance of the current wallet.
    */
-  wallet?: Wallet;
+  wallet?: BaseDotsamaWallet;
   /**
    * The accounts of the current wallet.
    */
-  accounts: WalletAccount[];
+  accounts: InjectedAccount[];
   /**
    * Error messages of the wallet.
    */
@@ -207,12 +215,36 @@ let accountsSubscriptionUnsub: VoidFunction | undefined | null;
  * @param walletId the id or wallet itself to enable
  * @returns Promise<boolean> - whether the wallet was enabled
  */
-const enableWallet = async (walletId: Wallet | string) => {
+const enableWallet = async (walletId: string) => {
   if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
 
-  const wallet = isString(walletId)
-    ? supportedWallets.find((w) => w.extensionName === walletId)
-    : walletId;
+  const wallet = supportedWallets.find((w) => w.extensionName === walletId);
+
+  if (!isPresent(wallet)) {
+    return;
+  }
+
+  const enablePoll = async (): Promise<void> => {
+    await cryptoWaitReady();
+    try {
+      const extension = await poll(
+        async () => {
+          await wallet.enable(DAPP_NAME);
+          return wallet;
+        },
+        {
+          intervall: 66,
+          timeout: 10_000,
+        },
+      );
+
+      if (extension === PollingTimeout) {
+        throw new Error("Wallet enabling timed out");
+      }
+    } catch (err) {
+      throw wallet.transformError(err);
+    }
+  };
 
   try {
     store.set(walletAtom, (state) => {
@@ -222,7 +254,7 @@ const enableWallet = async (walletId: Wallet | string) => {
       };
     });
 
-    await wallet?.enable();
+    await enablePoll();
 
     store.set(walletAtom, (state) => {
       return {
@@ -290,12 +322,12 @@ export const useWallet = (): UseWallet => {
   const [userConfig, setUserConfig] = useAtom(userConfigAtom);
   const [walletState, setWalletState] = useAtom(walletAtom);
 
-  const selectWallet = (wallet: Wallet | string) => {
+  const selectWallet = (wallet: BaseDotsamaWallet | string) => {
     setUserConfig({
       ...userConfig,
       walletId: isString(wallet) ? wallet : wallet.extensionName,
     });
-    enableWallet(wallet);
+    enableWallet(isString(wallet) ? wallet : wallet.extensionName);
   };
 
   const disconnectWallet = () => {
@@ -318,7 +350,7 @@ export const useWallet = (): UseWallet => {
     };
   };
 
-  const selectAccount = (account: WalletAccount | string) => {
+  const selectAccount = (account: InjectedAccount | string) => {
     const selectedAddress = isString(account) ? account : account.address;
     try {
       encodeAddress(selectedAddress, 73);
