@@ -107,8 +107,11 @@ const BuyFullSetForm = ({
   };
 
   useGlobalKeyPress("Enter", handleSignTransaction);
-  const { image } = getMetadataForCurrency(
-    (metadata?.symbol as SupportedCurrencyTag) ?? "ZTG",
+
+  const currencyMetadata = getMetadataForCurrency(
+    (metadata?.symbol && ["ZBS", "ZTG", "DOT"].includes(metadata.symbol)
+      ? metadata.symbol
+      : "ZTG") as SupportedCurrencyTag,
   );
 
   return (
@@ -117,13 +120,15 @@ const BuyFullSetForm = ({
         <div className="flex justify-center items-center mb-7">
           <div className="flex items-center justify-center gap-2">
             <span>Your Balance: </span>
-            <Image
-              width={20}
-              height={20}
-              src={image}
-              alt="Currency token logo"
-              className="rounded-full"
-            />
+            {currencyMetadata?.image && (
+              <Image
+                width={20}
+                height={20}
+                src={currencyMetadata?.image}
+                alt="Currency token logo"
+                className="rounded-full"
+              />
+            )}
             <span className="font-medium">
               {baseAssetBalance?.div(ZTG).toNumber().toFixed(2)}{" "}
               {metadata?.symbol}
