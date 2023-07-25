@@ -4,16 +4,17 @@ import {
   isRpcSdk,
   Market,
 } from "@zeitgeistpm/sdk-next";
+import Input from "components/ui/Input";
 import { DateTimeInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import moment from "moment";
 import { useState } from "react";
 
@@ -36,7 +37,7 @@ const ScalarDisputeBox = ({
   const lastDispute = disputes?.[disputes.length - 1];
 
   const wallet = useWallet();
-  const signer = wallet.getActiveSigner();
+  const signer = wallet.activeAccount;
 
   const bondAmount =
     disputes && disputeBond && disputeFactor
@@ -68,34 +69,30 @@ const ScalarDisputeBox = ({
     }
   };
 
-  const handleSignTransaction = async () => {
-    if (!isRpcSdk(sdk) || !signer) return;
-    const outcomeReport = {
-      Scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
-    };
+  const { send } = useExtrinsic(
+    () => {
+      if (!isRpcSdk(sdk) || !signer) return;
 
-    const callback = extrinsicCallback({
-      api: sdk.api,
-      notifications: notificationStore,
-      successCallback: async () => {
+      const outcomeReport = {
+        Scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
+      };
+
+      return sdk.api.tx.predictionMarkets.dispute(
+        market.marketId,
+        outcomeReport,
+      );
+    },
+    {
+      onSuccess: () => {
         notificationStore.pushNotification("Outcome Disputed", {
           type: "Success",
         });
         onSuccess?.();
       },
-      failCallback: (error) => {
-        notificationStore.pushNotification(error, {
-          type: "Error",
-        });
-      },
-    });
+    },
+  );
 
-    const tx = sdk.api.tx.predictionMarkets.dispute(
-      market.marketId,
-      outcomeReport,
-    );
-    await signAndSend(tx, signer, callback);
-  };
+  const handleSignTransaction = async () => send();
 
   return (
     <div className="p-[30px] flex flex-col items-center gap-y-3">
@@ -122,7 +119,7 @@ const ScalarDisputeBox = ({
           }}
         />
       ) : (
-        <input
+        <Input
           type="number"
           value={scalarReportValue}
           onChange={(e) => setScalarReportValue(e.target.value)}

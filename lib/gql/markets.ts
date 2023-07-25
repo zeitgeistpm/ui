@@ -32,7 +32,6 @@ const marketQuery = gql`
       question
       slug
       status
-      img
       outcomeAssets
       scalarType
       creator
@@ -64,6 +63,11 @@ const marketQuery = gql`
         start
         end
       }
+      deadlines {
+        disputeDuration
+        gracePeriod
+        oracleDuration
+      }
       categories {
         name
         color
@@ -75,7 +79,6 @@ const marketQuery = gql`
 
 export interface MarketPageIndexedData {
   marketId: number;
-  img: string;
   slug: string;
   question: string;
   description: string;
@@ -85,6 +88,11 @@ export interface MarketPageIndexedData {
     start: string;
     end: string;
   };
+  deadlines: {
+    disputeDuration: string;
+    gracePeriod: string;
+    oracleDuration: string;
+  } | null;
   categories: { name: string; color: string }[];
   outcomeAssets: string[];
   resolvedOutcome: string;

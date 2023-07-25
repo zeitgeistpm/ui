@@ -1,5 +1,5 @@
-import { parseAssetId } from "@zeitgeistpm/sdk-next";
+import { AssetId, parseAssetId } from "@zeitgeistpm/sdk-next";
 
-export const parseAssetIdString = (assetId?: string) => {
+export const parseAssetIdString = (assetId?: string): AssetId | undefined => {
   return assetId ? parseAssetId(assetId).unrightOr(undefined) : undefined;
 };

@@ -1,6 +1,6 @@
 import { atom, getDefaultStore, createStore } from "jotai";
 import { RESET, atomWithStorage } from "jotai/utils";
-import { tryCatch } from "@zeitgeistpm/utility/dist/option";
+import { tryCatch, fromNullable } from "@zeitgeistpm/utility/dist/option";
 
 export type PersistentAtomConfig<T> = {
   /**
@@ -10,7 +10,7 @@ export type PersistentAtomConfig<T> = {
   /**
    * Default value if no value is stored.
    */
-  defaultValue: Versioned<T>;
+  defaultValue: T;
   /**
    * Migrations to run on the stored value.
    * @note index is used as version number.
@@ -45,14 +45,15 @@ export type Migration<A, B> = (state: A) => B;
  * @returns WritableAtom<T & {__version: number}
  */
 export const persistentAtom = <T>(opts: PersistentAtomConfig<Versioned<T>>) => {
-  const parsedStorageValue = tryCatch(
-    () =>
-      JSON.parse(globalThis.localStorage?.getItem(opts.key)) as Versioned<T>,
-  ).unwrapOr(opts.defaultValue);
+  const parsedStorageValue = fromNullable(
+    globalThis.localStorage?.getItem(opts.key),
+  )
+    .bind((raw) => tryCatch(() => JSON.parse(raw) as Versioned<T>))
+    .unwrapOr(opts.defaultValue);
 
   const storageAtom = atomWithStorage<Versioned<T>>(
     opts.key,
-    (parsedStorageValue ?? opts.defaultValue) as Versioned<T>,
+    parsedStorageValue,
   );
 
   const store = opts.store ?? getDefaultStore();
@@ -61,27 +62,29 @@ export const persistentAtom = <T>(opts: PersistentAtomConfig<Versioned<T>>) => {
   const nextVersion = opts.migrations?.length ?? 0;
 
   if (nextVersion > initialVersion) {
-    console.group(`state-migration:${opts.key}`);
+    let newState = initialState;
+    const migrations = opts.migrations?.slice(initialVersion);
 
-    const migrations = opts.migrations.slice(initialVersion);
+    if (migrations) {
+      console.group(`state-migration:${opts.key}`);
+      console.info(`initial [version: ${initialVersion}]`, initialState);
 
-    console.info(`initial [version: ${initialVersion}]`, initialState);
+      newState = migrations.reduce((acc, migration, version) => {
+        const nextVersion = initialVersion + version + 1;
+        const nextState = { ...migration(acc), __version: nextVersion };
 
-    const newState = migrations.reduce((acc, migration, version) => {
-      const nextVersion = initialVersion + version + 1;
-      const nextState = { ...migration(acc), __version: nextVersion };
+        if (migrations.length == 1 || nextVersion !== 1) {
+          const step = version == migrations.length - 1 ? "final" : "next";
+          console.info(`${step} [version: ${nextVersion}]`, nextState);
+        }
 
-      if (migrations.length == 1 || nextVersion !== 1) {
-        const step = version == migrations.length - 1 ? "final" : "next";
-        console.info(`${step} [version: ${nextVersion}]`, nextState);
-      }
+        return nextState;
+      }, initialState);
 
-      return nextState;
-    }, initialState);
+      console.groupEnd();
+    }
 
-    console.groupEnd();
-
-    store.set(storageAtom, { ...newState, __version: nextVersion });
+    newState && store.set(storageAtom, { ...newState, __version: nextVersion });
   }
 
   const proxy = atom<

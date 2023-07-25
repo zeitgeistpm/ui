@@ -1,7 +1,7 @@
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 
-import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
+import { FullContext, ScalarRangeType, Sdk } from "@zeitgeistpm/sdk-next";
 import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
 import { IndexedMarketCardData } from "components/markets/market-card/index";
 import { ZTG } from "lib/constants";
@@ -11,6 +11,8 @@ import { getFeaturedMarketIds } from "lib/cms/get-featured-marketids";
 import { getCurrentPrediction } from "lib/util/assets";
 import { hiddenMarketIds } from "lib/constants/markets";
 import { marketMetaFilter } from "./constants";
+import { isPresent } from "lib/types";
+import { getDisplayName } from "./display-name";
 
 const marketQuery = gql`
   query Market($marketId: Int) {
@@ -64,6 +66,7 @@ const assetsQuery = gql`
 
 const getFeaturedMarkets = async (
   client: GraphQLClient,
+  sdk: Sdk<FullContext>,
 ): Promise<IndexedMarketCardData[]> => {
   const ids = await getFeaturedMarketIds();
 
@@ -167,7 +170,17 @@ const getFeaturedMarkets = async (
     }),
   );
 
-  return featuredMarkets.filter((market) => market !== undefined);
+  const filterMarkets = featuredMarkets.filter(isPresent);
+
+  const names = await getDisplayName(
+    sdk,
+    filterMarkets.map((m) => m.creator),
+  );
+
+  return filterMarkets.map((m, i) => ({
+    ...m,
+    creatorDisplayName: names[i],
+  }));
 };
 
 export default getFeaturedMarkets;

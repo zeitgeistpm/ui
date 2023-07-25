@@ -36,6 +36,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { positionsRootKey } from "lib/hooks/queries/useAccountTokenPositions";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { awaitIndexer } from "lib/util/await-indexer";
+import Input from "components/ui/Input";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -96,7 +97,7 @@ const Inner = ({
   });
 
   const wallet = useWallet();
-  const signer = wallet.getActiveSigner();
+  const signer = wallet.activeAccount;
 
   const { data: tradeItemState } = useTradeItemState(tradeItem);
 
@@ -529,7 +530,7 @@ const Inner = ({
           </Tab.Group>
           <div className="flex flex-col p-[20px] sm:p-[30px]">
             <div className="center relative">
-              <input
+              <Input
                 type="number"
                 {...register("assetAmount", {
                   required: true,
@@ -543,7 +544,7 @@ const Inner = ({
                   }
                 }}
                 step="any"
-                className="w-full bg-transparent outline-none !text-center text-[35px] sm:text-[58px]"
+                className="w-full bg-transparent text-center text-[35px] sm:text-[58px]"
                 autoFocus
               />
             </div>
@@ -552,7 +553,7 @@ const Inner = ({
             </div>
             <div className="font-semibold text-center mb-[20px]">For</div>
             <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative">
-              <input
+              <Input
                 type="number"
                 {...register("baseAmount", {
                   required: true,
@@ -566,7 +567,7 @@ const Inner = ({
                   }
                 }}
                 step="any"
-                className="w-full bg-transparent outline-none !text-center"
+                className="w-full bg-transparent text-center"
               />
               <div className="mr-[10px] absolute right-0">{baseSymbol}</div>
             </div>

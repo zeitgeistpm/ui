@@ -1,8 +1,9 @@
-import { FC, useEffect, useState } from "react";
+import { Transition } from "@headlessui/react";
+import { FC, Fragment, useEffect, useState } from "react";
 import { Copy } from "react-feather";
 
 export type CopyIconProps = {
-  copyText: string;
+  copyText?: string;
   className?: string;
   size?: number;
 };
@@ -15,6 +16,9 @@ const CopyIcon: FC<CopyIconProps> = ({
   const [recentlyCopied, setRecentlyCopied] = useState(false);
 
   const copyAddressToClipboard = () => {
+    if (copyText == null) {
+      return;
+    }
     navigator.clipboard.writeText(copyText);
     setRecentlyCopied(true);
   };
@@ -35,17 +39,29 @@ const CopyIcon: FC<CopyIconProps> = ({
   }, [recentlyCopied]);
 
   return (
-    <div className={"w-ztg-20 flex items-center " + className}>
-      {recentlyCopied ? (
-        <span className="text-sky-600 text-ztg-12-150 ml-auto">Copied!</span>
-      ) : (
-        <Copy
-          size={size}
-          role="button"
-          className="cursor-pointer text-sky-600 ml-auto"
-          onClick={handleCopy}
-        />
-      )}
+    <div className={"relative w-ztg-20 flex items-center " + className}>
+      <Copy
+        size={size}
+        role="button"
+        className="cursor-pointer ml-auto"
+        onClick={handleCopy}
+      />
+      <Transition
+        as={Fragment}
+        show={recentlyCopied}
+        enter="transition ease-out duration-100"
+        enterFrom="transform opacity-0 scale-95"
+        enterTo="transform opacity-100 scale-100"
+        leave="transition ease-in duration-75"
+        leaveFrom="transform opacity-100 scale-100"
+        leaveTo="transform opacity-0 :scale-95"
+      >
+        <div className="absolute top-[50%] right-0 translate-x-[100%] translate-y-[-50%] pl-2">
+          <div className="bg-black bg-opacity-30 text-sm text-white rounded-md p-1">
+            Copied!
+          </div>
+        </div>
+      </Transition>
     </div>
   );
 };

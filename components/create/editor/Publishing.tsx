@@ -24,6 +24,7 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import { LuFileWarning } from "react-icons/lu";
 import { RiSendPlaneLine } from "react-icons/ri";
+import type { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 
 export type PublishingProps = {
   editor: MarketDraftEditor;
@@ -40,11 +41,22 @@ export const Publishing = ({ editor }: PublishingProps) => {
   const { data: constants } = useChainConstants();
 
   const params = useMemo(() => {
-    const signer = wallet.getActiveSigner();
-    if (editor.isValid && chainTime && signer) {
-      return marketFormDataToExtrinsicParams(editor.form, signer, chainTime);
+    let signer = wallet.getSigner();
+
+    if (!editor.isValid || !chainTime || !signer) return;
+
+    const proxy = wallet.getProxyFor(wallet.activeAccount?.address);
+
+    if (proxy && proxy.enabled) {
+      return marketFormDataToExtrinsicParams(
+        editor.form,
+        { address: wallet.realAddress } as KeyringPairOrExtSigner,
+        chainTime,
+        signer,
+      );
     }
-    return;
+
+    return marketFormDataToExtrinsicParams(editor.form, signer, chainTime);
   }, [editor.form, chainTime, wallet.activeAccount]);
 
   const feesEnabled = !(
@@ -75,12 +87,12 @@ export const Publishing = ({ editor }: PublishingProps) => {
     (a) => a.name === editor.form.currency,
   );
 
-  const { data: ztgBalance } = useBalance(wallet.activeAccount?.address, {
+  const { data: ztgBalance } = useBalance(wallet.realAddress, {
     Ztg: null,
   });
 
   const { data: foreignAssetBalance } = useBalance(
-    wallet.activeAccount?.address,
+    wallet.realAddress,
     baseCurrency?.assetId,
   );
 
@@ -268,7 +280,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
                         </div>
                       </div>
 
-                      <div className="flex">
+                      <div className="flex mb-4">
                         <div className="flex-1">
                           <h3 className="text-base font-normal text-black">
                             Oracle Bond

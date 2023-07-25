@@ -1,4 +1,5 @@
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import Input from "components/ui/Input";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -33,22 +34,20 @@ const SellFullSetForm = ({
   const { data: metadata } = useAssetMetadata(baseAssetId);
 
   const { data: baseAssetBalance } = useBalance(
-    wallet.getActiveSigner()?.address,
+    wallet.realAddress,
     baseAssetId,
   );
 
   const { data: balances } = useAccountPoolAssetBalances(
-    wallet.getActiveSigner()?.address,
+    wallet.realAddress,
     pool,
   );
 
   const [amount, setAmount] = useState<string>("0");
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 
-  const extrinsicBase = wallet.activeAccount?.address
-    ? sdk
-        ?.asRpc()
-        .api.tx.balances.transfer(wallet.activeAccount?.address, ZTG.toFixed(0))
+  const extrinsicBase = wallet.realAddress
+    ? sdk?.asRpc().api.tx.balances.transfer(wallet.realAddress, ZTG.toFixed(0))
     : undefined;
   const { data: fee } = useExtrinsicFee(extrinsicBase);
 

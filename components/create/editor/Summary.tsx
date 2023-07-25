@@ -12,7 +12,6 @@ import {
 } from "lib/state/market-creation/types/form";
 import { timelineAsBlocks } from "lib/state/market-creation/types/timeline";
 import { shortenAddress } from "lib/util";
-import { formatDuration } from "lib/util/format-duration";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { useMemo } from "react";
@@ -206,15 +205,15 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
               {form.gracePeriod?.type === "duration"
                 ? timeline?.grace
                   ? timeline?.grace.period > 0
-                    ? formatDuration(blocksAsDuration(timeline?.grace.period))
+                    ? blocksAsDuration(timeline?.grace.period).humanize()
                     : "None"
                   : "--"
-                : Intl.DateTimeFormat("default", {
+                : form.gracePeriod?.date
+                ? Intl.DateTimeFormat("default", {
                     dateStyle: "medium",
                     timeStyle: "short",
-                  }).format(
-                    blockDate(chainTime!, form.gracePeriod?.block!).getTime(),
-                  )}
+                  }).format(new Date(form.gracePeriod?.date).getTime())
+                : "--"}
             </div>
           </div>
           <div className="flex justify-center gap-2 items-center mb-2 md:mb-0">
@@ -222,7 +221,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             <div>
               {timeline?.report
                 ? timeline?.report.period > 0
-                  ? formatDuration(blocksAsDuration(timeline?.report.period))
+                  ? blocksAsDuration(timeline?.report.period).humanize()
                   : "None"
                 : "--"}
             </div>
@@ -232,7 +231,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             <div>
               {timeline?.dispute
                 ? timeline?.dispute.period > 0
-                  ? formatDuration(blocksAsDuration(timeline?.dispute.period))
+                  ? blocksAsDuration(timeline?.dispute.period).humanize()
                   : "None"
                 : "--"}
             </div>
@@ -268,7 +267,12 @@ const Answers = ({
   moderation: Moderation;
 }) => {
   return (
-    <div className="md:grid grid-cols-4 gap-2">
+    <div
+      className="md:grid gap-3 max-w-full"
+      style={{
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+      }}
+    >
       {answers?.answers.map((answer, answerIndex) => {
         const answerLiquidity = liquidity?.rows[answerIndex];
 

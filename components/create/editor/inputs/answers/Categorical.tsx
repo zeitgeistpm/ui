@@ -21,9 +21,10 @@ import {
 import { uniq } from "lodash-es";
 import { MdOutlineDragIndicator } from "react-icons/md";
 import { FormEvent } from "../../types";
+import Input from "components/ui/Input";
 
 export type CategoricalAnswersInputProps = {
-  name?: string;
+  name: string;
   value?: CategoricalAnswers | YesNoAnswers;
   onChange?: (event: FormEvent<CategoricalAnswers>) => void;
   onBlur?: (event: FormEvent<CategoricalAnswers>) => void;
@@ -57,7 +58,9 @@ export const CategoricalAnswersInput = ({
           value: {
             type: "categorical",
             answers:
-              value?.answers.map((v, i) => (i === index ? answer : v)) ?? [],
+              value?.answers.map((v: string, i: number) =>
+                i === index ? answer : v,
+              ) ?? [],
           },
         },
       });
@@ -93,9 +96,11 @@ export const CategoricalAnswersInput = ({
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (active.id !== over.id) {
+    if (over && active.id !== over.id) {
       const oldIndex = value?.answers.findIndex((v) => v === active.id);
       const newIndex = value?.answers.findIndex((v) => v === over.id);
+
+      if (!oldIndex || !newIndex || !value?.answers) return;
 
       onChange?.({
         type: "change",
@@ -112,7 +117,8 @@ export const CategoricalAnswersInput = ({
 
   const draggingDisabled =
     disabled ||
-    value?.answers.length < 2 ||
+    !value?.answers ||
+    value?.answers?.length < 2 ||
     uniq(value?.answers).length < value?.answers.length;
 
   return (
@@ -135,7 +141,7 @@ export const CategoricalAnswersInput = ({
                     <AnswerInput
                       key={index}
                       id={answer}
-                      disabled={disabled}
+                      disabled={disabled ?? false}
                       value={answer}
                       onChange={handleChange(index, onChange)}
                       onBlur={handleChange(index, onBlur)}
@@ -204,9 +210,9 @@ const AnswerInput = ({
       style={style}
       className={`relative flex-1 w-full bg-gray-100 rounded-md md:min-w-[520px] md:max-w-[420px] py-3 px-5 mb-3`}
     >
-      <input
+      <Input
         disabled={disabled}
-        className={`h-full w-full bg-transparent outline-none`}
+        className={`h-full w-full bg-transparent outline-none !p-0 !m-0`}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onBlur={(event) => onBlur(event.target.value)}

@@ -11,6 +11,8 @@ import WithdrawButton from "./WithdrawButton";
 import Image from "next/image";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { ChainName, CHAIN_IMAGES } from "lib/constants/chains";
+import TransferButton from "./TransferButton";
+import { AssetId } from "@zeitgeistpm/sdk-next";
 
 const columns: TableColumn[] = [
   {
@@ -71,11 +73,13 @@ const MoveButton = ({
   existentialDeposit: Decimal;
 }) => {
   if (chain === "Zeitgeist") {
-    if (
-      token.toUpperCase() === nativeToken.toUpperCase() ||
-      sourceChain == null
-    ) {
-      return <></>;
+    const isNativeTokenBalance =
+      token.toUpperCase() === nativeToken.toUpperCase();
+    if (isNativeTokenBalance || sourceChain == null) {
+      const transferAssetId: AssetId = isNativeTokenBalance
+        ? { Ztg: null }
+        : { ForeignAsset: foreignAssetId };
+      return <TransferButton assetId={transferAssetId} />;
     } else {
       const destinationAsset = allBalanceDetails.find(
         (detail) => detail.chain === sourceChain,
@@ -109,38 +113,37 @@ const CurrenciesTable = ({ address }: { address: string }) => {
   const { data: balances } = useCurrencyBalances(address);
   const { data: constants } = useChainConstants();
 
-  const tableData: TableData[] =
-    balances
-      ?.sort((a, b) => b.balance.minus(a.balance).toNumber())
-      .map((balance) => {
-        return {
-          chain: (
-            <ImageAndText
-              name={balance.chain}
-              imagePath={CHAIN_IMAGES[balance.chain]}
-            />
-          ),
-          asset: (
-            <ImageAndText
-              name={balance.symbol}
-              imagePath={lookupAssetImagePath(balance.foreignAssetId) ?? ""}
-            />
-          ),
-          balance: balance.balance.div(ZTG).toFixed(3),
-          button: (
-            <MoveButton
-              chain={balance.chain}
-              sourceChain={balance.sourceChain}
-              token={balance.symbol}
-              foreignAssetId={balance.foreignAssetId ?? 0}
-              balance={balance.balance}
-              nativeToken={constants?.tokenSymbol ?? ""}
-              existentialDeposit={balance.existentialDeposit}
-              allBalanceDetails={balances}
-            />
-          ),
-        };
-      }) ?? [];
+  const tableData: TableData[] | undefined = balances
+    ?.sort((a, b) => b.balance.minus(a.balance).toNumber())
+    .map((balance) => {
+      return {
+        chain: (
+          <ImageAndText
+            name={balance.chain}
+            imagePath={CHAIN_IMAGES[balance.chain]}
+          />
+        ),
+        asset: (
+          <ImageAndText
+            name={balance.symbol}
+            imagePath={lookupAssetImagePath(balance.foreignAssetId) ?? ""}
+          />
+        ),
+        balance: balance.balance.div(ZTG).toFixed(3),
+        button: (
+          <MoveButton
+            chain={balance.chain}
+            sourceChain={balance.sourceChain}
+            token={balance.symbol}
+            foreignAssetId={balance.foreignAssetId ?? 0}
+            balance={balance.balance}
+            nativeToken={constants?.tokenSymbol ?? ""}
+            existentialDeposit={balance.existentialDeposit}
+            allBalanceDetails={balances}
+          />
+        ),
+      };
+    });
 
   return (
     <div>

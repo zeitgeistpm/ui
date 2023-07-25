@@ -11,6 +11,7 @@ import { DeepReadonly } from "lib/types/deep-readonly";
 import { ChangeEventHandler, FocusEventHandler } from "react";
 import { FormEvent } from "../types";
 import DateTimePicker from "./DateTime";
+import Input from "components/ui/Input";
 
 export type BlockPeriodPickerProps = {
   name: string;
@@ -64,7 +65,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
         name,
         value: {
           type: "date",
-          block: dateBlock(chainTime, new Date(event.target.value)),
+          date: event.target.value,
         },
       },
     });
@@ -78,7 +79,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
         name,
         value: {
           type: "date",
-          block: dateBlock(chainTime, new Date(event.target.value)),
+          date: event.target.value,
         },
       },
     });
@@ -159,11 +160,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
             }`}
             placeholder="Set Custom Date"
             isValid={value?.type === "date" && isValid}
-            value={
-              chainTime && value?.type === "date"
-                ? blockDate(chainTime, value.block).toISOString()
-                : undefined
-            }
+            value={chainTime && value?.type === "date" ? value.date : undefined}
             onChange={handleDateChange}
             onBlur={handleDateBlur}
           />
@@ -240,7 +237,7 @@ const DurationInput = ({
           isSelected ? "bg-nyanza-base" : "bg-gray-100"
         }`}
       >
-        <input
+        <Input
           type="number"
           className={`flex-2 rounded-l-md py-3 px-6 text-right bg-transparent outline-none w-full`}
           value={value?.value}

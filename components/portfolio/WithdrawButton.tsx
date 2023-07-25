@@ -17,6 +17,7 @@ import { countDecimals } from "lib/util/count-decimals";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
+import Input from "components/ui/Input";
 
 const WithdrawButton = ({
   toChain,
@@ -129,11 +130,11 @@ const WithdrawModal = ({
 
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
     () => {
-      if (isRpcSdk(sdk) && wallet.activeAccount) {
+      if (isRpcSdk(sdk) && wallet.realAddress) {
         const tx = createWithdrawExtrinsic(
           sdk.api,
           amountDecimal.toFixed(0),
-          wallet.activeAccount.address,
+          wallet.realAddress,
           foreignAssetId,
         );
         return tx;
@@ -202,7 +203,7 @@ const WithdrawModal = ({
             <Controller
               render={({ field }) => {
                 return (
-                  <input
+                  <Input
                     {...field}
                     type="number"
                     className="w-full bg-transparent outline-none !text-center"

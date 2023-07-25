@@ -5,9 +5,20 @@ import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS, ZTG } from "lib/constants";
 import { MarketOutcomes, MarketOutcome } from "lib/types/markets";
 import { getCurrentPrediction } from "lib/util/assets";
-import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
+import {
+  BaseAssetId,
+  FullContext,
+  IOForeignAssetId,
+  ScalarRangeType,
+  Sdk,
+} from "@zeitgeistpm/sdk-next";
 import { hiddenMarketIds } from "lib/constants/markets";
 import { marketMetaFilter } from "./constants";
+import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
+import { getForeignAssetPrice } from "lib/hooks/queries/useAssetUsdPrice";
+import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { getDisplayName } from "./display-name";
 
 const poolChangesQuery = gql`
   query PoolChanges($start: DateTime, $end: DateTime) {
@@ -78,13 +89,14 @@ const assetsQuery = gql`
 
 const getTrendingMarkets = async (
   client: GraphQLClient,
+  sdk: Sdk<FullContext>,
 ): Promise<IndexedMarketCardData[]> => {
   const now = new Date().toISOString();
   const dateOneWeekAgo = new Date(
     new Date().getTime() - DAY_SECONDS * 7 * 1000,
   ).toISOString();
 
-  const response = await client.request<{
+  const { historicalPools } = await client.request<{
     historicalPools: {
       dVolume: string;
       poolId: number;
@@ -94,7 +106,20 @@ const getTrendingMarkets = async (
     end: now,
   });
 
-  const trendingPoolIds = calcTrendingPools(response.historicalPools);
+  const { pools } = await client.request<{
+    pools: { poolId: number; baseAsset: string }[];
+  }>(gql`
+    query Pools {
+      pools {
+        poolId
+        baseAsset
+      }
+    }
+  `);
+
+  const basePrices = await getBaseAssetPrices();
+
+  const trendingPoolIds = calcTrendingPools(historicalPools, basePrices, pools);
 
   const trendingMarkets = await Promise.all(
     trendingPoolIds.map(async (poolId) => {
@@ -160,7 +185,7 @@ const getTrendingMarkets = async (
         volume: Number(new Decimal(market.pool.volume).div(ZTG).toFixed(0)),
         baseAsset: market.baseAsset,
         outcomes: marketCategories,
-        pool: market.pool,
+        pool: market.pool ?? null,
         marketType: market.marketType,
         tags: market.tags,
         status: market.status,
@@ -171,7 +196,48 @@ const getTrendingMarkets = async (
       return trendingMarket;
     }),
   );
-  return trendingMarkets;
+
+  const names = await getDisplayName(
+    sdk,
+    trendingMarkets.map((m) => m.creator),
+  );
+
+  return trendingMarkets.map((m, i) => ({
+    ...m,
+    creatorDisplayName: names[i],
+  }));
+};
+
+type BasePrices = {
+  [key: string | "ztg"]: Decimal;
+};
+
+const lookupPrice = (basePrices: BasePrices, baseAsset: BaseAssetId) => {
+  return IOForeignAssetId.is(baseAsset)
+    ? basePrices[baseAsset.ForeignAsset]
+    : basePrices["ztg"];
+};
+
+const getBaseAssetPrices = async (): Promise<BasePrices> => {
+  const assetIds = Object.keys(FOREIGN_ASSET_METADATA);
+
+  const foreignAssetPrices = await Promise.all(
+    assetIds.map((id) => getForeignAssetPrice({ ForeignAsset: Number(id) })),
+  );
+
+  const pricesObj = foreignAssetPrices.reduce<BasePrices>(
+    (obj, price, index) => {
+      obj[assetIds[index]] = price;
+      return obj;
+    },
+    {},
+  );
+
+  const ztgInfo = await fetchZTGInfo();
+
+  pricesObj["ztg"] = ztgInfo.price;
+
+  return pricesObj;
 };
 
 const calcTrendingPools = (
@@ -179,6 +245,8 @@ const calcTrendingPools = (
     poolId: number;
     dVolume: string;
   }[],
+  basePrices: BasePrices,
+  pools: { poolId: number; baseAsset: string }[],
 ) => {
   const poolVolumes: { [key: string]: Decimal } = {};
   const maxPools = 8;
@@ -192,6 +260,18 @@ const calcTrendingPools = (
       poolVolumes[transaction.poolId] = new Decimal(transaction.dVolume);
     }
   });
+
+  for (let poolId in poolVolumes) {
+    const base = pools.find(
+      (pool) => pool.poolId === Number(poolId),
+    )?.baseAsset;
+
+    const value = lookupPrice(
+      basePrices,
+      parseAssetIdString(base) as BaseAssetId,
+    );
+    poolVolumes[poolId] = poolVolumes[poolId].mul(value);
+  }
 
   const poolIdsByVolumeDesc = Object.keys(poolVolumes).sort((a, b) => {
     const aVol = poolVolumes[a];

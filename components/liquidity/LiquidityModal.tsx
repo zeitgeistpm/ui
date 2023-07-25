@@ -40,12 +40,12 @@ const LiquidityModal = ({
   poolId: number;
 }) => {
   const wallet = useWallet();
-  const connectedAddress = wallet.activeAccount?.address;
+  const connectedAddress = wallet.realAddress;
   const { data: pool } = usePool({ poolId });
 
   // pool balances
   const { data: poolAssetBalances } = useAccountPoolAssetBalances(
-    pool?.accountId,
+    pool?.account.accountId,
     pool,
   );
 
@@ -70,10 +70,7 @@ const LiquidityModal = ({
   const { data: metadata } = useAssetMetadata(baseAsset);
 
   //user balances outside of pool
-  const { data: userBaseBalance } = useBalance(
-    wallet.activeAccount?.address,
-    baseAsset,
-  );
+  const { data: userBaseBalance } = useBalance(connectedAddress, baseAsset);
   const { data: userAssetBalances } = useAccountPoolAssetBalances(
     connectedAddress,
     pool,
@@ -121,7 +118,6 @@ const LiquidityModal = ({
 
       return allBalances;
     }
-    return {};
   }, [
     pool?.weights,
     userAssetBalances,
@@ -145,27 +141,31 @@ const LiquidityModal = ({
 
           <Tab.Panels className="p-[30px]">
             <Tab.Panel>
-              <JoinPoolForm
-                poolId={poolId}
-                poolBalances={allBalances}
-                totalPoolShares={
-                  new Decimal(totalPoolIssuance?.toString() ?? 0)
-                }
-                baseAssetTicker={metadata?.symbol}
-                onSuccess={onClose}
-              />
+              {allBalances && (
+                <JoinPoolForm
+                  poolId={poolId}
+                  poolBalances={allBalances}
+                  totalPoolShares={
+                    new Decimal(totalPoolIssuance?.toString() ?? 0)
+                  }
+                  baseAssetTicker={metadata?.symbol}
+                  onSuccess={onClose}
+                />
+              )}
             </Tab.Panel>
             <Tab.Panel>
-              <ExitPoolForm
-                poolId={poolId}
-                poolBalances={allBalances}
-                totalPoolShares={
-                  new Decimal(totalPoolIssuance?.toString() ?? 0)
-                }
-                userPoolShares={new Decimal(userPoolTokens?.toString() ?? 0)}
-                baseAssetTicker={metadata?.symbol}
-                onSuccess={onClose}
-              />
+              {allBalances && (
+                <ExitPoolForm
+                  poolId={poolId}
+                  poolBalances={allBalances}
+                  totalPoolShares={
+                    new Decimal(totalPoolIssuance?.toString() ?? 0)
+                  }
+                  userPoolShares={new Decimal(userPoolTokens?.toString() ?? 0)}
+                  baseAssetTicker={metadata?.symbol}
+                  onSuccess={onClose}
+                />
+              )}
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>

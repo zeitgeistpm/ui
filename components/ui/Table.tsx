@@ -16,7 +16,7 @@ import InfoPopover from "components/ui/InfoPopover";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 
 interface TableProps {
-  data: TableData[];
+  data?: TableData[] | null;
   columns: TableColumn[];
   rowColorClass?: string;
   rowHeightPx?: number;
@@ -214,9 +214,9 @@ const Cell = ({
             </div>
             <div className="text-ztg-12-150 font-light text-sky-600">
               $
-              {(value.usdValue ?? ztgPrice?.toNumber() * value.value).toFixed(
-                2,
-              )}
+              {(
+                value.usdValue ?? (ztgPrice?.toNumber() ?? 0) * value.value
+              ).toFixed(2)}
             </div>
           </td>
         );
@@ -310,9 +310,10 @@ const Table = ({
 
   const { ref: loadMoreRef, inView: loadMoreInView } = useInView();
 
-  const loadMoreThresholdIndex = loadMoreThreshold
-    ? Math.floor((data.length / 100) * loadMoreThreshold)
-    : false;
+  const loadMoreThresholdIndex =
+    loadMoreThreshold && data
+      ? Math.floor((data.length / 100) * loadMoreThreshold)
+      : false;
 
   useEffect(() => {
     if (loadMoreInView && loadMoreThresholdIndex) {

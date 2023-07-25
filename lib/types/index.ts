@@ -1,26 +1,4 @@
 import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
-import { AssetId } from "@zeitgeistpm/sdk/dist/types";
-import { Asset } from "@zeitgeistpm/types/dist/interfaces";
-
-export type PoolsListQuery = {
-  page: number;
-};
-
-export interface SelectOption {
-  value: number | string;
-  label: string;
-}
-
-export const isAsset = (val: any): val is Asset => {
-  return val.type === "Asset";
-};
-
-export const ztgAsset = { ztg: null };
-export const ztgAssetJson = JSON.stringify(ztgAsset);
-
-export const isAssetZTG = (val: any): val is { ztg: null } => {
-  return JSON.stringify(val) === ztgAssetJson;
-};
 
 export type Primitive = null | number | string | boolean;
 export type JSONObject =
@@ -28,18 +6,20 @@ export type JSONObject =
   | { [key: string]: JSONObject }
   | JSONObject[];
 
-export interface MarketOutcome {
-  metadata: JSONObject;
-  asset: AssetId | null;
-  weight: number | null;
-}
-
 export type Environment = "production" | "staging";
 
 export interface EndpointOption {
   value: string;
   label: string;
   environment: Environment;
+}
+
+export function isPresent<T>(t: T | undefined | null | void): t is T {
+  return t !== undefined && t !== null;
+}
+
+export function isDefined<T>(t: T | undefined): t is T {
+  return t !== undefined;
 }
 
 export type TradeType = "buy" | "sell";
@@ -51,4 +31,33 @@ export const isScalarRangeType = (
     return true;
   }
   return ["date", "number"].includes(val);
+};
+
+export type MarketCategoricalOutcome = { categorical: number };
+export type MarketScalarOutcome = { scalar: string };
+
+export const isMarketCategoricalOutcome = (
+  val: any,
+): val is MarketCategoricalOutcome => {
+  return val.categorical != null;
+};
+
+export const isMarketScalarOutcome = (val: any): val is MarketScalarOutcome => {
+  return val.scalar != null;
+};
+
+export type MarketReport = {
+  at: number;
+  by: string;
+  outcome: MarketCategoricalOutcome | MarketScalarOutcome;
+};
+
+export const isValidMarketReport = (report: any): report is MarketReport => {
+  return (
+    report != null &&
+    report.at != null &&
+    report.by != null &&
+    report.outcome != null &&
+    (report.outcome.categorical != null || report.outcome.scalar != null)
+  );
 };

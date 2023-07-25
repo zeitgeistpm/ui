@@ -25,19 +25,19 @@ export const timelineAsBlocks = (
 
     const gracePeriodEndBlock =
       form.gracePeriod?.type === "date"
-        ? form.gracePeriod?.block
+        ? dateBlock(chainTime, new Date(form.gracePeriod?.date))
         : marketEndBlock +
           (form.gracePeriod ? durationasBlocks(form.gracePeriod) : 0);
 
     const reportPeriodEndBlock =
       form.reportingPeriod?.type === "date"
-        ? form.reportingPeriod?.block
+        ? dateBlock(chainTime, new Date(form.reportingPeriod?.date))
         : gracePeriodEndBlock +
           (form.reportingPeriod ? durationasBlocks(form.reportingPeriod) : 0);
 
     const disputePeriodEndBlock =
       form.disputePeriod?.type === "date"
-        ? form.disputePeriod?.block
+        ? dateBlock(chainTime, new Date(form.disputePeriod?.date))
         : reportPeriodEndBlock +
           (form.disputePeriod ? durationasBlocks(form.disputePeriod) : 0);
 

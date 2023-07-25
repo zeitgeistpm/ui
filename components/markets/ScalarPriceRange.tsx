@@ -6,8 +6,8 @@ interface ScalarPriceRangeProps {
   scalarType: ScalarRangeType;
   lowerBound: number;
   upperBound: number;
-  shortPrice: number; //between 0 and 1
-  longPrice: number; //between 0 and 1
+  shortPrice?: number; //between 0 and 1
+  longPrice?: number; //between 0 and 1
   status: string;
 }
 
@@ -20,12 +20,16 @@ const ScalarPriceRange = ({
   status,
 }: ScalarPriceRangeProps) => {
   const { width = 0, ref } = useResizeDetector();
-  const shortPercentage = 1 - shortPrice;
+  const shortPercentage = shortPrice && 1 - shortPrice;
   const longPercentage = longPrice;
-  const averagePercentage = (shortPercentage + longPercentage) / 2;
-  const averagePosition = width * averagePercentage;
+  const averagePercentage =
+    shortPercentage && longPercentage && (shortPercentage + longPercentage) / 2;
+  const averagePosition = averagePercentage && width * averagePercentage;
 
   const position = useMemo(() => {
+    if (!shortPrice || !longPrice) {
+      return 0;
+    }
     const pos =
       (upperBound - lowerBound) * ((1 - shortPrice + longPrice) / 2) +
       lowerBound;
@@ -66,7 +70,7 @@ const ScalarPriceRange = ({
           <div
             style={{
               width: `${
-                isNaN(averagePosition) || Number(positionDisplay) === 0
+                averagePosition != null || Number(positionDisplay) === 0
                   ? 0
                   : averagePosition
               }px`,

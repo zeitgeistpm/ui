@@ -22,6 +22,7 @@ export const useExtrinsic = <T>(
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isBroadcasting, setIsBroadcasting] = useState(false);
 
   const notifications = useNotifications();
 
@@ -30,11 +31,22 @@ export const useExtrinsic = <T>(
       throw new Error("SDK is not RPC");
     }
 
+    let signer = wallet.getSigner();
+    if (!signer) return;
+
     setIsLoading(true);
 
-    const extrinsic = extrinsicFn(params);
+    let extrinsic = extrinsicFn(params);
     if (!extrinsic) return;
-    const signer = wallet.getActiveSigner() as ExtSigner;
+
+    const proxy = wallet?.getProxyFor(wallet.activeAccount?.address);
+
+    if (!extrinsic || !signer) return;
+
+    if (proxy?.enabled && proxy?.address) {
+      console.info("Proxying transaction");
+      extrinsic = sdk.api.tx.proxy.proxy(proxy?.address, "Any", extrinsic);
+    }
 
     signAndSend(
       extrinsic,
@@ -42,24 +54,33 @@ export const useExtrinsic = <T>(
       extrinsicCallback({
         api: sdk.api,
         notifications,
+        broadcastCallback: () => {
+          setIsBroadcasting(true);
+          notifications?.pushNotification("Broadcasting transaction...", {
+            autoRemove: true,
+          });
+        },
         successCallback: (data) => {
           setIsLoading(false);
           setIsSuccess(true);
+          setIsBroadcasting(false);
 
           callbacks?.onSuccess && callbacks.onSuccess(data);
         },
         failCallback: (error) => {
           setIsLoading(false);
           setIsError(true);
+          setIsBroadcasting(false);
 
           callbacks?.onError && callbacks.onError();
           notifications.pushNotification(error, { type: "Error" });
         },
       }),
     ).catch(() => {
+      setIsBroadcasting(false);
       setIsLoading(false);
     });
   };
 
-  return { send, isError, isSuccess, isLoading };
+  return { send, isError, isSuccess, isLoading, isBroadcasting };
 };

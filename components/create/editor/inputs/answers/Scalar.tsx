@@ -3,9 +3,10 @@ import { ChangeEventHandler } from "react";
 import { FormEvent } from "../../types";
 import Toggle from "components/ui/Toggle";
 import DateTimePicker from "../DateTime";
+import Input from "components/ui/Input";
 
 export type ScalarAnswersInputProps = {
-  name?: string;
+  name: string;
   value?: ScalarAnswers;
   onChange?: (event: FormEvent<ScalarAnswers>) => void;
   onBlur?: (event: FormEvent<ScalarAnswers>) => void;
@@ -50,7 +51,7 @@ export const ScalarAnswersInput = ({
           name,
           value: {
             type: "scalar",
-            numberType: value.numberType,
+            numberType: value?.numberType ?? "number",
             answers: (value?.answers.map((v, i) =>
               i === index ? newValue : v,
             ) ?? []) as [number, number],
@@ -75,7 +76,7 @@ export const ScalarAnswersInput = ({
           name,
           value: {
             type: "scalar",
-            numberType: value.numberType,
+            numberType: value?.numberType ?? "number",
             answers: (value?.answers.map((v, i) =>
               i === index ? newValue : v,
             ) ?? []) as [number, number],
@@ -105,7 +106,7 @@ export const ScalarAnswersInput = ({
               onBlur={handleDateChange(0, onBlur)}
             />
           ) : (
-            <input
+            <Input
               type="number"
               inputMode="numeric"
               className={`w-full flex-1 bg-gray-100 rounded-md py-3 px-5 outline-none`}
@@ -127,7 +128,7 @@ export const ScalarAnswersInput = ({
               onBlur={handleDateChange(1, onBlur)}
             />
           ) : (
-            <input
+            <Input
               type="number"
               inputMode="numeric"
               className={` w-full flex-1 bg-gray-100 rounded-md py-3 px-5 outline-none`}

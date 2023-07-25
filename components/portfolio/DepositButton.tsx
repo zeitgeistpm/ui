@@ -15,6 +15,7 @@ import { formatNumberCompact } from "lib/util/format-compact";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
+import Input from "components/ui/Input";
 
 const DepositButton = ({
   sourceChain,
@@ -77,8 +78,9 @@ const DepositModal = ({
   const { chain, api } = useChain(sourceChain);
 
   const fee = chain?.depositFee;
+  const feeEstimate = fee?.mul(1.01) ?? 0; //add 1% buffer to fee
   //assumes source chain fee is paid in currency that is being transferred
-  const maxTransferAmount = balance.minus(fee?.mul(1.01) ?? 0); //add 1% buffer to fee
+  const maxTransferAmount = balance.minus(feeEstimate);
 
   const existentialDepositWarningThreshold = 0.1;
 
@@ -86,14 +88,16 @@ const DepositModal = ({
   const amountDecimal: Decimal = amount
     ? new Decimal(amount).mul(ZTG)
     : new Decimal(0);
-  const remainingSourceBalance = balance.minus(amountDecimal);
+  const remainingSourceBalance = balance
+    .minus(amountDecimal)
+    .minus(feeEstimate);
 
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
     () => {
-      if (!chain || !wallet.activeAccount || !constants) return;
+      if (!chain || !api || !wallet.realAddress || !constants) return;
       const tx = chain.createDepositExtrinsic(
         api,
-        wallet.activeAccount.address,
+        wallet.realAddress,
         amountDecimal.toFixed(0),
         constants.parachainId,
       );
@@ -134,7 +138,6 @@ const DepositModal = ({
           "amount",
           maxTransferAmount.mul(value.percentage).div(100).div(ZTG).toNumber(),
         );
-        trigger("amount");
       } else if (name === "amount" && value.amount !== "") {
         setValue(
           "percentage",
@@ -145,6 +148,7 @@ const DepositModal = ({
             .toString(),
         );
       }
+      trigger("amount");
     });
     return () => subscription.unsubscribe();
   }, [watch, balance, fee]);
@@ -167,7 +171,7 @@ const DepositModal = ({
               render={(val) => {
                 const { field } = val;
                 return (
-                  <input
+                  <Input
                     {...field}
                     type="number"
                     className="w-full bg-transparent outline-none !text-center"
@@ -188,10 +192,10 @@ const DepositModal = ({
                   message: "Value is required",
                 },
                 validate: (value) => {
-                  if (balance.div(ZTG).lessThan(value)) {
-                    return `Insufficient balance. Current balance: ${balance
+                  if (maxTransferAmount.div(ZTG).lessThan(value)) {
+                    return `Insufficient balance. Current balance: ${maxTransferAmount
                       .div(ZTG)
-                      .toFixed(3)}`;
+                      .toFixed(5)}`;
                   } else if (value <= 0) {
                     return "Value cannot be zero or less";
                   }

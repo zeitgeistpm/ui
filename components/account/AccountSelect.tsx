@@ -16,7 +16,7 @@ import AccountSelectOption from "./AccountSelectOption";
 import AccountSelectValue from "./AccountSelectValue";
 import { useAccountModals } from "lib/state/account";
 
-type AccountOption = { label: string; value: string };
+export type AccountOption = { label: string; value: string };
 
 const Control = ({ children, ...rest }: ControlProps<AccountOption, false>) => {
   return (
@@ -59,6 +59,7 @@ const customStyles: StylesConfig<AccountOption> = {
         display: "block",
       },
       height: "50px",
+      width: "100%",
     };
   },
   control: () => {
@@ -83,58 +84,47 @@ const customStyles: StylesConfig<AccountOption> = {
   },
 };
 
-const AccountSelect: FC = () => {
+export type AccountSelectProps = {
+  options: AccountOption[];
+  value: AccountOption | null;
+  disabled?: boolean;
+  onChange: (opt: OnChangeValue<AccountOption, false>) => void;
+};
+
+const AccountSelect: FC<AccountSelectProps> = ({
+  options,
+  value,
+  disabled,
+  onChange,
+}) => {
   const wallet = useWallet();
-  const accountModals = useAccountModals();
-
-  const options = useMemo<AccountOption[]>(() => {
-    return wallet.accounts.map((account, id) => {
-      return {
-        label: account.name ?? `Account #${id}`,
-        value: account.address,
-      };
-    });
-  }, [wallet.accounts]);
-
-  useEffect(() => {
-    if (wallet.activeAccount) {
-      const def = options.find(
-        (o) => o.value === wallet.activeAccount?.address,
-      );
-      setDefaultOption(def);
-    }
-  }, [wallet.activeAccount, options]);
-
-  const [defaultOption, setDefaultOption] = useState<AccountOption>();
-
-  const onSelectChange = (
-    opt: OnChangeValue<Unpacked<typeof options>, false>,
-  ) => {
-    opt && wallet.selectAccount(opt.value);
-  };
 
   return (
     <div className="flex h-ztg-50 items-center bg-sky-100 dark:bg-black rounded-ztg-10 w-full">
-      <Select
-        isSearchable={false}
-        options={options}
-        styles={customStyles}
-        value={defaultOption}
-        isMulti={false}
-        components={{
-          Control,
-          Option,
-          SingleValue,
-          DropdownIndicator,
-          IndicatorSeparator,
-        }}
-        onChange={onSelectChange}
-      />
+      <div className="flex-1">
+        <Select
+          isSearchable={false}
+          options={options}
+          styles={customStyles}
+          value={value}
+          isMulti={false}
+          isDisabled={disabled}
+          placeholder="Select an account"
+          components={{
+            Control,
+            Option,
+            SingleValue,
+            DropdownIndicator,
+            IndicatorSeparator,
+          }}
+          onChange={onChange}
+        />
+      </div>
 
       {wallet.activeAccount?.address && (
         <CopyIcon
-          copyText={wallet.activeAccount.address}
-          className="flex-grow pr-ztg-8"
+          copyText={wallet.activeAccount?.address}
+          className="pr-ztg-8 w-auto"
           size={16}
         />
       )}
