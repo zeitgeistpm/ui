@@ -109,7 +109,7 @@ const BuyFullSetForm = ({
   useGlobalKeyPress("Enter", handleSignTransaction);
 
   const currencyMetadata = getMetadataForCurrency(
-    (metadata?.symbol && ["ZBS", "ZTG", "DOT"].includes(metadata.symbol)
+    (metadata?.symbol && ["ZTG", "DOT"].includes(metadata.symbol)
       ? metadata.symbol
       : "ZTG") as SupportedCurrencyTag,
   );
