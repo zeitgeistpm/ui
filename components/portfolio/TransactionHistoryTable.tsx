@@ -5,6 +5,7 @@ import {
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Link from "next/link";
 import EmptyPortfolio from "./EmptyPortfolio";
+import SubScanIcon from "components/icons/SubScanIcon";
 
 const columns: TableColumn[] = [
   {
@@ -26,6 +27,11 @@ const columns: TableColumn[] = [
     header: "Block",
     accessor: "block",
     type: "text",
+  },
+  {
+    header: "Links",
+    accessor: "links",
+    type: "component",
   },
 ];
 
@@ -61,6 +67,18 @@ const TransactionHistoryTable = ({ address }: { address: string }) => {
           timeStyle: "medium",
         }).format(new Date(transaction.time)),
         block: transaction.blockNumber,
+        links: (
+          <div className="center">
+            <a
+              className="center"
+              target="_blank"
+              rel="noopener noreferrer"
+              href={`https://zeitgeist.subscan.io/extrinsic/${transaction.extrinsic.hash}`}
+            >
+              <SubScanIcon />
+            </a>
+          </div>
+        ),
       };
     });
 
