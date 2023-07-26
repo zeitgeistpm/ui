@@ -19,26 +19,21 @@ const humanReadableEventMap = {
 
 const transactionHistoryQuery = gql`
   query TransactionHistory($address: String) {
-    historicalAssets(
+    historicalAccountBalances(
       where: {
         accountId_eq: $address
-        event_in: ["PoolCreate", "PoolJoin", "PoolExit"]
+        event_in: ["PoolCreate", "PoolJoin", "PoolExit", "TokensRedeemed"]
       }
       orderBy: timestamp_DESC
     ) {
       assetId
-      timestamp
-      event
-      blockNumber
-    }
-    historicalAccountBalances(
-      where: { accountId_eq: $address, event_eq: "TokensRedeemed" }
-      orderBy: timestamp_DESC
-    ) {
-      assetId
       event
       timestamp
       blockNumber
+      extrinsic {
+        hash
+        name
+      }
     }
   }
 `;
@@ -60,6 +55,10 @@ export type TradeEvent = {
   action: Action;
   time: string;
   blockNumber: number;
+  extrinsic: {
+    hash: string;
+    name: string;
+  };
 };
 
 type MarketHeader = {
@@ -72,6 +71,10 @@ type EventEntry = {
   timestamp: string;
   event: string;
   blockNumber: number;
+  extrinsic: {
+    hash: string;
+    name: string;
+  };
 };
 
 export const useTransactionHistory = (address: string) => {
@@ -81,19 +84,16 @@ export const useTransactionHistory = (address: string) => {
     [id, transactionHistoryKey, address],
     async () => {
       if (isIndexedSdk(sdk) && address) {
-        const { historicalAssets, historicalAccountBalances } =
-          await sdk.indexer.client.request<{
-            historicalAssets: EventEntry[];
-            historicalAccountBalances: EventEntry[];
-          }>(transactionHistoryQuery, {
-            address: address,
-          });
+        const { historicalAccountBalances } = await sdk.indexer.client.request<{
+          historicalAssets: EventEntry[];
+          historicalAccountBalances: EventEntry[];
+        }>(transactionHistoryQuery, {
+          address: address,
+        });
 
-        const merged = [...historicalAssets, ...historicalAccountBalances].sort(
-          (a, b) => {
-            return b.blockNumber - a.blockNumber;
-          },
-        );
+        const merged = [...historicalAccountBalances].sort((a, b) => {
+          return b.blockNumber - a.blockNumber;
+        });
 
         let transactions: TradeEvent[] = [];
 
@@ -139,6 +139,7 @@ export const useTransactionHistory = (address: string) => {
               action: action,
               time: item.timestamp,
               blockNumber: item.blockNumber,
+              extrinsic: item.extrinsic,
             },
           ];
         }

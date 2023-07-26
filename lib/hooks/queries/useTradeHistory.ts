@@ -1,5 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { HistoricalSwapOrderByInput } from "@zeitgeistpm/indexer";
+import {
+  HistoricalSwapOrderByInput,
+  HistoricalSwap,
+} from "@zeitgeistpm/indexer";
 import {
   getIndexOf,
   getMarketIdOf,
@@ -81,6 +84,7 @@ export type TradeHistoryItem = {
   price: Decimal;
   baseAssetName?: string;
   time: any;
+  extrinsic?: HistoricalSwap["extrinsic"];
 };
 
 export const useTradeHistory = (address?: string) => {
@@ -88,7 +92,7 @@ export const useTradeHistory = (address?: string) => {
 
   const query = useQuery(
     [id, transactionHistoryKey, address],
-    async () => {
+    async (): Promise<TradeHistoryItem[]> => {
       if (isIndexedSdk(sdk) && isRpcSdk(sdk) && address) {
         const { historicalSwaps } = await sdk.indexer.historicalSwaps({
           where: {
@@ -173,6 +177,7 @@ export const useTradeHistory = (address?: string) => {
                 metadataMap,
               ),
               time: swap.timestamp,
+              extrinsic: swap.extrinsic,
             };
 
             return item;
