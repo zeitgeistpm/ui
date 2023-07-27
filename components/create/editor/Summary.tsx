@@ -1,4 +1,5 @@
-import { blockDate } from "@zeitgeistpm/utility/dist/time";
+import momentTz from "moment-timezone";
+import moment from "moment";
 import Decimal from "decimal.js";
 import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
@@ -12,6 +13,7 @@ import {
 } from "lib/state/market-creation/types/form";
 import { timelineAsBlocks } from "lib/state/market-creation/types/timeline";
 import { shortenAddress } from "lib/util";
+import partialRight from "lodash-es/partialRight";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { useMemo } from "react";
@@ -28,6 +30,10 @@ export type MarketSummaryProps = {
 export const MarketSummary = ({ editor }: MarketSummaryProps) => {
   const chainTime = useChainTime();
   const { form } = editor;
+
+  const momentFn = form?.timeZone
+    ? partialRight(momentTz.tz, form.timeZone)
+    : moment;
 
   const timeline = useMemo(() => {
     return !form || !chainTime
@@ -190,10 +196,9 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             <Label className="mb-2">Ends</Label>
             <div>
               {form.endDate
-                ? Intl.DateTimeFormat("default", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  }).format(new Date(form.endDate))
+                ? `${momentFn(form.endDate).format("MMM D, YYYY, h:mm:ss A")} ${
+                    form.timeZone ?? ""
+                  }`
                 : "--"}
             </div>
           </div>
@@ -208,10 +213,9 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
                     ? blocksAsDuration(timeline?.grace.period).humanize()
                     : "None"
                   : "--"
-                : Intl.DateTimeFormat("default", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  }).format(new Date(form.gracePeriod?.date!).getTime())}
+                : `${momentFn(form.gracePeriod?.date).format(
+                    "MMM D, YYYY, h:mm:ss A",
+                  )} ${form.timeZone ?? ""}`}
             </div>
           </div>
           <div className="flex justify-center gap-2 items-center mb-2 md:mb-0">
