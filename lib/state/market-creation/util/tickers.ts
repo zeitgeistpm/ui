@@ -11,8 +11,8 @@ export const tickersForAnswers = (
 
   if (answers.type === "scalar") {
     metadataCategories = [
-      { name: "Short", ticker: "SRT" },
       { name: "Long", ticker: "LNG" },
+      { name: "Short", ticker: "SRT" },
     ];
   } else if (answers.type === "yes/no") {
     metadataCategories = [
@@ -59,12 +59,4 @@ export const createCategoricalTickers = (
   }
 
   return tokens;
-};
-
-const input = ["foo bar", "foo bar baz", "foo bar baz qux"];
-
-const output = {
-  "foo bar": "FOOBAR",
-  "foo bar baz": "FOOBAZ",
-  "foo bar baz qux": "FOOQUX",
 };
