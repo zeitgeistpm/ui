@@ -36,7 +36,6 @@ const MarketFiltersContainer: FC<PropsWithChildren<MarketFiltersProps>> = (
 ) => {
   return (
     <MarketFiltersContext.Provider value={{ ...props }}>
-      <h2 className="text-center mb-4">All Markets</h2>
       {props.children}
     </MarketFiltersContext.Provider>
   );

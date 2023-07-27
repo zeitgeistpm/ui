@@ -42,7 +42,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div
-      className={`relative flex min-h-screen justify-evenly overflow-hidden ${
+      className={`relative flex min-h-screen justify-evenly ${
         greyBackgroundPageRoutes.includes(router.pathname) ? "bg-[#F1F1F1]" : ""
       }`}
     >
@@ -57,15 +57,12 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
             }
           `}
         </style>
-        <div
-          ref={contentRef}
-          className="overflow-y-a1uto overflow-x-hidden flex-grow"
-        >
+        <div ref={contentRef} className="flex-grow">
           <TopBar />
 
           <main
             className={`flex flex-col dark:text-white mb-12 ${
-              router.pathname !== "/" && "main-container mt-24 md:mt-32"
+              router.pathname !== "/" && "main-container mt-20"
             }`}
             ref={mainRef}
           >
