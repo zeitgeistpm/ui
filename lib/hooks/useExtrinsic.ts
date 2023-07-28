@@ -31,7 +31,7 @@ export const useExtrinsic = <T>(
       throw new Error("SDK is not RPC");
     }
 
-    let signer = wallet.getSigner();
+    const signer = wallet.getSigner();
     if (!signer) return;
 
     setIsLoading(true);
@@ -40,8 +40,6 @@ export const useExtrinsic = <T>(
     if (!extrinsic) return;
 
     const proxy = wallet?.getProxyFor(wallet.activeAccount?.address);
-
-    if (!extrinsic || !signer) return;
 
     if (proxy?.enabled && proxy?.address) {
       console.info("Proxying transaction");
