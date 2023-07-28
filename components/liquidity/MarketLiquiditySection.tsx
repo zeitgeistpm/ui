@@ -109,20 +109,24 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
           label="Pool Value"
           className="border-b-1 sm:border-r-1 sm:border-b-0 md:mr-6"
         >
-          {formatNumberLocalized(liquidity?.div(ZTG).abs().toNumber() ?? 0)}{" "}
-          {metadata?.symbol}
+          <span className="font-mono">
+            {formatNumberLocalized(liquidity?.div(ZTG).abs().toNumber() ?? 0)}{" "}
+            {metadata?.symbol}
+          </span>
         </LiquidityHeaderTextItem>
         <LiquidityHeaderTextItem
           label="Fees"
           className="border-b-1 sm:border-b-0 sm:border-r-1 md:border-r-1 md:mr-6"
         >
-          {new Decimal(swapFee).div(ZTG).mul(100).toNumber()} %
+          <span className="font-mono">
+            {new Decimal(swapFee).div(ZTG).mul(100).toNumber()} %
+          </span>
         </LiquidityHeaderTextItem>
         <LiquidityHeaderTextItem
           label="Prediction"
           className="border-b-1 sm:border-b-0 md:border-r-1"
         >
-          {predictionDisplay}
+          <span className="font-mono">{predictionDisplay}</span>
         </LiquidityHeaderTextItem>
       </div>
       <div className="flex md:w-full">

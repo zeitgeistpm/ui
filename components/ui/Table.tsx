@@ -160,7 +160,7 @@ const Cell = ({
     case "number":
       return (
         <td
-          className={`font-semibold text-ztg-12-150 ${base}`}
+          className={`font-semibold text-ztg-12-150 font-mono ${base}`}
           onClick={onClick}
           style={style}
         >
@@ -208,11 +208,11 @@ const Cell = ({
         ztgIsLoadingError === false
       ) {
         return (
-          <td className={`${base} `} onClick={onClick} style={style}>
+          <td className={`${base} font-mono`} onClick={onClick} style={style}>
             <div className="text-ztg-14-150 font-mediun mb-[2px]">
               {formatNumberLocalized(value.value)}
             </div>
-            <div className="text-ztg-12-150 font-light text-sky-600">
+            <div className="text-ztg-12-150 font-light text-sky-600 font-mono">
               $
               {(
                 value.usdValue ?? (ztgPrice?.toNumber() ?? 0) * value.value
@@ -269,7 +269,7 @@ const Cell = ({
     case "percentage":
       return (
         <td
-          className={`text-ztg-14-150 ${base}`}
+          className={`text-ztg-14-150 font-mono ${base}`}
           onClick={onClick}
           style={style}
         >

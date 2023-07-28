@@ -68,7 +68,9 @@ const Input = React.forwardRef<HTMLInputElement | null, InputProps>(
     return (
       <input
         {...restProps}
-        className={`${defaultClassName} ${className ?? ""}`}
+        className={`${defaultClassName} ${isNumber ? "font-mono" : ""} ${
+          className ?? ""
+        }`}
         ref={(instance) => {
           inputRef.current = instance;
           if (typeof ref === "function") {

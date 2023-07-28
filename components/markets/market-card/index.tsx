@@ -47,14 +47,6 @@ export interface MarketCardProps extends IndexedMarketCardData {
   className?: string;
 }
 
-const Pill = ({ value, classes }: { value: string; classes: string }) => {
-  return (
-    <span className={`px-2.5 py-0.5 h-fit text-xs rounded ${classes}`}>
-      {value}
-    </span>
-  );
-};
-
 const MarketCardInfo = ({
   question,
   img,
@@ -142,7 +134,9 @@ const MarketCardPredictionBar = ({
       >
         <div className="text-sm flex justify-between items-center absolute w-full h-full px-2.5">
           <span className="text-blue">{name}</span>
-          <span className="text-blue transition-all">{impliedPercentage}%</span>
+          <span className="text-blue transition-all font-mono">
+            {impliedPercentage}%
+          </span>
         </div>
         <div
           className={`h-full bg-blue-lighter`}
@@ -213,21 +207,21 @@ const MarketCardDetails = ({
         {rows.numParticipants != undefined && rows.baseAsset ? (
           <div className="flex items-center gap-2">
             <Users size={18} />
-            <span>{rows.numParticipants}</span>
+            <span className="font-mono">{rows.numParticipants}</span>
           </div>
         ) : (
           <Skeleton width={35} height={20} />
         )}
         <div className="flex items-center gap-2">
           <BarChart2 size={18} />
-          <span>
+          <span className="font-mono">
             {formatNumberCompact(rows.volume)} {rows.baseAsset}
           </span>
         </div>
         {rows.liquidity != undefined && rows.baseAsset ? (
           <div className="flex items-center gap-2">
             <Droplet size={18} />
-            <span>
+            <span className="font-mono">
               {formatNumberCompact(
                 new Decimal(rows.liquidity).div(ZTG).toString(),
               )}{" "}

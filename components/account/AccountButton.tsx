@@ -49,10 +49,15 @@ const BalanceRow = ({
       <div
         className={`group font-bold flex w-full items-center rounded-md px-2 py-2 text-sm`}
       >
-        {balance &&
-          `${formatNumberLocalized(balance?.div(ZTG).abs().toNumber())} ${
-            units ?? ""
-          }`}
+        {balance && (
+          <>
+            <span className="font-mono">
+              {formatNumberLocalized(balance?.div(ZTG).abs().toNumber())}
+            </span>
+            &nbsp;
+            {units ?? ""}
+          </>
+        )}
       </div>
     </div>
   );

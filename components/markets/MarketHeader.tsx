@@ -395,18 +395,22 @@ const MarketHeader: FC<{
         )}
         {token ? (
           <HeaderStat label="Volume">
-            {formatNumberCompact(volume)}
-            &nbsp;
-            {token}
+            <span className="font-mono">
+              {formatNumberCompact(volume)}
+              &nbsp;
+              {token}
+            </span>
           </HeaderStat>
         ) : (
           <Skeleton width="150px" height="20px" />
         )}
         {isLiqudityLoading === false && liquidity && token ? (
           <HeaderStat label="Liquidity" border={false}>
-            {formatNumberCompact(liquidity.div(ZTG).toNumber())}
-            &nbsp;
-            {token}
+            <span className="font-mono">
+              {formatNumberCompact(liquidity.div(ZTG).toNumber())}
+              &nbsp;
+              {token}
+            </span>
           </HeaderStat>
         ) : (
           <Skeleton width="150px" height="20px" />

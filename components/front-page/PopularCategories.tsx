@@ -54,7 +54,7 @@ const Category = ({
         >
           {title}
         </span>
-        <span className="flex justify-center items-center bg-anti-flash-white rounded-ztg-5 w-[41px] h-[24px] mt-[8px] lg:mt-0 lg:ml-[10px]">
+        <span className="flex justify-center items-center bg-anti-flash-white rounded-ztg-5 w-[41px] h-[24px] mt-[8px] lg:mt-0 lg:ml-[10px] font-mono">
           <span className="text-ztg-12-150">{count}</span>
         </span>
       </span>

@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useEffect, useRef, useState } from "react";
+import { FC, PropsWithChildren, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import Image from "next/image";
 import dynamic from "next/dynamic";
