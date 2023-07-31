@@ -26,6 +26,7 @@ import {
 } from "lib/hooks/queries/useAvatarParts";
 import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 import { createAvatarSdk } from "lib/util/create-avatar-sdk";
+import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import Link from "next/link";
@@ -202,7 +203,15 @@ export async function getStaticProps() {
 
   const { markets } = await sdk.indexer.markets();
 
-  const { historicalSwaps } = await sdk.indexer.historicalSwaps();
+  const swapsFetcher = async (pageNumber: number, limit: number) => {
+    const { historicalSwaps } = await sdk.indexer.historicalSwaps({
+      limit: limit,
+      offset: pageNumber * limit,
+    });
+    return historicalSwaps;
+  };
+
+  const historicalSwaps = await fetchAllPages(swapsFetcher);
 
   const tradersWithSwaps = historicalSwaps.reduce<Traders>((traders, swap) => {
     const trades = traders[swap.accountId];

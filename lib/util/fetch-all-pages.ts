@@ -1,5 +1,5 @@
 export const fetchAllPages = async <T>(
-  fetcher: (pageNumber: number) => Promise<T[]>,
+  fetcher: (pageNumber: number, limit: number) => Promise<T[]>,
 ) => {
   const MAX_RECORDS = 100;
 
@@ -8,7 +8,7 @@ export const fetchAllPages = async <T>(
   let pageNumber = 0;
 
   while (lastBatchLength == null || lastBatchLength === MAX_RECORDS) {
-    const batch = await fetcher(pageNumber);
+    const batch = await fetcher(pageNumber, MAX_RECORDS);
     records.push(...batch);
     pageNumber++;
     lastBatchLength = batch.length;
