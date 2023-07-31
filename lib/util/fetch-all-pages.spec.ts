@@ -15,10 +15,10 @@ describe("fetchAllPages", () => {
     expect(pages.length).toEqual(10);
   });
 
-  test("should fetch all when there is multiple pages", async () => {
+  test.only("should fetch all when there is multiple pages", async () => {
     const fetcher = async (pageNumber: number) => {
       if (pageNumber === 0) {
-        return Array.from({ length: 100 }, (_, i) => i);
+        return Array.from({ length: 5000 }, (_, i) => i);
       }
       if (pageNumber === 1) {
         return Array.from({ length: 10 }, (_, i) => i);
@@ -29,6 +29,6 @@ describe("fetchAllPages", () => {
 
     const pages = await fetchAllPages(fetcher);
 
-    expect(pages.length).toEqual(110);
+    expect(pages.length).toEqual(5010);
   });
 });
