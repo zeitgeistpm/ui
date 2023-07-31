@@ -1,7 +1,7 @@
 export const fetchAllPages = async <T>(
   fetcher: (pageNumber: number, limit: number) => Promise<T[]>,
 ) => {
-  const MAX_RECORDS = 100;
+  const MAX_RECORDS = 1000;
 
   const records: T[] = [];
   let lastBatchLength;
