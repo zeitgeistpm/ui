@@ -9,41 +9,6 @@ export const config: PageConfig = {
   runtime: "edge",
 };
 
-const getImageUrl = async (image: string | null): Promise<string> => {
-  const fallbackUrl = new URL(
-    "../../../public/icons/default-market.png",
-    import.meta.url,
-  ).href;
-  if (!image) {
-    return fallbackUrl;
-  }
-  if (isMarketImageBase64Encoded(image)) {
-    return image;
-  }
-  const controller = new AbortController();
-
-  const abortTimeout = 10000;
-
-  setTimeout(() => {
-    controller.abort();
-  }, abortTimeout);
-
-  try {
-    const url = `https://ipfs-gateway.zeitgeist.pm/ipfs/${image}`;
-    const res = await fetch(url, {
-      method: "HEAD",
-      signal: controller.signal,
-    });
-    if (res.headers.get("Content-Type")?.startsWith("image") === false) {
-      return fallbackUrl;
-    }
-    return url;
-  } catch (e) {
-    console.log(e); // TODO: remove after debugging
-    return fallbackUrl;
-  }
-};
-
 export default async function GenerateOgImage(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
@@ -65,8 +30,6 @@ export default async function GenerateOgImage(request: NextRequest) {
     ends,
     currencyMetadata,
   }: MarketImageData = await fetch(url.href).then((r) => r.json());
-
-  const marketImageUrl = await getImageUrl(market.img ?? null);
 
   const boldFont = await fetch(
     new URL(
@@ -104,20 +67,40 @@ export default async function GenerateOgImage(request: NextRequest) {
           objectFit: "cover",
         }}
       />
-      <div tw="flex h-full w-full">
-        <div tw="flex flex-col justify-between h-full">
-          <div tw="flex">
-            <img
-              style={{
-                width: 180,
-                height: 180,
-                objectFit: "cover",
-              }}
-              src={marketImageUrl}
-              tw="rounded-[5px]"
-            />
+      <div tw="flex flex-col h-full w-full">
+        <h1 tw={`${questionClass}`} style={{ lineHeight: "1.3em" }}>
+          {market.question}
+        </h1>
+        <div tw="flex flex-col mt-20">
+          <h2 tw={`font-bold text-4xl font-sans`}>
+            {market.status === "Reported" || market.status === "Resolved"
+              ? "Winning Outcome:"
+              : "Prediction:"}
+          </h2>
+          <div tw={`font-semibold ${"text-6xl"} `} style={{ color: "#ABC1F9" }}>
+            {prediction.name != null && prediction.name !== ""
+              ? market.marketType.categorical
+                ? `${prediction.name} (${prediction.percentage}%)`
+                : `${Intl.NumberFormat("en-US", {
+                    maximumSignificantDigits: 3,
+                  }).format(Number(prediction.name))}`
+              : "No Prediction"}
           </div>
-          <div tw="flex">
+        </div>
+        <div tw="flex mt-auto w-full items-center">
+          <div tw="flex flex-col mr-34">
+            <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Ends:</h2>
+            <div tw="text-4xl -mt-1" style={{ color: "#ABC1F9" }}>
+              {ends}
+            </div>
+          </div>
+          <div tw="flex flex-col">
+            <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Volume:</h2>
+            <div tw={`flex ${"text-4xl"}  -mt-1`} style={{ color: "#ABC1F9" }}>
+              {formatNumberCompact(Number(volume))} {currencyMetadata?.name}
+            </div>
+          </div>
+          <div tw="flex ml-auto mt-4">
             <img
               style={{
                 width: 250,
@@ -129,47 +112,6 @@ export default async function GenerateOgImage(request: NextRequest) {
                 ).href
               }
             />
-          </div>
-        </div>
-        <div tw="flex flex-col h-full ml-[80px]" style={{ width: 750 }}>
-          <h1 tw={`${questionClass}`} style={{ lineHeight: "1.3em" }}>
-            {market.question}
-          </h1>
-          <div tw="flex flex-col mt-auto">
-            <h2 tw={`font-bold ${"text-3xl"} font-sans`}>
-              {market.status === "Reported" || market.status === "Resolved"
-                ? "Winning Outcome:"
-                : "Prediction:"}
-            </h2>
-            <div
-              tw={`font-semibold ${"text-6xl"} `}
-              style={{ color: "#ABC1F9" }}
-            >
-              {prediction.name != null && prediction.name !== ""
-                ? market.marketType.categorical
-                  ? `${prediction.name} (${prediction.percentage}%)`
-                  : `${Intl.NumberFormat("en-US", {
-                      maximumSignificantDigits: 3,
-                    }).format(Number(prediction.name))}`
-                : "No Prediction"}
-            </div>
-          </div>
-          <div tw="flex mt-[50px] w-full">
-            <div tw="flex flex-col mr-[200px]">
-              <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Ends:</h2>
-              <div tw="text-4xl -mt-1" style={{ color: "#ABC1F9" }}>
-                {ends}
-              </div>
-            </div>
-            <div tw="flex flex-col">
-              <h2 tw={`font-bold ${"text-3xl"} font-sans`}>Volume:</h2>
-              <div
-                tw={`flex ${"text-4xl"}  -mt-1`}
-                style={{ color: "#ABC1F9" }}
-              >
-                {formatNumberCompact(Number(volume))} {currencyMetadata?.name}
-              </div>
-            </div>
           </div>
         </div>
       </div>
