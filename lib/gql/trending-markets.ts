@@ -19,6 +19,7 @@ import { getForeignAssetPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { getDisplayName } from "./display-name";
+import { fetchAllPages } from "lib/util/fetch-all-pages";
 
 const poolChangesQuery = gql`
   query PoolChanges($start: DateTime, $end: DateTime) {
@@ -106,16 +107,13 @@ const getTrendingMarkets = async (
     end: now,
   });
 
-  const { pools } = await client.request<{
-    pools: { poolId: number; baseAsset: string }[];
-  }>(gql`
-    query Pools {
-      pools {
-        poolId
-        baseAsset
-      }
-    }
-  `);
+  const pools = await fetchAllPages(async (pageNumber, limit) => {
+    const { pools } = await sdk.indexer.pools({
+      limit: limit,
+      offset: pageNumber * limit,
+    });
+    return pools;
+  });
 
   const basePrices = await getBaseAssetPrices();
 
