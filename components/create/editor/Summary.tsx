@@ -1,5 +1,5 @@
 import momentTz from "moment-timezone";
-import moment from "moment";
+import { Moment } from "moment";
 import Decimal from "decimal.js";
 import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
@@ -18,6 +18,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { useMemo } from "react";
 import { LuFileWarning } from "react-icons/lu";
+import { useAppTimezone } from "lib/state/timezone";
 
 const QuillViewer = dynamic(() => import("components/ui/QuillViewer"), {
   ssr: false,
@@ -30,10 +31,12 @@ export type MarketSummaryProps = {
 export const MarketSummary = ({ editor }: MarketSummaryProps) => {
   const chainTime = useChainTime();
   const { form } = editor;
+  const { timezone } = useAppTimezone();
 
-  const momentFn = form?.timeZone
-    ? partialRight(momentTz.tz, form.timeZone)
-    : moment;
+  const momentFn: (date: string | undefined) => Moment = partialRight(
+    momentTz.tz,
+    timezone,
+  );
 
   const timeline = useMemo(() => {
     return !form || !chainTime
@@ -197,7 +200,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             <div>
               {form.endDate
                 ? `${momentFn(form.endDate).format("MMM D, YYYY, h:mm:ss A")} ${
-                    form.timeZone ?? ""
+                    timezone ?? ""
                   }`
                 : "--"}
             </div>
@@ -215,7 +218,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
                   : "--"
                 : `${momentFn(form.gracePeriod?.date).format(
                     "MMM D, YYYY, h:mm:ss A",
-                  )} ${form.timeZone ?? ""}`}
+                  )} ${timezone ?? ""}`}
             </div>
           </div>
           <div className="flex justify-center gap-2 items-center mb-2 md:mb-0">

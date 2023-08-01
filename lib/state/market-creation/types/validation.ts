@@ -2,7 +2,6 @@ import { ZeitgeistPrimitivesMarketMarketCreation } from "@polkadot/types/lookup"
 import { encodeAddress } from "@polkadot/util-crypto";
 import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { ChainTime } from "@zeitgeistpm/utility/dist/time";
-import moment from "moment-timezone";
 import { defaultTags } from "lib/constants/markets";
 import {
   MarketDeadlineConstants,
@@ -170,8 +169,6 @@ export const IOQuestion = z
   .string()
   .min(10, { message: "Must be 10 or more characters long" })
   .max(100, { message: "Must be 100 or fewer characters long" });
-
-export const IOTimeZone = z.string().nonempty();
 
 export const IOTags = z
   .array(z.enum(defaultTags))

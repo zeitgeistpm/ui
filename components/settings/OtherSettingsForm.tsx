@@ -6,12 +6,17 @@ import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useWallet } from "lib/state/wallet";
 import { isValidPolkadotAddress } from "lib/util";
+import TimezoneSelect from "components/ui/TimezoneSelect";
+import { useAppTimezone } from "lib/state/timezone";
+import { isPresent } from "lib/types";
 
 export type OtherSettingsFormProps = {};
 
 const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
   const [sdk] = useSdkv2();
   const wallet = useWallet();
+
+  const { timezone: storedTimezone, setTimezone } = useAppTimezone();
 
   const proxyConfig = wallet.getProxyFor(wallet.activeAccount?.address);
 
@@ -26,12 +31,14 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
   } = useForm<{
     proxyAddress: AddressOption | null;
     enableProxy: boolean;
+    timezone: string;
   }>({
     defaultValues: {
       proxyAddress: proxyConfig
         ? { label: proxyConfig.address, value: proxyConfig.address }
         : null,
       enableProxy: proxyConfig?.enabled ?? false,
+      timezone: storedTimezone,
     },
     mode: "all",
     reValidateMode: "onChange",
@@ -40,8 +47,21 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
   const proxyEnabled = watch("enableProxy");
 
   useEffect(() => {
-    trigger("proxyAddress");
-  }, [proxyEnabled]);
+    const sub = watch((data, { name }) => {
+      console.log("watch data", data, name);
+      if (
+        name === "timezone" &&
+        isPresent(data.timezone) &&
+        data.timezone !== storedTimezone
+      ) {
+        return setTimezone(data.timezone);
+      }
+      if (name === "enableProxy") {
+        return trigger("proxyAddress");
+      }
+    });
+    return () => sub.unsubscribe();
+  }, []);
 
   return (
     <form
@@ -106,6 +126,8 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
         }}
         control={control}
       />
+      <label className="font-bold mb-2">Your timezone</label>
+      <TimezoneSelect {...register("timezone")} />
       <FormTransactionButton
         disabled={!isValid || !isDirty}
         className="mt-5"

@@ -33,7 +33,6 @@ import {
   IOScalarAnswers,
   IOSwappFee,
   IOTags,
-  IOTimeZone,
   IOYesNoAnswers,
 } from "./validation";
 
@@ -49,7 +48,6 @@ export type MarketFormData = {
   question: Question;
   tags: Tags;
   answers: Answers;
-  timeZone: TimeZone;
   endDate: EndDate;
   gracePeriod: PeriodOption;
   reportingPeriod: PeriodOption;
@@ -95,7 +93,6 @@ export type Tags = z.infer<typeof IOTags>;
 export type Answers = Required<z.infer<typeof IOAnswers>>;
 export type YesNoAnswers = Required<z.infer<typeof IOYesNoAnswers>>;
 export type CategoricalAnswers = Required<z.infer<typeof IOCategoricalAnswers>>;
-export type TimeZone = Required<z.infer<typeof IOTimeZone>>;
 export type ScalarAnswers = Required<z.infer<typeof IOScalarAnswers>>;
 export type EndDate = z.infer<typeof IOEndDate>;
 export type PeriodOption = Required<z.infer<typeof IOPeriodOption>>;

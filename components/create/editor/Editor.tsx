@@ -34,7 +34,7 @@ import OracleInput from "./inputs/Oracle";
 import { AnswersInput } from "./inputs/answers";
 import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 import Input from "components/ui/Input";
-import TimezoneSelect from "./inputs/TimezoneSelect";
+import { useAppTimezone } from "lib/state/timezone";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -70,7 +70,7 @@ export const MarketEditor = () => {
   const { isFetched } = useMarketDeadlineConstants();
   const { data: constants } = useChainConstants();
 
-  const timezone = form?.timeZone;
+  const { timezone } = useAppTimezone();
 
   const currencyMetadata = getMetadataForCurrency(form?.currency ?? "ZTG");
 
@@ -306,8 +306,9 @@ export const MarketEditor = () => {
             <h2 className="text-base">When does the market end?</h2>
           </div>
           <div className="mb-4 md:mb-8 center">
-            <h2 className="text-base font-medium mr-4">Set your time zone</h2>
-            <TimezoneSelect {...input("timeZone")} />
+            <h2 className="text-base font-medium mr-4">
+              <span className="font-bold">Your timezone:</span> {timezone}{" "}
+            </h2>
           </div>
           <div className="mb-4">
             <div className="flex center mb-3">

@@ -44,10 +44,6 @@ export const empty = (): FieldsState => ({
     isValid: false,
     isTouched: false,
   },
-  timeZone: {
-    isValid: false,
-    isTouched: false,
-  },
   endDate: {
     isValid: false,
     isTouched: false,

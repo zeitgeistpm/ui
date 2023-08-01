@@ -2,7 +2,6 @@ import {
   gracePeriodOptions,
   reportingPeriodOptions,
 } from "../constants/deadline-options";
-import moment from "moment-timezone";
 import { MarketFormData } from "./form";
 import { MarketCreationStep, MarketCreationStepType } from "./step";
 
@@ -61,7 +60,6 @@ export const empty = () => ({
       type: "categorical",
       answers: ["", ""],
     },
-    timeZone: "UTC",
     oracle: "",
     gracePeriod: gracePeriodOptions[0],
     reportingPeriod: reportingPeriodOptions[1],
