@@ -61,7 +61,7 @@ export const empty = () => ({
       type: "categorical",
       answers: ["", ""],
     },
-    timeZone: "UTC",
+    timeZone: moment.tz.guess(),
     oracle: "",
     gracePeriod: gracePeriodOptions[0],
     reportingPeriod: reportingPeriodOptions[1],
