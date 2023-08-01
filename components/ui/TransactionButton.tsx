@@ -10,6 +10,7 @@ import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useAccountModals } from "lib/state/account";
 import { useWallet } from "lib/state/wallet";
 import { FC, PropsWithChildren, useMemo } from "react";
+import Decimal from "decimal.js";
 
 interface TransactionButtonProps {
   preventDefault?: boolean;
@@ -101,12 +102,11 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
       return "Connect Wallet";
     }
   };
-
   return (
     <button
       type={type}
       className={`ztg-transition text-white focus:outline-none disabled:opacity-20 disabled:cursor-default 
-        rounded-full w-full font-bold text-ztg-16-150 h-ztg-56 ${
+        rounded-full w-full h-[56px] ${
           !isDisabled && "active:scale-95"
         } ${className} ${colorClass}`}
       onClick={(e) => click(e)}
