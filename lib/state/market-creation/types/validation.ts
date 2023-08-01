@@ -71,7 +71,7 @@ export const createMarketFormValidator = ({
       ).refine(
         () =>
           timeline?.report?.period &&
-          timeline?.report?.period < deadlineConstants?.maxOracleDuration,
+          timeline?.report?.period <= deadlineConstants?.maxOracleDuration,
         {
           message: `Reporting period must be less than ${deadlineConstants?.maxOracleDuration} blocks.`,
         },
