@@ -305,10 +305,6 @@ export const MarketEditor = () => {
           <div className="mb-4 md:mb-8 text-center">
             <h2 className="text-base">When does the market end?</h2>
           </div>
-          <div className="mb-4 md:mb-8 center">
-            <h2 className="text-base font-medium mr-4">Set your time zone</h2>
-            <TimezoneSelect {...input("timeZone")} />
-          </div>
           <div className="mb-4">
             <div className="flex center mb-3">
               <DateTimePicker
@@ -317,6 +313,7 @@ export const MarketEditor = () => {
                 isValid={fieldsState.endDate.isValid}
                 {...input("endDate", { mode: "all" })}
               />
+              <TimezoneSelect {...input("timeZone")} />
             </div>
             <div className="flex center h-5  text-xs text-red-400">
               <ErrorMessage field={fieldsState.endDate} />
