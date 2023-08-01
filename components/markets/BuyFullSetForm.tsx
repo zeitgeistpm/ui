@@ -3,19 +3,22 @@ import Input from "components/ui/Input";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useBalance } from "lib/hooks/queries/useBalance";
-import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
-import { useSaturatedMarket } from "lib/hooks/queries/useSaturatedMarket";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useGlobalKeyPress } from "lib/hooks/useGlobalKeyPress";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { calcMarketColors } from "lib/util/color-calc";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import {
+  getMetadataForCurrency,
+  SupportedCurrencyTag,
+} from "lib/constants/supported-currencies";
+import Image from "next/image";
+import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 
 const BuyFullSetForm = ({
   marketId,
@@ -27,20 +30,23 @@ const BuyFullSetForm = ({
   const [sdk] = useSdkv2();
   const wallet = useWallet();
   const notificationStore = useNotifications();
-  const { data: market } = useMarket({ marketId });
-  const { data: saturatedMarket } = useSaturatedMarket(market ?? undefined);
+
   const { data: pool } = usePool({ marketId: marketId });
+
   const baseAssetId = pool?.baseAsset
     ? parseAssetId(pool.baseAsset).unrightOr(undefined)
     : undefined;
-  const { data: metadata } = useAssetMetadata(baseAssetId);
 
-  const colors = market?.categories
-    ? calcMarketColors(marketId, market.categories.length)
-    : [];
+  const { data: metadata } = useAssetMetadata(baseAssetId);
 
   const [amount, setAmount] = useState<string>("0");
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
+
+  const extrinsicBase = wallet.realAddress
+    ? sdk?.asRpc().api.tx.balances.transfer(wallet.realAddress, ZTG.toFixed(0))
+    : undefined;
+
+  const { data: fee } = useExtrinsicFee(extrinsicBase);
 
   const { data: baseAssetBalance } = useBalance(
     wallet.realAddress,
@@ -102,61 +108,60 @@ const BuyFullSetForm = ({
 
   useGlobalKeyPress("Enter", handleSignTransaction);
 
+  const currencyMetadata = getMetadataForCurrency(
+    (metadata?.symbol && ["ZTG", "DOT"].includes(metadata.symbol)
+      ? metadata.symbol
+      : "ZTG") as SupportedCurrencyTag,
+  );
+
   return (
-    <div>
+    <div className="w-full">
       <div>
-        <div className="flex items-center mt-ztg-24 mb-ztg-8">
-          <div className="rounded-full w-ztg-20 h-ztg-20 mr-ztg-10 border-sky-600 border-2 bg-ztg-blue"></div>
-          <div className="font-bold   text-ztg-16-150 uppercase text-black dark:text-white">
+        <div className="flex justify-center items-center mb-7">
+          <div className="flex items-center justify-center gap-2">
+            <span>Your Balance: </span>
+            {currencyMetadata?.image && (
+              <Image
+                width={20}
+                height={20}
+                src={currencyMetadata?.image}
+                alt="Currency token logo"
+                className="rounded-full"
+              />
+            )}
+            <span className="font-medium">
+              {baseAssetBalance?.div(ZTG).toNumber().toFixed(2)}{" "}
+              {metadata?.symbol}
+            </span>
+          </div>
+        </div>
+        <div className="h-[56px] bg-anti-flash-white center mb-7 w-full">
+          <input
+            type="number"
+            min="0"
+            value={amount}
+            step="0.1"
+            onChange={(e) => handleAmountChange(e.target.value)}
+            className="w-full bg-transparent outline-none text-center text-lg"
+          />
+        </div>
+      </div>
+      <div>
+        <div className="text-center">
+          <p className="text-lg font-medium mb-7">
+            You'll get {amount ? amount : 0} Full Sets
+          </p>
+          <p className="text-sm text-center mb-7">
+            <span className="text-sky-600">Price Per Set: </span>1{" "}
             {metadata?.symbol}
-          </div>
-          <span className="font-mono text-ztg-12-150 font-medium ml-auto text-sky-600">
-            {baseAssetBalance?.div(ZTG).toNumber()}
-          </span>
+          </p>
         </div>
-        <Input
-          type="number"
-          min="0"
-          value={amount}
-          step="0.1"
-          onChange={(e) => handleAmountChange(e.target.value)}
-          className="text-ztg-14-150 font-mono text-right w-full p-2 outline-none bg-sky-200"
-        />
       </div>
-      <div>
-        <div className="flex items-center mt-ztg-24 mb-ztg-8">
-          {saturatedMarket?.categories?.map((_, index) => (
-            <div
-              key={index}
-              className="rounded-full w-ztg-20 h-ztg-20 -mr-ztg-8 border-sky-600 border-2"
-              style={{ backgroundColor: colors[index] }}
-            ></div>
-          ))}
-          <div className="font-bold  ml-ztg-20  text-ztg-16-150 text-black dark:text-white">
-            Full Set
-          </div>
-          <span className="font-mono text-ztg-12-150 font-medium ml-auto ">
-            {maxTokenSet.div(ZTG).toString()}
-          </span>
-        </div>
-        <Input
-          type="number"
-          value={amount}
-          step="0.1"
-          disabled={true}
-          className="text-ztg-14-150 font-mono text-right w-full p-2 outline-none bg-sky-200 disabled:bg-transparent disabled:border-sky-200 border-1"
-        />
-      </div>
-      <div className="h-ztg-18 flex px-ztg-8 justify-between text-ztg-12-150 my-ztg-10 text-sky-600">
-        <span className=" font-bold">Price per Set:</span>
-        <span className="font-mono font-medium">1 {metadata?.symbol}</span>
-      </div>
-      <TransactionButton
-        className="!rounded-ztg-10 h-ztg-50"
-        onClick={handleSignTransaction}
-        disabled={disabled}
-      >
-        Buy Full Set
+      <TransactionButton onClick={handleSignTransaction} disabled={disabled}>
+        Confirm Buy
+        <span className="block text-xs font-normal">
+          Transaction fee: {fee?.div(ZTG).toFixed(2)} {metadata?.symbol}
+        </span>
       </TransactionButton>
     </div>
   );
