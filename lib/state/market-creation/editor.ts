@@ -156,7 +156,7 @@ export const useMarketDraftEditor = ({
       (fieldsState, key) => {
         let isValid = true;
         let isTouched = draft.touchState[key];
-        let errors = [...(fieldsState[key]?.errors ?? [])];
+        let errors = [...(fieldsState[key].errors ?? [])];
 
         if (parsed?.success !== true) {
           const issue = parsed?.error.issues.find(
