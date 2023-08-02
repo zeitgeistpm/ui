@@ -64,9 +64,7 @@ const MarketCardInfo = ({
 }) => {
   return (
     <div className="w-full h-full flex whitespace-normal gap-4">
-      <h5 className="font-semibold w-full h-fit line-clamp-2 text-base">
-        {question}
-      </h5>
+      <h5 className="w-full h-fit line-clamp-2 text-base">{question}</h5>
       {/* {disable for now until we can get image from CMS} */}
       {/* {img && <MarketImage image={img} alt={question} className="rounded-lg" />} */}
     </div>
@@ -189,53 +187,60 @@ const MarketCardDetails = ({
     return diff < sixHours && diff > 0 ? true : false;
   };
   return (
-    <div className="flex items-center">
-      <div className="text-xs">
-        <span className="font-semibold">{rows.outcomes} outcomes</span>
+    <div className="flex items-center text-xs">
+      <div>
         <span>
           {rows.endDate &&
-            ` | ${rows.hasEnded ? "Ended" : "Ends"} ${new Date(
+            `${rows.hasEnded ? "Ended" : "Ends"} ${new Date(
               Number(rows?.endDate),
             ).toLocaleString("en-US", {
               month: "short",
               day: "numeric",
+              // year: "numeric",
             })}`}
         </span>
         {isEnding() && (
           <span>
-            {" "}
-            | <span className="text-red">Ends Soon</span>
+            <span className="text-red">Ends Soon</span>
           </span>
         )}
+        <span className="font-semibold border-l-1 border-l-black pl-1 ml-1 ">
+          {rows.outcomes} outcomes{" "}
+        </span>
       </div>
-      <div className="flex gap-2 text-xs ml-auto">
+      <div className="flex gap-1.5 ml-auto items-center justify-center">
         {rows.numParticipants != undefined && rows.baseAsset ? (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5">
             <Users size={12} />
-            <span>{rows.numParticipants}</span>
+            <span>{formatNumberCompact(rows.numParticipants, 2)}</span>
           </div>
         ) : (
-          <Skeleton width={35} height={20} />
+          <Skeleton width={35} height={12} />
         )}
         <div className="flex items-center gap-1">
           <BarChart2 size={12} />
-          <span>
-            {formatNumberCompact(rows.volume)} {rows.baseAsset}
-          </span>
+          <span>{formatNumberCompact(rows.volume, 2)}</span>
         </div>
         {rows.liquidity != undefined && rows.baseAsset ? (
           <div className="flex items-center gap-1">
             <Droplet size={12} />
             <span>
               {formatNumberCompact(
-                new Decimal(rows.liquidity).div(ZTG).toString(),
-              )}{" "}
-              {rows.baseAsset}
+                new Decimal(rows.liquidity).div(ZTG).toNumber(),
+                2,
+              )}
             </span>
           </div>
         ) : (
-          <Skeleton width={120} height={20} />
+          <Skeleton width={120} height={12} />
         )}
+        <Image
+          width={12}
+          height={12}
+          src={"/currencies/ztg.svg"}
+          alt="Currency token logo"
+          className="rounded-full"
+        />
       </div>
     </div>
   );
