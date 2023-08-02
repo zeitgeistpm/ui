@@ -11,7 +11,6 @@ import { ZTG } from "lib/constants";
 import Skeleton from "components/ui/Skeleton";
 import { hasDatePassed } from "lib/util/hasDatePassed";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
-import Avatar from "components/ui/Avatar";
 
 import Image from "next/image";
 import {
@@ -21,7 +20,6 @@ import {
 import { BaseAssetId, parseAssetId } from "@zeitgeistpm/sdk-next";
 import { IOBaseAssetId } from "@zeitgeistpm/sdk-next";
 import { IOForeignAssetId } from "@zeitgeistpm/sdk-next";
-import { shortenAddress } from "lib/util";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 export interface IndexedMarketCardData {
   marketId: number;
@@ -186,6 +184,14 @@ const MarketCardDetails = ({
     //checks if event has passed and is within 6 hours
     return diff < sixHours && diff > 0 ? true : false;
   };
+
+  const assetId = parseAssetId(rows.baseAsset).unwrap();
+  const imagePath = IOForeignAssetId.is(assetId)
+    ? lookupAssetImagePath(assetId.ForeignAsset)
+    : IOBaseAssetId.is(assetId)
+    ? lookupAssetImagePath(assetId.Ztg)
+    : "";
+
   return (
     <div className="flex items-center text-xs">
       <div>
@@ -236,7 +242,7 @@ const MarketCardDetails = ({
         <Image
           width={12}
           height={12}
-          src={"/currencies/ztg.svg"}
+          src={imagePath}
           alt="Currency token logo"
           className="rounded-full"
         />
@@ -307,7 +313,7 @@ const MarketCard = ({
     hasEnded: hasDatePassed(Number(endDate)),
     outcomes: outcomes.length,
     volume: volume,
-    baseAsset: assetSymbol ?? "",
+    baseAsset: baseAsset,
     liquidity,
     numParticipants: numParticipants,
   };
