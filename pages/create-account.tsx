@@ -58,9 +58,9 @@ const CreateAccountPage: NextPage = () => {
         </p>
       </div>
       <div className="grid grid-cols-3 gap-x-8 mt-9">
-        {walletsConfig.map((wallet) => {
+        {walletsConfig.map((wallet, idx) => {
           return (
-            <div className="center bg-white rounded-lg">
+            <div className="center bg-white rounded-lg" key={idx}>
               <div className="flex items-center h-36">
                 <Image
                   src={wallet.logo.src}
