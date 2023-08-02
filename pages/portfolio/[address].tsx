@@ -157,7 +157,7 @@ const Portfolio: NextPageWithLayout = () => {
                     return (
                       <MarketPositions
                         key={market.marketId}
-                        className="mb-14 border-b-4 border-gray-200"
+                        className="mb-14"
                         market={market}
                         usdZtgPrice={ztgPrice}
                         positions={marketPositions.filter((position) =>
@@ -211,7 +211,7 @@ const Portfolio: NextPageWithLayout = () => {
                           return (
                             <MarketPositions
                               key={market.marketId}
-                              className="mb-14 border-b-4 border-gray-200"
+                              className="mb-14"
                               market={market}
                               usdZtgPrice={ztgPrice}
                               positions={subsidyPositions.filter((position) =>
