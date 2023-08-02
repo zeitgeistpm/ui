@@ -69,7 +69,7 @@ const CreateAccountPage: NextPage = () => {
                   height={30}
                   quality={100}
                 />
-                <div className="font-medium ml-4">{wallet.title}</div>
+                <div className="font-medium ml-4 text-lg">{wallet.title}</div>
               </div>
             </div>
           );
