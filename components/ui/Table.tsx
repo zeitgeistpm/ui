@@ -322,8 +322,7 @@ const Table = ({
   }, [loadMoreRef, loadMoreInView, loadMoreThresholdIndex, data]);
 
   const getHeaderClass = (column: TableColumn) => {
-    const base =
-      "px-ztg-15 text-sky-600 font-semibold text-ztg-12-150 text-left";
+    const base = "px-ztg-15 text-[13px] text-left font-medium";
 
     if (column.alignment) {
       return `${column.alignment} ${base}`;
@@ -410,7 +409,7 @@ const Table = ({
               }
             >
               <thead>
-                <tr className="bg-gray-100 h-[50px]">
+                <tr className="bg-light-gray h-[50px]">
                   {columns
                     .filter((col) => columnIsCollapsed(col.accessor) == false)
                     .map((column, index) => (
@@ -521,7 +520,7 @@ const Table = ({
           {onLoadMore && !hideLoadMore && (
             <div className="flex justify-center mt-ztg-16 mb-ztg-20">
               <div
-                className="uppercase  text-sky-600 font-bold text-ztg-10-150"
+                className="uppercase text-sky-600 font-bold text-ztg-10-150"
                 role="button"
                 onClick={handleLoadMore}
               >
