@@ -79,7 +79,7 @@ const CreateAccountPage: NextPage = () => {
         {/* TODO: Update href attribute */}
         <Link href="#" className="flex">
           <div className="mr-3">
-            Watch Full Video Tutorial on how to buy tokens with Crypto
+            Watch this tutorial about how to buy tokens using crypto
           </div>
           <Video />
         </Link>
@@ -98,8 +98,8 @@ const CreateAccountPage: NextPage = () => {
               className="rounded-md"
             />
             <p className="ml-4">
-              Use one of several methods to deposit crypto tokens on Zeitgeist
-              to start trading
+              Use one of several methods to deposit crypto on Zeitgeist to start
+              trading
             </p>
           </div>
           <div className="flex items-center p-2">
@@ -126,7 +126,9 @@ const CreateAccountPage: NextPage = () => {
               quality={100}
               className="rounded-md"
             />
-            <p className="ml-4">Our system is at your full disposal</p>
+            <p className="ml-4">
+              You're ready to explore the entirety of our application!
+            </p>
           </div>
           <div className="flex items-center p-2">
             <Link
