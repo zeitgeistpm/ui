@@ -196,7 +196,6 @@ const MarketCardDetails = ({
             ).toLocaleString("en-US", {
               month: "short",
               day: "numeric",
-              // year: "numeric",
             })}`}
         </span>
         {isEnding() && (
@@ -215,7 +214,7 @@ const MarketCardDetails = ({
             <span>{formatNumberCompact(rows.numParticipants, 2)}</span>
           </div>
         ) : (
-          <Skeleton width={35} height={12} />
+          <Skeleton width={30} height={12} />
         )}
         <div className="flex items-center gap-1">
           <BarChart2 size={12} />
@@ -232,7 +231,7 @@ const MarketCardDetails = ({
             </span>
           </div>
         ) : (
-          <Skeleton width={120} height={12} />
+          <Skeleton width={30} height={12} />
         )}
         <Image
           width={12}
