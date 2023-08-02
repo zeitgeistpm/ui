@@ -189,15 +189,15 @@ const MarketCardDetails = ({
     return diff < sixHours && diff > 0 ? true : false;
   };
   return (
-    <div>
-      <div className="text-xs mb-4">
+    <div className="flex items-center">
+      <div className="text-xs">
         <span className="font-semibold">{rows.outcomes} outcomes</span>
         <span>
           {rows.endDate &&
             ` | ${rows.hasEnded ? "Ended" : "Ends"} ${new Date(
               Number(rows?.endDate),
             ).toLocaleString("en-US", {
-              month: "long",
+              month: "short",
               day: "numeric",
               year: "numeric",
             })}`}
@@ -209,23 +209,23 @@ const MarketCardDetails = ({
           </span>
         )}
       </div>
-      <div className="flex gap-2.5 text-sm min-w-full">
+      <div className="flex gap-2 text-xs ml-auto">
         {rows.numParticipants != undefined && rows.baseAsset ? (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Users size={18} />
             <span>{rows.numParticipants}</span>
           </div>
         ) : (
           <Skeleton width={35} height={20} />
         )}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <BarChart2 size={18} />
           <span>
             {formatNumberCompact(rows.volume)} {rows.baseAsset}
           </span>
         </div>
         {rows.liquidity != undefined && rows.baseAsset ? (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Droplet size={18} />
             <span>
               {formatNumberCompact(
@@ -320,27 +320,13 @@ const MarketCard = ({
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
         data-testid={`marketCard-${marketId}`}
-        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)] h-[274px] rounded-[10px] p-5 relative bg-anti-flash-white hover:bg-pastel-blue ${className}`}
+        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)] h-[171px] 
+        rounded-[10px] p-5 relative bg-white hover:bg-pastel-blue ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
           className="flex flex-col flex-1 gap-4"
         >
-          <div className="flex justify-between gap-2.5 w-full">
-            <div className={`inline-flex items-center text-xs gap-2.5`}>
-              <Avatar address={creator} copy={false} />
-              <span className="break-all flex-1">
-                {creatorDisplayName ?? shortenAddress(creator, 10, 10)}
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2.5 font-medium h-fit">
-              <MarketCardTags
-                baseAsset={baseAsset}
-                tags={tags}
-                isVerified={isVerified()}
-              />
-            </div>
-          </div>
           <MarketCardInfo question={question} img={img} />
           <div className="w-full">
             {pool && marketType?.categorical ? (
