@@ -64,7 +64,7 @@ const MarketCardInfo = ({
 }) => {
   return (
     <div className="w-full h-full flex whitespace-normal gap-4">
-      <h5 className="font-semibold w-full h-fit line-clamp-3 text-base">
+      <h5 className="font-semibold w-full h-fit line-clamp-2 text-base">
         {question}
       </h5>
       {/* {disable for now until we can get image from CMS} */}
@@ -199,7 +199,6 @@ const MarketCardDetails = ({
             ).toLocaleString("en-US", {
               month: "short",
               day: "numeric",
-              year: "numeric",
             })}`}
         </span>
         {isEnding() && (
@@ -212,21 +211,21 @@ const MarketCardDetails = ({
       <div className="flex gap-2 text-xs ml-auto">
         {rows.numParticipants != undefined && rows.baseAsset ? (
           <div className="flex items-center gap-1">
-            <Users size={18} />
+            <Users size={12} />
             <span>{rows.numParticipants}</span>
           </div>
         ) : (
           <Skeleton width={35} height={20} />
         )}
         <div className="flex items-center gap-1">
-          <BarChart2 size={18} />
+          <BarChart2 size={12} />
           <span>
             {formatNumberCompact(rows.volume)} {rows.baseAsset}
           </span>
         </div>
         {rows.liquidity != undefined && rows.baseAsset ? (
           <div className="flex items-center gap-1">
-            <Droplet size={18} />
+            <Droplet size={12} />
             <span>
               {formatNumberCompact(
                 new Decimal(rows.liquidity).div(ZTG).toString(),
