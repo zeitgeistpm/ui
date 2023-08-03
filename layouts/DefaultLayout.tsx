@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useEffect, useRef, useState } from "react";
+import { FC, PropsWithChildren, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -40,7 +40,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="relative flex min-h-screen justify-evenly overflow-hidden bg-[#F1F1F1]">
+    <div className="relative flex min-h-screen justify-evenly overflow-hidden">
       <TradeItemContext.Provider value={{ data: tradeItem, set: setTradeItem }}>
         {/* loads optimized fonts for global access */}
         <style jsx global>
