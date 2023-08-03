@@ -8,9 +8,9 @@ const MarketPositionHeader = ({
   question?: string;
 }) => {
   return (
-    <h2 className="text-ztg-16-150 text-center mb-6">
+    <h3 className="text-ztg-16-150 text-center mb-6 font-normal">
       <Link href={`/markets/${marketId}`}>{question}</Link>
-    </h2>
+    </h3>
   );
 };
 

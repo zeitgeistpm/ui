@@ -82,8 +82,7 @@ const Portfolio: NextPageWithLayout = () => {
   return (
     <>
       {address && <PortfolioIdentity address={address} />}
-      <div className="mb-12">
-        <h2 className="text-2xl my-6 text-center">Summary</h2>
+      <div className="mb-[40px]">
         <PortfolioBreakdown
           {...(breakdown ?? {
             loading: true,
@@ -98,7 +97,7 @@ const Portfolio: NextPageWithLayout = () => {
           }
           onChange={(index) => setMainTabSelection(mainTabItems[index])}
         >
-          <div className="overflow-auto">
+          <div className="overflow-auto border-b border-sky-200">
             <Tab.List className="flex sm:justify-center mb-4">
               {[
                 "Predictions",
