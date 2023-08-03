@@ -39,8 +39,14 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
 
   const contentRef = useRef<HTMLDivElement>(null);
 
+  const greyBackgroundPageRoutes = ["/", "/markets"];
+
   return (
-    <div className="relative flex min-h-screen justify-evenly overflow-hidden">
+    <div
+      className={`relative flex min-h-screen justify-evenly overflow-hidden ${
+        greyBackgroundPageRoutes.includes(router.pathname) ? "bg-[#F1F1F1]" : ""
+      }`}
+    >
       <TradeItemContext.Provider value={{ data: tradeItem, set: setTradeItem }}>
         {/* loads optimized fonts for global access */}
         <style jsx global>

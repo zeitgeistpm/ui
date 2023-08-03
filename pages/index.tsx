@@ -91,7 +91,7 @@ const IndexPage: NextPage<{
   bannerPlaceHolders,
 }) => {
   return (
-    <div className="bg-[#F1F1F1]">
+    <>
       <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
       <div data-testid="indexPage" className="main-container ">
         {featuredMarkets.length > 0 && (
@@ -125,7 +125,7 @@ const IndexPage: NextPage<{
         )}
         <LatestTrades />
       </div>
-    </div>
+    </>
   );
 };
 

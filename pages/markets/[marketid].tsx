@@ -196,7 +196,7 @@ const Market: NextPage<MarketPageProps> = ({
   const token = metadata?.symbol;
 
   return (
-    <div className="bg-[#F1F1F1]">
+    <>
       <MarketMeta market={indexedMarket} />
       <div>
         <div className="mt-4">
@@ -325,7 +325,7 @@ const Market: NextPage<MarketPageProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 };
 
