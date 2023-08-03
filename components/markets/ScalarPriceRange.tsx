@@ -57,6 +57,8 @@ const ScalarPriceRange = ({
         }).format(new Date(position))
       : position.toFixed(2);
 
+  console.log(positionDisplay);
+
   return (
     <div
       className="`w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative flex items-center"
@@ -69,11 +71,7 @@ const ScalarPriceRange = ({
         <>
           <div
             style={{
-              width: `${
-                averagePosition != null || Number(positionDisplay) === 0
-                  ? 0
-                  : averagePosition
-              }px`,
+              width: `${averagePosition != null ? averagePosition : 0}px`,
             }}
             className="bg-scalar-bar h-full absolute left-0 bottom-0"
           ></div>
