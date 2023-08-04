@@ -11,6 +11,8 @@ import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
 import { NextPage } from "next";
 
+import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
+import LatestTrades from "components/front-page/LatestTrades";
 import { Banner, getBanners } from "lib/cms/get-banners";
 import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import path from "path";
@@ -19,8 +21,8 @@ import {
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
-import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
-import LatestTrades from "components/front-page/LatestTrades";
+import { getNetworkStats } from "lib/gql/get-network-stats";
+import NetworkStats from "components/front-page/NetworkStats";
 
 const getPlaiceholders = (
   paths: string[],
@@ -45,6 +47,7 @@ export async function getStaticProps() {
     categoryPlaceholders,
     bannerPlaceHolders,
     categoryCounts,
+    stats,
   ] = await Promise.all([
     getFeaturedMarkets(client, sdk),
     getTrendingMarkets(client, sdk),
@@ -60,7 +63,10 @@ export async function getStaticProps() {
       client,
       CATEGORIES.map((cat) => cat.name),
     ),
+    getNetworkStats(sdk),
   ]);
+
+  console.log(stats);
 
   return {
     props: {
@@ -70,6 +76,7 @@ export async function getStaticProps() {
       categoryCounts: categoryCounts,
       categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
       bannerPlaceHolders: bannerPlaceHolders.map((c) => c.base64) ?? [],
+      stats,
     },
     revalidate: 1 * 60, //1min
   };
@@ -82,6 +89,7 @@ const IndexPage: NextPage<{
   categoryCounts: number[];
   categoryPlaceholders: string[];
   bannerPlaceHolders: string[];
+  stats: { marketCount: number; tradersCount: number; volumeUsd: number };
 }> = ({
   banners,
   trendingMarkets,
@@ -89,11 +97,18 @@ const IndexPage: NextPage<{
   categoryCounts,
   categoryPlaceholders,
   bannerPlaceHolders,
+  stats,
 }) => {
   return (
     <>
       <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
+
       <div data-testid="indexPage" className="main-container">
+        <NetworkStats
+          marketCount={stats.marketCount}
+          tradersCount={stats.tradersCount}
+          totalVolumeUsd={stats.volumeUsd}
+        />
         {featuredMarkets.length > 0 && (
           <div className="my-[60px]">
             <MarketScroll
