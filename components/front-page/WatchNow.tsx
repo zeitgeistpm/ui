@@ -2,12 +2,12 @@ import { Video } from "react-feather";
 
 const WatchNow = () => {
   return (
-    <div className="flex items-center w-full bg-white h-[120px] px-[41px] overflow-hidden relative">
-      <div className="font-medium text-[32px] z-10">
+    <div className="flex items-center w-full bg-white h-[80px] md:h-[120px] px-3 md:px-[41px] overflow-hidden relative">
+      <div className="font-medium text-sm sm:text-lg md:text-[32px]  z-10">
         Trade on any future event
       </div>
-      <div className="flex gap-2 ml-auto bg-[#DC056C] text-white rounded-md px-[20px] py-[10px] z-10">
-        <span>Watch how</span>
+      <div className="flex item-center justify-center gap-2 ml-auto bg-[#DC056C] text-white rounded-md px-[20px] py-[10px] z-10">
+        <span className="text-sm md:text-[px]">Watch how</span>
         <Video size={24} />
       </div>
 
@@ -31,7 +31,7 @@ const WatchNow = () => {
         ></div>
       </div>
       <div
-        className="rounded-full absolute right-[200px] -top-[80px]"
+        className="rounded-full absolute right-[200px] -top-[80px] hidden lg:block"
         style={{
           height: 157,
           width: 157,
