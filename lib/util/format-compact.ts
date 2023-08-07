@@ -1,9 +1,9 @@
-export const formatNumberCompact = (number: number | bigint | string) => {
-  if (typeof number === "string") {
-    number = Number(number);
-  }
+export const formatNumberCompact = (
+  number: number | bigint,
+  maximumSignificantDigits = 3,
+) => {
   return new Intl.NumberFormat("en-US", {
-    maximumSignificantDigits: 3,
+    maximumSignificantDigits: maximumSignificantDigits,
     notation: "compact",
   }).format(number);
 };
