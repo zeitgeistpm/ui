@@ -34,6 +34,7 @@ import OracleInput from "./inputs/Oracle";
 import { AnswersInput } from "./inputs/answers";
 import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 import Input from "components/ui/Input";
+import TimezoneSelect from "./inputs/TimezoneSelect";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -68,6 +69,8 @@ export const MarketEditor = () => {
   const chainTime = useChainTime();
   const { isFetched } = useMarketDeadlineConstants();
   const { data: constants } = useChainConstants();
+
+  const timezone = form?.timeZone;
 
   const currencyMetadata = getMetadataForCurrency(form?.currency ?? "ZTG");
 
@@ -305,10 +308,12 @@ export const MarketEditor = () => {
           <div className="mb-4">
             <div className="flex center mb-3">
               <DateTimePicker
+                timezone={timezone}
                 placeholder="Set End Date"
                 isValid={fieldsState.endDate.isValid}
                 {...input("endDate", { mode: "all" })}
               />
+              <TimezoneSelect {...input("timeZone")} />
             </div>
             <div className="flex center h-5  text-xs text-red-400">
               <ErrorMessage field={fieldsState.endDate} />
@@ -337,6 +342,7 @@ export const MarketEditor = () => {
               </div>
               <div className="flex justify-center">
                 <BlockPeriodPicker
+                  timezone={timezone}
                   disabled={!fieldsState.endDate.isValid}
                   isValid={fieldsState.gracePeriod.isValid}
                   options={gracePeriodOptions}
