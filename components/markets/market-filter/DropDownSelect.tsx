@@ -82,7 +82,7 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter, false>) => {
 const MenuList = ({ children, ...props }: MenuListProps) => {
   return (
     <components.MenuList {...props}>
-      <div className="flex flex-row flex-wrap mx-auto gap-[12px] justify-center mb-[30px]">
+      <div className="flex flex-row flex-wrap mx-auto gap-[12px] mb-[30px]">
         {children}
       </div>
     </components.MenuList>

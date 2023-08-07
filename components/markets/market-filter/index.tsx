@@ -146,9 +146,10 @@ const MarketFilterSelection = ({
         open={mobileDialogOpen}
         setOpen={setMobileDialogOpen}
       ></MobileDialog>
-      <div className="w-full flex flex-col items-center justify-center mb-[30px]">
+      <div className="w-full flex flex-col justify-center mb-4 sticky top-[69px] z-20 bg-[#F1F1F1] py-3">
         {portalRef.current ? (
           <div className="hidden md:flex md:items-center md:gap-2 md:mb-6">
+            <div className="font-medium text-lg mr-10">Markets:</div>
             <MarketFiltersDropdowns className="flex items-center gap-2"></MarketFiltersDropdowns>
             <MarketFiltersCheckboxes className="hidden lg:block mr-[20px] ml-[20px]"></MarketFiltersCheckboxes>
             <MarketFiltersSort className="hidden lg:block"></MarketFiltersSort>
@@ -157,7 +158,7 @@ const MarketFilterSelection = ({
           <Skeleton width="80%" height="44px" className="mb-[25px]"></Skeleton>
         )}
         <p
-          className="block md:hidden text-ztg-blue cursor-pointer mb-6"
+          className="block md:hidden text-ztg-blue cursor-pointer"
           onClick={() => setMobileDialogOpen(true)}
         >
           Find Your Market <ChevronDown className="inline mb-1" size={20} />
@@ -169,8 +170,8 @@ const MarketFilterSelection = ({
         ></div>
         {portalRef.current ? (
           <div className="hidden md:flex items-center gap-6 mb-6 lg:hidden">
-            <MarketFiltersCheckboxes></MarketFiltersCheckboxes>
-            <MarketFiltersSort></MarketFiltersSort>
+            <MarketFiltersCheckboxes />
+            <MarketFiltersSort />
           </div>
         ) : (
           <Skeleton width="40%" height="32px" className="mb-[25px]"></Skeleton>
