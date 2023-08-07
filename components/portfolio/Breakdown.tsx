@@ -22,7 +22,7 @@ export type PortfolioBreakdownProps =
  */
 export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center gap-y-[30px]">
+    <div className="flex flex-col md:flex-row justify-center gap-y-[30px]">
       <div className="flex w-full max-w-[600px] md:border-r-2 md:border-gray-200">
         <div className="flex-1 border-r-2 border-gray-200">
           {"loading" in props ? (

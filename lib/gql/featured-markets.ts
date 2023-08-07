@@ -172,15 +172,7 @@ const getFeaturedMarkets = async (
 
   const filterMarkets = featuredMarkets.filter(isPresent);
 
-  const names = await getDisplayName(
-    sdk,
-    filterMarkets.map((m) => m.creator),
-  );
-
-  return filterMarkets.map((m, i) => ({
-    ...m,
-    creatorDisplayName: names[i],
-  }));
+  return filterMarkets;
 };
 
 export default getFeaturedMarkets;

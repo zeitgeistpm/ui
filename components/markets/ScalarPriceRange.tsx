@@ -1,4 +1,5 @@
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
+import { formatNumberCompact } from "lib/util/format-compact";
 import { useMemo } from "react";
 import { useResizeDetector } from "react-resize-detector";
 
@@ -41,39 +42,35 @@ const ScalarPriceRange = ({
       ? new Intl.DateTimeFormat("default", {
           dateStyle: "medium",
         }).format(new Date(lowerBound))
-      : lowerBound;
+      : formatNumberCompact(lowerBound);
 
   const upperDisplay =
     scalarType === "date"
       ? new Intl.DateTimeFormat("default", {
           dateStyle: "medium",
         }).format(new Date(upperBound))
-      : upperBound;
+      : formatNumberCompact(upperBound);
 
   const positionDisplay =
     scalarType === "date"
       ? new Intl.DateTimeFormat("default", {
           dateStyle: "medium",
         }).format(new Date(position))
-      : position.toFixed(2);
+      : formatNumberCompact(position);
 
   return (
     <div
-      className="`w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative flex items-center"
+      className="w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative flex items-center p-2"
       ref={ref}
     >
-      <span className="absolute -top-5 left-0 text-xs text-gray-400 group-hover:text-white">
+      <span className="text-xs text-gray-400 z-10 font-semibold">
         {lowerDisplay}
       </span>
       {status !== "Proposed" && (
         <>
           <div
             style={{
-              width: `${
-                averagePosition != null || Number(positionDisplay) === 0
-                  ? 0
-                  : averagePosition
-              }px`,
+              width: `${averagePosition != null ? averagePosition : 0}px`,
             }}
             className="bg-scalar-bar h-full absolute left-0 bottom-0"
           ></div>
@@ -82,7 +79,7 @@ const ScalarPriceRange = ({
           </span>
         </>
       )}
-      <span className="absolute -top-5 right-0 text-xs text-gray-400 group-hover:text-white">
+      <span className="text-xs text-gray-400 z-10 ml-auto font-semibold">
         {upperDisplay}
       </span>
     </div>

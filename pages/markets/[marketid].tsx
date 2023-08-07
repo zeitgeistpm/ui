@@ -137,7 +137,7 @@ const Market: NextPage<MarketPageProps> = ({
   const { data: marketStage } = useMarketStage(market ?? undefined);
   const { data: spotPrices } = useMarketSpotPrices(marketId);
   const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
-  const baseAsset = parseAssetIdString(indexedMarket?.pool?.baseAsset);
+  const baseAsset = parseAssetIdString(indexedMarket?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAsset);
 
   const handlePoolDeployed = () => {
