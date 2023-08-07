@@ -2,7 +2,7 @@ import { Video } from "react-feather";
 
 const WatchHow = () => {
   return (
-    <div className="flex items-center w-full bg-white h-[80px] md:h-[120px] px-3 md:px-[41px] overflow-hidden relative">
+    <div className="flex items-center w-full bg-white h-[80px] md:h-[120px] px-3 md:px-[41px] overflow-hidden relative rounded-md">
       <div className="font-medium text-sm sm:text-lg md:text-[32px]  z-10">
         Trade on any future event
       </div>

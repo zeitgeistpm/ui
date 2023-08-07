@@ -21,7 +21,7 @@ import {
 } from "plaiceholder";
 import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
 import LatestTrades from "components/front-page/LatestTrades";
-import WatchHow from "components/front-page/WatchNow";
+import WatchHow from "components/front-page/WatchHow";
 
 const getPlaiceholders = (
   paths: string[],
