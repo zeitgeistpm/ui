@@ -21,6 +21,7 @@ import {
 } from "plaiceholder";
 import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
 import LatestTrades from "components/front-page/LatestTrades";
+import WatchNow from "components/front-page/WatchNow";
 
 const getPlaiceholders = (
   paths: string[],
@@ -104,6 +105,7 @@ const IndexPage: NextPage<{
             />
           </div>
         )}
+        <WatchNow />
         <div className="mb-[60px]">
           <PopularCategories
             counts={categoryCounts}
