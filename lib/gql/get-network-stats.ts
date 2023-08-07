@@ -3,6 +3,7 @@ import Decimal from "decimal.js";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { getBaseAssetHistoricalPrices, lookupPrice } from "./historical-prices";
 
+//todo: add dos protection support
 export const getNetworkStats = async (sdk: Sdk<FullContext>) => {
   const marketCountBN = await sdk.api.query.marketCommons.marketCounter();
   const basePrices = await getBaseAssetHistoricalPrices();
