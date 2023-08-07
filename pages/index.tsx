@@ -66,8 +66,6 @@ export async function getStaticProps() {
     getNetworkStats(sdk),
   ]);
 
-  console.log(stats);
-
   return {
     props: {
       banners: banners,
