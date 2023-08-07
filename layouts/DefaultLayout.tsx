@@ -29,7 +29,6 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   useSubscribeBlockEvents();
   const [tradeItem, setTradeItem] = useState<TradeItem | null>(null);
-  const [showChat, setShowChat] = useState(false);
 
   const {
     width,
@@ -99,9 +98,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
       </TradeItemContext.Provider>
       <Account />
       <Onboarding />
-      {process.env.NEXT_PUBLIC_GRILLCHAT_DISABLE !== "true" && (
-        <GrillChat open={showChat} setOpen={setShowChat} />
-      )}
+      {process.env.NEXT_PUBLIC_GRILLCHAT_DISABLE !== "true" && <GrillChat />}
     </div>
   );
 };
