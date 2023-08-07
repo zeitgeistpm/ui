@@ -146,7 +146,7 @@ const MarketFilterSelection = ({
         open={mobileDialogOpen}
         setOpen={setMobileDialogOpen}
       ></MobileDialog>
-      <div className="w-full flex flex-col justify-center mb-4 sticky top-[69px] z-20 bg-white py-3">
+      <div className="w-full flex flex-col justify-center mb-4 sticky top-[69px] z-20 bg-[#F1F1F1] py-3">
         {portalRef.current ? (
           <div className="hidden md:flex md:items-center md:gap-2 md:mb-6">
             <div className="font-medium text-lg mr-10">Markets:</div>
