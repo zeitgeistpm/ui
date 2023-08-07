@@ -326,7 +326,7 @@ const MarketHeader: FC<{
   const { data: marketHistory } = useMarketEventHistory(
     market.marketId.toString(),
   );
-  const { data: liquidity, isLoading: isLiqudityLoading } = usePoolLiquidity({
+  const { data: liquidity, isFetching: isLiqudityLoading } = usePoolLiquidity({
     marketId: market.marketId,
   });
 
@@ -402,9 +402,9 @@ const MarketHeader: FC<{
         ) : (
           <Skeleton width="150px" height="20px" />
         )}
-        {isLiqudityLoading === false && liquidity && token ? (
+        {isLiqudityLoading === false && token ? (
           <HeaderStat label="Liquidity" border={false}>
-            {formatNumberCompact(liquidity.div(ZTG).toNumber())}
+            {formatNumberCompact(liquidity?.div(ZTG).toNumber() ?? 0)}
             &nbsp;
             {token}
           </HeaderStat>

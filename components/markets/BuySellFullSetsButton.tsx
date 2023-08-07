@@ -36,10 +36,10 @@ const BuySellFullSetsButton = ({
           <Tab.Group>
             <Tab.List className="flex h-[71px] text-center font-medium text-ztg-18-150">
               <Tab className="ui-selected:font-bold ui-selected:bg-white bg-anti-flash-white transition-all w-1/2 rounded-tl-[10px]">
-                Buy
+                Buy Full Set
               </Tab>
               <Tab className="ui-selected:font-bold ui-selected:bg-white bg-anti-flash-white transition-all w-1/2 rounded-tr-[10px]">
-                Sell
+                Sell Full Set
               </Tab>
             </Tab.List>
 

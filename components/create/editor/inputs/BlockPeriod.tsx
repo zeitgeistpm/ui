@@ -1,8 +1,4 @@
-import {
-  ChainTime,
-  blockDate,
-  dateBlock,
-} from "@zeitgeistpm/utility/dist/time";
+import { ChainTime } from "@zeitgeistpm/utility/dist/time";
 import {
   PeriodDurationOption,
   PeriodOption,
@@ -15,6 +11,7 @@ import Input from "components/ui/Input";
 
 export type BlockPeriodPickerProps = {
   name: string;
+  timezone?: string;
   value?: PeriodOption;
   options: BlockPeriodPickerOptions;
   onChange: (event: FormEvent<PeriodOption>) => void;
@@ -32,6 +29,7 @@ export type BlockPeriodPickerOptions = DeepReadonly<
 
 export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
   name,
+  timezone,
   value,
   onChange,
   onBlur,
@@ -154,6 +152,7 @@ export const BlockPeriodPicker: React.FC<BlockPeriodPickerProps> = ({
 
         {hasCustomDateOption && (
           <DateTimePicker
+            timezone={timezone}
             name={name}
             className={`min-w-[300px] ${
               value?.type === "date" && "bg-nyanza-base"

@@ -56,6 +56,7 @@
     "jotai-tanstack-query": "^0.7.0",
     "lodash.merge": "^4.6.2",
     "median-range": "^0.0.11",
+    "moment-timezone": "^0.5.43",
     "next": "^13.2.3",
     "next-absolute-url": "^1.2.2",
     "object-hash": "^2.2.0",

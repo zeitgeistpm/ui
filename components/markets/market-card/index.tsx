@@ -1,35 +1,29 @@
-import Link from "next/link";
-import React from "react";
-import { MarketOutcomes } from "lib/types/markets";
-import MarketCardContext from "./context";
-import ScalarPriceRange from "../ScalarPriceRange";
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
-import { Users, BarChart2, Droplet } from "react-feather";
-import { formatNumberCompact } from "lib/util/format-compact";
+import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import Skeleton from "components/ui/Skeleton";
+import { MarketOutcomes } from "lib/types/markets";
+import { formatNumberCompact } from "lib/util/format-compact";
 import { hasDatePassed } from "lib/util/hasDatePassed";
-import { parseAssetIdString } from "lib/util/parse-asset-id";
-import Avatar from "components/ui/Avatar";
+import Link from "next/link";
+import { BarChart2, Droplet, Users } from "react-feather";
+import ScalarPriceRange from "../ScalarPriceRange";
+import MarketCardContext from "./context";
 
-import Image from "next/image";
 import {
-  lookupAssetImagePath,
-  lookupAssetSymbol,
-} from "lib/constants/foreign-asset";
-import { BaseAssetId, parseAssetId } from "@zeitgeistpm/sdk-next";
-import { IOBaseAssetId } from "@zeitgeistpm/sdk-next";
-import { IOForeignAssetId } from "@zeitgeistpm/sdk-next";
-import { shortenAddress } from "lib/util";
-import { useIdentity } from "lib/hooks/queries/useIdentity";
+  IOBaseAssetId,
+  IOForeignAssetId,
+  parseAssetId,
+} from "@zeitgeistpm/sdk-next";
+import { lookupAssetImagePath } from "lib/constants/foreign-asset";
+import Image from "next/image";
+
 export interface IndexedMarketCardData {
   marketId: number;
   img?: string;
   question: string;
   creation: string;
   creator: string;
-  creatorDisplayName?: string | null;
   outcomes: MarketOutcomes;
   marketType: { categorical?: string; scalar?: string[] };
   scalarType: ScalarRangeType;
@@ -47,14 +41,6 @@ export interface MarketCardProps extends IndexedMarketCardData {
   className?: string;
 }
 
-const Pill = ({ value, classes }: { value: string; classes: string }) => {
-  return (
-    <span className={`px-2.5 py-0.5 h-fit text-xs rounded ${classes}`}>
-      {value}
-    </span>
-  );
-};
-
 const MarketCardInfo = ({
   question,
   img,
@@ -64,64 +50,10 @@ const MarketCardInfo = ({
 }) => {
   return (
     <div className="w-full h-full flex whitespace-normal gap-4">
-      <h5 className="font-semibold w-full h-fit line-clamp-3 text-base">
-        {question}
-      </h5>
+      <h5 className="w-full h-fit line-clamp-2 text-base">{question}</h5>
       {/* {disable for now until we can get image from CMS} */}
       {/* {img && <MarketImage image={img} alt={question} className="rounded-lg" />} */}
     </div>
-  );
-};
-
-const MarketCardTags = ({
-  tags,
-  baseAsset,
-  isVerified,
-}: {
-  tags: string[];
-  baseAsset: string;
-  isVerified: boolean;
-}) => {
-  const assetId = parseAssetId(baseAsset).unwrap();
-  const imagePath = IOForeignAssetId.is(assetId)
-    ? lookupAssetImagePath(assetId.ForeignAsset)
-    : IOBaseAssetId.is(assetId)
-    ? lookupAssetImagePath(assetId.Ztg)
-    : "";
-  return (
-    <>
-      {imagePath && (
-        <Image
-          width={20}
-          height={20}
-          src={imagePath}
-          alt="Currency token logo"
-          className="rounded-full"
-        />
-      )}
-      {/* replace later when court dispute mechanism is ready */}
-      {/* {tags?.map((tag, index) => {
-        return (
-          tag === "Politics" && (
-            <Image
-              key={index}
-              width={20}
-              height={20}
-              src="icons/politics-cat-icon.svg"
-              alt="politics"
-            />
-          )
-        );
-      })} */}
-      {isVerified && (
-        <Image
-          width={20}
-          height={20}
-          src="icons/verified-icon.svg"
-          alt="verified checkmark"
-        />
-      )}
-    </>
   );
 };
 
@@ -188,82 +120,81 @@ const MarketCardDetails = ({
     //checks if event has passed and is within 6 hours
     return diff < sixHours && diff > 0 ? true : false;
   };
+
+  const assetId = parseAssetId(rows.baseAsset).unwrap();
+  const imagePath = IOForeignAssetId.is(assetId)
+    ? lookupAssetImagePath(assetId.ForeignAsset)
+    : IOBaseAssetId.is(assetId)
+    ? lookupAssetImagePath(assetId.Ztg)
+    : "";
+
   return (
-    <div>
-      <div className="text-xs mb-4">
-        <span className="font-semibold">{rows.outcomes} outcomes</span>
+    <div className="flex items-center text-xs">
+      <div>
         <span>
           {rows.endDate &&
-            ` | ${rows.hasEnded ? "Ended" : "Ends"} ${new Date(
+            `${rows.hasEnded ? "Ended" : "Ends"} ${new Date(
               Number(rows?.endDate),
             ).toLocaleString("en-US", {
-              month: "long",
+              month: "short",
               day: "numeric",
-              year: "numeric",
             })}`}
         </span>
         {isEnding() && (
           <span>
-            {" "}
-            | <span className="text-red">Ends Soon</span>
+            <span className="text-red">Ends Soon</span>
           </span>
         )}
+        <span className="font-semibold border-l-1 border-l-black pl-1 ml-1 ">
+          {rows.outcomes} outcomes{" "}
+        </span>
       </div>
-      <div className="flex gap-2.5 text-sm min-w-full">
+      <div className="flex gap-1.5 ml-auto items-center justify-center">
         {rows.numParticipants != undefined && rows.baseAsset ? (
-          <div className="flex items-center gap-2">
-            <Users size={18} />
-            <span>{rows.numParticipants}</span>
+          <div className="flex items-center gap-0.5">
+            <Users size={12} />
+            <span>{formatNumberCompact(rows.numParticipants, 2)}</span>
           </div>
         ) : (
-          <Skeleton width={35} height={20} />
+          <Skeleton width={30} height={12} />
         )}
-        <div className="flex items-center gap-2">
-          <BarChart2 size={18} />
-          <span>
-            {formatNumberCompact(rows.volume)} {rows.baseAsset}
-          </span>
+        <div className="flex items-center gap-1">
+          <BarChart2 size={12} />
+          <span>{formatNumberCompact(rows.volume, 2)}</span>
         </div>
         {rows.liquidity != undefined && rows.baseAsset ? (
-          <div className="flex items-center gap-2">
-            <Droplet size={18} />
+          <div className="flex items-center gap-1">
+            <Droplet size={12} />
             <span>
               {formatNumberCompact(
-                new Decimal(rows.liquidity).div(ZTG).toString(),
-              )}{" "}
-              {rows.baseAsset}
+                new Decimal(rows.liquidity).div(ZTG).toNumber(),
+                2,
+              )}
             </span>
           </div>
         ) : (
-          <Skeleton width={120} height={20} />
+          <Skeleton width={30} height={12} />
         )}
+        <Image
+          width={12}
+          height={12}
+          src={imagePath}
+          alt="Currency token logo"
+          className="rounded-full"
+        />
       </div>
     </div>
   );
 };
 
 export const MarketCardClientWrapper = (props: MarketCardProps) => {
-  const { data: identity } = useIdentity(props.creator);
-
-  return (
-    <MarketCard
-      {...props}
-      creatorDisplayName={
-        identity?.displayName && identity.displayName.length > 0
-          ? identity.displayName
-          : undefined
-      }
-    />
-  );
+  return <MarketCard {...props} />;
 };
 
 const MarketCard = ({
   marketId,
   img,
   question,
-  creation,
-  creator,
-  creatorDisplayName,
   outcomes,
   marketType,
   prediction,
@@ -271,22 +202,12 @@ const MarketCard = ({
   scalarType,
   volume,
   baseAsset,
-  tags = [],
   endDate,
   status,
   className = "",
   liquidity,
   numParticipants,
 }: MarketCardProps) => {
-  const isVerified = () => {
-    return creation === "Advised" && status === "Active" ? true : false;
-  };
-  const isProposed = () => {
-    return creation === "Advised" && status === "Proposed" ? true : false;
-  };
-  const assetSymbol = lookupAssetSymbol(
-    parseAssetIdString(baseAsset) as BaseAssetId,
-  );
   const isYesNoMarket =
     outcomes.length === 2 &&
     outcomes.some((outcome) => outcome.name.toLowerCase() === "yes") &&
@@ -304,7 +225,7 @@ const MarketCard = ({
     hasEnded: hasDatePassed(Number(endDate)),
     outcomes: outcomes.length,
     volume: volume,
-    baseAsset: assetSymbol ?? "",
+    baseAsset: baseAsset,
     liquidity,
     numParticipants: numParticipants,
   };
@@ -320,27 +241,13 @@ const MarketCard = ({
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
         data-testid={`marketCard-${marketId}`}
-        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)] h-[274px] rounded-[10px] p-5 relative bg-anti-flash-white hover:bg-pastel-blue ${className}`}
+        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)] h-[171px] 
+        rounded-[10px] p-5 relative bg-white hover:bg-pastel-blue ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
           className="flex flex-col flex-1 gap-4"
         >
-          <div className="flex justify-between gap-2.5 w-full">
-            <div className={`inline-flex items-center text-xs gap-2.5`}>
-              <Avatar address={creator} copy={false} />
-              <span className="break-all flex-1">
-                {creatorDisplayName ?? shortenAddress(creator, 10, 10)}
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2.5 font-medium h-fit">
-              <MarketCardTags
-                baseAsset={baseAsset}
-                tags={tags}
-                isVerified={isVerified()}
-              />
-            </div>
-          </div>
           <MarketCardInfo question={question} img={img} />
           <div className="w-full">
             {pool && marketType?.categorical ? (

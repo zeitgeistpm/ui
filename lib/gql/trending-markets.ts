@@ -18,7 +18,6 @@ import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { getForeignAssetPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
-import { getDisplayName } from "./display-name";
 
 const poolChangesQuery = gql`
   query PoolChanges($start: DateTime, $end: DateTime) {
@@ -197,15 +196,7 @@ const getTrendingMarkets = async (
     }),
   );
 
-  const names = await getDisplayName(
-    sdk,
-    trendingMarkets.map((m) => m.creator),
-  );
-
-  return trendingMarkets.map((m, i) => ({
-    ...m,
-    creatorDisplayName: names[i],
-  }));
+  return trendingMarkets;
 };
 
 type BasePrices = {
