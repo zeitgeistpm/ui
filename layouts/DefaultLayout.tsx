@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useRef, useState } from "react";
+import { FC, PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -10,13 +10,60 @@ import NotificationCenter from "components/ui/NotificationCenter";
 import GrillChat from "components/grillchat";
 import { TradeItem, TradeItemContext } from "lib/hooks/trade";
 import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
+import { Web3AuthNoModal, Web3AuthNoModalOptions } from "@web3auth/no-modal";
 import { useRouter } from "next/router";
 
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
 import { Account } from "components/account/Account";
+import { CustomChainConfig } from "@web3auth/base";
+import {
+  CommonPrivKeyProviderConfig,
+  CommonPrivateKeyProvider,
+} from "@web3auth/base-provider";
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
+
+const chainConfig: CustomChainConfig = {
+  chainNamespace: "other",
+  chainId: "",
+  rpcTarget: "",
+  displayName: "",
+  blockExplorer: "",
+  ticker: "",
+  tickerName: "",
+};
+const options: Web3AuthNoModalOptions = {
+  chainConfig: chainConfig,
+  clientId:
+    "BBhcjEH1aKqw6tXGwLKuILGv5fmGUrKnCX2WP7dWJWd0IvR475io6B1Hp-URGyBhzCOV2i1w7VQqJW2bIBDo3sQ",
+};
+const web3auth = new Web3AuthNoModal(options);
+
+const keyConfig: CommonPrivKeyProviderConfig = {
+  chainConfig: {
+    chainId: "",
+    rpcTarget: "",
+    displayName: "",
+    blockExplorer: "",
+    ticker: "",
+    tickerName: "",
+  },
+};
+const privateKeyProvider = new CommonPrivateKeyProvider({ config: keyConfig });
+
+// const openloginAdapter = new OpenloginAdapter({
+//   privateKeyProvider,
+//   // adapterSettings: {...},
+//   // mfaSettings: {...},
+//   // loginSettings: {...},
+// });
+
+const provider = await web3auth.connectTo("a");
+
+const privatekey = await provider?.request({
+  method: "private_key",
+});
 
 const Onboarding = dynamic(
   () => import("../components/onboarding/Onboarding"),
@@ -29,6 +76,9 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   useSubscribeBlockEvents();
   const [tradeItem, setTradeItem] = useState<TradeItem | null>(null);
+  useEffect(() => {
+    web3auth.init();
+  }, []);
 
   const {
     width,
