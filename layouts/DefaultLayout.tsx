@@ -38,7 +38,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
 
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const greyBackgroundPageRoutes = ["/", "/markets"];
+  const greyBackgroundPageRoutes = ["/", "/markets", "/create-account"];
 
   return (
     <div

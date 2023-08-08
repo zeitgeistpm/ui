@@ -60,7 +60,12 @@ const CreateAccountPage: NextPage = () => {
       <div className="grid grid-cols-3 gap-x-8 mt-9">
         {walletsConfig.map((wallet, idx) => {
           return (
-            <div className="center bg-white rounded-lg" key={idx}>
+            <Link
+              className="center bg-white rounded-lg hover:bg-pastel-blue duration-500 transition"
+              href={wallet.installUrl}
+              target="_blank"
+              key={idx}
+            >
               <div className="flex items-center h-36">
                 <Image
                   src={wallet.logo.src}
@@ -71,7 +76,7 @@ const CreateAccountPage: NextPage = () => {
                 />
                 <div className="font-medium ml-4 text-lg">{wallet.title}</div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
@@ -103,10 +108,10 @@ const CreateAccountPage: NextPage = () => {
             </p>
           </div>
           <div className="flex items-center p-2">
-            {/* TODO: Update href attribute */}
             <Link
               className="text-blue font-medium flex-grow flex items-center"
-              href="#"
+              href="/deposit"
+              shallow
             >
               Make a Deposit <ChevronRight size={22} />
             </Link>
@@ -134,6 +139,7 @@ const CreateAccountPage: NextPage = () => {
             <Link
               className="text-blue font-medium flex-grow flex items-center"
               href="/markets"
+              shallow
             >
               Make predictions <ChevronRight size={22} />
             </Link>
