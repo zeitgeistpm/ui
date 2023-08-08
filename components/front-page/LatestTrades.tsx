@@ -4,8 +4,14 @@ import { formatNumberLocalized } from "lib/util";
 import { useLatestTrades } from "lib/hooks/queries/useLatestTrades";
 import { ZTG } from "@zeitgeistpm/sdk-next";
 import moment from "moment";
+import Avatar from "components/ui/Avatar";
 
 const columns: TableColumn[] = [
+  {
+    header: "Trader",
+    accessor: "trader",
+    type: "component",
+  },
   {
     header: "Market",
     accessor: "question",
@@ -44,11 +50,13 @@ const TradeHistoryTable = () => {
 
   const tableData: TableData[] | undefined = trades?.map((trade) => {
     return {
+      trader: (
+        <Link href={`/portfolio/${trade.traderAddress}`} className="">
+          <Avatar address={trade.traderAddress} />
+        </Link>
+      ),
       question: (
-        <Link
-          href={`/markets/${trade.marketId}`}
-          className="text-[14px] line-clamp-1"
-        >
+        <Link href={`/markets/${trade.marketId}`} className="text-[14px]">
           {trade?.question}
         </Link>
       ),
