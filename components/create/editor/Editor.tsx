@@ -35,6 +35,7 @@ import { AnswersInput } from "./inputs/answers";
 import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 import Input from "components/ui/Input";
 import TimezoneSelect from "./inputs/TimezoneSelect";
+import { Loader } from "components/ui/Loader";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -104,7 +105,16 @@ export const MarketEditor = () => {
   return (
     <>
       {isLoaded === false && (
-        <div className="h-screen flex items-center justify-center">Loading</div>
+        <div
+          className="flex items-center justify-center bg-white "
+          style={{ height: "calc(100vh - 100px)" }}
+        >
+          <Loader
+            loading={true}
+            className="h-[100px] w-[100px]"
+            variant={"Info"}
+          />
+        </div>
       )}
       <Transition
         show={isLoaded}
