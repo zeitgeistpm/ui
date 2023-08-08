@@ -146,9 +146,9 @@ const MarketFilterSelection = ({
         open={mobileDialogOpen}
         setOpen={setMobileDialogOpen}
       ></MobileDialog>
-      <div className="w-full flex flex-col justify-center mb-4 sticky top-[69px] z-20 bg-[#F1F1F1] py-3">
+      <div className="w-full mb-2 flex flex-col justify-center sticky top-[69px] z-20 bg-[#F1F1F1] [&>*]:mb-2">
         {portalRef.current ? (
-          <div className="hidden md:flex md:items-center md:gap-2 md:mb-6">
+          <div className="hidden md:flex md:items-center md:gap-2">
             <div className="font-medium text-lg mr-10">Markets:</div>
             <MarketFiltersDropdowns className="flex items-center gap-2"></MarketFiltersDropdowns>
             <MarketFiltersCheckboxes className="hidden lg:block mr-[20px] ml-[20px]"></MarketFiltersCheckboxes>
@@ -164,12 +164,12 @@ const MarketFilterSelection = ({
           Find Your Market <ChevronDown className="inline mb-1" size={20} />
         </p>
         <div
-          className="hidden md:block"
+          className="hidden md:block !mb-0"
           id="marketsFiltersMenuPortal"
           ref={portalRef}
         ></div>
         {portalRef.current ? (
-          <div className="hidden md:flex items-center gap-6 mb-6 lg:hidden">
+          <div className="hidden md:flex items-center gap-6 lg:hidden">
             <MarketFiltersCheckboxes />
             <MarketFiltersSort />
           </div>
