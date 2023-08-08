@@ -16,17 +16,20 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
 import Input from "components/ui/Input";
+import { convertDecimals } from "lib/util/convert-decimals";
 
 const DepositButton = ({
   sourceChain,
   tokenSymbol,
   balance,
   sourceExistentialDeposit,
+  assetDecimals,
 }: {
   sourceChain: ChainName;
   tokenSymbol: string;
   balance: Decimal;
   sourceExistentialDeposit: Decimal;
+  assetDecimals: number;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -38,6 +41,7 @@ const DepositButton = ({
           sourceChain={sourceChain}
           tokenSymbol={tokenSymbol}
           balance={balance}
+          assetDecimals={assetDecimals}
           sourceExistentialDeposit={sourceExistentialDeposit}
           onSuccess={() => setIsOpen(false)}
         />
@@ -52,11 +56,13 @@ const DepositModal = ({
   balance,
   onSuccess,
   sourceExistentialDeposit,
+  assetDecimals,
 }: {
   sourceChain: ChainName;
   tokenSymbol: string;
   balance: Decimal;
   sourceExistentialDeposit: Decimal;
+  assetDecimals: number;
   onSuccess: () => void;
 }) => {
   const {
@@ -86,7 +92,7 @@ const DepositModal = ({
 
   const amount = getValues("amount");
   const amountDecimal: Decimal = amount
-    ? new Decimal(amount).mul(ZTG)
+    ? convertDecimals(new Decimal(amount), 0, assetDecimals)
     : new Decimal(0);
   const remainingSourceBalance = balance
     .minus(amountDecimal)
