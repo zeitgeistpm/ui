@@ -1,13 +1,19 @@
 import { BaseAssetId, FullContext, Sdk, ZTG } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
+import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { getBaseAssetHistoricalPrices, lookupPrice } from "./historical-prices";
 
-//todo: add dos protection support
 export const getNetworkStats = async (sdk: Sdk<FullContext>) => {
   const marketCountBN = await sdk.api.query.marketCommons.marketCounter();
   const basePrices = await getBaseAssetHistoricalPrices();
-  const { pools } = await sdk.indexer.pools();
+  const pools = await fetchAllPages(async (pageNumber, limit) => {
+    const { pools } = await sdk.indexer.pools({
+      limit: limit,
+      offset: pageNumber * limit,
+    });
+    return pools;
+  });
 
   const totalVolumeUsd = pools.reduce<Decimal>((total, pool) => {
     const poolCreationBaseAssetPrice = lookupPrice(
@@ -23,7 +29,13 @@ export const getNetworkStats = async (sdk: Sdk<FullContext>) => {
     return total.plus(volumeUsd);
   }, new Decimal(0));
 
-  const { historicalSwaps } = await sdk.indexer.historicalSwaps();
+  const historicalSwaps = await fetchAllPages(async (pageNumber, limit) => {
+    const { historicalSwaps } = await sdk.indexer.historicalSwaps({
+      limit: limit,
+      offset: pageNumber * limit,
+    });
+    return historicalSwaps;
+  });
   const tradersCount = historicalSwaps.reduce<Set<string>>(
     (traders, swap) => traders.add(swap.accountId),
     new Set(),
