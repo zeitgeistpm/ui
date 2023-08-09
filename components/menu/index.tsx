@@ -24,9 +24,9 @@ const AccountButton = dynamic(() => import("../account/AccountButton"), {
 const TopBar = () => {
   return (
     <div
-      className={`w-screen py-3.5 fixed z-40 transition-all duration-300 bg-black`}
+      className={`w-full py-3.5 sticky top-0 z-40 transition-all duration-300 bg-black h-topbar-height`}
     >
-      <div className="relative flex justify-between items-center w-full max-w-screen-2xl h-[44px] mx-auto md:px-8 px-3">
+      <div className="relative flex items-center container-fluid">
         <div className="hidden md:block border-r-1 border-blue-600 pr-3 md:pr-7">
           <Link href="/">
             <MenuLogo />

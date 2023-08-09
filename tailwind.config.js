@@ -309,6 +309,7 @@ module.exports = {
         "ztg-basis-520": "0 0 520px",
       },
       spacing: {
+        "topbar-height": "69px",
         "90%": "90%",
         "88%": "88%",
         "85%": "85%",

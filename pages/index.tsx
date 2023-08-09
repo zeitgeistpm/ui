@@ -93,7 +93,7 @@ const IndexPage: NextPage<{
   return (
     <>
       <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
-      <div data-testid="indexPage" className="main-container">
+      <div data-testid="indexPage" className="flex-col">
         {featuredMarkets.length > 0 && (
           <div className="my-[60px]">
             <MarketScroll
