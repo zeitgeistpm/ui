@@ -10,19 +10,18 @@ import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
 import { NextPage } from "next";
-
 import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
 import LatestTrades from "components/front-page/LatestTrades";
+import NetworkStats from "components/front-page/NetworkStats";
 import { Banner, getBanners } from "lib/cms/get-banners";
 import { endpointOptions, graphQlEndpoint } from "lib/constants";
+import { getNetworkStats } from "lib/gql/get-network-stats";
 import path from "path";
 import {
   getPlaiceholder,
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
-import { getNetworkStats } from "lib/gql/get-network-stats";
-import NetworkStats from "components/front-page/NetworkStats";
 
 const getPlaiceholders = (
   paths: string[],
@@ -117,6 +116,8 @@ const IndexPage: NextPage<{
             />
           </div>
         )}
+        {/* Need link */}
+        {/* <WatchHow /> */}
         <div className="mb-[60px]">
           <PopularCategories
             counts={categoryCounts}
