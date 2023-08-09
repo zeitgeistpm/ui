@@ -26,6 +26,7 @@ import {
 } from "lib/hooks/queries/useAvatarParts";
 import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 import { createAvatarSdk } from "lib/util/create-avatar-sdk";
+import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import Link from "next/link";
@@ -200,9 +201,21 @@ export async function getStaticProps() {
 
   const basePrices = await getBaseAssetHistoricalPrices();
 
-  const { markets } = await sdk.indexer.markets();
+  const markets = await fetchAllPages(async (pageNumber, limit) => {
+    const { markets } = await sdk.indexer.markets({
+      limit: limit,
+      offset: pageNumber * limit,
+    });
+    return markets;
+  });
 
-  const { historicalSwaps } = await sdk.indexer.historicalSwaps();
+  const historicalSwaps = await fetchAllPages(async (pageNumber, limit) => {
+    const { historicalSwaps } = await sdk.indexer.historicalSwaps({
+      limit: limit,
+      offset: pageNumber * limit,
+    });
+    return historicalSwaps;
+  });
 
   const tradersWithSwaps = historicalSwaps.reduce<Traders>((traders, swap) => {
     const trades = traders[swap.accountId];
@@ -244,29 +257,44 @@ export async function getStaticProps() {
     return traders;
   }, {});
 
-  const { historicalAccountBalances: redeemEvents } =
-    await sdk.indexer.historicalAccountBalances({
-      where: { event_contains: "TokensRedeemed" },
-    });
+  const redeemEvents = await fetchAllPages(async (pageNumber, limit) => {
+    const { historicalAccountBalances } =
+      await sdk.indexer.historicalAccountBalances({
+        where: { event_contains: "TokensRedeemed" },
+        limit: limit,
+        offset: pageNumber * limit,
+      });
+    return historicalAccountBalances;
+  });
 
-  const { historicalAccountBalances: buyFullSetEvents } =
-    await sdk.indexer.historicalAccountBalances({
-      where: {
-        OR: [
-          {
-            event_contains: "BoughtComplete",
-          },
-          { event_contains: "Deposited", assetId_not_contains: "pool" },
-        ],
-      },
-    });
+  const buyFullSetEvents = await fetchAllPages(async (pageNumber, limit) => {
+    const { historicalAccountBalances } =
+      await sdk.indexer.historicalAccountBalances({
+        where: {
+          OR: [
+            {
+              event_contains: "BoughtComplete",
+            },
+            { event_contains: "Deposited", assetId_not_contains: "pool" },
+          ],
+        },
+        limit: limit,
+        offset: pageNumber * limit,
+      });
+    return historicalAccountBalances;
+  });
 
-  const { historicalAccountBalances: sellFullSetEvents } =
-    await sdk.indexer.historicalAccountBalances({
-      where: {
-        event_contains: "SoldComplete",
-      },
-    });
+  const sellFullSetEvents = await fetchAllPages(async (pageNumber, limit) => {
+    const { historicalAccountBalances } =
+      await sdk.indexer.historicalAccountBalances({
+        where: {
+          event_contains: "SoldComplete",
+        },
+        limit: limit,
+        offset: pageNumber * limit,
+      });
+    return historicalAccountBalances;
+  });
 
   const fullSetEvents = [...buyFullSetEvents, ...sellFullSetEvents];
 
