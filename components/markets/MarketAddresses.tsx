@@ -104,7 +104,7 @@ const AddressInspectContent = ({
   );
 };
 
-const AddressDetails = ({
+export const AddressDetails = ({
   title,
   address,
 }: {
@@ -122,7 +122,7 @@ const AddressDetails = ({
   return (
     <>
       <div
-        className="flex flex-col sm:flex-row items-start sm:items-center mb-ztg-18 cursor-pointer hover:bg-sky-100 ztg-transition rounded-lg p-[5px]"
+        className="flex flex-col sm:flex-row items-start sm:items-center cursor-pointer hover:bg-sky-100 ztg-transition rounded-lg p-[5px]"
         onClick={() => setInspected(true)}
         data-test="inspectButton"
       >

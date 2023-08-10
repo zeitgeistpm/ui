@@ -28,6 +28,7 @@ import { Dialog } from "@headlessui/react";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { estimateMarketResolutionDate } from "lib/util/estimate-market-resolution";
 import { MarketReport } from "lib/types";
+import { AddressDetails } from "./MarketAddresses";
 
 export const UserIdentity: FC<
   PropsWithChildren<{ user: string; className?: string }>
@@ -287,6 +288,7 @@ const MarketHeader: FC<{
   token?: string;
   marketStage?: MarketStage;
   rejectReason?: string;
+  creatorAddress: string;
 }> = ({
   market,
   report,
@@ -295,17 +297,10 @@ const MarketHeader: FC<{
   token,
   marketStage,
   rejectReason,
+  creatorAddress,
 }) => {
-  const {
-    tags,
-    categories,
-    status,
-    question,
-    period,
-    marketType,
-    pool,
-    scalarType,
-  } = market;
+  const { categories, status, question, period, marketType, pool, scalarType } =
+    market;
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const starts = Number(period.start);
   const ends = Number(period.end);
@@ -344,9 +339,9 @@ const MarketHeader: FC<{
   );
 
   return (
-    <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
-      <h1 className="text-4xl font-extrabold my-5 text-center">{question}</h1>
-      <div className="flex flex-wrap justify-center gap-2.5">
+    <header className="flex flex-col gap-3 w-full max-w-[1000px]">
+      <h1 className="text-[32px] font-extrabold">{question}</h1>
+      {/* <div className="flex flex-wrap gap-2.5">
         <Tag className={`${status === "Active" && "!bg-green-lighter"}`}>
           {status === "Active" && <span className="text-green">&#x2713; </span>}
           {status}
@@ -357,18 +352,11 @@ const MarketHeader: FC<{
         <Tag className="!bg-black text-white">
           {marketType?.scalar === null ? "Categorical" : "Scalar"}
         </Tag>
-      </div>
+      </div> */}
       {rejectReason && rejectReason.length > 0 && (
         <div className="mt-2.5">Market rejected: {rejectReason}</div>
       )}
-      <div className="flex justify-center my-8 w-full">
-        {marketStage ? (
-          <MarketTimer stage={marketStage} />
-        ) : (
-          <MarketTimerSkeleton />
-        )}
-      </div>
-      <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-2 mb-5">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-2">
         <HeaderStat label={hasDatePassed(starts) ? "Started" : "Starts"}>
           {new Intl.DateTimeFormat("default", {
             dateStyle: "medium",
@@ -412,6 +400,17 @@ const MarketHeader: FC<{
           <Skeleton width="150px" height="20px" />
         )}
       </div>
+      <div className="flex">
+        <AddressDetails title="Creator" address={creatorAddress} />
+      </div>
+      <div className="flex w-full">
+        {marketStage ? (
+          <MarketTimer stage={marketStage} />
+        ) : (
+          <MarketTimerSkeleton />
+        )}
+      </div>
+
       {(status === "Reported" ||
         status === "Disputed" ||
         status === "Resolved") &&

@@ -216,6 +216,7 @@ const Market: NextPage<MarketPageProps> = ({
           token={token}
           marketStage={marketStage ?? undefined}
           rejectReason={market?.rejectReason ?? undefined}
+          creatorAddress={indexedMarket.creator}
         />
         {market?.rejectReason && market.rejectReason.length > 0 && (
           <div className="mt-[10px] text-ztg-14-150">
@@ -224,14 +225,16 @@ const Market: NextPage<MarketPageProps> = ({
         )}
 
         {chartSeries && indexedMarket?.pool?.poolId ? (
-          <MarketChart
-            marketId={indexedMarket.marketId}
-            chartSeries={chartSeries}
-            baseAsset={indexedMarket.pool.baseAsset}
-            poolCreationDate={new Date(indexedMarket.pool.createdAt)}
-            marketStatus={indexedMarket.status}
-            resolutionDate={new Date(resolutionTimestamp)}
-          />
+          <div className="mt-4">
+            <MarketChart
+              marketId={indexedMarket.marketId}
+              chartSeries={chartSeries}
+              baseAsset={indexedMarket.pool.baseAsset}
+              poolCreationDate={new Date(indexedMarket.pool.createdAt)}
+              marketStatus={indexedMarket.status}
+              resolutionDate={new Date(resolutionTimestamp)}
+            />
+          </div>
         ) : (
           <></>
         )}
