@@ -34,6 +34,7 @@ import { MarketReport } from "lib/types";
 import { AddressDetails } from "./MarketAddresses";
 import Image from "next/image";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
+import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
 
 export const UserIdentity: FC<
   PropsWithChildren<{ user: string; className?: string }>
@@ -83,7 +84,7 @@ const MarketOutcome: FC<
 > = ({ status, outcome, by, setShowMarketHistory, marketHistory }) => {
   return (
     <div
-      className={`w-full flex center items-center gap-4 py-6 mb-10 rounded-lg ${
+      className={`w-full flex center items-center gap-4 py-3 rounded-lg ${
         status === "Resolved"
           ? "bg-green-light"
           : status === "Reported"
@@ -324,9 +325,14 @@ const MarketHeader: FC<{
   const { data: marketHistory } = useMarketEventHistory(
     market.marketId.toString(),
   );
-  const { data: liquidity, isFetching: isLiqudityLoading } = usePoolLiquidity({
-    marketId: market.marketId,
-  });
+
+  const { data: stats, isLoading: isStatsLoading } = useMarketsStats([
+    market.marketId,
+  ]);
+  console.log(stats);
+
+  const liquidity = stats?.[0].liquidity;
+  const participants = stats?.[0].participants;
 
   const oracleReported = marketHistory?.reported?.by === market.oracle;
 
@@ -388,11 +394,20 @@ const MarketHeader: FC<{
         ) : (
           <Skeleton width="150px" height="20px" />
         )}
-        {isLiqudityLoading === false && token ? (
-          <HeaderStat label="Liquidity" border={false}>
-            {formatNumberCompact(liquidity?.div(ZTG).toNumber() ?? 0)}
+        {isStatsLoading === false && token ? (
+          <HeaderStat label="Liquidity" border={true}>
+            {formatNumberCompact(
+              new Decimal(liquidity ?? 0)?.div(ZTG).toNumber(),
+            )}
             &nbsp;
             {token}
+          </HeaderStat>
+        ) : (
+          <Skeleton width="150px" height="20px" />
+        )}
+        {isStatsLoading === false && token ? (
+          <HeaderStat label="Traders" border={false}>
+            {formatNumberCompact(participants ?? 0)}
           </HeaderStat>
         ) : (
           <Skeleton width="150px" height="20px" />
