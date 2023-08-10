@@ -61,7 +61,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
           <TopBar />
 
           <main
-            className={`flex flex-col dark:text-white mb-12 ${
+            className={`flex flex-col min-h-screen dark:text-white mb-12 ${
               router.pathname !== "/" && "main-container mt-20"
             }`}
             ref={mainRef}
