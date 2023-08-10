@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FC, Fragment, PropsWithChildren, useState } from "react";
 import {
+  ArrowRight,
   BarChart,
   ChevronDown,
   DollarSign,
@@ -304,22 +305,22 @@ const AccountButton: FC<{
                 >
                   <Menu.Items className="fixed md:absolute left-0 md:left-auto md:right-0 py-3 z-40 mt-2 w-full overflow-hidden h-full md:h-auto md:w-64 origin-top-right divide-y divide-gray-100 md:rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="">
-                      <div className="border-b-2 mb-3 py-2">
-                        <div className="px-6">
+                      <div className="border-b-2 mb-3 py-2 px-6">
+                        <div>
                           <BalanceRow
                             imgPath="/currencies/ztg.jpg"
                             units={constants?.tokenSymbol}
                             balance={activeBalance}
                           />
                         </div>
-                        <div className="px-6">
+                        <div>
                           <BalanceRow
                             imgPath="/currencies/dot.png"
                             units="DOT"
                             balance={polkadotBalance}
                           />
                         </div>
-                        <div className="px-6">
+                        <div>
                           <div className="flex items-center mb-3">
                             <img
                               src="/currencies/usdt.png"
@@ -330,6 +331,18 @@ const AccountButton: FC<{
                               USDT Coming Soon!
                             </div>
                           </div>
+                        </div>
+                        <div className="mt-6">
+                          <Link
+                            href={`/portfolio/${realAddress}?mainTab=Balances`}
+                          >
+                            <div className="flex items-center mb-3">
+                              <div className="text-xs font-medium">
+                                Go to Balances
+                              </div>
+                              <ArrowRight size={14} className="ml-auto" />
+                            </div>
+                          </Link>
                         </div>
                       </div>
                       <Menu.Item>
