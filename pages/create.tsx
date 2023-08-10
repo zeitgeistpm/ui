@@ -1,9 +1,5 @@
+import MarketEditor from "components/create/editor/Editor";
 import { NextPage } from "next";
-import dynamic from "next/dynamic";
-
-const MarketEditor = dynamic(() => import("components/create/editor/Editor"), {
-  ssr: false,
-});
 
 const CreateMarketPage: NextPage = () => {
   return <MarketEditor />;
