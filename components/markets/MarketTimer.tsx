@@ -20,10 +20,12 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
   return (
     <div className="inline-block w-full">
       <div className="flex mb-1 items-center">
-        <div className="font-semibold mr-4 md:mr-4 text-black">
+        <div className="font-semibold mr-4 text-black">
           {copy[stage.type].title}
         </div>
-        <div className="text-sky-600">{copy[stage.type].description}</div>
+        <div className="text-sky-600 text-sm">
+          {copy[stage.type].description}
+        </div>
         {!isInfinite(stage) && (
           <div className="ml-auto text-black text-right">
             {timeUntilStageEnds.humanize()} left

@@ -1,7 +1,10 @@
 import {
+  IOBaseAssetId,
+  IOForeignAssetId,
   MarketStage,
   MarketStatus,
   ScalarRangeType,
+  parseAssetId,
 } from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
 import Skeleton from "components/ui/Skeleton";
@@ -29,6 +32,8 @@ import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { estimateMarketResolutionDate } from "lib/util/estimate-market-resolution";
 import { MarketReport } from "lib/types";
 import { AddressDetails } from "./MarketAddresses";
+import Image from "next/image";
+import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 
 export const UserIdentity: FC<
   PropsWithChildren<{ user: string; className?: string }>
@@ -288,7 +293,6 @@ const MarketHeader: FC<{
   token?: string;
   marketStage?: MarketStage;
   rejectReason?: string;
-  creatorAddress: string;
 }> = ({
   market,
   report,
@@ -297,7 +301,6 @@ const MarketHeader: FC<{
   token,
   marketStage,
   rejectReason,
-  creatorAddress,
 }) => {
   const { categories, status, question, period, marketType, pool, scalarType } =
     market;
@@ -338,25 +341,20 @@ const MarketHeader: FC<{
     Number(market.deadlines?.disputeDuration ?? 0),
   );
 
+  const assetId = parseAssetId(market.baseAsset).unwrap();
+  const imagePath = IOForeignAssetId.is(assetId)
+    ? lookupAssetImagePath(assetId.ForeignAsset)
+    : IOBaseAssetId.is(assetId)
+    ? lookupAssetImagePath(assetId.Ztg)
+    : "";
+
   return (
-    <header className="flex flex-col gap-3 w-full max-w-[1000px]">
+    <header className="flex flex-col gap-4 w-full">
       <h1 className="text-[32px] font-extrabold">{question}</h1>
-      {/* <div className="flex flex-wrap gap-2.5">
-        <Tag className={`${status === "Active" && "!bg-green-lighter"}`}>
-          {status === "Active" && <span className="text-green">&#x2713; </span>}
-          {status}
-        </Tag>
-        {tags?.map((tag, index) => {
-          return <Tag key={index}>{tag}</Tag>;
-        })}
-        <Tag className="!bg-black text-white">
-          {marketType?.scalar === null ? "Categorical" : "Scalar"}
-        </Tag>
-      </div> */}
       {rejectReason && rejectReason.length > 0 && (
         <div className="mt-2.5">Market rejected: {rejectReason}</div>
       )}
-      <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <HeaderStat label={hasDatePassed(starts) ? "Started" : "Starts"}>
           {new Intl.DateTimeFormat("default", {
             dateStyle: "medium",
@@ -400,8 +398,23 @@ const MarketHeader: FC<{
           <Skeleton width="150px" height="20px" />
         )}
       </div>
-      <div className="flex">
-        <AddressDetails title="Creator" address={creatorAddress} />
+      <div className="flex items-center gap-3">
+        <AddressDetails title="Creator" address={market.creator} />
+        <Image
+          width={20}
+          height={20}
+          src={imagePath}
+          alt="Currency token logo"
+          className="rounded-full"
+        />
+        {/* todo: add when court is available */}
+        {/* <Image width={20} height={20} src="/icons/court.svg" alt="court" /> */}
+        <Image
+          width={20}
+          height={20}
+          src="/icons/verified-icon.svg"
+          alt="verified checkmark"
+        />
       </div>
       <div className="flex w-full">
         {marketStage ? (

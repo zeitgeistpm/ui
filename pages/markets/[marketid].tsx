@@ -1,7 +1,7 @@
 import { Transition } from "@headlessui/react";
 import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
-import MarketAddresses from "components/markets/MarketAddresses";
+import { AddressDetails } from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import MarketChart from "components/markets/MarketChart";
 import MarketHeader from "components/markets/MarketHeader";
@@ -216,7 +216,6 @@ const Market: NextPage<MarketPageProps> = ({
           token={token}
           marketStage={marketStage ?? undefined}
           rejectReason={market?.rejectReason ?? undefined}
-          creatorAddress={indexedMarket.creator}
         />
         {market?.rejectReason && market.rejectReason.length > 0 && (
           <div className="mt-[10px] text-ztg-14-150">
@@ -252,8 +251,7 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           </div>
         )}
-        <div className="mb-8">
-          <h3 className="text-center text-2xl mt-10 mb-8">Predictions</h3>
+        <div className="my-8">
           {indexedMarket?.marketType?.scalar !== null && (
             <div className="mb-8 max-w-[800px] mx-auto">
               {marketIsLoading ||
@@ -282,10 +280,10 @@ const Market: NextPage<MarketPageProps> = ({
           />
         </div>
 
-        <div className="lg:px-36 mb-12">
+        <div className="mb-12">
           {indexedMarket.description?.length > 0 && (
             <>
-              <h3 className="text-center text-2xl mb-5">About Market</h3>
+              <h3 className="text-2xl mb-5">About Market</h3>
               <QuillViewer value={indexedMarket.description} />
             </>
           )}
@@ -293,17 +291,13 @@ const Market: NextPage<MarketPageProps> = ({
             marketId={Number(marketid)}
             onPoolDeployed={handlePoolDeployed}
           />
-          <h3 className="text-center text-2xl mt-10 mb-8">Market Cast</h3>
-          <MarketAddresses
-            oracleAddress={indexedMarket.oracle}
-            creatorAddress={indexedMarket.creator}
-          />
         </div>
+        <AddressDetails title="Oracle" address={indexedMarket.oracle} />
 
         {market && (market?.pool || poolDeployed) && (
-          <div className="mb-12">
+          <div className="my-12">
             <div
-              className="flex center mb-8 text-mariner cursor-pointer"
+              className="flex items-center mb-8 text-mariner cursor-pointer"
               onClick={() => toggleLiquiditySection()}
             >
               <div>Show Liquidity</div>
