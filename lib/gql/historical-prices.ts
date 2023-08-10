@@ -6,6 +6,9 @@ export type BasePrices = {
   [key: string | "ztg"]: [number, number][];
 };
 
+/**
+ * Look up price for a given asset that is nearest to the given timestamp
+ */
 export const lookupPrice = (
   basePrices: BasePrices,
   baseAsset: BaseAssetId,
@@ -20,6 +23,9 @@ export const lookupPrice = (
   return findPrice(timestamp, prices);
 };
 
+/**
+ * Get Historical prices of all base assets
+ */
 export const getBaseAssetHistoricalPrices = async (): Promise<BasePrices> => {
   const coinGeckoIds = [
     ...Object.values(FOREIGN_ASSET_METADATA).map((asset) => asset.coinGeckoId),
