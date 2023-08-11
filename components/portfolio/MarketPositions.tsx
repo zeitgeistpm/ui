@@ -238,8 +238,7 @@ export const MarketPositions = ({
                       {IOPoolShareAssetId.is(assetId) ? (
                         <PoolShareButtons
                           poolId={assetId.PoolShare}
-                          marketStatus={market.status}
-                          marketId={market.marketId}
+                          market={market}
                         />
                       ) : marketStage?.type === "Trading" &&
                         IOMarketOutcomeAssetId.is(assetId) ? (

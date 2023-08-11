@@ -2,11 +2,17 @@ import LiquidityModal from "components/liquidity/LiquidityModal";
 import SecondaryButton from "components/ui/SecondaryButton";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useState } from "react";
-import { MarketStatus } from "@zeitgeistpm/indexer";
+import { MarketStatus, FullMarketFragment } from "@zeitgeistpm/indexer";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useNotifications } from "lib/state/notifications";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { IOBaseAssetId, ZTG, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import {
+  IOBaseAssetId,
+  IOCategoricalAssetId,
+  getIndexOf,
+  isRpcSdk,
+  parseAssetId,
+} from "@zeitgeistpm/sdk-next";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useWallet } from "lib/state/wallet";
@@ -19,10 +25,10 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 
 const RedeemPoolButton = ({
   poolId,
-  marketId,
+  market,
 }: {
   poolId: number;
-  marketId: number;
+  market: FullMarketFragment;
 }) => {
   const notificationStore = useNotifications();
   const [sdk] = useSdkv2();
@@ -45,14 +51,29 @@ const RedeemPoolButton = ({
       ? userPoolShares.div(totalPoolSharesIssuance)
       : new Decimal(0);
 
+  // filter out non-winning assets as they are deleted on chain
+  const poolWeights =
+    market.status === "Resolved" && market.marketType.categorical
+      ? pool?.weights.filter((weight) => {
+          const assetId = weight && parseAssetId(weight.assetId).unwrap();
+
+          return (
+            IOBaseAssetId.is(assetId) ||
+            (IOCategoricalAssetId.is(assetId) &&
+              market.resolvedOutcome === getIndexOf(assetId).toString())
+          );
+        })
+      : pool?.weights;
+
   const { isLoading, isSuccess, send } = useExtrinsic(
     () => {
-      if (!isRpcSdk(sdk) || !constants || !userPoolShares || !pool) return;
+      if (!isRpcSdk(sdk) || !constants || !userPoolShares || !poolWeights)
+        return;
 
       const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
       const feeMultiplier = 1 - constants.swaps.exitFee;
 
-      const minAssetsOut = pool.weights.map((asset, index) => {
+      const minAssetsOut = poolWeights.map((asset, index) => {
         if (!asset) return "0";
         const assetId = parseAssetIdString(asset.assetId);
 
@@ -73,14 +94,14 @@ const RedeemPoolButton = ({
         userPoolShares.toFixed(0),
         minAssetsOut,
       );
-      const redeem = sdk.api.tx.predictionMarkets.redeemShares(marketId);
+      const redeem = sdk.api.tx.predictionMarkets.redeemShares(market.marketId);
 
       return sdk.api.tx.utility.batchAll([exitPool, redeem]);
     },
     {
       onSuccess: () => {
         notificationStore.pushNotification(
-          "Successfully withdrew all pool shares and redeemed them",
+          "Successfully withdrew and redeemed all pool shares",
           {
             type: "Success",
           },
@@ -106,19 +127,17 @@ const RedeemPoolButton = ({
 
 const PoolShareButtons = ({
   poolId,
-  marketStatus,
-  marketId,
+  market,
 }: {
   poolId: number;
-  marketStatus: MarketStatus;
-  marketId: number;
+  market: FullMarketFragment;
 }) => {
   const [manageLiquidityOpen, setManageLiquidityOpen] = useState(false);
 
   return (
     <>
-      {marketStatus === MarketStatus.Resolved ? (
-        <RedeemPoolButton poolId={poolId} marketId={marketId} />
+      {market.status === MarketStatus.Resolved ? (
+        <RedeemPoolButton poolId={poolId} market={market} />
       ) : (
         <>
           <SecondaryButton
