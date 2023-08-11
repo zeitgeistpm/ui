@@ -316,21 +316,24 @@ const AccountButton: FC<{
                           units="DOT"
                           balance={polkadotBalance}
                         />
-                        <div className="mt-3">
-                          <Link
-                            href={`/portfolio/${realAddress}?mainTab=Balances`}
-                          >
-                            <div className="flex items-center mb-3">
-                              <div className="text-xs font-medium">
-                                Go to Balances
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              href={`/portfolio/${realAddress}?mainTab=Balances`}
+                              className="mt-3"
+                            >
+                              <div className="flex items-center mb-3">
+                                <div className="text-xs font-medium">
+                                  Go to Balances
+                                </div>
+                                <ArrowRight
+                                  size={14}
+                                  className="ml-2 md:ml-auto"
+                                />
                               </div>
-                              <ArrowRight
-                                size={14}
-                                className="ml-2 md:ml-auto"
-                              />
-                            </div>
-                          </Link>
-                        </div>
+                            </Link>
+                          )}
+                        </Menu.Item>
                       </div>
                       <Menu.Item>
                         {({ active }) => (
