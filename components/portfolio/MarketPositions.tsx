@@ -277,7 +277,7 @@ export const MarketPositionsSkeleton = ({
 }) => {
   return (
     <div className={`${className}`}>
-      <Skeleton className="mb-6 center mx-auto" height={20} width="70%" />
+      <Skeleton className="mb-6" height={20} width="70%" />
       <Skeleton className="mb-2" height={50} width={"100%"} />
       <Skeleton className="mb-2" height={90} width={"100%"} />
       <Skeleton height={90} width={"100%"} />
