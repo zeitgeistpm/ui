@@ -15,11 +15,11 @@ import Decimal from "decimal.js";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { Position } from "lib/hooks/queries/usePortfolioPositions";
 import { useWallet } from "lib/state/wallet";
-import Link from "next/link";
 import MarketPositionHeader from "./MarketPositionHeader";
 import { useAllForeignAssetUsdPrices } from "lib/hooks/queries/useAssetUsdPrice";
 import { lookUpAssetPrice } from "lib/util/lookup-price";
 import { MIN_USD_DISPLAY_AMOUNT } from "lib/constants";
+import PoolShareButtons from "components/assets/AssetActionButtons/PoolShareButtons";
 
 const COLUMNS: TableColumn[] = [
   {
@@ -236,11 +236,11 @@ export const MarketPositions = ({
                   actions: (
                     <div className="text-right">
                       {IOPoolShareAssetId.is(assetId) ? (
-                        <Link href={`/liquidity/${market.pool?.poolId}`}>
-                          <span className="text-mariner font-semibold text-ztg-14-120">
-                            View Pool
-                          </span>
-                        </Link>
+                        <PoolShareButtons
+                          poolId={assetId.PoolShare}
+                          marketStatus={market.status}
+                          marketId={market.marketId}
+                        />
                       ) : marketStage?.type === "Trading" &&
                         IOMarketOutcomeAssetId.is(assetId) ? (
                         <AssetTradingButtons assetId={assetId} />
