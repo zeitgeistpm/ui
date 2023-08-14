@@ -1,12 +1,12 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
-import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import { IOForeignAssetId, isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useState } from "react";
 import { useSdkv2 } from "./useSdkv2";
+import { useFeePayingAsset } from "./queries/useFeePayingAsset";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
@@ -23,6 +23,7 @@ export const useExtrinsic = <T>(
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isBroadcasting, setIsBroadcasting] = useState(false);
+  const { data: feeAsset } = useFeePayingAsset();
 
   const notifications = useNotifications();
 
@@ -74,6 +75,9 @@ export const useExtrinsic = <T>(
           notifications.pushNotification(error, { type: "Error" });
         },
       }),
+      IOForeignAssetId.is(feeAsset?.assetId)
+        ? feeAsset?.assetId.ForeignAsset
+        : undefined,
     ).catch(() => {
       setIsBroadcasting(false);
       setIsLoading(false);
