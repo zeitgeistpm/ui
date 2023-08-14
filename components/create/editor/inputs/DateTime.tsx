@@ -63,7 +63,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
           } ${className}`}
         >
           <Input
-            className="py-3 px-8 rounded-full"
+            className="py-3 px-8 rounded-full bg-transparent"
             ref={inputRef}
             name={name}
             type="datetime-local"
