@@ -3,16 +3,19 @@ import {
   AssetId,
   IOForeignAssetId,
   IOZtgAssetId,
+  ZTG,
   isRpcSdk,
 } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";
 import { XcmVersionedMultiLocation } from "@polkadot/types/lookup";
+import Decimal from "decimal.js";
 
 export type AssetMetadata = {
   symbol: string;
   name: string;
   location: XcmVersionedMultiLocation | null;
+  feeFactor: Decimal;
 };
 
 export const assetMetadataRootKey = "asset-metadata";
@@ -30,10 +33,18 @@ export const useAssetMetadata = (assetId?: AssetId) => {
             symbol: constants?.tokenSymbol,
             name: "Zeitgeist",
             location: null,
+            feeFactor: ZTG,
           };
           return assetMetadata;
         } else if (IOForeignAssetId.is(assetId)) {
           const metadata = await sdk.api.query.assetRegistry.metadata(assetId);
+          //todo: get this to work
+          console.log(metadata.unwrapOr(null)?.toHuman());
+          console.log(
+            metadata.unwrapOr(null)?.additional.xcm.feeFactor.toString(),
+          );
+          // console.log(metadata.unwrapOr(null)?.xcm.toHuman());
+
           const location = metadata.unwrapOr(null)?.location.isSome
             ? metadata.unwrap().location.unwrap()
             : null;
@@ -42,6 +53,10 @@ export const useAssetMetadata = (assetId?: AssetId) => {
             symbol: metadata.unwrap().symbol.toPrimitive() as string,
             name: metadata.unwrap().name.toPrimitive() as string,
             location: location,
+            feeFactor: new Decimal(
+              metadata.unwrapOr(null)?.additional.xcm.feeFactor.toString() ??
+                ZTG,
+            ),
           };
 
           return assetMetadata;
@@ -83,6 +98,7 @@ export const useAllAssetMetadata = () => {
             symbol: constants.tokenSymbol,
             name: "Zeitgeist",
             location: null,
+            feeFactor: ZTG,
           },
         ],
       ];
@@ -96,6 +112,9 @@ export const useAllAssetMetadata = () => {
           symbol: meta[1].unwrap().symbol.toPrimitive() as string,
           name: meta[1].unwrap().name.toPrimitive() as string,
           location: location,
+          feeFactor: new Decimal(
+            meta[1].unwrapOr(null)?.additional.xcm.feeFactor.toString() ?? ZTG,
+          ),
         };
         res = [...res, [foreignAssetId, assetMetadata]];
       }
