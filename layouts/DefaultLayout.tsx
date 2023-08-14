@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useEffect, useRef, useState } from "react";
+import { FC, PropsWithChildren, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -29,7 +29,6 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   useSubscribeBlockEvents();
   const [tradeItem, setTradeItem] = useState<TradeItem | null>(null);
-  const [showChat, setShowChat] = useState(false);
 
   const {
     width,
@@ -39,8 +38,14 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
 
   const contentRef = useRef<HTMLDivElement>(null);
 
+  const greyBackgroundPageRoutes = ["/", "/markets"];
+
   return (
-    <div className="relative flex min-h-screen justify-evenly overflow-hidden">
+    <div
+      className={`relative flex min-h-screen justify-evenly ${
+        greyBackgroundPageRoutes.includes(router.pathname) ? "bg-[#F1F1F1]" : ""
+      }`}
+    >
       <TradeItemContext.Provider value={{ data: tradeItem, set: setTradeItem }}>
         {/* loads optimized fonts for global access */}
         <style jsx global>
@@ -52,15 +57,12 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
             }
           `}
         </style>
-        <div
-          ref={contentRef}
-          className="overflow-y-a1uto overflow-x-hidden flex-grow"
-        >
+        <div ref={contentRef} className="flex-grow">
           <TopBar />
 
           <main
-            className={`flex flex-col dark:text-white mb-12 ${
-              router.pathname !== "/" && "main-container mt-24 md:mt-32"
+            className={`flex flex-col min-h-screen dark:text-white mb-12 ${
+              router.pathname !== "/" && "main-container mt-20"
             }`}
             ref={mainRef}
           >
@@ -93,9 +95,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
       </TradeItemContext.Provider>
       <Account />
       <Onboarding />
-      {process.env.NEXT_PUBLIC_GRILLCHAT_DISABLE !== "true" && (
-        <GrillChat open={showChat} setOpen={setShowChat} />
-      )}
+      {process.env.NEXT_PUBLIC_GRILLCHAT_DISABLE !== "true" && <GrillChat />}
     </div>
   );
 };

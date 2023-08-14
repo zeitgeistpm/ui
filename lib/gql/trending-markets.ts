@@ -18,7 +18,8 @@ import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { getForeignAssetPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
-import { getDisplayName } from "./display-name";
+import { fetchAllPages } from "lib/util/fetch-all-pages";
+import { PoolStatus } from "@zeitgeistpm/indexer";
 
 const poolChangesQuery = gql`
   query PoolChanges($start: DateTime, $end: DateTime) {
@@ -106,16 +107,14 @@ const getTrendingMarkets = async (
     end: now,
   });
 
-  const { pools } = await client.request<{
-    pools: { poolId: number; baseAsset: string }[];
-  }>(gql`
-    query Pools {
-      pools {
-        poolId
-        baseAsset
-      }
-    }
-  `);
+  const pools = await fetchAllPages(async (pageNumber, limit) => {
+    const { pools } = await sdk.indexer.pools({
+      limit: limit,
+      offset: pageNumber * limit,
+      where: { status_eq: PoolStatus.Active },
+    });
+    return pools;
+  });
 
   const basePrices = await getBaseAssetPrices();
 
@@ -197,15 +196,7 @@ const getTrendingMarkets = async (
     }),
   );
 
-  const names = await getDisplayName(
-    sdk,
-    trendingMarkets.map((m) => m.creator),
-  );
-
-  return trendingMarkets.map((m, i) => ({
-    ...m,
-    creatorDisplayName: names[i],
-  }));
+  return trendingMarkets;
 };
 
 type BasePrices = {
@@ -246,7 +237,7 @@ const calcTrendingPools = (
     dVolume: string;
   }[],
   basePrices: BasePrices,
-  pools: { poolId: number; baseAsset: string }[],
+  pools: { poolId: number; baseAsset: string; status: string }[],
 ) => {
   const poolVolumes: { [key: string]: Decimal } = {};
   const maxPools = 8;

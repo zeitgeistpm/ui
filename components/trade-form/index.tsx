@@ -37,6 +37,7 @@ import { positionsRootKey } from "lib/hooks/queries/useAccountTokenPositions";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { awaitIndexer } from "lib/util/await-indexer";
 import Input from "components/ui/Input";
+import { useDelayQueue } from "lib/state/delay-queue";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -98,6 +99,7 @@ const Inner = ({
 
   const wallet = useWallet();
   const signer = wallet.activeAccount;
+  const { addItem } = useDelayQueue();
 
   const { data: tradeItemState } = useTradeItemState(tradeItem);
 
@@ -214,13 +216,19 @@ const Inner = ({
       setFinalAmounts({ asset: assetAmount, base: baseAmount });
       setPercentageDisplay("0");
 
-      awaitIndexer(() => {
-        queryClient.invalidateQueries([
-          id,
-          positionsRootKey,
-          wallet.activeAccount?.address,
-        ]);
-      });
+      if (tradeItem.action === "buy" && wallet.realAddress) {
+        addItem(40_000, {
+          address: wallet.realAddress,
+          assetId: tradeItem.assetId,
+        });
+        awaitIndexer(() => {
+          queryClient.invalidateQueries([
+            id,
+            positionsRootKey,
+            wallet.realAddress,
+          ]);
+        });
+      }
     },
   });
 

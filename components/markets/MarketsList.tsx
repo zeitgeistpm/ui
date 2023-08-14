@@ -92,7 +92,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
 
   return (
     <div
-      className={"mb-[38px] scroll-mt-[40px]" + className}
+      className={"mb-[38px] scroll-mt-[40px] " + className}
       data-testid="marketsList"
       id={"market-list"}
     >
@@ -147,7 +147,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
       <div className="flex justify-center w-full mt-[78px] h-[20px]">
         {(isFetchingMarkets || isLoading) && <Loader />}
       </div>
-      {!isLoading && count === 0 && (
+      {!(isFetchingMarkets || isLoading) && count === 0 && (
         <div className="text-center">No results!</div>
       )}
       <div

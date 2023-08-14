@@ -34,6 +34,8 @@ import OracleInput from "./inputs/Oracle";
 import { AnswersInput } from "./inputs/answers";
 import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 import Input from "components/ui/Input";
+import TimezoneSelect from "./inputs/TimezoneSelect";
+import { Loader } from "components/ui/Loader";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -61,13 +63,13 @@ export const MarketEditor = () => {
     input,
     fieldsState,
     mergeFormData,
-    isTouched,
-    reset,
   } = editor;
 
   const chainTime = useChainTime();
   const { isFetched } = useMarketDeadlineConstants();
   const { data: constants } = useChainConstants();
+
+  const timezone = form?.timeZone;
 
   const currencyMetadata = getMetadataForCurrency(form?.currency ?? "ZTG");
 
@@ -98,525 +100,545 @@ export const MarketEditor = () => {
   const showLiquidityWarning =
     fieldsState.liquidity.isTouched && form.liquidity?.deploy && isWizard;
 
+  const isLoaded = Boolean(chainTime && isFetched);
+
   return (
-    <Transition
-      show={Boolean(chainTime && isFetched)}
-      enter="transition-opacity duration-100"
-      enterFrom="opacity-0"
-      enterTo="opacity-100"
-      leave="transition-opacity duration-100"
-      leaveFrom="opacity-100"
-      leaveTo="opacity-0"
-    >
-      <h2
-        className="relative font-3xl text-center flex justify-center items-center gap-3 mb-6"
-        ref={headerRef}
-      >
-        <div className="relative md:flex justify-center items-center">
-          Create Market
-          <EditorResetButton editor={editor} />
-        </div>
-      </h2>
-
-      <div className="flex center mb-8">
-        <div className="mr-3 font-light">One Page</div>
-        <Toggle checked={isWizard} onChange={toggleWizard} />
-        <div className="ml-3 font-light">Wizard</div>
-      </div>
-
-      <div className="mb-8 md:mb-12">
-        {isWizard && (
-          <WizardStepper
-            steps={steps}
-            current={currentStep}
-            onChange={(step) => setStep(step)}
+    <>
+      {isLoaded === false && (
+        <div
+          className="flex items-center justify-center bg-white "
+          style={{ height: "calc(100vh - 100px)" }}
+        >
+          <Loader
+            loading={true}
+            className="h-[100px] w-[100px]"
+            variant={"Info"}
           />
-        )}
-      </div>
-
-      <form>
-        <MarketFormSection
-          wizard={isWizard}
-          isCurrent={currentStep.label == "Currency"}
-          onClickNext={next}
-          nextDisabled={!fieldsState.currency.isValid}
+        </div>
+      )}
+      <Transition
+        show={isLoaded}
+        enter="transition-opacity duration-100"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="transition-opacity duration-100"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        <h2
+          className="relative font-3xl text-center flex justify-center items-center gap-3 mb-6"
+          ref={headerRef}
         >
-          <div className="mb-4 md:mb-8 text-center">
-            <h2 className="text-base flex justify-center items-center gap-2">
-              Market Currency
-              <InfoPopover
-                title={
-                  <h3 className="flex justify-center items-center mb-4 gap-2">
-                    <AiOutlineInfoCircle />
-                    Market Base Asset
-                  </h3>
-                }
-              >
-                <p>
-                  The base asset used to provide liquidity to the market and
-                  what you use when making trades for market outcome tokens.
-                </p>
-              </InfoPopover>
-            </h2>
+          <div className="relative md:flex justify-center items-center">
+            Create Market
+            <EditorResetButton editor={editor} />
           </div>
-          <CurrencySelect options={["ZTG", "DOT"]} {...input("currency")} />
-          {showLiquidityWarning && (
-            <div className="center mt-4 mb-8">
-              <div className="w-full md:max-w-lg text-center text-sm text-gray-400">
-                <LuFileWarning size={22} className="inline mr-2" />
-                You have already added liquidity to this market. If you change
-                the base currency liquidity settings will be reset to defaults.
-              </div>
-            </div>
-          )}
-        </MarketFormSection>
+        </h2>
 
-        <MarketFormSection
-          wizard={isWizard}
-          isCurrent={currentStep.label == "Question"}
-          onClickNext={next}
-          onClickBack={back}
-          nextDisabled={
-            !fieldsState.question.isValid || !fieldsState.tags.isValid
-          }
-        >
-          <div className="mb-4 md:mb-8 text-center">
-            <h2 className="mb-4 md:mb-8 text-base">What is your question?</h2>
-            <div>
-              <Input
-                autoComplete="off"
-                className={`h-12 w-full md:w-2/3 text-center rounded-md mb-4 px-4 py-7
+        <div className="flex center mb-8">
+          <div className="mr-3 font-light">One Page</div>
+          <Toggle checked={isWizard} onChange={toggleWizard} />
+          <div className="ml-3 font-light">Wizard</div>
+        </div>
+
+        <div className="mb-8 md:mb-12">
+          {isWizard && (
+            <WizardStepper
+              steps={steps}
+              current={currentStep}
+              onChange={(step) => setStep(step)}
+            />
+          )}
+        </div>
+
+        <form>
+          <MarketFormSection
+            wizard={isWizard}
+            isCurrent={currentStep.label == "Currency"}
+            onClickNext={next}
+            nextDisabled={!fieldsState.currency.isValid}
+          >
+            <div className="mb-4 md:mb-8 text-center">
+              <h2 className="text-base flex justify-center items-center gap-2">
+                Market Currency
+                <InfoPopover
+                  title={
+                    <h3 className="flex justify-center items-center mb-4 gap-2">
+                      <AiOutlineInfoCircle />
+                      Market Base Asset
+                    </h3>
+                  }
+                >
+                  <p>
+                    The base asset used to provide liquidity to the market and
+                    what you use when making trades for market outcome tokens.
+                  </p>
+                </InfoPopover>
+              </h2>
+            </div>
+            <CurrencySelect options={["ZTG", "DOT"]} {...input("currency")} />
+            {showLiquidityWarning && (
+              <div className="center mt-4 mb-8">
+                <div className="w-full md:max-w-lg text-center text-sm text-gray-400">
+                  <LuFileWarning size={22} className="inline mr-2" />
+                  You have already added liquidity to this market. If you change
+                  the base currency liquidity settings will be reset to
+                  defaults.
+                </div>
+              </div>
+            )}
+          </MarketFormSection>
+
+          <MarketFormSection
+            wizard={isWizard}
+            isCurrent={currentStep.label == "Question"}
+            onClickNext={next}
+            onClickBack={back}
+            nextDisabled={
+              !fieldsState.question.isValid || !fieldsState.tags.isValid
+            }
+          >
+            <div className="mb-4 md:mb-8 text-center">
+              <h2 className="mb-4 md:mb-8 text-base">What is your question?</h2>
+              <div>
+                <Input
+                  autoComplete="off"
+                  className={`h-12 w-full md:w-2/3 text-center rounded-md mb-4 px-4 py-7
                   ${
                     !fieldsState.question.isValid
                       ? "bg-gray-100 border-vermilion"
                       : "bg-nyanza-base "
                   }
                 `}
-                placeholder="Ask a question that is specific and has a timeframe."
-                {...input("question", { type: "text" })}
-              />
-              <div className="flex center h-5 text-xs text-red-400">
-                <ErrorMessage field={fieldsState.question} />
+                  placeholder="Ask a question that is specific and has a timeframe."
+                  {...input("question", { type: "text" })}
+                />
+                <div className="flex center h-5 text-xs text-red-400">
+                  <ErrorMessage field={fieldsState.question} />
+                </div>
               </div>
             </div>
-          </div>
-          <h2 className="flex justify-center mb-4 md:mb-8 text-base text-center">
-            <span className="hidden md:block">
-              Which categories does the market relate to?
-            </span>
-            <span className="block md:hidden">Select market categories.</span>
-          </h2>
-          <div className="flex justify-center">
-            <div className="mb-6 max-w-2xl">
-              <CategorySelect {...input("tags")} />
-            </div>
-          </div>
-          <div className="flex center h-5 text-xs text-red-400">
-            <ErrorMessage field={fieldsState.tags} />
-          </div>
-        </MarketFormSection>
-
-        <MarketFormSection
-          wizard={isWizard}
-          isCurrent={currentStep.label == "Answers"}
-          onClickNext={next}
-          onClickBack={back}
-          nextDisabled={!fieldsState.answers.isValid}
-        >
-          <div className="relative mb-4 md:mb-8 text-center">
-            <h2 className="text-base center gap-2">
-              Answers
-              <InfoPopover
-                title={<h4 className="answer-types mb-4">Answer Types</h4>}
-                className="!text-left"
-              >
-                <h4 className="text-base text-left mb-1">
-                  Outcomes (Categorical)
-                </h4>
-                <p className="font-light text-left mb-4">
-                  Outcomes will create a categorical market from the options you
-                  specify.{" "}
-                  <a
-                    className="text-ztg-blue"
-                    href="https://docs.zeitgeist.pm/docs/learn/prediction-markets#categorical-prediction-markets"
-                    target="_blank"
-                  >
-                    Learn more.
-                  </a>
-                </p>
-                <h4 className="text-base text-left mb-1">Scalar</h4>
-                <p className="text-left mb-4">
-                  A scalar market is a market where the outcome is a number or
-                  date in a the range specified by the lower(<b>short</b>) and
-                  upper(
-                  <b>long</b>) bound.{" "}
-                  <a
-                    className="text-ztg-blue"
-                    href="https://docs.zeitgeist.pm/docs/learn/prediction-markets#scalar-prediction-markets"
-                    target="_blank"
-                  >
-                    Learn more.
-                  </a>
-                </p>
-                <h4 className="text-base text-left mb-1">Yes/No</h4>
-                <p className="text-left">
-                  Choosing yes/no will create a categorical market with two
-                  preset outcomes, yes and no.
-                </p>
-              </InfoPopover>
+            <h2 className="flex justify-center mb-4 md:mb-8 text-base text-center">
+              <span className="hidden md:block">
+                Which categories does the market relate to?
+              </span>
+              <span className="block md:hidden">Select market categories.</span>
             </h2>
-          </div>
-          <AnswersInput
-            {...input("answers", { mode: "onChange" })}
-            fieldState={fieldsState.answers}
-          />
-          {showLiquidityWarning && (
-            <div className="mt-8 mb-4">
-              <div className="center">
-                <div className="w-full md:max-w-xl text-center text-sm text-gray-400">
-                  <LuFileWarning size={22} className="inline mr-2" />
-                  You have already added liquidity to this market. If you change
-                  the number of answers the liquidity settings will be reset to
-                  defaults.
+            <div className="flex justify-center">
+              <div className="mb-6 max-w-2xl">
+                <CategorySelect {...input("tags")} />
+              </div>
+            </div>
+            <div className="flex center h-5 text-xs text-red-400">
+              <ErrorMessage field={fieldsState.tags} />
+            </div>
+          </MarketFormSection>
+
+          <MarketFormSection
+            wizard={isWizard}
+            isCurrent={currentStep.label == "Answers"}
+            onClickNext={next}
+            onClickBack={back}
+            nextDisabled={!fieldsState.answers.isValid}
+          >
+            <div className="relative mb-4 md:mb-8 text-center">
+              <h2 className="text-base center gap-2">
+                Answers
+                <InfoPopover
+                  title={<h4 className="answer-types mb-4">Answer Types</h4>}
+                  className="!text-left"
+                >
+                  <h4 className="text-base text-left mb-1">
+                    Outcomes (Categorical)
+                  </h4>
+                  <p className="font-light text-left mb-4">
+                    Outcomes will create a categorical market from the options
+                    you specify.{" "}
+                    <a
+                      className="text-ztg-blue"
+                      href="https://docs.zeitgeist.pm/docs/learn/prediction-markets#categorical-prediction-markets"
+                      target="_blank"
+                    >
+                      Learn more.
+                    </a>
+                  </p>
+                  <h4 className="text-base text-left mb-1">Scalar</h4>
+                  <p className="text-left mb-4">
+                    A scalar market is a market where the outcome is a number or
+                    date in a the range specified by the lower(<b>short</b>) and
+                    upper(
+                    <b>long</b>) bound.{" "}
+                    <a
+                      className="text-ztg-blue"
+                      href="https://docs.zeitgeist.pm/docs/learn/prediction-markets#scalar-prediction-markets"
+                      target="_blank"
+                    >
+                      Learn more.
+                    </a>
+                  </p>
+                  <h4 className="text-base text-left mb-1">Yes/No</h4>
+                  <p className="text-left">
+                    Choosing yes/no will create a categorical market with two
+                    preset outcomes, yes and no.
+                  </p>
+                </InfoPopover>
+              </h2>
+            </div>
+            <AnswersInput
+              {...input("answers", { mode: "onChange" })}
+              fieldState={fieldsState.answers}
+            />
+            {showLiquidityWarning && (
+              <div className="mt-8 mb-4">
+                <div className="center">
+                  <div className="w-full md:max-w-xl text-center text-sm text-gray-400">
+                    <LuFileWarning size={22} className="inline mr-2" />
+                    You have already added liquidity to this market. If you
+                    change the number of answers the liquidity settings will be
+                    reset to defaults.
+                  </div>
                 </div>
               </div>
+            )}
+            <div className="flex center h-5 text-xs text-red-400">
+              <ErrorMessage field={fieldsState.answers} />
             </div>
-          )}
-          <div className="flex center h-5 text-xs text-red-400">
-            <ErrorMessage field={fieldsState.answers} />
-          </div>
-        </MarketFormSection>
+          </MarketFormSection>
 
-        <MarketFormSection
-          wizard={isWizard}
-          isCurrent={currentStep.label == "Time Period"}
-          onClickNext={next}
-          onClickBack={back}
-          nextDisabled={
-            !fieldsState.endDate.isValid ||
-            !fieldsState.gracePeriod.isValid ||
-            !fieldsState.reportingPeriod.isValid ||
-            !fieldsState.disputePeriod.isValid
-          }
-        >
-          <div className="mb-4 md:mb-8 text-center">
-            <h2 className="text-base">When does the market end?</h2>
-          </div>
-          <div className="mb-4">
-            <div className="flex center mb-3">
-              <DateTimePicker
-                placeholder="Set End Date"
-                isValid={fieldsState.endDate.isValid}
-                {...input("endDate", { mode: "all" })}
-              />
+          <MarketFormSection
+            wizard={isWizard}
+            isCurrent={currentStep.label == "Time Period"}
+            onClickNext={next}
+            onClickBack={back}
+            nextDisabled={
+              !fieldsState.endDate.isValid ||
+              !fieldsState.gracePeriod.isValid ||
+              !fieldsState.reportingPeriod.isValid ||
+              !fieldsState.disputePeriod.isValid
+            }
+          >
+            <div className="mb-4 md:mb-8 text-center">
+              <h2 className="text-base">When does the market end?</h2>
             </div>
-            <div className="flex center h-5  text-xs text-red-400">
-              <ErrorMessage field={fieldsState.endDate} />
-            </div>
-          </div>
-
-          <div>
-            <div className="mb-6">
-              <div className="mb-4 text-center">
-                <h2 className="flex text-base justify-center items-center gap-2">
-                  Set Grace Period
-                  <InfoPopover
-                    title={
-                      <h3 className="flex justify-center items-center mb-4 gap-2">
-                        <AiOutlineInfoCircle />
-                        Grace Period
-                      </h3>
-                    }
-                  >
-                    <p className="font-light">
-                      Grace period starts after the market ends. During this
-                      period, trading, reporting and disputing is disabled.
-                    </p>
-                  </InfoPopover>
-                </h2>
-              </div>
-              <div className="flex justify-center">
-                <BlockPeriodPicker
-                  disabled={!fieldsState.endDate.isValid}
-                  isValid={fieldsState.gracePeriod.isValid}
-                  options={gracePeriodOptions}
-                  chainTime={chainTime ?? undefined}
-                  {...input("gracePeriod", { mode: "all" })}
+            <div className="mb-4">
+              <div className="flex center mb-3">
+                <DateTimePicker
+                  timezone={timezone}
+                  placeholder="Set End Date"
+                  isValid={fieldsState.endDate.isValid}
+                  {...input("endDate", { mode: "all" })}
                 />
+                <TimezoneSelect {...input("timeZone")} />
               </div>
-              <div className="flex center h-5 mt-4 text-xs text-red-400">
-                <ErrorMessage field={fieldsState.gracePeriod} />
+              <div className="flex center h-5  text-xs text-red-400">
+                <ErrorMessage field={fieldsState.endDate} />
               </div>
-            </div>
-
-            <div className="mb-6 ">
-              <div className="mb-4 text-center">
-                <h2 className="flex text-base justify-center items-center gap-2">
-                  Set Report Period
-                  <InfoPopover
-                    title={
-                      <h3 className="flex justify-center items-center mb-4 gap-2">
-                        <AiOutlineInfoCircle />
-                        Report Period
-                      </h3>
-                    }
-                  >
-                    <p className="font-light">
-                      Reporting starts after the market ends and grace period
-                      has finished. In this period the market outcome can only
-                      be resolved by the designated oracle. If the oracle fails
-                      to report the market goes into open reporting where anyone
-                      can submit the outcome.
-                    </p>
-                  </InfoPopover>
-                </h2>
-              </div>
-              <div className="flex justify-center">
-                <BlockPeriodPicker
-                  disabled={!fieldsState.endDate.isValid}
-                  isValid={fieldsState.reportingPeriod.isValid}
-                  options={reportingPeriodOptions}
-                  chainTime={chainTime ?? undefined}
-                  {...input("reportingPeriod", { mode: "all" })}
-                />
-              </div>
-              <div className="flex center h-5 mt-4 text-xs text-red-400">
-                <ErrorMessage field={fieldsState.reportingPeriod} />
-              </div>
-            </div>
-
-            <div className="mb-0">
-              <div className="mb-4 text-center">
-                <h2 className="flex text-base justify-center items-center gap-2">
-                  Set Dispute Period
-                  <InfoPopover
-                    title={
-                      <h3 className="flex justify-center items-center mb-4 gap-2">
-                        <AiOutlineInfoCircle />
-                        Dispute Period
-                      </h3>
-                    }
-                  >
-                    <p className="font-light">
-                      The dispute period starts when the market has been
-                      reported. If no dispute is raised during this period the
-                      market is resolved to the reported outcome.
-                    </p>
-                  </InfoPopover>
-                </h2>
-              </div>
-              <div className="flex justify-center">
-                <BlockPeriodPicker
-                  disabled={!fieldsState.endDate.isValid}
-                  isValid={fieldsState.disputePeriod.isValid}
-                  options={disputePeriodOptions}
-                  chainTime={chainTime ?? undefined}
-                  {...input("disputePeriod", { mode: "all" })}
-                />
-              </div>
-              <div className="flex center h-5 mt-4 text-xs text-red-400">
-                <ErrorMessage field={fieldsState.disputePeriod} />
-              </div>
-            </div>
-          </div>
-        </MarketFormSection>
-
-        <MarketFormSection
-          wizard={isWizard}
-          isCurrent={currentStep.label == "Oracle"}
-          onClickNext={next}
-          onClickBack={back}
-          nextDisabled={!fieldsState.oracle.isValid}
-        >
-          <div className="mb-4 md:mb-8 text-center">
-            <h2 className="mb-4 md:mb-8 text-base">Set Up Oracle</h2>
-            <div className="center">
-              <p className="mb-6 md:mb-12 text-sm text-gray-500 font-light md:max-w-2xl">
-                This is the account that will be{" "}
-                <b className="font-semibold text-gray-600">
-                  responsible for submitting the outcome
-                </b>{" "}
-                when the market ends.
-                <br />
-                If the Oracle fails to submit; or submits an answer that turns
-                out to be wrong according to a dispute, you will lose your
-                bonded oracle deposit of{" "}
-                <span className="font-bold">
-                  {constants?.markets.oracleBond} ZTG
-                </span>
-              </p>
             </div>
 
             <div>
-              <div className="center mb-6">
-                <OracleInput
-                  className="md:w-2/3"
-                  {...input("oracle", { mode: "all" })}
-                />
-              </div>
-              <div className="flex center h-5 text-xs text-red-400">
-                <ErrorMessage field={fieldsState.oracle} />
-              </div>
-            </div>
-          </div>
-        </MarketFormSection>
-
-        <MarketFormSection
-          wizard={isWizard}
-          isCurrent={currentStep.label == "Description"}
-          onClickNext={next}
-          onClickBack={back}
-          nextDisabled={!fieldsState.description.isValid}
-        >
-          <div className="mb-4 md:mb-8 text-center">
-            <h2 className="mb-4 md:mb-8 text-base">Market Description</h2>
-            <div>
-              <div className="flex center min-w-full">
-                <QuillEditor
-                  className="max-w-full w-full md:w-2/3 h-full mb-6 md:mb-0"
-                  placeHolder={
-                    "Additional information you want to provide about the market, such as resolution source, special cases, or other details."
-                  }
-                  {...input("description", { mode: "all" })}
-                />
-              </div>
-              <div className="flex center h-5 text-xs text-red-400">
-                <ErrorMessage field={fieldsState.description} />
-              </div>
-            </div>
-          </div>
-        </MarketFormSection>
-
-        <MarketFormSection
-          wizard={isWizard}
-          isCurrent={currentStep.label == "Moderation"}
-          onClickNext={next}
-          onClickBack={back}
-          nextDisabled={!fieldsState.moderation.isValid}
-        >
-          <div className="mb-4 md:mb-8 text-center">
-            <h2 className="mb-4 md:mb-8 text-base">Market Moderation</h2>
-            <div>
-              <div className="flex center min-w-full">
-                <ModerationModeSelect {...input("moderation")} />
-              </div>
-              <div className="flex center h-5 text-xs text-red-400">
-                <ErrorMessage field={fieldsState.moderation} />
-              </div>
-            </div>
-          </div>
-        </MarketFormSection>
-
-        <MarketFormSection
-          wizard={isWizard}
-          isCurrent={currentStep.label == "Liquidity"}
-          onClickNext={next}
-          onClickBack={back}
-          nextDisabled={
-            !fieldsState.liquidity.isValid || !fieldsState.answers.isValid
-          }
-        >
-          {form.moderation === "Permissionless" && form.currency ? (
-            <>
-              <div className="mb-2 md:mb-4 text-center">
-                <h2 className="text-base mb-0">Market Liquidity</h2>
-              </div>
-
-              <div className="mb-10 flex justify-center">
-                <div className="flex flex-col justify-center items-center">
-                  <div className="font-light text-sm mb-2">Deploy Pool?</div>
-                  <Toggle
-                    checked={form?.liquidity?.deploy ?? false}
-                    activeClassName={`bg-${currencyMetadata?.twColor}`}
-                    onChange={handlePoolDeploymentToggle}
-                  />
-                </div>
-              </div>
-
               <div className="mb-6">
-                {!form?.liquidity?.deploy ? (
-                  <div>
-                    <div className="mb-4 center text-gray-500">
-                      <LuFileWarning size={32} />
-                    </div>
-                    <div className="center">
-                      <p className="text-center md:max-w-lg text-gray-400">
-                        No liquidity pool will be deployed for the market.
-                        <b className="inline">
-                          You can deploy a pool after you create the market
-                        </b>{" "}
-                        from the market page.
+                <div className="mb-4 text-center">
+                  <h2 className="flex text-base justify-center items-center gap-2">
+                    Set Grace Period
+                    <InfoPopover
+                      title={
+                        <h3 className="flex justify-center items-center mb-4 gap-2">
+                          <AiOutlineInfoCircle />
+                          Grace Period
+                        </h3>
+                      }
+                    >
+                      <p className="font-light">
+                        Grace period starts after the market ends. During this
+                        period, trading, reporting and disputing is disabled.
                       </p>
+                    </InfoPopover>
+                  </h2>
+                </div>
+                <div className="flex justify-center">
+                  <BlockPeriodPicker
+                    timezone={timezone}
+                    disabled={!fieldsState.endDate.isValid}
+                    isValid={fieldsState.gracePeriod.isValid}
+                    options={gracePeriodOptions}
+                    chainTime={chainTime ?? undefined}
+                    {...input("gracePeriod", { mode: "all" })}
+                  />
+                </div>
+                <div className="flex center h-5 mt-4 text-xs text-red-400">
+                  <ErrorMessage field={fieldsState.gracePeriod} />
+                </div>
+              </div>
+
+              <div className="mb-6 ">
+                <div className="mb-4 text-center">
+                  <h2 className="flex text-base justify-center items-center gap-2">
+                    Set Report Period
+                    <InfoPopover
+                      title={
+                        <h3 className="flex justify-center items-center mb-4 gap-2">
+                          <AiOutlineInfoCircle />
+                          Report Period
+                        </h3>
+                      }
+                    >
+                      <p className="font-light">
+                        Reporting starts after the market ends and grace period
+                        has finished. In this period the market outcome can only
+                        be resolved by the designated oracle. If the oracle
+                        fails to report the market goes into open reporting
+                        where anyone can submit the outcome.
+                      </p>
+                    </InfoPopover>
+                  </h2>
+                </div>
+                <div className="flex justify-center">
+                  <BlockPeriodPicker
+                    disabled={!fieldsState.endDate.isValid}
+                    isValid={fieldsState.reportingPeriod.isValid}
+                    options={reportingPeriodOptions}
+                    chainTime={chainTime ?? undefined}
+                    {...input("reportingPeriod", { mode: "all" })}
+                  />
+                </div>
+                <div className="flex center h-5 mt-4 text-xs text-red-400">
+                  <ErrorMessage field={fieldsState.reportingPeriod} />
+                </div>
+              </div>
+
+              <div className="mb-0">
+                <div className="mb-4 text-center">
+                  <h2 className="flex text-base justify-center items-center gap-2">
+                    Set Dispute Period
+                    <InfoPopover
+                      title={
+                        <h3 className="flex justify-center items-center mb-4 gap-2">
+                          <AiOutlineInfoCircle />
+                          Dispute Period
+                        </h3>
+                      }
+                    >
+                      <p className="font-light">
+                        The dispute period starts when the market has been
+                        reported. If no dispute is raised during this period the
+                        market is resolved to the reported outcome.
+                      </p>
+                    </InfoPopover>
+                  </h2>
+                </div>
+                <div className="flex justify-center">
+                  <BlockPeriodPicker
+                    disabled={!fieldsState.endDate.isValid}
+                    isValid={fieldsState.disputePeriod.isValid}
+                    options={disputePeriodOptions}
+                    chainTime={chainTime ?? undefined}
+                    {...input("disputePeriod", { mode: "all" })}
+                  />
+                </div>
+                <div className="flex center h-5 mt-4 text-xs text-red-400">
+                  <ErrorMessage field={fieldsState.disputePeriod} />
+                </div>
+              </div>
+            </div>
+          </MarketFormSection>
+
+          <MarketFormSection
+            wizard={isWizard}
+            isCurrent={currentStep.label == "Oracle"}
+            onClickNext={next}
+            onClickBack={back}
+            nextDisabled={!fieldsState.oracle.isValid}
+          >
+            <div className="mb-4 md:mb-8 text-center">
+              <h2 className="mb-4 md:mb-8 text-base">Set Up Oracle</h2>
+              <div className="center">
+                <p className="mb-6 md:mb-12 text-sm text-gray-500 font-light md:max-w-2xl">
+                  This is the account that will be{" "}
+                  <b className="font-semibold text-gray-600">
+                    responsible for submitting the outcome
+                  </b>{" "}
+                  when the market ends.
+                  <br />
+                  If the Oracle fails to submit; or submits an answer that turns
+                  out to be wrong according to a dispute, you will lose your
+                  bonded oracle deposit of{" "}
+                  <span className="font-bold">
+                    {constants?.markets.oracleBond} ZTG
+                  </span>
+                </p>
+              </div>
+
+              <div>
+                <div className="center mb-6">
+                  <OracleInput
+                    className="md:w-2/3"
+                    {...input("oracle", { mode: "all" })}
+                  />
+                </div>
+                <div className="flex center h-5 text-xs text-red-400">
+                  <ErrorMessage field={fieldsState.oracle} />
+                </div>
+              </div>
+            </div>
+          </MarketFormSection>
+
+          <MarketFormSection
+            wizard={isWizard}
+            isCurrent={currentStep.label == "Description"}
+            onClickNext={next}
+            onClickBack={back}
+            nextDisabled={!fieldsState.description.isValid}
+          >
+            <div className="mb-4 md:mb-8 text-center">
+              <h2 className="mb-4 md:mb-8 text-base">Market Description</h2>
+              <div>
+                <div className="flex center min-w-full">
+                  <QuillEditor
+                    className="max-w-full w-full md:w-2/3 h-full mb-6 md:mb-0"
+                    placeHolder={
+                      "Additional information you want to provide about the market, such as resolution source, special cases, or other details."
+                    }
+                    {...input("description", { mode: "all" })}
+                  />
+                </div>
+                <div className="flex center h-5 text-xs text-red-400">
+                  <ErrorMessage field={fieldsState.description} />
+                </div>
+              </div>
+            </div>
+          </MarketFormSection>
+
+          <MarketFormSection
+            wizard={isWizard}
+            isCurrent={currentStep.label == "Moderation"}
+            onClickNext={next}
+            onClickBack={back}
+            nextDisabled={!fieldsState.moderation.isValid}
+          >
+            <div className="mb-4 md:mb-8 text-center">
+              <h2 className="mb-4 md:mb-8 text-base">Market Moderation</h2>
+              <div>
+                <div className="flex center min-w-full">
+                  <ModerationModeSelect {...input("moderation")} />
+                </div>
+                <div className="flex center h-5 text-xs text-red-400">
+                  <ErrorMessage field={fieldsState.moderation} />
+                </div>
+              </div>
+            </div>
+          </MarketFormSection>
+
+          <MarketFormSection
+            wizard={isWizard}
+            isCurrent={currentStep.label == "Liquidity"}
+            onClickNext={next}
+            onClickBack={back}
+            nextDisabled={
+              !fieldsState.liquidity.isValid || !fieldsState.answers.isValid
+            }
+          >
+            {form.moderation === "Permissionless" && form.currency ? (
+              <>
+                <div className="mb-2 md:mb-4 text-center">
+                  <h2 className="text-base mb-0">Market Liquidity</h2>
+                </div>
+
+                <div className="mb-10 flex justify-center">
+                  <div className="flex flex-col justify-center items-center">
+                    <div className="font-light text-sm mb-2">Deploy Pool?</div>
+                    <Toggle
+                      checked={form?.liquidity?.deploy ?? false}
+                      activeClassName={`bg-${currencyMetadata?.twColor}`}
+                      onChange={handlePoolDeploymentToggle}
+                    />
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  {!form?.liquidity?.deploy ? (
+                    <div>
+                      <div className="mb-4 center text-gray-500">
+                        <LuFileWarning size={32} />
+                      </div>
+                      <div className="center">
+                        <p className="text-center md:max-w-lg text-gray-400">
+                          No liquidity pool will be deployed for the market.
+                          <b className="inline">
+                            You can deploy a pool after you create the market
+                          </b>{" "}
+                          from the market page.
+                        </p>
+                      </div>
+                    </div>
+                  ) : !fieldsState.answers.isValid ? (
+                    <div className="text-red-500 text-center">
+                      Answers must be filled out correctly before adding
+                      liquidity.
+                    </div>
+                  ) : (
+                    <LiquidityInput
+                      {...input("liquidity", { mode: "all" })}
+                      currency={form.currency}
+                      errorMessage={
+                        !fieldsState.answers.isValid
+                          ? "Answers must be filled out correctly before adding liquidity."
+                          : ""
+                      }
+                    />
+                  )}
+
+                  <div className="flex center h-5 text-xs mt-6 text-red-400">
+                    <ErrorMessage field={fieldsState.liquidity} />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="mt-4">
+                  <div className="mb-2 center text-gray-500">
+                    <LuFileWarning size={22} />
+                  </div>
+                  <div className="center mb-12">
+                    <div className="text-center text-lg md:max-w-xl text-gray-500">
+                      You have selected <b>advised</b> moderation. This means
+                      that the market could be rejected by the moderators.
+                      <br />
+                      <br />
+                      If the market is rejected, you will be refunded most of
+                      your bonded deposit{" "}
+                      <i>
+                        (the refunded amount might incur a slash depending on
+                        the chain configuration, currently at{" "}
+                        {constants?.markets.advisoryBondSlashPercentage}%)
+                      </i>
+                      <br />
+                      <br />
+                      If the market is <b>approved</b>, you will be able to{" "}
+                      <b>add liquidity </b>
+                      or request it from the community.
                     </div>
                   </div>
-                ) : !fieldsState.answers.isValid ? (
-                  <div className="text-red-500 text-center">
-                    Answers must be filled out correctly before adding
-                    liquidity.
-                  </div>
-                ) : (
-                  <LiquidityInput
-                    {...input("liquidity", { mode: "all" })}
-                    currency={form.currency}
-                    errorMessage={
-                      !fieldsState.answers.isValid
-                        ? "Answers must be filled out correctly before adding liquidity."
-                        : ""
-                    }
-                  />
-                )}
+                </div>
+              </>
+            )}
+          </MarketFormSection>
 
-                <div className="flex center h-5 text-xs mt-6 text-red-400">
-                  <ErrorMessage field={fieldsState.liquidity} />
-                </div>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="mt-4">
-                <div className="mb-2 center text-gray-500">
-                  <LuFileWarning size={22} />
-                </div>
-                <div className="center mb-12">
-                  <div className="text-center text-lg md:max-w-xl text-gray-500">
-                    You have selected <b>advised</b> moderation. This means that
-                    the market could be rejected by the moderators.
-                    <br />
-                    <br />
-                    If the market is rejected, you will be refunded most of your
-                    bonded deposit{" "}
-                    <i>
-                      (the refunded amount might incur a slash depending on the
-                      chain configuration, currently at{" "}
-                      {constants?.markets.advisoryBondSlashPercentage}%)
-                    </i>
-                    <br />
-                    <br />
-                    If the market is <b>approved</b>, you will be able to{" "}
-                    <b>add liquidity </b>
-                    or request it from the community.
-                  </div>
-                </div>
-              </div>
-            </>
+          <MarketFormSection
+            wizard={isWizard}
+            isCurrent={currentStep.label == "Summary"}
+            disabled={!isWizard}
+          >
+            <div className="flex center">
+              <MarketSummary editor={editor} />
+            </div>
+          </MarketFormSection>
+
+          {(!editor.isWizard || currentStep.label == "Summary") && (
+            <Publishing editor={editor} />
           )}
-        </MarketFormSection>
-
-        <MarketFormSection
-          wizard={isWizard}
-          isCurrent={currentStep.label == "Summary"}
-          disabled={!isWizard}
-        >
-          <div className="flex center">
-            <MarketSummary editor={editor} />
-          </div>
-        </MarketFormSection>
-
-        {(!editor.isWizard || currentStep.label == "Summary") && (
-          <Publishing editor={editor} />
-        )}
-      </form>
-    </Transition>
+        </form>
+      </Transition>
+    </>
   );
 };
 
