@@ -16,6 +16,7 @@ import { useSdkv2 } from "../useSdkv2";
 export const transactionHistoryKey = "latest-trades";
 
 export type TradeItem = {
+  traderAddress: string;
   marketId: number;
   question: string;
   type: "buy" | "sell";
@@ -71,6 +72,7 @@ export const useLatestTrades = () => {
             const assetInIsBaseAsset = IOBaseAssetId.is(assetInId);
 
             const item: TradeItem = {
+              traderAddress: swap.accountId,
               marketId: market.marketId,
               question: market.question,
               outcomeName: outcome,
