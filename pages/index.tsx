@@ -1,4 +1,8 @@
+import { ApiPromise, WsProvider } from "@polkadot/api";
+import { create, isRpcSdk, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
+import LatestTrades from "components/front-page/LatestTrades";
 import LearnSection from "components/front-page/LearnSection";
+import NetworkStats from "components/front-page/NetworkStats";
 import PopularCategories, {
   CATEGORIES,
 } from "components/front-page/PopularCategories";
@@ -6,22 +10,26 @@ import HeroSlider from "components/hero-slider/HeroSlider";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import { GraphQLClient } from "graphql-request";
+import { Banner, getBanners } from "lib/cms/get-banners";
+import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import getFeaturedMarkets from "lib/gql/featured-markets";
+import { getNetworkStats } from "lib/gql/get-network-stats";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
 import { NextPage } from "next";
-import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
-import LatestTrades from "components/front-page/LatestTrades";
-import NetworkStats from "components/front-page/NetworkStats";
-import { Banner, getBanners } from "lib/cms/get-banners";
-import { endpointOptions, graphQlEndpoint } from "lib/constants";
-import { getNetworkStats } from "lib/gql/get-network-stats";
+
+import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import { isExtSigner } from "@zeitgeistpm/sdk/dist/util";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useWallet } from "lib/state/wallet";
 import path from "path";
 import {
   getPlaiceholder,
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
+import { useEffect } from "react";
+import Decimal from "decimal.js";
 
 const getPlaiceholders = (
   paths: string[],
@@ -79,6 +87,32 @@ export async function getStaticProps() {
   };
 }
 
+//431.71
+const transaction = async (signer: ExtSigner) => {
+  const wsProvider = new WsProvider("wss://bsr.zeitgeist.pm");
+
+  // const wsProvider = new WsProvider("wss://rococo-asset-hub-rpc.polkadot.io/");
+  const api = await ApiPromise.create({
+    provider: wsProvider,
+  });
+  console.log(api.isConnected);
+
+  const tx = api.tx.balances.transfer(signer.address, 0);
+
+  tx.signAndSend(
+    signer.address,
+    {
+      signer: signer.signer,
+      assetId: 0,
+      // tip: 10000000,
+    },
+    (res) => {
+      console.log(res.toHuman());
+      // console.log(res);
+    },
+  );
+};
+
 const IndexPage: NextPage<{
   banners: Banner[];
   featuredMarkets: IndexedMarketCardData[];
@@ -96,11 +130,74 @@ const IndexPage: NextPage<{
   bannerPlaceHolders,
   stats,
 }) => {
+  const wallet = useWallet();
+  const [sdk] = useSdkv2();
+
+  useEffect(() => {
+    // const signer = wallet.getSigner();
+    // if (signer && isExtSigner(signer)) {
+    //   transaction(signer);
+    // }
+    // if (isRpcSdk(sdk)) {
+    //   const tx = sdk.api.tx.balances.transfer(wallet?.realAddress!, 0);
+    //   if (isExtSigner(signer!)) {
+    //     tx.signAndSend(
+    //       signer.address,
+    //       {
+    //         signer: signer.signer,
+    //         assetId: 0,
+    //         // tip: 10000000,
+    //       },
+    //       (res) => {
+    //         console.log(res.toHuman());
+    //       },
+    //     );
+    //   }
+    // const keyring = new Keyring({ type: "sr25519" });
+    // const alice = keyring.addFromUri("//Alice", { name: "Alice default" }); //5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+    // tx.signAndSend(alice, (res) => {
+    // console.log(res.toHuman());
+    // });
+    // }
+  }, [wallet]);
+
+  // 435.19 ZBS
+
+  // 431.71 DOT
   return (
     <>
       <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
-
       <div data-testid="indexPage" className="main-container">
+        <button
+          className="bg-green"
+          onClick={() => transaction(wallet.getSigner())}
+        >
+          TX
+        </button>
+        <button
+          className="bg-blue"
+          onClick={() => {
+            const signer = wallet.getSigner();
+
+            if (isRpcSdk(sdk)) {
+              const tx = sdk.api.tx.balances.transfer(wallet?.realAddress!, 0);
+              if (isExtSigner(signer!)) {
+                tx.signAndSend(
+                  signer.address,
+                  {
+                    signer: signer.signer,
+                    assetId: 0,
+                  },
+                  (res) => {
+                    console.log(res.toHuman());
+                  },
+                );
+              }
+            }
+          }}
+        >
+          TX sdk
+        </button>
         <NetworkStats
           marketCount={stats.marketCount}
           tradersCount={stats.tradersCount}
