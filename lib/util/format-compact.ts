@@ -1,9 +1,12 @@
 export const formatNumberCompact = (
-  number: number | bigint,
+  num: number | bigint,
   maximumSignificantDigits = 3,
 ) => {
+  // Ensure displaying absolute zeros are usnigned(-), because javascript sucks sometimes.
+  if (num === 0 || num === 0n) num = 0;
+
   return new Intl.NumberFormat("en-US", {
     maximumSignificantDigits: maximumSignificantDigits,
     notation: "compact",
-  }).format(number);
+  }).format(num);
 };
