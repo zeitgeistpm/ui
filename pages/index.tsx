@@ -168,12 +168,12 @@ const IndexPage: NextPage<{
     <>
       <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
       <div data-testid="indexPage" className="main-container">
-        <button
+        {/* <button
           className="bg-green"
           onClick={() => transaction(wallet.getSigner())}
         >
           TX
-        </button>
+        </button> */}
         <button
           className="bg-blue"
           onClick={() => {
