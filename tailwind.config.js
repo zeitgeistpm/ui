@@ -63,12 +63,14 @@ module.exports = {
       lg: "1240px",
       xl: "1440px",
       "2xl": "1728px",
+      "3xl": "2560px",
     },
     containers: {
       sm: "520px",
       md: "713px",
       lg: "984px",
       xl: "1184px",
+      "3xl": "2560px",
     },
     container: {
       screens: {
@@ -77,6 +79,7 @@ module.exports = {
         lg: "1240px",
         xl: "1440px",
         "2xl": "1728px",
+        "3xl": "2560px",
       },
       padding: {
         DEFAULT: "16px",
