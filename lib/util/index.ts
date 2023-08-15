@@ -32,7 +32,7 @@ export const formatNumberLocalized = (
   num: number | bigint,
   locale: string = "en-US",
 ) => {
-  // Ensure displaying absolute zeros are usnigned(-), because javascript sucks sometimes.
+  // Ensure displaying absolute zeros are unsigned(-), because javascript sucks sometimes.
   if (num === 0 || num === 0n) num = 0;
 
   return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(
