@@ -13,4 +13,5 @@ module.exports = withPlaiceholder({
       "images.unsplash.com",
     ],
   },
+  staticPageGenerationTimeout: 300, //5 mins
 });

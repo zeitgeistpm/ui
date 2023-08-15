@@ -368,7 +368,7 @@ const AccountButton: FC<{
                       )}
                       <Menu.Item>
                         {({ active }) => (
-                          <Link href="/portfolio">
+                          <Link href={`/portfolio/${realAddress}`}>
                             <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
                               <BarChart />
                               <button
