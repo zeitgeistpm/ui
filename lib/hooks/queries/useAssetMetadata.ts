@@ -54,8 +54,10 @@ export const useAssetMetadata = (assetId?: AssetId) => {
             name: metadata.unwrap().name.toPrimitive() as string,
             location: location,
             feeFactor: new Decimal(
-              metadata.unwrapOr(null)?.additional.xcm.feeFactor.toString() ??
-                ZTG,
+              metadata
+                .unwrapOr(null)
+                ?.additional.xcm.feeFactor.unwrapOr(null)
+                ?.toString() ?? ZTG,
             ),
           };
 
@@ -113,7 +115,10 @@ export const useAllAssetMetadata = () => {
           name: meta[1].unwrap().name.toPrimitive() as string,
           location: location,
           feeFactor: new Decimal(
-            meta[1].unwrapOr(null)?.additional.xcm.feeFactor.toString() ?? ZTG,
+            meta[1]
+              .unwrapOr(null)
+              ?.additional.xcm.feeFactor.unwrapOr(null)
+              ?.toString() ?? ZTG,
           ),
         };
         res = [...res, [foreignAssetId, assetMetadata]];
