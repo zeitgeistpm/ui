@@ -312,7 +312,11 @@ const Answers = ({
                     <Label className="text-xs">Weight</Label>{" "}
                   </div>
                   <div className="table-cell text-left">
-                    <div>{answerLiquidity?.weight ?? "--"}</div>
+                    <div>
+                      {answerLiquidity?.weight
+                        ? new Decimal(answerLiquidity.weight).toFixed(2)
+                        : "--"}
+                    </div>
                   </div>
                 </div>
 
