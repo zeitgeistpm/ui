@@ -115,24 +115,6 @@ const DepositPaymentMethodLabels: Record<DepositPaymentMethod, string> = {
   crypto: "with Crypto",
 };
 
-const DepositCreditCardProviderItems = ["banxa"] as const;
-type DepositCreditCardProvider = ArrayToUnion<
-  typeof DepositCreditCardProviderItems
->;
-const DepositCreditCardProviderLabels: Record<
-  DepositCreditCardProvider,
-  string
-> = {
-  banxa: "Banxa *",
-};
-
-const DepositCryptoProviderItems = ["hydradx", "gateio"] as const;
-type DepositCryptoProvider = ArrayToUnion<typeof DepositCryptoProviderItems>;
-const DepositCryptoProviderLabels: Record<DepositCryptoProvider, string> = {
-  hydradx: "Hydra DX",
-  gateio: "Gate.io",
-};
-
 const TabGroup = <T extends readonly string[]>({
   items,
   labels,
@@ -194,6 +176,32 @@ const TabGroup = <T extends readonly string[]>({
         })}
       </Tab.List>
     </Tab.Group>
+  );
+};
+
+const ResultButtons = ({
+  items,
+}: {
+  items: { label: string; url: string }[];
+}) => {
+  const size = items.length;
+  return (
+    <div className={"grid gap-3 " + `grid-cols-${size}`}>
+      {items.map((item, id) => {
+        return (
+          <Link
+            key={id}
+            href={item.url}
+            target="_blank"
+            className={
+              "h-16 outline-none center rounded-lg cursor-pointer bg-white"
+            }
+          >
+            {item.label}
+          </Link>
+        );
+      })}
+    </div>
   );
 };
 
@@ -337,12 +345,6 @@ const DepositPage: NextPage = () => {
   const [paymentMethod, setPaymentMethod] = useState<
     DepositPaymentMethod | undefined
   >("crypto");
-  const [creditCardProvider, setCreditCardProvider] = useState<
-    DepositCreditCardProvider | undefined
-  >();
-  const [cryptoProvider, setCryptoProvider] = useState<
-    DepositCryptoProvider | undefined
-  >();
 
   const disabledPaymentMethods = useMemo<
     DepositPaymentMethod[] | undefined
@@ -391,27 +393,33 @@ const DepositPage: NextPage = () => {
             disabled={disabledPaymentMethods}
           />
         )}
-        {method === "buy" && paymentMethod === "card" && (
-          <div>
-            <TabGroup
-              items={DepositCreditCardProviderItems}
-              labels={DepositCreditCardProviderLabels}
-              selected={creditCardProvider}
-              onChange={setCreditCardProvider}
-            />
+        {method === "buy" && currency === "ztg" && paymentMethod === "crypto" && (
+          <ResultButtons
+            items={[
+              {
+                label: "Hydra DX",
+                url: "https://app.hydradx.io/trade?assetIn=5&assetOut=12",
+              },
+              { label: "Gate.io", url: "https://www.gate.io/trade/ZTG_USDT" },
+            ]}
+          />
+        )}
+        {method === "buy" && currency === "dot" && paymentMethod === "crypto" && (
+          <ResultButtons
+            items={[
+              { label: "DEX", url: "#" },
+              { label: "CEX", url: "#" },
+            ]}
+          />
+        )}
+        {method === "buy" && currency === "dot" && paymentMethod === "card" && (
+          <div className={"grid gap-3 " + `grid-cols-1`}>
+            <ResultButtons items={[{ label: "Banxa *", url: "#" }]} />
             <div className="mt-2">
               * — Complete purchase on the Banxa page then return to this page
               and select the Deposit tab to continue
             </div>
           </div>
-        )}
-        {method === "buy" && paymentMethod === "crypto" && (
-          <TabGroup
-            items={DepositCryptoProviderItems}
-            labels={DepositCryptoProviderLabels}
-            selected={cryptoProvider}
-            onChange={setCryptoProvider}
-          />
         )}
       </div>
       {method === "deposit" && wallet.realAddress && currency && (
