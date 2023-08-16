@@ -16,6 +16,7 @@ export type AssetMetadata = {
   name: string;
   location: XcmVersionedMultiLocation | null;
   feeFactor: Decimal;
+  decimals: number;
 };
 
 export const assetMetadataRootKey = "asset-metadata";
@@ -34,6 +35,7 @@ export const useAssetMetadata = (assetId?: AssetId) => {
             name: "Zeitgeist",
             location: null,
             feeFactor: ZTG,
+            decimals: 10,
           };
           return assetMetadata;
         } else if (IOForeignAssetId.is(assetId)) {
@@ -59,6 +61,7 @@ export const useAssetMetadata = (assetId?: AssetId) => {
                 ?.additional.xcm.feeFactor.unwrapOr(null)
                 ?.toString() ?? ZTG,
             ),
+            decimals: Number(metadata.unwrap().name.toString()),
           };
 
           return assetMetadata;
@@ -101,6 +104,7 @@ export const useAllAssetMetadata = () => {
             name: "Zeitgeist",
             location: null,
             feeFactor: ZTG,
+            decimals: 10,
           },
         ],
       ];
@@ -120,6 +124,7 @@ export const useAllAssetMetadata = () => {
               ?.additional.xcm.feeFactor.unwrapOr(null)
               ?.toString() ?? ZTG,
           ),
+          decimals: Number(meta[1].unwrap().name.toString()),
         };
         res = [...res, [foreignAssetId, assetMetadata]];
       }

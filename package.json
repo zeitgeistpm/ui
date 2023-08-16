@@ -7,6 +7,7 @@
     "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build",
     "build": "next build",
     "build:staging": "NEXT_PUBLIC_VERCEL_ENV=staging next build",
+    "build:prod": "NEXT_PUBLIC_VERCEL_ENV=production next build",
     "dev": "NEXT_PUBLIC_VERCEL_ENV=staging next",
     "dev:prod": "NEXT_PUBLIC_VERCEL_ENV=production next",
     "prettier:check": "npx prettier ./**/*.tsx --check",

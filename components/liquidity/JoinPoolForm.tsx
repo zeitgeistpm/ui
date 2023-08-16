@@ -1,8 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
 import FormTransactionButton from "components/ui/FormTransactionButton";
+import Input from "components/ui/Input";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { poolTotalIssuanceRootQueryKey } from "lib/hooks/queries/useTotalIssuanceForPools";
@@ -12,9 +14,6 @@ import { useNotifications } from "lib/state/notifications";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
-import Input from "components/ui/Input";
-import { isEmpty } from "lodash-es";
-import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 
 const JoinPoolForm = ({
   poolBalances,
