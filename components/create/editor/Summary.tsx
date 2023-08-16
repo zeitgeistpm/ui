@@ -349,9 +349,9 @@ const Answers = ({
                   <div className="table-cell text-left">
                     <div className="flex gap-2">
                       <div className="font-semibold">
-                        {new Decimal(answerLiquidity?.price.price ?? 0)
-                          .toFixed(2)
-                          .toString()}
+                        {new Decimal(answerLiquidity?.price.price ?? 0).toFixed(
+                          2,
+                        )}
                       </div>
                       <div className="font-bold">{baseCurrency}</div>
                     </div>
