@@ -13,7 +13,6 @@ import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
 import Input from "components/ui/Input";
-import { isEmpty } from "lodash-es";
 
 const JoinPoolForm = ({
   poolBalances,
