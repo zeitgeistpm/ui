@@ -21,6 +21,7 @@ import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
 import Input from "components/ui/Input";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 
 const ExitPoolForm = ({
   poolBalances,
@@ -56,6 +57,7 @@ const ExitPoolForm = ({
   const userPercentageOwnership = userPoolShares.div(totalPoolShares);
   const { data: market } = useMarket({ poolId });
   const queryClient = useQueryClient();
+  const { data: fee } = useExtrinsicFee();
 
   // filter out non-winning assets as they are deleted on chain
   const poolWeights =
@@ -185,7 +187,7 @@ const ExitPoolForm = ({
   }, [watch, poolBalances]);
 
   const onSubmit: SubmitHandler<any> = () => {
-    exitPool();
+    exitPool(fee?.assetId);
   };
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>

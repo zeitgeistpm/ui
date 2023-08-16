@@ -14,6 +14,7 @@ type FeeAsset = {
   assetId: AssetId;
   symbol: string;
   amount: Decimal;
+  sufficientBalance: boolean;
 };
 
 export const extrinsicFeeKey = "extrinsic-fee";
@@ -21,7 +22,7 @@ export const extrinsicFeeKey = "extrinsic-fee";
 export const useExtrinsicFee = (
   inputExtrinsic?: SubmittableExtrinsic<"promise", ISubmittableResult>,
 ): UseQueryResult<FeeAsset | null> => {
-  const [sdk, id] = useSdkv2();
+  const [sdk] = useSdkv2();
   const { activeAccount: activeAccount } = useWallet();
   const { data: nativeBalance } = useZtgBalance(activeAccount?.address);
   const { data: foreignAssetBalances } = useForeignAssetBalances(
@@ -53,6 +54,7 @@ export const useExtrinsicFee = (
             assetId: { Ztg: null },
             symbol: constants?.tokenSymbol ?? "",
             amount: fee,
+            sufficientBalance: true,
           };
         }
 
@@ -76,12 +78,14 @@ export const useExtrinsicFee = (
             },
             symbol: availableAsset.symbol,
             amount: fee.mul(feeFactor ?? 1),
+            sufficientBalance: true,
           };
         } else {
           return {
             assetId: { Ztg: null },
             symbol: constants?.tokenSymbol ?? "",
             amount: fee,
+            sufficientBalance: false,
           };
         }
       }

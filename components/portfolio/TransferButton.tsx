@@ -179,7 +179,7 @@ const TransferModal = ({
   ]);
 
   const { data: feeRaw } = useExtrinsicFee(feeExtrinsic);
-  const fee = feeRaw && new Decimal(feeRaw).div(ZTG);
+  const fee = feeRaw?.amount.div(ZTG);
 
   let maxAmount = "";
 
@@ -213,7 +213,7 @@ const TransferModal = ({
 
   const submit = () => {
     if (!isValid) return;
-    send();
+    send(feeRaw?.assetId);
   };
 
   return (
@@ -254,6 +254,7 @@ const TransferModal = ({
                 if (!v.assetOption) {
                   return "Currency selection missing";
                 }
+                //todo check this
                 if (
                   (isNativeCurrency && fee && balance?.sub(fee).lt(v.amount)) ||
                   balance?.lt(v.amount)
@@ -306,8 +307,7 @@ const TransferModal = ({
         />
         <div className="mb-3 text-sm text-center">
           <span className="text-sky-600">
-            Transfer Fee:{" "}
-            {fee ? `${fee.toFixed(4)} ${chainConstants?.tokenSymbol}` : ""}
+            Transfer Fee: {fee ? `${fee.toFixed(4)} ${feeRaw?.symbol}` : ""}
           </span>
         </div>
         <FormTransactionButton disabled={!isValid || txIsLoading}>

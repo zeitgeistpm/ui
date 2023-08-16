@@ -17,6 +17,7 @@ import {
   useAccountAssetBalances,
 } from "lib/hooks/queries/useAccountAssetBalances";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
@@ -129,6 +130,7 @@ const RedeemButtonByValue = ({
   const notificationStore = useNotifications();
   const baseAsset = parseAssetIdString(market.baseAsset);
   const { data: baseAssetMetadata } = useAssetMetadata(baseAsset);
+  const { data: fee } = useExtrinsicFee();
 
   const { isLoading, isSuccess, send } = useExtrinsic(
     () => {
@@ -147,7 +149,7 @@ const RedeemButtonByValue = ({
     },
   );
 
-  const handleClick = () => send();
+  const handleClick = () => send(fee?.assetId);
 
   return (
     <>

@@ -96,7 +96,7 @@ const SellFullSetForm = ({
       return;
     }
 
-    sellSets();
+    sellSets(fee?.assetId);
   };
 
   useGlobalKeyPress("Enter", handleSignTransaction);
@@ -135,7 +135,7 @@ const SellFullSetForm = ({
       <TransactionButton onClick={handleSignTransaction} disabled={disabled}>
         Confirm Sell
         <span className="block text-xs font-normal">
-          Transaction fee: {fee?.div(ZTG).toFixed(2)} {metadata?.symbol}
+          Transaction fee: {fee?.amount.div(ZTG).toFixed(2)} {fee?.symbol}
         </span>
       </TransactionButton>
     </div>

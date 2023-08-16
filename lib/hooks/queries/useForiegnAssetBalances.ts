@@ -4,9 +4,11 @@ import Decimal from "decimal.js";
 import { ChainName } from "lib/constants/chains";
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { useSdkv2 } from "../useSdkv2";
+import { CurrencyBalance } from "./useCurrencyBalances";
 
 export const foreignAssetBalancesRootKey = "foreign-asset-balances";
 
+//todo refactor to add into useCurencybalances
 export const useForeignAssetBalances = (address?: string) => {
   const [sdk, id] = useSdkv2();
 
@@ -25,17 +27,19 @@ export const useForeignAssetBalances = (address?: string) => {
           assetIds.map((assetId) => [address, { ForeignAsset: assetId }]),
         );
 
-        const foreignAssetBalances = foreignAccounts.map((account, index) => ({
-          symbol: metadata[index].unwrap().symbol.toPrimitive() as string,
-          balance: new Decimal(account.free.toString()),
-          chain: "Zeitgeist",
-          sourceChain: FOREIGN_ASSET_METADATA[assetIds[index]]
-            .originChain as ChainName,
-          foreignAssetId: Number(assetIds[index]),
-          existentialDeposit: new Decimal(
-            sdk.api.consts.balances.existentialDeposit.toString(),
-          ),
-        }));
+        const foreignAssetBalances: CurrencyBalance[] = foreignAccounts.map(
+          (account, index) => ({
+            symbol: metadata[index].unwrap().symbol.toPrimitive() as string,
+            balance: new Decimal(account.free.toString()),
+            chain: "Zeitgeist",
+            sourceChain: FOREIGN_ASSET_METADATA[assetIds[index]]
+              .originChain as ChainName,
+            foreignAssetId: Number(assetIds[index]),
+            existentialDeposit: new Decimal(
+              sdk.api.consts.balances.existentialDeposit.toString(),
+            ),
+          }),
+        );
 
         return foreignAssetBalances;
       }

@@ -38,6 +38,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { awaitIndexer } from "lib/util/await-indexer";
 import Input from "components/ui/Input";
 import { useDelayQueue } from "lib/state/delay-queue";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -123,7 +124,6 @@ const Inner = ({
   const maxBaseAmountDecimal = new Decimal(maxBaseAmount ?? 0).div(ZTG);
   const maxAssetAmountDecimal = new Decimal(maxAssetAmount ?? 0).div(ZTG);
 
-  const [fee, setFee] = useState<string>("0.00");
   const [percentageDisplay, setPercentageDisplay] = useState<string>("0");
   const { data: assetMetadata } = useAssetMetadata(tradeItemState?.baseAssetId);
   const baseSymbol = assetMetadata?.symbol;
@@ -194,6 +194,9 @@ const Inner = ({
     IOMarketOutcomeAssetId.is(lastEditedAssetId) ? assetAmount : baseAmount,
   );
 
+  //todo: debounce?
+  const { data: fee } = useExtrinsicFee(transaction);
+
   const {
     send: swapTx,
     isSuccess,
@@ -231,23 +234,6 @@ const Inner = ({
       }
     },
   });
-
-  const [debouncedTransactionHash] = useDebounce(
-    transaction?.hash.toString(),
-    150,
-  );
-
-  useEffect(() => {
-    if (debouncedTransactionHash == null || signer == null || !transaction) {
-      return;
-    }
-    const sub = from(transaction.paymentInfo(signer.address)).subscribe(
-      (fee) => {
-        setFee(new Decimal(fee.partialFee.toString()).div(ZTG).toFixed(3));
-      },
-    );
-    return () => sub.unsubscribe();
-  }, [debouncedTransactionHash, signer]);
 
   const changeByPercentage = useCallback(
     (percentage: Decimal) => {
@@ -495,7 +481,7 @@ const Inner = ({
           className="bg-white rounded-[10px]"
           onSubmit={(e) => {
             e.preventDefault();
-            swapTx();
+            swapTx(fee?.assetId);
           }}
         >
           <Tab.Group
@@ -625,7 +611,7 @@ const Inner = ({
                 Confirm {`${capitalize(tradeItem?.action)}`}
               </div>
               <div className="center font-normal text-ztg-12-120 h-[20px]">
-                Transaction fee: {fee} {constants?.tokenSymbol}
+                Transaction fee: {fee?.amount.div(ZTG).toString()} {fee?.symbol}
               </div>
             </TransactionButton>
           </div>

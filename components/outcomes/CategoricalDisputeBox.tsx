@@ -8,6 +8,7 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import TransactionButton from "components/ui/TransactionButton";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import {
   marketDisputesRootKey,
   useMarketDisputes,
@@ -31,6 +32,7 @@ const CategoricalDisputeBox = ({
   const queryClient = useQueryClient();
   const { data: constants, isLoading: isConstantsLoading } =
     useChainConstants();
+  const { data: fee } = useExtrinsicFee();
 
   const disputeBond = constants?.markets.disputeBond;
   const disputeFactor = constants?.markets.disputeFactor;
@@ -111,7 +113,7 @@ const CategoricalDisputeBox = ({
       )}
       <TransactionButton
         className="mb-ztg-10 mt-[20px]"
-        onClick={dispute}
+        onClick={() => dispute(fee?.assetId)}
         disabled={isLoading}
       >
         Confirm Dispute

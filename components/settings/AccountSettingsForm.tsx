@@ -10,6 +10,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { UserIdentity } from "lib/types/user-identity";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 
 export type AcccountSettingsFormProps = {
   identity: UserIdentity;
@@ -48,6 +49,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
   const displayName = watch("displayName");
 
   const { data: constants } = useChainConstants();
+  const { data: fee } = useExtrinsicFee();
 
   const indetityCost =
     constants?.identity?.basicDeposit ??
@@ -103,7 +105,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
       onSubmit={(e) => {
         e.preventDefault();
         if (!isValid) return;
-        updateIdentity();
+        updateIdentity(fee?.assetId);
       }}
     >
       <label htmlFor="displayName" className="font-bold mb-2">
@@ -162,7 +164,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
         type="button"
         className="mt-2 text-sm text-sky-600 focus:outline-none"
         disabled={isUpdating || isClearing || isCleared}
-        onClick={() => clearIdentity()}
+        onClick={() => clearIdentity(fee?.assetId)}
       >
         Clear Identity
       </button>

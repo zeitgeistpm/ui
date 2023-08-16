@@ -14,6 +14,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
 import Input from "components/ui/Input";
 import { isEmpty } from "lodash-es";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 
 const JoinPoolForm = ({
   poolBalances,
@@ -37,6 +38,7 @@ const JoinPoolForm = ({
   const [poolSharesToReceive, setPoolSharesToReceive] = useState<Decimal>();
   const { data: market } = useMarket({ poolId });
   const queryClient = useQueryClient();
+  const { data: fee } = useExtrinsicFee();
 
   const { send: joinPool, isLoading } = useExtrinsic(
     () => {
@@ -143,8 +145,8 @@ const JoinPoolForm = ({
     return () => subscription.unsubscribe();
   }, [watch, poolBalances]);
 
-  const onSubmit: SubmitHandler<any> = (data) => {
-    joinPool();
+  const onSubmit: SubmitHandler<any> = () => {
+    joinPool(fee?.assetId);
   };
 
   return (

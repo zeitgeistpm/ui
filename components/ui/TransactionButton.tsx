@@ -10,7 +10,6 @@ import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useAccountModals } from "lib/state/account";
 import { useWallet } from "lib/state/wallet";
 import { FC, PropsWithChildren, useMemo } from "react";
-import Decimal from "decimal.js";
 
 interface TransactionButtonProps {
   preventDefault?: boolean;
@@ -49,15 +48,9 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
           )
       : undefined);
   const { data: fee } = useExtrinsicFee(extrinsicBase);
-  const { data: balance } = useBalance(wallet.activeAccount?.address, {
-    Ztg: null,
-  });
   const { data: constants } = useChainConstants();
 
-  const feeEstimationFactor = extrinsic ? 1.05 : 1.5;
-  const insufficientFeeBalance =
-    disableFeeCheck === false &&
-    balance?.lessThan(fee?.mul(feeEstimationFactor) ?? 0);
+  const insufficientFeeBalance = fee?.sufficientBalance === false;
 
   const click = (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (preventDefault) {

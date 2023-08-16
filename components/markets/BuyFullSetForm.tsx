@@ -103,7 +103,7 @@ const BuyFullSetForm = ({
     if (disabled || !isRpcSdk(sdk)) {
       return;
     }
-    buySet();
+    buySet(fee?.assetId);
   };
 
   useGlobalKeyPress("Enter", handleSignTransaction);
@@ -160,7 +160,7 @@ const BuyFullSetForm = ({
       <TransactionButton onClick={handleSignTransaction} disabled={disabled}>
         Confirm Buy
         <span className="block text-xs font-normal">
-          Transaction fee: {fee?.div(ZTG).toFixed(2)} {metadata?.symbol}
+          Transaction fee: {fee?.amount.div(ZTG).toFixed(2)} {fee?.symbol}
         </span>
       </TransactionButton>
     </div>

@@ -223,6 +223,7 @@ const WithdrawModal = ({
                   value: true,
                   message: "Value is required",
                 },
+                //todo: validate transfer where fee is paid in same asset as the one being transferred
                 validate: (value) => {
                   if (balance.div(ZTG).lessThan(value)) {
                     return `Insufficient balance. Current balance: ${balance
@@ -254,7 +255,9 @@ const WithdrawModal = ({
           </div>
           <div className="center font-normal text-ztg-12-120 mb-[16px] text-sky-600">
             Zeitgeist fee:
-            <span className="text-black ml-1">{fee?.div(ZTG).toFixed(3)}</span>
+            <span className="text-black ml-1">
+              {fee?.amount.div(ZTG).toFixed(3)} {fee?.symbol ?? ""}
+            </span>
           </div>
           <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
             {toChain} fee:

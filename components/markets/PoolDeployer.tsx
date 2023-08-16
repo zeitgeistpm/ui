@@ -31,6 +31,7 @@ import { Liquidity } from "lib/state/market-creation/types/form";
 import { IOLiquidity } from "lib/state/market-creation/types/validation";
 import { useMemo, useState } from "react";
 import { Loader } from "components/ui/Loader";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 
 const PoolDeployer = ({
   marketId,
@@ -47,6 +48,7 @@ const PoolDeployer = ({
   const notificationStore = useNotifications();
   const [sdk, id] = useSdkv2();
   const [liquidity, setLiquidity] = useState<Liquidity | null>(null);
+  const { data: fee } = useExtrinsicFee();
 
   const {
     send: deployPool,
@@ -230,7 +232,7 @@ const PoolDeployer = ({
             <div className="text-center">
               <TransactionButton
                 className="w-ztg-266 ml-ztg-8 mb-4"
-                onClick={deployPool}
+                onClick={() => deployPool(fee?.assetId)}
                 disabled={!fieldState.isValid || isLoading || isBroadcasting}
               >
                 Deploy Pool
