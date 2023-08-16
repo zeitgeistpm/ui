@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
 import Input from "components/ui/Input";
+import { convertDecimals } from "lib/util/convert-decimals";
 
 const WithdrawButton = ({
   toChain,
@@ -26,6 +27,7 @@ const WithdrawButton = ({
   foreignAssetId,
   destinationExistentialDeposit,
   destinationTokenBalance,
+  assetDecimals,
 }: {
   toChain: ChainName;
   tokenSymbol: string;
@@ -33,6 +35,7 @@ const WithdrawButton = ({
   foreignAssetId: number;
   destinationExistentialDeposit: Decimal;
   destinationTokenBalance: Decimal;
+  assetDecimals: number;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -49,6 +52,7 @@ const WithdrawButton = ({
           foreignAssetId={foreignAssetId}
           destinationExistentialDeposit={destinationExistentialDeposit}
           destinationTokenBalance={destinationTokenBalance}
+          assetDecimals={assetDecimals}
           onSuccess={() => setIsOpen(false)}
         />
       </Modal>
@@ -85,6 +89,7 @@ const WithdrawModal = ({
   onSuccess,
   destinationExistentialDeposit,
   destinationTokenBalance,
+  assetDecimals,
 }: {
   toChain: ChainName;
   tokenSymbol: string;
@@ -92,6 +97,7 @@ const WithdrawModal = ({
   foreignAssetId: number;
   destinationExistentialDeposit: Decimal;
   destinationTokenBalance: Decimal;
+  assetDecimals: number;
   onSuccess: () => void;
 }) => {
   const {
@@ -125,7 +131,7 @@ const WithdrawModal = ({
   );
   const amount = getValues("amount");
   const amountDecimal: Decimal = amount
-    ? new Decimal(amount).mul(ZTG)
+    ? convertDecimals(new Decimal(amount), 0, assetDecimals)
     : new Decimal(0);
 
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
@@ -232,7 +238,9 @@ const WithdrawModal = ({
                     return "Value cannot be zero or less";
                   } else if (
                     destinationTokenBalance
-                      .plus(new Decimal(value).mul(ZTG))
+                      .plus(
+                        convertDecimals(new Decimal(value), 0, assetDecimals),
+                      )
                       .lessThan(destinationExistentialDeposit)
                   ) {
                     return `Balance on ${toChain} must be greater than ${destinationExistentialDeposit.div(
