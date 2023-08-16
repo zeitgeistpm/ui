@@ -38,6 +38,7 @@ export const useForeignAssetBalances = (address?: string) => {
             existentialDeposit: new Decimal(
               sdk.api.consts.balances.existentialDeposit.toString(),
             ),
+            decimals: Number(metadata[index].unwrap().decimals.toString()),
           }),
         );
 
