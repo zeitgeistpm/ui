@@ -418,7 +418,9 @@ const DepositPage: NextPage = () => {
       </div>
       {method === "deposit" && wallet.realAddress && currency && (
         <>
-          <h3 className="my-8 p-2">Fund your ZTG Wallet</h3>
+          <h3 className="my-8 p-2">
+            Fund your {currency.toUpperCase()} Wallet
+          </h3>
           <div className="flex flex-row">
             <div className="w-48 h-48 flex-shrink-0 mr-14">
               <QrCode text={wallet.realAddress} width={192} />
