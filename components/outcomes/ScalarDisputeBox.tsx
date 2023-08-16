@@ -10,6 +10,7 @@ import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -28,6 +29,7 @@ const ScalarDisputeBox = ({
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
   const { data: constants } = useChainConstants();
+  const { data: fee } = useExtrinsicFee();
 
   const disputeBond = constants?.markets.disputeBond;
   const disputeFactor = constants?.markets.disputeFactor;
@@ -92,7 +94,7 @@ const ScalarDisputeBox = ({
     },
   );
 
-  const handleSignTransaction = async () => send();
+  const handleSignTransaction = async () => send(fee?.assetId);
 
   return (
     <div className="p-[30px] flex flex-col items-center gap-y-3">
