@@ -7,6 +7,7 @@ import { useChainTime } from "lib/state/chaintime";
 import { MarketDraftEditor } from "lib/state/market-creation/editor";
 import {
   Answers,
+  CurrencyTag,
   Liquidity,
   Moderation,
   blocksAsDuration,
@@ -73,6 +74,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             <Answers
               answers={form.answers!}
               baseAssetPrice={baseAssetPrice!}
+              baseCurrency={form.currency!}
               liquidity={form?.liquidity}
               moderation={form.moderation!}
             />
@@ -260,11 +262,13 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
 const Answers = ({
   answers,
   liquidity,
+  baseCurrency,
   baseAssetPrice,
   moderation,
 }: {
   answers: Answers;
   liquidity?: Liquidity;
+  baseCurrency: CurrencyTag;
   baseAssetPrice?: Decimal;
   moderation: Moderation;
 }) => {
@@ -312,7 +316,7 @@ const Answers = ({
                   </div>
                 </div>
 
-                <div className="table-row">
+                <div className="table-row mb-1">
                   <div className="table-cell text-left pr-4">
                     <Label className="text-xs">Value</Label>{" "}
                   </div>
@@ -330,6 +334,22 @@ const Answers = ({
                       ) : (
                         ""
                       )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="table-row ">
+                  <div className="table-cell text-left pr-4">
+                    <Label className="text-xs">Price</Label>{" "}
+                  </div>
+                  <div className="table-cell text-left">
+                    <div className="flex gap-2">
+                      <div className="font-semibold">
+                        {new Decimal(answerLiquidity?.price.price ?? 0)
+                          .toFixed(2)
+                          .toString()}
+                      </div>
+                      <div className="font-bold">{baseCurrency}</div>
                     </div>
                   </div>
                 </div>
