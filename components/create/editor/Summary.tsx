@@ -283,7 +283,7 @@ const Answers = ({
             key={answerIndex}
             className="flex-1 rounded-md bg-gray-50 py-3 px-5 mb-4 md:mb-0"
           >
-            <div className="text-xl font-semibold">
+            <div className="text-xl font-semibold uppercase">
               {answerLiquidity?.asset}
             </div>
             {answers.type === "categorical" && (
