@@ -1,7 +1,7 @@
 import { Tab } from "@headlessui/react";
 import Decimal from "decimal.js";
 import { NextPage } from "next";
-import { useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { SVGProps } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -359,6 +359,12 @@ const DepositPage: NextPage = () => {
       return ["card"];
     }
   }, [currency]);
+
+  useEffect(() => {
+    if (currency === "ztg" && method === "buy" && paymentMethod === "card") {
+      setPaymentMethod(undefined);
+    }
+  }, [currency, method, paymentMethod]);
 
   return (
     <>
