@@ -224,8 +224,6 @@ const DotDeposit = ({ address }: { address: string }) => {
     handleSubmit,
   } = useForm<{ amount: string }>();
 
-  console.log(balances);
-
   const balance = balances?.find(
     (b) => b.symbol === "DOT" && b.chain === "Polkadot",
   );
@@ -292,7 +290,6 @@ const DotDeposit = ({ address }: { address: string }) => {
           <Input
             {...register("amount", {
               validate: (v) => {
-                console.log(v);
                 if (!v) {
                   return "Required";
                 }
