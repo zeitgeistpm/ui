@@ -39,10 +39,21 @@ export const useExtrinsicFee = (
   const extrinsic = inputExtrinsic ?? defaultExtrinsic;
 
   const enabled =
-    !!nativeBalance && !!foreignAssetBalances && !!extrinsic && !!activeAccount;
+    !!nativeBalance &&
+    !!foreignAssetBalances &&
+    !!extrinsic &&
+    !!activeAccount &&
+    !!assetMetadata;
 
   const query = useQuery(
-    [extrinsicFeeKey, extrinsic?.hash, activeAccount],
+    [
+      extrinsicFeeKey,
+      activeAccount,
+      extrinsic?.hash,
+      activeAccount,
+      nativeBalance,
+      foreignAssetBalances,
+    ],
     async () => {
       if (enabled) {
         const info = await extrinsic.paymentInfo(activeAccount?.address);

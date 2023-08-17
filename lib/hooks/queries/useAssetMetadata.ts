@@ -133,7 +133,6 @@ export const useAllAssetMetadata = () => {
     {
       enabled: Boolean(enabled),
       keepPreviousData: true,
-      placeholderData: [],
       staleTime: Infinity,
     },
   );
