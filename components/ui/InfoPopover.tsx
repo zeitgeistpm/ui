@@ -24,7 +24,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
         onClick={() => setIsOpen(true)}
         className="relative justify-center items-center flex md:hidden"
       >
-        <AiOutlineInfoCircle />
+        {icon ?? <AiOutlineInfoCircle />}
       </button>
 
       <Popover className="relative">
