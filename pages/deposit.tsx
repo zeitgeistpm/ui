@@ -1,7 +1,7 @@
 import { Tab } from "@headlessui/react";
 import Decimal from "decimal.js";
 import { NextPage } from "next";
-import { use, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SVGProps } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -404,14 +404,22 @@ const DepositPage: NextPage = () => {
         {method === "buy" && currency === "dot" && paymentMethod === "crypto" && (
           <ResultButtons
             items={[
-              { label: "DEX", url: "#" },
-              { label: "CEX", url: "#" },
+              {
+                label: "DEX",
+                url: "https://app.hydradx.io/trade?assetIn=10&assetOut=5",
+              },
+              {
+                label: "CEX",
+                url: "https://www.binance.com/en/trade/DOT_USDT",
+              },
             ]}
           />
         )}
         {method === "buy" && currency === "dot" && paymentMethod === "card" && (
           <div className={"grid gap-3 " + `grid-cols-1`}>
-            <ResultButtons items={[{ label: "Banxa *", url: "#" }]} />
+            <ResultButtons
+              items={[{ label: "Banxa *", url: "https://banxa.com/" }]}
+            />
             <div className="mt-2">
               * — Complete purchase on the Banxa page then return to this page
               and select the Deposit tab to continue
