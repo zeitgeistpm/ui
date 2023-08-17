@@ -8,7 +8,6 @@ import { CurrencyBalance } from "./useCurrencyBalances";
 
 export const foreignAssetBalancesRootKey = "foreign-asset-balances";
 
-//todo refactor to add into useCurencybalances
 export const useForeignAssetBalances = (address?: string) => {
   const [sdk, id] = useSdkv2();
 

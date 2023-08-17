@@ -6,7 +6,7 @@ import Decimal from "decimal.js";
 import { useWallet } from "lib/state/wallet";
 import { useAllAssetMetadata } from "./useAssetMetadata";
 import { useChainConstants } from "./useChainConstants";
-import { useForeignAssetBalances } from "./useForiegnAssetBalances";
+import { useForeignAssetBalances } from "./useForeignAssetBalances";
 import { useZtgBalance } from "./useZtgBalance";
 import { useSdkv2 } from "../useSdkv2";
 
