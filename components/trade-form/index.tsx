@@ -39,6 +39,7 @@ import { awaitIndexer } from "lib/util/await-indexer";
 import Input from "components/ui/Input";
 import { useDelayQueue } from "lib/state/delay-queue";
 import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
+import { formatNumberCompact } from "lib/util/format-compact";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -103,8 +104,6 @@ const Inner = ({
   const { addItem } = useDelayQueue();
 
   const { data: tradeItemState } = useTradeItemState(tradeItem);
-
-  const { data: constants } = useChainConstants();
 
   const {
     poolBaseBalance,
@@ -610,9 +609,13 @@ const Inner = ({
               <div className="center font-normal h-[20px]">
                 Confirm {`${capitalize(tradeItem?.action)}`}
               </div>
-              <div className="center font-normal text-ztg-12-120 h-[20px]">
-                Transaction fee: {fee?.amount.div(ZTG).toString()} {fee?.symbol}
-              </div>
+              {fee && (
+                <div className="center font-normal text-ztg-12-120 h-[20px]">
+                  Transaction fee:{" "}
+                  {formatNumberCompact(fee.amount.div(ZTG).toNumber())}{" "}
+                  {fee.symbol}
+                </div>
+              )}
             </TransactionButton>
           </div>
         </form>

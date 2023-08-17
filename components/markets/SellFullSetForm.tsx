@@ -17,6 +17,7 @@ import { useWallet } from "lib/state/wallet";
 import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useEffect, useState } from "react";
+import { formatNumberCompact } from "lib/util/format-compact";
 
 const SellFullSetForm = ({
   marketId,
@@ -134,9 +135,12 @@ const SellFullSetForm = ({
       </div>
       <TransactionButton onClick={handleSignTransaction} disabled={disabled}>
         Confirm Sell
-        <span className="block text-xs font-normal">
-          Transaction fee: {fee?.amount.div(ZTG).toFixed(2)} {fee?.symbol}
-        </span>
+        {fee && (
+          <span className="block text-xs font-normal">
+            Transaction fee:{" "}
+            {formatNumberCompact(fee.amount.div(ZTG).toNumber())} {fee.symbol}
+          </span>
+        )}
       </TransactionButton>
     </div>
   );

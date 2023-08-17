@@ -19,6 +19,7 @@ import {
 import Image from "next/image";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
+import { formatNumberCompact } from "lib/util/format-compact";
 
 const BuyFullSetForm = ({
   marketId,
@@ -159,9 +160,12 @@ const BuyFullSetForm = ({
       </div>
       <TransactionButton onClick={handleSignTransaction} disabled={disabled}>
         Confirm Buy
-        <span className="block text-xs font-normal">
-          Transaction fee: {fee?.amount.div(ZTG).toFixed(2)} {fee?.symbol}
-        </span>
+        {fee && (
+          <span className="block text-xs font-normal">
+            Transaction fee:{" "}
+            {formatNumberCompact(fee.amount.div(ZTG).toNumber())} {fee.symbol}
+          </span>
+        )}
       </TransactionButton>
     </div>
   );

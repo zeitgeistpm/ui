@@ -29,6 +29,7 @@ import { formatNumberLocalized, isValidPolkadotAddress } from "lib/util";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useNotifications } from "lib/state/notifications";
+import { formatNumberCompact } from "lib/util/format-compact";
 
 const isSupportedAsset = (id: number) => {
   return Object.keys(FOREIGN_ASSET_METADATA).includes(`${id}`);
@@ -307,7 +308,10 @@ const TransferModal = ({
         />
         <div className="mb-3 text-sm text-center">
           <span className="text-sky-600">
-            Transfer Fee: {fee ? `${fee.toFixed(4)} ${feeRaw?.symbol}` : ""}
+            Transfer Fee:{" "}
+            {fee
+              ? `${formatNumberCompact(fee.toNumber())} ${feeRaw?.symbol}`
+              : ""}
           </span>
         </div>
         <FormTransactionButton disabled={!isValid || txIsLoading}>

@@ -19,6 +19,7 @@ import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
 import Input from "components/ui/Input";
 import { convertDecimals } from "lib/util/convert-decimals";
+import { formatNumberCompact } from "lib/util/format-compact";
 
 const WithdrawButton = ({
   toChain,
@@ -263,9 +264,12 @@ const WithdrawModal = ({
           </div>
           <div className="center font-normal text-ztg-12-120 mb-[16px] text-sky-600">
             Zeitgeist fee:
-            <span className="text-black ml-1">
-              {fee?.amount.div(ZTG).toFixed(3)} {fee?.symbol ?? ""}
-            </span>
+            {fee && (
+              <span className="text-black ml-1">
+                {formatNumberCompact(fee.amount.div(ZTG).toNumber())}{" "}
+                {fee.symbol}
+              </span>
+            )}
           </div>
           <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
             {toChain} fee:
