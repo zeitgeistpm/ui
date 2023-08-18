@@ -140,20 +140,6 @@ const TransferModal = ({
   const wallet = useWallet();
   const [sdk] = useSdkv2();
 
-  // Dummy extrinsic for fee calculation since real extrinsic depends on form values
-  // Don't use this for anything else but fetching the fee
-  const feeExtrinsic = useMemo(() => {
-    if (!isRpcSdk(sdk)) {
-      return;
-    }
-    return createTransferExtrinsic(
-      sdk.api,
-      { Ztg: null },
-      "1",
-      encodeAddress(new Uint8Array(32)),
-    );
-  }, [sdk]);
-
   const extrinsic = useMemo(() => {
     if (
       !(
@@ -180,20 +166,11 @@ const TransferModal = ({
     isValid,
   ]);
 
-  const { data: feeRaw } = useExtrinsicFee(feeExtrinsic);
-  const fee = feeRaw?.amount.div(ZTG);
-
-  let maxAmount = "";
-
-  if (balance) {
-    if (assetsAreEqual(asset.assetOption?.value, feeRaw?.assetId)) {
-      maxAmount = balance.sub(fee ?? 0).toString();
-    } else {
-      maxAmount = balance.toString();
-    }
-  }
-
-  const { send, isLoading: txIsLoading } = useExtrinsic(
+  const {
+    send,
+    isLoading: txIsLoading,
+    fee: feeRaw,
+  } = useExtrinsic(
     () => {
       return extrinsic;
     },
@@ -214,6 +191,17 @@ const TransferModal = ({
       },
     },
   );
+  const fee = feeRaw?.amount.div(ZTG);
+
+  let maxAmount = "";
+
+  if (balance) {
+    if (assetsAreEqual(asset.assetOption?.value, feeRaw?.assetId)) {
+      maxAmount = balance.sub(fee ?? 0).toString();
+    } else {
+      maxAmount = balance.toString();
+    }
+  }
 
   const submit = () => {
     if (!isValid) return;

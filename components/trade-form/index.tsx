@@ -28,8 +28,6 @@ import { TradeType } from "lib/types";
 import { capitalize } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { from } from "rxjs";
-import { useDebounce } from "use-debounce";
 import RangeInput from "../ui/RangeInput";
 import TransactionButton from "../ui/TransactionButton";
 import TradeTab, { TradeTabType } from "./TradeTab";
@@ -39,7 +37,6 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { awaitIndexer } from "lib/util/await-indexer";
 import Input from "components/ui/Input";
 import { useDelayQueue } from "lib/state/delay-queue";
-import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { formatNumberCompact } from "lib/util/format-compact";
 
 const getTradeValuesFromExtrinsicResult = (
@@ -194,23 +191,24 @@ const Inner = ({
     IOMarketOutcomeAssetId.is(lastEditedAssetId) ? assetAmount : baseAmount,
   );
 
-  const feeEstimationTx = isRpcSdk(sdk)
-    ? sdk.api.tx.swaps.swapExactAmountIn(
-        0,
-        { Ztg: null },
-        "0",
-        { Ztg: null },
-        "0",
-        null,
-      )
-    : undefined;
+  // const feeEstimationTx = isRpcSdk(sdk)
+  //   ? sdk.api.tx.swaps.swapExactAmountIn(
+  //       0,
+  //       { Ztg: null },
+  //       "0",
+  //       { Ztg: null },
+  //       "0",
+  //       null,
+  //     )
+  //   : undefined;
 
-  const { data: fee } = useExtrinsicFee(feeEstimationTx);
+  // const { data: fee } = useExtrinsicFee(feeEstimationTx);
 
   const {
     send: swapTx,
     isSuccess,
     isLoading,
+    fee,
   } = useExtrinsic(() => transaction, {
     onSuccess: (data) => {
       const { baseAmount, assetAmount } = getTradeValuesFromExtrinsicResult(
@@ -491,7 +489,7 @@ const Inner = ({
           className="bg-white rounded-[10px]"
           onSubmit={(e) => {
             e.preventDefault();
-            swapTx(fee?.assetId);
+            swapTx();
           }}
         >
           <Tab.Group
@@ -620,13 +618,11 @@ const Inner = ({
               <div className="center font-normal h-[20px]">
                 Confirm {`${capitalize(tradeItem?.action)}`}
               </div>
-              {fee && (
-                <div className="center font-normal text-ztg-12-120 h-[20px]">
-                  Transaction fee:{" "}
-                  {formatNumberCompact(fee.amount.div(ZTG).toNumber())}{" "}
-                  {fee.symbol}
-                </div>
-              )}
+              <div className="center font-normal text-ztg-12-120 h-[20px]">
+                Transaction fee:{" "}
+                {formatNumberCompact(fee?.amount.div(ZTG).toNumber() ?? 0)}{" "}
+                {fee?.symbol}
+              </div>
             </TransactionButton>
           </div>
         </form>

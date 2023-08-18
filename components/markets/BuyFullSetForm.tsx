@@ -43,12 +43,6 @@ const BuyFullSetForm = ({
   const [amount, setAmount] = useState<string>("0");
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 
-  const extrinsicBase = wallet.realAddress
-    ? sdk?.asRpc().api.tx.balances.transfer(wallet.realAddress, ZTG.toFixed(0))
-    : undefined;
-
-  const { data: fee } = useExtrinsicFee(extrinsicBase);
-
   const { data: baseAssetBalance } = useBalance(
     wallet.realAddress,
     baseAssetId,
@@ -59,7 +53,11 @@ const BuyFullSetForm = ({
     pool,
   );
 
-  const { send: buySet, isLoading } = useExtrinsic(
+  const {
+    send: buySet,
+    isLoading,
+    fee,
+  } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk)) {
         return sdk.api.tx.predictionMarkets.buyCompleteSet(
@@ -104,7 +102,7 @@ const BuyFullSetForm = ({
     if (disabled || !isRpcSdk(sdk)) {
       return;
     }
-    buySet(fee?.assetId);
+    buySet();
   };
 
   useGlobalKeyPress("Enter", handleSignTransaction);

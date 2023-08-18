@@ -1,11 +1,12 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
-import { AssetId, IOForeignAssetId, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { IOForeignAssetId, isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useSdkv2 } from "./useSdkv2";
+import { useExtrinsicFee } from "./queries/useExtrinsicFee";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
@@ -25,7 +26,14 @@ export const useExtrinsic = <T>(
 
   const notifications = useNotifications();
 
-  const send = (feeAssetId?: AssetId, params?: T) => {
+  const extrinsic = useMemo(() => {
+    const ext = extrinsicFn();
+    return ext;
+  }, [extrinsicFn]);
+
+  const { data: fee } = useExtrinsicFee(extrinsic);
+
+  const send = (params?: T) => {
     if (!isRpcSdk(sdk)) {
       throw new Error("SDK is not RPC");
     }
@@ -73,12 +81,12 @@ export const useExtrinsic = <T>(
           notifications.pushNotification(error, { type: "Error" });
         },
       }),
-      IOForeignAssetId.is(feeAssetId) ? feeAssetId?.ForeignAsset : undefined,
+      IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
     ).catch(() => {
       setIsBroadcasting(false);
       setIsLoading(false);
     });
   };
 
-  return { send, isError, isSuccess, isLoading, isBroadcasting };
+  return { send, isError, isSuccess, isLoading, isBroadcasting, fee };
 };

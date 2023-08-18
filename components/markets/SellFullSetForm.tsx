@@ -14,7 +14,6 @@ import { useGlobalKeyPress } from "lib/hooks/useGlobalKeyPress";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useEffect, useState } from "react";
 import { formatNumberCompact } from "lib/util/format-compact";
@@ -47,12 +46,11 @@ const SellFullSetForm = ({
   const [amount, setAmount] = useState<string>("0");
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 
-  const extrinsicBase = wallet.realAddress
-    ? sdk?.asRpc().api.tx.balances.transfer(wallet.realAddress, ZTG.toFixed(0))
-    : undefined;
-  const { data: fee } = useExtrinsicFee(extrinsicBase);
-
-  const { send: sellSets, isLoading } = useExtrinsic(
+  const {
+    send: sellSets,
+    isLoading,
+    fee,
+  } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk)) {
         return sdk.api.tx.predictionMarkets.sellCompleteSet(
@@ -97,7 +95,7 @@ const SellFullSetForm = ({
       return;
     }
 
-    sellSets(fee?.assetId);
+    sellSets();
   };
 
   useGlobalKeyPress("Enter", handleSignTransaction);
