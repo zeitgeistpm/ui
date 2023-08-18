@@ -30,6 +30,7 @@ import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useNotifications } from "lib/state/notifications";
 import { formatNumberCompact } from "lib/util/format-compact";
+import { assetsAreEqual } from "lib/util/assets-are-equal";
 
 const isSupportedAsset = (id: number) => {
   return Object.keys(FOREIGN_ASSET_METADATA).includes(`${id}`);
@@ -185,7 +186,7 @@ const TransferModal = ({
   let maxAmount = "";
 
   if (balance) {
-    if (isNativeCurrency) {
+    if (assetsAreEqual(asset.assetOption?.value, feeRaw?.assetId)) {
       maxAmount = balance.sub(fee ?? 0).toString();
     } else {
       maxAmount = balance.toString();
@@ -199,7 +200,9 @@ const TransferModal = ({
     {
       onSuccess: () => {
         notifications.pushNotification(
-          `Successfully transfered ${asset.amount} ${asset.assetOption?.label} to ${targetAddress?.label}`,
+          `Successfully transferred ${formatNumberCompact(
+            Number(asset.amount),
+          )} ${asset.assetOption?.label} to ${targetAddress?.label}`,
           {
             type: "Success",
           },
@@ -255,11 +258,7 @@ const TransferModal = ({
                 if (!v.assetOption) {
                   return "Currency selection missing";
                 }
-                //todo check this
-                if (
-                  (isNativeCurrency && fee && balance?.sub(fee).lt(v.amount)) ||
-                  balance?.lt(v.amount)
-                ) {
+                if (new Decimal(maxAmount).lessThan(v.amount)) {
                   return "Insufficient balance";
                 }
               },

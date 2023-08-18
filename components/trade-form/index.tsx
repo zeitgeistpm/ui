@@ -6,6 +6,7 @@ import {
   IOMarketOutcomeAssetId,
   IOZtgAssetId,
   ZTG,
+  isRpcSdk,
 } from "@zeitgeistpm/sdk-next";
 import TradeResult from "components/markets/TradeResult";
 import Decimal from "decimal.js";
@@ -89,7 +90,7 @@ const Inner = ({
 }) => {
   const notifications = useNotifications();
   const queryClient = useQueryClient();
-  const [_, id] = useSdkv2();
+  const [sdk, id] = useSdkv2();
 
   const { register, formState, watch, setValue, reset } = useForm<{
     percentage: string;
@@ -193,8 +194,18 @@ const Inner = ({
     IOMarketOutcomeAssetId.is(lastEditedAssetId) ? assetAmount : baseAmount,
   );
 
-  //todo: debounce?
-  const { data: fee } = useExtrinsicFee(transaction);
+  const feeEstimationTx = isRpcSdk(sdk)
+    ? sdk.api.tx.swaps.swapExactAmountIn(
+        0,
+        { Ztg: null },
+        "0",
+        { Ztg: null },
+        "0",
+        null,
+      )
+    : undefined;
+
+  const { data: fee } = useExtrinsicFee(feeEstimationTx);
 
   const {
     send: swapTx,
