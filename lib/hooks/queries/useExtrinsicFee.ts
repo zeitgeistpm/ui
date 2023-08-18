@@ -17,6 +17,9 @@ type FeeAsset = {
   sufficientBalance: boolean;
 };
 
+// 2% buffer, extrinsic fees paid in foreign asset take a little more computation (approx 1.6%)
+const foreignAssetFeeBuffer = 1.02;
+
 export const extrinsicFeeKey = "extrinsic-fee";
 
 export const useExtrinsicFee = (
@@ -75,7 +78,9 @@ export const useExtrinsicFee = (
             ?.find((data) => asset.foreignAssetId === data[0])?.[1]
             .feeFactor.div(ZTG);
           if (feeFactor) {
-            return asset.balance.greaterThan(fee.mul(feeFactor));
+            return asset.balance.greaterThan(
+              fee.mul(feeFactor).mul(foreignAssetFeeBuffer),
+            );
           }
         });
 
@@ -88,7 +93,7 @@ export const useExtrinsicFee = (
               ForeignAsset: availableAsset.foreignAssetId,
             },
             symbol: availableAsset.symbol,
-            amount: fee.mul(feeFactor ?? 1),
+            amount: fee.mul(feeFactor ?? 1).mul(foreignAssetFeeBuffer),
             sufficientBalance: true,
           };
         } else {
