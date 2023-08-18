@@ -3097,20 +3097,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/indexer@npm:^3.6.0":
-  version: 3.6.0
-  resolution: "@zeitgeistpm/indexer@npm:3.6.0"
+"@zeitgeistpm/indexer@npm:^3.7.1":
+  version: 3.7.1
+  resolution: "@zeitgeistpm/indexer@npm:3.7.1"
   dependencies:
     graphql: ^16.6.0
     graphql-request: ^5.0.0
     graphql-tag: ^2.12.6
-  checksum: ef5b28fcc447b55c646cf48b272740fc686b218a33d052960eef5ff2e1f77439cdb6feb3cca2a59d275094f438f3e8387e7bc0aeb1be40e3eee1526e23080137
+  checksum: c715db6faeee0c78e81d3e7cc3ec697b24289887cbb61b87efc1cdeaa909c209185638539f245fe86f741079f0c5560d3901192434ace22654c7d73e2ef0fc8e
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/rpc@npm:^2.10.0":
-  version: 2.10.0
-  resolution: "@zeitgeistpm/rpc@npm:2.10.0"
+"@zeitgeistpm/rpc@npm:^2.10.1":
+  version: 2.10.1
+  resolution: "@zeitgeistpm/rpc@npm:2.10.1"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.14.0
     "@zeitgeistpm/utility": ^2.20.0
@@ -3118,17 +3118,17 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/keyring": "*"
     "@polkadot/types": "*"
-  checksum: 4f826a68a2e56490f30e404092209923ad486e51193af0697f2362368dc92f5a357094968343d0cf1253acef645d2d7582481dd03fef39af2ead792a11ae39cd
+  checksum: 20a1200f1cdbea4d244843510ce34456e1ba9655126a19f95685f24b61dea37b5b6ead5964e346644e6f91a3771b2246b7de3538aac4289c51802b9ba76366c1
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.35.0":
-  version: 2.35.0
-  resolution: "@zeitgeistpm/sdk@npm:2.35.0"
+"@zeitgeistpm/sdk-next@npm:@zeitgeistpm/sdk@2.36.1":
+  version: 2.36.1
+  resolution: "@zeitgeistpm/sdk@npm:2.36.1"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.14.0
-    "@zeitgeistpm/indexer": ^3.6.0
-    "@zeitgeistpm/rpc": ^2.10.0
+    "@zeitgeistpm/indexer": ^3.7.1
+    "@zeitgeistpm/rpc": ^2.10.1
     "@zeitgeistpm/utility": ^2.20.0
     "@zeitgeistpm/web3.storage": ^2.11.0
     cids: ^1.1.9
@@ -3143,7 +3143,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: c43b261f633a40ecc616cfe07be69e3dc05c6ec603daa95b0b065ed598a2cfee87d34ea89baefbbc4b7277ea2c3e7972a799e473e7d0754a62f17e7493a9500e
+  checksum: a02da5598a1fd5ada743fad7690388fed1ce7c2fce05b59852d396961afc76f5f8013f4b815b792ffa7e875a8cd6aa6feab1f5afa8340f9601ca74f464406fd4
   languageName: node
   linkType: hard
 
@@ -3242,7 +3242,7 @@ __metadata:
     "@zeitgeistpm/avatara-react": ^1.3.2
     "@zeitgeistpm/avatara-util": ^1.2.0
     "@zeitgeistpm/sdk": ^1.0.3
-    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.35.0"
+    "@zeitgeistpm/sdk-next": "npm:@zeitgeistpm/sdk@2.36.1"
     "@zeitgeistpm/utility": ^2.19.1
     autoprefixer: 10.2.5
     axios: ^0.21.4
