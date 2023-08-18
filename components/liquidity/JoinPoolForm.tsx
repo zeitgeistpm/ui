@@ -4,7 +4,6 @@ import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
-import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { poolTotalIssuanceRootQueryKey } from "lib/hooks/queries/useTotalIssuanceForPools";
@@ -37,7 +36,6 @@ const JoinPoolForm = ({
   const [poolSharesToReceive, setPoolSharesToReceive] = useState<Decimal>();
   const { data: market } = useMarket({ poolId });
   const queryClient = useQueryClient();
-  const { data: fee } = useExtrinsicFee();
 
   const { send: joinPool, isLoading } = useExtrinsic(
     () => {
@@ -145,7 +143,7 @@ const JoinPoolForm = ({
   }, [watch, poolBalances]);
 
   const onSubmit: SubmitHandler<any> = () => {
-    joinPool(fee?.assetId);
+    joinPool();
   };
 
   return (

@@ -9,11 +9,9 @@ import { DateTimeInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
-import { useWallet } from "lib/state/wallet";
 import { useState } from "react";
 
 const ScalarReportBox = ({
@@ -25,7 +23,6 @@ const ScalarReportBox = ({
 }) => {
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
-  const { data: fee } = useExtrinsicFee();
 
   if (!market) return null;
 
@@ -71,7 +68,7 @@ const ScalarReportBox = ({
     isSuccess ||
     scalarReportValue === "";
 
-  const handleSignTransaction = async () => send(fee?.assetId);
+  const handleSignTransaction = async () => send();
 
   return (
     <>

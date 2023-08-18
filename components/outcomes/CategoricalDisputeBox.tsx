@@ -32,7 +32,6 @@ const CategoricalDisputeBox = ({
   const queryClient = useQueryClient();
   const { data: constants, isLoading: isConstantsLoading } =
     useChainConstants();
-  const { data: fee } = useExtrinsicFee();
 
   const disputeBond = constants?.markets.disputeBond;
   const disputeFactor = constants?.markets.disputeFactor;
@@ -113,7 +112,7 @@ const CategoricalDisputeBox = ({
       )}
       <TransactionButton
         className="mb-ztg-10 mt-[20px]"
-        onClick={() => dispute(fee?.assetId)}
+        onClick={() => dispute()}
         disabled={isLoading}
       >
         Confirm Dispute

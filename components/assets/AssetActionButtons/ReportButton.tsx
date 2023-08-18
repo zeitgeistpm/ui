@@ -11,7 +11,6 @@ import {
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";
-import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -30,7 +29,6 @@ const ReportButton = ({
   const wallet = useWallet();
   const notificationStore = useNotifications();
   const [scalarReportBoxOpen, setScalarReportBoxOpen] = useState(false);
-  const { data: fee } = useExtrinsicFee();
 
   const { isLoading, isSuccess, send } = useExtrinsic(
     () => {
@@ -79,7 +77,7 @@ const ReportButton = ({
     if (market.marketType.scalar) {
       setScalarReportBoxOpen(true);
     } else {
-      send(fee?.assetId);
+      send();
     }
   };
 

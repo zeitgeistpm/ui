@@ -8,6 +8,7 @@ import {
   ZTG,
 } from "@zeitgeistpm/sdk-next";
 import FormTransactionButton from "components/ui/FormTransactionButton";
+import Input from "components/ui/Input";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
@@ -20,8 +21,6 @@ import { useNotifications } from "lib/state/notifications";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
-import Input from "components/ui/Input";
-import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 
 const ExitPoolForm = ({
   poolBalances,
@@ -57,7 +56,6 @@ const ExitPoolForm = ({
   const userPercentageOwnership = userPoolShares.div(totalPoolShares);
   const { data: market } = useMarket({ poolId });
   const queryClient = useQueryClient();
-  const { data: fee } = useExtrinsicFee();
 
   // filter out non-winning assets as they are deleted on chain
   const poolWeights =
@@ -187,7 +185,7 @@ const ExitPoolForm = ({
   }, [watch, poolBalances]);
 
   const onSubmit: SubmitHandler<any> = () => {
-    exitPool(fee?.assetId);
+    exitPool();
   };
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>

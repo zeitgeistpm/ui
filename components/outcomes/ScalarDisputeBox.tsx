@@ -29,7 +29,6 @@ const ScalarDisputeBox = ({
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
   const { data: constants } = useChainConstants();
-  const { data: fee } = useExtrinsicFee();
 
   const disputeBond = constants?.markets.disputeBond;
   const disputeFactor = constants?.markets.disputeFactor;
@@ -94,7 +93,7 @@ const ScalarDisputeBox = ({
     },
   );
 
-  const handleSignTransaction = async () => send(fee?.assetId);
+  const handleSignTransaction = async () => send();
 
   return (
     <div className="p-[30px] flex flex-col items-center gap-y-3">
