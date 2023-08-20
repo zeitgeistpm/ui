@@ -22,15 +22,15 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="relative justify-center items-center flex md:hidden"
+        className="relative justify-center items-center flex lg:hidden"
       >
-        <AiOutlineInfoCircle />
+        {icon ?? <AiOutlineInfoCircle />}
       </button>
 
       <Popover className="relative">
         {({ open }) => (
           <>
-            <Popover.Button className="relative justify-center items-center hidden md:flex">
+            <Popover.Button className="relative justify-center items-center hidden lg:flex">
               {icon ?? <AiOutlineInfoCircle />}
             </Popover.Button>
 
@@ -56,7 +56,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
               leaveFrom="opacity-100 scale-95"
               leaveTo="opacity-0 scale-1"
             >
-              <Popover.Panel className="absolute z-[100] bg-tooltip-bg top-[100%] right-0 translate-x-[50%] mt-2 ml-2 w-screen md:w-[500px] rounded-md">
+              <Popover.Panel className="absolute z-[100] bg-tooltip-bg top-[100%] right-0 translate-x-[50%] mt-2 ml-2 w-screen lg:w-[500px] rounded-md">
                 <div className="overflow-hidden p-5 rounded-md shadow-xs ring-2 text-black ring-orange-400 ring-opacity-20 text-left font-light text-base">
                   {children}
                 </div>

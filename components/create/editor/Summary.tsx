@@ -7,6 +7,7 @@ import { useChainTime } from "lib/state/chaintime";
 import { MarketDraftEditor } from "lib/state/market-creation/editor";
 import {
   Answers,
+  CurrencyTag,
   Liquidity,
   Moderation,
   blocksAsDuration,
@@ -73,6 +74,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             <Answers
               answers={form.answers!}
               baseAssetPrice={baseAssetPrice!}
+              baseCurrency={form.currency!}
               liquidity={form?.liquidity}
               moderation={form.moderation!}
             />
@@ -260,11 +262,13 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
 const Answers = ({
   answers,
   liquidity,
+  baseCurrency,
   baseAssetPrice,
   moderation,
 }: {
   answers: Answers;
   liquidity?: Liquidity;
+  baseCurrency: CurrencyTag;
   baseAssetPrice?: Decimal;
   moderation: Moderation;
 }) => {
@@ -283,7 +287,7 @@ const Answers = ({
             key={answerIndex}
             className="flex-1 rounded-md bg-gray-50 py-3 px-5 mb-4 md:mb-0"
           >
-            <div className="text-xl font-semibold">
+            <div className="text-xl font-semibold uppercase">
               {answerLiquidity?.asset}
             </div>
             {answers.type === "categorical" && (
@@ -308,11 +312,15 @@ const Answers = ({
                     <Label className="text-xs">Weight</Label>{" "}
                   </div>
                   <div className="table-cell text-left">
-                    <div>{answerLiquidity?.weight ?? "--"}</div>
+                    <div>
+                      {answerLiquidity?.weight
+                        ? new Decimal(answerLiquidity.weight).toFixed(2)
+                        : "--"}
+                    </div>
                   </div>
                 </div>
 
-                <div className="table-row">
+                <div className="table-row mb-1">
                   <div className="table-cell text-left pr-4">
                     <Label className="text-xs">Value</Label>{" "}
                   </div>
@@ -330,6 +338,22 @@ const Answers = ({
                       ) : (
                         ""
                       )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="table-row ">
+                  <div className="table-cell text-left pr-4">
+                    <Label className="text-xs">Price</Label>{" "}
+                  </div>
+                  <div className="table-cell text-left">
+                    <div className="flex gap-2">
+                      <div className="font-semibold">
+                        {new Decimal(answerLiquidity?.price.price ?? 0).toFixed(
+                          2,
+                        )}
+                      </div>
+                      <div className="font-bold">{baseCurrency}</div>
                     </div>
                   </div>
                 </div>

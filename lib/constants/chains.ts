@@ -57,6 +57,7 @@ const BATTERY_STATION_CHAINS: Chain[] = [
           existentialDeposit: new Decimal(
             api.consts.balances.existentialDeposit.toString(),
           ),
+          decimals: 12,
         },
       ];
     },
@@ -119,6 +120,7 @@ const PROD_CHAINS: Chain[] = [
           existentialDeposit: new Decimal(
             api.consts.balances.existentialDeposit.toString(),
           ),
+          decimals: 10,
         },
       ];
     },
