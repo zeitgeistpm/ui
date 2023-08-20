@@ -3,10 +3,12 @@ import {
   SubWallet,
   TalismanWallet,
 } from "@talismn/connect-wallets";
-import { ChevronRight, Video } from "react-feather";
+import { Video } from "react-feather";
 import { NextPage } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import ActionCard from "components/ui/ActionCard";
+import { motion } from "framer-motion";
 
 const walletsConfig = [
   new TalismanWallet(),
@@ -60,23 +62,32 @@ const CreateAccountPage: NextPage = () => {
       <div className="grid grid-cols-3 gap-x-8 mt-9">
         {walletsConfig.map((wallet, idx) => {
           return (
-            <Link
-              className="center bg-white rounded-lg hover:bg-pastel-blue duration-500 transition"
-              href={wallet.installUrl}
-              target="_blank"
-              key={idx}
+            <motion.div
+              whileHover={{
+                scale: 1.03,
+                boxShadow: "0px 10px 20px 5px rgba(0,0,0,0.25)",
+              }}
+              whileTap={{ scale: 1 }}
+              className={`w-full rounded-lg`}
             >
-              <div className="flex items-center h-36">
-                <Image
-                  src={wallet.logo.src}
-                  alt={wallet.logo.alt}
-                  width={30}
-                  height={30}
-                  quality={100}
-                />
-                <div className="font-medium ml-4 text-lg">{wallet.title}</div>
-              </div>
-            </Link>
+              <Link
+                className="center bg-white rounded-lg"
+                href={wallet.installUrl}
+                target="_blank"
+                key={idx}
+              >
+                <div className="flex items-center h-36">
+                  <Image
+                    src={wallet.logo.src}
+                    alt={wallet.logo.alt}
+                    width={30}
+                    height={30}
+                    quality={100}
+                  />
+                  <div className="font-medium ml-4 text-lg">{wallet.title}</div>
+                </div>
+              </Link>
+            </motion.div>
           );
         })}
       </div>
@@ -91,63 +102,22 @@ const CreateAccountPage: NextPage = () => {
       </div>
       <h2 className="mb-9 p-2">Next Steps</h2>
       <div className="grid grid-cols-2 gap-x-8 mb-20">
-        <div className="px-5 py-2 bg-white rounded-lg flex flex-col justify-between">
-          <h3 className="p-2 font-bold">Deposit Tokens</h3>
-          <div className="flex p-2">
-            <Image
-              src="/category/e-sports.png"
-              alt="Deposit tokens"
-              width={69}
-              height={69}
-              quality={100}
-              className="rounded-md"
-            />
-            <p className="ml-4">
-              Use one of several methods to deposit crypto on Zeitgeist to start
-              trading
-            </p>
-          </div>
-          <div className="flex items-center p-2">
-            <Link
-              className="text-blue font-medium flex-grow flex items-center"
-              href="/deposit"
-              shallow
-            >
-              Make a Deposit <ChevronRight size={22} />
-            </Link>
-            <div className="bg-mystic py-1 px-2 text-sm rounded-md">
-              ~5 - 15 minutes
-            </div>
-          </div>
-        </div>
-        <div className="px-5 py-2 bg-white rounded-lg flex flex-col justify-between">
-          <h3 className="p-2 font-bold">Start Trading</h3>
-          <div className="flex p-2">
-            <Image
-              src="/category/e-sports.png"
-              alt="Deposit tokens"
-              width={69}
-              height={69}
-              quality={100}
-              className="rounded-md"
-            />
-            <p className="ml-4">
-              You're ready to explore the entirety of our application!
-            </p>
-          </div>
-          <div className="flex items-center p-2">
-            <Link
-              className="text-blue font-medium flex-grow flex items-center"
-              href="/markets"
-              shallow
-            >
-              Make predictions <ChevronRight size={22} />
-            </Link>
-            <div className="bg-mystic py-1 px-2 text-sm rounded-md">
-              No time limits
-            </div>
-          </div>
-        </div>
+        <ActionCard
+          title="Deposit Tokens"
+          imageUrl="/category/e-sports.png"
+          actionText="Make a Deposit"
+          description="Use one of several methods to deposit crypto on Zeitgeist to start trading"
+          actionUrl="/deposit"
+          pillLabel="~5 - 15 minutes"
+        />
+        <ActionCard
+          title="Start Trading"
+          imageUrl="/category/e-sports.png"
+          actionText="Make a Predictions"
+          description="You're ready to explore the entirety of our application!"
+          actionUrl="/markets"
+          pillLabel="No time limits"
+        />
       </div>
     </>
   );

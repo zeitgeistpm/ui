@@ -21,6 +21,7 @@ import { useCrossChainExtrinsic } from "lib/hooks/useCrossChainExtrinsic";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { formatNumberCompact } from "lib/util/format-compact";
 import FormTransactionButton from "components/ui/FormTransactionButton";
+import ActionCard from "components/ui/ActionCard";
 
 const ZtgIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg
@@ -482,63 +483,22 @@ const DepositPage: NextPage = () => {
       </div>
       <h2 className="mb-9 p-2">What else</h2>
       <div className="grid grid-cols-2 gap-x-8 mb-20">
-        <div className="px-5 py-2 bg-white rounded-lg flex flex-col justify-between">
-          <h3 className="p-2 font-bold">Create an Account</h3>
-          <div className="flex p-2">
-            <Image
-              src="/category/e-sports.png"
-              alt="Deposit tokens"
-              width={69}
-              height={69}
-              quality={100}
-              className="rounded-md"
-            />
-            <p className="ml-4">
-              Use one of several methods to deposit crypto on Zeitgeist to start
-              trading
-            </p>
-          </div>
-          <div className="flex items-center p-2">
-            <Link
-              className="text-blue font-medium flex-grow flex items-center"
-              href="/deposit"
-              shallow
-            >
-              Make a Deposit <ChevronRight size={22} />
-            </Link>
-            <div className="bg-mystic py-1 px-2 text-sm rounded-md">
-              ~5 - 15 minutes
-            </div>
-          </div>
-        </div>
-        <div className="px-5 py-2 bg-white rounded-lg flex flex-col justify-between">
-          <h3 className="p-2 font-bold">Start Trading</h3>
-          <div className="flex p-2">
-            <Image
-              src="/category/e-sports.png"
-              alt="Deposit tokens"
-              width={69}
-              height={69}
-              quality={100}
-              className="rounded-md"
-            />
-            <p className="ml-4">
-              You're ready to explore the entirety of our application!
-            </p>
-          </div>
-          <div className="flex items-center p-2">
-            <Link
-              className="text-blue font-medium flex-grow flex items-center"
-              href="/markets"
-              shallow
-            >
-              Make predictions <ChevronRight size={22} />
-            </Link>
-            <div className="bg-mystic py-1 px-2 text-sm rounded-md">
-              No time limits
-            </div>
-          </div>
-        </div>
+        <ActionCard
+          title="Crate an Account"
+          imageUrl="/category/e-sports.png"
+          actionText="Make a Deposit"
+          description="Use one of several methods to deposit crypto on Zeitgeist to start trading"
+          actionUrl="/deposit"
+          pillLabel="~5 - 15 minutes"
+        />
+        <ActionCard
+          title="Start Trading"
+          imageUrl="/category/e-sports.png"
+          actionText="Make predictions"
+          description="You're ready to explore the entirety of our application!"
+          actionUrl="/markets"
+          pillLabel="No time limits"
+        />
       </div>
     </>
   );
