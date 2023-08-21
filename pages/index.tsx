@@ -177,7 +177,7 @@ const HeroBanner = () => {
   });
 
   return (
-    <div className="relative main-container mt-28 md:mt-36 mb-20 z-2">
+    <div className="relative main-container mt-12 md:mt-28 mb-20 z-2">
       <div className="relative flex flex-col-reverse md:flex-row md:gap-8">
         <div className="md:w-[890px] lg:w-[690px]">
           <h1 className="text-5xl mb-8">Welcome to the Future of Betting</h1>
