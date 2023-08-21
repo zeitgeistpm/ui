@@ -185,10 +185,10 @@ const HeroBanner = () => {
             Zeitgeist is a new innovative platform for predicting future events
           </h2>
           <div className="flex gap-4 mb-8">
-            <button className="rounded-md bg-vermilion text-white px-6 py-3">
+            <button className="rounded-md flex-1 md:flex-none bg-vermilion text-white px-6 py-3">
               Learn More
             </button>
-            <button className="rounded-md bg-transparent border-2 border-black text-black px-6 py-3">
+            <button className="rounded-md flex-1 md:flex-none bg-transparent border-2 border-black text-black px-6 py-3">
               Get Started
             </button>
           </div>
