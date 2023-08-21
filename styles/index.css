@@ -210,12 +210,8 @@ h6 {
 @import "./quill.css";
 @import "./range-component.css";
 
-.main-container {
-  @apply px-4 sm:px-10 md:px-24 lg:px-32 mx-auto;
-}
-
 .container-fluid {
-  @apply px-4 sm:px-10 md:px-24 lg:px-32 max-w-screen-xl mx-auto;
+  @apply px-9 mx-auto max-w-screen-2xl;
 }
 
 .carousel__slide--visible {

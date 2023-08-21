@@ -105,11 +105,11 @@ const IndexPage: NextPage<{
     <>
       {/* <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} /> */}
 
-      <BgBallGfx />
-
-      <HeroBanner />
-
       <div data-testid="indexPage" className="main-container relative z-1">
+        <BgBallGfx />
+
+        <HeroBanner />
+
         <NetworkStats
           marketCount={stats.marketCount}
           tradersCount={stats.tradersCount}
@@ -154,7 +154,7 @@ const IndexPage: NextPage<{
 
 const BgBallGfx = () => (
   <div
-    className="absolute flex justify-center -left-20 top-10 items-center h-[740px] w-[740px] rounded-full bg-red z-0 rotate-180"
+    className="absolute flex justify-center -left-20 -top-[370px] items-center h-[740px] w-[740px] rounded-full bg-red z-0 rotate-180"
     style={{
       background:
         "linear-gradient(131.15deg, rgba(0, 102, 255, 0.022) 11.02%, rgba(254, 0, 152, 0.1) 93.27%)",
