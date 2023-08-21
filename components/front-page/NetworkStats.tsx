@@ -19,7 +19,7 @@ const NetworkStats = ({
   totalVolumeUsd: number;
 }) => {
   return (
-    <div className="w-full flex flex-col sm:flex-row gap-4 mt-10">
+    <div className="relative w-full flex flex-col sm:flex-row gap-4 mt-10 z-10">
       <StatCard
         title="All-time trading volume"
         value={`$${new Intl.NumberFormat("en-US", {

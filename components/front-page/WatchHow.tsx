@@ -6,38 +6,17 @@ const WatchHow = () => {
       <div className="font-medium text-sm sm:text-lg md:text-[32px]  z-10">
         Trade on any future event
       </div>
-      <div className="flex item-center justify-center gap-2 ml-auto bg-[#DC056C] text-white rounded-md px-[20px] py-[10px] z-10">
-        <span className="text-sm md:text-[px]">Watch how</span>
+      <a className="flex cursor-pointer center gap-2 ml-auto bg-[#DC056C] text-white rounded-md px-[20px] py-[10px] z-10">
+        <span className="text-sm md:text-[px] font-semibold">Watch how</span>
         <Video size={24} />
-      </div>
-
+      </a>
       <div
-        className="rounded-full absolute flex items-center justify-center"
-        style={{
-          height: 625,
-          width: 625,
-          background:
-            "linear-gradient(131deg, rgba(240, 206, 135, 0.05) 0%, rgba(50, 255, 157, 0.40) 100%)",
-        }}
-      >
-        <div
-          className="rounded-full "
-          style={{
-            height: 337,
-            width: 337,
-            background:
-              "linear-gradient(131deg, rgba(240, 206, 135, 0.05) 0%, rgba(50, 255, 157, 0.40) 100%)",
-          }}
-        ></div>
-      </div>
+        className="absolute left-[25%] top-10 w-[30%] pb-[30%] h-[0] rounded-full blur-3xl"
+        style={{ backgroundColor: "rgba(250,217,255, 1)" }}
+      ></div>
       <div
-        className="rounded-full absolute right-[200px] -top-[80px] hidden lg:block"
-        style={{
-          height: 157,
-          width: 157,
-          background:
-            "linear-gradient(131deg, rgba(240, 206, 135, 0.40) 0%, rgba(254, 0, 152, 0.40) 100%)",
-        }}
+        className="absolute left-[60%] -top-10 w-[40%] pb-[40%] h-[0] rounded-full blur-3xl"
+        style={{ backgroundColor: "rgba(231,237,247, 1)" }}
       ></div>
     </div>
   );

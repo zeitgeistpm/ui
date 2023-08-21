@@ -96,7 +96,7 @@ export const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
 
   const json = await res.json();
 
-  return new Decimal(json[coinGeckoId].usd);
+  return new Decimal(json[coinGeckoId]?.usd ?? 0);
 };
 
 const getZTGPrice = async (): Promise<Decimal> => {
