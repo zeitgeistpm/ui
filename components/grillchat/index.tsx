@@ -33,7 +33,7 @@ const GrillChat: React.FC<GrillChatProps> = () => {
 
   return (
     <div
-      className={"fixed bottom-0 w-screen mr-10 mb-4 pointer-events-none z-30"}
+      className={"fixed bottom-0 right-4 w-full mb-4 pointer-events-none z-30"}
     >
       <motion.div
         key="grillchat"

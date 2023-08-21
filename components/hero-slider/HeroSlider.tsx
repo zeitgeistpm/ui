@@ -20,7 +20,7 @@ const HeroSlider = ({
 
   return (
     <section
-      className={`relative w-full h-[527px] mx-auto mt-[60px]`}
+      className={`relative w-full h-[527px] mx-auto`}
       data-testid="HeroSlider__container"
     >
       {banners.map((banner, index) => (
