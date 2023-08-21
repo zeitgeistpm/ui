@@ -4,7 +4,7 @@ import Logo from "../icons/ZeitgeistIcon";
 const MenuLogo: FC<{}> = () => {
   return (
     <div className="flex items-center gap-4">
-      <Logo dark={false} />
+      <Logo variant={"light"} />
       <>
         <div className="hidden md:flex flex-col">
           <h1 className={`font-kanit text-white text-xl `}>Zeitgeist</h1>

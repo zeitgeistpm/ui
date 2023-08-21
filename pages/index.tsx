@@ -27,6 +27,8 @@ import { Line, LineChart, ResponsiveContainer, YAxis } from "recharts";
 import TableChart, { getColour } from "components/ui/TableChart";
 import { random } from "lodash-es";
 import { FaDollarSign } from "react-icons/fa";
+import ZeitgeistIcon from "components/icons/ZeitgeistIcon";
+import WatchHow from "components/front-page/WatchHow";
 
 const getPlaiceholders = (
   paths: string[],
@@ -103,8 +105,6 @@ const IndexPage: NextPage<{
 }) => {
   return (
     <>
-      {/* <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} /> */}
-
       <div data-testid="indexPage" className="main-container relative z-1">
         <BgBallGfx />
 
@@ -115,27 +115,33 @@ const IndexPage: NextPage<{
           tradersCount={stats.tradersCount}
           totalVolumeUsd={stats.volumeUsd}
         />
+
         {featuredMarkets.length > 0 && (
           <div className="my-[60px]">
             <MarketScroll
-              title="Featured Markets"
+              title="Promoted Markets"
               cta="Go to Markets"
               markets={featuredMarkets}
               link="markets"
             />
           </div>
         )}
-        {/* Need link */}
-        {/* <WatchHow /> */}
+
+        {/* NEWS HERE */}
+
+        <WatchHow />
+
         <div className="mb-[60px]">
           <PopularCategories
             counts={categoryCounts}
             imagePlaceholders={categoryPlaceholders}
           />
         </div>
+
         <div className="flex items-center w-full justify-center bottom-[60px]">
           <LearnSection />
         </div>
+
         {trendingMarkets.length > 0 && (
           <div className="my-[60px]">
             <MarketScroll
@@ -146,6 +152,7 @@ const IndexPage: NextPage<{
             />
           </div>
         )}
+
         <LatestTrades />
       </div>
     </>
@@ -195,11 +202,11 @@ const HeroBanner = () => {
           <div className="bg-blue-300 py-3 px-4 bg-opacity-70 w-full rounded-md flex gap-2">
             <div className="flex justify-start items-center gap-2 w-1/3">
               <div>
-                <FaDollarSign size={20} />
+                <ZeitgeistIcon variant="blue" height={28} width={28} />
               </div>
               <div>
-                <div className="font-bold text-md">Trade Volume</div>
-                <div className="text-sm">24 h</div>
+                <div className="font-bold text-md">Zeitgeist</div>
+                <div className="text-sm">ZTG</div>
               </div>
             </div>
             <div className="flex center w-1/3">
@@ -221,9 +228,7 @@ const HeroBanner = () => {
             </div>
             <div className="flex justify-end items-center gap-2 flex-1">
               <div>
-                <div className="font-semibold text-md text-center">
-                  2.5K USD
-                </div>
+                <div className="font-semibold text-md text-center">$0.55</div>
                 <div className="text-sm text-center">+2.3%</div>
               </div>
             </div>
