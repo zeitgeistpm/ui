@@ -40,13 +40,6 @@ export const useAssetMetadata = (assetId?: AssetId) => {
           return assetMetadata;
         } else if (IOForeignAssetId.is(assetId)) {
           const metadata = await sdk.api.query.assetRegistry.metadata(assetId);
-          //todo: get this to work
-          console.log(metadata.unwrapOr(null)?.toHuman());
-          console.log(
-            metadata.unwrapOr(null)?.additional.xcm.feeFactor.toString(),
-          );
-          // console.log(metadata.unwrapOr(null)?.xcm.toHuman());
-
           const location = metadata.unwrapOr(null)?.location.isSome
             ? metadata.unwrap().location.unwrap()
             : null;

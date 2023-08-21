@@ -90,6 +90,7 @@ export const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
   const coinGeckoId =
     FOREIGN_ASSET_METADATA[foreignAsset.ForeignAsset].coinGeckoId;
 
+  //todo: this is failing
   const res = await fetch(
     `https://api.coingecko.com/api/v3/simple/price?ids=${coinGeckoId}&vs_currencies=usd`,
   );

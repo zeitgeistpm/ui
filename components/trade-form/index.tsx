@@ -191,19 +191,6 @@ const Inner = ({
     IOMarketOutcomeAssetId.is(lastEditedAssetId) ? assetAmount : baseAmount,
   );
 
-  // const feeEstimationTx = isRpcSdk(sdk)
-  //   ? sdk.api.tx.swaps.swapExactAmountIn(
-  //       0,
-  //       { Ztg: null },
-  //       "0",
-  //       { Ztg: null },
-  //       "0",
-  //       null,
-  //     )
-  //   : undefined;
-
-  // const { data: fee } = useExtrinsicFee(feeEstimationTx);
-
   const {
     send: swapTx,
     isSuccess,
