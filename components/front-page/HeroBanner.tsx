@@ -1,14 +1,40 @@
 import ZeitgeistIcon from "components/icons/ZeitgeistIcon";
 import { getColour } from "components/ui/TableChart";
+import { ZtgPriceHistory } from "lib/hooks/queries/useAssetUsdPrice";
 import { random } from "lodash-es";
 import Image from "next/image";
+import { useMemo } from "react";
 import { Line, LineChart, ResponsiveContainer, YAxis } from "recharts";
 
-export const HeroBanner = () => {
-  const mockChartData = [...Array(10).keys()].map(() => {
-    const v = random(4, 10);
-    return { v, t: 1 };
-  });
+function getEveryNth<T>(arr: Array<T>, nth: number) {
+  const result: Array<T> = [];
+
+  for (let index = 0; index < arr.length; index += nth) {
+    result.push(arr[index]);
+  }
+
+  return result;
+}
+
+export const HeroBanner = ({ ztgHistory }: { ztgHistory: ZtgPriceHistory }) => {
+  const { chartData, firstPrice, latestPrice, prctChange } = useMemo(() => {
+    const chartData = getEveryNth(ztgHistory.prices, 10).map(
+      ([timestamp, price]) => {
+        return { v: price, t: 1 };
+      },
+    );
+
+    const firstPrice = ztgHistory.prices[0][1];
+    const latestPrice = ztgHistory.prices[ztgHistory.prices.length - 1][1];
+    const prctChange = ((latestPrice - firstPrice) / firstPrice) * 100;
+
+    return {
+      chartData,
+      firstPrice,
+      latestPrice,
+      prctChange,
+    };
+  }, [ztgHistory]);
 
   return (
     <div className="relative main-container mt-12 md:mt-28 mb-20 z-2">
@@ -38,15 +64,15 @@ export const HeroBanner = () => {
             </div>
             <div className="flex center w-1/3">
               <ResponsiveContainer width={"100%"} height="65%">
-                <LineChart data={mockChartData}>
+                <LineChart data={chartData}>
                   <Line
                     type="monotone"
                     dataKey="v"
                     dot={false}
                     strokeWidth={2}
                     stroke={getColour(
-                      mockChartData[0].v,
-                      mockChartData[mockChartData.length - 1].v,
+                      chartData[0].v,
+                      chartData[chartData.length - 1].v,
                     )}
                   />
                   <YAxis hide={true} domain={["dataMin", "dataMax"]} />
@@ -55,8 +81,12 @@ export const HeroBanner = () => {
             </div>
             <div className="flex justify-end items-center gap-2 flex-1">
               <div>
-                <div className="font-semibold text-md text-center">$0.55</div>
-                <div className="text-sm text-center">+2.3%</div>
+                <div className="font-semibold text-md text-center">
+                  ${latestPrice.toFixed(3)}
+                </div>
+                <div className="text-sm text-center">
+                  {prctChange.toFixed(1)}%
+                </div>
               </div>
             </div>
           </div>

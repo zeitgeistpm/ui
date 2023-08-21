@@ -113,3 +113,15 @@ const getZTGPrice = async (): Promise<Decimal> => {
     }
   }
 };
+
+export type ZtgPriceHistory = {
+  prices: [timestamp: number, price: number][];
+};
+
+export const getZTGHistory = async (): Promise<ZtgPriceHistory> => {
+  const response = await fetch(
+    `https://api.coingecko.com/api/v3/coins/zeitgeist/market_chart?vs_currency=usd&days=7`,
+  );
+  const data = await response.json();
+  return data;
+};

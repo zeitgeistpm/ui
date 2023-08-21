@@ -18,6 +18,10 @@ import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getNetworkStats } from "lib/gql/get-network-stats";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
+import {
+  getZTGHistory,
+  ZtgPriceHistory,
+} from "lib/hooks/queries/useAssetUsdPrice";
 import { NextPage } from "next";
 import path from "path";
 import {
@@ -50,6 +54,7 @@ export async function getStaticProps() {
     bannerPlaceHolders,
     categoryCounts,
     stats,
+    ztgHistory,
   ] = await Promise.all([
     getFeaturedMarkets(client, sdk),
     getTrendingMarkets(client, sdk),
@@ -66,6 +71,7 @@ export async function getStaticProps() {
       CATEGORIES.map((cat) => cat.name),
     ),
     getNetworkStats(sdk),
+    getZTGHistory(),
   ]);
 
   return {
@@ -77,6 +83,7 @@ export async function getStaticProps() {
       categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
       bannerPlaceHolders: bannerPlaceHolders.map((c) => c.base64) ?? [],
       stats,
+      ztgHistory,
     },
     revalidate: 1 * 60, //1min
   };
@@ -90,6 +97,7 @@ const IndexPage: NextPage<{
   categoryPlaceholders: string[];
   bannerPlaceHolders: string[];
   stats: { marketCount: number; tradersCount: number; volumeUsd: number };
+  ztgHistory: ZtgPriceHistory;
 }> = ({
   news,
   trendingMarkets,
@@ -98,13 +106,14 @@ const IndexPage: NextPage<{
   categoryPlaceholders,
   bannerPlaceHolders,
   stats,
+  ztgHistory,
 }) => {
   return (
     <>
       <div data-testid="indexPage" className="main-container relative z-1">
         <BgBallGfx />
 
-        <HeroBanner />
+        <HeroBanner ztgHistory={ztgHistory} />
 
         <div className="mb-12">
           <NetworkStats
