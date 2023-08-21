@@ -70,7 +70,7 @@ export const useInfiniteMarkets = (
         baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
         pool: {
           account: {
-            balances_every: {
+            balances_some: {
               balance_gt: withLiquidityOnly ? 0 : undefined,
             },
           },
