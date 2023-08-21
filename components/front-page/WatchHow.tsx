@@ -15,8 +15,8 @@ const WatchHow = () => {
         style={{ backgroundColor: "rgba(250,217,255, 1)" }}
       ></div>
       <div
-        className="absolute left-[60%] -top-10 w-[40%] pb-[40%] h-[0] rounded-full blur-3xl"
-        style={{ backgroundColor: "rgba(231,237,247, 1)" }}
+        className="absolute left-[62%] -top-96 w-[40%] pb-[40%] h-[0] rounded-full blur-3xl"
+        style={{ backgroundColor: "rgba(231,237,247, 0.8)" }}
       ></div>
     </div>
   );
