@@ -25,6 +25,8 @@ const Onboarding = dynamic(
   },
 );
 
+const greyBackgroundPageRoutes = ["/", "/markets"];
+
 const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   useSubscribeBlockEvents();
@@ -38,11 +40,9 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
 
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const greyBackgroundPageRoutes = ["/", "/markets"];
-
   return (
     <div
-      className={`relative flex min-h-screen justify-evenly overflow-hidden ${
+      className={`relative min-h-screen justify-evenly ${
         greyBackgroundPageRoutes.includes(router.pathname) ? "bg-[#F1F1F1]" : ""
       }`}
     >
@@ -57,18 +57,14 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
             }
           `}
         </style>
-        <div
-          ref={contentRef}
-          className="overflow-y-a1uto overflow-x-hidden flex-grow"
-        >
+        <div ref={contentRef} className="flex-grow">
           <TopBar />
-          <main
-            className={`flex flex-col min-h-screen dark:text-white mb-12 ${
-              router.pathname !== "/" && "main-container mt-20"
-            }`}
-            ref={mainRef}
-          >
-            <div>
+          <main className="mb-12 container-fluid" ref={mainRef}>
+            <div
+              className={`w-full ${
+                ["/", "/markets"].includes(router.pathname) ? "pt-0" : "pt-2"
+              }`}
+            >
               {process.env.NEXT_PUBLIC_MIGRATION_IN_PROGRESS === "true" ? (
                 <div className="w-full h-[800px] flex flex-col items-center justify-center ">
                   <div className="text-[24px] font-bold">
