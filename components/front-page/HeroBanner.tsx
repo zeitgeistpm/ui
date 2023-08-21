@@ -52,7 +52,10 @@ export const HeroBanner = ({ ztgHistory }: { ztgHistory: ZtgPriceHistory }) => {
               Get Started
             </button>
           </div>
-          <div className="bg-blue-300 py-3 px-4 bg-opacity-70 w-full rounded-md flex gap-2">
+          <div
+            className="py-3 px-4 w-full rounded-md flex gap-2"
+            style={{ backgroundColor: "rgba(28, 100, 242, 0.2)" }}
+          >
             <div className="flex justify-start items-center gap-2 w-1/3">
               <div>
                 <ZeitgeistIcon variant="blue" height={28} width={28} />
