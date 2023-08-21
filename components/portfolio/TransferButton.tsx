@@ -246,7 +246,11 @@ const TransferModal = ({
                 if (!v.assetOption) {
                   return "Currency selection missing";
                 }
-                if (new Decimal(maxAmount).lessThan(v.amount)) {
+                if (
+                  new Decimal(maxAmount === "" ? 0 : maxAmount).lessThan(
+                    v.amount,
+                  )
+                ) {
                   return "Insufficient balance";
                 }
               },
