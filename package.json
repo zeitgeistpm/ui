@@ -60,6 +60,7 @@
     "moment-timezone": "^0.5.43",
     "next": "^13.2.3",
     "next-absolute-url": "^1.2.2",
+    "next-qrcode": "^2.5.1",
     "object-hash": "^2.2.0",
     "plaiceholder": "^2.5.0",
     "pure-react-carousel": "^1.27.8",

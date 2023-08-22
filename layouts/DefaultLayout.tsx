@@ -25,7 +25,12 @@ const Onboarding = dynamic(
   },
 );
 
-const greyBackgroundPageRoutes = ["/", "/markets"];
+const greyBackgroundPageRoutes = [
+  "/",
+  "/markets",
+  "/create-account",
+  "/deposit",
+];
 
 const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
