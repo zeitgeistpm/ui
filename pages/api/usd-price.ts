@@ -6,7 +6,7 @@ export const config = {
 };
 
 export default async function handler(request: NextRequest) {
-  //   const asset = request.nextUrl.searchParams.get("asset");
+  const asset = request.nextUrl.searchParams.get("asset");
   //   const res = await fetch(
   //     `https://api.coingecko.com/api/v3/simple/price?ids=${asset}&vs_currencies=usd`,
   //   );
@@ -18,7 +18,7 @@ export default async function handler(request: NextRequest) {
   return NextResponse.json(
     {
       //   body: { price: price },
-      body: {},
+      body: { asset },
       query: request.nextUrl.search,
       cookies: request.cookies.getAll(),
     },
