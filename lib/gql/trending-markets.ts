@@ -15,7 +15,7 @@ import {
 import { hiddenMarketIds } from "lib/constants/markets";
 import { marketMetaFilter } from "./constants";
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
-import { getForeignAssetPrice } from "lib/hooks/queries/useAssetUsdPrice";
+import { getForeignAssetPriceServerSide } from "lib/hooks/queries/useAssetUsdPrice";
 import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { fetchAllPages } from "lib/util/fetch-all-pages";
@@ -213,7 +213,9 @@ const getBaseAssetPrices = async (): Promise<BasePrices> => {
   const assetIds = Object.keys(FOREIGN_ASSET_METADATA);
 
   const foreignAssetPrices = await Promise.all(
-    assetIds.map((id) => getForeignAssetPrice({ ForeignAsset: Number(id) })),
+    assetIds.map((id) =>
+      getForeignAssetPriceServerSide({ ForeignAsset: Number(id) }),
+    ),
   );
 
   const pricesObj = foreignAssetPrices.reduce<BasePrices>(
