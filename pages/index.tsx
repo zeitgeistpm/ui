@@ -99,8 +99,7 @@ const IndexPage: NextPage<{
   return (
     <>
       <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
-
-      <div data-testid="indexPage" className="main-container">
+      <div data-testid="indexPage" className="flex-col">
         <NetworkStats
           marketCount={stats.marketCount}
           tradersCount={stats.tradersCount}

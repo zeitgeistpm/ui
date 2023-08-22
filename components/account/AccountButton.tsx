@@ -147,7 +147,7 @@ const AccountButton: FC<{
     <>
       {!connected ? (
         <div
-          className="sm:mr-5 sm:ml-auto"
+          className="ml-auto"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
@@ -181,12 +181,12 @@ const AccountButton: FC<{
           )}
         </div>
       ) : (
-        <div className="relative sm:mr-5 sm:ml-auto">
+        <div className="relative ml-auto">
           <Menu>
             {({ open }) => (
               <>
                 <div>
-                  <div className="flex h-11 relative pr-4 md:pr-0">
+                  <div className="flex h-11 relative">
                     <Menu.Button>
                       <div
                         className={`relative flex flex-1	items-center justify-end h-full rounded-full cursor-pointer z-30  ${
