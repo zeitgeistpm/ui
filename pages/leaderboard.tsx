@@ -11,6 +11,7 @@ import {
   ZeitgeistIpfs,
 } from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
+import TabGroup from "components/ui/TabGroup";
 import Decimal from "decimal.js";
 import { endpointOptions, graphQlEndpoint, ZTG } from "lib/constants";
 import { getDisplayName } from "lib/gql/display-name";
@@ -411,82 +412,15 @@ export async function getStaticProps() {
   };
 }
 
-const TabGroup = <T extends readonly string[]>({
-  items,
-  labels,
-  icons,
-  selected,
-  disabled = [],
-  onChange,
-  selectedItemClassName = "",
-  itemClassName = "h-full outline-none flex",
-  className = "",
-}: {
-  items: T;
-  labels?: Record<T[number], string>;
-  icons?: Record<T[number], React.FC>;
-  disabled?: T[number][];
-  onChange: (item: T[number]) => void;
-  selected: T[number] | undefined;
-  selectedItemClassName?: string;
-  itemClassName?: string;
-  className?: string;
-}) => {
-  const selectedIndex = selected != null ? items.indexOf(selected) : -1;
-
-  return (
-    <Tab.Group
-      manual
-      onChange={(index) => {
-        if (disabled.includes(items[index])) {
-          return;
-        }
-        onChange(items[index]);
-      }}
-      defaultIndex={selectedIndex}
-      selectedIndex={selectedIndex}
-    >
-      <Tab.List
-        className={"grid gap-3 " + `grid-cols-${items.length} ` + className}
-      >
-        {items.map((item, id) => {
-          const Icon = icons ? icons[item] : null;
-          const isDisabled = disabled.includes(item);
-          return (
-            <Tab
-              key={id}
-              as="div"
-              className={
-                itemClassName +
-                " " +
-                (selectedIndex === id
-                  ? selectedItemClassName ?? ""
-                  : isDisabled
-                  ? "bg-misty-harbor text-sky-600"
-                  : "cursor-pointer")
-              }
-            >
-              {Icon && (
-                <div className="relative w-[40px] h-[40px] mr-3">
-                  <Icon fill={isDisabled ? "#C3C9CD" : undefined} />
-                </div>
-              )}
-              {labels ? labels[item] : item}
-            </Tab>
-          );
-        })}
-      </Tab.List>
-    </Tab.Group>
-  );
-};
-
 const TimePeriodItems = ["Day", "Week", "Month", "All"] as const;
 type TimePeriod = typeof TimePeriodItems[number];
 
 const Leaderboard: NextPage<{
   rankings: Rank[];
 }> = ({ rankings }) => {
-  const [timePeriod, setTimePeriod] = React.useState("Month");
+  const [timePeriod, setTimePeriod] = React.useState<TimePeriod | undefined>(
+    "Month",
+  );
 
   return (
     <div className="">
@@ -494,7 +428,7 @@ const Leaderboard: NextPage<{
         Leaderboard (Top 20)
       </h2>
       <TabGroup
-        items={["Day", "Week", "Month", "All"]}
+        items={TimePeriodItems}
         onChange={setTimePeriod}
         selected={timePeriod}
         selectedItemClassName="!text-black font-bold"
