@@ -13,6 +13,7 @@ export default async function GET(request: NextRequest) {
     `https://api.coingecko.com/api/v3/simple/price?ids=${asset}&vs_currencies=usd`,
     // "https://api.coingecko.com/api/v33/simple/price?ids=zeitgeist&vs_currsfsdfs",
   ).catch((e) => console.log(e));
+  console.log(res);
 
   const json = await res!.json();
 
