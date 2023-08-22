@@ -1,5 +1,5 @@
 import { isInfinite, MarketStage } from "@zeitgeistpm/sdk-next";
-import { clamp, upperFirst } from "lodash-es";
+import { clamp } from "lodash-es";
 import Skeleton from "components/ui/Skeleton";
 import moment from "moment";
 
@@ -19,11 +19,13 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
 
   return (
     <div className="inline-block w-full">
-      <div className="flex mb-3 items-center">
-        <div className="font-semibold mr-4 md:mr-4 text-black">
+      <div className="flex mb-1 items-center">
+        <div className="font-semibold mr-4 text-black">
           {copy[stage.type].title}
         </div>
-        <div className="text-sky-600">{copy[stage.type].description}</div>
+        <div className="text-sky-600 text-sm">
+          {copy[stage.type].description}
+        </div>
         {!isInfinite(stage) && (
           <div className="ml-auto text-black text-right">
             {timeUntilStageEnds.humanize()} left
@@ -50,17 +52,17 @@ export const MarketTimer = ({ stage }: MarketTimerProps) => {
 export const MarketTimerSkeleton = () => {
   return (
     <div className="inline-block w-full">
-      <div className="flex mb-4 items-center">
-        <h3 className="font-bold text-lg mr-2 md:mr-4">
+      <div className="flex mb-1 items-center">
+        <div className="mr-4">
           <Skeleton width={150} className="inline-block" />
-        </h3>
-        <h4 className="hidden sm:block">
+        </div>
+        <div className="hidden sm:block">
           <Skeleton width={260} className="inline-block" />
-        </h4>
+        </div>
 
-        <h4 className="ml-auto">
+        <div className="ml-auto">
           <Skeleton width={40} className="inline-block" />
-        </h4>
+        </div>
       </div>
       <div className="w-full">
         <div className="text-gray-500 text-sm text-right flex justify-end h-4"></div>

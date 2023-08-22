@@ -4,7 +4,6 @@ import {
   BaseAssetId,
   create,
   getMarketIdOf,
-  IOForeignAssetId,
   IOMarketOutcomeAssetId,
   IOScalarAssetId,
   parseAssetId,
@@ -12,20 +11,19 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
 import Decimal from "decimal.js";
-import {
-  endpointOptions,
-  environment,
-  graphQlEndpoint,
-  ZTG,
-} from "lib/constants";
-import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
+import { endpointOptions, graphQlEndpoint, ZTG } from "lib/constants";
 import { getDisplayName } from "lib/gql/display-name";
+import {
+  getBaseAssetHistoricalPrices,
+  lookupPrice,
+} from "lib/gql/historical-prices";
 import {
   avatarPartsKey,
   getAvatarParts,
 } from "lib/hooks/queries/useAvatarParts";
 import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 import { createAvatarSdk } from "lib/util/create-avatar-sdk";
+import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import Link from "next/link";
@@ -82,10 +80,6 @@ type Rank = {
   markets: MarketSummary[];
 };
 
-type BasePrices = {
-  [key: string | "ztg"]: [number, number][];
-};
-
 const convertEventToTrade = (
   event: FullHistoricalAccountBalanceFragment,
   longTokenVaue?: Decimal,
@@ -132,61 +126,6 @@ const convertEventToTrade = (
     }
   }
 };
-const datesAreOnSameDay = (first: Date, second: Date) =>
-  first.getFullYear() === second.getFullYear() &&
-  first.getMonth() === second.getMonth() &&
-  first.getDate() === second.getDate();
-
-const findPrice = (timestamp: number, prices: [number, number][]) => {
-  const date = new Date(Number(timestamp));
-
-  const price = prices.find((p) => {
-    return datesAreOnSameDay(date, new Date(p[0]));
-  });
-
-  return price?.[1];
-};
-
-const lookupPrice = (
-  basePrices: BasePrices,
-  baseAsset: BaseAssetId,
-  timestamp: number,
-) => {
-  //BSR has been live before some assets existed, so no price data is available
-  if (environment === "staging") return 1;
-  const prices = IOForeignAssetId.is(baseAsset)
-    ? basePrices[baseAsset.ForeignAsset]
-    : basePrices["ztg"];
-
-  return findPrice(timestamp, prices);
-};
-
-const getBaseAssetHistoricalPrices = async (): Promise<BasePrices> => {
-  const coinGeckoIds = [
-    ...Object.values(FOREIGN_ASSET_METADATA).map((asset) => asset.coinGeckoId),
-    "zeitgeist",
-  ];
-
-  const pricesRes = await Promise.all(
-    coinGeckoIds.map((id) =>
-      fetch(
-        `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=max`,
-      ),
-    ),
-  );
-
-  const prices = await Promise.all(pricesRes.map((res) => res.json()));
-  const assetIds = Object.keys(FOREIGN_ASSET_METADATA);
-
-  const pricesObj = prices.reduce<BasePrices>((obj, assetPrices, index) => {
-    obj[assetIds[index]] = assetPrices.prices;
-    return obj;
-  }, {});
-
-  pricesObj["ztg"] = prices.at(-1).prices;
-
-  return pricesObj;
-};
 
 export async function getStaticProps() {
   const [sdk, avatarSdk] = await Promise.all([
@@ -200,9 +139,21 @@ export async function getStaticProps() {
 
   const basePrices = await getBaseAssetHistoricalPrices();
 
-  const { markets } = await sdk.indexer.markets();
+  const markets = await fetchAllPages(async (pageNumber, limit) => {
+    const { markets } = await sdk.indexer.markets({
+      limit: limit,
+      offset: pageNumber * limit,
+    });
+    return markets;
+  });
 
-  const { historicalSwaps } = await sdk.indexer.historicalSwaps();
+  const historicalSwaps = await fetchAllPages(async (pageNumber, limit) => {
+    const { historicalSwaps } = await sdk.indexer.historicalSwaps({
+      limit: limit,
+      offset: pageNumber * limit,
+    });
+    return historicalSwaps;
+  });
 
   const tradersWithSwaps = historicalSwaps.reduce<Traders>((traders, swap) => {
     const trades = traders[swap.accountId];
@@ -244,29 +195,44 @@ export async function getStaticProps() {
     return traders;
   }, {});
 
-  const { historicalAccountBalances: redeemEvents } =
-    await sdk.indexer.historicalAccountBalances({
-      where: { event_contains: "TokensRedeemed" },
-    });
+  const redeemEvents = await fetchAllPages(async (pageNumber, limit) => {
+    const { historicalAccountBalances } =
+      await sdk.indexer.historicalAccountBalances({
+        where: { event_contains: "TokensRedeemed" },
+        limit: limit,
+        offset: pageNumber * limit,
+      });
+    return historicalAccountBalances;
+  });
 
-  const { historicalAccountBalances: buyFullSetEvents } =
-    await sdk.indexer.historicalAccountBalances({
-      where: {
-        OR: [
-          {
-            event_contains: "BoughtComplete",
-          },
-          { event_contains: "Deposited", assetId_not_contains: "pool" },
-        ],
-      },
-    });
+  const buyFullSetEvents = await fetchAllPages(async (pageNumber, limit) => {
+    const { historicalAccountBalances } =
+      await sdk.indexer.historicalAccountBalances({
+        where: {
+          OR: [
+            {
+              event_contains: "BoughtComplete",
+            },
+            { event_contains: "Deposited", assetId_not_contains: "pool" },
+          ],
+        },
+        limit: limit,
+        offset: pageNumber * limit,
+      });
+    return historicalAccountBalances;
+  });
 
-  const { historicalAccountBalances: sellFullSetEvents } =
-    await sdk.indexer.historicalAccountBalances({
-      where: {
-        event_contains: "SoldComplete",
-      },
-    });
+  const sellFullSetEvents = await fetchAllPages(async (pageNumber, limit) => {
+    const { historicalAccountBalances } =
+      await sdk.indexer.historicalAccountBalances({
+        where: {
+          event_contains: "SoldComplete",
+        },
+        limit: limit,
+        offset: pageNumber * limit,
+      });
+    return historicalAccountBalances;
+  });
 
   const fullSetEvents = [...buyFullSetEvents, ...sellFullSetEvents];
 

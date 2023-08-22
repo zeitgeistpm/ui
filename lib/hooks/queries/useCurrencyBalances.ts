@@ -17,6 +17,7 @@ export type CurrencyBalance = {
   foreignAssetId?: number;
   sourceChain: ChainName;
   existentialDeposit: Decimal;
+  decimals: number;
 };
 
 export const useCurrencyBalances = (address: string) => {
@@ -56,6 +57,7 @@ export const useCurrencyBalances = (address: string) => {
             existentialDeposit: new Decimal(
               sdk.api.consts.balances.existentialDeposit.toString(),
             ),
+            decimals: Number(metadata[index].unwrap().decimals.toString()),
           }),
         );
 
@@ -86,6 +88,7 @@ export const useCurrencyBalances = (address: string) => {
           existentialDeposit: new Decimal(
             sdk.api.consts.balances.existentialDeposit.toString(),
           ),
+          decimals: 10,
         };
 
         return [

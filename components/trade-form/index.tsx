@@ -25,7 +25,13 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { TradeType } from "lib/types";
 import { capitalize } from "lodash";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
 import { from } from "rxjs";
 import { useDebounce } from "use-debounce";
@@ -38,6 +44,8 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { awaitIndexer } from "lib/util/await-indexer";
 import Input from "components/ui/Input";
 import { useDelayQueue } from "lib/state/delay-queue";
+import InfoPopover from "components/ui/InfoPopover";
+import TruncatedText from "components/ui/TruncatedText";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -557,7 +565,12 @@ const Inner = ({
               />
             </div>
             <div className="center sm:h-[48px] font-semibold capitalize text-[20px] sm:text-[28px]">
-              {tradeItemState?.asset?.name}
+              <TruncatedText
+                length={24}
+                text={tradeItemState?.asset?.name ?? ""}
+              >
+                {(text) => <>{text}</>}
+              </TruncatedText>
             </div>
             <div className="font-semibold text-center mb-[20px]">For</div>
             <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative">

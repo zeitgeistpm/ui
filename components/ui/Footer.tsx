@@ -32,7 +32,7 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
 
   return (
     <form className="flex flex-col w-full" onSubmit={handleSubmit(subscribe)}>
-      <h6 className="font-semibold mb-[26px]">{title}</h6>
+      <h6 className="font-semibold text-white mb-[26px]">{title}</h6>
       <div className="flex gap-3 items-center h-10 mb-auto w-full">
         <Input
           {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
@@ -43,7 +43,7 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
         />
         <button
           type="submit"
-          className={`h-full flex-shrink-0 text-ztg-16-150 rounded-full center bg-ztg-blue text-white px-5 ${
+          className={`h-full flex-shrink text-ztg-16-150 rounded-full center bg-ztg-blue text-white px-5 ${
             invalid ? "cursor-default" : "cursor-pointer"
           } disabled:opacity-60`}
           disabled={invalid}
@@ -64,7 +64,7 @@ interface FooterMenuProps {
 const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
   return (
     <div className={`${className}`}>
-      <h6 className="font-semibold mb-1">{title}</h6>
+      <h6 className="font-semibold mb-1 text-white">{title}</h6>
       <div className="text-ztg-14-150 flex flex-col text-sky-600">
         {links.map(({ text, href }, idx) => {
           return (
@@ -85,7 +85,7 @@ const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
 
 const Footer = () => {
   return (
-    <div className="w-full mt-auto flex flex-col pb-24 bg-[#1C1C1C]">
+    <div className="w-full mt-auto flex flex-col pb-24 pt-12 bg-[#1C1C1C]">
       <div className="container-fluid">
         <div className="flex justify-between gap-12 lg:gap-36 mb-8 md:mb-16 flex-wrap md:flex-nowrap">
           <div className="flex justify-between gap-7 w-full">

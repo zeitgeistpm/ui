@@ -14,6 +14,7 @@ import { Judgement, UserIdentity } from "lib/types/user-identity";
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import Modal from "components/ui/Modal";
+import Skeleton from "components/ui/Skeleton";
 
 const AddressInspectContent = ({
   address,
@@ -104,7 +105,7 @@ const AddressInspectContent = ({
   );
 };
 
-const AddressDetails = ({
+export const AddressDetails = ({
   title,
   address,
 }: {
@@ -112,7 +113,7 @@ const AddressDetails = ({
   address: string;
 }) => {
   const [inspected, setInspected] = useState(false);
-  const { data: identity } = useIdentity(address);
+  const { data: identity, isLoading } = useIdentity(address);
 
   const displayName =
     identity?.displayName?.length !== 0
@@ -122,18 +123,20 @@ const AddressDetails = ({
   return (
     <>
       <div
-        className="flex flex-col sm:flex-row items-start sm:items-center mb-ztg-18 cursor-pointer hover:bg-sky-100 ztg-transition rounded-lg p-[5px]"
+        className="flex flex-col sm:flex-row items-start sm:items-center cursor-pointer hover:bg-sky-100 ztg-transition rounded-lg w-fit"
         onClick={() => setInspected(true)}
         data-test="inspectButton"
       >
         <div className="flex items-center">
-          <div className="flex justify-center items-center pl-ztg-6 pr-ztg-10">
-            <div className="w-ztg-40 h-ztg-40 rounded-full bg-white overflow-hidden text-ztg-14-150 mr-[15px]">
-              <Avatar address={address} size={40} />
-            </div>
-            <div className="flex flex-col font-medium text-ztg-16-150">
-              <div className=" text-sky-600">{title}</div>
-              <div className="">{displayName}</div>
+          <div className="flex justify-center items-center pr-ztg-10 gap-2">
+            <Avatar address={address} size={30} />
+            <div className="flex flex-col font-medium">
+              <div className="text-sky-600 text-[10px]">{title}</div>
+              {isLoading ? (
+                <Skeleton width={130} height={16} />
+              ) : (
+                <div className="text-xs">{displayName}</div>
+              )}
             </div>
           </div>
         </div>
@@ -190,24 +193,3 @@ const AddressModalHeader = ({
     </span>
   );
 };
-
-interface MarketAddressesProps {
-  creatorAddress: string;
-  oracleAddress: string;
-}
-
-const MarketAddresses = ({
-  creatorAddress,
-  oracleAddress,
-}: MarketAddressesProps) => {
-  return (
-    <div className="flex flex-wrap gap-[20px] justify-center my-ztg-20">
-      <AddressDetails title="Creator" address={creatorAddress} />
-      <AddressDetails title="Oracle" address={oracleAddress} />
-    </div>
-  );
-};
-
-export default dynamic(() => Promise.resolve(MarketAddresses), {
-  ssr: false,
-});

@@ -8,7 +8,6 @@ import Decimal from "decimal.js";
 import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalances";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { usePool } from "lib/hooks/queries/usePool";
-import { useTotalIssuanceForPools } from "lib/hooks/queries/useTotalIssuanceForPools";
 import { useWallet } from "lib/state/wallet";
 import { useMemo } from "react";
 import ExitPoolForm from "./ExitPoolForm";
@@ -17,6 +16,7 @@ import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import Modal from "components/ui/Modal";
+import { useTotalIssuance } from "lib/hooks/queries/useTotalIssuance";
 
 export type PoolBalances = {
   [key: string]: {
@@ -51,11 +51,11 @@ const LiquidityModal = ({
 
   const { data: poolBaseBalance } = usePoolBaseBalance(poolId);
 
-  const data = useTotalIssuanceForPools([poolId]);
-  const totalPoolIssuance = data?.[poolId]?.data?.totalIssuance;
   const userPoolTokensQuery = useAccountAssetBalances([
     { account: connectedAddress, assetId: { PoolShare: poolId } },
   ]);
+
+  const { data: totalPoolIssuance } = useTotalIssuance({ PoolShare: poolId });
 
   const userPoolTokens =
     connectedAddress &&
