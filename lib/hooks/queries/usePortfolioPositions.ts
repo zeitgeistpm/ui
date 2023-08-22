@@ -152,7 +152,7 @@ export type PorfolioBreakdown = {
   /**
    * The price of ztg in usd.
    */
-  usdZtgPrice: Decimal;
+  usdZtgPrice?: Decimal;
 };
 
 /**
