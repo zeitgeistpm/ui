@@ -6,18 +6,19 @@ export const config = {
 };
 
 export default async function handler(request: NextRequest) {
-  const asset = request.nextUrl.searchParams.get("asset");
-  const res = await fetch(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${asset}&vs_currencies=usd`,
-  );
+  //   const asset = request.nextUrl.searchParams.get("asset");
+  //   const res = await fetch(
+  //     `https://api.coingecko.com/api/v3/simple/price?ids=${asset}&vs_currencies=usd`,
+  //   );
 
-  const json = await res.json();
+  //   const json = await res.json();
 
-  const price = asset ? json[asset]?.usd : null;
+  //   const price = asset ? json[asset]?.usd : null;
 
   return NextResponse.json(
     {
-      body: { price },
+      //   body: { price: price },
+      body: {},
       query: request.nextUrl.search,
       cookies: request.cookies.getAll(),
     },
