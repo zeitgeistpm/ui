@@ -260,6 +260,8 @@ module.exports = {
         twitter: "#479BE9",
         "scalar-bar": "#CCF994",
         "scalar-text": "#0C5F0B",
+        "ice-hush": "#B6F2FF",
+        "misty-harbor": "#D8E1E7",
         purple: {
           light: "#FCE8F3",
           DEFAULT: "#99154B",
