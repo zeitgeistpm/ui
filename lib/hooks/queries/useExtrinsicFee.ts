@@ -31,10 +31,6 @@ export const useExtrinsicFee = (
     [extrinsicFeeKey, debouncedExtrinsicParams],
     async () => {
       if (enabled) {
-        console.log(extrinsicParams);
-
-        console.log("calcfee");
-
         const info = await extrinsic.paymentInfo(activeAccount?.address);
         return new Decimal(info?.partialFee.toString() ?? 0);
       }
