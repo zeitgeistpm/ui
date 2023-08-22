@@ -44,7 +44,7 @@ export const NewsSection = ({
   return (
     <div className="mb-12">
       <h2 className="sm:col-span-2 text-center sm:text-start mb-6">News</h2>
-      <div className="flex gap-4">
+      <div className="flex flex-col md:flex-row gap-4">
         {news.map((news, index) => {
           const isExternalLink = news.ctaLink
             ? !isCurrentOrigin(news.ctaLink)
@@ -74,7 +74,7 @@ export const NewsSection = ({
                 />
               </div>
               <h4 className="mb-1 font-semibold">{news.title}</h4>
-              <h5 className="text-base">{news.subtitle}</h5>
+              <h5 className="text-base font-light">{news.subtitle}</h5>
             </Link>
           );
         })}

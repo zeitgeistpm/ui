@@ -1,5 +1,6 @@
 import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
 import { BgBallGfx } from "components/front-page/BgBallFx";
+import { GenericChainProperties } from "@polkadot/types";
 import GettingStartedSection from "components/front-page/GettingStartedSection";
 import { HeroBanner } from "components/front-page/HeroBanner";
 import LatestTrades from "components/front-page/LatestTrades";
@@ -18,6 +19,7 @@ import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getNetworkStats } from "lib/gql/get-network-stats";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
+import { AssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import {
   getZTGHistory,
   ZtgPriceHistory,
@@ -55,6 +57,7 @@ export async function getStaticProps() {
     categoryCounts,
     stats,
     ztgHistory,
+    chainProperties,
   ] = await Promise.all([
     getFeaturedMarkets(client, sdk),
     getTrendingMarkets(client, sdk),
@@ -72,6 +75,7 @@ export async function getStaticProps() {
     ),
     getNetworkStats(sdk),
     getZTGHistory(),
+    sdk.api.rpc.system.properties(),
   ]);
 
   return {
@@ -84,6 +88,7 @@ export async function getStaticProps() {
       bannerPlaceHolders: bannerPlaceHolders.map((c) => c.base64) ?? [],
       stats,
       ztgHistory,
+      chainProperties: chainProperties.toHuman(),
     },
     revalidate: 1 * 60, //1min
   };
@@ -98,6 +103,7 @@ const IndexPage: NextPage<{
   bannerPlaceHolders: string[];
   stats: { marketCount: number; tradersCount: number; volumeUsd: number };
   ztgHistory: ZtgPriceHistory;
+  chainProperties: GenericChainProperties;
 }> = ({
   news,
   trendingMarkets,
@@ -107,13 +113,14 @@ const IndexPage: NextPage<{
   bannerPlaceHolders,
   stats,
   ztgHistory,
+  chainProperties,
 }) => {
   return (
     <>
       <div data-testid="indexPage" className="main-container relative z-1">
         <BgBallGfx />
 
-        <HeroBanner ztgHistory={ztgHistory} />
+        <HeroBanner ztgHistory={ztgHistory} chainProperties={chainProperties} />
 
         <div className="mb-12">
           <NetworkStats

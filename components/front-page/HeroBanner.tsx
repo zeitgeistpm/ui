@@ -1,40 +1,25 @@
 import ZeitgeistIcon from "components/icons/ZeitgeistIcon";
 import { getColour } from "components/ui/TableChart";
+import { GenericChainProperties } from "@polkadot/types";
 import { ZtgPriceHistory } from "lib/hooks/queries/useAssetUsdPrice";
-import { random } from "lodash-es";
 import Image from "next/image";
-import { useMemo } from "react";
 import { Line, LineChart, ResponsiveContainer, YAxis } from "recharts";
+import Link from "next/link";
 
-function getEveryNth<T>(arr: Array<T>, nth: number) {
-  const result: Array<T> = [];
+export const HeroBanner = ({
+  ztgHistory,
+  chainProperties,
+}: {
+  ztgHistory: ZtgPriceHistory;
+  chainProperties: GenericChainProperties;
+}) => {
+  const chartData = ztgHistory.prices.map(([timestamp, price]) => {
+    return { v: price, t: 1 };
+  });
 
-  for (let index = 0; index < arr.length; index += nth) {
-    result.push(arr[index]);
-  }
-
-  return result;
-}
-
-export const HeroBanner = ({ ztgHistory }: { ztgHistory: ZtgPriceHistory }) => {
-  const { chartData, firstPrice, latestPrice, prctChange } = useMemo(() => {
-    const chartData = getEveryNth(ztgHistory.prices, 10).map(
-      ([timestamp, price]) => {
-        return { v: price, t: 1 };
-      },
-    );
-
-    const firstPrice = ztgHistory.prices[0][1];
-    const latestPrice = ztgHistory.prices[ztgHistory.prices.length - 1][1];
-    const prctChange = ((latestPrice - firstPrice) / firstPrice) * 100;
-
-    return {
-      chartData,
-      firstPrice,
-      latestPrice,
-      prctChange,
-    };
-  }, [ztgHistory]);
+  const firstPrice = ztgHistory.prices[0][1];
+  const latestPrice = ztgHistory.prices[ztgHistory.prices.length - 1][1];
+  const prctChange = ((latestPrice - firstPrice) / firstPrice) * 100;
 
   return (
     <div className="relative main-container mt-12 md:mt-28 mb-20 z-2">
@@ -48,9 +33,11 @@ export const HeroBanner = ({ ztgHistory }: { ztgHistory: ZtgPriceHistory }) => {
             <button className="rounded-md flex-1 md:flex-none bg-vermilion text-white px-6 py-3">
               Learn More
             </button>
-            <button className="rounded-md flex-1 md:flex-none bg-transparent border-2 border-black text-black px-6 py-3">
-              Get Started
-            </button>
+            <Link href="/create-account">
+              <button className="rounded-md flex-1 md:flex-none bg-transparent border-2 border-black text-black px-6 py-3">
+                Get Started
+              </button>
+            </Link>
           </div>
           <div
             className="py-3 px-4 w-full rounded-md flex gap-2"
@@ -62,7 +49,9 @@ export const HeroBanner = ({ ztgHistory }: { ztgHistory: ZtgPriceHistory }) => {
               </div>
               <div>
                 <div className="font-bold text-md">Zeitgeist</div>
-                <div className="text-sm">ZTG</div>
+                <div className="text-sm">
+                  {chainProperties.tokenSymbol.toString()}
+                </div>
               </div>
             </div>
             <div className="flex center w-1/3">
@@ -88,7 +77,7 @@ export const HeroBanner = ({ ztgHistory }: { ztgHistory: ZtgPriceHistory }) => {
                   ${latestPrice.toFixed(3)}
                 </div>
                 <div className="text-sm text-center">
-                  {prctChange.toFixed(1)}%
+                  {!isNaN(prctChange) ? prctChange.toFixed(1) : 0}%
                 </div>
               </div>
             </div>

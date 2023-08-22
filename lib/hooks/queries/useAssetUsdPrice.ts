@@ -6,6 +6,7 @@ import {
   ForeignAssetId,
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
+import { environment } from "lib/constants";
 import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
 import Decimal from "decimal.js";
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
@@ -119,8 +120,18 @@ export type ZtgPriceHistory = {
 };
 
 export const getZTGHistory = async (): Promise<ZtgPriceHistory> => {
+  if (environment === "staging") {
+    return {
+      prices: [
+        [1, 0],
+        [2, 0],
+        [3, 0],
+        [4, 0],
+      ],
+    };
+  }
   const response = await fetch(
-    `https://api.coingecko.com/api/v3/coins/zeitgeist/market_chart?vs_currency=usd&days=7`,
+    `https://api.coingecko.com/api/v3/coins/zeitgeist/market_chart?vs_currency=usd&days=7&interval=daily`,
   );
   const data = await response.json();
   return data;

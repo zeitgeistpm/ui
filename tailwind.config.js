@@ -28,6 +28,18 @@ module.exports = {
   safelist: ["bg-polkadot", "text-polkadot"],
   darkMode: "class",
   theme: {
+    keyframes: {
+      "pop-in": {
+        "0%, 100%": { transform: "scale(1)" },
+        "50%": { transform: "scale(1.2)" },
+      },
+      ...defaultTheme.keyframes,
+    },
+    animation: {
+      "pop-in": "pop-in 0.5s ease-in-out",
+      ...defaultTheme.animation,
+    },
+
     fontFamily: {
       mono: [
         "var(--font-roboto-mono)",
