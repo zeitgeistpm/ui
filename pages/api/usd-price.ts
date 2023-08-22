@@ -12,10 +12,11 @@ export default async function GET(request: NextRequest) {
   const res = await fetch(
     `https://api.coingecko.com/api/v3/simple/price?ids=${asset}&vs_currencies=usd`,
     // "https://api.coingecko.com/api/v33/simple/price?ids=zeitgeist&vs_currsfsdfs",
-  ).catch((e) => console.log(e));
-  console.log(res);
+  );
+  console.log(res.status);
+  console.log(res.statusText);
 
-  const json = await res!.json();
+  const json = await res.json();
 
   const price = asset ? json[asset]?.usd : null;
   console.log(price);
