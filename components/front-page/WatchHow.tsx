@@ -33,7 +33,7 @@ const WatchHow = () => {
           <span className="text-sm md:text-[px] font-semibold">Watch how</span>
           <Video size={24} />
         </a>
-        <div className="absolute text-xs top-0 right-0 z-10 translate-x-[10%] -translate-y-[50%] text-white bg-orange-400 rounded-full py-1 px-2">
+        <div className="absolute text-xs top-0 right-0 z-10 translate-x-[10%] -translate-y-[50%] text-white bg-blue-300 rounded-full py-1 px-2">
           Coming soon!
         </div>
       </div>
