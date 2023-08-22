@@ -1,3 +1,4 @@
+import { Tab } from "@headlessui/react";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
 import {
@@ -27,6 +28,7 @@ import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import Link from "next/link";
+import React from "react";
 
 // Approach: aggregate base asset movements in and out of a market
 // "In events": swaps, buy full set
@@ -409,14 +411,96 @@ export async function getStaticProps() {
   };
 }
 
+const TabGroup = <T extends readonly string[]>({
+  items,
+  labels,
+  icons,
+  selected,
+  disabled = [],
+  onChange,
+  selectedItemClassName = "",
+  itemClassName = "h-full outline-none flex",
+  className = "",
+}: {
+  items: T;
+  labels?: Record<T[number], string>;
+  icons?: Record<T[number], React.FC>;
+  disabled?: T[number][];
+  onChange: (item: T[number]) => void;
+  selected: T[number] | undefined;
+  selectedItemClassName?: string;
+  itemClassName?: string;
+  className?: string;
+}) => {
+  const selectedIndex = selected != null ? items.indexOf(selected) : -1;
+
+  return (
+    <Tab.Group
+      manual
+      onChange={(index) => {
+        if (disabled.includes(items[index])) {
+          return;
+        }
+        onChange(items[index]);
+      }}
+      defaultIndex={selectedIndex}
+      selectedIndex={selectedIndex}
+    >
+      <Tab.List
+        className={"grid gap-3 " + `grid-cols-${items.length} ` + className}
+      >
+        {items.map((item, id) => {
+          const Icon = icons ? icons[item] : null;
+          const isDisabled = disabled.includes(item);
+          return (
+            <Tab
+              key={id}
+              as="div"
+              className={
+                itemClassName +
+                " " +
+                (selectedIndex === id
+                  ? selectedItemClassName ?? ""
+                  : isDisabled
+                  ? "bg-misty-harbor text-sky-600"
+                  : "cursor-pointer")
+              }
+            >
+              {Icon && (
+                <div className="relative w-[40px] h-[40px] mr-3">
+                  <Icon fill={isDisabled ? "#C3C9CD" : undefined} />
+                </div>
+              )}
+              {labels ? labels[item] : item}
+            </Tab>
+          );
+        })}
+      </Tab.List>
+    </Tab.Group>
+  );
+};
+
+const TimePeriodItems = ["Day", "Week", "Month", "All"] as const;
+type TimePeriod = typeof TimePeriodItems[number];
+
 const Leaderboard: NextPage<{
   rankings: Rank[];
 }> = ({ rankings }) => {
+  const [timePeriod, setTimePeriod] = React.useState("Month");
+
   return (
     <div className="">
-      <div className="font-bold text-3xl mb-[40px] w-full text-center">
-        Most Profitable Traders
-      </div>
+      <h2 className="font-bold mt-9 mb-2 w-full text-center">
+        Leaderboard (Top 20)
+      </h2>
+      <TabGroup
+        items={["Day", "Week", "Month", "All"]}
+        onChange={setTimePeriod}
+        selected={timePeriod}
+        selectedItemClassName="!text-black font-bold"
+        itemClassName="h-full outline-none flex items-center text-sky-600 font-medium"
+        className="h-14 mb-9 w-[340px]"
+      />
       <div className="flex flex-col gap-y-5 justify-center items-center">
         {rankings.map((rank, index) => (
           <div
