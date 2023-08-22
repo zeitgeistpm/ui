@@ -21,7 +21,8 @@ import { useCrossChainExtrinsic } from "lib/hooks/useCrossChainExtrinsic";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { formatNumberCompact } from "lib/util/format-compact";
 import FormTransactionButton from "components/ui/FormTransactionButton";
-import ActionCard from "components/ui/ActionCard";
+import { CreateAccountActionableCard } from "components/ui/actionable/cards/CreateAccount";
+import { StartTradingActionableCard } from "components/ui/actionable/cards/StartTrading";
 
 const ZtgIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg
@@ -482,23 +483,9 @@ const DepositPage: NextPage = () => {
         </Link>
       </div>
       <h2 className="mb-9 p-2">What else</h2>
-      <div className="grid grid-cols-2 gap-x-8 mb-20">
-        <ActionCard
-          title="Crate an Account"
-          imageUrl="/category/e-sports.png"
-          actionText="Make a Deposit"
-          description="Use one of several methods to deposit crypto on Zeitgeist to start trading"
-          actionUrl="/deposit"
-          pillLabel="~5 - 15 minutes"
-        />
-        <ActionCard
-          title="Start Trading"
-          imageUrl="/category/e-sports.png"
-          actionText="Make predictions"
-          description="You're ready to explore the entirety of our application!"
-          actionUrl="/markets"
-          pillLabel="No time limits"
-        />
+      <div className="flex flex-col md:flex-row gap-4">
+        <CreateAccountActionableCard />
+        <StartTradingActionableCard />
       </div>
     </>
   );
