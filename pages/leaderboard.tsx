@@ -209,7 +209,7 @@ export async function getStaticProps() {
   });
 
   const buyFullSetEvents = await fetchAllPages(async (pageNumber, limit) => {
-    const { historicalAccountBalances: buyFullSetEvents } =
+    const { historicalAccountBalances } =
       await sdk.indexer.historicalAccountBalances({
         where: {
           OR: [
@@ -223,7 +223,7 @@ export async function getStaticProps() {
         offset: pageNumber * limit,
         order: HistoricalAccountBalanceOrderByInput.BlockNumberDesc,
       });
-    return buyFullSetEvents;
+    return historicalAccountBalances;
   });
 
   const sellFullSetEvents = await fetchAllPages(async (pageNumber, limit) => {
