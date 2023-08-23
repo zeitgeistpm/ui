@@ -38,16 +38,16 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   const [sdk] = useSdkv2();
   const accountModals = useAccountModals();
   const { locationAllowed, isUsingVPN } = useUserLocation();
-  const extrinsicBase =
-    extrinsic ??
-    (wallet.activeAccount?.address
-      ? sdk
-          ?.asRpc()
-          .api.tx.balances.transfer(
-            wallet.activeAccount?.address,
-            ZTG.toFixed(0),
-          )
-      : undefined);
+
+  const extrinsicBase = useMemo(() => {
+    return extrinsic && isRpcSdk(sdk) && wallet.activeAccount?.address
+      ? sdk.api.tx.balances.transfer(
+          wallet.activeAccount?.address,
+          ZTG.toFixed(0),
+        )
+      : undefined;
+  }, [extrinsic, sdk]);
+
   const { data: fee } = useExtrinsicFee(extrinsicBase);
   const { data: balance } = useBalance(wallet.activeAccount?.address, {
     Ztg: null,

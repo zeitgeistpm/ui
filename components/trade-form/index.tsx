@@ -1,12 +1,16 @@
-import { Tab } from "@headlessui/react";
+import { Tab, Transition } from "@headlessui/react";
 import { ISubmittableResult } from "@polkadot/types/types";
 import {
   AssetId,
   IOForeignAssetId,
   IOMarketOutcomeAssetId,
   IOZtgAssetId,
+  MarketOutcomeAssetId,
   ZTG,
+  getIndexOf,
+  getMarketIdOf,
 } from "@zeitgeistpm/sdk-next";
+import { Listbox } from "@headlessui/react";
 import TradeResult from "components/markets/TradeResult";
 import Decimal from "decimal.js";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
@@ -30,6 +34,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useForm } from "react-hook-form";
@@ -46,6 +51,9 @@ import Input from "components/ui/Input";
 import { useDelayQueue } from "lib/state/delay-queue";
 import InfoPopover from "components/ui/InfoPopover";
 import TruncatedText from "components/ui/TruncatedText";
+import { useMarket } from "lib/hooks/queries/useMarket";
+import { FaCaretDown } from "react-icons/fa";
+import { calcMarketColors } from "lib/util/color-calc";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -76,12 +84,22 @@ const getTradeValuesFromExtrinsicResult = (
   };
 };
 
-const TradeForm = () => {
+const TradeForm = ({
+  outcomeAssets,
+}: {
+  outcomeAssets: MarketOutcomeAssetId[];
+}) => {
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
 
   if (!tradeItem) return <div></div>;
 
-  return <Inner tradeItem={tradeItem} setTradeItem={setTradeItem} />;
+  return (
+    <Inner
+      outcomeAssets={outcomeAssets}
+      tradeItem={tradeItem}
+      setTradeItem={setTradeItem}
+    />
+  );
 };
 
 export default TradeForm;
@@ -89,9 +107,11 @@ export default TradeForm;
 const Inner = ({
   tradeItem,
   setTradeItem,
+  outcomeAssets,
 }: {
   tradeItem: TradeItem;
   setTradeItem: (trade: TradeItem) => void;
+  outcomeAssets: MarketOutcomeAssetId[];
 }) => {
   const notifications = useNotifications();
   const queryClient = useQueryClient();
@@ -110,6 +130,10 @@ const Inner = ({
   const { addItem } = useDelayQueue();
 
   const { data: tradeItemState } = useTradeItemState(tradeItem);
+
+  const { data: market } = useMarket({
+    marketId: getMarketIdOf(tradeItem.assetId),
+  });
 
   const { data: constants } = useChainConstants();
 
@@ -206,20 +230,24 @@ const Inner = ({
     send: swapTx,
     isSuccess,
     isLoading,
+    isBroadcasting,
+    resetState: resetTransactionState,
   } = useExtrinsic(() => transaction, {
+    onBroadcast: () => {},
     onSuccess: (data) => {
       const { baseAmount, assetAmount } = getTradeValuesFromExtrinsicResult(
         type,
         data,
       );
-      notifications.pushNotification(
-        `Successfully ${
-          tradeItem.action === "buy" ? "bought" : "sold"
-        } ${assetAmount} ${
-          tradeItemState?.asset?.name
-        } for ${baseAmount} ${baseSymbol}`,
-        { type: "Success", lifetime: 60 },
-      );
+
+      // notifications.pushNotification(
+      //   `Successfully ${
+      //     tradeItem.action === "buy" ? "bought" : "sold"
+      //   } ${assetAmount} ${
+      //     tradeItemState?.asset?.name
+      //   } for ${baseAmount} ${baseSymbol}`,
+      //   { type: "Success", lifetime: 60 },
+      // );
 
       setFinalAmounts({ asset: assetAmount, base: baseAmount });
       setPercentageDisplay("0");
@@ -497,6 +525,10 @@ const Inner = ({
           baseToken={baseSymbol}
           marketId={tradeItemState?.market.marketId}
           marketQuestion={tradeItemState?.market.question ?? undefined}
+          onContinueClick={() => {
+            reset();
+            resetTransactionState();
+          }}
         />
       ) : (
         <form
@@ -564,13 +596,52 @@ const Inner = ({
                 autoFocus
               />
             </div>
-            <div className="center sm:h-[48px] font-semibold capitalize text-[20px] sm:text-[28px]">
-              <TruncatedText
-                length={24}
-                text={tradeItemState?.asset?.name ?? ""}
+            <div className="relative center sm:h-[48px] font-semibold capitalize text-[20px] sm:text-[28px]">
+              <Listbox
+                value={tradeItemState?.assetId}
+                onChange={(assetId) => {
+                  reset();
+                  setTradeItem({
+                    action: tradeItem.action,
+                    assetId,
+                  });
+                }}
               >
-                {(text) => <>{text}</>}
-              </TruncatedText>
+                <Listbox.Button>
+                  <div className="center">
+                    <TruncatedText
+                      length={24}
+                      text={tradeItemState?.asset?.name ?? ""}
+                    >
+                      {(text) => <>{text}</>}
+                    </TruncatedText>
+                    <FaCaretDown />
+                  </div>
+                </Listbox.Button>
+                <Listbox.Options className="absolute top-[100%] min-w-[220px] mt-1 rounded-xl shadow-lg z-50 bg-fog-of-war text-white">
+                  {outcomeAssets.map((asset, index) => {
+                    const assetIndex = getIndexOf(asset);
+                    const category = market?.categories?.[assetIndex];
+                    const colors = calcMarketColors(
+                      market?.marketId!,
+                      outcomeAssets.length,
+                    );
+                    return (
+                      <Listbox.Option
+                        key={assetIndex}
+                        value={asset}
+                        className="font-light flex gap-3 items-center text-base mb-2 cursor-pointer py-4 px-5 hover:bg-slate-50 hover:bg-opacity-10"
+                      >
+                        <div
+                          className="w-4 h-4 rounded-full"
+                          style={{ backgroundColor: colors[index] }}
+                        ></div>
+                        {category?.name || assetIndex}
+                      </Listbox.Option>
+                    );
+                  })}
+                </Listbox.Options>
+              </Listbox>
             </div>
             <div className="font-semibold text-center mb-[20px]">For</div>
             <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative">
@@ -628,19 +699,34 @@ const Inner = ({
               </div>
             </div>
 
-            <TransactionButton
-              disabled={!formState.isValid || isLoading === true}
-              className="h-[56px]"
-              type="submit"
-              extrinsic={transaction}
-            >
-              <div className="center font-normal h-[20px]">
-                Confirm {`${capitalize(tradeItem?.action)}`}
-              </div>
-              <div className="center font-normal text-ztg-12-120 h-[20px]">
-                Transaction fee: {fee} {constants?.tokenSymbol}
-              </div>
-            </TransactionButton>
+            <div className="relative">
+              <TransactionButton
+                disabled={!formState.isValid || isLoading === true}
+                className={`h-[56px] ${isLoading && "animate-pulse"}`}
+                type="submit"
+                extrinsic={transaction}
+              >
+                <div className="center font-normal h-[20px]">
+                  Confirm {`${capitalize(tradeItem?.action)}`}
+                </div>
+                <div className="center font-normal text-ztg-12-120 h-[20px]">
+                  Transaction fee: {fee} {constants?.tokenSymbol}
+                </div>
+              </TransactionButton>
+              <Transition
+                show={isBroadcasting}
+                enter="transition-all duration-100"
+                enterFrom="opacity-0 scale-75"
+                enterTo="opacity-100 scale-100"
+                leave="transition-all duration-100"
+                leaveFrom="opacity-100 scale-75"
+                leaveTo="opacity-0 scale-100"
+              >
+                <div className="absolute left-[50%] bottom-0 translate-y-[65%] -translate-x-[50%] text-xs py-1 px-3 text-white bg-blue-300 rounded-full">
+                  Broadcasting transaction..
+                </div>
+              </Transition>
+            </div>
           </div>
         </form>
       )}
