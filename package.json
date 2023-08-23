@@ -58,7 +58,7 @@
     "lodash.merge": "^4.6.2",
     "median-range": "^0.0.11",
     "moment-timezone": "^0.5.43",
-    "next": "^13.2.3",
+    "next": "^13.4.19",
     "next-absolute-url": "^1.2.2",
     "next-qrcode": "^2.5.1",
     "object-hash": "^2.2.0",

@@ -2,9 +2,7 @@ import Table, { TableColumn } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useAccountBonds } from "lib/hooks/queries/useAccountBonds";
-import { useAllForeignAssetUsdPrices } from "lib/hooks/queries/useAssetUsdPrice";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
-import { lookUpAssetPrice } from "lib/util/lookup-price";
 import EmptyPortfolio from "./EmptyPortfolio";
 import MarketPositionHeader from "./MarketPositionHeader";
 
