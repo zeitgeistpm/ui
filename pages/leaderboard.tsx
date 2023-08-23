@@ -503,48 +503,6 @@ const Leaderboard: NextPage<{
         className="h-14 mb-9 w-[340px]"
       />
       <Table columns={columns} data={tableData} />
-      <div className="flex flex-col gap-y-5 justify-center items-center">
-        {rankings.map((rank, index) => (
-          <div
-            key={index}
-            className="flex flex-col bg-sky-100 py-3 px-4 sm:px-6 rounded-xl w-full max-w-[800px]"
-          >
-            <div className="flex items-center justify-center">
-              <div className="mr-1 sm:mr-[20px] w-[20px] shrink-0">
-                {index + 1}
-              </div>
-              <div className="shrink-0">
-                <Avatar size={50} address={rank.accountId} />
-              </div>
-              <Link
-                className="mx-ztg-15 text-xs sm:text-sm md:text-base truncate shrink"
-                href={`/portfolio/${rank.accountId}`}
-              >
-                {rank.name ?? rank.accountId}
-              </Link>
-              <div className="ml-auto font-bold text-xs sm:text-sm md:text-base">
-                ${rank.profitUsd.toFixed(0)}
-              </div>
-            </div>
-            {/* <div>
-              {rank.markets
-                .sort((a, b) => b.profit - a.profit)
-                // .slice(0, 1000) // todo move this server side
-                .map((market) => (
-                  <div>
-                    <Link href={`markets/${market.marketId}`}>
-                      {market.question}-{market.marketId}
-                    </Link>
-                    <div>
-                      {formatNumberCompact(market.profit)}{" "}
-                      {lookupAssetSymbol(market.baseAssetId)}
-                    </div>
-                  </div>
-                ))}
-            </div> */}
-          </div>
-        ))}
-      </div>
     </div>
   );
 };
