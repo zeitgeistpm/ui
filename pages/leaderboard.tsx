@@ -1,5 +1,8 @@
 import { dehydrate, QueryClient } from "@tanstack/react-query";
-import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
+import {
+  FullHistoricalAccountBalanceFragment,
+  HistoricalAccountBalanceOrderByInput,
+} from "@zeitgeistpm/indexer";
 import {
   BaseAssetId,
   create,
@@ -206,7 +209,7 @@ export async function getStaticProps() {
   });
 
   const buyFullSetEvents = await fetchAllPages(async (pageNumber, limit) => {
-    const { historicalAccountBalances } =
+    const { historicalAccountBalances: buyFullSetEvents } =
       await sdk.indexer.historicalAccountBalances({
         where: {
           OR: [
@@ -218,8 +221,9 @@ export async function getStaticProps() {
         },
         limit: limit,
         offset: pageNumber * limit,
+        order: HistoricalAccountBalanceOrderByInput.BlockNumberDesc,
       });
-    return historicalAccountBalances;
+    return buyFullSetEvents;
   });
 
   const sellFullSetEvents = await fetchAllPages(async (pageNumber, limit) => {
@@ -230,6 +234,7 @@ export async function getStaticProps() {
         },
         limit: limit,
         offset: pageNumber * limit,
+        order: HistoricalAccountBalanceOrderByInput.BlockNumberDesc,
       });
     return historicalAccountBalances;
   });
