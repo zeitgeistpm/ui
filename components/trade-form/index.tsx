@@ -54,6 +54,7 @@ import TruncatedText from "components/ui/TruncatedText";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { FaCaretDown } from "react-icons/fa";
 import { calcMarketColors } from "lib/util/color-calc";
+import { Loader } from "components/ui/Loader";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -526,6 +527,7 @@ const Inner = ({
           marketId={tradeItemState?.market.marketId}
           marketQuestion={tradeItemState?.market.question ?? undefined}
           onContinueClick={() => {
+            setPercentageDisplay("0");
             reset();
             resetTransactionState();
           }}
@@ -702,30 +704,20 @@ const Inner = ({
             <div className="relative">
               <TransactionButton
                 disabled={!formState.isValid || isLoading === true}
-                className={`h-[56px] ${isLoading && "animate-pulse"}`}
+                className={`relative h-[56px] ${isLoading && "animate-pulse"}`}
                 type="submit"
                 extrinsic={transaction}
+                loading={isBroadcasting}
               >
-                <div className="center font-normal h-[20px]">
-                  Confirm {`${capitalize(tradeItem?.action)}`}
-                </div>
-                <div className="center font-normal text-ztg-12-120 h-[20px]">
-                  Transaction fee: {fee} {constants?.tokenSymbol}
+                <div>
+                  <div className="center font-normal h-[20px]">
+                    Confirm {`${capitalize(tradeItem?.action)}`}
+                  </div>
+                  <div className="center font-normal text-ztg-12-120 h-[20px]">
+                    Transaction fee: {fee} {constants?.tokenSymbol}
+                  </div>
                 </div>
               </TransactionButton>
-              <Transition
-                show={isBroadcasting}
-                enter="transition-all duration-100"
-                enterFrom="opacity-0 scale-75"
-                enterTo="opacity-100 scale-100"
-                leave="transition-all duration-100"
-                leaveFrom="opacity-100 scale-75"
-                leaveTo="opacity-0 scale-100"
-              >
-                <div className="absolute left-[50%] bottom-0 translate-y-[65%] -translate-x-[50%] text-xs py-1 px-3 text-white bg-blue-300 rounded-full">
-                  Broadcasting transaction..
-                </div>
-              </Transition>
             </div>
           </div>
         </form>

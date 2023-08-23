@@ -7,7 +7,7 @@ export type LoaderProps = {
   lineThrough?: boolean;
 };
 
-export type LoaderVariant = "Success" | "Info" | "Error";
+export type LoaderVariant = "Success" | "Info" | "Error" | "Dark";
 
 export const Loader = ({
   className,
@@ -20,7 +20,7 @@ export const Loader = ({
   return (
     <div className={`relative bg-inherit rounded-full ${className}`}>
       <div
-        className={`h-full w-full rounded-full  z-10 ${
+        className={`h-full w-full rounded-full z-10 ${
           loading && "animate-spin"
         }`}
         style={{
@@ -29,7 +29,7 @@ export const Loader = ({
           } 35%, ${gradient?.[1] ?? "rgba(0,0,0,0.1)"} 100%)`,
         }}
       ></div>
-      <div className="absolute center top-0 left-0 h-full w-full bg-inherit rounded-full z-20 scale-[0.88]">
+      <div className="absolute center top-0 left-0 h-full w-full bg-inherit rounded-full z-20 scale-[0.84]">
         {lineThrough && (
           <div
             className="absolute, top-0 left-0 w-[6%] h-[102%] rotate-45 bg-red"
@@ -53,5 +53,7 @@ const getGradient = (type: LoaderVariant): [string, string] => {
       return ["#31A1C4", "#00F0FF"];
     case "Error":
       return ["#C43131", "#FF6B00"];
+    case "Dark":
+      return ["rgb(10,10,10, 0.35)", "rgba(10,10,10, 0.85)"];
   }
 };
