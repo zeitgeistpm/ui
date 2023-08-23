@@ -181,13 +181,13 @@ const WithdrawModal = ({
           "amount",
           balance.mul(value.percentage).div(100).div(ZTG).toNumber(),
         );
-        trigger("amount");
       } else if (name === "amount" && value.amount !== "") {
         setValue(
           "percentage",
           new Decimal(value.amount).mul(ZTG).div(balance).mul(100).toString(),
         );
       }
+      trigger("amount");
     });
     return () => subscription.unsubscribe();
   }, [watch]);
