@@ -58,38 +58,46 @@ export const useFeePayingAsset = (
           };
         }
 
-        // find first available asset to pay fee, else just return native asset
-        const availableAsset = foreignAssetBalances.find((asset) => {
-          const feeFactor = assetMetadata
-            ?.find((data) => asset.foreignAssetId === data[0])?.[1]
-            .feeFactor.div(ZTG);
-          if (feeFactor) {
-            return asset.balance.greaterThan(
-              baseFee.mul(feeFactor).mul(foreignAssetFeeBuffer),
-            );
-          }
-        });
+        //todo: remove this an uncomment below once #1742 is resolved
+        return {
+          assetId: { Ztg: null },
+          symbol: constants?.tokenSymbol ?? "",
+          amount: baseFee,
+          sufficientBalance: false,
+        };
 
-        if (availableAsset && availableAsset.foreignAssetId != null) {
-          const feeFactor = assetMetadata
-            ?.find((data) => availableAsset.foreignAssetId === data[0])?.[1]
-            .feeFactor.div(ZTG);
-          return {
-            assetId: {
-              ForeignAsset: availableAsset.foreignAssetId,
-            },
-            symbol: availableAsset.symbol,
-            amount: baseFee.mul(feeFactor ?? 1).mul(foreignAssetFeeBuffer),
-            sufficientBalance: true,
-          };
-        } else {
-          return {
-            assetId: { Ztg: null },
-            symbol: constants?.tokenSymbol ?? "",
-            amount: baseFee,
-            sufficientBalance: false,
-          };
-        }
+        // find first available asset to pay fee, else just return native asset
+        // const availableAsset = foreignAssetBalances.find((asset) => {
+        //   const feeFactor = assetMetadata
+        //     ?.find((data) => asset.foreignAssetId === data[0])?.[1]
+        //     .feeFactor.div(ZTG);
+        //   if (feeFactor) {
+        //     return asset.balance.greaterThan(
+        //       baseFee.mul(feeFactor).mul(foreignAssetFeeBuffer),
+        //     );
+        //   }
+        // });
+
+        // if (availableAsset && availableAsset.foreignAssetId != null) {
+        //   const feeFactor = assetMetadata
+        //     ?.find((data) => availableAsset.foreignAssetId === data[0])?.[1]
+        //     .feeFactor.div(ZTG);
+        //   return {
+        //     assetId: {
+        //       ForeignAsset: availableAsset.foreignAssetId,
+        //     },
+        //     symbol: availableAsset.symbol,
+        //     amount: baseFee.mul(feeFactor ?? 1).mul(foreignAssetFeeBuffer),
+        //     sufficientBalance: true,
+        //   };
+        // } else {
+        //   return {
+        //     assetId: { Ztg: null },
+        //     symbol: constants?.tokenSymbol ?? "",
+        //     amount: baseFee,
+        //     sufficientBalance: false,
+        //   };
+        // }
       }
       return null;
     },
