@@ -6,7 +6,6 @@ import {
   ForeignAssetId,
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
-import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
 import Decimal from "decimal.js";
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { isEmpty } from "lodash";
@@ -114,14 +113,8 @@ const getZTGPrice = async (): Promise<Decimal> => {
   try {
     const response = await fetch(`/api/usd-price?asset=zeitgeist`);
     const json = await response.json();
-
     return new Decimal(json.body.price);
   } catch (err) {
-    const ztgInfo = JSON.parse(window.localStorage.getItem("ztgInfo") || "{}");
-    if (isEmpty(ztgInfo)) {
-      return new Decimal(0);
-    } else {
-      return new Decimal(ztgInfo?.price ?? 0);
-    }
+    return new Decimal(0);
   }
 };
