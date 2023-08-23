@@ -404,8 +404,8 @@ export async function getStaticProps() {
         ...player,
         name: names[index],
       })),
-      revalidate: 10 * 60, //10min
     },
+    revalidate: 10 * 60, //10min
   };
 }
 
