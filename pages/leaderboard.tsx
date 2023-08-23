@@ -1,4 +1,4 @@
-import { Tab } from "@headlessui/react";
+import React, { useMemo } from "react";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
 import TabGroup from "components/ui/TabGroup";
+import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { endpointOptions, graphQlEndpoint, ZTG } from "lib/constants";
 import { getDisplayName } from "lib/gql/display-name";
@@ -29,7 +30,6 @@ import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import Link from "next/link";
-import React from "react";
 
 // Approach: aggregate base asset movements in and out of a market
 // "In events": swaps, buy full set
@@ -72,6 +72,7 @@ type MarketSummary = {
 type TradersSummary = {
   [key: AccountId]: {
     profitUsd: number;
+    volumeUsd: number;
     markets: MarketSummary[];
   };
 };
@@ -79,6 +80,7 @@ type TradersSummary = {
 type Rank = {
   accountId: string;
   profitUsd: number;
+  volumeUsd: number;
   name?: string;
   markets: MarketSummary[];
 };
@@ -325,13 +327,17 @@ export async function getStaticProps() {
     return { ...traders, [accountId]: marketTotal };
   }, {});
 
-  const tradeProfits = Object.keys(
+  const tradersSummaries = Object.keys(
     tradersAggregatedByMarket,
   ).reduce<TradersSummary>((ranks, accountId) => {
     const trader = tradersAggregatedByMarket[accountId];
 
     const marketsSummary: MarketSummary[] = [];
-    const profit = Object.keys(trader).reduce<Decimal>((total, marketId) => {
+
+    let profit = new Decimal(0);
+    let volume = new Decimal(0);
+
+    for (const marketId of Object.keys(trader)) {
       const marketTotal: MarketBaseDetails = trader[marketId];
 
       const market = markets.find((m) => m.marketId === Number(marketId));
@@ -357,27 +363,33 @@ export async function getStaticProps() {
         );
 
         const usdProfitLoss = diff.mul(marketEndBaseAssetPrice ?? 0);
-        return total.plus(usdProfitLoss);
-      } else {
-        return total;
+        volume = volume.plus(
+          marketTotal.baseAssetIn
+            .plus(marketTotal.baseAssetOut)
+            .mul(marketEndBaseAssetPrice ?? 0),
+        );
+
+        profit = profit.plus(usdProfitLoss);
       }
-    }, new Decimal(0));
+    }
 
     return {
       ...ranks,
       [accountId]: {
         profitUsd: profit.div(ZTG).toNumber(),
+        volumeUsd: volume.div(ZTG).toNumber(),
         markets: marketsSummary,
       },
     };
   }, {});
 
-  const rankings = Object.keys(tradeProfits)
+  const rankings = Object.keys(tradersSummaries)
     .reduce<Rank[]>((rankings, accountId) => {
       rankings.push({
         accountId,
-        profitUsd: tradeProfits[accountId].profitUsd,
-        markets: tradeProfits[accountId].markets,
+        profitUsd: tradersSummaries[accountId].profitUsd,
+        markets: tradersSummaries[accountId].markets,
+        volumeUsd: tradersSummaries[accountId].volumeUsd,
       });
       return rankings;
     }, [])
@@ -415,12 +427,67 @@ export async function getStaticProps() {
 const TimePeriodItems = ["Day", "Week", "Month", "All"] as const;
 type TimePeriod = typeof TimePeriodItems[number];
 
+const columns: TableColumn[] = [
+  {
+    header: "Rank",
+    accessor: "rank",
+    type: "number",
+  },
+  {
+    header: "User",
+    accessor: "user",
+    type: "component",
+  },
+  {
+    header: "Markets Won",
+    accessor: "numMarketsWon",
+    type: "number",
+  },
+  {
+    header: "Total Profit",
+    accessor: "totalProfit",
+    type: "text",
+  },
+  { header: "Volume", accessor: "volume", type: "text" },
+];
+
+const UserCell = ({ address, name }: { address: string; name?: string }) => {
+  return (
+    <div className="flex">
+      <Avatar size={50} address={address} />
+      <Link
+        className="ml-2 center truncate shrink"
+        href={`/portfolio/${address}`}
+      >
+        {name ?? address}
+      </Link>
+    </div>
+  );
+};
+
 const Leaderboard: NextPage<{
   rankings: Rank[];
 }> = ({ rankings }) => {
   const [timePeriod, setTimePeriod] = React.useState<TimePeriod | undefined>(
-    "Month",
+    "All",
   );
+
+  const tableData = useMemo<TableData[]>(() => {
+    let res: TableData[] = [];
+    for (const [index, rankObj] of rankings.entries()) {
+      res = [
+        ...res,
+        {
+          rank: index + 1,
+          user: <UserCell address={rankObj.accountId} name={rankObj.name} />,
+          numMarketsWon: rankObj.markets.filter((m) => m.profit > 0).length,
+          totalProfit: `$${rankObj.profitUsd.toFixed(0)}`,
+          volume: `$${rankObj.volumeUsd.toFixed(0)}`,
+        },
+      ];
+    }
+    return res;
+  }, [rankings]);
 
   return (
     <div className="">
@@ -435,6 +502,7 @@ const Leaderboard: NextPage<{
         itemClassName="h-full outline-none flex items-center text-sky-600 font-medium"
         className="h-14 mb-9 w-[340px]"
       />
+      <Table columns={columns} data={tableData} />
       <div className="flex flex-col gap-y-5 justify-center items-center">
         {rankings.map((rank, index) => (
           <div
