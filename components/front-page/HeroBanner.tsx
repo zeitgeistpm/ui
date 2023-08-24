@@ -90,6 +90,7 @@ export const HeroBanner = ({
             alt="Futuristic City Image"
             fill={true}
             sizes="100vw"
+            priority
             className="object-cover"
             blurDataURL={bannerPlaceholder}
             src="/banner.png"
