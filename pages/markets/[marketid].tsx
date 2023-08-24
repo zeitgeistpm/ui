@@ -408,26 +408,46 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
     MarketCategoricalOutcome | MarketScalarOutcome | undefined
   >();
 
-  return (
+  const wallet = useWallet();
+  const { data: stage } = useMarketStage(market);
+
+  const connectedWalletIsOracle = market.oracle === wallet.realAddress;
+
+  const userCanReport =
+    stage?.type === "OpenReportingPeriod" || !connectedWalletIsOracle;
+
+  return !userCanReport ? (
+    <></>
+  ) : (
     <div className="py-6 px-5">
       {reportedOutcome ? (
         <ReportResult market={market} outcome={reportedOutcome} />
       ) : (
         <>
           <h4 className="mb-3">Report Market Outcome</h4>
+
           <p className="mb-5 text-sm">
             Market has closed and the outcome can now be reported.
           </p>
-          {market.marketType?.scalar ? (
-            <ScalarReportBox market={market} onReport={setReportedOutcome} />
-          ) : (
-            <>
-              <CategoricalReportBox
-                market={market}
-                onReport={setReportedOutcome}
-              />
-            </>
+
+          {stage?.type === "OpenReportingPeriod" && (
+            <p className="-mt-3 mb-10 text-sm italic text-gray-500">
+              Oracle failed to report. Reporting is now open to all.
+            </p>
           )}
+
+          <div className="mb-6">
+            {market.marketType?.scalar ? (
+              <ScalarReportBox market={market} onReport={setReportedOutcome} />
+            ) : (
+              <>
+                <CategoricalReportBox
+                  market={market}
+                  onReport={setReportedOutcome}
+                />
+              </>
+            )}
+          </div>
         </>
       )}
     </div>

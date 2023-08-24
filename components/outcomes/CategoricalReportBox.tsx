@@ -78,7 +78,7 @@ const CategoricalReportBox = ({
             setSelectedOutcome(assetId);
           }}
         >
-          <Listbox.Button className="mb-2">
+          <Listbox.Button className="mb-2 w-full">
             <div className="center gap-2 text-2xl">
               <TruncatedText
                 length={24}
