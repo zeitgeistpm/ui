@@ -93,7 +93,7 @@ const CategoricalReportBox = ({
               )}
             </div>
           </Listbox.Button>
-          <Listbox.Options className="absolute top-[100%] left-[50%] -translate-x-[50%] min-w-[220px] mt-1 rounded-xl shadow-lg z-50 bg-fog-of-war text-white">
+          <Listbox.Options className="absolute top-[100%] left-[50%] -translate-x-[50%] min-w-[290px] mt-1 rounded-xl shadow-lg z-50 bg-fog-of-war text-white">
             {outcomeAssets?.map((asset, index) => {
               const assetIndex = getIndexOf(asset);
               const category = market?.categories?.[assetIndex];

@@ -55,8 +55,6 @@ export const useSimilarMarkets = (marketId?: number, limit = 2) => {
           ];
         }
 
-        console.log(resMarkets);
-
         return resMarkets;
       }
     },
