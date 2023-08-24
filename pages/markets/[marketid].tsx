@@ -1,6 +1,11 @@
 import { Transition } from "@headlessui/react";
-import { MarketOutcomeAssetId, parseAssetId } from "@zeitgeistpm/sdk-next";
+import {
+  MarketOutcomeAssetId,
+  getIndexOf,
+  parseAssetId,
+} from "@zeitgeistpm/sdk-next";
 import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
+import { MarketStatus, FullMarketFragment } from "@zeitgeistpm/indexer";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 import { AddressDetails } from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
@@ -35,8 +40,10 @@ import { useSimilarMarkets } from "lib/hooks/queries/useSimilarMarkets";
 import { useTradeItem } from "lib/hooks/trade";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import {
+  MarketOutcome,
   MarketReport,
   isMarketCategoricalOutcome,
+  isMarketScalarOutcome,
   isValidMarketReport,
 } from "lib/types";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
@@ -46,6 +53,13 @@ import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { Suspense, useEffect, useState } from "react";
 import { AlertTriangle, ChevronDown } from "react-feather";
+import ScalarReportBox from "components/outcomes/ScalarReportBox";
+import { MarketCategoricalOutcome } from "lib/types";
+import { MarketScalarOutcome } from "lib/types";
+import CategoricalReportBox from "components/outcomes/CategoricalReportBox";
+import { AiOutlineFileDone } from "react-icons/ai";
+import { TwitterBird } from "components/markets/TradeResult";
+import { useWallet } from "lib/state/wallet";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -170,6 +184,8 @@ const Market: NextPage<MarketPageProps> = ({
   const { data: poolId, isLoading: poolIdLoading } = useMarketPoolId(marketId);
   const baseAsset = parseAssetIdString(indexedMarket?.baseAsset);
   const { data: metadata } = useAssetMetadata(baseAsset);
+
+  const wallet = useWallet();
 
   const handlePoolDeployed = () => {
     setPoolDeployed(true);
@@ -361,7 +377,21 @@ const Market: NextPage<MarketPageProps> = ({
         <div className="hidden lg:block w-[460px] min-w-[380px]">
           <div className="sticky top-28">
             <div className="shadow-lg rounded-lg mb-12 opacity-0 animate-pop-in">
-              <TradeForm outcomeAssets={outcomeAssets} />
+              {market?.status === MarketStatus.Active ? (
+                <TradeForm outcomeAssets={outcomeAssets} />
+              ) : market?.status === MarketStatus.Closed ? (
+                <>
+                  <ReportForm market={market} />
+                </>
+              ) : market?.status === MarketStatus.Reported &&
+                wallet.realAddress === market.report?.by ? (
+                <ReportResult
+                  market={market}
+                  outcome={market.report?.outcome as MarketOutcome}
+                />
+              ) : (
+                <></>
+              )}
             </div>
             <div>
               <SimilarMarketsSection market={market ?? undefined} />
@@ -369,6 +399,75 @@ const Market: NextPage<MarketPageProps> = ({
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+const ReportForm = ({ market }: { market: FullMarketFragment }) => {
+  const [reportedOutcome, setReportedOutcome] = useState<
+    MarketCategoricalOutcome | MarketScalarOutcome | undefined
+  >();
+
+  return (
+    <div className="py-6 px-5">
+      {reportedOutcome ? (
+        <ReportResult market={market} outcome={reportedOutcome} />
+      ) : (
+        <>
+          <h4 className="mb-3">Report Market Outcome</h4>
+          <p className="mb-5 text-sm">
+            Market has closed and the outcome can now be reported.
+          </p>
+          {market.marketType?.scalar ? (
+            <ScalarReportBox market={market} onReport={setReportedOutcome} />
+          ) : (
+            <>
+              <CategoricalReportBox
+                market={market}
+                onReport={setReportedOutcome}
+              />
+            </>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+const ReportResult = ({
+  market,
+  outcome,
+}: {
+  market: FullMarketFragment;
+  outcome: MarketCategoricalOutcome | MarketScalarOutcome;
+}) => {
+  const outcomeName = isMarketScalarOutcome(outcome)
+    ? new Decimal(outcome.scalar).div(ZTG).toFixed(3)
+    : market.categories?.[outcome.categorical].name;
+
+  const marketUrl = `https://app.zeitgeist.pm/markets/${market.marketId}`;
+
+  const twitterBaseUrl = "https://twitter.com/intent/tweet?text=";
+  const tweetUrl = `${twitterBaseUrl}I just reported the outcome of %40ZeitgeistPM market: "${market.question}" to be ${outcomeName}%0A%0ACheck out the market here%3A%0A&url=${marketUrl}`;
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <div>
+        <AiOutlineFileDone size={64} className="text-ztg-blue" />
+      </div>
+      <p className="text">Successfully reported!</p>
+      <div className="text-2xl font-semibold mb-4">
+        {"scalar" in outcome && "Value: "}
+        {outcomeName}
+      </div>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={tweetUrl}
+        className="mb-4"
+      >
+        <TwitterBird />
+      </a>
     </div>
   );
 };

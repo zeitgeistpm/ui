@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 
-const TwitterBird = () => {
+export const TwitterBird = () => {
   return (
     <svg
       width="56"

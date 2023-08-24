@@ -33,6 +33,8 @@ export const isScalarRangeType = (
   return ["date", "number"].includes(val);
 };
 
+export type MarketOutcome = MarketCategoricalOutcome | MarketScalarOutcome;
+
 export type MarketCategoricalOutcome = { categorical: number };
 export type MarketScalarOutcome = { scalar: string };
 

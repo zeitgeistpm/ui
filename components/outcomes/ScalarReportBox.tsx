@@ -13,6 +13,7 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
+import { MarketScalarOutcome } from "lib/types";
 import { useState } from "react";
 
 const ScalarReportBox = ({
@@ -20,7 +21,7 @@ const ScalarReportBox = ({
   onReport,
 }: {
   market: Market<IndexerContext>;
-  onReport?: () => void;
+  onReport?: (outcome: MarketScalarOutcome) => void;
 }) => {
   const [sdk] = useSdkv2();
   const wallet = useWallet();
@@ -40,7 +41,7 @@ const ScalarReportBox = ({
     return ((bounds[1].toNumber() + bounds[0].toNumber()) / 2).toFixed(0);
   });
 
-  const { send, isLoading, isSuccess } = useExtrinsic(
+  const { send, isLoading, isBroadcasting, isSuccess } = useExtrinsic(
     () => {
       if (!isRpcSdk(sdk)) return;
 
@@ -54,11 +55,17 @@ const ScalarReportBox = ({
       );
     },
     {
+      onBroadcast: () => {},
       onSuccess: () => {
-        notificationStore.pushNotification("Outcome Reported", {
-          type: "Success",
-        });
-        onReport?.();
+        if (onReport) {
+          onReport?.({
+            scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
+          });
+        } else {
+          notificationStore.pushNotification("Outcome Reported", {
+            type: "Success",
+          });
+        }
       },
     },
   );
@@ -94,7 +101,7 @@ const ScalarReportBox = ({
           onChange={(e) => handleNumberChange(e.target.value)}
           min={bounds[0].toString()}
           max={bounds[1].toString()}
-          className="text-ztg-14-150 p-2 bg-sky-200 rounded-md w-full outline-none text-right font-mono mt-2"
+          className="text-ztg-14-150 p-2 w-full outline-none text-right font-mono mt-2"
           onBlur={() => {
             if (
               scalarReportValue === "" ||
@@ -108,11 +115,12 @@ const ScalarReportBox = ({
         />
       )}
       <TransactionButton
-        className="my-ztg-10 shadow-ztg-2"
+        className="mt-4 shadow-ztg-2"
         onClick={handleSignTransaction}
         disabled={reportDisabled}
+        loading={isBroadcasting}
       >
-        Report Outcome
+        Report Outcome {scalarReportValue}
       </TransactionButton>
     </>
   );
