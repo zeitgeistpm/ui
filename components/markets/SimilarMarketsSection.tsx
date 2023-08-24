@@ -56,7 +56,7 @@ export const SimilarMarketsSection = ({
               <div
                 className="shadow-lg rounded-xl opacity-0 animate-pop-in"
                 style={{
-                  animationDelay: `${200 * index}ms`,
+                  animationDelay: `${200 * (index + 1)}ms`,
                 }}
               >
                 <MarketCard
