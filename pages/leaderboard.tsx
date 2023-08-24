@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { GraphQLClient } from "graphql-request";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
 import {
@@ -13,6 +14,8 @@ import {
 import Avatar from "components/ui/Avatar";
 import TabGroup from "components/ui/TabGroup";
 import Table, { TableColumn, TableData } from "components/ui/Table";
+import { IndexedMarketCardData } from "components/markets/market-card";
+import MarketScroll from "components/markets/MarketScroll";
 import Decimal from "decimal.js";
 import { endpointOptions, graphQlEndpoint, ZTG } from "lib/constants";
 import { getDisplayName } from "lib/gql/display-name";
@@ -32,6 +35,7 @@ import { NextPage } from "next";
 import Link from "next/link";
 import { shortenAddress } from "lib/util";
 import Image from "next/image";
+import getTrendingMarkets from "lib/gql/trending-markets";
 
 // Approach: aggregate base asset movements in and out of a market
 // "In events": swaps, buy full set
@@ -414,6 +418,10 @@ export async function getStaticProps() {
     ),
   );
 
+  const client = new GraphQLClient(graphQlEndpoint);
+
+  const trendingMarkets = await getTrendingMarkets(client, sdk);
+
   return {
     props: {
       dehydratedState: dehydrate(queryClient),
@@ -421,6 +429,7 @@ export async function getStaticProps() {
         ...player,
         name: names[index],
       })),
+      trendingMarkets,
       revalidate: 10 * 60, //10min
     },
   };
@@ -478,7 +487,8 @@ const UserCell = ({ address, name }: { address: string; name?: string }) => {
 
 const Leaderboard: NextPage<{
   rankings: Rank[];
-}> = ({ rankings }) => {
+  trendingMarkets: IndexedMarketCardData[];
+}> = ({ rankings, trendingMarkets }) => {
   const [timePeriod, setTimePeriod] = React.useState<TimePeriod | undefined>(
     "All",
   );
@@ -501,7 +511,7 @@ const Leaderboard: NextPage<{
   }, [rankings]);
 
   return (
-    <div>
+    <div id="leaderboard">
       <div className="w-full h-[137px] sm:h-[244px] relative overflow-hidden rounded-md mt-8">
         <Image
           src="/Leaderboard-banner.png"
@@ -524,6 +534,16 @@ const Leaderboard: NextPage<{
         />
       </div>
       <Table columns={columns} data={tableData} />
+      {trendingMarkets.length > 0 && (
+        <div className="my-[60px]">
+          <MarketScroll
+            title="Trending Markets"
+            cta="Go to Markets"
+            markets={trendingMarkets}
+            link="markets"
+          />
+        </div>
+      )}
     </div>
   );
 };
