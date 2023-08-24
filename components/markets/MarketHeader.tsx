@@ -359,7 +359,7 @@ const MarketHeader: FC<{
       {rejectReason && rejectReason.length > 0 && (
         <div className="mt-2.5">Market rejected: {rejectReason}</div>
       )}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 mb-4">
         <HeaderStat label={hasDatePassed(starts) ? "Started" : "Starts"}>
           {new Intl.DateTimeFormat("default", {
             dateStyle: "medium",
@@ -412,7 +412,7 @@ const MarketHeader: FC<{
           <Skeleton width="150px" height="20px" />
         )}
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 mb-4">
         <AddressDetails title="Creator" address={market.creator} />
         <Image
           width={20}

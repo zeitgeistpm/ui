@@ -266,6 +266,7 @@ const Market: NextPage<MarketPageProps> = ({
             marketStage={marketStage ?? undefined}
             rejectReason={market?.rejectReason ?? undefined}
           />
+
           {market?.rejectReason && market.rejectReason.length > 0 && (
             <div className="mt-[10px] text-ztg-14-150">
               Market rejected: {market.rejectReason}
