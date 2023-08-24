@@ -27,11 +27,13 @@ export const HeroBanner = ({
     <div className="relative main-container mt-12 md:mt-18 mb-20 z-2">
       <div className="relative flex flex-col-reverse md:flex-row md:gap-8">
         <div className="md:w-[890px] lg:w-[690px] md:pt-8">
-          <h1 className="text-5xl mb-8">Welcome to the Future of Betting</h1>
-          <h2 className="text-xl mb-8">
+          <h1 className="text-5xl mb-8 leading-tight">
+            Welcome to the Future of Betting
+          </h1>
+          <h2 className="text-xl mb-8 leading-6">
             Zeitgeist is a new innovative platform for predicting future events
           </h2>
-          <div className="flex gap-4 mb-8">
+          <div className="flex gap-4 mb-14">
             <button className="rounded-md flex-1 md:flex-none bg-vermilion text-white px-6 py-3">
               Learn More
             </button>
