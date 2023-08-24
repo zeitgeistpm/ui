@@ -30,6 +30,7 @@ import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import Link from "next/link";
+import { shortenAddress } from "lib/util";
 
 // Approach: aggregate base asset movements in and out of a market
 // "In events": swaps, buy full set
@@ -447,19 +448,28 @@ const columns: TableColumn[] = [
     header: "Total Profit",
     accessor: "totalProfit",
     type: "text",
+    collapseOrder: 2,
   },
-  { header: "Volume", accessor: "volume", type: "text" },
+  { header: "Volume", accessor: "volume", type: "text", collapseOrder: 1 },
 ];
 
 const UserCell = ({ address, name }: { address: string; name?: string }) => {
   return (
-    <div className="flex">
-      <Avatar size={50} address={address} />
+    <div className="flex items-center">
+      <div className="hidden sm:block">
+        <Avatar size={50} address={address} />
+      </div>
       <Link
-        className="ml-2 center truncate shrink"
+        className="ml-2 md:w-[300px] lg:w-auto"
         href={`/portfolio/${address}`}
       >
-        {name ?? address}
+        <span className="hidden lg:inline">{name ?? address}</span>
+        <span className="lg:hidden md:inline hidden">
+          {name ?? shortenAddress(address, 12, 12)}
+        </span>
+        <span className="block w-[100px] md:hidden truncate shrink">
+          {name ?? shortenAddress(address, 3, 3)}
+        </span>
       </Link>
     </div>
   );
