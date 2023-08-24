@@ -31,6 +31,7 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import Link from "next/link";
 import { shortenAddress } from "lib/util";
+import Image from "next/image";
 
 // Approach: aggregate base asset movements in and out of a market
 // "In events": swaps, buy full set
@@ -500,18 +501,28 @@ const Leaderboard: NextPage<{
   }, [rankings]);
 
   return (
-    <div className="">
+    <div>
+      <div className="w-full h-[137px] sm:h-[244px] relative overflow-hidden rounded-md mt-8">
+        <Image
+          src="/Leaderboard-banner.png"
+          alt="Leaderboard-banner"
+          fill
+          style={{ objectFit: "cover", objectPosition: "top" }}
+        />
+      </div>
       <h2 className="font-bold mt-9 mb-2 w-full text-center">
         Leaderboard (Top 20)
       </h2>
-      <TabGroup
-        items={TimePeriodItems}
-        onChange={setTimePeriod}
-        selected={timePeriod}
-        selectedItemClassName="!text-black font-bold"
-        itemClassName="h-full outline-none flex items-center text-sky-600 font-medium"
-        className="h-14 mb-9 w-[340px]"
-      />
+      <div className="border-b-1 border-misty-harbor mb-9">
+        <TabGroup
+          items={TimePeriodItems}
+          onChange={setTimePeriod}
+          selected={timePeriod}
+          selectedItemClassName="!text-black font-bold"
+          itemClassName="h-full outline-none flex items-center text-sky-600 font-medium"
+          className="h-14 w-auto sm:w-[340px] mx-auto sm:mx-0 "
+        />
+      </div>
       <Table columns={columns} data={tableData} />
     </div>
   );
