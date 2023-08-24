@@ -150,8 +150,6 @@ const Market: NextPage<MarketPageProps> = ({
   const { marketid } = router.query;
   const marketId = Number(marketid);
 
-  const { data: similarMarkets } = useSimilarMarkets(marketId);
-
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
 
   const outcomeAssets = indexedMarket.outcomeAssets.map(
@@ -245,6 +243,11 @@ const Market: NextPage<MarketPageProps> = ({
   }, [disputes, market?.report]);
 
   const token = metadata?.symbol;
+
+  const isOracle = market?.oracle === wallet.realAddress;
+  const canReport =
+    marketStage?.type === "OpenReportingPeriod" ||
+    (marketStage?.type === "OracleReportingPeriod" && isOracle);
 
   return (
     <div className="flex">
@@ -384,7 +387,7 @@ const Market: NextPage<MarketPageProps> = ({
             <div className="shadow-lg rounded-lg mb-12 opacity-0 animate-pop-in">
               {market?.status === MarketStatus.Active ? (
                 <TradeForm outcomeAssets={outcomeAssets} />
-              ) : market?.status === MarketStatus.Closed ? (
+              ) : market?.status === MarketStatus.Closed && canReport ? (
                 <>
                   <ReportForm market={market} />
                 </>
@@ -401,6 +404,35 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           </div>
         </div>
+
+        {(market?.status === MarketStatus.Active ||
+          market?.status === MarketStatus.Closed ||
+          market?.status === MarketStatus.Reported) && (
+          <div className="fixed bottom-0 right-0 left-0 lg:hidden">
+            <div className="flex h-20 text-lg font-semibold cursor-pointer">
+              {market?.status === MarketStatus.Active ? (
+                <>
+                  <div className="flex-1 h-full center text-gray-200 bg-fog-of-war">
+                    Buy
+                  </div>
+                  <div className="flex-1 h-full center bg-white text-black">
+                    Sell
+                  </div>
+                </>
+              ) : market?.status === MarketStatus.Closed && canReport ? (
+                <div className="flex-1 h-full center text-white bg-ztg-blue">
+                  Report
+                </div>
+              ) : market?.status === MarketStatus.Reported ? (
+                <div className="flex-1 h-full center text-white bg-ztg-blue">
+                  Dispute
+                </div>
+              ) : (
+                <></>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
