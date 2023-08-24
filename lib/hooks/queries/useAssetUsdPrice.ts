@@ -1,16 +1,14 @@
 import { useQueries, useQuery, UseQueryResult } from "@tanstack/react-query";
 import {
   AssetId,
-  IOZtgAssetId,
-  IOForeignAssetId,
   ForeignAssetId,
+  IOForeignAssetId,
+  IOZtgAssetId,
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
-import { environment } from "lib/constants";
-import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
 import Decimal from "decimal.js";
+import { environment } from "lib/constants";
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
-import { isEmpty } from "lodash";
 
 export const assetUsdPriceRootKey = "asset-usd-price";
 
@@ -87,7 +85,9 @@ export const useAllForeignAssetUsdPrices = (): {
   };
 };
 
-export const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
+export const getForeignAssetPriceServerSide = async (
+  foreignAsset: ForeignAssetId,
+) => {
   const coinGeckoId =
     FOREIGN_ASSET_METADATA[foreignAsset.ForeignAsset].coinGeckoId;
 
@@ -99,19 +99,23 @@ export const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
 
   return new Decimal(json[coinGeckoId]?.usd ?? 0);
 };
+export const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
+  const coinGeckoId =
+    FOREIGN_ASSET_METADATA[foreignAsset.ForeignAsset].coinGeckoId;
+
+  const response = await fetch(`/api/usd-price?asset=${coinGeckoId}`);
+  const json = await response.json();
+
+  return new Decimal(json.body.price);
+};
 
 const getZTGPrice = async (): Promise<Decimal> => {
   try {
-    const ztgInfo = await fetchZTGInfo();
-    window.localStorage.setItem("ztgInfo", JSON.stringify(ztgInfo));
-    return ztgInfo.price;
+    const response = await fetch(`/api/usd-price?asset=zeitgeist`);
+    const json = await response.json();
+    return new Decimal(json.body.price);
   } catch (err) {
-    const ztgInfo = JSON.parse(window.localStorage.getItem("ztgInfo") || "{}");
-    if (isEmpty(ztgInfo)) {
-      return new Decimal(0);
-    } else {
-      return ztgInfo.price;
-    }
+    return new Decimal(0);
   }
 };
 
