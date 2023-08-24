@@ -49,19 +49,13 @@ import { AlertTriangle, ChevronDown } from "react-feather";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
-  loading: () => <Skeleton height={606} width={"100%"} />,
+  loading: () => <div style={{ width: "100%", height: "606px" }} />,
 });
 
 const SimilarMarketsSection = dynamic(
   () => import("../../components/markets/SimilarMarketsSection"),
   {
     ssr: false,
-    loading: () => (
-      <div className="flex flex-col gap-4">
-        <Skeleton height={171} width={"100%"} />
-        <Skeleton height={171} width={"100%"} />
-      </div>
-    ),
   },
 );
 
@@ -366,11 +360,10 @@ const Market: NextPage<MarketPageProps> = ({
         </div>
         <div className="hidden lg:block w-[460px] min-w-[380px]">
           <div className="sticky top-28">
-            <div className="shadow-lg rounded-lg mb-12">
+            <div className="shadow-lg rounded-lg mb-12 opacity-0 animate-pop-in">
               <TradeForm outcomeAssets={outcomeAssets} />
             </div>
             <div>
-              <h4 className="mb-4">Similar Markets</h4>
               <SimilarMarketsSection market={market ?? undefined} />
             </div>
           </div>

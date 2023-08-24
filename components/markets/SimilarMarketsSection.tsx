@@ -16,23 +16,29 @@ export const SimilarMarketsSection = ({
   limit?: number;
 }) => {
   const similarMarkets = useSimilarMarkets(market?.marketId, limit ?? 2);
+
+  const hasSimilarMarkets = Boolean(similarMarkets?.data?.length);
+
   const stats = useMarketsStats(
     similarMarkets?.data?.map((m) => m.marketId) ?? [],
+    {
+      enabled: hasSimilarMarkets,
+    },
   );
 
   const isLoading =
     (!similarMarkets.isFetched &&
       (similarMarkets.isFetching || similarMarkets.isLoading)) ||
-    (!stats.isFetched && stats.isFetching) ||
-    stats.isLoading;
+    (hasSimilarMarkets &&
+      ((!stats.isFetched && stats.isFetching) || stats.isLoading));
 
   return (
     <div className="flex flex-col gap-4">
-      {isLoading
-        ? range(0, limit ?? 2).map((i) => (
-            <Skeleton key={i} height={171} width={"100%"} />
-          ))
-        : similarMarkets?.data?.map((market) => {
+      {!isLoading && (
+        <>
+          {hasSimilarMarkets && <h4 className="mb-4">Similar Markets</h4>}
+
+          {similarMarkets?.data?.map((market, index) => {
             const stat = stats?.data?.find(
               (s) => s.marketId === market.marketId,
             );
@@ -47,7 +53,12 @@ export const SimilarMarketsSection = ({
             const scalarType = market.scalarType as ScalarRangeType;
 
             return (
-              <div className="shadow-lg rounded-xl ">
+              <div
+                className="shadow-lg rounded-xl opacity-0 animate-pop-in"
+                style={{
+                  animationDelay: `${200 * index}ms`,
+                }}
+              >
                 <MarketCard
                   marketId={market.marketId}
                   outcomes={market.outcomes}
@@ -76,6 +87,8 @@ export const SimilarMarketsSection = ({
               </div>
             );
           })}
+        </>
+      )}
     </div>
   );
 };

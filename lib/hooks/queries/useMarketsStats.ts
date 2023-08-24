@@ -7,6 +7,9 @@ export const marketsStatsRootQuery = "marketsStats";
 
 export const useMarketsStats = (
   marketIds: number[],
+  opts?: {
+    enabled?: boolean;
+  },
 ): UseQueryResult<MarketStats[]> => {
   const [sdk, id] = useSdkv2();
 
@@ -19,7 +22,11 @@ export const useMarketsStats = (
       return poolStats;
     },
     {
-      enabled: sdk != null && isIndexedSdk(sdk) && marketIds.length > 0,
+      enabled:
+        sdk != null &&
+        isIndexedSdk(sdk) &&
+        marketIds.length > 0 &&
+        (opts?.enabled ?? true),
       keepPreviousData: true,
     },
   );
