@@ -57,7 +57,7 @@ import ScalarReportBox from "components/outcomes/ScalarReportBox";
 import { MarketCategoricalOutcome } from "lib/types";
 import { MarketScalarOutcome } from "lib/types";
 import CategoricalReportBox from "components/outcomes/CategoricalReportBox";
-import { AiOutlineFileDone } from "react-icons/ai";
+import { AiOutlineFileAdd, AiOutlineFileDone } from "react-icons/ai";
 import { TwitterBird } from "components/markets/TradeResult";
 import { useWallet } from "lib/state/wallet";
 
@@ -419,24 +419,27 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
   return !userCanReport ? (
     <></>
   ) : (
-    <div className="py-6 px-5">
+    <div className="py-8 px-5">
       {reportedOutcome ? (
         <ReportResult market={market} outcome={reportedOutcome} />
       ) : (
         <>
-          <h4 className="mb-3">Report Market Outcome</h4>
+          <h4 className="mb-3 flex items-center gap-2">
+            <AiOutlineFileAdd size={20} className="text-gray-600" />
+            <span>Report Market Outcome</span>
+          </h4>
 
           <p className="mb-5 text-sm">
             Market has closed and the outcome can now be reported.
           </p>
 
           {stage?.type === "OpenReportingPeriod" && (
-            <p className="-mt-3 mb-10 text-sm italic text-gray-500">
+            <p className="-mt-3 mb-6 text-sm italic text-gray-500">
               Oracle failed to report. Reporting is now open to all.
             </p>
           )}
 
-          <div className="mb-6">
+          <div className="mb-2">
             {market.marketType?.scalar ? (
               <ScalarReportBox market={market} onReport={setReportedOutcome} />
             ) : (
