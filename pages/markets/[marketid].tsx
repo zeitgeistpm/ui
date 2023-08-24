@@ -1,9 +1,5 @@
 import { Transition } from "@headlessui/react";
-import {
-  IOMarketOutcomeAssetId,
-  MarketOutcomeAssetId,
-  parseAssetId,
-} from "@zeitgeistpm/sdk-next";
+import { MarketOutcomeAssetId, parseAssetId } from "@zeitgeistpm/sdk-next";
 import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 import { AddressDetails } from "components/markets/MarketAddresses";
@@ -35,24 +31,39 @@ import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
+import { useSimilarMarkets } from "lib/hooks/queries/useSimilarMarkets";
 import { useTradeItem } from "lib/hooks/trade";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import {
+  MarketReport,
   isMarketCategoricalOutcome,
   isValidMarketReport,
-  MarketReport,
 } from "lib/types";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { AlertTriangle, ChevronDown } from "react-feather";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
+  loading: () => <Skeleton height={606} width={"100%"} />,
 });
+
+const SimilarMarketsSection = dynamic(
+  () => import("../../components/markets/SimilarMarketsSection"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex flex-col gap-4">
+        <Skeleton height={171} width={"100%"} />
+        <Skeleton height={171} width={"100%"} />
+      </div>
+    ),
+  },
+);
 
 export const QuillViewer = dynamic(
   () => import("../../components/ui/QuillViewer"),
@@ -126,6 +137,8 @@ const Market: NextPage<MarketPageProps> = ({
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
+
+  const { data: similarMarkets } = useSimilarMarkets(marketId);
 
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
 
@@ -353,8 +366,12 @@ const Market: NextPage<MarketPageProps> = ({
         </div>
         <div className="hidden lg:block w-[460px] min-w-[380px]">
           <div className="sticky top-28">
-            <div className="shadow-lg rounded-lg">
+            <div className="shadow-lg rounded-lg mb-12">
               <TradeForm outcomeAssets={outcomeAssets} />
+            </div>
+            <div>
+              <h4 className="mb-4">Similar Markets</h4>
+              <SimilarMarketsSection market={market ?? undefined} />
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
-import { Tab, Transition } from "@headlessui/react";
+import { Listbox, Tab } from "@headlessui/react";
 import { ISubmittableResult } from "@polkadot/types/types";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   AssetId,
   IOForeignAssetId,
@@ -10,11 +11,14 @@ import {
   getIndexOf,
   getMarketIdOf,
 } from "@zeitgeistpm/sdk-next";
-import { Listbox } from "@headlessui/react";
 import TradeResult from "components/markets/TradeResult";
+import Input from "components/ui/Input";
+import TruncatedText from "components/ui/TruncatedText";
 import Decimal from "decimal.js";
+import { positionsRootKey } from "lib/hooks/queries/useAccountTokenPositions";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
 import {
   TradeItem,
@@ -24,37 +28,23 @@ import {
   useTradeTransaction,
 } from "lib/hooks/trade";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
+import { useDelayQueue } from "lib/state/delay-queue";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { TradeType } from "lib/types";
+import { awaitIndexer } from "lib/util/await-indexer";
+import { calcMarketColors } from "lib/util/color-calc";
 import { capitalize } from "lodash";
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { RiArrowDownSLine } from "react-icons/ri";
 import { from } from "rxjs";
 import { useDebounce } from "use-debounce";
 import RangeInput from "../ui/RangeInput";
 import TransactionButton from "../ui/TransactionButton";
 import TradeTab, { TradeTabType } from "./TradeTab";
-import { useQueryClient } from "@tanstack/react-query";
-import { positionsRootKey } from "lib/hooks/queries/useAccountTokenPositions";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { awaitIndexer } from "lib/util/await-indexer";
-import Input from "components/ui/Input";
-import { useDelayQueue } from "lib/state/delay-queue";
-import InfoPopover from "components/ui/InfoPopover";
-import TruncatedText from "components/ui/TruncatedText";
-import { useMarket } from "lib/hooks/queries/useMarket";
-import { FaCaretDown } from "react-icons/fa";
-import { calcMarketColors } from "lib/util/color-calc";
-import { Loader } from "components/ui/Loader";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -88,7 +78,7 @@ const getTradeValuesFromExtrinsicResult = (
 const TradeForm = ({
   outcomeAssets,
 }: {
-  outcomeAssets: MarketOutcomeAssetId[];
+  outcomeAssets?: MarketOutcomeAssetId[];
 }) => {
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
 
@@ -112,7 +102,7 @@ const Inner = ({
 }: {
   tradeItem: TradeItem;
   setTradeItem: (trade: TradeItem) => void;
-  outcomeAssets: MarketOutcomeAssetId[];
+  outcomeAssets?: MarketOutcomeAssetId[];
 }) => {
   const notifications = useNotifications();
   const queryClient = useQueryClient();
@@ -610,18 +600,20 @@ const Inner = ({
                 }}
               >
                 <Listbox.Button>
-                  <div className="center">
+                  <div className="center gap-2">
                     <TruncatedText
                       length={24}
                       text={tradeItemState?.asset?.name ?? ""}
                     >
                       {(text) => <>{text}</>}
                     </TruncatedText>
-                    <FaCaretDown />
+                    {outcomeAssets && outcomeAssets.length > 1 && (
+                      <RiArrowDownSLine />
+                    )}
                   </div>
                 </Listbox.Button>
                 <Listbox.Options className="absolute top-[100%] min-w-[220px] mt-1 rounded-xl shadow-lg z-50 bg-fog-of-war text-white">
-                  {outcomeAssets.map((asset, index) => {
+                  {outcomeAssets?.map((asset, index) => {
                     const assetIndex = getIndexOf(asset);
                     const category = market?.categories?.[assetIndex];
                     const colors = calcMarketColors(

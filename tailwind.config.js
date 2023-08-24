@@ -211,7 +211,7 @@ module.exports = {
         "light-gray": "#F5F5F5",
         efefef: "#EFEFEF",
         //finalised proto colour pallet
-        "ztg-blue": "#0001FE",
+        "ztg-blue": "#2468e2",
         "laser-lemon": "#F7FF58",
         sunglow: "#FFD23F",
         "sunglow-2": "#FAB400",
