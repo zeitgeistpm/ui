@@ -47,7 +47,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div
-      className={`relative min-h-screen justify-evenly ${
+      className={`relative flex min-h-screen justify-evenly overflow-hidden ${
         greyBackgroundPageRoutes.includes(router.pathname) ? "bg-[#F1F1F1]" : ""
       }`}
     >
@@ -62,9 +62,18 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
             }
           `}
         </style>
-        <div ref={contentRef} className="flex-grow">
+        <div
+          ref={contentRef}
+          className="overflow-y-a1uto overflow-x-hidden flex-grow"
+        >
           <TopBar />
-          <main className="mb-12 container-fluid" ref={mainRef}>
+          <main
+            className={`flex flex-col min-h-screen dark:text-white mb-12 ${
+              router.pathname !== "/" && "main-container mt-20"
+            }`}
+            ref={mainRef}
+          >
+            {" "}
             <div
               className={`w-full ${
                 ["/", "/markets"].includes(router.pathname) ? "pt-0" : "pt-2"

@@ -24,7 +24,7 @@ const AccountButton = dynamic(() => import("../account/AccountButton"), {
 const TopBar = () => {
   return (
     <div
-      className={`flex justify-center items-center w-full h-[69px] sticky top-0 z-40 transition-all duration-300 bg-black container-fluid`}
+      className={`fixed flex justify-center items-center w-full h-[69px] top-0 z-40 transition-all duration-300 bg-black container-fluid`}
     >
       <div className="hidden md:block border-r-1 border-blue-600 pr-3 md:pr-7">
         <Link href="/">
