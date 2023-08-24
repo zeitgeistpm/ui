@@ -73,7 +73,9 @@ const TradeHistoryTable = () => {
       <h2 className="sm:col-span-2 text-center sm:text-start mb-7">
         Latest Trades
       </h2>
-      <Table columns={columns} data={tableData} />
+      <div className="shadow-lg rounded-xl">
+        <Table columns={columns} data={tableData} />
+      </div>
     </div>
   );
 };
