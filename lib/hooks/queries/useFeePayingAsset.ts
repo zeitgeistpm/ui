@@ -2,9 +2,9 @@ import { UseQueryResult, useQuery } from "@tanstack/react-query";
 import { AssetId, ZTG } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { useWallet } from "lib/state/wallet";
-import { useAllAssetMetadata } from "./useAssetMetadata";
+import { useAssetMetadata } from "./useAssetMetadata";
+import { useBalance } from "./useBalance";
 import { useChainConstants } from "./useChainConstants";
-import { useForeignAssetBalances } from "./useForeignAssetBalances";
 import { useZtgBalance } from "./useZtgBalance";
 
 type FeeAsset = {
@@ -24,17 +24,18 @@ export const useFeePayingAsset = (
 ): UseQueryResult<FeeAsset | null> => {
   const { activeAccount: activeAccount } = useWallet();
   const { data: nativeBalance } = useZtgBalance(activeAccount?.address);
-  const { data: foreignAssetBalances } = useForeignAssetBalances(
-    activeAccount?.address,
-  );
   const { data: constants } = useChainConstants();
-  const { data: assetMetadata } = useAllAssetMetadata();
+
+  const { data: dotMetadata } = useAssetMetadata({ ForeignAsset: 0 });
+  const { data: dotBalance } = useBalance(activeAccount?.address, {
+    ForeignAsset: 0,
+  });
 
   const enabled =
     !!nativeBalance &&
-    !!foreignAssetBalances &&
+    !!dotMetadata &&
     !!activeAccount &&
-    !!assetMetadata &&
+    !!dotBalance &&
     !!baseFee;
 
   const query = useQuery(
@@ -43,7 +44,7 @@ export const useFeePayingAsset = (
       activeAccount,
       activeAccount,
       nativeBalance,
-      foreignAssetBalances,
+      dotBalance,
       baseFee,
     ],
     async () => {
@@ -58,46 +59,26 @@ export const useFeePayingAsset = (
           };
         }
 
-        //todo: remove this an uncomment below once #1742 is resolved
-        return {
-          assetId: { Ztg: null },
-          symbol: constants?.tokenSymbol ?? "",
-          amount: baseFee,
-          sufficientBalance: false,
-        };
+        const dotFeeFactor = dotMetadata.feeFactor.div(ZTG);
+        const dotFee = baseFee.mul(dotFeeFactor).mul(foreignAssetFeeBuffer);
 
-        // find first available asset to pay fee, else just return native asset
-        // const availableAsset = foreignAssetBalances.find((asset) => {
-        //   const feeFactor = assetMetadata
-        //     ?.find((data) => asset.foreignAssetId === data[0])?.[1]
-        //     .feeFactor.div(ZTG);
-        //   if (feeFactor) {
-        //     return asset.balance.greaterThan(
-        //       baseFee.mul(feeFactor).mul(foreignAssetFeeBuffer),
-        //     );
-        //   }
-        // });
-
-        // if (availableAsset && availableAsset.foreignAssetId != null) {
-        //   const feeFactor = assetMetadata
-        //     ?.find((data) => availableAsset.foreignAssetId === data[0])?.[1]
-        //     .feeFactor.div(ZTG);
-        //   return {
-        //     assetId: {
-        //       ForeignAsset: availableAsset.foreignAssetId,
-        //     },
-        //     symbol: availableAsset.symbol,
-        //     amount: baseFee.mul(feeFactor ?? 1).mul(foreignAssetFeeBuffer),
-        //     sufficientBalance: true,
-        //   };
-        // } else {
-        //   return {
-        //     assetId: { Ztg: null },
-        //     symbol: constants?.tokenSymbol ?? "",
-        //     amount: baseFee,
-        //     sufficientBalance: false,
-        //   };
-        // }
+        if (dotBalance.greaterThan(dotFee)) {
+          return {
+            assetId: {
+              ForeignAsset: 0,
+            },
+            symbol: dotMetadata.symbol,
+            amount: dotFee,
+            sufficientBalance: true,
+          };
+        } else {
+          return {
+            assetId: { Ztg: null },
+            symbol: constants?.tokenSymbol ?? "",
+            amount: baseFee,
+            sufficientBalance: false,
+          };
+        }
       }
       return null;
     },

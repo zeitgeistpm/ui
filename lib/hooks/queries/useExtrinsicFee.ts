@@ -38,6 +38,7 @@ export const useExtrinsicFee = (
     {
       enabled: enabled,
       staleTime: BLOCK_TIME_SECONDS * 1000,
+      keepPreviousData: true,
     },
   );
 
