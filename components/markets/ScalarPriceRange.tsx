@@ -60,7 +60,7 @@ const ScalarPriceRange = ({
 
   return (
     <div
-      className="w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative flex items-center p-2"
+      className="w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative flex items-center p-2 rounded-lg overflow-hidden"
       ref={ref}
     >
       <span className="text-xs text-gray-400 z-10 font-semibold">
