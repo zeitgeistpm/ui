@@ -232,7 +232,7 @@ table {
 }
 
 tr {
-  border-bottom: 1px solid #e1cfff;
+  border-bottom: 1px solid #1c64f2;
   background: white;
 }
 
@@ -244,7 +244,7 @@ tr:last-child td:last-child {
 }
 
 tbody tr:first-child {
-  border-top: 1px solid #e1cfff;
+  border-top: 1px solid #1c64f2;
 }
 tr:last-child {
   border-bottom: none;
