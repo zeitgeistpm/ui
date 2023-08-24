@@ -1,6 +1,7 @@
 import { Transition } from "@headlessui/react";
 import {
   MarketOutcomeAssetId,
+  ScalarRangeType,
   getIndexOf,
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
@@ -60,6 +61,9 @@ import CategoricalReportBox from "components/outcomes/CategoricalReportBox";
 import { AiOutlineFileAdd, AiOutlineFileDone } from "react-icons/ai";
 import { TwitterBird } from "components/markets/TradeResult";
 import { useWallet } from "lib/state/wallet";
+import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
+import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
+import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -384,12 +388,10 @@ const Market: NextPage<MarketPageProps> = ({
                 <>
                   <ReportForm market={market} />
                 </>
-              ) : market?.status === MarketStatus.Reported &&
-                wallet.realAddress === market.report?.by ? (
-                <ReportResult
-                  market={market}
-                  outcome={market.report?.outcome as MarketOutcome}
-                />
+              ) : market?.status === MarketStatus.Reported ? (
+                <>
+                  <DisputeForm market={market} />
+                </>
               ) : (
                 <></>
               )}
@@ -404,9 +406,33 @@ const Market: NextPage<MarketPageProps> = ({
   );
 };
 
+const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
+  const reportedOutcome = market.report?.outcome;
+
+  const [disputeOutcome, setDisputeOutcome] = useState<
+    | MarketCategoricalOutcome
+    | (MarketScalarOutcome & { type: ScalarRangeType })
+    | undefined
+  >();
+
+  return (
+    <div>
+      {disputeOutcome ? (
+        <DisputeResult market={market} outcome={disputeOutcome} />
+      ) : isMarketCategoricalOutcome(reportedOutcome) ? (
+        <CategoricalDisputeBox market={market} onSuccess={setDisputeOutcome} />
+      ) : (
+        <ScalarDisputeBox market={market} onSuccess={setDisputeOutcome} />
+      )}
+    </div>
+  );
+};
+
 const ReportForm = ({ market }: { market: FullMarketFragment }) => {
   const [reportedOutcome, setReportedOutcome] = useState<
-    MarketCategoricalOutcome | MarketScalarOutcome | undefined
+    | MarketCategoricalOutcome
+    | (MarketScalarOutcome & { type: ScalarRangeType })
+    | undefined
   >();
 
   const wallet = useWallet();
@@ -463,11 +489,11 @@ const ReportResult = ({
   outcome,
 }: {
   market: FullMarketFragment;
-  outcome: MarketCategoricalOutcome | MarketScalarOutcome;
+  outcome:
+    | MarketCategoricalOutcome
+    | (MarketScalarOutcome & { type: ScalarRangeType });
 }) => {
-  const outcomeName = isMarketScalarOutcome(outcome)
-    ? new Decimal(outcome.scalar).div(ZTG).toFixed(3)
-    : market.categories?.[outcome.categorical].name;
+  const outcomeName = displayOutcome(market, outcome);
 
   const marketUrl = `https://app.zeitgeist.pm/markets/${market.marketId}`;
 
@@ -494,6 +520,58 @@ const ReportResult = ({
       </a>
     </div>
   );
+};
+
+const DisputeResult = ({
+  market,
+  outcome,
+}: {
+  market: FullMarketFragment;
+  outcome:
+    | MarketCategoricalOutcome
+    | (MarketScalarOutcome & { type: ScalarRangeType });
+}) => {
+  const outcomeName = displayOutcome(market, outcome);
+
+  const marketUrl = `https://app.zeitgeist.pm/markets/${market.marketId}`;
+
+  const twitterBaseUrl = "https://twitter.com/intent/tweet?text=";
+  const tweetUrl = `${twitterBaseUrl}I just disputed the outcome of %40ZeitgeistPM market: "${market.question}" to be ${outcomeName}%0A%0ACheck out the market here%3A%0A&url=${marketUrl}`;
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <div>
+        <AiOutlineFileDone size={64} className="text-ztg-blue" />
+      </div>
+      <p className="text">Successfully disputed!</p>
+      <div className="text-2xl font-semibold mb-4">
+        <span>New Outcome: </span>
+        {"scalar" in outcome && "Value: "}
+        {outcomeName}
+      </div>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={tweetUrl}
+        className="mb-4"
+      >
+        <TwitterBird />
+      </a>
+    </div>
+  );
+};
+
+const displayOutcome = (
+  market: FullMarketFragment,
+  outcome:
+    | MarketCategoricalOutcome
+    | (MarketScalarOutcome & { type: ScalarRangeType }),
+) => {
+  if (isMarketScalarOutcome(outcome)) {
+    return formatScalarOutcome(outcome.scalar, outcome.type);
+  } else {
+    return market.categories?.[outcome.categorical].name;
+  }
 };
 
 export default Market;

@@ -3,6 +3,7 @@ import {
   IndexerContext,
   isRpcSdk,
   Market,
+  ScalarRangeType,
 } from "@zeitgeistpm/sdk-next";
 import Input from "components/ui/Input";
 import { DateTimeInput } from "components/ui/inputs";
@@ -21,7 +22,7 @@ const ScalarReportBox = ({
   onReport,
 }: {
   market: Market<IndexerContext>;
-  onReport?: (outcome: MarketScalarOutcome) => void;
+  onReport?: (outcome: MarketScalarOutcome & { type: ScalarRangeType }) => void;
 }) => {
   const [sdk] = useSdkv2();
   const wallet = useWallet();
@@ -59,6 +60,7 @@ const ScalarReportBox = ({
       onSuccess: () => {
         if (onReport) {
           onReport?.({
+            type: market.scalarType as ScalarRangeType,
             scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
           });
         } else {

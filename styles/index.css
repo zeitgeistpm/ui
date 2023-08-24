@@ -214,6 +214,20 @@ h6 {
   @apply px-9 mx-auto max-w-screen-3xl;
 }
 
+.invis-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  background-color: transparent;
+}
+
+.invis-scrollbar::-webkit-scrollbar-track {
+  height: 10%;
+  background-color: transparent;
+}
+
+.invis-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-slate-100/70 rounded-xl;
+}
+
 .carousel__slide--visible {
   overflow: hidden;
 }

@@ -524,7 +524,7 @@ const Inner = ({
         />
       ) : (
         <form
-          className="bg-white rounded-[10px]"
+          className="relative bg-white rounded-[10px]"
           onSubmit={(e) => {
             e.preventDefault();
             swapTx();
@@ -612,7 +612,7 @@ const Inner = ({
                     )}
                   </div>
                 </Listbox.Button>
-                <Listbox.Options className="absolute top-[100%] min-w-[220px] mt-1 rounded-xl shadow-lg z-50 bg-fog-of-war text-white">
+                <Listbox.Options className="absolute invis-scrollbar top-[100%] min-w-[290px] max-h-[300px] overflow-y-scroll mt-1 rounded-xl shadow-lg z-50 bg-fog-of-war text-white">
                   {outcomeAssets?.map((asset, index) => {
                     const assetIndex = getIndexOf(asset);
                     const category = market?.categories?.[assetIndex];
@@ -624,7 +624,7 @@ const Inner = ({
                       <Listbox.Option
                         key={assetIndex}
                         value={asset}
-                        className="font-light flex gap-3 items-center text-base mb-2 cursor-pointer py-4 px-5 hover:bg-slate-50 hover:bg-opacity-10"
+                        className="font-light flex gap-3 items-center text-base cursor-pointer py-6 px-5 hover:bg-slate-50 hover:bg-opacity-10"
                       >
                         <div
                           className="w-4 h-4 rounded-full"

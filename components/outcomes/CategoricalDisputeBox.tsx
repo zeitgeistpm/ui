@@ -1,12 +1,16 @@
+import { Listbox } from "@headlessui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  CategoricalAssetId,
   getIndexOf,
   IndexerContext,
   isRpcSdk,
   Market,
   MarketOutcomeAssetId,
+  parseAssetId,
 } from "@zeitgeistpm/sdk-next";
 import TransactionButton from "components/ui/TransactionButton";
+import TruncatedText from "components/ui/TruncatedText";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import {
   marketDisputesRootKey,
@@ -15,6 +19,10 @@ import {
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
+import { MarketCategoricalOutcome } from "lib/types";
+import { calcMarketColors } from "lib/util/color-calc";
+import { useState } from "react";
+import { RiArrowDownSLine } from "react-icons/ri";
 
 const CategoricalDisputeBox = ({
   market,
@@ -22,8 +30,8 @@ const CategoricalDisputeBox = ({
   onSuccess,
 }: {
   market: Market<IndexerContext>;
-  assetId: MarketOutcomeAssetId;
-  onSuccess?: () => void;
+  assetId?: MarketOutcomeAssetId;
+  onSuccess?: (outcome: MarketCategoricalOutcome) => void;
 }) => {
   const [sdk, id] = useSdkv2();
   const { data: disputes } = useMarketDisputes(market);
@@ -32,39 +40,63 @@ const CategoricalDisputeBox = ({
   const { data: constants, isLoading: isConstantsLoading } =
     useChainConstants();
 
+  const outcomeAssets = market.outcomeAssets
+    .map(
+      (assetIdString) =>
+        parseAssetId(assetIdString).unwrap() as CategoricalAssetId,
+    )
+    .filter(
+      (asset) => market.report?.outcome.categorical !== getIndexOf(asset),
+    );
+
+  const [selectedAssetId, setSelectedAssetId] = useState<MarketOutcomeAssetId>(
+    assetId ?? outcomeAssets[0],
+  );
+
+  const assetName = market.categories?.[getIndexOf(selectedAssetId)]?.name;
   const disputeBond = constants?.markets.disputeBond;
   const disputeFactor = constants?.markets.disputeFactor;
   const tokenSymbol = constants?.tokenSymbol;
 
   const lastDispute = disputes?.[disputes.length - 1];
-  const assetName = market.categories?.[getIndexOf(assetId)]?.name;
+
   const bondAmount =
     disputes && isConstantsLoading === false
       ? disputeBond! + disputes.length * disputeFactor!
       : disputeBond;
 
-  const { send: dispute, isLoading } = useExtrinsic(
+  const {
+    send: dispute,
+    isLoading,
+    isBroadcasting,
+  } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk)) {
+      if (isRpcSdk(sdk) && selectedAssetId) {
         return sdk.api.tx.predictionMarkets.dispute(market.marketId, {
-          Categorical: getIndexOf(assetId),
+          Categorical: getIndexOf(selectedAssetId),
         });
       }
     },
     {
+      onBroadcast: () => {},
       onSuccess: () => {
         queryClient.invalidateQueries([
           id,
           marketDisputesRootKey,
           market.marketId,
         ]);
-        notificationStore.pushNotification(
-          `Successfully disputed. New report: ${assetName}`,
-          {
-            type: "Success",
-          },
-        );
-        onSuccess?.();
+        if (onSuccess) {
+          onSuccess({
+            categorical: getIndexOf(selectedAssetId),
+          });
+        } else {
+          notificationStore.pushNotification(
+            `Successfully disputed. New report: ${assetName}`,
+            {
+              type: "Success",
+            },
+          );
+        }
       },
     },
   );
@@ -97,7 +129,54 @@ const CategoricalDisputeBox = ({
       </div>
       <div className="flex flex-col item-center text-center">
         <span className="text-sky-600 text-[14px]">New Report:</span>
-        <span className="">{assetName}</span>
+
+        <div className="relative">
+          <Listbox
+            value={selectedAssetId}
+            onChange={(assetId) => {
+              setSelectedAssetId(assetId);
+            }}
+          >
+            <Listbox.Button className="mb-2 w-full">
+              <div className="center gap-2 ">
+                <TruncatedText
+                  length={24}
+                  text={
+                    market.categories?.[getIndexOf(selectedAssetId)]?.name ?? ""
+                  }
+                >
+                  {(text) => <>{text}</>}
+                </TruncatedText>
+                {outcomeAssets && outcomeAssets.length > 1 && (
+                  <RiArrowDownSLine />
+                )}
+              </div>
+            </Listbox.Button>
+            <Listbox.Options className="absolute top-[100%] left-[50%] -translate-x-[50%] min-w-[220px] mt-1 rounded-xl shadow-lg z-50 bg-fog-of-war text-white">
+              {outcomeAssets?.map((asset, index) => {
+                const assetIndex = getIndexOf(asset);
+                const category = market?.categories?.[assetIndex];
+                const colors = calcMarketColors(
+                  market?.marketId!,
+                  outcomeAssets.length,
+                );
+                return (
+                  <Listbox.Option
+                    key={assetIndex}
+                    value={asset}
+                    className="font-light flex gap-3 items-center text-base mb-2 cursor-pointer py-4 px-5 hover:bg-slate-50 hover:bg-opacity-10"
+                  >
+                    <div
+                      className="w-4 h-4 rounded-full"
+                      style={{ backgroundColor: colors[index] }}
+                    ></div>
+                    {category?.name || assetIndex}
+                  </Listbox.Option>
+                );
+              })}
+            </Listbox.Options>
+          </Listbox>
+        </div>
       </div>
       {bondAmount !== disputeBond &&
       bondAmount !== undefined &&
@@ -113,6 +192,7 @@ const CategoricalDisputeBox = ({
         className="mb-ztg-10 mt-[20px]"
         onClick={dispute}
         disabled={isLoading}
+        loading={isBroadcasting}
       >
         Confirm Dispute
       </TransactionButton>
