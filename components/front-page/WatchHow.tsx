@@ -19,9 +19,9 @@ const WatchHow = () => {
   return (
     <div
       ref={ref}
-      className="flex items-center w-full bg-white h-[80px] md:h-[120px] px-3 md:px-[41px] overflow-hidden relative rounded-md"
+      className="flex items-center w-full bg-white h-[80px] md:h-[120px] px-6 md:px-[41px] overflow-hidden relative rounded-md"
     >
-      <div className="font-medium text-3xl flex-1  z-10">{text}</div>
+      <div className="font-medium text-xl lg:text-3xl flex-1  z-10">{text}</div>
       <div className="relative">
         <a
           className={`flex relative cursor-wait center gap-2 ml-auto opacity-70 bg-[#DC056C] text-white rounded-md px-[20px] py-[10px] z-10 ${
