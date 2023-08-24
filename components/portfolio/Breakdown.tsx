@@ -92,7 +92,7 @@ export type BreakdownSlotProps = {
   /**
    * The price of ztg in usd
    */
-  usdZtgPrice: Decimal;
+  usdZtgPrice?: Decimal;
   /**
    * The change in percentage of the value represented.
    */
@@ -131,7 +131,10 @@ export const BreakdownSlot = ({
         </div>
       </div>
       <div className="text-sky-600 mb-1 text-ztg-14-150">
-        ${formatNumberLocalized(usdZtgPrice.mul(value.div(ZTG)).toNumber())}
+        $
+        {formatNumberLocalized(
+          usdZtgPrice?.mul(value.div(ZTG)).toNumber() ?? 0,
+        )}
       </div>
     </>
   );
