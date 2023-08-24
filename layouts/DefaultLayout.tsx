@@ -47,7 +47,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div
-      className={`relative min-h-screen justify-evenly ${
+      className={`relative min-h-screen justify-evenly overflow-x-hidden ${
         greyBackgroundPageRoutes.includes(router.pathname) ? "bg-[#F1F1F1]" : ""
       }`}
     >

@@ -52,8 +52,9 @@ export async function getStaticProps() {
   const [
     featuredMarkets,
     trendingMarkets,
+    bannerPlaceholder,
     categoryPlaceholders,
-    bannerPlaceHolders,
+    newsImagePlaceholders,
     categoryCounts,
     stats,
     ztgHistory,
@@ -61,6 +62,7 @@ export async function getStaticProps() {
   ] = await Promise.all([
     getFeaturedMarkets(client, sdk),
     getTrendingMarkets(client, sdk),
+    getPlaiceholder(`/banner.png`),
     getPlaiceholders(
       CATEGORIES.map((cat) => `${cat.imagePath}`),
       { dir: `${path.join(process.cwd())}/public/` },
@@ -83,9 +85,10 @@ export async function getStaticProps() {
       news: news,
       featuredMarkets: featuredMarkets ?? [],
       trendingMarkets: trendingMarkets ?? [],
+      bannerPlaceholder: bannerPlaceholder.base64 ?? "",
       categoryCounts: categoryCounts,
       categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
-      bannerPlaceHolders: bannerPlaceHolders.map((c) => c.base64) ?? [],
+      newsImagePlaceholders: newsImagePlaceholders.map((c) => c.base64) ?? [],
       stats,
       ztgHistory,
       chainProperties: chainProperties.toHuman(),
@@ -100,7 +103,8 @@ const IndexPage: NextPage<{
   trendingMarkets: IndexedMarketCardData[];
   categoryCounts: number[];
   categoryPlaceholders: string[];
-  bannerPlaceHolders: string[];
+  newsImagePlaceholders: string[];
+  bannerPlaceholder: string;
   stats: { marketCount: number; tradersCount: number; volumeUsd: number };
   ztgHistory: ZtgPriceHistory;
   chainProperties: GenericChainProperties;
@@ -108,9 +112,10 @@ const IndexPage: NextPage<{
   news,
   trendingMarkets,
   featuredMarkets,
+  bannerPlaceholder,
   categoryCounts,
   categoryPlaceholders,
-  bannerPlaceHolders,
+  newsImagePlaceholders,
   stats,
   ztgHistory,
   chainProperties,
@@ -120,7 +125,11 @@ const IndexPage: NextPage<{
       <div data-testid="indexPage" className="main-container relative z-1">
         <BgBallGfx />
 
-        <HeroBanner ztgHistory={ztgHistory} chainProperties={chainProperties} />
+        <HeroBanner
+          bannerPlaceholder={bannerPlaceholder}
+          ztgHistory={ztgHistory}
+          chainProperties={chainProperties}
+        />
 
         <div className="mb-12">
           <NetworkStats
@@ -141,7 +150,7 @@ const IndexPage: NextPage<{
           </div>
         )}
 
-        <NewsSection news={news} bannerPlaceHolders={bannerPlaceHolders} />
+        <NewsSection news={news} imagePlaceholders={newsImagePlaceholders} />
 
         <div className="mb-12">
           <WatchHow />

@@ -9,8 +9,10 @@ import Link from "next/link";
 export const HeroBanner = ({
   ztgHistory,
   chainProperties,
+  bannerPlaceholder,
 }: {
   ztgHistory: ZtgPriceHistory;
+  bannerPlaceholder: string;
   chainProperties: GenericChainProperties;
 }) => {
   const chartData = ztgHistory.prices.map(([timestamp, price]) => {
@@ -89,7 +91,8 @@ export const HeroBanner = ({
             fill={true}
             sizes="100vw"
             className="object-cover"
-            src="https://cdn.discordapp.com/attachments/826371897084215376/1138829878188327043/image.png"
+            blurDataURL={bannerPlaceholder}
+            src="/banner.png"
           />
         </div>
       </div>
