@@ -5,7 +5,7 @@ import { useInView } from "react-intersection-observer";
 
 const WatchHow = () => {
   const { text, play, animationState } = useTypedText(
-    "Trade on any future event.",
+    "Trade on any future event",
   );
 
   const { ref, inView } = useInView({ delay: 60 });
@@ -23,7 +23,7 @@ const WatchHow = () => {
     >
       <div className="font-medium text-xl lg:text-3xl flex-1 z-10 flex">
         {text.split("").map((c) => (
-          <span key={c} className="block animate-[pop-in_0.1s]">
+          <span key={c} className="block animate-[pop-in_0.08s_40ms]">
             {c == " " ? "\u00A0" : c}
           </span>
         ))}

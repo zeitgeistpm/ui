@@ -1,3 +1,4 @@
+import { random } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 
 export const useTypedText = (fullText: string) => {
@@ -16,7 +17,7 @@ export const useTypedText = (fullText: string) => {
         } else {
           setAnimationState("finished");
         }
-      }, Math.random() * 70);
+      }, random(15, 55));
     }
   }, [animationState, text]);
 
