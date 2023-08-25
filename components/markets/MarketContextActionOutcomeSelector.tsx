@@ -54,7 +54,7 @@ export const MarketContextActionOutcomeSelector = ({
         }}
       >
         <Listbox.Button onClick={() => setOpen(!open)}>
-          <div className="center gap-2">
+          <div className="center gap-2 md:text-base lg:text-2xl">
             <TruncatedText
               length={24}
               text={market.categories?.[getIndexOf(selected)].name ?? ""}
@@ -113,7 +113,7 @@ export const MarketContextActionOutcomeSelector = ({
                     value={asset}
                     className=" text-base cursor-pointer py-1 px-2 hover:bg-opacity-10"
                   >
-                    <div className="hover:bg-slate-100 flex py-6 px-5 gap-3 rounded-md items-center">
+                    <div className="hover:bg-slate-100 flex py-6 md:text-sm lg:text-base px-5 gap-3 rounded-md items-center">
                       <div
                         className="w-4 h-4 rounded-full "
                         style={{ backgroundColor: colors[index] }}
