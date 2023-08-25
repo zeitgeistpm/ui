@@ -525,44 +525,46 @@ const Inner = ({
             swapTx();
           }}
         >
-          <Tab.Group
-            defaultIndex={tabIndex}
-            onChange={(index: TradeTabType) => {
-              setTabIndex(index);
-              if (index === TradeTabType.Buy) {
-                setTradeItem({
-                  ...tradeItem,
-                  action: "buy",
-                });
-              }
-              if (index === TradeTabType.Sell) {
-                setTradeItem({
-                  ...tradeItem,
-                  action: "sell",
-                });
-              }
-              reset();
-              setPercentageDisplay("0");
-            }}
-            selectedIndex={tabIndex}
-          >
-            <Tab.List className="flex justify-between h-[60px] sm:h-[71px] text-center rounded-[10px]">
-              <Tab
-                as={TradeTab}
-                selected={type === "buy"}
-                className="rounded-tl-[10px]"
-              >
-                Buy
-              </Tab>
-              <Tab
-                as={TradeTab}
-                selected={type === "sell"}
-                className="rounded-tr-[10px]"
-              >
-                Sell
-              </Tab>
-            </Tab.List>
-          </Tab.Group>
+          <div className="hidden md:block">
+            <Tab.Group
+              defaultIndex={tabIndex}
+              onChange={(index: TradeTabType) => {
+                setTabIndex(index);
+                if (index === TradeTabType.Buy) {
+                  setTradeItem({
+                    ...tradeItem,
+                    action: "buy",
+                  });
+                }
+                if (index === TradeTabType.Sell) {
+                  setTradeItem({
+                    ...tradeItem,
+                    action: "sell",
+                  });
+                }
+                reset();
+                setPercentageDisplay("0");
+              }}
+              selectedIndex={tabIndex}
+            >
+              <Tab.List className="flex justify-between h-[60px] sm:h-[71px] text-center rounded-[10px]">
+                <Tab
+                  as={TradeTab}
+                  selected={type === "buy"}
+                  className="rounded-tl-[10px]"
+                >
+                  Buy
+                </Tab>
+                <Tab
+                  as={TradeTab}
+                  selected={type === "sell"}
+                  className="rounded-tr-[10px]"
+                >
+                  Sell
+                </Tab>
+              </Tab.List>
+            </Tab.Group>
+          </div>
           <div className="flex flex-col p-[20px] sm:p-[30px]">
             <div className="center relative">
               <Input

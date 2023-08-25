@@ -54,7 +54,7 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { Suspense, useEffect, useState } from "react";
-import { AlertTriangle, ChevronDown } from "react-feather";
+import { AlertTriangle, ChevronDown, X } from "react-feather";
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
 import { MarketCategoricalOutcome } from "lib/types";
 import { MarketScalarOutcome } from "lib/types";
@@ -383,7 +383,8 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           )}
         </div>
-        <div className="hidden lg:block w-[460px] min-w-[380px]">
+
+        <div className="hidden md:block md:w-[320px] lg:w-[460px] md:-mr-6 lg:mr-auto">
           <div className="sticky top-28">
             <div className="shadow-lg rounded-lg mb-12 opacity-0 animate-pop-in">
               {market?.status === MarketStatus.Active ? (
@@ -406,36 +407,150 @@ const Market: NextPage<MarketPageProps> = ({
           </div>
         </div>
 
-        {(market?.status === MarketStatus.Active ||
-          market?.status === MarketStatus.Closed ||
-          market?.status === MarketStatus.Reported) && (
-          <div className="fixed bottom-0 right-0 left-0 lg:hidden">
-            <div className="flex h-20 text-lg font-semibold cursor-pointer">
-              {market?.status === MarketStatus.Active ? (
-                <>
-                  <div className="flex-1 h-full center text-gray-200 bg-fog-of-war">
-                    Buy
-                  </div>
-                  <div className="flex-1 h-full center bg-white text-black">
-                    Sell
-                  </div>
-                </>
-              ) : market?.status === MarketStatus.Closed && canReport ? (
-                <div className="flex-1 h-full center text-white bg-ztg-blue">
-                  Report
-                </div>
-              ) : market?.status === MarketStatus.Reported ? (
-                <div className="flex-1 h-full center text-white bg-ztg-blue">
-                  Dispute
-                </div>
-              ) : (
-                <></>
-              )}
-            </div>
-          </div>
-        )}
+        {market && <MobileContextButtons market={market} />}
       </div>
     </div>
+  );
+};
+
+const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
+  const wallet = useWallet();
+
+  const { data: marketStage } = useMarketStage(market);
+  const isOracle = market?.oracle === wallet.realAddress;
+  const canReport =
+    marketStage?.type === "OpenReportingPeriod" ||
+    (marketStage?.type === "OracleReportingPeriod" && isOracle);
+
+  const outcomeAssets = market.outcomeAssets.map(
+    (assetIdString) =>
+      parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+  );
+
+  const { data: tradeItem, set: setTradeItem } = useTradeItem();
+
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <Transition show={open} className="fixed top-0 left-0 h-full w-full">
+        {/* Background overlay */}
+        <Transition.Child
+          enter="transition-opacity ease-linear duration-100"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="transition-opacity ease-linear duration-100"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+          onClick={() => setOpen(false)}
+          className="fixed lg:hidden  top-0 left-0 h-full w-full bg-black/20 z-40"
+        >
+          <div />
+        </Transition.Child>
+
+        {/* Sliding sidebar */}
+        <Transition.Child
+          enter="transition ease-in-out duration-500"
+          enterFrom="translate-y-full"
+          enterTo="translate-y-0"
+          leave="transition ease-in-out duration-500"
+          leaveFrom="translate-y-0"
+          leaveTo="translate-y-full"
+          className="md:hidden fixed bottom-20 left-0 z-50 w-full bg-white rounded-t-lg"
+        >
+          <div>
+            {market?.status === MarketStatus.Active ? (
+              <TradeForm outcomeAssets={outcomeAssets} />
+            ) : market?.status === MarketStatus.Closed && canReport ? (
+              <>
+                <ReportForm market={market} />
+              </>
+            ) : market?.status === MarketStatus.Reported ? (
+              <>
+                <DisputeForm market={market} />
+              </>
+            ) : (
+              <></>
+            )}
+          </div>
+        </Transition.Child>
+      </Transition>
+
+      {(market?.status === MarketStatus.Active ||
+        market?.status === MarketStatus.Closed ||
+        market?.status === MarketStatus.Reported) && (
+        <div className="fixed bottom-0 right-0 left-0 md:hidden z-50">
+          <div className="flex h-20 text-lg font-semibold cursor-pointer">
+            {market?.status === MarketStatus.Active ? (
+              <>
+                <div
+                  className={`flex-1 h-full center  ${
+                    tradeItem?.action === "buy"
+                      ? "text-black bg-white"
+                      : "text-gray-200 bg-fog-of-war"
+                  } `}
+                  onClick={() => {
+                    setOpen(true);
+                    setTradeItem({
+                      assetId: tradeItem?.assetId ?? outcomeAssets[0],
+                      action: "buy",
+                    });
+                  }}
+                >
+                  Buy
+                </div>
+                <div
+                  className={`flex-1 h-full center ${
+                    tradeItem?.action === "sell"
+                      ? "text-black bg-white"
+                      : "text-gray-200 bg-fog-of-war"
+                  }`}
+                  onClick={() => {
+                    setOpen(true);
+                    setTradeItem({
+                      assetId: tradeItem?.assetId ?? outcomeAssets[0],
+                      action: "sell",
+                    });
+                  }}
+                >
+                  Sell
+                </div>
+                <div
+                  className={`h-full transition-all w-0 center text-gray-700 bg-slate-200 ${
+                    open && "w-24"
+                  }`}
+                  onClick={() => setOpen(false)}
+                >
+                  <X />
+                </div>
+              </>
+            ) : market?.status === MarketStatus.Closed && canReport ? (
+              <>
+                <div
+                  className={`flex-1 h-full center transition-all ${
+                    !open ? "text-white bg-ztg-blue" : "bg-slate-200"
+                  }`}
+                  onClick={() => setOpen(!open)}
+                >
+                  {open ? <X /> : "Report"}
+                </div>
+              </>
+            ) : market?.status === MarketStatus.Reported ? (
+              <div
+                className={`flex-1 h-full center ${
+                  !open ? "text-white bg-ztg-blue" : "bg-slate-200"
+                }`}
+                onClick={() => setOpen(!open)}
+              >
+                {open ? <X /> : "Dispute"}
+              </div>
+            ) : (
+              <></>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

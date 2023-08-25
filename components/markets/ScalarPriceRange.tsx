@@ -63,7 +63,7 @@ const ScalarPriceRange = ({
       className="w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative flex items-center p-2 rounded-lg overflow-hidden"
       ref={ref}
     >
-      <span className="text-xs text-gray-400 z-10 font-semibold">
+      <span className="text-xs text-gray-400 font-semibold">
         {lowerDisplay}
       </span>
       {status !== "Proposed" && (
@@ -74,12 +74,12 @@ const ScalarPriceRange = ({
             }}
             className="bg-scalar-bar h-full absolute left-0 bottom-0"
           ></div>
-          <span className="text-scalar-text text-sm px-2.5 z-10 relative">
+          <span className="text-scalar-text text-sm px-2.5  relative">
             Prediction: {positionDisplay}
           </span>
         </>
       )}
-      <span className="text-xs text-gray-400 z-10 ml-auto font-semibold">
+      <span className="text-xs text-gray-400 ml-auto font-semibold">
         {upperDisplay}
       </span>
     </div>
