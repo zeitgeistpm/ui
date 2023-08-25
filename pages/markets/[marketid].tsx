@@ -43,6 +43,7 @@ import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import {
   MarketOutcome,
   MarketReport,
+  displayOutcome,
   isMarketCategoricalOutcome,
   isMarketScalarOutcome,
   isValidMarketReport,
@@ -591,19 +592,6 @@ const DisputeResult = ({
       </a>
     </div>
   );
-};
-
-const displayOutcome = (
-  market: FullMarketFragment,
-  outcome:
-    | MarketCategoricalOutcome
-    | (MarketScalarOutcome & { type: ScalarRangeType }),
-) => {
-  if (isMarketScalarOutcome(outcome)) {
-    return formatScalarOutcome(outcome.scalar, outcome.type);
-  } else {
-    return market.categories?.[outcome.categorical].name;
-  }
 };
 
 export default Market;

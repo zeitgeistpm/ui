@@ -225,7 +225,7 @@ h6 {
 }
 
 .invis-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-slate-100/70 rounded-xl;
+  @apply bg-slate-200/90 rounded-xl;
 }
 
 .carousel__slide--visible {

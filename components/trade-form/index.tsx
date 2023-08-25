@@ -1,4 +1,4 @@
-import { Listbox, Tab } from "@headlessui/react";
+import { Tab } from "@headlessui/react";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -8,12 +8,11 @@ import {
   IOZtgAssetId,
   MarketOutcomeAssetId,
   ZTG,
-  getIndexOf,
   getMarketIdOf,
 } from "@zeitgeistpm/sdk-next";
+import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import TradeResult from "components/markets/TradeResult";
 import Input from "components/ui/Input";
-import TruncatedText from "components/ui/TruncatedText";
 import Decimal from "decimal.js";
 import { positionsRootKey } from "lib/hooks/queries/useAccountTokenPositions";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
@@ -31,15 +30,12 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
 import { useDelayQueue } from "lib/state/delay-queue";
-import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { TradeType } from "lib/types";
 import { awaitIndexer } from "lib/util/await-indexer";
-import { calcMarketColors } from "lib/util/color-calc";
 import { capitalize } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { RiArrowDownSLine } from "react-icons/ri";
 import { from } from "rxjs";
 import { useDebounce } from "use-debounce";
 import RangeInput from "../ui/RangeInput";
@@ -104,7 +100,6 @@ const Inner = ({
   setTradeItem: (trade: TradeItem) => void;
   outcomeAssets?: MarketOutcomeAssetId[];
 }) => {
-  const notifications = useNotifications();
   const queryClient = useQueryClient();
   const [_, id] = useSdkv2();
 
@@ -588,54 +583,22 @@ const Inner = ({
                 autoFocus
               />
             </div>
-            <div className="relative center sm:h-[48px] font-semibold capitalize text-[20px] sm:text-[28px]">
-              <Listbox
-                value={tradeItemState?.assetId}
-                onChange={(assetId) => {
-                  reset();
-                  setTradeItem({
-                    action: tradeItem.action,
-                    assetId,
-                  });
-                }}
-              >
-                <Listbox.Button>
-                  <div className="center gap-2">
-                    <TruncatedText
-                      length={24}
-                      text={tradeItemState?.asset?.name ?? ""}
-                    >
-                      {(text) => <>{text}</>}
-                    </TruncatedText>
-                    {outcomeAssets && outcomeAssets.length > 1 && (
-                      <RiArrowDownSLine />
-                    )}
-                  </div>
-                </Listbox.Button>
-                <Listbox.Options className="absolute invis-scrollbar top-[100%] min-w-[290px] max-h-[300px] overflow-y-scroll mt-1 rounded-xl shadow-lg z-50 bg-fog-of-war text-white">
-                  {outcomeAssets?.map((asset, index) => {
-                    const assetIndex = getIndexOf(asset);
-                    const category = market?.categories?.[assetIndex];
-                    const colors = calcMarketColors(
-                      market?.marketId!,
-                      outcomeAssets.length,
-                    );
-                    return (
-                      <Listbox.Option
-                        key={assetIndex}
-                        value={asset}
-                        className="font-light flex gap-3 items-center text-base cursor-pointer py-6 px-5 hover:bg-slate-50 hover:bg-opacity-10"
-                      >
-                        <div
-                          className="w-4 h-4 rounded-full"
-                          style={{ backgroundColor: colors[index] }}
-                        ></div>
-                        {category?.name || assetIndex}
-                      </Listbox.Option>
-                    );
-                  })}
-                </Listbox.Options>
-              </Listbox>
+            <div className="center sm:h-[48px] font-semibold capitalize text-[20px] sm:text-[28px]">
+              {market && tradeItemState?.assetId && (
+                <MarketContextActionOutcomeSelector
+                  market={market}
+                  selected={tradeItemState?.assetId}
+                  options={outcomeAssets}
+                  onChange={(assetId) => {
+                    console.log("onChage", assetId);
+                    reset();
+                    setTradeItem({
+                      action: tradeItem.action,
+                      assetId,
+                    });
+                  }}
+                />
+              )}
             </div>
             <div className="font-semibold text-center mb-[20px]">For</div>
             <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative">

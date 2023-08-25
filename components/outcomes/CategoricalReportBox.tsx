@@ -8,6 +8,7 @@ import {
   Market,
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
+import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import TransactionButton from "components/ui/TransactionButton";
 import TruncatedText from "components/ui/TruncatedText";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
@@ -70,53 +71,18 @@ const CategoricalReportBox = ({
   const handleSignTransaction = async () => send();
 
   return (
-    <div className="relative">
-      <div className="relative">
-        <Listbox
-          value={selectedOutcome}
-          onChange={(assetId) => {
-            setSelectedOutcome(assetId);
-          }}
-        >
-          <Listbox.Button className="mb-2 w-full">
-            <div className="center gap-2 text-2xl">
-              <TruncatedText
-                length={24}
-                text={
-                  market.categories?.[getIndexOf(selectedOutcome)]?.name ?? ""
-                }
-              >
-                {(text) => <>{text}</>}
-              </TruncatedText>
-              {outcomeAssets && outcomeAssets.length > 1 && (
-                <RiArrowDownSLine />
-              )}
-            </div>
-          </Listbox.Button>
-          <Listbox.Options className="absolute top-[100%] left-[50%] -translate-x-[50%] min-w-[290px] mt-1 rounded-xl shadow-lg z-50 bg-fog-of-war text-white">
-            {outcomeAssets?.map((asset, index) => {
-              const assetIndex = getIndexOf(asset);
-              const category = market?.categories?.[assetIndex];
-              const colors = calcMarketColors(
-                market?.marketId!,
-                outcomeAssets.length,
-              );
-              return (
-                <Listbox.Option
-                  key={assetIndex}
-                  value={asset}
-                  className="font-light flex gap-3 items-center text-base mb-2 cursor-pointer py-4 px-5 hover:bg-slate-50 hover:bg-opacity-10"
-                >
-                  <div
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: colors[index] }}
-                  ></div>
-                  {category?.name || assetIndex}
-                </Listbox.Option>
-              );
-            })}
-          </Listbox.Options>
-        </Listbox>
+    <>
+      <div className="mb-4">
+        {market && selectedOutcome && (
+          <MarketContextActionOutcomeSelector
+            market={market}
+            selected={selectedOutcome}
+            options={outcomeAssets}
+            onChange={(assetId) => {
+              setSelectedOutcome(assetId as CategoricalAssetId);
+            }}
+          />
+        )}
       </div>
 
       <TransactionButton
@@ -133,7 +99,7 @@ const CategoricalReportBox = ({
           {(text) => <>{text}</>}
         </TruncatedText>
       </TransactionButton>
-    </div>
+    </>
   );
 };
 
