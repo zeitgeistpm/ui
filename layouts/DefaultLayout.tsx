@@ -48,7 +48,9 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   return (
     <div
       className={`relative min-h-screen justify-evenly ${
-        greyBackgroundPageRoutes.includes(router.pathname) ? "bg-[#F1F1F1]" : ""
+        greyBackgroundPageRoutes.includes(router.pathname)
+          ? "bg-light-gray"
+          : ""
       }`}
     >
       <TradeItemContext.Provider value={{ data: tradeItem, set: setTradeItem }}>
