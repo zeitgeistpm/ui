@@ -75,7 +75,7 @@ export const MarketContextActionOutcomeSelector = ({
           className="absolute top-[-1px] left-[1px] right-0 bottom-0 h-full w-full overflow-hidden rounded-xl z-50 bg-white"
         >
           <div
-            className="py-6 px-5 text-xl flex items-center gap-2 cursor-pointer"
+            className="py-6 px-5 text-xl flex items-center gap-4 cursor-pointer"
             onClick={() => setOpen(false)}
           >
             <BsArrowLeft />
@@ -97,7 +97,7 @@ export const MarketContextActionOutcomeSelector = ({
           )}
           <Listbox.Options
             static
-            className="overflow-y-scroll invis-scrollbar h-full"
+            className="overflow-y-auto scrollbar-hide h-full"
           >
             {options &&
               options?.map((asset, index) => {
@@ -111,13 +111,15 @@ export const MarketContextActionOutcomeSelector = ({
                   <Listbox.Option
                     key={assetIndex}
                     value={asset}
-                    className="flex gap-3 items-center text-base cursor-pointer py-6 px-5 hover:bg-slate-50 hover:bg-opacity-10"
+                    className=" text-base cursor-pointer py-1 px-2 hover:bg-opacity-10"
                   >
-                    <div
-                      className="w-4 h-4 rounded-full"
-                      style={{ backgroundColor: colors[index] }}
-                    ></div>
-                    {category?.name || assetIndex}
+                    <div className="hover:bg-slate-100 flex py-6 px-5 gap-3 rounded-md items-center">
+                      <div
+                        className="w-4 h-4 rounded-full "
+                        style={{ backgroundColor: colors[index] }}
+                      ></div>
+                      {category?.name || assetIndex}
+                    </div>
                   </Listbox.Option>
                 );
               })}

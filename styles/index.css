@@ -228,6 +228,11 @@ h6 {
   @apply bg-slate-200/90 rounded-xl;
 }
 
+.scrollbar-hide::-webkit-scrollbar {
+  width: 0px;
+  background-color: transparent;
+}
+
 .carousel__slide--visible {
   overflow: hidden;
 }
