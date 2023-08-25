@@ -16,6 +16,7 @@ import {
   FiPlusSquare,
   FiList,
 } from "react-icons/fi";
+import { useCategoryCounts } from "lib/hooks/queries/useCategoryCounts";
 
 const AccountButton = dynamic(() => import("../account/AccountButton"), {
   ssr: false,
@@ -164,6 +165,7 @@ const TopBar = () => {
 };
 
 const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
+  const { data: counts } = useCategoryCounts();
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 grid-flow-row-dense md:h-full">
       {CATEGORIES.map((category, index) => (
@@ -181,7 +183,12 @@ const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
               sizes="100"
             />
           </div>
-          <div className="font-light">{category.name}</div>
+          <div className="flex flex-col">
+            <div className="font-light">{category.name}</div>
+            <div className="font-light text-xs h-[16px]">
+              {counts ? counts[index] : ""}
+            </div>
+          </div>
         </Link>
       ))}
     </div>
