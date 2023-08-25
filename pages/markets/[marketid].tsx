@@ -1,21 +1,26 @@
 import { Transition } from "@headlessui/react";
+import { FullMarketFragment, MarketStatus } from "@zeitgeistpm/indexer";
 import {
   MarketOutcomeAssetId,
   ScalarRangeType,
-  getIndexOf,
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
 import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
-import { MarketStatus, FullMarketFragment } from "@zeitgeistpm/indexer";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
+import DisputeResult from "components/markets/DisputeResult";
 import { AddressDetails } from "components/markets/MarketAddresses";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import MarketChart from "components/markets/MarketChart";
 import MarketHeader from "components/markets/MarketHeader";
 import PoolDeployer from "components/markets/PoolDeployer";
 import { MarketPromotionCallout } from "components/markets/PromotionCallout";
+import ReportResult from "components/markets/ReportResult";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
+import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
+import CategoricalReportBox from "components/outcomes/CategoricalReportBox";
+import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
+import ScalarReportBox from "components/outcomes/ScalarReportBox";
 import Skeleton from "components/ui/Skeleton";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
@@ -37,15 +42,14 @@ import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useMarketPoolId } from "lib/hooks/queries/useMarketPoolId";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
-import { useSimilarMarkets } from "lib/hooks/queries/useSimilarMarkets";
 import { useTradeItem } from "lib/hooks/trade";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
+import { useWallet } from "lib/state/wallet";
 import {
-  MarketOutcome,
+  MarketCategoricalOutcome,
   MarketReport,
-  displayOutcome,
+  MarketScalarOutcome,
   isMarketCategoricalOutcome,
-  isMarketScalarOutcome,
   isValidMarketReport,
 } from "lib/types";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
@@ -53,18 +57,9 @@ import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
-import ScalarReportBox from "components/outcomes/ScalarReportBox";
-import { MarketCategoricalOutcome } from "lib/types";
-import { MarketScalarOutcome } from "lib/types";
-import CategoricalReportBox from "components/outcomes/CategoricalReportBox";
-import { AiOutlineFileAdd, AiOutlineFileDone } from "react-icons/ai";
-import { TwitterBird } from "components/markets/TradeResult";
-import { useWallet } from "lib/state/wallet";
-import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
-import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
-import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
+import { AiOutlineFileAdd } from "react-icons/ai";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -628,83 +623,6 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
           </div>
         </>
       )}
-    </div>
-  );
-};
-
-const ReportResult = ({
-  market,
-  outcome,
-}: {
-  market: FullMarketFragment;
-  outcome:
-    | MarketCategoricalOutcome
-    | (MarketScalarOutcome & { type: ScalarRangeType });
-}) => {
-  const outcomeName = displayOutcome(market, outcome);
-
-  const marketUrl = `https://app.zeitgeist.pm/markets/${market.marketId}`;
-
-  const twitterBaseUrl = "https://twitter.com/intent/tweet?text=";
-  const tweetUrl = `${twitterBaseUrl}I just reported the outcome of %40ZeitgeistPM market: "${market.question}" to be ${outcomeName}%0A%0ACheck out the market here%3A%0A&url=${marketUrl}`;
-
-  return (
-    <div className="flex flex-col items-center gap-3">
-      <div>
-        <AiOutlineFileDone size={64} className="text-ztg-blue" />
-      </div>
-      <p className="text">Successfully reported!</p>
-      <div className="text-2xl font-semibold mb-4">
-        {"scalar" in outcome && "Value: "}
-        {outcomeName}
-      </div>
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href={tweetUrl}
-        className="mb-4"
-      >
-        <TwitterBird />
-      </a>
-    </div>
-  );
-};
-
-const DisputeResult = ({
-  market,
-  outcome,
-}: {
-  market: FullMarketFragment;
-  outcome:
-    | MarketCategoricalOutcome
-    | (MarketScalarOutcome & { type: ScalarRangeType });
-}) => {
-  const outcomeName = displayOutcome(market, outcome);
-
-  const marketUrl = `https://app.zeitgeist.pm/markets/${market.marketId}`;
-
-  const twitterBaseUrl = "https://twitter.com/intent/tweet?text=";
-  const tweetUrl = `${twitterBaseUrl}I just disputed the outcome of %40ZeitgeistPM market: "${market.question}" to be ${outcomeName}%0A%0ACheck out the market here%3A%0A&url=${marketUrl}`;
-
-  return (
-    <div className="flex flex-col items-center gap-3">
-      <div>
-        <AiOutlineFileDone size={64} className="text-ztg-blue" />
-      </div>
-      <p className="text">Successfully disputed!</p>
-      <div className="text-2xl font-semibold mb-4">
-        <span>New Outcome: </span>
-        {"scalar" in outcome && "Value: "}
-        {outcomeName}
-      </div>
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href={tweetUrl}
-        className="mb-4"
-      >
-        <TwitterBird />
-      </a>
     </div>
   );
 };
