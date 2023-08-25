@@ -1,5 +1,8 @@
 import { dehydrate, QueryClient } from "@tanstack/react-query";
-import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
+import {
+  FullHistoricalAccountBalanceFragment,
+  HistoricalAccountBalanceOrderByInput,
+} from "@zeitgeistpm/indexer";
 import {
   BaseAssetId,
   create,
@@ -218,6 +221,7 @@ export async function getStaticProps() {
         },
         limit: limit,
         offset: pageNumber * limit,
+        order: HistoricalAccountBalanceOrderByInput.BlockNumberDesc,
       });
     return historicalAccountBalances;
   });
@@ -230,6 +234,7 @@ export async function getStaticProps() {
         },
         limit: limit,
         offset: pageNumber * limit,
+        order: HistoricalAccountBalanceOrderByInput.BlockNumberDesc,
       });
     return historicalAccountBalances;
   });
@@ -404,8 +409,8 @@ export async function getStaticProps() {
         ...player,
         name: names[index],
       })),
-      revalidate: 10 * 60, //10min
     },
+    revalidate: 10 * 60, //10min
   };
 }
 
