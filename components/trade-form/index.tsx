@@ -601,7 +601,7 @@ const Inner = ({
               )}
             </div>
             <div className="font-semibold text-center mb-[20px]">For</div>
-            <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative">
+            <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative rounded-lg">
               <Input
                 type="number"
                 {...register("baseAmount", {
@@ -618,7 +618,7 @@ const Inner = ({
                 step="any"
                 className="w-full bg-transparent text-center"
               />
-              <div className="mr-[10px] absolute right-0">{baseSymbol}</div>
+              <div className="mr-[10px] absolute right-2">{baseSymbol}</div>
             </div>
             <RangeInput
               min="0"
