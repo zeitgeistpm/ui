@@ -438,7 +438,7 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
           onClick={() => setOpen(false)}
-          className="fixed lg:hidden  top-0 left-0 h-full w-full bg-black/20 z-40"
+          className="fixed md:hidden  top-0 left-0 h-full w-full bg-black/20 z-40"
         >
           <div />
         </Transition.Child>
