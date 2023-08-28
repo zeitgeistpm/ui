@@ -1,3 +1,4 @@
+import { Popover, Transition } from "@headlessui/react";
 import {
   getScalarBounds,
   IndexerContext,
@@ -15,7 +16,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { MarketScalarOutcome } from "lib/types";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 const ScalarReportBox = ({
   market,
@@ -27,6 +28,8 @@ const ScalarReportBox = ({
   const [sdk] = useSdkv2();
   const wallet = useWallet();
   const notificationStore = useNotifications();
+
+  const [expandedInfoToggled, setExpandedInfoToggled] = useState(false);
 
   if (!market) return null;
 
@@ -81,6 +84,12 @@ const ScalarReportBox = ({
 
   const handleSignTransaction = async () => send();
 
+  const digits =
+    bounds[0].abs().toString().length + bounds[1].abs().toString().length;
+
+  const hasExpandedInfo =
+    bounds[0].abs().gte(1000) || bounds[1].abs().gte(1000);
+
   return (
     <>
       {isScalarDate ? (
@@ -97,24 +106,68 @@ const ScalarReportBox = ({
           }}
         />
       ) : (
-        <Input
-          type="number"
-          value={scalarReportValue}
-          onChange={(e) => handleNumberChange(e.target.value)}
-          min={bounds[0].toString()}
-          max={bounds[1].toString()}
-          className="text-ztg-14-150 p-2 w-full outline-none text-right font-mono mt-2"
-          onBlur={() => {
-            if (
-              scalarReportValue === "" ||
-              Number(scalarReportValue) < bounds[0].toNumber()
-            ) {
-              setScalarReportValue(bounds[0].toString());
-            } else if (Number(scalarReportValue) > bounds[1].toNumber()) {
-              setScalarReportValue(bounds[1].toString());
+        <div className="bg-gray-50 overflow-hidden sm:flex md:block lg:flex rounded-md">
+          <Input
+            type="number"
+            value={scalarReportValue}
+            onChange={(e) => handleNumberChange(e.target.value)}
+            min={bounds[0].toString()}
+            max={bounds[1].toString()}
+            className="text-ztg-14-150 p-2 w-full outline-none text-right font-mono !rounded-none "
+            onBlur={() => {
+              if (
+                scalarReportValue === "" ||
+                Number(scalarReportValue) < bounds[0].toNumber()
+              ) {
+                setScalarReportValue(bounds[0].toString());
+              } else if (Number(scalarReportValue) > bounds[1].toNumber()) {
+                setScalarReportValue(bounds[1].toString());
+              }
+            }}
+          />
+
+          <div
+            className={`focus:outline-none ${
+              hasExpandedInfo && "cursor-pointer"
+            }`}
+            title={
+              hasExpandedInfo
+                ? "Click to show full scalar range of market."
+                : ""
             }
-          }}
-        />
+            onClick={() =>
+              hasExpandedInfo && setExpandedInfoToggled(!expandedInfoToggled)
+            }
+          >
+            <div
+              className={`flex justify-end sm:justify-center md:justify-end lg:justify-center items-center px-3 text-sm transition-all ease-[cubic-bezier(0.95,0.05,0.795,0.035)] flex-1 h-full py-1 bg-scalar-bar text-scalar-text`}
+              style={{
+                minWidth: expandedInfoToggled ? digits * 18 : digits * 12,
+              }}
+            >
+              <div className="self-start flex sm:hidden md:flex flex-1 lg:hidden">
+                Scalar range:
+              </div>
+              <div className="whitespace-nowrap">
+                {expandedInfoToggled
+                  ? bounds[0].toNumber()
+                  : new Intl.NumberFormat("en-IN", {
+                      maximumSignificantDigits: expandedInfoToggled ? 100 : 5,
+                      compactDisplay: "short",
+                      notation: "compact",
+                    }).format(bounds[0].toNumber())}{" "}
+                {"<-> "}{" "}
+                {expandedInfoToggled
+                  ? bounds[1].toNumber()
+                  : new Intl.NumberFormat("en-IN", {
+                      maximumSignificantDigits: 5,
+                      compactDisplay: "short",
+                      notation: "compact",
+                    }).format(bounds[1].toNumber())}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
       <TransactionButton
         className="mt-4 shadow-ztg-2"
