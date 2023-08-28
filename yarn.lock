@@ -854,15 +854,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@headlessui/react@npm:^1.7.15":
-  version: 1.7.15
-  resolution: "@headlessui/react@npm:1.7.15"
+"@headlessui/react@npm:^1.7.17":
+  version: 1.7.17
+  resolution: "@headlessui/react@npm:1.7.17"
   dependencies:
     client-only: ^0.0.1
   peerDependencies:
     react: ^16 || ^17 || ^18
     react-dom: ^16 || ^17 || ^18
-  checksum: f2d11d58499ddf1362a40d84d92b7db932adaccc3596f44f1eead642258280f124497f2b329cee6e04801818bb2e66c42d752ee05f40f8b5239c2f692128e568
+  checksum: 0cdb67747e7f606f78214dac0b48573247779e70534b4471515c094b74addda173dc6a9847d33aea9c6e6bc151016c034125328953077e32aa7947ebabed91f7
   languageName: node
   linkType: hard
 
@@ -3180,7 +3180,7 @@ __metadata:
     "@babel/helper-compilation-targets": ^7.19.3
     "@dnd-kit/core": ^6.0.8
     "@dnd-kit/sortable": ^7.0.2
-    "@headlessui/react": ^1.7.15
+    "@headlessui/react": ^1.7.17
     "@headlessui/tailwindcss": ^0.1.2
     "@next/bundle-analyzer": ^12.3.1
     "@notionhq/client": ^2.2.3

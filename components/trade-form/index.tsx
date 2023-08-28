@@ -78,7 +78,9 @@ const TradeForm = ({
 }) => {
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
 
-  if (!tradeItem) return <div></div>;
+  if (!tradeItem) {
+    return <div></div>;
+  }
 
   return (
     <Inner
@@ -501,7 +503,7 @@ const Inner = ({
   }, [maxBaseAmount.toString(), maxAssetAmount.toString()]);
 
   return (
-    <>
+    <div>
       {isSuccess === true && tradeItemState ? (
         <TradeResult
           type={tradeItem.action}
@@ -678,6 +680,6 @@ const Inner = ({
           </div>
         </form>
       )}
-    </>
+    </div>
   );
 };

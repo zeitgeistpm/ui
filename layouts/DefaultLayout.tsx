@@ -90,6 +90,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
               )}
             </div>
           </main>
+
           <Footer />
         </div>
         <NotificationCenter />

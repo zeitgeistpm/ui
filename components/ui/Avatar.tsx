@@ -39,6 +39,7 @@ const Avatar = ({
 
   return (
     <div
+      className="z-0"
       style={{
         height: size,
         width: size,

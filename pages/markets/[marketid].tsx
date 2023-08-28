@@ -57,7 +57,7 @@ import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 
@@ -246,7 +246,7 @@ const Market: NextPage<MarketPageProps> = ({
     (marketStage?.type === "OracleReportingPeriod" && isOracle);
 
   return (
-    <div className="flex">
+    <div className="">
       <div className="flex flex-auto gap-12 relative">
         <div className="flex-1">
           <MarketMeta market={indexedMarket} />
@@ -383,7 +383,9 @@ const Market: NextPage<MarketPageProps> = ({
           <div className="sticky top-28">
             <div className="shadow-lg rounded-lg mb-12 opacity-0 animate-pop-in">
               {market?.status === MarketStatus.Active ? (
-                <TradeForm outcomeAssets={outcomeAssets} />
+                <>
+                  <TradeForm outcomeAssets={outcomeAssets} />
+                </>
               ) : market?.status === MarketStatus.Closed && canReport ? (
                 <>
                   <ReportForm market={market} />
@@ -401,9 +403,8 @@ const Market: NextPage<MarketPageProps> = ({
             </div>
           </div>
         </div>
-
-        {market && <MobileContextButtons market={market} />}
       </div>
+      {market && <MobileContextButtons market={market} />}
     </div>
   );
 };
@@ -425,51 +426,47 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
 
   const [open, setOpen] = useState(false);
+  console.log(open);
 
   return (
     <>
-      <Transition show={open} className="fixed top-0 left-0 h-full w-full">
-        {/* Background overlay */}
-        <Transition.Child
-          enter="transition-opacity ease-linear duration-100"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="transition-opacity ease-linear duration-100"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
+      <Transition
+        show={open}
+        enter="transition-opacity ease-in-out duration-100"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="transition-opacity ease-in-out duration-100"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+        className="fixed top-0 left-0 h-full w-full"
+      >
+        <div
           onClick={() => setOpen(false)}
-          className="fixed md:hidden  top-0 left-0 h-full w-full bg-black/20 z-40"
-        >
-          <div />
-        </Transition.Child>
-
-        {/* Sliding sidebar */}
-        <Transition.Child
-          enter="transition ease-in-out duration-500"
-          enterFrom="translate-y-full"
-          enterTo="translate-y-0"
-          leave="transition ease-in-out duration-500"
-          leaveFrom="translate-y-0"
-          leaveTo="translate-y-full"
-          className="md:hidden fixed bottom-20 left-0 z-50 w-full bg-white rounded-t-lg"
-        >
-          <div>
-            {market?.status === MarketStatus.Active ? (
-              <TradeForm outcomeAssets={outcomeAssets} />
-            ) : market?.status === MarketStatus.Closed && canReport ? (
-              <>
-                <ReportForm market={market} />
-              </>
-            ) : market?.status === MarketStatus.Reported ? (
-              <>
-                <DisputeForm market={market} />
-              </>
-            ) : (
-              <></>
-            )}
-          </div>
-        </Transition.Child>
+          className="fixed md:hidden top-0 left-0 h-full w-full bg-black/20 z-40"
+        />
       </Transition>
+
+      <div
+        className={`md:hidden fixed bottom-20 left-0 z-50 w-full bg-white rounded-t-lg transition-all ease-in-out duration-500 ${
+          open ? "translate-y-0" : "translate-y-full"
+        }`}
+      >
+        {market?.status === MarketStatus.Active ? (
+          <>
+            <TradeForm outcomeAssets={outcomeAssets} />
+          </>
+        ) : market?.status === MarketStatus.Closed && canReport ? (
+          <>
+            <ReportForm market={market} />
+          </>
+        ) : market?.status === MarketStatus.Reported ? (
+          <>
+            <DisputeForm market={market} />
+          </>
+        ) : (
+          <></>
+        )}
+      </div>
 
       {(market?.status === MarketStatus.Active ||
         market?.status === MarketStatus.Closed ||
@@ -485,11 +482,11 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
                       : "text-gray-200 bg-fog-of-war"
                   } `}
                   onClick={() => {
-                    setOpen(true);
                     setTradeItem({
                       assetId: tradeItem?.assetId ?? outcomeAssets[0],
                       action: "buy",
                     });
+                    setOpen(true);
                   }}
                 >
                   Buy
@@ -501,11 +498,11 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
                       : "text-gray-200 bg-fog-of-war"
                   }`}
                   onClick={() => {
-                    setOpen(true);
                     setTradeItem({
                       assetId: tradeItem?.assetId ?? outcomeAssets[0],
                       action: "sell",
                     });
+                    setOpen(true);
                   }}
                 >
                   Sell
