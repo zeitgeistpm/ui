@@ -57,7 +57,7 @@ import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 
@@ -140,13 +140,11 @@ const Market: NextPage<MarketPageProps> = ({
   resolutionTimestamp,
   promotionData,
 }) => {
-  const [lastDispute, setLastDispute] = useState<MarketDispute>();
-  const [report, setReport] = useState<MarketReport>();
   const router = useRouter();
   const { marketid } = router.query;
   const marketId = Number(marketid);
 
-  const { data: tradeItem, set: setTradeItem } = useTradeItem();
+  const tradeItem = useTradeItem();
 
   const outcomeAssets = indexedMarket.outcomeAssets.map(
     (assetIdString) =>
@@ -154,7 +152,7 @@ const Market: NextPage<MarketPageProps> = ({
   );
 
   useEffect(() => {
-    setTradeItem({
+    tradeItem.set({
       assetId: outcomeAssets[0],
       action: "buy",
     });
@@ -175,6 +173,7 @@ const Market: NextPage<MarketPageProps> = ({
       refetchInterval: poolDeployed ? 1000 : false,
     },
   );
+
   const { data: disputes } = useMarketDisputes(marketId);
 
   const { data: marketStage } = useMarketStage(market ?? undefined);
@@ -199,11 +198,14 @@ const Market: NextPage<MarketPageProps> = ({
     }
   };
 
-  if (indexedMarket == null) {
-    return <NotFoundPage backText="Back To Markets" backLink="/" />;
-  }
+  const token = metadata?.symbol;
 
-  useEffect(() => {
+  const isOracle = market?.oracle === wallet.realAddress;
+  const canReport =
+    marketStage?.type === "OpenReportingPeriod" ||
+    (marketStage?.type === "OracleReportingPeriod" && isOracle);
+
+  const lastDispute = useMemo(() => {
     if (disputes && market?.status === "Disputed") {
       const lastDispute = disputes?.[disputes.length - 1];
       const at = lastDispute.at.toNumber();
@@ -219,9 +221,12 @@ const Market: NextPage<MarketPageProps> = ({
         by,
         outcome: isCategorical ? { categorical: outcome } : { scalar: outcome },
       };
-      setLastDispute(marketDispute);
-    }
 
+      return marketDispute;
+    }
+  }, [market?.report, disputes]);
+
+  const report = useMemo(() => {
     if (
       market?.report &&
       market?.status === "Reported" &&
@@ -234,16 +239,13 @@ const Market: NextPage<MarketPageProps> = ({
           ? { categorical: market.report.outcome.categorical }
           : { scalar: market.report.outcome.scalar?.toString() },
       };
-      setReport(report);
+      return report;
     }
-  }, [disputes, market?.report]);
+  }, [market?.report, disputes]);
 
-  const token = metadata?.symbol;
-
-  const isOracle = market?.oracle === wallet.realAddress;
-  const canReport =
-    marketStage?.type === "OpenReportingPeriod" ||
-    (marketStage?.type === "OracleReportingPeriod" && isOracle);
+  if (indexedMarket == null) {
+    return <NotFoundPage backText="Back To Markets" backLink="/" />;
+  }
 
   return (
     <div className="">

@@ -123,6 +123,10 @@ const ScalarDisputeBox = ({
           incorrect
         </span>
       </div>
+      <div className="flex flex-col item-center text-center">
+        <span className="text-sky-600 text-[14px]">Previous Report:</span>
+        <span className="">{getPreviousReport()}</span>
+      </div>
       {isScalarDate ? (
         <DateTimeInput
           timestamp={scalarReportValue}
@@ -147,10 +151,7 @@ const ScalarDisputeBox = ({
           className="text-ztg-14-150 p-2 bg-sky-200 rounded-md w-full outline-none text-center font-mono mt-2"
         />
       )}
-      <div className="flex flex-col item-center text-center">
-        <span className="text-sky-600 text-[14px]">Previous Report:</span>
-        <span className="">{getPreviousReport()}</span>
-      </div>
+
       {bondAmount !== disputeBond &&
       bondAmount !== undefined &&
       disputeFactor !== undefined ? (
