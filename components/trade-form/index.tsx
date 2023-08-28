@@ -583,7 +583,7 @@ const Inner = ({
                   }
                 }}
                 step="any"
-                className="w-full bg-transparent text-center text-[35px] sm:text-[58px]"
+                className="w-full bg-transparent text-center text-6xl sm:text-4xl lg:text-5xl"
                 autoFocus
               />
             </div>
