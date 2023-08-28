@@ -471,7 +471,10 @@ const Table = ({
                       }
                       key={row.id}
                       className={`
-                      border-b-1 border-gray-200
+                      group
+                      border-t-1 border-gray-200
+                      transition-colors duration-100 ease-in-out
+                      hover:bg-blue-lighter hover:border-blue-300
                     ${rowColorClass}
                     ${onRowClick ? "cursor-pointer" : ""} mx-ztg-5`}
                       onClick={() => handleRowClick(row)}

@@ -587,7 +587,7 @@ const Inner = ({
                 autoFocus
               />
             </div>
-            <div className="center sm:h-[48px] font-semibold capitalize text-[20px] sm:text-[28px]">
+            <div className="center font-semibold mb-4">
               {market && tradeItemState?.assetId && (
                 <MarketContextActionOutcomeSelector
                   market={market}
@@ -603,7 +603,6 @@ const Inner = ({
                 />
               )}
             </div>
-            <div className="font-semibold text-center mb-[20px]">For</div>
             <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative rounded-lg">
               <Input
                 type="number"
