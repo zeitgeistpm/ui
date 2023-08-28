@@ -592,7 +592,6 @@ const Inner = ({
                   selected={tradeItemState?.assetId}
                   options={outcomeAssets}
                   onChange={(assetId) => {
-                    console.log("onChage", assetId);
                     reset();
                     setTradeItem({
                       action: tradeItem.action,

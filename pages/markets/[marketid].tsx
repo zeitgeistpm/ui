@@ -158,7 +158,7 @@ const Market: NextPage<MarketPageProps> = ({
       assetId: outcomeAssets[0],
       action: "buy",
     });
-  }, []);
+  }, [marketId]);
 
   const [showLiquidityParam, setShowLiquidityParam, unsetShowLiquidityParam] =
     useQueryParamState("showLiquidity");
