@@ -54,7 +54,7 @@ export const MarketContextActionOutcomeSelector = ({
         }}
       >
         <Listbox.Button onClick={() => setOpen(!open)}>
-          <div className="center gap-2 text-2xl">
+          <div className="center gap-2 text-2xl md:text-xl lg:text-2xl">
             <TruncatedText
               length={24}
               text={market.categories?.[getIndexOf(selected)].name ?? ""}

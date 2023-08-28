@@ -253,15 +253,6 @@ const Market: NextPage<MarketPageProps> = ({
         <div className="flex-1">
           <MarketMeta market={indexedMarket} />
 
-          <div className="mt-4">
-            {promotionData && (
-              <MarketPromotionCallout
-                market={indexedMarket}
-                promotion={promotionData}
-              />
-            )}
-          </div>
-
           <MarketHeader
             market={indexedMarket}
             resolvedOutcome={market?.resolvedOutcome ?? undefined}
@@ -269,6 +260,7 @@ const Market: NextPage<MarketPageProps> = ({
             disputes={lastDispute}
             token={token}
             marketStage={marketStage ?? undefined}
+            promotionData={promotionData}
             rejectReason={market?.rejectReason ?? undefined}
           />
 
@@ -429,7 +421,6 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
 
   const [open, setOpen] = useState(false);
-  console.log(open);
 
   return (
     <>
