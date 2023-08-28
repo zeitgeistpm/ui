@@ -16,6 +16,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { MarketScalarOutcome } from "lib/types";
+import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import { Fragment, useState } from "react";
 
 const ScalarReportBox = ({
@@ -93,18 +94,23 @@ const ScalarReportBox = ({
   return (
     <>
       {isScalarDate ? (
-        <DateTimeInput
-          timestamp={scalarReportValue}
-          onChange={setScalarReportValue}
-          isValidDate={(current) => {
-            const loBound = bounds[0].toNumber();
-            const hiBound = bounds[1].toNumber();
-            if (current.valueOf() >= loBound && current.valueOf() <= hiBound) {
-              return true;
-            }
-            return false;
-          }}
-        />
+        <div className="relative z-50">
+          <DateTimeInput
+            timestamp={scalarReportValue}
+            onChange={setScalarReportValue}
+            isValidDate={(current) => {
+              const loBound = bounds[0].toNumber();
+              const hiBound = bounds[1].toNumber();
+              if (
+                current.valueOf() >= loBound &&
+                current.valueOf() <= hiBound
+              ) {
+                return true;
+              }
+              return false;
+            }}
+          />
+        </div>
       ) : (
         <div className="bg-gray-50 overflow-hidden sm:flex md:block lg:flex rounded-md">
           <Input
@@ -175,7 +181,11 @@ const ScalarReportBox = ({
         disabled={reportDisabled}
         loading={isBroadcasting}
       >
-        Report Outcome {scalarReportValue}
+        Report Outcome{" "}
+        {formatScalarOutcome(
+          new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
+          market.scalarType as ScalarRangeType,
+        )}
       </TransactionButton>
     </>
   );

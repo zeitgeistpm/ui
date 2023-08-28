@@ -33,7 +33,7 @@ export const SimilarMarketsSection = ({
       ((!stats.isFetched && stats.isFetching) || stats.isLoading));
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 relative z-[-1]">
       {!isLoading && (
         <>
           {hasSimilarMarkets && <h4 className="mb-4">Similar Markets</h4>}
