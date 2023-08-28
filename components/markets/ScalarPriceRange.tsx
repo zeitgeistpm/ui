@@ -10,6 +10,7 @@ interface ScalarPriceRangeProps {
   shortPrice?: number; //between 0 and 1
   longPrice?: number; //between 0 and 1
   status: string;
+  className?: string;
 }
 
 const ScalarPriceRange = ({
@@ -19,6 +20,7 @@ const ScalarPriceRange = ({
   shortPrice,
   longPrice,
   status,
+  className,
 }: ScalarPriceRangeProps) => {
   const { width = 0, ref } = useResizeDetector();
   const shortPercentage = shortPrice && 1 - shortPrice;
@@ -60,7 +62,7 @@ const ScalarPriceRange = ({
 
   return (
     <div
-      className="w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative flex items-center p-2 rounded-lg overflow-hidden"
+      className={`w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative flex items-center p-2 overflow-hidden ${className}`}
       ref={ref}
     >
       <span className="text-xs text-gray-400 font-semibold">

@@ -313,6 +313,7 @@ const Market: NextPage<MarketPageProps> = ({
                   <Skeleton height="40px" width="100%" />
                 ) : (
                   <ScalarPriceRange
+                    className="rounded-lg"
                     scalarType={indexedMarket.scalarType}
                     lowerBound={new Decimal(indexedMarket.marketType.scalar[0])
                       .div(ZTG)
