@@ -41,13 +41,23 @@ export const BgBallGfx = () => {
   const ref = useRef();
   const { x: mx, y: my } = useRelativeMousePosition(ref);
 
-  const oy = useParallax(
+  const osy = useParallax(
     useSpring(scrollYProgress, {
       stiffness: 100,
       damping: 30,
       restDelta: 0.001,
     }),
-    320,
+    220,
+  );
+
+  const osx = useTransform(
+    useSpring(mx, {
+      stiffness: 100,
+      damping: 30,
+      restDelta: 0.001,
+    }),
+    [-1400, 1400],
+    [-50, 50],
   );
 
   const iy = useTransform(
@@ -56,8 +66,8 @@ export const BgBallGfx = () => {
       damping: 30,
       restDelta: 0.001,
     }),
-    [-1000, 1000],
-    [-100, 100],
+    [-1400, 1400],
+    [-75, 75],
   );
 
   const ix = useTransform(
@@ -66,19 +76,21 @@ export const BgBallGfx = () => {
       damping: 30,
       restDelta: 0.001,
     }),
-    [-1000, 1000],
-    [-100, 100],
+    [-1400, 1400],
+    [-75, 75],
   );
 
-  const ox = useTransform(
-    useSpring(mx, {
+  const omy = useTransform(
+    useSpring(my, {
       stiffness: 100,
       damping: 30,
       restDelta: 0.001,
     }),
-    [-1000, 1000],
-    [-60, 60],
+    [-1400, 1400],
+    [-50, 50],
   );
+
+  const oy = useTransform(() => osy.get() + omy.get());
 
   return (
     <motion.div
@@ -86,7 +98,7 @@ export const BgBallGfx = () => {
       className="hidden absolute md:flex justify-center -left-24 -top-[170px] items-center h-[860px] w-[860px] rounded-full bg-red z-0 rotate-180"
       style={{
         y: oy,
-        x: ox,
+        x: osx,
         background:
           "linear-gradient(131.15deg, rgb(0 102 255 / 7%) 11.02%, rgba(254, 0, 152, 0.1) 93.27%)",
       }}
