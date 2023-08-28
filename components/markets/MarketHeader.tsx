@@ -430,9 +430,9 @@ const MarketHeader: FC<{
             alt="Currency token logo"
             className="rounded-full"
           />
-          <div className="opacity-0 transition-opacity absolute right-0 bottom-0 translate-x-[50%] z-10 translate-y-[115%] group-hover:opacity-100 py-1 whitespace-nowrap">
+          <div className="opacity-0 transition-opacity absolute right-0 bottom-0 translate-x-[50%] z-10 translate-y-[115%] group-hover:opacity-100 pt-1  whitespace-nowrap">
             <div className="py-1 px-2 text-sm bg-slate-50 rounded-lg">
-              <span className="text-gray-500">Base asset: </span>
+              <span className="text-gray-500">Currency: </span>
               <span className="font-semibold">{token}</span>
             </div>
           </div>
@@ -448,7 +448,7 @@ const MarketHeader: FC<{
             src="/icons/verified-icon.svg"
             alt="verified checkmark"
           />
-          <div className="opacity-0 transition-opacity absolute right-0 bottom-0 translate-x-[50%] z-10 translate-y-[115%] group-hover:opacity-100 py-1 pl-2 whitespace-nowrap">
+          <div className="opacity-0 transition-opacity absolute right-0 bottom-0 translate-x-[50%] z-10 translate-y-[115%] group-hover:opacity-100 pt-1 whitespace-nowrap">
             <div className="py-1 px-2 text-sm bg-green-lighter rounded-lg">
               Verified Market
             </div>
