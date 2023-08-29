@@ -489,9 +489,16 @@ const DepositPage: NextPage = () => {
               <div className="my-auto">
                 {
                   {
-                    ztg: "Copy your address above or from the QR code and transfer ZTG to your address. Need help? See the video below.",
-                    dot: "Copy your address above or from the QR code and transfer DOT to your address. If you already DOT on your wallet you can go to the Deposit section below. Need help? See the video below.",
+                    ztg: "Copy your address above or from the QR code and transfer ZTG to your address.",
+                    dot: "Copy your address above or from the QR code and transfer DOT to your address. If you already DOT on your wallet you can go to the Deposit section below.",
                   }[currency]
+                }
+                {
+                  //todo: need to add video
+                  // {
+                  //   ztg: "Copy your address above or from the QR code and transfer ZTG to your address. Need help? See the video below.",
+                  //   dot: "Copy your address above or from the QR code and transfer DOT to your address. If you already DOT on your wallet you can go to the Deposit section below. Need help? See the video below.",
+                  // }[currency]
                 }
               </div>
             </div>
