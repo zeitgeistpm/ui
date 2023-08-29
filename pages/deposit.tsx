@@ -21,6 +21,7 @@ import Link from "next/link";
 import { SVGProps, useEffect, useMemo, useState } from "react";
 import { ExternalLink } from "react-feather";
 import { useForm } from "react-hook-form";
+import { encodeAddress } from "@polkadot/keyring";
 
 const ZtgIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg
@@ -167,9 +168,11 @@ const TabGroup = <T extends readonly string[]>({
                   : "cursor-pointer bg-white")
               }
             >
-              <div className="relative w-[40px] h-[40px] mr-3">
-                {Icon && <Icon fill={isDisabled ? "#C3C9CD" : undefined} />}
-              </div>
+              {Icon && (
+                <div className="relative w-[40px] h-[40px] mr-3">
+                  <Icon fill={isDisabled ? "#C3C9CD" : undefined} />
+                </div>
+              )}
               {labels ? labels[item] : item}
             </Tab>
           );
@@ -212,6 +215,8 @@ const DotDeposit = ({ address }: { address: string }) => {
   const notificationStore = useNotifications();
   const { chain, api } = useChain("Polkadot");
   const { data: constants } = useChainConstants();
+
+  const dotAddress = wallet.realAddress && encodeAddress(wallet.realAddress, 0);
 
   const fee = chain?.depositFee;
   const feeEstimate = new Decimal(fee?.mul(1.01) ?? 0).div(ZTG); //add 1% buffer to feeQ
@@ -337,6 +342,7 @@ const DotDeposit = ({ address }: { address: string }) => {
 
 const DepositPage: NextPage = () => {
   const wallet = useWallet();
+  const dotAddress = wallet.realAddress && encodeAddress(wallet.realAddress, 0);
 
   const [method, setMethod] = useState<DepositMethod | undefined>("buy");
   const [currency, setCurrency] = useState<DepositCurrency | undefined>("ztg");
@@ -422,7 +428,7 @@ const DepositPage: NextPage = () => {
               items={[
                 {
                   label: "Banxa",
-                  url: `https://checkout.banxa.com//?fiatAmount=50&fiatType=EUR&coinAmount=8&coinType=DOT&lockFiat=false&orderMode=BUY&walletAddress=${wallet.realAddress}`,
+                  url: `https://checkout.banxa.com/?fiatAmount=50&fiatType=EUR&coinAmount=8&coinType=DOT&lockFiat=false&orderMode=BUY&walletAddress=${dotAddress}`,
                 },
               ]}
             />
@@ -435,23 +441,23 @@ const DepositPage: NextPage = () => {
           </div>
         )}
       </div>
-      {method === "deposit" && wallet.realAddress && currency && (
+      {method === "deposit" && dotAddress && currency && (
         <>
           <h3 className="my-8 p-2">
             Fund your {currency.toUpperCase()} Wallet
           </h3>
           <div className="flex flex-row">
             <div className="w-48 h-48 flex-shrink-0 mr-14">
-              <QrCode text={wallet.realAddress} width={192} />
+              <QrCode text={dotAddress} width={192} />
             </div>
             <div className="flex flex-col">
               <div className="flex-shrink text-lg font-medium">
                 <div className="flex">
-                  {shortenAddress(wallet.realAddress, 12, 12)}{" "}
+                  {shortenAddress(dotAddress, 12, 12)}{" "}
                   <CopyIcon
                     size={24}
                     className="ml-3 cursor-pointer"
-                    copyText={wallet.realAddress}
+                    copyText={dotAddress}
                   />
                 </div>
               </div>
