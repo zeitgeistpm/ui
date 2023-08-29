@@ -427,18 +427,38 @@ const DepositPage: NextPage = () => {
             ]}
           />
         )}
-        {method === "buy" && currency === "dot" && paymentMethod === "card" && (
-          <div className={"grid gap-3 " + `grid-cols-1`}>
-            <ResultButtons
-              items={[
-                {
-                  label: "Banxa",
-                  url: `https://checkout.banxa.com/?fiatAmount=50&fiatType=EUR&coinAmount=8&coinType=DOT&lockFiat=false&orderMode=BUY&walletAddress=${encodedAddress}`,
-                },
-              ]}
-            />
-          </div>
-        )}
+        {method === "buy" &&
+          currency === "dot" &&
+          paymentMethod === "card" &&
+          encodedAddress && (
+            <div className={"grid gap-3 " + `grid-cols-1`}>
+              <ResultButtons
+                items={[
+                  {
+                    label: "Banxa",
+                    url: `https://checkout.banxa.com/?fiatAmount=50&fiatType=EUR&coinAmount=8&coinType=DOT&lockFiat=false&orderMode=BUY&walletAddress=${encodedAddress}`,
+                  },
+                ]}
+              />
+              <div className="flex items-center gap-2 mt-7">
+                <Image
+                  src="/currencies/dot.png"
+                  width={25}
+                  height={25}
+                  alt="Polkadot currency"
+                />
+                <div>Polkadot Address:</div>
+                <div className="flex font-semibold">
+                  {encodedAddress}
+                  <CopyIcon
+                    size={24}
+                    className="ml-3 cursor-pointer"
+                    copyText={encodedAddress}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         {currency === "dot" && method === "buy" && (
           <div className="mt-2">
             After purchasing DOT return to this page and select the Deposit tab
@@ -499,16 +519,16 @@ const DepositPage: NextPage = () => {
           <Video />
         </Link>
       </div> */}
-      <h2 className="my-9">What else</h2>
+      <h2 className="my-9">Next Steps</h2>
       <div className="grid grid-cols-2 gap-x-8 mb-20">
-        <ActionCard
+        {/* <ActionCard
           title="Create an Account"
           imageUrl="/category/e-sports.png"
           actionText="Make a Deposit"
           description="Use one of several methods to deposit crypto on Zeitgeist to start trading"
           actionUrl="/deposit"
           pillLabel="~5 - 15 minutes"
-        />
+        /> */}
         <ActionCard
           title="Start Trading"
           imageUrl="/category/e-sports.png"
