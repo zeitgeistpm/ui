@@ -303,7 +303,7 @@ const AccountButton: FC<{
                   leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
                   leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                 >
-                  <Menu.Items className="fixed md:absolute left-0 md:left-auto md:right-0 py-3 z-40 mt-2 w-full overflow-hidden h-full md:h-auto md:w-64 origin-top-right divide-y divide-gray-100 md:rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <Menu.Items className="fixed md:absolute left-0 md:left-auto md:right-0 py-3 z-40 mt-6 w-full overflow-hidden h-full md:h-auto md:w-64 origin-top-right divide-y divide-gray-100 md:rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="">
                       <div className="flex flex-col gap-2 border-b-2 mb-3 py-2 px-6">
                         <BalanceRow
