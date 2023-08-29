@@ -7,10 +7,10 @@ import { useSdkv2 } from "../useSdkv2";
 export const categoryCountsKey = "category-counts";
 
 export const useCategoryCounts = () => {
-  const [sdk, id] = useSdkv2();
+  const [sdk] = useSdkv2();
 
   const query = useQuery(
-    [id, categoryCountsKey],
+    [categoryCountsKey],
     async () => {
       if (isIndexedSdk(sdk)) {
         const categoryCounts = await getCategoryCounts(

@@ -22,6 +22,8 @@ import {
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
+import { dehydrate, QueryClient } from "@tanstack/react-query";
+import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
 
 const getPlaiceholders = (
   paths: string[],
@@ -45,7 +47,6 @@ export async function getStaticProps() {
     trendingMarkets,
     categoryPlaceholders,
     bannerPlaceHolders,
-    categoryCounts,
     stats,
   ] = await Promise.all([
     getFeaturedMarkets(client, sdk),
@@ -58,19 +59,24 @@ export async function getStaticProps() {
       banners.map((slide) => slide.imageUrl ?? ""),
       { size: 16 },
     ),
-    getCategoryCounts(
-      client,
-      CATEGORIES.map((cat) => cat.name),
-    ),
     getNetworkStats(sdk),
   ]);
 
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery([categoryCountsKey], () =>
+    getCategoryCounts(
+      sdk.indexer.client,
+      CATEGORIES.map((c) => c.name),
+    ),
+  );
+
   return {
     props: {
+      dehydratedState: dehydrate(queryClient),
       banners: banners,
       featuredMarkets: featuredMarkets ?? [],
       trendingMarkets: trendingMarkets ?? [],
-      categoryCounts: categoryCounts,
       categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
       bannerPlaceHolders: bannerPlaceHolders.map((c) => c.base64) ?? [],
       stats,
@@ -83,7 +89,6 @@ const IndexPage: NextPage<{
   banners: Banner[];
   featuredMarkets: IndexedMarketCardData[];
   trendingMarkets: IndexedMarketCardData[];
-  categoryCounts: number[];
   categoryPlaceholders: string[];
   bannerPlaceHolders: string[];
   stats: { marketCount: number; tradersCount: number; volumeUsd: number };
@@ -91,7 +96,6 @@ const IndexPage: NextPage<{
   banners,
   trendingMarkets,
   featuredMarkets,
-  categoryCounts,
   categoryPlaceholders,
   bannerPlaceHolders,
   stats,
@@ -118,10 +122,7 @@ const IndexPage: NextPage<{
         {/* Need link */}
         {/* <WatchHow /> */}
         <div className="mb-[60px]">
-          <PopularCategories
-            counts={categoryCounts}
-            imagePlaceholders={categoryPlaceholders}
-          />
+          <PopularCategories imagePlaceholders={categoryPlaceholders} />
         </div>
         <div className="flex items-center w-full justify-center bottom-[60px]">
           <LearnSection />
