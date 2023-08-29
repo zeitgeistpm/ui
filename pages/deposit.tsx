@@ -1,4 +1,5 @@
 import { Tab } from "@headlessui/react";
+import { encodeAddress } from "@polkadot/keyring";
 import { ZTG } from "@zeitgeistpm/sdk-next";
 import ActionCard from "components/ui/ActionCard";
 import CopyIcon from "components/ui/CopyIcon";
@@ -21,7 +22,6 @@ import Link from "next/link";
 import { SVGProps, useEffect, useMemo, useState } from "react";
 import { ExternalLink } from "react-feather";
 import { useForm } from "react-hook-form";
-import { encodeAddress } from "@polkadot/keyring";
 
 const ZtgIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg
@@ -95,6 +95,7 @@ const DepositMethodLabels: Record<DepositMethod, string> = {
 };
 
 const DepositCurrencyItems = ["ztg", "dot", "usdt"] as const;
+const ss58PrefixLookup = { ztg: 73, dot: 0, usdt: 0 };
 type DepositCurrency = ArrayToUnion<typeof DepositCurrencyItems>;
 
 const DepositCurrencyLabels: Record<DepositCurrency, string> =
@@ -342,7 +343,6 @@ const DotDeposit = ({ address }: { address: string }) => {
 
 const DepositPage: NextPage = () => {
   const wallet = useWallet();
-  const dotAddress = wallet.realAddress && encodeAddress(wallet.realAddress, 0);
 
   const [method, setMethod] = useState<DepositMethod | undefined>("buy");
   const [currency, setCurrency] = useState<DepositCurrency | undefined>("ztg");
@@ -363,6 +363,11 @@ const DepositPage: NextPage = () => {
       setPaymentMethod(undefined);
     }
   }, [currency, method, paymentMethod]);
+
+  const encodedAddress =
+    wallet.realAddress &&
+    currency &&
+    encodeAddress(wallet.realAddress, ss58PrefixLookup[currency]);
 
   return (
     <>
@@ -428,36 +433,36 @@ const DepositPage: NextPage = () => {
               items={[
                 {
                   label: "Banxa",
-                  url: `https://checkout.banxa.com/?fiatAmount=50&fiatType=EUR&coinAmount=8&coinType=DOT&lockFiat=false&orderMode=BUY&walletAddress=${dotAddress}`,
+                  url: `https://checkout.banxa.com/?fiatAmount=50&fiatType=EUR&coinAmount=8&coinType=DOT&lockFiat=false&orderMode=BUY&walletAddress=${encodedAddress}`,
                 },
               ]}
             />
           </div>
         )}
-        {currency === "dot" && (
+        {currency === "dot" && method === "buy" && (
           <div className="mt-2">
             After purchasing DOT return to this page and select the Deposit tab
             to move it to your account on Zeitgeist
           </div>
         )}
       </div>
-      {method === "deposit" && dotAddress && currency && (
+      {method === "deposit" && encodedAddress && currency && (
         <>
           <h3 className="my-8 p-2">
             Fund your {currency.toUpperCase()} Wallet
           </h3>
           <div className="flex flex-row">
             <div className="w-48 h-48 flex-shrink-0 mr-14">
-              <QrCode text={dotAddress} width={192} />
+              <QrCode text={encodedAddress} width={192} />
             </div>
             <div className="flex flex-col">
               <div className="flex-shrink text-lg font-medium">
                 <div className="flex">
-                  {shortenAddress(dotAddress, 12, 12)}{" "}
+                  {shortenAddress(encodedAddress, 12, 12)}{" "}
                   <CopyIcon
                     size={24}
                     className="ml-3 cursor-pointer"
-                    copyText={dotAddress}
+                    copyText={encodedAddress}
                   />
                 </div>
               </div>
@@ -497,7 +502,7 @@ const DepositPage: NextPage = () => {
       <h2 className="my-9">What else</h2>
       <div className="grid grid-cols-2 gap-x-8 mb-20">
         <ActionCard
-          title="Crate an Account"
+          title="Create an Account"
           imageUrl="/category/e-sports.png"
           actionText="Make a Deposit"
           description="Use one of several methods to deposit crypto on Zeitgeist to start trading"
