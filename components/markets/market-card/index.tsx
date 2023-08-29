@@ -190,8 +190,6 @@ export const MarketCard = ({
   numParticipants,
   tags,
 }: MarketCardProps) => {
-  const { hovered, register: registerHover } = useHover();
-
   const isYesNoMarket =
     outcomes.length === 2 &&
     outcomes.some((outcome) => outcome.name.toLowerCase() === "yes") &&
@@ -223,22 +221,10 @@ export const MarketCard = ({
 
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
-      <motion.div
-        initial={false}
-        transition={{
-          duration: 0.12,
-          bounce: 10,
-        }}
-        animate={{
-          scale: hovered ? 1.02 : 1,
-          translateY: hovered ? "-6px" : 0,
-          translateX: hovered ? "6px" : 0,
-          boxShadow: hovered ? "-2px 2px 3px rgba(10,10,10, 0.07)" : "0",
-        }}
+      <div
         data-testid={`marketCard-${marketId}`}
         className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)]  
-        rounded-[10px] p-5 relative bg-white `}
-        {...registerHover()}
+        rounded-[10px] p-5 relative bg-white ztg-transition hover:scale-105 ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
@@ -247,19 +233,9 @@ export const MarketCard = ({
           <div className="w-full h-full flex whitespace-normal gap-4">
             <h5 className="w-full h-fit line-clamp-2 text-base">{question}</h5>
             {/* {disable for now until we can get image from CMS} */}
-            <motion.div
-              initial={false}
-              className="relative min-w-[84px] min-h-[80px] rounded-xl"
-              animate={{
-                translateX: hovered ? "4px" : 0,
-                translateY: hovered ? "-4px" : 0,
-                boxShadow: hovered
-                  ? "-4px 4px 3px rgba(10,10,10, 0.3)"
-                  : "-0px 0px 0px rgba(10,10,10, 0.0001)",
-              }}
-            >
+            <div className="relative min-w-[84px] min-h-[80px] rounded-xl">
               <MarketImage tags={tags} alt={question} className="rounded-lg" />
-            </motion.div>
+            </div>
           </div>
 
           <div className="w-full">
@@ -290,7 +266,7 @@ export const MarketCard = ({
           </div>
           <MarketCardDetails rows={infoRows} />
         </Link>
-      </motion.div>
+      </div>
     </MarketCardContext.Provider>
   );
 };
