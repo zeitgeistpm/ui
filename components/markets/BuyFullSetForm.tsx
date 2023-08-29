@@ -7,7 +7,7 @@ import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
-import { useGlobalKeyPress } from "lib/hooks/useGlobalKeyPress";
+import { useGlobalKeyPress } from "lib/hooks/events/useGlobalKeyPress";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";

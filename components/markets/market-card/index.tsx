@@ -69,9 +69,7 @@ const MarketCardPredictionBar = ({
     const impliedPercentage = Math.round(Number(price) * 100);
 
     return (
-      <div
-        className={`w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative`}
-      >
+      <div className={`w-full h-[30px] transition-all bg-gray-200 relative`}>
         <div className="text-sm flex justify-between items-center absolute w-full h-full px-2.5">
           <span className="text-blue">{name}</span>
           <span className="text-blue transition-all">{impliedPercentage}%</span>
@@ -242,7 +240,7 @@ const MarketCard = ({
       <div
         data-testid={`marketCard-${marketId}`}
         className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)] h-[171px] 
-        rounded-[10px] p-5 relative bg-white hover:bg-pastel-blue ${className}`}
+        rounded-[10px] p-5 relative bg-white ztg-transition hover:scale-105  ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}

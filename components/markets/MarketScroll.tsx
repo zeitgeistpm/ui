@@ -3,8 +3,10 @@ import { useResizeDetector } from "react-resize-detector";
 import MarketCard, { IndexedMarketCardData } from "./market-card/index";
 import HorizontalScroll from "components/ui/HorizontalScroll";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
-import { useWindowSize } from "lib/hooks/useWindowSize";
+import { useWindowSize } from "lib/hooks/events/useWindowSize";
 import { BREAKPOINTS } from "lib/constants/breakpoints";
+import { clamp, range } from "lodash-es";
+import medianRange from "median-range";
 
 const MarketScroll = ({
   title,
@@ -18,7 +20,7 @@ const MarketScroll = ({
   link?: string;
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [scrollLeft, setScrollLeft] = useState(0);
+  const [pageIndex, setPageIndex] = useState(0);
 
   const { width: windowWidth } = useWindowSize();
   const { width, ref: containerRef } = useResizeDetector();
@@ -32,39 +34,27 @@ const MarketScroll = ({
   //calculate cards shown and width based on container width
   const cardsShown =
     windowWidth < BREAKPOINTS.md ? 1 : windowWidth < BREAKPOINTS.lg ? 2 : 3;
+
   const cardWidth =
     windowWidth < BREAKPOINTS.md
       ? containerWidth
       : windowWidth < BREAKPOINTS.lg
       ? (containerWidth - gap) / cardsShown
       : (containerWidth - gap * 2) / cardsShown;
-  const scrollMin = 0;
-  const scrollMax = cardWidth * markets.length + gap * (markets.length - 1);
-
-  const moveSize = cardsShown * (cardWidth + gap);
-
-  useEffect(() => {
-    scrollRef.current?.scroll({ left: scrollLeft, behavior: "smooth" });
-  }, [scrollRef, scrollLeft]);
 
   const handleRightClick = () => {
-    setScrollLeft((prev) => {
-      const newScroll = prev + moveSize;
-      const max = scrollMax - containerWidth;
-      return newScroll > max ? scrollMax - containerWidth : newScroll;
-    });
+    setPageIndex(pageIndex + 1);
   };
 
   const handleLeftClick = () => {
-    setScrollLeft((prev) => {
-      const newScroll = prev - moveSize;
-
-      return newScroll < scrollMin ? scrollMin : newScroll;
-    });
+    setPageIndex(pageIndex - 1);
   };
 
-  const hasReachedEnd = scrollMax - containerWidth - scrollLeft === 0;
-  const leftDisabled = scrollLeft === 0;
+  const pageDelta = markets.length / cardsShown;
+  const maxPages = pageDelta % 1 ? Math.round(pageDelta) : pageDelta - 1;
+
+  const hasReachedEnd = pageIndex === maxPages;
+  const leftDisabled = pageIndex === 0;
   const rightDisabled =
     hasReachedEnd || cardWidth * markets.length < containerWidth;
 
@@ -86,12 +76,19 @@ const MarketScroll = ({
       <div className="col-span-3 relative">
         <div
           ref={scrollRef}
-          className="flex flex-col gap-7 sm:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
+          style={{
+            transform: `translateX(${-(pageIndex * (cardWidth + gap))}px)`,
+          }}
+          className="flex transition-transform ztg-transition flex-col gap-7 sm:flex-row no-scroll-bar  whitespace-nowrap scroll-smooth"
         >
-          {markets.map((market) => {
+          {markets.map((market, cardIndex) => {
             const stat = marketsStats?.find(
               (s) => s.marketId === market.marketId,
             );
+
+            const showRange = range(pageIndex, pageIndex + cardsShown);
+            const isShown = showRange.includes(cardIndex);
+
             market = {
               ...market,
               numParticipants: stat?.participants,
@@ -101,7 +98,9 @@ const MarketScroll = ({
               <MarketCard
                 key={market.marketId}
                 {...market}
-                className="market-card rounded-ztg-10 transition duration-500 ease-in-out"
+                className={`market-card rounded-ztg-10 transition duration-500 ease-in-out ${
+                  isShown ? "opacity-1" : "opacity-0"
+                }`}
               />
             );
           })}
