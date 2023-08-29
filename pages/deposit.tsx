@@ -1,27 +1,26 @@
 import { Tab } from "@headlessui/react";
-import Decimal from "decimal.js";
-import { NextPage } from "next";
-import { useEffect, useMemo, useState } from "react";
-import { SVGProps } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { ChevronRight, Video } from "react-feather";
-import { useWallet } from "lib/state/wallet";
-import { shortenAddress } from "lib/util";
-import CopyIcon from "components/ui/CopyIcon";
-import QrCode from "components/ui/QrCode";
-import { ArrayToUnion } from "lib/types/union";
-import { useCurrencyBalances } from "lib/hooks/queries/useCurrencyBalances";
 import { ZTG } from "@zeitgeistpm/sdk-next";
-import Input from "components/ui/Input";
-import { useForm } from "react-hook-form";
-import { useNotifications } from "lib/state/notifications";
-import { useChain } from "lib/state/cross-chain";
-import { useCrossChainExtrinsic } from "lib/hooks/useCrossChainExtrinsic";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
-import { formatNumberCompact } from "lib/util/format-compact";
-import FormTransactionButton from "components/ui/FormTransactionButton";
 import ActionCard from "components/ui/ActionCard";
+import CopyIcon from "components/ui/CopyIcon";
+import FormTransactionButton from "components/ui/FormTransactionButton";
+import Input from "components/ui/Input";
+import QrCode from "components/ui/QrCode";
+import Decimal from "decimal.js";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useCurrencyBalances } from "lib/hooks/queries/useCurrencyBalances";
+import { useCrossChainExtrinsic } from "lib/hooks/useCrossChainExtrinsic";
+import { useChain } from "lib/state/cross-chain";
+import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
+import { ArrayToUnion } from "lib/types/union";
+import { shortenAddress } from "lib/util";
+import { formatNumberCompact } from "lib/util/format-compact";
+import { NextPage } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { SVGProps, useEffect, useMemo, useState } from "react";
+import { ExternalLink } from "react-feather";
+import { useForm } from "react-hook-form";
 
 const ZtgIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg
@@ -195,10 +194,11 @@ const ResultButtons = ({
             href={item.url}
             target="_blank"
             className={
-              "h-16 outline-none center rounded-lg cursor-pointer bg-white"
+              "flex items-center justify-center gap-2 h-16 outline-none center rounded-lg cursor-pointer bg-white"
             }
           >
-            {item.label}
+            <div>{item.label}</div>
+            <ExternalLink size={16} />
           </Link>
         );
       })}
@@ -419,12 +419,19 @@ const DepositPage: NextPage = () => {
         {method === "buy" && currency === "dot" && paymentMethod === "card" && (
           <div className={"grid gap-3 " + `grid-cols-1`}>
             <ResultButtons
-              items={[{ label: "Banxa *", url: "https://banxa.com/" }]}
+              items={[
+                {
+                  label: "Banxa",
+                  url: `https://checkout.banxa.com//?fiatAmount=50&fiatType=EUR&coinAmount=8&coinType=DOT&lockFiat=false&orderMode=BUY&walletAddress=${wallet.realAddress}`,
+                },
+              ]}
             />
-            <div className="mt-2">
-              * — Complete purchase on the Banxa page then return to this page
-              and select the Deposit tab to continue
-            </div>
+          </div>
+        )}
+        {currency === "dot" && (
+          <div className="mt-2">
+            After purchasing DOT return to this page and select the Deposit tab
+            to move it to your account on Zeitgeist
           </div>
         )}
       </div>
@@ -473,15 +480,15 @@ const DepositPage: NextPage = () => {
         <DotDeposit address={wallet.realAddress} />
       )}
       {/* TODO: Update href attribute */}
-      <div className="flex text-blue my-9 p-2">
+      {/* <div className="flex text-blue my-9 p-2">
         <Link href="#" className="flex">
           <div className="mr-3">
             Watch this tutorial about how to buy tokens using crypto
           </div>
           <Video />
         </Link>
-      </div>
-      <h2 className="mb-9 p-2">What else</h2>
+      </div> */}
+      <h2 className="my-9">What else</h2>
       <div className="grid grid-cols-2 gap-x-8 mb-20">
         <ActionCard
           title="Crate an Account"
