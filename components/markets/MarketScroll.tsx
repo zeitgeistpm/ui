@@ -1,12 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import HorizontalScroll from "components/ui/HorizontalScroll";
+import { BREAKPOINTS } from "lib/constants/breakpoints";
+import { useWindowSize } from "lib/hooks/events/useWindowSize";
+import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
+import { range } from "lodash-es";
+import { useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import MarketCard, { IndexedMarketCardData } from "./market-card/index";
-import HorizontalScroll from "components/ui/HorizontalScroll";
-import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
-import { useWindowSize } from "lib/hooks/events/useWindowSize";
-import { BREAKPOINTS } from "lib/constants/breakpoints";
-import { clamp, range } from "lodash-es";
-import medianRange from "median-range";
 
 const MarketScroll = ({
   title,

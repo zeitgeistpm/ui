@@ -29,12 +29,14 @@ export const ActionableCard = ({
       <motion.div
         initial={false}
         className="w-full rounded-md py-5 px-7 bg-white flex flex-col"
+        transition={{
+          duration: 0.12,
+          bounce: 10,
+        }}
         animate={{
-          // rotateX: hovered ? "7deg" : 0,
-          // rotateY: hovered ? "6deg" : 0,
           scale: hovered ? 1.02 : 1,
           translateY: hovered ? "-6px" : 0,
-          translateX: hovered ? "-3px" : 0,
+          translateX: hovered ? "3px" : 0,
           boxShadow: hovered ? "-2px 2px 3px rgba(10,10,10, 0.07)" : "0",
         }}
         {...register()}
@@ -55,8 +57,8 @@ export const ActionableCard = ({
               initial={false}
               className="relative min-w-[84px] min-h-[80px] rounded-xl"
               animate={{
-                translateX: hovered ? "12px" : 0,
-                translateY: hovered ? "-12px" : 0,
+                translateX: hovered ? "10px" : 0,
+                translateY: hovered ? "-10px" : 0,
                 boxShadow: hovered ? "-5px 5px 3px rgba(10,10,10, 0.3)" : "0",
               }}
             >

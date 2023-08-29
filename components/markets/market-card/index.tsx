@@ -1,5 +1,6 @@
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import Skeleton from "components/ui/Skeleton";
+import { motion } from "framer-motion";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { MarketOutcomes } from "lib/types/markets";
@@ -17,6 +18,8 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import Image from "next/image";
+import MarketImage from "components/ui/MarketImage";
+import { useHover } from "lib/hooks/events/useHover";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -40,22 +43,6 @@ export interface IndexedMarketCardData {
 export interface MarketCardProps extends IndexedMarketCardData {
   className?: string;
 }
-
-const MarketCardInfo = ({
-  question,
-  img,
-}: {
-  question: string;
-  img?: string;
-}) => {
-  return (
-    <div className="w-full h-full flex whitespace-normal gap-4">
-      <h5 className="w-full h-fit line-clamp-2 text-base">{question}</h5>
-      {/* {disable for now until we can get image from CMS} */}
-      {/* {img && <MarketImage image={img} alt={question} className="rounded-lg" />} */}
-    </div>
-  );
-};
 
 const MarketCardPredictionBar = ({
   prediction: { name, price },
@@ -185,11 +172,7 @@ const MarketCardDetails = ({
   );
 };
 
-export const MarketCardClientWrapper = (props: MarketCardProps) => {
-  return <MarketCard {...props} />;
-};
-
-const MarketCard = ({
+export const MarketCard = ({
   marketId,
   img,
   question,
@@ -205,7 +188,10 @@ const MarketCard = ({
   className = "",
   liquidity,
   numParticipants,
+  tags,
 }: MarketCardProps) => {
+  const { hovered, register: registerHover } = useHover();
+
   const isYesNoMarket =
     outcomes.length === 2 &&
     outcomes.some((outcome) => outcome.name.toLowerCase() === "yes") &&
@@ -237,16 +223,45 @@ const MarketCard = ({
 
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
-      <div
+      <motion.div
+        initial={false}
+        transition={{
+          duration: 0.12,
+          bounce: 10,
+        }}
+        animate={{
+          scale: hovered ? 1.02 : 1,
+          translateY: hovered ? "-6px" : 0,
+          translateX: hovered ? "6px" : 0,
+          boxShadow: hovered ? "-2px 2px 3px rgba(10,10,10, 0.07)" : "0",
+        }}
         data-testid={`marketCard-${marketId}`}
-        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)] h-[171px] 
-        rounded-[10px] p-5 relative bg-white ztg-transition hover:scale-105  ${className}`}
+        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)]  
+        rounded-[10px] p-5 relative bg-white `}
+        {...registerHover()}
       >
         <Link
           href={`/markets/${marketId}`}
           className="flex flex-col flex-1 gap-4"
         >
-          <MarketCardInfo question={question} img={img} />
+          <div className="w-full h-full flex whitespace-normal gap-4">
+            <h5 className="w-full h-fit line-clamp-2 text-base">{question}</h5>
+            {/* {disable for now until we can get image from CMS} */}
+            <motion.div
+              initial={false}
+              className="relative min-w-[84px] min-h-[80px] rounded-xl"
+              animate={{
+                translateX: hovered ? "4px" : 0,
+                translateY: hovered ? "-4px" : 0,
+                boxShadow: hovered
+                  ? "-4px 4px 3px rgba(10,10,10, 0.3)"
+                  : "-0px 0px 0px rgba(10,10,10, 0.0001)",
+              }}
+            >
+              <MarketImage tags={tags} alt={question} className="rounded-lg" />
+            </motion.div>
+          </div>
+
           <div className="w-full">
             {pool && marketType?.categorical ? (
               <MarketCardPredictionBar pool={pool} prediction={prediction} />
@@ -275,7 +290,7 @@ const MarketCard = ({
           </div>
           <MarketCardDetails rows={infoRows} />
         </Link>
-      </div>
+      </motion.div>
     </MarketCardContext.Provider>
   );
 };
