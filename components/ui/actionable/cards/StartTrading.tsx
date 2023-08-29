@@ -1,6 +1,10 @@
-import { ActionableCard } from "../ActionableCard";
+import { ActionableCard, ActionableCardProps } from "../ActionableCard";
 
-export const StartTradingActionableCard = () => (
+export const StartTradingActionableCard = ({
+  animationVariant,
+}: {
+  animationVariant?: ActionableCardProps["animationVariant"];
+}) => (
   <ActionableCard
     title="Start Trading"
     description="Our system is at your full disposal. View markets and start trading on your beliefs."
@@ -8,5 +12,6 @@ export const StartTradingActionableCard = () => (
     linkText="Make Preditions"
     img="/learn/start_trading.png"
     timeUsage="No time limits"
+    animationVariant={animationVariant}
   />
 );

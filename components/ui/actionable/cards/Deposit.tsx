@@ -1,6 +1,10 @@
-import { ActionableCard } from "../ActionableCard";
+import { ActionableCard, ActionableCardProps } from "../ActionableCard";
 
-export const DepositActionableCard = () => (
+export const DepositActionableCard = ({
+  animationVariant,
+}: {
+  animationVariant?: ActionableCardProps["animationVariant"];
+}) => (
   <ActionableCard
     title="Deposit Tokens"
     description="Use one of several methods to deposit crypto tokens on Zeitgeist to start trading. Trade on your beliefs."
@@ -8,5 +12,6 @@ export const DepositActionableCard = () => (
     linkText="Make a Deposit"
     img="/learn/deposit.png"
     timeUsage="~5—15 minutes"
+    animationVariant={animationVariant}
   />
 );

@@ -87,7 +87,8 @@ const MarketScroll = ({
             );
 
             const showRange = range(pageIndex, pageIndex + cardsShown);
-            const isShown = showRange.includes(cardIndex);
+            const isShown =
+              showRange.includes(cardIndex) || windowWidth < BREAKPOINTS.md;
 
             market = {
               ...market,

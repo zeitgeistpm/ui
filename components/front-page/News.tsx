@@ -23,7 +23,7 @@ export const NewsSection = ({
             <Link
               href={news.ctaLink!}
               key={index}
-              className="flex-1"
+              className="flex-1 ztg-transition hover:scale-105"
               target={isExternalLink ? "_blank" : "_parent"}
             >
               <div className="relative h-52 mb-3">

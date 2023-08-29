@@ -10,9 +10,15 @@ const GettingStartedSection = () => {
           Getting Started
         </h2>
         <div className="flex flex-col md:flex-row gap-4">
-          <CreateAccountActionableCard />
-          <DepositActionableCard />
-          <StartTradingActionableCard />
+          <div className="flex-1">
+            <CreateAccountActionableCard animationVariant="right" />
+          </div>
+          <div className="flex-1">
+            <DepositActionableCard animationVariant="center" />
+          </div>
+          <div className="flex-1">
+            <StartTradingActionableCard animationVariant="left" />
+          </div>
         </div>
       </div>
     </>

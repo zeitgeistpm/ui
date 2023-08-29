@@ -1,15 +1,18 @@
+import { Transition, motion } from "framer-motion";
+import { useHover } from "lib/hooks/events/useHover";
 import Image from "next/image";
 import Link from "next/link";
 import { FiChevronRight } from "react-icons/fi";
 
-interface ActionableCardProps {
+export type ActionableCardProps = {
   title: string;
   description: string;
   link: string;
   linkText: string;
   img: string;
   timeUsage: string;
-}
+  animationVariant?: "left" | "center" | "right";
+};
 
 export const ActionableCard = ({
   title,
@@ -19,34 +22,89 @@ export const ActionableCard = ({
   img,
   timeUsage,
 }: ActionableCardProps) => {
+  const { hovered, register } = useHover();
+
   return (
-    <div className="w-full rounded-md py-5 px-7 bg-white flex flex-col">
-      <div className="mb-6 flex-1">
-        <h6 className="font-semibold text-xl mb-4">{title}</h6>
-        <div className="flex gap-4">
-          <Image
-            src={img}
-            width={84}
-            height={80}
-            alt={title}
-            className="flex-shrink-0 w-[84px] h-[80px]"
-          />
-          <p className="text-ztg-14-150">{description}</p>
-        </div>
-      </div>
-      <div className="flex md:flex-col lg:flex-row gap-2">
-        <div className="text-blue-500 flex items-center gap-1 flex-1">
-          <Link href={link} className="flex flex-col">
-            {linkText}
-          </Link>
-          <FiChevronRight size={20} />
-        </div>
-        <div className="">
-          <div className="inline-block text-sm bg-gray-200 rounded-md py-1 px-2">
-            {timeUsage}
+    <Link href={link} className="flex flex-col">
+      <motion.div
+        initial={false}
+        className="w-full rounded-md py-5 px-7 bg-white flex flex-col"
+        animate={{
+          // rotateX: hovered ? "7deg" : 0,
+          // rotateY: hovered ? "6deg" : 0,
+          scale: hovered ? 1.02 : 1,
+          translateY: hovered ? "-6px" : 0,
+          translateX: hovered ? "-3px" : 0,
+          boxShadow: hovered ? "-2px 2px 3px rgba(10,10,10, 0.07)" : "0",
+        }}
+        {...register()}
+      >
+        <div className="mb-6 flex-1">
+          <motion.h6
+            initial={false}
+            animate={{
+              translateX: hovered ? "4px" : 0,
+              translateY: hovered ? "-4px" : 0,
+            }}
+            className="font-semibold text-xl mb-4"
+          >
+            {title}
+          </motion.h6>
+          <div className="flex gap-4">
+            <motion.div
+              initial={false}
+              className="relative min-w-[84px] min-h-[80px] rounded-xl"
+              animate={{
+                translateX: hovered ? "12px" : 0,
+                translateY: hovered ? "-12px" : 0,
+                boxShadow: hovered ? "-5px 5px 3px rgba(10,10,10, 0.3)" : "0",
+              }}
+            >
+              <Image src={img} alt={title} fill />
+            </motion.div>
+
+            <motion.p
+              initial={false}
+              animate={{
+                translateX: hovered ? "4px" : 0,
+                translateY: hovered ? "-4px" : 0,
+              }}
+              className="text-ztg-14-150"
+            >
+              {description}
+            </motion.p>
           </div>
         </div>
-      </div>
-    </div>
+        <div className="flex md:flex-col lg:flex-row gap-2">
+          <motion.div
+            initial={false}
+            animate={{
+              translateX: hovered ? "4px" : 0,
+              translateY: hovered ? "-4px" : 0,
+              scale: hovered ? 1.02 : 1,
+            }}
+            className="text-blue-500 flex items-center gap-1 flex-1"
+          >
+            {linkText}
+
+            <FiChevronRight size={20} />
+          </motion.div>
+          <motion.div
+            initial={false}
+            className={"rounded-md"}
+            animate={{
+              translateX: hovered ? "4px" : 0,
+              translateY: hovered ? "-4px" : 0,
+              scale: hovered ? 1.02 : 1,
+              boxShadow: hovered ? "-2px 2px 4px rgba(10,10,10, 0.3)" : "0",
+            }}
+          >
+            <div className="inline-block text-sm bg-gray-200 rounded-md py-1 px-2">
+              {timeUsage}
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
+    </Link>
   );
 };
