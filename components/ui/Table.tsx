@@ -415,9 +415,7 @@ const Table = ({
                     .map((column, index) => (
                       <th
                         key={index}
-                        className={`${getHeaderClass(
-                          column,
-                        )} border-b-2 border-purple-100 ${
+                        className={`${getHeaderClass(column)} ${
                           index == 0 ? "rounded-tl-md" : ""
                         } ${
                           index == columns.length - 1 ? "rounded-tr-md" : ""

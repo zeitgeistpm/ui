@@ -19,9 +19,6 @@ export const SimilarMarketsSection = ({
 
   const stats = useMarketsStats(
     similarMarkets?.data?.map((m) => m.marketId) ?? [],
-    {
-      enabled: hasSimilarMarkets,
-    },
   );
 
   const isLoading =
