@@ -76,9 +76,6 @@ const ScalarReportBox = ({
     },
   );
 
-  bounds[0] = new Decimal(10000);
-  bounds[1] = new Decimal(500000);
-
   const reportDisabled =
     !sdk ||
     !isRpcSdk(sdk) ||
@@ -158,13 +155,13 @@ const ScalarReportBox = ({
                 Scalar range:
               </div>
               <div className="whitespace-nowrap">
-                {new Intl.NumberFormat("default", {
+                {new Intl.NumberFormat("en-US", {
                   maximumSignificantDigits: expandedInfoToggled ? 10 : 5,
                   compactDisplay: "short",
                   notation: expandedInfoToggled ? undefined : "compact",
                 }).format(bounds[0].toNumber())}{" "}
                 {"<-> "}{" "}
-                {new Intl.NumberFormat("default", {
+                {new Intl.NumberFormat("en-US", {
                   maximumSignificantDigits: expandedInfoToggled ? 10 : 5,
                   compactDisplay: "short",
                   notation: expandedInfoToggled ? undefined : "compact",
