@@ -21,17 +21,22 @@ export const SimilarMarketsSection = ({
     similarMarkets?.data?.map((m) => m.marketId) ?? [],
   );
 
-  const isLoading =
-    (!similarMarkets.isFetched &&
-      (similarMarkets.isFetching || similarMarkets.isLoading)) ||
-    (hasSimilarMarkets &&
-      ((!stats.isFetched && stats.isFetching) || stats.isLoading));
+  const isLoading = !similarMarkets.isFetched || !stats.isFetched;
 
   return (
     <div className="flex flex-col gap-4 relative z-[-1]">
       {!isLoading && (
         <>
-          {hasSimilarMarkets && <h4 className="mb-4">Similar Markets</h4>}
+          {hasSimilarMarkets && (
+            <h4
+              className="mb-4 opacity-0 animate-pop-in"
+              style={{
+                animationDelay: `200ms`,
+              }}
+            >
+              Similar Markets
+            </h4>
+          )}
 
           {similarMarkets?.data?.map((market, index) => {
             const stat = stats?.data?.find(
