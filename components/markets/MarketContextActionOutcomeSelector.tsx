@@ -25,8 +25,6 @@ export const MarketContextActionOutcomeSelector = ({
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState<string | undefined>();
 
-  let optionsLength = useMemo(() => options?.length, [options]);
-
   if (search && options) {
     let opts = options.map((option) => {
       const name = market.categories?.[getIndexOf(option)].name ?? "";
@@ -81,7 +79,7 @@ export const MarketContextActionOutcomeSelector = ({
             <BsArrowLeft />
             Select Outcome Asset
           </div>
-          {Number(optionsLength) > 5 && (
+          {Number(options?.length) > 5 && (
             <div className="px-5 mb-3">
               <Input
                 type="text"
@@ -99,30 +97,29 @@ export const MarketContextActionOutcomeSelector = ({
             static
             className="overflow-y-auto scrollbar-hide h-full"
           >
-            {options &&
-              options?.map((asset, index) => {
-                const assetIndex = getIndexOf(asset);
-                const category = market?.categories?.[assetIndex];
-                const colors = calcMarketColors(
-                  market?.marketId!,
-                  options!.length,
-                );
-                return (
-                  <Listbox.Option
-                    key={assetIndex}
-                    value={asset}
-                    className=" text-base cursor-pointer py-1 px-2 hover:bg-opacity-10"
-                  >
-                    <div className="hover:bg-slate-100 flex py-6 md:text-sm lg:text-base px-5 gap-3 rounded-md items-center">
-                      <div
-                        className="w-4 h-4 rounded-full "
-                        style={{ backgroundColor: colors[index] }}
-                      ></div>
-                      {category?.name || assetIndex}
-                    </div>
-                  </Listbox.Option>
-                );
-              })}
+            {options?.map((asset, index) => {
+              const assetIndex = getIndexOf(asset);
+              const category = market?.categories?.[assetIndex];
+              const colors = calcMarketColors(
+                market?.marketId!,
+                options!.length,
+              );
+              return (
+                <Listbox.Option
+                  key={assetIndex}
+                  value={asset}
+                  className=" text-base cursor-pointer py-1 px-2 hover:bg-opacity-10"
+                >
+                  <div className="hover:bg-slate-100 flex py-6 md:text-sm lg:text-base px-5 gap-3 rounded-md items-center">
+                    <div
+                      className="w-4 h-4 rounded-full "
+                      style={{ backgroundColor: colors[index] }}
+                    ></div>
+                    {category?.name || assetIndex}
+                  </div>
+                </Listbox.Option>
+              );
+            })}
           </Listbox.Options>
         </Transition>
       </Listbox>
