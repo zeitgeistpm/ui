@@ -393,9 +393,8 @@ const Market: NextPage<MarketPageProps> = ({
                 <></>
               )}
             </div>
-            <div>
-              <SimilarMarketsSection market={market ?? undefined} />
-            </div>
+
+            <SimilarMarketsSection market={market ?? undefined} />
           </div>
         </div>
       </div>
