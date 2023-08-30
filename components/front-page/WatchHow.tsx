@@ -78,7 +78,7 @@ const WatchHow = () => {
         </div>
         <div className="relative">
           <a
-            className={`flex relative cursor-wait center gap-2 ml-auto opacity-70 bg-[#DC056C] text-white rounded-md px-[20px] py-[10px] z-10 ${
+            className={`flex relative cursor-wait center gap-2 ml-auto opacity-70 bg-ztg-pink text-white rounded-md px-[20px] py-[10px] z-10 ${
               animationState === "finished" && "animate-pop-in"
             }`}
           >
