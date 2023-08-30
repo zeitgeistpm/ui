@@ -1,12 +1,10 @@
 import type { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
 import MarketCard from "components/markets/market-card";
-import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
 import { useSimilarMarkets } from "lib/hooks/queries/useSimilarMarkets";
-import { range } from "lodash-es";
 
 export const SimilarMarketsSection = ({
   market,
