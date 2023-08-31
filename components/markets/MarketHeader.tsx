@@ -33,8 +33,13 @@ import { estimateMarketResolutionDate } from "lib/util/estimate-market-resolutio
 import { MarketReport } from "lib/types";
 import { AddressDetails } from "./MarketAddresses";
 import Image from "next/image";
-import { lookupAssetImagePath } from "lib/constants/foreign-asset";
+import {
+  FOREIGN_ASSET_METADATA,
+  lookupAssetImagePath,
+} from "lib/constants/foreign-asset";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
+import { MarketPromotionCallout } from "./PromotionCallout";
+import { PromotedMarket } from "lib/cms/get-promoted-markets";
 
 export const UserIdentity: FC<
   PropsWithChildren<{ user: string; className?: string }>
@@ -294,6 +299,7 @@ const MarketHeader: FC<{
   token?: string;
   marketStage?: MarketStage;
   rejectReason?: string;
+  promotionData?: PromotedMarket | null;
 }> = ({
   market,
   report,
@@ -302,6 +308,7 @@ const MarketHeader: FC<{
   token,
   marketStage,
   rejectReason,
+  promotionData,
 }) => {
   const { categories, status, question, period, marketType, pool, scalarType } =
     market;
@@ -359,7 +366,7 @@ const MarketHeader: FC<{
       {rejectReason && rejectReason.length > 0 && (
         <div className="mt-2.5">Market rejected: {rejectReason}</div>
       )}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 mb-4">
         <HeaderStat label={hasDatePassed(starts) ? "Started" : "Starts"}>
           {new Intl.DateTimeFormat("default", {
             dateStyle: "medium",
@@ -412,23 +419,45 @@ const MarketHeader: FC<{
           <Skeleton width="150px" height="20px" />
         )}
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex relative items-center gap-3 mb-4">
         <AddressDetails title="Creator" address={market.creator} />
-        <Image
-          width={20}
-          height={20}
-          src={imagePath}
-          alt="Currency token logo"
-          className="rounded-full"
-        />
+
+        <div className="relative group">
+          <Image
+            width={20}
+            height={20}
+            src={imagePath}
+            alt="Currency token logo"
+            className="rounded-full"
+          />
+          <div className="opacity-0 transition-opacity absolute right-0 bottom-0 translate-x-[50%] z-10 translate-y-[115%] group-hover:opacity-100 pt-1  whitespace-nowrap">
+            <div className="py-1 px-2 text-sm bg-slate-50 rounded-lg">
+              <span className="text-gray-500">Currency: </span>
+              <span className="font-semibold">{token}</span>
+            </div>
+          </div>
+        </div>
+
         {/* todo: add when court is available */}
         {/* <Image width={20} height={20} src="/icons/court.svg" alt="court" /> */}
-        <Image
-          width={20}
-          height={20}
-          src="/icons/verified-icon.svg"
-          alt="verified checkmark"
-        />
+
+        <div className="relative group">
+          <Image
+            width={20}
+            height={20}
+            src="/icons/verified-icon.svg"
+            alt="verified checkmark"
+          />
+          <div className="opacity-0 transition-opacity absolute right-0 bottom-0 translate-x-[50%] z-10 translate-y-[115%] group-hover:opacity-100 pt-1 whitespace-nowrap">
+            <div className="py-1 px-2 text-sm bg-green-lighter rounded-lg">
+              Verified Market
+            </div>
+          </div>
+        </div>
+
+        {promotionData && (
+          <MarketPromotionCallout market={market} promotion={promotionData} />
+        )}
       </div>
       <div className="flex w-full">
         {marketStage ? (

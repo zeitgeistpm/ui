@@ -1,4 +1,9 @@
-import { CategoricalAssetId, ScalarAssetId } from "@zeitgeistpm/sdk-next";
+import {
+  AssetId,
+  CategoricalAssetId,
+  MarketOutcomeAssetId,
+  ScalarAssetId,
+} from "@zeitgeistpm/sdk-next";
 import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
@@ -9,6 +14,7 @@ import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 import dynamic from "next/dynamic";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { useTradeItem } from "lib/hooks/trade";
 
 const columns: TableColumn[] = [
   { header: "Outcome", accessor: "outcome", type: "text" },
@@ -25,12 +31,6 @@ const columns: TableColumn[] = [
     type: "change",
     width: "120px",
     collapseOrder: 2,
-  },
-  {
-    header: "",
-    accessor: "buttons",
-    type: "component",
-    width: "180px",
   },
 ];
 
@@ -79,16 +79,6 @@ const MarketAssetDetails = ({
           ? Math.round((currentPrice / totalAssetPrice.toNumber()) * 100)
           : null,
       change: priceChange,
-      buttons: (
-        <AssetActionButtons
-          marketId={marketId}
-          assetId={
-            parseAssetIdString(market?.pool?.weights[index]?.assetId) as
-              | ScalarAssetId
-              | CategoricalAssetId
-          }
-        />
-      ),
     };
   });
 

@@ -1,4 +1,6 @@
 import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
+import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 
 export type Primitive = null | number | string | boolean;
 export type JSONObject =
@@ -33,8 +35,23 @@ export const isScalarRangeType = (
   return ["date", "number"].includes(val);
 };
 
+export type MarketOutcome = MarketCategoricalOutcome | MarketScalarOutcome;
+
 export type MarketCategoricalOutcome = { categorical: number };
 export type MarketScalarOutcome = { scalar: string };
+
+export const displayOutcome = (
+  market: FullMarketFragment,
+  outcome:
+    | MarketCategoricalOutcome
+    | (MarketScalarOutcome & { type: ScalarRangeType }),
+) => {
+  if (isMarketScalarOutcome(outcome)) {
+    return formatScalarOutcome(outcome.scalar, outcome.type);
+  } else {
+    return market.categories?.[outcome.categorical].name;
+  }
+};
 
 export const isMarketCategoricalOutcome = (
   val: any,
