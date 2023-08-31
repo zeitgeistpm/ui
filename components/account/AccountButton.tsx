@@ -202,12 +202,7 @@ const AccountButton: FC<{
                             open ? "border-sunglow-2" : "border-white"
                           }`}
                         >
-                          <div
-                            className={`ring-2 rounded-full`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                            }}
-                          >
+                          <div className={`ring-2 rounded-full`}>
                             {activeAccount?.address && (
                               <Avatar
                                 zoomed
