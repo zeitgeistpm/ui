@@ -49,7 +49,7 @@ const RangeInput = React.forwardRef(
             }
           }}
           onChange={change}
-          className={`w-full !px-0`}
+          className={`w-full !px-0 !py-0`}
         />
         <div className="w-full justify-between">
           <div

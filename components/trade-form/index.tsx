@@ -1,17 +1,21 @@
 import { Tab } from "@headlessui/react";
 import { ISubmittableResult } from "@polkadot/types/types";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   AssetId,
   IOForeignAssetId,
   IOMarketOutcomeAssetId,
   IOZtgAssetId,
+  MarketOutcomeAssetId,
   ZTG,
-  isRpcSdk,
+  getMarketIdOf,
 } from "@zeitgeistpm/sdk-next";
+import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import TradeResult from "components/markets/TradeResult";
+import Input from "components/ui/Input";
 import Decimal from "decimal.js";
+import { positionsRootKey } from "lib/hooks/queries/useAccountTokenPositions";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
 import {
   TradeItem,
@@ -21,31 +25,21 @@ import {
   useTradeTransaction,
 } from "lib/hooks/trade";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
-import { useNotifications } from "lib/state/notifications";
+import { useDelayQueue } from "lib/state/delay-queue";
 import { useWallet } from "lib/state/wallet";
 import { TradeType } from "lib/types";
+import { awaitIndexer } from "lib/util/await-indexer";
+import { formatNumberCompact } from "lib/util/format-compact";
 import { capitalize } from "lodash";
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import RangeInput from "../ui/RangeInput";
 import TransactionButton from "../ui/TransactionButton";
 import TradeTab, { TradeTabType } from "./TradeTab";
-import { useQueryClient } from "@tanstack/react-query";
-import { positionsRootKey } from "lib/hooks/queries/useAccountTokenPositions";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { awaitIndexer } from "lib/util/await-indexer";
-import Input from "components/ui/Input";
-import { useDelayQueue } from "lib/state/delay-queue";
-import { formatNumberCompact } from "lib/util/format-compact";
-import InfoPopover from "components/ui/InfoPopover";
-import TruncatedText from "components/ui/TruncatedText";
+import { useMarket } from "lib/hooks/queries/useMarket";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -76,12 +70,24 @@ const getTradeValuesFromExtrinsicResult = (
   };
 };
 
-const TradeForm = () => {
+const TradeForm = ({
+  outcomeAssets,
+}: {
+  outcomeAssets?: MarketOutcomeAssetId[];
+}) => {
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
 
-  if (!tradeItem) return <div></div>;
+  if (!tradeItem) {
+    return <div></div>;
+  }
 
-  return <Inner tradeItem={tradeItem} setTradeItem={setTradeItem} />;
+  return (
+    <Inner
+      outcomeAssets={outcomeAssets}
+      tradeItem={tradeItem}
+      setTradeItem={setTradeItem}
+    />
+  );
 };
 
 export default TradeForm;
@@ -89,11 +95,12 @@ export default TradeForm;
 const Inner = ({
   tradeItem,
   setTradeItem,
+  outcomeAssets,
 }: {
   tradeItem: TradeItem;
   setTradeItem: (trade: TradeItem) => void;
+  outcomeAssets?: MarketOutcomeAssetId[];
 }) => {
-  const notifications = useNotifications();
   const queryClient = useQueryClient();
   const [sdk, id] = useSdkv2();
 
@@ -110,6 +117,12 @@ const Inner = ({
   const { addItem } = useDelayQueue();
 
   const { data: tradeItemState } = useTradeItemState(tradeItem);
+
+  const { data: market } = useMarket({
+    marketId: getMarketIdOf(tradeItem.assetId),
+  });
+
+  const { data: constants } = useChainConstants();
 
   const {
     poolBaseBalance,
@@ -204,20 +217,24 @@ const Inner = ({
     isSuccess,
     isLoading,
     fee,
+    isBroadcasting,
+    resetState: resetTransactionState,
   } = useExtrinsic(() => transaction, {
+    onBroadcast: () => {},
     onSuccess: (data) => {
       const { baseAmount, assetAmount } = getTradeValuesFromExtrinsicResult(
         type,
         data,
       );
-      notifications.pushNotification(
-        `Successfully ${
-          tradeItem.action === "buy" ? "bought" : "sold"
-        } ${assetAmount} ${
-          tradeItemState?.asset?.name
-        } for ${baseAmount} ${baseSymbol}`,
-        { type: "Success", lifetime: 60 },
-      );
+
+      // notifications.pushNotification(
+      //   `Successfully ${
+      //     tradeItem.action === "buy" ? "bought" : "sold"
+      //   } ${assetAmount} ${
+      //     tradeItemState?.asset?.name
+      //   } for ${baseAmount} ${baseSymbol}`,
+      //   { type: "Success", lifetime: 60 },
+      // );
 
       setFinalAmounts({ asset: assetAmount, base: baseAmount });
       setPercentageDisplay("0");
@@ -468,7 +485,7 @@ const Inner = ({
   }, [maxBaseAmount.toString(), maxAssetAmount.toString()]);
 
   return (
-    <>
+    <div>
       {isSuccess === true && tradeItemState ? (
         <TradeResult
           type={tradeItem.action}
@@ -478,53 +495,60 @@ const Inner = ({
           baseToken={baseSymbol}
           marketId={tradeItemState?.market.marketId}
           marketQuestion={tradeItemState?.market.question ?? undefined}
+          onContinueClick={() => {
+            setPercentageDisplay("0");
+            reset();
+            resetTransactionState();
+          }}
         />
       ) : (
         <form
-          className="bg-white rounded-[10px]"
+          className="relative bg-white rounded-[10px]"
           onSubmit={(e) => {
             e.preventDefault();
             swapTx();
           }}
         >
-          <Tab.Group
-            defaultIndex={tabIndex}
-            onChange={(index: TradeTabType) => {
-              setTabIndex(index);
-              if (index === TradeTabType.Buy) {
-                setTradeItem({
-                  ...tradeItem,
-                  action: "buy",
-                });
-              }
-              if (index === TradeTabType.Sell) {
-                setTradeItem({
-                  ...tradeItem,
-                  action: "sell",
-                });
-              }
-              reset();
-              setPercentageDisplay("0");
-            }}
-            selectedIndex={tabIndex}
-          >
-            <Tab.List className="flex justify-between h-[60px] sm:h-[71px] text-center rounded-[10px]">
-              <Tab
-                as={TradeTab}
-                selected={type === "buy"}
-                className="rounded-tl-[10px]"
-              >
-                Buy
-              </Tab>
-              <Tab
-                as={TradeTab}
-                selected={type === "sell"}
-                className="rounded-tr-[10px]"
-              >
-                Sell
-              </Tab>
-            </Tab.List>
-          </Tab.Group>
+          <div className="hidden md:block">
+            <Tab.Group
+              defaultIndex={tabIndex}
+              onChange={(index: TradeTabType) => {
+                setTabIndex(index);
+                if (index === TradeTabType.Buy) {
+                  setTradeItem({
+                    ...tradeItem,
+                    action: "buy",
+                  });
+                }
+                if (index === TradeTabType.Sell) {
+                  setTradeItem({
+                    ...tradeItem,
+                    action: "sell",
+                  });
+                }
+                reset();
+                setPercentageDisplay("0");
+              }}
+              selectedIndex={tabIndex}
+            >
+              <Tab.List className="flex justify-between h-[60px] sm:h-[71px] text-center rounded-[10px]">
+                <Tab
+                  as={TradeTab}
+                  selected={type === "buy"}
+                  className="rounded-tl-[10px]"
+                >
+                  Buy
+                </Tab>
+                <Tab
+                  as={TradeTab}
+                  selected={type === "sell"}
+                  className="rounded-tr-[10px]"
+                >
+                  Sell
+                </Tab>
+              </Tab.List>
+            </Tab.Group>
+          </div>
           <div className="flex flex-col p-[20px] sm:p-[30px]">
             <div className="center relative">
               <Input
@@ -541,20 +565,27 @@ const Inner = ({
                   }
                 }}
                 step="any"
-                className="w-full bg-transparent text-center text-[35px] sm:text-[58px]"
+                className="w-full bg-transparent text-center text-6xl sm:text-4xl lg:text-5xl"
                 autoFocus
               />
             </div>
-            <div className="center sm:h-[48px] font-semibold capitalize text-[20px] sm:text-[28px]">
-              <TruncatedText
-                length={24}
-                text={tradeItemState?.asset?.name ?? ""}
-              >
-                {(text) => <>{text}</>}
-              </TruncatedText>
+            <div className="center font-semibold mb-4">
+              {market && tradeItemState?.assetId && (
+                <MarketContextActionOutcomeSelector
+                  market={market}
+                  selected={tradeItemState?.assetId}
+                  options={outcomeAssets}
+                  onChange={(assetId) => {
+                    reset();
+                    setTradeItem({
+                      action: tradeItem.action,
+                      assetId,
+                    });
+                  }}
+                />
+              )}
             </div>
-            <div className="font-semibold text-center mb-[20px]">For</div>
-            <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative">
+            <div className="h-[56px] bg-anti-flash-white center text-ztg-18-150 mb-[20px] relative rounded-lg">
               <Input
                 type="number"
                 {...register("baseAmount", {
@@ -571,7 +602,7 @@ const Inner = ({
                 step="any"
                 className="w-full bg-transparent text-center"
               />
-              <div className="mr-[10px] absolute right-0">{baseSymbol}</div>
+              <div className="mr-[10px] absolute right-2">{baseSymbol}</div>
             </div>
             <RangeInput
               min="0"
@@ -609,24 +640,29 @@ const Inner = ({
               </div>
             </div>
 
-            <TransactionButton
-              disabled={!formState.isValid || isLoading === true}
-              className="h-[56px]"
-              type="submit"
-              extrinsic={transaction}
-            >
-              <div className="center font-normal h-[20px]">
-                Confirm {`${capitalize(tradeItem?.action)}`}
-              </div>
-              <div className="center font-normal text-ztg-12-120 h-[20px]">
-                Transaction fee:{" "}
-                {formatNumberCompact(fee?.amount.div(ZTG).toNumber() ?? 0)}{" "}
-                {fee?.symbol}
-              </div>
-            </TransactionButton>
+            <div className="relative">
+              <TransactionButton
+                disabled={!formState.isValid || isLoading === true}
+                className={`relative h-[56px] ${isLoading && "animate-pulse"}`}
+                type="submit"
+                extrinsic={transaction}
+                loading={isBroadcasting}
+              >
+                <div>
+                  <div className="center font-normal h-[20px]">
+                    Confirm {`${capitalize(tradeItem?.action)}`}
+                  </div>
+                  <div className="center font-normal text-ztg-12-120 h-[20px]">
+                    Transaction fee:{" "}
+                    {formatNumberCompact(fee?.amount.div(ZTG).toNumber() ?? 0)}{" "}
+                    {fee?.symbol}
+                  </div>
+                </div>
+              </TransactionButton>
+            </div>
           </div>
         </form>
       )}
-    </>
+    </div>
   );
 };

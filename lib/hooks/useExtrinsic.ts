@@ -14,6 +14,7 @@ export const useExtrinsic = <T>(
   ) => SubmittableExtrinsic<"promise", ISubmittableResult> | undefined,
   callbacks?: {
     onSuccess?: (data: ISubmittableResult) => void;
+    onBroadcast?: () => void;
     onError?: () => void;
   },
 ) => {
@@ -32,6 +33,12 @@ export const useExtrinsic = <T>(
   }, [extrinsicFn]);
 
   const { data: fee } = useExtrinsicFee(extrinsic);
+  const resetState = () => {
+    setIsError(false);
+    setIsSuccess(false);
+    setIsLoading(false);
+    setIsBroadcasting(false);
+  };
 
   const send = (params?: T) => {
     if (!isRpcSdk(sdk)) {
@@ -61,9 +68,11 @@ export const useExtrinsic = <T>(
         notifications,
         broadcastCallback: () => {
           setIsBroadcasting(true);
-          notifications?.pushNotification("Broadcasting transaction...", {
-            autoRemove: true,
-          });
+          callbacks?.onBroadcast
+            ? callbacks.onBroadcast()
+            : notifications?.pushNotification("Broadcasting transaction...", {
+                autoRemove: true,
+              });
         },
         successCallback: (data) => {
           setIsLoading(false);
@@ -88,5 +97,13 @@ export const useExtrinsic = <T>(
     });
   };
 
-  return { send, isError, isSuccess, isLoading, isBroadcasting, fee };
+  return {
+    send,
+    isError,
+    isSuccess,
+    isLoading,
+    isBroadcasting,
+    fee,
+    resetState,
+  };
 };

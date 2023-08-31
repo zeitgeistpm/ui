@@ -1,12 +1,17 @@
+import { Listbox } from "@headlessui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  CategoricalAssetId,
   getIndexOf,
   IndexerContext,
   isRpcSdk,
   Market,
   MarketOutcomeAssetId,
+  parseAssetId,
 } from "@zeitgeistpm/sdk-next";
+import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import TransactionButton from "components/ui/TransactionButton";
+import TruncatedText from "components/ui/TruncatedText";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import {
@@ -16,6 +21,10 @@ import {
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
+import { MarketCategoricalOutcome } from "lib/types";
+import { calcMarketColors } from "lib/util/color-calc";
+import { useState } from "react";
+import { RiArrowDownSLine } from "react-icons/ri";
 
 const CategoricalDisputeBox = ({
   market,
@@ -23,8 +32,8 @@ const CategoricalDisputeBox = ({
   onSuccess,
 }: {
   market: Market<IndexerContext>;
-  assetId: MarketOutcomeAssetId;
-  onSuccess?: () => void;
+  assetId?: MarketOutcomeAssetId;
+  onSuccess?: (outcome: MarketCategoricalOutcome) => void;
 }) => {
   const [sdk, id] = useSdkv2();
   const { data: disputes } = useMarketDisputes(market);
@@ -33,39 +42,63 @@ const CategoricalDisputeBox = ({
   const { data: constants, isLoading: isConstantsLoading } =
     useChainConstants();
 
+  const outcomeAssets = market.outcomeAssets
+    .map(
+      (assetIdString) =>
+        parseAssetId(assetIdString).unwrap() as CategoricalAssetId,
+    )
+    .filter(
+      (asset) => market.report?.outcome.categorical !== getIndexOf(asset),
+    );
+
+  const [selectedAssetId, setSelectedAssetId] = useState<MarketOutcomeAssetId>(
+    assetId ?? outcomeAssets[0],
+  );
+
+  const assetName = market.categories?.[getIndexOf(selectedAssetId)]?.name;
   const disputeBond = constants?.markets.disputeBond;
   const disputeFactor = constants?.markets.disputeFactor;
   const tokenSymbol = constants?.tokenSymbol;
 
   const lastDispute = disputes?.[disputes.length - 1];
-  const assetName = market.categories?.[getIndexOf(assetId)]?.name;
+
   const bondAmount =
     disputes && isConstantsLoading === false
       ? disputeBond! + disputes.length * disputeFactor!
       : disputeBond;
 
-  const { send: dispute, isLoading } = useExtrinsic(
+  const {
+    send: dispute,
+    isLoading,
+    isBroadcasting,
+  } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk)) {
+      if (isRpcSdk(sdk) && selectedAssetId) {
         return sdk.api.tx.predictionMarkets.dispute(market.marketId, {
-          Categorical: getIndexOf(assetId),
+          Categorical: getIndexOf(selectedAssetId),
         });
       }
     },
     {
+      onBroadcast: () => {},
       onSuccess: () => {
         queryClient.invalidateQueries([
           id,
           marketDisputesRootKey,
           market.marketId,
         ]);
-        notificationStore.pushNotification(
-          `Successfully disputed. New report: ${assetName}`,
-          {
-            type: "Success",
-          },
-        );
-        onSuccess?.();
+        if (onSuccess) {
+          onSuccess({
+            categorical: getIndexOf(selectedAssetId),
+          });
+        } else {
+          notificationStore.pushNotification(
+            `Successfully disputed. New report: ${assetName}`,
+            {
+              type: "Success",
+            },
+          );
+        }
       },
     },
   );
@@ -98,7 +131,19 @@ const CategoricalDisputeBox = ({
       </div>
       <div className="flex flex-col item-center text-center">
         <span className="text-sky-600 text-[14px]">New Report:</span>
-        <span className="">{assetName}</span>
+
+        <div className="mb-4">
+          {market && selectedAssetId && (
+            <MarketContextActionOutcomeSelector
+              market={market}
+              selected={selectedAssetId}
+              options={outcomeAssets}
+              onChange={(assetId) => {
+                setSelectedAssetId(assetId as CategoricalAssetId);
+              }}
+            />
+          )}
+        </div>
       </div>
       {bondAmount !== disputeBond &&
       bondAmount !== undefined &&
@@ -114,6 +159,7 @@ const CategoricalDisputeBox = ({
         className="mb-ztg-10 mt-[20px]"
         onClick={() => dispute()}
         disabled={isLoading}
+        loading={isBroadcasting}
       >
         Confirm Dispute
       </TransactionButton>

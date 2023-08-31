@@ -76,7 +76,7 @@ const MyApp = ({ Component, pageProps }) => {
               <Component {...pageProps} />
             </Layout>
           </DefaultLayout>
-          <Devtools />
+          {/* <Devtools /> */}
         </AvatarContext.Provider>
       </Hydrate>
     </QueryClientProvider>
