@@ -214,11 +214,6 @@ h6 {
   @apply px-9 mx-auto max-w-screen-3xl;
 }
 
-.scrollbar-hide::-webkit-scrollbar {
-  width: 0px;
-  background-color: transparent;
-}
-
 .carousel__slide--visible {
   overflow: hidden;
 }
