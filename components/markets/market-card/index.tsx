@@ -42,6 +42,7 @@ export interface IndexedMarketCardData {
 }
 export interface MarketCardProps extends IndexedMarketCardData {
   className?: string;
+  disableLink?: boolean;
 }
 
 const MarketCardPredictionBar = ({
@@ -189,6 +190,7 @@ export const MarketCard = ({
   liquidity,
   numParticipants,
   tags,
+  disableLink,
 }: MarketCardProps) => {
   const isYesNoMarket =
     outcomes.length === 2 &&
@@ -228,7 +230,15 @@ export const MarketCard = ({
       >
         <Link
           href={`/markets/${marketId}`}
-          className="flex flex-col flex-1 gap-4"
+          onClick={(e) => {
+            if (disableLink) {
+              e.preventDefault();
+              return;
+            }
+          }}
+          className={`flex flex-col flex-1 gap-4 ${
+            disableLink && "cursor-default"
+          }`}
         >
           <div className="w-full h-full flex whitespace-normal gap-4">
             <h5 className="w-full h-fit line-clamp-2 text-base">{question}</h5>

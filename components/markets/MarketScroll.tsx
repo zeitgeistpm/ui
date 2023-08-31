@@ -94,10 +94,12 @@ const MarketScroll = ({
               numParticipants: stat?.participants,
               liquidity: stat?.liquidity,
             };
+
             return (
               <MarketCard
                 key={market.marketId}
                 {...market}
+                disableLink={!isShown}
                 className={`market-card rounded-ztg-10 transition duration-500 ease-in-out ${
                   isShown ? "opacity-1" : "opacity-0"
                 }`}
