@@ -22,6 +22,7 @@ import Avatar from "./Avatar";
 export type AddressOption = {
   label?: string;
   value: string;
+  name?: string;
 };
 
 const Control = ({ children, ...rest }: ControlProps<AddressOption, false>) => {
@@ -111,13 +112,16 @@ const SingleValue = ({
           <Avatar address={address} size={36} />
         </div>
       )}
-      {children}
+      <div className="flex flex-col">
+        <div className="text-xs">{rest.data.name}</div>
+        {children}
+      </div>
     </components.SingleValue>
   );
 };
 
 const Option = ({ children, ...rest }: OptionProps<AddressOption, false>) => {
-  const { value: address, label } = rest.data;
+  const { value: address, label, name } = rest.data;
   return (
     <components.Option
       {...rest}
@@ -128,7 +132,10 @@ const Option = ({ children, ...rest }: OptionProps<AddressOption, false>) => {
           <Avatar address={address} size={36} />
         </div>
       )}
-      <div>{label}</div>
+      <div className="flex flex-col">
+        <div className="text-xs">{name}</div>
+        <div>{label}</div>
+      </div>
     </components.Option>
   );
 };
@@ -163,6 +170,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
       .map((account) => ({
         label: shortenAddress(account.address, 13, 13),
         value: account.address,
+        name: account.name,
       }));
   }, [options, wallet.accounts]);
 
