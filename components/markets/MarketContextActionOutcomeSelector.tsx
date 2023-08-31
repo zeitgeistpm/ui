@@ -6,7 +6,7 @@ import TruncatedText from "components/ui/TruncatedText";
 import Fuse from "fuse.js";
 import { calcMarketColors } from "lib/util/color-calc";
 import { omit } from "lodash-es";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BsArrowLeft } from "react-icons/bs";
 import { RiArrowDownSLine } from "react-icons/ri";
 
@@ -17,6 +17,8 @@ export type MarketContextActionOutcomeSelectorProps = {
   onChange: (selected: MarketOutcomeAssetId) => void;
 };
 
+const SEARCH_ITEMS_THRESHOLD = 5;
+
 export const MarketContextActionOutcomeSelector = ({
   market,
   selected,
@@ -25,6 +27,7 @@ export const MarketContextActionOutcomeSelector = ({
 }: MarketContextActionOutcomeSelectorProps) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState<string | undefined>();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const searchResults = useMemo(() => {
     if (!search) return null;
@@ -54,6 +57,14 @@ export const MarketContextActionOutcomeSelector = ({
       setSearch(undefined);
     }
   }, [open, search]);
+
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 66);
+    }
+  }, [open, inputRef]);
 
   return (
     <>
@@ -94,11 +105,11 @@ export const MarketContextActionOutcomeSelector = ({
                 <BsArrowLeft />
                 Select Outcome Asset
               </div>
-              {Number(options?.length) > 5 && (
+              {Number(options?.length) > SEARCH_ITEMS_THRESHOLD && (
                 <div className="px-5 mb-3">
                   <Input
                     type="text"
-                    autoFocus
+                    ref={inputRef}
                     placeholder="Search Assets"
                     className="w-full text-base"
                     value={search ?? ""}
