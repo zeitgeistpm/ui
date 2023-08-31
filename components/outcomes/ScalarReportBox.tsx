@@ -65,7 +65,7 @@ const ScalarReportBox = ({
         if (onReport) {
           onReport?.({
             type: market.scalarType as ScalarRangeType,
-            scalar: new Decimal(scalarReportValue).mul(ZTG).toFixed(0),
+            scalar: new Decimal(scalarReportValue).mul(ZTG).toString(),
           });
         } else {
           notificationStore.pushNotification("Outcome Reported", {

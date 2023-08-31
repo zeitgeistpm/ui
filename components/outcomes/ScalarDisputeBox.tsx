@@ -92,7 +92,7 @@ const ScalarDisputeBox = ({
         if (onSuccess) {
           onSuccess?.({
             type: market.scalarType as ScalarRangeType,
-            scalar: scalarReportValue,
+            scalar: new Decimal(scalarReportValue).mul(ZTG).toString(),
           });
         } else {
           notificationStore.pushNotification("Outcome Disputed", {
