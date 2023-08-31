@@ -233,9 +233,9 @@ export const MarketCard = ({
           <div className="w-full h-full flex whitespace-normal gap-4">
             <h5 className="w-full h-fit line-clamp-2 text-base">{question}</h5>
             {/* {disable for now until we can get image from CMS} */}
-            <div className="relative min-w-[84px] min-h-[80px] rounded-xl">
+            {/* <div className="relative min-w-[84px] min-h-[80px] rounded-xl">
               <MarketImage tags={tags} alt={question} className="rounded-lg" />
-            </div>
+            </div> */}
           </div>
 
           <div className="w-full">
