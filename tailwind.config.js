@@ -30,8 +30,8 @@ module.exports = {
   theme: {
     keyframes: {
       "pop-in": {
-        "0%, 100%": { transform: "scale(1)" },
-        "50%": { transform: "scale(1.2)" },
+        "0%": { transform: "scale(0.82)", opacity: "0" },
+        "100%": { transform: "scale(1)", opacity: "1" },
       },
       ...defaultTheme.keyframes,
     },
