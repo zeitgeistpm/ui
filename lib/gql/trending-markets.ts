@@ -203,7 +203,10 @@ type BasePrices = {
   [key: string | "ztg"]: Decimal;
 };
 
-const lookupPrice = (basePrices: BasePrices, baseAsset: BaseAssetId) => {
+const lookupPrice = (
+  basePrices: BasePrices,
+  baseAsset: BaseAssetId,
+): Decimal | undefined => {
   return IOForeignAssetId.is(baseAsset)
     ? basePrices[baseAsset.ForeignAsset]
     : basePrices["ztg"];
@@ -263,7 +266,8 @@ const calcTrendingPools = (
       basePrices,
       parseAssetIdString(base) as BaseAssetId,
     );
-    poolVolumes[poolId] = poolVolumes[poolId].mul(value);
+
+    poolVolumes[poolId] = poolVolumes[poolId].mul(value ?? 0);
   }
 
   const poolIdsByVolumeDesc = Object.keys(poolVolumes).sort((a, b) => {
