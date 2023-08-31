@@ -36,10 +36,9 @@ module.exports = {
       ...defaultTheme.keyframes,
     },
     animation: {
-      "pop-in": "pop-in 0.5s ease-in-out",
+      "pop-in": "pop-in 0.4s cubic-bezier(.38,.39,.2,1.45) forwards",
       ...defaultTheme.animation,
     },
-
     fontFamily: {
       mono: [
         "var(--font-roboto-mono)",
@@ -224,7 +223,7 @@ module.exports = {
         "light-gray": "#F5F5F5",
         efefef: "#EFEFEF",
         //finalised proto colour pallet
-        "ztg-blue": "#0001FE",
+        "ztg-blue": "#2468e2",
         "laser-lemon": "#F7FF58",
         sunglow: "#FFD23F",
         "sunglow-2": "#FAB400",

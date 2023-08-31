@@ -232,7 +232,6 @@ table {
 }
 
 tr {
-  border-bottom: 1px solid #e1cfff;
   background: white;
 }
 
@@ -241,10 +240,6 @@ tr:last-child td:first-child {
 }
 tr:last-child td:last-child {
   border-bottom-right-radius: 10px;
-}
-
-tbody tr:first-child {
-  border-top: 1px solid #e1cfff;
 }
 tr:last-child {
   border-bottom: none;

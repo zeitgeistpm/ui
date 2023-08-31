@@ -21,7 +21,7 @@ interface InputProps {
 }
 
 const inputClasses =
-  "bg-sky-200 dark:bg-black text-ztg-14-150 w-full rounded-ztg-5 h-ztg-40 p-ztg-8  focus:outline-none border-1 dark:border-black text-black dark:text-white";
+  "bg-gray-100 dark:bg-black text-ztg-14-150 w-full rounded-lg h-ztg-40 p-ztg-8  focus:outline-none dark:border-black text-black dark:text-white";
 const invalidClasses = "!border-vermilion !text-vermilion";
 
 export const Input: FC<InputProps & InputHTMLAttributes<HTMLInputElement>> =
@@ -86,7 +86,7 @@ const rdtpInput = (
         readOnly
       />
       <div
-        className="w-ztg-40 h-ztg-40 border-l-1 border-sky-600 bg-sky-200 dark:bg-black flex-shrink-0 rounded-r-ztg-5 center cursor-pointer"
+        className="w-ztg-40 h-ztg-40 border-l-1 bg-gray-100 dark:bg-black flex-shrink-0 rounded-r-ztg-5 center cursor-pointer"
         data-test="calendarIcon"
         onClick={openCalendar}
       >

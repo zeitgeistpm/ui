@@ -11,6 +11,7 @@ import { useAccountModals } from "lib/state/account";
 import { useWallet } from "lib/state/wallet";
 import { FC, PropsWithChildren, useMemo } from "react";
 import Decimal from "decimal.js";
+import { Loader } from "./Loader";
 
 interface TransactionButtonProps {
   preventDefault?: boolean;
@@ -21,6 +22,7 @@ interface TransactionButtonProps {
   type?: "button" | "submit" | "reset";
   extrinsic?: SubmittableExtrinsic<"promise", ISubmittableResult>;
   disableFeeCheck?: boolean;
+  loading?: boolean;
 }
 
 const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
@@ -33,21 +35,22 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   type = "button",
   extrinsic,
   disableFeeCheck = false,
+  loading,
 }) => {
   const wallet = useWallet();
   const [sdk] = useSdkv2();
   const accountModals = useAccountModals();
   const { locationAllowed, isUsingVPN } = useUserLocation();
-  const extrinsicBase =
-    extrinsic ??
-    (wallet.activeAccount?.address
-      ? sdk
-          ?.asRpc()
-          .api.tx.balances.transfer(
-            wallet.activeAccount?.address,
-            ZTG.toFixed(0),
-          )
-      : undefined);
+
+  const extrinsicBase = useMemo(() => {
+    return extrinsic && isRpcSdk(sdk) && wallet.activeAccount?.address
+      ? sdk.api.tx.balances.transfer(
+          wallet.activeAccount?.address,
+          ZTG.toFixed(0),
+        )
+      : undefined;
+  }, [extrinsic, sdk]);
+
   const { data: fee } = useExtrinsicFee(extrinsicBase);
   const { data: balance } = useBalance(wallet.activeAccount?.address, {
     Ztg: null,
@@ -96,6 +99,12 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
       return "VPN Blocked";
     } else if (insufficientFeeBalance) {
       return `Insufficient ${constants?.tokenSymbol}`;
+    } else if (loading) {
+      return (
+        <div className="w-full center bg-inherit rounded-full">
+          <Loader variant={"Dark"} className="z-20 h-6 w-6" loading />
+        </div>
+      );
     } else if (wallet.connected) {
       return children;
     } else {
@@ -105,7 +114,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   return (
     <button
       type={type}
-      className={`ztg-transition text-white focus:outline-none disabled:opacity-20 disabled:cursor-default 
+      className={`ztg-transition text-white focus:outline-none disabled:bg-slate-300 disabled:cursor-default 
         rounded-full w-full h-[56px] ${
           !isDisabled && "active:scale-95"
         } ${className} ${colorClass}`}
