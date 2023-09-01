@@ -17,7 +17,6 @@ import {
   ZeitgeistIpfs,
 } from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
-import TabGroup from "components/ui/TabGroup";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
@@ -51,11 +50,11 @@ import getTrendingMarkets from "lib/gql/trending-markets";
 // "In events": swaps, buy full set
 // "Out events": swaps, sell full set, redeem
 
-const TimePeriodItems = ["week", "month", "year", "all"] as const;
+const TimePeriodItems = ["month", "year", "all"] as const;
 type TimePeriod = typeof TimePeriodItems[number];
 
 const durationLookup: { [key in TimePeriod]: number } = {
-  week: DAY_SECONDS * 1000 * 7,
+  // week: DAY_SECONDS * 1000 * 7,
   month: DAY_SECONDS * 1000 * 30,
   year: DAY_SECONDS * 1000 * 365,
   all: DAY_SECONDS * 1000 * 365 * 100,
@@ -253,6 +252,7 @@ export async function getStaticProps({ params }) {
       await sdk.indexer.historicalAccountBalances({
         where: {
           event_contains: "TokensRedeemed",
+          timestamp_gt: periodStart.toISOString(),
         },
         limit: limit,
         offset: pageNumber * limit,
@@ -268,8 +268,13 @@ export async function getStaticProps({ params }) {
           OR: [
             {
               event_contains: "BoughtComplete",
+              timestamp_gt: periodStart.toISOString(),
             },
-            { event_contains: "Deposited", assetId_not_contains: "pool" },
+            {
+              event_contains: "Deposited",
+              assetId_not_contains: "pool",
+              timestamp_gt: periodStart.toISOString(),
+            },
           ],
         },
         limit: limit,
@@ -284,6 +289,7 @@ export async function getStaticProps({ params }) {
       await sdk.indexer.historicalAccountBalances({
         where: {
           event_contains: "SoldComplete",
+          timestamp_gt: periodStart.toISOString(),
         },
         limit: limit,
         offset: pageNumber * limit,
