@@ -94,10 +94,9 @@ export const getForeignAssetPriceServerSide = async (
   const res = await fetch(
     `${process?.env?.NEXT_PUBLIC_SITE_URL}/api/usd-price?asset=${coinGeckoId}`,
   );
-
   const json = await res.json();
 
-  return new Decimal(json[coinGeckoId].usd);
+  return new Decimal(json.body.price);
 };
 export const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
   const coinGeckoId =
