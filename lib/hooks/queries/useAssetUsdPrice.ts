@@ -85,6 +85,7 @@ export const useAllForeignAssetUsdPrices = (): {
   };
 };
 
+//try: https://api.coingecko.com/api/v3/simple/price?ids=zeitgeist%2Cpolkadot&vs_currencies=usd
 export const getForeignAssetPriceServerSide = async (
   foreignAsset: ForeignAssetId,
 ) => {
@@ -94,7 +95,7 @@ export const getForeignAssetPriceServerSide = async (
 
   const res = await fetch(
     `${
-      baseUrl?.includes("http") ? "" : "https"
+      baseUrl?.includes("http") ? "" : "https://"
     }${baseUrl}/api/usd-price?asset=${coinGeckoId}`,
   );
   const json = await res.json();
