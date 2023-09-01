@@ -3,9 +3,10 @@ import { BREAKPOINTS } from "lib/constants/breakpoints";
 import { useWindowSize } from "lib/hooks/events/useWindowSize";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
 import { range } from "lodash-es";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import MarketCard, { IndexedMarketCardData } from "./market-card/index";
+import { useDebouncedCallback } from "use-debounce";
 
 const MarketScroll = ({
   title,
@@ -28,6 +29,7 @@ const MarketScroll = ({
   const { data: marketsStats } = useMarketsStats(
     markets.map((m) => m.marketId),
   );
+
   const gap = 28;
 
   //calculate cards shown and width based on container width
@@ -57,6 +59,21 @@ const MarketScroll = ({
   const rightDisabled =
     hasReachedEnd || cardWidth * markets.length < containerWidth;
 
+  const [isResizing, setIsResizing] = useState(false);
+
+  useEffect(() => {
+    setIsResizing(true);
+  }, [width]);
+
+  useEffect(
+    useDebouncedCallback(() => {
+      setIsResizing(false);
+    }, 120),
+    [width],
+  );
+
+  console.log(isResizing);
+
   return (
     <div
       ref={containerRef}
@@ -76,9 +93,15 @@ const MarketScroll = ({
         <div
           ref={scrollRef}
           style={{
-            transform: `translateX(${-(pageIndex * (cardWidth + gap))}px)`,
+            transform: `translateX(${
+              windowWidth < BREAKPOINTS.sm
+                ? 0
+                : -(pageIndex * (cardWidth + gap))
+            }px)`,
           }}
-          className="flex transition-transform ztg-transition flex-col gap-7 sm:flex-row no-scroll-bar  whitespace-nowrap scroll-smooth"
+          className={`flex ${
+            !isResizing && "transition-transform ztg-transition"
+          } flex-col gap-7 sm:flex-row no-scroll-bar  whitespace-nowrap scroll-smooth`}
         >
           {markets.map((market, cardIndex) => {
             const stat = marketsStats?.find(
