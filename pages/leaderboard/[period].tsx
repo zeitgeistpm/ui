@@ -22,7 +22,12 @@ import Table, { TableColumn, TableData } from "components/ui/Table";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import Decimal from "decimal.js";
-import { endpointOptions, graphQlEndpoint, ZTG } from "lib/constants";
+import {
+  DAY_SECONDS,
+  endpointOptions,
+  graphQlEndpoint,
+  ZTG,
+} from "lib/constants";
 import { getDisplayName } from "lib/gql/display-name";
 import {
   getBaseAssetHistoricalPrices,
@@ -45,6 +50,16 @@ import getTrendingMarkets from "lib/gql/trending-markets";
 // Approach: aggregate base asset movements in and out of a market
 // "In events": swaps, buy full set
 // "Out events": swaps, sell full set, redeem
+
+const TimePeriodItems = ["week", "month", "year", "all"] as const;
+type TimePeriod = typeof TimePeriodItems[number];
+
+const durationLookup: { [key in TimePeriod]: number } = {
+  week: DAY_SECONDS * 1000 * 7,
+  month: DAY_SECONDS * 1000 * 30,
+  year: DAY_SECONDS * 1000 * 365,
+  all: DAY_SECONDS * 1000 * 365 * 100,
+};
 
 type Trade = {
   marketId: number;
@@ -143,7 +158,22 @@ const convertEventToTrade = (
   }
 };
 
-export async function getStaticProps() {
+export async function getStaticPaths() {
+  const paths = TimePeriodItems.map((timePeriod) => ({
+    params: { period: timePeriod },
+  }));
+  return { paths, fallback: "blocking" };
+}
+
+export async function getStaticProps({ params }) {
+  console.log(params);
+  const period: TimePeriod = params.period;
+  console.log(period);
+
+  const periodEnd = new Date();
+  const periodDuration = durationLookup[period];
+  const periodStart = new Date(periodEnd.getTime() - periodDuration);
+
   const [sdk, avatarSdk] = await Promise.all([
     create({
       provider: endpointOptions.map((e) => e.value),
@@ -155,6 +185,7 @@ export async function getStaticProps() {
 
   const basePrices = await getBaseAssetHistoricalPrices();
 
+  //markets that are running during the given period
   const markets = await fetchAllPages(async (pageNumber, limit) => {
     const { markets } = await sdk.indexer.markets({
       limit: limit,
@@ -169,9 +200,13 @@ export async function getStaticProps() {
       limit: limit,
       offset: pageNumber * limit,
       order: HistoricalSwapOrderByInput.IdAsc,
+      where: {
+        timestamp_gt: periodStart.toISOString(),
+      },
     });
     return historicalSwaps;
   });
+  console.log(historicalSwaps.length);
 
   const tradersWithSwaps = historicalSwaps.reduce<Traders>((traders, swap) => {
     const trades = traders[swap.accountId];
@@ -216,7 +251,9 @@ export async function getStaticProps() {
   const redeemEvents = await fetchAllPages(async (pageNumber, limit) => {
     const { historicalAccountBalances } =
       await sdk.indexer.historicalAccountBalances({
-        where: { event_contains: "TokensRedeemed" },
+        where: {
+          event_contains: "TokensRedeemed",
+        },
         limit: limit,
         offset: pageNumber * limit,
         order: HistoricalAccountBalanceOrderByInput.IdAsc,
@@ -440,13 +477,11 @@ export async function getStaticProps() {
         name: names[index],
       })),
       trendingMarkets,
+      timePeriod: period,
     },
     revalidate: 10 * 60, //10min
   };
 }
-
-const TimePeriodItems = ["Day", "Week", "Month", "All"] as const;
-type TimePeriod = typeof TimePeriodItems[number];
 
 const columns: TableColumn[] = [
   {
@@ -498,11 +533,8 @@ const UserCell = ({ address, name }: { address: string; name?: string }) => {
 const Leaderboard: NextPage<{
   rankings: Rank[];
   trendingMarkets: IndexedMarketCardData[];
-}> = ({ rankings, trendingMarkets }) => {
-  const [timePeriod, setTimePeriod] = React.useState<TimePeriod | undefined>(
-    "All",
-  );
-
+  timePeriod: TimePeriod;
+}> = ({ rankings, trendingMarkets, timePeriod }) => {
   const tableData = useMemo<TableData[]>(() => {
     let res: TableData[] = [];
     for (const [index, rankObj] of rankings.entries()) {
@@ -533,15 +565,16 @@ const Leaderboard: NextPage<{
       <h2 className="font-bold mt-9 mb-2 w-full text-center">
         Leaderboard (Top 20)
       </h2>
-      <div className="border-b-1 border-misty-harbor mb-9">
-        <TabGroup
-          items={TimePeriodItems}
-          onChange={setTimePeriod}
-          selected={timePeriod}
-          selectedItemClassName="!text-black font-bold"
-          itemClassName="h-full outline-none flex items-center text-sky-600 font-medium"
-          className="h-14 w-auto sm:w-[340px] mx-auto sm:mx-0 "
-        />
+      <div className="border-b-1 border-misty-harbor mb-9 flex gap-7">
+        {TimePeriodItems.map((period) => (
+          <Link
+            key={period}
+            href={`/leaderboard/${period}`}
+            className={`capitalize ${period === timePeriod ? "font-bold" : ""}`}
+          >
+            {period}
+          </Link>
+        ))}
       </div>
       <Table columns={columns} data={tableData} />
       {trendingMarkets.length > 0 && (
