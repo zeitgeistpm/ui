@@ -473,7 +473,8 @@ export async function getStaticProps({ params }) {
 
   const client = new GraphQLClient(graphQlEndpoint);
 
-  const trendingMarkets = await getTrendingMarkets(client, sdk);
+  // const trendingMarkets = await getTrendingMarkets(client, sdk);
+  const trendingMarkets = [];
 
   return {
     props: {
@@ -518,7 +519,7 @@ const UserCell = ({ address, name }: { address: string; name?: string }) => {
   return (
     <div className="flex items-center">
       <div className="hidden sm:block">
-        <Avatar size={50} address={address} />
+        <Avatar size={40} address={address} />
       </div>
       <Link
         className="ml-2 md:w-[300px] lg:w-auto"
@@ -565,18 +566,21 @@ const Leaderboard: NextPage<{
           src="/Leaderboard-banner.png"
           alt="Leaderboard-banner"
           fill
+          priority
           style={{ objectFit: "cover", objectPosition: "top" }}
         />
       </div>
-      <h2 className="font-bold mt-9 mb-2 w-full text-center">
+      <h2 className="font-bold my-8 w-full text-[24px]">
         Leaderboard (Top 20)
       </h2>
-      <div className="border-b-1 border-misty-harbor mb-9 flex gap-7">
+      <div className="border-b-1 border-misty-harbor mb-8 flex gap-7 text-sky-600 text-[18px]">
         {TimePeriodItems.map((period) => (
           <Link
             key={period}
             href={`/leaderboard/${period}`}
-            className={`capitalize ${period === timePeriod ? "font-bold" : ""}`}
+            className={`capitalize pb-4 ${
+              period === timePeriod ? "font-semibold text-black" : ""
+            }`}
           >
             {period}
           </Link>
