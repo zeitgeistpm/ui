@@ -92,7 +92,7 @@ export const getForeignAssetPriceServerSide = async (
     FOREIGN_ASSET_METADATA[foreignAsset.ForeignAsset].coinGeckoId;
 
   const res = await fetch(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${coinGeckoId}&vs_currencies=usd`,
+    `${process?.env?.NEXT_PUBLIC_SITE_URL}/api/usd-price?asset=${coinGeckoId}`,
   );
 
   const json = await res.json();

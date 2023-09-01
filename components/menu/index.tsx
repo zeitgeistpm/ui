@@ -149,7 +149,7 @@ const TopBar = () => {
 
           <Link
             className="text-white font-light relative hidden md:flex md:center gap-2"
-            href="/leaderboard"
+            href="/leaderboard/all"
           >
             <div className="relative h-6 w-6">
               <FiAward size={"100%"} />

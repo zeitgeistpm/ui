@@ -471,10 +471,7 @@ export async function getStaticProps({ params }) {
     ),
   );
 
-  const client = new GraphQLClient(graphQlEndpoint);
-
-  // const trendingMarkets = await getTrendingMarkets(client, sdk);
-  const trendingMarkets = [];
+  const trendingMarkets = await getTrendingMarkets(sdk.indexer.client, sdk);
 
   return {
     props: {
@@ -593,7 +590,7 @@ const Leaderboard: NextPage<{
             title="Trending Markets"
             cta="Go to Markets"
             markets={trendingMarkets}
-            link="markets"
+            link="/markets"
           />
         </div>
       )}
