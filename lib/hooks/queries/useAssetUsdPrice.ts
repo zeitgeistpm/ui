@@ -92,6 +92,11 @@ export const getForeignAssetPriceServerSide = async (
   const coinGeckoId =
     FOREIGN_ASSET_METADATA[foreignAsset.ForeignAsset].coinGeckoId;
   const baseUrl = process?.env?.NEXT_PUBLIC_SITE_URL;
+  console.log(
+    `${
+      baseUrl?.includes("http") ? "" : "https://"
+    }${baseUrl}/api/usd-price?asset=${coinGeckoId}`,
+  );
 
   const res = await fetch(
     `${
@@ -99,6 +104,7 @@ export const getForeignAssetPriceServerSide = async (
     }${baseUrl}/api/usd-price?asset=${coinGeckoId}`,
   );
   const json = await res.json();
+  console.log(json.body.price);
 
   return new Decimal(json.body.price);
 };
