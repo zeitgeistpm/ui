@@ -29,6 +29,8 @@ import { formatNumberLocalized, isValidPolkadotAddress } from "lib/util";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useNotifications } from "lib/state/notifications";
+import { formatNumberCompact } from "lib/util/format-compact";
+import { assetsAreEqual } from "lib/util/assets-are-equal";
 
 const isSupportedAsset = (id: number) => {
   return Object.keys(FOREIGN_ASSET_METADATA).includes(`${id}`);
@@ -138,20 +140,6 @@ const TransferModal = ({
   const wallet = useWallet();
   const [sdk] = useSdkv2();
 
-  // Dummy extrinsic for fee calculation since real extrinsic depends on form values
-  // Don't use this for anything else but fetching the fee
-  const feeExtrinsic = useMemo(() => {
-    if (!isRpcSdk(sdk)) {
-      return;
-    }
-    return createTransferExtrinsic(
-      sdk.api,
-      { Ztg: null },
-      "1",
-      encodeAddress(new Uint8Array(32)),
-    );
-  }, [sdk]);
-
   const extrinsic = useMemo(() => {
     if (
       !(
@@ -178,27 +166,20 @@ const TransferModal = ({
     isValid,
   ]);
 
-  const { data: feeRaw } = useExtrinsicFee(feeExtrinsic);
-  const fee = feeRaw && new Decimal(feeRaw).div(ZTG);
-
-  let maxAmount = "";
-
-  if (balance) {
-    if (isNativeCurrency) {
-      maxAmount = balance.sub(fee ?? 0).toString();
-    } else {
-      maxAmount = balance.toString();
-    }
-  }
-
-  const { send, isLoading: txIsLoading } = useExtrinsic(
+  const {
+    send,
+    isLoading: txIsLoading,
+    fee: feeRaw,
+  } = useExtrinsic(
     () => {
       return extrinsic;
     },
     {
       onSuccess: () => {
         notifications.pushNotification(
-          `Successfully transfered ${asset.amount} ${asset.assetOption?.label} to ${targetAddress?.label}`,
+          `Successfully transferred ${formatNumberCompact(
+            Number(asset.amount),
+          )} ${asset.assetOption?.label} to ${targetAddress?.label}`,
           {
             type: "Success",
           },
@@ -210,10 +191,21 @@ const TransferModal = ({
       },
     },
   );
+  const fee = feeRaw?.amount.div(ZTG);
+
+  let maxAmount = "";
+
+  if (balance) {
+    if (assetsAreEqual(asset.assetOption?.value, feeRaw?.assetId)) {
+      maxAmount = balance.sub(fee ?? 0).toString();
+    } else {
+      maxAmount = balance.toString();
+    }
+  }
 
   const submit = () => {
     if (!isValid) return;
-    send();
+    send(feeRaw?.assetId);
   };
 
   return (
@@ -255,8 +247,9 @@ const TransferModal = ({
                   return "Currency selection missing";
                 }
                 if (
-                  (isNativeCurrency && fee && balance?.sub(fee).lt(v.amount)) ||
-                  balance?.lt(v.amount)
+                  new Decimal(maxAmount === "" ? 0 : maxAmount).lessThan(
+                    v.amount,
+                  )
                 ) {
                   return "Insufficient balance";
                 }
@@ -307,7 +300,9 @@ const TransferModal = ({
         <div className="mb-3 text-sm text-center">
           <span className="text-sky-600">
             Transfer Fee:{" "}
-            {fee ? `${fee.toFixed(4)} ${chainConstants?.tokenSymbol}` : ""}
+            {fee
+              ? `${formatNumberCompact(fee.toNumber())} ${feeRaw?.symbol}`
+              : ""}
           </span>
         </div>
         <FormTransactionButton disabled={!isValid || txIsLoading}>

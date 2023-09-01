@@ -19,6 +19,7 @@ import {
 import Image from "next/image";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
+import { formatNumberCompact } from "lib/util/format-compact";
 
 const BuyFullSetForm = ({
   marketId,
@@ -42,12 +43,6 @@ const BuyFullSetForm = ({
   const [amount, setAmount] = useState<string>("0");
   const [maxTokenSet, setMaxTokenSet] = useState<Decimal>(new Decimal(0));
 
-  const extrinsicBase = wallet.realAddress
-    ? sdk?.asRpc().api.tx.balances.transfer(wallet.realAddress, ZTG.toFixed(0))
-    : undefined;
-
-  const { data: fee } = useExtrinsicFee(extrinsicBase);
-
   const { data: baseAssetBalance } = useBalance(
     wallet.realAddress,
     baseAssetId,
@@ -58,7 +53,11 @@ const BuyFullSetForm = ({
     pool,
   );
 
-  const { send: buySet, isLoading } = useExtrinsic(
+  const {
+    send: buySet,
+    isLoading,
+    fee,
+  } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk)) {
         return sdk.api.tx.predictionMarkets.buyCompleteSet(
@@ -159,9 +158,12 @@ const BuyFullSetForm = ({
       </div>
       <TransactionButton onClick={handleSignTransaction} disabled={disabled}>
         Confirm Buy
-        <span className="block text-xs font-normal">
-          Transaction fee: {fee?.div(ZTG).toFixed(2)} {metadata?.symbol}
-        </span>
+        {fee && (
+          <span className="block text-xs font-normal">
+            Transaction fee:{" "}
+            {formatNumberCompact(fee.amount.div(ZTG).toNumber())} {fee.symbol}
+          </span>
+        )}
       </TransactionButton>
     </div>
   );

@@ -1,4 +1,7 @@
+import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
+import LatestTrades from "components/front-page/LatestTrades";
 import LearnSection from "components/front-page/LearnSection";
+import NetworkStats from "components/front-page/NetworkStats";
 import PopularCategories, {
   CATEGORIES,
 } from "components/front-page/PopularCategories";
@@ -6,16 +9,14 @@ import HeroSlider from "components/hero-slider/HeroSlider";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import { GraphQLClient } from "graphql-request";
+import { Banner, getBanners } from "lib/cms/get-banners";
+import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import getFeaturedMarkets from "lib/gql/featured-markets";
+import { getNetworkStats } from "lib/gql/get-network-stats";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
 import { NextPage } from "next";
-import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
-import LatestTrades from "components/front-page/LatestTrades";
-import NetworkStats from "components/front-page/NetworkStats";
-import { Banner, getBanners } from "lib/cms/get-banners";
-import { endpointOptions, graphQlEndpoint } from "lib/constants";
-import { getNetworkStats } from "lib/gql/get-network-stats";
+
 import path from "path";
 import {
   getPlaiceholder,
