@@ -1,7 +1,12 @@
 import React, { useMemo } from "react";
 import { GraphQLClient } from "graphql-request";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
-import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
+import {
+  FullHistoricalAccountBalanceFragment,
+  HistoricalAccountBalanceOrderByInput,
+  HistoricalSwapOrderByInput,
+  MarketOrderByInput,
+} from "@zeitgeistpm/indexer";
 import {
   BaseAssetId,
   create,
@@ -154,6 +159,7 @@ export async function getStaticProps() {
     const { markets } = await sdk.indexer.markets({
       limit: limit,
       offset: pageNumber * limit,
+      order: MarketOrderByInput.IdAsc,
     });
     return markets;
   });
@@ -162,6 +168,7 @@ export async function getStaticProps() {
     const { historicalSwaps } = await sdk.indexer.historicalSwaps({
       limit: limit,
       offset: pageNumber * limit,
+      order: HistoricalSwapOrderByInput.IdAsc,
     });
     return historicalSwaps;
   });
@@ -212,6 +219,7 @@ export async function getStaticProps() {
         where: { event_contains: "TokensRedeemed" },
         limit: limit,
         offset: pageNumber * limit,
+        order: HistoricalAccountBalanceOrderByInput.IdAsc,
       });
     return historicalAccountBalances;
   });
@@ -229,6 +237,7 @@ export async function getStaticProps() {
         },
         limit: limit,
         offset: pageNumber * limit,
+        order: HistoricalAccountBalanceOrderByInput.IdAsc,
       });
     return historicalAccountBalances;
   });
@@ -241,6 +250,7 @@ export async function getStaticProps() {
         },
         limit: limit,
         offset: pageNumber * limit,
+        order: HistoricalAccountBalanceOrderByInput.IdAsc,
       });
     return historicalAccountBalances;
   });
@@ -430,8 +440,8 @@ export async function getStaticProps() {
         name: names[index],
       })),
       trendingMarkets,
-      revalidate: 10 * 60, //10min
     },
+    revalidate: 10 * 60, //10min
   };
 }
 

@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 
-const TwitterBird = () => {
+export const TwitterBird = () => {
   return (
     <svg
       width="56"
@@ -35,6 +35,7 @@ interface TradeResultProps {
   baseToken?: string;
   marketId: number;
   marketQuestion?: string;
+  onContinueClick?: () => void;
 }
 
 const TradeResult = ({
@@ -45,6 +46,7 @@ const TradeResult = ({
   baseToken,
   marketId,
   marketQuestion,
+  onContinueClick,
 }: TradeResultProps) => {
   const marketUrl = `https://app.zeitgeist.pm/markets/${marketId}`;
   const potentialGain = amount.div(baseTokenAmount);
@@ -70,9 +72,18 @@ const TradeResult = ({
           {baseTokenAmount.toFixed(2)} {baseToken}
         </div>
       </div>
-      <a target="_blank" rel="noopener noreferrer" href={tweetUrl}>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={tweetUrl}
+        className="mb-4"
+      >
         <TwitterBird />
       </a>
+
+      <button onClick={onContinueClick} className="text-ztg-blue font-bold">
+        Continue Trading
+      </button>
     </div>
   );
 };

@@ -148,6 +148,7 @@ const TimeSeriesChart = ({
 
   return (
     <div
+      className="relative"
       style={{ width: "100%", height: 350 }}
       onMouseMove={(e) => {
         e.preventDefault();
@@ -163,7 +164,7 @@ const TimeSeriesChart = ({
       onMouseLeave={handleMouseLeave}
     >
       {isLoading === false ? (
-        <ResponsiveContainer>
+        <ResponsiveContainer width="99%">
           <LineChart
             width={500}
             height={300}
