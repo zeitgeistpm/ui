@@ -91,7 +91,7 @@ export async function getStaticProps() {
       newsImagePlaceholders: newsImagePlaceholders.map((c) => c.base64) ?? [],
       stats,
       ztgHistory,
-      chainProperties: chainProperties.toHuman(),
+      chainProperties: chainProperties.toPrimitive(),
     },
     revalidate: 1 * 60, //1min
   };
