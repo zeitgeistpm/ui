@@ -72,8 +72,6 @@ const MarketScroll = ({
     [width],
   );
 
-  console.log(isResizing);
-
   return (
     <div
       ref={containerRef}
