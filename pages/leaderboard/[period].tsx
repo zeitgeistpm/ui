@@ -1,5 +1,3 @@
-import React, { useMemo } from "react";
-import { GraphQLClient } from "graphql-request";
 import { dehydrate, QueryClient } from "@tanstack/react-query";
 import {
   FullHistoricalAccountBalanceFragment,
@@ -18,8 +16,6 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
 import Table, { TableColumn, TableData } from "components/ui/Table";
-import { IndexedMarketCardData } from "components/markets/market-card";
-import MarketScroll from "components/markets/MarketScroll";
 import Decimal from "decimal.js";
 import {
   DAY_SECONDS,
@@ -36,15 +32,16 @@ import {
   avatarPartsKey,
   getAvatarParts,
 } from "lib/hooks/queries/useAvatarParts";
+import { shortenAddress } from "lib/util";
 import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 import { createAvatarSdk } from "lib/util/create-avatar-sdk";
 import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
-import Link from "next/link";
-import { shortenAddress } from "lib/util";
 import Image from "next/image";
-import getTrendingMarkets from "lib/gql/trending-markets";
+import Link from "next/link";
+import { getPlaiceholder } from "plaiceholder";
+import { useMemo } from "react";
 
 // Approach: aggregate base asset movements in and out of a market
 // "In events": swaps, buy full set
@@ -470,6 +467,10 @@ export async function getStaticProps({ params }) {
   //todo: need to solve rate coin gecko rate limit issue
   // const trendingMarkets = await getTrendingMarkets(sdk.indexer.client, sdk);
 
+  const bannerPlaceholder = await getPlaiceholder("/Leaderboard-banner.png", {
+    size: 16,
+  });
+
   return {
     props: {
       dehydratedState: dehydrate(queryClient),
@@ -479,6 +480,7 @@ export async function getStaticProps({ params }) {
       })),
       // trendingMarkets,
       timePeriod: period,
+      bannerPlaceholder: bannerPlaceholder.base64,
     },
     revalidate: 10 * 60, //10min
   };
@@ -533,9 +535,10 @@ const UserCell = ({ address, name }: { address: string; name?: string }) => {
 
 const Leaderboard: NextPage<{
   rankings: Rank[];
+  bannerPlaceholder: string;
   // trendingMarkets: IndexedMarketCardData[];
   timePeriod: TimePeriod;
-}> = ({ rankings, timePeriod }) => {
+}> = ({ rankings, timePeriod, bannerPlaceholder }) => {
   const tableData = useMemo<TableData[]>(() => {
     let res: TableData[] = [];
     for (const [index, rankObj] of rankings.entries()) {
@@ -562,6 +565,7 @@ const Leaderboard: NextPage<{
           fill
           priority
           style={{ objectFit: "cover", objectPosition: "top" }}
+          blurDataURL={bannerPlaceholder}
         />
       </div>
       <h2 className="font-bold my-8 w-full text-[24px]">
