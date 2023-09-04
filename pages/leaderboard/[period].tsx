@@ -464,7 +464,7 @@ export async function getStaticProps({ params }) {
     ),
   );
 
-  //todo: need to solve rate coin gecko rate limit issue
+  //todo: need to solve coin gecko rate limit issue
   // const trendingMarkets = await getTrendingMarkets(sdk.indexer.client, sdk);
 
   const bannerPlaceholder = await getPlaiceholder("/Leaderboard-banner.png", {
