@@ -94,7 +94,6 @@ export const getBaseAssetPrices = async (): Promise<ForeignAssetPrices> => {
       "%2C",
     )}&vs_currencies=usd`,
   );
-  console.log(res.status);
 
   const json = await res.json();
 
@@ -112,7 +111,6 @@ export const getBaseAssetPrices = async (): Promise<ForeignAssetPrices> => {
   return assetPrices;
 };
 
-//try: https://api.coingecko.com/api/v3/simple/price?ids=zeitgeist%2Cpolkadot&vs_currencies=usd
 export const getForeignAssetPriceServerSide = async (
   foreignAsset: ForeignAssetId,
 ) => {
@@ -122,10 +120,8 @@ export const getForeignAssetPriceServerSide = async (
   const res = await fetch(
     `https://staging.zeitgeist.pm/api/usd-price?asset=${coinGeckoId}`,
   );
-  console.log(res.status);
 
   const json = await res.json();
-  console.log(json.body.price);
 
   return new Decimal(json.body.price);
 };

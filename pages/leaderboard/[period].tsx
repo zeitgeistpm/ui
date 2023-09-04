@@ -165,10 +165,7 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  console.log(params);
   const period: TimePeriod = params.period;
-  console.log(period);
-
   const periodEnd = new Date();
   const periodDuration = durationLookup[period];
   const periodStart = new Date(periodEnd.getTime() - periodDuration);
@@ -205,7 +202,6 @@ export async function getStaticProps({ params }) {
     });
     return historicalSwaps;
   });
-  console.log(historicalSwaps.length);
 
   const tradersWithSwaps = historicalSwaps.reduce<Traders>((traders, swap) => {
     const trades = traders[swap.accountId];
@@ -471,7 +467,8 @@ export async function getStaticProps({ params }) {
     ),
   );
 
-  const trendingMarkets = await getTrendingMarkets(sdk.indexer.client, sdk);
+  //todo: need to solve rate coin gecko rate limit issue
+  // const trendingMarkets = await getTrendingMarkets(sdk.indexer.client, sdk);
 
   return {
     props: {
@@ -480,7 +477,7 @@ export async function getStaticProps({ params }) {
         ...player,
         name: names[index],
       })),
-      trendingMarkets,
+      // trendingMarkets,
       timePeriod: period,
     },
     revalidate: 10 * 60, //10min
@@ -536,9 +533,9 @@ const UserCell = ({ address, name }: { address: string; name?: string }) => {
 
 const Leaderboard: NextPage<{
   rankings: Rank[];
-  trendingMarkets: IndexedMarketCardData[];
+  // trendingMarkets: IndexedMarketCardData[];
   timePeriod: TimePeriod;
-}> = ({ rankings, trendingMarkets, timePeriod }) => {
+}> = ({ rankings, timePeriod }) => {
   const tableData = useMemo<TableData[]>(() => {
     let res: TableData[] = [];
     for (const [index, rankObj] of rankings.entries()) {
@@ -584,7 +581,7 @@ const Leaderboard: NextPage<{
         ))}
       </div>
       <Table columns={columns} data={tableData} />
-      {trendingMarkets.length > 0 && (
+      {/* {trendingMarkets.length > 0 && (
         <div className="my-[60px]">
           <MarketScroll
             title="Trending Markets"
@@ -593,7 +590,7 @@ const Leaderboard: NextPage<{
             link="/markets"
           />
         </div>
-      )}
+      )} */}
     </div>
   );
 };
