@@ -13,6 +13,7 @@ import MarketContextActionOutcomeSelector from "components/markets/MarketContext
 import TransactionButton from "components/ui/TransactionButton";
 import TruncatedText from "components/ui/TruncatedText";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import {
   marketDisputesRootKey,
   useMarketDisputes,
@@ -156,7 +157,7 @@ const CategoricalDisputeBox = ({
       )}
       <TransactionButton
         className="mb-ztg-10 mt-[20px]"
-        onClick={dispute}
+        onClick={() => dispute()}
         disabled={isLoading}
         loading={isBroadcasting}
       >

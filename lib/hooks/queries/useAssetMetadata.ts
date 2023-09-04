@@ -3,16 +3,19 @@ import {
   AssetId,
   IOForeignAssetId,
   IOZtgAssetId,
+  ZTG,
   isRpcSdk,
 } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";
 import { XcmVersionedMultiLocation } from "@polkadot/types/lookup";
+import Decimal from "decimal.js";
 
 export type AssetMetadata = {
   symbol: string;
   name: string;
   location: XcmVersionedMultiLocation | null;
+  feeFactor: Decimal;
   decimals: number;
 };
 
@@ -31,6 +34,7 @@ export const useAssetMetadata = (assetId?: AssetId) => {
             symbol: constants?.tokenSymbol,
             name: "Zeitgeist",
             location: null,
+            feeFactor: ZTG,
             decimals: 10,
           };
           return assetMetadata;
@@ -44,6 +48,12 @@ export const useAssetMetadata = (assetId?: AssetId) => {
             symbol: metadata.unwrap().symbol.toPrimitive() as string,
             name: metadata.unwrap().name.toPrimitive() as string,
             location: location,
+            feeFactor: new Decimal(
+              metadata
+                .unwrapOr(null)
+                ?.additional.xcm.feeFactor.unwrapOr(null)
+                ?.toString() ?? ZTG,
+            ),
             decimals: Number(metadata.unwrap().name.toString()),
           };
 
@@ -86,6 +96,7 @@ export const useAllAssetMetadata = () => {
             symbol: constants.tokenSymbol,
             name: "Zeitgeist",
             location: null,
+            feeFactor: ZTG,
             decimals: 10,
           },
         ],
@@ -100,6 +111,12 @@ export const useAllAssetMetadata = () => {
           symbol: meta[1].unwrap().symbol.toPrimitive() as string,
           name: meta[1].unwrap().name.toPrimitive() as string,
           location: location,
+          feeFactor: new Decimal(
+            meta[1]
+              .unwrapOr(null)
+              ?.additional.xcm.feeFactor.unwrapOr(null)
+              ?.toString() ?? ZTG,
+          ),
           decimals: Number(meta[1].unwrap().name.toString()),
         };
         res = [...res, [foreignAssetId, assetMetadata]];
@@ -109,7 +126,6 @@ export const useAllAssetMetadata = () => {
     {
       enabled: Boolean(enabled),
       keepPreviousData: true,
-      placeholderData: [],
       staleTime: Infinity,
     },
   );

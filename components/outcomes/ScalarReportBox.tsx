@@ -1,23 +1,21 @@
-import { Popover, Transition } from "@headlessui/react";
 import {
-  getScalarBounds,
   IndexerContext,
-  isRpcSdk,
   Market,
   ScalarRangeType,
+  getScalarBounds,
+  isRpcSdk,
 } from "@zeitgeistpm/sdk-next";
 import Input from "components/ui/Input";
-import { DateTimeInput } from "components/ui/inputs";
 import TransactionButton from "components/ui/TransactionButton";
+import { DateTimeInput } from "components/ui/inputs";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
-import { useWallet } from "lib/state/wallet";
 import { MarketScalarOutcome } from "lib/types";
 import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 
 const ScalarReportBox = ({
   market,
@@ -27,7 +25,6 @@ const ScalarReportBox = ({
   onReport?: (outcome: MarketScalarOutcome & { type: ScalarRangeType }) => void;
 }) => {
   const [sdk] = useSdkv2();
-  const wallet = useWallet();
   const notificationStore = useNotifications();
 
   const [expandedInfoToggled, setExpandedInfoToggled] = useState(false);

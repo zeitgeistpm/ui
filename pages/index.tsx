@@ -1,6 +1,6 @@
+import { GenericChainProperties } from "@polkadot/types";
 import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
 import { BgBallGfx } from "components/front-page/BgBallFx";
-import { GenericChainProperties } from "@polkadot/types";
 import GettingStartedSection from "components/front-page/GettingStartedSection";
 import { HeroBanner } from "components/front-page/HeroBanner";
 import LatestTrades from "components/front-page/LatestTrades";
@@ -19,12 +19,12 @@ import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getNetworkStats } from "lib/gql/get-network-stats";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
-import { AssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import {
   getZTGHistory,
   ZtgPriceHistory,
 } from "lib/hooks/queries/useAssetUsdPrice";
 import { NextPage } from "next";
+
 import path from "path";
 import {
   getPlaiceholder,

@@ -1,12 +1,12 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
-import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import { IOForeignAssetId, isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useSdkv2 } from "./useSdkv2";
+import { useExtrinsicFee } from "./queries/useExtrinsicFee";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
@@ -27,6 +27,12 @@ export const useExtrinsic = <T>(
 
   const notifications = useNotifications();
 
+  const extrinsic = useMemo(() => {
+    const ext = extrinsicFn();
+    return ext;
+  }, [extrinsicFn]);
+
+  const { data: fee } = useExtrinsicFee(extrinsic);
   const resetState = () => {
     setIsError(false);
     setIsSuccess(false);
@@ -39,7 +45,7 @@ export const useExtrinsic = <T>(
       throw new Error("SDK is not RPC");
     }
 
-    let signer = wallet.getSigner();
+    const signer = wallet.getSigner();
     if (!signer) return;
 
     setIsLoading(true);
@@ -48,8 +54,6 @@ export const useExtrinsic = <T>(
     if (!extrinsic) return;
 
     const proxy = wallet?.getProxyFor(wallet.activeAccount?.address);
-
-    if (!extrinsic || !signer) return;
 
     if (proxy?.enabled && proxy?.address) {
       console.info("Proxying transaction");
@@ -86,11 +90,20 @@ export const useExtrinsic = <T>(
           notifications.pushNotification(error, { type: "Error" });
         },
       }),
+      IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
     ).catch(() => {
       setIsBroadcasting(false);
       setIsLoading(false);
     });
   };
 
-  return { send, isError, isSuccess, isLoading, isBroadcasting, resetState };
+  return {
+    send,
+    isError,
+    isSuccess,
+    isLoading,
+    isBroadcasting,
+    fee,
+    resetState,
+  };
 };
