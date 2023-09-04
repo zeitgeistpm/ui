@@ -570,6 +570,7 @@ const Leaderboard: NextPage<{
       <div className="border-b-1 border-misty-harbor mb-8 flex gap-7 text-sky-600 text-[18px]">
         {TimePeriodItems.map((period) => (
           <Link
+            scroll={false}
             key={period}
             href={`/leaderboard/${period}`}
             className={`capitalize pb-4 ${
