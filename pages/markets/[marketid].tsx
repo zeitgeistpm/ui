@@ -440,7 +440,7 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
       </Transition>
 
       <div
-        className={`md:hidden fixed bottom-20 left-0 z-50 w-full bg-white rounded-t-lg transition-all ease-in-out duration-500 ${
+        className={`md:hidden fixed bottom-20 pb-12 left-0 z-50 w-full bg-white rounded-t-lg transition-all ease-in-out duration-500 ${
           open ? "translate-y-0" : "translate-y-full"
         }`}
       >
