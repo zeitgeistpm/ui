@@ -61,7 +61,7 @@ export const ActionableCard = ({
           <div className="flex gap-4">
             <motion.div
               initial={false}
-              className="relative min-w-[84px] min-h-[80px] rounded-xl"
+              className="relative min-w-[84px] w-[84px] h-[84px] md:min-w-[52px] md:w-[52px] md:h-[52px] lg:min-w-[84px] lg:w-[84px] lg:h-[84px] rounded-xl"
               transition={transitionConfig}
               animate={{
                 translateX: hovered ? "8px" : 0,
@@ -100,21 +100,23 @@ export const ActionableCard = ({
 
             <FiChevronRight size={20} />
           </motion.div>
-          <motion.div
-            initial={false}
-            className={"rounded-md"}
-            transition={transitionConfig}
-            animate={{
-              translateX: hovered ? "2px" : 0,
-              translateY: hovered ? "-2px" : 0,
-              scale: hovered ? 1.02 : 1,
-              boxShadow: hovered ? "-2px 2px 4px rgba(10,10,10, 0.3)" : "0",
-            }}
-          >
-            <div className="inline-block text-sm bg-gray-200 rounded-md py-1 px-2">
-              {timeUsage}
-            </div>
-          </motion.div>
+          <div>
+            <motion.div
+              initial={false}
+              className={"rounded-md inline-block"}
+              transition={transitionConfig}
+              animate={{
+                translateX: hovered ? "2px" : 0,
+                translateY: hovered ? "-2px" : 0,
+                scale: hovered ? 1.02 : 1,
+                boxShadow: hovered ? "-2px 2px 4px rgba(10,10,10, 0.3)" : "0",
+              }}
+            >
+              <div className="inline-block text-xs lg:text-sm bg-gray-200 rounded-md py-1 px-2">
+                {timeUsage}
+              </div>
+            </motion.div>
+          </div>
         </div>
       </motion.div>
     </Link>
