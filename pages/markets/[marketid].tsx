@@ -471,42 +471,52 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
                 <div
                   className={`flex-1 h-full center  ${
                     tradeItem?.action === "buy"
-                      ? "text-black bg-white"
-                      : "text-gray-200 bg-fog-of-war"
+                      ? "text-gray-200 bg-fog-of-war"
+                      : "text-black bg-white"
                   } `}
                   onClick={() => {
                     setTradeItem({
                       assetId: tradeItem?.assetId ?? outcomeAssets[0],
                       action: "buy",
                     });
-                    setOpen(true);
+                    if (open && tradeItem?.action === "buy") {
+                      setOpen(false);
+                    } else {
+                      setOpen(true);
+                    }
                   }}
                 >
-                  Buy
+                  Buy{" "}
+                  <X
+                    className={`h-full transition-all w-0 center  ${
+                      open && tradeItem?.action === "buy" && "w-6"
+                    }`}
+                  />
                 </div>
                 <div
                   className={`flex-1 h-full center ${
                     tradeItem?.action === "sell"
-                      ? "text-black bg-white"
-                      : "text-gray-200 bg-fog-of-war"
+                      ? "text-gray-200 bg-fog-of-war"
+                      : "text-black bg-white"
                   }`}
                   onClick={() => {
                     setTradeItem({
                       assetId: tradeItem?.assetId ?? outcomeAssets[0],
                       action: "sell",
                     });
-                    setOpen(true);
+                    if (open && tradeItem?.action === "sell") {
+                      setOpen(false);
+                    } else {
+                      setOpen(true);
+                    }
                   }}
                 >
                   Sell
-                </div>
-                <div
-                  className={`h-full transition-all w-0 center text-gray-700 bg-slate-200 ${
-                    open && "w-24"
-                  }`}
-                  onClick={() => setOpen(false)}
-                >
-                  <X />
+                  <X
+                    className={`h-full transition-all w-0 center  ${
+                      open && tradeItem?.action === "sell" && "w-6"
+                    }`}
+                  />
                 </div>
               </>
             ) : market?.status === MarketStatus.Closed && canReport ? (
