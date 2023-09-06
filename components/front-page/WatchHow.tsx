@@ -70,8 +70,8 @@ const WatchHow = () => {
         className="flex flex-col sm:flex-row py-6 sm:py-0 items-center w-full bg-white sm:h-[80px] md:h-[120px] px-6 md:px-[41px] overflow-hidden relative rounded-md"
       >
         <div className="font-medium text-2xl md:text-3xl lg:text-3xl flex-1 z-10 flex mb-6 sm:mb-0">
-          {text.split("").map((c) => (
-            <span key={c} className="block animate-[pop-in_0.08s_40ms]">
+          {text.split("").map((c, index) => (
+            <span key={index} className="block animate-[pop-in_0.08s_40ms]">
               {c == " " ? "\u00A0" : c}
             </span>
           ))}
