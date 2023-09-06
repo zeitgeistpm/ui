@@ -226,7 +226,7 @@ export const MarketCard = ({
       <div
         data-testid={`marketCard-${marketId}`}
         className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)]  
-        rounded-[10px] p-5 relative bg-white ztg-transition hover:scale-105 ${className}`}
+        rounded-[10px] p-5 relative bg-white ztg-transition md:hover:scale-105 ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
