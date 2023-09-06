@@ -38,7 +38,6 @@ const MarketImage = ({
       return;
     }
     const tag = tags?.[0];
-    console.log(tag);
     setImageUrl(`/category/${tag.toLowerCase()}.png`);
   }, [tags]);
 
