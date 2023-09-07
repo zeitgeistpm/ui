@@ -10,7 +10,7 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { usePool } from "lib/hooks/queries/usePool";
 import { useSaturatedMarket } from "lib/hooks/queries/useSaturatedMarket";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
-import { useGlobalKeyPress } from "lib/hooks/useGlobalKeyPress";
+import { useGlobalKeyPress } from "lib/hooks/events/useGlobalKeyPress";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";

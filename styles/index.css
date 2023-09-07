@@ -211,7 +211,7 @@ h6 {
 @import "./range-component.css";
 
 .container-fluid {
-  @apply px-9 mx-auto max-w-screen-3xl;
+  @apply px-4 mx-auto max-w-screen-2xl;
 }
 
 .carousel__slide--visible {
