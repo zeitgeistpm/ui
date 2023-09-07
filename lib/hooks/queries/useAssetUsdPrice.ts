@@ -1,14 +1,14 @@
 import { useQueries, useQuery, UseQueryResult } from "@tanstack/react-query";
 import {
   AssetId,
-  IOZtgAssetId,
-  IOForeignAssetId,
   ForeignAssetId,
+  IOForeignAssetId,
+  IOZtgAssetId,
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
+import { environment } from "lib/constants";
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
-import { isEmpty } from "lodash";
 
 export const assetUsdPriceRootKey = "asset-usd-price";
 
@@ -97,7 +97,7 @@ export const getForeignAssetPriceServerSide = async (
 
   const json = await res.json();
 
-  return new Decimal(json[coinGeckoId].usd);
+  return new Decimal(json[coinGeckoId]?.usd ?? 0);
 };
 export const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
   const coinGeckoId =
@@ -117,4 +117,26 @@ const getZTGPrice = async (): Promise<Decimal> => {
   } catch (err) {
     return new Decimal(0);
   }
+};
+
+export type ZtgPriceHistory = {
+  prices: [timestamp: number, price: number][];
+};
+
+export const getZTGHistory = async (): Promise<ZtgPriceHistory> => {
+  if (environment === "staging") {
+    return {
+      prices: [
+        [1, 0],
+        [2, 0],
+        [3, 0],
+        [4, 0],
+      ],
+    };
+  }
+  const response = await fetch(
+    `https://api.coingecko.com/api/v3/coins/zeitgeist/market_chart?vs_currency=usd&days=7&interval=daily`,
+  );
+  const data = await response.json();
+  return data;
 };

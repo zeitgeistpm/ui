@@ -54,6 +54,7 @@ export const SimilarMarketsSection = ({
 
             return (
               <div
+                key={`market-${market.marketId}`}
                 className="shadow-lg rounded-xl opacity-0 animate-pop-in"
                 style={{
                   animationDelay: `${200 * (index + 1)}ms`,
@@ -82,7 +83,6 @@ export const SimilarMarketsSection = ({
                   }
                   numParticipants={stat?.participants}
                   liquidity={stat?.liquidity}
-                  key={`market-${market.marketId}`}
                 />
               </div>
             );

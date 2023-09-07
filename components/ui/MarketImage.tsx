@@ -15,17 +15,17 @@ const getImageUrl = (image: MarketImageString) => {
 const fallbackImageUrl = "/icons/default-market.png";
 
 const MarketImage = ({
-  image,
   alt = "",
   className = "",
   size = "70px",
   status = "",
+  tags,
 }: {
-  image?: MarketImageString;
   className?: string;
   alt?: string;
   size?: string;
   status?: string;
+  tags?: string[];
 }) => {
   const [imageUrl, setImageUrl] = useState<string>(fallbackImageUrl);
 
@@ -34,34 +34,28 @@ const MarketImage = ({
   };
 
   useEffect(() => {
-    if (image == null) {
+    if (!tags || tags.length === 0) {
       return;
     }
-    return setImageUrl(getImageUrl(image));
-  }, [image]);
+    const tag = tags?.[0];
+    setImageUrl(`/category/${tag.toLowerCase()}.png`);
+  }, [tags]);
 
   return (
-    <div
-      className={`relative rounded-full flex-shrink-0 overflow-hidden ${
-        status === "Active" && "border-[15px] border-green-lighter"
-      } ${className} `}
-      style={{ width: size, height: size }}
-    >
-      <Image
-        alt={alt ?? "Market image"}
-        src={imageUrl}
-        fill
-        className="overflow-hidden"
-        style={{
-          objectFit: "cover",
-          objectPosition: "50% 50%",
-        }}
-        sizes={size}
-        onError={onError}
-        blurDataURL={fallbackImageUrl}
-        placeholder="blur"
-      />
-    </div>
+    <Image
+      alt={alt ?? "Market image"}
+      src={imageUrl}
+      fill
+      className="overflow-hidden rounded-lg"
+      style={{
+        objectFit: "cover",
+        objectPosition: "50% 50%",
+      }}
+      sizes={size}
+      onError={onError}
+      blurDataURL={fallbackImageUrl}
+      placeholder="blur"
+    />
   );
 };
 
