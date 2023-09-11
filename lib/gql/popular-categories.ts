@@ -1,39 +1,29 @@
-import { gql, GraphQLClient } from "graphql-request";
+import { GraphQLClient } from "graphql-request";
 import { hiddenMarketIds } from "lib/constants/markets";
 import { marketMetaFilter } from "./constants";
-
-const tagsQuery = gql`
-  query MarketTags($tag: [String!]) {
-    markets(
-      where: {
-        tags_containsAny: $tag
-        status_eq: Active
-        marketId_not_in: ${hiddenMarketIds}
-        ${marketMetaFilter}
-      }
-    ) {
-      marketId
-    }
-  }
-`;
 
 export const getCategoryCounts = async (
   client: GraphQLClient,
   categoryNames: string[],
 ): Promise<number[]> => {
-  const counts = await Promise.all(
-    categoryNames.map((category) => getTagCount(client, category)),
+  const queries = categoryNames.map(
+    (name, index) => `tag${index}: marketsConnection(where: {
+      status_eq: Active, 
+      tags_containsAny: "${name}", 
+      marketId_not_in: ${hiddenMarketIds},
+      ${marketMetaFilter}
+    }, orderBy: marketId_ASC) {
+      totalCount
+    }`,
   );
 
-  return counts;
-};
-
-const getTagCount = async (client: GraphQLClient, tag: string) => {
   const response = await client.request<{
-    markets: {
-      marketId: number;
-    }[];
-  }>(tagsQuery, { tag: tag });
+    [key: string]: {
+      totalCount: number;
+    };
+  }>(`query MyQuery {${queries.join(" ")}}`);
 
-  return response.markets.length;
+  const counts = Object.values(response).map((a) => a.totalCount);
+
+  return counts;
 };
