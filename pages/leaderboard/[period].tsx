@@ -471,8 +471,6 @@ export async function getStaticProps({ params }) {
     size: 16,
   });
 
-  console.log(bannerPlaceholder.base64);
-
   return {
     props: {
       dehydratedState: dehydrate(queryClient),
