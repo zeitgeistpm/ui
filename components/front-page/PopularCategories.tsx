@@ -28,7 +28,7 @@ const Category = ({
 }) => {
   return (
     <div
-      className="flex flex-1 flex-col w-full min-w-[80px] md:hover:scale-105 ztg-transition"
+      className="flex flex-1 flex-col w-full min-w-[80px] md:hover:scale-[1.035] ztg-transition"
       data-testid="category"
     >
       <div className="relative  w-full h-full aspect-square">
