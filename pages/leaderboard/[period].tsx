@@ -471,6 +471,8 @@ export async function getStaticProps({ params }) {
     size: 16,
   });
 
+  console.log(bannerPlaceholder.base64);
+
   return {
     props: {
       dehydratedState: dehydrate(queryClient),
@@ -566,6 +568,7 @@ const Leaderboard: NextPage<{
           priority
           style={{ objectFit: "cover", objectPosition: "top" }}
           blurDataURL={bannerPlaceholder}
+          placeholder="blur"
         />
       </div>
       <h2 className="font-bold my-8 w-full text-[24px]">
