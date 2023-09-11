@@ -192,6 +192,7 @@ module.exports = {
         success: "#E8FFE4",
         info: "#E4F5FF",
         error: "#FFE6E4",
+        "ztg-pink": "#DC056C",
         "tooltip-bg": "#FDF5DB",
         "maroon-base": "#3C0C0C",
         "kusama-base": "#E10178",

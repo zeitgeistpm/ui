@@ -1,7 +1,7 @@
 import { Dialog } from "@headlessui/react";
 import { useQuery } from "@tanstack/react-query";
 import { PollingTimeout, poll } from "@zeitgeistpm/avatara-util";
-import { ZTG, isFullSdk } from "@zeitgeistpm/sdk-next";
+import { IOZtgAssetId, ZTG, isFullSdk } from "@zeitgeistpm/sdk-next";
 import { StorageError } from "@zeitgeistpm/web3.storage";
 import Modal from "components/ui/Modal";
 import TransactionButton from "components/ui/TransactionButton";
@@ -25,6 +25,9 @@ import { useMemo, useState } from "react";
 import { LuFileWarning } from "react-icons/lu";
 import { RiSendPlaneLine } from "react-icons/ri";
 import type { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
+import { useFeePayingAsset } from "lib/hooks/queries/useFeePayingAsset";
+import { assetsAreEqual } from "lib/util/assets-are-equal";
+import { formatNumberCompact } from "lib/util/format-compact";
 
 export type PublishingProps = {
   editor: MarketDraftEditor;
@@ -66,7 +69,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
     !wallet.activeAccount
   );
 
-  const { data: fees } = useQuery(
+  const { data: baseFee } = useQuery(
     [params, wallet.activeAccount],
     async () => {
       if (!feesEnabled) {
@@ -80,6 +83,8 @@ export const Publishing = ({ editor }: PublishingProps) => {
       enabled: feesEnabled,
     },
   );
+
+  const { data: feeDetails } = useFeePayingAsset(baseFee);
 
   const firstInvalidStep = editor.steps.find((step) => !step.isValid);
 
@@ -107,6 +112,10 @@ export const Publishing = ({ editor }: PublishingProps) => {
 
   const oracleBond = constants?.markets.oracleBond;
 
+  const ztgTransactionFee = IOZtgAssetId.is(feeDetails?.assetId)
+    ? feeDetails?.amount
+    : new Decimal(0);
+
   const ztgCost = new Decimal(bondCost ?? 0)
     .plus(oracleBond ?? 0)
     .plus(
@@ -116,11 +125,23 @@ export const Publishing = ({ editor }: PublishingProps) => {
         ? new Decimal(baseAssetLiquidityRow?.value ?? 0).mul(2).toNumber()
         : 0,
     )
-    .plus(fees ?? 0);
+    .plus(ztgTransactionFee ?? 0);
+
+  const baseCurrencyMetadata =
+    editor.form.currency && getMetadataForCurrency(editor.form.currency);
+
+  const baseAssetTransactionFee = assetsAreEqual(
+    baseCurrencyMetadata?.assetId,
+    feeDetails?.assetId,
+  )
+    ? feeDetails?.amount
+    : new Decimal(0);
 
   const foreignCurrencyCost =
     editor.form.liquidity?.deploy && editor.form.currency !== "ZTG"
-      ? new Decimal(baseAssetLiquidityRow?.value ?? 0).mul(2)
+      ? new Decimal(baseAssetLiquidityRow?.value ?? 0)
+          .mul(2)
+          .plus(baseAssetTransactionFee ?? 0)
       : null;
 
   const ztgBalanceDelta = ztgBalance?.div(ZTG).minus(ztgCost);
@@ -132,21 +153,21 @@ export const Publishing = ({ editor }: PublishingProps) => {
     ztgBalanceDelta?.gte(0) &&
     (!foreignCurrencyCost || foreignAssetBalanceDelta?.gte(0));
 
-  const baseCurrencyMetadata =
-    editor.form.currency && getMetadataForCurrency(editor.form.currency);
-
   const submit = async () => {
     if (params && isFullSdk(sdk)) {
       setIsTransacting(true);
 
       try {
-        notifications.pushNotification("Transacting..", {
+        notifications.pushNotification("Transacting...", {
           autoRemove: true,
           type: "Info",
           lifetime: 60,
         });
 
-        const result = await sdk.model.markets.create(params);
+        const result = await sdk.model.markets.create(
+          params,
+          feeDetails?.assetId,
+        );
         const marketId = result.saturate().unwrap().market.marketId;
 
         editor.published(marketId);
@@ -329,7 +350,12 @@ export const Publishing = ({ editor }: PublishingProps) => {
                               Returned if oracle reports the market outcome on
                               time.
                             </h4>
-                            <div className="">{fees?.toFixed(4)} ZTG</div>
+                            <div>
+                              {formatNumberCompact(
+                                feeDetails?.amount.toNumber() ?? 0,
+                              )}{" "}
+                              {feeDetails?.symbol}
+                            </div>
                           </div>
                         </div>
                       </div>

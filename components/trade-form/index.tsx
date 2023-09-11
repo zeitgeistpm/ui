@@ -16,8 +16,6 @@ import Input from "components/ui/Input";
 import Decimal from "decimal.js";
 import { positionsRootKey } from "lib/hooks/queries/useAccountTokenPositions";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
-import { useMarket } from "lib/hooks/queries/useMarket";
 import { useTradeItemState } from "lib/hooks/queries/useTradeItemState";
 import {
   TradeItem,
@@ -33,14 +31,15 @@ import { useDelayQueue } from "lib/state/delay-queue";
 import { useWallet } from "lib/state/wallet";
 import { TradeType } from "lib/types";
 import { awaitIndexer } from "lib/util/await-indexer";
+import { formatNumberCompact } from "lib/util/format-compact";
 import { capitalize } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { from } from "rxjs";
-import { useDebounce } from "use-debounce";
 import RangeInput from "../ui/RangeInput";
 import TransactionButton from "../ui/TransactionButton";
 import TradeTab, { TradeTabType } from "./TradeTab";
+import { useMarket } from "lib/hooks/queries/useMarket";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -103,7 +102,7 @@ const Inner = ({
   outcomeAssets?: MarketOutcomeAssetId[];
 }) => {
   const queryClient = useQueryClient();
-  const [_, id] = useSdkv2();
+  const [sdk, id] = useSdkv2();
 
   const { register, formState, watch, setValue, reset } = useForm<{
     percentage: string;
@@ -143,7 +142,6 @@ const Inner = ({
   const maxBaseAmountDecimal = new Decimal(maxBaseAmount ?? 0).div(ZTG);
   const maxAssetAmountDecimal = new Decimal(maxAssetAmount ?? 0).div(ZTG);
 
-  const [fee, setFee] = useState<string>("0.00");
   const [percentageDisplay, setPercentageDisplay] = useState<string>("0");
   const { data: assetMetadata } = useAssetMetadata(tradeItemState?.baseAssetId);
   const baseSymbol = assetMetadata?.symbol;
@@ -218,6 +216,7 @@ const Inner = ({
     send: swapTx,
     isSuccess,
     isLoading,
+    fee,
     isBroadcasting,
     resetState: resetTransactionState,
   } = useExtrinsic(() => transaction, {
@@ -255,23 +254,6 @@ const Inner = ({
       }
     },
   });
-
-  const [debouncedTransactionHash] = useDebounce(
-    transaction?.hash.toString(),
-    150,
-  );
-
-  useEffect(() => {
-    if (debouncedTransactionHash == null || signer == null || !transaction) {
-      return;
-    }
-    const sub = from(transaction.paymentInfo(signer.address)).subscribe(
-      (fee) => {
-        setFee(new Decimal(fee.partialFee.toString()).div(ZTG).toFixed(3));
-      },
-    );
-    return () => sub.unsubscribe();
-  }, [debouncedTransactionHash, signer]);
 
   const changeByPercentage = useCallback(
     (percentage: Decimal) => {
@@ -671,7 +653,9 @@ const Inner = ({
                     Confirm {`${capitalize(tradeItem?.action)}`}
                   </div>
                   <div className="center font-normal text-ztg-12-120 h-[20px]">
-                    Transaction fee: {fee} {constants?.tokenSymbol}
+                    Transaction fee:{" "}
+                    {formatNumberCompact(fee?.amount.div(ZTG).toNumber() ?? 0)}{" "}
+                    {fee?.symbol}
                   </div>
                 </div>
               </TransactionButton>

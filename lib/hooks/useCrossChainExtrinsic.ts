@@ -1,17 +1,17 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
-import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 import { ChainName } from "lib/constants/chains";
 import { useChain } from "lib/state/cross-chain";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useSdkv2 } from "./useSdkv2";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { useQueryClient } from "@tanstack/react-query";
 import { currencyBalanceRootKey } from "./queries/useCurrencyBalances";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { IOForeignAssetId, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { useExtrinsicFee } from "./queries/useExtrinsicFee";
 
 export const useCrossChainExtrinsic = <T>(
   extrinsicFn: (
@@ -33,6 +33,13 @@ export const useCrossChainExtrinsic = <T>(
   const [isLoading, setIsLoading] = useState(false);
   const { api: sourceChainApi } = useChain(sourceChain);
   const { api: destinationChainApi } = useChain(destinationChain);
+
+  const extrinsic = useMemo(() => {
+    const ext = extrinsicFn();
+    return ext;
+  }, [extrinsicFn]);
+
+  const { data: fee } = useExtrinsicFee(extrinsic);
 
   const notifications = useNotifications();
 
@@ -108,6 +115,7 @@ export const useCrossChainExtrinsic = <T>(
           notifications.pushNotification(error, { type: "Error" });
         },
       }),
+      IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
     ).catch(() => {
       setIsLoading(false);
     });

@@ -2,7 +2,6 @@ import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { ZTG } from "lib/constants";
-import { useBalance } from "lib/hooks/queries/useBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -10,7 +9,6 @@ import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useAccountModals } from "lib/state/account";
 import { useWallet } from "lib/state/wallet";
 import { FC, PropsWithChildren, useMemo } from "react";
-import Decimal from "decimal.js";
 import { Loader } from "./Loader";
 
 interface TransactionButtonProps {
@@ -52,15 +50,9 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   }, [extrinsic, sdk]);
 
   const { data: fee } = useExtrinsicFee(extrinsicBase);
-  const { data: balance } = useBalance(wallet.activeAccount?.address, {
-    Ztg: null,
-  });
   const { data: constants } = useChainConstants();
 
-  const feeEstimationFactor = extrinsic ? 1.05 : 1.5;
-  const insufficientFeeBalance =
-    disableFeeCheck === false &&
-    balance?.lessThan(fee?.mul(feeEstimationFactor) ?? 0);
+  const insufficientFeeBalance = fee?.sufficientBalance === false;
 
   const click = (event?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (preventDefault) {

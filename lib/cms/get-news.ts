@@ -2,7 +2,7 @@ import { Client, isFullPage } from "@notionhq/client";
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
-export type Banner = {
+export type News = {
   title?: string;
   subtitle?: string;
   imageUrl?: string;
@@ -13,7 +13,7 @@ export type Banner = {
   imageAlignment?: "left" | "right" | "center";
 };
 
-const DEFAULT_BANNERS: Banner[] = [
+const DEFAULT_BANNERS: News[] = [
   {
     title: "Defaut Banner Title",
     subtitle: "Default Subtitle",
@@ -27,14 +27,14 @@ const DEFAULT_BANNERS: Banner[] = [
   },
 ];
 
-export const getBanners = async (): Promise<Banner[]> => {
+export const getNews = async (): Promise<News[]> => {
   // Short circuit to use default if NOTION_API_KEY doesn't exist.
   if (!process.env.NOTION_API_KEY) {
     return DEFAULT_BANNERS;
   }
 
   const contrast = (await import("font-color-contrast")).default;
-  const { results: bannersData } = await notion.databases.query({
+  const { results: newsData } = await notion.databases.query({
     database_id: "7085702a851842adace1c9963e817446",
     sorts: [
       {
@@ -53,45 +53,45 @@ export const getBanners = async (): Promise<Banner[]> => {
     },
   });
 
-  return bannersData.filter(isFullPage).map((page) => {
-    const banner: Banner = {};
+  return newsData.filter(isFullPage).map((page) => {
+    const news: News = {};
 
     if (page.properties.Title.type === "title") {
-      banner.title = page.properties.Title.title[0].plain_text;
+      news.title = page.properties.Title.title[0].plain_text;
     }
 
     if (page.properties.Subtitle.type === "rich_text") {
-      banner.subtitle = page.properties.Subtitle.rich_text?.[0]?.plain_text;
+      news.subtitle = page.properties.Subtitle.rich_text?.[0]?.plain_text;
     }
 
     if (page.properties.Image.type === "url") {
-      banner.imageUrl = page.properties.Image.url ?? undefined;
+      news.imageUrl = page.properties.Image.url ?? undefined;
     }
 
     if (page.properties["CTA(button text)"].type === "rich_text") {
-      banner.ctaText =
+      news.ctaText =
         page.properties["CTA(button text)"].rich_text[0].plain_text;
     }
 
     if (page.properties["CTA(link)"].type === "url") {
-      banner.ctaLink = page.properties["CTA(link)"].url ?? undefined;
+      news.ctaLink = page.properties["CTA(link)"].url ?? undefined;
     }
 
     if (page.properties["Button Color"].type === "rich_text") {
-      banner.buttonColor =
+      news.buttonColor =
         page.properties["Button Color"].rich_text[0].plain_text;
     }
 
     if (page.properties["Image Align"].type === "select") {
-      banner.imageAlignment =
+      news.imageAlignment =
         (page.properties["Image Align"].select
-          ?.name as Banner["imageAlignment"]) ?? "left";
+          ?.name as News["imageAlignment"]) ?? "left";
     }
 
-    banner.buttonTextColor = banner.buttonColor
-      ? contrast(banner.buttonColor)
+    news.buttonTextColor = news.buttonColor
+      ? contrast(news.buttonColor)
       : "#000000";
 
-    return banner;
+    return news;
   });
 };

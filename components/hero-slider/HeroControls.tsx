@@ -1,10 +1,10 @@
-import { Banner } from "lib/cms/get-banners";
+import { News } from "lib/cms/get-news";
 import { UseSliderControls } from "lib/hooks/slides";
 import { FC } from "react";
 import { ChevronLeft, ChevronRight } from "react-feather";
 
 export interface HeroControlsProps {
-  slides: Banner[];
+  slides: News[];
   slider: UseSliderControls;
 }
 
