@@ -1,5 +1,6 @@
 import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
 import Skeleton from "components/ui/Skeleton";
+import { motion } from "framer-motion";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { MarketOutcomes } from "lib/types/markets";
@@ -17,6 +18,8 @@ import {
 } from "@zeitgeistpm/sdk-next";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import Image from "next/image";
+import MarketImage from "components/ui/MarketImage";
+import { useHover } from "lib/hooks/events/useHover";
 
 export interface IndexedMarketCardData {
   marketId: number;
@@ -39,23 +42,8 @@ export interface IndexedMarketCardData {
 }
 export interface MarketCardProps extends IndexedMarketCardData {
   className?: string;
+  disableLink?: boolean;
 }
-
-const MarketCardInfo = ({
-  question,
-  img,
-}: {
-  question: string;
-  img?: string;
-}) => {
-  return (
-    <div className="w-full h-full flex whitespace-normal gap-4">
-      <h5 className="w-full h-fit line-clamp-2 text-base">{question}</h5>
-      {/* {disable for now until we can get image from CMS} */}
-      {/* {img && <MarketImage image={img} alt={question} className="rounded-lg" />} */}
-    </div>
-  );
-};
 
 const MarketCardPredictionBar = ({
   prediction: { name, price },
@@ -69,9 +57,7 @@ const MarketCardPredictionBar = ({
     const impliedPercentage = Math.round(Number(price) * 100);
 
     return (
-      <div
-        className={`w-full h-[30px] transition-all group-hover:bg-white bg-gray-200 relative`}
-      >
+      <div className={`w-full h-[30px] transition-all bg-gray-200 relative`}>
         <div className="text-sm flex justify-between items-center absolute w-full h-full px-2.5">
           <span className="text-blue">{name}</span>
           <span className="text-blue transition-all">{impliedPercentage}%</span>
@@ -187,11 +173,7 @@ const MarketCardDetails = ({
   );
 };
 
-export const MarketCardClientWrapper = (props: MarketCardProps) => {
-  return <MarketCard {...props} />;
-};
-
-const MarketCard = ({
+export const MarketCard = ({
   marketId,
   img,
   question,
@@ -207,6 +189,8 @@ const MarketCard = ({
   className = "",
   liquidity,
   numParticipants,
+  tags,
+  disableLink,
 }: MarketCardProps) => {
   const isYesNoMarket =
     outcomes.length === 2 &&
@@ -241,14 +225,29 @@ const MarketCard = ({
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
         data-testid={`marketCard-${marketId}`}
-        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)] h-[171px] 
-        rounded-[10px] p-5 relative bg-white hover:bg-pastel-blue ${className}`}
+        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)]  
+        rounded-[10px] p-5 relative bg-white ztg-transition md:hover:scale-105 ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
-          className="flex flex-col flex-1 gap-4"
+          onClick={(e) => {
+            if (disableLink) {
+              e.preventDefault();
+              return;
+            }
+          }}
+          className={`flex flex-col flex-1 gap-4 ${
+            disableLink && "cursor-default"
+          }`}
         >
-          <MarketCardInfo question={question} img={img} />
+          <div className="w-full h-full flex whitespace-normal gap-4">
+            <h5 className="w-full h-fit line-clamp-2 text-base">{question}</h5>
+            {/* {disable for now until we can get image from CMS} */}
+            {/* <div className="relative min-w-[84px] min-h-[80px] rounded-xl">
+              <MarketImage tags={tags} alt={question} className="rounded-lg" />
+            </div> */}
+          </div>
+
           <div className="w-full">
             {pool && marketType?.categorical ? (
               <MarketCardPredictionBar pool={pool} prediction={prediction} />

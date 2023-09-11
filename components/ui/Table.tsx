@@ -396,7 +396,7 @@ const Table = ({
         <>
           <div data-testid={testId}>
             <table
-              className="border-separate w-full"
+              className="border-separate w-full rounded-xl shadow-xl shadow-gray-100 overflow-hidden"
               ref={tableRef}
               style={
                 isOverflowing === true
@@ -415,7 +415,9 @@ const Table = ({
                     .map((column, index) => (
                       <th
                         key={index}
-                        className={`${getHeaderClass(column)} ${
+                        className={`${getHeaderClass(
+                          column,
+                        )} border-b-2 border-purple-100 ${
                           index == 0 ? "rounded-tl-md" : ""
                         } ${
                           index == columns.length - 1 ? "rounded-tr-md" : ""
@@ -469,6 +471,10 @@ const Table = ({
                       }
                       key={row.id}
                       className={`
+                      group
+                      border-t-1 border-gray-200
+                      transition-colors duration-100 ease-in-out
+                      hover:bg-blue-lighter hover:border-blue-300
                     ${rowColorClass}
                     ${onRowClick ? "cursor-pointer" : ""} mx-ztg-5`}
                       onClick={() => handleRowClick(row)}

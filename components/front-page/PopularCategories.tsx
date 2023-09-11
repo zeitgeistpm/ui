@@ -29,10 +29,10 @@ const Category = ({
 }) => {
   return (
     <div
-      className="flex flex-col w-full max-w-[230px] min-w-[80px] md:hover:scale-105 ztg-transition"
+      className="flex flex-1 flex-col w-full min-w-[80px] md:hover:scale-105 ztg-transition"
       data-testid="category"
     >
-      <div className="relative max-w-[230px] max-h-[230px] w-full h-full aspect-square">
+      <div className="relative  w-full h-full aspect-square">
         <Link
           href={`/markets?status=Active&tag=${title}#market-list`}
           className="w-full h-full relative block"
@@ -77,7 +77,7 @@ const PopularCategories: FC<{
     .slice(0, 6);
 
   return (
-    <div className="flex flex-col mt-ztg-30" data-testid="popularCategories">
+    <div className="flex flex-col" data-testid="popularCategories">
       <h2 className="mb-7 text-center sm:text-start">Popular Categories</h2>
       <div className="flex gap-x-[20px] overflow-x-auto no-scroll-bar md:overflow-x-visible">
         {topCategories.map((category, index) => (

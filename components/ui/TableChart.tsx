@@ -1,16 +1,16 @@
 import { Line, LineChart, ResponsiveContainer, YAxis } from "recharts";
 
-const TableChart = ({ data }: { data: { v: number; t: number }[] }) => {
-  const getColour = (startValue: number, endValue: number) => {
-    if (startValue > endValue) {
-      return "#FF0054";
-    } else if (startValue < endValue) {
-      return "#70C703";
-    } else {
-      return "#0001FE";
-    }
-  };
+export const getColour = (startValue: number, endValue: number) => {
+  if (startValue > endValue) {
+    return "#FF0054";
+  } else if (startValue < endValue) {
+    return "#70C703";
+  } else {
+    return "#0001FE";
+  }
+};
 
+const TableChart = ({ data }: { data: { v: number; t: number }[] }) => {
   return (
     <>
       {data?.length > 0 ? (

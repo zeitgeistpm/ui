@@ -7,9 +7,13 @@ const TradeTab: FC<
     { children, selected, className, ...rest },
     ref: React.ForwardedRef<HTMLDivElement>,
   ) => {
-    const classes = `block font-medium cursor-pointer h-full center w-1/2 outline-0 text-ztg-18-150 ${
+    const classes = `block font-medium cursor-pointer h-full center w-1/2 outline-0 text-ztg-18-150 transition-all ${
       className ?? ""
-    } ${selected ? "bg-white font-bold" : "bg-anti-flash-white"}`;
+    } ${
+      selected
+        ? "bg-white font-bold"
+        : "text-gray-300 text-opacity-50 bg-fog-of-war"
+    }`;
     return (
       <div ref={ref} className={classes} {...rest}>
         {children}

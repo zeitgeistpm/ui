@@ -19,7 +19,7 @@ import { getForeignAssetPriceServerSide } from "lib/hooks/queries/useAssetUsdPri
 import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { fetchAllPages } from "lib/util/fetch-all-pages";
-import { PoolStatus } from "@zeitgeistpm/indexer";
+import { PoolStatus, PoolOrderByInput } from "@zeitgeistpm/indexer";
 
 const poolChangesQuery = gql`
   query PoolChanges($start: DateTime, $end: DateTime) {
@@ -112,6 +112,7 @@ const getTrendingMarkets = async (
       limit: limit,
       offset: pageNumber * limit,
       where: { status_eq: PoolStatus.Active },
+      order: PoolOrderByInput.IdAsc,
     });
     return pools;
   });
@@ -203,7 +204,10 @@ type BasePrices = {
   [key: string | "ztg"]: Decimal;
 };
 
-const lookupPrice = (basePrices: BasePrices, baseAsset: BaseAssetId) => {
+const lookupPrice = (
+  basePrices: BasePrices,
+  baseAsset: BaseAssetId,
+): Decimal | undefined => {
   return IOForeignAssetId.is(baseAsset)
     ? basePrices[baseAsset.ForeignAsset]
     : basePrices["ztg"];
@@ -263,7 +267,8 @@ const calcTrendingPools = (
       basePrices,
       parseAssetIdString(base) as BaseAssetId,
     );
-    poolVolumes[poolId] = poolVolumes[poolId].mul(value);
+
+    poolVolumes[poolId] = poolVolumes[poolId].mul(value ?? 0);
   }
 
   const poolIdsByVolumeDesc = Object.keys(poolVolumes).sort((a, b) => {
