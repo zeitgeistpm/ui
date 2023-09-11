@@ -7,8 +7,9 @@ import { Video } from "react-feather";
 import { NextPage } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import ActionCard from "components/ui/ActionCard";
 import { motion } from "framer-motion";
+import { DepositActionableCard } from "components/ui/actionable/cards/Deposit";
+import { StartTradingActionableCard } from "components/ui/actionable/cards/StartTrading";
 
 const walletsConfig = [
   new TalismanWallet(),
@@ -101,23 +102,9 @@ const CreateAccountPage: NextPage = () => {
         </Link>
       </div>
       <h2 className="mb-9 p-2">Next Steps</h2>
-      <div className="grid grid-cols-2 gap-x-8 mb-20">
-        <ActionCard
-          title="Deposit Tokens"
-          imageUrl="/category/e-sports.png"
-          actionText="Make a Deposit"
-          description="Use one of several methods to deposit crypto on Zeitgeist to start trading"
-          actionUrl="/deposit"
-          pillLabel="~5 - 15 minutes"
-        />
-        <ActionCard
-          title="Start Trading"
-          imageUrl="/category/e-sports.png"
-          actionText="Make a Predictions"
-          description="You're ready to explore the entirety of our application!"
-          actionUrl="/markets"
-          pillLabel="No time limits"
-        />
+      <div className="flex flex-col md:flex-row gap-4">
+        <DepositActionableCard />
+        <StartTradingActionableCard />
       </div>
     </>
   );

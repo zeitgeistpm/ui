@@ -1,44 +1,105 @@
+import { useScroll, useSpring, useTransform, motion } from "framer-motion";
+import { useParallax } from "lib/hooks/animation/useParallax";
+import { useTypedText } from "lib/hooks/animation/useTypedText";
+import { useRelativeMousePosition } from "lib/hooks/events/useRelativeMousePosition";
+import { useEffect, useRef, useState } from "react";
 import { Video } from "react-feather";
+import { useInView } from "react-intersection-observer";
 
 const WatchHow = () => {
-  return (
-    <div className="flex items-center w-full bg-white h-[80px] md:h-[120px] px-3 md:px-[41px] overflow-hidden relative rounded-md">
-      <div className="font-medium text-sm sm:text-lg md:text-[32px]  z-10">
-        Trade on any future event
-      </div>
-      <div className="flex item-center justify-center gap-2 ml-auto bg-[#DC056C] text-white rounded-md px-[20px] py-[10px] z-10">
-        <span className="text-sm md:text-[px]">Watch how</span>
-        <Video size={24} />
-      </div>
+  const { text, play, animationState } = useTypedText(
+    "Trade on any future event",
+  );
 
+  const { ref, inView } = useInView({ delay: 60 });
+
+  const { scrollYProgress } = useScroll();
+  const mouseRef = useRef<HTMLDivElement>(null);
+  const { x: mx, y: my } = useRelativeMousePosition(mouseRef);
+
+  const ay = useTransform(
+    useSpring(my, {
+      stiffness: 100,
+      damping: 30,
+      restDelta: 0.001,
+    }),
+    [-1400, 1400],
+    [-120, 75],
+  );
+
+  const ax = useTransform(
+    useSpring(mx, {
+      stiffness: 100,
+      damping: 30,
+      restDelta: 0.001,
+    }),
+    [-1400, 1400],
+    [-100, 100],
+  );
+
+  const by = useTransform(
+    useSpring(my, {
+      stiffness: 100,
+      damping: 30,
+      restDelta: 0.001,
+    }),
+    [-1400, 1400],
+    [-120, 120],
+  );
+
+  const bx = useTransform(
+    useSpring(mx, {
+      stiffness: 100,
+      damping: 30,
+      restDelta: 0.001,
+    }),
+    [-1400, 1400],
+    [-100, 100],
+  );
+
+  useEffect(() => {
+    if (inView && animationState === "waiting") {
+      play();
+    }
+  }, [inView, animationState]);
+
+  return (
+    <div ref={mouseRef}>
       <div
-        className="rounded-full absolute flex items-center justify-center"
-        style={{
-          height: 625,
-          width: 625,
-          background:
-            "linear-gradient(131deg, rgba(240, 206, 135, 0.05) 0%, rgba(50, 255, 157, 0.40) 100%)",
-        }}
+        ref={ref}
+        className="flex flex-col sm:flex-row py-6 sm:py-0 items-center w-full bg-white sm:h-[80px] md:h-[120px] px-6 md:px-[41px] overflow-hidden relative rounded-md"
       >
-        <div
-          className="rounded-full "
-          style={{
-            height: 337,
-            width: 337,
-            background:
-              "linear-gradient(131deg, rgba(240, 206, 135, 0.05) 0%, rgba(50, 255, 157, 0.40) 100%)",
-          }}
-        ></div>
+        <div className="font-medium text-2xl md:text-3xl lg:text-3xl flex-1 z-10 flex mb-6 sm:mb-0">
+          {text.split("").map((c, index) => (
+            <span key={index} className="block animate-[pop-in_0.08s_40ms]">
+              {c == " " ? "\u00A0" : c}
+            </span>
+          ))}
+        </div>
+        <div className="relative">
+          <a
+            className={`flex relative cursor-wait center gap-2 ml-auto opacity-70 bg-ztg-pink text-white rounded-md px-[20px] py-[10px] z-10 ${
+              animationState === "finished" && "animate-pop-in"
+            }`}
+          >
+            <span className="text-sm md:text-[px] font-semibold">
+              Watch how
+            </span>
+            <Video size={24} />
+          </a>
+          <div className="absolute text-xs top-0 right-0 z-10 translate-x-[10%] -translate-y-[50%] text-white bg-blue-300 rounded-full py-1 px-2">
+            Coming soon!
+          </div>
+        </div>
+        <motion.div
+          className="absolute left-[10%] sm:left-[25%] top-12 sm:top-8 w-[40%] pb-[40%] h-[0] rounded-full blur-3xl"
+          style={{ x: ax, y: ay, backgroundColor: "rgba(250,217,255, 1)" }}
+        ></motion.div>
+        <motion.div
+          className="absolute left-[62%] sm:-top-96 w-[40%] pb-[40%] h-[0] rounded-full blur-3xl"
+          style={{ x: bx, y: by, backgroundColor: "rgba(231,237,247, 0.8)" }}
+        ></motion.div>
       </div>
-      <div
-        className="rounded-full absolute right-[200px] -top-[80px] hidden lg:block"
-        style={{
-          height: 157,
-          width: 157,
-          background:
-            "linear-gradient(131deg, rgba(240, 206, 135, 0.40) 0%, rgba(254, 0, 152, 0.40) 100%)",
-        }}
-      ></div>
     </div>
   );
 };

@@ -108,6 +108,7 @@ export const signAndSend = async (
   tx: SubmittableExtrinsic<"promise">,
   signer: KeyringPairOrExtSigner,
   cb?: GenericCallback,
+  foreignAssetNumber?: number,
 ) => {
   const _callback = (
     result: ISubmittableResult,
@@ -137,7 +138,12 @@ export const signAndSend = async (
       if (isExtSigner(signer)) {
         const unsub = await tx.signAndSend(
           signer.address,
-          { signer: signer.signer },
+          {
+            signer: signer.signer,
+            ...(foreignAssetNumber != null
+              ? { assetId: foreignAssetNumber }
+              : {}),
+          },
           (result) => {
             cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
           },

@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import HorizontalScroll from "components/ui/HorizontalScroll";
+import { BREAKPOINTS } from "lib/constants/breakpoints";
+import { useWindowSize } from "lib/hooks/events/useWindowSize";
+import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
+import { range } from "lodash-es";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import MarketCard, { IndexedMarketCardData } from "./market-card/index";
-import HorizontalScroll from "components/ui/HorizontalScroll";
-import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
-import { useWindowSize } from "lib/hooks/useWindowSize";
-import { BREAKPOINTS } from "lib/constants/breakpoints";
+import { useDebouncedCallback } from "use-debounce";
+import { useHasMounted } from "lib/hooks/events/useHasMounted";
 
 const MarketScroll = ({
   title,
@@ -18,7 +21,7 @@ const MarketScroll = ({
   link?: string;
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [scrollLeft, setScrollLeft] = useState(0);
+  const [pageIndex, setPageIndex] = useState(0);
 
   const { width: windowWidth } = useWindowSize();
   const { width, ref: containerRef } = useResizeDetector();
@@ -27,46 +30,47 @@ const MarketScroll = ({
   const { data: marketsStats } = useMarketsStats(
     markets.map((m) => m.marketId),
   );
+
   const gap = 28;
 
   //calculate cards shown and width based on container width
   const cardsShown =
     windowWidth < BREAKPOINTS.md ? 1 : windowWidth < BREAKPOINTS.lg ? 2 : 3;
+
   const cardWidth =
     windowWidth < BREAKPOINTS.md
       ? containerWidth
       : windowWidth < BREAKPOINTS.lg
       ? (containerWidth - gap) / cardsShown
       : (containerWidth - gap * 2) / cardsShown;
-  const scrollMin = 0;
-  const scrollMax = cardWidth * markets.length + gap * (markets.length - 1);
-
-  const moveSize = cardsShown * (cardWidth + gap);
-
-  useEffect(() => {
-    scrollRef.current?.scroll({ left: scrollLeft, behavior: "smooth" });
-  }, [scrollRef, scrollLeft]);
 
   const handleRightClick = () => {
-    setScrollLeft((prev) => {
-      const newScroll = prev + moveSize;
-      const max = scrollMax - containerWidth;
-      return newScroll > max ? scrollMax - containerWidth : newScroll;
-    });
+    setPageIndex(pageIndex + 1);
   };
 
   const handleLeftClick = () => {
-    setScrollLeft((prev) => {
-      const newScroll = prev - moveSize;
-
-      return newScroll < scrollMin ? scrollMin : newScroll;
-    });
+    setPageIndex(pageIndex - 1);
   };
 
-  const hasReachedEnd = scrollMax - containerWidth - scrollLeft === 0;
-  const leftDisabled = scrollLeft === 0;
+  const showRange = range(pageIndex, pageIndex + cardsShown);
+  const hasReachedEnd = showRange.includes(markets.length - 1);
+  const leftDisabled = pageIndex === 0;
   const rightDisabled =
     hasReachedEnd || cardWidth * markets.length < containerWidth;
+
+  const [isResizing, setIsResizing] = useState(false);
+
+  useEffect(() => {
+    setIsResizing(true);
+  }, [width]);
+
+  useEffect(
+    useDebouncedCallback(() => {
+      setPageIndex(0);
+      setTimeout(() => setIsResizing(false), 66);
+    }, 120),
+    [width],
+  );
 
   return (
     <div
@@ -86,22 +90,45 @@ const MarketScroll = ({
       <div className="col-span-3 relative">
         <div
           ref={scrollRef}
-          className="flex flex-col gap-7 sm:flex-row no-scroll-bar overflow-x-auto whitespace-nowrap scroll-smooth"
+          style={{
+            transform: `translateX(${
+              windowWidth < BREAKPOINTS.sm
+                ? 0
+                : -(showRange[0] * (cardWidth + gap))
+            }px)`,
+          }}
+          className={`flex ${
+            !isResizing && "transition-transform ztg-transition"
+          } flex-col gap-7 sm:flex-row no-scroll-bar  whitespace-nowrap scroll-smooth`}
         >
-          {markets.map((market) => {
+          {markets.map((market, cardIndex) => {
             const stat = marketsStats?.find(
               (s) => s.marketId === market.marketId,
             );
+
+            // Will only be true on the client.
+            // So enables two pass rendering and updating of the card visibility
+            // based on the window width which is only available when it mounts on the client.
+            // @note Without this the className wont update correctly when the component initially renders on the client
+            const hasMounted = useHasMounted();
+
+            const isShown =
+              showRange.includes(cardIndex) || windowWidth < BREAKPOINTS.md;
+
             market = {
               ...market,
               numParticipants: stat?.participants,
               liquidity: stat?.liquidity,
             };
+
             return (
               <MarketCard
                 key={market.marketId}
+                disableLink={!isShown}
+                className={`market-card rounded-ztg-10 transition duration-500 ease-in-out ${
+                  isShown && hasMounted ? "opacity-1" : "opacity-0"
+                }`}
                 {...market}
-                className="market-card rounded-ztg-10 transition duration-500 ease-in-out"
               />
             );
           })}

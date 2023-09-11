@@ -18,7 +18,7 @@
 }
 
 .ql-editor {
-  @apply font-sans text-base leading-8;
+  @apply font-sans text-base leading-8 !p-0;
 }
 
 .ql-editor[contenteditable="true"] {

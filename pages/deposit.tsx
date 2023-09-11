@@ -1,11 +1,11 @@
 import { Tab } from "@headlessui/react";
 import { encodeAddress } from "@polkadot/keyring";
 import { ZTG } from "@zeitgeistpm/sdk-next";
-import ActionCard from "components/ui/ActionCard";
 import CopyIcon from "components/ui/CopyIcon";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import QrCode from "components/ui/QrCode";
+import { StartTradingActionableCard } from "components/ui/actionable/cards/StartTrading";
 import Decimal from "decimal.js";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useCurrencyBalances } from "lib/hooks/queries/useCurrencyBalances";
@@ -526,24 +526,9 @@ const DepositPage: NextPage = () => {
           <Video />
         </Link>
       </div> */}
-      <h2 className="my-9">Next Steps</h2>
-      <div className="grid grid-cols-2 gap-x-8 mb-20">
-        {/* <ActionCard
-          title="Create an Account"
-          imageUrl="/category/e-sports.png"
-          actionText="Make a Deposit"
-          description="Use one of several methods to deposit crypto on Zeitgeist to start trading"
-          actionUrl="/deposit"
-          pillLabel="~5 - 15 minutes"
-        /> */}
-        <ActionCard
-          title="Start Trading"
-          imageUrl="/category/e-sports.png"
-          actionText="Make predictions"
-          description="You're ready to explore the entirety of our application!"
-          actionUrl="/markets"
-          pillLabel="No time limits"
-        />
+      <h2 className="mb-9 p-2">Next Steps</h2>
+      <div className="flex flex-col md:flex-row gap-4">
+        <StartTradingActionableCard />
       </div>
     </>
   );

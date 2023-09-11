@@ -31,7 +31,7 @@ export const MarketPromotionCallout = (props: {
         <div>
           <div className="flex justify-center">
             <div
-              className="rounded-md bg-green-lighter p-2 text-sm cursor-pointer"
+              className="rounded-md bg-green-lighter py-1 px-2 text-sm cursor-pointer"
               onClick={() => toggle()}
             >
               <span>Promo Market</span>

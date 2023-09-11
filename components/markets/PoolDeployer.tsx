@@ -21,6 +21,7 @@ import { calculatePoolCost } from "lib/util/market";
 import { ErrorMessage } from "components/create/editor/ErrorMessage";
 import { LiquidityInput } from "components/create/editor/inputs/Liquidity";
 import { FormEvent } from "components/create/editor/types";
+import { Loader } from "components/ui/Loader";
 import { getMetadataForCurrencyByAssetId } from "lib/constants/supported-currencies";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
@@ -30,7 +31,6 @@ import { FieldState } from "lib/state/market-creation/types/fieldstate";
 import { Liquidity } from "lib/state/market-creation/types/form";
 import { IOLiquidity } from "lib/state/market-creation/types/validation";
 import { useMemo, useState } from "react";
-import { Loader } from "components/ui/Loader";
 
 const PoolDeployer = ({
   marketId,
@@ -230,7 +230,7 @@ const PoolDeployer = ({
             <div className="text-center">
               <TransactionButton
                 className="w-ztg-266 ml-ztg-8 mb-4"
-                onClick={deployPool}
+                onClick={() => deployPool()}
                 disabled={!fieldState.isValid || isLoading || isBroadcasting}
               >
                 Deploy Pool

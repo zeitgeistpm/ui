@@ -47,8 +47,10 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div
-      className={`relative min-h-screen justify-evenly ${
-        greyBackgroundPageRoutes.includes(router.pathname) ? "bg-[#F1F1F1]" : ""
+      className={`relative min-h-screen justify-evenly overflow-x-hidden ${
+        greyBackgroundPageRoutes.includes(router.pathname)
+          ? "bg-light-gray"
+          : ""
       }`}
     >
       <TradeItemContext.Provider value={{ data: tradeItem, set: setTradeItem }}>
@@ -64,7 +66,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
         </style>
         <div ref={contentRef} className="flex-grow">
           <TopBar />
-          <main className="mb-12 container-fluid" ref={mainRef}>
+          <main className="mt-24 mb-12 container-fluid" ref={mainRef}>
             <div
               className={`w-full ${
                 ["/", "/markets"].includes(router.pathname) ? "pt-0" : "pt-2"
@@ -86,12 +88,11 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
                   />
                 </div>
               ) : (
-                <ContentDimensionsProvider height={height} width={width}>
-                  {children}
-                </ContentDimensionsProvider>
+                children
               )}
             </div>
           </main>
+
           <Footer />
         </div>
         <NotificationCenter />

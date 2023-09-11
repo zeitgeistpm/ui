@@ -3,7 +3,7 @@ import { gql, GraphQLClient } from "graphql-request";
 const resolutionQuery = gql`
   query MarketResolutionDate($marketId: Int) {
     historicalMarkets(
-      where: { event_eq: MarketResolved, marketId_eq: $marketId }
+      where: { event_eq: MarketResolved, market: { marketId_eq: $marketId } }
     ) {
       timestamp
       blockNumber

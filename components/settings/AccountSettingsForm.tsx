@@ -10,6 +10,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { UserIdentity } from "lib/types/user-identity";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 
 export type AcccountSettingsFormProps = {
   identity: UserIdentity;
