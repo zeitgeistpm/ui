@@ -29,6 +29,7 @@ interface TableProps {
   loadingNumber?: number;
   loadMoreThreshold?: number;
   testId?: string;
+  showHighlight?: boolean;
 }
 
 export interface TableColumn {
@@ -295,6 +296,7 @@ const Table = ({
   loadingNumber = 3,
   loadMoreThreshold,
   testId,
+  showHighlight = true,
 }: TableProps) => {
   const { rows, prepareRow } = useTable({ columns, data: data ?? [] });
   const tableRef = useRef<HTMLTableElement>(null);
@@ -474,7 +476,11 @@ const Table = ({
                       group
                       border-t-1 border-gray-200
                       transition-colors duration-100 ease-in-out
-                      hover:bg-blue-lighter hover:border-blue-300
+                      ${
+                        showHighlight === true
+                          ? " hover:bg-blue-lighter hover:border-blue-300 "
+                          : ""
+                      }
                     ${rowColorClass}
                     ${onRowClick ? "cursor-pointer" : ""} mx-ztg-5`}
                       onClick={() => handleRowClick(row)}

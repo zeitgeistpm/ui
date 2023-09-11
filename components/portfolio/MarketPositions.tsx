@@ -177,6 +177,7 @@ export const MarketPositions = ({
           question={market.question ?? undefined}
         />
         <Table
+          showHighlight={false}
           columns={isLiquidityMarket ? COLUMNS_LIQUIDITY : COLUMNS}
           data={positions
             .filter((pos) => displayBalance(pos))
