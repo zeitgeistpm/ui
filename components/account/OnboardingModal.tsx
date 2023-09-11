@@ -315,17 +315,11 @@ export const DesktopOnboardingModal = (props: {
     <TextSection
       headerText=""
       bodyText="After installing a wallet, you can now send and receive ZTG, our native
-          token. In the below tutorials, we show you how to get ZTG using one of
-          either the “MEXC” exchange or “GATE” exchange."
+          token. In the below tutorial, we show you how to get ZTG using Gate.io, a cryptocurrency exchange."
       leftButton={{
         text: "Use Gate.io",
         onClick: () =>
           window.open("https://blog.zeitgeist.pm/how-to-buy-ztg-on-gateio/"),
-      }}
-      rightButton={{
-        text: "Use MEXC",
-        onClick: () =>
-          window.open("https://blog.zeitgeist.pm/how-to-buy-ztg-on-mexc/"),
       }}
     />,
   ];
