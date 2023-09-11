@@ -27,8 +27,8 @@ const TopBar = () => {
     <div
       className={`w-full py-3.5 fixed top-0 z-40 transition-all duration-300 bg-black h-topbar-height`}
     >
-      <div className="relative flex items-center container-fluid">
-        <div className="hidden md:block border-r-1 border-blue-600 pr-3 md:pr-7">
+      <div className="h-full relative flex items-center container-fluid">
+        <div className="h-full hidden md:flex items-center justify-center border-r-1 border-blue-600 pr-3 md:pr-7">
           <Link href="/">
             <MenuLogo />
           </Link>
