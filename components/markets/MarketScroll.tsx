@@ -27,6 +27,12 @@ const MarketScroll = ({
   const { width, ref: containerRef } = useResizeDetector();
   const containerWidth = width || 0;
 
+  // Will only be true on the client.
+  // So enables two pass rendering and updating of the card visibility
+  // based on the window width which is only available when it mounts on the client.
+  // @note Without this the className wont update correctly when the component initially renders on the client
+  const hasMounted = useHasMounted();
+
   const { data: marketsStats } = useMarketsStats(
     markets.map((m) => m.marketId),
   );
@@ -34,8 +40,13 @@ const MarketScroll = ({
   const gap = 28;
 
   //calculate cards shown and width based on container width
-  const cardsShown =
-    windowWidth < BREAKPOINTS.md ? 1 : windowWidth < BREAKPOINTS.lg ? 2 : 3;
+  const cardsShown = !hasMounted
+    ? 4
+    : windowWidth < BREAKPOINTS.md
+    ? 1
+    : windowWidth < BREAKPOINTS.lg
+    ? 2
+    : 3;
 
   const cardWidth =
     windowWidth < BREAKPOINTS.md
@@ -106,12 +117,6 @@ const MarketScroll = ({
               (s) => s.marketId === market.marketId,
             );
 
-            // Will only be true on the client.
-            // So enables two pass rendering and updating of the card visibility
-            // based on the window width which is only available when it mounts on the client.
-            // @note Without this the className wont update correctly when the component initially renders on the client
-            const hasMounted = useHasMounted();
-
             const isShown =
               showRange.includes(cardIndex) || windowWidth < BREAKPOINTS.md;
 
@@ -126,7 +131,7 @@ const MarketScroll = ({
                 key={market.marketId}
                 disableLink={!isShown}
                 className={`market-card rounded-ztg-10 transition duration-500 ease-in-out ${
-                  isShown && hasMounted ? "opacity-1" : "opacity-0"
+                  isShown ? "opacity-1" : "opacity-0"
                 }`}
                 {...market}
               />
