@@ -118,12 +118,12 @@ export const getForeignAssetPriceServerSide = async (
     FOREIGN_ASSET_METADATA[foreignAsset.ForeignAsset].coinGeckoId;
 
   const res = await fetch(
-    `https://staging.zeitgeist.pm/api/usd-price?asset=${coinGeckoId}`,
+    `https://api.coingecko.com/api/v3/simple/price?ids=${coinGeckoId}&vs_currencies=usd`,
   );
 
   const json = await res.json();
 
-  return new Decimal(json.body.price ?? 0);
+  return new Decimal(json[coinGeckoId]?.usd ?? 0);
 };
 export const getForeignAssetPrice = async (foreignAsset: ForeignAssetId) => {
   const coinGeckoId =
