@@ -109,7 +109,7 @@ const MarketScroll = ({
           }}
           className={`flex ${
             !isResizing && "transition-transform ztg-transition"
-          } flex-col gap-7 sm:flex-row no-scroll-bar  whitespace-nowrap scroll-smooth`}
+          } flex-col gap-4 sm:flex-row no-scroll-bar  whitespace-nowrap scroll-smooth`}
         >
           {markets.map((market, cardIndex) => {
             const stat = marketsStats?.find(
