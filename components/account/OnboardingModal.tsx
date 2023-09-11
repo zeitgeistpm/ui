@@ -91,6 +91,18 @@ const TextSection = ({
   );
 };
 
+const TopPic = () => (
+  <div className="rounded-full w-[120px] h-[120px] mb-auto overflow-hidden">
+    <Image
+      alt="Portal Gate"
+      src={"/misc/portal_gate.png"}
+      objectFit="cover"
+      width={120}
+      height={120}
+    />
+  </div>
+);
+
 const walletsConfig = [
   new TalismanWallet(),
   new PolkadotjsWallet(),
@@ -245,14 +257,7 @@ export const MobileOnboardingModal = () => {
       className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
     w-full max-w-[526px] p-[30px] rounded-ztg-10"
     >
-      <div className="rounded-full w-[120px] h-[120px] mb-auto">
-        <Image
-          alt="AI Logan?"
-          src={"/misc/face.png"}
-          width={120}
-          height={120}
-        />
-      </div>
+      <TopPic />
 
       {screens[step]}
 
@@ -330,14 +335,7 @@ export const DesktopOnboardingModal = (props: {
       className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
     w-full max-w-[526px] p-[30px] rounded-ztg-10"
     >
-      <div className="rounded-full w-[120px] h-[120px] mb-auto">
-        <Image
-          alt="AI Logan?"
-          src={"/misc/face.png"}
-          width={120}
-          height={120}
-        />
-      </div>
+      <TopPic />
 
       {screens[step]}
 
