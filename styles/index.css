@@ -260,15 +260,30 @@ tr td:first-child {
 }
 
 #leaderboard table tbody tr:nth-child(1) {
-  background: #c5b04e;
+  background: rgb(197, 176, 78);
+  background: linear-gradient(
+    90deg,
+    rgba(197, 176, 78, 1) 0%,
+    rgba(255, 255, 255, 1) 10%
+  );
 }
 
 #leaderboard table tbody tr:nth-child(2) {
-  background: #b7c1c9;
+  background: rgb(183, 193, 201);
+  background: linear-gradient(
+    90deg,
+    rgba(183, 193, 201, 1) 0%,
+    rgba(255, 255, 255, 1) 10%
+  );
 }
 
 #leaderboard table tbody tr:nth-child(3) {
-  background: #ad8a56;
+  background: rgb(173, 138, 86);
+  background: linear-gradient(
+    90deg,
+    rgba(173, 138, 86, 1) 0%,
+    rgba(255, 255, 255, 1) 10%
+  );
 }
 
 /* Scroll */

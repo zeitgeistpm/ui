@@ -560,7 +560,7 @@ const Leaderboard: NextPage<{
 
   return (
     <div id="leaderboard">
-      <div className="w-full h-[137px] sm:h-[244px] relative overflow-hidden rounded-md mt-8">
+      <div className="w-full h-[137px] sm:h-[244px] relative overflow-hidden rounded-md">
         <Image
           src="/Leaderboard-banner.png"
           alt="Leaderboard-banner"
