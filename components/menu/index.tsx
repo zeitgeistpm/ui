@@ -16,6 +16,7 @@ import {
   FiPlusSquare,
   FiList,
 } from "react-icons/fi";
+import { useCategoryCounts } from "lib/hooks/queries/useCategoryCounts";
 
 const AccountButton = dynamic(() => import("../account/AccountButton"), {
   ssr: false,
@@ -26,8 +27,8 @@ const TopBar = () => {
     <div
       className={`w-full py-3.5 fixed top-0 z-40 transition-all duration-300 bg-black h-topbar-height`}
     >
-      <div className="relative flex items-center container-fluid">
-        <div className="hidden md:block border-r-1 border-blue-600 pr-3 md:pr-7">
+      <div className="h-full relative flex items-center container-fluid">
+        <div className="h-full hidden md:flex items-center justify-center border-r-1 border-blue-600 pr-3 md:pr-7">
           <Link href="/">
             <MenuLogo />
           </Link>
@@ -164,6 +165,7 @@ const TopBar = () => {
 };
 
 const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
+  const { data: counts } = useCategoryCounts();
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 grid-flow-row-dense md:h-full">
       {CATEGORIES.map((category, index) => (
@@ -181,7 +183,12 @@ const CategoriesMenu = ({ onSelect }: { onSelect: () => void }) => {
               sizes="100"
             />
           </div>
-          <div className="font-light">{category.name}</div>
+          <div className="flex flex-col">
+            <div className="font-light">{category.name}</div>
+            <div className="font-light text-xs h-[16px]">
+              {counts ? counts[index] : ""}
+            </div>
+          </div>
         </Link>
       ))}
     </div>

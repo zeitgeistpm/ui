@@ -31,6 +31,8 @@ import {
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
+import { dehydrate, QueryClient } from "@tanstack/react-query";
+import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
 
 const getPlaiceholders = (
   paths: string[],
@@ -55,7 +57,6 @@ export async function getStaticProps() {
     bannerPlaceholder,
     categoryPlaceholders,
     newsImagePlaceholders,
-    categoryCounts,
     stats,
     ztgHistory,
     chainProperties,
@@ -71,22 +72,27 @@ export async function getStaticProps() {
       news.map((slide) => slide.imageUrl ?? ""),
       { size: 16 },
     ),
-    getCategoryCounts(
-      client,
-      CATEGORIES.map((cat) => cat.name),
-    ),
     getNetworkStats(sdk),
     getZTGHistory(),
     sdk.api.rpc.system.properties(),
   ]);
 
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery([categoryCountsKey], () =>
+    getCategoryCounts(
+      sdk.indexer.client,
+      CATEGORIES.map((c) => c.name),
+    ),
+  );
+
   return {
     props: {
+      dehydratedState: dehydrate(queryClient),
       news: news,
       featuredMarkets: featuredMarkets ?? [],
       trendingMarkets: trendingMarkets ?? [],
       bannerPlaceholder: bannerPlaceholder.base64 ?? "",
-      categoryCounts: categoryCounts,
       categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
       newsImagePlaceholders: newsImagePlaceholders.map((c) => c.base64) ?? [],
       stats,
@@ -101,7 +107,6 @@ const IndexPage: NextPage<{
   news: News[];
   featuredMarkets: IndexedMarketCardData[];
   trendingMarkets: IndexedMarketCardData[];
-  categoryCounts: number[];
   categoryPlaceholders: string[];
   newsImagePlaceholders: string[];
   bannerPlaceholder: string;
@@ -113,7 +118,6 @@ const IndexPage: NextPage<{
   trendingMarkets,
   featuredMarkets,
   bannerPlaceholder,
-  categoryCounts,
   categoryPlaceholders,
   newsImagePlaceholders,
   stats,
@@ -168,10 +172,7 @@ const IndexPage: NextPage<{
         )}
 
         <div className="mb-12">
-          <PopularCategories
-            counts={categoryCounts}
-            imagePlaceholders={categoryPlaceholders}
-          />
+          <PopularCategories imagePlaceholders={categoryPlaceholders} />
         </div>
 
         <LatestTrades />

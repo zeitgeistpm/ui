@@ -39,8 +39,6 @@ export const MarketContextActionOutcomeSelector = ({
       }),
       {
         includeScore: true,
-        shouldSort: true,
-        threshold: 0.1,
         keys: ["name"],
       },
     );
