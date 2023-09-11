@@ -440,16 +440,21 @@ const DepositPage: NextPage = () => {
                   },
                 ]}
               />
-              <div className="flex items-center gap-2 mt-7">
-                <Image
-                  src="/currencies/dot.png"
-                  width={25}
-                  height={25}
-                  alt="Polkadot currency"
-                />
-                <div>Polkadot Address:</div>
+              <div className="flex flex-col md:flex-row gap-2 mt-7">
+                <div className="flex item-center gap-2">
+                  <Image
+                    src="/currencies/dot.png"
+                    width={25}
+                    height={25}
+                    alt="Polkadot currency"
+                  />
+                  <div>Polkadot Address:</div>
+                </div>
                 <div className="flex font-semibold">
-                  {encodedAddress}
+                  <span className="hidden sm:inline">{encodedAddress}</span>
+                  <span className="inline sm:hidden">
+                    {shortenAddress(encodedAddress, 12, 12)}
+                  </span>
                   <CopyIcon
                     size={24}
                     className="ml-3 cursor-pointer"
@@ -526,7 +531,7 @@ const DepositPage: NextPage = () => {
           <Video />
         </Link>
       </div> */}
-      <h2 className="mb-9 p-2">Next Steps</h2>
+      <h2 className="my-9">Next Steps</h2>
       <div className="flex flex-col md:flex-row gap-4">
         <StartTradingActionableCard />
       </div>
