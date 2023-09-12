@@ -5,12 +5,11 @@ import { useEffect, useMemo, useState } from "react";
 import { SVGProps } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronRight, Video } from "react-feather";
+import { Video } from "react-feather";
 import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
 import CopyIcon from "components/ui/CopyIcon";
 import QrCode from "components/ui/QrCode";
-import { ArrayToUnion } from "lib/types/union";
 import { useCurrencyBalances } from "lib/hooks/queries/useCurrencyBalances";
 import { ZTG } from "@zeitgeistpm/sdk-next";
 import Input from "components/ui/Input";
@@ -21,6 +20,7 @@ import { useCrossChainExtrinsic } from "lib/hooks/useCrossChainExtrinsic";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { formatNumberCompact } from "lib/util/format-compact";
 import FormTransactionButton from "components/ui/FormTransactionButton";
+import TabGroup from "components/ui/TabGroup";
 import { CreateAccountActionableCard } from "components/ui/actionable/cards/CreateAccount";
 import { StartTradingActionableCard } from "components/ui/actionable/cards/StartTrading";
 
@@ -88,7 +88,7 @@ const UsdtIcon = (props: SVGProps<SVGSVGElement>) => (
 );
 
 const DepositMethodItems = ["buy", "deposit"] as const;
-type DepositMethod = ArrayToUnion<typeof DepositMethodItems>;
+type DepositMethod = typeof DepositMethodItems[number];
 
 const DepositMethodLabels: Record<DepositMethod, string> = {
   buy: "Buy",
@@ -96,7 +96,7 @@ const DepositMethodLabels: Record<DepositMethod, string> = {
 };
 
 const DepositCurrencyItems = ["ztg", "dot", "usdt"] as const;
-type DepositCurrency = ArrayToUnion<typeof DepositCurrencyItems>;
+type DepositCurrency = typeof DepositCurrencyItems[number];
 
 const DepositCurrencyLabels: Record<DepositCurrency, string> =
   DepositCurrencyItems.reduce((acc, item) => {
@@ -110,75 +110,11 @@ const DepositCurrencyIcons: Record<DepositCurrency, React.FC> = {
 };
 
 const DepositPaymentMethodItems = ["card", "crypto"] as const;
-type DepositPaymentMethod = ArrayToUnion<typeof DepositPaymentMethodItems>;
+type DepositPaymentMethod = typeof DepositPaymentMethodItems[number];
 
 const DepositPaymentMethodLabels: Record<DepositPaymentMethod, string> = {
   card: "Use Credit Card",
   crypto: "with Crypto",
-};
-
-const TabGroup = <T extends readonly string[]>({
-  items,
-  labels,
-  icons,
-  selected,
-  disabled = [],
-  onChange,
-  className = "",
-}: {
-  items: T;
-  labels?: Record<ArrayToUnion<T>, string>;
-  icons?: Record<ArrayToUnion<T>, React.FC>;
-  disabled?: ArrayToUnion<T>[];
-  selected: ArrayToUnion<T> | undefined;
-  onChange: (item: ArrayToUnion<T>) => void;
-  className?: string;
-}) => {
-  const selectedIndex = selected != null ? items.indexOf(selected) : -1;
-
-  return (
-    <Tab.Group
-      manual
-      onChange={(index) => {
-        if (disabled.includes(items[index] as ArrayToUnion<T>)) {
-          return;
-        }
-        onChange(items[index] as ArrayToUnion<T>);
-      }}
-      defaultIndex={selectedIndex}
-      selectedIndex={selectedIndex}
-    >
-      <Tab.List
-        className={
-          "grid gap-3 " + `grid-cols-${items.length} h-16 ` + className
-        }
-      >
-        {items.map((item, id) => {
-          const Icon = icons ? icons[item] : null;
-          const isDisabled = disabled.includes(item as ArrayToUnion<T>);
-          return (
-            <Tab
-              key={id}
-              as="div"
-              className={
-                "h-full outline-none center rounded-lg " +
-                (selectedIndex === id
-                  ? "bg-ice-hush"
-                  : isDisabled
-                  ? "bg-misty-harbor text-sky-600"
-                  : "cursor-pointer bg-white")
-              }
-            >
-              <div className="relative w-[40px] h-[40px] mr-3">
-                {Icon && <Icon fill={isDisabled ? "#C3C9CD" : undefined} />}
-              </div>
-              {labels ? labels[item] : item}
-            </Tab>
-          );
-        })}
-      </Tab.List>
-    </Tab.Group>
-  );
 };
 
 const ResultButtons = ({
@@ -373,6 +309,9 @@ const DepositPage: NextPage = () => {
           labels={DepositMethodLabels}
           selected={method}
           onChange={setMethod}
+          className="h-16"
+          itemClassName="center outline-none rounded-lg bg-white"
+          selectedItemClassName="!bg-ice-hush"
         />
         <TabGroup
           items={DepositCurrencyItems}
@@ -382,6 +321,9 @@ const DepositPage: NextPage = () => {
           onChange={setCurrency}
           disabled={["usdt"]}
           className="h-36"
+          itemClassName="center outline-none rounded-lg bg-white"
+          disabledItemClassName="!bg-misty-harbor text-sky-600"
+          selectedItemClassName="!bg-ice-hush"
         />
         {method === "buy" && (
           <TabGroup
@@ -390,6 +332,10 @@ const DepositPage: NextPage = () => {
             selected={paymentMethod}
             onChange={setPaymentMethod}
             disabled={disabledPaymentMethods}
+            disabledItemClassName="!bg-misty-harbor text-sky-600"
+            className="h-16"
+            itemClassName="center outline-none rounded-lg bg-white"
+            selectedItemClassName="!bg-ice-hush"
           />
         )}
         {method === "buy" && currency === "ztg" && paymentMethod === "crypto" && (

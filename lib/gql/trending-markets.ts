@@ -1,10 +1,4 @@
-import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
-import { IndexedMarketCardData } from "components/markets/market-card/index";
-import Decimal from "decimal.js";
-import { gql, GraphQLClient } from "graphql-request";
-import { DAY_SECONDS, ZTG } from "lib/constants";
-import { MarketOutcomes, MarketOutcome } from "lib/types/markets";
-import { getCurrentPrediction } from "lib/util/assets";
+import { PoolOrderByInput, PoolStatus } from "@zeitgeistpm/indexer";
 import {
   BaseAssetId,
   FullContext,
@@ -12,14 +6,21 @@ import {
   ScalarRangeType,
   Sdk,
 } from "@zeitgeistpm/sdk-next";
+import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
+import { IndexedMarketCardData } from "components/markets/market-card/index";
+import Decimal from "decimal.js";
+import { gql, GraphQLClient } from "graphql-request";
+import { DAY_SECONDS, ZTG } from "lib/constants";
 import { hiddenMarketIds } from "lib/constants/markets";
-import { marketMetaFilter } from "./constants";
-import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
-import { getForeignAssetPriceServerSide } from "lib/hooks/queries/useAssetUsdPrice";
-import { fetchZTGInfo } from "@zeitgeistpm/utility/dist/ztg";
-import { parseAssetIdString } from "lib/util/parse-asset-id";
+import {
+  ForeignAssetPrices,
+  getBaseAssetPrices,
+} from "lib/hooks/queries/useAssetUsdPrice";
+import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
+import { getCurrentPrediction } from "lib/util/assets";
 import { fetchAllPages } from "lib/util/fetch-all-pages";
-import { PoolStatus, PoolOrderByInput } from "@zeitgeistpm/indexer";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { marketMetaFilter } from "./constants";
 
 const poolChangesQuery = gql`
   query PoolChanges($start: DateTime, $end: DateTime) {
@@ -200,12 +201,8 @@ const getTrendingMarkets = async (
   return trendingMarkets;
 };
 
-type BasePrices = {
-  [key: string | "ztg"]: Decimal;
-};
-
 const lookupPrice = (
-  basePrices: BasePrices,
+  basePrices: ForeignAssetPrices,
   baseAsset: BaseAssetId,
 ): Decimal | undefined => {
   return IOForeignAssetId.is(baseAsset)
@@ -213,36 +210,12 @@ const lookupPrice = (
     : basePrices["ztg"];
 };
 
-const getBaseAssetPrices = async (): Promise<BasePrices> => {
-  const assetIds = Object.keys(FOREIGN_ASSET_METADATA);
-
-  const foreignAssetPrices = await Promise.all(
-    assetIds.map((id) =>
-      getForeignAssetPriceServerSide({ ForeignAsset: Number(id) }),
-    ),
-  );
-
-  const pricesObj = foreignAssetPrices.reduce<BasePrices>(
-    (obj, price, index) => {
-      obj[assetIds[index]] = price;
-      return obj;
-    },
-    {},
-  );
-
-  const ztgInfo = await fetchZTGInfo();
-
-  pricesObj["ztg"] = ztgInfo.price;
-
-  return pricesObj;
-};
-
 const calcTrendingPools = (
   transactions: {
     poolId: number;
     dVolume: string;
   }[],
-  basePrices: BasePrices,
+  basePrices: ForeignAssetPrices,
   pools: { poolId: number; baseAsset: string; status: string }[],
 ) => {
   const poolVolumes: { [key: string]: Decimal } = {};
