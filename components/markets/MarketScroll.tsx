@@ -27,6 +27,12 @@ const MarketScroll = ({
   const { width, ref: containerRef } = useResizeDetector();
   const containerWidth = width || 0;
 
+  // Will only be true on the client.
+  // So enables two pass rendering and updating of the card visibility
+  // based on the window width which is only available when it mounts on the client.
+  // @note Without this the className wont update correctly when the component initially renders on the client
+  const hasMounted = useHasMounted();
+
   const { data: marketsStats } = useMarketsStats(
     markets.map((m) => m.marketId),
   );
@@ -72,6 +78,10 @@ const MarketScroll = ({
     [width],
   );
 
+  if (!hasMounted) {
+    markets = markets.slice(0, cardsShown);
+  }
+
   return (
     <div
       ref={containerRef}
@@ -99,18 +109,12 @@ const MarketScroll = ({
           }}
           className={`flex ${
             !isResizing && "transition-transform ztg-transition"
-          } flex-col gap-7 sm:flex-row no-scroll-bar  whitespace-nowrap scroll-smooth`}
+          } flex-col gap-4 sm:flex-row no-scroll-bar  whitespace-nowrap scroll-smooth`}
         >
           {markets.map((market, cardIndex) => {
             const stat = marketsStats?.find(
               (s) => s.marketId === market.marketId,
             );
-
-            // Will only be true on the client.
-            // So enables two pass rendering and updating of the card visibility
-            // based on the window width which is only available when it mounts on the client.
-            // @note Without this the className wont update correctly when the component initially renders on the client
-            const hasMounted = useHasMounted();
 
             const isShown =
               showRange.includes(cardIndex) || windowWidth < BREAKPOINTS.md;
@@ -126,7 +130,7 @@ const MarketScroll = ({
                 key={market.marketId}
                 disableLink={!isShown}
                 className={`market-card rounded-ztg-10 transition duration-500 ease-in-out ${
-                  isShown && hasMounted ? "opacity-1" : "opacity-0"
+                  isShown ? "opacity-1" : "opacity-0"
                 }`}
                 {...market}
               />

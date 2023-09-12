@@ -225,8 +225,8 @@ export const MarketCard = ({
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
         data-testid={`marketCard-${marketId}`}
-        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-18.67px)]  
-        rounded-[10px] p-5 relative bg-white ztg-transition md:hover:scale-105 ${className}`}
+        className={`group flex flex-col min-w-full md:min-w-[calc(50%-14px)] lg:min-w-[calc(100%/3-9.67px)]  
+        rounded-[10px] p-5 relative bg-white ztg-transition md:hover:scale-[1.035] ${className}`}
       >
         <Link
           href={`/markets/${marketId}`}
