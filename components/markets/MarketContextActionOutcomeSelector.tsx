@@ -29,12 +29,28 @@ export const MarketContextActionOutcomeSelector = ({
   const [search, setSearch] = useState<string | undefined>();
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const assetOptions = useMemo(() => {
+    if (!options) return [];
+    const colors = calcMarketColors(market?.marketId!, options.length);
+
+    return options.map((asset, index) => {
+      const assetIndex = getIndexOf(asset);
+      const category = market?.categories?.[assetIndex];
+      return {
+        asset,
+        assetIndex,
+        category,
+        color: colors[index],
+      };
+    });
+  }, [options]);
+
   const searchResults = useMemo(() => {
     if (!search) return null;
     if (!options) return [];
     const fuse = new Fuse(
-      options.map((option) => {
-        const name = market.categories?.[getIndexOf(option)].name ?? "";
+      assetOptions.map((option) => {
+        const name = market.categories?.[getIndexOf(option.asset)].name ?? "";
         return { ...option, name };
       }),
       {
@@ -45,10 +61,10 @@ export const MarketContextActionOutcomeSelector = ({
 
     const results = fuse.search(search);
 
-    return results.map(
-      (result) => omit(result.item, "name") as MarketOutcomeAssetId,
-    );
-  }, [options, search]);
+    return results.map((result) => omit(result.item, "name"));
+  }, [assetOptions, search]);
+
+  console.log(assetOptions);
 
   useEffect(() => {
     if (!open) {
@@ -81,7 +97,7 @@ export const MarketContextActionOutcomeSelector = ({
             >
               {(text) => <>{text}</>}
             </TruncatedText>
-            {options && options.length > 1 && <RiArrowDownSLine />}
+            <RiArrowDownSLine />
           </div>
         </Listbox.Button>
         <Transition
@@ -122,25 +138,19 @@ export const MarketContextActionOutcomeSelector = ({
               static
               className="overflow-y-scroll no-scroll-bar flex-1 h-fit min-h-0 mb-4"
             >
-              {(searchResults ?? options)?.map((asset, index) => {
-                const assetIndex = getIndexOf(asset);
-                const category = market?.categories?.[assetIndex];
-                const colors = calcMarketColors(
-                  market?.marketId!,
-                  options!.length,
-                );
+              {(searchResults ?? assetOptions)?.map((option, index) => {
                 return (
                   <Listbox.Option
-                    key={assetIndex}
-                    value={asset}
+                    key={option.assetIndex}
+                    value={option.asset}
                     className=" text-base cursor-pointer py-1 px-5 hover:bg-opacity-10"
                   >
                     <div className="hover:bg-slate-100 flex py-6 md:text-sm lg:text-base px-5 gap-3 rounded-md items-center">
                       <div
                         className="w-4 h-4 rounded-full "
-                        style={{ backgroundColor: colors[index] }}
+                        style={{ backgroundColor: option.color }}
                       ></div>
-                      {category?.name || assetIndex}
+                      {option.category?.name || option.assetIndex}
                     </div>
                   </Listbox.Option>
                 );
