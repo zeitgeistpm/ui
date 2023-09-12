@@ -143,7 +143,7 @@ export const AddressDetails = ({
       </div>
 
       <Modal open={inspected} onClose={() => setInspected(false)}>
-        <Dialog.Panel className="bg-white rounded-ztg-10 p-[15px]">
+        <Dialog.Panel className="bg-white rounded-ztg-10 p-[15px] max-w-[95%]">
           <div>
             Address Details
             {identity?.judgement && (
