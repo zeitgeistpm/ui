@@ -11,8 +11,6 @@ import { TradeItem, TradeItemContext } from "lib/hooks/trade";
 import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
 import { useRouter } from "next/router";
 
-// font optimization from @next/font
-import { inter, kanit, roboto_mono } from "lib/util/fonts";
 import { Account } from "components/account/Account";
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
@@ -46,9 +44,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div
-      className={`${inter.variable} ${kanit.variable} ${
-        roboto_mono.variable
-      } font-sans relative min-h-screen justify-evenly overflow-x-hidden ${
+      className={`relative min-h-screen justify-evenly overflow-x-hidden ${
         greyBackgroundPageRoutes.includes(router.pathname)
           ? "bg-light-gray"
           : ""
