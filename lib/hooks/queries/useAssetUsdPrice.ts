@@ -85,6 +85,32 @@ export const useAllForeignAssetUsdPrices = (): {
   };
 };
 
+export const getBaseAssetPrices = async (): Promise<ForeignAssetPrices> => {
+  const coinGeckoIds = Object.values(FOREIGN_ASSET_METADATA).map(
+    (asset) => asset.coinGeckoId,
+  );
+  const res = await fetch(
+    `https://api.coingecko.com/api/v3/simple/price?ids=${coinGeckoIds.join(
+      "%2C",
+    )}&vs_currencies=usd`,
+  );
+
+  const json = await res.json();
+
+  const assetPrices = Object.keys(
+    FOREIGN_ASSET_METADATA,
+  ).reduce<ForeignAssetPrices>((prices, assetNumber) => {
+    const assetMetadata = FOREIGN_ASSET_METADATA[Number(assetNumber)];
+    const coinGeckoId = assetMetadata.coinGeckoId;
+    const assetPrice = json[coinGeckoId].usd;
+    prices[assetNumber] = new Decimal(assetPrice);
+
+    return prices;
+  }, {});
+
+  return assetPrices;
+};
+
 export const getForeignAssetPriceServerSide = async (
   foreignAsset: ForeignAssetId,
 ) => {
