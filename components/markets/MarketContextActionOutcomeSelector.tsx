@@ -64,8 +64,6 @@ export const MarketContextActionOutcomeSelector = ({
     return results.map((result) => omit(result.item, "name"));
   }, [assetOptions, search]);
 
-  console.log(assetOptions);
-
   useEffect(() => {
     if (!open) {
       setSearch(undefined);
