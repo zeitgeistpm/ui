@@ -55,6 +55,16 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
           : ""
       }`}
     >
+      {/* loads optimized fonts for global access */}
+      <style jsx global>
+        {`
+          :root {
+            --font-inter: ${inter.style.fontFamily};
+            --font-kanit: ${kanit.style.fontFamily};
+            --font-roboto-mono: ${roboto_mono.style.fontFamily};
+          }
+        `}
+      </style>
       <TradeItemContext.Provider value={{ data: tradeItem, set: setTradeItem }}>
         <div ref={contentRef} className={`flex-grow`}>
           <TopBar />
