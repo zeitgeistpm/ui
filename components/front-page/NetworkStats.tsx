@@ -2,7 +2,9 @@ const StatCard = ({ title, value }: { title: string; value: string }) => {
   return (
     <div className="flex flex-col bg-white w-full items-center justify-center rounded-md py-2">
       <div className="">
-        <div className="text-3xl font-mono ">{value}</div>
+        <div className="text-3xl font-mono text-center mb-1 md:mb-0 md:text-left">
+          {value}
+        </div>
         <div className="text-sm font-light">{title}</div>
       </div>
     </div>
