@@ -102,7 +102,7 @@ const Portfolio: NextPageWithLayout = () => {
     marketPositionsByMarket && newAssetsQueued.length !== 0;
 
   return (
-    <div className="pt-10">
+    <div className="">
       {address && <PortfolioIdentity address={address} />}
       <div className="mb-[40px]">
         <PortfolioBreakdown
