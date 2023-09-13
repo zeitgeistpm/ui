@@ -91,6 +91,18 @@ const TextSection = ({
   );
 };
 
+const TopPic = () => (
+  <div className="rounded-full w-[120px] h-[120px] mb-auto overflow-hidden">
+    <Image
+      alt="Portal Gate"
+      src={"/misc/portal_gate.png"}
+      objectFit="cover"
+      width={120}
+      height={120}
+    />
+  </div>
+);
+
 const walletsConfig = [
   new TalismanWallet(),
   new PolkadotjsWallet(),
@@ -245,14 +257,7 @@ export const MobileOnboardingModal = () => {
       className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
     w-full max-w-[526px] p-[30px] rounded-ztg-10"
     >
-      <div className="rounded-full w-[120px] h-[120px] mb-auto">
-        <Image
-          alt="AI Logan?"
-          src={"/misc/face.png"}
-          width={120}
-          height={120}
-        />
-      </div>
+      <TopPic />
 
       {screens[step]}
 
@@ -310,17 +315,11 @@ export const DesktopOnboardingModal = (props: {
     <TextSection
       headerText=""
       bodyText="After installing a wallet, you can now send and receive ZTG, our native
-          token. In the below tutorials, we show you how to get ZTG using one of
-          either the “MEXC” exchange or “GATE” exchange."
+          token. In the below tutorial, we show you how to get ZTG using Gate.io, a cryptocurrency exchange."
       leftButton={{
         text: "Use Gate.io",
         onClick: () =>
           window.open("https://blog.zeitgeist.pm/how-to-buy-ztg-on-gateio/"),
-      }}
-      rightButton={{
-        text: "Use MEXC",
-        onClick: () =>
-          window.open("https://blog.zeitgeist.pm/how-to-buy-ztg-on-mexc/"),
       }}
     />,
   ];
@@ -330,14 +329,7 @@ export const DesktopOnboardingModal = (props: {
       className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
     w-full max-w-[526px] p-[30px] rounded-ztg-10"
     >
-      <div className="rounded-full w-[120px] h-[120px] mb-auto">
-        <Image
-          alt="AI Logan?"
-          src={"/misc/face.png"}
-          width={120}
-          height={120}
-        />
-      </div>
+      <TopPic />
 
       {screens[step]}
 
