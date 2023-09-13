@@ -1,6 +1,7 @@
 import { FC } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useCategoryCounts } from "lib/hooks/queries/useCategoryCounts";
 
 export const CATEGORIES = [
   { name: "Sports", imagePath: "/category/sports.png" },
@@ -28,7 +29,7 @@ const Category = ({
 }) => {
   return (
     <div
-      className="flex flex-1 flex-col w-full min-w-[80px] md:hover:scale-105 ztg-transition"
+      className="flex flex-1 flex-col w-full min-w-[80px] md:hover:scale-[1.035] ztg-transition"
       data-testid="category"
     >
       <div className="relative  w-full h-full aspect-square">
@@ -63,12 +64,13 @@ const Category = ({
 };
 
 const PopularCategories: FC<{
-  counts: number[];
   imagePlaceholders: string[];
-}> = ({ counts, imagePlaceholders }) => {
+}> = ({ imagePlaceholders }) => {
+  const { data: counts } = useCategoryCounts();
+
   const topCategories = CATEGORIES.map((category, index) => ({
     ...category,
-    count: counts[index],
+    count: counts?.[index] ?? 0,
     placeholder: imagePlaceholders[index],
   }))
     .sort((a, b) => b.count - a.count)
@@ -77,7 +79,7 @@ const PopularCategories: FC<{
   return (
     <div className="flex flex-col" data-testid="popularCategories">
       <h2 className="mb-7 text-center sm:text-start">Popular Categories</h2>
-      <div className="flex gap-x-[20px] overflow-x-auto no-scroll-bar md:overflow-x-visible">
+      <div className="flex gap-4 overflow-x-auto no-scroll-bar md:overflow-x-visible">
         {topCategories.map((category, index) => (
           <Category
             key={index}

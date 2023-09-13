@@ -21,6 +21,7 @@ interface TransactionButtonProps {
   extrinsic?: SubmittableExtrinsic<"promise", ISubmittableResult>;
   disableFeeCheck?: boolean;
   loading?: boolean;
+  connectText?: string;
 }
 
 const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
@@ -33,6 +34,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   type = "button",
   extrinsic,
   disableFeeCheck = false,
+  connectText = "Connect Wallet",
   loading,
 }) => {
   const wallet = useWallet();
@@ -100,7 +102,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
     } else if (wallet.connected) {
       return children;
     } else {
-      return "Connect Wallet";
+      return connectText;
     }
   };
   return (

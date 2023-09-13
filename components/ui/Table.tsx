@@ -28,7 +28,6 @@ interface TableProps {
   loadingMore?: boolean;
   loadingNumber?: number;
   loadMoreThreshold?: number;
-  testId?: string;
   showHighlight?: boolean;
 }
 
@@ -295,7 +294,6 @@ const Table = ({
   loadingMore = false,
   loadingNumber = 3,
   loadMoreThreshold,
-  testId,
   showHighlight = true,
 }: TableProps) => {
   const { rows, prepareRow } = useTable({ columns, data: data ?? [] });
@@ -396,7 +394,7 @@ const Table = ({
         </div>
       ) : (
         <>
-          <div data-testid={testId}>
+          <div>
             <table
               className="border-separate w-full rounded-xl shadow-xl shadow-gray-100 overflow-hidden"
               ref={tableRef}
