@@ -13,9 +13,6 @@ import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { hotjar } from "react-hotjar";
 
-// font optimization from @next/font
-import { inter, kanit, roboto_mono } from "lib/util/fonts";
-
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
 const domain = process.env["NEXT_PUBLIC_DOMAIN"];
@@ -26,30 +23,6 @@ const isProduction =
 const MyApp = ({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
   const router = useRouter();
-
-  useEffect(() => {
-    // font optimization from @next/font
-    document.body.className += `${inter.variable} ${kanit.variable} ${roboto_mono.variable} font-sans`;
-
-    return () => {
-      document.body.className = document.body.className.replace(
-        `${inter.variable}`,
-        "",
-      );
-      document.body.className = document.body.className.replace(
-        `${kanit.variable}`,
-        "",
-      );
-      document.body.className = document.body.className.replace(
-        `${roboto_mono.variable}`,
-        "",
-      );
-      document.body.className = document.body.className.replace(
-        "font-sans",
-        "",
-      );
-    };
-  }, []);
 
   useEffect(() => {
     if (!isProduction) {
