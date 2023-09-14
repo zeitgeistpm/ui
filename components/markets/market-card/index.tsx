@@ -220,7 +220,7 @@ export const MarketCard = ({
   const upper = marketType?.scalar?.[1]
     ? new Decimal(marketType?.scalar?.[1]).div(ZTG).toNumber()
     : 0;
-
+  console.log(status, prediction);
   return (
     <MarketCardContext.Provider value={{ baseAsset }}>
       <div
@@ -249,7 +249,16 @@ export const MarketCard = ({
           </div>
 
           <div className="w-full">
-            {pool && marketType?.categorical ? (
+            {status === "Resolved" ? (
+              <span className="text-xs text-ztg-blue">
+                Resolved:{" "}
+                <span className="font-semibold">
+                  {marketType?.categorical
+                    ? prediction.name
+                    : formatNumberCompact(Number(prediction.name))}
+                </span>
+              </span>
+            ) : pool && marketType?.categorical ? (
               <MarketCardPredictionBar pool={pool} prediction={prediction} />
             ) : pool && Object.keys(pool).length !== 0 ? (
               <ScalarPriceRange
