@@ -44,15 +44,12 @@ const CategoricalDisputeBox = ({
     );
 
   const disputeBond = constants?.markets.disputeBond;
-  const disputeFactor = constants?.markets.disputeFactor;
   const tokenSymbol = constants?.tokenSymbol;
 
   const lastDispute = disputes?.[disputes.length - 1];
 
   const bondAmount =
-    disputes && isConstantsLoading === false
-      ? disputeBond! + disputes.length * disputeFactor!
-      : disputeBond;
+    disputes && isConstantsLoading === false ? disputeBond : undefined;
 
   const {
     send: dispute,
@@ -97,8 +94,7 @@ const CategoricalDisputeBox = ({
     <div className="p-[30px] flex flex-col items-center gap-y-3">
       <div className="font-bold text-[22px]">Dispute Outcome</div>
       <div className="text-center mb-[20px]">
-        Bond will start at {disputeBond} {tokenSymbol}, increasing by{" "}
-        {disputeFactor} {tokenSymbol} for each dispute.{" "}
+        Bond cost: {disputeBond} {tokenSymbol}
         <span className="font-bold">
           Bonds will be slashed if the reported outcome is deemed to be
           incorrect
@@ -125,15 +121,11 @@ const CategoricalDisputeBox = ({
           )}
         </div>
       </div> */}
-      {bondAmount !== disputeBond &&
-      bondAmount !== undefined &&
-      disputeFactor !== undefined ? (
+      {bondAmount !== disputeBond && bondAmount !== undefined && (
         <div className="flex flex-col item-center text-center">
           <span className="text-sky-600 text-[14px]">Previous Bond:</span>
-          <span className="">{bondAmount - disputeFactor}</span>
+          <span className="">{bondAmount}</span>
         </div>
-      ) : (
-        <></>
       )}
       <TransactionButton
         className="mb-ztg-10 mt-[20px]"

@@ -22,7 +22,6 @@ const ScalarDisputeBox = ({
   const { data: constants } = useChainConstants();
 
   const disputeBond = constants?.markets.disputeBond;
-  const disputeFactor = constants?.markets.disputeFactor;
   const tokenSymbol = constants?.tokenSymbol;
 
   const { data: disputes } = useMarketDisputes(market);
@@ -31,10 +30,7 @@ const ScalarDisputeBox = ({
   const wallet = useWallet();
   const signer = wallet.activeAccount;
 
-  const bondAmount =
-    disputes && disputeBond && disputeFactor
-      ? disputeBond + disputes.length * disputeFactor
-      : disputeBond;
+  const bondAmount = disputes && disputeBond ? disputeBond : undefined;
 
   const isScalarDate = market.scalarType === "date";
 
@@ -76,8 +72,7 @@ const ScalarDisputeBox = ({
     <div className="p-[30px] flex flex-col items-center gap-y-3">
       <div className="font-bold text-[22px]">Dispute Outcome</div>
       <div className="text-center mb-[20px]">
-        Bond will start at {disputeBond} {tokenSymbol}, increasing by{" "}
-        {disputeFactor} {tokenSymbol} for each dispute.{" "}
+        Bond cost: {disputeBond} {tokenSymbol}
         <span className="font-bold">
           Bonds will be slashed if the reported outcome is deemed to be
           incorrect
@@ -112,15 +107,11 @@ const ScalarDisputeBox = ({
         />
       )} */}
 
-      {bondAmount !== disputeBond &&
-      bondAmount !== undefined &&
-      disputeFactor !== undefined ? (
+      {bondAmount !== disputeBond && bondAmount !== undefined && (
         <div className="flex flex-col item-center text-center">
           <span className="text-sky-600 text-[14px]">Previous Bond:</span>
-          <span className="">{bondAmount - disputeFactor}</span>
+          <span className="">{bondAmount}</span>
         </div>
-      ) : (
-        <></>
       )}
       <TransactionButton
         className="mb-ztg-10 mt-[20px]"

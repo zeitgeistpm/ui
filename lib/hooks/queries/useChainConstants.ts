@@ -18,10 +18,6 @@ export type ChainConstants = {
     minCategories: number;
     advisoryBondSlashPercentage: number;
   };
-  court: {
-    caseDurationSec: number;
-    stakeWeight: number; // increase in juror stake per juror
-  };
   swaps: {
     exitFee: number;
   };
