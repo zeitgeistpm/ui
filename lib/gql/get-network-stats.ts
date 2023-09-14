@@ -3,6 +3,10 @@ import Decimal from "decimal.js";
 import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { getBaseAssetHistoricalPrices, lookupPrice } from "./historical-prices";
+import {
+  PoolOrderByInput,
+  HistoricalSwapOrderByInput,
+} from "@zeitgeistpm/indexer";
 
 export const getNetworkStats = async (sdk: Sdk<FullContext>) => {
   const [marketCountBN, basePrices, pools, historicalSwaps] = await Promise.all(
@@ -13,6 +17,7 @@ export const getNetworkStats = async (sdk: Sdk<FullContext>) => {
         const { pools } = await sdk.indexer.pools({
           limit: limit,
           offset: pageNumber * limit,
+          order: PoolOrderByInput.IdAsc,
         });
         return pools;
       }),
@@ -20,6 +25,7 @@ export const getNetworkStats = async (sdk: Sdk<FullContext>) => {
         const { historicalSwaps } = await sdk.indexer.historicalSwaps({
           limit: limit,
           offset: pageNumber * limit,
+          order: HistoricalSwapOrderByInput.IdAsc,
         });
         return historicalSwaps;
       }),

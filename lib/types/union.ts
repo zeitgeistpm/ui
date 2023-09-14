@@ -54,5 +54,3 @@ export const union = <T>() => ({
  * Type helper that ensures value on index one in a indexed type, like arrays.
  */
 export type NonEmptyArray<T> = { 0: T };
-
-export type ArrayToUnion<T> = T extends readonly (infer U)[] ? U : never;

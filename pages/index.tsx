@@ -1,27 +1,38 @@
-import LearnSection from "components/front-page/LearnSection";
+import { GenericChainProperties } from "@polkadot/types";
+import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
+import { BgBallGfx } from "components/front-page/BgBallFx";
+import GettingStartedSection from "components/front-page/GettingStartedSection";
+import { HeroBanner } from "components/front-page/HeroBanner";
+import LatestTrades from "components/front-page/LatestTrades";
+import NetworkStats from "components/front-page/NetworkStats";
+import { NewsSection } from "components/front-page/News";
 import PopularCategories, {
   CATEGORIES,
 } from "components/front-page/PopularCategories";
-import HeroSlider from "components/hero-slider/HeroSlider";
+import WatchHow from "components/front-page/WatchHow";
 import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import { GraphQLClient } from "graphql-request";
+import { getNews, News } from "lib/cms/get-news";
+import { endpointOptions, graphQlEndpoint } from "lib/constants";
 import getFeaturedMarkets from "lib/gql/featured-markets";
+import { getNetworkStats } from "lib/gql/get-network-stats";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import getTrendingMarkets from "lib/gql/trending-markets";
+import {
+  getZTGHistory,
+  ZtgPriceHistory,
+} from "lib/hooks/queries/useAssetUsdPrice";
 import { NextPage } from "next";
-import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
-import LatestTrades from "components/front-page/LatestTrades";
-import NetworkStats from "components/front-page/NetworkStats";
-import { Banner, getBanners } from "lib/cms/get-banners";
-import { endpointOptions, graphQlEndpoint } from "lib/constants";
-import { getNetworkStats } from "lib/gql/get-network-stats";
+
 import path from "path";
 import {
   getPlaiceholder,
   IGetPlaiceholderOptions,
   IGetPlaiceholderReturn,
 } from "plaiceholder";
+import { dehydrate, QueryClient } from "@tanstack/react-query";
+import { categoryCountsKey } from "lib/hooks/queries/useCategoryCounts";
 
 const getPlaiceholders = (
   paths: string[],
@@ -38,94 +49,117 @@ export async function getStaticProps() {
     storage: ZeitgeistIpfs(),
   });
 
-  const banners = await getBanners();
+  const news = await getNews();
 
   const [
     featuredMarkets,
     trendingMarkets,
+    bannerPlaceholder,
     categoryPlaceholders,
-    bannerPlaceHolders,
-    categoryCounts,
+    newsImagePlaceholders,
     stats,
+    ztgHistory,
+    chainProperties,
   ] = await Promise.all([
     getFeaturedMarkets(client, sdk),
     getTrendingMarkets(client, sdk),
+    getPlaiceholder(`/banner.png`),
     getPlaiceholders(
       CATEGORIES.map((cat) => `${cat.imagePath}`),
       { dir: `${path.join(process.cwd())}/public/` },
     ),
     getPlaiceholders(
-      banners.map((slide) => slide.imageUrl ?? ""),
+      news.map((slide) => slide.imageUrl ?? ""),
       { size: 16 },
     ),
-    getCategoryCounts(
-      client,
-      CATEGORIES.map((cat) => cat.name),
-    ),
     getNetworkStats(sdk),
+    getZTGHistory(),
+    sdk.api.rpc.system.properties(),
   ]);
+
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery([categoryCountsKey], () =>
+    getCategoryCounts(
+      sdk.indexer.client,
+      CATEGORIES.map((c) => c.name),
+    ),
+  );
 
   return {
     props: {
-      banners: banners,
+      dehydratedState: dehydrate(queryClient),
+      news: news,
       featuredMarkets: featuredMarkets ?? [],
       trendingMarkets: trendingMarkets ?? [],
-      categoryCounts: categoryCounts,
+      bannerPlaceholder: bannerPlaceholder.base64 ?? "",
       categoryPlaceholders: categoryPlaceholders.map((c) => c.base64) ?? [],
-      bannerPlaceHolders: bannerPlaceHolders.map((c) => c.base64) ?? [],
+      newsImagePlaceholders: newsImagePlaceholders.map((c) => c.base64) ?? [],
       stats,
+      ztgHistory,
+      chainProperties: chainProperties.toPrimitive(),
     },
     revalidate: 1 * 60, //1min
   };
 }
 
 const IndexPage: NextPage<{
-  banners: Banner[];
+  news: News[];
   featuredMarkets: IndexedMarketCardData[];
   trendingMarkets: IndexedMarketCardData[];
-  categoryCounts: number[];
   categoryPlaceholders: string[];
-  bannerPlaceHolders: string[];
+  newsImagePlaceholders: string[];
+  bannerPlaceholder: string;
   stats: { marketCount: number; tradersCount: number; volumeUsd: number };
+  ztgHistory: ZtgPriceHistory;
+  chainProperties: GenericChainProperties;
 }> = ({
-  banners,
+  news,
   trendingMarkets,
   featuredMarkets,
-  categoryCounts,
+  bannerPlaceholder,
   categoryPlaceholders,
-  bannerPlaceHolders,
+  newsImagePlaceholders,
   stats,
+  ztgHistory,
+  chainProperties,
 }) => {
   return (
     <>
-      <HeroSlider banners={banners} bannerPlaceHolders={bannerPlaceHolders} />
-      <div data-testid="indexPage" className="flex-col">
-        <NetworkStats
-          marketCount={stats.marketCount}
-          tradersCount={stats.tradersCount}
-          totalVolumeUsd={stats.volumeUsd}
+      <div data-testid="indexPage" className="main-container relative z-1">
+        <BgBallGfx />
+
+        <HeroBanner
+          bannerPlaceholder={bannerPlaceholder}
+          ztgHistory={ztgHistory}
+          chainProperties={chainProperties}
         />
+
+        <div className="mb-12">
+          <NetworkStats
+            marketCount={stats.marketCount}
+            tradersCount={stats.tradersCount}
+            totalVolumeUsd={stats.volumeUsd}
+          />
+        </div>
+
         {featuredMarkets.length > 0 && (
-          <div className="my-[60px]">
+          <div className="mb-12">
             <MarketScroll
-              title="Featured Markets"
+              title="Promoted Markets"
               cta="Go to Markets"
               markets={featuredMarkets}
               link="markets"
             />
           </div>
         )}
-        {/* Need link */}
-        {/* <WatchHow /> */}
-        <div className="mb-[60px]">
-          <PopularCategories
-            counts={categoryCounts}
-            imagePlaceholders={categoryPlaceholders}
-          />
+
+        <NewsSection news={news} imagePlaceholders={newsImagePlaceholders} />
+
+        <div className="mb-12">
+          <WatchHow />
         </div>
-        <div className="flex items-center w-full justify-center bottom-[60px]">
-          <LearnSection />
-        </div>
+
         {trendingMarkets.length > 0 && (
           <div className="my-[60px]">
             <MarketScroll
@@ -136,7 +170,16 @@ const IndexPage: NextPage<{
             />
           </div>
         )}
+
+        <div className="mb-12">
+          <PopularCategories imagePlaceholders={categoryPlaceholders} />
+        </div>
+
         <LatestTrades />
+
+        <div className="flex items-center w-full justify-center mb-12">
+          <GettingStartedSection />
+        </div>
       </div>
     </>
   );

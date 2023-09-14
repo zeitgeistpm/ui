@@ -1,27 +1,26 @@
-import { Tab } from "@headlessui/react";
+import { encodeAddress } from "@polkadot/keyring";
+import { ZTG } from "@zeitgeistpm/sdk-next";
+import CopyIcon from "components/ui/CopyIcon";
+import FormTransactionButton from "components/ui/FormTransactionButton";
+import Input from "components/ui/Input";
+import QrCode from "components/ui/QrCode";
+import TabGroup from "components/ui/TabGroup";
+import { StartTradingActionableCard } from "components/ui/actionable/cards/StartTrading";
 import Decimal from "decimal.js";
-import { NextPage } from "next";
-import { useEffect, useMemo, useState } from "react";
-import { SVGProps } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { ChevronRight, Video } from "react-feather";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useCurrencyBalances } from "lib/hooks/queries/useCurrencyBalances";
+import { useCrossChainExtrinsic } from "lib/hooks/useCrossChainExtrinsic";
+import { useChain } from "lib/state/cross-chain";
+import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
-import CopyIcon from "components/ui/CopyIcon";
-import QrCode from "components/ui/QrCode";
-import { ArrayToUnion } from "lib/types/union";
-import { useCurrencyBalances } from "lib/hooks/queries/useCurrencyBalances";
-import { ZTG } from "@zeitgeistpm/sdk-next";
-import Input from "components/ui/Input";
-import { useForm } from "react-hook-form";
-import { useNotifications } from "lib/state/notifications";
-import { useChain } from "lib/state/cross-chain";
-import { useCrossChainExtrinsic } from "lib/hooks/useCrossChainExtrinsic";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { formatNumberCompact } from "lib/util/format-compact";
-import FormTransactionButton from "components/ui/FormTransactionButton";
-import ActionCard from "components/ui/ActionCard";
+import { NextPage } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { SVGProps, useEffect, useMemo, useState } from "react";
+import { ExternalLink } from "react-feather";
+import { useForm } from "react-hook-form";
 
 const ZtgIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg
@@ -87,7 +86,7 @@ const UsdtIcon = (props: SVGProps<SVGSVGElement>) => (
 );
 
 const DepositMethodItems = ["buy", "deposit"] as const;
-type DepositMethod = ArrayToUnion<typeof DepositMethodItems>;
+type DepositMethod = typeof DepositMethodItems[number];
 
 const DepositMethodLabels: Record<DepositMethod, string> = {
   buy: "Buy",
@@ -95,7 +94,8 @@ const DepositMethodLabels: Record<DepositMethod, string> = {
 };
 
 const DepositCurrencyItems = ["ztg", "dot", "usdt"] as const;
-type DepositCurrency = ArrayToUnion<typeof DepositCurrencyItems>;
+const ss58PrefixLookup = { ztg: 73, dot: 0, usdt: 0 };
+type DepositCurrency = typeof DepositCurrencyItems[number];
 
 const DepositCurrencyLabels: Record<DepositCurrency, string> =
   DepositCurrencyItems.reduce((acc, item) => {
@@ -109,75 +109,11 @@ const DepositCurrencyIcons: Record<DepositCurrency, React.FC> = {
 };
 
 const DepositPaymentMethodItems = ["card", "crypto"] as const;
-type DepositPaymentMethod = ArrayToUnion<typeof DepositPaymentMethodItems>;
+type DepositPaymentMethod = typeof DepositPaymentMethodItems[number];
 
 const DepositPaymentMethodLabels: Record<DepositPaymentMethod, string> = {
   card: "Use Credit Card",
   crypto: "with Crypto",
-};
-
-const TabGroup = <T extends readonly string[]>({
-  items,
-  labels,
-  icons,
-  selected,
-  disabled = [],
-  onChange,
-  className = "",
-}: {
-  items: T;
-  labels?: Record<ArrayToUnion<T>, string>;
-  icons?: Record<ArrayToUnion<T>, React.FC>;
-  disabled?: ArrayToUnion<T>[];
-  selected: ArrayToUnion<T> | undefined;
-  onChange: (item: ArrayToUnion<T>) => void;
-  className?: string;
-}) => {
-  const selectedIndex = selected != null ? items.indexOf(selected) : -1;
-
-  return (
-    <Tab.Group
-      manual
-      onChange={(index) => {
-        if (disabled.includes(items[index] as ArrayToUnion<T>)) {
-          return;
-        }
-        onChange(items[index] as ArrayToUnion<T>);
-      }}
-      defaultIndex={selectedIndex}
-      selectedIndex={selectedIndex}
-    >
-      <Tab.List
-        className={
-          "grid gap-3 " + `grid-cols-${items.length} h-16 ` + className
-        }
-      >
-        {items.map((item, id) => {
-          const Icon = icons ? icons[item] : null;
-          const isDisabled = disabled.includes(item as ArrayToUnion<T>);
-          return (
-            <Tab
-              key={id}
-              as="div"
-              className={
-                "h-full outline-none center rounded-lg " +
-                (selectedIndex === id
-                  ? "bg-ice-hush"
-                  : isDisabled
-                  ? "bg-misty-harbor text-sky-600"
-                  : "cursor-pointer bg-white")
-              }
-            >
-              <div className="relative w-[40px] h-[40px] mr-3">
-                {Icon && <Icon fill={isDisabled ? "#C3C9CD" : undefined} />}
-              </div>
-              {labels ? labels[item] : item}
-            </Tab>
-          );
-        })}
-      </Tab.List>
-    </Tab.Group>
-  );
 };
 
 const ResultButtons = ({
@@ -195,10 +131,11 @@ const ResultButtons = ({
             href={item.url}
             target="_blank"
             className={
-              "h-16 outline-none center rounded-lg cursor-pointer bg-white"
+              "flex items-center justify-center gap-2 h-16 outline-none center rounded-lg cursor-pointer bg-white"
             }
           >
-            {item.label}
+            <div>{item.label}</div>
+            <ExternalLink size={16} />
           </Link>
         );
       })}
@@ -212,6 +149,8 @@ const DotDeposit = ({ address }: { address: string }) => {
   const notificationStore = useNotifications();
   const { chain, api } = useChain("Polkadot");
   const { data: constants } = useChainConstants();
+
+  const dotAddress = wallet.realAddress && encodeAddress(wallet.realAddress, 0);
 
   const fee = chain?.depositFee;
   const feeEstimate = new Decimal(fee?.mul(1.01) ?? 0).div(ZTG); //add 1% buffer to feeQ
@@ -358,6 +297,11 @@ const DepositPage: NextPage = () => {
     }
   }, [currency, method, paymentMethod]);
 
+  const encodedAddress =
+    wallet.realAddress &&
+    currency &&
+    encodeAddress(wallet.realAddress, ss58PrefixLookup[currency]);
+
   return (
     <>
       <h2 className="px-2 mb-6">Deposit Tokens</h2>
@@ -372,6 +316,9 @@ const DepositPage: NextPage = () => {
           labels={DepositMethodLabels}
           selected={method}
           onChange={setMethod}
+          className="h-16"
+          itemClassName="center outline-none rounded-lg bg-white"
+          selectedItemClassName="!bg-ice-hush"
         />
         <TabGroup
           items={DepositCurrencyItems}
@@ -381,6 +328,9 @@ const DepositPage: NextPage = () => {
           onChange={setCurrency}
           disabled={["usdt"]}
           className="h-36"
+          itemClassName="center outline-none rounded-lg bg-white"
+          disabledItemClassName="!bg-misty-harbor text-sky-600"
+          selectedItemClassName="!bg-ice-hush"
         />
         {method === "buy" && (
           <TabGroup
@@ -389,6 +339,10 @@ const DepositPage: NextPage = () => {
             selected={paymentMethod}
             onChange={setPaymentMethod}
             disabled={disabledPaymentMethods}
+            disabledItemClassName="!bg-misty-harbor text-sky-600"
+            className="h-16"
+            itemClassName="center outline-none rounded-lg bg-white"
+            selectedItemClassName="!bg-ice-hush"
           />
         )}
         {method === "buy" && currency === "ztg" && paymentMethod === "crypto" && (
@@ -416,44 +370,83 @@ const DepositPage: NextPage = () => {
             ]}
           />
         )}
-        {method === "buy" && currency === "dot" && paymentMethod === "card" && (
-          <div className={"grid gap-3 " + `grid-cols-1`}>
-            <ResultButtons
-              items={[{ label: "Banxa *", url: "https://banxa.com/" }]}
-            />
-            <div className="mt-2">
-              * — Complete purchase on the Banxa page then return to this page
-              and select the Deposit tab to continue
+        {method === "buy" &&
+          currency === "dot" &&
+          paymentMethod === "card" &&
+          encodedAddress && (
+            <div className={"grid gap-3 " + `grid-cols-1`}>
+              <ResultButtons
+                items={[
+                  {
+                    label: "Banxa",
+                    url: `https://checkout.banxa.com/?fiatAmount=50&fiatType=EUR&coinAmount=8&coinType=DOT&lockFiat=false&orderMode=BUY&walletAddress=${encodedAddress}`,
+                  },
+                ]}
+              />
+              <div className="flex flex-col md:flex-row gap-2 mt-7">
+                <div className="flex item-center gap-2">
+                  <Image
+                    src="/currencies/dot.png"
+                    width={25}
+                    height={25}
+                    alt="Polkadot currency"
+                  />
+                  <div>Polkadot Address:</div>
+                </div>
+                <div className="flex font-semibold">
+                  <span className="hidden sm:inline">{encodedAddress}</span>
+                  <span className="inline sm:hidden">
+                    {shortenAddress(encodedAddress, 12, 12)}
+                  </span>
+                  <CopyIcon
+                    size={24}
+                    className="ml-3 cursor-pointer"
+                    copyText={encodedAddress}
+                  />
+                </div>
+              </div>
             </div>
+          )}
+        {currency === "dot" && method === "buy" && (
+          <div className="mt-2">
+            After purchasing DOT return to this page and select the Deposit tab
+            to move it to your account on Zeitgeist
           </div>
         )}
       </div>
-      {method === "deposit" && wallet.realAddress && currency && (
+      {method === "deposit" && encodedAddress && currency && (
         <>
           <h3 className="my-8 p-2">
             Fund your {currency.toUpperCase()} Wallet
           </h3>
           <div className="flex flex-row">
             <div className="w-48 h-48 flex-shrink-0 mr-14">
-              <QrCode text={wallet.realAddress} width={192} />
+              <QrCode text={encodedAddress} width={192} />
             </div>
             <div className="flex flex-col">
               <div className="flex-shrink text-lg font-medium">
                 <div className="flex">
-                  {shortenAddress(wallet.realAddress, 12, 12)}{" "}
+                  {shortenAddress(encodedAddress, 12, 12)}{" "}
                   <CopyIcon
                     size={24}
                     className="ml-3 cursor-pointer"
-                    copyText={wallet.realAddress}
+                    copyText={encodedAddress}
                   />
                 </div>
               </div>
               <div className="my-auto">
                 {
                   {
-                    ztg: "Copy your address above or from the QR code and transfer ZTG to your address. Need help? See the video below.",
-                    dot: "Copy your address above or from the QR code and transfer DOT to your address. If you already DOT on your wallet you can go to the Deposit section below. Need help? See the video below.",
+                    ztg: "Copy your address above or from the QR code and transfer ZTG to your address.",
+                    dot: "Copy your address above or from the QR code and transfer DOT to your address. If you already DOT on your wallet you can go to the Deposit section below.",
                   }[currency]
+                }
+                {
+                  //todo: need to add video
+                  // {
+                  //   ztg: "Copy your address above or from the QR code and transfer ZTG to your address. Need help? See the video below.",
+                  //   dot: "Copy your address above or from the QR code and transfer DOT to your address. If you already DOT on your wallet you can go to the Deposit section below. Need help? See the video below.",
+                  // }[currency]
                 }
               </div>
             </div>
@@ -473,32 +466,17 @@ const DepositPage: NextPage = () => {
         <DotDeposit address={wallet.realAddress} />
       )}
       {/* TODO: Update href attribute */}
-      <div className="flex text-blue my-9 p-2">
+      {/* <div className="flex text-blue my-9 p-2">
         <Link href="#" className="flex">
           <div className="mr-3">
             Watch this tutorial about how to buy tokens using crypto
           </div>
           <Video />
         </Link>
-      </div>
-      <h2 className="mb-9 p-2">What else</h2>
-      <div className="grid grid-cols-2 gap-x-8 mb-20">
-        <ActionCard
-          title="Crate an Account"
-          imageUrl="/category/e-sports.png"
-          actionText="Make a Deposit"
-          description="Use one of several methods to deposit crypto on Zeitgeist to start trading"
-          actionUrl="/deposit"
-          pillLabel="~5 - 15 minutes"
-        />
-        <ActionCard
-          title="Start Trading"
-          imageUrl="/category/e-sports.png"
-          actionText="Make predictions"
-          description="You're ready to explore the entirety of our application!"
-          actionUrl="/markets"
-          pillLabel="No time limits"
-        />
+      </div> */}
+      <h2 className="my-9">Next Steps</h2>
+      <div className="flex flex-col md:flex-row gap-4">
+        <StartTradingActionableCard />
       </div>
     </>
   );

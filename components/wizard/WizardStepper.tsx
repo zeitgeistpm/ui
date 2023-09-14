@@ -1,4 +1,4 @@
-import { useWindowSize } from "lib/hooks/useWindowSize";
+import { useWindowSize } from "lib/hooks/events/useWindowSize";
 import { WizardStep, nextStepFrom, prevStepFrom } from "./types";
 import medianrange from "median-range";
 import { TAILWIND } from "lib/constants";
