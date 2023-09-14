@@ -66,6 +66,7 @@ export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
       assetWeight,
       tradeablePoolAssetBalance,
       swapFee,
+      0,
     );
     return maxAmountBase.gt(traderBaseBalance)
       ? traderBaseBalance
@@ -83,6 +84,7 @@ export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
       baseWeight,
       maxAssetIn,
       swapFee,
+      0,
     );
     return maxAmountBase;
   }
@@ -119,6 +121,7 @@ export const useTradeMaxAssetAmount = (item: TradeItem): Decimal => {
       assetWeight,
       maxBaseAmount,
       swapFee,
+      0,
     );
   }
   if (item.action === "sell") {
@@ -129,6 +132,7 @@ export const useTradeMaxAssetAmount = (item: TradeItem): Decimal => {
       baseWeight,
       maxBaseAmount,
       swapFee,
+      0,
     );
   }
 
@@ -186,6 +190,7 @@ export const useTradeTransaction = (
         assetWeight,
         amountDecimal,
         swapFee,
+        0,
       ).mul(new Decimal(1 - slippage / 100));
 
       if (!minAmountOut.isNaN() && minAmountOut.greaterThanOrEqualTo(0)) {
@@ -206,6 +211,7 @@ export const useTradeTransaction = (
         assetWeight,
         amountDecimal,
         swapFee,
+        0,
       ).mul(new Decimal(slippage / 100 + 1));
 
       if (!maxAmountIn.isNaN() && maxAmountIn.greaterThanOrEqualTo(0)) {
@@ -234,6 +240,7 @@ export const useTradeTransaction = (
         baseWeight,
         amountDecimal,
         swapFee,
+        0,
       ).mul(new Decimal(slippage / 100 + 1));
 
       if (!maxAmountIn.isNaN() && maxAmountIn.greaterThanOrEqualTo(0)) {
@@ -254,6 +261,7 @@ export const useTradeTransaction = (
         baseWeight,
         amountDecimal,
         swapFee,
+        0,
       ).mul(new Decimal(1 - slippage / 100));
 
       if (!minAmountOut.isNaN() && minAmountOut.greaterThanOrEqualTo(0)) {

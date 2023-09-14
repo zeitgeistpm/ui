@@ -122,8 +122,6 @@ const Inner = ({
     marketId: getMarketIdOf(tradeItem.assetId),
   });
 
-  const { data: constants } = useChainConstants();
-
   const {
     poolBaseBalance,
     baseWeight,
@@ -284,6 +282,7 @@ const Inner = ({
           weightOut,
           amountOut.mul(ZTG),
           tradeItemState.swapFee,
+          0,
         );
 
         setValue(
@@ -301,6 +300,7 @@ const Inner = ({
           weightIn,
           amountOut.mul(ZTG),
           tradeItemState.swapFee,
+          0,
         );
 
         setValue("baseAmount", amountOut.toFixed(4, Decimal.ROUND_DOWN));
@@ -349,6 +349,7 @@ const Inner = ({
           weightOut,
           assetAmount.mul(ZTG),
           swapFee,
+          0,
         );
 
         setValue(
@@ -364,6 +365,7 @@ const Inner = ({
           weightOut,
           assetAmount.mul(ZTG),
           swapFee,
+          0,
         );
         setValue(
           "baseAmount",
@@ -412,6 +414,7 @@ const Inner = ({
           weightOut,
           baseAmount.mul(ZTG),
           swapFee,
+          0,
         );
         setValue(
           "assetAmount",
@@ -433,6 +436,7 @@ const Inner = ({
           weightOut,
           baseAmount.mul(ZTG),
           swapFee,
+          0,
         );
 
         setValue(
