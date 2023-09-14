@@ -16,12 +16,12 @@ export const calcSpotPrice = (
 };
 
 export const calcOutGivenIn = (
-  tokenBalanceIn, // amount of 'in' asset in the pool
-  tokenWeightIn, // weight of 'in' asset on the pool
-  tokenBalanceOut, // amount of 'out' asset in the pool
-  tokenWeightOut, // weight of 'out' asset on the pool
-  tokenAmountIn, // amount in for the swap
-  swapFee,
+  tokenBalanceIn: Decimal | string | number, // amount of 'in' asset in the pool
+  tokenWeightIn: Decimal | string | number, // weight of 'in' asset on the pool
+  tokenBalanceOut: Decimal | string | number, // amount of 'out' asset in the pool
+  tokenWeightOut: Decimal | string | number, // weight of 'out' asset on the pool
+  tokenAmountIn: Decimal | string | number, // amount in for the swap
+  swapFee: Decimal | string | number,
 ) => {
   const weightRatio = new Decimal(tokenWeightIn).div(
     new Decimal(tokenWeightOut),
@@ -39,12 +39,12 @@ export const calcOutGivenIn = (
 };
 
 export const calcInGivenOut = (
-  tokenBalanceIn,
-  tokenWeightIn,
-  tokenBalanceOut,
-  tokenWeightOut,
-  tokenAmountOut,
-  swapFee,
+  tokenBalanceIn: Decimal | string | number,
+  tokenWeightIn: Decimal | string | number,
+  tokenBalanceOut: Decimal | string | number,
+  tokenWeightOut: Decimal | string | number,
+  tokenAmountOut: Decimal | string | number,
+  swapFee: Decimal | string | number,
 ) => {
   const weightRatio = new Decimal(tokenWeightOut).div(
     new Decimal(tokenWeightIn),

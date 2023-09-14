@@ -257,18 +257,25 @@ const Inner = ({
 
   const changeByPercentage = useCallback(
     (percentage: Decimal) => {
-      if (tradeItemState == null) {
+      const [balanceIn, weightIn, balanceOut, weightOut] = [
+        poolBaseBalance,
+        baseWeight,
+        poolAssetBalance,
+        assetWeight,
+      ];
+
+      if (
+        tradeItemState == null ||
+        balanceIn == null ||
+        weightIn == null ||
+        balanceOut == null ||
+        weightOut == null
+      ) {
         return;
       }
-      if (tradeItem.action === "buy") {
-        const amountOut = maxAssetAmountDecimal.mul(percentage);
 
-        const [balanceIn, weightIn, balanceOut, weightOut] = [
-          poolBaseBalance,
-          baseWeight,
-          poolAssetBalance,
-          assetWeight,
-        ];
+      if (tradeItem.action === "buy" && balanceIn) {
+        const amountOut = maxAssetAmountDecimal.mul(percentage);
 
         const amountIn = calcInGivenOut(
           balanceIn,
@@ -286,13 +293,6 @@ const Inner = ({
         setValue("assetAmount", amountOut.toFixed(4, Decimal.ROUND_DOWN));
       } else if (tradeItem.action === "sell") {
         const amountOut = maxBaseAmountDecimal.mul(percentage);
-
-        const [balanceIn, weightIn, balanceOut, weightOut] = [
-          poolBaseBalance,
-          baseWeight,
-          poolAssetBalance,
-          assetWeight,
-        ];
 
         const amountIn = calcInGivenOut(
           balanceOut,
@@ -320,7 +320,20 @@ const Inner = ({
 
   const changeByAssetAmount = useCallback(
     (assetAmount: Decimal) => {
-      if (tradeItemState == null) {
+      const [balanceIn, weightIn, balanceOut, weightOut] = [
+        poolBaseBalance,
+        baseWeight,
+        poolAssetBalance,
+        assetWeight,
+      ];
+      if (
+        tradeItemState == null ||
+        balanceIn == null ||
+        weightIn == null ||
+        balanceOut == null ||
+        weightOut == null ||
+        swapFee == null
+      ) {
         return;
       }
 
@@ -329,12 +342,6 @@ const Inner = ({
         : new Decimal(0);
 
       if (tradeItem.action === "buy") {
-        const [balanceIn, weightIn, balanceOut, weightOut] = [
-          poolBaseBalance,
-          baseWeight,
-          poolAssetBalance,
-          assetWeight,
-        ];
         const amountIn = calcInGivenOut(
           balanceIn,
           weightIn,
@@ -350,13 +357,6 @@ const Inner = ({
         );
         setPercentageDisplay(percentage.toString());
       } else if (tradeItem.action === "sell") {
-        const [balanceIn, weightIn, balanceOut, weightOut] = [
-          poolAssetBalance,
-          assetWeight,
-          poolBaseBalance,
-          baseWeight,
-        ];
-
         const amountOut = calcOutGivenIn(
           balanceIn,
           weightIn,
