@@ -13,9 +13,6 @@ import { useRouter } from "next/router";
 
 import { Account } from "components/account/Account";
 
-// font optimization from @next/font
-import { inter, kanit, roboto_mono } from "lib/util/fonts";
-
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 
 const Onboarding = dynamic(
@@ -47,24 +44,12 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div
-      className={`${inter.variable} ${kanit.variable} ${
-        roboto_mono.variable
-      } font-sans relative min-h-screen justify-evenly overflow-x-hidden ${
+      className={`relative min-h-screen justify-evenly overflow-x-hidden ${
         greyBackgroundPageRoutes.includes(router.pathname)
           ? "bg-light-gray"
           : ""
       }`}
     >
-      {/* loads optimized fonts for global access */}
-      <style jsx global>
-        {`
-          :root {
-            --font-inter: ${inter.style.fontFamily};
-            --font-kanit: ${kanit.style.fontFamily};
-            --font-roboto-mono: ${roboto_mono.style.fontFamily};
-          }
-        `}
-      </style>
       <TradeItemContext.Provider value={{ data: tradeItem, set: setTradeItem }}>
         <div ref={contentRef} className={`flex-grow`}>
           <TopBar />
