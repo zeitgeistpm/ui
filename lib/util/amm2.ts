@@ -1,5 +1,6 @@
 import Decimal from "decimal.js";
 
+// buy outcome token with the base asset
 export const calculateSwapAmountOutForBuy = (
   reserve: Decimal, // amount of asset you want to buy in the pool
   amountIn: Decimal, // amount you want to spend
@@ -24,6 +25,7 @@ export const calculateSwapAmountOutForBuy = (
     .minus(amountIn);
 };
 
+// sell outcome token for the base asset
 export const calculateSwapAmountOutForSell = (
   reserve: Decimal, // amount of asset you want to sell in the pool
   amountIn: Decimal, //amount of asset to sell
@@ -47,4 +49,11 @@ export const calculateSwapAmountOutForSell = (
   const totalFee = poolFee.plus(creatorFee);
   const feeMultiplier = new Decimal(1).minus(totalFee);
   return amountOut.mul(feeMultiplier);
+};
+
+export const calculateSpotPrice = (
+  reserve: Decimal, // amount of asset in the pool
+  liquidity: Decimal,
+) => {
+  return new Decimal(0).minus(reserve).div(liquidity).exp();
 };
