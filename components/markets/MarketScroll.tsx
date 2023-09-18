@@ -43,14 +43,7 @@ const MarketScroll = ({
   const cardsShown =
     windowWidth < BREAKPOINTS.md ? 1 : windowWidth < BREAKPOINTS.lg ? 2 : 3;
 
-  const cardWidth =
-    cardsShown === 1
-      ? containerWidth
-      : cardsShown === 2
-      ? (containerWidth - gap) / cardsShown
-      : cardsShown === 3
-      ? (containerWidth - gap * 2) / cardsShown
-      : 0;
+  const cardWidth = (containerWidth - gap * (cardsShown - 1)) / cardsShown;
 
   const handleRightClick = () => {
     setPageIndex(pageIndex + 1);
