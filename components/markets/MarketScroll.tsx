@@ -124,7 +124,7 @@ const MarketScroll = ({
               <MarketCard
                 key={market.marketId}
                 disableLink={!isShown}
-                className={`market-card rounded-ztg-10 transition duration-500 ease-in-out w-[${cardWidth}px] ${
+                className={`market-card rounded-ztg-10 transition duration-500 ease-in-out ${
                   isShown ? "opacity-1" : "opacity-0"
                 }`}
                 {...market}
