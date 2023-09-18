@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { HeroControls } from "./HeroControls";
 import { HeroSlide } from "./HeroSlide";
-import { Banner } from "lib/cms/get-banners";
+import { News } from "lib/cms/get-news";
 import { useSliderControls } from "lib/hooks/slides";
 import { Transition } from "@headlessui/react";
 
@@ -9,7 +9,7 @@ const HeroSlider = ({
   banners,
   bannerPlaceHolders,
 }: {
-  banners: Banner[];
+  banners: News[];
   bannerPlaceHolders: string[];
 }) => {
   const slider = useSliderControls({
@@ -20,7 +20,7 @@ const HeroSlider = ({
 
   return (
     <section
-      className={`relative w-full h-[527px] mx-auto mt-[60px]`}
+      className={`relative w-full h-[527px] mx-auto`}
       data-testid="HeroSlider__container"
     >
       {banners.map((banner, index) => (
@@ -33,7 +33,7 @@ const HeroSlider = ({
           blurDataURL={bannerPlaceHolders[index]}
           sizes="100vw"
           fill
-          className={`absolute inset-0 w-full h-full transition-opacity`}
+          className="object-cover"
           style={{
             objectFit: "cover",
             transitionDuration: index == slider.currentSlide ? "0.5s" : "1s",

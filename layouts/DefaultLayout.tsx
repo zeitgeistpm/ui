@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useEffect, useRef, useState } from "react";
+import { FC, PropsWithChildren, useRef, useState } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import Image from "next/image";
 import dynamic from "next/dynamic";
@@ -25,11 +25,17 @@ const Onboarding = dynamic(
   },
 );
 
+const greyBackgroundPageRoutes = [
+  "/",
+  "/markets",
+  "/create-account",
+  "/deposit",
+];
+
 const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
   useSubscribeBlockEvents();
   const [tradeItem, setTradeItem] = useState<TradeItem | null>(null);
-  const [showChat, setShowChat] = useState(false);
 
   const {
     width,
@@ -40,7 +46,13 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="relative flex min-h-screen justify-evenly overflow-hidden">
+    <div
+      className={`relative min-h-screen justify-evenly overflow-x-hidden ${
+        greyBackgroundPageRoutes.includes(router.pathname)
+          ? "bg-light-gray"
+          : ""
+      }`}
+    >
       <TradeItemContext.Provider value={{ data: tradeItem, set: setTradeItem }}>
         {/* loads optimized fonts for global access */}
         <style jsx global>
@@ -52,19 +64,14 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
             }
           `}
         </style>
-        <div
-          ref={contentRef}
-          className="overflow-y-a1uto overflow-x-hidden flex-grow"
-        >
+        <div ref={contentRef} className="flex-grow">
           <TopBar />
-
-          <main
-            className={`flex flex-col dark:text-white mb-12 ${
-              router.pathname !== "/" && "main-container mt-24 md:mt-32"
-            }`}
-            ref={mainRef}
-          >
-            <div>
+          <main className="mt-24 mb-12 container-fluid" ref={mainRef}>
+            <div
+              className={`w-full ${
+                ["/", "/markets"].includes(router.pathname) ? "pt-0" : "pt-2"
+              }`}
+            >
               {process.env.NEXT_PUBLIC_MIGRATION_IN_PROGRESS === "true" ? (
                 <div className="w-full h-[800px] flex flex-col items-center justify-center ">
                   <div className="text-[24px] font-bold">
@@ -81,21 +88,18 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
                   />
                 </div>
               ) : (
-                <ContentDimensionsProvider height={height} width={width}>
-                  {children}
-                </ContentDimensionsProvider>
+                children
               )}
             </div>
           </main>
+
           <Footer />
         </div>
         <NotificationCenter />
       </TradeItemContext.Provider>
       <Account />
       <Onboarding />
-      {process.env.NEXT_PUBLIC_GRILLCHAT_DISABLE !== "true" && (
-        <GrillChat open={showChat} setOpen={setShowChat} />
-      )}
+      {process.env.NEXT_PUBLIC_GRILLCHAT_DISABLE !== "true" && <GrillChat />}
     </div>
   );
 };

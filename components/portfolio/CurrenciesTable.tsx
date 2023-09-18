@@ -13,6 +13,7 @@ import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { ChainName, CHAIN_IMAGES } from "lib/constants/chains";
 import TransferButton from "./TransferButton";
 import { AssetId } from "@zeitgeistpm/sdk-next";
+import { convertDecimals } from "lib/util/convert-decimals";
 
 const columns: TableColumn[] = [
   {
@@ -62,6 +63,7 @@ const MoveButton = ({
   nativeToken,
   allBalanceDetails,
   existentialDeposit,
+  assetDecimals,
 }: {
   chain: ChainName;
   sourceChain: ChainName;
@@ -71,6 +73,7 @@ const MoveButton = ({
   nativeToken: string;
   allBalanceDetails: CurrencyBalance[];
   existentialDeposit: Decimal;
+  assetDecimals: number;
 }) => {
   if (chain === "Zeitgeist") {
     const isNativeTokenBalance =
@@ -94,6 +97,7 @@ const MoveButton = ({
           foreignAssetId={foreignAssetId}
           destinationExistentialDeposit={destinationAsset?.existentialDeposit}
           destinationTokenBalance={destinationAsset?.balance}
+          assetDecimals={assetDecimals}
         />
       );
     }
@@ -104,6 +108,7 @@ const MoveButton = ({
         tokenSymbol={token}
         balance={balance}
         sourceExistentialDeposit={existentialDeposit}
+        assetDecimals={assetDecimals}
       />
     );
   }
@@ -116,6 +121,10 @@ const CurrenciesTable = ({ address }: { address: string }) => {
   const tableData: TableData[] | undefined = balances
     ?.sort((a, b) => b.balance.minus(a.balance).toNumber())
     .map((balance) => {
+      const amount =
+        balance.chain === "Zeitgeist"
+          ? balance.balance
+          : convertDecimals(balance.balance, balance.decimals, 10);
       return {
         chain: (
           <ImageAndText
@@ -129,17 +138,18 @@ const CurrenciesTable = ({ address }: { address: string }) => {
             imagePath={lookupAssetImagePath(balance.foreignAssetId) ?? ""}
           />
         ),
-        balance: balance.balance.div(ZTG).toFixed(3),
+        balance: amount.div(ZTG).toFixed(3),
         button: (
           <MoveButton
             chain={balance.chain}
             sourceChain={balance.sourceChain}
             token={balance.symbol}
             foreignAssetId={balance.foreignAssetId ?? 0}
-            balance={balance.balance}
+            balance={amount}
             nativeToken={constants?.tokenSymbol ?? ""}
             existentialDeposit={balance.existentialDeposit}
             allBalanceDetails={balances}
+            assetDecimals={balance.decimals}
           />
         ),
       };

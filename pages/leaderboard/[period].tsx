@@ -1,38 +1,61 @@
 import { dehydrate, QueryClient } from "@tanstack/react-query";
-import { FullHistoricalAccountBalanceFragment } from "@zeitgeistpm/indexer";
+import {
+  FullHistoricalAccountBalanceFragment,
+  HistoricalAccountBalanceOrderByInput,
+  HistoricalSwapOrderByInput,
+  MarketOrderByInput,
+} from "@zeitgeistpm/indexer";
 import {
   BaseAssetId,
   create,
   getMarketIdOf,
-  IOForeignAssetId,
   IOMarketOutcomeAssetId,
   IOScalarAssetId,
   parseAssetId,
   ZeitgeistIpfs,
 } from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
+import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import {
+  DAY_SECONDS,
   endpointOptions,
-  environment,
   graphQlEndpoint,
   ZTG,
 } from "lib/constants";
-import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { getDisplayName } from "lib/gql/display-name";
+import {
+  getBaseAssetHistoricalPrices,
+  lookupPrice,
+} from "lib/gql/historical-prices";
 import {
   avatarPartsKey,
   getAvatarParts,
 } from "lib/hooks/queries/useAvatarParts";
+import { shortenAddress } from "lib/util";
 import { calcScalarResolvedPrices } from "lib/util/calc-scalar-winnings";
 import { createAvatarSdk } from "lib/util/create-avatar-sdk";
+import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import { getPlaiceholder } from "plaiceholder";
+import { useMemo } from "react";
 
 // Approach: aggregate base asset movements in and out of a market
 // "In events": swaps, buy full set
 // "Out events": swaps, sell full set, redeem
+
+const TimePeriodItems = ["month", "year", "all"] as const;
+type TimePeriod = typeof TimePeriodItems[number];
+
+const durationLookup: { [key in TimePeriod]: number } = {
+  // week: DAY_SECONDS * 1000 * 7,
+  month: DAY_SECONDS * 1000 * 30,
+  year: DAY_SECONDS * 1000 * 365,
+  all: DAY_SECONDS * 1000 * 365 * 100,
+};
 
 type Trade = {
   marketId: number;
@@ -71,6 +94,7 @@ type MarketSummary = {
 type TradersSummary = {
   [key: AccountId]: {
     profitUsd: number;
+    volumeUsd: number;
     markets: MarketSummary[];
   };
 };
@@ -78,12 +102,9 @@ type TradersSummary = {
 type Rank = {
   accountId: string;
   profitUsd: number;
+  volumeUsd: number;
   name?: string;
   markets: MarketSummary[];
-};
-
-type BasePrices = {
-  [key: string | "ztg"]: [number, number][];
 };
 
 const convertEventToTrade = (
@@ -132,63 +153,20 @@ const convertEventToTrade = (
     }
   }
 };
-const datesAreOnSameDay = (first: Date, second: Date) =>
-  first.getFullYear() === second.getFullYear() &&
-  first.getMonth() === second.getMonth() &&
-  first.getDate() === second.getDate();
 
-const findPrice = (timestamp: number, prices: [number, number][]) => {
-  const date = new Date(Number(timestamp));
+export async function getStaticPaths() {
+  const paths = TimePeriodItems.map((timePeriod) => ({
+    params: { period: timePeriod },
+  }));
+  return { paths, fallback: "blocking" };
+}
 
-  const price = prices.find((p) => {
-    return datesAreOnSameDay(date, new Date(p[0]));
-  });
+export async function getStaticProps({ params }) {
+  const period: TimePeriod = params.period;
+  const periodEnd = new Date();
+  const periodDuration = durationLookup[period];
+  const periodStart = new Date(periodEnd.getTime() - periodDuration);
 
-  return price?.[1];
-};
-
-const lookupPrice = (
-  basePrices: BasePrices,
-  baseAsset: BaseAssetId,
-  timestamp: number,
-) => {
-  //BSR has been live before some assets existed, so no price data is available
-  if (environment === "staging") return 1;
-  const prices = IOForeignAssetId.is(baseAsset)
-    ? basePrices[baseAsset.ForeignAsset]
-    : basePrices["ztg"];
-
-  return findPrice(timestamp, prices);
-};
-
-const getBaseAssetHistoricalPrices = async (): Promise<BasePrices> => {
-  const coinGeckoIds = [
-    ...Object.values(FOREIGN_ASSET_METADATA).map((asset) => asset.coinGeckoId),
-    "zeitgeist",
-  ];
-
-  const pricesRes = await Promise.all(
-    coinGeckoIds.map((id) =>
-      fetch(
-        `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=max`,
-      ),
-    ),
-  );
-
-  const prices = await Promise.all(pricesRes.map((res) => res.json()));
-  const assetIds = Object.keys(FOREIGN_ASSET_METADATA);
-
-  const pricesObj = prices.reduce<BasePrices>((obj, assetPrices, index) => {
-    obj[assetIds[index]] = assetPrices.prices;
-    return obj;
-  }, {});
-
-  pricesObj["ztg"] = prices.at(-1).prices;
-
-  return pricesObj;
-};
-
-export async function getStaticProps() {
   const [sdk, avatarSdk] = await Promise.all([
     create({
       provider: endpointOptions.map((e) => e.value),
@@ -200,9 +178,27 @@ export async function getStaticProps() {
 
   const basePrices = await getBaseAssetHistoricalPrices();
 
-  const { markets } = await sdk.indexer.markets();
+  //markets that are running during the given period
+  const markets = await fetchAllPages(async (pageNumber, limit) => {
+    const { markets } = await sdk.indexer.markets({
+      limit: limit,
+      offset: pageNumber * limit,
+      order: MarketOrderByInput.IdAsc,
+    });
+    return markets;
+  });
 
-  const { historicalSwaps } = await sdk.indexer.historicalSwaps();
+  const historicalSwaps = await fetchAllPages(async (pageNumber, limit) => {
+    const { historicalSwaps } = await sdk.indexer.historicalSwaps({
+      limit: limit,
+      offset: pageNumber * limit,
+      order: HistoricalSwapOrderByInput.IdAsc,
+      where: {
+        timestamp_gt: periodStart.toISOString(),
+      },
+    });
+    return historicalSwaps;
+  });
 
   const tradersWithSwaps = historicalSwaps.reduce<Traders>((traders, swap) => {
     const trades = traders[swap.accountId];
@@ -244,29 +240,56 @@ export async function getStaticProps() {
     return traders;
   }, {});
 
-  const { historicalAccountBalances: redeemEvents } =
-    await sdk.indexer.historicalAccountBalances({
-      where: { event_contains: "TokensRedeemed" },
-    });
+  const redeemEvents = await fetchAllPages(async (pageNumber, limit) => {
+    const { historicalAccountBalances } =
+      await sdk.indexer.historicalAccountBalances({
+        where: {
+          event_contains: "TokensRedeemed",
+          timestamp_gt: periodStart.toISOString(),
+        },
+        limit: limit,
+        offset: pageNumber * limit,
+        order: HistoricalAccountBalanceOrderByInput.IdAsc,
+      });
+    return historicalAccountBalances;
+  });
 
-  const { historicalAccountBalances: buyFullSetEvents } =
-    await sdk.indexer.historicalAccountBalances({
-      where: {
-        OR: [
-          {
-            event_contains: "BoughtComplete",
-          },
-          { event_contains: "Deposited", assetId_not_contains: "pool" },
-        ],
-      },
-    });
+  const buyFullSetEvents = await fetchAllPages(async (pageNumber, limit) => {
+    const { historicalAccountBalances } =
+      await sdk.indexer.historicalAccountBalances({
+        where: {
+          OR: [
+            {
+              event_contains: "BoughtComplete",
+              timestamp_gt: periodStart.toISOString(),
+            },
+            {
+              event_contains: "Deposited",
+              assetId_not_contains: "pool",
+              timestamp_gt: periodStart.toISOString(),
+            },
+          ],
+        },
+        limit: limit,
+        offset: pageNumber * limit,
+        order: HistoricalAccountBalanceOrderByInput.IdAsc,
+      });
+    return historicalAccountBalances;
+  });
 
-  const { historicalAccountBalances: sellFullSetEvents } =
-    await sdk.indexer.historicalAccountBalances({
-      where: {
-        event_contains: "SoldComplete",
-      },
-    });
+  const sellFullSetEvents = await fetchAllPages(async (pageNumber, limit) => {
+    const { historicalAccountBalances } =
+      await sdk.indexer.historicalAccountBalances({
+        where: {
+          event_contains: "SoldComplete",
+          timestamp_gt: periodStart.toISOString(),
+        },
+        limit: limit,
+        offset: pageNumber * limit,
+        order: HistoricalAccountBalanceOrderByInput.IdAsc,
+      });
+    return historicalAccountBalances;
+  });
 
   const fullSetEvents = [...buyFullSetEvents, ...sellFullSetEvents];
 
@@ -356,13 +379,17 @@ export async function getStaticProps() {
     return { ...traders, [accountId]: marketTotal };
   }, {});
 
-  const tradeProfits = Object.keys(
+  const tradersSummaries = Object.keys(
     tradersAggregatedByMarket,
   ).reduce<TradersSummary>((ranks, accountId) => {
     const trader = tradersAggregatedByMarket[accountId];
 
     const marketsSummary: MarketSummary[] = [];
-    const profit = Object.keys(trader).reduce<Decimal>((total, marketId) => {
+
+    let profit = new Decimal(0);
+    let volume = new Decimal(0);
+
+    for (const marketId of Object.keys(trader)) {
       const marketTotal: MarketBaseDetails = trader[marketId];
 
       const market = markets.find((m) => m.marketId === Number(marketId));
@@ -388,27 +415,33 @@ export async function getStaticProps() {
         );
 
         const usdProfitLoss = diff.mul(marketEndBaseAssetPrice ?? 0);
-        return total.plus(usdProfitLoss);
-      } else {
-        return total;
+        volume = volume.plus(
+          marketTotal.baseAssetIn
+            .plus(marketTotal.baseAssetOut)
+            .mul(marketEndBaseAssetPrice ?? 0),
+        );
+
+        profit = profit.plus(usdProfitLoss);
       }
-    }, new Decimal(0));
+    }
 
     return {
       ...ranks,
       [accountId]: {
         profitUsd: profit.div(ZTG).toNumber(),
+        volumeUsd: volume.div(ZTG).toNumber(),
         markets: marketsSummary,
       },
     };
   }, {});
 
-  const rankings = Object.keys(tradeProfits)
+  const rankings = Object.keys(tradersSummaries)
     .reduce<Rank[]>((rankings, accountId) => {
       rankings.push({
         accountId,
-        profitUsd: tradeProfits[accountId].profitUsd,
-        markets: tradeProfits[accountId].markets,
+        profitUsd: tradersSummaries[accountId].profitUsd,
+        markets: tradersSummaries[accountId].markets,
+        volumeUsd: tradersSummaries[accountId].volumeUsd,
       });
       return rankings;
     }, [])
@@ -431,6 +464,13 @@ export async function getStaticProps() {
     ),
   );
 
+  //todo: need to solve coin gecko rate limit issue
+  // const trendingMarkets = await getTrendingMarkets(sdk.indexer.client, sdk);
+
+  const bannerPlaceholder = await getPlaiceholder("/Leaderboard-banner.png", {
+    size: 16,
+  });
+
   return {
     props: {
       dehydratedState: dehydrate(queryClient),
@@ -438,61 +478,125 @@ export async function getStaticProps() {
         ...player,
         name: names[index],
       })),
-      revalidate: 10 * 60, //10min
+      // trendingMarkets,
+      timePeriod: period,
+      bannerPlaceholder: bannerPlaceholder.base64,
     },
+    revalidate: 10 * 60, //10min
   };
 }
 
+const columns: TableColumn[] = [
+  {
+    header: "Rank",
+    accessor: "rank",
+    type: "number",
+  },
+  {
+    header: "User",
+    accessor: "user",
+    type: "component",
+  },
+  {
+    header: "Markets Won",
+    accessor: "numMarketsWon",
+    type: "number",
+  },
+  {
+    header: "Total Profit",
+    accessor: "totalProfit",
+    type: "text",
+    collapseOrder: 2,
+  },
+  { header: "Volume", accessor: "volume", type: "text", collapseOrder: 1 },
+];
+
+const UserCell = ({ address, name }: { address: string; name?: string }) => {
+  return (
+    <div className="flex items-center">
+      <div className="hidden sm:block">
+        <Avatar size={40} address={address} />
+      </div>
+      <Link
+        className="ml-2 md:w-[300px] lg:w-auto"
+        href={`/portfolio/${address}`}
+      >
+        <span className="hidden lg:inline">{name ?? address}</span>
+        <span className="lg:hidden md:inline hidden">
+          {name ?? shortenAddress(address, 12, 12)}
+        </span>
+        <span className="block w-[100px] md:hidden truncate shrink">
+          {name ?? shortenAddress(address, 3, 3)}
+        </span>
+      </Link>
+    </div>
+  );
+};
+
 const Leaderboard: NextPage<{
   rankings: Rank[];
-}> = ({ rankings }) => {
+  bannerPlaceholder: string;
+  // trendingMarkets: IndexedMarketCardData[];
+  timePeriod: TimePeriod;
+}> = ({ rankings, timePeriod, bannerPlaceholder }) => {
+  const tableData = useMemo<TableData[]>(() => {
+    let res: TableData[] = [];
+    for (const [index, rankObj] of rankings.entries()) {
+      res = [
+        ...res,
+        {
+          rank: index + 1,
+          user: <UserCell address={rankObj.accountId} name={rankObj.name} />,
+          numMarketsWon: rankObj.markets.filter((m) => m.profit > 0).length,
+          totalProfit: `$${rankObj.profitUsd.toFixed(0)}`,
+          volume: `$${rankObj.volumeUsd.toFixed(0)}`,
+        },
+      ];
+    }
+    return res;
+  }, [rankings]);
+
   return (
-    <div className="">
-      <div className="font-bold text-3xl mb-[40px] w-full text-center">
-        Most Profitable Traders
+    <div id="leaderboard">
+      <div className="w-full h-[137px] sm:h-[244px] relative overflow-hidden rounded-md">
+        <Image
+          src="/Leaderboard-banner.png"
+          alt="Leaderboard-banner"
+          fill
+          priority
+          style={{ objectFit: "cover", objectPosition: "top" }}
+          blurDataURL={bannerPlaceholder}
+          placeholder="blur"
+        />
       </div>
-      <div className="flex flex-col gap-y-5 justify-center items-center">
-        {rankings.map((rank, index) => (
-          <div
-            key={index}
-            className="flex flex-col bg-sky-100 py-3 px-4 sm:px-6 rounded-xl w-full max-w-[800px]"
+      <h2 className="font-bold my-8 w-full text-[24px]">
+        Leaderboard (Top 20)
+      </h2>
+      <div className="border-b-1 border-misty-harbor mb-8 flex gap-7 text-sky-600 text-[18px]">
+        {TimePeriodItems.map((period) => (
+          <Link
+            scroll={false}
+            key={period}
+            href={`/leaderboard/${period}`}
+            className={`capitalize pb-4 ${
+              period === timePeriod ? "font-semibold text-black" : ""
+            }`}
           >
-            <div className="flex items-center justify-center">
-              <div className="mr-1 sm:mr-[20px] w-[20px] shrink-0">
-                {index + 1}
-              </div>
-              <div className="shrink-0">
-                <Avatar size={50} address={rank.accountId} />
-              </div>
-              <Link
-                className="mx-ztg-15 text-xs sm:text-sm md:text-base truncate shrink"
-                href={`/portfolio/${rank.accountId}`}
-              >
-                {rank.name ?? rank.accountId}
-              </Link>
-              <div className="ml-auto font-bold text-xs sm:text-sm md:text-base">
-                ${rank.profitUsd.toFixed(0)}
-              </div>
-            </div>
-            {/* <div>
-              {rank.markets
-                .sort((a, b) => b.profit - a.profit)
-                // .slice(0, 1000) // todo move this server side
-                .map((market) => (
-                  <div>
-                    <Link href={`markets/${market.marketId}`}>
-                      {market.question}-{market.marketId}
-                    </Link>
-                    <div>
-                      {formatNumberCompact(market.profit)}{" "}
-                      {lookupAssetSymbol(market.baseAssetId)}
-                    </div>
-                  </div>
-                ))}
-            </div> */}
-          </div>
+            {period}
+          </Link>
         ))}
       </div>
+      <Table columns={columns} data={tableData} />
+      {/* {trendingMarkets.length > 0 && (
+        <div className="my-[60px]">
+          <MarketScroll
+            title="Trending Markets"
+            cta="Go to Markets"
+            markets={trendingMarkets}
+            link="/markets"
+          />
+        </div>
+      )} */}
     </div>
   );
 };

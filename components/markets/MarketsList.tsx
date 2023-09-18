@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { useInfiniteMarkets } from "lib/hooks/queries/useInfiniteMarkets";
 import { MarketFilter, MarketsOrderBy } from "lib/types/market-filter";
 import MarketFilterSelection from "./market-filter";
-import { MarketCardClientWrapper } from "./market-card/index";
+import MarketCard from "./market-card/index";
 import useMarketsUrlQuery from "lib/hooks/useMarketsUrlQuery";
 import { filterTypes } from "lib/constants/market-filter";
 import { ZTG } from "lib/constants";
@@ -92,7 +92,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
 
   return (
     <div
-      className={"mb-[38px] scroll-mt-[40px]" + className}
+      className={"mb-[38px] scroll-mt-[40px] " + className}
       data-testid="marketsList"
       id={"market-list"}
     >
@@ -121,7 +121,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
             market.tags?.filter((tag): tag is string => tag !== null) ?? [];
 
           return (
-            <MarketCardClientWrapper
+            <MarketCard
               marketId={market.marketId}
               outcomes={market.outcomes}
               question={question}
@@ -147,7 +147,7 @@ const MarketsList = ({ className = "" }: MarketsListProps) => {
       <div className="flex justify-center w-full mt-[78px] h-[20px]">
         {(isFetchingMarkets || isLoading) && <Loader />}
       </div>
-      {!isLoading && count === 0 && (
+      {!(isFetchingMarkets || isLoading) && count === 0 && (
         <div className="text-center">No results!</div>
       )}
       <div

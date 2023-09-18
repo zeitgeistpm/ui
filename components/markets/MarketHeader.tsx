@@ -1,7 +1,10 @@
 import {
+  IOBaseAssetId,
+  IOForeignAssetId,
   MarketStage,
   MarketStatus,
   ScalarRangeType,
+  parseAssetId,
 } from "@zeitgeistpm/sdk-next";
 import Avatar from "components/ui/Avatar";
 import Skeleton from "components/ui/Skeleton";
@@ -28,6 +31,15 @@ import { Dialog } from "@headlessui/react";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
 import { estimateMarketResolutionDate } from "lib/util/estimate-market-resolution";
 import { MarketReport } from "lib/types";
+import { AddressDetails } from "./MarketAddresses";
+import Image from "next/image";
+import {
+  FOREIGN_ASSET_METADATA,
+  lookupAssetImagePath,
+} from "lib/constants/foreign-asset";
+import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
+import { MarketPromotionCallout } from "./PromotionCallout";
+import { PromotedMarket } from "lib/cms/get-promoted-markets";
 
 export const UserIdentity: FC<
   PropsWithChildren<{ user: string; className?: string }>
@@ -77,7 +89,7 @@ const MarketOutcome: FC<
 > = ({ status, outcome, by, setShowMarketHistory, marketHistory }) => {
   return (
     <div
-      className={`w-full flex center items-center gap-4 py-6 mb-10 rounded-lg ${
+      className={`w-full flex center items-center gap-4 py-3 rounded-lg ${
         status === "Resolved"
           ? "bg-green-light"
           : status === "Reported"
@@ -287,6 +299,7 @@ const MarketHeader: FC<{
   token?: string;
   marketStage?: MarketStage;
   rejectReason?: string;
+  promotionData?: PromotedMarket | null;
 }> = ({
   market,
   report,
@@ -295,17 +308,10 @@ const MarketHeader: FC<{
   token,
   marketStage,
   rejectReason,
+  promotionData,
 }) => {
-  const {
-    tags,
-    categories,
-    status,
-    question,
-    period,
-    marketType,
-    pool,
-    scalarType,
-  } = market;
+  const { categories, status, question, period, marketType, pool, scalarType } =
+    market;
   const [showMarketHistory, setShowMarketHistory] = useState(false);
   const starts = Number(period.start);
   const ends = Number(period.end);
@@ -326,9 +332,13 @@ const MarketHeader: FC<{
   const { data: marketHistory } = useMarketEventHistory(
     market.marketId.toString(),
   );
-  const { data: liquidity, isLoading: isLiqudityLoading } = usePoolLiquidity({
-    marketId: market.marketId,
-  });
+
+  const { data: stats, isLoading: isStatsLoading } = useMarketsStats([
+    market.marketId,
+  ]);
+
+  const liquidity = stats?.[0].liquidity;
+  const participants = stats?.[0].participants;
 
   const oracleReported = marketHistory?.reported?.by === market.oracle;
 
@@ -343,32 +353,20 @@ const MarketHeader: FC<{
     Number(market.deadlines?.disputeDuration ?? 0),
   );
 
+  const assetId = parseAssetId(market.baseAsset).unwrap();
+  const imagePath = IOForeignAssetId.is(assetId)
+    ? lookupAssetImagePath(assetId.ForeignAsset)
+    : IOBaseAssetId.is(assetId)
+    ? lookupAssetImagePath(assetId.Ztg)
+    : "";
+
   return (
-    <header className="flex flex-col items-center w-full max-w-[1000px] mx-auto">
-      <h1 className="text-4xl font-extrabold my-5 text-center">{question}</h1>
-      <div className="flex flex-wrap justify-center gap-2.5">
-        <Tag className={`${status === "Active" && "!bg-green-lighter"}`}>
-          {status === "Active" && <span className="text-green">&#x2713; </span>}
-          {status}
-        </Tag>
-        {tags?.map((tag, index) => {
-          return <Tag key={index}>{tag}</Tag>;
-        })}
-        <Tag className="!bg-black text-white">
-          {marketType?.scalar === null ? "Categorical" : "Scalar"}
-        </Tag>
-      </div>
+    <header className="flex flex-col gap-4 w-full">
+      <h1 className="text-[32px] font-extrabold">{question}</h1>
       {rejectReason && rejectReason.length > 0 && (
         <div className="mt-2.5">Market rejected: {rejectReason}</div>
       )}
-      <div className="flex justify-center my-8 w-full">
-        {marketStage ? (
-          <MarketTimer stage={marketStage} />
-        ) : (
-          <MarketTimerSkeleton />
-        )}
-      </div>
-      <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-2 mb-5">
+      <div className="flex flex-wrap items-center gap-2 mb-4">
         <HeaderStat label={hasDatePassed(starts) ? "Started" : "Starts"}>
           {new Intl.DateTimeFormat("default", {
             dateStyle: "medium",
@@ -402,16 +400,73 @@ const MarketHeader: FC<{
         ) : (
           <Skeleton width="150px" height="20px" />
         )}
-        {isLiqudityLoading === false && liquidity && token ? (
-          <HeaderStat label="Liquidity" border={false}>
-            {formatNumberCompact(liquidity.div(ZTG).toNumber())}
+        {isStatsLoading === false && token ? (
+          <HeaderStat label="Liquidity" border={true}>
+            {formatNumberCompact(
+              new Decimal(liquidity ?? 0)?.div(ZTG).toNumber(),
+            )}
             &nbsp;
             {token}
           </HeaderStat>
         ) : (
           <Skeleton width="150px" height="20px" />
         )}
+        {isStatsLoading === false && token ? (
+          <HeaderStat label="Traders" border={false}>
+            {formatNumberCompact(participants ?? 0)}
+          </HeaderStat>
+        ) : (
+          <Skeleton width="150px" height="20px" />
+        )}
       </div>
+      <div className="flex relative items-center gap-3 mb-4">
+        <AddressDetails title="Creator" address={market.creator} />
+
+        <div className="relative group">
+          <Image
+            width={20}
+            height={20}
+            src={imagePath}
+            alt="Currency token logo"
+            className="rounded-full"
+          />
+          <div className="opacity-0 transition-opacity absolute right-0 bottom-0 translate-x-[50%] z-10 translate-y-[115%] group-hover:opacity-100 pt-1  whitespace-nowrap">
+            <div className="py-1 px-2 text-sm bg-slate-50 rounded-lg">
+              <span className="text-gray-500">Currency: </span>
+              <span className="font-semibold">{token}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* todo: add when court is available */}
+        {/* <Image width={20} height={20} src="/icons/court.svg" alt="court" /> */}
+
+        <div className="relative group">
+          <Image
+            width={20}
+            height={20}
+            src="/icons/verified-icon.svg"
+            alt="verified checkmark"
+          />
+          <div className="opacity-0 transition-opacity absolute right-0 bottom-0 translate-x-[50%] z-10 translate-y-[115%] group-hover:opacity-100 pt-1 whitespace-nowrap">
+            <div className="py-1 px-2 text-sm bg-green-lighter rounded-lg">
+              Verified Market
+            </div>
+          </div>
+        </div>
+
+        {promotionData && (
+          <MarketPromotionCallout market={market} promotion={promotionData} />
+        )}
+      </div>
+      <div className="flex w-full">
+        {marketStage ? (
+          <MarketTimer stage={marketStage} />
+        ) : (
+          <MarketTimerSkeleton />
+        )}
+      </div>
+
       {(status === "Reported" ||
         status === "Disputed" ||
         status === "Resolved") &&

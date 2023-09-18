@@ -188,7 +188,7 @@ export const useTradeTransaction = (
         swapFee,
       ).mul(new Decimal(1 - slippage / 100));
 
-      if (!minAmountOut.isNaN()) {
+      if (!minAmountOut.isNaN() && minAmountOut.greaterThanOrEqualTo(0)) {
         transaction = sdk.api.tx.swaps.swapExactAmountIn(
           pool.poolId,
           inAssetId,
@@ -208,7 +208,7 @@ export const useTradeTransaction = (
         swapFee,
       ).mul(new Decimal(slippage / 100 + 1));
 
-      if (!maxAmountIn.isNaN()) {
+      if (!maxAmountIn.isNaN() && maxAmountIn.greaterThanOrEqualTo(0)) {
         transaction = sdk.api.tx.swaps.swapExactAmountOut(
           pool.poolId,
           inAssetId,
@@ -236,7 +236,7 @@ export const useTradeTransaction = (
         swapFee,
       ).mul(new Decimal(slippage / 100 + 1));
 
-      if (!maxAmountIn.isNaN()) {
+      if (!maxAmountIn.isNaN() && maxAmountIn.greaterThanOrEqualTo(0)) {
         transaction = sdk.api.tx.swaps.swapExactAmountOut(
           pool.poolId,
           inAssetId,
@@ -256,7 +256,7 @@ export const useTradeTransaction = (
         swapFee,
       ).mul(new Decimal(1 - slippage / 100));
 
-      if (!minAmountOut.isNaN()) {
+      if (!minAmountOut.isNaN() && minAmountOut.greaterThanOrEqualTo(0)) {
         transaction = sdk.api.tx.swaps.swapExactAmountIn(
           pool.poolId,
           inAssetId,

@@ -27,7 +27,7 @@ const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
     <components.Control {...props}>
       <div
         className={
-          "flex justify-center items-center ml-[10px] font-medium text-ztg-16-150 h-[44px] " +
+          "flex justify-center items-center ml-[10px] font-medium text-ztg-16-150 h-8 " +
           (menuIsOpen ? "text-black" : "text-sky-600")
         }
         onClick={onClick}
@@ -82,7 +82,7 @@ const Option = ({ children, ...props }: OptionProps<MarketFilter, false>) => {
 const MenuList = ({ children, ...props }: MenuListProps) => {
   return (
     <components.MenuList {...props}>
-      <div className="flex flex-row flex-wrap mx-auto gap-[12px] justify-center mb-[30px]">
+      <div className="flex flex-row flex-wrap mx-auto gap-[12px] mb-2">
         {children}
       </div>
     </components.MenuList>

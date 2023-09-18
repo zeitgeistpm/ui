@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FC, Fragment, PropsWithChildren, useState } from "react";
 import {
+  ArrowRight,
   BarChart,
   ChevronDown,
   DollarSign,
@@ -44,7 +45,7 @@ const BalanceRow = ({
   balance?: Decimal;
 }) => {
   return (
-    <div className="flex items-center mb-3 ">
+    <div className="flex items-center">
       <img src={imgPath} height={"24px"} width="24px" />
       <div
         className={`group font-bold flex w-full items-center rounded-md px-2 py-2 text-sm`}
@@ -64,8 +65,6 @@ const HeaderActionButton: FC<
     disabled: boolean;
   }>
 > = ({ onClick, disabled, children }) => {
-  const { pathname } = useRouter();
-
   return (
     <button
       className={`flex border-2 rounded-full px-6 leading-[40px] text-white font-medium items-center border-white justify-center cursor-pointer disabled:cursor-default disabled:opacity-30`}
@@ -146,7 +145,7 @@ const AccountButton: FC<{
     <>
       {!connected ? (
         <div
-          className="sm:mr-5 sm:ml-auto"
+          className="ml-auto"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
@@ -180,12 +179,12 @@ const AccountButton: FC<{
           )}
         </div>
       ) : (
-        <div className="relative sm:mr-5 sm:ml-auto">
+        <div className="relative ml-auto">
           <Menu>
             {({ open }) => (
               <>
                 <div>
-                  <div className="flex h-11 relative pr-4 md:pr-0">
+                  <div className="flex h-11 relative">
                     <Menu.Button>
                       <div
                         className={`relative flex flex-1	items-center justify-end h-full rounded-full cursor-pointer z-30  ${
@@ -201,12 +200,7 @@ const AccountButton: FC<{
                             open ? "border-sunglow-2" : "border-white"
                           }`}
                         >
-                          <div
-                            className={`ring-2 rounded-full`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                            }}
-                          >
+                          <div className={`ring-2 rounded-full`}>
                             {activeAccount?.address && (
                               <Avatar
                                 zoomed
@@ -302,35 +296,37 @@ const AccountButton: FC<{
                   leaveFrom="transform opacity-100 translate-y-0 md:scale-100"
                   leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
                 >
-                  <Menu.Items className="fixed md:absolute left-0 md:left-auto md:right-0 py-3 z-40 mt-2 w-full overflow-hidden h-full md:h-auto md:w-64 origin-top-right divide-y divide-gray-100 md:rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <Menu.Items className="fixed md:absolute left-0 md:left-auto md:right-0 py-3 z-40 mt-3 md:mt-6 w-full overflow-hidden h-full md:h-auto md:w-64 origin-top-right divide-y divide-gray-100 md:rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="">
-                      <div className="border-b-2 mb-3 py-2">
-                        <div className="px-6">
-                          <BalanceRow
-                            imgPath="/currencies/ztg.jpg"
-                            units={constants?.tokenSymbol}
-                            balance={activeBalance}
-                          />
-                        </div>
-                        <div className="px-6">
-                          <BalanceRow
-                            imgPath="/currencies/dot.png"
-                            units="DOT"
-                            balance={polkadotBalance}
-                          />
-                        </div>
-                        <div className="px-6">
-                          <div className="flex items-center mb-3">
-                            <img
-                              src="/currencies/usdt.png"
-                              height={"24px"}
-                              width="24px"
-                            />
-                            <div className="bg-green-200 ml-2 text-green-900 rounded-md py-1 px-2 text-xs">
-                              USDT Coming Soon!
-                            </div>
-                          </div>
-                        </div>
+                      <div className="flex flex-col gap-2 border-b-2 mb-3 py-2 px-6">
+                        <BalanceRow
+                          imgPath="/currencies/ztg.jpg"
+                          units={constants?.tokenSymbol}
+                          balance={activeBalance}
+                        />
+                        <BalanceRow
+                          imgPath="/currencies/dot.png"
+                          units="DOT"
+                          balance={polkadotBalance}
+                        />
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              href={`/portfolio/${realAddress}?mainTab=Balances`}
+                              className="mt-3"
+                            >
+                              <div className="flex items-center mb-3">
+                                <div className="text-xs font-medium">
+                                  Go to Balances
+                                </div>
+                                <ArrowRight
+                                  size={14}
+                                  className="ml-2 md:ml-auto"
+                                />
+                              </div>
+                            </Link>
+                          )}
+                        </Menu.Item>
                       </div>
                       <Menu.Item>
                         {({ active }) => (
@@ -368,7 +364,7 @@ const AccountButton: FC<{
                       )}
                       <Menu.Item>
                         {({ active }) => (
-                          <Link href="/portfolio">
+                          <Link href={`/portfolio/${realAddress}`}>
                             <div className="flex items-center px-6 mb-3 hover:bg-slate-100">
                               <BarChart />
                               <button

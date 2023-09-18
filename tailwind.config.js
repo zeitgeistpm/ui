@@ -28,6 +28,17 @@ module.exports = {
   safelist: ["bg-polkadot", "text-polkadot"],
   darkMode: "class",
   theme: {
+    keyframes: {
+      "pop-in": {
+        "0%": { transform: "scale(0.82)", opacity: "0" },
+        "100%": { transform: "scale(1)", opacity: "1" },
+      },
+      ...defaultTheme.keyframes,
+    },
+    animation: {
+      "pop-in": "pop-in 0.4s cubic-bezier(.38,.39,.2,1.45) forwards",
+      ...defaultTheme.animation,
+    },
     fontFamily: {
       mono: [
         "var(--font-roboto-mono)",
@@ -63,12 +74,14 @@ module.exports = {
       lg: "1240px",
       xl: "1440px",
       "2xl": "1728px",
+      "3xl": "2560px",
     },
     containers: {
       sm: "520px",
       md: "713px",
       lg: "984px",
       xl: "1184px",
+      "3xl": "2560px",
     },
     container: {
       screens: {
@@ -77,6 +90,7 @@ module.exports = {
         lg: "1240px",
         xl: "1440px",
         "2xl": "1728px",
+        "3xl": "2560px",
       },
       padding: {
         DEFAULT: "16px",
@@ -178,6 +192,7 @@ module.exports = {
         success: "#E8FFE4",
         info: "#E4F5FF",
         error: "#FFE6E4",
+        "ztg-pink": "#DC056C",
         "tooltip-bg": "#FDF5DB",
         "maroon-base": "#3C0C0C",
         "kusama-base": "#E10178",
@@ -208,7 +223,7 @@ module.exports = {
         "light-gray": "#F5F5F5",
         efefef: "#EFEFEF",
         //finalised proto colour pallet
-        "ztg-blue": "#0001FE",
+        "ztg-blue": "#2468e2",
         "laser-lemon": "#F7FF58",
         sunglow: "#FFD23F",
         "sunglow-2": "#FAB400",
@@ -257,6 +272,8 @@ module.exports = {
         twitter: "#479BE9",
         "scalar-bar": "#CCF994",
         "scalar-text": "#0C5F0B",
+        "ice-hush": "#B6F2FF",
+        "misty-harbor": "#D8E1E7",
         purple: {
           light: "#FCE8F3",
           DEFAULT: "#99154B",
@@ -309,6 +326,7 @@ module.exports = {
         "ztg-basis-520": "0 0 520px",
       },
       spacing: {
+        "topbar-height": "69px",
         "90%": "90%",
         "88%": "88%",
         "85%": "85%",

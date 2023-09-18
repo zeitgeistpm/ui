@@ -3,7 +3,7 @@ import { OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
 
 const historicalMarketQuery = gql`
   query HistoricalMarkets($marketId: Int) {
-    historicalMarkets(where: { marketId_eq: $marketId }) {
+    historicalMarkets(where: { market: { marketId_eq: $marketId } }) {
       by
       blockNumber
       event

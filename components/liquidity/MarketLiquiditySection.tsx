@@ -5,10 +5,12 @@ import PoolTable from "components/liquidity/PoolTable";
 import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
 import { Loader } from "components/ui/Loader";
 import SecondaryButton from "components/ui/SecondaryButton";
+import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { usePoolLiquidity } from "lib/hooks/queries/usePoolLiquidity";
+import { useWallet } from "lib/state/wallet";
 import { isScalarRangeType } from "lib/types";
 import { formatNumberLocalized } from "lib/util";
 import { getCurrentPrediction } from "lib/util/assets";
@@ -69,7 +71,7 @@ const LiquidityHeaderButtonItem: FC<PropsWithChildren<{ className?: string }>> =
     return (
       <div
         className={
-          "center border-pastel-blue w-full px-2 sm:px-8 md:px-0 " + className
+          "center border-pastel-blue w-full px-2 sm:px-8 md:px-0" + className
         }
       >
         {children}
@@ -87,6 +89,8 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
     ? parseAssetId(pool.baseAsset).unrightOr(undefined)
     : undefined;
   const { data: metadata } = useAssetMetadata(baseAssetId);
+
+  const wallet = useWallet();
 
   const prediction =
     market &&
@@ -126,20 +130,28 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
         </LiquidityHeaderTextItem>
       </div>
       <div className="flex md:w-full">
-        <LiquidityHeaderButtonItem className="border-r-1 md:mx-0">
-          <BuySellFullSetsButton
-            marketId={market.marketId}
-            buttonClassName="h-8 border-gray-300 border-1 rounded-full text-ztg-10-150 px-1 w-full md:w-auto sm:px-6 mx-auto"
-          />
-        </LiquidityHeaderButtonItem>
-        <LiquidityHeaderButtonItem className="lg:-ml-14">
-          <SecondaryButton
-            onClick={() => setManageLiquidityOpen(true)}
-            className="max-w-[160px] md:ml-auto md:mr-0"
-          >
-            Manage Liquidity
-          </SecondaryButton>
-        </LiquidityHeaderButtonItem>
+        {!wallet.connected ? (
+          <LiquidityHeaderButtonItem className="border-r-1 md:mx-0">
+            <TransactionButton connectText="Connect Wallet to Manage Liquidity" />
+          </LiquidityHeaderButtonItem>
+        ) : (
+          <>
+            <LiquidityHeaderButtonItem className="border-b-1 sm:border-b-0 sm:border-r-1 md:border-r-1 md:mr-6">
+              <BuySellFullSetsButton
+                marketId={market.marketId}
+                buttonClassName="h-8 border-gray-300 border-1 rounded-full text-ztg-10-150 px-1 w-full md:w-auto sm:px-6 mx-auto"
+              />
+            </LiquidityHeaderButtonItem>
+            <LiquidityHeaderButtonItem className="lg:-ml-14">
+              <SecondaryButton
+                onClick={() => setManageLiquidityOpen(true)}
+                className="max-w-[160px] md:ml-auto md:mr-0"
+              >
+                Manage Liquidity
+              </SecondaryButton>
+            </LiquidityHeaderButtonItem>
+          </>
+        )}
       </div>
       {pool?.poolId && (
         <LiquidityModal

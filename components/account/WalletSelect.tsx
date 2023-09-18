@@ -1,7 +1,7 @@
+import { BaseDotsamaWallet } from "@talismn/connect-wallets";
 import { useAccountModals } from "lib/state/account";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { supportedWallets, useWallet } from "lib/state/wallet";
-import { Wallet } from "lib/wallets/types";
 
 import { useEffect } from "react";
 import { Download } from "react-feather";
@@ -12,7 +12,7 @@ const WalletSelect = () => {
 
   const wasConnected = usePrevious(connected);
 
-  const handleSelectWallet = async (wallet: Wallet) => {
+  const handleSelectWallet = async (wallet: BaseDotsamaWallet) => {
     if (!wallet.installed) {
       window.open(wallet.installUrl);
     } else {

@@ -11,6 +11,7 @@ import {
   MarketPositionsSkeleton,
 } from "components/portfolio/MarketPositions";
 import PortfolioIdentity from "components/portfolio/PortfolioIdentity";
+import { Loader } from "components/ui/Loader";
 import SubTabsList from "components/ui/SubTabsList";
 import PortfolioLayout from "layouts/PortfolioLayout";
 import { NextPageWithLayout } from "layouts/types";
@@ -18,7 +19,9 @@ import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { useCrossChainApis } from "lib/state/cross-chain";
+import { useDelayQueue } from "lib/state/delay-queue";
 import { isValidPolkadotAddress } from "lib/util";
+import { assetsAreEqual } from "lib/util/assets-are-equal";
 import { groupBy, range } from "lodash-es";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
@@ -51,6 +54,8 @@ const Portfolio: NextPageWithLayout = () => {
   //init cross chain apis early
   useCrossChainApis();
 
+  const { items } = useDelayQueue();
+
   const [mainTabSelection, setMainTabSelection] =
     useQueryParamState<MainTabItem>("mainTab");
 
@@ -79,11 +84,27 @@ const Portfolio: NextPageWithLayout = () => {
     return <NotFoundPage />;
   }
 
+  const ownedAssetIds = Object.values(marketPositionsByMarket ?? {})
+    .flat()
+    .map((p) => p.assetId);
+
+  const newAssetsQueued = items.filter(
+    (item) =>
+      item.metadata?.address === address &&
+      ownedAssetIds.some(
+        (assetId) =>
+          item.metadata?.assetId &&
+          assetsAreEqual(assetId, item.metadata.assetId),
+      ) === false,
+  );
+
+  const isPortfolioIndexing =
+    marketPositionsByMarket && newAssetsQueued.length !== 0;
+
   return (
-    <>
+    <div className="">
       {address && <PortfolioIdentity address={address} />}
-      <div className="mb-12">
-        <h2 className="text-2xl my-6 text-center">Summary</h2>
+      <div className="mb-[40px]">
         <PortfolioBreakdown
           {...(breakdown ?? {
             loading: true,
@@ -98,8 +119,8 @@ const Portfolio: NextPageWithLayout = () => {
           }
           onChange={(index) => setMainTabSelection(mainTabItems[index])}
         >
-          <div className="overflow-auto">
-            <Tab.List className="flex sm:justify-center mb-4">
+          <div className="overflow-auto border-b border-sky-200">
+            <Tab.List className="flex mb-4">
               {[
                 "Predictions",
                 ...(process.env.NEXT_PUBLIC_SHOW_CROSS_CHAIN === "true"
@@ -128,6 +149,14 @@ const Portfolio: NextPageWithLayout = () => {
 
           <Tab.Panels>
             <Tab.Panel className="mt-[40px]">
+              {isPortfolioIndexing && (
+                <div className="flex w-full items-center justify-center gap-5 bg-info p-4 mb-[40px] text-sm flex-wrap">
+                  <Loader loading={true} className="h-9 w-9" variant={"Info"} />
+                  <div className="text-center">
+                    New portfolio positions are being indexed
+                  </div>
+                </div>
+              )}
               {!marketPositionsByMarket || !ztgPrice ? (
                 range(0, 8).map((i) => (
                   <MarketPositionsSkeleton className="mb-14" key={i} />
@@ -157,7 +186,7 @@ const Portfolio: NextPageWithLayout = () => {
                     return (
                       <MarketPositions
                         key={market.marketId}
-                        className="mb-14 border-b-4 border-gray-200"
+                        className="mb-14"
                         market={market}
                         usdZtgPrice={ztgPrice}
                         positions={marketPositions.filter((position) =>
@@ -211,7 +240,7 @@ const Portfolio: NextPageWithLayout = () => {
                           return (
                             <MarketPositions
                               key={market.marketId}
-                              className="mb-14 border-b-4 border-gray-200"
+                              className="mb-14"
                               market={market}
                               usdZtgPrice={ztgPrice}
                               positions={subsidyPositions.filter((position) =>
@@ -242,7 +271,7 @@ const Portfolio: NextPageWithLayout = () => {
           </Tab.Panels>
         </Tab.Group>
       </div>
-    </>
+    </div>
   );
 };
 

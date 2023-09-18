@@ -60,11 +60,3 @@ export const createCategoricalTickers = (
 
   return tokens;
 };
-
-const input = ["foo bar", "foo bar baz", "foo bar baz qux"];
-
-const output = {
-  "foo bar": "FOOBAR",
-  "foo bar baz": "FOOBAZ",
-  "foo bar baz qux": "FOOQUX",
-};

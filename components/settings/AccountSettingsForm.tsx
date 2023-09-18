@@ -10,6 +10,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { UserIdentity } from "lib/types/user-identity";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 
 export type AcccountSettingsFormProps = {
   identity: UserIdentity;
@@ -126,7 +127,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
       <input
         type="text"
         id="discord"
-        {...register("discord", { required: true })}
+        {...register("discord")}
         className={
           "rounded-md items-center h-14 px-3 outline-none border-1 border-transparent bg-anti-flash-white " +
           (errors?.discord ? "border-vermilion" : "")
@@ -140,7 +141,7 @@ const AcccountSettingsForm: React.FC<AcccountSettingsFormProps> = ({
       <input
         type="text"
         id="twitter"
-        {...register("twitter", { required: true })}
+        {...register("twitter")}
         className={
           "rounded-md items-center h-14 px-3 outline-none border-1 border-transparent bg-anti-flash-white mb-5 " +
           (errors?.twitter ? "border-vermilion" : "")

@@ -1,4 +1,5 @@
-import { blockDate } from "@zeitgeistpm/utility/dist/time";
+import momentTz from "moment-timezone";
+import moment from "moment";
 import Decimal from "decimal.js";
 import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
@@ -6,12 +7,14 @@ import { useChainTime } from "lib/state/chaintime";
 import { MarketDraftEditor } from "lib/state/market-creation/editor";
 import {
   Answers,
+  CurrencyTag,
   Liquidity,
   Moderation,
   blocksAsDuration,
 } from "lib/state/market-creation/types/form";
 import { timelineAsBlocks } from "lib/state/market-creation/types/timeline";
 import { shortenAddress } from "lib/util";
+import partialRight from "lodash-es/partialRight";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { useMemo } from "react";
@@ -28,6 +31,10 @@ export type MarketSummaryProps = {
 export const MarketSummary = ({ editor }: MarketSummaryProps) => {
   const chainTime = useChainTime();
   const { form } = editor;
+
+  const momentFn = form?.timeZone
+    ? partialRight(momentTz.tz, form.timeZone)
+    : moment;
 
   const timeline = useMemo(() => {
     return !form || !chainTime
@@ -67,6 +74,7 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             <Answers
               answers={form.answers!}
               baseAssetPrice={baseAssetPrice!}
+              baseCurrency={form.currency!}
               liquidity={form?.liquidity}
               moderation={form.moderation!}
             />
@@ -190,10 +198,9 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             <Label className="mb-2">Ends</Label>
             <div>
               {form.endDate
-                ? Intl.DateTimeFormat("default", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  }).format(new Date(form.endDate))
+                ? `${momentFn(form.endDate).format("MMM D, YYYY, h:mm:ss A")} ${
+                    form.timeZone ?? ""
+                  }`
                 : "--"}
             </div>
           </div>
@@ -208,10 +215,9 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
                     ? blocksAsDuration(timeline?.grace.period).humanize()
                     : "None"
                   : "--"
-                : Intl.DateTimeFormat("default", {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  }).format(new Date(form.gracePeriod?.date!).getTime())}
+                : `${momentFn(form.gracePeriod?.date).format(
+                    "MMM D, YYYY, h:mm:ss A",
+                  )} ${form.timeZone ?? ""}`}
             </div>
           </div>
           <div className="flex justify-center gap-2 items-center mb-2 md:mb-0">
@@ -256,11 +262,13 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
 const Answers = ({
   answers,
   liquidity,
+  baseCurrency,
   baseAssetPrice,
   moderation,
 }: {
   answers: Answers;
   liquidity?: Liquidity;
+  baseCurrency: CurrencyTag;
   baseAssetPrice?: Decimal;
   moderation: Moderation;
 }) => {
@@ -279,7 +287,7 @@ const Answers = ({
             key={answerIndex}
             className="flex-1 rounded-md bg-gray-50 py-3 px-5 mb-4 md:mb-0"
           >
-            <div className="text-xl font-semibold">
+            <div className="text-xl font-semibold uppercase">
               {answerLiquidity?.asset}
             </div>
             {answers.type === "categorical" && (
@@ -304,11 +312,15 @@ const Answers = ({
                     <Label className="text-xs">Weight</Label>{" "}
                   </div>
                   <div className="table-cell text-left">
-                    <div>{answerLiquidity?.weight ?? "--"}</div>
+                    <div>
+                      {answerLiquidity?.weight
+                        ? new Decimal(answerLiquidity.weight).toFixed(2)
+                        : "--"}
+                    </div>
                   </div>
                 </div>
 
-                <div className="table-row">
+                <div className="table-row mb-1">
                   <div className="table-cell text-left pr-4">
                     <Label className="text-xs">Value</Label>{" "}
                   </div>
@@ -326,6 +338,22 @@ const Answers = ({
                       ) : (
                         ""
                       )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="table-row ">
+                  <div className="table-cell text-left pr-4">
+                    <Label className="text-xs">Price</Label>{" "}
+                  </div>
+                  <div className="table-cell text-left">
+                    <div className="flex gap-2">
+                      <div className="font-semibold">
+                        {new Decimal(answerLiquidity?.price.price ?? 0).toFixed(
+                          2,
+                        )}
+                      </div>
+                      <div className="font-bold">{baseCurrency}</div>
                     </div>
                   </div>
                 </div>

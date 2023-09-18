@@ -4,8 +4,8 @@ import { MarketDispute, MarketTypeOf } from "@zeitgeistpm/sdk/dist/types";
 import { formatScalarOutcome } from "./format-scalar-outcome";
 import {
   MarketReport,
+  isMarketCategoricalOutcome,
   isMarketScalarOutcome,
-  isValidMarketReport,
 } from "lib/types";
 
 export const getMarketStatusDetails = (
@@ -17,9 +17,6 @@ export const getMarketStatusDetails = (
   report?: MarketReport,
   resolvedOutcome?: string,
 ): { outcome?: string | number; by?: string } => {
-  if (!isValidMarketReport(dispute) || !isValidMarketReport(report)) {
-    return {};
-  }
   if (status === "Disputed" && dispute) {
     //scalar market
     if (isMarketScalarOutcome(dispute.outcome)) {
@@ -28,11 +25,13 @@ export const getMarketStatusDetails = (
         by: dispute.by,
       };
       //categorical market
-    } else {
+    } else if (isMarketCategoricalOutcome(dispute.outcome)) {
       return {
         outcome: categories[Number(dispute.outcome.categorical)].name,
         by: dispute.by,
       };
+    } else {
+      return {};
     }
   } else if (status === "Reported" && report) {
     //scalar market

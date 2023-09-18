@@ -112,6 +112,7 @@ export interface MarketPageIndexedData {
   creator: string;
   oracle: string;
   tags: [];
+  baseAsset: string;
   disputeMechanism: "SimpleDisputes" | "Authorized" | "Court";
 }
 

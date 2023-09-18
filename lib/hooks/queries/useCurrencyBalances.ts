@@ -2,11 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import Decimal from "decimal.js";
 import { ChainName, CHAINS } from "lib/constants/chains";
-import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 import { useCrossChainApis } from "lib/state/cross-chain";
+import { calculateFreeBalance } from "lib/util/calc-free-balance";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";
-import { calculateFreeBalance } from "lib/util/calc-free-balance";
+import { useForeignAssetBalances } from "./useForeignAssetBalances";
 
 export const currencyBalanceRootKey = "currency-balances";
 
@@ -17,14 +17,21 @@ export type CurrencyBalance = {
   foreignAssetId?: number;
   sourceChain: ChainName;
   existentialDeposit: Decimal;
+  decimals: number;
 };
 
 export const useCurrencyBalances = (address: string) => {
   const [sdk, id] = useSdkv2();
   const { apis } = useCrossChainApis();
   const { data: constants } = useChainConstants();
+  const { data: foreignAssetBalances } = useForeignAssetBalances(address);
 
-  const enabled = !!sdk && !!address && !!constants && isRpcSdk(sdk);
+  const enabled =
+    !!sdk &&
+    !!address &&
+    !!constants &&
+    isRpcSdk(sdk) &&
+    !!foreignAssetBalances;
   const query = useQuery(
     [
       id,
@@ -32,33 +39,10 @@ export const useCurrencyBalances = (address: string) => {
       address,
       Object.values(apis ?? {}).length,
       constants,
+      foreignAssetBalances,
     ],
     async () => {
       if (enabled) {
-        const assetIds = Object.keys(FOREIGN_ASSET_METADATA);
-
-        const metadata = await sdk.api.query.assetRegistry.metadata.multi(
-          assetIds.map((assetId) => ({ ForeignAsset: assetId })),
-        );
-
-        const foreignAccounts = await sdk.api.query.tokens.accounts.multi(
-          assetIds.map((assetId) => [address, { ForeignAsset: assetId }]),
-        );
-
-        const foreignAssetBalances: CurrencyBalance[] = foreignAccounts.map(
-          (account, index) => ({
-            symbol: metadata[index].unwrap().symbol.toPrimitive() as string,
-            balance: new Decimal(account.free.toString()),
-            chain: "Zeitgeist",
-            sourceChain: FOREIGN_ASSET_METADATA[assetIds[index]]
-              .originChain as ChainName,
-            foreignAssetId: Number(assetIds[index]),
-            existentialDeposit: new Decimal(
-              sdk.api.consts.balances.existentialDeposit.toString(),
-            ),
-          }),
-        );
-
         const { data } = await sdk.api.query.system.account(address);
         const nativeBalance = calculateFreeBalance(
           data.free.toString(),
@@ -86,6 +70,7 @@ export const useCurrencyBalances = (address: string) => {
           existentialDeposit: new Decimal(
             sdk.api.consts.balances.existentialDeposit.toString(),
           ),
+          decimals: 10,
         };
 
         return [

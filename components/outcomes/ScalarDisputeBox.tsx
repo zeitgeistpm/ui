@@ -3,6 +3,7 @@ import {
   IndexerContext,
   isRpcSdk,
   Market,
+  ScalarRangeType,
 } from "@zeitgeistpm/sdk-next";
 import Input from "components/ui/Input";
 import { DateTimeInput } from "components/ui/inputs";
@@ -10,20 +11,24 @@ import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
+import { MarketScalarOutcome } from "lib/types";
 import moment from "moment";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 const ScalarDisputeBox = ({
   market,
   onSuccess,
 }: {
   market: Market<IndexerContext>;
-  onSuccess?: () => void;
+  onSuccess?: (
+    outcome: MarketScalarOutcome & { type: ScalarRangeType },
+  ) => void;
 }) => {
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
@@ -69,7 +74,7 @@ const ScalarDisputeBox = ({
     }
   };
 
-  const { send } = useExtrinsic(
+  const { send, isLoading, isBroadcasting } = useExtrinsic(
     () => {
       if (!isRpcSdk(sdk) || !signer) return;
 
@@ -83,16 +88,30 @@ const ScalarDisputeBox = ({
       );
     },
     {
+      onBroadcast: () => {},
       onSuccess: () => {
-        notificationStore.pushNotification("Outcome Disputed", {
-          type: "Success",
-        });
-        onSuccess?.();
+        if (onSuccess) {
+          onSuccess?.({
+            type: market.scalarType as ScalarRangeType,
+            scalar: new Decimal(scalarReportValue).mul(ZTG).toString(),
+          });
+        } else {
+          notificationStore.pushNotification("Outcome Disputed", {
+            type: "Success",
+          });
+        }
       },
     },
   );
 
   const handleSignTransaction = async () => send();
+
+  const isValid = useMemo(() => {
+    if (!scalarReportValue) return false;
+    if (Number(scalarReportValue) < bounds[0].toNumber()) return false;
+    if (Number(scalarReportValue) > bounds[1].toNumber()) return false;
+    return true;
+  }, [scalarReportValue]);
 
   return (
     <div className="p-[30px] flex flex-col items-center gap-y-3">
@@ -104,6 +123,10 @@ const ScalarDisputeBox = ({
           Bonds will be slashed if the reported outcome is deemed to be
           incorrect
         </span>
+      </div>
+      <div className="flex flex-col item-center text-center">
+        <span className="text-sky-600 text-[14px]">Previous Report:</span>
+        <span className="">{getPreviousReport()}</span>
       </div>
       {isScalarDate ? (
         <DateTimeInput
@@ -122,26 +145,14 @@ const ScalarDisputeBox = ({
         <Input
           type="number"
           value={scalarReportValue}
+          placeholder="New reported value"
           onChange={(e) => setScalarReportValue(e.target.value)}
           min={bounds[0].toString()}
           max={bounds[1].toString()}
-          className="text-ztg-14-150 p-2 bg-sky-200 rounded-md w-full outline-none text-right font-mono mt-2"
-          onBlur={() => {
-            if (
-              scalarReportValue === "" ||
-              Number(scalarReportValue) < bounds[0].toNumber()
-            ) {
-              setScalarReportValue(bounds[0].toString());
-            } else if (Number(scalarReportValue) > bounds[1].toNumber()) {
-              setScalarReportValue(bounds[1].toString());
-            }
-          }}
+          className="text-ztg-14-150 p-2 bg-sky-200 rounded-md w-full outline-none text-center font-mono mt-2"
         />
       )}
-      <div className="flex flex-col item-center text-center">
-        <span className="text-sky-600 text-[14px]">Previous Report:</span>
-        <span className="">{getPreviousReport()}</span>
-      </div>
+
       {bondAmount !== disputeBond &&
       bondAmount !== undefined &&
       disputeFactor !== undefined ? (
@@ -155,6 +166,8 @@ const ScalarDisputeBox = ({
       <TransactionButton
         className="mb-ztg-10 mt-[20px]"
         onClick={handleSignTransaction}
+        disabled={!isValid || isLoading}
+        loading={isBroadcasting}
       >
         Confirm Dispute
       </TransactionButton>

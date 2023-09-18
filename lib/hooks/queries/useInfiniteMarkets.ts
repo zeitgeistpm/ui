@@ -59,6 +59,7 @@ export const useInfiniteMarkets = (
     const statuses = filters.status as MarketStatus[];
     const tags = filters.tag;
     const currencies = filters.currency;
+
     const markets: Market<IndexerContext>[] = await sdk.model.markets.list({
       where: {
         ...validMarketWhereInput,
@@ -68,13 +69,18 @@ export const useInfiniteMarkets = (
         pool_isNull: withLiquidityOnly ? false : undefined,
         baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
         pool: {
-          baseAssetQty_gt: withLiquidityOnly ? 0 : undefined,
+          account: {
+            balances_some: {
+              balance_gt: withLiquidityOnly ? 0 : undefined,
+            },
+          },
         },
       },
       offset: !pageParam ? 0 : limit * pageParam,
       limit: limit,
       order: orderByMap[orderBy],
     });
+
     const outcomes = await getOutcomesForMarkets(sdk.indexer.client, markets);
 
     let resMarkets: Array<QueryMarketData> = [];

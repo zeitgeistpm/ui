@@ -18,6 +18,8 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Transfer from "./Transfer";
 import Input from "components/ui/Input";
+import { convertDecimals } from "lib/util/convert-decimals";
+import { formatNumberCompact } from "lib/util/format-compact";
 
 const WithdrawButton = ({
   toChain,
@@ -26,6 +28,7 @@ const WithdrawButton = ({
   foreignAssetId,
   destinationExistentialDeposit,
   destinationTokenBalance,
+  assetDecimals,
 }: {
   toChain: ChainName;
   tokenSymbol: string;
@@ -33,6 +36,7 @@ const WithdrawButton = ({
   foreignAssetId: number;
   destinationExistentialDeposit: Decimal;
   destinationTokenBalance: Decimal;
+  assetDecimals: number;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -49,6 +53,7 @@ const WithdrawButton = ({
           foreignAssetId={foreignAssetId}
           destinationExistentialDeposit={destinationExistentialDeposit}
           destinationTokenBalance={destinationTokenBalance}
+          assetDecimals={assetDecimals}
           onSuccess={() => setIsOpen(false)}
         />
       </Modal>
@@ -85,6 +90,7 @@ const WithdrawModal = ({
   onSuccess,
   destinationExistentialDeposit,
   destinationTokenBalance,
+  assetDecimals,
 }: {
   toChain: ChainName;
   tokenSymbol: string;
@@ -92,6 +98,7 @@ const WithdrawModal = ({
   foreignAssetId: number;
   destinationExistentialDeposit: Decimal;
   destinationTokenBalance: Decimal;
+  assetDecimals: number;
   onSuccess: () => void;
 }) => {
   const {
@@ -125,7 +132,7 @@ const WithdrawModal = ({
   );
   const amount = getValues("amount");
   const amountDecimal: Decimal = amount
-    ? new Decimal(amount).mul(ZTG)
+    ? convertDecimals(new Decimal(amount), 0, assetDecimals)
     : new Decimal(0);
 
   const { send: transfer, isLoading } = useCrossChainExtrinsic(
@@ -223,6 +230,7 @@ const WithdrawModal = ({
                   value: true,
                   message: "Value is required",
                 },
+                //todo: validate transfer where fee is paid in same asset as the one being transferred
                 validate: (value) => {
                   if (balance.div(ZTG).lessThan(value)) {
                     return `Insufficient balance. Current balance: ${balance
@@ -232,7 +240,9 @@ const WithdrawModal = ({
                     return "Value cannot be zero or less";
                   } else if (
                     destinationTokenBalance
-                      .plus(new Decimal(value).mul(ZTG))
+                      .plus(
+                        convertDecimals(new Decimal(value), 0, assetDecimals),
+                      )
                       .lessThan(destinationExistentialDeposit)
                   ) {
                     return `Balance on ${toChain} must be greater than ${destinationExistentialDeposit.div(
@@ -254,7 +264,12 @@ const WithdrawModal = ({
           </div>
           <div className="center font-normal text-ztg-12-120 mb-[16px] text-sky-600">
             Zeitgeist fee:
-            <span className="text-black ml-1">{fee?.div(ZTG).toFixed(3)}</span>
+            {fee && (
+              <span className="text-black ml-1">
+                {formatNumberCompact(fee.amount.div(ZTG).toNumber())}{" "}
+                {fee.symbol}
+              </span>
+            )}
           </div>
           <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
             {toChain} fee:

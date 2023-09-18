@@ -1,33 +1,39 @@
-import React, { useEffect, useRef } from "react";
-import { MessageSquare } from "react-feather";
-import { motion } from "framer-motion";
 import grill from "@subsocial/grill-widget";
+import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { MessageSquare } from "react-feather";
 
 type GrillChatProps = {
-  open: boolean;
-  setOpen: (open: boolean) => void;
   className?: string;
 };
 
-const GrillChat: React.FC<GrillChatProps> = ({ open, setOpen }) => {
-  useEffect(() => {
-    grill.init({
-      theme: "light",
-      channel: {
-        type: "channel",
-        id: "zeitgeist-2052",
-        settings: {
-          enableInputAutofocus: false, // doesn't work
-          enableBackButton: false,
-          enableLoginButton: true,
+const GrillChat: React.FC<GrillChatProps> = () => {
+  const [isInitialised, setIsInitialised] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const handleClick = () => {
+    if (isInitialised === false) {
+      grill.init({
+        theme: "light",
+        channel: {
+          type: "channel",
+          id: "zeitgeist-2052",
+          settings: {
+            enableInputAutofocus: false, // doesn't work
+            enableBackButton: false,
+            enableLoginButton: true,
+          },
         },
-      },
-    });
-  }, []);
+      });
+      setIsInitialised(true);
+    }
+
+    setOpen(!open);
+  };
 
   return (
     <div
-      className={"fixed bottom-0 w-screen mr-10 mb-4 pointer-events-none z-30"}
+      className={"fixed bottom-0 right-4 w-full mb-4 pointer-events-none z-30"}
     >
       <motion.div
         key="grillchat"
@@ -47,12 +53,12 @@ const GrillChat: React.FC<GrillChatProps> = ({ open, setOpen }) => {
       >
         <div id="grill" className="h-full"></div>
       </motion.div>
-      <div
+      <button
         className="ml-auto rounded-full cursor-pointer border-1 border-gray-300 w-14 h-14 center shadow-ztg-5 bg-white pointer-events-auto mt-4"
-        onClick={() => setOpen(!open)}
+        onClick={handleClick}
       >
         <MessageSquare size={28} />
-      </div>
+      </button>
     </div>
   );
 };

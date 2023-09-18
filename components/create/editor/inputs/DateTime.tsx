@@ -1,4 +1,6 @@
+import momentTz from "moment-timezone";
 import moment from "moment";
+import partialRight from "lodash/partialRight";
 import { ChangeEventHandler, FocusEventHandler, useRef } from "react";
 import { FormEvent } from "../types";
 import Input from "components/ui/Input";
@@ -6,6 +8,7 @@ import Input from "components/ui/Input";
 export type DateTimePickerProps = {
   name: string;
   value?: string;
+  timezone?: string;
   onChange: (event: FormEvent<string>) => void;
   onBlur: (event: FormEvent<string>) => void;
   placeholder?: string;
@@ -16,6 +19,7 @@ export type DateTimePickerProps = {
 export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   name,
   value,
+  timezone,
   onChange,
   onBlur,
   placeholder,
@@ -24,12 +28,14 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const momentFn = timezone ? partialRight(momentTz.tz, timezone) : moment;
+
   const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     onChange?.({
       type: "change",
       target: {
         name,
-        value: moment(event.target.value).toISOString(),
+        value: momentFn(event.target.value).utc().toISOString(),
       },
     });
   };
@@ -39,46 +45,71 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
       type: "blur",
       target: {
         name,
-        value: moment(event.target.value).toISOString(),
+        value: momentFn(event.target.value).utc().toISOString(),
       },
     });
   };
 
+  const isFirefox =
+    typeof window !== "undefined" &&
+    navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
+
   return (
-    <button
-      type="button"
-      className={`flex center rounded-full  bg-gray-100 transition-all active:scale-95  ${
-        isValid && "!bg-nyanza-base"
-      } ${className}`}
-      onClick={() => {
-        inputRef.current?.focus();
-        inputRef.current?.showPicker();
-      }}
-    >
-      <div className="relative py-3 px-8">
-        <div>
-          {!value
-            ? placeholder ?? "Set Date"
-            : Intl.DateTimeFormat("default", {
-                dateStyle: "medium",
-                timeStyle: "medium",
-              }).format(new Date(value))}
+    <>
+      {isFirefox ? (
+        <div
+          className={`flex center rounded-full overflow-hidden bg-gray-100 transition-all ${
+            isValid && "!bg-nyanza-base"
+          } ${className}`}
+        >
+          <Input
+            className="py-3 px-8 rounded-full bg-transparent"
+            ref={inputRef}
+            name={name}
+            type="datetime-local"
+            value={
+              value
+                ? momentFn(value).format("YYYY-MM-DDTHH:mm")
+                : momentFn().hours(0).minutes(0).format("YYYY-MM-DDTHH:mm")
+            }
+            onChange={handleChange}
+            onBlurCapture={handleBlur}
+          />
         </div>
-        <Input
-          className="opacity-0 h-0 w-0 absolute -bottom-2 left-0"
-          ref={inputRef}
-          name={name}
-          type="datetime-local"
-          value={
-            value
-              ? moment(value).format("YYYY-MM-DDTHH:mm")
-              : moment().hours(0).minutes(0).format("YYYY-MM-DDTHH:mm")
-          }
-          onChange={handleChange}
-          onBlurCapture={handleBlur}
-        />
-      </div>
-    </button>
+      ) : (
+        <button
+          type="button"
+          className={`flex center rounded-full  bg-gray-100 transition-all active:scale-95  ${
+            isValid && "!bg-nyanza-base"
+          } ${className}`}
+          onClick={() => {
+            inputRef.current?.focus();
+            inputRef.current?.showPicker();
+          }}
+        >
+          <div className="relative py-3 px-8">
+            <div>
+              {!value
+                ? placeholder ?? "Set Date"
+                : momentFn(value).format("MMM D, YYYY, h:mm:ss A")}
+            </div>
+            <Input
+              className="opacity-0 h-0 w-0 absolute -bottom-2 left-0"
+              ref={inputRef}
+              name={name}
+              type="datetime-local"
+              value={
+                value
+                  ? momentFn(value).format("YYYY-MM-DDTHH:mm")
+                  : momentFn().hours(0).minutes(0).format("YYYY-MM-DDTHH:mm")
+              }
+              onChange={handleChange}
+              onBlurCapture={handleBlur}
+            />
+          </div>
+        </button>
+      )}
+    </>
   );
 };
 

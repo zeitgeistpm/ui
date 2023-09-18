@@ -15,11 +15,11 @@ import Decimal from "decimal.js";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { Position } from "lib/hooks/queries/usePortfolioPositions";
 import { useWallet } from "lib/state/wallet";
-import Link from "next/link";
 import MarketPositionHeader from "./MarketPositionHeader";
 import { useAllForeignAssetUsdPrices } from "lib/hooks/queries/useAssetUsdPrice";
 import { lookUpAssetPrice } from "lib/util/lookup-price";
 import { MIN_USD_DISPLAY_AMOUNT } from "lib/constants";
+import PoolShareButtons from "components/assets/AssetActionButtons/PoolShareButtons";
 
 const COLUMNS: TableColumn[] = [
   {
@@ -177,6 +177,7 @@ export const MarketPositions = ({
           question={market.question ?? undefined}
         />
         <Table
+          showHighlight={false}
           columns={isLiquidityMarket ? COLUMNS_LIQUIDITY : COLUMNS}
           data={positions
             .filter((pos) => displayBalance(pos))
@@ -236,11 +237,10 @@ export const MarketPositions = ({
                   actions: (
                     <div className="text-right">
                       {IOPoolShareAssetId.is(assetId) ? (
-                        <Link href={`/liquidity/${market.pool?.poolId}`}>
-                          <span className="text-mariner font-semibold text-ztg-14-120">
-                            View Pool
-                          </span>
-                        </Link>
+                        <PoolShareButtons
+                          poolId={assetId.PoolShare}
+                          market={market}
+                        />
                       ) : marketStage?.type === "Trading" &&
                         IOMarketOutcomeAssetId.is(assetId) ? (
                         <AssetTradingButtons assetId={assetId} />
@@ -277,7 +277,7 @@ export const MarketPositionsSkeleton = ({
 }) => {
   return (
     <div className={`${className}`}>
-      <Skeleton className="mb-6 center mx-auto" height={20} width="70%" />
+      <Skeleton className="mb-6" height={20} width="70%" />
       <Skeleton className="mb-2" height={50} width={"100%"} />
       <Skeleton className="mb-2" height={90} width={"100%"} />
       <Skeleton height={90} width={"100%"} />

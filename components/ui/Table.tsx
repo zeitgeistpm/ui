@@ -28,7 +28,7 @@ interface TableProps {
   loadingMore?: boolean;
   loadingNumber?: number;
   loadMoreThreshold?: number;
-  testId?: string;
+  showHighlight?: boolean;
 }
 
 export interface TableColumn {
@@ -294,7 +294,7 @@ const Table = ({
   loadingMore = false,
   loadingNumber = 3,
   loadMoreThreshold,
-  testId,
+  showHighlight = true,
 }: TableProps) => {
   const { rows, prepareRow } = useTable({ columns, data: data ?? [] });
   const tableRef = useRef<HTMLTableElement>(null);
@@ -322,8 +322,7 @@ const Table = ({
   }, [loadMoreRef, loadMoreInView, loadMoreThresholdIndex, data]);
 
   const getHeaderClass = (column: TableColumn) => {
-    const base =
-      "px-ztg-15 text-sky-600 font-semibold text-ztg-12-150 text-left";
+    const base = "px-ztg-15 text-[13px] text-left font-medium";
 
     if (column.alignment) {
       return `${column.alignment} ${base}`;
@@ -395,9 +394,9 @@ const Table = ({
         </div>
       ) : (
         <>
-          <div data-testid={testId}>
+          <div>
             <table
-              className="border-separate w-full"
+              className="border-separate w-full rounded-xl shadow-xl shadow-gray-100 overflow-hidden"
               ref={tableRef}
               style={
                 isOverflowing === true
@@ -410,13 +409,15 @@ const Table = ({
               }
             >
               <thead>
-                <tr className="bg-gray-100 h-[50px]">
+                <tr className="bg-light-gray h-[50px]">
                   {columns
                     .filter((col) => columnIsCollapsed(col.accessor) == false)
                     .map((column, index) => (
                       <th
                         key={index}
-                        className={`${getHeaderClass(column)} ${
+                        className={`${getHeaderClass(
+                          column,
+                        )} border-b-2 border-purple-100 ${
                           index == 0 ? "rounded-tl-md" : ""
                         } ${
                           index == columns.length - 1 ? "rounded-tr-md" : ""
@@ -470,6 +471,14 @@ const Table = ({
                       }
                       key={row.id}
                       className={`
+                      group
+                      border-t-1 border-gray-200
+                      transition-colors duration-100 ease-in-out
+                      ${
+                        showHighlight === true
+                          ? " hover:bg-blue-lighter hover:border-blue-300 "
+                          : ""
+                      }
                     ${rowColorClass}
                     ${onRowClick ? "cursor-pointer" : ""} mx-ztg-5`}
                       onClick={() => handleRowClick(row)}
@@ -521,7 +530,7 @@ const Table = ({
           {onLoadMore && !hideLoadMore && (
             <div className="flex justify-center mt-ztg-16 mb-ztg-20">
               <div
-                className="uppercase  text-sky-600 font-bold text-ztg-10-150"
+                className="uppercase text-sky-600 font-bold text-ztg-10-150"
                 role="button"
                 onClick={handleLoadMore}
               >
