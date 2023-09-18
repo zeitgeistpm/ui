@@ -37,18 +37,20 @@ const MarketScroll = ({
     markets.map((m) => m.marketId),
   );
 
-  const gap = 28;
+  const gap = 16;
 
   //calculate cards shown and width based on container width
   const cardsShown =
     windowWidth < BREAKPOINTS.md ? 1 : windowWidth < BREAKPOINTS.lg ? 2 : 3;
 
   const cardWidth =
-    windowWidth < BREAKPOINTS.md
+    cardsShown === 1
       ? containerWidth
-      : windowWidth < BREAKPOINTS.lg
+      : cardsShown === 2
       ? (containerWidth - gap) / cardsShown
-      : (containerWidth - gap * 2) / cardsShown;
+      : cardsShown === 3
+      ? (containerWidth - gap * 2) / cardsShown
+      : 0;
 
   const handleRightClick = () => {
     setPageIndex(pageIndex + 1);
@@ -104,7 +106,7 @@ const MarketScroll = ({
             transform: `translateX(${
               windowWidth < BREAKPOINTS.sm
                 ? 0
-                : -(showRange[0] * (cardWidth + gap))
+                : -(showRange[0] * cardWidth + pageIndex * gap)
             }px)`,
           }}
           className={`flex ${
@@ -129,7 +131,7 @@ const MarketScroll = ({
               <MarketCard
                 key={market.marketId}
                 disableLink={!isShown}
-                className={`market-card rounded-ztg-10 transition duration-500 ease-in-out ${
+                className={`market-card rounded-ztg-10 transition duration-500 ease-in-out w-[${cardWidth}px] ${
                   isShown ? "opacity-1" : "opacity-0"
                 }`}
                 {...market}
