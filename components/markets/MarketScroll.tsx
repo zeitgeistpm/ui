@@ -37,18 +37,13 @@ const MarketScroll = ({
     markets.map((m) => m.marketId),
   );
 
-  const gap = 28;
+  const gap = 16;
 
   //calculate cards shown and width based on container width
   const cardsShown =
     windowWidth < BREAKPOINTS.md ? 1 : windowWidth < BREAKPOINTS.lg ? 2 : 3;
 
-  const cardWidth =
-    windowWidth < BREAKPOINTS.md
-      ? containerWidth
-      : windowWidth < BREAKPOINTS.lg
-      ? (containerWidth - gap) / cardsShown
-      : (containerWidth - gap * 2) / cardsShown;
+  const cardWidth = (containerWidth - gap * (cardsShown - 1)) / cardsShown;
 
   const handleRightClick = () => {
     setPageIndex(pageIndex + 1);
@@ -104,7 +99,7 @@ const MarketScroll = ({
             transform: `translateX(${
               windowWidth < BREAKPOINTS.sm
                 ? 0
-                : -(showRange[0] * (cardWidth + gap))
+                : -(showRange[0] * cardWidth + pageIndex * gap)
             }px)`,
           }}
           className={`flex ${
