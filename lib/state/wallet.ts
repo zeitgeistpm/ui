@@ -14,7 +14,7 @@ import {
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { InjectedAccount } from "@polkadot/extension-inject/types";
 import { isPresent } from "lib/types";
-import { PollingTimeout, poll } from "@zeitgeistpm/avatara-util";
+import { PollingTimeout, poll } from "lib/util/poll";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -233,7 +233,7 @@ const enableWallet = async (walletId: string) => {
           return wallet;
         },
         {
-          intervall: 66,
+          interval: 66,
           timeout: 10_000,
         },
       );
