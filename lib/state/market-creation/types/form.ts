@@ -55,6 +55,7 @@ export type MarketFormData = {
   reportingPeriod: PeriodOption;
   disputePeriod: PeriodOption;
   oracle: Oracle;
+  creatorFee: number;
   description?: Description;
   moderation: Moderation;
   liquidity: Liquidity;
