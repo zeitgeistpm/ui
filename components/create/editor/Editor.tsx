@@ -102,6 +102,7 @@ export const MarketEditor = () => {
     fieldsState.liquidity.isTouched && form.liquidity?.deploy && isWizard;
 
   const isLoaded = Boolean(chainTime && isFetched);
+  console.log(fieldsState);
 
   return (
     <>
@@ -539,9 +540,15 @@ export const MarketEditor = () => {
             }
           >
             {form.currency && (
-              <>
-                <div className="mb-2 md:mb-4 text-center">
+              <div className="flex flex-col items-center">
+                <div className="mb-2 md:mb-4 text-center flex items-center gap-2">
                   <h2 className="text-base mb-0">Creator Fee</h2>
+                  <InfoPopover>
+                    <p>
+                      Creators will be paid a fee based on trading volume.
+                      Higher fees may discourage trading and liquidity provision
+                    </p>
+                  </InfoPopover>
                 </div>
                 <FeeSelect
                   {...input("creatorFee", { mode: "all" })}
@@ -556,7 +563,7 @@ export const MarketEditor = () => {
                 <div className="flex center h-5 text-xs mt-6 text-red-400">
                   <ErrorMessage field={fieldsState.creatorFee} />
                 </div>
-              </>
+              </div>
             )}
             {form.moderation === "Permissionless" && form.currency ? (
               <>
