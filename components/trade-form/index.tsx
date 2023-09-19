@@ -414,7 +414,7 @@ const Inner = ({
           weightOut,
           baseAmount.mul(ZTG),
           swapFee,
-          0,
+          market?.creatorFee ?? 0,
         );
         setValue(
           "assetAmount",
