@@ -10,6 +10,7 @@ export type FeeInputProps = {
   onChange: (event: FormEvent<Fee>) => void;
   isValid: boolean;
   presets: Fee[];
+  label: string;
 };
 
 const FeeSelect = ({
@@ -18,6 +19,7 @@ const FeeSelect = ({
   onChange,
   isValid,
   presets,
+  label,
 }: FeeInputProps) => {
   const handleSwapFeePresetChange = (fee: Fee) => () => {
     onChange({
@@ -70,7 +72,7 @@ const FeeSelect = ({
             onChange={handleSwapFeeCustomChange}
           />
           <div className="absolute bottom-[50%] center text-gray-600 right-0 rounded-r-md border-2 border-gray-100 border-l-0 px-4 bg-white h-full translate-y-[50%] translate-x-[0%] pointer-events-none">
-            % swap fee
+            {label}
           </div>
         </div>
       </div>

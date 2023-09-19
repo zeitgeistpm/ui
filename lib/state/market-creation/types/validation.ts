@@ -268,6 +268,13 @@ export const IOModerationMode = z.enum<
   ["Permissionless", "Advised"]
 >(["Permissionless", "Advised"]);
 
+export const IOCreatorFee = z
+  .number()
+  .min(0, {
+    message: "Creator fee must be a postive number.",
+  })
+  .max(1, { message: "Creator fee cannot exceed 1%." });
+
 export const IOLiquidityRow = z.object({
   asset: z.string(),
   weight: z.string(),

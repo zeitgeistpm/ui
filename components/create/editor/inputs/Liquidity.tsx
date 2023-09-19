@@ -7,9 +7,9 @@ import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { swapFeePresets } from "lib/state/market-creation/constants/swap-fee";
 import { FieldState } from "lib/state/market-creation/types/fieldstate";
 import { CurrencyTag, Liquidity } from "lib/state/market-creation/types/form";
-import { ChangeEventHandler, ReactNode } from "react";
+import { ReactNode } from "react";
 import { FormEvent } from "../types";
-import FeeSelect, { Fee } from "./Fee";
+import FeeSelect, { Fee } from "./FeeSelect";
 
 export type LiquidityInputProps = {
   name: string;
@@ -39,38 +39,6 @@ export const LiquidityInput = ({
         value: {
           ...value!,
           rows: transformRows(data),
-        },
-      },
-    });
-  };
-
-  const handleSwapFeeCustomChange: ChangeEventHandler<HTMLInputElement> = (
-    event,
-  ) => {
-    const swapFee = parseFloat(event.target.value);
-    onChange({
-      type: "change",
-      target: {
-        name,
-        value: {
-          ...value!,
-          swapFee: {
-            type: "custom",
-            value: isNaN(swapFee) ? 0 : parseFloat(event.target.value),
-          },
-        },
-      },
-    });
-  };
-
-  const handleSwapFeePresetChange = (swapFee: Liquidity["swapFee"]) => () => {
-    onChange({
-      type: "change",
-      target: {
-        name,
-        value: {
-          ...value!,
-          swapFee,
         },
       },
     });
@@ -107,6 +75,7 @@ export const LiquidityInput = ({
             onChange={handleFeeChange}
             presets={swapFeePresets}
             isValid={fieldState.isValid}
+            label="% Swap Fee"
           />
         </>
       </div>
