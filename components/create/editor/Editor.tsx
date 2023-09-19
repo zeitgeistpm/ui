@@ -544,9 +544,8 @@ export const MarketEditor = () => {
                   <h2 className="text-base mb-0">Creator Fee</h2>
                 </div>
                 <FeeSelect
+                  {...input("creatorFee", { mode: "all" })}
                   label="% Creator Fee"
-                  name=""
-                  onChange={() => {}}
                   presets={[
                     { value: 0, type: "preset" },
                     { value: 0.1, type: "preset" },

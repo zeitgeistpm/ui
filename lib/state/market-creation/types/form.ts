@@ -36,6 +36,7 @@ import {
   IOTimeZone,
   IOYesNoAnswers,
 } from "./validation";
+import { Fee } from "components/create/editor/inputs/FeeSelect";
 
 /**
  * This is the type of the full market creation form data that is used to create a market.
@@ -55,7 +56,7 @@ export type MarketFormData = {
   reportingPeriod: PeriodOption;
   disputePeriod: PeriodOption;
   oracle: Oracle;
-  creatorFee: number;
+  creatorFee: Fee;
   description?: Description;
   moderation: Moderation;
   liquidity: Liquidity;
