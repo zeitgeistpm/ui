@@ -63,9 +63,10 @@ const WalletSelect = () => {
               )}
               {hasError && (
                 <div className="text-vermilion ml-auto  text-ztg-12-120 w-ztg-275">
-                  {error.type === "NoAccounts"
-                    ? "No accounts on this wallet. Please add account in wallet extension."
-                    : "Not allowed to interact with extension. Please change permission settings."}
+                  {error.type === "NoAccounts" &&
+                    "No accounts on this wallet. Please add account in wallet extension."}
+                  {error.type === "InteractionDenied" &&
+                    "Not allowed to interact with extension. Please change permission settings."}
                 </div>
               )}
             </div>
