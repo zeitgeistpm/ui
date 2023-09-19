@@ -225,10 +225,10 @@ const enableWallet = async (walletId: string) => {
   }
 
   const enablePoll = async (): Promise<void> => {
-    await cryptoWaitReady();
     try {
       const extension = await poll(
         async () => {
+          await cryptoWaitReady();
           await wallet.enable(DAPP_NAME);
           return wallet;
         },
