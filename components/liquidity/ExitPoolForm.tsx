@@ -94,8 +94,13 @@ const ExitPoolForm = ({
               .toFixed(0, Decimal.ROUND_DOWN);
       });
 
+      const poolSharesPercentage: string | undefined =
+        formValue["poolSharesPercentage"];
+
+      if (poolSharesPercentage == null) return;
+
       const poolSharesAmount = userPoolShares.mul(
-        Number(formValue["poolSharesPercentage"]) / 100,
+        Number(poolSharesPercentage) / 100,
       );
 
       return sdk.api.tx.swaps.poolExit(
