@@ -100,6 +100,7 @@ export const createMarketFormValidator = ({
       description: IODescription,
       moderation: IOModerationMode,
       liquidity: IOLiquidity,
+      creatorFee: IOCreatorFee,
     })
     .superRefine((form, ctx) => {
       const baseLiquidityRow =
