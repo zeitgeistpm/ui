@@ -269,12 +269,15 @@ export const IOModerationMode = z.enum<
   ["Permissionless", "Advised"]
 >(["Permissionless", "Advised"]);
 
-export const IOCreatorFee = z
-  .number()
-  .min(0, {
-    message: "Creator fee must be a postive number.",
-  })
-  .max(1, { message: "Creator fee cannot exceed 1%." });
+export const IOCreatorFee = z.object({
+  type: z.union([z.literal("custom"), z.literal("preset")]),
+  value: z
+    .number()
+    .min(0, {
+      message: "Creator fee must be a positive number.",
+    })
+    .max(1, { message: "Creator fee cannot exceed 1%." }),
+});
 
 export const IOLiquidityRow = z.object({
   asset: z.string(),
@@ -287,10 +290,10 @@ export const IOLiquidityRow = z.object({
   value: z.string(),
 });
 
-export const IOSwappFee = z
+export const IOSwapFee = z
   .number()
   .min(0, {
-    message: "Swap fee must be a postive number.",
+    message: "Swap fee must be a positive number.",
   })
   .max(10, { message: "Swap fee cannot exceed 10%." });
 
@@ -300,11 +303,11 @@ export const IOLiquidity = z.object({
   swapFee: z.union([
     z.object({
       type: z.literal("preset"),
-      value: IOSwappFee,
+      value: IOSwapFee,
     }),
     z.object({
       type: z.literal("custom"),
-      value: IOSwappFee,
+      value: IOSwapFee,
     }),
   ]),
 });

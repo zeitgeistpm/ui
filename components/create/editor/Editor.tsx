@@ -102,7 +102,6 @@ export const MarketEditor = () => {
     fieldsState.liquidity.isTouched && form.liquidity?.deploy && isWizard;
 
   const isLoaded = Boolean(chainTime && isFetched);
-  console.log(fieldsState);
 
   return (
     <>
