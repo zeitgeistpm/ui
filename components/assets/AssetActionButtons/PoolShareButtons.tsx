@@ -77,9 +77,15 @@ const RedeemPoolButton = ({
         if (!asset) return "0";
         const assetId = parseAssetIdString(asset.assetId);
 
+        const assetIndex = IOCategoricalAssetId.is(assetId)
+          ? getIndexOf(assetId)
+          : index;
+
         const assetAmount = IOBaseAssetId.is(assetId)
           ? poolBaseBalance?.mul(userPercentageOwnership)
-          : new Decimal(poolAssetBalances?.[index]?.free.toString() ?? 0);
+          : new Decimal(
+              poolAssetBalances?.[assetIndex]?.free.toString() ?? 0,
+            ).mul(userPercentageOwnership);
 
         return assetAmount
           ? assetAmount
