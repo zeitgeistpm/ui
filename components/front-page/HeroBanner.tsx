@@ -35,7 +35,7 @@ export const HeroBanner = ({
           </h2>
           <div className="flex gap-4 mb-14">
             <Link href="https://zeitgeist.pm/" target="_blank">
-              <button className="rounded-md flex-1 md:flex-none bg-vermilion text-white px-6 py-3">
+              <button className="rounded-md flex-1 md:flex-none bg-vermilion border-2 border-vermilion text-white px-6 py-3">
                 Learn More
               </button>
             </Link>
