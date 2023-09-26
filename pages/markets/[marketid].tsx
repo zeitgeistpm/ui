@@ -586,7 +586,7 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
   const connectedWalletIsOracle = market.oracle === wallet.realAddress;
 
   const userCanReport =
-    stage?.type === "OpenReportingPeriod" || !connectedWalletIsOracle;
+    stage?.type === "OpenReportingPeriod" || connectedWalletIsOracle;
 
   return !userCanReport ? (
     <></>
