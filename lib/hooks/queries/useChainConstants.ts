@@ -11,17 +11,12 @@ export type ChainConstants = {
   markets: {
     maxDisputes: number;
     disputeBond: number; // initial dispute amount
-    disputeFactor: number; // increase in bond per dispute
     oracleBond: number;
     advisoryBond: number;
     validityBond: number;
     maxCategories: number;
     minCategories: number;
     advisoryBondSlashPercentage: number;
-  };
-  court: {
-    caseDurationSec: number;
-    stakeWeight: number; // increase in juror stake per juror
   };
   swaps: {
     exitFee: number;
@@ -64,8 +59,6 @@ export const useChainConstants = () => {
         markets: {
           maxDisputes: consts.predictionMarkets.maxDisputes.toNumber(),
           disputeBond: consts.predictionMarkets.disputeBond.toNumber() / ZTG,
-          disputeFactor:
-            consts.predictionMarkets.disputeFactor.toNumber() / ZTG,
           oracleBond: consts.predictionMarkets.oracleBond.toNumber() / ZTG,
           advisoryBond: consts.predictionMarkets.advisoryBond.toNumber() / ZTG,
           validityBond: consts.predictionMarkets.validityBond.toNumber() / ZTG,
@@ -73,11 +66,6 @@ export const useChainConstants = () => {
           minCategories: consts.predictionMarkets.minCategories.toNumber(),
           advisoryBondSlashPercentage:
             consts.predictionMarkets.advisoryBondSlashPercentage.toNumber(),
-        },
-        court: {
-          caseDurationSec:
-            consts.court.courtCaseDuration.toNumber() * blockTimeSec,
-          stakeWeight: consts.court.stakeWeight.toNumber() / ZTG,
         },
         swaps: {
           exitFee: consts.swaps.exitFee.toNumber() / ZTG,

@@ -552,20 +552,22 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
 const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
   const reportedOutcome = market.report?.outcome;
 
-  const [disputeOutcome, setDisputeOutcome] = useState<
-    | MarketCategoricalOutcome
-    | (MarketScalarOutcome & { type: ScalarRangeType })
-    | undefined
-  >();
+  const [hasReportedDispute, setHasReportedDispute] = useState(false);
 
   return (
     <div>
-      {disputeOutcome ? (
-        <DisputeResult market={market} outcome={disputeOutcome} />
+      {hasReportedDispute ? (
+        <DisputeResult market={market} />
       ) : isMarketCategoricalOutcome(reportedOutcome) ? (
-        <CategoricalDisputeBox market={market} onSuccess={setDisputeOutcome} />
+        <CategoricalDisputeBox
+          market={market}
+          onSuccess={() => setHasReportedDispute(true)}
+        />
       ) : (
-        <ScalarDisputeBox market={market} onSuccess={setDisputeOutcome} />
+        <ScalarDisputeBox
+          market={market}
+          onSuccess={() => setHasReportedDispute(true)}
+        />
       )}
     </div>
   );

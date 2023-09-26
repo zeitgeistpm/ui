@@ -1,4 +1,3 @@
-import { Listbox } from "@headlessui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   CategoricalAssetId,
@@ -9,11 +8,8 @@ import {
   MarketOutcomeAssetId,
   parseAssetId,
 } from "@zeitgeistpm/sdk-next";
-import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import TransactionButton from "components/ui/TransactionButton";
-import TruncatedText from "components/ui/TruncatedText";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
-import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";
 import {
   marketDisputesRootKey,
   useMarketDisputes,
@@ -21,10 +17,6 @@ import {
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
-import { MarketCategoricalOutcome } from "lib/types";
-import { calcMarketColors } from "lib/util/color-calc";
-import { useState } from "react";
-import { RiArrowDownSLine } from "react-icons/ri";
 
 const CategoricalDisputeBox = ({
   market,
@@ -33,7 +25,7 @@ const CategoricalDisputeBox = ({
 }: {
   market: Market<IndexerContext>;
   assetId?: MarketOutcomeAssetId;
-  onSuccess?: (outcome: MarketCategoricalOutcome) => void;
+  onSuccess?: () => void;
 }) => {
   const [sdk, id] = useSdkv2();
   const { data: disputes } = useMarketDisputes(market);
@@ -51,21 +43,13 @@ const CategoricalDisputeBox = ({
       (asset) => market.report?.outcome.categorical !== getIndexOf(asset),
     );
 
-  const [selectedAssetId, setSelectedAssetId] = useState<MarketOutcomeAssetId>(
-    assetId ?? outcomeAssets[0],
-  );
-
-  const assetName = market.categories?.[getIndexOf(selectedAssetId)]?.name;
   const disputeBond = constants?.markets.disputeBond;
-  const disputeFactor = constants?.markets.disputeFactor;
   const tokenSymbol = constants?.tokenSymbol;
 
   const lastDispute = disputes?.[disputes.length - 1];
 
   const bondAmount =
-    disputes && isConstantsLoading === false
-      ? disputeBond! + disputes.length * disputeFactor!
-      : disputeBond;
+    disputes && isConstantsLoading === false ? disputeBond : undefined;
 
   const {
     send: dispute,
@@ -73,10 +57,8 @@ const CategoricalDisputeBox = ({
     isBroadcasting,
   } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk) && selectedAssetId) {
-        return sdk.api.tx.predictionMarkets.dispute(market.marketId, {
-          Categorical: getIndexOf(selectedAssetId),
-        });
+      if (isRpcSdk(sdk)) {
+        return sdk.api.tx.predictionMarkets.dispute(market.marketId);
       }
     },
     {
@@ -88,16 +70,11 @@ const CategoricalDisputeBox = ({
           market.marketId,
         ]);
         if (onSuccess) {
-          onSuccess({
-            categorical: getIndexOf(selectedAssetId),
-          });
+          onSuccess();
         } else {
-          notificationStore.pushNotification(
-            `Successfully disputed. New report: ${assetName}`,
-            {
-              type: "Success",
-            },
-          );
+          notificationStore.pushNotification(`Successfully disputed.`, {
+            type: "Success",
+          });
         }
       },
     },
@@ -117,8 +94,7 @@ const CategoricalDisputeBox = ({
     <div className="p-[30px] flex flex-col items-center gap-y-3">
       <div className="font-bold text-[22px]">Dispute Outcome</div>
       <div className="text-center mb-[20px]">
-        Bond will start at {disputeBond} {tokenSymbol}, increasing by{" "}
-        {disputeFactor} {tokenSymbol} for each dispute.{" "}
+        Bond cost: {disputeBond} {tokenSymbol}
         <span className="font-bold">
           Bonds will be slashed if the reported outcome is deemed to be
           incorrect
@@ -129,7 +105,7 @@ const CategoricalDisputeBox = ({
         <span className="text-sky-600 text-[14px]">Previous Report:</span>
         <span className="">{getPreviousReportName()}</span>
       </div>
-      <div className="flex flex-col item-center text-center">
+      {/* <div className="flex flex-col item-center text-center">
         <span className="text-sky-600 text-[14px]">New Report:</span>
 
         <div className="mb-4">
@@ -144,16 +120,12 @@ const CategoricalDisputeBox = ({
             />
           )}
         </div>
-      </div>
-      {bondAmount !== disputeBond &&
-      bondAmount !== undefined &&
-      disputeFactor !== undefined ? (
+      </div> */}
+      {bondAmount !== disputeBond && bondAmount !== undefined && (
         <div className="flex flex-col item-center text-center">
           <span className="text-sky-600 text-[14px]">Previous Bond:</span>
-          <span className="">{bondAmount - disputeFactor}</span>
+          <span className="">{bondAmount}</span>
         </div>
-      ) : (
-        <></>
       )}
       <TransactionButton
         className="mb-ztg-10 mt-[20px]"
