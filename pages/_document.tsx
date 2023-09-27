@@ -61,7 +61,7 @@ export default function Document() {
           content="@ZeitgeistPM"
         />
       </Head>
-      <body className="overflow-x-hidden">
+      <body>
         <Main />
         <NextScript />
       </body>
