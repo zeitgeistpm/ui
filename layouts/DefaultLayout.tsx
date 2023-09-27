@@ -3,7 +3,6 @@ import { useResizeDetector } from "react-resize-detector";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 
-import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import TopBar from "components/menu";
 import Footer from "components/ui/Footer";
 import NotificationCenter from "components/ui/NotificationCenter";
@@ -64,9 +63,13 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
             }
           `}
         </style>
-        <div ref={contentRef} className="flex-grow">
+        <div ref={contentRef} className="">
           <TopBar />
-          <main className="mt-24 mb-12 container-fluid" ref={mainRef}>
+          <main
+            className="mt-24 mb-12 container-fluid"
+            ref={mainRef}
+            style={{ minHeight: "calc(100vh - 300px)" }}
+          >
             <div
               className={`w-full ${
                 ["/", "/markets"].includes(router.pathname) ? "pt-0" : "pt-2"
