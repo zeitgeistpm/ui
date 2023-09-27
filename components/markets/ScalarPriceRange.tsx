@@ -65,7 +65,7 @@ const ScalarPriceRange = ({
       className={`w-full h-[30px] transition-all  bg-gray-200 relative flex items-center p-2 overflow-hidden ${className}`}
       ref={ref}
     >
-      <span className="text-xs text-gray-400 font-semibold">
+      <span className="text-xs text-gray-400 font-semibold z-10">
         {lowerDisplay}
       </span>
       {status !== "Proposed" && (
@@ -81,7 +81,7 @@ const ScalarPriceRange = ({
           </span>
         </>
       )}
-      <span className="text-xs text-gray-400 ml-auto font-semibold">
+      <span className="text-xs text-gray-400 ml-auto font-semibold z-10">
         {upperDisplay}
       </span>
     </div>
