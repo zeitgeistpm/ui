@@ -10,7 +10,7 @@ import { poolTotalIssuanceRootQueryKey } from "lib/hooks/queries/useTotalIssuanc
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { assetObjStringToId, PoolBalances } from "./LiquidityModal";
 
@@ -146,6 +146,13 @@ const JoinPoolForm = ({
     joinPool();
   };
 
+  const prctSharesToReceive = useMemo(() => {
+    if (!poolSharesToReceive) return new Decimal(0);
+    return poolSharesToReceive
+      .div(totalPoolShares.plus(poolSharesToReceive))
+      .mul(100);
+  }, [totalPoolShares, poolSharesToReceive]);
+
   return (
     <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-y-6 max-h-[250px] md:max-h-[400px] overflow-y-auto py-5">
@@ -209,6 +216,13 @@ const JoinPoolForm = ({
           Market is closed. Cannot provide liquidity for closed market
         </div>
       )}
+      <div className="text-center mb-2">
+        <label className="block text-sm mb-1 font-bold">
+          Expected Pool Ownership
+        </label>
+        {prctSharesToReceive.toFixed(1)} %
+      </div>
+
       <FormTransactionButton
         disabled={
           formState.isValid === false ||
