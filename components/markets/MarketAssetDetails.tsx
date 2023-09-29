@@ -1,20 +1,12 @@
-import {
-  AssetId,
-  CategoricalAssetId,
-  MarketOutcomeAssetId,
-  ScalarAssetId,
-} from "@zeitgeistpm/sdk-next";
-import AssetActionButtons from "components/assets/AssetActionButtons";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarket24hrPriceChanges } from "lib/hooks/queries/useMarket24hrPriceChanges";
 import { useMarketSpotPrices } from "lib/hooks/queries/useMarketSpotPrices";
 
-import dynamic from "next/dynamic";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
-import { useTradeItem } from "lib/hooks/trade";
+import dynamic from "next/dynamic";
 
 const columns: TableColumn[] = [
   { header: "Outcome", accessor: "outcome", type: "text" },

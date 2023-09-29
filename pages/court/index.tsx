@@ -6,30 +6,54 @@ import { useNotifications } from "lib/state/notifications";
 import JurorsTable from "components/court/JurorsTable";
 import JoinCourtButton from "components/court/JoinCourt";
 import { useWallet } from "lib/state/wallet";
+import TransactionButton from "components/ui/TransactionButton";
 
 const JurorHeader = () => {
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
   const wallet = useWallet();
 
-  const { isLoading, isSuccess, send } = useExtrinsic(
+  const { isLoading: isLeaveLoading, send: leaveCourt } = useExtrinsic(
     () => {
       if (!isRpcSdk(sdk) || !wallet.realAddress) return;
 
-      return sdk.api.tx.court.exitCourt(wallet.realAddress);
+      return sdk.api.tx.court.exitCourt(wallet.realAddress); //todo: is this correct input?
     },
     {
       onSuccess: () => {
-        notificationStore.pushNotification("Successfully joined court", {
+        notificationStore.pushNotification("Successfully exit court", {
           type: "Success",
         });
       },
     },
   );
+  const { isLoading: isPrepareLeaveLoading, send: prepareLeaveCourt } =
+    useExtrinsic(
+      () => {
+        if (!isRpcSdk(sdk) || !wallet.realAddress) return;
+
+        return sdk.api.tx.court.prepareExitCourt();
+      },
+      {
+        onSuccess: () => {
+          notificationStore.pushNotification("Successfully exit court", {
+            type: "Success",
+          });
+        },
+      },
+    );
 
   return (
     <div>
-      <button>Leave Court</button>
+      <TransactionButton onClick={leaveCourt} disabled={isLeaveLoading}>
+        Leave Court
+      </TransactionButton>
+      <TransactionButton
+        onClick={prepareLeaveCourt}
+        disabled={isPrepareLeaveLoading}
+      >
+        Prepare Leave Court
+      </TransactionButton>
       <div>Stake size</div>
       <div>Count down till next vote/reveal period</div>
       <div>My Cases</div>
@@ -40,7 +64,7 @@ const JurorHeader = () => {
 const NonJurorHeader = () => {
   return (
     <div>
-      <button>Leave Court</button>
+      <JoinCourtButton />
       <div>Stake size</div>
       <div>Count down till next vote/reveal period</div>
     </div>
@@ -51,7 +75,8 @@ const CourtPage: NextPage = () => {
   return (
     <div className="flex flex-col">
       <div>Court</div>
-      <JoinCourtButton />
+      <NonJurorHeader />
+      <JurorHeader />
       <JurorsTable />
     </div>
   );

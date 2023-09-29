@@ -1,9 +1,14 @@
-import { ScalarRangeType, ZTG } from "@zeitgeistpm/sdk-next";
+import { ScalarRangeType, ZTG, isRpcSdk } from "@zeitgeistpm/sdk-next";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
+import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
 import { useMarket } from "lib/hooks/queries/useMarket";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useNotifications } from "lib/state/notifications";
+import { useWallet } from "lib/state/wallet";
 import { isMarketCategoricalOutcome } from "lib/types";
 import { useRouter } from "next/router";
 import { NextPage } from "next/types";
@@ -17,6 +22,9 @@ const CasePage: NextPage = () => {
   const { data: market } = useMarket(
     marketId != null ? { marketId } : undefined,
   );
+  const [sdk] = useSdkv2();
+  const notificationStore = useNotifications();
+  const wallet = useWallet();
 
   const reportedOutcome =
     market?.report?.outcome != null &&
@@ -24,6 +32,43 @@ const CasePage: NextPage = () => {
       ? market.report?.outcome.categorical
       : market?.report?.outcome.scalar?.toString();
 
+  // const { isLoading, send, fee } = useExtrinsic(
+  //   () => {
+  //     // const amount = getValues("amount");
+  //     if (!isRpcSdk(sdk)) return;
+
+  //     return sdk.api.tx.court.vote(
+  //       caseId,
+  //       "", //todo: what format?
+  //     );
+  //   },
+  //   {
+  //     onSuccess: () => {
+  //       notificationStore.pushNotification("Successfully joined court", {
+  //         type: "Success",
+  //       });
+  //     },
+  //   },
+  // );
+
+  const {
+    isLoading: isAppealLoading,
+    send: appeal,
+    fee,
+  } = useExtrinsic(
+    () => {
+      if (!isRpcSdk(sdk)) return;
+
+      return sdk.api.tx.court.appeal(caseId);
+    },
+    {
+      onSuccess: () => {
+        notificationStore.pushNotification("Successfully appeal case result", {
+          type: "Success",
+        });
+      },
+    },
+  );
   return (
     <div className="flex flex-col">
       <div>Case - {caseid}</div>
@@ -31,6 +76,9 @@ const CasePage: NextPage = () => {
       <div>Original Report:{reportedOutcome}</div>
       <div>Timings?</div>
       <div>Jurors Table?</div>
+      <TransactionButton onClick={appeal} disabled={isAppealLoading}>
+        Appeal
+      </TransactionButton>
       {market?.marketType?.scalar !== null &&
         market?.scalarType &&
         market.marketType.scalar?.[0] != null &&
