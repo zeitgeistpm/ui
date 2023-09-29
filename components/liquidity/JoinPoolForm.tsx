@@ -154,7 +154,10 @@ const JoinPoolForm = ({
   }, [totalPoolShares, poolSharesToReceive]);
 
   return (
-    <form className="flex flex-col gap-y-6" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="flex flex-col gap-y-4 md:gap-y-6"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="flex flex-col gap-y-6 max-h-[250px] md:max-h-[400px] overflow-y-auto py-5">
         {pool?.weights.map((asset, index) => {
           const id = assetObjStringToId(asset.assetId);
@@ -216,8 +219,8 @@ const JoinPoolForm = ({
           Market is closed. Cannot provide liquidity for closed market
         </div>
       )}
-      <div className="text-center mb-2">
-        <label className="block text-sm mb-1 font-bold">
+      <div className="flex mb-2 text-sm center gap-2">
+        <label className="block font-bold flex-1">
           Expected Pool Ownership
         </label>
         {prctSharesToReceive.toFixed(1)} %
