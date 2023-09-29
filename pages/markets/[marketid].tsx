@@ -29,7 +29,7 @@ import {
   PromotedMarket,
   getMarketPromotion,
 } from "lib/cms/get-promoted-markets";
-import { ZTG, graphQlEndpoint } from "lib/constants";
+import { ZTG, environment, graphQlEndpoint } from "lib/constants";
 import {
   MarketPageIndexedData,
   getMarket,
@@ -126,7 +126,10 @@ export async function getStaticProps({ params }) {
       resolutionTimestamp: resolutionTimestamp ?? null,
       promotionData: null,
     },
-    revalidate: 5 * 60, //1min
+    revalidate:
+      environment === "production"
+        ? 5 * 60 //5min
+        : 60 * 60,
   };
 }
 
