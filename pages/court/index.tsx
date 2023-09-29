@@ -5,15 +5,18 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useNotifications } from "lib/state/notifications";
 import JurorsTable from "components/court/JurorsTable";
 import JoinCourtButton from "components/court/JoinCourt";
+import { useWallet } from "lib/state/wallet";
 
 const JurorHeader = () => {
   const [sdk] = useSdkv2();
   const notificationStore = useNotifications();
+  const wallet = useWallet();
+
   const { isLoading, isSuccess, send } = useExtrinsic(
     () => {
-      if (!isRpcSdk(sdk)) return;
+      if (!isRpcSdk(sdk) || !wallet.realAddress) return;
 
-      return sdk.api.tx.court.exitCourt();
+      return sdk.api.tx.court.exitCourt(wallet.realAddress);
     },
     {
       onSuccess: () => {
