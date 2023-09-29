@@ -1,7 +1,7 @@
 import Avatar from "components/ui/Avatar";
 import SecondaryButton from "components/ui/SecondaryButton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
-import { Link } from "react-feather";
+import Link from "next/link";
 
 const columns: TableColumn[] = [
   {

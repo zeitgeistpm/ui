@@ -4,6 +4,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useNotifications } from "lib/state/notifications";
 import JurorsTable from "components/court/JurorsTable";
+import JoinCourtButton from "components/court/JoinCourt";
 
 const JurorHeader = () => {
   const [sdk] = useSdkv2();
@@ -32,24 +33,8 @@ const JurorHeader = () => {
     </div>
   );
 };
+
 const NonJurorHeader = () => {
-  const [sdk] = useSdkv2();
-  const notificationStore = useNotifications();
-  const { isLoading, isSuccess, send } = useExtrinsic(
-    () => {
-      if (!isRpcSdk(sdk)) return;
-
-      return sdk.api.tx.court.joinCourt();
-    },
-    {
-      onSuccess: () => {
-        notificationStore.pushNotification("Successfully joined court", {
-          type: "Success",
-        });
-      },
-    },
-  );
-
   return (
     <div>
       <button>Leave Court</button>
@@ -63,6 +48,7 @@ const CourtPage: NextPage = () => {
   return (
     <div className="flex flex-col">
       <div>Court</div>
+      <JoinCourtButton />
       <JurorsTable />
     </div>
   );
