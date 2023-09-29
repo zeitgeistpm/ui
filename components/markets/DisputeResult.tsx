@@ -8,21 +8,11 @@ import {
 } from "lib/types";
 import { AiOutlineFileDone } from "react-icons/ai";
 
-export const DisputeResult = ({
-  market,
-  outcome,
-}: {
-  market: FullMarketFragment;
-  outcome:
-    | MarketCategoricalOutcome
-    | (MarketScalarOutcome & { type: ScalarRangeType });
-}) => {
-  const outcomeName = displayOutcome(market, outcome);
-
+export const DisputeResult = ({ market }: { market: FullMarketFragment }) => {
   const marketUrl = `https://app.zeitgeist.pm/markets/${market.marketId}`;
 
   const twitterBaseUrl = "https://twitter.com/intent/tweet?text=";
-  const tweetUrl = `${twitterBaseUrl}I just disputed the outcome of %40ZeitgeistPM market: "${market.question}" to be ${outcomeName}%0A%0ACheck out the market here%3A%0A&url=${marketUrl}`;
+  const tweetUrl = `${twitterBaseUrl}I just disputed the outcome of %40ZeitgeistPM market: "${market.question}"%0A%0ACheck out the market here%3A%0A&url=${marketUrl}`;
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -30,11 +20,7 @@ export const DisputeResult = ({
         <AiOutlineFileDone size={64} className="text-ztg-blue" />
       </div>
       <p className="text">Successfully disputed!</p>
-      <div className="text-2xl font-semibold mb-4">
-        <span>New Outcome: </span>
-        {"scalar" in outcome && "Value: "}
-        {outcomeName}
-      </div>
+
       <a
         target="_blank"
         rel="noopener noreferrer"

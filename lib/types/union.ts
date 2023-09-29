@@ -48,6 +48,17 @@ export const union = <T>() => ({
       ? `MissingKey<${Exclude<T, keyof R>}>`
       : never,
   ) => record,
+
+  match: <
+    R extends Record<any, () => any>,
+    A = R extends Record<keyof R, () => infer A> ? A : never,
+  >(
+    value: T,
+    record: [T] extends [keyof R] ? R : Record<keyof R | "_", () => A>,
+  ): A => {
+    let match = (record[value] ?? record["_"]) as () => A;
+    return match();
+  },
 });
 
 /**

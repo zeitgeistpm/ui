@@ -71,15 +71,16 @@ const createWithdrawExtrinsic = (
 
   const account = {
     parents: 1,
-    interior: { X1: { AccountId32: { id: accountId, network: "Any" } } },
+    interior: { X1: { AccountId32: { id: accountId } } },
   };
+  const destWeightLimit = { Unlimited: null };
 
   return api.tx.xTokens.transfer(
     { ForeignAsset: foreignAssetId },
     amount,
-    { V1: account },
-    //@ts-ignore sdk types need to be updated for new release
-    { Limited: "100000000000" },
+    { V3: account },
+    // { Limited: "100000000000" },
+    destWeightLimit,
   );
 };
 const WithdrawModal = ({
@@ -182,13 +183,13 @@ const WithdrawModal = ({
           "amount",
           balance.mul(value.percentage).div(100).div(ZTG).toNumber(),
         );
-        trigger("amount");
       } else if (name === "amount" && value.amount !== "") {
         setValue(
           "percentage",
           new Decimal(value.amount).mul(ZTG).div(balance).mul(100).toString(),
         );
       }
+      trigger("amount");
     });
     return () => subscription.unsubscribe();
   }, [watch]);
