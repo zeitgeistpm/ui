@@ -1,7 +1,7 @@
 import Avatar from "components/ui/Avatar";
-import SecondaryButton from "components/ui/SecondaryButton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Link from "next/link";
+import DelegateButton from "./DelegateJuror";
 
 const columns: TableColumn[] = [
   {
@@ -55,7 +55,7 @@ const JurorsTable = () => {
       personalStake: juror.personalStake,
       totalStake: juror.totalStake,
       delegators: juror.delegators,
-      button: <SecondaryButton onClick={() => {}}>Delegate</SecondaryButton>,
+      button: <DelegateButton address={juror.address} />,
     };
   });
   return <Table columns={columns} data={tableData} showHighlight={false} />;
