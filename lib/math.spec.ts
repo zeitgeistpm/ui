@@ -16,30 +16,50 @@ describe("math", () => {
   });
 
   describe("calcOutGivenIn", () => {
-    test("should calculate correctly", () => {
-      const out = calcOutGivenIn(50, 50, 50, 50, 25, 0);
+    describe("without creator fees", () => {
+      test("should calculate correctly", () => {
+        const out = calcOutGivenIn(50, 50, 50, 50, 25, 0, 0);
 
-      expect(out.toFixed(1)).toEqual("16.7");
+        expect(out.toFixed(1)).toEqual("16.7");
+      });
+
+      test("should calculate correctly with fees", () => {
+        const out = calcOutGivenIn(50, 50, 50, 50, 25, 0.1, 0);
+
+        expect(out.toFixed(1)).toEqual("15.5");
+      });
     });
 
-    test("should calculate correctly with fees", () => {
-      const out = calcOutGivenIn(50, 50, 50, 50, 25, 0.1);
+    describe("with creator fees", () => {
+      test("should calculate correctly", () => {
+        const out = calcOutGivenIn(50, 50, 50, 50, 25, 0.01, 0.01);
 
-      expect(out.toFixed(1)).toEqual("15.5");
+        expect(out.toFixed(1)).toEqual("16.4");
+      });
     });
   });
 
   describe("calcInGivenOut", () => {
-    test("should calculate correctly", () => {
-      const amountIn = calcInGivenOut(50, 50, 50, 50, 10, 0);
+    describe("without creator fees", () => {
+      test("should calculate correctly", () => {
+        const amountIn = calcInGivenOut(50, 50, 50, 50, 10, 0, 0);
 
-      expect(amountIn.toFixed(1)).toEqual("12.5");
+        expect(amountIn.toFixed(1)).toEqual("12.5");
+      });
+
+      test("should calculate correctly with fees", () => {
+        const amountIn = calcInGivenOut(50, 50, 50, 50, 10, 0.05, 0);
+
+        expect(amountIn.toFixed(1)).toEqual("13.2");
+      });
     });
 
-    test("should calculate correctly with fees", () => {
-      const amountIn = calcInGivenOut(50, 50, 50, 50, 10, 0.05);
+    describe("with creator fees", () => {
+      test("should calculate correctly", () => {
+        const amountIn = calcInGivenOut(50, 50, 50, 50, 10, 0.01, 0.01);
 
-      expect(amountIn.toFixed(1)).toEqual("13.2");
+        expect(amountIn.toFixed(1)).toEqual("12.8");
+      });
     });
   });
 });
