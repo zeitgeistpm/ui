@@ -557,7 +557,7 @@ const Leaderboard: NextPage<{
   }, [rankings]);
 
   return (
-    <div id="leaderboard">
+    <div id="leaderboard" className="pt-4">
       <div className="w-full h-[137px] sm:h-[244px] relative overflow-hidden rounded-md">
         <Image
           src="/Leaderboard-banner.png"
