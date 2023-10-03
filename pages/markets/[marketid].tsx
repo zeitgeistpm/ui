@@ -29,7 +29,7 @@ import {
   PromotedMarket,
   getMarketPromotion,
 } from "lib/cms/get-promoted-markets";
-import { ZTG, graphQlEndpoint } from "lib/constants";
+import { ZTG, environment, graphQlEndpoint } from "lib/constants";
 import {
   MarketPageIndexedData,
   getMarket,
@@ -94,9 +94,12 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const client = new GraphQLClient(graphQlEndpoint);
 
-  const [market, promotionData] = await Promise.all([
+  const [
+    market,
+    // promotionData
+  ] = await Promise.all([
     getMarket(client, params.marketid),
-    getMarketPromotion(Number(params.marketid)),
+    // getMarketPromotion(Number(params.marketid)),
   ]);
 
   const chartSeries: ChartSeries[] = market?.categories?.map(
@@ -121,9 +124,12 @@ export async function getStaticProps({ params }) {
       indexedMarket: market ?? null,
       chartSeries: chartSeries ?? null,
       resolutionTimestamp: resolutionTimestamp ?? null,
-      promotionData,
+      promotionData: null,
     },
-    revalidate: 1 * 60, //1min
+    revalidate:
+      environment === "production"
+        ? 5 * 60 //5min
+        : 60 * 60,
   };
 }
 
