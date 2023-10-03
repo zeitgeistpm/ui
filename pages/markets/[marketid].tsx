@@ -387,7 +387,7 @@ const Market: NextPage<MarketPageProps> = ({
               {market?.status === MarketStatus.Active ? (
                 <>
                   {/* <TradeForm outcomeAssets={outcomeAssets} /> */}
-                  <Amm2TradeForm />
+                  <Amm2TradeForm marketId={marketId} />
                 </>
               ) : market?.status === MarketStatus.Closed && canReport ? (
                 <>
