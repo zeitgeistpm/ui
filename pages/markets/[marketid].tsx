@@ -254,7 +254,7 @@ const Market: NextPage<MarketPageProps> = ({
   }
 
   return (
-    <div className="">
+    <div className="mt-6">
       <div className="flex flex-auto gap-12 relative">
         <div className="flex-1">
           <MarketMeta market={indexedMarket} />

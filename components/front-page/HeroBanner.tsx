@@ -34,15 +34,18 @@ export const HeroBanner = ({
             Zeitgeist is a new innovative platform for predicting future events
           </h2>
           <div className="flex gap-4 mb-14">
-            <Link href="https://zeitgeist.pm/" target="_blank">
-              <button className="rounded-md flex-1 md:flex-none bg-vermilion text-white px-6 py-3">
-                Learn More
-              </button>
+            <Link
+              href="https://zeitgeist.pm/"
+              target="_blank"
+              className="rounded-md flex-1 sm:flex-none bg-vermilion border-2 border-vermilion text-white px-6 py-3"
+            >
+              Learn More
             </Link>
-            <Link href="/create-account">
-              <button className="rounded-md flex-1 md:flex-none bg-transparent border-2 border-black text-black px-6 py-3">
-                Get Started
-              </button>
+            <Link
+              href="/create-account"
+              className="rounded-md flex-1 sm:flex-none bg-transparent border-2 border-black text-black px-6 py-3"
+            >
+              Get Started
             </Link>
           </div>
           <div
