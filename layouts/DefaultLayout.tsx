@@ -3,7 +3,6 @@ import { useResizeDetector } from "react-resize-detector";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 
-import { ContentDimensionsProvider } from "components/context/ContentDimensionsContext";
 import TopBar from "components/menu";
 import Footer from "components/ui/Footer";
 import NotificationCenter from "components/ui/NotificationCenter";
@@ -12,8 +11,6 @@ import { TradeItem, TradeItemContext } from "lib/hooks/trade";
 import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
 import { useRouter } from "next/router";
 
-// font optimization from @next/font
-import { inter, kanit, roboto_mono } from "lib/util/fonts";
 import { Account } from "components/account/Account";
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
@@ -54,17 +51,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
       }`}
     >
       <TradeItemContext.Provider value={{ data: tradeItem, set: setTradeItem }}>
-        {/* loads optimized fonts for global access */}
-        <style jsx global>
-          {`
-            :root {
-              --font-inter: ${inter.style.fontFamily};
-              --font-kanit: ${kanit.style.fontFamily};
-              --font-roboto-mono: ${roboto_mono.style.fontFamily};
-            }
-          `}
-        </style>
-        <div ref={contentRef} className="flex-grow">
+        <div ref={contentRef} className={`flex-grow`}>
           <TopBar />
           <main className="mt-24 mb-12 container-fluid" ref={mainRef}>
             <div
