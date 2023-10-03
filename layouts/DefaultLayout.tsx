@@ -44,7 +44,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div
-      className={`relative min-h-screen justify-evenly overflow-x-hidden ${
+      className={`relative min-h-screen justify-evenly ${
         greyBackgroundPageRoutes.includes(router.pathname)
           ? "bg-light-gray"
           : ""
@@ -54,7 +54,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
         <div ref={contentRef} className={`flex-grow`}>
           <TopBar />
           <main
-            className="mt-24 mb-12 container-fluid"
+            className="mt-16 mb-12 container-fluid"
             ref={mainRef}
             style={{ minHeight: "calc(100vh - 300px)" }}
           >

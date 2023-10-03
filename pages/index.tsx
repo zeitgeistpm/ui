@@ -129,7 +129,10 @@ const IndexPage: NextPage<{
 }) => {
   return (
     <>
-      <div data-testid="indexPage" className="main-container relative z-1">
+      <div
+        data-testid="indexPage"
+        className="main-container pt-1 md:pt-1 relative z-1"
+      >
         <BgBallGfx />
 
         <HeroBanner
