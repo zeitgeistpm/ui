@@ -14,7 +14,7 @@ import { IndexedMarketCardData } from "components/markets/market-card";
 import MarketScroll from "components/markets/MarketScroll";
 import { GraphQLClient } from "graphql-request";
 import { getNews, News } from "lib/cms/get-news";
-import { endpointOptions, graphQlEndpoint } from "lib/constants";
+import { endpointOptions, environment, graphQlEndpoint } from "lib/constants";
 import getFeaturedMarkets from "lib/gql/featured-markets";
 import { getNetworkStats } from "lib/gql/get-network-stats";
 import { getCategoryCounts } from "lib/gql/popular-categories";
@@ -99,7 +99,10 @@ export async function getStaticProps() {
       ztgHistory,
       chainProperties: chainProperties.toPrimitive(),
     },
-    revalidate: 1 * 60, //1min
+    revalidate:
+      environment === "production"
+        ? 1 * 60 //1min
+        : 60 * 60,
   };
 }
 
