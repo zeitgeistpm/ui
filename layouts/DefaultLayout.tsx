@@ -44,7 +44,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div
-      className={`relative min-h-screen justify-evenly overflow-x-hidden ${
+      className={`relative min-h-screen justify-evenly ${
         greyBackgroundPageRoutes.includes(router.pathname)
           ? "bg-light-gray"
           : ""
@@ -53,7 +53,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
       <TradeItemContext.Provider value={{ data: tradeItem, set: setTradeItem }}>
         <div ref={contentRef} className={`flex-grow`}>
           <TopBar />
-          <main className="mt-24 mb-12 container-fluid" ref={mainRef}>
+          <main className="mt-16 mb-12 container-fluid" ref={mainRef}>
             <div
               className={`w-full ${
                 ["/", "/markets"].includes(router.pathname) ? "pt-0" : "pt-2"
