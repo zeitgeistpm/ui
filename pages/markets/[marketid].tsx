@@ -29,7 +29,7 @@ import {
   PromotedMarket,
   getMarketPromotion,
 } from "lib/cms/get-promoted-markets";
-import { ZTG, graphQlEndpoint } from "lib/constants";
+import { ZTG, environment, graphQlEndpoint } from "lib/constants";
 import {
   MarketPageIndexedData,
   getMarket,
@@ -94,9 +94,12 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const client = new GraphQLClient(graphQlEndpoint);
 
-  const [market, promotionData] = await Promise.all([
+  const [
+    market,
+    // promotionData
+  ] = await Promise.all([
     getMarket(client, params.marketid),
-    getMarketPromotion(Number(params.marketid)),
+    // getMarketPromotion(Number(params.marketid)),
   ]);
 
   const chartSeries: ChartSeries[] = market?.categories?.map(
@@ -121,9 +124,12 @@ export async function getStaticProps({ params }) {
       indexedMarket: market ?? null,
       chartSeries: chartSeries ?? null,
       resolutionTimestamp: resolutionTimestamp ?? null,
-      promotionData,
+      promotionData: null,
     },
-    revalidate: 1 * 60, //1min
+    revalidate:
+      environment === "production"
+        ? 5 * 60 //5min
+        : 60 * 60,
   };
 }
 
@@ -328,7 +334,7 @@ const Market: NextPage<MarketPageProps> = ({
             />
           </div>
 
-          <div className="mb-12">
+          <div className="mb-12 max-w-[90vw]">
             {indexedMarket.description?.length > 0 && (
               <>
                 <h3 className="text-2xl mb-5">About Market</h3>
@@ -552,20 +558,22 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
 const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
   const reportedOutcome = market.report?.outcome;
 
-  const [disputeOutcome, setDisputeOutcome] = useState<
-    | MarketCategoricalOutcome
-    | (MarketScalarOutcome & { type: ScalarRangeType })
-    | undefined
-  >();
+  const [hasReportedDispute, setHasReportedDispute] = useState(false);
 
   return (
     <div>
-      {disputeOutcome ? (
-        <DisputeResult market={market} outcome={disputeOutcome} />
+      {hasReportedDispute ? (
+        <DisputeResult market={market} />
       ) : isMarketCategoricalOutcome(reportedOutcome) ? (
-        <CategoricalDisputeBox market={market} onSuccess={setDisputeOutcome} />
+        <CategoricalDisputeBox
+          market={market}
+          onSuccess={() => setHasReportedDispute(true)}
+        />
       ) : (
-        <ScalarDisputeBox market={market} onSuccess={setDisputeOutcome} />
+        <ScalarDisputeBox
+          market={market}
+          onSuccess={() => setHasReportedDispute(true)}
+        />
       )}
     </div>
   );
@@ -584,7 +592,7 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
   const connectedWalletIsOracle = market.oracle === wallet.realAddress;
 
   const userCanReport =
-    stage?.type === "OpenReportingPeriod" || !connectedWalletIsOracle;
+    stage?.type === "OpenReportingPeriod" || connectedWalletIsOracle;
 
   return !userCanReport ? (
     <></>

@@ -157,7 +157,7 @@ const CurrenciesTable = ({ address }: { address: string }) => {
 
   return (
     <div>
-      <Table data={tableData} columns={columns} />
+      <Table data={tableData} columns={columns} showHighlight={false} />
     </div>
   );
 };

@@ -20,6 +20,7 @@ import Decimal from "decimal.js";
 import {
   DAY_SECONDS,
   endpointOptions,
+  environment,
   graphQlEndpoint,
   ZTG,
 } from "lib/constants";
@@ -482,7 +483,10 @@ export async function getStaticProps({ params }) {
       timePeriod: period,
       bannerPlaceholder: bannerPlaceholder.base64,
     },
-    revalidate: 10 * 60, //10min
+    revalidate:
+      environment === "production"
+        ? 10 * 60 //10min
+        : 60 * 60,
   };
 }
 
