@@ -21,6 +21,7 @@ import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
 import CategoricalReportBox from "components/outcomes/CategoricalReportBox";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
+import Amm2TradeForm from "components/trade-form/Amm2TradeForm";
 import Skeleton from "components/ui/Skeleton";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
@@ -379,7 +380,8 @@ const Market: NextPage<MarketPageProps> = ({
             <div className="shadow-lg rounded-lg mb-12 opacity-0 animate-pop-in">
               {market?.status === MarketStatus.Active ? (
                 <>
-                  <TradeForm outcomeAssets={outcomeAssets} />
+                  {/* <TradeForm outcomeAssets={outcomeAssets} /> */}
+                  <Amm2TradeForm />
                 </>
               ) : market?.status === MarketStatus.Closed && canReport ? (
                 <>
