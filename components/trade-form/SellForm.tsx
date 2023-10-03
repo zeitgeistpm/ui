@@ -9,6 +9,7 @@ import { useMarket } from "lib/hooks/queries/useMarket";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
+import { calculateSwapAmountOutForSell } from "lib/util/amm2";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -49,6 +50,16 @@ const SellForm = ({
   const [selectedAsset, setSelectedAsset] = useState<
     MarketOutcomeAssetId | undefined
   >(initialAsset ?? outcomeAssets?.[0]);
+
+  const amountIn = new Decimal(getValues("amount") ?? 0);
+
+  const amountOut = calculateSwapAmountOutForSell(
+    new Decimal(10000), //todo: fetch params
+    amountIn,
+    new Decimal(100000),
+    new Decimal(0.01),
+    new Decimal(0.001),
+  );
 
   //   const { isLoading, send, fee } = useExtrinsic(
   //     () => {
@@ -146,7 +157,7 @@ const SellForm = ({
         </div>
         <div>For</div>
         <div className="h-[56px] center text-ztg-18-150 relative font-normal w-full border border-black">
-          <div className="mr-auto">{1000}</div>
+          <div className="mr-auto">{amountOut.toString()}</div>
 
           <div className="mr-[10px] absolute right-0">
             {constants?.tokenSymbol}
