@@ -3,7 +3,7 @@ import { useResizeDetector } from "react-resize-detector";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 
-import TopBar from "components/menu";
+import TopBar from "components/top-bar";
 import Footer from "components/ui/Footer";
 import NotificationCenter from "components/ui/NotificationCenter";
 import GrillChat from "components/grillchat";

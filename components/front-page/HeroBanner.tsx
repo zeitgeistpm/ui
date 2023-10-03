@@ -45,16 +45,13 @@ export const HeroBanner = ({
               </button>
             </Link>
           </div>
-          <div
-            className="py-3 px-4 w-full rounded-md flex gap-2"
-            style={{ backgroundColor: "rgba(28, 100, 242, 0.2)" }}
-          >
-            <div className="flex justify-start items-center gap-2 w-1/3">
+          <div className="py-3 px-4 w-full rounded-md flex gap-3 bg-ztg-gray">
+            <div className="flex justify-start items-center gap-3 w-1/3">
               <div>
-                <ZeitgeistIcon variant="blue" height={28} width={28} />
+                <ZeitgeistIcon variant="blue" height={32} width={32} />
               </div>
               <div>
-                <div className="font-bold text-md">Zeitgeist</div>
+                <div className="text-lg font-medium">Zeitgeist</div>
                 <div className="text-sm">
                   {chainProperties.tokenSymbol.toString()}
                 </div>

@@ -106,7 +106,7 @@ export const MarketContextActionOutcomeSelector = ({
           leave="transition duration-75 ease-out"
           leaveFrom="transform scale-100 opacity-100"
           leaveTo="transform scale-95 opacity-0"
-          className="absolute top-[-1px] left-[1px] right-0 bottom-0 h-full w-full overflow-hidden rounded-xl z-50 bg-white"
+          className="absolute top-[-1px] left-[1px] right-0 bottom-0 h-full w-full overflow-hidden rounded-xl z-40 bg-white"
         >
           <div className="relative flex flex-col h-full">
             <div className="">
