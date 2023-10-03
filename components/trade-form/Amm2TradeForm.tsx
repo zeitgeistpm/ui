@@ -8,6 +8,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import {
+  AssetId,
   isRpcSdk,
   MarketOutcomeAssetId,
   parseAssetId,
@@ -22,8 +23,18 @@ import { useBalance } from "lib/hooks/queries/useBalance";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 
-const Amm2TradeForm = () => {
-  const [tabType, setTabType] = useState<TradeTabType>(TradeTabType.Buy);
+const Amm2TradeForm = ({
+  marketId,
+  initialTab,
+  initialAsset,
+}: {
+  marketId: number;
+  initialTab?: TradeTabType;
+  initialAsset?: MarketOutcomeAssetId;
+}) => {
+  const [tabType, setTabType] = useState<TradeTabType>(
+    initialTab ?? TradeTabType.Buy,
+  );
 
   return (
     <Tab.Group
@@ -54,17 +65,23 @@ const Amm2TradeForm = () => {
 
       <Tab.Panels className="p-[30px]">
         <Tab.Panel>
-          <BuyForm marketId={689} />
+          <BuyForm marketId={marketId ?? 689} initialAsset={initialAsset} />
         </Tab.Panel>
         <Tab.Panel>
-          <SellForm marketId={689} />
+          <SellForm marketId={marketId ?? 689} initialAsset={initialAsset} />
         </Tab.Panel>
       </Tab.Panels>
     </Tab.Group>
   );
 };
 
-const BuyForm = ({ marketId }: { marketId: number }) => {
+const BuyForm = ({
+  marketId,
+  initialAsset,
+}: {
+  marketId: number;
+  initialAsset?: MarketOutcomeAssetId;
+}) => {
   const { data: constants } = useChainConstants();
   const {
     register,
@@ -93,7 +110,7 @@ const BuyForm = ({ marketId }: { marketId: number }) => {
   );
   const [selectedAsset, setSelectedAsset] = useState<
     MarketOutcomeAssetId | undefined
-  >(outcomeAssets?.[0]);
+  >(initialAsset ?? outcomeAssets?.[0]);
 
   //   const { isLoading, send, fee } = useExtrinsic(
   //     () => {
@@ -225,7 +242,13 @@ const BuyForm = ({ marketId }: { marketId: number }) => {
     </div>
   );
 };
-const SellForm = ({ marketId }: { marketId: number }) => {
+const SellForm = ({
+  marketId,
+  initialAsset,
+}: {
+  marketId: number;
+  initialAsset?: MarketOutcomeAssetId;
+}) => {
   const { data: constants } = useChainConstants();
   const {
     register,
@@ -254,7 +277,7 @@ const SellForm = ({ marketId }: { marketId: number }) => {
   );
   const [selectedAsset, setSelectedAsset] = useState<
     MarketOutcomeAssetId | undefined
-  >(outcomeAssets?.[0]);
+  >(initialAsset ?? outcomeAssets?.[0]);
 
   //   const { isLoading, send, fee } = useExtrinsic(
   //     () => {
