@@ -328,7 +328,7 @@ const Market: NextPage<MarketPageProps> = ({
             />
           </div>
 
-          <div className="mb-12">
+          <div className="mb-12 max-w-[90vw]">
             {indexedMarket.description?.length > 0 && (
               <>
                 <h3 className="text-2xl mb-5">About Market</h3>
