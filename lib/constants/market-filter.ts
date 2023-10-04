@@ -8,6 +8,7 @@ import {
 } from "lib/types/market-filter";
 import { FOREIGN_ASSET_METADATA } from "./foreign-asset";
 import { defaultTags, marketStatuses } from "./markets";
+import { CATEGORIES } from "components/front-page/PopularCategories";
 
 export const filterTypes = ["status", "tag", "currency"] as const;
 
@@ -18,21 +19,22 @@ export const marketStatusFilterOptions: MarketStatusFilter[] =
     label: status,
   }));
 
-export const categoryImages: Record<typeof defaultTags[number], string> = {
-  Sports: "/category/sports.png",
-  Politics: "/category/politics.png",
-  Technology: "/category/technology.png",
-  Crypto: "/category/crypto.png",
-  Science: "/category/science.png",
-  "E-Sports": "/category/e-sports.png",
-  Zeitgeist: "/category/zeitgeist.png",
-  Dotsama: "/category/dotsama.png",
-  News: "/category/news.png",
-} as const;
+export const categoryImages: Record<typeof CATEGORIES[number]["name"], string> =
+  {
+    Sports: "/category/sports.png",
+    Politics: "/category/politics.png",
+    Technology: "/category/technology.png",
+    Crypto: "/category/crypto.png",
+    Science: "/category/science.png",
+    "E-Sports": "/category/e-sports.png",
+    Zeitgeist: "/category/zeitgeist.png",
+    Dotsama: "/category/dotsama.png",
+    News: "/category/news.png",
+  } as const;
 
 export const marketTagFilterOptions: MarketTagFilter[] = defaultTags.map(
   (tag) => ({
-    type: "tag",
+    type: "tag" as const,
     value: tag,
     label: tag,
     imageUrl: categoryImages[tag],
