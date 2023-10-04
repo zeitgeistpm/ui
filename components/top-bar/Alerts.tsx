@@ -1,10 +1,10 @@
 import { Menu, Transition } from "@headlessui/react";
 import {
-  ReadyToReportMarketAlert,
-  RedeemableMarketsAlert,
-  RelevantMarketDisputeAlert,
+  ReadyToReportMarketAlertData,
+  RedeemableMarketsAlertData,
+  RelevantMarketDisputeAlertData,
   useAlerts,
-} from "lib/hooks/useAlerts";
+} from "lib/state/alerts";
 import { useWallet } from "lib/state/wallet";
 import { useRouter } from "next/router";
 import { Fragment, useEffect, useState } from "react";
@@ -14,7 +14,7 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 
 export const Alerts = () => {
   const wallet = useWallet();
-  const { alerts } = useAlerts(wallet.realAddress);
+  const { alerts, setAsRead } = useAlerts(wallet.realAddress);
 
   const hasNotifications = alerts.length > 0;
 
@@ -93,7 +93,7 @@ export const Alerts = () => {
                     <div className="mb-2 md:hover:scale-105 hover:ring-1 ring-[#fa8cce] rounded-md transition-transform cursor-pointer">
                       {alert.type === "ready-to-report-market" ? (
                         <ReadyToReportMarketAlertItem alert={alert} />
-                      ) : alert.type === "relevant-market-dispute" ? (
+                      ) : alert.type === "market-dispute" ? (
                         <RelevantMarketDisputeItem alert={alert} />
                       ) : alert.type === "redeemable-markets" ? (
                         <RedeemableMarketAlertItem alert={alert} />
@@ -121,7 +121,7 @@ export const Alerts = () => {
 const ReadyToReportMarketAlertItem = ({
   alert,
 }: {
-  alert: ReadyToReportMarketAlert;
+  alert: ReadyToReportMarketAlertData;
 }) => {
   const router = useRouter();
 
@@ -161,7 +161,7 @@ const ReadyToReportMarketAlertItem = ({
 const RedeemableMarketAlertItem = ({
   alert,
 }: {
-  alert: RedeemableMarketsAlert;
+  alert: RedeemableMarketsAlertData;
 }) => {
   const router = useRouter();
   const wallet = useWallet();
@@ -204,7 +204,7 @@ const RedeemableMarketAlertItem = ({
 const RelevantMarketDisputeItem = ({
   alert,
 }: {
-  alert: RelevantMarketDisputeAlert;
+  alert: RelevantMarketDisputeAlertData;
 }) => {
   return <div></div>;
 };
