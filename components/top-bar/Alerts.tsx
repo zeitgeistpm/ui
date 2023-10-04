@@ -1,14 +1,15 @@
 import { Menu, Transition } from "@headlessui/react";
 import {
   ReadyToReportMarketAlert,
-  RelevantMarketDispute,
+  RedeemableMarketsAlert,
+  RelevantMarketDisputeAlert,
   useAlerts,
 } from "lib/hooks/useAlerts";
 import { useWallet } from "lib/state/wallet";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useEffect } from "react";
 import { AiOutlineFileAdd } from "react-icons/ai";
+import { BiMoneyWithdraw } from "react-icons/bi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 
 export const Alerts = () => {
@@ -58,6 +59,8 @@ export const Alerts = () => {
                         <ReadyToReportMarketAlertItem alert={alert} />
                       ) : alert.type === "relevant-market-dispute" ? (
                         <RelevantMarketDisputeItem alert={alert} />
+                      ) : alert.type === "redeemable-markets" ? (
+                        <RedeemableMarketAlertItem alert={alert} />
                       ) : (
                         <>
                           {console.warn(
@@ -119,10 +122,53 @@ const ReadyToReportMarketAlertItem = ({
   );
 };
 
+const RedeemableMarketAlertItem = ({
+  alert,
+}: {
+  alert: RedeemableMarketsAlert;
+}) => {
+  const router = useRouter();
+  const wallet = useWallet();
+
+  useEffect(() => {
+    router.prefetch(`/portfolio/${wallet.realAddress}`);
+  }, [alert, wallet.realAddress]);
+
+  return (
+    <div
+      className="bg-white/50 border-1 border-solid border-black/10 backdrop-blur-lg py-3 px-4 rounded-md"
+      style={{
+        WebkitTransform: "translate3d(0,0,0)",
+      }}
+      onClick={() => {
+        router.push(`/portfolio/${wallet.realAddress}`);
+      }}
+    >
+      <div className="mb-1">
+        <div
+          className="rounded-full py-1 px-1.5 inline-flex text-xxs items-center gap-1"
+          style={{
+            background:
+              "linear-gradient(131.15deg, rgba(50, 255, 157, 0.4) 11.02%, rgba(240, 206, 135, 0.048) 93.27%)",
+          }}
+        >
+          <BiMoneyWithdraw size={12} className="text-gray-600" />
+          Redeemable Tokens
+        </div>
+      </div>
+      <div>
+        <h3 className="text-sm font-medium pl-1">
+          You have {alert.markets.length} redeemable markets.
+        </h3>
+      </div>
+    </div>
+  );
+};
+
 const RelevantMarketDisputeItem = ({
   alert,
 }: {
-  alert: RelevantMarketDispute;
+  alert: RelevantMarketDisputeAlert;
 }) => {
   return <div></div>;
 };
