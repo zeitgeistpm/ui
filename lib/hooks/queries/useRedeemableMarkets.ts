@@ -66,8 +66,6 @@ export const useRedeemableMarkets = (account?: string) => {
           return hasWinningPosition;
         });
 
-        console.log(redeemableMarkets);
-
         return redeemableMarkets;
       }
     },

@@ -98,13 +98,7 @@ export const Alerts = () => {
                       ) : alert.type === "redeemable-markets" ? (
                         <RedeemableMarketAlertItem alert={alert} />
                       ) : (
-                        <>
-                          {console.warn(
-                            `No component implemented for Alert.type: ${
-                              (alert as any).type
-                            }`,
-                          )}
-                        </>
+                        <UnknownAlertItem alert={alert} /> // Including this prevents us from not exhausting the switch on alert type .
                       )}
                     </div>
                   </Menu.Item>
@@ -207,4 +201,12 @@ const RelevantMarketDisputeItem = ({
   alert: RelevantMarketDisputeAlertData;
 }) => {
   return <div></div>;
+};
+
+/**
+ * @note Since the param here is `never` it prevents us from forgetting to add a case for a new alert type
+ *  If a case for a alert type is missing in the rendering of the list, the compiler will complain.
+ */
+const UnknownAlertItem = ({ alert }: { alert: never }) => {
+  return <></>;
 };
