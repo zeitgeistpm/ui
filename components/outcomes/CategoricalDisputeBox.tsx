@@ -58,7 +58,10 @@ const CategoricalDisputeBox = ({
   } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk)) {
-        return sdk.api.tx.predictionMarkets.dispute(market.marketId);
+        return sdk.api.tx.predictionMarkets.dispute(market.marketId, {
+          //todo: revert
+          Categorical: [1, 1],
+        });
       }
     },
     {
