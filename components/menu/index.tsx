@@ -17,6 +17,7 @@ import {
   FiList,
 } from "react-icons/fi";
 import { useCategoryCounts } from "lib/hooks/queries/useCategoryCounts";
+import MarketSearch from "components/markets/MarketSearch";
 
 const AccountButton = dynamic(() => import("../account/AccountButton"), {
   ssr: false,
@@ -157,6 +158,7 @@ const TopBar = () => {
             </div>
             <div>Leaderboard</div>
           </Link>
+          <MarketSearch />
         </div>
         <AccountButton />
       </div>
