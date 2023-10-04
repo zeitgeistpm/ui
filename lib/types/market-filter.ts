@@ -14,7 +14,7 @@ export type MarketOrderByOption = {
   value: MarketsOrderBy;
 };
 
-export type MarketFilterTagLabel = typeof CATEGORIES[number]["name"];
+export type MarketFilterTagLabel = typeof CATEGORIES[number]["name"] | string;
 
 export type MarketFilterStatusLabel = MarketStatus;
 
