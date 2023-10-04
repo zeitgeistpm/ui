@@ -7,7 +7,7 @@ import {
 } from "lib/hooks/useAlerts";
 import { useWallet } from "lib/state/wallet";
 import { useRouter } from "next/router";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { IoMdNotificationsOutline } from "react-icons/io";
@@ -17,6 +17,15 @@ export const Alerts = () => {
   const { alerts } = useAlerts(wallet.realAddress);
 
   const hasNotifications = alerts.length > 0;
+
+  const [hoveringMenu, setHoveringMenu] = useState(false);
+
+  const mouseEnterMenuHandler = () => {
+    setHoveringMenu(true);
+  };
+  const mouseLeaveMenuHandler = () => {
+    setHoveringMenu(false);
+  };
 
   return (
     <Menu as="div" className="relative z-50">
@@ -44,6 +53,22 @@ export const Alerts = () => {
             </div>
             <Transition
               as={Fragment}
+              show={open && hoveringMenu}
+              enter="transition ease-out duration-100"
+              enterFrom="transform opacity-0"
+              enterTo="transform opacity-1"
+              leave="transition ease-in opacity-0 duration-75"
+              leaveFrom="transform opacity-1"
+              leaveTo="transform opacity-0 "
+            >
+              <div
+                className="fixed z-40 left-0 top-0 h-screen w-screen bg-black/10 backdrop-blur-sm"
+                aria-hidden="true"
+              />
+            </Transition>
+
+            <Transition
+              as={Fragment}
               enter="transition ease-out duration-100"
               enterFrom="transform translate-y-2 md:translate-y-0 md:scale-95"
               enterTo="transform translate-y-0 md:scale-100"
@@ -51,10 +76,21 @@ export const Alerts = () => {
               leaveFrom="transform translate-y-0 md:scale-100"
               leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
             >
-              <Menu.Items className="fixed md:absolute left-0 md:translate-x-[50%] md:left-auto p-2 md:px-4 md:max-h-[700px] overflow-y-scroll subtle-scroll-bar md:right-0 bottom-0 md:bottom-auto z-50 py-3 top-12 md:top-auto mt-6 md:mt-6 w-full overflow-hidden h-full md:h-auto md:w-96 pb-20 md:bg-transparent origin-top-right divide-gray-100 md:rounded-md  focus:outline-none">
+              <Menu.Items
+                onMouseEnter={mouseEnterMenuHandler}
+                onMouseLeave={mouseLeaveMenuHandler}
+                className={`
+                  fixed md:absolute left-0 md:translate-x-[50%] md:left-auto p-2 md:px-4 md:max-h-[700px] 
+                  overflow-y-scroll md:right-0 bottom-0 md:bottom-auto z-50 py-3 top-11 
+                  md:top-auto mt-6 md:mt-6 w-full overflow-hidden h-full md:h-auto md:w-96 pb-20 md:pb-0 
+                  origin-top-right divide-gray-100 md:rounded-md focus:outline-none  
+                  bg-black/20 md:bg-transparent 
+                  subtle-scroll-bar subtle-scroll-bar-on-hover 
+                `}
+              >
                 {alerts.map((alert, index) => (
                   <Menu.Item key={index}>
-                    <div className="mb-2 md:hover:scale-105 transition-transform cursor-pointer">
+                    <div className="mb-2 md:hover:scale-105 hover:ring-1 ring-[#fa8cce] rounded-md transition-transform cursor-pointer">
                       {alert.type === "ready-to-report-market" ? (
                         <ReadyToReportMarketAlertItem alert={alert} />
                       ) : alert.type === "relevant-market-dispute" ? (
@@ -95,7 +131,7 @@ const ReadyToReportMarketAlertItem = ({
 
   return (
     <div
-      className="bg-white/50 border-1 border-solid border-black/10 backdrop-blur-lg py-3 px-4 rounded-md"
+      className="bg-white/80 md:bg-white/50 border-1 border-solid border-black/10 backdrop-blur-lg py-3 px-4 rounded-md"
       style={{
         WebkitTransform: "translate3d(0,0,0)",
       }}
@@ -111,7 +147,7 @@ const ReadyToReportMarketAlertItem = ({
               "linear-gradient(131.15deg, rgba(240, 206, 135, 0.4) 11.02%, rgba(254, 0, 152, 0.4) 93.27%)",
           }}
         >
-          <AiOutlineFileAdd size={12} className="text-gray-600" />
+          <AiOutlineFileAdd size={12} className="text-gray-700" />
           Submit Report
         </div>
       </div>
@@ -136,7 +172,7 @@ const RedeemableMarketAlertItem = ({
 
   return (
     <div
-      className="bg-white/50 border-1 border-solid border-black/10 backdrop-blur-lg py-3 px-4 rounded-md"
+      className="bg-white/80 md:bg-white/50 border-1 border-solid border-black/10 backdrop-blur-lg py-3 px-4 rounded-md"
       style={{
         WebkitTransform: "translate3d(0,0,0)",
       }}
@@ -149,7 +185,7 @@ const RedeemableMarketAlertItem = ({
           className="rounded-full py-1 px-1.5 inline-flex text-xxs items-center gap-1"
           style={{
             background:
-              "linear-gradient(131.15deg, rgba(50, 255, 157, 0.4) 11.02%, rgba(240, 206, 135, 0.048) 93.27%)",
+              "linear-gradient(131.15deg, rgba(50, 255, 157, 0.4) 11.02%, rgb(142 185 231 / 38%) 93.27%)",
           }}
         >
           <BiMoneyWithdraw size={12} className="text-gray-600" />

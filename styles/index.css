@@ -317,6 +317,14 @@ tr td:first-child {
   display:none;
 }
 
+.subtle-scroll-bar.subtle-scroll-bar-on-hover::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0, 0.001);
+}
+
+.subtle-scroll-bar.subtle-scroll-bar-on-hover:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0, 0.7);
+}
+
 /* Skeleton */
 .dark > * .MuiSkeleton-root {
   height: 1.2em;
