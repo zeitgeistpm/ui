@@ -3,11 +3,13 @@ import { MarketStatus } from "@zeitgeistpm/indexer";
 import { isFullSdk } from "@zeitgeistpm/sdk-next";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import { useSdkv2 } from "../useSdkv2";
+import { useChainTime } from "lib/state/chaintime";
 
 export const useReadyToReportMarkets = (account?: string) => {
   const [sdk, id] = useSdkv2();
+  const chainTime = useChainTime();
 
-  const enabled = sdk && isFullSdk(sdk) && account;
+  const enabled = sdk && isFullSdk(sdk) && account && chainTime;
 
   return useQuery(
     [id, "ready-to-report-markets", account],
@@ -23,7 +25,7 @@ export const useReadyToReportMarkets = (account?: string) => {
         let readyToReportMarkets = (
           await Promise.all(
             closedMarketsForAccount.markets.map(async (market) => {
-              const stage = await sdk.model.markets.getStage(market);
+              const stage = await sdk.model.markets.getStage(market, chainTime);
               if (
                 stage.type === "OracleReportingPeriod" ||
                 stage.type === "OpenReportingPeriod"
@@ -40,6 +42,7 @@ export const useReadyToReportMarkets = (account?: string) => {
     },
     {
       enabled: Boolean(enabled),
+      refetchInterval: 1000 * 60,
     },
   );
 };
