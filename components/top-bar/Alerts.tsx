@@ -7,7 +7,7 @@ import {
 } from "lib/state/alerts";
 import { useWallet } from "lib/state/wallet";
 import { useRouter } from "next/router";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, PropsWithChildren, useEffect, useState } from "react";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { IoMdNotificationsOutline } from "react-icons/io";
@@ -88,9 +88,9 @@ export const Alerts = () => {
                   subtle-scroll-bar subtle-scroll-bar-on-hover 
                 `}
               >
-                {alerts.map((alert, index) => (
-                  <Menu.Item key={index}>
-                    <div className="mb-2 md:hover:scale-105 hover:ring-1 ring-[#fa8cce] rounded-md transition-all cursor-pointer">
+                {alerts.map((alert) => (
+                  <Menu.Item key={alert.id}>
+                    <div>
                       {alert.type === "ready-to-report-market" ? (
                         <ReadyToReportMarketAlertItem alert={alert} />
                       ) : alert.type === "market-dispute" ? (
@@ -98,7 +98,9 @@ export const Alerts = () => {
                       ) : alert.type === "redeemable-markets" ? (
                         <RedeemableMarketAlertItem alert={alert} />
                       ) : (
-                        <UnknownAlertItem alert={alert} /> // Including this prevents us from not exhausting the switch on alert type .
+                        // Including this prevents us from not exhausting the switch on alert type.
+                        // Should never be reached but caught by the type system.
+                        <UnknownAlertItem alert={alert} />
                       )}
                     </div>
                   </Menu.Item>
@@ -112,6 +114,20 @@ export const Alerts = () => {
   );
 };
 
+const AlertCard: React.FC<PropsWithChildren & { onClick?: () => void }> = ({
+  children,
+  onClick,
+}) => (
+  <div className="mb-2 md:hover:scale-105 hover:ring-1 ring-[#fa8cce] rounded-md transition-all cursor-pointer">
+    <div
+      className="bg-white/80 md:bg-white/50 border-1 border-solid border-black/10 backdrop-blur-lg py-3 px-4 rounded-md"
+      onClick={onClick}
+    >
+      {children}
+    </div>
+  </div>
+);
+
 const ReadyToReportMarketAlertItem = ({
   alert,
 }: {
@@ -124,11 +140,7 @@ const ReadyToReportMarketAlertItem = ({
   }, [alert]);
 
   return (
-    <div
-      className="bg-white/80 md:bg-white/50 border-1 border-solid border-black/10 backdrop-blur-lg py-3 px-4 rounded-md"
-      style={{
-        WebkitTransform: "translate3d(0,0,0)",
-      }}
+    <AlertCard
       onClick={() => {
         router.push(`/markets/${alert.market.marketId}`);
       }}
@@ -148,7 +160,7 @@ const ReadyToReportMarketAlertItem = ({
       <div>
         <h3 className="text-sm font-medium pl-1">{alert.market.question}</h3>
       </div>
-    </div>
+    </AlertCard>
   );
 };
 
@@ -165,11 +177,7 @@ const RedeemableMarketAlertItem = ({
   }, [alert, wallet.realAddress]);
 
   return (
-    <div
-      className="bg-white/80 md:bg-white/50 border-1 border-solid border-black/10 backdrop-blur-lg py-3 px-4 rounded-md"
-      style={{
-        WebkitTransform: "translate3d(0,0,0)",
-      }}
+    <AlertCard
       onClick={() => {
         router.push(`/portfolio/${wallet.realAddress}`);
       }}
@@ -191,7 +199,7 @@ const RedeemableMarketAlertItem = ({
           You have {alert.markets.length} redeemable markets.
         </h3>
       </div>
-    </div>
+    </AlertCard>
   );
 };
 
@@ -200,7 +208,7 @@ const RelevantMarketDisputeItem = ({
 }: {
   alert: RelevantMarketDisputeAlertData;
 }) => {
-  return <div></div>;
+  return <AlertCard></AlertCard>;
 };
 
 /**
