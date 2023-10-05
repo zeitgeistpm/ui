@@ -1,4 +1,5 @@
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
+import Opaque, { create } from "ts-opaque";
 
 /**
  * Top level alert type.
@@ -16,8 +17,7 @@ export type IAlert = {
 /**
  * Opaque type to ensure that the `id` field is a AlertId and only ever set by the `withId` function.
  */
-declare const tag: unique symbol;
-export type AlertId = string & { readonly [tag]: "AlertId" };
+export type AlertId = Opaque<string, Alert>;
 
 /**
  * Union type of all possible alert types.
@@ -53,17 +53,17 @@ export const withId = (alert: AlertData): Alert => {
   switch (alert.type) {
     case "ready-to-report-market":
       return {
-        id: `${alert.account}-${alert.type}-${alert.market.marketId}` as AlertId,
+        id: create(`${alert.account}-${alert.type}-${alert.market.marketId}`),
         ...alert,
       };
     case "market-dispute":
       return {
-        id: `${alert.account}-${alert.type}-${alert.market.marketId}` as AlertId,
+        id: create(`${alert.account}-${alert.type}-${alert.market.marketId}`),
         ...alert,
       };
     case "redeemable-markets":
       return {
-        id: `${alert.account}-${alert.type}` as AlertId,
+        id: create(`${alert.account}-${alert.type}`),
         ...alert,
       };
   }
