@@ -133,8 +133,7 @@ export const marketFormDataToExtrinsicParams = (
     signer,
     proxy,
     disputeMechanism: "Authorized",
-    // todo: revert
-    // creatorFee: 0,
+    creatorFee: 0,
     oracle: form.oracle,
     period: {
       Timestamp: [Date.now(), new Date(form.endDate).getTime()],

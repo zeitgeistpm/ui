@@ -50,11 +50,7 @@ const ScalarDisputeBox = ({
   const { send, isLoading, isBroadcasting } = useExtrinsic(
     () => {
       if (!isRpcSdk(sdk) || !signer) return;
-      return sdk.api.tx.predictionMarkets.dispute(
-        market.marketId,
-        //todo: revert
-        { Categorical: [1, 1] },
-      );
+      return sdk.api.tx.predictionMarkets.dispute(market.marketId);
     },
     {
       onBroadcast: () => {},

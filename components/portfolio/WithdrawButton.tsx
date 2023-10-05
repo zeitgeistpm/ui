@@ -78,8 +78,7 @@ const createWithdrawExtrinsic = (
   return api.tx.xTokens.transfer(
     { ForeignAsset: foreignAssetId },
     amount,
-    //todo: revert
-    { V3: account } as any,
+    { V3: account },
     // { Limited: "100000000000" },
     destWeightLimit,
   );
