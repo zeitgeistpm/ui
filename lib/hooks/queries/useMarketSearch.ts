@@ -4,11 +4,14 @@ import { useSdkv2 } from "../useSdkv2";
 import { useDebounce } from "use-debounce";
 import Fuse from "fuse.js";
 
-// import {
-//   FullMarketFragment,
-//   InputMaybe,
-//   MarketWhereInput,
-// } from "@zeitgeistpm/indexer";
+import {
+  FullMarketFragment,
+  InputMaybe,
+  MarketWhereInput,
+  Exact,
+  MarketOrderByInput,
+} from "@zeitgeistpm/indexer";
+import { RequestDocument } from "graphql-request";
 
 export const marketSearchKey = "market-search";
 
@@ -34,6 +37,8 @@ export const useMarketSearch = (searchTerm: string) => {
               //   { tags_containsAny: [debouncedSearchTerm] },
             ],
           },
+          order: MarketOrderByInput.IdDesc,
+          limit: 100,
         });
         console.timeEnd("a");
 
