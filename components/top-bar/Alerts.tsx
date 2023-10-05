@@ -8,6 +8,7 @@ import {
 import { useWallet } from "lib/state/wallet";
 import { useRouter } from "next/router";
 import { Fragment, useEffect, useState } from "react";
+import { set } from "react-hook-form";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { IoMdNotificationsOutline } from "react-icons/io";
@@ -90,7 +91,7 @@ export const Alerts = () => {
               >
                 {alerts.map((alert, index) => (
                   <Menu.Item key={index}>
-                    <div className="mb-2 md:hover:scale-105 hover:ring-1 ring-[#fa8cce] rounded-md transition-transform cursor-pointer">
+                    <div className="mb-2 md:hover:scale-105 hover:ring-1 ring-[#fa8cce] rounded-md transition-all cursor-pointer">
                       {alert.type === "ready-to-report-market" ? (
                         <ReadyToReportMarketAlertItem alert={alert} />
                       ) : alert.type === "market-dispute" ? (

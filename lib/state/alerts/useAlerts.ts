@@ -6,8 +6,22 @@ import { persistentAtom } from "../util/persistent-atom";
 import { Alert, AlertId, withId } from "./types";
 
 export type UseAlerts = {
+  /**
+   * All alerts for the current account.
+   */
   alerts: Alert[];
-  setAsRead: (id: AlertId | Alert) => void;
+  /**
+   * Set an alert as read.
+   *
+   * @note
+   *   This is only possible for alerts that are marked as dismissible = true.
+   *   Alerts should only be marked as dismissible if they are not time sensitive and has not user action that will result in them being
+   *   automatically dismissed. Example: "You have markets ready to report" is not dismissible since reporting will remove them.
+   *   Whereas something like a reminder, news or add should be dismissible.
+   *
+   * @param alert - the alert to set as read.
+   */
+  setAsRead: (alert: Alert & { dismissible: true }) => void;
 };
 
 const readAlertsAtom = persistentAtom<{ read: AlertId[] }>({
@@ -36,9 +50,9 @@ export const useAlerts = (account?: string): UseAlerts => {
     if (redeemableMarkets && redeemableMarkets.length > 0) {
       add(
         withId({
-          type: "redeemable-markets",
-          markets: redeemableMarkets,
           account,
+          markets: redeemableMarkets,
+          type: "redeemable-markets",
         }),
       );
     }
@@ -47,9 +61,9 @@ export const useAlerts = (account?: string): UseAlerts => {
       marketsReadyToReport.forEach((market) => {
         add(
           withId({
-            type: "ready-to-report-market",
-            market,
             account,
+            market,
+            type: "ready-to-report-market",
           }),
         );
       });
@@ -58,9 +72,14 @@ export const useAlerts = (account?: string): UseAlerts => {
     return alerts;
   }, [readAlerts, account, marketsReadyToReport, redeemableMarkets]);
 
-  const setAsRead = (id: AlertId | Alert) => {
+  const setAsRead = (alert: Alert & { dismissible: true }) => {
+    if (!alert.dismissible)
+      return console.warn(
+        "Attempted to set a non-dismissible alert as read. Should not be reachable in the type system.",
+      );
+
     setRead((prev) => ({
-      read: [...prev.read, typeof id === "string" ? id : id.id],
+      read: [...prev.read, alert.id],
     }));
   };
 
