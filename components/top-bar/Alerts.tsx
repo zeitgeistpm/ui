@@ -70,11 +70,11 @@ export const Alerts = () => {
             <Transition
               as={Fragment}
               enter="transition ease-out duration-100"
-              enterFrom="transform translate-y-2 md:translate-y-0 md:scale-95"
+              enterFrom="transform -translate-y-2 md:translate-y-0 md:scale-95"
               enterTo="transform translate-y-0 md:scale-100"
               leave="transition ease-in translate-y-2 md:translate-y-0 duration-75"
               leaveFrom="transform translate-y-0 md:scale-100"
-              leaveTo="transform opacity-0 translate-y-2 md:translate-y-0 md:scale-95"
+              leaveTo="transform opacity-0 -translate-y-2 md:translate-y-0 md:scale-95"
             >
               <Menu.Items
                 onMouseEnter={mouseEnterMenuHandler}
