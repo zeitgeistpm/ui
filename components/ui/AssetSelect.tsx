@@ -122,16 +122,18 @@ export type AssetSelectProps = {
   options: AssetOption[];
   selectedOption?: AssetOption;
   onChange: (value: AssetOption) => void;
+  showArrowRight?: boolean;
 };
 
 const AssetSelect: React.FC<AssetSelectProps> = ({
   options,
   selectedOption,
   onChange,
+  showArrowRight = false,
 }) => {
   return (
     <Select
-      className="h-full !static pr-4"
+      className={`h-full !static  ${showArrowRight ? "pr-4" : "w-34"}`}
       isSearchable={false}
       options={options}
       unstyled={true}

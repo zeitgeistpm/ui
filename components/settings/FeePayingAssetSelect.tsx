@@ -75,6 +75,7 @@ const FeePayingAssetSelect = () => {
         <AssetSelect
           options={options}
           selectedOption={assetSelection}
+          showArrowRight={true}
           onChange={(option) => {
             setAsset(option);
             setShowSaved(true);
