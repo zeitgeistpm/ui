@@ -74,9 +74,7 @@ const FeePayingAssetSelect = () => {
       >
         <AssetSelect
           options={options}
-          selectedOption={
-            assetSelection === "Default" ? defaultSelection : assetSelection
-          }
+          selectedOption={assetSelection}
           onChange={(option) => {
             setAsset(option);
             setShowSaved(true);

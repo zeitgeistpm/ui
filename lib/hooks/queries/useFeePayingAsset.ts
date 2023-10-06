@@ -32,7 +32,6 @@ export const useFeePayingAsset = (
     ForeignAsset: 0,
   });
   const { assetSelection } = useFeePayingAssetSelection();
-  console.log(assetSelection);
 
   const enabled =
     !!nativeBalance &&
@@ -49,10 +48,11 @@ export const useFeePayingAsset = (
       nativeBalance,
       dotBalance,
       baseFee,
+      assetSelection,
     ],
     async () => {
       if (enabled) {
-        if (assetSelection === "Default") {
+        if (assetSelection.label === "Default") {
           // if user has ztg, use that to pay
           if (nativeBalance.greaterThanOrEqualTo(baseFee)) {
             return {
