@@ -590,7 +590,7 @@ const Leaderboard: NextPage<{
           </Link>
         ))}
       </div>
-      <Table columns={columns} data={tableData} />
+      <Table columns={columns} data={tableData} showHighlight={false} />
       {/* {trendingMarkets.length > 0 && (
         <div className="my-[60px]">
           <MarketScroll
