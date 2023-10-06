@@ -62,8 +62,8 @@ const FeePayingAssetSelect = () => {
         <label className="font-bold">Select asset to pay network fees</label>
         {showSaved && (
           <div className="flex gap-2 items-center ml-auto">
-            <Check size={18} className="text-green-500" />
-            <div>Saved</div>
+            <Check size={16} className="text-green-500" />
+            <div className="text-sm">Saved</div>
           </div>
         )}
       </div>
@@ -74,13 +74,15 @@ const FeePayingAssetSelect = () => {
       >
         <AssetSelect
           options={options}
-          selectedOption={assetSelection ?? defaultSelection}
+          selectedOption={
+            assetSelection === "Default" ? defaultSelection : assetSelection
+          }
           onChange={(option) => {
             setAsset(option);
             setShowSaved(true);
             setTimeout(() => {
               setShowSaved(false);
-            }, 3000);
+            }, 1000);
           }}
         />
       </div>
