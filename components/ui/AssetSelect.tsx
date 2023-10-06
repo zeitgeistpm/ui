@@ -17,8 +17,9 @@ import Select, {
 
 export type AssetOption = {
   label: string;
-  value: AssetId;
-  image: string;
+  value?: AssetId;
+  image?: string;
+  additionalText?: string;
 };
 
 const Control = ({ children, ...rest }: ControlProps<AssetOption, false>) => {
@@ -52,21 +53,25 @@ const SingleValue = (props: SingleValueProps<AssetOption, false>) => {
   const { label, image } = props.data;
   return (
     <div className="flex items-center font-semibold">
-      <Image
-        src={image}
-        width={36}
-        height={36}
-        className="mr-3"
-        alt={label}
-        quality={100}
-      />
+      {image ? (
+        <Image
+          src={image}
+          width={36}
+          height={36}
+          className="mr-3"
+          alt={label}
+          quality={100}
+        />
+      ) : (
+        <div className="w-[36px] h-[36px] rounded-full bg-ztg-blue mr-3"></div>
+      )}
       <span>{label}</span>
     </div>
   );
 };
 
 const Option = (props: OptionProps<AssetOption, false>) => {
-  const { label, value, image } = props.data;
+  const { label, value, image, additionalText } = props.data;
   const wallet = useWallet();
   const address = wallet.activeAccount?.address;
 
@@ -77,19 +82,26 @@ const Option = (props: OptionProps<AssetOption, false>) => {
       {...props}
       className="!flex items-center w-full bg-anti-flash-white rounded-md h-14 mb-2 last:mb-0 font-semibold px-4 !cursor-pointer"
     >
-      <Image
-        src={image}
-        width={36}
-        height={36}
-        className="mr-3"
-        alt={label}
-        quality={100}
-      />
+      {image ? (
+        <Image
+          src={image}
+          width={36}
+          height={36}
+          className="mr-3"
+          alt={label}
+          quality={100}
+        />
+      ) : (
+        <div className="w-[36px] h-[36px] rounded-full bg-ztg-blue mr-3"></div>
+      )}
       <span>{label}</span>
       {balance && (
         <div className="ml-auto text-xs">
           Balance: {formatNumberLocalized(balance.div(ZTG).toNumber())}
         </div>
+      )}
+      {additionalText && (
+        <div className="ml-auto text-xs">{additionalText}</div>
       )}
     </components.Option>
   );
@@ -119,7 +131,7 @@ const AssetSelect: React.FC<AssetSelectProps> = ({
 }) => {
   return (
     <Select
-      className="w-34 h-full !static"
+      className="h-full !static pr-4"
       isSearchable={false}
       options={options}
       unstyled={true}
