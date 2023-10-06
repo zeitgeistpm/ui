@@ -131,7 +131,7 @@ const IndexPage: NextPage<{
     <>
       <div
         data-testid="indexPage"
-        className="main-container pt-1 md:pt-1 relative z-1"
+        className="main-container pt-1 md:pt-1 relative z-1 overflow-x-hidden"
       >
         <BgBallGfx />
 

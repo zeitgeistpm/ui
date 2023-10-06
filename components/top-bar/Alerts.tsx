@@ -1,4 +1,5 @@
-import { Menu, Transition } from "@headlessui/react";
+import { Menu, Transition, Portal } from "@headlessui/react";
+import Modal from "components/ui/Modal";
 import {
   ReadyToReportMarketAlertData,
   RedeemableMarketsAlertData,
@@ -54,13 +55,14 @@ export const Alerts = () => {
                 </div>
               </Menu.Button>
             </div>
+
             <Transition
               as={Fragment}
               show={open && hoveringMenu}
-              enter="transition ease-out duration-100"
+              enter="transition-opacity ease-out duration-100"
               enterFrom="transform opacity-0"
               enterTo="transform opacity-1"
-              leave="transition ease-in opacity-0 duration-75"
+              leave="transition-opacity ease-in opacity-0 duration-75"
               leaveFrom="transform opacity-1"
               leaveTo="transform opacity-0 "
             >
@@ -82,18 +84,21 @@ export const Alerts = () => {
               <Menu.Items
                 onMouseEnter={mouseEnterMenuHandler}
                 onMouseLeave={mouseLeaveMenuHandler}
+                onWheelCapture={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
                 className={`
                   fixed md:absolute left-0 md:translate-x-[50%] md:left-auto p-2 md:px-4 md:max-h-[664px] 
                   overflow-y-scroll md:right-0 bottom-0 md:bottom-auto z-50 py-3 top-11 
                   md:top-auto mt-6 md:mt-6 w-full overflow-hidden h-full md:h-auto md:w-96 pb-20 md:pb-0 
                   origin-top-right divide-gray-100 md:rounded-md focus:outline-none  
-                  bg-black/20 md:bg-transparent 
-                  subtle-scroll-bar subtle-scroll-bar-on-hover 
+                  bg-black/20 md:bg-transparent subtle-scroll-bar subtle-scroll-bar-on-hover 
                 `}
               >
                 {alerts.map((alert) => (
                   <Menu.Item key={alert.id}>
-                    <div>
+                    <div className={`${!hoveringMenu && "backdrop-blur-lg"}`}>
                       {alert.type === "ready-to-report-market" ? (
                         <ReadyToReportMarketAlertItem alert={alert} />
                       ) : alert.type === "market-dispute" ? (
@@ -123,8 +128,12 @@ const AlertCard: React.FC<PropsWithChildren & { onClick?: () => void }> = ({
 }) => (
   <div className="mb-2 md:hover:scale-105 hover:ring-1 ring-[#fa8cce] rounded-md transition-all cursor-pointer">
     <div
-      className="bg-white/80 md:bg-white/50 border-1 border-solid border-black/10 backdrop-blur-lg py-3 px-4 rounded-md"
+      className={`transition-all bg-white/80 md:bg-white/60 hover:md:bg-white/80  border-1 border-solid border-black/10 py-3 px-4 rounded-md`}
       onClick={onClick}
+      style={{
+        transform: "translate3d(0,0,0)",
+        backfaceVisibility: "hidden",
+      }}
     >
       {children}
     </div>
