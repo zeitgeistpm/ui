@@ -33,7 +33,10 @@ export const Alerts = () => {
         return (
           <>
             <div className="flex gap-2">
-              <Menu.Button className="text-white font-light relative flex center gap-2">
+              <Menu.Button
+                disabled={alerts.length === 0}
+                className="text-white font-light relative flex center gap-2"
+              >
                 <div
                   className={`transition-all ${
                     hasNotifications
@@ -70,11 +73,11 @@ export const Alerts = () => {
             <Transition
               as={Fragment}
               enter="transition ease-out duration-100"
-              enterFrom="transform -translate-y-2 md:translate-y-0 md:scale-95"
-              enterTo="transform translate-y-0 md:scale-100"
-              leave="transition ease-in translate-y-2 md:translate-y-0 duration-75"
-              leaveFrom="transform translate-y-0 md:scale-100"
-              leaveTo="transform opacity-0 -translate-y-2 md:translate-y-0 md:scale-95"
+              enterFrom="transform -translate-y-2"
+              enterTo="transform translate-y-0 "
+              leave="transition ease-in translate-y-2 duration-75"
+              leaveFrom="transform translate-y-0"
+              leaveTo="transform opacity-0 -translate-y-2"
             >
               <Menu.Items
                 onMouseEnter={mouseEnterMenuHandler}
