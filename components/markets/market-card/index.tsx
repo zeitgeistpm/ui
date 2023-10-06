@@ -126,11 +126,7 @@ const MarketCardDetails = ({
               day: "numeric",
             })}`}
         </span>
-        {isEnding() && (
-          <span>
-            <span className="text-red">Ends Soon</span>
-          </span>
-        )}
+        {isEnding() && <span className="text-red ml-1">Ends Soon</span>}
         <span className="font-semibold border-l-1 border-l-black pl-1 ml-1 ">
           {rows.outcomes} outcomes{" "}
         </span>

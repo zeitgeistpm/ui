@@ -341,10 +341,12 @@ const Market: NextPage<MarketPageProps> = ({
                 <QuillViewer value={indexedMarket.description} />
               </>
             )}
-            <PoolDeployer
-              marketId={Number(marketid)}
-              onPoolDeployed={handlePoolDeployed}
-            />
+            {market && !market.pool && (
+              <PoolDeployer
+                marketId={Number(marketid)}
+                onPoolDeployed={handlePoolDeployed}
+              />
+            )}
           </div>
 
           <AddressDetails title="Oracle" address={indexedMarket.oracle} />
