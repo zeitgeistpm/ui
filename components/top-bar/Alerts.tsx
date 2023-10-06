@@ -83,7 +83,7 @@ export const Alerts = () => {
                 onMouseEnter={mouseEnterMenuHandler}
                 onMouseLeave={mouseLeaveMenuHandler}
                 className={`
-                  fixed md:absolute left-0 md:translate-x-[50%] md:left-auto p-2 md:px-4 md:max-h-[700px] 
+                  fixed md:absolute left-0 md:translate-x-[50%] md:left-auto p-2 md:px-4 md:max-h-[664px] 
                   overflow-y-scroll md:right-0 bottom-0 md:bottom-auto z-50 py-3 top-11 
                   md:top-auto mt-6 md:mt-6 w-full overflow-hidden h-full md:h-auto md:w-96 pb-20 md:pb-0 
                   origin-top-right divide-gray-100 md:rounded-md focus:outline-none  
