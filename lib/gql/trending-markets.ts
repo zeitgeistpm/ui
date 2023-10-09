@@ -6,7 +6,7 @@ import {
   ScalarRangeType,
   Sdk,
 } from "@zeitgeistpm/sdk-next";
-import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
+import { ZeitgeistPrimitivesMarketMarketCreation } from "@polkadot/types/lookup";
 import { IndexedMarketCardData } from "components/markets/market-card/index";
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
@@ -129,7 +129,7 @@ const getTrendingMarkets = async (
           marketId: number;
           img: string;
           question: string;
-          creation: MarketCreation;
+          creation: ZeitgeistPrimitivesMarketMarketCreation["type"];
           marketType: { [key: string]: string };
           categories: { color: string; name: string }[];
           outcomeAssets: string[];

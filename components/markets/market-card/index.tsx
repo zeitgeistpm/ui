@@ -1,4 +1,4 @@
-import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
+import type { ScalarRangeType } from "@zeitgeistpm/sdk-next";
 import Skeleton from "components/ui/Skeleton";
 import { motion } from "framer-motion";
 import Decimal from "decimal.js";

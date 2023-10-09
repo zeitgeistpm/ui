@@ -2,7 +2,7 @@ import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 
 import { FullContext, ScalarRangeType, Sdk } from "@zeitgeistpm/sdk-next";
-import { MarketCreation } from "@zeitgeistpm/sdk/dist/types";
+import { ZeitgeistPrimitivesMarketMarketCreation } from "@polkadot/types/lookup";
 import { IndexedMarketCardData } from "components/markets/market-card/index";
 import { ZTG } from "lib/constants";
 import { MarketOutcome, MarketOutcomes } from "lib/types/markets";
@@ -83,7 +83,7 @@ const getFeaturedMarkets = async (
           img: string;
           question: string;
           creator: string;
-          creation: MarketCreation;
+          creation: ZeitgeistPrimitivesMarketMarketCreation["type"];
           marketType: { [key: string]: string };
           scalarType: ScalarRangeType;
           categories: { color: string; name: string }[];

@@ -11,7 +11,6 @@
 // } from "@zeitgeistpm/avatara-react";
 // import { sanitizeIpfsUrl } from "@zeitgeistpm/avatara-util";
 // import { isRpcSdk } from "@zeitgeistpm/sdk-next";
-// import { ExtSigner } from "@zeitgeistpm/sdk/dist/types";
 // import { tryCatch } from "@zeitgeistpm/utility/dist/either";
 // import { fromNullable } from "@zeitgeistpm/utility/dist/option";
 // import DiscordIcon from "components/icons/DiscordIcon";

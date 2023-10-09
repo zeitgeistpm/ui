@@ -6,7 +6,7 @@ import {
   ZTG,
   swapFeeFromFloat,
 } from "@zeitgeistpm/sdk-next";
-import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
+import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 import { ChainTime } from "@zeitgeistpm/utility/dist/time";
 import Decimal from "decimal.js";
 import { BLOCK_TIME_SECONDS } from "lib/constants";

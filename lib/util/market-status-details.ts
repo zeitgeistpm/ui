@@ -1,12 +1,12 @@
-import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
+import type { ScalarRangeType } from "@zeitgeistpm/sdk-next";
 import { MarketStatus } from "@zeitgeistpm/sdk-next";
-import { MarketDispute, MarketTypeOf } from "@zeitgeistpm/sdk/dist/types";
 import { formatScalarOutcome } from "./format-scalar-outcome";
 import {
   MarketReport,
   isMarketCategoricalOutcome,
   isMarketScalarOutcome,
 } from "lib/types";
+import { MarketDispute, MarketTypeOf } from "lib/types/markets";
 
 export const getMarketStatusDetails = (
   marketType: MarketTypeOf,

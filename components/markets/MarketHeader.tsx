@@ -19,7 +19,7 @@ import { hasDatePassed } from "lib/util/hasDatePassed";
 import { FC, PropsWithChildren, useState } from "react";
 import { MarketTimer } from "./MarketTimer";
 import { MarketTimerSkeleton } from "./MarketTimer";
-import { MarketDispute, OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
+import { OutcomeReport } from "@zeitgeistpm/indexer";
 import {
   MarketEventHistory,
   useMarketEventHistory,
@@ -40,6 +40,7 @@ import {
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
 import { MarketPromotionCallout } from "./PromotionCallout";
 import { PromotedMarket } from "lib/cms/get-promoted-markets";
+import { MarketDispute } from "lib/types/markets";
 
 export const UserIdentity: FC<
   PropsWithChildren<{ user: string; className?: string }>
@@ -159,7 +160,7 @@ const MarketHistory: FC<
   }).format(marketHistory?.end?.timestamp);
   const getOutcome = (outcome: OutcomeReport) => {
     if (marketType.scalar === null) {
-      return categories[outcome["categorical"]]?.name;
+      return categories[outcome.categorical!]?.name;
     } else {
       return formatScalarOutcome(outcome["scalar"], scalarType);
     }
