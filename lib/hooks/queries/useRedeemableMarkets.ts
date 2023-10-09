@@ -76,6 +76,7 @@ export const useRedeemableMarkets = (account?: string) => {
     },
     {
       enabled: Boolean(enabled),
+      staleTime: 100_000,
     },
   );
 };

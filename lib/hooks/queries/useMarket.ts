@@ -31,6 +31,7 @@ export const useMarket = (
     },
     {
       refetchInterval: opts?.refetchInterval ?? false,
+      staleTime: 10_000,
       enabled: Boolean(
         sdk &&
           isIndexedSdk(sdk) &&
@@ -74,6 +75,7 @@ const batcher = memoize((sdk: Sdk<IndexerContext>) => {
       });
       return markets;
     },
+
     scheduler: batshit.windowScheduler(10),
     resolver: (data, query) => {
       if ("marketId" in query) {
