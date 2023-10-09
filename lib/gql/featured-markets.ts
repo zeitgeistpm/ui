@@ -1,7 +1,7 @@
 import Decimal from "decimal.js";
 import { gql, GraphQLClient } from "graphql-request";
 
-import { FullContext, ScalarRangeType, Sdk } from "@zeitgeistpm/sdk-next";
+import { FullContext, ScalarRangeType, Sdk } from "@zeitgeistpm/sdk";
 import { ZeitgeistPrimitivesMarketMarketCreation } from "@polkadot/types/lookup";
 import { IndexedMarketCardData } from "components/markets/market-card/index";
 import { ZTG } from "lib/constants";

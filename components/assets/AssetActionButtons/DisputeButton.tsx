@@ -5,7 +5,7 @@ import {
   isRpcSdk,
   Market,
   MarketOutcomeAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
 import Modal from "components/ui/Modal";

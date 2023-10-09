@@ -9,7 +9,7 @@ import {
   MarketOutcomeAssetId,
   ZTG,
   getMarketIdOf,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import TradeResult from "components/markets/TradeResult";
 import Input from "components/ui/Input";

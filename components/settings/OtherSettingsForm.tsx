@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import AddressInput, { AddressOption } from "components/ui/AddressInput";
 import FormTransactionButton from "components/ui/FormTransactionButton";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useWallet } from "lib/state/wallet";
 import { isValidPolkadotAddress } from "lib/util";

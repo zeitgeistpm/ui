@@ -1,5 +1,5 @@
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
-import { AssetId, ZTG } from "@zeitgeistpm/sdk-next";
+import { AssetId, ZTG } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { useWallet } from "lib/state/wallet";
 import { useAssetMetadata } from "./useAssetMetadata";

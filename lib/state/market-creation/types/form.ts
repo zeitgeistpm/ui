@@ -5,7 +5,7 @@ import {
   RpcContext,
   ZTG,
   swapFeeFromFloat,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 import { ChainTime } from "@zeitgeistpm/utility/dist/time";
 import Decimal from "decimal.js";

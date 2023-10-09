@@ -1,4 +1,4 @@
-import { MarketStatus, ScalarRangeType } from "@zeitgeistpm/sdk-next";
+import { MarketStatus, ScalarRangeType } from "@zeitgeistpm/sdk";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS } from "lib/constants";
 import { marketMetaFilter } from "./constants";

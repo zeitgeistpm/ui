@@ -13,7 +13,7 @@ import {
   IOScalarAssetId,
   parseAssetId,
   ZeitgeistIpfs,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import Avatar from "components/ui/Avatar";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";

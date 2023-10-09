@@ -5,7 +5,7 @@ import {
   MarketStatus,
   ScalarRangeType,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import Avatar from "components/ui/Avatar";
 import Skeleton from "components/ui/Skeleton";
 import Decimal from "decimal.js";

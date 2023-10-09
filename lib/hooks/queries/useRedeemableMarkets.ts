@@ -5,7 +5,7 @@ import {
   getMarketIdOf,
   isIndexedSdk,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import { MarketStatus } from "@zeitgeistpm/indexer";
 import { useSdkv2 } from "../useSdkv2";
 import { useAccountTokenPositions } from "./useAccountTokenPositions";

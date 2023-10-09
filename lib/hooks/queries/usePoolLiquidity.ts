@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { parseAssetId } from "@zeitgeistpm/sdk-next";
+import { parseAssetId } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useSdkv2 } from "../useSdkv2";

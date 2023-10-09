@@ -1,5 +1,5 @@
-import type { ScalarRangeType } from "@zeitgeistpm/sdk-next";
-import { MarketStatus } from "@zeitgeistpm/sdk-next";
+import type { ScalarRangeType } from "@zeitgeistpm/sdk";
+import { MarketStatus } from "@zeitgeistpm/sdk";
 import { formatScalarOutcome } from "./format-scalar-outcome";
 import {
   MarketReport,

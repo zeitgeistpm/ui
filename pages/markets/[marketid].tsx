@@ -4,7 +4,7 @@ import {
   MarketOutcomeAssetId,
   ScalarRangeType,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 import DisputeResult from "components/markets/DisputeResult";
 import { AddressDetails } from "components/markets/MarketAddresses";

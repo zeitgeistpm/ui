@@ -5,7 +5,7 @@ import {
   IOForeignAssetId,
   ScalarRangeType,
   Sdk,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import { ZeitgeistPrimitivesMarketMarketCreation } from "@polkadot/types/lookup";
 import { IndexedMarketCardData } from "components/markets/market-card/index";
 import Decimal from "decimal.js";

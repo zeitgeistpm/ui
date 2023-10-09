@@ -1,4 +1,4 @@
-import type { ScalarRangeType } from "@zeitgeistpm/sdk-next";
+import type { ScalarRangeType } from "@zeitgeistpm/sdk";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { useMemo } from "react";
 import { useResizeDetector } from "react-resize-detector";

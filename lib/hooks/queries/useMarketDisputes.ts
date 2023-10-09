@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Context, isRpcSdk, Market } from "@zeitgeistpm/sdk-next";
+import { Context, isRpcSdk, Market } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "../useSdkv2";
 
 export const marketDisputesRootKey = "market-disputes";

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { MarketStatus } from "@zeitgeistpm/indexer";
-import { isFullSdk } from "@zeitgeistpm/sdk-next";
+import { isFullSdk } from "@zeitgeistpm/sdk";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainTime } from "lib/state/chaintime";

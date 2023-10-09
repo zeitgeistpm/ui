@@ -1,4 +1,4 @@
-import { AssetId, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { AssetId, isRpcSdk } from "@zeitgeistpm/sdk";
 import { useQuery } from "@tanstack/react-query";
 
 import { useSdkv2 } from "../useSdkv2";
