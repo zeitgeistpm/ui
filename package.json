@@ -87,6 +87,7 @@
     "sharp": "^0.31.2",
     "styled-components": "^5.3.3",
     "toformat": "^2.0.0",
+    "ts-opaque": "^3.0.1",
     "uri-js": "^4.4.1",
     "use-debounce": "^7.0.1",
     "validatorjs": "^3.22.1",

@@ -33,10 +33,15 @@ module.exports = {
         "0%": { transform: "scale(0.82)", opacity: "0" },
         "100%": { transform: "scale(1)", opacity: "1" },
       },
+      "pulse-scale": {
+        "0%, 100%": { transform: "scale(1)", opacity: "0.8" },
+        "50%": { transform: "scale(1.1)", opacity: "1" },
+      },
       ...defaultTheme.keyframes,
     },
     animation: {
       "pop-in": "pop-in 0.4s cubic-bezier(.38,.39,.2,1.45) forwards",
+      "pulse-scale": "pulse-scale 1s ease-in-out infinite",
       ...defaultTheme.animation,
     },
     fontFamily: {
@@ -192,6 +197,7 @@ module.exports = {
         success: "#E8FFE4",
         info: "#E4F5FF",
         error: "#FFE6E4",
+        "ztg-gray": "#CFD7E4",
         "ztg-pink": "#DC056C",
         "tooltip-bg": "#FDF5DB",
         "maroon-base": "#3C0C0C",
