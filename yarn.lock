@@ -431,6 +431,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.21.0":
+  version: 7.23.1
+  resolution: "@babel/runtime@npm:7.23.1"
+  dependencies:
+    regenerator-runtime: ^0.14.0
+  checksum: 0cd0d43e6e7dc7f9152fda8c8312b08321cda2f56ef53d6c22ebdd773abdc6f5d0a69008de90aa41908d00e2c1facb24715ff121274e689305c858355ff02c70
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:^7.3.1":
   version: 7.22.3
   resolution: "@babel/runtime@npm:7.22.3"
@@ -3438,9 +3447,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk@npm:^2.36.1":
-  version: 2.38.0
-  resolution: "@zeitgeistpm/sdk@npm:2.38.0"
+"@zeitgeistpm/sdk@npm:2.38.1":
+  version: 2.38.1
+  resolution: "@zeitgeistpm/sdk@npm:2.38.1"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.16.0
     "@zeitgeistpm/indexer": ^3.9.0
@@ -3449,6 +3458,7 @@ __metadata:
     "@zeitgeistpm/web3.storage": ^2.12.0
     cids: ^1.1.9
     decimal.js: ^10.4.3
+    human-object-diff: ^3.0.0
     lodash-es: ^4.17.21
     lodash.memoize: ^4.1.2
     ms: ^2.1.3
@@ -3459,7 +3469,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: c15395afb1aeb482f66dc5fe3cb824ee529348fe8204de68137f8d7c37b20f7b42d8a58ce14c07381d77fec044031dbebed9e2bd939a68f32fa466639e36ec72
+  checksum: 17ad6daf7f423520a8096025817d21e336bae8737e05cd8171e9dcf4c8e64868d74cc61d607894160fe6bde024fe66ab6f119ba56925c0e2859b20b3baf1cf27
   languageName: node
   linkType: hard
 
@@ -3519,7 +3529,7 @@ __metadata:
     "@zeitgeistpm/avatara-nft-sdk": ^1.3.1
     "@zeitgeistpm/avatara-react": ^1.3.2
     "@zeitgeistpm/avatara-util": ^1.2.0
-    "@zeitgeistpm/sdk": ^2.36.1
+    "@zeitgeistpm/sdk": 2.38.1
     "@zeitgeistpm/utility": ^2.20.0
     autoprefixer: 10.2.5
     axios: ^0.21.4
@@ -5113,6 +5123,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"date-fns@npm:^2.29.3":
+  version: 2.30.0
+  resolution: "date-fns@npm:2.30.0"
+  dependencies:
+    "@babel/runtime": ^7.21.0
+  checksum: f7be01523282e9bb06c0cd2693d34f245247a29098527d4420628966a2d9aad154bd0e90a6b1cf66d37adcb769cd108cf8a7bd49d76db0fb119af5cdd13644f4
+  languageName: node
+  linkType: hard
+
 "debug@npm:4, debug@npm:4.3.4, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.3":
   version: 4.3.4
   resolution: "debug@npm:4.3.4"
@@ -5151,6 +5170,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"decamelize@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "decamelize@npm:2.0.0"
+  dependencies:
+    xregexp: 4.0.0
+  checksum: e1d8274e6e6f80654fd5b96a6a3bef50f8979df10f1ab35fe2406f567df9588640a6f29e1414bec30983275e2041fb87e858df7cfd5661ea578196989d73de31
+  languageName: node
+  linkType: hard
+
 "decimal.js-light@npm:^2.4.1":
   version: 2.5.1
   resolution: "decimal.js-light@npm:2.5.1"
@@ -5185,6 +5213,13 @@ __metadata:
   version: 0.7.0
   resolution: "dedent@npm:0.7.0"
   checksum: 87de191050d9a40dd70cad01159a0bcf05ecb59750951242070b6abf9569088684880d00ba92a955b4058804f16eeaf91d604f283929b4f614d181cd7ae633d2
+  languageName: node
+  linkType: hard
+
+"deep-diff@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "deep-diff@npm:1.0.2"
+  checksum: 9de8b5eedc1957116e1b47e4c3c4e3dbe23cb741abefc5ec8829a12e77958c689ac46888a3c35320f976cf42fb6de2b016e158facdb24d894ab5b5fdabad9b34
   languageName: node
   linkType: hard
 
@@ -5693,6 +5728,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-config-prettier@npm:^8.8.0":
+  version: 8.10.0
+  resolution: "eslint-config-prettier@npm:8.10.0"
+  peerDependencies:
+    eslint: ">=7.0.0"
+  bin:
+    eslint-config-prettier: bin/cli.js
+  checksum: 153266badd477e49b0759816246b2132f1dbdb6c7f313ca60a9af5822fd1071c2bc5684a3720d78b725452bbac04bb130878b2513aea5e72b1b792de5a69fec8
+  languageName: node
+  linkType: hard
+
 "esprima@npm:^4.0.0, esprima@npm:^4.0.1":
   version: 4.0.1
   resolution: "esprima@npm:4.0.1"
@@ -5851,6 +5897,13 @@ __metadata:
   version: 9.0.0
   resolution: "extract-files@npm:9.0.0"
   checksum: c31781d090f8d8f62cc541f1023b39ea863f24bd6fb3d4011922d71cbded70cef8191f2b70b43ec6cb5c5907cdad1dc5e9f29f78228936c10adc239091d8ab64
+  languageName: node
+  linkType: hard
+
+"fast-deep-equal@npm:^3.1.3":
+  version: 3.1.3
+  resolution: "fast-deep-equal@npm:3.1.3"
+  checksum: e21a9d8d84f53493b6aa15efc9cfd53dd5b714a1f23f67fb5dc8f574af80df889b3bce25dc081887c6d25457cce704e636395333abad896ccdec03abaf1f3f9d
   languageName: node
   linkType: hard
 
@@ -6584,6 +6637,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"human-object-diff@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "human-object-diff@npm:3.0.0"
+  dependencies:
+    date-fns: ^2.29.3
+    deep-diff: ^1.0.2
+    eslint-config-prettier: ^8.8.0
+    fast-deep-equal: ^3.1.3
+    humanize-string: ^2.1.0
+    titleize: ^2.1.0
+  checksum: e92231974c6f5cc960a5717a8266419e42d62bb55498e1a82bb1edb6312037441fc2fbc73ac759c2eb70ff3809e84ac06a16c68f255fa0700e3ee5a3cd6f489b
+  languageName: node
+  linkType: hard
+
 "human-signals@npm:^2.1.0":
   version: 2.1.0
   resolution: "human-signals@npm:2.1.0"
@@ -6597,6 +6664,15 @@ __metadata:
   dependencies:
     ms: ^2.0.0
   checksum: 9c7a74a2827f9294c009266c82031030eae811ca87b0da3dceb8d6071b9bde22c9f3daef0469c3c533cc67a97d8a167cd9fc0389350e5f415f61a79b171ded16
+  languageName: node
+  linkType: hard
+
+"humanize-string@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "humanize-string@npm:2.1.0"
+  dependencies:
+    decamelize: ^2.0.0
+  checksum: 75d6b6a12b1284e41b736eef0f99ca77609895ca6074eb314a08f2d6aefc68858003f1c5ead2027a16cab650ecbe9b92bece80f5ca99af700962647ee5f6ab56
   languageName: node
   linkType: hard
 
@@ -10894,6 +10970,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"regenerator-runtime@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "regenerator-runtime@npm:0.14.0"
+  checksum: 1c977ad82a82a4412e4f639d65d22be376d3ebdd30da2c003eeafdaaacd03fc00c2320f18120007ee700900979284fc78a9f00da7fb593f6e6eeebc673fba9a3
+  languageName: node
+  linkType: hard
+
 "regexp.prototype.flags@npm:^1.2.0, regexp.prototype.flags@npm:^1.4.3":
   version: 1.4.3
   resolution: "regexp.prototype.flags@npm:1.4.3"
@@ -11902,6 +11985,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"titleize@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "titleize@npm:2.1.0"
+  checksum: f4e6a479cba7d45fd3a0da1ced7f0c7701ce4f0b9a1751f0d561e69657a4bbd84699825c2f4184ec8b6b28570cfdc42ee4bf6fd9a4565816d6a85c87b2926940
+  languageName: node
+  linkType: hard
+
 "tmpl@npm:1.0.5":
   version: 1.0.5
   resolution: "tmpl@npm:1.0.5"
@@ -12836,6 +12926,13 @@ __metadata:
   version: 2.2.0
   resolution: "xmlchars@npm:2.2.0"
   checksum: 8c70ac94070ccca03f47a81fcce3b271bd1f37a591bf5424e787ae313fcb9c212f5f6786e1fa82076a2c632c0141552babcd85698c437506dfa6ae2d58723062
+  languageName: node
+  linkType: hard
+
+"xregexp@npm:4.0.0":
+  version: 4.0.0
+  resolution: "xregexp@npm:4.0.0"
+  checksum: ce644eb022fa3370dbf53e1b6f28d7a25dd6cca711ba463c129141429d11776a1239c604370bdcaf93c5028ff8d75cac2a10644377cb649b985c0094da5ef693
   languageName: node
   linkType: hard
 
