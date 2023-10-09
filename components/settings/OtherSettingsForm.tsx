@@ -6,6 +6,8 @@ import { isRpcSdk } from "@zeitgeistpm/sdk-next";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useWallet } from "lib/state/wallet";
 import { isValidPolkadotAddress } from "lib/util";
+import InfoPopover from "components/ui/InfoPopover";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 
 export type OtherSettingsFormProps = {};
 
@@ -57,7 +59,24 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
         reset(data);
       })}
     >
-      <label className="font-bold mb-2">Proxy Account</label>
+      <div className="flex items-center mb-2 gap-3">
+        <label className="font-bold ">Proxy Account</label>
+        <InfoPopover
+          title={
+            <h3 className="flex justify-center items-center mb-4 gap-2">
+              <AiOutlineInfoCircle />
+              Proxy Accounts
+            </h3>
+          }
+        >
+          <p>
+            Proxy accounts can be used to allow wallets to sign transactions on
+            behalf of others. This section allows you to tell this application
+            to attempt to sign transactions using the connected wallet on behalf
+            of another account.
+          </p>
+        </InfoPopover>
+      </div>
       <div className="flex flex-row p-2 mb-2">
         <input
           type="checkbox"
