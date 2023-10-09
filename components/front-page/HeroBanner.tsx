@@ -49,7 +49,7 @@ export const HeroBanner = ({
             </Link>
           </div>
           <div
-            className="py-3 px-4 w-full rounded-md flex gap-"
+            className="py-3 px-4 w-full rounded-md flex gap-2"
             style={{ backgroundColor: "rgba(28, 100, 242, 0.2)" }}
           >
             <div className="flex justify-start items-center gap-3 w-1/3">
