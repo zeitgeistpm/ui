@@ -1,11 +1,13 @@
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
-import { AssetId, ZTG } from "@zeitgeistpm/sdk";
+
+import { AssetId, IOZtgAssetId, ZTG } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { useWallet } from "lib/state/wallet";
 import { useAssetMetadata } from "./useAssetMetadata";
 import { useBalance } from "./useBalance";
 import { useChainConstants } from "./useChainConstants";
 import { useZtgBalance } from "./useZtgBalance";
+import useFeePayingAssetSelection from "lib/state/fee-paying-asset";
 
 type FeeAsset = {
   assetId: AssetId;
@@ -30,6 +32,7 @@ export const useFeePayingAsset = (
   const { data: dotBalance } = useBalance(activeAccount?.address, {
     ForeignAsset: 0,
   });
+  const { assetSelection } = useFeePayingAssetSelection();
 
   const enabled =
     !!nativeBalance &&
@@ -46,38 +49,62 @@ export const useFeePayingAsset = (
       nativeBalance,
       dotBalance,
       baseFee,
+      assetSelection,
     ],
     async () => {
       if (enabled) {
-        // if user has ztg, use that to pay
-        if (nativeBalance.greaterThanOrEqualTo(baseFee)) {
-          return {
-            assetId: { Ztg: null },
-            symbol: constants?.tokenSymbol ?? "",
-            amount: baseFee,
-            sufficientBalance: true,
-          };
-        }
+        if (assetSelection.label === "Default") {
+          // if user has ztg, use that to pay
+          if (nativeBalance.greaterThanOrEqualTo(baseFee)) {
+            return {
+              assetId: { Ztg: null },
+              symbol: constants?.tokenSymbol ?? "",
+              amount: baseFee,
+              sufficientBalance: true,
+            };
+          }
 
-        const dotFeeFactor = dotMetadata.feeFactor.div(ZTG);
-        const dotFee = baseFee.mul(dotFeeFactor).mul(foreignAssetFeeBuffer);
+          const dotFeeFactor = dotMetadata.feeFactor.div(ZTG);
+          const dotFee = baseFee.mul(dotFeeFactor).mul(foreignAssetFeeBuffer);
 
-        if (dotBalance.greaterThan(dotFee)) {
-          return {
-            assetId: {
-              ForeignAsset: 0,
-            },
-            symbol: dotMetadata.symbol,
-            amount: dotFee,
-            sufficientBalance: true,
-          };
+          if (dotBalance.greaterThan(dotFee)) {
+            return {
+              assetId: {
+                ForeignAsset: 0,
+              },
+              symbol: dotMetadata.symbol,
+              amount: dotFee,
+              sufficientBalance: true,
+            };
+          } else {
+            return {
+              assetId: { Ztg: null },
+              symbol: constants?.tokenSymbol ?? "",
+              amount: baseFee,
+              sufficientBalance: false,
+            };
+          }
         } else {
-          return {
-            assetId: { Ztg: null },
-            symbol: constants?.tokenSymbol ?? "",
-            amount: baseFee,
-            sufficientBalance: false,
-          };
+          const isNative = IOZtgAssetId.is(assetSelection.value);
+          if (isNative) {
+            return {
+              assetId: { Ztg: null },
+              symbol: constants?.tokenSymbol ?? "",
+              amount: baseFee,
+              sufficientBalance: true,
+            };
+          } else {
+            const dotFeeFactor = dotMetadata.feeFactor.div(ZTG);
+            const dotFee = baseFee.mul(dotFeeFactor).mul(foreignAssetFeeBuffer);
+            return {
+              assetId: {
+                ForeignAsset: 0,
+              },
+              symbol: dotMetadata.symbol,
+              amount: dotFee,
+              sufficientBalance: dotBalance.greaterThan(dotFee),
+            };
+          }
         }
       }
       return null;
