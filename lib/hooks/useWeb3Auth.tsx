@@ -45,21 +45,12 @@ export const useWeb3Auth = () => {
   const [web3auth, setWeb3auth] = useAtom(web3authAtom);
   const [provider, setProvider] = useAtom(providerAtom);
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
-  const [newUser, setNewUser] = useState<boolean>(false);
 
   const { selectWallet, disconnectWallet } = useWallet();
 
   useEffect(() => {
     loadWallet();
   }, [loggedIn]);
-
-  useEffect(() => {
-    const init = async () => {
-      const wallet = await getAccounts();
-      await checkNewUser(wallet?.address);
-    };
-    newUser && init();
-  }, [newUser]);
 
   const loadWallet = async () => {
     if (!provider || !loggedIn) {
@@ -78,31 +69,6 @@ export const useWeb3Auth = () => {
         selectWallet(extendedWallet);
       };
       init();
-    }
-  };
-
-  const checkNewUser = async (userAddress) => {
-    try {
-      const response = await fetch("/api/checkNewUser", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userAddress }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        console.log("Transfer successful!");
-        // Handle success (e.g., show a success message or update UI)
-      } else {
-        console.error("Error:", data.error);
-        // Handle error (e.g., show an error message or alert)
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      // Handle error (e.g., show an error message or alert)
     }
   };
 
@@ -148,7 +114,7 @@ export const useWeb3Auth = () => {
     }
   };
 
-  const signup = async () => {
+  const login = async () => {
     if (!web3auth) {
       return;
     }
@@ -162,7 +128,6 @@ export const useWeb3Auth = () => {
 
     setProvider(web3authProvider);
     setLoggedIn(true);
-    setNewUser(true);
   };
 
   const authenticateUser = async () => {
@@ -183,7 +148,6 @@ export const useWeb3Auth = () => {
     await disconnectWallet();
     setProvider(null);
     setLoggedIn(false);
-    setNewUser(false);
   };
 
   const onGetPolkadotKeypair = async () => {
@@ -213,7 +177,7 @@ export const useWeb3Auth = () => {
     loggedIn,
     loadWallet,
     initWeb3Auth,
-    signup,
+    login,
     logout,
     onGetPolkadotKeypair,
     authenticateUser,

@@ -2,22 +2,28 @@ import { BaseDotsamaWallet } from "@talismn/connect-wallets";
 import { useAccountModals } from "lib/state/account";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { supportedWallets, useWallet } from "lib/state/wallet";
+import { useWeb3Auth } from "lib/hooks/useWeb3Auth";
 
 import { useEffect } from "react";
 import { Download } from "react-feather";
 
 const WalletSelect = () => {
   const { selectWallet, errors, accounts, connected } = useWallet();
+  const { login } = useWeb3Auth();
   const accountModals = useAccountModals();
 
   const wasConnected = usePrevious(connected);
 
   const handleSelectWallet = async (wallet: BaseDotsamaWallet) => {
-    if (!wallet.installed) {
-      window.open(wallet.installUrl);
+    if (wallet.extensionName === "web3auth") {
+      login();
     } else {
-      selectWallet(wallet.extensionName);
-      accountModals.closeWalletSelect();
+      if (!wallet.installed) {
+        window.open(wallet.installUrl);
+      } else {
+        selectWallet(wallet.extensionName);
+        accountModals.closeWalletSelect();
+      }
     }
   };
 
