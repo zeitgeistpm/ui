@@ -20,12 +20,6 @@ export enum EMarketStatus {
 
 export type MarketStatus = keyof typeof EMarketStatus;
 
-export type Report = {
-  at: number;
-  by: string;
-  outcome: OutcomeReport;
-};
-
 export type MarketDispute = {
   at: number;
   by: string;
