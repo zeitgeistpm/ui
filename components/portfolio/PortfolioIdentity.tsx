@@ -4,6 +4,7 @@ import TwitterIcon from "components/icons/TwitterIcon";
 import Avatar from "components/ui/Avatar";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { useWallet } from "lib/state/wallet";
+import { shortenAddress } from "lib/util";
 import { FaNetworkWired } from "react-icons/fa";
 
 const PortfolioIdentity = ({ address }: { address: string }) => {
@@ -16,16 +17,26 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
     proxy && proxy.enabled && proxy.address === address,
   );
 
+  let name = identity?.displayName;
+
+  if (!name) {
+    const ownedAccount = wallet.accounts.find((a) => a.address === address);
+    if (ownedAccount) {
+      name = ownedAccount.name;
+    } else {
+      name = shortenAddress(address);
+    }
+  }
+
   return (
     <div className="flex flex-col justify-center w-full gap-y-2 sm:gap-y-5 mb-5">
       <div className="flex gap-2 sm:gap-5 flex-col sm:flex-row">
         <div>{address && <Avatar address={address} size={100} />}</div>
         <div className="flex flex-col justify-center">
-          {identity?.displayName && (
-            <div className=" font-extrabold text-[28px] sm:text-[38px]">
-              {identity.displayName}
-            </div>
-          )}
+          <div className=" font-extrabold text-[28px] sm:text-[38px]">
+            {name}
+          </div>
+
           <div className="text-ztg-12-150 sm:text-ztg-16-150">{address}</div>
         </div>
       </div>
