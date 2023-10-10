@@ -14,9 +14,14 @@ import {
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { InjectedAccount } from "@polkadot/extension-inject/types";
 import { isPresent } from "lib/types";
+import { KeyringPair } from "@polkadot/keyring/types";
+import { web3AuthInstance } from "../hooks/useWeb3Auth";
+
 import { PollingTimeout, poll } from "lib/util/poll";
 
 const DAPP_NAME = "zeitgeist";
+
+export type ExtendedKeyringPair = KeyringPair & { extensionName?: string };
 
 export type UseWallet = WalletState & {
   /**
@@ -204,6 +209,7 @@ export const supportedWallets = [
   new PolkadotjsWallet(),
   new SubWallet(),
   new TalismanWallet(),
+  web3AuthInstance,
 ];
 
 let accountsSubscriptionUnsub: VoidFunction | undefined | null;
@@ -217,7 +223,19 @@ let accountsSubscriptionUnsub: VoidFunction | undefined | null;
  */
 const enableWallet = async (walletId: string) => {
   if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
-
+  if (walletId?.extensionName === "web3auth") {
+    store.set(walletAtom, (state) => {
+      return {
+        ...state,
+        connected: true,
+        accounts: [{ address: walletId?.address }] ?? [],
+        wallet: {
+          ...walletId,
+        },
+      };
+    });
+    return true;
+  }
   const wallet = supportedWallets.find((w) => w.extensionName === walletId);
 
   if (!isPresent(wallet)) {
@@ -322,12 +340,28 @@ export const useWallet = (): UseWallet => {
   const [userConfig, setUserConfig] = useAtom(userConfigAtom);
   const [walletState, setWalletState] = useAtom(walletAtom);
 
-  const selectWallet = (wallet: BaseDotsamaWallet | string) => {
+  const selectWallet = (
+    wallet: BaseDotsamaWallet | KeyringPair | WalletState | any, //TODO: fix type
+  ) => {
+    const userData =
+      wallet.extensionName === "web3auth"
+        ? {
+            walletId: wallet,
+            selectedAddress: wallet?.address,
+          }
+        : { ...userConfig };
     setUserConfig({
-      ...userConfig,
-      walletId: isString(wallet) ? wallet : wallet.extensionName,
+      ...userData,
+      walletId:
+        isString(wallet) || wallet.extensionName === "web3auth"
+          ? wallet
+          : wallet.extensionName,
     });
-    enableWallet(isString(wallet) ? wallet : wallet.extensionName);
+    enableWallet(
+      isString(wallet) || wallet.extensionName === "web3auth"
+        ? wallet
+        : wallet.extensionName,
+    );
   };
 
   const disconnectWallet = () => {
@@ -341,12 +375,13 @@ export const useWallet = (): UseWallet => {
     if (
       walletState.wallet == null ||
       !activeAccount ||
-      !walletState.wallet.signer
+      (!walletState.wallet.signer &&
+        walletState.wallet.extensionName !== "web3auth")
     )
       return;
     return {
       address: activeAccount.address,
-      signer: walletState.wallet.signer,
+      signer: walletState.wallet.signer ?? walletState.wallet,
     };
   };
 

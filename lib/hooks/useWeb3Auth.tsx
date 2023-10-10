@@ -7,6 +7,34 @@ import { useWallet } from "lib/state/wallet";
 import { useAtom } from "jotai";
 import { atom } from "jotai";
 import { SafeEventEmitterProvider } from "@web3auth/base";
+import { BaseDotsamaWallet } from "@talismn/connect-wallets";
+
+//Web3 Auth Instance for Wallet Select Details
+class Web3Auth extends BaseDotsamaWallet {
+  constructor({ extensionName, title, installUrl, logo }) {
+    super();
+    this.extensionName = extensionName;
+    this.title = title;
+    this.installUrl = installUrl;
+    this.logo = logo;
+  }
+}
+
+const extensionName = "web3auth";
+const title = "Web 3 Auth";
+const installUrl = "";
+const logoSrc = "/web3auth.svg";
+const logoAlt = "web 3 auth";
+
+export const web3AuthInstance = new Web3Auth({
+  extensionName,
+  title,
+  installUrl,
+  logo: {
+    src: logoSrc,
+    alt: logoAlt,
+  },
+});
 
 export const web3authAtom = atom<Web3Auth | null>(null);
 export const providerAtom = atom<SafeEventEmitterProvider | null>(null);

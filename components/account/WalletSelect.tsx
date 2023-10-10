@@ -26,13 +26,13 @@ const WalletSelect = () => {
       accountModals.openAccountSelect();
     }
   }, [wasConnected, connected, accounts, errors]);
-
   return (
     <div className="flex flex-col">
       <div className="font-bold text-ztg-16-150 text-black mb-3">
         Connect Wallet
       </div>
       {supportedWallets.map((wallet, idx) => {
+        console.log(wallet);
         const error = errors.find(
           (e) => e.extensionName === wallet.extensionName,
         );
@@ -42,7 +42,7 @@ const WalletSelect = () => {
             <div
               className={
                 "flex flex-row h-ztg-64 items-center rounded-ztg-12 bg-sky-100 dark:bg-sky-700 px-ztg-12 cursor-pointer " +
-                (idx < 2 ? "mb-ztg-12 " : "")
+                (idx < 3 ? "mb-ztg-12 " : "")
               }
               onClick={() => {
                 handleSelectWallet(wallet);
@@ -50,13 +50,13 @@ const WalletSelect = () => {
             >
               <img
                 className="w-ztg-32 h-ztg-32 text-ztg-12-120 center mr-ztg-10"
-                alt={wallet.logo.alt}
-                src={wallet.logo.src}
+                alt={wallet.logo?.alt}
+                src={wallet.logo?.src}
               />
               <div className="flex items-center  text-ztg-18-150">
                 {wallet.title}
               </div>
-              {!wallet.installed && (
+              {!wallet.installed && wallet.extensionName !== "web3auth" && (
                 <div className="ml-auto">
                   <Download size={24} />
                 </div>
