@@ -5,6 +5,7 @@ import { isExtSigner, unsubOrWarns } from "@zeitgeistpm/sdk/dist/util";
 import type { ApiPromise } from "@polkadot/api";
 
 import { UseNotifications } from "lib/state/notifications";
+import { result } from "lodash";
 
 type GenericCallback = (...args: any[]) => void;
 
@@ -106,7 +107,7 @@ export const extrinsicCallback = ({
 
 export const signAndSend = async (
   tx: SubmittableExtrinsic<"promise">,
-  signer: KeyringPairOrExtSigner,
+  signer: KeyringPairOrExtSigner | any,
   cb?: GenericCallback,
   foreignAssetNumber?: number,
 ) => {
@@ -117,7 +118,6 @@ export const signAndSend = async (
     _unsub: any,
   ) => {
     const { events, status } = result;
-
     if (status.isInBlock) {
       events.forEach(({ phase, event: { data, method, section } }) => {
         console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
@@ -136,24 +136,43 @@ export const signAndSend = async (
   return new Promise(async (resolve, reject) => {
     try {
       if (isExtSigner(signer)) {
-        const unsub = await tx.signAndSend(
-          signer.address,
-          {
-            signer: signer.signer,
-            ...(foreignAssetNumber != null
-              ? { assetId: foreignAssetNumber }
-              : {}),
-          },
-          (result) => {
-            cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
-          },
-        );
+        if (signer?.signer?.extensionName === "web3auth") {
+          const unsub = await tx.signAndSend(
+            signer.signer,
+            {
+              ...(foreignAssetNumber != null
+                ? { assetId: foreignAssetNumber }
+                : {}),
+            },
+            (result) => {
+              cb
+                ? cb(result, unsub)
+                : _callback(result, resolve, reject, unsub);
+            },
+          );
+        } else {
+          const unsub = await tx.signAndSend(
+            signer.address,
+            {
+              signer: signer.signer,
+              ...(foreignAssetNumber != null
+                ? { assetId: foreignAssetNumber }
+                : {}),
+            },
+            (result) => {
+              cb
+                ? cb(result, unsub)
+                : _callback(result, resolve, reject, unsub);
+            },
+          );
+        }
       } else {
         const unsub = await tx.signAndSend(signer, (result) => {
           cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
         });
       }
     } catch (error) {
+      console.log(error);
       reject(error);
     }
   });
