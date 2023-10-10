@@ -87,7 +87,7 @@ export const useWeb3Auth = () => {
         const web3authInstance = new Web3Auth({
           clientId,
           chainConfig,
-          web3AuthNetwork: "cyan",
+          web3AuthNetwork: "sapphire_devnet",
           uiConfig: {
             loginMethodsOrder: [
               "google",
@@ -97,7 +97,7 @@ export const useWeb3Auth = () => {
               "twitch",
               "email_passwordless",
             ],
-            appName: "WSX",
+            appName: "Zeitgeist",
             mode: "dark",
             logoLight: "https://web3auth.io/images/w3a-L-Favicon-1.svg",
             logoDark: "https://web3auth.io/images/w3a-D-Favicon-1.svg",

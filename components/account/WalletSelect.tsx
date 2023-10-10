@@ -38,7 +38,6 @@ const WalletSelect = () => {
         Connect Wallet
       </div>
       {supportedWallets.map((wallet, idx) => {
-        console.log(wallet);
         const error = errors.find(
           (e) => e.extensionName === wallet.extensionName,
         );

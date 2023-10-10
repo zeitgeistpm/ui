@@ -13,6 +13,9 @@ import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { hotjar } from "react-hotjar";
 
+//web3auth
+import { useWeb3Auth } from "lib/hooks/useWeb3Auth";
+
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
 
@@ -26,6 +29,7 @@ const isProduction =
 const MyApp = ({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
   const router = useRouter();
+  const { initWeb3Auth, web3auth } = useWeb3Auth();
 
   useEffect(() => {
     if (!isProduction) {
@@ -54,6 +58,15 @@ const MyApp = ({ Component, pageProps }) => {
 
     return () =>
       router.events.off("routeChangeComplete", onRouteChangeComplete);
+  }, []);
+
+  useEffect(() => {
+    if (!web3auth) {
+      const init = async () => {
+        await initWeb3Auth();
+      };
+      init();
+    }
   }, []);
 
   return (
