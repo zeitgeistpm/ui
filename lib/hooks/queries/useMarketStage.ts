@@ -27,6 +27,7 @@ export const useMarketStage = (market?: Market<Context>) => {
     },
     {
       enabled: Boolean(sdk && isRpcSdk(sdk) && market && now),
+      staleTime: 10_000,
     },
   );
 };

@@ -24,6 +24,7 @@ export const useCategoryCounts = () => {
     {
       enabled: Boolean(sdk && isIndexedSdk(sdk)),
       keepPreviousData: true,
+      staleTime: 100_000,
     },
   );
 
