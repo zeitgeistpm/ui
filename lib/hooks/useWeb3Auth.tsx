@@ -10,7 +10,7 @@ import { SafeEventEmitterProvider } from "@web3auth/base";
 import { BaseDotsamaWallet } from "@talismn/connect-wallets";
 
 //Web3 Auth Instance for Wallet Select Details
-class Web3Auth extends BaseDotsamaWallet {
+class Web3AuthWallet extends BaseDotsamaWallet {
   constructor({ extensionName, title, installUrl, logo }) {
     super();
     this.extensionName = extensionName;
@@ -26,7 +26,7 @@ const installUrl = "";
 const logoSrc = "/web3auth.svg";
 const logoAlt = "web 3 auth";
 
-export const web3AuthInstance = new Web3Auth({
+export const web3AuthInstance = new Web3AuthWallet({
   extensionName,
   title,
   installUrl,
