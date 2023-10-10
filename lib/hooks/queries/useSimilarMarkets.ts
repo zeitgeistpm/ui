@@ -60,6 +60,7 @@ export const useSimilarMarkets = (marketId?: number, limit = 2) => {
     },
     {
       enabled: Boolean(enabled),
+      staleTime: Infinity,
     },
   );
 

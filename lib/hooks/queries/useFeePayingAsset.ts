@@ -43,8 +43,7 @@ export const useFeePayingAsset = (
   const query = useQuery(
     [
       feePayingAssetKey,
-      activeAccount,
-      activeAccount,
+      activeAccount?.address,
       nativeBalance,
       dotBalance,
       baseFee,

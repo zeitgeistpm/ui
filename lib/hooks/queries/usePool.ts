@@ -17,6 +17,7 @@ export const usePool = (getPoolQuery?: PoolGetQuery) => {
     },
     {
       enabled: Boolean(sdk && getPoolQuery && isIndexedSdk(sdk)),
+      staleTime: 10_000,
     },
   );
 

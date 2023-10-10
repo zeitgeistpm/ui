@@ -18,6 +18,7 @@ export const useMarketDisputes = (market: Market<Context> | number) => {
     },
     {
       enabled: Boolean(sdk && isRpcSdk(sdk)),
+      staleTime: 100_000,
     },
   );
   return query;

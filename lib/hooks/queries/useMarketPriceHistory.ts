@@ -4,7 +4,7 @@ import { TimeUnit } from "components/ui/TimeFilters";
 import { gql, GraphQLClient } from "graphql-request";
 import { useSdkv2 } from "../useSdkv2";
 
-export const marketPriceHistoryKey = "market-price-histroy";
+export const marketPriceHistoryKey = "market-price-history";
 
 const priceHistoryQuery = gql`
   query PriceHistory(
@@ -56,6 +56,7 @@ export const useMarketPriceHistory = (
       enabled: Boolean(
         sdk && marketId != null && timeUnit && timeValue && startTime,
       ),
+      staleTime: 10_000,
     },
   );
 

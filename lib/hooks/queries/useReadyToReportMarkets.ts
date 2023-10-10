@@ -43,6 +43,7 @@ export const useReadyToReportMarkets = (account?: string) => {
     {
       enabled: Boolean(enabled),
       refetchInterval: 1000 * 60,
+      staleTime: Infinity,
     },
   );
 };

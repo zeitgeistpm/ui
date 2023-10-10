@@ -28,6 +28,7 @@ export const useAccountTokenPositions = (address?: string) => {
       keepPreviousData: true,
       enabled: Boolean(sdk && isIndexedSdk(sdk) && address),
       refetchInterval: 12 * 1000,
+      staleTime: Infinity,
     },
   );
 };

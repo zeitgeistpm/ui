@@ -5,7 +5,7 @@ import { MarketEvent } from "lib/gql/market-history";
 import { useMarket } from "./useMarket";
 import { getMarketHistory } from "lib/gql/market-history";
 
-export const marketsEventsRootQuery = "marketsEvents";
+export const marketsEventsRootQuery = "market-events";
 
 export type MarketEventHistory = {
   start: MarketEvent;
@@ -63,6 +63,7 @@ export const useMarketEventHistory = (
     },
     {
       enabled: Boolean(sdk && isIndexedSdk(sdk) && isRpcSdk(sdk) && market),
+      staleTime: 10_000,
     },
   );
 };

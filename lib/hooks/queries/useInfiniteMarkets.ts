@@ -125,6 +125,7 @@ export const useInfiniteMarkets = (
           );
         });
     },
+    staleTime: 10_000,
   });
   return query;
 };

@@ -65,6 +65,7 @@ export const useIdentity = (address?: string) => {
     },
     {
       enabled: Boolean(sdk && isRpcSdk(sdk)),
+      staleTime: 100_000,
     },
   );
 
