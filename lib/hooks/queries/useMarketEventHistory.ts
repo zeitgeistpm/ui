@@ -1,5 +1,5 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { isRpcSdk, isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk, isIndexedSdk } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "../useSdkv2";
 import { MarketEvent } from "lib/gql/market-history";
 import { useMarket } from "./useMarket";

@@ -1,4 +1,4 @@
-import { isRpcSdk, parseAssetId } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk, parseAssetId } from "@zeitgeistpm/sdk";
 import Input from "components/ui/Input";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";

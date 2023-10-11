@@ -1,6 +1,6 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk } from "@zeitgeistpm/sdk";
 import { ZTG } from "lib/constants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsicFee } from "lib/hooks/queries/useExtrinsicFee";

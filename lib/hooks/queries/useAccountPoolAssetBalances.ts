@@ -6,7 +6,7 @@ import {
   isRpcSdk,
   parseAssetId,
   Pool,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
 import { FullPoolFragment } from "@zeitgeistpm/indexer";

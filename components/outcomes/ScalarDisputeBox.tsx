@@ -1,4 +1,4 @@
-import { IndexerContext, isRpcSdk, Market } from "@zeitgeistpm/sdk-next";
+import { IndexerContext, isRpcSdk, Market } from "@zeitgeistpm/sdk";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";

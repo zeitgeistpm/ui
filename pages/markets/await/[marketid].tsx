@@ -1,5 +1,5 @@
 import { PollingTimeout, poll } from "@zeitgeistpm/avatara-util";
-import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import { isIndexedSdk } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { NextPage } from "next";
 import { useRouter } from "next/router";

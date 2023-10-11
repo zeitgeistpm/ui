@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { IndexerContext, isIndexedSdk, Sdk } from "@zeitgeistpm/sdk-next";
+import { IndexerContext, isIndexedSdk, Sdk } from "@zeitgeistpm/sdk";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { memoize } from "lodash-es";
 import * as batshit from "@yornaath/batshit";

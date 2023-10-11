@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { isIndexedSdk, PoolGetQuery } from "@zeitgeistpm/sdk-next";
+import { isIndexedSdk, PoolGetQuery } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "../useSdkv2";
 
 export const poolsRootKey = "pools";

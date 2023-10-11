@@ -1,6 +1,6 @@
 // run with the command  e.g `ts-node -s --transpile-only --esm scripts/mts/getSpotPrices.mts 65 --at 1944439`
 import { Command } from "commander";
-import { ZeitgeistIpfs, createRpcContext } from "@zeitgeistpm/sdk-next";
+import { ZeitgeistIpfs, createRpcContext } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 
 const program = new Command();
