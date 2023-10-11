@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk";
+import Decimal from "decimal.js";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 
 export const jurorsIdRootKey = "jurors";
 
-export const useJurors = () => {
+export const useParticipants = () => {
   const [sdk, id] = useSdkv2();
 
   const enabled = !!sdk && isRpcSdk(sdk);
@@ -17,12 +18,21 @@ export const useJurors = () => {
 
       const jurors = res.map(([address, details]) => {
         const unwrappedDetails = details.unwrapOr(undefined);
+        console.log(unwrappedDetails?.delegations.isSome);
+
+        const delegations = unwrappedDetails?.delegations
+          .unwrapOr(null)
+          ?.map((d) => d.toString());
+
         return {
           address: (address.toHuman() as [string])[0],
-          stake: unwrappedDetails?.stake.toNumber(),
-          prepareExitAt: unwrappedDetails?.prepareExitAt.toString(),
+          stake: new Decimal(unwrappedDetails?.stake.toString() ?? 0),
+          prepareExit: unwrappedDetails?.prepareExitAt.isSome,
+          type: unwrappedDetails?.delegations.isSome
+            ? ("Delegator" as const)
+            : ("Juror" as const),
           activeLock: unwrappedDetails?.activeLock.toNumber(),
-          delegations: unwrappedDetails?.delegations.toString(),
+          delegations: delegations,
         };
       });
 

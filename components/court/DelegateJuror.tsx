@@ -1,5 +1,6 @@
 import { Dialog } from "@headlessui/react";
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk";
+import Avatar from "components/ui/Avatar";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Modal from "components/ui/Modal";
@@ -11,6 +12,7 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
+import { shortenAddress } from "lib/util";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -41,13 +43,13 @@ const DelegateButton = ({ address }: { address: string }) => {
 
       return sdk.api.tx.court.delegate(
         new Decimal(amount).mul(ZTG).toFixed(0),
-        [], // todo: what's this?
+        [address],
       );
     },
     {
       onSuccess: () => {
         notificationStore.pushNotification(
-          `Successfully delegated to ${address} `,
+          `Successfully delegated to ${shortenAddress(address, 5, 5)} `,
           {
             type: "Success",
           },
@@ -89,7 +91,11 @@ const DelegateButton = ({ address }: { address: string }) => {
       </SecondaryButton>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
-          <h3 className="mb-8">Delegate to {address}</h3>
+          <h3 className="mb-8">Delegate to</h3>
+          <div className="flex items-center gap-2 text-xxs">
+            <Avatar address={address} />
+            <span>{address}</span>
+          </div>
           <div className="flex flex-col w-full items-center gap-8 mt-[20px] text-ztg-18-150 font-semibold">
             <form
               onSubmit={handleSubmit(onSubmit)}
@@ -113,6 +119,11 @@ const DelegateButton = ({ address }: { address: string }) => {
                           .toFixed(3)}`;
                       } else if (value <= 0) {
                         return "Value cannot be zero or less";
+                      } else if (
+                        constants?.court.minJurorStake &&
+                        value < constants?.court.minJurorStake
+                      ) {
+                        return `Stake cannot be less than ${constants?.court.minJurorStake} ${constants.tokenSymbol}`;
                       }
                     },
                   })}
