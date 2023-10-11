@@ -1,5 +1,5 @@
 import { encodeAddress } from "@polkadot/keyring";
-import { ZTG } from "@zeitgeistpm/sdk-next";
+import { ZTG } from "@zeitgeistpm/sdk";
 import CopyIcon from "components/ui/CopyIcon";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";

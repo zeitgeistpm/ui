@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Decimal from "decimal.js";

@@ -5,7 +5,7 @@ import {
   isRpcSdk,
   parseAssetId,
   swapFeeFromFloat,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";

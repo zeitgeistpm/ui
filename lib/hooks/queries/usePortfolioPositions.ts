@@ -17,7 +17,7 @@ import {
   IOForeignAssetId,
   IOCategoricalAssetId,
   IOScalarAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import Decimal from "decimal.js";
 import {

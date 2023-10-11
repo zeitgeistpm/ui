@@ -1,4 +1,4 @@
-import { AssetId } from "@zeitgeistpm/sdk-next";
+import { AssetId } from "@zeitgeistpm/sdk";
 import { atom, getDefaultStore, useAtom } from "jotai";
 
 type QueueItem = {

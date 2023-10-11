@@ -7,7 +7,7 @@ import {
   Market,
   MarketOutcomeAssetId,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import TransactionButton from "components/ui/TransactionButton";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import {

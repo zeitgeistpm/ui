@@ -1,6 +1,6 @@
 import { gql } from "graphql-request";
 import { marketMetaFilter } from "./constants";
-import { IndexerContext, Sdk } from "@zeitgeistpm/sdk-next";
+import { IndexerContext, Sdk } from "@zeitgeistpm/sdk";
 
 const marketHeaderQuery = gql`
   query MarketTransactionHeader($marketIds: [Int!]) {

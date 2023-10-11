@@ -1,4 +1,4 @@
-import { BaseAssetId, FullContext, Sdk, ZTG } from "@zeitgeistpm/sdk-next";
+import { BaseAssetId, FullContext, Sdk, ZTG } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { fetchAllPages } from "lib/util/fetch-all-pages";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
