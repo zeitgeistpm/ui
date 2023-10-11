@@ -12,7 +12,7 @@ const Modal = ({
 }) => {
   return (
     <Transition appear show={open} as={Fragment}>
-      <Dialog open={true} onClose={onClose} className="relative z-ztg-40">
+      <Dialog open={true} onClose={onClose} className="relative z-ztg-50">
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-200"
@@ -35,7 +35,7 @@ const Modal = ({
           leaveTo="opacity-0 scale-95"
         >
           <div
-            className={`fixed w-screen inset-0 flex items-center justify-center p-4`}
+            className={`fixed w-screen inset-0 flex items-center justify-center p-4 z-50`}
           >
             {children}
           </div>

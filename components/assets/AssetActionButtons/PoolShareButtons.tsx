@@ -12,7 +12,7 @@ import {
   getIndexOf,
   isRpcSdk,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useWallet } from "lib/state/wallet";

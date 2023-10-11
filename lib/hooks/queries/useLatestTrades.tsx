@@ -7,7 +7,7 @@ import {
   IOMarketOutcomeAssetId,
   isIndexedSdk,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { BLOCK_TIME_SECONDS } from "lib/constants";
 import { getMarketHeaders, MarketHeader } from "lib/gql/market-header";

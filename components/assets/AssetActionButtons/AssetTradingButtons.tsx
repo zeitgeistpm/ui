@@ -1,5 +1,5 @@
 import { Dialog } from "@headlessui/react";
-import { ScalarAssetId, CategoricalAssetId } from "@zeitgeistpm/sdk-next";
+import { ScalarAssetId, CategoricalAssetId } from "@zeitgeistpm/sdk";
 import TradeForm from "components/trade-form";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";

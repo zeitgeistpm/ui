@@ -1,5 +1,5 @@
 import { Tab } from "@headlessui/react";
-import { getIndexOf } from "@zeitgeistpm/sdk-next";
+import { getIndexOf } from "@zeitgeistpm/sdk";
 import BadgesList from "components/avatar/BadgesList";
 import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
@@ -102,7 +102,7 @@ const Portfolio: NextPageWithLayout = () => {
     marketPositionsByMarket && newAssetsQueued.length !== 0;
 
   return (
-    <div className="">
+    <div className="mt-8">
       {address && <PortfolioIdentity address={address} />}
       <div className="mb-[40px]">
         <PortfolioBreakdown

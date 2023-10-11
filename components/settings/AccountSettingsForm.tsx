@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk } from "@zeitgeistpm/sdk";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import { identityRootKey } from "lib/hooks/queries/useIdentity";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";

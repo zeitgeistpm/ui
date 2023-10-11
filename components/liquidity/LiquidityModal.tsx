@@ -3,7 +3,7 @@ import {
   getIndexOf,
   IOMarketOutcomeAssetId,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { useAccountAssetBalances } from "lib/hooks/queries/useAccountAssetBalances";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";

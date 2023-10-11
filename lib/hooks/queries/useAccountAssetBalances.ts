@@ -1,6 +1,6 @@
 import { OrmlTokensAccountData } from "@polkadot/types/lookup";
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
-import { AssetId, isRpcSdk, RpcContext } from "@zeitgeistpm/sdk-next";
+import { AssetId, isRpcSdk, RpcContext } from "@zeitgeistpm/sdk";
 import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";
 import { useMemo } from "react";

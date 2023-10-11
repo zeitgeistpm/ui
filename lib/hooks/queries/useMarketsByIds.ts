@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import { isIndexedSdk } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "../useSdkv2";
 import { marketsRootQuery, UseMarketFilter } from "./useMarket";
 import { marketMetaFilter } from "./constants";

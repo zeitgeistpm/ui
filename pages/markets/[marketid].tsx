@@ -4,8 +4,7 @@ import {
   MarketOutcomeAssetId,
   ScalarRangeType,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
-import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
+} from "@zeitgeistpm/sdk";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 import DisputeResult from "components/markets/DisputeResult";
 import { AddressDetails } from "components/markets/MarketAddresses";
@@ -13,7 +12,6 @@ import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import MarketChart from "components/markets/MarketChart";
 import MarketHeader from "components/markets/MarketHeader";
 import PoolDeployer from "components/markets/PoolDeployer";
-import { MarketPromotionCallout } from "components/markets/PromotionCallout";
 import ReportResult from "components/markets/ReportResult";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
@@ -25,11 +23,8 @@ import Skeleton from "components/ui/Skeleton";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
-import {
-  PromotedMarket,
-  getMarketPromotion,
-} from "lib/cms/get-promoted-markets";
-import { ZTG, graphQlEndpoint } from "lib/constants";
+import { PromotedMarket } from "lib/cms/get-promoted-markets";
+import { ZTG, environment, graphQlEndpoint } from "lib/constants";
 import {
   MarketPageIndexedData,
   getMarket,
@@ -52,12 +47,13 @@ import {
   isMarketCategoricalOutcome,
   isValidMarketReport,
 } from "lib/types";
+import { MarketDispute } from "lib/types/markets";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 
@@ -94,9 +90,12 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const client = new GraphQLClient(graphQlEndpoint);
 
-  const [market, promotionData] = await Promise.all([
+  const [
+    market,
+    // promotionData
+  ] = await Promise.all([
     getMarket(client, params.marketid),
-    getMarketPromotion(Number(params.marketid)),
+    // getMarketPromotion(Number(params.marketid)),
   ]);
 
   const chartSeries: ChartSeries[] = market?.categories?.map(
@@ -121,9 +120,12 @@ export async function getStaticProps({ params }) {
       indexedMarket: market ?? null,
       chartSeries: chartSeries ?? null,
       resolutionTimestamp: resolutionTimestamp ?? null,
-      promotionData,
+      promotionData: null,
     },
-    revalidate: 1 * 60, //1min
+    revalidate:
+      environment === "production"
+        ? 5 * 60 //5min
+        : 60 * 60,
   };
 }
 
@@ -248,7 +250,7 @@ const Market: NextPage<MarketPageProps> = ({
   }
 
   return (
-    <div className="">
+    <div className="mt-6">
       <div className="flex flex-auto gap-12 relative">
         <div className="flex-1">
           <MarketMeta market={indexedMarket} />
@@ -328,17 +330,19 @@ const Market: NextPage<MarketPageProps> = ({
             />
           </div>
 
-          <div className="mb-12">
+          <div className="mb-12 max-w-[90vw]">
             {indexedMarket.description?.length > 0 && (
               <>
                 <h3 className="text-2xl mb-5">About Market</h3>
                 <QuillViewer value={indexedMarket.description} />
               </>
             )}
-            <PoolDeployer
-              marketId={Number(marketid)}
-              onPoolDeployed={handlePoolDeployed}
-            />
+            {market && !market.pool && (
+              <PoolDeployer
+                marketId={Number(marketid)}
+                onPoolDeployed={handlePoolDeployed}
+              />
+            )}
           </div>
 
           <AddressDetails title="Oracle" address={indexedMarket.oracle} />

@@ -22,6 +22,7 @@ export const useAvatarParts = (
     {
       enabled,
       keepPreviousData: true,
+      staleTime: 100_000,
     },
   );
 };

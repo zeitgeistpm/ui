@@ -1,4 +1,4 @@
-import type { ScalarRangeType } from "@zeitgeistpm/sdk/dist/types";
+import type { ScalarRangeType } from "@zeitgeistpm/sdk";
 import Skeleton from "components/ui/Skeleton";
 import { motion } from "framer-motion";
 import Decimal from "decimal.js";
@@ -15,7 +15,7 @@ import {
   IOBaseAssetId,
   IOForeignAssetId,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import Image from "next/image";
 import MarketImage from "components/ui/MarketImage";
@@ -126,11 +126,7 @@ const MarketCardDetails = ({
               day: "numeric",
             })}`}
         </span>
-        {isEnding() && (
-          <span>
-            <span className="text-red">Ends Soon</span>
-          </span>
-        )}
+        {isEnding() && <span className="text-red ml-1">Ends Soon</span>}
         <span className="font-semibold border-l-1 border-l-black pl-1 ml-1 ">
           {rows.outcomes} outcomes{" "}
         </span>

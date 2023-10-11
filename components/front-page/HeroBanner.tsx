@@ -34,27 +34,30 @@ export const HeroBanner = ({
             Zeitgeist is a new innovative platform for predicting future events
           </h2>
           <div className="flex gap-4 mb-14">
-            <Link href="https://zeitgeist.pm/" target="_blank">
-              <button className="rounded-md flex-1 md:flex-none bg-vermilion text-white px-6 py-3">
-                Learn More
-              </button>
+            <Link
+              href="https://zeitgeist.pm/"
+              target="_blank"
+              className="rounded-md flex-1 sm:flex-none bg-vermilion border-2 border-vermilion text-white px-6 py-3"
+            >
+              Learn More
             </Link>
-            <Link href="/create-account">
-              <button className="rounded-md flex-1 md:flex-none bg-transparent border-2 border-black text-black px-6 py-3">
-                Get Started
-              </button>
+            <Link
+              href="/create-account"
+              className="rounded-md flex-1 sm:flex-none bg-transparent border-2 border-black text-black px-6 py-3"
+            >
+              Get Started
             </Link>
           </div>
           <div
             className="py-3 px-4 w-full rounded-md flex gap-2"
             style={{ backgroundColor: "rgba(28, 100, 242, 0.2)" }}
           >
-            <div className="flex justify-start items-center gap-2 w-1/3">
+            <div className="flex justify-start items-center gap-3 w-1/3">
               <div>
-                <ZeitgeistIcon variant="blue" height={28} width={28} />
+                <ZeitgeistIcon variant="blue" height={32} width={32} />
               </div>
               <div>
-                <div className="font-bold text-md">Zeitgeist</div>
+                <div className="text-lg font-medium">Zeitgeist</div>
                 <div className="text-sm">
                   {chainProperties.tokenSymbol.toString()}
                 </div>

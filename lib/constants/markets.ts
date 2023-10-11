@@ -1,6 +1,6 @@
 import { EMarketStatus, MarketStatus } from "lib/types/markets";
 
-export const defaultTags = [
+const prodTags = [
   "Politics",
   "Crypto",
   "Dotsama",
@@ -11,6 +11,12 @@ export const defaultTags = [
   "Sports",
   "E-Sports",
 ] as const;
+
+const otherTags = process.env.NEXT_PUBLIC_OTHER_TAGS
+  ? JSON.parse(process.env.NEXT_PUBLIC_OTHER_TAGS)
+  : [];
+
+export const defaultTags = [...prodTags, ...otherTags] as const;
 
 export type SupportedTag = typeof defaultTags[number];
 

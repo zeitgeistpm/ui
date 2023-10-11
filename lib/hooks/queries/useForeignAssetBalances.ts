@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { ChainName } from "lib/constants/chains";
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
