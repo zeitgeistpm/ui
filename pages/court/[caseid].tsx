@@ -1,4 +1,4 @@
-import { ScalarRangeType, ZTG, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { ScalarRangeType, ZTG, isRpcSdk } from "@zeitgeistpm/sdk";
 import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import TransactionButton from "components/ui/TransactionButton";

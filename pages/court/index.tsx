@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useNotifications } from "lib/state/notifications";
