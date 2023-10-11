@@ -5,7 +5,7 @@ import {
   isIndexedData,
   Market,
   MetadataStorage,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "market-enabled";

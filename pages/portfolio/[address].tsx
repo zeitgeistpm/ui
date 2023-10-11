@@ -1,5 +1,5 @@
 import { Tab } from "@headlessui/react";
-import { getIndexOf } from "@zeitgeistpm/sdk-next";
+import { getIndexOf } from "@zeitgeistpm/sdk";
 import BadgesList from "components/avatar/BadgesList";
 import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";

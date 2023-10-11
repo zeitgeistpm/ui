@@ -1,8 +1,9 @@
-import { MarketStatus, ScalarRangeType } from "@zeitgeistpm/sdk-next";
-import { MarketDispute, Report } from "@zeitgeistpm/sdk/dist/types";
+import { MarketStatus, ScalarRangeType } from "@zeitgeistpm/sdk";
+import { MarketReport } from "@zeitgeistpm/indexer";
 import { gql, GraphQLClient } from "graphql-request";
 import { DAY_SECONDS } from "lib/constants";
 import { marketMetaFilter } from "./constants";
+import { MarketDispute } from "lib/types/markets";
 
 const marketIdsQuery = gql`
   query MarketIds($end: BigInt) {
@@ -108,7 +109,7 @@ export interface MarketPageIndexedData {
     categorical: string;
   };
   disputes: MarketDispute[];
-  report: Report;
+  report: MarketReport;
   creator: string;
   oracle: string;
   tags: [];

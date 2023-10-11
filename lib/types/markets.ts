@@ -1,3 +1,5 @@
+import { OutcomeReport } from "@zeitgeistpm/indexer";
+
 export type MarketOutcome = {
   name: string;
   color?: string;
@@ -17,3 +19,17 @@ export enum EMarketStatus {
 }
 
 export type MarketStatus = keyof typeof EMarketStatus;
+
+export type MarketDispute = {
+  at: number;
+  by: string;
+  outcome: OutcomeReport;
+};
+
+export type MarketTypeOf =
+  | {
+      categorical: number;
+    }
+  | {
+      scalar: string[];
+    };

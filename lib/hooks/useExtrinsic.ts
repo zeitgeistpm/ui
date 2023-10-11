@@ -1,6 +1,6 @@
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
-import { IOForeignAssetId, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { IOForeignAssetId, isRpcSdk } from "@zeitgeistpm/sdk";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { extrinsicCallback, signAndSend } from "lib/util/tx";

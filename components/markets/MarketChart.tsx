@@ -1,4 +1,4 @@
-import { MarketStatus, parseAssetId } from "@zeitgeistpm/sdk-next";
+import { MarketStatus, parseAssetId } from "@zeitgeistpm/sdk";
 import TimeFilters, { filters, TimeFilter } from "components/ui/TimeFilters";
 import TimeSeriesChart, { ChartSeries } from "components/ui/TimeSeriesChart";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";

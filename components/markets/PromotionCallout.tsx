@@ -1,5 +1,5 @@
 import { Dialog } from "@headlessui/react";
-import { IndexerContext, Market } from "@zeitgeistpm/sdk-next";
+import { IndexerContext, Market } from "@zeitgeistpm/sdk";
 import Modal from "components/ui/Modal";
 import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import { MarketPageIndexedData } from "lib/gql/markets";

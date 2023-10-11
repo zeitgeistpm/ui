@@ -7,7 +7,7 @@ import {
   isRpcSdk,
   Market,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import TransactionButton from "components/ui/TransactionButton";
 import TruncatedText from "components/ui/TruncatedText";

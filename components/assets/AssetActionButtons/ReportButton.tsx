@@ -7,7 +7,7 @@ import {
   isRpcSdk,
   Market,
   ScalarAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";
