@@ -106,6 +106,11 @@ const JoinCourtButton = () => {
                           .toFixed(3)}`;
                       } else if (value <= 0) {
                         return "Value cannot be zero or less";
+                      } else if (
+                        constants?.court.minJurorStake &&
+                        value < constants?.court.minJurorStake
+                      ) {
+                        return `Stake cannot be less than ${constants?.court.minJurorStake} ${constants.tokenSymbol}`;
                       }
                     },
                   })}
