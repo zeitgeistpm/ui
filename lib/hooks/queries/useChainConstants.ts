@@ -84,10 +84,10 @@ export const useChainConstants = () => {
             consts.balances.existentialDeposit.toNumber() / ZTG,
         },
         court: {
-          maxCourtParticipants:
-            consts.court.maxCourtParticipants.toNumber() / ZTG,
-          maxAppeals: consts.court.maxAppeals.toNumber() / ZTG,
+          maxCourtParticipants: consts.court.maxCourtParticipants.toNumber(),
+          maxAppeals: consts.court.maxAppeals.toNumber(),
           minJurorStake: consts.court.minJurorStake.toNumber() / ZTG,
+          // inflationPeriodBlock: consts.court.inflationPeriod.toNumber() / ZTG,
         },
       };
 

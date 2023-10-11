@@ -2,6 +2,9 @@ import Avatar from "components/ui/Avatar";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Link from "next/link";
 import DelegateButton from "./DelegateJuror";
+import { useJurors } from "lib/hooks/queries/court/useJurors";
+import Decimal from "decimal.js";
+import { ZTG } from "@zeitgeistpm/sdk";
 
 const columns: TableColumn[] = [
   {
@@ -14,11 +17,11 @@ const columns: TableColumn[] = [
     accessor: "personalStake",
     type: "text",
   },
-  {
-    header: "Total Stake",
-    accessor: "totalStake",
-    type: "text",
-  },
+  // {
+  //   header: "Total Stake",
+  //   accessor: "totalStake",
+  //   type: "text",
+  // },
   {
     header: "Delegators",
     accessor: "delegators",
@@ -33,15 +36,9 @@ const columns: TableColumn[] = [
 ];
 
 const JurorsTable = () => {
-  const jurors = [
-    {
-      address: "dE2PSbmYGG2jyKACsZk83PydtyCJVrskVHpJdj4eqFY945KJu",
-      personalStake: 10,
-      totalStake: 10,
-      delegators: 2,
-    },
-  ];
-  const tableData: TableData[] | undefined = jurors.map((juror) => {
+  const { data: jurors } = useJurors();
+
+  const tableData: TableData[] | undefined = jurors?.map((juror) => {
     return {
       address: (
         <Link
@@ -52,9 +49,9 @@ const JurorsTable = () => {
           <span>{juror.address}</span>
         </Link>
       ),
-      personalStake: juror.personalStake,
-      totalStake: juror.totalStake,
-      delegators: juror.delegators,
+      personalStake: new Decimal(juror.stake ?? 0).div(ZTG).toNumber(),
+      // totalStake: juror.totalStake,
+      delegators: juror.delegations,
       button: <DelegateButton address={juror.address} />,
     };
   });
