@@ -34,8 +34,6 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
     }
   }
 
-  console.log({ isOwned, hasIdentity, identity });
-
   return (
     <>
       <div className="flex flex-col justify-center w-full gap-y-2 sm:gap-y-5 mb-5">
