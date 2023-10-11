@@ -1,5 +1,6 @@
 import { UseQueryResult, useQuery } from "@tanstack/react-query";
-import { AssetId, IOZtgAssetId, ZTG } from "@zeitgeistpm/sdk-next";
+
+import { AssetId, IOZtgAssetId, ZTG } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { useWallet } from "lib/state/wallet";
 import { useAssetMetadata } from "./useAssetMetadata";
@@ -43,8 +44,7 @@ export const useFeePayingAsset = (
   const query = useQuery(
     [
       feePayingAssetKey,
-      activeAccount,
-      activeAccount,
+      activeAccount?.address,
       nativeBalance,
       dotBalance,
       baseFee,

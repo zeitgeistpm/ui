@@ -1,4 +1,4 @@
-import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
+import { ScalarRangeType } from "@zeitgeistpm/sdk";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 

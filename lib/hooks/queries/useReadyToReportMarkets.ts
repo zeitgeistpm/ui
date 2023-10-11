@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { MarketStatus } from "@zeitgeistpm/indexer";
-import { isFullSdk } from "@zeitgeistpm/sdk-next";
+import { isFullSdk } from "@zeitgeistpm/sdk";
 import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainTime } from "lib/state/chaintime";
@@ -43,6 +43,7 @@ export const useReadyToReportMarkets = (account?: string) => {
     {
       enabled: Boolean(enabled),
       refetchInterval: 1000 * 60,
+      staleTime: Infinity,
     },
   );
 };

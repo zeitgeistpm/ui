@@ -1,4 +1,4 @@
-import { Context, create$, Sdk, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
+import { Context, create$, Sdk, ZeitgeistIpfs } from "@zeitgeistpm/sdk";
 import { endpointOptions as endpoints, graphQlEndpoint } from "lib/constants";
 import { memoize } from "lodash-es";
 import { useEffect, useState } from "react";

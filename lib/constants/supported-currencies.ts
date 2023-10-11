@@ -1,4 +1,4 @@
-import { AssetId } from "@zeitgeistpm/sdk-next";
+import { AssetId } from "@zeitgeistpm/sdk";
 import { Unpacked } from "@zeitgeistpm/utility/dist/array";
 import { isEqual } from "lodash-es";
 

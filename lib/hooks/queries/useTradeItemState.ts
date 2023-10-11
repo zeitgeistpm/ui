@@ -4,7 +4,7 @@ import {
   getIndexOf,
   getMarketIdOf,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
 import { calcSpotPrice } from "lib/math";

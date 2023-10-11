@@ -1,5 +1,5 @@
 import Skeleton from "components/ui/Skeleton";
-import { ZTG } from "@zeitgeistpm/sdk-next";
+import { ZTG } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { PorfolioBreakdown } from "lib/hooks/queries/usePortfolioPositions";
 import { formatNumberLocalized } from "lib/util";

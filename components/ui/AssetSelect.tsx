@@ -1,4 +1,4 @@
-import { AssetId, ZTG } from "@zeitgeistpm/sdk-next";
+import { AssetId, ZTG } from "@zeitgeistpm/sdk";
 import Image from "next/image";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useWallet } from "lib/state/wallet";
