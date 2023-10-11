@@ -1,5 +1,5 @@
 import { gql, GraphQLClient } from "graphql-request";
-import { OutcomeReport } from "@zeitgeistpm/sdk/dist/types";
+import { OutcomeReport } from "@zeitgeistpm/indexer";
 
 const historicalMarketQuery = gql`
   query HistoricalMarkets($marketId: Int) {

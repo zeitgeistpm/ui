@@ -1,4 +1,4 @@
-import { IOBaseAssetId, parseAssetId, ZTG } from "@zeitgeistpm/sdk-next";
+import { IOBaseAssetId, parseAssetId, ZTG } from "@zeitgeistpm/sdk";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";

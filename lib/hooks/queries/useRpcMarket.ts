@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rpcMarketRootKey = "rpc-market";

@@ -1,4 +1,4 @@
-import { BaseAssetId, IOForeignAssetId } from "@zeitgeistpm/sdk-next";
+import { BaseAssetId, IOForeignAssetId } from "@zeitgeistpm/sdk";
 import { ChainName } from "./chains";
 
 type ForeignAssetMetadata = {

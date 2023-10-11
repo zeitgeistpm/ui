@@ -13,13 +13,14 @@ import {
   IOScalarAssetId,
   parseAssetId,
   ZeitgeistIpfs,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import Avatar from "components/ui/Avatar";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import {
   DAY_SECONDS,
   endpointOptions,
+  environment,
   graphQlEndpoint,
   ZTG,
 } from "lib/constants";
@@ -482,7 +483,10 @@ export async function getStaticProps({ params }) {
       timePeriod: period,
       bannerPlaceholder: bannerPlaceholder.base64,
     },
-    revalidate: 10 * 60, //10min
+    revalidate:
+      environment === "production"
+        ? 10 * 60 //10min
+        : 60 * 60,
   };
 }
 
@@ -557,7 +561,7 @@ const Leaderboard: NextPage<{
   }, [rankings]);
 
   return (
-    <div id="leaderboard">
+    <div id="leaderboard" className="pt-4">
       <div className="w-full h-[137px] sm:h-[244px] relative overflow-hidden rounded-md">
         <Image
           src="/Leaderboard-banner.png"
@@ -586,7 +590,7 @@ const Leaderboard: NextPage<{
           </Link>
         ))}
       </div>
-      <Table columns={columns} data={tableData} />
+      <Table columns={columns} data={tableData} showHighlight={false} />
       {/* {trendingMarkets.length > 0 && (
         <div className="my-[60px]">
           <MarketScroll

@@ -2,7 +2,7 @@ import Table, { TableColumn, TableData } from "components/ui/Table";
 import Link from "next/link";
 import { formatNumberLocalized } from "lib/util";
 import { useLatestTrades } from "lib/hooks/queries/useLatestTrades";
-import { ZTG } from "@zeitgeistpm/sdk-next";
+import { ZTG } from "@zeitgeistpm/sdk";
 import moment from "moment";
 import Avatar from "components/ui/Avatar";
 

@@ -1,6 +1,6 @@
 import { Dialog } from "@headlessui/react";
 import type { ApiPromise } from "@polkadot/api";
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk } from "@zeitgeistpm/sdk";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";

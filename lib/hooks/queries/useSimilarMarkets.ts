@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { isIndexedSdk, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { isIndexedSdk, isRpcSdk } from "@zeitgeistpm/sdk";
 import { MarketStatus, MarketOrderByInput } from "@zeitgeistpm/indexer";
 import Decimal from "decimal.js";
 import { useSdkv2 } from "../useSdkv2";
@@ -60,6 +60,7 @@ export const useSimilarMarkets = (marketId?: number, limit = 2) => {
     },
     {
       enabled: Boolean(enabled),
+      staleTime: Infinity,
     },
   );
 

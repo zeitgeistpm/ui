@@ -4,7 +4,7 @@ import {
   getMarketIdOf,
   isIndexedSdk,
   IOMarketOutcomeAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import { gql } from "graphql-request";
 import { useSdkv2 } from "../useSdkv2";
 

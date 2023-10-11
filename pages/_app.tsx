@@ -13,6 +13,9 @@ import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { hotjar } from "react-hotjar";
 
+// font optimization from @next/font
+import { inter, kanit, roboto_mono } from "lib/util/fonts";
+
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
 const domain = process.env["NEXT_PUBLIC_DOMAIN"];
@@ -54,32 +57,45 @@ const MyApp = ({ Component, pageProps }) => {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Hydrate state={pageProps.dehydratedState}>
-        <AvatarContext.Provider
-          value={{
-            api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
-            ipfs: { node: { url: process.env.NEXT_PUBLIC_IPFS_NODE ?? "" } },
-            rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
-            indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
-            avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,
-            badgeCollectionId: process.env.NEXT_PUBLIC_BADGE_COLLECTION_ID,
-            avatarBaseId: process.env.NEXT_PUBLIC_AVATAR_BASE_ID,
-            prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
-          }}
-        >
-          <Head>
-            <title>Zeitgeist - Prediction Markets</title>
-          </Head>
-          <DefaultLayout>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </DefaultLayout>
-          {/* <Devtools /> */}
-        </AvatarContext.Provider>
-      </Hydrate>
-    </QueryClientProvider>
+    <div
+      className={`${inter.variable} ${kanit.variable} ${roboto_mono.variable} font-sans `}
+    >
+      <style jsx global>
+        {`
+          :root {
+            --font-inter: ${inter.style.fontFamily};
+            --font-kanit: ${kanit.style.fontFamily};
+            --font-roboto-mono: ${roboto_mono.style.fontFamily};
+          }
+        `}
+      </style>
+      <QueryClientProvider client={queryClient}>
+        <Hydrate state={pageProps.dehydratedState}>
+          <AvatarContext.Provider
+            value={{
+              api: process.env.NEXT_PUBLIC_AVATAR_API_HOST,
+              ipfs: { node: { url: process.env.NEXT_PUBLIC_IPFS_NODE ?? "" } },
+              rpc: process.env.NEXT_PUBLIC_RMRK_CHAIN_RPC_NODE,
+              indexer: process.env.NEXT_PUBLIC_RMRK_INDEXER_API,
+              avatarCollectionId: process.env.NEXT_PUBLIC_AVATAR_COLLECTION_ID,
+              badgeCollectionId: process.env.NEXT_PUBLIC_BADGE_COLLECTION_ID,
+              avatarBaseId: process.env.NEXT_PUBLIC_AVATAR_BASE_ID,
+              prerenderUrl: process.env.NEXT_PUBLIC_RMRK_PRERENDER_URL,
+            }}
+          >
+            <Head>
+              <title>Zeitgeist - Prediction Markets</title>
+            </Head>
+            <DefaultLayout>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </DefaultLayout>
+            {/* <Devtools /> */}
+          </AvatarContext.Provider>
+        </Hydrate>
+      </QueryClientProvider>
+    </div>
   );
 };
 
