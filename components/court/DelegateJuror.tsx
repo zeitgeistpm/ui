@@ -1,4 +1,5 @@
 import { Dialog } from "@headlessui/react";
+import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk";
 import Avatar from "components/ui/Avatar";
 import FormTransactionButton from "components/ui/FormTransactionButton";
@@ -6,6 +7,7 @@ import Input from "components/ui/Input";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
+import { participantsRootKey } from "lib/hooks/queries/court/useParticipants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
@@ -31,10 +33,11 @@ const DelegateButton = ({ address }: { address: string }) => {
     reValidateMode: "onChange",
     mode: "onChange",
   });
-  const [sdk] = useSdkv2();
+  const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();
   const wallet = useWallet();
   const { data: balance } = useZtgBalance(wallet.realAddress);
+  const queryClient = useQueryClient();
 
   const { isLoading, send, fee } = useExtrinsic(
     () => {
@@ -48,6 +51,8 @@ const DelegateButton = ({ address }: { address: string }) => {
     },
     {
       onSuccess: () => {
+        queryClient.invalidateQueries([id, participantsRootKey]);
+
         notificationStore.pushNotification(
           `Successfully delegated to ${shortenAddress(address, 5, 5)} `,
           {

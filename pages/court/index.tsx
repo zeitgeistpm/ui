@@ -1,8 +1,10 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { ZTG, isRpcSdk } from "@zeitgeistpm/sdk";
 import JoinCourtButton from "components/court/JoinCourt";
 import JurorsTable from "components/court/JurorsTable";
 import PrepareExitCourtButton from "components/court/PrepareExitCourt";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
+import { participantsRootKey } from "lib/hooks/queries/court/useParticipants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -12,21 +14,22 @@ import { NextPage } from "next";
 
 const CourtPage: NextPage = () => {
   const { data: constants } = useChainConstants();
-  const [sdk] = useSdkv2();
+  const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();
   const wallet = useWallet();
+  const queryClient = useQueryClient();
 
   const participant = useConnectedCourtParticipant();
 
   const { isLoading: isLeaveLoading, send: leaveCourt } = useExtrinsic(
     () => {
       if (!isRpcSdk(sdk) || !wallet.realAddress) return;
-
       return sdk.api.tx.court.exitCourt(wallet.realAddress); //todo: is this correct input?
     },
     {
       onSuccess: () => {
-        notificationStore.pushNotification("Successfully exit court", {
+        queryClient.invalidateQueries([id, participantsRootKey]);
+        notificationStore.pushNotification("Successfully exited court", {
           type: "Success",
         });
       },
@@ -43,6 +46,7 @@ const CourtPage: NextPage = () => {
           <button
             className="bg-[#DC056C] rounded-md text-white py-2 px-4"
             disabled={isLeaveLoading === true || !participant}
+            onClick={() => leaveCourt()}
           >
             Exit Court
           </button>

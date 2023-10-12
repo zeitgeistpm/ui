@@ -1,9 +1,11 @@
 import { Dialog } from "@headlessui/react";
+import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk";
 import Modal from "components/ui/Modal";
 import TransactionButton from "components/ui/TransactionButton";
 import { BLOCK_TIME_SECONDS, DAY_SECONDS } from "lib/constants";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
+import { participantsRootKey } from "lib/hooks/queries/court/useParticipants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -14,10 +16,11 @@ import { useState } from "react";
 const PrepareExitCourtButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: constants } = useChainConstants();
-  const [sdk] = useSdkv2();
+  const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();
   const wallet = useWallet();
   const participant = useConnectedCourtParticipant();
+  const queryClient = useQueryClient();
 
   const {
     isLoading: isPrepareLeaveLoading,
@@ -31,7 +34,8 @@ const PrepareExitCourtButton = () => {
     },
     {
       onSuccess: () => {
-        notificationStore.pushNotification("Successfully exit court", {
+        queryClient.invalidateQueries([id, participantsRootKey]);
+        notificationStore.pushNotification("Successfully began exit process", {
           type: "Success",
         });
         setIsOpen(false);

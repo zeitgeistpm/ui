@@ -1,10 +1,12 @@
 import { Dialog } from "@headlessui/react";
+import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
+import { participantsRootKey } from "lib/hooks/queries/court/useParticipants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
@@ -29,11 +31,12 @@ const JoinCourtButton = () => {
     reValidateMode: "onChange",
     mode: "onChange",
   });
-  const [sdk] = useSdkv2();
+  const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();
   const wallet = useWallet();
   const { data: balance } = useZtgBalance(wallet.realAddress);
   const participant = useConnectedCourtParticipant();
+  const queryClient = useQueryClient();
 
   const { isLoading, send, fee } = useExtrinsic(
     () => {
@@ -49,6 +52,7 @@ const JoinCourtButton = () => {
         notificationStore.pushNotification("Successfully joined court", {
           type: "Success",
         });
+        queryClient.invalidateQueries([id, participantsRootKey]);
       },
     },
   );
