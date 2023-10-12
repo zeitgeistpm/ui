@@ -67,7 +67,13 @@ const RedeemPoolButton = ({
 
   const { isLoading, isSuccess, send } = useExtrinsic(
     () => {
-      if (!isRpcSdk(sdk) || !constants || !userPoolShares || !poolWeights)
+      if (
+        !isRpcSdk(sdk) ||
+        !constants ||
+        !userPoolShares ||
+        !poolWeights ||
+        userPoolShares.equals(0)
+      )
         return;
 
       const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
