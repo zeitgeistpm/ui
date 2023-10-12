@@ -13,6 +13,7 @@ import { useUserLocation } from "lib/hooks/useUserLocation";
 import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized, shortenAddress } from "lib/util";
 import { FaNetworkWired } from "react-icons/fa";
+import { useWeb3Auth } from "../../lib/hooks/useWeb3Auth";
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -91,7 +92,7 @@ const AccountButton: FC<{
     getProxyFor,
     realAddress,
   } = useWallet();
-
+  const { logout } = useWeb3Auth();
   const proxy = getProxyFor(activeAccount?.address);
 
   const accountModals = useAccountModals();
@@ -395,7 +396,10 @@ const AccountButton: FC<{
                         {({ active }) => (
                           <div
                             className="flex items-center px-6 hover:bg-slate-100"
-                            onClick={() => disconnectWallet()}
+                            onClick={() => {
+                              logout();
+                              disconnectWallet();
+                            }}
                           >
                             <Frown />
                             <button

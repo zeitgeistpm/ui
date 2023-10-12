@@ -39,14 +39,14 @@ export const web3AuthInstance = new Web3AuthWallet({
 export const web3authAtom = atom<Web3Auth | null>(null);
 export const providerAtom = atom<SafeEventEmitterProvider | null>(null);
 
-const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID;
+const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG;
 
 export const useWeb3Auth = () => {
   const [web3auth, setWeb3auth] = useAtom(web3authAtom);
   const [provider, setProvider] = useAtom(providerAtom);
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
-  const { selectWallet, disconnectWallet } = useWallet();
+  const { selectWallet } = useWallet();
 
   useEffect(() => {
     loadWallet();
@@ -116,12 +116,12 @@ export const useWeb3Auth = () => {
 
   const login = async () => {
     if (!web3auth) {
+      console.log("no login");
       return;
     }
     await initWeb3Auth();
     await web3auth.initModal();
     if (web3auth.status === "connected") {
-      await disconnectWallet();
       await web3auth.logout();
     }
     const web3authProvider = await web3auth.connect();
@@ -142,10 +142,10 @@ export const useWeb3Auth = () => {
       console.log("no logout");
       return;
     }
+    console.log(web3auth.status);
     if (web3auth.status === "connected") {
       await web3auth.logout();
     }
-    await disconnectWallet();
     setProvider(null);
     setLoggedIn(false);
   };

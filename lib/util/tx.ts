@@ -172,7 +172,6 @@ export const signAndSend = async (
         });
       }
     } catch (error) {
-      console.log(error);
       reject(error);
     }
   });
