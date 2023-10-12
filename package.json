@@ -100,7 +100,6 @@
     "@next/bundle-analyzer": "^12.3.1",
     "@playwright/test": "^1.28.1",
     "@polkadot/wasm-crypto": "^6.3.1",
-    "@tailwindcss/line-clamp": "^0.4.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@types/flexsearch": "^0.7.2",
