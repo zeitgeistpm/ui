@@ -9,7 +9,7 @@ import {
   isRpcSdk,
   ScalarAssetId,
   ZTG,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { calcInGivenOut, calcOutGivenIn } from "lib/math";
 import { TradeType } from "lib/types";

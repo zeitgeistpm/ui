@@ -3,7 +3,7 @@ import { LogOut } from "react-feather";
 import AccountSelect, { AccountOption } from "./AccountSelect";
 import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
-import { ZTG } from "@zeitgeistpm/sdk-next";
+import { ZTG } from "@zeitgeistpm/sdk";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useWeb3Auth } from "../../lib/hooks/useWeb3Auth";
 

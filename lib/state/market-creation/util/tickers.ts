@@ -1,4 +1,4 @@
-import { MarketMetadata } from "@zeitgeistpm/sdk-next";
+import { MarketMetadata } from "@zeitgeistpm/sdk";
 import { Answers } from "../types/form";
 
 /**

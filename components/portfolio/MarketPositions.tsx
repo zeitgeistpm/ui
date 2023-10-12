@@ -5,7 +5,7 @@ import {
   IOPoolShareAssetId,
   Market,
   ZTG,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import DisputeButton from "components/assets/AssetActionButtons/DisputeButton";
 import RedeemButton from "components/assets/AssetActionButtons/RedeemButton";
 import ReportButton from "components/assets/AssetActionButtons/ReportButton";

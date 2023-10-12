@@ -1,4 +1,4 @@
-import { isInfinite, MarketStage } from "@zeitgeistpm/sdk-next";
+import { isInfinite, MarketStage } from "@zeitgeistpm/sdk";
 import { clamp } from "lodash-es";
 import Skeleton from "components/ui/Skeleton";
 import moment from "moment";

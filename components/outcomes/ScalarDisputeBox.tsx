@@ -1,4 +1,4 @@
-import { IndexerContext, isRpcSdk, Market } from "@zeitgeistpm/sdk-next";
+import { IndexerContext, isRpcSdk, Market } from "@zeitgeistpm/sdk";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -50,11 +50,7 @@ const ScalarDisputeBox = ({
   const { send, isLoading, isBroadcasting } = useExtrinsic(
     () => {
       if (!isRpcSdk(sdk) || !signer) return;
-      return sdk.api.tx.predictionMarkets.dispute(
-        market.marketId,
-        //todo: revert
-        { Categorical: [1, 1] },
-      );
+      return sdk.api.tx.predictionMarkets.dispute(market.marketId);
     },
     {
       onBroadcast: () => {},

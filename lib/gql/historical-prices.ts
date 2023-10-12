@@ -1,4 +1,4 @@
-import { BaseAssetId, IOForeignAssetId } from "@zeitgeistpm/sdk-next";
+import { BaseAssetId, IOForeignAssetId } from "@zeitgeistpm/sdk";
 import { environment } from "lib/constants";
 import { FOREIGN_ASSET_METADATA } from "lib/constants/foreign-asset";
 

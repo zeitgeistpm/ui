@@ -1,6 +1,6 @@
 import { Menu, Popover, Transition } from "@headlessui/react";
 import { getWallets } from "@talismn/connect-wallets";
-import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk";
 import Avatar from "components/ui/Avatar";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
