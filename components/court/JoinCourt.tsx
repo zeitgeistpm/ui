@@ -4,6 +4,7 @@ import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
+import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
@@ -32,6 +33,7 @@ const JoinCourtButton = () => {
   const notificationStore = useNotifications();
   const wallet = useWallet();
   const { data: balance } = useZtgBalance(wallet.realAddress);
+  const participant = useConnectedCourtParticipant();
 
   const { isLoading, send, fee } = useExtrinsic(
     () => {
@@ -76,6 +78,7 @@ const JoinCourtButton = () => {
   const onSubmit = () => {
     send();
   };
+  console.log(participant);
 
   return (
     <>
@@ -83,7 +86,7 @@ const JoinCourtButton = () => {
         className="bg-[#670031] rounded-md text-white py-2 px-4"
         onClick={() => setIsOpen(true)}
       >
-        Become a Juror
+        {participant?.type === "Juror" ? "Increase Stake" : "Become a Juror"}
       </button>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
@@ -116,6 +119,13 @@ const JoinCourtButton = () => {
                         value < constants?.court.minJurorStake
                       ) {
                         return `Stake cannot be less than ${constants?.court.minJurorStake} ${constants.tokenSymbol}`;
+                      } else if (
+                        participant?.stake &&
+                        participant?.stake.div(ZTG).greaterThan(value)
+                      ) {
+                        return `Stake must be higher than your current stake of ${participant?.stake
+                          .div(ZTG)
+                          .toNumber()} ${constants?.tokenSymbol}`;
                       }
                     },
                   })}
@@ -142,7 +152,6 @@ const JoinCourtButton = () => {
               <FormTransactionButton
                 className="w-full max-w-[250px]"
                 disabled={formState.isValid === false || isLoading}
-                disableFeeCheck={true}
               >
                 Join
               </FormTransactionButton>

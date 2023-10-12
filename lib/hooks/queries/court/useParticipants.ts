@@ -18,7 +18,6 @@ export const useParticipants = () => {
 
       const jurors = res.map(([address, details]) => {
         const unwrappedDetails = details.unwrapOr(undefined);
-        console.log(unwrappedDetails?.delegations.isSome);
 
         const delegations = unwrappedDetails?.delegations
           .unwrapOr(null)

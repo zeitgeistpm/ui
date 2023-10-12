@@ -42,7 +42,6 @@ const columns: TableColumn[] = [
 
 const JurorsTable = () => {
   const { data: participants } = useParticipants();
-  console.log(participants);
 
   const tableData: TableData[] | undefined = participants
     ?.filter((p) => p.type === "Juror")
@@ -55,7 +54,6 @@ const JurorsTable = () => {
         (total, delegator) => total.plus(delegator.stake),
         new Decimal(0),
       );
-      console.log(delegatorStake.toString());
 
       return {
         address: (

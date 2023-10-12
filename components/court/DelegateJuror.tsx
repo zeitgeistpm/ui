@@ -150,7 +150,6 @@ const DelegateButton = ({ address }: { address: string }) => {
               <FormTransactionButton
                 className="w-full max-w-[250px]"
                 disabled={formState.isValid === false || isLoading}
-                disableFeeCheck={true}
               >
                 Delegate
               </FormTransactionButton>
