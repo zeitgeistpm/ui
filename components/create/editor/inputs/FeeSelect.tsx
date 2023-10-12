@@ -21,7 +21,7 @@ const FeeSelect = ({
   presets,
   label,
 }: FeeInputProps) => {
-  const handleSwapFeePresetChange = (fee: Fee) => () => {
+  const handleFeePresetChange = (fee: Fee) => () => {
     onChange({
       type: "change",
       target: {
@@ -31,7 +31,7 @@ const FeeSelect = ({
     });
   };
 
-  const handleSwapFeeCustomChange: ChangeEventHandler<HTMLInputElement> = (
+  const handleFeeCustomChange: ChangeEventHandler<HTMLInputElement> = (
     event,
   ) => {
     const fee = parseFloat(event.target.value);
@@ -50,7 +50,7 @@ const FeeSelect = ({
         <button
           key={index}
           type="button"
-          onClick={handleSwapFeePresetChange(preset)}
+          onClick={handleFeePresetChange(preset)}
           className={`flex center rounded-full bg-gray-100 py-3 px-6 transition-all active:scale-9 ${
             value?.type === "preset" &&
             value?.value === preset.value &&
@@ -68,7 +68,7 @@ const FeeSelect = ({
             value?.type === "custom" && isValid && "bg-nyanza-base"
           }`}
           value={Number(value?.value).toString()}
-          onChange={handleSwapFeeCustomChange}
+          onChange={handleFeeCustomChange}
         />
         <div className="h-full center text-gray-600 right-0 rounded-r-md border-2 border-gray-100 border-l-0 px-4 bg-white pointer-events-none">
           {label}
