@@ -4,7 +4,7 @@ import {
   getIndexOf,
   getMarketIdOf,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { MAX_IN_OUT_RATIO, ZTG } from "lib/constants";
 import { calcSpotPrice } from "lib/math";
@@ -23,7 +23,6 @@ export const tradeItemStateRootQueryKey = "trade-item-state";
 export const useTradeItemState = (item: TradeItem) => {
   const [sdk, id] = useSdkv2();
   const wallet = useWallet();
-  const signer = wallet.activeAccount ? wallet.activeAccount : null;
   const slippage = 1;
 
   const marketId = getMarketIdOf(item.assetId);

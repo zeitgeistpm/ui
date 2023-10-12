@@ -12,7 +12,7 @@ import Image from "next/image";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { ChainName, CHAIN_IMAGES } from "lib/constants/chains";
 import TransferButton from "./TransferButton";
-import { AssetId } from "@zeitgeistpm/sdk-next";
+import { AssetId } from "@zeitgeistpm/sdk";
 import { convertDecimals } from "lib/util/convert-decimals";
 
 const columns: TableColumn[] = [
@@ -157,7 +157,7 @@ const CurrenciesTable = ({ address }: { address: string }) => {
 
   return (
     <div>
-      <Table data={tableData} columns={columns} />
+      <Table data={tableData} columns={columns} showHighlight={false} />
     </div>
   );
 };

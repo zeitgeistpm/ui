@@ -1,9 +1,9 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import { isIndexedSdk } from "@zeitgeistpm/sdk";
 import { getMarketsStats, MarketStats } from "lib/gql/markets-stats";
 import { useSdkv2 } from "../useSdkv2";
 
-export const marketsStatsRootQuery = "marketsStats";
+export const marketsStatsRootQuery = "markets-stats";
 
 export const useMarketsStats = (
   marketIds: number[],
@@ -21,6 +21,7 @@ export const useMarketsStats = (
     {
       enabled: sdk != null && isIndexedSdk(sdk) && marketIds.length > 0,
       keepPreviousData: true,
+      staleTime: 100_000,
     },
   );
 };

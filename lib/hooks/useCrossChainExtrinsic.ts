@@ -10,7 +10,7 @@ import { useSdkv2 } from "./useSdkv2";
 import { decodeAddress, encodeAddress } from "@polkadot/keyring";
 import { useQueryClient } from "@tanstack/react-query";
 import { currencyBalanceRootKey } from "./queries/useCurrencyBalances";
-import { IOForeignAssetId, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { IOForeignAssetId, isRpcSdk } from "@zeitgeistpm/sdk";
 import { useExtrinsicFee } from "./queries/useExtrinsicFee";
 
 export const useCrossChainExtrinsic = <T>(

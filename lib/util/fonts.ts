@@ -23,14 +23,7 @@ export const kanit = Kanit({
 });
 
 export const roboto_mono = Roboto_Mono({
-  subsets: [
-    "cyrillic",
-    "cyrillic-ext",
-    "greek",
-    "latin",
-    "latin-ext",
-    "vietnamese",
-  ],
+  subsets: ["latin", "latin-ext"],
   weight: ["400", "700"],
   variable: "--font-roboto-mono",
 });

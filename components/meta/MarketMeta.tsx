@@ -1,4 +1,4 @@
-import { IndexerContext, Market } from "@zeitgeistpm/sdk-next";
+import { IndexerContext, Market } from "@zeitgeistpm/sdk";
 import { MarketPageIndexedData } from "lib/gql/markets";
 import { OgHead } from "./OgHead";
 

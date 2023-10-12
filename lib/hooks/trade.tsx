@@ -9,7 +9,7 @@ import {
   isRpcSdk,
   ScalarAssetId,
   ZTG,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { calcInGivenOut, calcOutGivenIn } from "lib/math";
 import { TradeType } from "lib/types";
@@ -36,7 +36,6 @@ export const useTradeItem = () => {
 
 export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
   const { data: itemState } = useTradeItemState(item);
-
   if (!itemState) {
     return new Decimal(0);
   }
@@ -50,6 +49,7 @@ export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
     swapFee,
     traderAssetBalance,
     traderBaseBalance,
+    market,
   } = itemState;
 
   let maxAmountBase: Decimal = new Decimal(0);
@@ -66,6 +66,7 @@ export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
       assetWeight,
       tradeablePoolAssetBalance,
       swapFee,
+      market.creatorFee ?? 0,
     );
     return maxAmountBase.gt(traderBaseBalance)
       ? traderBaseBalance
@@ -83,6 +84,7 @@ export const useTradeMaxBaseAmount = (item: TradeItem): Decimal => {
       baseWeight,
       maxAssetIn,
       swapFee,
+      market.creatorFee ?? 0,
     );
     return maxAmountBase;
   }
@@ -107,6 +109,7 @@ export const useTradeMaxAssetAmount = (item: TradeItem): Decimal => {
     tradeablePoolAssetBalance,
     swapFee,
     traderBaseBalance,
+    market,
   } = itemState;
 
   let maxAmountAsset: Decimal = new Decimal(0);
@@ -119,6 +122,7 @@ export const useTradeMaxAssetAmount = (item: TradeItem): Decimal => {
       assetWeight,
       maxBaseAmount,
       swapFee,
+      market.creatorFee ?? 0,
     );
   }
   if (item.action === "sell") {
@@ -129,6 +133,7 @@ export const useTradeMaxAssetAmount = (item: TradeItem): Decimal => {
       baseWeight,
       maxBaseAmount,
       swapFee,
+      market.creatorFee ?? 0,
     );
   }
 
@@ -166,6 +171,7 @@ export const useTradeTransaction = (
     slippage,
     baseAssetId,
     assetId,
+    market,
   } = itemState;
 
   let transaction:
@@ -186,6 +192,7 @@ export const useTradeTransaction = (
         assetWeight,
         amountDecimal,
         swapFee,
+        market.creatorFee ?? 0,
       ).mul(new Decimal(1 - slippage / 100));
 
       if (!minAmountOut.isNaN() && minAmountOut.greaterThanOrEqualTo(0)) {
@@ -206,6 +213,7 @@ export const useTradeTransaction = (
         assetWeight,
         amountDecimal,
         swapFee,
+        market.creatorFee ?? 0,
       ).mul(new Decimal(slippage / 100 + 1));
 
       if (!maxAmountIn.isNaN() && maxAmountIn.greaterThanOrEqualTo(0)) {
@@ -234,6 +242,7 @@ export const useTradeTransaction = (
         baseWeight,
         amountDecimal,
         swapFee,
+        market.creatorFee ?? 0,
       ).mul(new Decimal(slippage / 100 + 1));
 
       if (!maxAmountIn.isNaN() && maxAmountIn.greaterThanOrEqualTo(0)) {
@@ -254,6 +263,7 @@ export const useTradeTransaction = (
         baseWeight,
         amountDecimal,
         swapFee,
+        market.creatorFee ?? 0,
       ).mul(new Decimal(1 - slippage / 100));
 
       if (!minAmountOut.isNaN() && minAmountOut.greaterThanOrEqualTo(0)) {

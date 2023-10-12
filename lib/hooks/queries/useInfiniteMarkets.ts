@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { IndexerContext, isIndexedSdk, Market } from "@zeitgeistpm/sdk-next";
+import { IndexerContext, isIndexedSdk, Market } from "@zeitgeistpm/sdk";
 import { MarketOrderByInput, MarketWhereInput } from "@zeitgeistpm/indexer";
 import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets";
 import { getCurrentPrediction } from "lib/util/assets";
@@ -125,6 +125,7 @@ export const useInfiniteMarkets = (
           );
         });
     },
+    staleTime: 10_000,
   });
   return query;
 };

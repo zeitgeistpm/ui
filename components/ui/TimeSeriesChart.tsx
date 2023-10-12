@@ -1,12 +1,11 @@
 import Skeleton from "components/ui/Skeleton";
 import { Decimal } from "decimal.js";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import {
   CartesianGrid,
   Label,
   Line,
   LineChart,
-  ReferenceArea,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -95,8 +94,6 @@ const TimeSeriesChart = ({
   yUnits,
   isLoading,
 }: TimeSeriesChartProps) => {
-  const [refAreaLeft, setRefAreaLeft] = useState("");
-  const [refAreaRight, setRefAreaRight] = useState("");
   const [leftX, setLeftX] = useState("dataMin");
   const [rightX, setRightX] = useState("dataMax");
   const [mouseInside, setMouseInside] = useState(false);
@@ -107,36 +104,6 @@ const TimeSeriesChart = ({
     data && data.length > 0
       ? Math.abs(data[data.length - 1].t - data[0].t) < 172800
       : false;
-
-  const zoom = () => {
-    let left = refAreaLeft;
-    let right = refAreaRight;
-
-    if (left === right || right === "") {
-      setRefAreaLeft("");
-      setRefAreaRight("");
-      return;
-    }
-
-    if (left > right) {
-      [left, right] = [right, left];
-    }
-
-    setLeftX(left);
-    setRightX(right);
-    setRefAreaLeft("");
-    setRefAreaRight("");
-  };
-
-  const handleMouseMove = useCallback(
-    (e) => {
-      if (refAreaLeft) {
-        setRefAreaRight(e.activeLabel);
-      }
-    },
-
-    [refAreaLeft],
-  );
 
   const handleMouseEnter = () => {
     setMouseInside(true);
@@ -165,16 +132,7 @@ const TimeSeriesChart = ({
     >
       {isLoading === false ? (
         <ResponsiveContainer width="99%">
-          <LineChart
-            width={500}
-            height={300}
-            data={data}
-            onMouseDown={(e) => {
-              if (e?.activeLabel) setRefAreaLeft(e.activeLabel);
-            }}
-            onMouseMove={handleMouseMove}
-            onMouseUp={zoom}
-          >
+          <LineChart width={500} height={300} data={data}>
             <CartesianGrid
               strokeDasharray="3 3"
               strokeWidth={1}
@@ -267,8 +225,6 @@ const TimeSeriesChart = ({
                 stroke={s.color ? s.color : "#0001FE"}
               />
             ))}
-
-            <ReferenceArea x1={refAreaLeft} x2={refAreaRight} />
           </LineChart>
         </ResponsiveContainer>
       ) : (
