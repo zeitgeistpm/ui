@@ -21,7 +21,7 @@ class Web3AuthWallet extends BaseDotsamaWallet {
 }
 
 const extensionName = "web3auth";
-const title = "Web 3 Auth";
+const title = "Web3Auth";
 const installUrl = "";
 const logoSrc = "/web3auth.svg";
 const logoAlt = "web 3 auth";
