@@ -161,16 +161,21 @@ const TopBar = () => {
         </div>
         <div className="relative center gap-3">
           <Link
-            className="h-11 rounded-md p-0.5"
+            className="relative h-11 rounded-md p-0.5 overflow-hidden group"
             href="/deposit"
-            style={{
-              background:
-                "linear-gradient(180deg, #FF00E6 0%, #F36464 50%, #04C3FF 100%)",
-            }}
           >
-            <button className="h-full w-full rounded-md px-3 md:px-5 bg-black text-white center">
-              Get Tokens
-            </button>
+            <div
+              className="h-full w-full absolute top-0 left-0 z-10 group-hover:animate-spin group-hover:h-[150%] group-hover:w-[150%] group-hover:-top-6 group-hover:-left-6"
+              style={{
+                background:
+                  "linear-gradient(180deg, #FF00E6 0%, #F36464 50%, #04C3FF 100%)",
+              }}
+            />
+            <div className="relative h-full block z-20">
+              <button className="h-full w-full rounded-md px-3 md:px-5 bg-black text-white center">
+                Get Tokens
+              </button>
+            </div>
           </Link>
           <AccountButton />
           <Alerts />
