@@ -79,7 +79,12 @@ const JoinCourtButton = () => {
 
   return (
     <>
-      <button onClick={() => setIsOpen(true)}>Become a Juror</button>
+      <button
+        className="bg-[#670031] rounded-md text-white py-2 px-4"
+        onClick={() => setIsOpen(true)}
+      >
+        Become a Juror
+      </button>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
           <h3 className="mb-8">Become a Juror</h3>
