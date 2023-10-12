@@ -1,4 +1,4 @@
-import { SubmittableExtrinsic } from "@polkadot/api/types";
+import { AddressOrPair, SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult, IEventRecord } from "@polkadot/types/types";
 import { KeyringPairOrExtSigner, isExtSigner } from "@zeitgeistpm/rpc";
 
@@ -107,7 +107,7 @@ export const extrinsicCallback = ({
 
 export const signAndSend = async (
   tx: SubmittableExtrinsic<"promise">,
-  signer: KeyringPairOrExtSigner | any,
+  signer: KeyringPairOrExtSigner,
   cb?: GenericCallback,
   foreignAssetNumber?: number,
 ) => {
@@ -138,7 +138,7 @@ export const signAndSend = async (
       if (isExtSigner(signer)) {
         if (signer?.signer?.extensionName === "web3auth") {
           const unsub = await tx.signAndSend(
-            signer.signer,
+            signer.signer as AddressOrPair,
             {
               ...(foreignAssetNumber != null
                 ? { assetId: foreignAssetNumber }

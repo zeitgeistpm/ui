@@ -59,7 +59,7 @@ export const useExtrinsic = <T>(
       console.info("Proxying transaction");
       extrinsic = sdk.api.tx.proxy.proxy(proxy?.address, "Any", extrinsic);
     }
-
+    console.log(signer);
     signAndSend(
       extrinsic,
       signer,

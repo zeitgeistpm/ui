@@ -15,7 +15,7 @@ import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { InjectedAccount } from "@polkadot/extension-inject/types";
 import { isPresent } from "lib/types";
 import { KeyringPair } from "@polkadot/keyring/types";
-import { web3AuthInstance } from "../hooks/useWeb3Auth";
+import { web3AuthInstance, Web3AuthWallet } from "../hooks/useWeb3Auth";
 
 import { PollingTimeout, poll } from "lib/util/poll";
 
@@ -223,6 +223,7 @@ let accountsSubscriptionUnsub: VoidFunction | undefined | null;
  */
 const enableWallet = async (walletId: string) => {
   if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
+  console.log(walletId);
   if (walletId?.extensionName === "web3auth") {
     store.set(walletAtom, (state) => {
       return {

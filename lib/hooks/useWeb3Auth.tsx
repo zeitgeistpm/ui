@@ -1,5 +1,5 @@
 import { CHAIN_NAMESPACES } from "@web3auth/base";
-import { Web3Auth } from "@web3auth/modal";
+import { Web3Auth, Web3AuthOptions } from "@web3auth/modal";
 import { useEffect, useState } from "react";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { Keyring } from "@polkadot/api";
@@ -10,7 +10,7 @@ import { SafeEventEmitterProvider } from "@web3auth/base";
 import { BaseDotsamaWallet } from "@talismn/connect-wallets";
 
 //Web3 Auth Instance for Wallet Select Details
-class Web3AuthWallet extends BaseDotsamaWallet {
+export class Web3AuthWallet extends BaseDotsamaWallet {
   constructor({ extensionName, title, installUrl, logo }) {
     super();
     this.extensionName = extensionName;
@@ -103,7 +103,7 @@ export const useWeb3Auth = () => {
             logoDark: "https://web3auth.io/images/w3a-D-Favicon-1.svg",
             defaultLanguage: "en",
             loginGridCol: 3,
-            primaryButton: "externalLogin", // "externalLogin" | "socialLogin" | "emailLogin"
+            primaryButton: "externalLogin",
           },
         });
         setWeb3auth(web3authInstance);
