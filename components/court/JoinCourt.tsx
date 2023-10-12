@@ -82,7 +82,6 @@ const JoinCourtButton = () => {
   const onSubmit = () => {
     send();
   };
-  console.log(participant);
 
   return (
     <>

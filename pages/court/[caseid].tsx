@@ -17,7 +17,6 @@ const CasePage: NextPage = () => {
   const router = useRouter();
   const { caseid } = router.query;
   const caseId = Number(caseid);
-  console.log(caseId);
   const { data: marketId } = useCaseMarketId(caseId);
   const { data: market } = useMarket(
     marketId != null ? { marketId } : undefined,
@@ -31,25 +30,6 @@ const CasePage: NextPage = () => {
     isMarketCategoricalOutcome(market.report?.outcome)
       ? market.report?.outcome.categorical
       : market?.report?.outcome.scalar?.toString();
-
-  // const { isLoading, send, fee } = useExtrinsic(
-  //   () => {
-  //     // const amount = getValues("amount");
-  //     if (!isRpcSdk(sdk)) return;
-
-  //     return sdk.api.tx.court.vote(
-  //       caseId,
-  //       "", //todo: what format?
-  //     );
-  //   },
-  //   {
-  //     onSuccess: () => {
-  //       notificationStore.pushNotification("Successfully joined court", {
-  //         type: "Success",
-  //       });
-  //     },
-  //   },
-  // );
 
   const {
     isLoading: isAppealLoading,
