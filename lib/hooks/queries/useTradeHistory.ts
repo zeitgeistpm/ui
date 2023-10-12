@@ -13,7 +13,7 @@ import {
   isRpcSdk,
   MarketId,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { getMarketHeaders, MarketHeader } from "lib/gql/market-header";
 import { useSdkv2 } from "../useSdkv2";

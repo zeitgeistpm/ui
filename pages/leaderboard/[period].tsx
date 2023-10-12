@@ -13,7 +13,7 @@ import {
   IOScalarAssetId,
   parseAssetId,
   ZeitgeistIpfs,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import Avatar from "components/ui/Avatar";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
@@ -590,7 +590,7 @@ const Leaderboard: NextPage<{
           </Link>
         ))}
       </div>
-      <Table columns={columns} data={tableData} />
+      <Table columns={columns} data={tableData} showHighlight={false} />
       {/* {trendingMarkets.length > 0 && (
         <div className="my-[60px]">
           <MarketScroll

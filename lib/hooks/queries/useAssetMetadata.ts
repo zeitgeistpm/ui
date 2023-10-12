@@ -5,7 +5,7 @@ import {
   IOZtgAssetId,
   ZTG,
   isRpcSdk,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "../useSdkv2";
 import { useChainConstants } from "./useChainConstants";
 import { XcmVersionedMultiLocation } from "@polkadot/types/lookup";

@@ -4,7 +4,7 @@ import {
   ScalarRangeType,
   getScalarBounds,
   isRpcSdk,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import Input from "components/ui/Input";
 import TransactionButton from "components/ui/TransactionButton";
 import { DateTimeInput } from "components/ui/inputs";

@@ -7,7 +7,7 @@ import {
   Market,
   MarketOutcomeAssetId,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import TransactionButton from "components/ui/TransactionButton";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import {
@@ -58,10 +58,7 @@ const CategoricalDisputeBox = ({
   } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk)) {
-        return sdk.api.tx.predictionMarkets.dispute(market.marketId, {
-          //todo: revert
-          Categorical: [1, 1],
-        });
+        return sdk.api.tx.predictionMarkets.dispute(market.marketId);
       }
     },
     {

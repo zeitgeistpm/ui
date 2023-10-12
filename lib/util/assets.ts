@@ -1,4 +1,4 @@
-import { getIndexOf, ZTG, MarketOutcomeAssetId } from "@zeitgeistpm/sdk-next";
+import { getIndexOf, ZTG, MarketOutcomeAssetId } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { parseAssetIdString } from "./parse-asset-id";
 

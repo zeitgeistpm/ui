@@ -1,4 +1,4 @@
-import { parseAssetId } from "@zeitgeistpm/sdk-next";
+import { parseAssetId } from "@zeitgeistpm/sdk";
 import { useBalance } from "./useBalance";
 import { usePool } from "./usePool";
 

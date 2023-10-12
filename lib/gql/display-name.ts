@@ -1,4 +1,4 @@
-import { FullContext, Sdk } from "@zeitgeistpm/sdk-next";
+import { FullContext, Sdk } from "@zeitgeistpm/sdk";
 
 export const getDisplayName = async (
   sdk: Sdk<FullContext>,

@@ -1,4 +1,4 @@
-import { CategoricalAssetId, ScalarAssetId } from "@zeitgeistpm/sdk-next";
+import { CategoricalAssetId, ScalarAssetId } from "@zeitgeistpm/sdk";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketStage } from "lib/hooks/queries/useMarketStage";
 import { useWallet } from "lib/state/wallet";

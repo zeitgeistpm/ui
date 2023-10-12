@@ -1,4 +1,4 @@
-import { isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { isRpcSdk } from "@zeitgeistpm/sdk";
 import { ChainTime } from "@zeitgeistpm/utility/dist/time";
 import { atom, getDefaultStore, useAtom } from "jotai";
 import { sdkAtom } from "lib/hooks/useSdkv2";
