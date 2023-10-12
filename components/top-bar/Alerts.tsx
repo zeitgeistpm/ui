@@ -50,7 +50,7 @@ export const Alerts = () => {
                     size={24}
                   />
                   {hasNotifications && (
-                    <div className="absolute animate-pulse-scale top-0 right-0 w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div className="absolute animate-pulse-scale top-0 right-0 w-3 h-3 rounded-full bg-vermilion"></div>
                   )}
                 </div>
               </Menu.Button>
