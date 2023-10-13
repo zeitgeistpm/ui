@@ -7,6 +7,7 @@ import Input from "components/ui/Input";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";
 import Decimal from "decimal.js";
+import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import { participantsRootKey } from "lib/hooks/queries/court/useParticipants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
@@ -37,6 +38,7 @@ const DelegateButton = ({ address }: { address: string }) => {
   const notificationStore = useNotifications();
   const wallet = useWallet();
   const { data: balance } = useZtgBalance(wallet.realAddress);
+  const participant = useConnectedCourtParticipant();
   const queryClient = useQueryClient();
 
   const { isLoading, send, fee } = useExtrinsic(
@@ -129,6 +131,13 @@ const DelegateButton = ({ address }: { address: string }) => {
                         value < constants?.court.minJurorStake
                       ) {
                         return `Stake cannot be less than ${constants?.court.minJurorStake} ${constants.tokenSymbol}`;
+                      } else if (
+                        participant?.stake &&
+                        participant?.stake.div(ZTG).greaterThan(value)
+                      ) {
+                        return `Stake must be higher than your current stake of ${participant?.stake
+                          .div(ZTG)
+                          .toNumber()} ${constants?.tokenSymbol}`;
                       }
                     },
                   })}
