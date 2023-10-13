@@ -97,9 +97,10 @@ const PROD_CHAINS: Chain[] = [
     withdrawFee: "0.0422 DOT", // informed from testing
     depositFee: new Decimal(0.02).mul(ZTG), // informed from testing
     endpoints: [
-      "wss://polkadot.api.onfinality.io/public-ws",
-      "wss://polkadot-rpc.dwellir.com",
       "wss://rpc.polkadot.io",
+      "wss://polkadot-rpc.dwellir.com",
+      "wss://polkadot.public.curie.radiumblock.co/ws",
+      "wss://1rpc.io/dot",
     ],
     fetchCurrencies: async (api, address) => {
       const { data } = await api.query.system.account(address);
