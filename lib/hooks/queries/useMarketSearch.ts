@@ -29,13 +29,22 @@ export const useMarketSearch = (searchTerm: string) => {
       if (enabled) {
         // const searchWords = debouncedSearchTerm.split(" ");
         console.time("a");
+        const search = buildSearch(debouncedSearchTerm);
+
+        // const response = await sdk.indexer.client.request(`
+        //   query MyQuery {
+        //     markets(where: { OR: {${search}}}) {
+        //       id
+        //       tags
+        //     }
+        //   }
+        // `);
+
+        // console.log("res", response);
+
         const { markets } = await sdk.indexer.markets({
           where: {
-            OR: [
-              { question_containsInsensitive: debouncedSearchTerm },
-              { description_containsInsensitive: debouncedSearchTerm },
-              //   { tags_containsAny: [debouncedSearchTerm] },
-            ],
+            OR: search,
           },
           order: MarketOrderByInput.IdDesc,
           limit: 100,
@@ -47,7 +56,6 @@ export const useMarketSearch = (searchTerm: string) => {
 
         const options = {
           includeScore: true,
-          // Search in `author` and in `tags` array
           keys: ["question", "description"],
           threshold: 0.9,
         };
@@ -70,6 +78,30 @@ export const useMarketSearch = (searchTerm: string) => {
   );
 
   return query;
+};
+
+// const buildSearch = (searchTerm: string) => {
+//   const search = searchTerm
+//     .split(" ")
+//     .map(
+//       (word) =>
+//         `description_containsInsensitive: "${word}", question_containsInsensitive: "${word}"`,
+//     )
+//     .join(",");
+//   console.log(search);
+
+//   return search;
+// };
+const buildSearch = (searchTerm: string) => {
+  const search = searchTerm
+    .split(" ")
+    .map((word) => [
+      { question_containsInsensitive: word },
+      { description_containsInsensitive: word },
+    ])
+    .flat();
+
+  return search;
 };
 
 // const;
