@@ -1,5 +1,5 @@
 import { useQueries } from "@tanstack/react-query";
-import { Context, isRpcSdk, Pool } from "@zeitgeistpm/sdk-next";
+import { Context, isRpcSdk, Pool } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "../useSdkv2";
 
 export const rootKey = "pool-account-ids";

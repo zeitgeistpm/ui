@@ -1,7 +1,12 @@
 import { Dialog } from "@headlessui/react";
 import { useQuery } from "@tanstack/react-query";
 import { PollingTimeout, poll } from "@zeitgeistpm/avatara-util";
-import { IOZtgAssetId, ZTG, isFullSdk } from "@zeitgeistpm/sdk-next";
+import {
+  IOForeignAssetId,
+  IOZtgAssetId,
+  ZTG,
+  isFullSdk,
+} from "@zeitgeistpm/sdk";
 import { StorageError } from "@zeitgeistpm/web3.storage";
 import Modal from "components/ui/Modal";
 import TransactionButton from "components/ui/TransactionButton";
@@ -166,7 +171,9 @@ export const Publishing = ({ editor }: PublishingProps) => {
 
         const result = await sdk.model.markets.create(
           params,
-          feeDetails?.assetId,
+          IOForeignAssetId.is(feeDetails?.assetId)
+            ? feeDetails?.assetId
+            : undefined,
         );
         const marketId = result.saturate().unwrap().market.marketId;
 

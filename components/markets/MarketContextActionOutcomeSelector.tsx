@@ -1,6 +1,6 @@
 import { Listbox, Transition } from "@headlessui/react";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { MarketOutcomeAssetId, getIndexOf } from "@zeitgeistpm/sdk-next";
+import { MarketOutcomeAssetId, getIndexOf } from "@zeitgeistpm/sdk";
 import Input from "components/ui/Input";
 import TruncatedText from "components/ui/TruncatedText";
 import Fuse from "fuse.js";

@@ -2,7 +2,7 @@ import { Fragment, useState } from "react";
 
 import { Menu, Transition } from "@headlessui/react";
 import { CATEGORIES } from "components/front-page/PopularCategories";
-import MenuLogo from "components/menu/MenuLogo";
+import MenuLogo from "components/top-bar/MenuLogo";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,6 +18,7 @@ import {
 } from "react-icons/fi";
 import { useCategoryCounts } from "lib/hooks/queries/useCategoryCounts";
 import MarketSearch from "components/markets/MarketSearch";
+import { Alerts } from "./Alerts";
 
 const AccountButton = dynamic(() => import("../account/AccountButton"), {
   ssr: false,
@@ -160,7 +161,10 @@ const TopBar = () => {
           </Link>
           <MarketSearch />
         </div>
-        <AccountButton />
+        <div className="center gap-2">
+          <Alerts />
+          <AccountButton />
+        </div>
       </div>
     </div>
   );

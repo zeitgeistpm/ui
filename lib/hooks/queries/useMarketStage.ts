@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Context, isRpcSdk, Market } from "@zeitgeistpm/sdk-next";
+import { Context, isRpcSdk, Market } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "../useSdkv2";
 import { marketsRootQuery } from "./useMarket";
 import { useChainTime } from "lib/state/chaintime";
@@ -27,6 +27,7 @@ export const useMarketStage = (market?: Market<Context>) => {
     },
     {
       enabled: Boolean(sdk && isRpcSdk(sdk) && market && now),
+      staleTime: 10_000,
     },
   );
 };

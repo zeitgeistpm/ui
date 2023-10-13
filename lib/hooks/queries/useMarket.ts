@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { IndexerContext, isIndexedSdk, Sdk } from "@zeitgeistpm/sdk-next";
+import { IndexerContext, isIndexedSdk, Sdk } from "@zeitgeistpm/sdk";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { memoize } from "lodash-es";
 import * as batshit from "@yornaath/batshit";
@@ -31,6 +31,7 @@ export const useMarket = (
     },
     {
       refetchInterval: opts?.refetchInterval ?? false,
+      staleTime: 10_000,
       enabled: Boolean(
         sdk &&
           isIndexedSdk(sdk) &&
@@ -74,6 +75,7 @@ const batcher = memoize((sdk: Sdk<IndexerContext>) => {
       });
       return markets;
     },
+
     scheduler: batshit.windowScheduler(10),
     resolver: (data, query) => {
       if ("marketId" in query) {
