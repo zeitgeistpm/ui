@@ -53,22 +53,40 @@ export const useMarketSearch = (searchTerm: string) => {
 
         console.log(markets);
         console.log(markets.map((m) => m.question));
-
-        const options = {
+        console.time("b");
+        const fuse = new Fuse(markets, {
           includeScore: true,
-          keys: ["question", "description"],
           threshold: 0.9,
-        };
+          keys: [
+            //matches in the question are consisdered more important
+            {
+              name: "question",
+              weight: 3,
+            },
+            {
+              name: "description",
+              weight: 1,
+            },
+            { name: "status", weight: 0.2 },
+          ],
+        });
 
-        const fuse = new Fuse(markets, options);
-
-        const result = fuse.search(debouncedSearchTerm);
+        // const result = fuse.search(debouncedSearchTerm);
+        const result = fuse.search({
+          $or: [
+            { question: debouncedSearchTerm },
+            { description: debouncedSearchTerm },
+            { status: "Active" },
+          ],
+        });
+        console.timeEnd("b");
         console.log(result);
 
         console.log(result.map((m) => m.item.question));
+        console.log(result.map((m) => m.item.status));
         console.log(result.map((m) => m.score));
 
-        return markets;
+        return result.map((r) => r.item);
       }
     },
     {
