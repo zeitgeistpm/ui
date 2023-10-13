@@ -61,7 +61,6 @@ export type MarketBond = {
 
 export const useAccountBonds = (address?: string) => {
   const [sdk, id] = useSdkv2();
-
   const query = useQuery(
     [id, accountBondsKey, address],
     async () => {
@@ -71,7 +70,6 @@ export const useAccountBonds = (address?: string) => {
         }>(accountBondsQuery, {
           address: address,
         });
-
         return markets;
       }
     },

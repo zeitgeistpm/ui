@@ -49,7 +49,7 @@ export const useExtrinsic = <T>(
     if (!signer) return;
 
     setIsLoading(true);
-
+    // 0x3eef66e59f376146b03d84ff2a46d59351214b76f1400bad13ee0370ba929c93
     let extrinsic = extrinsicFn(params);
     if (!extrinsic) return;
 
@@ -59,7 +59,6 @@ export const useExtrinsic = <T>(
       console.info("Proxying transaction");
       extrinsic = sdk.api.tx.proxy.proxy(proxy?.address, "Any", extrinsic);
     }
-    console.log(signer);
     signAndSend(
       extrinsic,
       signer,
@@ -75,6 +74,8 @@ export const useExtrinsic = <T>(
               });
         },
         successCallback: (data) => {
+          console.log(data.txHash.toHuman());
+          console.log(data);
           setIsLoading(false);
           setIsSuccess(true);
           setIsBroadcasting(false);
