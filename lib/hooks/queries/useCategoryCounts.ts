@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { isIndexedSdk } from "@zeitgeistpm/sdk-next";
+import { isIndexedSdk } from "@zeitgeistpm/sdk";
 import { CATEGORIES } from "components/front-page/PopularCategories";
 import { getCategoryCounts } from "lib/gql/popular-categories";
 import { useSdkv2 } from "../useSdkv2";
@@ -24,6 +24,7 @@ export const useCategoryCounts = () => {
     {
       enabled: Boolean(sdk && isIndexedSdk(sdk)),
       keepPreviousData: true,
+      staleTime: 100_000,
     },
   );
 

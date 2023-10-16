@@ -5,8 +5,8 @@ import {
   RpcContext,
   ZTG,
   swapFeeFromFloat,
-} from "@zeitgeistpm/sdk-next";
-import { KeyringPairOrExtSigner } from "@zeitgeistpm/sdk/dist/types";
+} from "@zeitgeistpm/sdk";
+import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 import { ChainTime } from "@zeitgeistpm/utility/dist/time";
 import Decimal from "decimal.js";
 import { BLOCK_TIME_SECONDS } from "lib/constants";
@@ -133,6 +133,7 @@ export const marketFormDataToExtrinsicParams = (
     signer,
     proxy,
     disputeMechanism: "Authorized",
+    creatorFee: 0,
     oracle: form.oracle,
     period: {
       Timestamp: [Date.now(), new Date(form.endDate).getTime()],

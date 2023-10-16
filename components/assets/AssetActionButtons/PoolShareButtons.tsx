@@ -12,7 +12,7 @@ import {
   getIndexOf,
   isRpcSdk,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useWallet } from "lib/state/wallet";
@@ -67,7 +67,13 @@ const RedeemPoolButton = ({
 
   const { isLoading, isSuccess, send } = useExtrinsic(
     () => {
-      if (!isRpcSdk(sdk) || !constants || !userPoolShares || !poolWeights)
+      if (
+        !isRpcSdk(sdk) ||
+        !constants ||
+        !userPoolShares ||
+        !poolWeights ||
+        userPoolShares.equals(0)
+      )
         return;
 
       const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
@@ -77,9 +83,15 @@ const RedeemPoolButton = ({
         if (!asset) return "0";
         const assetId = parseAssetIdString(asset.assetId);
 
+        const assetIndex = IOCategoricalAssetId.is(assetId)
+          ? getIndexOf(assetId)
+          : index;
+
         const assetAmount = IOBaseAssetId.is(assetId)
           ? poolBaseBalance?.mul(userPercentageOwnership)
-          : new Decimal(poolAssetBalances?.[index]?.free.toString() ?? 0);
+          : new Decimal(
+              poolAssetBalances?.[assetIndex]?.free.toString() ?? 0,
+            ).mul(userPercentageOwnership);
 
         return assetAmount
           ? assetAmount

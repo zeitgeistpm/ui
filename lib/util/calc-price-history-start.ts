@@ -1,4 +1,4 @@
-import { MarketStatus } from "@zeitgeistpm/sdk-next";
+import { MarketStatus } from "@zeitgeistpm/sdk";
 import { TimeFilter } from "components/ui/TimeFilters";
 
 export const calcPriceHistoryStartDate = (

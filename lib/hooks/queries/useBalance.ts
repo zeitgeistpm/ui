@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { AssetId, IOZtgAssetId, isRpcSdk } from "@zeitgeistpm/sdk-next";
+import { AssetId, IOZtgAssetId, isRpcSdk } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { getApiAtBlock } from "lib/util/get-api-at";
 import { useSdkv2 } from "../useSdkv2";

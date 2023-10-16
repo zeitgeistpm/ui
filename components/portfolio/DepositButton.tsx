@@ -1,5 +1,5 @@
 import { Dialog } from "@headlessui/react";
-import { ZTG } from "@zeitgeistpm/sdk-next";
+import { ZTG } from "@zeitgeistpm/sdk";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";

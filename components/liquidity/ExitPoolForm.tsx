@@ -6,7 +6,7 @@ import {
   isRpcSdk,
   parseAssetId,
   ZTG,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Decimal from "decimal.js";

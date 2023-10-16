@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { IndexerContext, isIndexedSdk, Market } from "@zeitgeistpm/sdk-next";
+import { IndexerContext, isIndexedSdk, Market } from "@zeitgeistpm/sdk";
 import { MarketOrderByInput, MarketWhereInput } from "@zeitgeistpm/indexer";
 import { getOutcomesForMarkets } from "lib/gql/markets-list/outcomes-for-markets";
 import { getCurrentPrediction } from "lib/util/assets";
@@ -68,13 +68,17 @@ export const useInfiniteMarkets = (
         tags_containsAny: tags?.length === 0 ? undefined : tags,
         pool_isNull: withLiquidityOnly ? false : undefined,
         baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
-        pool: {
-          account: {
-            balances_some: {
-              balance_gt: withLiquidityOnly ? 0 : undefined,
-            },
-          },
-        },
+        ...(withLiquidityOnly
+          ? {
+              pool: {
+                account: {
+                  balances_some: {
+                    balance_gt: 0,
+                  },
+                },
+              },
+            }
+          : {}),
       },
       offset: !pageParam ? 0 : limit * pageParam,
       limit: limit,
@@ -125,6 +129,7 @@ export const useInfiniteMarkets = (
           );
         });
     },
+    staleTime: 10_000,
   });
   return query;
 };

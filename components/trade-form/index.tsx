@@ -9,7 +9,7 @@ import {
   MarketOutcomeAssetId,
   ZTG,
   getMarketIdOf,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import TradeResult from "components/markets/TradeResult";
 import Input from "components/ui/Input";
@@ -121,8 +121,6 @@ const Inner = ({
   const { data: market } = useMarket({
     marketId: getMarketIdOf(tradeItem.assetId),
   });
-
-  const { data: constants } = useChainConstants();
 
   const {
     poolBaseBalance,
@@ -257,18 +255,25 @@ const Inner = ({
 
   const changeByPercentage = useCallback(
     (percentage: Decimal) => {
-      if (tradeItemState == null) {
+      const [balanceIn, weightIn, balanceOut, weightOut] = [
+        poolBaseBalance,
+        baseWeight,
+        poolAssetBalance,
+        assetWeight,
+      ];
+
+      if (
+        tradeItemState == null ||
+        balanceIn == null ||
+        weightIn == null ||
+        balanceOut == null ||
+        weightOut == null
+      ) {
         return;
       }
-      if (tradeItem.action === "buy") {
-        const amountOut = maxAssetAmountDecimal.mul(percentage);
 
-        const [balanceIn, weightIn, balanceOut, weightOut] = [
-          poolBaseBalance,
-          baseWeight,
-          poolAssetBalance,
-          assetWeight,
-        ];
+      if (tradeItem.action === "buy" && balanceIn) {
+        const amountOut = maxAssetAmountDecimal.mul(percentage);
 
         const amountIn = calcInGivenOut(
           balanceIn,
@@ -277,6 +282,7 @@ const Inner = ({
           weightOut,
           amountOut.mul(ZTG),
           tradeItemState.swapFee,
+          market?.creatorFee ?? 0,
         );
 
         setValue(
@@ -287,13 +293,6 @@ const Inner = ({
       } else if (tradeItem.action === "sell") {
         const amountOut = maxBaseAmountDecimal.mul(percentage);
 
-        const [balanceIn, weightIn, balanceOut, weightOut] = [
-          poolBaseBalance,
-          baseWeight,
-          poolAssetBalance,
-          assetWeight,
-        ];
-
         const amountIn = calcInGivenOut(
           balanceOut,
           weightOut,
@@ -301,6 +300,7 @@ const Inner = ({
           weightIn,
           amountOut.mul(ZTG),
           tradeItemState.swapFee,
+          market?.creatorFee ?? 0,
         );
 
         setValue("baseAmount", amountOut.toFixed(4, Decimal.ROUND_DOWN));
@@ -320,7 +320,20 @@ const Inner = ({
 
   const changeByAssetAmount = useCallback(
     (assetAmount: Decimal) => {
-      if (tradeItemState == null) {
+      const [balanceIn, weightIn, balanceOut, weightOut] = [
+        poolBaseBalance,
+        baseWeight,
+        poolAssetBalance,
+        assetWeight,
+      ];
+      if (
+        tradeItemState == null ||
+        balanceIn == null ||
+        weightIn == null ||
+        balanceOut == null ||
+        weightOut == null ||
+        swapFee == null
+      ) {
         return;
       }
 
@@ -329,12 +342,6 @@ const Inner = ({
         : new Decimal(0);
 
       if (tradeItem.action === "buy") {
-        const [balanceIn, weightIn, balanceOut, weightOut] = [
-          poolBaseBalance,
-          baseWeight,
-          poolAssetBalance,
-          assetWeight,
-        ];
         const amountIn = calcInGivenOut(
           balanceIn,
           weightIn,
@@ -342,6 +349,7 @@ const Inner = ({
           weightOut,
           assetAmount.mul(ZTG),
           swapFee,
+          market?.creatorFee ?? 0,
         );
 
         setValue(
@@ -350,13 +358,6 @@ const Inner = ({
         );
         setPercentageDisplay(percentage.toString());
       } else if (tradeItem.action === "sell") {
-        const [balanceIn, weightIn, balanceOut, weightOut] = [
-          poolAssetBalance,
-          assetWeight,
-          poolBaseBalance,
-          baseWeight,
-        ];
-
         const amountOut = calcOutGivenIn(
           balanceIn,
           weightIn,
@@ -364,6 +365,7 @@ const Inner = ({
           weightOut,
           assetAmount.mul(ZTG),
           swapFee,
+          market?.creatorFee ?? 0,
         );
         setValue(
           "baseAmount",
@@ -412,6 +414,7 @@ const Inner = ({
           weightOut,
           baseAmount.mul(ZTG),
           swapFee,
+          market?.creatorFee ?? 0,
         );
         setValue(
           "assetAmount",
@@ -433,6 +436,7 @@ const Inner = ({
           weightOut,
           baseAmount.mul(ZTG),
           swapFee,
+          market?.creatorFee ?? 0,
         );
 
         setValue(
@@ -531,18 +535,18 @@ const Inner = ({
               }}
               selectedIndex={tabIndex}
             >
-              <Tab.List className="flex justify-between h-[60px] sm:h-[71px] text-center rounded-[10px]">
+              <Tab.List className="flex justify-between h-[60px] sm:h-[71px] text-center rounded-xl">
                 <Tab
                   as={TradeTab}
                   selected={type === "buy"}
-                  className="rounded-tl-[10px]"
+                  className="rounded-tl-xl"
                 >
                   Buy
                 </Tab>
                 <Tab
                   as={TradeTab}
                   selected={type === "sell"}
-                  className="rounded-tr-[10px]"
+                  className="rounded-tr-xl"
                 >
                   Sell
                 </Tab>
