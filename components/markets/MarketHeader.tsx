@@ -98,33 +98,36 @@ const MarketOutcome: FC<
           : "bg-yellow-light"
       }`}
     >
-      {status === "Reported" && (
-        <div className="flex gap-1">
-          <span>{status} Outcome </span>
-          {outcome ? (
-            <span className="font-bold">{outcome}</span>
-          ) : status === "Reported" ? (
-            <Skeleton width={100} height={24} />
-          ) : (
-            ""
-          )}
-        </div>
-      )}
-
-      {status === "Disputed" && (
-        <div className="flex gap-1">
-          <span>{status} Outcome </span>
-        </div>
-      )}
-
-      {status !== "Resolved" && by && (
-        <div className="flex items-center gap-4">
-          <span>{status} by: </span>
-          <div className="flex items-center">
-            <UserIdentity user={by} />
+      <div className="center gap-1">
+        {status === "Reported" && (
+          <div className="flex gap-1">
+            <span>{status} Outcome </span>
+            {outcome ? (
+              <span className="font-bold">{outcome}</span>
+            ) : status === "Reported" ? (
+              <Skeleton width={100} height={24} />
+            ) : (
+              ""
+            )}
           </div>
-        </div>
-      )}
+        )}
+
+        {status === "Disputed" && (
+          <div className="flex gap-1">
+            <span>{status} Outcome </span>
+          </div>
+        )}
+
+        {status !== "Resolved" && by && (
+          <div className="flex items-center gap-4">
+            <span>by: </span>
+            <div className="flex items-center">
+              <UserIdentity user={by} />
+            </div>
+          </div>
+        )}
+      </div>
+
       {marketHistory ? (
         <button
           className="text-ztg-blue font-medium"

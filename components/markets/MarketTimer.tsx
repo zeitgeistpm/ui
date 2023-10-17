@@ -132,7 +132,7 @@ const copy: Record<
     color: "bg-black",
   },
   Court: {
-    title: "Market outcome Disputed in Court",
+    title: "Disputed in Court",
     description: "Market is awaiting a ruling",
     color: "bg-orange-400",
   },

@@ -51,6 +51,7 @@ import { MarketDispute } from "lib/types/markets";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
@@ -387,6 +388,9 @@ const Market: NextPage<MarketPageProps> = ({
                 <>
                   <DisputeForm market={market} />
                 </>
+              ) : market?.status === MarketStatus.Disputed &&
+                market?.disputeMechanism === "Court" ? (
+                <CourtCaseContext market={market} />
               ) : (
                 <></>
               )}
@@ -623,6 +627,28 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
           </div>
         </>
       )}
+    </div>
+  );
+};
+
+const CourtCaseContext = ({ market }: { market: FullMarketFragment }) => {
+  return (
+    <div className="py-8 px-5">
+      <h4 className="mb-3 flex items-center gap-2">
+        <Image width={22} height={22} src="/icons/court.svg" alt="court" />
+        <span>Market Court Case</span>
+      </h4>
+
+      <p className="mb-5 text-sm">
+        Market has been disputed and is awaiting a ruling in court.
+      </p>
+
+      <button
+        className={`ztg-transition text-white focus:outline-none disabled:bg-slate-300 disabled:cursor-default 
+        rounded-full w-full h-[56px] bg-purple-400`}
+      >
+        View Case
+      </button>
     </div>
   );
 };
