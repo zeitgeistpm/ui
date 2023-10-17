@@ -1,7 +1,10 @@
+import { IOBaseAssetId } from "@zeitgeistpm/sdk";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
+import { lookupAssetSymbol } from "lib/constants/foreign-asset";
 import { useCreatorFeePayouts } from "lib/hooks/queries/useCreatorFeePayouts";
+import { parseAssetIdString } from "lib/util/parse-asset-id";
 import EmptyPortfolio from "./EmptyPortfolio";
 
 const columns: TableColumn[] = [
@@ -24,11 +27,18 @@ const columns: TableColumn[] = [
 
 const CreatorFeePayouts = ({ address }: { address: string }) => {
   const { data: feePayouts, isLoading } = useCreatorFeePayouts(address);
-  const tableData: TableData[] | undefined = feePayouts?.map((payout) => ({
-    amount: new Decimal(payout.dBalance).div(ZTG).toNumber(),
-    currency: "ZTG",
-    block: payout.blockNumber,
-  }));
+  const tableData: TableData[] | undefined = feePayouts?.map((payout) => {
+    const assetId = parseAssetIdString(payout.assetId);
+    const assetSymbol = IOBaseAssetId.is(assetId)
+      ? lookupAssetSymbol(assetId)
+      : "Unknown Asset";
+
+    return {
+      amount: new Decimal(payout.dBalance).div(ZTG).toNumber(),
+      currency: assetSymbol,
+      block: payout.blockNumber,
+    };
+  });
 
   return (
     <div>
