@@ -130,7 +130,7 @@ const TopBar = () => {
                         {({ active }) => (
                           <Link href="/create" onClick={close}>
                             <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-3 mb-4`}
+                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-3`}
                             >
                               <div className="relative h-6 w-6 z-10">
                                 <FiPlusSquare size={"100%"} />
@@ -148,7 +148,7 @@ const TopBar = () => {
                           {({ active }) => (
                             <Link href="/court" onClick={close}>
                               <button
-                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-3`}
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-3 mt-4`}
                               >
                                 <div className="relative h-6 w-6 z-10">
                                   <Users size={"100%"} />
