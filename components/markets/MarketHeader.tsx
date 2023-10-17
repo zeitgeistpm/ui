@@ -52,7 +52,7 @@ export const UserIdentity: FC<
       : shortenAddress(user, 10, 10);
   return (
     <div className={`inline-flex items-center gap-1 ${className}`}>
-      <Avatar address={user} copy={false} />
+      <Avatar address={user} copy={false} size={18} />
       <span className="break-all flex-1">{displayName}</span>
     </div>
   );
