@@ -6,7 +6,7 @@ import MenuLogo from "components/top-bar/MenuLogo";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu as MenuIcon } from "react-feather";
+import { Menu as MenuIcon, Users } from "react-feather";
 import {
   FiArrowLeft,
   FiArrowRight,
@@ -130,7 +130,7 @@ const TopBar = () => {
                         {({ active }) => (
                           <Link href="/create" onClick={close}>
                             <button
-                              className={`group flex w-full items-center  rounded-md px-2 py-2 text-sm gap-3`}
+                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-3`}
                             >
                               <div className="relative h-6 w-6 z-10">
                                 <FiPlusSquare size={"100%"} />
@@ -142,6 +142,23 @@ const TopBar = () => {
                           </Link>
                         )}
                       </Menu.Item>
+
+                      {process.env.NEXT_PUBLIC_SHOW_COURT === "true" && (
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link href="/court" onClick={close}>
+                              <button
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-3 mt-4`}
+                              >
+                                <div className="relative h-6 w-6 z-10">
+                                  <Users size={"100%"} />
+                                </div>
+                                <h3 className="text-sm font-semibold">Court</h3>
+                              </button>
+                            </Link>
+                          )}
+                        </Menu.Item>
+                      )}
                     </Menu.Items>
                   </Transition>
                 </>

@@ -2,7 +2,6 @@ import {
   BarChart2,
   Box,
   Briefcase,
-  Droplet,
   PlusSquare,
   User,
   Users,

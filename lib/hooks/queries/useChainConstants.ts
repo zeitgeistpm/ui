@@ -28,6 +28,12 @@ export type ChainConstants = {
   balances: {
     existentialDeposit: number;
   };
+  court: {
+    maxCourtParticipants: number;
+    maxAppeals: number;
+    minJurorStake: number;
+    inflationPeriodBlocks: number;
+  };
 };
 
 export const useChainConstants = () => {
@@ -77,6 +83,12 @@ export const useChainConstants = () => {
         balances: {
           existentialDeposit:
             consts.balances.existentialDeposit.toNumber() / ZTG,
+        },
+        court: {
+          maxCourtParticipants: consts.court.maxCourtParticipants.toNumber(),
+          maxAppeals: consts.court.maxAppeals.toNumber(),
+          minJurorStake: consts.court.minJurorStake.toNumber() / ZTG,
+          inflationPeriodBlocks: consts.court.inflationPeriod.toNumber(),
         },
       };
 
