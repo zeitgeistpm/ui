@@ -1,38 +1,34 @@
-import Table, { TableColumn } from "components/ui/Table";
+import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
-import { useAccountBonds } from "lib/hooks/queries/useAccountBonds";
-import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
-import EmptyPortfolio from "./EmptyPortfolio";
-import MarketPositionHeader from "./MarketPositionHeader";
 import { useCreatorFeePayouts } from "lib/hooks/queries/useCreatorFeePayouts";
+import EmptyPortfolio from "./EmptyPortfolio";
 
 const columns: TableColumn[] = [
   {
-    header: "Bond type",
-    accessor: "type",
-    type: "paragraph",
+    header: "Amount",
+    accessor: "amount",
+    type: "text",
   },
   {
-    header: "Responsible",
-    accessor: "responsible",
-    type: "address",
+    header: "Currency",
+    accessor: "currency",
+    type: "text",
   },
   {
-    header: "Value",
-    accessor: "value",
-    type: "currency",
-  },
-  {
-    header: "Settled",
-    accessor: "settled",
+    header: "Block number",
+    accessor: "block",
     type: "text",
   },
 ];
 
 const CreatorFeePayouts = ({ address }: { address: string }) => {
   const { data: feePayouts, isLoading } = useCreatorFeePayouts(address);
-  const { data: ztgPrice } = useZtgPrice();
+  const tableData: TableData[] | undefined = feePayouts?.map((payout) => ({
+    amount: new Decimal(payout.dBalance).div(ZTG).toNumber(),
+    currency: "ZTG",
+    block: payout.blockNumber,
+  }));
 
   return (
     <div>
@@ -45,51 +41,7 @@ const CreatorFeePayouts = ({ address }: { address: string }) => {
           buttonLink="/create"
         />
       ) : (
-        <>
-          {/* {feePayouts?.map((market) => (
-            <div key={market.marketId} className="mb-[30px]">
-              <MarketPositionHeader
-                marketId={market.marketId}
-                question={market.question}
-              />
-              <Table
-                columns={columns}
-                data={[
-                  {
-                    type: "Creation",
-                    responsible: market.bonds.creation.who,
-                    value: {
-                      value: new Decimal(market.bonds.creation.value)
-                        .div(ZTG)
-                        .toNumber(),
-                      usdValue: new Decimal(market.bonds.creation.value)
-                        .div(ZTG)
-                        .mul(ztgPrice ?? 0)
-                        .toNumber(),
-                    },
-                    settled:
-                      market.bonds.creation.isSettled === true ? "Yes" : "No",
-                  },
-                  {
-                    type: "Oracle",
-                    responsible: market.bonds.oracle.who,
-                    value: {
-                      value: new Decimal(market.bonds.oracle.value)
-                        .div(ZTG)
-                        .toNumber(),
-                      usdValue: new Decimal(market.bonds.oracle.value)
-                        .div(ZTG)
-                        .mul(ztgPrice ?? 0)
-                        .toNumber(),
-                    },
-                    settled:
-                      market.bonds.oracle.isSettled === true ? "Yes" : "No",
-                  },
-                ]}
-              />
-            </div>
-          ))} */}
-        </>
+        <Table columns={columns} data={tableData} />
       )}
     </div>
   );
