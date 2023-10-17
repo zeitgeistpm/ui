@@ -3,6 +3,7 @@ import { ZTG, isRpcSdk } from "@zeitgeistpm/sdk";
 import JoinCourtButton from "components/court/JoinCourt";
 import JurorsTable from "components/court/JurorsTable";
 import PrepareExitCourtButton from "components/court/PrepareExitCourt";
+import { environment } from "lib/constants";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import { participantsRootKey } from "lib/hooks/queries/court/useParticipants";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
@@ -11,8 +12,13 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { NextPage } from "next";
+import NotFoundPage from "pages/404";
 
 const CourtPage: NextPage = () => {
+  if (process.env.NEXT_PUBLIC_SHOW_COURT !== "true") {
+    return <NotFoundPage />;
+  }
+
   const { data: constants } = useChainConstants();
   const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();

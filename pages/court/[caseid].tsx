@@ -12,8 +12,12 @@ import { useWallet } from "lib/state/wallet";
 import { isMarketCategoricalOutcome } from "lib/types";
 import { useRouter } from "next/router";
 import { NextPage } from "next/types";
+import NotFoundPage from "pages/404";
 
 const CasePage: NextPage = () => {
+  if (process.env.NEXT_PUBLIC_SHOW_COURT !== "true") {
+    return <NotFoundPage />;
+  }
   const router = useRouter();
   const { caseid } = router.query;
   const caseId = Number(caseid);
