@@ -210,18 +210,12 @@ const Market: NextPage<MarketPageProps> = ({
   const lastDispute = useMemo(() => {
     if (disputes && market?.status === "Disputed") {
       const lastDispute = disputes?.[disputes.length - 1];
-      const at = lastDispute.at.toNumber();
-      const by = lastDispute.by.toString();
-      const isCategorical = !market?.marketType.scalar;
-      const outcome = !isCategorical
-        ? market.scalarType === "date"
-          ? new Decimal(lastDispute?.outcome?.asScalar.toString()).toNumber()
-          : Number(lastDispute?.outcome?.asScalar)
-        : Number(lastDispute?.outcome?.asCategorical);
+      const at = lastDispute?.at!;
+      const by = lastDispute?.by!;
+
       const marketDispute: MarketDispute = {
         at,
         by,
-        outcome: isCategorical ? { categorical: outcome } : { scalar: outcome },
       };
 
       return marketDispute;

@@ -32,7 +32,7 @@ const DisputeButton = ({
     if (!assetId) return true;
     const assetIndex = getIndexOf(assetId);
     const isCategorical = market.marketType.categorical != null;
-    const assetIsReported = market.report?.outcome.categorical === assetIndex;
+    const assetIsReported = market.report?.outcome?.categorical === assetIndex;
 
     return (sdk && !isRpcSdk(sdk)) || (isCategorical && assetIsReported);
   }, [sdk, disputes?.length, market]);
