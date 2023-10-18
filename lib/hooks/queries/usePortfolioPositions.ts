@@ -192,7 +192,7 @@ export const usePortfolioPositions = (
       return null;
     })
     .filter(isNotNull);
-  console.log(filter);
+
   const pools = usePoolsByIds(filter);
   const markets = useMarketsByIds(filter);
 

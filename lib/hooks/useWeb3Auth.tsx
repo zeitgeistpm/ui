@@ -46,7 +46,7 @@ export const useWeb3Auth = () => {
   const [provider, setProvider] = useAtom(providerAtom);
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
-  const { selectWallet } = useWallet();
+  const { selectWallet, loadWeb3Wallet } = useWallet();
 
   useEffect(() => {
     loadWallet();
@@ -60,13 +60,15 @@ export const useWeb3Auth = () => {
         if (!provider) {
           await initWeb3Auth();
         }
+        // let wallet = await getAccounts();
+        // const extendedWallet = {
+        //   ...wallet,
+        //   extensionName: "web3auth",
+        // };
+        // selectWallet(extendedWallet);
         let wallet = await getAccounts();
-        const extendedWallet = {
-          ...wallet,
-          extensionName: "web3auth",
-        };
-
-        selectWallet(extendedWallet);
+        console.log(wallet);
+        wallet && loadWeb3Wallet(wallet);
       };
       init();
     }

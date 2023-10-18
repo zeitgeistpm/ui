@@ -39,17 +39,17 @@ export const useExtrinsic = <T>(
     setIsLoading(false);
     setIsBroadcasting(false);
   };
-
   const send = (params?: T) => {
     if (!isRpcSdk(sdk)) {
       throw new Error("SDK is not RPC");
     }
-
+    console.log(wallet);
     const signer = wallet.getSigner();
     if (!signer) return;
+    console.log("try here");
 
     setIsLoading(true);
-    // 0x3eef66e59f376146b03d84ff2a46d59351214b76f1400bad13ee0370ba929c93
+
     let extrinsic = extrinsicFn(params);
     if (!extrinsic) return;
 
@@ -74,8 +74,6 @@ export const useExtrinsic = <T>(
               });
         },
         successCallback: (data) => {
-          console.log(data.txHash.toHuman());
-          console.log(data);
           setIsLoading(false);
           setIsSuccess(true);
           setIsBroadcasting(false);

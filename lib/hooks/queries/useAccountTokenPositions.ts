@@ -7,22 +7,16 @@ export const positionsRootKey = "account-token-positions";
 
 export const useAccountTokenPositions = (address?: string) => {
   const [sdk, id] = useSdkv2();
-  // ("5CkxsFF61ggucjmdoTARy6v2pfLw5VLDi2yKAHMj3n2G6bKq");
-  // ("dE3phcNpdXRzK8RQnWej9C87CJ3AphKwCYXniTKAqiaUfdfCz");
-  const zeitgeistAddress = encodeAddress(
-    "5CkxsFF61ggucjmdoTARy6v2pfLw5VLDi2yKAHMj3n2G6bKq",
-    73,
-  );
-  console.log(`Zeitgeist Address: ${zeitgeistAddress}`);
 
   return useQuery(
     [id, positionsRootKey, address],
     async () => {
       if (sdk && isIndexedSdk(sdk) && address) {
+        const ztgAddress = encodeAddress(address, 73);
         const { accountBalances } = await sdk.indexer.accountBalances({
           where: {
             account: {
-              accountId_eq: "dDyiQf6wUFXYXgEyrqVbYybXe7AN6Qj5sbWUPfPvkvREv84in",
+              accountId_eq: ztgAddress,
             },
             balance_gt: 0,
           },
