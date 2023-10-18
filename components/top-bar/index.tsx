@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, Suspense, useState } from "react";
 
 import { Menu, Transition } from "@headlessui/react";
 import { CATEGORIES } from "components/front-page/PopularCategories";
@@ -20,10 +20,27 @@ import { useCategoryCounts } from "lib/hooks/queries/useCategoryCounts";
 import { Alerts } from "./Alerts";
 import Modal from "components/ui/Modal";
 import { DesktopOnboardingModal } from "components/account/OnboardingModal";
+import Skeleton from "components/ui/Skeleton";
+import { delay } from "lib/util/delay";
 
-const AccountButton = dynamic(() => import("../account/AccountButton"), {
-  ssr: false,
-});
+const AccountButton = dynamic(
+  async () => {
+    await delay(200);
+    return import("../account/AccountButton");
+  },
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="flex center rounded-full h-[44px] w-[76px] md:w-[186px] border-2 pl-1.5 py-1 md:py-0 bg-black transition-all text-white border-white"
+        // height={"44px"}
+        // width={"186px"}
+      >
+        <div className="text-xs animate-pulse">...</div>
+      </div>
+    ),
+  },
+);
 
 const TopBar = () => {
   return (
