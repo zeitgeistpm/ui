@@ -63,13 +63,16 @@ export const useConfirmation = (opts?: {
       },
     }));
 
+    let unsubStorage: () => void;
+
     return new Promise<boolean>(async (resolve) => {
-      store.sub(confirmationState, () => {
+      unsubStorage = store.sub(confirmationState, () => {
         const state = store.get(confirmationState);
         const confirmation = state[id];
 
         if (!confirmation.open) {
           resolve(confirmation.confirmed);
+          unsubStorage();
         }
       });
     });
