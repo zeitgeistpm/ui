@@ -43,7 +43,7 @@ export const useExtrinsic = <T>(
     if (!isRpcSdk(sdk)) {
       throw new Error("SDK is not RPC");
     }
-    console.log(wallet);
+    console.log(wallet.getSigner());
     const signer = wallet.getSigner();
     if (!signer) return;
     console.log("try here");

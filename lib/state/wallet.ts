@@ -239,7 +239,10 @@ const loadWeb3Wallet = async (wallet: KeyringPair) => {
       wallet: {
         address: wallet.address,
         addressRaw: wallet.addressRaw,
-        meta: wallet.meta,
+        meta: {
+          ...wallet.meta,
+          extensionName: "web3auth",
+        },
         isLocked: wallet.isLocked,
         publicKey: wallet.publicKey,
         type: wallet.type,
@@ -410,12 +413,26 @@ export const useWallet = (): UseWallet => {
     setUserConfig(newUserConfigState);
   };
 
+  // const getSigner = (): KeyringPairOrExtSigner | undefined => {
+  //   if (
+  //     walletState.wallet == null ||
+  //     !activeAccount ||
+  //     !walletState.wallet.signer
+  //   )
+  //     return;
+  //   return {
+  //     address: activeAccount.address,
+  //     signer: walletState.wallet.signer,
+  //   };
+  // };
+
   const getSigner = (): KeyringPairOrExtSigner | undefined => {
+    console.log(walletAtom);
     if (
       walletState.wallet == null ||
       !activeAccount ||
-      (!walletState.wallet.signer &&
-        walletState.wallet.extensionName !== "web3auth")
+      !walletState.wallet.signer ||
+      !walletState.wallet.meta.extensionName === "web3auth"
     )
       return;
     return {
