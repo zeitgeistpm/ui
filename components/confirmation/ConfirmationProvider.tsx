@@ -8,10 +8,7 @@ export const ConfirmationProvider = () => {
     <>
       {Object.entries(confirmations).map(([id, value]) => (
         <Modal key={id} open={value.open} onClose={() => dismiss(id)}>
-          <Dialog.Panel
-            className="bg-white 
-    w-full max-w-[526px] p-[30px] rounded-ztg-10"
-          >
+          <Dialog.Panel className="bg-white w-full max-w-[526px] p-[30px] rounded-ztg-10">
             <h2 className="text-base mb-3">{value.title}</h2>
             <p className="text-sm mb-4">{value.description}</p>
             <div className="flex items-center justify-end gap-3">
