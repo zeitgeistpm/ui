@@ -1,4 +1,4 @@
-import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
+import { ScalarRangeType } from "@zeitgeistpm/sdk";
 import React, { useEffect, useState } from "react";
 import Decimal from "decimal.js";
 import { useInView } from "react-intersection-observer";

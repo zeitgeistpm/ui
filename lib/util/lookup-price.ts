@@ -1,4 +1,4 @@
-import { IOForeignAssetId, parseAssetId } from "@zeitgeistpm/sdk-next";
+import { IOForeignAssetId, parseAssetId } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { ForeignAssetPrices } from "lib/hooks/queries/useAssetUsdPrice";
 

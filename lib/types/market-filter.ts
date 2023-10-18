@@ -1,6 +1,6 @@
 import { filterTypes } from "lib/constants/market-filter";
-import { defaultTags } from "lib/constants/markets";
 import { MarketStatus } from "./markets";
+import { CATEGORIES } from "components/front-page/PopularCategories";
 
 export enum MarketsOrderBy {
   Newest = "Newest",
@@ -14,7 +14,7 @@ export type MarketOrderByOption = {
   value: MarketsOrderBy;
 };
 
-export type MarketFilterTagLabel = typeof defaultTags[number];
+export type MarketFilterTagLabel = typeof CATEGORIES[number]["name"] | string;
 
 export type MarketFilterStatusLabel = MarketStatus;
 

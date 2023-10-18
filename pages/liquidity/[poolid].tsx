@@ -1,4 +1,4 @@
-import { isIndexedData } from "@zeitgeistpm/sdk-next";
+import { isIndexedData } from "@zeitgeistpm/sdk";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 import Pill from "components/ui/Pill";
 import Decimal from "decimal.js";

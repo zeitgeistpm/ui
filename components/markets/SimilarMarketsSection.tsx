@@ -1,5 +1,5 @@
 import type { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
+import { ScalarRangeType } from "@zeitgeistpm/sdk";
 import MarketCard from "components/markets/market-card";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";

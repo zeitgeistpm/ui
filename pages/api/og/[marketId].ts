@@ -1,6 +1,6 @@
 import { create } from "@zeitgeistpm/indexer";
 import type { FullMarketFragment, PoolWhereInput } from "@zeitgeistpm/indexer";
-import { parseAssetId } from "@zeitgeistpm/sdk-next";
+import { parseAssetId } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { graphQlEndpoint, ZTG } from "lib/constants";
 import {

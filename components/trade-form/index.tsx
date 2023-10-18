@@ -9,7 +9,7 @@ import {
   MarketOutcomeAssetId,
   ZTG,
   getMarketIdOf,
-} from "@zeitgeistpm/sdk-next";
+} from "@zeitgeistpm/sdk";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import TradeResult from "components/markets/TradeResult";
 import Input from "components/ui/Input";
@@ -535,18 +535,18 @@ const Inner = ({
               }}
               selectedIndex={tabIndex}
             >
-              <Tab.List className="flex justify-between h-[60px] sm:h-[71px] text-center rounded-[10px]">
+              <Tab.List className="flex justify-between h-[60px] sm:h-[71px] text-center rounded-xl">
                 <Tab
                   as={TradeTab}
                   selected={type === "buy"}
-                  className="rounded-tl-[10px]"
+                  className="rounded-tl-xl"
                 >
                   Buy
                 </Tab>
                 <Tab
                   as={TradeTab}
                   selected={type === "sell"}
-                  className="rounded-tr-[10px]"
+                  className="rounded-tr-xl"
                 >
                   Sell
                 </Tab>

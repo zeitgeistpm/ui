@@ -1,5 +1,5 @@
 import { GenericChainProperties } from "@polkadot/types";
-import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk-next";
+import { create, ZeitgeistIpfs } from "@zeitgeistpm/sdk";
 import { BgBallGfx } from "components/front-page/BgBallFx";
 import GettingStartedSection from "components/front-page/GettingStartedSection";
 import { HeroBanner } from "components/front-page/HeroBanner";

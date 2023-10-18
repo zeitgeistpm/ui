@@ -4,8 +4,7 @@ import {
   MarketOutcomeAssetId,
   ScalarRangeType,
   parseAssetId,
-} from "@zeitgeistpm/sdk-next";
-import { MarketDispute } from "@zeitgeistpm/sdk/dist/types";
+} from "@zeitgeistpm/sdk";
 import { MarketLiquiditySection } from "components/liquidity/MarketLiquiditySection";
 import DisputeResult from "components/markets/DisputeResult";
 import { AddressDetails } from "components/markets/MarketAddresses";
@@ -13,7 +12,6 @@ import MarketAssetDetails from "components/markets/MarketAssetDetails";
 import MarketChart from "components/markets/MarketChart";
 import MarketHeader from "components/markets/MarketHeader";
 import PoolDeployer from "components/markets/PoolDeployer";
-import { MarketPromotionCallout } from "components/markets/PromotionCallout";
 import ReportResult from "components/markets/ReportResult";
 import ScalarPriceRange from "components/markets/ScalarPriceRange";
 import MarketMeta from "components/meta/MarketMeta";
@@ -26,10 +24,7 @@ import Skeleton from "components/ui/Skeleton";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
 import { GraphQLClient } from "graphql-request";
-import {
-  PromotedMarket,
-  getMarketPromotion,
-} from "lib/cms/get-promoted-markets";
+import { PromotedMarket } from "lib/cms/get-promoted-markets";
 import { ZTG, environment, graphQlEndpoint } from "lib/constants";
 import {
   MarketPageIndexedData,
@@ -53,12 +48,13 @@ import {
   isMarketCategoricalOutcome,
   isValidMarketReport,
 } from "lib/types";
+import { MarketDispute } from "lib/types/markets";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 
@@ -342,10 +338,12 @@ const Market: NextPage<MarketPageProps> = ({
                 <QuillViewer value={indexedMarket.description} />
               </>
             )}
-            <PoolDeployer
-              marketId={Number(marketid)}
-              onPoolDeployed={handlePoolDeployed}
-            />
+            {market && !market.pool && (
+              <PoolDeployer
+                marketId={Number(marketid)}
+                onPoolDeployed={handlePoolDeployed}
+              />
+            )}
           </div>
 
           <AddressDetails title="Oracle" address={indexedMarket.oracle} />

@@ -1,11 +1,11 @@
-import React, { Fragment, useState } from "react";
 import { Dialog, Tab } from "@headlessui/react";
 import Modal from "components/ui/Modal";
-import AcccountSettingsForm from "./AccountSettingsForm";
-import OtherSettingsForm from "./OtherSettingsForm";
 import { useIdentity } from "lib/hooks/queries/useIdentity";
 import { useWallet } from "lib/state/wallet";
-import { AddressOption } from "components/ui/AddressInput";
+import React, { Fragment } from "react";
+import AcccountSettingsForm from "./AccountSettingsForm";
+import FeePayingAssetSelect from "./FeePayingAssetSelect";
+import OtherSettingsForm from "./OtherSettingsForm";
 
 export type SettingsModalProps = {
   open: boolean;
@@ -14,7 +14,8 @@ export type SettingsModalProps = {
 
 enum TabSelection {
   Account,
-  Other,
+  Proxy,
+  Fees,
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
@@ -58,7 +59,21 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
                         (selected ? "font-semibold text-black" : "")
                       }
                     >
-                      Other Settings
+                      Proxy
+                    </span>
+                  )}
+                </Tab>
+              </div>
+              <div className="flex-grow center">
+                <Tab as={Fragment}>
+                  {({ selected }) => (
+                    <span
+                      className={
+                        "cursor-pointer text-sm " +
+                        (selected ? "font-semibold text-black" : "")
+                      }
+                    >
+                      Fee Paying Asset
                     </span>
                   )}
                 </Tab>
@@ -73,7 +88,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ open, onClose }) => {
             ) : (
               <></>
             ),
-            [TabSelection.Other]: <OtherSettingsForm />,
+            [TabSelection.Proxy]: <OtherSettingsForm />,
+            [TabSelection.Fees]: <FeePayingAssetSelect />,
           }[tabSelection]
         }
       </Dialog.Panel>

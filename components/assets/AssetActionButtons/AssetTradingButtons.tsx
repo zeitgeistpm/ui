@@ -1,10 +1,9 @@
 import { Dialog } from "@headlessui/react";
 import {
-  ScalarAssetId,
   CategoricalAssetId,
+  ScalarAssetId,
   getMarketIdOf,
-} from "@zeitgeistpm/sdk-next";
-import TradeForm from "components/trade-form";
+} from "@zeitgeistpm/sdk";
 import Amm2TradeForm from "components/trade-form/Amm2TradeForm";
 import { TradeTabType } from "components/trade-form/TradeTab";
 import Modal from "components/ui/Modal";

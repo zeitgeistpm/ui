@@ -1,5 +1,5 @@
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { ScalarRangeType } from "@zeitgeistpm/sdk-next";
+import { ScalarRangeType } from "@zeitgeistpm/sdk";
 import { TwitterBird } from "components/markets/TradeResult";
 import {
   MarketCategoricalOutcome,

@@ -3,7 +3,7 @@ import { useResizeDetector } from "react-resize-detector";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 
-import TopBar from "components/menu";
+import TopBar from "components/top-bar";
 import Footer from "components/ui/Footer";
 import NotificationCenter from "components/ui/NotificationCenter";
 import GrillChat from "components/grillchat";
@@ -53,7 +53,11 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
       <TradeItemContext.Provider value={{ data: tradeItem, set: setTradeItem }}>
         <div ref={contentRef} className={`flex-grow`}>
           <TopBar />
-          <main className="mt-16 mb-12 container-fluid" ref={mainRef}>
+          <main
+            className="mt-16 mb-12 container-fluid"
+            ref={mainRef}
+            style={{ minHeight: "calc(100vh - 300px)" }}
+          >
             <div
               className={`w-full ${
                 ["/", "/markets"].includes(router.pathname) ? "pt-0" : "pt-2"
