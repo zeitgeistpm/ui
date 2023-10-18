@@ -1,4 +1,4 @@
-import { MarketOutcomeAssetId, parseAssetId, ZTG } from "@zeitgeistpm/sdk-next";
+import { MarketOutcomeAssetId, parseAssetId, ZTG } from "@zeitgeistpm/sdk";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";

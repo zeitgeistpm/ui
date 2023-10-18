@@ -1,5 +1,5 @@
 import { Tab } from "@headlessui/react";
-import { MarketOutcomeAssetId } from "@zeitgeistpm/sdk-next";
+import { MarketOutcomeAssetId } from "@zeitgeistpm/sdk";
 import { useState } from "react";
 import BuyForm from "./BuyForm";
 import SellForm from "./SellForm";
