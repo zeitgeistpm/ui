@@ -31,6 +31,7 @@ import {
   getRecentMarketIds,
 } from "lib/gql/markets";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
+import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
@@ -632,6 +633,9 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
 };
 
 const CourtCaseContext = ({ market }: { market: FullMarketFragment }) => {
+  const { data: caseId, isFetched } = useMarketCaseId(market.marketId);
+  const router = useRouter();
+
   return (
     <div className="py-8 px-5">
       <h4 className="mb-3 flex items-center gap-2">
@@ -644,8 +648,10 @@ const CourtCaseContext = ({ market }: { market: FullMarketFragment }) => {
       </p>
 
       <button
-        className={`ztg-transition text-white focus:outline-none disabled:bg-slate-300 disabled:cursor-default 
-        rounded-full w-full h-[56px] bg-purple-400`}
+        disabled={!isFetched}
+        onClick={() => router.push(`/court/${caseId}`)}
+        onMouseEnter={() => router.prefetch(`/court/${caseId}`)}
+        className={`ztg-transition text-white focus:outline-none disabled:bg-slate-300 disabled:cursor-default rounded-full w-full h-[56px] bg-purple-400`}
       >
         View Case
       </button>

@@ -46,8 +46,6 @@ const CategoricalDisputeBox = ({
   const disputeBond = constants?.markets.disputeBond;
   const tokenSymbol = constants?.tokenSymbol;
 
-  const lastDispute = disputes?.[disputes.length - 1];
-
   const bondAmount =
     disputes && isConstantsLoading === false ? disputeBond : undefined;
 
