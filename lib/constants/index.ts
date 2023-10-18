@@ -58,12 +58,12 @@ export const endpoints: EndpointOption[] = [
 
 export const graphQlEndpoints: EndpointOption[] = [
   {
-    value: "https://processor.bsr.zeitgeist.pm/graphql",
+    value: "https://zeitgeist-squid-bsr.stellate.sh/",
     label: "Battery Park (Testnet)",
     environment: "staging",
   },
   {
-    value: "https://processor.rpc-0.zeitgeist.pm/graphql",
+    value: "https://zeitgeist-squid-mainnet.stellate.sh/",
     label: "Polkadot (Live)",
     environment: "production",
   },
