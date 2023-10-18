@@ -1,11 +1,18 @@
-import { MarketOutcomeAssetId, parseAssetId, ZTG } from "@zeitgeistpm/sdk";
+import {
+  isRpcSdk,
+  MarketOutcomeAssetId,
+  parseAssetId,
+  ZTG,
+} from "@zeitgeistpm/sdk";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Decimal from "decimal.js";
+import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
+import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
@@ -61,27 +68,40 @@ const BuyForm = ({
     new Decimal(0.001),
   );
 
+  const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
+
   console.log(amountIn.toString());
   console.log(amountOut.toString());
 
-  //   const { isLoading, send, fee } = useExtrinsic(
-  //     () => {
-  //       const amount = getValues("amount");
-  //       if (!isRpcSdk(sdk) || !amount) return;
+  const { isLoading, send, fee } = useExtrinsic(
+    () => {
+      const amount = getValues("amount");
+      if (
+        !isRpcSdk(sdk) ||
+        !amount ||
+        amount === "" ||
+        market?.categories?.length == null ||
+        !selectedAsset
+      ) {
+        return;
+      }
 
-  //       return sdk.api.tx.court.delegate(
-  //         new Decimal(amount).mul(ZTG).toFixed(0),
-  //         [],
-  //       );
-  //     },
-  //     {
-  //       onSuccess: () => {
-  //         notificationStore.pushNotification(`Successfully traded`, {
-  //           type: "Success",
-  //         });
-  //       },
-  //     },
-  //   );
+      return sdk.api.tx.neoSwaps.buy(
+        marketId,
+        market?.categories?.length,
+        selectedAsset,
+        new Decimal(amount).mul(ZTG).toFixed(0),
+        amountOut.mul(slippageMultiplier).div(ZTG).toFixed(0),
+      );
+    },
+    {
+      onSuccess: () => {
+        notificationStore.pushNotification(`Successfully traded`, {
+          type: "Success",
+        });
+      },
+    },
+  );
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
@@ -110,7 +130,7 @@ const BuyForm = ({
   }, [watch, baseAssetBalance]);
 
   const onSubmit = () => {
-    // send();
+    send();
   };
   return (
     <div className="flex flex-col w-full items-center gap-8 mt-[20px] text-ztg-18-150 font-semibold">
@@ -175,17 +195,14 @@ const BuyForm = ({
           <>{formState.errors["amount"]?.message}</>
         </div>
         <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
-          {/* <span className="text-black ml-1">
-              Network Fee: {fee ? fee.amount.div(ZTG).toFixed(3) : 0}{" "}
-              {fee?.symbol}
-            </span> */}
+          <span className="text-black ml-1">
+            Network Fee: {fee ? fee.amount.div(ZTG).toFixed(3) : 0}{" "}
+            {fee?.symbol}
+          </span>
         </div>
         <FormTransactionButton
           className="w-full max-w-[250px]"
-          disabled={
-            formState.isValid === false
-            // || isLoading
-          }
+          disabled={formState.isValid === false || isLoading}
           disableFeeCheck={true}
         >
           Swap
