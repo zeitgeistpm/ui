@@ -53,6 +53,7 @@ export const useConfirmation = (opts?: {
 
   const prompt = async (props: ConfirmationPromptProps) => {
     const id = generateGUID();
+
     setState((state) => ({
       ...state,
       [id]: {
