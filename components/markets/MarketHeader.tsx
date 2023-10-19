@@ -455,7 +455,7 @@ const MarketHeader: FC<{
             <Image width={22} height={22} src="/icons/court.svg" alt="court" />
             <div className="opacity-0 transition-opacity absolute right-0 bottom-0 translate-x-[50%] z-10 translate-y-[115%] group-hover:opacity-100 pt-1 whitespace-nowrap">
               <div className="py-1 px-2 text-sm bg-purple-200 rounded-lg">
-                Court Dispute Mechanism Enables
+                Court Dispute Mechanism Enabled
               </div>
             </div>
           </div>
