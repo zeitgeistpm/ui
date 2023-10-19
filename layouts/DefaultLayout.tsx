@@ -12,6 +12,7 @@ import { useSubscribeBlockEvents } from "lib/hooks/useSubscribeBlockEvents";
 import { useRouter } from "next/router";
 
 import { Account } from "components/account/Account";
+import { ConfirmationProvider } from "components/confirmation/ConfirmationProvider";
 
 const NOTIFICATION_MESSAGE = process.env.NEXT_PUBLIC_NOTIFICATION_MESSAGE;
 
@@ -87,6 +88,7 @@ const DefaultLayout: FC<PropsWithChildren> = ({ children }) => {
           <Footer />
         </div>
         <NotificationCenter />
+        <ConfirmationProvider />
       </TradeItemContext.Provider>
       <Account />
       <Onboarding />
