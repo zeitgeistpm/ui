@@ -61,6 +61,7 @@ const MyApp = ({ Component, pageProps }) => {
   useEffect(() => {
     if (!web3auth) {
       const init = async () => {
+        console.log(web3auth);
         await initWeb3Auth();
       };
       init();

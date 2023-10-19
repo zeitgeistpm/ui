@@ -152,9 +152,9 @@ const AccountButton: FC<{
         >
           {hasWallet === true ? (
             <HeaderActionButton
-              disabled={
-                locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)
-              }
+              // disabled={
+              //   locationAllowed !== true || isUsingVPN || !isRpcSdk(sdk)
+              // }
               onClick={() => connect()}
             >
               Connect Wallet

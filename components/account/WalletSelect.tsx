@@ -9,23 +9,17 @@ import { Download } from "react-feather";
 
 const WalletSelect = () => {
   const { selectWallet, errors, accounts, connected } = useWallet();
-  const { login } = useWeb3Auth();
   const accountModals = useAccountModals();
 
   const wasConnected = usePrevious(connected);
 
   const handleSelectWallet = async (wallet: BaseDotsamaWallet) => {
-    // if (wallet.extensionName === "web3auth") {
-    //   login();
-    // } else {
-    console.log("selecting wallet", wallet.extensionName);
     if (!wallet.installed && wallet.extensionName !== "web3auth") {
       window.open(wallet.installUrl);
     } else {
       selectWallet(wallet.extensionName);
       accountModals.closeWalletSelect();
     }
-    // }
   };
 
   useEffect(() => {
