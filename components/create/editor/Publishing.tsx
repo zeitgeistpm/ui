@@ -184,7 +184,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
           {
             autoRemove: true,
             type: "Info",
-            lifetime: 20,
+            lifetime: 60,
           },
         );
 

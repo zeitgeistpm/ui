@@ -62,7 +62,7 @@ export const stepFormKeys: Record<
   Oracle: ["oracle"],
   Description: ["description"],
   Moderation: ["moderation"],
-  Liquidity: ["liquidity"],
+  Liquidity: ["creatorFee", "liquidity"],
   Summary: [
     "currency",
     "question",
