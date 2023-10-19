@@ -441,6 +441,4 @@ const AccountButton: FC<{
   );
 };
 
-export default dynamic(() => Promise.resolve(AccountButton), {
-  ssr: false,
-});
+export default AccountButton;
