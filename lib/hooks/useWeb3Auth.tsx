@@ -8,6 +8,7 @@ import { useAtom } from "jotai";
 import { atom } from "jotai";
 import { SafeEventEmitterProvider } from "@web3auth/base";
 import { BaseDotsamaWallet } from "@talismn/connect-wallets";
+import { providerAtom, web3authAtom } from "lib/state/wallet";
 
 //Web3 Auth Instance for Wallet Select Details
 export class Web3AuthWallet extends BaseDotsamaWallet {
@@ -36,23 +37,30 @@ export const web3AuthInstance = new Web3AuthWallet({
   },
 });
 
-export const web3authAtom = atom<Web3Auth | null>(null);
-export const providerAtom = atom<SafeEventEmitterProvider | null>(null);
-
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG;
 
 export const useWeb3Auth = () => {
-  const [web3auth, setWeb3auth] = useAtom(web3authAtom);
-  const [provider, setProvider] = useAtom(providerAtom);
+  // const [web3auth, setWeb3auth] = useAtom(web3authAtom);
+  // const [provider, setProvider] = useAtom(providerAtom);
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
-  const { selectWallet, loadWeb3Wallet } = useWallet();
+  const { selectWallet } = useWallet();
 
-  useEffect(() => {
-    loadWallet();
-  }, [loggedIn]);
+  // useEffect(() => {
+  //   loadWeb3Wallet();
+  // }, [loggedIn]);
 
-  const loadWallet = async () => {
+  const web3AuthInstance = new Web3AuthWallet({
+    extensionName,
+    title,
+    installUrl,
+    logo: {
+      src: logoSrc,
+      alt: logoAlt,
+    },
+  });
+
+  const loadWeb3Wallet = async () => {
     if (!provider || !loggedIn) {
       return;
     } else {
@@ -61,14 +69,16 @@ export const useWeb3Auth = () => {
           await initWeb3Auth();
         }
         // let wallet = await getAccounts();
-        // const extendedWallet = {
-        //   ...wallet,
-        //   extensionName: "web3auth",
-        // };
+        const extendedWallet = {
+          ...wallet,
+          extensionName: "web3auth",
+        };
         // selectWallet(extendedWallet);
         let wallet = await getAccounts();
-        console.log(wallet);
-        wallet && loadWeb3Wallet(wallet);
+        selectWallet(extendedWallet);
+        // console.log(wallet);
+        // web3AuthInstance(wallet)
+        // wallet && loadWeb3Wallet(wallet);
       };
       init();
     }
@@ -130,6 +140,7 @@ export const useWeb3Auth = () => {
 
     setProvider(web3authProvider);
     setLoggedIn(true);
+    selectWallet("web3auth");
   };
 
   const authenticateUser = async () => {
@@ -174,10 +185,10 @@ export const useWeb3Auth = () => {
   };
 
   return {
-    web3auth,
-    provider,
+    // web3auth,
+    // provider,
     loggedIn,
-    loadWallet,
+    loadWeb3Wallet,
     initWeb3Auth,
     login,
     logout,

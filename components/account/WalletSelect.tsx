@@ -15,16 +15,17 @@ const WalletSelect = () => {
   const wasConnected = usePrevious(connected);
 
   const handleSelectWallet = async (wallet: BaseDotsamaWallet) => {
-    if (wallet.extensionName === "web3auth") {
-      login();
+    // if (wallet.extensionName === "web3auth") {
+    //   login();
+    // } else {
+    console.log("selecting wallet", wallet.extensionName);
+    if (!wallet.installed && wallet.extensionName !== "web3auth") {
+      window.open(wallet.installUrl);
     } else {
-      if (!wallet.installed) {
-        window.open(wallet.installUrl);
-      } else {
-        selectWallet(wallet.extensionName);
-        accountModals.closeWalletSelect();
-      }
+      selectWallet(wallet.extensionName);
+      accountModals.closeWalletSelect();
     }
+    // }
   };
 
   useEffect(() => {

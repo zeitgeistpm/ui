@@ -1,4 +1,5 @@
 import { encodeAddress } from "@polkadot/util-crypto";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 import { tryCatch } from "@zeitgeistpm/utility/dist/option";
 import { atom, getDefaultStore, useAtom } from "jotai";
@@ -11,14 +12,27 @@ import {
   SubWallet,
   TalismanWallet,
 } from "@talismn/connect-wallets";
+import { Keyring } from "@polkadot/api";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { InjectedAccount } from "@polkadot/extension-inject/types";
 import { isPresent } from "lib/types";
 import { KeyringPair } from "@polkadot/keyring/types";
-import { web3AuthInstance, Web3AuthWallet } from "../hooks/useWeb3Auth";
+import {
+  web3AuthInstance,
+  Web3AuthWallet,
+  useWeb3Auth,
+} from "../hooks/useWeb3Auth";
+import { SafeEventEmitterProvider } from "@web3auth/base";
+import { Web3Auth, Web3AuthOptions } from "@web3auth/modal";
+import { useState, useEffect } from "react";
+
+export const web3authAtom = atom<Web3Auth | null>(null);
+export const providerAtom = atom<SafeEventEmitterProvider | null>(null);
 
 import { PollingTimeout, poll } from "lib/util/poll";
+import { load } from "fathom-client";
 
+const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG;
 const DAPP_NAME = "zeitgeist";
 
 export type ExtendedKeyringPair = KeyringPair & { extensionName?: string };
@@ -53,14 +67,11 @@ export type UseWallet = WalletState & {
    * @param account the address to select
    * @returns void
    */
+  initWeb3Auth: () => void;
+  web3auth: Web3Auth | null;
   selectAccount: (account: string) => void;
   /**
    * Disconnect the wallet.
-   * @returns void
-   */
-  loadWeb3Wallet: (wallet: KeyringPair) => void;
-  /**
-   * Connects web3auth wallet.
    * @returns void
    */
   disconnectWallet: () => void;
@@ -99,7 +110,7 @@ export type WalletState = {
   /**
    * Instance of the current wallet.
    */
-  wallet?: BaseDotsamaWallet | Web3AuthWallet;
+  wallet?: BaseDotsamaWallet | Web3AuthWallet | KeyringPair;
   /**
    * The accounts of the current wallet.
    */
@@ -227,56 +238,14 @@ let accountsSubscriptionUnsub: VoidFunction | undefined | null;
  * @returns Promise<boolean> - whether the wallet was enabled
  */
 
-const loadWeb3Wallet = async (wallet: KeyringPair) => {
-  enableWallet("web3auth");
-  console.log(wallet);
-  store.set<WalletState>(walletAtom, (state) => {
-    return {
-      ...state,
-      connected: true,
-      errors: [],
-      accounts: [{ address: wallet?.address }] ?? [],
-      wallet: {
-        address: wallet.address,
-        addressRaw: wallet.addressRaw,
-        meta: {
-          ...wallet.meta,
-          extensionName: "web3auth",
-        },
-        isLocked: wallet.isLocked,
-        publicKey: wallet.publicKey,
-        type: wallet.type,
-        vrfSign: wallet.vrfSign,
-        vrfVerify: wallet.vrfVerify,
-      },
-    };
-  });
-};
-
 const enableWallet = async (walletId: string) => {
   if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
-  console.log(walletId);
-  // if (walletId === "web3auth") return true;
-  // if (walletId?.extensionName === "web3auth") {
-  //   store.set(walletAtom, (state) => {
-  //     return {
-  //       ...state,
-  //       connected: true,
-  //       accounts: [{ address: walletId?.address }] ?? [],
-  //       wallet: {
-  //         ...walletId,
-  //       },
-  //     };
-  //   });
-  //   return true;
-  // }
 
   const wallet = supportedWallets.find((w) => w.extensionName === walletId);
 
   if (!isPresent(wallet)) {
     return;
   }
-
   const enablePoll = async (): Promise<void> => {
     try {
       const extension = await poll(
@@ -290,7 +259,6 @@ const enableWallet = async (walletId: string) => {
           timeout: 10_000,
         },
       );
-
       if (extension === PollingTimeout) {
         throw new Error("Wallet enabling timed out");
       }
@@ -301,6 +269,7 @@ const enableWallet = async (walletId: string) => {
 
   try {
     store.set(walletAtom, (state) => {
+      console.log(state);
       return {
         ...state,
         connected: false,
@@ -310,6 +279,7 @@ const enableWallet = async (walletId: string) => {
     await enablePoll();
 
     store.set(walletAtom, (state) => {
+      console.log(state);
       return {
         ...state,
         wallet,
@@ -317,6 +287,7 @@ const enableWallet = async (walletId: string) => {
     });
 
     accountsSubscriptionUnsub = await wallet?.subscribeAccounts((accounts) => {
+      console.log(accounts);
       store.set(walletAtom, (state) => {
         return {
           ...state,
@@ -343,6 +314,7 @@ const enableWallet = async (walletId: string) => {
 
     return true;
   } catch (error) {
+    console.log(error);
     store.set(walletAtom, (state) => {
       return {
         ...state,
@@ -363,9 +335,9 @@ const enableWallet = async (walletId: string) => {
  * Enable wallet on first load if wallet id is set.
  */
 const initialWalletId = store.get(userConfigAtom).walletId;
-if (initialWalletId) {
-  enableWallet(initialWalletId);
-}
+// if (initialWalletId) {
+//   enableWallet(initialWalletId);
+// }
 
 /**
  * Hook for interacting with the wallet.
@@ -374,65 +346,138 @@ if (initialWalletId) {
 export const useWallet = (): UseWallet => {
   const [userConfig, setUserConfig] = useAtom(userConfigAtom);
   const [walletState, setWalletState] = useAtom(walletAtom);
+  const [web3auth, setWeb3auth] = useAtom(web3authAtom);
+  const [provider, setProvider] = useAtom(providerAtom);
 
-  // const selectWallet = (wallet: BaseDotsamaWallet | string) => {
-  //   setUserConfig({
-  //     ...userConfig,
-  //     walletId: isString(wallet) ? wallet : wallet.extensionName,
-  //   });
-  //   enableWallet(isString(wallet) ? wallet : wallet.extensionName);
-  // };
+  const enableWeb3Wallet = async () => {
+    if (!web3auth) {
+      console.log("no login");
+      return;
+    }
+    await initWeb3Auth();
+    await web3auth.initModal();
+    if (web3auth.status === "connected") {
+      await web3auth.logout();
+    }
+    const web3authProvider = await web3auth.connect();
 
-  const selectWallet = (wallet: BaseDotsamaWallet | Web3AuthWallet) => {
-    console.log(wallet instanceof Web3AuthWallet);
-    const userData =
-      wallet instanceof Web3AuthWallet
-        ? {
-            walletId: wallet,
-            selectedAddress: wallet?.address,
-          }
-        : { ...userConfig };
-    setUserConfig({
-      ...userData,
-      walletId:
-        isString(wallet) || wallet.extensionName === "web3auth"
-          ? wallet
-          : wallet.extensionName,
+    const onGetPolkadotKeypair = async () => {
+      if (!web3authProvider) {
+        return;
+      }
+
+      await cryptoWaitReady();
+
+      const privateKey = (await web3authProvider.request({
+        method: "private_key",
+      })) as string;
+      const keyring = new Keyring({ ss58Format: 42, type: "sr25519" });
+      const wallet = keyring.addFromUri("0x" + privateKey);
+      return wallet;
+    };
+
+    if (!web3authProvider) {
+      return;
+    }
+
+    const keyPair = await onGetPolkadotKeypair();
+    console.log(keyPair);
+    if (!keyPair) {
+      return;
+    }
+    store.set(walletAtom, (state) => {
+      console.log(state);
+      return {
+        ...state,
+        wallet: { ...keyPair },
+        connected: true,
+        accounts:
+          [keyPair?.address].map((account) => {
+            return {
+              address: encodeAddress(account, 73),
+            };
+          }) ?? [],
+        errors:
+          [keyPair?.address].length === 0
+            ? [
+                {
+                  extensionName: "web3auth",
+                  type: "NoAccounts",
+                },
+              ]
+            : [],
+      };
     });
-    enableWallet(
-      isString(wallet) || wallet.extensionName === "web3auth"
-        ? wallet
-        : wallet.extensionName,
-    );
   };
 
-  const disconnectWallet = () => {
+  const initWeb3Auth = async () => {
+    if (clientId) {
+      try {
+        const chainConfig = {
+          chainNamespace: CHAIN_NAMESPACES.OTHER,
+          chainId: "0x1",
+          rpcTarget: "https://rpc.polkadot.io/",
+          displayName: "Polkadot Mainnet",
+          blockExplorer: "https://explorer.polkascan.io/",
+          ticker: "DOT",
+          tickerName: "Polkadot",
+        };
+        const web3authInstance = new Web3Auth({
+          clientId,
+          chainConfig,
+          web3AuthNetwork: "sapphire_devnet",
+          uiConfig: {
+            loginMethodsOrder: [
+              "google",
+              "facebook",
+              "twitter",
+              "discord",
+              "twitch",
+              "email_passwordless",
+            ],
+            appName: "Zeitgeist",
+            mode: "dark",
+            logoLight: "https://web3auth.io/images/w3a-L-Favicon-1.svg",
+            logoDark: "https://web3auth.io/images/w3a-D-Favicon-1.svg",
+            defaultLanguage: "en",
+            loginGridCol: 3,
+            primaryButton: "externalLogin",
+          },
+        });
+        setWeb3auth(web3authInstance);
+        setProvider(web3authInstance.provider);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const selectWallet = (wallet: BaseDotsamaWallet | string) => {
+    setUserConfig({
+      ...userConfig,
+      walletId: isString(wallet) ? wallet : wallet.extensionName,
+    });
+    wallet === "web3auth"
+      ? enableWeb3Wallet()
+      : enableWallet(isString(wallet) ? wallet : wallet.extensionName);
+  };
+
+  const disconnectWallet = async () => {
     const [newWalletState, newUserConfigState] =
       disconnectWalletStateTransition(walletState, userConfig);
     setWalletState(newWalletState);
     setUserConfig(newUserConfigState);
+    if (web3auth?.status === "connected") {
+      await web3auth.logout();
+    }
   };
-
-  // const getSigner = (): KeyringPairOrExtSigner | undefined => {
-  //   if (
-  //     walletState.wallet == null ||
-  //     !activeAccount ||
-  //     !walletState.wallet.signer
-  //   )
-  //     return;
-  //   return {
-  //     address: activeAccount.address,
-  //     signer: walletState.wallet.signer,
-  //   };
-  // };
 
   const getSigner = (): KeyringPairOrExtSigner | undefined => {
     console.log(walletAtom);
     if (
       walletState.wallet == null ||
       !activeAccount ||
-      !walletState.wallet.signer ||
-      !walletState.wallet.meta.extensionName === "web3auth"
+      !walletState.wallet.signer
     )
       return;
     return {
@@ -442,6 +487,7 @@ export const useWallet = (): UseWallet => {
   };
 
   const selectAccount = (account: InjectedAccount | string) => {
+    console.log(account);
     const selectedAddress = isString(account) ? account : account.address;
     try {
       encodeAddress(selectedAddress, 73);
@@ -497,9 +543,10 @@ export const useWallet = (): UseWallet => {
     realAddress,
     selectAccount,
     activeAccount: activeAccount,
+    web3auth,
+    initWeb3Auth,
     getSigner,
     selectWallet,
-    loadWeb3Wallet,
     disconnectWallet,
     isNovaWallet,
     setProxyFor,

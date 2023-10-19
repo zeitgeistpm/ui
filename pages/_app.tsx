@@ -13,11 +13,9 @@ import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import { hotjar } from "react-hotjar";
 
-//web3auth
-import { useWeb3Auth } from "lib/hooks/useWeb3Auth";
-
 // font optimization from @next/font
 import { inter, kanit, roboto_mono } from "lib/util/fonts";
+import { useWallet } from "lib/state/wallet";
 
 // environment variables set in .env.local or vercel interface
 const fathomSiteId = process.env["NEXT_PUBLIC_FATHOM_SITE_ID"];
@@ -29,7 +27,7 @@ const isProduction =
 const MyApp = ({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
   const router = useRouter();
-  const { initWeb3Auth, web3auth } = useWeb3Auth();
+  const { initWeb3Auth, web3auth } = useWallet();
 
   useEffect(() => {
     if (!isProduction) {
