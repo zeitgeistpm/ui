@@ -23,8 +23,10 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
     trigger,
     handleSubmit,
     reset,
+    getFieldState,
     formState: { isValid, errors, isDirty },
     watch,
+    setValue,
   } = useForm<{
     proxyAddress: AddressOption | null;
     enableProxy: boolean;
@@ -43,6 +45,9 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
 
   useEffect(() => {
     trigger("proxyAddress");
+    if (!proxyEnabled && getFieldState("proxyAddress").error) {
+      setValue("proxyAddress", null);
+    }
   }, [proxyEnabled]);
 
   return (
