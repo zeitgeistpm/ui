@@ -7,15 +7,14 @@ import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { swapFeePresets } from "lib/state/market-creation/constants/swap-fee";
 import { FieldState } from "lib/state/market-creation/types/fieldstate";
 import { CurrencyTag, Liquidity } from "lib/state/market-creation/types/form";
-import { ChangeEventHandler, ReactNode } from "react";
+import { ReactNode } from "react";
 import { FormEvent } from "../types";
-import Input from "components/ui/Input";
+import FeeSelect, { Fee } from "./FeeSelect";
 
 export type LiquidityInputProps = {
   name: string;
   value?: Liquidity;
   onChange: (event: FormEvent<Liquidity>) => void;
-  onBlur?: (event: FormEvent<Liquidity>) => void;
   errorMessage?: string | ReactNode;
   currency: CurrencyTag;
   fieldState: FieldState;
@@ -25,7 +24,6 @@ export const LiquidityInput = ({
   name,
   value,
   onChange,
-  onBlur,
   errorMessage,
   currency,
   fieldState,
@@ -46,33 +44,14 @@ export const LiquidityInput = ({
     });
   };
 
-  const handleSwapFeeCustomChange: ChangeEventHandler<HTMLInputElement> = (
-    event,
-  ) => {
-    const swapFee = parseFloat(event.target.value);
+  const handleFeeChange = (event: FormEvent<Fee>) => {
     onChange({
       type: "change",
       target: {
         name,
         value: {
           ...value!,
-          swapFee: {
-            type: "custom",
-            value: isNaN(swapFee) ? 0 : parseFloat(event.target.value),
-          },
-        },
-      },
-    });
-  };
-
-  const handleSwapFeePresetChange = (swapFee: Liquidity["swapFee"]) => () => {
-    onChange({
-      type: "change",
-      target: {
-        name,
-        value: {
-          ...value!,
-          swapFee,
+          swapFee: event.target.value,
         },
       },
     });
@@ -90,40 +69,14 @@ export const LiquidityInput = ({
               noDataMessage={errorMessage}
             />
           </div>
-          <div className="relative flex justify-end pr-8 mr-4 md:mr-0">
-            <div className="flex items-center gap-2">
-              {swapFeePresets.map((preset, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={handleSwapFeePresetChange(preset)}
-                  className={`flex center rounded-full bg-gray-100 py-3 px-6 transition-all active:scale-9 ${
-                    value?.swapFee?.type === "preset" &&
-                    value?.swapFee?.value === preset.value &&
-                    "bg-nyanza-base"
-                  }`}
-                >
-                  {preset.value}%
-                </button>
-              ))}
-              <div className="relative inline-block">
-                <Input
-                  type="number"
-                  min={0}
-                  className={`rounded-md bg-gray-100 py-3 pl-4 pr-34 text-right w-64 outline-none ${
-                    value?.swapFee?.type === "custom" &&
-                    fieldState.isValid &&
-                    "bg-nyanza-base"
-                  }`}
-                  value={Number(value?.swapFee?.value).toString()}
-                  onChange={handleSwapFeeCustomChange}
-                />
-                <div className="absolute bottom-[50%] center text-gray-600 right-0 rounded-r-md border-2 border-gray-100 border-l-0 px-4 bg-white h-full translate-y-[50%] translate-x-[0%] pointer-events-none">
-                  % swap fee
-                </div>
-              </div>
-            </div>
-          </div>
+          <FeeSelect
+            name={name}
+            value={value?.swapFee}
+            onChange={handleFeeChange}
+            presets={swapFeePresets}
+            isValid={fieldState.isValid}
+            label="% Swap Fee"
+          />
         </>
       </div>
     </div>

@@ -243,8 +243,8 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
         </div>
       </div>
 
-      <div>
-        <Label className="mb-2">Description</Label>
+      <div className="mb-10">
+        <Label>Description</Label>
         <div className="flex center ">
           {form?.description ? (
             <div className="w-full md:w-2/3 max-w-2xl bg-gray-50 rounded-md p-4 h-fit">
@@ -254,6 +254,10 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             <span className="italic text-gray-500">No description given.</span>
           )}
         </div>
+      </div>
+      <div>
+        <Label className="mb-2">Creator Fee</Label>
+        <div className="flex center ">{form?.creatorFee?.value} %</div>
       </div>
     </div>
   );
