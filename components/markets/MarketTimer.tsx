@@ -131,4 +131,9 @@ const copy: Record<
     description: "Market has been removed",
     color: "bg-black",
   },
+  Court: {
+    title: "Disputed in Court",
+    description: "Market is awaiting a ruling",
+    color: "bg-orange-400",
+  },
 };
