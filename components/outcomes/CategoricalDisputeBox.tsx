@@ -40,13 +40,11 @@ const CategoricalDisputeBox = ({
         parseAssetId(assetIdString).unwrap() as CategoricalAssetId,
     )
     .filter(
-      (asset) => market.report?.outcome.categorical !== getIndexOf(asset),
+      (asset) => market.report?.outcome?.categorical !== getIndexOf(asset),
     );
 
   const disputeBond = constants?.markets.disputeBond;
   const tokenSymbol = constants?.tokenSymbol;
-
-  const lastDispute = disputes?.[disputes.length - 1];
 
   const bondAmount =
     disputes && isConstantsLoading === false ? disputeBond : undefined;
@@ -81,9 +79,7 @@ const CategoricalDisputeBox = ({
   );
 
   const getPreviousReportName = () => {
-    const reportIndex =
-      lastDispute?.outcome.asCategorical.toNumber() ??
-      market.report?.outcome.categorical;
+    const reportIndex = market.report?.outcome?.categorical;
 
     if (reportIndex == null) return;
 
