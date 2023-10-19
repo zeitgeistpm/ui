@@ -32,7 +32,6 @@ export const LiquidityInput = ({
 }: LiquidityInputProps) => {
   const currencyMetadata = getMetadataForCurrency(currency);
   const { data: baseAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
-  const isAMM2Market = value?.rows?.length === 2;
 
   const handleRowsChange = (data: PoolAssetRowData[]) => {
     onChange({

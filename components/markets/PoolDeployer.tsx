@@ -31,6 +31,7 @@ import { FieldState } from "lib/state/market-creation/types/fieldstate";
 import { Liquidity } from "lib/state/market-creation/types/form";
 import { IOLiquidity } from "lib/state/market-creation/types/validation";
 import { useMemo, useState } from "react";
+import { LiquidityInputAmm2 } from "components/create/editor/inputs/LiquidityAMM2";
 
 const PoolDeployer = ({
   marketId,
@@ -55,7 +56,7 @@ const PoolDeployer = ({
     isBroadcasting,
   } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk) && liquidity) {
+      if (isRpcSdk(sdk) && liquidity?.rows) {
         // We are assuming all rows have the same amount
         const amount = liquidity.rows[0].amount;
 
@@ -163,12 +164,12 @@ const PoolDeployer = ({
       return activeBalance?.div(ZTG).greaterThanOrEqualTo(poolCost);
     }, "Insufficient balance to deploy pool.")
       .refine((liquidity) => {
-        return new Decimal(liquidity.rows[0]?.amount || 0).greaterThan(0);
+        return new Decimal(liquidity.rows?.[0]?.amount || 0).greaterThan(0);
       }, "Liquidity amount must be a positive number.")
       .refine((liquidity) => {
         return (
           currencyMetadata &&
-          new Decimal(liquidity.rows[0]?.amount || 0)
+          new Decimal(liquidity.rows?.[0]?.amount || 0)
             .mul(2)
             .greaterThanOrEqualTo(minBaseLiquidity[currencyMetadata.name])
         );
@@ -216,13 +217,23 @@ const PoolDeployer = ({
               <h4 className="mt-10 mb-4 center">Deploy Pool</h4>
             </div>
             <div className="mb-12">
-              <LiquidityInput
-                name="poolDeployer"
-                value={liquidity}
-                currency={currencyMetadata?.name ?? "ZTG"}
-                onChange={handleLiquidityChange}
-                fieldState={fieldState}
-              />
+              {true ? (
+                <LiquidityInputAmm2
+                  name="poolDeployer"
+                  value={liquidity}
+                  currency={currencyMetadata?.name ?? "ZTG"}
+                  onChange={handleLiquidityChange}
+                  fieldState={fieldState}
+                />
+              ) : (
+                <LiquidityInput
+                  name="poolDeployer"
+                  value={liquidity ?? undefined}
+                  currency={currencyMetadata?.name ?? "ZTG"}
+                  onChange={handleLiquidityChange}
+                  fieldState={fieldState}
+                />
+              )}
               <div className="center text-vermilion h-6 mt-4">
                 <ErrorMessage field={fieldState} />
               </div>
