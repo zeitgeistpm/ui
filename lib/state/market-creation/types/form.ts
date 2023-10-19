@@ -31,11 +31,13 @@ import {
   IOPeriodOption,
   IOQuestion,
   IOScalarAnswers,
-  IOSwappFee,
+  IOSwapFee,
   IOTags,
   IOTimeZone,
   IOYesNoAnswers,
 } from "./validation";
+import { Fee } from "components/create/editor/inputs/FeeSelect";
+import { union } from "lib/types/union";
 
 /**
  * This is the type of the full market creation form data that is used to create a market.
@@ -55,6 +57,7 @@ export type MarketFormData = {
   reportingPeriod: PeriodOption;
   disputePeriod: PeriodOption;
   oracle: Oracle;
+  creatorFee: Fee;
   description?: Description;
   moderation: Moderation;
   liquidity: Liquidity;
@@ -66,7 +69,7 @@ export type PartialMarketFormData = Partial<MarketFormData>;
 /**
  * Array of all form keys in the market creation form.
  */
-export const marketCreationFormKeys = [
+export const marketCreationFormKeys = union<keyof MarketFormData>().exhaust([
   "currency",
   "question",
   "tags",
@@ -79,8 +82,9 @@ export const marketCreationFormKeys = [
   "oracle",
   "description",
   "moderation",
+  "creatorFee",
   "liquidity",
-] as const;
+]);
 
 /**
  * These are the individual market form field types.
@@ -106,7 +110,7 @@ export type PeriodDurationOption = Required<
 export type Oracle = z.infer<typeof IOOracle>;
 export type Description = z.infer<typeof IODescription>;
 export type Moderation = z.infer<typeof IOModerationMode>;
-export type SwapFee = z.infer<typeof IOSwappFee>;
+export type SwapFee = z.infer<typeof IOSwapFee>;
 export type Liquidity = z.infer<typeof IOLiquidity>;
 export type LiquidityRow = z.infer<typeof IOLiquidityRow>;
 
@@ -133,7 +137,6 @@ export const marketFormDataToExtrinsicParams = (
     signer,
     proxy,
     disputeMechanism: "Authorized",
-    creatorFee: 0,
     oracle: form.oracle,
     period: {
       Timestamp: [Date.now(), new Date(form.endDate).getTime()],
@@ -143,6 +146,7 @@ export const marketFormDataToExtrinsicParams = (
       oracleDuration: timeline.report.period,
       disputeDuration: timeline.dispute.period,
     },
+    creatorFee: new Decimal(10).pow(7).mul(form.creatorFee.value).toString(),
     marketType:
       form.answers.type === "scalar"
         ? {
