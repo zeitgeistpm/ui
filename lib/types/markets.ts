@@ -23,7 +23,6 @@ export type MarketStatus = keyof typeof EMarketStatus;
 export type MarketDispute = {
   at: number;
   by: string;
-  outcome: OutcomeReport;
 };
 
 export type MarketTypeOf =
