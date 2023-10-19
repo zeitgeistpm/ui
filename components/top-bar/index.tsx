@@ -22,6 +22,8 @@ import Modal from "components/ui/Modal";
 import { DesktopOnboardingModal } from "components/account/OnboardingModal";
 import Skeleton from "components/ui/Skeleton";
 import { delay } from "lib/util/delay";
+import { useWallet } from "lib/state/wallet";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 
 const AccountButton = dynamic(
   async () => {
@@ -206,25 +208,38 @@ const TopBar = () => {
 };
 
 const GetTokensButton = () => {
+  const { activeAccount, connected } = useWallet();
+  const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   return (
     <>
-      <Link
-        className="relative h-11 rounded-md p-0.5 overflow-hidden group"
-        href="/deposit"
+      <Transition
+        as={Fragment}
+        show={Boolean(connected && activeBalance?.eq(0))}
+        enter="transition-all duration-250"
+        enterFrom="opacity-0 scale-90"
+        enterTo="opacity-100 scale-100"
+        leave="transition-all duration-250"
+        leaveFrom="opacity-100 scale-100"
+        leaveTo="opacity-0 scale-90"
       >
-        <div
-          className="h-full w-full absolute top-0 left-0 z-10 group-hover:animate-spin group-hover:h-[150%] group-hover:w-[150%] group-hover:-top-6 group-hover:-left-6"
-          style={{
-            background:
-              "linear-gradient(180deg, #FF00E6 0%, #F36464 50%, #04C3FF 100%)",
-          }}
-        />
-        <div className="relative h-full block z-20">
-          <button className="h-full w-full rounded-md px-3 md:px-5 bg-black text-white center">
-            Get Tokens
-          </button>
-        </div>
-      </Link>
+        <Link
+          className="relative h-11 rounded-md p-0.5 overflow-hidden group"
+          href="/deposit"
+        >
+          <div
+            className="h-full w-full absolute top-0 left-0 z-10 group-hover:animate-spin group-hover:h-[150%] group-hover:w-[150%] group-hover:-top-6 group-hover:-left-6"
+            style={{
+              background:
+                "linear-gradient(180deg, #FF00E6 0%, #F36464 50%, #04C3FF 100%)",
+            }}
+          />
+          <div className="relative h-full block z-20">
+            <button className="h-full w-full rounded-md px-3 md:px-5 bg-black text-white center">
+              Get Tokens
+            </button>
+          </div>
+        </Link>
+      </Transition>
     </>
   );
 };
