@@ -35,12 +35,11 @@ export const useMarketDisputes = (
         }
 
         if (disputeMechanism === "Court") {
-          // TODO: use dispute.by when its in the indexer
           const lastDispute = market.disputes?.[market.disputes.length - 1];
           return [
             {
               at: lastDispute?.at,
-              //by: (market.bonds as any)?.dispute?.who ?? "unknown",
+              by: lastDispute?.by,
             },
           ];
         }
