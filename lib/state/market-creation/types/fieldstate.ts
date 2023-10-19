@@ -76,6 +76,10 @@ export const empty = (): FieldsState => ({
     isValid: false,
     isTouched: false,
   },
+  creatorFee: {
+    isValid: false,
+    isTouched: false,
+  },
   liquidity: {
     isValid: false,
     isTouched: false,
