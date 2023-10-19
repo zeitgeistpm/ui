@@ -104,17 +104,29 @@ export const createMarketFormValidator = ({
     .superRefine((form, ctx) => {
       const baseLiquidityRow =
         form.liquidity?.rows?.[form.liquidity?.rows.length - 1];
+      const min = minBaseLiquidity[form.currency];
 
       if (form.moderation === "Permissionless" && form?.liquidity?.deploy) {
-        const min = minBaseLiquidity[form.currency];
-        const amount = parseFloat(baseLiquidityRow.amount) * 2;
+        if (baseLiquidityRow) {
+          const amount = parseFloat(baseLiquidityRow.amount) * 2;
 
-        if (!amount || amount < min) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ["liquidity", "base"],
-            message: `Minimum base liquidity is ${min} ${form.currency}`,
-          });
+          if (!amount || amount < min) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["liquidity", "base"],
+              message: `Minimum base liquidity is ${min} ${form.currency}`,
+            });
+          }
+        } else {
+          const amount = parseFloat(form.liquidity.amount ?? "0");
+
+          if (!amount || amount < min) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["liquidity", "base"],
+              message: `Minimum base liquidity is ${min} ${form.currency}`,
+            });
+          }
         }
       }
     })
@@ -122,7 +134,9 @@ export const createMarketFormValidator = ({
       if (
         form.moderation === "Permissionless" &&
         form.liquidity?.deploy &&
+        form.liquidity?.rows &&
         form.liquidity?.rows?.length < 3
+        //todo: test with 1 row
       ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -288,7 +302,8 @@ export const IOSwappFee = z
 
 export const IOLiquidity = z.object({
   deploy: z.boolean(),
-  rows: z.array(IOLiquidityRow),
+  amount: z.optional(z.string()),
+  rows: z.optional(z.array(IOLiquidityRow)),
   swapFee: z.union([
     z.object({
       type: z.literal("preset"),

@@ -22,7 +22,7 @@ export type LiquidityInputProps = {
   fieldState: FieldState;
 };
 
-export const LiquidityInput = ({
+export const LiquidityInputAmm2 = ({
   name,
   value,
   onChange,
@@ -33,16 +33,15 @@ export const LiquidityInput = ({
 }: LiquidityInputProps) => {
   const currencyMetadata = getMetadataForCurrency(currency);
   const { data: baseAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
-  const isAMM2Market = value?.rows?.length === 2;
 
-  const handleRowsChange = (data: PoolAssetRowData[]) => {
+  const handleAmountChange = (amount: string) => {
     onChange({
       type: "change",
       target: {
         name,
         value: {
           ...value!,
-          rows: transformRows(data),
+          amount: amount,
         },
       },
     });
@@ -85,23 +84,14 @@ export const LiquidityInput = ({
       <div className="md:max-w-4xl">
         <>
           <div className="mb-4 ">
-            {/* {isAMM2Market ? (
-              <PoolSettingsAmm2
-                baseAssetPrice={baseAssetPrice ?? undefined}
-                data={transformRows(value?.rows ?? [])}
-                onChange={handleRowsChange}
-                noDataMessage={errorMessage}
-                baseAssetSymbol={currency}
-                baseAssetImageSrc={currencyMetadata?.image}
-              />
-            ) : ( */}
-            <PoolSettings
+            <PoolSettingsAmm2
               baseAssetPrice={baseAssetPrice ?? undefined}
-              data={transformRows(value?.rows ?? [])}
-              onChange={handleRowsChange}
+              onChange={handleAmountChange}
               noDataMessage={errorMessage}
+              baseAssetSymbol={currency}
+              baseAssetImageSrc={currencyMetadata?.image}
+              baseAssetAmount={value?.amount}
             />
-            {/* )} */}
           </div>
           <div className="relative flex justify-end pr-8 mr-4 md:mr-0">
             <div className="flex items-center gap-2">
@@ -142,19 +132,3 @@ export const LiquidityInput = ({
     </div>
   );
 };
-
-function transformRows(rows: PoolAssetRowData[]): Liquidity["rows"];
-function transformRows(rows: Liquidity["rows"]): PoolAssetRowData[];
-function transformRows(
-  rows: PoolAssetRowData[] | Liquidity["rows"],
-): PoolAssetRowData[] | Liquidity["rows"] {
-  return rows?.map((row) => ({
-    ...row,
-    price: {
-      price: Decimal.isDecimal(row.price.price)
-        ? row.price.price.toString()
-        : new Decimal(row.price.price),
-      locked: row.price.locked,
-    },
-  }));
-}
