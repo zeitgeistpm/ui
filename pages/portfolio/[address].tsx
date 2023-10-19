@@ -3,6 +3,7 @@ import { getIndexOf } from "@zeitgeistpm/sdk";
 import BadgesList from "components/avatar/BadgesList";
 import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
+import CreatorFeePayouts from "components/portfolio/CreatorFeePayouts";
 import CurrenciesTable from "components/portfolio/CurrenciesTable";
 import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
 import HistoryTabGroup from "components/portfolio/HistoryTabGroup";
@@ -42,8 +43,12 @@ const mainTabItems: MainTabItem[] = [
   "History",
 ] as MainTabItem[];
 
-type MarketsTabItem = "Created Markets" | "Liquidity";
-const marketsTabItems: MarketsTabItem[] = ["Created Markets", "Liquidity"];
+type MarketsTabItem = "Created Markets" | "Liquidity" | "Creator Fee Payouts";
+const marketsTabItems: MarketsTabItem[] = [
+  "Created Markets",
+  "Liquidity",
+  "Creator Fee Payouts",
+];
 
 const Portfolio: NextPageWithLayout = () => {
   const router = useRouter();
@@ -258,6 +263,9 @@ const Portfolio: NextPageWithLayout = () => {
                         buttonLink="/liquidity"
                       />
                     )}
+                  </Tab.Panel>
+                  <Tab.Panel>
+                    {address && <CreatorFeePayouts address={address} />}
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>
