@@ -31,31 +31,30 @@ export default async function GenerateOgImage(request: NextRequest) {
     currencyMetadata,
   }: MarketImageData = await fetch(url.href).then((r) => r.json());
 
-  const boldFont = await fetch(
-    new URL(
-      "../../../public/fonts/inter/static/Inter-Bold.ttf",
-      import.meta.url,
-    ).href,
-  ).then((res) => res.arrayBuffer());
-
-  const regularFont = await fetch(
-    new URL(
-      "../../../public/fonts/inter/static/Inter-Regular.ttf",
-      import.meta.url,
-    ).href,
-  ).then((res) => res.arrayBuffer());
-
   if (!market?.question) return;
 
   const questionClass = market.question.length > 90 ? "text-4xl" : "text-5xl";
 
-  const bg = await fetch(
-    new URL("../../../public/og/bg1.png", import.meta.url),
-  ).then((res) => res.arrayBuffer());
-
-  const zeitgeistBadge = await fetch(
-    new URL("../../../public/og/zeitgeist_badge.png", import.meta.url),
-  ).then((res) => res.arrayBuffer());
+  const [boldFont, regularFont, bg, zeitgeistBadge] = await Promise.all([
+    fetch(
+      new URL(
+        "../../../public/fonts/inter/static/Inter-Bold.ttf",
+        import.meta.url,
+      ).href,
+    ).then((res) => res.arrayBuffer()),
+    fetch(
+      new URL(
+        "../../../public/fonts/inter/static/Inter-Regular.ttf",
+        import.meta.url,
+      ).href,
+    ).then((res) => res.arrayBuffer()),
+    fetch(new URL("../../../public/og/bg1.png", import.meta.url)).then((res) =>
+      res.arrayBuffer(),
+    ),
+    fetch(
+      new URL("../../../public/og/zeitgeist_badge.png", import.meta.url),
+    ).then((res) => res.arrayBuffer()),
+  ]);
 
   const image = (
     <div
