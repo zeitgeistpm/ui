@@ -49,6 +49,14 @@ export default async function GenerateOgImage(request: NextRequest) {
 
   const questionClass = market.question.length > 90 ? "text-4xl" : "text-5xl";
 
+  const bg = await fetch(
+    new URL("../../../public/og/bg1.png", import.meta.url),
+  ).then((res) => res.arrayBuffer());
+
+  const zeitgeistBadge = await fetch(
+    new URL("../../../public/og/zeitgeist_badge.png", import.meta.url),
+  ).then((res) => res.arrayBuffer());
+
   const image = (
     <div
       tw="p-16 text-white"
@@ -59,7 +67,7 @@ export default async function GenerateOgImage(request: NextRequest) {
       }}
     >
       <img
-        src={new URL("../../../public/og/bg1.png", import.meta.url).href}
+        src={bg as any}
         tw="absolute top-0 left-0"
         style={{
           width: 1200,
@@ -105,12 +113,7 @@ export default async function GenerateOgImage(request: NextRequest) {
               style={{
                 width: 250,
               }}
-              src={
-                new URL(
-                  "../../../public/og/zeitgeist_badge.png",
-                  import.meta.url,
-                ).href
-              }
+              src={zeitgeistBadge as any}
             />
           </div>
         </div>
