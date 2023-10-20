@@ -50,6 +50,31 @@ const PoolDeployer = ({
   const [liquidity, setLiquidity] = useState<Liquidity | null>(null);
 
   const {
+    send: deployAmm2Pool,
+    isLoading: amm2IsLoading,
+    isSuccess: amm2IsSuccess,
+  } = useExtrinsic(
+    () => {
+      if (isRpcSdk(sdk) && liquidity?.amount) {
+        return sdk.api.tx.neoSwaps.deployPool(
+          marketId,
+          new Decimal(liquidity.amount).mul(ZTG).toFixed(0),
+          [0.5 * ZTG, 0.5 * ZTG], //todo: need to be updated when we can support multiple assets
+          swapFeeFromFloat(liquidity.swapFee?.value).toString(),
+        );
+      }
+    },
+    {
+      onSuccess: () => {
+        notificationStore.pushNotification("Liquidity pool deployed", {
+          type: "Success",
+        });
+        queryClient.invalidateQueries([id, accountPoolAssetBalancesRootKey]);
+        onPoolDeployed?.();
+      },
+    },
+  );
+  const {
     send: deployPool,
     isLoading,
     isSuccess,
@@ -199,7 +224,7 @@ const PoolDeployer = ({
 
   return (
     <>
-      {isSuccess ? (
+      {isSuccess || amm2IsSuccess ? (
         <></>
       ) : liquidity && isBroadcasting ? (
         <div className="center">
@@ -217,7 +242,7 @@ const PoolDeployer = ({
               <h4 className="mt-10 mb-4 center">Deploy Pool</h4>
             </div>
             <div className="mb-12">
-              {true ? (
+              {true ? ( //todo check scoring rule
                 <LiquidityInputAmm2
                   name="poolDeployer"
                   value={liquidity}
@@ -239,13 +264,23 @@ const PoolDeployer = ({
               </div>
             </div>
             <div className="text-center">
-              <TransactionButton
-                className="w-ztg-266 ml-ztg-8 mb-4"
-                onClick={() => deployPool()}
-                disabled={!fieldState.isValid || isLoading || isBroadcasting}
-              >
-                Deploy Pool
-              </TransactionButton>
+              {true ? ( //todo check scoring rule
+                <TransactionButton
+                  className="w-ztg-266 ml-ztg-8 mb-4"
+                  onClick={() => deployAmm2Pool()}
+                  disabled={!fieldState.isValid || amm2IsLoading}
+                >
+                  Deploy Pool
+                </TransactionButton>
+              ) : (
+                <TransactionButton
+                  className="w-ztg-266 ml-ztg-8 mb-4"
+                  onClick={() => deployPool()}
+                  disabled={!fieldState.isValid || isLoading || isBroadcasting}
+                >
+                  Deploy Pool
+                </TransactionButton>
+              )}
               <div className="text-ztg-12-150 text-sky-600 font-bold ml-[27px]">
                 Total Cost:
                 <span className="font-mono">
