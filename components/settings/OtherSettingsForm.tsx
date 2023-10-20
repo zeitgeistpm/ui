@@ -1,13 +1,15 @@
-import React, { useEffect } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import AddressInput, { AddressOption } from "components/ui/AddressInput";
 import FormTransactionButton from "components/ui/FormTransactionButton";
 import { isRpcSdk } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useWallet } from "lib/state/wallet";
-import { isValidPolkadotAddress } from "lib/util";
+import { isValidPolkadotAddress, shortenAddress } from "lib/util";
 import InfoPopover from "components/ui/InfoPopover";
 import { AiOutlineInfoCircle } from "react-icons/ai";
+import { Check } from "react-feather";
+import { Transition } from "@headlessui/react";
 
 export type OtherSettingsFormProps = {};
 
@@ -50,10 +52,11 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
     }
   }, [proxyEnabled]);
 
-  return (
-    <form
-      className="flex flex-col"
-      onSubmit={handleSubmit((data) => {
+  const [showSaved, setShowSaved] = useState(false);
+
+  useEffect(() => {
+    const subscription = watch(() => {
+      handleSubmit((data) => {
         if (!wallet.activeAccount?.address) {
           return;
         }
@@ -61,11 +64,30 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
           address: data.proxyAddress?.value ?? "",
           enabled: data.enableProxy,
         });
-        reset(data);
-      })}
-    >
+        setShowSaved(true);
+        setTimeout(() => {
+          setShowSaved(false);
+        }, 1000);
+      })();
+    });
+    return () => subscription.unsubscribe();
+  }, [handleSubmit, watch]);
+
+  const opts = useMemo<AddressOption[]>(() => {
+    return wallet.accounts
+      .filter((acc) => acc.address !== wallet.activeAccount?.address)
+      .map((account) => ({
+        label: shortenAddress(account.address, 13, 13),
+        value: account.address,
+        name: account.name,
+      }));
+  }, [wallet.accounts]);
+
+  return (
+    <form className="flex flex-col" onSubmit={(e) => e.preventDefault()}>
       <div className="flex items-center mb-2 gap-3">
         <label className="font-bold ">Proxy Account</label>
+
         <InfoPopover
           title={
             <h3 className="flex justify-center items-center mb-4 gap-2">
@@ -81,6 +103,21 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
             of another account.
           </p>
         </InfoPopover>
+        <Transition
+          as={Fragment}
+          show={showSaved}
+          enter="transition duration-100 ease-out"
+          enterFrom="transform scale-95 opacity-0"
+          enterTo="transform scale-100 opacity-100"
+          leave="transition duration-75 ease-out"
+          leaveFrom="transform scale-100 opacity-100"
+          leaveTo="transform scale-95 opacity-0"
+        >
+          <div className="flex gap-2 items-center ml-auto">
+            <Check size={16} className="text-green-500" />
+            <div className="text-sm">Saved</div>
+          </div>
+        </Transition>
       </div>
       <div className="flex flex-row p-2 mb-2">
         <input
@@ -121,6 +158,7 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
         render={({ field: { value, onChange } }) => {
           return (
             <AddressInput
+              options={opts}
               onChange={onChange}
               value={value}
               disabled={!proxyEnabled}
@@ -130,13 +168,6 @@ const OtherSettingsForm: React.FC<OtherSettingsFormProps> = ({}) => {
         }}
         control={control}
       />
-      <FormTransactionButton
-        disabled={!isValid || !isDirty}
-        className="mt-5"
-        disableFeeCheck={true}
-      >
-        Save
-      </FormTransactionButton>
     </form>
   );
 };
