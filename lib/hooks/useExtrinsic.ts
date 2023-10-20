@@ -43,10 +43,11 @@ export const useExtrinsic = <T>(
     if (!isRpcSdk(sdk)) {
       throw new Error("SDK is not RPC");
     }
-    console.log(wallet.getSigner());
-    const signer = wallet.getSigner();
+    console.log(wallet);
+    const walletId = wallet?.walletId;
+    const signer = wallet.getSigner(walletId);
+    console.log(signer);
     if (!signer) return;
-    console.log("try here");
 
     setIsLoading(true);
 
@@ -90,6 +91,7 @@ export const useExtrinsic = <T>(
         },
       }),
       IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
+      walletId,
     ).catch(() => {
       setIsBroadcasting(false);
       setIsLoading(false);

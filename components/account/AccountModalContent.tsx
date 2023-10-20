@@ -5,7 +5,6 @@ import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { ZTG } from "@zeitgeistpm/sdk";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
-import { useWeb3Auth } from "../../lib/hooks/useWeb3Auth";
 
 const AccountModalContent: FC = () => {
   const { activeAccount, disconnectWallet, accounts, selectAccount } =
@@ -13,7 +12,6 @@ const AccountModalContent: FC = () => {
 
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const { data: constants } = useChainConstants();
-  const { logout } = useWeb3Auth();
 
   const options = useMemo<AccountOption[]>(() => {
     return accounts.map((account, id) => {
@@ -70,7 +68,6 @@ const AccountModalContent: FC = () => {
         <div
           className="flex justify-evenly items-center w-ztg-176 bg-border-light dark:bg-sky-700 ml-ztg-16 rounded-ztg-10 h-full text-white cursor-pointer"
           onClick={() => {
-            logout();
             disconnectWallet();
           }}
         >

@@ -1,6 +1,7 @@
 import { AddressOrPair, SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult, IEventRecord } from "@polkadot/types/types";
 import { KeyringPairOrExtSigner, isExtSigner } from "@zeitgeistpm/rpc";
+import { useWallet } from "lib/state/wallet";
 
 import type { ApiPromise } from "@polkadot/api";
 
@@ -110,6 +111,7 @@ export const signAndSend = async (
   signer: KeyringPairOrExtSigner,
   cb?: GenericCallback,
   foreignAssetNumber?: number,
+  walletId?: string | undefined,
 ) => {
   const _callback = (
     result: ISubmittableResult,
@@ -137,7 +139,7 @@ export const signAndSend = async (
   return new Promise(async (resolve, reject) => {
     try {
       if (isExtSigner(signer)) {
-        if (signer?.signer?.extensionName === "web3auth") {
+        if (walletId === "web3auth") {
           const unsub = await tx.signAndSend(
             signer.signer as AddressOrPair,
             {

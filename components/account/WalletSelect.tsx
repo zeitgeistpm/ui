@@ -2,7 +2,6 @@ import { BaseDotsamaWallet } from "@talismn/connect-wallets";
 import { useAccountModals } from "lib/state/account";
 import { usePrevious } from "lib/hooks/usePrevious";
 import { supportedWallets, useWallet } from "lib/state/wallet";
-import { useWeb3Auth } from "lib/hooks/useWeb3Auth";
 
 import { useEffect } from "react";
 import { Download } from "react-feather";
