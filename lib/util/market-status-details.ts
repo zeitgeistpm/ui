@@ -18,21 +18,9 @@ export const getMarketStatusDetails = (
   resolvedOutcome?: string,
 ): { outcome?: string | number; by?: string } => {
   if (status === "Disputed" && dispute) {
-    //scalar market
-    if (isMarketScalarOutcome(dispute.outcome)) {
-      return {
-        outcome: formatScalarOutcome(dispute.outcome.scalar, scalarType),
-        by: dispute.by,
-      };
-      //categorical market
-    } else if (isMarketCategoricalOutcome(dispute.outcome)) {
-      return {
-        outcome: categories[Number(dispute.outcome.categorical)].name,
-        by: dispute.by,
-      };
-    } else {
-      return {};
-    }
+    return {
+      by: dispute.by,
+    };
   } else if (status === "Reported" && report) {
     //scalar market
     if (isMarketScalarOutcome(report.outcome)) {
