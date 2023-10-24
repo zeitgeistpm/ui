@@ -56,7 +56,7 @@ export const PortfolioBreakdown = (props: PortfolioBreakdownProps) => {
             <BreakdownSlotSkeleton />
           ) : (
             <BreakdownSlot
-              title="Subsidy"
+              title="Liquidity"
               value={props.subsidy.value}
               usdZtgPrice={props.usdZtgPrice}
               changePercentage={props.subsidy.changePercentage}
