@@ -56,12 +56,16 @@ const PoolDeployer = ({
   } = useExtrinsic(
     () => {
       if (isRpcSdk(sdk) && liquidity?.amount) {
-        return sdk.api.tx.neoSwaps.deployPool(
-          marketId,
-          new Decimal(liquidity.amount).mul(ZTG).toFixed(0),
-          [0.5 * ZTG, 0.5 * ZTG], //todo: need to be updated when we can support multiple assets
-          swapFeeFromFloat(liquidity.swapFee?.value).toString(),
-        );
+        const amount = new Decimal(liquidity.amount).mul(ZTG).toFixed(0);
+        return sdk.api.tx.utility.batchAll([
+          sdk.api.tx.predictionMarkets.buyCompleteSet(marketId, amount),
+          sdk.api.tx.neoSwaps.deployPool(
+            marketId,
+            new Decimal(liquidity.amount).mul(ZTG).toFixed(0),
+            [0.5 * ZTG, 0.5 * ZTG], //todo: needs to be updated when we can support multiple assets
+            swapFeeFromFloat(liquidity.swapFee?.value).toString(),
+          ),
+        ]);
       }
     },
     {
@@ -110,7 +114,10 @@ const PoolDeployer = ({
     },
   );
 
-  const poolCost = liquidity?.rows
+  //todo: lsmr cost is same as amount
+  const poolCost = liquidity?.amount
+    ? liquidity?.amount
+    : liquidity?.rows
     ? calculatePoolCost(liquidity?.rows.map((row) => Number(row.amount)) ?? [])
     : "";
 
@@ -242,7 +249,7 @@ const PoolDeployer = ({
               <h4 className="mt-10 mb-4 center">Deploy Pool</h4>
             </div>
             <div className="mb-12">
-              {true ? ( //todo check scoring rule
+              {market?.scoringRule === "Lmsr" ? (
                 <LiquidityInputAmm2
                   name="poolDeployer"
                   value={liquidity}
@@ -264,7 +271,7 @@ const PoolDeployer = ({
               </div>
             </div>
             <div className="text-center">
-              {true ? ( //todo check scoring rule
+              {market?.scoringRule === "Lmsr" ? (
                 <TransactionButton
                   className="w-ztg-266 ml-ztg-8 mb-4"
                   onClick={() => deployAmm2Pool()}
