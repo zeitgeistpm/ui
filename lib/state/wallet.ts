@@ -420,7 +420,8 @@ export const useWallet = (): UseWallet => {
     return keyPair;
   };
 
-  const loginWeb3Wallet = async () => {
+  const loginWeb3Wallet = async (web3auth?: Web3Auth) => {
+    console.log(web3auth);
     if (!web3auth) {
       return;
     }
@@ -468,8 +469,10 @@ export const useWallet = (): UseWallet => {
             primaryButton: "externalLogin",
           },
         });
-        console.log(web3authInstance);
+        const walletId = userConfig.walletId;
+        console.log(walletId);
         setWeb3auth(web3authInstance);
+        walletId === "web3auth" && loginWeb3Wallet(web3authInstance);
       } catch (error) {
         console.error(error);
       }
