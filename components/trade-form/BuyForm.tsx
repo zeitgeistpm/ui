@@ -9,6 +9,10 @@ import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
+import {
+  lookupAssetReserve,
+  useAmm2Pool,
+} from "lib/hooks/queries/amm2/useAmm2Pool";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
@@ -49,6 +53,8 @@ const BuyForm = ({
   const wallet = useWallet();
   const baseAsset = parseAssetIdString(market?.baseAsset);
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
+  const { data: pool } = useAmm2Pool(marketId);
+  console.log(pool);
 
   const outcomeAssets = market?.outcomeAssets.map(
     (assetIdString) =>
@@ -58,20 +64,35 @@ const BuyForm = ({
     MarketOutcomeAssetId | undefined
   >(initialAsset ?? outcomeAssets?.[0]);
 
-  const amountIn = new Decimal(getValues("amount") ?? 0);
+  const formAmount = getValues("amount");
 
-  const amountOut = calculateSwapAmountOutForBuy(
-    new Decimal(10000), //todo: fetch params
-    amountIn,
-    new Decimal(100000),
-    new Decimal(0.01),
-    new Decimal(0.001),
+  const amountIn = new Decimal(
+    formAmount && formAmount !== "" ? formAmount : 0,
+  ).mul(ZTG);
+  const assetReserve =
+    pool?.reserves && lookupAssetReserve(pool?.reserves, selectedAsset);
+
+  console.log(
+    assetReserve?.div(ZTG).toString(),
+    amountIn.div(ZTG).toString(),
+    pool?.liquidity.div(ZTG).toString(),
   );
+
+  const amountOut =
+    assetReserve && pool.liquidity
+      ? calculateSwapAmountOutForBuy(
+          assetReserve,
+          amountIn,
+          pool.liquidity,
+          new Decimal(0.01),
+          new Decimal(0.001),
+        )
+      : new Decimal(0);
 
   const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
 
-  console.log(amountIn.toString());
-  console.log(amountOut.toString());
+  console.log(amountIn.div(ZTG).toString());
+  console.log(amountOut.div(ZTG).toString());
 
   const { isLoading, send, fee } = useExtrinsic(
     () => {
@@ -91,7 +112,7 @@ const BuyForm = ({
         market?.categories?.length,
         selectedAsset,
         new Decimal(amount).mul(ZTG).toFixed(0),
-        amountOut.mul(slippageMultiplier).div(ZTG).toFixed(0),
+        amountOut.mul(slippageMultiplier).toFixed(0),
       );
     },
     {
@@ -139,7 +160,7 @@ const BuyForm = ({
         className="w-full flex flex-col items-center gap-y-4"
       >
         <div className="flex w-full border border-black items-center justify-center rounded-md p-2">
-          <div className="mr-auto">{amountOut.toString()}</div>
+          <div className="mr-auto">{amountOut.div(ZTG).toString()}</div>
           <div>
             {market && selectedAsset && (
               <MarketContextActionOutcomeSelector

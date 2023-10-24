@@ -4,10 +4,12 @@ import {
   ScalarAssetId,
   getMarketIdOf,
 } from "@zeitgeistpm/sdk";
+import TradeForm from "components/trade-form";
 import Amm2TradeForm from "components/trade-form/Amm2TradeForm";
 import { TradeTabType } from "components/trade-form/TradeTab";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import { useTradeItem } from "lib/hooks/trade";
 import { useState } from "react";
 
@@ -18,8 +20,9 @@ const AssetTradingButtons = ({
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
-
   const marketId = getMarketIdOf(assetId);
+  const { data: market } = useMarket({ marketId });
+
   return (
     <>
       <div className="flex justify-end gap-x-2">
@@ -49,17 +52,19 @@ const AssetTradingButtons = ({
       {tradeItem && (
         <Modal open={isOpen} onClose={() => setIsOpen(false)}>
           <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
-            {/* todo: add condition */}
-            {/* <TradeForm /> */}
-            <Amm2TradeForm
-              marketId={marketId}
-              initialAsset={assetId}
-              initialTab={
-                tradeItem.action === "buy"
-                  ? TradeTabType.Buy
-                  : TradeTabType.Sell
-              }
-            />
+            {market?.scoringRule === "Lsmr" ? (
+              <Amm2TradeForm
+                marketId={marketId}
+                initialAsset={assetId}
+                initialTab={
+                  tradeItem.action === "buy"
+                    ? TradeTabType.Buy
+                    : TradeTabType.Sell
+                }
+              />
+            ) : (
+              <TradeForm />
+            )}
           </Dialog.Panel>
         </Modal>
       )}

@@ -380,8 +380,11 @@ const Market: NextPage<MarketPageProps> = ({
             <div className="shadow-lg rounded-lg mb-12 opacity-0 animate-pop-in">
               {market?.status === MarketStatus.Active ? (
                 <>
-                  {/* <TradeForm outcomeAssets={outcomeAssets} /> */}
-                  <Amm2TradeForm marketId={marketId} />
+                  {market?.scoringRule === "Lsmr" ? (
+                    <TradeForm outcomeAssets={outcomeAssets} />
+                  ) : (
+                    <Amm2TradeForm marketId={marketId} />
+                  )}
                 </>
               ) : market?.status === MarketStatus.Closed && canReport ? (
                 <>
