@@ -2481,10 +2481,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@resvg/resvg-wasm@npm:2.0.0-alpha.4":
-  version: 2.0.0-alpha.4
-  resolution: "@resvg/resvg-wasm@npm:2.0.0-alpha.4"
-  checksum: fa2d470d6f39c4a57e4500f4bff389683c4d0d97ad20d08c7721df7a66d5b179e243e4f990cdda70615191167d40dd6cc724e620b5f2aa7f46c8b46ff63c37eb
+"@resvg/resvg-wasm@npm:2.5.0":
+  version: 2.5.0
+  resolution: "@resvg/resvg-wasm@npm:2.5.0"
+  checksum: 86b5128549ad685318b1669cecf00ac1986eac4c31515720c6245faabae1977bbc87df5dd5d0396dd06302151bdd0eff5bca6a705a3a4f72981188d53a10fe69
   languageName: node
   linkType: hard
 
@@ -3241,14 +3241,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vercel/og@npm:^0.0.27":
-  version: 0.0.27
-  resolution: "@vercel/og@npm:0.0.27"
+"@vercel/og@npm:^0.5.19":
+  version: 0.5.19
+  resolution: "@vercel/og@npm:0.5.19"
   dependencies:
-    "@resvg/resvg-wasm": 2.0.0-alpha.4
-    satori: 0.0.46
-    yoga-wasm-web: 0.3.0
-  checksum: 543ed081284913d5b33fe439a75b389f6c00e2a929d03be238b192a5b7f9d7e03c10f3bdf42e842c55950efdbba75957c03ca7375aed0339c333911a608f7e7a
+    "@resvg/resvg-wasm": 2.5.0
+    satori: 0.10.9
+    yoga-wasm-web: 0.3.3
+  checksum: 27bc5415b10d10a3268f2c9710d6f0c57e3e4f22f98adc1f1fba9b21d7c23214636c16ba4abd92f4042ae3f9830bad18cd379a71206a649aaa9f03d901096878
   languageName: node
   linkType: hard
 
@@ -3308,18 +3308,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/augment-api@npm:^2.16.0":
-  version: 2.16.0
-  resolution: "@zeitgeistpm/augment-api@npm:2.16.0"
+"@zeitgeistpm/augment-api@npm:^2.18.0":
+  version: 2.18.0
+  resolution: "@zeitgeistpm/augment-api@npm:2.18.0"
   peerDependencies:
     "@polkadot/api-base": "*"
     "@polkadot/rpc-core": "*"
     "@polkadot/types": "*"
-  checksum: bcb96d5636300bbc17f0d8933dfbd7dbfa90357abbe2b3bb100bfe84fcc8196380682186bbed311be59852defe5804cea81eb037d1f7903fdcf375581dc06188
+  checksum: 618edab3e43af61956962666f075ae20de0d00cb4e25f76441a9e03c04463969e37733412f45e19d4f7a3adea0fea2cc0acaf8fa3d6f3a8946d9ec6b0f39ea49
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/augment-api@npm:^2.18.0":
+"@zeitgeistpm/augment-api@npm:^2.19.0":
   version: 2.19.0
   resolution: "@zeitgeistpm/augment-api@npm:2.19.0"
   peerDependencies:
@@ -3327,17 +3327,6 @@ __metadata:
     "@polkadot/rpc-core": "*"
     "@polkadot/types": "*"
   checksum: ea143cc03fd70414c6d1b702dc76c8522e07a5f2e4e210f6f58f9a448146d75dcaf78b8ae42da3d40eaeda0d542130cbfcb6144daa3800c9aebe4495c3ba8875
-  languageName: node
-  linkType: hard
-
-"@zeitgeistpm/augment-api@npm:^2.8.1":
-  version: 2.8.1
-  resolution: "@zeitgeistpm/augment-api@npm:2.8.1"
-  peerDependencies:
-    "@polkadot/api-base": "*"
-    "@polkadot/rpc-core": "*"
-    "@polkadot/types": "*"
-  checksum: 7a87ed649e16ab450414019c38db72727cd52f6b74950878fe0d0c33677c1c6cbc304d25580145d6941d813120dd9f8e518e5f2bf6dfc5eacd1e4b307e6fa095
   languageName: node
   linkType: hard
 
@@ -3433,7 +3422,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/indexer@npm:^3.13.0":
+"@zeitgeistpm/indexer@npm:^3.14.0":
   version: 3.14.0
   resolution: "@zeitgeistpm/indexer@npm:3.14.0"
   dependencies:
@@ -3444,29 +3433,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/rpc@npm:^2.11.0":
-  version: 2.11.0
-  resolution: "@zeitgeistpm/rpc@npm:2.11.0"
+"@zeitgeistpm/rpc@npm:^2.12.0":
+  version: 2.12.0
+  resolution: "@zeitgeistpm/rpc@npm:2.12.0"
   dependencies:
-    "@zeitgeistpm/augment-api": ^2.16.0
-    "@zeitgeistpm/utility": ^2.21.0
+    "@zeitgeistpm/augment-api": ^2.18.0
+    "@zeitgeistpm/utility": ^2.22.0
   peerDependencies:
     "@polkadot/api": "*"
     "@polkadot/keyring": "*"
     "@polkadot/types": "*"
-  checksum: 4454dbc7e68b7625e0d221b0d174e9c79af1b23f2cea71dd74d04c9460ea774779f83581f17bd3335fc31a35e80cfceadabd1ced99484c64eb954ac6060dad78
+  checksum: 1f75d8548034c01a82859e0168d64febdd311e34226296f77391634208168387fc925a8a72719ea30d85b60ff1dddb2dad261c1e201b26362b0ec9cdf551f2c7
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk@npm:2.42.0":
-  version: 2.42.0
-  resolution: "@zeitgeistpm/sdk@npm:2.42.0"
+"@zeitgeistpm/sdk@npm:2.43.1":
+  version: 2.43.1
+  resolution: "@zeitgeistpm/sdk@npm:2.43.1"
   dependencies:
-    "@zeitgeistpm/augment-api": ^2.18.0
-    "@zeitgeistpm/indexer": ^3.13.0
-    "@zeitgeistpm/rpc": ^2.11.0
-    "@zeitgeistpm/utility": ^2.21.0
-    "@zeitgeistpm/web3.storage": ^2.12.0
+    "@zeitgeistpm/augment-api": ^2.19.0
+    "@zeitgeistpm/indexer": ^3.14.0
+    "@zeitgeistpm/rpc": ^2.12.0
+    "@zeitgeistpm/utility": ^2.22.0
+    "@zeitgeistpm/web3.storage": ^2.13.0
     cids: ^1.1.9
     decimal.js: ^10.4.3
     human-object-diff: ^3.0.0
@@ -3480,7 +3469,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: c099dc473185a6927b40a15a91a7d73e7f19cfed66a9f3f3bad5087808d54b4574099d4d72ae3b56a316170e37b2861e483942501f893a22012447e680df7b5f
+  checksum: 3272136d21aeabb54b1c4a023bdbd94664071f4de41028dfa4a6992c2fb0c6bb9300a98ddb00e5015237da90e571cda781dab37ec66e159acf3b56566d29d920
   languageName: node
   linkType: hard
 
@@ -3533,14 +3522,14 @@ __metadata:
     "@types/react": ^18.0.28
     "@types/react-color": ^3.0.6
     "@types/react-dom": ^18.0.11
-    "@vercel/og": ^0.0.27
+    "@vercel/og": ^0.5.19
     "@yornaath/batshit": ^0.7.1
     "@yornaath/batshit-devtools-react": ^0.5.4
-    "@zeitgeistpm/augment-api": ^2.8.1
+    "@zeitgeistpm/augment-api": ^2.19.0
     "@zeitgeistpm/avatara-nft-sdk": ^1.3.1
     "@zeitgeistpm/avatara-react": ^1.3.2
     "@zeitgeistpm/avatara-util": ^1.2.0
-    "@zeitgeistpm/sdk": 2.42.0
+    "@zeitgeistpm/sdk": 2.43.1
     "@zeitgeistpm/utility": ^2.20.0
     autoprefixer: 10.2.5
     axios: ^0.21.4
@@ -3625,9 +3614,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/utility@npm:^2.21.0":
-  version: 2.21.0
-  resolution: "@zeitgeistpm/utility@npm:2.21.0"
+"@zeitgeistpm/utility@npm:^2.22.0":
+  version: 2.22.0
+  resolution: "@zeitgeistpm/utility@npm:2.22.0"
   dependencies:
     decimal.js: ^10.4.3
     lodash.omit: ^4.5.0
@@ -3637,15 +3626,15 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: c8625436b0f87f7d0591e955ed4625a26dd27166ce4a380982a7e99bad9bf09f090f793f8aae9bb10ef3c55c49eff35b251dcf0249a26c1e6ddea7532385b5d8
+  checksum: c9a168c63bd10bca409f6824e75c3324c9ebbde9199ab37efb55f8d4a295e4bd4375d7f322c9a5e213c1326898ead13d29a21abd4e925cf8897d6a78bfa10e24
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/web3.storage@npm:^2.12.0":
-  version: 2.12.0
-  resolution: "@zeitgeistpm/web3.storage@npm:2.12.0"
+"@zeitgeistpm/web3.storage@npm:^2.13.0":
+  version: 2.13.0
+  resolution: "@zeitgeistpm/web3.storage@npm:2.13.0"
   dependencies:
-    "@zeitgeistpm/utility": ^2.21.0
+    "@zeitgeistpm/utility": ^2.22.0
     cids: ^1.1.9
     ipfs-http-client: ^60.0.0
     ipfs-only-hash: ^4.0.0
@@ -3654,7 +3643,7 @@ __metadata:
     up: ^1.0.2
   peerDependencies:
     "@polkadot/util": "*"
-  checksum: 2106b48173ce0e6c2c2c3919fd059c9e127114d4fc4bee3d73315bd9d5cc0a4f54753430f58c15fc3391e1a50a5985fba2ee704e89dbe1905088e94c089f63f2
+  checksum: 09e75f403228661ff2d8863ff26865715804a2f04077713625a651bef3c69f33f97d06dac75328642fc9cde7f55990ad03f2d7356d047de422ed08f2f89fed9e
   languageName: node
   linkType: hard
 
@@ -4119,6 +4108,13 @@ __metadata:
   version: 1.0.2
   resolution: "balanced-match@npm:1.0.2"
   checksum: 9706c088a283058a8a99e0bf91b0a2f75497f185980d9ffa8b304de1d9e58ebda7c72c07ebf01dadedaac5b2907b2c6f566f660d62bd336c3468e960403b9d65
+  languageName: node
+  linkType: hard
+
+"base64-js@npm:0.0.8":
+  version: 0.0.8
+  resolution: "base64-js@npm:0.0.8"
+  checksum: e95d2fa4b9000789fedd1e1ebac7830a70f5b1c06c72b2cf7862a48335af5d42229c0deda5085b2c8e403e479b612a55cd682bd4438838980d07cfc21c91e750
   languageName: node
   linkType: hard
 
@@ -5699,6 +5695,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"escape-html@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "escape-html@npm:1.0.3"
+  checksum: 6213ca9ae00d0ab8bccb6d8d4e0a98e76237b2410302cf7df70aaa6591d509a2a37ce8998008cbecae8fc8ffaadf3fb0229535e6a145f3ce0b211d060decbb24
+  languageName: node
+  linkType: hard
+
 "escape-string-regexp@npm:^1.0.5":
   version: 1.0.5
   resolution: "escape-string-regexp@npm:1.0.5"
@@ -6558,6 +6561,13 @@ __metadata:
     property-information: ^5.0.0
     space-separated-tokens: ^1.0.0
   checksum: 5e50b85af0d2cb7c17979cb1ddca75d6b96b53019dd999b39e7833192c9004201c3cee6445065620ea05d0087d9ae147a4844e582d64868be5bc6b0232dfe52d
+  languageName: node
+  linkType: hard
+
+"hex-rgb@npm:^4.1.0":
+  version: 4.3.0
+  resolution: "hex-rgb@npm:4.3.0"
+  checksum: e654648db8647446f0111c68690d9b340eb192a93c8b2c6789a2b8deb5c20e757515ae209c5ae67074acfddf8575f9fc645d4ffaa0596d859457b08e180d791d
   languageName: node
   linkType: hard
 
@@ -8584,6 +8594,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"linebreak@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "linebreak@npm:1.1.0"
+  dependencies:
+    base64-js: 0.0.8
+    unicode-trie: ^2.0.0
+  checksum: 65cb66900b4b60d99bb761fb4143d8673ad5dd57dd850fcd921fe425a5a8e3c4416ebee76a68058a90d88b5033a50b210f522558a7e0c7d95ca907b5a2b52520
+  languageName: node
+  linkType: hard
+
 "lines-and-columns@npm:^1.1.6":
   version: 1.2.4
   resolution: "lines-and-columns@npm:1.2.4"
@@ -9831,6 +9851,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pako@npm:^0.2.5":
+  version: 0.2.9
+  resolution: "pako@npm:0.2.9"
+  checksum: 055f9487cd57fbb78df84315873bbdd089ba286f3499daed47d2effdc6253e981f5db6898c23486de76d4a781559f890d643bd3a49f70f1b4a18019c98aa5125
+  languageName: node
+  linkType: hard
+
 "pako@npm:^2.0.4":
   version: 2.1.0
   resolution: "pako@npm:2.1.0"
@@ -9851,6 +9878,16 @@ __metadata:
   dependencies:
     callsites: ^3.0.0
   checksum: 6ba8b255145cae9470cf5551eb74be2d22281587af787a2626683a6c20fbb464978784661478dd2a3f1dad74d1e802d403e1b03c1a31fab310259eec8ac560ff
+  languageName: node
+  linkType: hard
+
+"parse-css-color@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "parse-css-color@npm:0.2.1"
+  dependencies:
+    color-name: ^1.1.4
+    hex-rgb: ^4.1.0
+  checksum: 3751e81fe904b491612ee4c92235b476d16419b88a0da2822319b657ff35311f5ffc13cd092bd385d17319058dc2188e5bcbee7d476516a77b90f6aa556d88d9
   languageName: node
   linkType: hard
 
@@ -11229,18 +11266,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"satori@npm:0.0.46":
-  version: 0.0.46
-  resolution: "satori@npm:0.0.46"
+"satori@npm:0.10.9":
+  version: 0.10.9
+  resolution: "satori@npm:0.10.9"
   dependencies:
     "@shuding/opentype.js": 1.4.0-beta.0
     css-background-parser: ^0.1.0
     css-box-shadow: 1.0.0-3
     css-to-react-native: ^3.0.0
     emoji-regex: ^10.2.1
+    escape-html: ^1.0.3
+    linebreak: ^1.1.0
+    parse-css-color: ^0.2.1
     postcss-value-parser: ^4.2.0
-    yoga-wasm-web: ^0.3.0
-  checksum: 0a0a73637a9ca6c2aec7cbb2ff58677791c764dd83b03b6908864914ce0f46aaee4e67aa9544d6a3ac449056c4fa3436f914404913c2f18718802410aa3d1ec9
+    yoga-wasm-web: ^0.3.3
+  checksum: 56cb35e553cf8a65ee08ec29357e441a10adcc7c0cd68977c4e24c613f8999b0862ae05fe3c648498c4bda8dfc5a1c15d883cfbc30c815a9117fd99531ee4355
   languageName: node
   linkType: hard
 
@@ -11989,6 +12029,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tiny-inflate@npm:^1.0.0":
+  version: 1.0.3
+  resolution: "tiny-inflate@npm:1.0.3"
+  checksum: 4086a1f8938dafa4a20c63b099aeb47bf8fef5aca991bf4ea4b35dd2684fa52363b2c19b3e76660311e7613cb7c4f063bc48751b9bdf9555e498d997c30bc2d6
+  languageName: node
+  linkType: hard
+
 "tinycolor2@npm:^1.4.1":
   version: 1.6.0
   resolution: "tinycolor2@npm:1.6.0"
@@ -12352,6 +12399,16 @@ __metadata:
   dependencies:
     busboy: ^1.6.0
   checksum: 25412a785b2bd0b12f0bb0ec47ef00aa7a611ca0e570cb7af97cffe6a42e0d78e4b15190363a43771e9002defc3c6647c1b2d52201b3f64e2196819db4d150d3
+  languageName: node
+  linkType: hard
+
+"unicode-trie@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "unicode-trie@npm:2.0.0"
+  dependencies:
+    pako: ^0.2.5
+    tiny-inflate: ^1.0.0
+  checksum: 19e637ce20953ec1fbfa9087abef4746a50352679b833be27924e4ba7ad753cc4073b74263747ccfccb5e38b30b17468cbb96f361eb49903ff8602396280b5a4
   languageName: node
   linkType: hard
 
@@ -13068,17 +13125,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yoga-wasm-web@npm:0.3.0":
-  version: 0.3.0
-  resolution: "yoga-wasm-web@npm:0.3.0"
-  checksum: 5d3ea343e06e694cf498e2c496c30aa3ad9d3f7dce9a8554e73649a53d01312165fdfb3d1efa0ef234adc1ef23cd80c2e1a9a271a2701a11250d48df447fa0da
-  languageName: node
-  linkType: hard
-
-"yoga-wasm-web@npm:^0.3.0":
-  version: 0.3.1
-  resolution: "yoga-wasm-web@npm:0.3.1"
-  checksum: c927470ab75c25c838e91bced3915bf70d8fb449b9c5de4fea4af9dbca1dec67c2fe3e4a6fd14badb5538a3c68ae9432319b84f440f85c8894b6868377f315ef
+"yoga-wasm-web@npm:0.3.3, yoga-wasm-web@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "yoga-wasm-web@npm:0.3.3"
+  checksum: ff65192a832975ff531a1b6eae160c2da859c250feaa58b6389b684f9b48f53fda849a7ea49d12d241198309e671e6bd230a44e7155af9573d7843ac48831c98
   languageName: node
   linkType: hard
 

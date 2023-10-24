@@ -31,23 +31,30 @@ export default async function GenerateOgImage(request: NextRequest) {
     currencyMetadata,
   }: MarketImageData = await fetch(url.href).then((r) => r.json());
 
-  const boldFont = await fetch(
-    new URL(
-      "../../../public/fonts/inter/static/Inter-Bold.ttf",
-      import.meta.url,
-    ).href,
-  ).then((res) => res.arrayBuffer());
-
-  const regularFont = await fetch(
-    new URL(
-      "../../../public/fonts/inter/static/Inter-Regular.ttf",
-      import.meta.url,
-    ).href,
-  ).then((res) => res.arrayBuffer());
-
   if (!market?.question) return;
 
   const questionClass = market.question.length > 90 ? "text-4xl" : "text-5xl";
+
+  const [boldFont, regularFont, bg, zeitgeistBadge] = await Promise.all([
+    fetch(
+      new URL(
+        "../../../public/fonts/inter/static/Inter-Bold.ttf",
+        import.meta.url,
+      ).href,
+    ).then((res) => res.arrayBuffer()),
+    fetch(
+      new URL(
+        "../../../public/fonts/inter/static/Inter-Regular.ttf",
+        import.meta.url,
+      ).href,
+    ).then((res) => res.arrayBuffer()),
+    fetch(new URL("../../../public/og/bg1.png", import.meta.url)).then((res) =>
+      res.arrayBuffer(),
+    ),
+    fetch(
+      new URL("../../../public/og/zeitgeist_badge.png", import.meta.url),
+    ).then((res) => res.arrayBuffer()),
+  ]);
 
   const image = (
     <div
@@ -59,7 +66,7 @@ export default async function GenerateOgImage(request: NextRequest) {
       }}
     >
       <img
-        src={new URL("../../../public/og/bg1.png", import.meta.url).href}
+        src={bg as any}
         tw="absolute top-0 left-0"
         style={{
           width: 1200,
@@ -105,12 +112,7 @@ export default async function GenerateOgImage(request: NextRequest) {
               style={{
                 width: 250,
               }}
-              src={
-                new URL(
-                  "../../../public/og/zeitgeist_badge.png",
-                  import.meta.url,
-                ).href
-              }
+              src={zeitgeistBadge as any}
             />
           </div>
         </div>

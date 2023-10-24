@@ -33,7 +33,7 @@ const CasePage: NextPage = () => {
     market?.report?.outcome != null &&
     isMarketCategoricalOutcome(market.report?.outcome)
       ? market.report?.outcome.categorical
-      : market?.report?.outcome.scalar?.toString();
+      : market?.report?.outcome?.scalar?.toString();
 
   const {
     isLoading: isAppealLoading,

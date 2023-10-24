@@ -39,7 +39,7 @@ import RangeInput from "../ui/RangeInput";
 import TransactionButton from "../ui/TransactionButton";
 import TradeTab, { TradeTabType } from "./TradeTab";
 import { useMarket } from "lib/hooks/queries/useMarket";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { perbillToNumber } from "lib/util/perbill-to-number";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -218,7 +218,6 @@ const Inner = ({
     isBroadcasting,
     resetState: resetTransactionState,
   } = useExtrinsic(() => transaction, {
-    onBroadcast: () => {},
     onSuccess: (data) => {
       const { baseAmount, assetAmount } = getTradeValuesFromExtrinsicResult(
         type,
@@ -282,7 +281,7 @@ const Inner = ({
           weightOut,
           amountOut.mul(ZTG),
           tradeItemState.swapFee,
-          market?.creatorFee ?? 0,
+          perbillToNumber(market?.creatorFee ?? 0),
         );
 
         setValue(
@@ -300,7 +299,7 @@ const Inner = ({
           weightIn,
           amountOut.mul(ZTG),
           tradeItemState.swapFee,
-          market?.creatorFee ?? 0,
+          perbillToNumber(market?.creatorFee ?? 0),
         );
 
         setValue("baseAmount", amountOut.toFixed(4, Decimal.ROUND_DOWN));
@@ -349,7 +348,7 @@ const Inner = ({
           weightOut,
           assetAmount.mul(ZTG),
           swapFee,
-          market?.creatorFee ?? 0,
+          perbillToNumber(market?.creatorFee ?? 0),
         );
 
         setValue(
@@ -365,7 +364,7 @@ const Inner = ({
           weightOut,
           assetAmount.mul(ZTG),
           swapFee,
-          market?.creatorFee ?? 0,
+          perbillToNumber(market?.creatorFee ?? 0),
         );
         setValue(
           "baseAmount",
@@ -414,7 +413,7 @@ const Inner = ({
           weightOut,
           baseAmount.mul(ZTG),
           swapFee,
-          market?.creatorFee ?? 0,
+          perbillToNumber(market?.creatorFee ?? 0),
         );
         setValue(
           "assetAmount",
@@ -436,7 +435,7 @@ const Inner = ({
           weightOut,
           baseAmount.mul(ZTG),
           swapFee,
-          market?.creatorFee ?? 0,
+          perbillToNumber(market?.creatorFee ?? 0),
         );
 
         setValue(
