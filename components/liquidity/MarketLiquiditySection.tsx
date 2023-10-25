@@ -121,9 +121,11 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
           label="Fees"
           className="border-b-1 sm:border-b-0 sm:border-r-1 md:border-r-1 md:mr-6"
         >
-          {`${new Decimal(swapFee).div(ZTG).mul(100).toNumber()}% + ${
-            perbillToNumber(market?.creatorFee ?? 0) * 100
-          }%`}
+          {`${new Decimal(swapFee).div(ZTG).mul(100).toNumber()}%${
+            market?.creatorFee
+              ? ` + ${perbillToNumber(market.creatorFee) * 100}%`
+              : ""
+          }`}
         </LiquidityHeaderTextItem>
         <LiquidityHeaderTextItem
           label="Prediction"
