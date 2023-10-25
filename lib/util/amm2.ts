@@ -22,7 +22,8 @@ export const calculateSwapAmountOutForBuy = (
     .ln()
     .mul(liquidity)
     .plus(reserve)
-    .minus(amountIn);
+    .minus(amountIn)
+    .plus(amountIn);
 };
 
 // sell outcome token for the base asset
