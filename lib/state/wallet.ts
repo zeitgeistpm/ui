@@ -21,7 +21,7 @@ import { Signer } from "@polkadot/api/types";
 import { PollingTimeout, poll } from "lib/util/poll";
 
 //Web3Auth
-import { web3authAtom, providerAtom } from "./util/web3auth-config";
+import { web3authAtom } from "./util/web3auth-config";
 import {
   Web3AuthWallet,
   web3AuthWalletInstance,
@@ -31,8 +31,6 @@ import {
 import { Web3Auth } from "@web3auth/modal";
 
 const DAPP_NAME = "zeitgeist";
-
-export type ExtendedKeyringPair = KeyringPair & { extensionName?: string };
 
 export type UseWallet = WalletState & {
   /**
@@ -83,9 +81,9 @@ export type UseWallet = WalletState & {
    */
   walletId?: string;
   /**
-   * Sets up web3 auth
+   * Sets up web3 auth wallet
    */
-  initWeb3Auth: () => void;
+  loadWeb3AuthWallet: () => void;
 };
 
 export type ProxyConfig = {
@@ -113,7 +111,7 @@ export type WalletState = {
   /**
    * Instance of the current wallet.
    */
-  wallet?: BaseDotsamaWallet | Web3AuthWallet;
+  wallet?: BaseDotsamaWallet | KeyringPairOrExtSigner;
   /**
    * The accounts of the current wallet.
    */
@@ -373,76 +371,28 @@ if (initialWalletId) {
 export const useWallet = (): UseWallet => {
   const [userConfig, setUserConfig] = useAtom(userConfigAtom);
   const [walletState, setWalletState] = useAtom(walletAtom);
-  const [web3auth, setWeb3auth] = useAtom(web3authAtom);
-  const [provider, setProvider] = useAtom(providerAtom);
+  const [web3auth] = useAtom(web3authAtom);
 
-  //Gets web3auth keypair after provider is set
-  useEffect(() => {
-    loadWeb3Wallet();
-    console.log("provider loading...");
-  }, [provider]);
-
-  // useEffect(() => {
-  //   console.log(userConfig, walletState);
-  // }, [userConfig]);
-
-  const loadWeb3Wallet = async () => {
-    if (!provider) {
-      return;
-    } else {
-      const init = async () => {
-        let keyPair = await getWeb3Accounts();
-        if (keyPair) enabledWeb3Wallet(keyPair);
-      };
-      init();
-    }
-  };
-
-  const onGetWeb3PolkadotKeypair = async () => {
-    if (!provider) {
-      return;
-    }
-    await cryptoWaitReady();
-    const privateKey = (await provider.request({
-      method: "private_key",
-    })) as string;
-    const keyring = new Keyring({ ss58Format: 42, type: "sr25519" });
-    const keyPair = keyring.addFromUri("0x" + privateKey);
-    return keyPair;
-  };
-
-  const getWeb3Accounts = async () => {
-    if (!provider) {
-      return;
-    }
-    const keyPair = await onGetWeb3PolkadotKeypair();
-    return keyPair;
-  };
-
-  const loginWeb3Wallet = async () => {
-    console.log(web3auth);
+  const loadWeb3AuthWallet = async () => {
     if (!web3auth) {
       return;
     }
-    // if (web3auth.status === "connected") {
-    //   await web3auth.logout();
-    // }
-    console.log("login");
+
     web3auth.status === "not_ready" && (await web3auth.initModal());
     await web3auth.connect();
-    setProvider(web3auth.provider);
-  };
 
-  const initWeb3Auth = async () => {
-    if (clientId) {
-      try {
-        const walletId = userConfig.walletId;
-        // setWeb3auth(web3AuthInstance);
-        console.log(web3AuthInstance, walletId);
-        walletId === "web3auth" && loginWeb3Wallet();
-      } catch (error) {
-        console.error(error);
-      }
+    if (web3auth.provider) {
+      const getKeypair = async (provider) => {
+        await cryptoWaitReady();
+        const privateKey = await provider.request({
+          method: "private_key",
+        });
+        const keyring = new Keyring({ ss58Format: 42, type: "sr25519" });
+        const keyPair = keyring.addFromUri("0x" + privateKey);
+        return keyPair;
+      };
+      const keyPair = await getKeypair(web3auth.provider);
+      keyPair && enabledWeb3Wallet(keyPair);
     }
   };
 
@@ -453,7 +403,7 @@ export const useWallet = (): UseWallet => {
       walletId: isString(wallet) ? wallet : wallet.extensionName,
     });
     wallet === "web3auth"
-      ? loginWeb3Wallet()
+      ? loadWeb3AuthWallet()
       : enableWallet(isString(wallet) ? wallet : wallet.extensionName);
   };
 
@@ -477,7 +427,7 @@ export const useWallet = (): UseWallet => {
     ) {
       return {
         address: activeAccount.address,
-        signer: walletState.wallet as Signer,
+        signer: walletState.wallet,
       };
     }
     if (
@@ -550,7 +500,7 @@ export const useWallet = (): UseWallet => {
     realAddress,
     selectAccount,
     activeAccount: activeAccount,
-    initWeb3Auth,
+    loadWeb3AuthWallet,
     getSigner,
     selectWallet,
     disconnectWallet,

@@ -27,7 +27,7 @@ const isProduction =
 const MyApp = ({ Component, pageProps }) => {
   const Layout = Component.Layout ? Component.Layout : React.Fragment;
   const router = useRouter();
-  const { initWeb3Auth } = useWallet();
+  const wallet = useWallet();
 
   useEffect(() => {
     if (!isProduction) {
@@ -59,10 +59,13 @@ const MyApp = ({ Component, pageProps }) => {
   }, []);
 
   useEffect(() => {
-    const init = async () => {
-      await initWeb3Auth();
-    };
-    init();
+    if (wallet.walletId === "web3auth") {
+      const init = async () => {
+        await wallet.loadWeb3AuthWallet();
+      };
+      init();
+    }
+    console.log(wallet);
   }, []);
 
   return (

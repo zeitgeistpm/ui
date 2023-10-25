@@ -66,4 +66,3 @@ export const web3AuthInstance = new Web3Auth({
 });
 
 export const web3authAtom = atom<Web3Auth | null>(web3AuthInstance);
-export const providerAtom = atom<IProvider | null>(null);
