@@ -3436,9 +3436,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk@npm:2.44.1":
-  version: 2.44.1
-  resolution: "@zeitgeistpm/sdk@npm:2.44.1"
+"@zeitgeistpm/sdk@npm:2.44.2":
+  version: 2.44.2
+  resolution: "@zeitgeistpm/sdk@npm:2.44.2"
   dependencies:
     "@zeitgeistpm/augment-api": ^2.20.0
     "@zeitgeistpm/indexer": ^3.15.0
@@ -3458,7 +3458,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: f11f20b469784bb7023baf029d6d2514ecf86d931c881e96336c0c6e069ad21c0b757118c98e9a3a0e4b8b0036826819bf841d5197089101d4bf9797ebd87f37
+  checksum: 773607f4746b8b66f0e42494670caa6a4167189f2fc9f5280165e1be813d05a445c74127ca4288d21fccf215b2edb4eeca4d5e30f06fe9bed64fffabf67df24f
   languageName: node
   linkType: hard
 
@@ -3518,7 +3518,7 @@ __metadata:
     "@zeitgeistpm/avatara-nft-sdk": ^1.3.1
     "@zeitgeistpm/avatara-react": ^1.3.2
     "@zeitgeistpm/avatara-util": ^1.2.0
-    "@zeitgeistpm/sdk": 2.44.1
+    "@zeitgeistpm/sdk": 2.44.2
     "@zeitgeistpm/utility": ^2.20.0
     autoprefixer: 10.2.5
     axios: ^0.21.4
