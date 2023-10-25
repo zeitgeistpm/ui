@@ -5,6 +5,8 @@ import {
   RpcContext,
   ZTG,
   swapFeeFromFloat,
+  WithPool,
+  NoPool,
 } from "@zeitgeistpm/sdk";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 import { ChainTime } from "@zeitgeistpm/utility/dist/time";
@@ -130,10 +132,51 @@ export const marketFormDataToExtrinsicParams = (
     throw new Error("Invalid market creation form data");
   }
 
-  const base: CreateMarketBaseParams<
-    RpcContext<MetadataStorage>,
-    MetadataStorage
-  > = {
+  const hasPool = form.moderation === "Permissionless" && form.liquidity.deploy;
+  const isAMM2Market = form.answers && form.answers.answers.length === 2;
+
+  let poolParams: WithPool | NoPool;
+
+  if (hasPool) {
+    if (isAMM2Market) {
+      poolParams = {
+        scoringRule: "Lmsr",
+        pool: {
+          amount: new Decimal(form.liquidity.rows[0].amount)
+            .mul(ZTG)
+            .toString(),
+          swapFee: swapFeeFromFloat(form.liquidity.swapFee?.value).toString(),
+          spotPrices: [
+            //todo: needs to be updated when we can support multiple assets
+            new Decimal(0.5).mul(ZTG).toString(),
+            new Decimal(0.5).mul(ZTG).toString(),
+          ],
+        },
+      };
+    } else {
+      poolParams = {
+        scoringRule: "Cpmm",
+        pool: {
+          amount: new Decimal(form.liquidity.rows[0].amount)
+            .mul(ZTG)
+            .toString(),
+          swapFee: swapFeeFromFloat(form.liquidity.swapFee?.value).toString(),
+          weights: form.liquidity.rows.slice(0, -1).map((row) => {
+            return new Decimal(row.weight)
+              .mul(ZTG)
+              .toFixed(0, Decimal.ROUND_DOWN);
+          }),
+        },
+      };
+    }
+  } else {
+    poolParams = {
+      scoringRule: isAMM2Market ? "Lmsr" : "Cpmm",
+      creationType: form.moderation,
+    };
+  }
+
+  const params: CreateMarketParams<RpcContext> = {
     signer,
     proxy,
     disputeMechanism: "Authorized",
@@ -169,32 +212,35 @@ export const marketFormDataToExtrinsicParams = (
         form.answers?.type === "scalar" ? form.answers.numberType : undefined,
     },
     baseAsset: baseCurrencyMetadata.assetId,
+    ...poolParams,
   };
 
-  if (form.moderation === "Permissionless") {
-    return {
-      ...base,
-      creationType: form.moderation,
-      pool: form.liquidity.deploy
-        ? {
-            amount: new Decimal(form.liquidity.rows[0].amount)
-              .mul(ZTG)
-              .toString(),
-            swapFee: swapFeeFromFloat(form.liquidity.swapFee?.value).toString(),
-            weights: form.liquidity.rows.slice(0, -1).map((row) => {
-              return new Decimal(row.weight)
-                .mul(ZTG)
-                .toFixed(0, Decimal.ROUND_DOWN);
-            }),
-          }
-        : undefined,
-    };
-  } else {
-    return {
-      ...base,
-      creationType: form.moderation,
-    };
-  }
+  return params;
+
+  // if (form.moderation === "Permissionless") {
+  //   return {
+  //     ...base,
+  //     creationType: form.moderation,
+  //     pool: form.liquidity.deploy
+  //       ? {
+  //           amount: new Decimal(form.liquidity.rows[0].amount)
+  //             .mul(ZTG)
+  //             .toString(),
+  //           swapFee: swapFeeFromFloat(form.liquidity.swapFee?.value).toString(),
+  //           weights: form.liquidity.rows.slice(0, -1).map((row) => {
+  //             return new Decimal(row.weight)
+  //               .mul(ZTG)
+  //               .toFixed(0, Decimal.ROUND_DOWN);
+  //           }),
+  //         }
+  //       : undefined,
+  //   };
+  // } else {
+  //   return {
+  //     ...base,
+  //     creationType: form.moderation,
+  //   };
+  // }
 };
 
 export const durationasBlocks = (duration: Partial<PeriodDurationOption>) => {
