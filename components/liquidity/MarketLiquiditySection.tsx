@@ -3,6 +3,7 @@ import { parseAssetId } from "@zeitgeistpm/sdk";
 import LiquidityModal from "components/liquidity/LiquidityModal";
 import PoolTable from "components/liquidity/PoolTable";
 import BuySellFullSetsButton from "components/markets/BuySellFullSetsButton";
+import InfoPopover from "components/ui/InfoPopover";
 import { Loader } from "components/ui/Loader";
 import SecondaryButton from "components/ui/SecondaryButton";
 import TransactionButton from "components/ui/TransactionButton";
@@ -15,7 +16,9 @@ import { isScalarRangeType } from "lib/types";
 import { formatNumberLocalized } from "lib/util";
 import { getCurrentPrediction } from "lib/util/assets";
 import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
+import { perbillToNumber } from "lib/util/perbill-to-number";
 import { FC, PropsWithChildren, useState } from "react";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 
 export const MarketLiquiditySection = ({
   market,
@@ -84,7 +87,13 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
   const { data: liquidity } = usePoolLiquidity(
     pool?.poolId ? { poolId: pool.poolId } : undefined,
   );
-  const swapFee = Number(pool?.swapFee ?? 0);
+
+  const swapFee = new Decimal(Number(pool?.swapFee) ?? 0)
+    .div(ZTG)
+    .mul(100)
+    .toNumber();
+  const creatorFee = perbillToNumber(market?.creatorFee ?? 0) * 100;
+
   const baseAssetId = pool?.baseAsset
     ? parseAssetId(pool.baseAsset).unrightOr(undefined)
     : undefined;
@@ -120,7 +129,27 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
           label="Fees"
           className="border-b-1 sm:border-b-0 sm:border-r-1 md:border-r-1 md:mr-6"
         >
-          {new Decimal(swapFee).div(ZTG).mul(100).toNumber()} %
+          {swapFee + creatorFee}%
+          <InfoPopover
+            className="ml-2"
+            title={
+              <h3 className="flex justify-center items-center mb-4 gap-2">
+                <AiOutlineInfoCircle />
+                Swap fees
+              </h3>
+            }
+          >
+            <div className="flex flex-col gap-2 w-full items-center mt-6">
+              <p className="font-light mb-4 flex gap-2">
+                <span>Creator fee:</span>
+                <span className="font-bold">{creatorFee}%</span>
+              </p>
+              <p className="font-light mb-4 flex gap-2">
+                <span>Pool fee:</span>
+                <span className="font-bold">{swapFee}%</span>
+              </p>
+            </div>
+          </InfoPopover>
         </LiquidityHeaderTextItem>
         <LiquidityHeaderTextItem
           label="Prediction"
