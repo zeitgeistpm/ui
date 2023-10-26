@@ -27,7 +27,6 @@ import {
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
-import { useDelayQueue } from "lib/state/delay-queue";
 import { useWallet } from "lib/state/wallet";
 import { TradeType } from "lib/types";
 import { awaitIndexer } from "lib/util/await-indexer";
@@ -114,7 +113,6 @@ const Inner = ({
 
   const wallet = useWallet();
   const signer = wallet.activeAccount;
-  const { addItem } = useDelayQueue();
 
   const { data: tradeItemState } = useTradeItemState(tradeItem);
 
@@ -237,10 +235,6 @@ const Inner = ({
       setPercentageDisplay("0");
 
       if (tradeItem.action === "buy" && wallet.realAddress) {
-        addItem(40_000, {
-          address: wallet.realAddress,
-          assetId: tradeItem.assetId,
-        });
         awaitIndexer(() => {
           queryClient.invalidateQueries([
             id,
