@@ -36,6 +36,7 @@ import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 import Input from "components/ui/Input";
 import TimezoneSelect from "./inputs/TimezoneSelect";
 import { Loader } from "components/ui/Loader";
+import FeeSelect from "./inputs/FeeSelect";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -537,6 +538,32 @@ export const MarketEditor = () => {
               !fieldsState.liquidity.isValid || !fieldsState.answers.isValid
             }
           >
+            {form.currency && (
+              <div className="flex flex-col items-center">
+                <div className="mb-2 md:mb-4 text-center flex items-center gap-2">
+                  <h2 className="text-base mb-0">Creator Fee</h2>
+                  <InfoPopover>
+                    <p>
+                      Creators will be paid a fee based on trading volume.
+                      Higher fees may discourage trading and liquidity provision
+                    </p>
+                  </InfoPopover>
+                </div>
+                <FeeSelect
+                  {...input("creatorFee", { mode: "all" })}
+                  label="% Creator Fee"
+                  presets={[
+                    { value: 0, type: "preset" },
+                    { value: 0.1, type: "preset" },
+                    { value: 0.5, type: "preset" },
+                  ]}
+                  isValid={fieldsState.creatorFee?.isValid}
+                />
+                <div className="flex center h-5 text-xs mt-6 text-red-400">
+                  <ErrorMessage field={fieldsState.creatorFee} />
+                </div>
+              </div>
+            )}
             {form.moderation === "Permissionless" && form.currency ? (
               <>
                 <div className="mb-2 md:mb-4 text-center">

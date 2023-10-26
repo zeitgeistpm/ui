@@ -7,6 +7,7 @@ import { extrinsicCallback, signAndSend } from "lib/util/tx";
 import { useMemo, useState } from "react";
 import { useSdkv2 } from "./useSdkv2";
 import { useExtrinsicFee } from "./queries/useExtrinsicFee";
+import { useConfirmation } from "lib/state/confirm-modal/useConfirmation";
 
 export const useExtrinsic = <T>(
   extrinsicFn: (
@@ -24,6 +25,9 @@ export const useExtrinsic = <T>(
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isBroadcasting, setIsBroadcasting] = useState(false);
+  const confirm = useConfirmation();
+
+  const confirmEnabled = wallet?.walletId === "web3auth";
 
   const notifications = useNotifications();
 
@@ -39,17 +43,16 @@ export const useExtrinsic = <T>(
     setIsLoading(false);
     setIsBroadcasting(false);
   };
-  const send = (params?: T) => {
+
+  const send = async (params?: T) => {
     if (!isRpcSdk(sdk)) {
       throw new Error("SDK is not RPC");
     }
-    console.log(wallet);
+
     const walletId = wallet?.walletId;
     const signer = wallet.getSigner(walletId);
-    console.log(signer);
-    if (!signer) return;
 
-    setIsLoading(true);
+    if (!signer) return;
 
     let extrinsic = extrinsicFn(params);
     if (!extrinsic) return;
@@ -60,6 +63,22 @@ export const useExtrinsic = <T>(
       console.info("Proxying transaction");
       extrinsic = sdk.api.tx.proxy.proxy(proxy?.address, "Any", extrinsic);
     }
+
+    setIsLoading(true);
+
+    if (confirmEnabled) {
+      const confirmed = await confirm.prompt({
+        title: "Confirm Transaction",
+        description:
+          "This will make a onchain transaction. Please confirm that you want to proceed.",
+      });
+
+      if (!confirmed) {
+        setIsLoading(false);
+        return;
+      }
+    }
+
     signAndSend(
       extrinsic,
       signer,

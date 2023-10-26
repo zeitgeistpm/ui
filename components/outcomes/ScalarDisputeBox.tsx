@@ -1,4 +1,5 @@
 import { IndexerContext, isRpcSdk, Market } from "@zeitgeistpm/sdk";
+import { MarketStatus } from "@zeitgeistpm/indexer";
 import TransactionButton from "components/ui/TransactionButton";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
@@ -24,28 +25,15 @@ const ScalarDisputeBox = ({
   const disputeBond = constants?.markets.disputeBond;
   const tokenSymbol = constants?.tokenSymbol;
 
-  const { data: disputes } = useMarketDisputes(market);
-  const lastDispute = disputes?.[disputes.length - 1];
-
   const wallet = useWallet();
   const signer = wallet.activeAccount;
 
-  const bondAmount = disputes && disputeBond ? disputeBond : undefined;
+  const bondAmount =
+    market.status === MarketStatus.Disputed && disputeBond
+      ? disputeBond
+      : undefined;
 
   const isScalarDate = market.scalarType === "date";
-
-  const getPreviousReport = () => {
-    const reportVal = new Decimal(
-      lastDispute?.outcome.asScalar.toString() ?? market.report?.outcome.scalar,
-    )
-      .div(ZTG)
-      .toString();
-    if (isScalarDate) {
-      return moment(Number(reportVal)).format("YYYY-MM-DD HH:mm");
-    } else {
-      return reportVal;
-    }
-  };
 
   const { send, isLoading, isBroadcasting } = useExtrinsic(
     () => {
@@ -78,34 +66,6 @@ const ScalarDisputeBox = ({
           incorrect
         </span>
       </div>
-      <div className="flex flex-col item-center text-center">
-        <span className="text-sky-600 text-[14px]">Previous Report:</span>
-        <span className="">{getPreviousReport()}</span>
-      </div>
-      {/* {isScalarDate ? (
-        <DateTimeInput
-          timestamp={scalarReportValue}
-          onChange={setScalarReportValue}
-          isValidDate={(current) => {
-            const loBound = bounds[0].toNumber();
-            const hiBound = bounds[1].toNumber();
-            if (current.valueOf() >= loBound && current.valueOf() <= hiBound) {
-              return true;
-            }
-            return false;
-          }}
-        />
-      ) : (
-        <Input
-          type="number"
-          value={scalarReportValue}
-          placeholder="New reported value"
-          onChange={(e) => setScalarReportValue(e.target.value)}
-          min={bounds[0].toString()}
-          max={bounds[1].toString()}
-          className="text-ztg-14-150 p-2 bg-sky-200 rounded-md w-full outline-none text-center font-mono mt-2"
-        />
-      )} */}
 
       {bondAmount !== disputeBond && bondAmount !== undefined && (
         <div className="flex flex-col item-center text-center">

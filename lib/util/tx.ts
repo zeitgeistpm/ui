@@ -147,7 +147,6 @@ export const signAndSend = async (
                 : {}),
             },
             (result) => {
-              console.log(result.txHash.toHuman());
               cb
                 ? cb(result, unsub)
                 : _callback(result, resolve, reject, unsub);
@@ -175,7 +174,6 @@ export const signAndSend = async (
         });
       }
     } catch (error) {
-      console.log(error);
       reject(error);
     }
   });

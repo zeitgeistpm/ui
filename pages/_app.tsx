@@ -65,7 +65,6 @@ const MyApp = ({ Component, pageProps }) => {
       };
       init();
     }
-    console.log(wallet);
   }, []);
 
   return (

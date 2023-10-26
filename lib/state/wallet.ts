@@ -16,19 +16,11 @@ import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { InjectedAccount } from "@polkadot/extension-inject/types";
 import { isPresent } from "lib/types";
 import { KeyringPair } from "@polkadot/keyring/types";
-import { useEffect, useState } from "react";
-import { Signer } from "@polkadot/api/types";
 import { PollingTimeout, poll } from "lib/util/poll";
 
 //Web3Auth
 import { web3authAtom } from "./util/web3auth-config";
-import {
-  Web3AuthWallet,
-  web3AuthWalletInstance,
-  web3AuthInstance,
-  clientId,
-} from "./util/web3auth-config";
-import { Web3Auth } from "@web3auth/modal";
+import { web3AuthWalletInstance } from "./util/web3auth-config";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -133,7 +125,6 @@ const disconnectWalletStateTransition = (
   wallet: WalletState,
   userConfig: WalletUserConfig,
 ): [WalletState, WalletUserConfig] => {
-  console.log(userConfig);
   return [
     {
       ...wallet,
@@ -181,7 +172,6 @@ const userConfigAtom = persistentAtom<WalletUserConfig>({
        * Migrate existing localStorage values to new atom state.
        * So existing users don't have to reselect their wallet and address.
        */
-      console.log(state);
       if (!state || Object.keys(state).length === 0) {
         const walletId = globalThis.localStorage?.getItem("walletId");
         let selectedAddress =
@@ -242,7 +232,6 @@ let accountsSubscriptionUnsub: VoidFunction | undefined | null;
  */
 
 const enableWallet = async (walletId: string) => {
-  console.log(walletId);
   if (accountsSubscriptionUnsub) accountsSubscriptionUnsub();
 
   const wallet = supportedWallets.find((w) => w.extensionName === walletId);
@@ -360,8 +349,8 @@ const enabledWeb3Wallet = (keyPair: KeyringPair) => {
  * Enable wallet on first load if wallet id is set.
  */
 const initialWalletId = store.get(userConfigAtom).walletId;
-if (initialWalletId) {
-  initialWalletId !== "web3auth" && enableWallet(initialWalletId);
+if (initialWalletId && initialWalletId !== "web3auth") {
+  enableWallet(initialWalletId);
 }
 
 /**
@@ -397,7 +386,6 @@ export const useWallet = (): UseWallet => {
   };
 
   const selectWallet = (wallet: BaseDotsamaWallet | string) => {
-    console.log(userConfig, wallet);
     setUserConfig({
       ...userConfig,
       walletId: isString(wallet) ? wallet : wallet.extensionName,
@@ -410,11 +398,9 @@ export const useWallet = (): UseWallet => {
   const disconnectWallet = async () => {
     const [newWalletState, newUserConfigState] =
       disconnectWalletStateTransition(walletState, userConfig);
-    console.log(newWalletState, newUserConfigState);
     setWalletState(newWalletState);
     setUserConfig(newUserConfigState);
     if (web3auth?.status === "connected") {
-      console.log("logout");
       await web3auth.logout();
     }
   };
@@ -443,7 +429,6 @@ export const useWallet = (): UseWallet => {
   };
 
   const selectAccount = (account: InjectedAccount | string) => {
-    console.log(account);
     const selectedAddress = isString(account) ? account : account.address;
     try {
       encodeAddress(selectedAddress, 73);
@@ -457,7 +442,6 @@ export const useWallet = (): UseWallet => {
   };
 
   const setProxyFor = (address: string, proxyFor: ProxyConfig) => {
-    console.log(address, proxyFor);
     setUserConfig({
       ...userConfig,
       proxyFor: {
