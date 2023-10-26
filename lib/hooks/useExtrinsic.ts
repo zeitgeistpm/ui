@@ -27,6 +27,7 @@ export const useExtrinsic = <T>(
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const confirm = useConfirmation();
 
+  //Show transaction confirmation modal for web3auth
   const confirmEnabled = wallet?.walletId === "web3auth";
 
   const notifications = useNotifications();
@@ -49,8 +50,7 @@ export const useExtrinsic = <T>(
       throw new Error("SDK is not RPC");
     }
 
-    const walletId = wallet?.walletId;
-    const signer = wallet.getSigner(walletId);
+    const signer = wallet.getSigner();
 
     if (!signer) return;
 
@@ -110,7 +110,6 @@ export const useExtrinsic = <T>(
         },
       }),
       IOForeignAssetId.is(fee?.assetId) ? fee?.assetId.ForeignAsset : undefined,
-      walletId,
     ).catch(() => {
       setIsBroadcasting(false);
       setIsLoading(false);

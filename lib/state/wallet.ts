@@ -40,6 +40,10 @@ export type UseWallet = WalletState & {
    */
   isNovaWallet: boolean;
   /**
+   * Name of the wallet being used
+   */
+  walletId?: string;
+  /**
    * Get the active signer for transactions. Is either the real account or the proxy account.
    */
   getSigner: (walletId?: string) => KeyringPairOrExtSigner | undefined;
@@ -68,10 +72,6 @@ export type UseWallet = WalletState & {
    * Get the proxy config for an address(real).
    */
   getProxyFor: (address?: string) => ProxyConfig | undefined;
-  /**
-   * Stores walletId to identify the wallet
-   */
-  walletId?: string;
   /**
    * Sets up web3 auth wallet
    */
@@ -149,7 +149,7 @@ const store = getDefaultStore();
 /**
  * Atom proxy storage of wallet state.
  */
-const walletAtom = atom<WalletState>({
+export const walletAtom = atom<WalletState>({
   connected: false,
   wallet: undefined,
   accounts: [],
@@ -405,27 +405,19 @@ export const useWallet = (): UseWallet => {
     }
   };
 
-  const getSigner = (walletId?: string): KeyringPairOrExtSigner | undefined => {
-    if (
-      walletId === "web3auth" &&
-      activeAccount.address &&
-      walletState.wallet
-    ) {
+  const getSigner = (): KeyringPairOrExtSigner | undefined => {
+    if (!walletState.wallet) {
+      return;
+    }
+
+    if (walletState.wallet instanceof BaseDotsamaWallet) {
       return {
         address: activeAccount.address,
-        signer: walletState.wallet,
+        signer: walletState.wallet.signer,
       };
     }
-    if (
-      walletState.wallet == null ||
-      !activeAccount ||
-      !walletState.wallet.signer
-    )
-      return;
-    return {
-      address: activeAccount.address,
-      signer: walletState.wallet.signer,
-    };
+
+    return walletState.wallet;
   };
 
   const selectAccount = (account: InjectedAccount | string) => {
@@ -478,6 +470,8 @@ export const useWallet = (): UseWallet => {
   const isNovaWallet: boolean =
     typeof window === "object" && (window as any).walletExtension?.isNovaWallet;
 
+  const walletId = userConfig.walletId;
+
   return {
     ...walletState,
     ...userConfig,
@@ -489,6 +483,7 @@ export const useWallet = (): UseWallet => {
     selectWallet,
     disconnectWallet,
     isNovaWallet,
+    walletId,
     setProxyFor,
     getProxyFor,
   };

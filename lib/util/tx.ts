@@ -138,36 +138,18 @@ export const signAndSend = async (
   return new Promise(async (resolve, reject) => {
     try {
       if (isExtSigner(signer)) {
-        if (walletId === "web3auth") {
-          const unsub = await tx.signAndSend(
-            signer.signer as AddressOrPair,
-            {
-              ...(foreignAssetNumber != null
-                ? { assetId: foreignAssetNumber }
-                : {}),
-            },
-            (result) => {
-              cb
-                ? cb(result, unsub)
-                : _callback(result, resolve, reject, unsub);
-            },
-          );
-        } else {
-          const unsub = await tx.signAndSend(
-            signer.address,
-            {
-              signer: signer.signer,
-              ...(foreignAssetNumber != null
-                ? { assetId: foreignAssetNumber }
-                : {}),
-            },
-            (result) => {
-              cb
-                ? cb(result, unsub)
-                : _callback(result, resolve, reject, unsub);
-            },
-          );
-        }
+        const unsub = await tx.signAndSend(
+          signer.address,
+          {
+            signer: signer.signer,
+            ...(foreignAssetNumber != null
+              ? { assetId: foreignAssetNumber }
+              : {}),
+          },
+          (result) => {
+            cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);
+          },
+        );
       } else {
         const unsub = await tx.signAndSend(signer, (result) => {
           cb ? cb(result, unsub) : _callback(result, resolve, reject, unsub);

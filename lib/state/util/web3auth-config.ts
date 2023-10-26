@@ -1,11 +1,11 @@
 import { BaseDotsamaWallet } from "@talismn/connect-wallets";
-import { CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { Web3Auth } from "@web3auth/modal";
 import { atom } from "jotai";
 
 export const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG ?? "";
 
-export class Web3AuthWallet extends BaseDotsamaWallet {
+class Web3AuthWallet extends BaseDotsamaWallet {
   constructor({ extensionName, title, installUrl, logo }) {
     super();
     this.extensionName = extensionName;
@@ -14,7 +14,6 @@ export class Web3AuthWallet extends BaseDotsamaWallet {
     this.logo = logo;
     this.signer;
   }
-  walletId: string;
 }
 
 const extensionName = "web3auth";
