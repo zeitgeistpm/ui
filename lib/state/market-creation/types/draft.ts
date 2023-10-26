@@ -67,6 +67,10 @@ export const empty = () => ({
     reportingPeriod: reportingPeriodOptions[1],
     disputePeriod: reportingPeriodOptions[1],
     moderation: "Permissionless",
+    creatorFee:{
+      type: "preset",
+      value: 0,
+    },
     liquidity: {
       deploy: true,
       rows: [],
