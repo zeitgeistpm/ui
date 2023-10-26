@@ -45,23 +45,23 @@ export const web3AuthInstance = new Web3Auth({
   clientId,
   chainConfig,
   web3AuthNetwork: "cyan",
-  uiConfig: {
-    loginMethodsOrder: [
-      "google",
-      "facebook",
-      "twitter",
-      "discord",
-      "twitch",
-      "email_passwordless",
-    ],
-    appName: "Zeitgeist",
-    mode: "dark",
-    logoLight: "https://web3auth.io/images/w3a-L-Favicon-1.svg",
-    logoDark: "https://web3auth.io/images/w3a-D-Favicon-1.svg",
-    defaultLanguage: "en",
-    loginGridCol: 3,
-    primaryButton: "externalLogin",
-  },
+  // uiConfig: {
+  //   loginMethodsOrder: [
+  //     "google",
+  //     "facebook",
+  //     "twitter",
+  //     "discord",
+  //     "twitch",
+  //     "email_passwordless",
+  //   ],
+  //   appName: "Zeitgeist",
+  //   mode: "dark",
+  //   logoLight: "https://web3auth.io/images/w3a-L-Favicon-1.svg",
+  //   logoDark: "https://web3auth.io/images/w3a-D-Favicon-1.svg",
+  //   defaultLanguage: "en",
+  //   loginGridCol: 3,
+  //   primaryButton: "externalLogin",
+  // },
 });
 
 export const web3authAtom = atom<Web3Auth | null>(web3AuthInstance);
