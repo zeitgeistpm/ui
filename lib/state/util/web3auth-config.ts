@@ -44,7 +44,7 @@ const chainConfig = {
 export const web3AuthInstance = new Web3Auth({
   clientId,
   chainConfig,
-  web3AuthNetwork: "sapphire_devnet",
+  web3AuthNetwork: "cyan",
   uiConfig: {
     loginMethodsOrder: [
       "google",
