@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { isIndexedSdk } from "@zeitgeistpm/sdk";
+import { isIndexedSdk, isRpcSdk } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "../useSdkv2";
 import { encodeAddress } from "@polkadot/util-crypto";
 
@@ -11,16 +11,28 @@ export const useAccountTokenPositions = (address?: string) => {
   return useQuery(
     [id, positionsRootKey, address],
     async () => {
-      if (sdk && isIndexedSdk(sdk) && address) {
-        const ztgAddress = encodeAddress(address, 73);
-        const { accountBalances } = await sdk.indexer.accountBalances({
-          where: {
-            account: {
-              accountId_eq: ztgAddress,
-            },
-            balance_gt: 0,
-          },
-        });
+      if (sdk && isRpcSdk(sdk) && address) {
+        // todo: we may wish to add this back and stitch the two data sources together
+        // to get back the fast initial load along with faster updates issue #1945
+        // const { accountBalances } = await sdk.indexer.accountBalances({
+        //   where: {
+        //     account: {
+        //       accountId_eq: address,
+        //     },
+        //     balance_gt: 0,
+        //   },
+        // });
+
+        const accounts = await sdk.api.query.tokens.accounts.entries(address);
+
+        const accountBalances = accounts
+          .map((account) => {
+            const assetId = account[0].args[1];
+            const balance = account[1].free.toString();
+
+            return { assetId, balance };
+          })
+          .filter((account) => Number(account.balance) > 0);
 
         return accountBalances;
       }
@@ -28,9 +40,8 @@ export const useAccountTokenPositions = (address?: string) => {
     },
     {
       keepPreviousData: true,
-      enabled: Boolean(sdk && isIndexedSdk(sdk) && address),
-      refetchInterval: 12 * 1000,
-      staleTime: Infinity,
+      enabled: Boolean(sdk && isRpcSdk(sdk) && address),
+      staleTime: 10_000,
     },
   );
 };
