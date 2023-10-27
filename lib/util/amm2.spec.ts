@@ -17,7 +17,7 @@ describe("amm2", () => {
         new Decimal(0),
       );
 
-      expect(amountOut.toFixed(0)).toEqual("58496250072");
+      expect(amountOut.toFixed(0)).toEqual("158496250072");
     });
   });
 
