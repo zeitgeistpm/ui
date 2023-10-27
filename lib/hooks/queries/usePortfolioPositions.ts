@@ -238,6 +238,7 @@ export const usePortfolioPositions = (
       })
       .filter(isNotNull) ?? [];
 
+  //Todo: we can use useAccountTokenPositions for this to reduce it to a single query issue #1945
   const poolAssetBalances = useAccountAssetBalances(poolAssetBalancesFilter);
 
   const poolAssetBalances24HoursAgo = useAccountAssetBalances(
