@@ -17,6 +17,7 @@ import { InjectedAccount } from "@polkadot/extension-inject/types";
 import { isPresent } from "lib/types";
 import { KeyringPair } from "@polkadot/keyring/types";
 import { PollingTimeout, poll } from "lib/util/poll";
+import { IProvider } from "@web3auth/base";
 
 //Web3Auth
 import { web3authAtom } from "./util/web3auth-config";
@@ -46,7 +47,7 @@ export type UseWallet = WalletState & {
   /**
    * Get the active signer for transactions. Is either the real account or the proxy account.
    */
-  getSigner: (walletId?: string) => KeyringPairOrExtSigner | undefined;
+  getSigner: () => KeyringPairOrExtSigner | undefined;
   /**
    * Select a wallet.
    * @param wallet the selected wallet id or instance
@@ -371,12 +372,12 @@ export const useWallet = (): UseWallet => {
     await web3auth.connect();
 
     if (web3auth.provider) {
-      const getKeypair = async (provider) => {
+      const getKeypair = async (provider: IProvider) => {
         await cryptoWaitReady();
         const privateKey = await provider.request({
           method: "private_key",
         });
-        const keyring = new Keyring({ ss58Format: 42, type: "sr25519" });
+        const keyring = new Keyring({ ss58Format: 73, type: "sr25519" });
         const keyPair = keyring.addFromUri("0x" + privateKey);
         return keyPair;
       };

@@ -111,7 +111,6 @@ export const signAndSend = async (
   signer: KeyringPairOrExtSigner,
   cb?: GenericCallback,
   foreignAssetNumber?: number,
-  walletId?: string | undefined,
 ) => {
   const _callback = (
     result: ISubmittableResult,
