@@ -216,31 +216,6 @@ export const marketFormDataToExtrinsicParams = (
   };
 
   return params;
-
-  // if (form.moderation === "Permissionless") {
-  //   return {
-  //     ...base,
-  //     creationType: form.moderation,
-  //     pool: form.liquidity.deploy
-  //       ? {
-  //           amount: new Decimal(form.liquidity.rows[0].amount)
-  //             .mul(ZTG)
-  //             .toString(),
-  //           swapFee: swapFeeFromFloat(form.liquidity.swapFee?.value).toString(),
-  //           weights: form.liquidity.rows.slice(0, -1).map((row) => {
-  //             return new Decimal(row.weight)
-  //               .mul(ZTG)
-  //               .toFixed(0, Decimal.ROUND_DOWN);
-  //           }),
-  //         }
-  //       : undefined,
-  //   };
-  // } else {
-  //   return {
-  //     ...base,
-  //     creationType: form.moderation,
-  //   };
-  // }
 };
 
 export const durationasBlocks = (duration: Partial<PeriodDurationOption>) => {

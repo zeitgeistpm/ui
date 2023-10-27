@@ -114,8 +114,9 @@ const PoolDeployer = ({
     },
   );
 
-  //todo: lsmr cost is same as amount
-  const poolCost = liquidity?.amount
+  const isAmm2 = market?.scoringRule === "Lmsr";
+
+  const poolCost = isAmm2
     ? liquidity?.amount
     : liquidity?.rows
     ? calculatePoolCost(liquidity?.rows.map((row) => Number(row.amount)) ?? [])
@@ -194,7 +195,7 @@ const PoolDeployer = ({
 
   const parser = useMemo(() => {
     return IOLiquidity.refine((liquidity) => {
-      return activeBalance?.div(ZTG).greaterThanOrEqualTo(poolCost);
+      return activeBalance?.div(ZTG).greaterThanOrEqualTo(poolCost ?? 0);
     }, "Insufficient balance to deploy pool.")
       .refine((liquidity) => {
         return new Decimal(liquidity.rows?.[0]?.amount || 0).greaterThan(0);

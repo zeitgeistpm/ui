@@ -137,7 +137,6 @@ export const createMarketFormValidator = ({
         form.liquidity?.deploy &&
         form.liquidity?.rows &&
         form.liquidity?.rows?.length < 3
-        //todo: test with 1 row
       ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,

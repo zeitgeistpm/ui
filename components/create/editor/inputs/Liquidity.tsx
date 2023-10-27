@@ -64,23 +64,12 @@ export const LiquidityInput = ({
       <div className="md:max-w-4xl">
         <>
           <div className="mb-4 ">
-            {/* {isAMM2Market ? (
-              <PoolSettingsAmm2
-                baseAssetPrice={baseAssetPrice ?? undefined}
-                data={transformRows(value?.rows ?? [])}
-                onChange={handleRowsChange}
-                noDataMessage={errorMessage}
-                baseAssetSymbol={currency}
-                baseAssetImageSrc={currencyMetadata?.image}
-              />
-            ) : ( */}
             <PoolSettings
               baseAssetPrice={baseAssetPrice ?? undefined}
               data={transformRows(value?.rows ?? [])}
               onChange={handleRowsChange}
               noDataMessage={errorMessage}
             />
-            {/* )} */}
           </div>
           <FeeSelect
             name={name}
