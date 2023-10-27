@@ -190,7 +190,7 @@ export const IOTimeZone = z.string().nonempty();
 
 export const IOTags = z
   .array(z.enum(defaultTags))
-  .min(1, { message: "Must select atleast one category" });
+  .min(1, { message: "Must select at least one category" });
 
 export const IOYesNoAnswers = z
   .object({
@@ -206,9 +206,9 @@ export const IOCategoricalAnswers = z
       .array(
         z
           .string()
-          .min(1, { message: "Answers must be atleast one character long." }),
+          .min(1, { message: "Answers must be at least one character long." }),
       )
-      .min(2, { message: "Must have atleast two answers" })
+      .min(2, { message: "Must have at least two answers" })
       .refine((answers) => new Set(answers).size === answers.length, {
         message: "Answers must be unique.",
       }),

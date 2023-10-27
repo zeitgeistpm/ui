@@ -182,6 +182,7 @@ const PoolDeployer = ({
       deploy: true,
       swapFee: swapFeePresets[0],
       rows,
+      amount: amountNum.toString(),
     };
 
     setLiquidity(liquidity);
