@@ -1,3 +1,4 @@
+import { Transition } from "@headlessui/react";
 import AssetSelect, { AssetOption } from "components/ui/AssetSelect";
 import {
   FOREIGN_ASSET_METADATA,
@@ -5,7 +6,7 @@ import {
 } from "lib/constants/foreign-asset";
 import { useAllAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import useFeePayingAssetSelection from "lib/state/fee-paying-asset";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { Check } from "react-feather";
 
 const isSupportedAsset = (id: number) => {
@@ -60,12 +61,21 @@ const FeePayingAssetSelect = () => {
     <div className="flex flex-col gap-y-3">
       <div className="flex item-center">
         <label className="font-bold">Select asset to pay network fees</label>
-        {showSaved && (
+        <Transition
+          as={Fragment}
+          show={showSaved}
+          enter="transition duration-100 ease-out"
+          enterFrom="transform scale-95 opacity-0"
+          enterTo="transform scale-100 opacity-100"
+          leave="transition duration-75 ease-out"
+          leaveFrom="transform scale-100 opacity-100"
+          leaveTo="transform scale-95 opacity-0"
+        >
           <div className="flex gap-2 items-center ml-auto">
             <Check size={16} className="text-green-500" />
             <div className="text-sm">Saved</div>
           </div>
-        )}
+        </Transition>
       </div>
       <div
         className={

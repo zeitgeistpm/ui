@@ -52,7 +52,7 @@ export const UserIdentity: FC<
       : shortenAddress(user, 10, 10);
   return (
     <div className={`inline-flex items-center gap-1 ${className}`}>
-      <Avatar address={user} copy={false} />
+      <Avatar address={user} copy={false} size={18} />
       <span className="break-all flex-1">{displayName}</span>
     </div>
   );
@@ -98,22 +98,36 @@ const MarketOutcome: FC<
           : "bg-yellow-light"
       }`}
     >
-      <div className="flex gap-1">
-        <span>{status} Outcome: </span>
-        {outcome ? (
-          <span className="font-bold">{outcome}</span>
-        ) : (
-          <Skeleton width={100} height={24} />
+      <div className="center gap-1">
+        {status === "Reported" && (
+          <div className="flex gap-1">
+            <span>{status} Outcome </span>
+            {outcome ? (
+              <span className="font-bold">{outcome}</span>
+            ) : status === "Reported" ? (
+              <Skeleton width={100} height={24} />
+            ) : (
+              ""
+            )}
+          </div>
+        )}
+
+        {status === "Disputed" && (
+          <div className="flex gap-1">
+            <span>{status} Outcome </span>
+          </div>
+        )}
+
+        {status !== "Resolved" && by && (
+          <div className="flex items-center gap-4">
+            <span>by: </span>
+            <div className="flex items-center">
+              <UserIdentity user={by} />
+            </div>
+          </div>
         )}
       </div>
-      {status !== "Resolved" && by && (
-        <div className="flex items-center gap-4">
-          <span>{status} by: </span>
-          <div className="flex items-center">
-            <UserIdentity user={by} />
-          </div>
-        </div>
-      )}
+
       {marketHistory ? (
         <button
           className="text-ztg-blue font-medium"
@@ -243,10 +257,7 @@ const MarketHistory: FC<
                               "Unknown"
                             )}
                           </span>{" "}
-                          disputed and suggested{" "}
-                          <span className="font-bold">
-                            {getOutcome(dispute.outcome)}
-                          </span>
+                          disputed the reported outcome.
                         </span>
                       </span>
                       <span className="text-sm text-gray-500">
@@ -432,20 +443,28 @@ const MarketHeader: FC<{
             className="rounded-full"
           />
           <div className="opacity-0 transition-opacity absolute right-0 bottom-0 translate-x-[50%] z-10 translate-y-[115%] group-hover:opacity-100 pt-1  whitespace-nowrap">
-            <div className="py-1 px-2 text-sm bg-slate-50 rounded-lg">
+            <div className="py-1 px-2 text-sm bg-blue-100 rounded-lg">
               <span className="text-gray-500">Currency: </span>
               <span className="font-semibold">{token}</span>
             </div>
           </div>
         </div>
 
-        {/* todo: add when court is available */}
-        {/* <Image width={20} height={20} src="/icons/court.svg" alt="court" /> */}
+        {market.disputeMechanism === "Court" && (
+          <div className="relative group">
+            <Image width={22} height={22} src="/icons/court.svg" alt="court" />
+            <div className="opacity-0 transition-opacity absolute right-0 bottom-0 translate-x-[50%] z-10 translate-y-[115%] group-hover:opacity-100 pt-1 whitespace-nowrap">
+              <div className="py-1 px-2 text-sm bg-purple-200 rounded-lg">
+                Court Dispute Mechanism Enabled
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="relative group">
           <Image
-            width={20}
-            height={20}
+            width={22}
+            height={22}
             src="/icons/verified-icon.svg"
             alt="verified checkmark"
           />

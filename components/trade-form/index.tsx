@@ -27,7 +27,6 @@ import {
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { calcInGivenOut, calcOutGivenIn, calcSpotPrice } from "lib/math";
-import { useDelayQueue } from "lib/state/delay-queue";
 import { useWallet } from "lib/state/wallet";
 import { TradeType } from "lib/types";
 import { awaitIndexer } from "lib/util/await-indexer";
@@ -39,7 +38,7 @@ import RangeInput from "../ui/RangeInput";
 import TransactionButton from "../ui/TransactionButton";
 import TradeTab, { TradeTabType } from "./TradeTab";
 import { useMarket } from "lib/hooks/queries/useMarket";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { perbillToNumber } from "lib/util/perbill-to-number";
 
 const getTradeValuesFromExtrinsicResult = (
   type: TradeType,
@@ -114,7 +113,6 @@ const Inner = ({
 
   const wallet = useWallet();
   const signer = wallet.activeAccount;
-  const { addItem } = useDelayQueue();
 
   const { data: tradeItemState } = useTradeItemState(tradeItem);
 
@@ -218,7 +216,6 @@ const Inner = ({
     isBroadcasting,
     resetState: resetTransactionState,
   } = useExtrinsic(() => transaction, {
-    onBroadcast: () => {},
     onSuccess: (data) => {
       const { baseAmount, assetAmount } = getTradeValuesFromExtrinsicResult(
         type,
@@ -238,10 +235,6 @@ const Inner = ({
       setPercentageDisplay("0");
 
       if (tradeItem.action === "buy" && wallet.realAddress) {
-        addItem(40_000, {
-          address: wallet.realAddress,
-          assetId: tradeItem.assetId,
-        });
         awaitIndexer(() => {
           queryClient.invalidateQueries([
             id,
@@ -282,7 +275,7 @@ const Inner = ({
           weightOut,
           amountOut.mul(ZTG),
           tradeItemState.swapFee,
-          market?.creatorFee ?? 0,
+          perbillToNumber(market?.creatorFee ?? 0),
         );
 
         setValue(
@@ -300,7 +293,7 @@ const Inner = ({
           weightIn,
           amountOut.mul(ZTG),
           tradeItemState.swapFee,
-          market?.creatorFee ?? 0,
+          perbillToNumber(market?.creatorFee ?? 0),
         );
 
         setValue("baseAmount", amountOut.toFixed(4, Decimal.ROUND_DOWN));
@@ -349,7 +342,7 @@ const Inner = ({
           weightOut,
           assetAmount.mul(ZTG),
           swapFee,
-          market?.creatorFee ?? 0,
+          perbillToNumber(market?.creatorFee ?? 0),
         );
 
         setValue(
@@ -365,7 +358,7 @@ const Inner = ({
           weightOut,
           assetAmount.mul(ZTG),
           swapFee,
-          market?.creatorFee ?? 0,
+          perbillToNumber(market?.creatorFee ?? 0),
         );
         setValue(
           "baseAmount",
@@ -414,7 +407,7 @@ const Inner = ({
           weightOut,
           baseAmount.mul(ZTG),
           swapFee,
-          market?.creatorFee ?? 0,
+          perbillToNumber(market?.creatorFee ?? 0),
         );
         setValue(
           "assetAmount",
@@ -436,7 +429,7 @@ const Inner = ({
           weightOut,
           baseAmount.mul(ZTG),
           swapFee,
-          market?.creatorFee ?? 0,
+          perbillToNumber(market?.creatorFee ?? 0),
         );
 
         setValue(

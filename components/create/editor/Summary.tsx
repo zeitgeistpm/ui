@@ -46,9 +46,10 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
 
   const { data: baseAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
 
-  const baseAssetLiquidityRow = form?.liquidity?.rows.find(
+  const baseAssetLiquidityRow = form?.liquidity?.rows?.find(
     (row) => row.asset === form.currency,
   );
+  const amm2Liquidity = editor.form?.liquidity?.amount;
 
   return (
     <div className="flex-1 text-center">
@@ -112,12 +113,16 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
                 <div className="flex justify-center gap-4 mb-4">
                   <div className="flex justify-center gap-2 items-center">
                     <Label>Amount</Label>{" "}
-                    <div>{baseAssetLiquidityRow?.amount ?? "--"}</div>
+                    <div>
+                      {amm2Liquidity ?? baseAssetLiquidityRow?.amount ?? "--"}
+                    </div>
                   </div>
-                  <div className="flex justify-center gap-2 items-center">
-                    <Label>Weight</Label>{" "}
-                    <div>{baseAssetLiquidityRow?.weight ?? "--"}</div>
-                  </div>
+                  {!amm2Liquidity && (
+                    <div className="flex justify-center gap-2 items-center">
+                      <Label>Weight</Label>{" "}
+                      <div>{baseAssetLiquidityRow?.weight ?? "--"}</div>
+                    </div>
+                  )}
                   <div className="flex justify-center gap-2 items-center">
                     <Label>Swap Fee</Label>{" "}
                     {form.liquidity?.swapFee?.value ?? "--"}%
@@ -243,8 +248,8 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
         </div>
       </div>
 
-      <div>
-        <Label className="mb-2">Description</Label>
+      <div className="mb-10">
+        <Label>Description</Label>
         <div className="flex center ">
           {form?.description ? (
             <div className="w-full md:w-2/3 max-w-2xl bg-gray-50 rounded-md p-4 h-fit">
@@ -254,6 +259,10 @@ export const MarketSummary = ({ editor }: MarketSummaryProps) => {
             <span className="italic text-gray-500">No description given.</span>
           )}
         </div>
+      </div>
+      <div>
+        <Label className="mb-2">Creator Fee</Label>
+        <div className="flex center ">{form?.creatorFee?.value} %</div>
       </div>
     </div>
   );
@@ -280,7 +289,7 @@ const Answers = ({
       }}
     >
       {answers?.answers.map((answer, answerIndex) => {
-        const answerLiquidity = liquidity?.rows[answerIndex];
+        const answerLiquidity = liquidity?.rows?.[answerIndex];
 
         return (
           <div
@@ -303,22 +312,26 @@ const Answers = ({
                     <Label className="text-xs">Amount</Label>{" "}
                   </div>
                   <div className="table-cell text-left">
-                    <div>{answerLiquidity?.amount ?? "--"}</div>
-                  </div>
-                </div>
-
-                <div className="table-row mb-1">
-                  <div className="table-cell text-left pr-4">
-                    <Label className="text-xs">Weight</Label>{" "}
-                  </div>
-                  <div className="table-cell text-left">
                     <div>
-                      {answerLiquidity?.weight
-                        ? new Decimal(answerLiquidity.weight).toFixed(2)
-                        : "--"}
+                      {liquidity?.amount ?? answerLiquidity?.amount ?? "--"}
                     </div>
                   </div>
                 </div>
+
+                {!liquidity.amount && (
+                  <div className="table-row mb-1">
+                    <div className="table-cell text-left pr-4">
+                      <Label className="text-xs">Weight</Label>{" "}
+                    </div>
+                    <div className="table-cell text-left">
+                      <div>
+                        {answerLiquidity?.weight
+                          ? new Decimal(answerLiquidity.weight).toFixed(2)
+                          : "--"}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="table-row mb-1">
                   <div className="table-cell text-left pr-4">

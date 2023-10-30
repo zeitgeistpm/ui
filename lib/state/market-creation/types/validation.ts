@@ -100,21 +100,34 @@ export const createMarketFormValidator = ({
       description: IODescription,
       moderation: IOModerationMode,
       liquidity: IOLiquidity,
+      creatorFee: IOCreatorFee,
     })
     .superRefine((form, ctx) => {
       const baseLiquidityRow =
         form.liquidity?.rows?.[form.liquidity?.rows.length - 1];
+      const min = minBaseLiquidity[form.currency];
 
       if (form.moderation === "Permissionless" && form?.liquidity?.deploy) {
-        const min = minBaseLiquidity[form.currency];
-        const amount = parseFloat(baseLiquidityRow.amount) * 2;
+        if (baseLiquidityRow) {
+          const amount = parseFloat(baseLiquidityRow.amount) * 2;
 
-        if (!amount || amount < min) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ["liquidity", "base"],
-            message: `Minimum base liquidity is ${min} ${form.currency}`,
-          });
+          if (!amount || amount < min) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["liquidity", "base"],
+              message: `Minimum base liquidity is ${min} ${form.currency}`,
+            });
+          }
+        } else {
+          const amount = parseFloat(form.liquidity.amount ?? "0");
+
+          if (!amount || amount < min) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["liquidity", "base"],
+              message: `Minimum base liquidity is ${min} ${form.currency}`,
+            });
+          }
         }
       }
     })
@@ -122,6 +135,7 @@ export const createMarketFormValidator = ({
       if (
         form.moderation === "Permissionless" &&
         form.liquidity?.deploy &&
+        form.liquidity?.rows &&
         form.liquidity?.rows?.length < 3
       ) {
         ctx.addIssue({
@@ -175,7 +189,7 @@ export const IOTimeZone = z.string().nonempty();
 
 export const IOTags = z
   .array(z.enum(defaultTags))
-  .min(1, { message: "Must select atleast one category" });
+  .min(1, { message: "Must select at least one category" });
 
 export const IOYesNoAnswers = z
   .object({
@@ -191,9 +205,9 @@ export const IOCategoricalAnswers = z
       .array(
         z
           .string()
-          .min(1, { message: "Answers must be atleast one character long." }),
+          .min(1, { message: "Answers must be at least one character long." }),
       )
-      .min(2, { message: "Must have atleast two answers" })
+      .min(2, { message: "Must have at least two answers" })
       .refine((answers) => new Set(answers).size === answers.length, {
         message: "Answers must be unique.",
       }),
@@ -268,6 +282,16 @@ export const IOModerationMode = z.enum<
   ["Permissionless", "Advised"]
 >(["Permissionless", "Advised"]);
 
+export const IOCreatorFee = z.object({
+  type: z.union([z.literal("custom"), z.literal("preset")]),
+  value: z
+    .number()
+    .min(0, {
+      message: "Creator fee must be a positive number.",
+    })
+    .max(1, { message: "Creator fee cannot exceed 1%." }),
+});
+
 export const IOLiquidityRow = z.object({
   asset: z.string(),
   weight: z.string(),
@@ -279,24 +303,25 @@ export const IOLiquidityRow = z.object({
   value: z.string(),
 });
 
-export const IOSwappFee = z
+export const IOSwapFee = z
   .number()
   .min(0, {
-    message: "Swap fee must be a postive number.",
+    message: "Swap fee must be a positive number.",
   })
   .max(10, { message: "Swap fee cannot exceed 10%." });
 
 export const IOLiquidity = z.object({
   deploy: z.boolean(),
-  rows: z.array(IOLiquidityRow),
+  amount: z.optional(z.string()),
+  rows: z.optional(z.array(IOLiquidityRow)),
   swapFee: z.union([
     z.object({
       type: z.literal("preset"),
-      value: IOSwappFee,
+      value: IOSwapFee,
     }),
     z.object({
       type: z.literal("custom"),
-      value: IOSwappFee,
+      value: IOSwapFee,
     }),
   ]),
 });
