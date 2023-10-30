@@ -95,9 +95,9 @@ export const useTradeItemState = (item: TradeItem) => {
       const assetWeight = getAssetWeight(pool, item.assetId).unwrap();
       const assetIndex = getIndexOf(item.assetId);
       const asset = market.categories?.[assetIndex];
-      const swapFee = new Decimal(pool.swapFee === "" ? "0" : pool.swapFee).div(
-        ZTG,
-      );
+      const swapFee = new Decimal(
+        pool.swapFee === "" ? "0" : pool.swapFee ?? "0",
+      ).div(ZTG);
       const tradeablePoolAssetBalance = poolAssetBalance.mul(MAX_IN_OUT_RATIO);
 
       if (!baseWeight || !assetWeight) return;

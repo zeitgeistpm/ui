@@ -25,7 +25,7 @@ export const useRedeemableMarkets = (account?: string) => {
       redeemableMarketsRootKey,
       account,
       tokenPositions
-        ?.map((p) => p.id)
+        ?.map((p) => p.assetId)
         .sort()
         .join("|"),
     ],

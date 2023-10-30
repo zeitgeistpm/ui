@@ -59,8 +59,6 @@ const Portfolio: NextPageWithLayout = () => {
   //init cross chain apis early
   useCrossChainApis();
 
-  const { items } = useDelayQueue();
-
   const [mainTabSelection, setMainTabSelection] =
     useQueryParamState<MainTabItem>("mainTab");
 
@@ -88,23 +86,6 @@ const Portfolio: NextPageWithLayout = () => {
   if (isValidPolkadotAddress(address) === false) {
     return <NotFoundPage />;
   }
-
-  const ownedAssetIds = Object.values(marketPositionsByMarket ?? {})
-    .flat()
-    .map((p) => p.assetId);
-
-  const newAssetsQueued = items.filter(
-    (item) =>
-      item.metadata?.address === address &&
-      ownedAssetIds.some(
-        (assetId) =>
-          item.metadata?.assetId &&
-          assetsAreEqual(assetId, item.metadata.assetId),
-      ) === false,
-  );
-
-  const isPortfolioIndexing =
-    marketPositionsByMarket && newAssetsQueued.length !== 0;
 
   return (
     <div className="mt-8">
@@ -154,14 +135,6 @@ const Portfolio: NextPageWithLayout = () => {
 
           <Tab.Panels>
             <Tab.Panel className="mt-[40px]">
-              {isPortfolioIndexing && (
-                <div className="flex w-full items-center justify-center gap-5 bg-info p-4 mb-[40px] text-sm flex-wrap">
-                  <Loader loading={true} className="h-9 w-9" variant={"Info"} />
-                  <div className="text-center">
-                    New portfolio positions are being indexed
-                  </div>
-                </div>
-              )}
               {!marketPositionsByMarket || !ztgPrice ? (
                 range(0, 8).map((i) => (
                   <MarketPositionsSkeleton className="mb-14" key={i} />
