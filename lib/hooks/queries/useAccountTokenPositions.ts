@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { isIndexedSdk, isRpcSdk } from "@zeitgeistpm/sdk";
 import { useSdkv2 } from "../useSdkv2";
+import { encodeAddress } from "@polkadot/util-crypto";
 
 export const positionsRootKey = "account-token-positions";
 
