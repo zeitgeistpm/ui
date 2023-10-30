@@ -31,6 +31,7 @@ import { FieldState } from "lib/state/market-creation/types/fieldstate";
 import { Liquidity } from "lib/state/market-creation/types/form";
 import { IOLiquidity } from "lib/state/market-creation/types/validation";
 import { useMemo, useState } from "react";
+import { LiquidityInputAmm2 } from "components/create/editor/inputs/LiquidityAMM2";
 
 const PoolDeployer = ({
   marketId,
@@ -49,13 +50,42 @@ const PoolDeployer = ({
   const [liquidity, setLiquidity] = useState<Liquidity | null>(null);
 
   const {
+    send: deployAmm2Pool,
+    isLoading: amm2IsLoading,
+    isSuccess: amm2IsSuccess,
+  } = useExtrinsic(
+    () => {
+      if (isRpcSdk(sdk) && liquidity?.amount) {
+        const amount = new Decimal(liquidity.amount).mul(ZTG).toFixed(0);
+        return sdk.api.tx.utility.batchAll([
+          sdk.api.tx.predictionMarkets.buyCompleteSet(marketId, amount),
+          sdk.api.tx.neoSwaps.deployPool(
+            marketId,
+            new Decimal(liquidity.amount).mul(ZTG).toFixed(0),
+            [0.5 * ZTG, 0.5 * ZTG], //todo: needs to be updated when we can support multiple assets
+            swapFeeFromFloat(liquidity.swapFee?.value).toString(),
+          ),
+        ]);
+      }
+    },
+    {
+      onSuccess: () => {
+        notificationStore.pushNotification("Liquidity pool deployed", {
+          type: "Success",
+        });
+        queryClient.invalidateQueries([id, accountPoolAssetBalancesRootKey]);
+        onPoolDeployed?.();
+      },
+    },
+  );
+  const {
     send: deployPool,
     isLoading,
     isSuccess,
     isBroadcasting,
   } = useExtrinsic(
     () => {
-      if (isRpcSdk(sdk) && liquidity) {
+      if (isRpcSdk(sdk) && liquidity?.rows) {
         // We are assuming all rows have the same amount
         const amount = liquidity.rows[0].amount;
 
@@ -84,7 +114,11 @@ const PoolDeployer = ({
     },
   );
 
-  const poolCost = liquidity?.rows
+  const isAmm2 = market?.scoringRule === "Lmsr";
+
+  const poolCost = isAmm2
+    ? liquidity?.amount
+    : liquidity?.rows
     ? calculatePoolCost(liquidity?.rows.map((row) => Number(row.amount)) ?? [])
     : "";
 
@@ -149,6 +183,7 @@ const PoolDeployer = ({
       deploy: true,
       swapFee: swapFeePresets[0],
       rows,
+      amount: amountNum.toString(),
     };
 
     setLiquidity(liquidity);
@@ -160,15 +195,15 @@ const PoolDeployer = ({
 
   const parser = useMemo(() => {
     return IOLiquidity.refine((liquidity) => {
-      return activeBalance?.div(ZTG).greaterThanOrEqualTo(poolCost);
+      return activeBalance?.div(ZTG).greaterThanOrEqualTo(poolCost ?? 0);
     }, "Insufficient balance to deploy pool.")
       .refine((liquidity) => {
-        return new Decimal(liquidity.rows[0]?.amount || 0).greaterThan(0);
+        return new Decimal(liquidity.rows?.[0]?.amount || 0).greaterThan(0);
       }, "Liquidity amount must be a positive number.")
       .refine((liquidity) => {
         return (
           currencyMetadata &&
-          new Decimal(liquidity.rows[0]?.amount || 0)
+          new Decimal(liquidity.rows?.[0]?.amount || 0)
             .mul(2)
             .greaterThanOrEqualTo(minBaseLiquidity[currencyMetadata.name])
         );
@@ -198,7 +233,7 @@ const PoolDeployer = ({
 
   return (
     <>
-      {isSuccess ? (
+      {isSuccess || amm2IsSuccess ? (
         <></>
       ) : liquidity && isBroadcasting ? (
         <div className="center">
@@ -216,25 +251,45 @@ const PoolDeployer = ({
               <h4 className="mt-10 mb-4 center">Deploy Pool</h4>
             </div>
             <div className="mb-12">
-              <LiquidityInput
-                name="poolDeployer"
-                value={liquidity}
-                currency={currencyMetadata?.name ?? "ZTG"}
-                onChange={handleLiquidityChange}
-                fieldState={fieldState}
-              />
+              {market?.scoringRule === "Lmsr" ? (
+                <LiquidityInputAmm2
+                  name="poolDeployer"
+                  value={liquidity}
+                  currency={currencyMetadata?.name ?? "ZTG"}
+                  onChange={handleLiquidityChange}
+                  fieldState={fieldState}
+                />
+              ) : (
+                <LiquidityInput
+                  name="poolDeployer"
+                  value={liquidity ?? undefined}
+                  currency={currencyMetadata?.name ?? "ZTG"}
+                  onChange={handleLiquidityChange}
+                  fieldState={fieldState}
+                />
+              )}
               <div className="center text-vermilion h-6 mt-4">
                 <ErrorMessage field={fieldState} />
               </div>
             </div>
             <div className="text-center">
-              <TransactionButton
-                className="w-ztg-266 ml-ztg-8 mb-4"
-                onClick={() => deployPool()}
-                disabled={!fieldState.isValid || isLoading || isBroadcasting}
-              >
-                Deploy Pool
-              </TransactionButton>
+              {market?.scoringRule === "Lmsr" ? (
+                <TransactionButton
+                  className="w-ztg-266 ml-ztg-8 mb-4"
+                  onClick={() => deployAmm2Pool()}
+                  disabled={!fieldState.isValid || amm2IsLoading}
+                >
+                  Deploy Pool
+                </TransactionButton>
+              ) : (
+                <TransactionButton
+                  className="w-ztg-266 ml-ztg-8 mb-4"
+                  onClick={() => deployPool()}
+                  disabled={!fieldState.isValid || isLoading || isBroadcasting}
+                >
+                  Deploy Pool
+                </TransactionButton>
+              )}
               <div className="text-ztg-12-150 text-sky-600 font-bold ml-[27px]">
                 Total Cost:
                 <span className="font-mono">
