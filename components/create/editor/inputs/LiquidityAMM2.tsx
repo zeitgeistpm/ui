@@ -7,7 +7,7 @@ import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
 import { swapFeePresets } from "lib/state/market-creation/constants/swap-fee";
 import { FieldState } from "lib/state/market-creation/types/fieldstate";
 import { CurrencyTag, Liquidity } from "lib/state/market-creation/types/form";
-import { ReactNode } from "react";
+import { ChangeEventHandler, ReactNode } from "react";
 import { FormEvent } from "../types";
 import Input from "components/ui/Input";
 import PoolSettingsAmm2 from "components/liquidity/PoolSettingsAMM2";
@@ -17,15 +17,17 @@ export type LiquidityInputProps = {
   name: string;
   value?: Liquidity;
   onChange: (event: FormEvent<Liquidity>) => void;
+  onBlur?: (event: FormEvent<Liquidity>) => void;
   errorMessage?: string | ReactNode;
   currency: CurrencyTag;
   fieldState: FieldState;
 };
 
-export const LiquidityInput = ({
+export const LiquidityInputAmm2 = ({
   name,
   value,
   onChange,
+  onBlur,
   errorMessage,
   currency,
   fieldState,
@@ -33,19 +35,18 @@ export const LiquidityInput = ({
   const currencyMetadata = getMetadataForCurrency(currency);
   const { data: baseAssetPrice } = useAssetUsdPrice(currencyMetadata?.assetId);
 
-  const handleRowsChange = (data: PoolAssetRowData[]) => {
+  const handleAmountChange = (amount: string) => {
     onChange({
       type: "change",
       target: {
         name,
         value: {
           ...value!,
-          rows: transformRows(data),
+          amount: amount,
         },
       },
     });
   };
-
   const handleFeeChange = (event: FormEvent<Fee>) => {
     onChange({
       type: "change",
@@ -61,14 +62,16 @@ export const LiquidityInput = ({
 
   return (
     <div className="center">
-      <div className="md:max-w-4xl">
+      <div className="md:max-w-4xl w-full flex flex-col items-center">
         <>
           <div className="mb-4 ">
-            <PoolSettings
+            <PoolSettingsAmm2
               baseAssetPrice={baseAssetPrice ?? undefined}
-              data={transformRows(value?.rows ?? [])}
-              onChange={handleRowsChange}
+              onChange={handleAmountChange}
               noDataMessage={errorMessage}
+              baseAssetSymbol={currency}
+              baseAssetImageSrc={currencyMetadata?.image}
+              baseAssetAmount={value?.amount}
             />
           </div>
           <FeeSelect
@@ -84,19 +87,3 @@ export const LiquidityInput = ({
     </div>
   );
 };
-
-function transformRows(rows: PoolAssetRowData[]): Liquidity["rows"];
-function transformRows(rows: Liquidity["rows"]): PoolAssetRowData[];
-function transformRows(
-  rows: PoolAssetRowData[] | Liquidity["rows"],
-): PoolAssetRowData[] | Liquidity["rows"] {
-  return rows?.map((row) => ({
-    ...row,
-    price: {
-      price: Decimal.isDecimal(row.price.price)
-        ? row.price.price.toString()
-        : new Decimal(row.price.price),
-      locked: row.price.locked,
-    },
-  }));
-}
