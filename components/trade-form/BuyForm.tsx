@@ -13,6 +13,7 @@ import {
   lookupAssetReserve,
   useAmm2Pool,
 } from "lib/hooks/queries/amm2/useAmm2Pool";
+import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
@@ -20,10 +21,15 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { calculateSwapAmountOutForBuy } from "lib/util/amm2";
+import {
+  calculateSpotPrice,
+  calculateSwapAmountOutForBuy,
+} from "lib/util/amm2";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
+
+const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
 
 const BuyForm = ({
   marketId,
@@ -52,6 +58,8 @@ const BuyForm = ({
   });
   const wallet = useWallet();
   const baseAsset = parseAssetIdString(market?.baseAsset);
+  const { data: assetMetadata } = useAssetMetadata(baseAsset);
+  const baseSymbol = assetMetadata?.symbol;
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
   const { data: pool } = useAmm2Pool(marketId);
   console.log(pool);
@@ -78,21 +86,50 @@ const BuyForm = ({
     pool?.liquidity.div(ZTG).toString(),
   );
 
-  const amountOut =
-    assetReserve && pool.liquidity
-      ? calculateSwapAmountOutForBuy(
-          assetReserve,
-          amountIn,
-          pool.liquidity,
-          new Decimal(0.01),
-          new Decimal(0.001),
-        )
+  const {
+    amountOut,
+    spotPrice,
+    newSpotPrice,
+    priceImpact,
+    maxProfit,
+    minAmountOut,
+  } = useMemo(() => {
+    const amountOut =
+      assetReserve && pool.liquidity
+        ? calculateSwapAmountOutForBuy(
+            assetReserve,
+            amountIn,
+            pool.liquidity,
+            new Decimal(0.01),
+            new Decimal(0.001),
+          )
+        : new Decimal(0);
+
+    const spotPrice =
+      assetReserve && calculateSpotPrice(assetReserve, pool?.liquidity);
+
+    const newSpotPrice =
+      pool?.liquidity &&
+      assetReserve &&
+      calculateSpotPrice(assetReserve?.minus(amountOut), pool?.liquidity);
+
+    const priceImpact = spotPrice
+      ? newSpotPrice?.div(spotPrice).minus(1).mul(100)
       : new Decimal(0);
 
-  const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
+    const maxProfit = amountOut.minus(amountIn);
 
-  console.log(amountIn.div(ZTG).toString());
-  console.log(amountOut.div(ZTG).toString());
+    const minAmountOut = amountOut.mul(slippageMultiplier);
+
+    return {
+      amountOut,
+      spotPrice,
+      newSpotPrice,
+      priceImpact,
+      maxProfit,
+      minAmountOut,
+    };
+  }, [amountIn, pool?.liquidity, assetReserve]);
 
   const { isLoading, send, fee } = useExtrinsic(
     () => {
@@ -112,7 +149,7 @@ const BuyForm = ({
         market?.categories?.length,
         selectedAsset,
         new Decimal(amount).mul(ZTG).toFixed(0),
-        amountOut.mul(slippageMultiplier).toFixed(0),
+        minAmountOut.toFixed(0),
       );
     },
     {
@@ -192,12 +229,37 @@ const BuyForm = ({
                 message: "Value is required",
               },
               validate: (value) => {
+                const amountIn = new Decimal(
+                  value && value !== "" ? value : 0,
+                ).mul(ZTG);
+                const amountOut =
+                  assetReserve && pool.liquidity
+                    ? calculateSwapAmountOutForBuy(
+                        assetReserve,
+                        amountIn,
+                        pool.liquidity,
+                        new Decimal(0.01),
+                        new Decimal(0.001),
+                      )
+                    : new Decimal(0);
+
+                const newSpotPrice =
+                  pool?.liquidity &&
+                  assetReserve &&
+                  calculateSpotPrice(
+                    assetReserve?.minus(amountOut),
+                    pool?.liquidity,
+                  );
                 if (value > (baseAssetBalance?.div(ZTG).toNumber() ?? 0)) {
                   return `Insufficient balance. Current balance: ${baseAssetBalance
                     ?.div(ZTG)
                     .toFixed(3)}`;
                 } else if (value <= 0) {
                   return "Value cannot be zero or less";
+                } else if (newSpotPrice?.greaterThan(0.99)) {
+                  return "New spot price cannot be greater than 0.99, please reduce trade size";
+                } else if (newSpotPrice?.lessThan(0.01)) {
+                  return "New spot price cannot be less than 0.01, please reduce trade size";
                 }
               },
             })}
@@ -212,14 +274,27 @@ const BuyForm = ({
           disabled={!baseAssetBalance || baseAssetBalance.lessThanOrEqualTo(0)}
           {...register("percentage", { value: "0" })}
         />
-        <div className="text-vermilion text-ztg-12-120 my-[4px] h-[16px]">
+        <div className="text-vermilion text-xs my-[4px] h-[16px]">
           <>{formState.errors["amount"]?.message}</>
         </div>
-        <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
-          <span className="text-black ml-1">
+        <div className="flex flex-col items-center gap-2 w-full font-normal text-xs mb-[10px] text-sky-600">
+          <div className="">
             Network Fee: {fee ? fee.amount.div(ZTG).toFixed(3) : 0}{" "}
             {fee?.symbol}
-          </span>
+          </div>
+          <div className="">
+            Max profit: {maxProfit.toFixed(2)}
+            {baseSymbol}
+          </div>
+          <div className="">Min amount out:</div>
+          <div className="">
+            Price after trade:
+            {newSpotPrice?.toFixed(2)}
+          </div>
+          <div className="">
+            Price impact:
+            {priceImpact?.toFixed(2)}%
+          </div>
         </div>
         <FormTransactionButton
           className="w-full max-w-[250px]"
