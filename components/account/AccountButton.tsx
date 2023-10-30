@@ -91,7 +91,6 @@ const AccountButton: FC<{
     getProxyFor,
     realAddress,
   } = useWallet();
-
   const proxy = getProxyFor(activeAccount?.address);
 
   const accountModals = useAccountModals();
@@ -395,7 +394,9 @@ const AccountButton: FC<{
                         {({ active }) => (
                           <div
                             className="flex items-center px-6 hover:bg-slate-100"
-                            onClick={() => disconnectWallet()}
+                            onClick={() => {
+                              disconnectWallet();
+                            }}
                           >
                             <Frown />
                             <button
