@@ -45,6 +45,7 @@ export const web3AuthInstance = new Web3Auth({
   clientId,
   chainConfig,
   web3AuthNetwork: "cyan",
+  // Settings for whitelabel version of web3auth modal
   // uiConfig: {
   //   loginMethodsOrder: [
   //     "google",
