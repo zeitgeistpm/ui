@@ -9,6 +9,8 @@ import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { OrmlTokensAccountData } from "@polkadot/types/lookup";
 import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { usePoolBaseBalance } from "./usePoolBaseBalance";
+import { Amm2Pool, useAmm2Pool } from "./amm2/useAmm2Pool";
+import { calculateSpotPrice } from "lib/util/amm2";
 
 export const marketSpotPricesKey = "market-spot-prices";
 
@@ -34,6 +36,8 @@ export const useMarketSpotPrices = (
     blockNumber,
   );
 
+  const { data: amm2Pool } = useAmm2Pool(marketId);
+
   const enabled =
     isRpcSdk(sdk) &&
     marketId != null &&
@@ -41,15 +45,26 @@ export const useMarketSpotPrices = (
     !!market &&
     !!basePoolBalance &&
     !!balances &&
+    !!amm2Pool &&
     balances.length !== 0;
 
   const query = useQuery(
-    [id, marketSpotPricesKey, pool, blockNumber, balances, basePoolBalance],
+    [
+      id,
+      marketSpotPricesKey,
+      pool,
+      blockNumber,
+      balances,
+      basePoolBalance,
+      amm2Pool,
+    ],
     async () => {
       if (!enabled) return;
       const spotPrices: MarketPrices =
         market?.status !== "Resolved"
           ? calcMarketPrices(market, basePoolBalance, balances)
+          : market.scoringRule === "Lsmr"
+          ? calcMarketPricesAmm2(amm2Pool)
           : calcResolvedMarketPrices(market);
 
       return spotPrices;
@@ -60,6 +75,20 @@ export const useMarketSpotPrices = (
   );
 
   return query;
+};
+
+const calcMarketPricesAmm2 = (pool: Amm2Pool) => {
+  const spotPrices: MarketPrices = new Map();
+
+  Array.from(pool.reserves.values()).forEach((reserve, index) => {
+    const spotPrice = calculateSpotPrice(reserve, pool.liquidity);
+
+    if (!spotPrice.isNaN()) {
+      spotPrices.set(index, spotPrice);
+    }
+  });
+
+  return spotPrices;
 };
 
 const calcMarketPrices = (

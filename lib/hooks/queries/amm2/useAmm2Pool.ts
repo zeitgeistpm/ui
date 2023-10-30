@@ -1,12 +1,9 @@
-import type { ZeitgeistPrimitivesAsset } from "@polkadot/types/lookup";
 import { useQuery } from "@tanstack/react-query";
 import {
-  isRpcSdk,
-  MarketOutcomeAssetId,
-  IOMarketOutcomeAssetId,
-  IOCategoricalAssetId,
-  parseAssetId,
   AssetId,
+  IOCategoricalAssetId,
+  IOMarketOutcomeAssetId,
+  isRpcSdk,
 } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -15,6 +12,14 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 export const amm2PoolKey = "amm2-pool";
 
 type ReserveMap = Map<number | "Long" | "Short", Decimal>;
+
+export type Amm2Pool = {
+  accountId: string;
+  baseAsset: AssetId;
+  liquidity: Decimal;
+  swapFee: Decimal;
+  reserves: ReserveMap;
+};
 
 export const useAmm2Pool = (marketId?: number) => {
   const [sdk, id] = useSdkv2();
@@ -42,13 +47,15 @@ export const useAmm2Pool = (marketId?: number) => {
           }
         });
 
-        return {
+        const pool: Amm2Pool = {
           accountId: unwrappedRes.accountId.toString(),
-          baseAsset: parseAssetIdString(unwrappedRes.collateral.toString()),
+          baseAsset: parseAssetIdString(unwrappedRes.collateral.toString())!,
           liquidity: new Decimal(unwrappedRes.liquidityParameter.toString()),
           swapFee: new Decimal(unwrappedRes.swapFee.toString()),
           reserves,
         };
+
+        return pool;
       }
     },
     {
