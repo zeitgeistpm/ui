@@ -52,7 +52,6 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   }, [extrinsic, sdk]);
 
   const { data: fee } = useExtrinsicFee(extrinsicBase);
-  const { data: constants } = useChainConstants();
 
   const insufficientFeeBalance = fee?.sufficientBalance === false;
 
