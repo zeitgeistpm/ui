@@ -2,6 +2,7 @@ import { Dialog } from "@headlessui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk";
 import FormTransactionButton from "components/ui/FormTransactionButton";
+import InfoPopover from "components/ui/InfoPopover";
 import Input from "components/ui/Input";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
@@ -85,12 +86,22 @@ const JoinCourtButton = () => {
 
   return (
     <>
-      <button
-        className="bg-[#670031] rounded-md text-white py-2 px-4"
-        onClick={() => setIsOpen(true)}
-      >
-        {participant?.type === "Juror" ? "Increase Stake" : "Become a Juror"}
-      </button>
+      <div className="relative">
+        <button
+          className={`bg-[#670031] rounded-md text-white py-2 px-4  ${
+            participant?.type === "Delegator" && "ring-2 ring-orange-500"
+          }`}
+          onClick={() => setIsOpen(true)}
+        >
+          {participant?.type === "Juror" ? "Increase Stake" : "Become a Juror"}
+        </button>
+        {participant?.type === "Delegator" && (
+          <div className="absolute top-0 right-0">
+            <InfoPopover>WEarn</InfoPopover>
+          </div>
+        )}
+      </div>
+
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
           <h3 className="mb-8">Become a Juror</h3>

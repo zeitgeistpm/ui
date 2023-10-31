@@ -38,7 +38,7 @@ const DelegateButton = ({ address }: { address: string }) => {
   const notificationStore = useNotifications();
   const wallet = useWallet();
   const { data: balance } = useZtgBalance(wallet.realAddress);
-  const participant = useConnectedCourtParticipant();
+  const connectedParticipant = useConnectedCourtParticipant();
   const queryClient = useQueryClient();
 
   const { isLoading, send, fee } = useExtrinsic(
@@ -132,10 +132,10 @@ const DelegateButton = ({ address }: { address: string }) => {
                       ) {
                         return `Stake cannot be less than ${constants?.court.minJurorStake} ${constants.tokenSymbol}`;
                       } else if (
-                        participant?.stake &&
-                        participant?.stake.div(ZTG).greaterThan(value)
+                        connectedParticipant?.stake &&
+                        connectedParticipant?.stake.div(ZTG).greaterThan(value)
                       ) {
-                        return `Stake must be higher than your current stake of ${participant?.stake
+                        return `Stake must be higher than your current stake of ${connectedParticipant?.stake
                           .div(ZTG)
                           .toNumber()} ${constants?.tokenSymbol}`;
                       }
