@@ -1,16 +1,16 @@
+import { OrmlTokensAccountData } from "@polkadot/types/lookup";
 import { useQuery } from "@tanstack/react-query";
+import { FullMarketFragment, ScoringRule } from "@zeitgeistpm/indexer";
 import { isRpcSdk } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
 import { calcSpotPrice } from "lib/math";
+import { calculateSpotPrice } from "lib/util/amm2";
+import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { useSdkv2 } from "../useSdkv2";
+import { Amm2Pool, useAmm2Pool } from "./amm2/useAmm2Pool";
 import { useAccountPoolAssetBalances } from "./useAccountPoolAssetBalances";
 import { useMarket } from "./useMarket";
-import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { OrmlTokensAccountData } from "@polkadot/types/lookup";
-import { calcResolvedMarketPrices } from "lib/util/calc-resolved-market-prices";
 import { usePoolBaseBalance } from "./usePoolBaseBalance";
-import { Amm2Pool, useAmm2Pool } from "./amm2/useAmm2Pool";
-import { calculateSpotPrice } from "lib/util/amm2";
 
 export const marketSpotPricesKey = "market-spot-prices";
 
@@ -63,7 +63,7 @@ export const useMarketSpotPrices = (
       const spotPrices: MarketPrices =
         market?.status !== "Resolved"
           ? calcMarketPrices(market, basePoolBalance, balances)
-          : market.scoringRule === "Lsmr"
+          : market.scoringRule === ScoringRule.Lmsr
           ? calcMarketPricesAmm2(amm2Pool)
           : calcResolvedMarketPrices(market);
 

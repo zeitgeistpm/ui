@@ -60,6 +60,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { ScoringRule } from "@zeitgeistpm/indexer";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -381,7 +382,7 @@ const Market: NextPage<MarketPageProps> = ({
             <div className="shadow-lg rounded-lg mb-12 opacity-0 animate-pop-in">
               {market?.status === MarketStatus.Active ? (
                 <>
-                  {market?.scoringRule === "Lsmr" ? (
+                  {market?.scoringRule === ScoringRule.Cpmm ? (
                     <TradeForm outcomeAssets={outcomeAssets} />
                   ) : (
                     <Amm2TradeForm marketId={marketId} />

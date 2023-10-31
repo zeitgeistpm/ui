@@ -12,6 +12,7 @@ import SecondaryButton from "components/ui/SecondaryButton";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useTradeItem } from "lib/hooks/trade";
 import { useState } from "react";
+import { ScoringRule } from "@zeitgeistpm/indexer";
 
 const AssetTradingButtons = ({
   assetId,
@@ -52,7 +53,7 @@ const AssetTradingButtons = ({
       {tradeItem && (
         <Modal open={isOpen} onClose={() => setIsOpen(false)}>
           <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
-            {market?.scoringRule === "Lsmr" ? (
+            {market?.scoringRule === ScoringRule.Lmsr ? (
               <Amm2TradeForm
                 marketId={marketId}
                 initialAsset={assetId}
