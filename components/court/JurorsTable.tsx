@@ -1,7 +1,7 @@
 import Avatar from "components/ui/Avatar";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Link from "next/link";
-import DelegateButton from "./DelegateJuror";
+import DelegateButton from "./DelegateButton";
 import { useParticipants } from "lib/hooks/queries/court/useParticipants";
 import Decimal from "decimal.js";
 import { ZTG } from "@zeitgeistpm/sdk";

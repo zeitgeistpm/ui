@@ -50,9 +50,12 @@ const JoinCourtButton = () => {
     },
     {
       onSuccess: () => {
-        notificationStore.pushNotification("Successfully joined court", {
-          type: "Success",
-        });
+        notificationStore.pushNotification(
+          "Successfully joined court as juror.",
+          {
+            type: "Success",
+          },
+        );
         queryClient.invalidateQueries([id, participantsRootKey]);
       },
     },
@@ -88,7 +91,8 @@ const JoinCourtButton = () => {
     <>
       <div className="relative">
         <button
-          className={`bg-[#670031] rounded-md text-white py-2 px-4  ${
+          disabled={isLoading}
+          className={`bg-[#670031] rounded-md text-white py-2 px-4 transition-all  ${
             participant?.type === "Delegator" && "ring-2 ring-orange-500"
           }`}
           onClick={() => setIsOpen(true)}
@@ -96,8 +100,12 @@ const JoinCourtButton = () => {
           {participant?.type === "Juror" ? "Increase Stake" : "Become a Juror"}
         </button>
         {participant?.type === "Delegator" && (
-          <div className="absolute top-0 right-0">
-            <InfoPopover>WEarn</InfoPopover>
+          <div className="absolute top-0 right-0 p-[0.5] rounded-full bg-orange-500 translate-x-[50%] translate-y-[-50%]">
+            <InfoPopover overlay={false} className="text-white" position="top">
+              You are currently delegating to other jurors. If you join the
+              court as a juror, your delegations will be removed and stake will
+              be moved to your personal stake.
+            </InfoPopover>
           </div>
         )}
       </div>

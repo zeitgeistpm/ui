@@ -7,6 +7,7 @@ export type InfoPopoverProps = React.PropsWithChildren<{
   title?: ReactNode;
   icon?: ReactNode;
   className?: string;
+  overlay?: boolean;
   position?:
     | "top"
     | "bottom"
@@ -21,6 +22,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
   icon,
   children,
   className,
+  overlay = true,
   position = "bottom",
 }) => {
   let [isOpen, setIsOpen] = useState(false);
@@ -61,7 +63,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
 
             <Transition
               as={Fragment}
-              show={open}
+              show={open && overlay}
               enter="ease-out duration-200"
               enterFrom="opacity-0"
               enterTo="opacity-30"

@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { ZTG, isRpcSdk } from "@zeitgeistpm/sdk";
-import JoinCourtButton from "components/court/JoinCourt";
+import JoinCourtButton from "components/court/JoinCourtButton";
 import JurorsTable from "components/court/JurorsTable";
 import PrepareExitCourtButton from "components/court/PrepareExitCourt";
 import { environment } from "lib/constants";
@@ -76,6 +76,7 @@ const CourtPage: NextPage = () => {
             <div>
               <div className="flex gap-4 mb-3">
                 <JoinCourtButton />
+
                 {!connectedParticipant?.prepareExit && (
                   <PrepareExitCourtButton />
                 )}
@@ -100,6 +101,7 @@ const CourtPage: NextPage = () => {
           <span>{address}</span>
         ))}
       </div>
+
       <JurorsTable />
     </div>
   );
