@@ -80,7 +80,9 @@ export const useFeePayingAsset = (
             };
           } else if (IOForeignAssetId.is(assetSelection.value)) {
             const balance = foreignAssetBalances.find(
-              (asset) => asset.foreignAssetId === assetSelection.value,
+              (asset) =>
+                IOForeignAssetId.is(assetSelection.value) &&
+                assetSelection.value.ForeignAsset === asset.foreignAssetId,
             );
             const metadata = assetMetadata?.find(
               (data) =>
