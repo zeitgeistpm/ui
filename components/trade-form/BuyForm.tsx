@@ -62,7 +62,6 @@ const BuyForm = ({
   const baseSymbol = assetMetadata?.symbol;
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
   const { data: pool } = useAmm2Pool(marketId);
-  console.log(pool);
 
   const outcomeAssets = market?.outcomeAssets.map(
     (assetIdString) =>
@@ -79,12 +78,6 @@ const BuyForm = ({
   ).mul(ZTG);
   const assetReserve =
     pool?.reserves && lookupAssetReserve(pool?.reserves, selectedAsset);
-
-  console.log(
-    assetReserve?.div(ZTG).toString(),
-    amountIn.div(ZTG).toString(),
-    pool?.liquidity.div(ZTG).toString(),
-  );
 
   const {
     amountOut,
@@ -283,10 +276,12 @@ const BuyForm = ({
             {fee?.symbol}
           </div>
           <div className="">
-            Max profit: {maxProfit.toFixed(2)}
+            Max profit: {maxProfit.div(ZTG).toFixed(2)}
             {baseSymbol}
           </div>
-          <div className="">Min amount out:</div>
+          <div className="">
+            Min amount out: {minAmountOut.div(ZTG).toFixed(2)}
+          </div>
           <div className="">
             Price after trade:
             {newSpotPrice?.toFixed(2)}

@@ -9,6 +9,10 @@ import FormTransactionButton from "components/ui/FormTransactionButton";
 import Input from "components/ui/Input";
 import Decimal from "decimal.js";
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from "lib/constants";
+import {
+  lookupAssetReserve,
+  useAmm2Pool,
+} from "lib/hooks/queries/amm2/useAmm2Pool";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useMarket } from "lib/hooks/queries/useMarket";
@@ -16,10 +20,15 @@ import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { calculateSwapAmountOutForSell } from "lib/util/amm2";
+import {
+  calculateSpotPrice,
+  calculateSwapAmountOutForSell,
+} from "lib/util/amm2";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
+
+const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
 
 const SellForm = ({
   marketId,
@@ -49,6 +58,7 @@ const SellForm = ({
   const wallet = useWallet();
   const baseAsset = parseAssetIdString(market?.baseAsset);
   const { data: baseAssetBalance } = useBalance(wallet.realAddress, baseAsset);
+  const { data: pool } = useAmm2Pool(marketId);
 
   const outcomeAssets = market?.outcomeAssets.map(
     (assetIdString) =>
@@ -58,16 +68,50 @@ const SellForm = ({
     MarketOutcomeAssetId | undefined
   >(initialAsset ?? outcomeAssets?.[0]);
 
-  const amountIn = new Decimal(getValues("amount") ?? 0);
+  const formAmount = getValues("amount");
 
-  const amountOut = calculateSwapAmountOutForSell(
-    new Decimal(10000), //todo: fetch params
-    amountIn,
-    new Decimal(100000),
-    new Decimal(0.01),
-    new Decimal(0.001),
-  );
-  const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
+  const amountIn = new Decimal(
+    formAmount && formAmount !== "" ? formAmount : 0,
+  ).mul(ZTG);
+  const assetReserve =
+    pool?.reserves && lookupAssetReserve(pool?.reserves, selectedAsset);
+
+  const { amountOut, spotPrice, newSpotPrice, priceImpact, minAmountOut } =
+    useMemo(() => {
+      const amountOut =
+        assetReserve && pool.liquidity
+          ? calculateSwapAmountOutForSell(
+              assetReserve,
+              amountIn,
+              pool.liquidity,
+              new Decimal(0),
+              new Decimal(0),
+            )
+          : new Decimal(0);
+
+      const spotPrice =
+        assetReserve && calculateSpotPrice(assetReserve, pool?.liquidity);
+
+      const newSpotPrice =
+        pool?.liquidity &&
+        assetReserve &&
+        calculateSpotPrice(assetReserve?.minus(amountOut), pool?.liquidity);
+
+      const priceImpact = spotPrice
+        ? newSpotPrice?.div(spotPrice).minus(1).mul(100)
+        : new Decimal(0);
+
+      const minAmountOut = amountOut.mul(slippageMultiplier);
+
+      return {
+        amountOut,
+        spotPrice,
+        newSpotPrice,
+        priceImpact,
+        minAmountOut,
+      };
+    }, [amountIn, pool?.liquidity, assetReserve]);
+
   const { isLoading, send, fee } = useExtrinsic(
     () => {
       const amount = getValues("amount");
@@ -81,12 +125,12 @@ const SellForm = ({
         return;
       }
 
-      return sdk.api.tx.neoSwaps.buy(
+      return sdk.api.tx.neoSwaps.sell(
         marketId,
         market?.categories?.length,
         selectedAsset,
         new Decimal(amount).mul(ZTG).toFixed(0),
-        amountOut.mul(slippageMultiplier).div(ZTG).toFixed(0),
+        minAmountOut.toFixed(0),
       );
     },
     {
@@ -170,7 +214,7 @@ const SellForm = ({
         </div>
         <div>For</div>
         <div className="h-[56px] center text-ztg-18-150 relative font-normal w-full border border-black">
-          <div className="mr-auto">{amountOut.toString()}</div>
+          <div className="mr-auto">{amountOut.div(ZTG).toFixed(5)}</div>
 
           <div className="mr-[10px] absolute right-0">
             {constants?.tokenSymbol}
@@ -185,11 +229,22 @@ const SellForm = ({
         <div className="text-vermilion text-ztg-12-120 my-[4px] h-[16px]">
           <>{formState.errors["amount"]?.message}</>
         </div>
-        <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
-          <span className="text-black ml-1">
+        <div className="flex flex-col items-center gap-2 w-full font-normal text-xs mb-[10px] text-sky-600">
+          <div className="">
             Network Fee: {fee ? fee.amount.div(ZTG).toFixed(3) : 0}{" "}
             {fee?.symbol}
-          </span>
+          </div>
+          <div className="">
+            Min amount out: {minAmountOut.div(ZTG).toFixed(2)}
+          </div>
+          <div className="">
+            Price after trade:
+            {newSpotPrice?.toFixed(2)}
+          </div>
+          <div className="">
+            Price impact:
+            {priceImpact?.toFixed(2)}%
+          </div>
         </div>
         <FormTransactionButton
           className="w-full max-w-[250px]"
