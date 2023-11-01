@@ -17,7 +17,7 @@ import { useWallet } from "lib/state/wallet";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-const JoinCourtButton = () => {
+const JoinCourtAsJurorButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: constants } = useChainConstants();
   const {
@@ -36,7 +36,7 @@ const JoinCourtButton = () => {
   const notificationStore = useNotifications();
   const wallet = useWallet();
   const { data: balance } = useZtgBalance(wallet.realAddress);
-  const participant = useConnectedCourtParticipant();
+  const connectedParticipant = useConnectedCourtParticipant();
   const queryClient = useQueryClient();
 
   const { isLoading, send, fee } = useExtrinsic(
@@ -57,6 +57,7 @@ const JoinCourtButton = () => {
           },
         );
         queryClient.invalidateQueries([id, participantsRootKey]);
+        setIsOpen(false);
       },
     },
   );
@@ -93,18 +94,26 @@ const JoinCourtButton = () => {
         <button
           disabled={isLoading}
           className={`bg-[#670031] rounded-md text-white py-2 px-4 transition-all  ${
-            participant?.type === "Delegator" && "ring-2 ring-orange-500"
+            connectedParticipant?.type === "Delegator" &&
+            "ring-2 ring-orange-500"
           }`}
           onClick={() => setIsOpen(true)}
         >
-          {participant?.type === "Juror" ? "Increase Stake" : "Become a Juror"}
+          {connectedParticipant?.type === "Juror"
+            ? "Increase Personal Stake"
+            : "Become a Juror"}
         </button>
-        {participant?.type === "Delegator" && (
+        {connectedParticipant?.type === "Delegator" && (
           <div className="absolute top-0 right-0 p-[0.5] rounded-full bg-orange-500 translate-x-[50%] translate-y-[-50%]">
-            <InfoPopover overlay={false} className="text-white" position="top">
+            <InfoPopover
+              overlay={false}
+              className="text-white"
+              position="top-end"
+              popoverCss="-ml-12"
+            >
               You are currently delegating to other jurors. If you join the
-              court as a juror, your delegations will be removed and stake will
-              be moved to your personal stake.
+              court as a juror, your delegations will be removed and delegated
+              to your personal juror stake.
             </InfoPopover>
           </div>
         )}
@@ -112,7 +121,11 @@ const JoinCourtButton = () => {
 
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white p-[30px]">
-          <h3 className="mb-8">Become a Juror</h3>
+          <h3 className="mb-8">
+            {connectedParticipant?.type === "Juror"
+              ? "Increase Personal Stake"
+              : "Become a Juror"}
+          </h3>
           <div className="flex flex-col w-full items-center gap-8 mt-[20px] text-ztg-18-150 font-semibold">
             <form
               onSubmit={handleSubmit(onSubmit)}
@@ -142,35 +155,49 @@ const JoinCourtButton = () => {
                       ) {
                         return `Stake cannot be less than ${constants?.court.minJurorStake} ${constants.tokenSymbol}`;
                       } else if (
-                        participant?.stake &&
-                        participant?.stake.div(ZTG).greaterThan(value)
+                        connectedParticipant?.stake &&
+                        connectedParticipant?.stake.div(ZTG).greaterThan(value)
                       ) {
-                        return `Stake must be higher than your current stake of ${participant?.stake
+                        return `Stake must exceed your current stake of ${connectedParticipant?.stake
                           .div(ZTG)
-                          .toNumber()} ${constants?.tokenSymbol}`;
+                          .toNumber()
+                          .toFixed(3)} ${constants?.tokenSymbol}`;
                       }
                     },
                   })}
                 />
+
                 <div className="mr-[10px] absolute right-0">
                   {constants?.tokenSymbol}
                 </div>
               </div>
+
               <input
                 className="mt-[30px] mb-[10px] w-full"
                 type="range"
                 disabled={!balance || balance.lessThanOrEqualTo(0)}
                 {...register("percentage", { value: "0" })}
               />
-              <div className="text-vermilion text-ztg-12-120 my-[4px] h-[16px]">
+
+              <div className="text-vermilion text-center mb-5 text-ztg-12-120 my-[4px] h-[16px]">
                 <>{formState.errors["amount"]?.message}</>
               </div>
+
               <div className="center font-normal text-ztg-12-120 mb-[10px] text-sky-600">
                 <span className="text-black ml-1">
                   Network Fee: {fee ? fee.amount.div(ZTG).toFixed(3) : 0}{" "}
                   {fee?.symbol}
                 </span>
               </div>
+
+              {connectedParticipant?.type === "Delegator" && (
+                <div className="rounded-lg p-5 mb-5 bg-provincial-pink text-sm w-full font-normal">
+                  You are currently delegating to other jurors. If you join the
+                  court as a juror, your delegations will be removed and stake
+                  will be moved to your personal stake.
+                </div>
+              )}
+
               <FormTransactionButton
                 className="w-full max-w-[250px]"
                 disabled={formState.isValid === false || isLoading}
@@ -185,4 +212,4 @@ const JoinCourtButton = () => {
   );
 };
 
-export default JoinCourtButton;
+export default JoinCourtAsJurorButton;

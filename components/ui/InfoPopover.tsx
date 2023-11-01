@@ -8,6 +8,7 @@ export type InfoPopoverProps = React.PropsWithChildren<{
   icon?: ReactNode;
   className?: string;
   overlay?: boolean;
+  popoverCss?: string;
   position?:
     | "top"
     | "bottom"
@@ -24,19 +25,20 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
   className,
   overlay = true,
   position = "bottom",
+  popoverCss,
 }) => {
   let [isOpen, setIsOpen] = useState(false);
 
   const positionCss = useMemo(() => {
     switch (position) {
       case "top":
-        return "top-0 translate-y-[-100%] left-1/2 transform translate-x-[-50%]";
+        return "-top-1 translate-y-[-100%] left-1/2 transform translate-x-[-50%]";
       case "bottom":
         return "top-[100%] left-1/2 transform translate-x-[-50%]";
       case "top-start":
         return "top-0 translate-y-[-100%] translate-x-[-100%] left-0";
       case "top-end":
-        return "top-0 translate-y-[-100%]  left-0";
+        return "-top-1 translate-y-[-100%] left-0";
       case "bottom-start":
         return "top-[100%] right-0";
       case "bottom-end":
@@ -84,7 +86,7 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
               leaveTo="opacity-0 scale-1"
             >
               <Popover.Panel
-                className={`absolute z-[100] bg-tooltip-bg ${positionCss} w-screen lg:w-[500px] rounded-md`}
+                className={`absolute z-[100] bg-tooltip-bg ${positionCss} w-screen lg:w-[500px] rounded-md ${popoverCss}`}
               >
                 <div className="overflow-hidden p-5 rounded-md shadow-xs ring-2 text-black ring-orange-400 ring-opacity-20 text-left font-light text-base">
                   {children}

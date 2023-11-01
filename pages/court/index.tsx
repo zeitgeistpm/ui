@@ -1,8 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { ZTG, isRpcSdk } from "@zeitgeistpm/sdk";
-import JoinCourtButton from "components/court/JoinCourtButton";
+import ManageDelegationButton from "components/court/ManageDelegationButton";
+import JoinCourtAsJurorButton from "components/court/JoinCourtAsJurorButton";
 import JurorsTable from "components/court/JurorsTable";
 import PrepareExitCourtButton from "components/court/PrepareExitCourt";
+import InfoPopover from "components/ui/InfoPopover";
 import { environment } from "lib/constants";
 import { useConnectedCourtParticipant } from "lib/hooks/queries/court/useConnectedCourtParticipant";
 import { participantsRootKey } from "lib/hooks/queries/court/useParticipants";
@@ -15,6 +17,7 @@ import { useWallet } from "lib/state/wallet";
 import { formatNumberLocalized } from "lib/util";
 import { NextPage } from "next";
 import NotFoundPage from "pages/404";
+import { CourtCasesTable } from "components/court/CourtCasesTable";
 
 const CourtPage: NextPage = () => {
   if (process.env.NEXT_PUBLIC_SHOW_COURT !== "true") {
@@ -55,27 +58,49 @@ const CourtPage: NextPage = () => {
 
       {connectedParticipant && (
         <div className="">
-          <h3 className="mb-2 text-lg">My Stake</h3>
           <div className="bg-slate-200 rounded-md py-5 px-6 inline-block mb-4 min-w-[260px]">
-            <div className="font-medium text-lg mb-[0.5]">
-              {formatNumberLocalized(
-                connectedParticipant?.stake.div(ZTG).toNumber() ?? 0,
-              )}{" "}
-              {constants?.tokenSymbol}
+            <div className="flex">
+              <h3 className="mb-2 text-lg flex-1 text-slate-500">My Stake</h3>
+              <div>
+                <div
+                  className={`text-sm px-2 py-1 rounded-md text-slate-500 center gap-1`}
+                >
+                  {connectedParticipant?.type}
+                  <InfoPopover overlay={false} position="top">
+                    {connectedParticipant?.type === "Juror"
+                      ? "You are participating as a juror. All stake is delegated to your personal juror stake."
+                      : "You are participating as a delegator. The probability of one delegator being selected is equally distributed among all delegations."}
+                  </InfoPopover>
+                </div>
+              </div>
             </div>
-            <div className="font-light text-gray-500 mb-4">
-              $
-              {ztgPrice &&
-                formatNumberLocalized(
-                  ztgPrice
-                    .mul(connectedParticipant?.stake.div(ZTG).toNumber() ?? 0)
-                    .toNumber(),
-                )}
+
+            <div className="flex  mb-4">
+              <div className="flex-1">
+                <div className="font-medium text-lg mb-[0.5]">
+                  {formatNumberLocalized(
+                    connectedParticipant?.stake.div(ZTG).toNumber() ?? 0,
+                  )}{" "}
+                  {constants?.tokenSymbol}
+                </div>
+                <div className="font-light text-gray-500">
+                  $
+                  {ztgPrice &&
+                    formatNumberLocalized(
+                      ztgPrice
+                        .mul(
+                          connectedParticipant?.stake.div(ZTG).toNumber() ?? 0,
+                        )
+                        .toNumber(),
+                    )}
+                </div>
+              </div>
             </div>
 
             <div>
               <div className="flex gap-4 mb-3">
-                <JoinCourtButton />
+                <JoinCourtAsJurorButton />
+                <ManageDelegationButton />
 
                 {!connectedParticipant?.prepareExit && (
                   <PrepareExitCourtButton />
@@ -95,14 +120,16 @@ const CourtPage: NextPage = () => {
         </div>
       )}
 
-      <div className="flex gap-2">
+      {/* <div className="flex gap-2">
         <span>Delegations:</span>
         {connectedParticipant?.delegations?.map((address) => (
           <span>{address}</span>
         ))}
       </div>
 
-      <JurorsTable />
+      <JurorsTable /> */}
+
+      <CourtCasesTable />
     </div>
   );
 };
