@@ -37,10 +37,10 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
   return (
     <>
       <div className="flex flex-col justify-center w-full gap-y-2 sm:gap-y-5 mb-5">
-        <div className="flex gap-2 sm:gap-5 flex-col sm:flex-row">
+        <div className="flex gap-5 flex-col sm:flex-row">
           <div>{address && <Avatar address={address} size={100} />}</div>
           <div className="flex flex-col justify-center">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 sm:mb-3">
               <div>
                 {isOwned && !hasIdentity && (
                   <div className="-mb-3 font-extrabold text-xs text-gray-500">
@@ -52,7 +52,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
                     on chain name
                   </div>
                 )}
-                <div className="font-extrabold text-[28px] sm:text-[38px]">
+                <div className="font-extrabold text-xl sm:text-4xl">
                   {name}{" "}
                 </div>
               </div>
@@ -68,7 +68,10 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
                 </div>
               )}
             </div>
-            <div className="text-ztg-12-150 sm:text-ztg-16-150">{address}</div>
+            <div className="hidden sm:block">{address}</div>
+            <div className="sm:hidden text-sm">
+              {shortenAddress(address, 12, 26)}
+            </div>
           </div>
         </div>
         <div className="flex flex-wrap gap-3 text-ztg-14-110 text-white">
