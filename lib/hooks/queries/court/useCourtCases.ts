@@ -22,7 +22,7 @@ export const useCourtCases = () => {
       if (!enabled) return [];
 
       const res = await sdk.api.query.court.courts.entries();
-
+      console.log(res);
       const cases = res
         .map(([id, rawCase]) => {
           const courtCase = rawCase.unwrapOr(null);

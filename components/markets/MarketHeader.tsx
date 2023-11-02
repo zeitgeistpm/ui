@@ -58,15 +58,16 @@ export const UserIdentity: FC<
   );
 };
 
-const HeaderStat: FC<PropsWithChildren<{ label: string; border?: boolean }>> =
-  ({ label, border = true, children }) => {
-    return (
-      <div className={border ? "sm:border-r sm:border-ztg-blue pr-2" : ""}>
-        <span>{label}: </span>
-        <span className="font-medium">{children}</span>
-      </div>
-    );
-  };
+export const HeaderStat: FC<
+  PropsWithChildren<{ label: string; border?: boolean }>
+> = ({ label, border = true, children }) => {
+  return (
+    <div className={border ? "sm:border-r sm:border-ztg-blue pr-2" : ""}>
+      <span>{label}: </span>
+      <span className="font-medium">{children}</span>
+    </div>
+  );
+};
 
 const Tag: FC<PropsWithChildren<{ className?: string }>> = ({
   className,

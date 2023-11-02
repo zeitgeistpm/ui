@@ -179,7 +179,7 @@ export const marketFormDataToExtrinsicParams = (
   const params: CreateMarketParams<RpcContext> = {
     signer,
     proxy,
-    disputeMechanism: "Authorized",
+    disputeMechanism: "Court",
     oracle: form.oracle,
     period: {
       Timestamp: [Date.now(), new Date(form.endDate).getTime()],
