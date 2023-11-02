@@ -1,16 +1,19 @@
 import {
   IOBaseAssetId,
   IOForeignAssetId,
+  isRpcSdk,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
 import CourtStageTimer from "components/court/CourtStageTimer";
 import { AddressDetails } from "components/markets/MarketAddresses";
 import { HeaderStat } from "components/markets/MarketHeader";
 import Skeleton from "components/ui/Skeleton";
+import { KeyringPairOrExtSigner, isExtSigner } from "@zeitgeistpm/rpc";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
 import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
+import { useSelectedDraws } from "lib/hooks/queries/court/useSelectedDraws";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -46,6 +49,7 @@ const CasePage: NextPage = () => {
   const caseId = Number(caseid);
 
   const { data: courtCase } = useCourtCase(caseId);
+  const { data: selectedDraws } = useSelectedDraws(caseId);
   const { data: marketId } = useCaseMarketId(caseId);
   const { data: market } = useMarket(
     marketId != null ? { marketId } : undefined,
@@ -82,6 +86,13 @@ const CasePage: NextPage = () => {
       <section>
         <h2 className="text-base font-normal">Case — #{caseId}</h2>
         <h1 className="text-[32px] font-extrabold">{market?.question}</h1>
+        <button
+          onClick={() => {
+            wallet.signRaw("some data")?.then(console.log);
+          }}
+        >
+          SIGN
+        </button>
         <Link
           className="text-blue-600 font-medium text-sm mb-6 block"
           href={`/markets/${marketId}`}

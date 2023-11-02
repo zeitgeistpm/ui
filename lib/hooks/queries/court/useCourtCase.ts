@@ -1,8 +1,7 @@
+import { ZrmlCourtCourtInfo } from "@polkadot/types/lookup";
 import { useQuery } from "@tanstack/react-query";
 import { isRpcSdk } from "@zeitgeistpm/sdk";
-import { isNotNull } from "@zeitgeistpm/utility/dist/null";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { ZrmlCourtCourtInfo } from "@polkadot/types/lookup";
 
 export const courtCaseRootKey = "court-case";
 
@@ -17,7 +16,7 @@ export const useCourtCase = (caseId?: number) => {
   const enabled = !!sdk && isRpcSdk(sdk) && caseId;
 
   const query = useQuery<ZrmlCourtCourtInfo | undefined>(
-    [id, courtCaseRootKey],
+    [id, courtCaseRootKey, caseId],
     async () => {
       if (!enabled) return;
 
