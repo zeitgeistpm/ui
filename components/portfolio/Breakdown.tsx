@@ -115,11 +115,11 @@ export const BreakdownSlot = ({
     <>
       <h4 className="font-medium text-sky-600 text-xs mb-1">{title}</h4>
       <div className="flex font-mono mb-1 items-center">
-        <div className="w-2/3 font-semibold">
-          {formatNumberLocalized(value.div(ZTG).toNumber(), undefined, 0)} ZTG
+        <div className="sm:w-2/3 font-semibold">
+          {formatNumberLocalized(value.div(ZTG).toNumber())} ZTG
         </div>
         <div
-          className={`flex-1 w-1/3 ${
+          className={`hidden sm:block flex-1 w-1/3 ${
             changePercentage < 0.01
               ? "text-gray-800"
               : changePercentage < 0

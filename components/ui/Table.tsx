@@ -125,13 +125,11 @@ const Cell = ({
     isLoadingError: ztgIsLoadingError,
   } = useZtgPrice();
 
-  const base = `dark:text-white px-ztg-15 h-ztg-72 ${
-    onClick ? "cursor-pointer" : ""
-  }`;
+  const base = `dark:text-white px-4 h-16 ${onClick ? "cursor-pointer" : ""}`;
   const style = { height: `${rowHeight}px` };
   const skeletonElement = (
     <td
-      className={`font-semibold text-ztg-12-150 ${base}`}
+      className={`font-semibold text-xs ${base}`}
       onClick={onClick}
       style={style}
     >
@@ -149,7 +147,7 @@ const Cell = ({
     case "text":
       return (
         <td
-          className={`text-ztg-14-150 ${base}`}
+          className={`text-sm ${base}`}
           data-test="outcomeText"
           onClick={onClick}
           style={style}
@@ -160,7 +158,7 @@ const Cell = ({
     case "number":
       return (
         <td
-          className={`font-semibold text-ztg-12-150 ${base}`}
+          className={`font-semibold text-xs ${base}`}
           onClick={onClick}
           style={style}
         >
@@ -194,7 +192,7 @@ const Cell = ({
     case "paragraph":
       return (
         <td
-          className={` font-semibold text-ztg-12-150 text-left ${base}`}
+          className={`font-semibold text-xs text-left ${base}`}
           onClick={onClick}
           style={style}
         >
@@ -209,10 +207,10 @@ const Cell = ({
       ) {
         return (
           <td className={`${base} `} onClick={onClick} style={style}>
-            <div className="text-ztg-14-150 font-mediun mb-[2px]">
+            <div className="text-sm mb-0.5">
               {formatNumberLocalized(value.value)}
             </div>
-            <div className="text-ztg-12-150 font-light text-sky-600">
+            <div className="text-xs font-light text-sky-600">
               $
               {(
                 value.usdValue ?? (ztgPrice?.toNumber() ?? 0) * value.value
@@ -228,7 +226,7 @@ const Cell = ({
         <td className={` ${base}`} onClick={onClick} style={style}>
           <div className="flex items-center">
             <Avatar address={typeof value === "string" ? value : ""} />
-            <div className="font-semibold text-ztg-12-150 ml-ztg-10">
+            <div className="font-semibold text-xs ml-2.5">
               {typeof value === "string" ? value : ""}
             </div>
           </div>
@@ -239,10 +237,7 @@ const Cell = ({
         return (
           <td className={` ${base}`} onClick={onClick} style={style}>
             <div className="flex items-center">
-              <div
-                className="font-semibold text-ztg-16-150 uppercase"
-                data-test="tokenText"
-              >
+              <div className="font-semibold uppercase" data-test="tokenText">
                 {value.label}
               </div>
             </div>
@@ -255,11 +250,11 @@ const Cell = ({
           <td className={` ${base}`} onClick={onClick} style={style}>
             <div className="flex items-center">
               <img
-                className="rounded-ztg-5 w-ztg-40 h-ztg-40 mr-ztg-10"
+                className="rounded-md w-10 h-10 mr-2.5"
                 src={value.url}
                 loading="lazy"
               />
-              <span className="font-semibold text-ztg-10-150 text-sky-600 uppercase">
+              <span className="font-semibold text-xxs text-sky-600 uppercase">
                 {value.label}
               </span>
             </div>
@@ -268,11 +263,7 @@ const Cell = ({
       }
     case "percentage":
       return (
-        <td
-          className={`text-ztg-14-150 ${base}`}
-          onClick={onClick}
-          style={style}
-        >
+        <td className={`text-sm ${base}`} onClick={onClick} style={style}>
           <>{value}</>%
         </td>
       );
@@ -322,7 +313,7 @@ const Table = ({
   }, [loadMoreRef, loadMoreInView, loadMoreThresholdIndex, data]);
 
   const getHeaderClass = (column: TableColumn) => {
-    const base = "px-ztg-15 text-[13px] text-left font-medium";
+    const base = "px-4 text-xxs sm:text-xs text-left font-medium";
 
     if (column.alignment) {
       return `${column.alignment} ${base}`;
@@ -414,7 +405,7 @@ const Table = ({
               }
             >
               <thead>
-                <tr className="bg-light-gray h-[50px]">
+                <tr className="bg-light-gray h-12">
                   {renderColumns.map((column, index) => (
                     <th
                       key={index}
@@ -438,7 +429,7 @@ const Table = ({
                             role="button"
                             onClick={handleSortClick}
                             size={14}
-                            className="ml-ztg-8 cursor-pointer"
+                            className="ml-2 cursor-pointer"
                           />
                         ) : (
                           <></>
@@ -486,7 +477,7 @@ const Table = ({
                           : ""
                       }
                     ${rowColorClass}
-                    ${onRowClick ? "cursor-pointer" : ""} mx-ztg-5`}
+                    ${onRowClick ? "cursor-pointer" : ""} mx-1`}
                       onClick={() => handleRowClick(row)}
                     >
                       {row.cells
@@ -516,15 +507,13 @@ const Table = ({
             <div className="">
               {loadingMore &&
                 range(0, loadingNumber).map((index) => (
-                  <Skeleton key={index} height={80} className="mb-ztg-16" />
+                  <Skeleton key={index} height={80} className="mb-4" />
                 ))}
             </div>
 
             {!loadingMore && rows.length === 0 ? (
               <div className="w-full flex justify-center">
-                <div className="text-ztg-16-120 font-bold mt-ztg-60">
-                  {noDataMessage}
-                </div>
+                <div className="font-bold mt-14">{noDataMessage}</div>
               </div>
             ) : (
               <></>
@@ -534,9 +523,9 @@ const Table = ({
           {onPaginate ? <Paginator onPlusClicked={handlePlusClicked} /> : <></>}
 
           {onLoadMore && !hideLoadMore && (
-            <div className="flex justify-center mt-ztg-16 mb-ztg-20">
+            <div className="flex justify-center mt-4 mb-5">
               <div
-                className="uppercase text-sky-600 font-bold text-ztg-10-150"
+                className="uppercase text-sky-600 font-bold text-xs"
                 role="button"
                 onClick={handleLoadMore}
               >
