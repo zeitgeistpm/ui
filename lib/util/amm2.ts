@@ -64,7 +64,6 @@ export const approximateMaxAmountInForBuy = (
   liquidity: Decimal, // liqudity parameter of the pool
 ) => {
   const price = calculateSpotPrice(reserve, liquidity).toNumber();
-  console.log(price);
 
   return liquidity.mul(
     0.99 *
@@ -87,18 +86,19 @@ export const approximateMaxAmountInForSell = (
   liquidity: Decimal, // liqudity parameter of the pool
 ) => {
   const price = calculateSpotPrice(reserve, liquidity).toNumber();
-  return (
+
+  return liquidity.mul(
     0.99 *
-    (6027.48739001329704478849 * price ** 10 -
-      23943.83771737971983384341 * price ** 9 +
-      36748.94249659497290849686 * price ** 8 -
-      24233.23433796403696760535 * price ** 7 +
-      453.48665119856707406143 * price ** 6 +
-      10032.97899602322468126658 * price ** 5 -
-      7080.22041420203277084511 * price ** 4 +
-      2410.0255212617116740148 * price ** 3 -
-      459.95159954049660200326 * price ** 2 +
-      54.14308593643040978804 * price ** 1 -
-      0.538594836861739279)
+      (6027.48739001329704478849 * price ** 10 -
+        23943.83771737971983384341 * price ** 9 +
+        36748.94249659497290849686 * price ** 8 -
+        24233.23433796403696760535 * price ** 7 +
+        453.48665119856707406143 * price ** 6 +
+        10032.97899602322468126658 * price ** 5 -
+        7080.22041420203277084511 * price ** 4 +
+        2410.0255212617116740148 * price ** 3 -
+        459.95159954049660200326 * price ** 2 +
+        54.14308593643040978804 * price ** 1 -
+        0.538594836861739279),
   );
 };
