@@ -12,7 +12,6 @@ import {
   MarketPositionsSkeleton,
 } from "components/portfolio/MarketPositions";
 import PortfolioIdentity from "components/portfolio/PortfolioIdentity";
-import { Loader } from "components/ui/Loader";
 import SubTabsList from "components/ui/SubTabsList";
 import PortfolioLayout from "layouts/PortfolioLayout";
 import { NextPageWithLayout } from "layouts/types";
@@ -20,9 +19,7 @@ import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { useCrossChainApis } from "lib/state/cross-chain";
-import { useDelayQueue } from "lib/state/delay-queue";
 import { isValidPolkadotAddress } from "lib/util";
-import { assetsAreEqual } from "lib/util/assets-are-equal";
 import { groupBy, range } from "lodash-es";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
