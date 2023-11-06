@@ -28,6 +28,7 @@ import { NextPage } from "next/types";
 import NotFoundPage from "pages/404";
 import { useMemo } from "react";
 import { useSelectedDraws } from "lib/hooks/queries/court/useSelectedDraws";
+import { CourtVoteForm } from "components/court/CourtVoteForm";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -183,7 +184,9 @@ const CasePage: NextPage = () => {
 
       {isDrawnJuror && (
         <div className="hidden md:block md:w-[320px] lg:w-[460px] md:-mr-6 lg:mr-auto">
-          <div className="sticky top-28">wat</div>
+          <div className="sticky top-28">
+            <CourtVoteForm market={market} caseId={caseId} />
+          </div>
         </div>
       )}
     </div>
