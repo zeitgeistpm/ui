@@ -41,12 +41,8 @@ export const useMarketSpotPrices = (
   const enabled =
     isRpcSdk(sdk) &&
     marketId != null &&
-    !!pool &&
     !!market &&
-    !!basePoolBalance &&
-    !!balances &&
-    !!amm2Pool &&
-    balances.length !== 0;
+    !!(amm2Pool || (pool && basePoolBalance && balances));
 
   const query = useQuery(
     [
@@ -62,9 +58,9 @@ export const useMarketSpotPrices = (
       if (!enabled) return;
       const spotPrices: MarketPrices =
         market?.status !== "Resolved"
-          ? calcMarketPrices(market, basePoolBalance, balances)
-          : market.scoringRule === ScoringRule.Lmsr
-          ? calcMarketPricesAmm2(amm2Pool)
+          ? market.scoringRule === ScoringRule.Lmsr
+            ? calcMarketPricesAmm2(amm2Pool!)
+            : calcMarketPrices(market, basePoolBalance!, balances!)
           : calcResolvedMarketPrices(market);
 
       return spotPrices;

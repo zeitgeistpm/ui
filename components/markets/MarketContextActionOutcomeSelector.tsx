@@ -88,14 +88,14 @@ const MarketContextActionOutcomeSelector = ({
         }}
       >
         <Listbox.Button onClick={() => setOpen(!open)}>
-          <div className="center gap-2 text-2xl md:text-xl lg:text-2xl">
+          <div className="center gap-2 md:text-lg lg:text-xl text-ztg-blue">
             <TruncatedText
               length={24}
               text={market.categories?.[getIndexOf(selected)].name ?? ""}
             >
               {(text) => <>{text}</>}
             </TruncatedText>
-            <RiArrowDownSLine />
+            <RiArrowDownSLine className="text-black" />
           </div>
         </Listbox.Button>
         <Transition

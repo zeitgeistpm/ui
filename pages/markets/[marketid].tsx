@@ -248,6 +248,12 @@ const Market: NextPage<MarketPageProps> = ({
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
 
+  const marketHasPool =
+    (market?.scoringRule === ScoringRule.Cpmm &&
+      poolId != null &&
+      poolIdLoading === false) ||
+    (market?.scoringRule === ScoringRule.Lmsr && market.neoPool != null);
+
   return (
     <div className="mt-6">
       <div className="flex flex-auto gap-12 relative">
@@ -285,7 +291,7 @@ const Market: NextPage<MarketPageProps> = ({
           ) : (
             <></>
           )}
-          {poolId == null && poolIdLoading === false && (
+          {marketHasPool && market.neoPool == null && (
             <div className="flex h-ztg-22 items-center bg-vermilion-light text-vermilion p-ztg-20 rounded-ztg-5">
               <div className="w-ztg-20 h-ztg-20">
                 <AlertTriangle size={20} />
@@ -336,7 +342,7 @@ const Market: NextPage<MarketPageProps> = ({
                 <QuillViewer value={indexedMarket.description} />
               </>
             )}
-            {market && !market.pool && (
+            {market && !marketHasPool && (
               <PoolDeployer
                 marketId={Number(marketid)}
                 onPoolDeployed={handlePoolDeployed}
@@ -346,7 +352,7 @@ const Market: NextPage<MarketPageProps> = ({
 
           <AddressDetails title="Oracle" address={indexedMarket.oracle} />
 
-          {market && (market?.pool || poolDeployed) && (
+          {market && (marketHasPool || poolDeployed) && (
             <div className="my-12">
               <div
                 className="flex items-center mb-8 text-mariner cursor-pointer"
@@ -369,7 +375,7 @@ const Market: NextPage<MarketPageProps> = ({
                 leave="transition ease-in duration-75"
                 leaveFrom="transform opacity-100 "
                 leaveTo="transform opacity-0 "
-                show={showLiquidity && Boolean(market?.pool || poolDeployed)}
+                show={showLiquidity && Boolean(marketHasPool || poolDeployed)}
               >
                 <MarketLiquiditySection poll={poolDeployed} market={market} />
               </Transition>
