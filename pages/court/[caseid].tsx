@@ -212,8 +212,8 @@ const Outcomes = ({
         return (
           <div className="shadow-sm border-1 rounded-md min-w-[200px] text-xs flex-1">
             <div className="flex-1 flex items-center gap-2 bg-gray-100">
-              <div className="p-3 flex-1">Outcome</div>
-              <div className="p-3 flex-1">Votes</div>
+              <div className="p-3 flex-1 font-semibold">Outcome</div>
+              <div className="p-3 flex-1 font-semibold">Votes</div>
             </div>
             <div className="flex-1 flex items-center gap-2 text-sm">
               <div className="p-3 flex-1">

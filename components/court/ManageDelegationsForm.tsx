@@ -200,7 +200,6 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
                     if (delegates?.length === 0) {
                       return "At least one juror must be selected for delegation.";
                     }
-
                     if (delegates?.length > 5) {
                       return "Maximum of 5 jurors can be selected for delegation.";
                     }
