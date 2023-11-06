@@ -29,15 +29,22 @@ import { formatNumberCompact } from "lib/util/format-compact";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { ISubmittableResult } from "@polkadot/types/types";
 
 const slippageMultiplier = (100 - DEFAULT_SLIPPAGE_PERCENTAGE) / 100;
 
 const SellForm = ({
   marketId,
   initialAsset,
+  onSuccess,
 }: {
   marketId: number;
   initialAsset?: MarketOutcomeAssetId;
+  onSuccess: (
+    data: ISubmittableResult,
+    outcomeAsset: MarketOutcomeAssetId,
+    amountIn: Decimal,
+  ) => void;
 }) => {
   const { data: constants } = useChainConstants();
   const {
@@ -146,10 +153,11 @@ const SellForm = ({
       );
     },
     {
-      onSuccess: () => {
+      onSuccess: (data) => {
         notificationStore.pushNotification(`Successfully traded`, {
           type: "Success",
         });
+        onSuccess(data, selectedAsset!, amountIn);
       },
     },
   );
