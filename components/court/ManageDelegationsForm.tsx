@@ -120,7 +120,7 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
   const onSubmit = () => {
     send();
   };
-
+  console.log({ participants });
   const jurors = participants?.filter(
     (p) => p.type === "Juror" && p.address !== connectedParticipant?.address,
   );
@@ -184,8 +184,7 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
           <h3 className="flex-1 text-base">Juror</h3>
           <h3 className="text-xs">Delegated</h3>
         </div>
-        {connectedParticipant &&
-          jurors &&
+        {jurors &&
           jurors.map((juror) => (
             <div key={juror.address} className="text-left mb-2 flex">
               <div className="flex items-center gap-3 flex-1">
@@ -200,6 +199,10 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
                   validate: (delegates) => {
                     if (delegates?.length === 0) {
                       return "At least one juror must be selected for delegation.";
+                    }
+
+                    if (delegates?.length > 5) {
+                      return "Maximum of 5 jurors can be selected for delegation.";
                     }
                   },
                 })}

@@ -14,7 +14,8 @@ export const useSelectedDraws = (caseId?: number) => {
     [id, selectedDrawsRootKey, caseId],
     async () => {
       if (!enabled) return [];
-      return sdk.api.query.court.selectedDraws(caseId);
+      const draws = await sdk.api.query.court.selectedDraws(caseId);
+      return draws.toArray();
     },
     {
       enabled: Boolean(enabled),
