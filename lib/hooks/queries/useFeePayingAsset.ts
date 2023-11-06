@@ -122,9 +122,8 @@ const findBestFeePayingAsset = (
 ) => {
   // find first available asset to pay fee, else just return native asset
   const availableAsset = foreignAssetBalances.find((asset) => {
-    const feeFactor = assetMetadata
-      ?.find((data) => asset.foreignAssetId === data[0])?.[1]
-      .feeFactor.div(ZTG);
+    const feeFactor =
+      availableAsset && findFeeFactor(assetMetadata, availableAsset);
     if (feeFactor) {
       return asset.balance.greaterThan(
         baseFee.mul(feeFactor).mul(foreignAssetFeeBuffer),
@@ -133,9 +132,8 @@ const findBestFeePayingAsset = (
   });
 
   if (availableAsset && availableAsset.foreignAssetId != null) {
-    const feeFactor = assetMetadata
-      ?.find((data) => availableAsset.foreignAssetId === data[0])?.[1]
-      .feeFactor.div(ZTG);
+    const feeFactor =
+      availableAsset && findFeeFactor(assetMetadata, availableAsset);
     return {
       assetId: {
         ForeignAsset: availableAsset.foreignAssetId,
@@ -152,4 +150,13 @@ const findBestFeePayingAsset = (
       sufficientBalance: false,
     };
   }
+};
+
+const findFeeFactor = (
+  assetMetadata: [number | "Ztg", AssetMetadata][],
+  asset: CurrencyBalance,
+) => {
+  return assetMetadata
+    .find((data) => asset.foreignAssetId === data[0])?.[1]
+    .feeFactor.div(ZTG);
 };
