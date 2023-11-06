@@ -24,6 +24,7 @@ import Skeleton from "components/ui/Skeleton";
 import { delay } from "lib/util/delay";
 import { useWallet } from "lib/state/wallet";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
+import { isWSX } from "lib/constants";
 
 const AccountButton = dynamic(
   async () => {
@@ -52,7 +53,7 @@ const TopBar = () => {
       <div className="h-full relative flex items-center container-fluid">
         <div className="h-full hidden md:flex items-center justify-center border-r-1 border-blue-600 pr-3 md:pr-7">
           <Link href="/">
-            <MenuLogo />
+            {isWSX ? <img src="/wsx/wsx-logo.svg" /> : <MenuLogo />}
           </Link>
         </div>
         <div className="md:pl-7 flex flex-1 gap-7">
@@ -71,7 +72,7 @@ const TopBar = () => {
                       </div>
                     </Menu.Button>
                     <Link href="/" className="md:hidden pl-2">
-                      <MenuLogo />
+                      {isWSX ? <img src="/wsx/wsx-logo.svg" /> : <MenuLogo />}
                     </Link>
                   </div>
                   <Transition
