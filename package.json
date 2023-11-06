@@ -29,6 +29,8 @@
     "@polkadot/extension-dapp": "^0.44.6",
     "@polkadot/ui-keyring": "^2.4.1",
     "@subsocial/grill-widget": "^0.0.5",
+    "@supabase/auth-helpers-nextjs": "^0.8.7",
+    "@supabase/supabase-js": "^2.38.4",
     "@tailwindcss/container-queries": "^0.1.1",
     "@talismn/connect-wallets": "^1.2.3",
     "@tanstack/query-core": "^4.29.1",
