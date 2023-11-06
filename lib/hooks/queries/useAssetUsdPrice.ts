@@ -86,9 +86,11 @@ export const useAllForeignAssetUsdPrices = (): {
 };
 
 export const getBaseAssetPrices = async (): Promise<ForeignAssetPrices> => {
-  const coinGeckoIds = Object.values(FOREIGN_ASSET_METADATA).map(
-    (asset) => asset.coinGeckoId,
-  );
+  const zeitgeistCoingeckoId = "zeitgeist";
+  const coinGeckoIds = [
+    ...Object.values(FOREIGN_ASSET_METADATA).map((asset) => asset.coinGeckoId),
+    zeitgeistCoingeckoId,
+  ];
   const res = await fetch(
     `https://api.coingecko.com/api/v3/simple/price?ids=${coinGeckoIds.join(
       "%2C",
@@ -107,6 +109,8 @@ export const getBaseAssetPrices = async (): Promise<ForeignAssetPrices> => {
 
     return prices;
   }, {});
+
+  assetPrices["ztg"] = json[zeitgeistCoingeckoId].usd;
 
   return assetPrices;
 };

@@ -384,6 +384,11 @@ const Table = ({
 
   const columnIsCollapsed = (columnAccessor: string) =>
     collapsedAccessors.has(columnAccessor);
+
+  const renderColumns = columns.filter(
+    (col) => columnIsCollapsed(col.accessor) == false,
+  );
+
   return (
     <>
       {data == null ? (
@@ -396,7 +401,7 @@ const Table = ({
         <>
           <div>
             <table
-              className="border-separate w-full rounded-xl shadow-xl shadow-gray-100 overflow-hidden"
+              className="border-separate w-full rounded-lg shadow-xl shadow-gray-100 "
               ref={tableRef}
               style={
                 isOverflowing === true
@@ -410,52 +415,55 @@ const Table = ({
             >
               <thead>
                 <tr className="bg-light-gray h-[50px]">
-                  {columns
-                    .filter((col) => columnIsCollapsed(col.accessor) == false)
-                    .map((column, index) => (
-                      <th
-                        key={index}
-                        className={`${getHeaderClass(column)} border-b-2 ${
-                          index == 0 ? "rounded-tl-md" : ""
-                        } ${
-                          index == columns.length - 1 ? "rounded-tr-md" : ""
+                  {renderColumns.map((column, index) => (
+                    <th
+                      key={index}
+                      className={`${getHeaderClass(column)} border-b-2 ${
+                        index == 0 ? "rounded-tl-xl" : ""
+                      } ${index == columns.length - 1 ? "rounded-tr-xl" : ""}`}
+                      style={column.width ? { width: column.width } : {}}
+                    >
+                      <div
+                        className={`${
+                          column.onSort
+                            ? "flex justify-center"
+                            : column.infobox
+                            ? "flex items-center gap-1"
+                            : ""
                         }`}
-                        style={column.width ? { width: column.width } : {}}
                       >
-                        <div
-                          className={`${
-                            column.onSort
-                              ? "flex justify-center"
-                              : column.infobox
-                              ? "flex items-center gap-1"
-                              : ""
-                          }`}
-                        >
-                          {column.header}
-                          {column.onSort ? (
-                            <ArrowDown
-                              role="button"
-                              onClick={handleSortClick}
-                              size={14}
-                              className="ml-ztg-8 cursor-pointer"
-                            />
-                          ) : (
-                            <></>
-                          )}
-                          {column.infobox && (
-                            <InfoPopover
-                              title={
-                                <h3 className="flex justify-center items-center mb-4 gap-2">
-                                  <AiOutlineInfoCircle />
-                                  {column.header}
-                                </h3>
-                              }
-                              children={column.infobox}
-                            />
-                          )}
-                        </div>
-                      </th>
-                    ))}
+                        {column.header}
+                        {column.onSort ? (
+                          <ArrowDown
+                            role="button"
+                            onClick={handleSortClick}
+                            size={14}
+                            className="ml-ztg-8 cursor-pointer"
+                          />
+                        ) : (
+                          <></>
+                        )}
+                        {column.infobox && (
+                          <InfoPopover
+                            position={
+                              index === 0
+                                ? "bottom-end"
+                                : index > renderColumns.length - 3
+                                ? "bottom-start"
+                                : "bottom"
+                            }
+                            title={
+                              <h3 className="flex justify-center items-center mb-4 gap-2">
+                                <AiOutlineInfoCircle />
+                                {column.header}
+                              </h3>
+                            }
+                            children={column.infobox}
+                          />
+                        )}
+                      </div>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>

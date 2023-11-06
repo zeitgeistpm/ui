@@ -1,4 +1,4 @@
-import { Transition } from "@headlessui/react";
+import { Disclosure, Transition } from "@headlessui/react";
 import { FullMarketFragment, MarketStatus } from "@zeitgeistpm/indexer";
 import {
   MarketOutcomeAssetId,
@@ -58,6 +58,7 @@ import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -558,19 +559,62 @@ const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
   const [hasReportedDispute, setHasReportedDispute] = useState(false);
 
   return (
-    <div>
+    <div className="relative">
       {hasReportedDispute ? (
         <DisputeResult market={market} />
-      ) : isMarketCategoricalOutcome(reportedOutcome) ? (
-        <CategoricalDisputeBox
-          market={market}
-          onSuccess={() => setHasReportedDispute(true)}
-        />
       ) : (
-        <ScalarDisputeBox
-          market={market}
-          onSuccess={() => setHasReportedDispute(true)}
-        />
+        <Disclosure>
+          {({ open }) => (
+            <>
+              <Disclosure.Button
+                className={`relative flex w-full px-5 py-2 rounded-md items-center z-20 ${
+                  !open && "bg-orange-400 "
+                }`}
+              >
+                <h3
+                  className={`flex-1 text-left text-base ${
+                    open ? "opacity-0" : "opacity-100 text-white"
+                  }`}
+                >
+                  Market can be disputed
+                </h3>
+                {open ? (
+                  <X />
+                ) : (
+                  <FaChevronUp
+                    size={18}
+                    className={`text-gray-600 justify-end ${
+                      !open && "text-white rotate-180"
+                    }`}
+                  />
+                )}
+              </Disclosure.Button>
+              <Transition
+                enter="transition duration-100 ease-out"
+                enterFrom="transform scale-95 opacity-0"
+                enterTo="transform scale-100 opacity-100"
+                leave="transition duration-75 ease-out"
+                leaveFrom="transform scale-100 opacity-100"
+                leaveTo="transform scale-95 opacity-0"
+                className="relative -mt-[30px] z-10"
+              >
+                <Disclosure.Panel>
+                  {isMarketCategoricalOutcome(reportedOutcome) ? (
+                    <CategoricalDisputeBox
+                      market={market}
+                      onSuccess={() => setHasReportedDispute(true)}
+                    />
+                  ) : (
+                    <ScalarDisputeBox
+                      market={market}
+                      onSuccess={() => setHasReportedDispute(true)}
+                    />
+                  )}
+                </Disclosure.Panel>
+              </Transition>
+            </>
+          )}
+        </Disclosure>
       )}
     </div>
   );

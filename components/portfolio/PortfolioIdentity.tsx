@@ -98,9 +98,9 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
             leaveTo="opacity-0"
             show={isProxying}
           >
-            <div className="flex items-center gap-2 bg-ztg-100 p-[8px] rounded-md bg-purple-600 text-white text-sm">
-              <FaNetworkWired size={18} />
-              Your are acting proxy for this portfolio.
+            <div className="flex items-center gap-2  p-[8px] rounded-md bg-purple-600 text-white">
+              <FaNetworkWired size={16} />
+              Your are acting proxy for this account.
             </div>
           </Transition>
         </div>
