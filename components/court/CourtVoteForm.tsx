@@ -1,19 +1,16 @@
-import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
-import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
-import { useWallet } from "lib/state/wallet";
+import { u8aToHex } from "@polkadot/util";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import React, { useState } from "react";
-import { mnemonicGenerate } from "@polkadot/util-crypto";
-import {
-  CategoricalAssetId,
-  MarketOutcomeAssetId,
-  parseAssetId,
-} from "@zeitgeistpm/sdk";
+import { CategoricalAssetId, parseAssetId } from "@zeitgeistpm/sdk";
+import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import TransactionButton from "components/ui/TransactionButton";
+import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
-import { useCourtSalt } from "lib/state/court/useCourtSalt";
+import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useCourtCommitmentHash } from "lib/state/court/useCourtCommitmentHash";
+import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
-import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
+import React, { useState } from "react";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 export type CourtVoteFormProps = {
   caseId: number;
@@ -24,17 +21,22 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
   caseId,
   market,
 }) => {
+  const [sdk] = useSdkv2();
   const wallet = useWallet();
   const { data: courtCase } = useCourtCase(caseId);
 
   const outcomeAssets = market.outcomeAssets.map(
     (assetIdString) =>
-      parseAssetId(assetIdString).unwrap() as MarketOutcomeAssetId,
+      parseAssetId(assetIdString).unwrap() as CategoricalAssetId,
   );
 
   const [selectedOutcome, setSelectedOutcome] = useState(outcomeAssets[0]);
 
-  const { phrase, salt, setPhrase } = useCourtSalt(market.marketId, caseId);
+  const { phrase, salt, commitmentHash } = useCourtCommitmentHash({
+    marketId: market.marketId,
+    caseId: caseId,
+    selectedOutcome,
+  });
 
   const [revealSalt, setRevealSalt] = useState(false);
 
@@ -53,7 +55,9 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
             market={market}
             selected={selectedOutcome}
             options={outcomeAssets}
-            onChange={(assetId) => {}}
+            onChange={(assetId) => {
+              setSelectedOutcome(assetId as CategoricalAssetId);
+            }}
           />
         </div>
 
@@ -65,17 +69,12 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
             client. <b>But please save it somewhere safe.</b>
           </div>
 
-          <textarea
-            onChange={(e) => {
-              setPhrase(e.target.value);
-            }}
-            className="w-full bg-transparent text-center font-semibold rounded-md border-1 py-4 px-4 border-black border-opacity-30 resize-none"
-          >
+          <div className="w-full bg-transparent text-center font-semibold rounded-md border-1 py-4 px-4 border-black border-opacity-30 resize-none">
             {phrase}
-          </textarea>
+          </div>
           <div className="text-xxs flex center gap-2">
             <div className="text-gray-600">
-              {revealSalt ? salt : shortenAddress(salt)}
+              {revealSalt ? u8aToHex(salt) : shortenAddress(u8aToHex(salt))}
             </div>
             <div
               className="cursor-pointer"
@@ -85,6 +84,8 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
             </div>
           </div>
         </div>
+
+        <div className="text-xxs">{u8aToHex(commitmentHash)}</div>
 
         <TransactionButton
           disabled={false}
