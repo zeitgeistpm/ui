@@ -4,7 +4,7 @@ import { isRpcSdk, ZTG } from "@zeitgeistpm/sdk";
 import Avatar from "components/ui/Avatar";
 import Modal from "components/ui/Modal";
 import Decimal from "decimal.js";
-import { SUPPORTED_WALLET_NAMES } from "lib/constants";
+import { SUPPORTED_WALLET_NAMES, isWSX } from "lib/constants";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
@@ -103,6 +103,9 @@ const AccountButton: FC<{
   const { data: activeBalance } = useZtgBalance(activeAccount?.address);
   const { data: polkadotBalance } = useBalance(activeAccount?.address, {
     ForeignAsset: 0,
+  });
+  const { data: wsxBalance } = useBalance(activeAccount?.address, {
+    ForeignAsset: 3,
   });
 
   const { data: constants } = useChainConstants();
@@ -298,16 +301,26 @@ const AccountButton: FC<{
                   <Menu.Items className="fixed md:absolute left-0 md:left-auto md:right-0 py-3 z-40 mt-3 md:mt-6 w-full overflow-hidden h-full md:h-auto md:w-64 origin-top-right divide-y divide-gray-100 md:rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="">
                       <div className="flex flex-col gap-2 border-b-2 mb-3 py-2 px-6">
-                        <BalanceRow
-                          imgPath="/currencies/ztg.jpg"
-                          units={constants?.tokenSymbol}
-                          balance={activeBalance}
-                        />
-                        <BalanceRow
-                          imgPath="/currencies/dot.png"
-                          units="DOT"
-                          balance={polkadotBalance}
-                        />
+                        {isWSX ? (
+                          <BalanceRow
+                            imgPath="/currencies/wsx-currency.png"
+                            units={constants?.tokenSymbol}
+                            balance={wsxBalance}
+                          />
+                        ) : (
+                          <>
+                            <BalanceRow
+                              imgPath="/currencies/ztg.jpg"
+                              units={constants?.tokenSymbol}
+                              balance={activeBalance}
+                            />
+                            <BalanceRow
+                              imgPath="/currencies/dot.png"
+                              units="DOT"
+                              balance={polkadotBalance}
+                            />
+                          </>
+                        )}
                         <Menu.Item>
                           {({ active }) => (
                             <Link
@@ -327,21 +340,24 @@ const AccountButton: FC<{
                           )}
                         </Menu.Item>
                       </div>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            className="flex items-center px-6 mb-3 hover:bg-slate-100"
-                            onClick={() => setShowGetZtgModal(true)}
-                          >
-                            <DollarSign />
-                            <button
-                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                      {!isWSX && (
+                        <Menu.Item>
+                          {({ active }) => (
+                            <div
+                              className="flex items-center px-6 mb-3 hover:bg-slate-100"
+                              onClick={() => setShowGetZtgModal(true)}
                             >
-                              Get ZTG
-                            </button>
-                          </div>
-                        )}
-                      </Menu.Item>
+                              <DollarSign />
+                              <button
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm font-semibold`}
+                              >
+                                Get ZTG
+                              </button>
+                            </div>
+                          )}
+                        </Menu.Item>
+                      )}
+                      {/* TODO: disable when ready to launch */}
                       {isNovaWallet !== true && (
                         <Menu.Item>
                           {({ active }) => (

@@ -59,6 +59,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { isWSX } from "lib/constants";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -398,7 +399,7 @@ const Market: NextPage<MarketPageProps> = ({
               )}
             </div>
 
-            <SimilarMarketsSection market={market ?? undefined} />
+            {!isWSX && <SimilarMarketsSection market={market ?? undefined} />}
           </div>
         </div>
       </div>
