@@ -1,12 +1,11 @@
 import { blake2AsU8a, mnemonicGenerate } from "@polkadot/util-crypto";
-import { u8aConcat } from "@polkadot/util/u8a";
 import { CategoricalAssetId, isRpcSdk } from "@zeitgeistpm/sdk";
 import { useAtom } from "jotai";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { createCourtCommitmentHash } from "lib/util/create-vote-commitment-hash";
 import { useMemo } from "react";
 import { persistentAtom } from "../util/persistent-atom";
 import { useWallet } from "../wallet";
-import { createCourtCommitmentHash } from "lib/util/create-vote-commitment-hash";
 
 export type UseCourtCommitmentHash = {
   phrase: string;
