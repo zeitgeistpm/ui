@@ -3,6 +3,7 @@ import {
   AssetId,
   IOCategoricalAssetId,
   IOMarketOutcomeAssetId,
+  MarketOutcomeAssetId,
   isRpcSdk,
 } from "@zeitgeistpm/sdk";
 import Decimal from "decimal.js";
@@ -19,6 +20,7 @@ export type Amm2Pool = {
   liquidity: Decimal;
   swapFee: Decimal;
   reserves: ReserveMap;
+  assetIds: MarketOutcomeAssetId[];
 };
 
 export const useAmm2Pool = (marketId?: number) => {
@@ -34,6 +36,7 @@ export const useAmm2Pool = (marketId?: number) => {
 
       if (unwrappedRes) {
         const reserves: ReserveMap = new Map();
+        const assetIds: MarketOutcomeAssetId[] = [];
 
         unwrappedRes.reserves.forEach((reserve, asset) => {
           const assetId = parseAssetIdString(asset.toString());
@@ -44,6 +47,7 @@ export const useAmm2Pool = (marketId?: number) => {
                 : assetId.ScalarOutcome[1],
               new Decimal(reserve.toString()),
             );
+            assetIds.push(assetId);
           }
         });
 
@@ -53,6 +57,7 @@ export const useAmm2Pool = (marketId?: number) => {
           liquidity: new Decimal(unwrappedRes.liquidityParameter.toString()),
           swapFee: new Decimal(unwrappedRes.swapFee.toString()),
           reserves,
+          assetIds,
         };
 
         return pool;
@@ -66,7 +71,6 @@ export const useAmm2Pool = (marketId?: number) => {
   return query;
 };
 
-// todo: change to hook that takes assetId
 export const lookupAssetReserve = (
   map: ReserveMap,
   asset?: string | AssetId,
