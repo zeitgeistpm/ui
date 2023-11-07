@@ -47,7 +47,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
   const [isTransacting, setIsTransacting] = useState(false);
   const [totalCostIsOpen, setTotalCostIsOpen] = useState(false);
   const { data: constants } = useChainConstants();
-
+  console.log(editor);
   const params = useMemo(() => {
     let signer = wallet.getSigner();
 
@@ -245,7 +245,12 @@ export const Publishing = ({ editor }: PublishingProps) => {
       setIsTransacting(false);
     }
   };
-
+  console.log(
+    editor.isValid,
+    isTransacting,
+    editor.isPublished,
+    hasEnoughLiquidty,
+  );
   return (
     <>
       <div className="">

@@ -35,9 +35,11 @@ import { AnswersInput } from "./inputs/answers";
 import { getMetadataForCurrency } from "lib/constants/supported-currencies";
 import Input from "components/ui/Input";
 import TimezoneSelect from "./inputs/TimezoneSelect";
-import { Loader } from "components/ui/Loader";
 import { LiquidityInputAmm2 } from "./inputs/LiquidityAMM2";
 import FeeSelect from "./inputs/FeeSelect";
+import { useWallet } from "lib/state/wallet";
+import { useAccountModals } from "lib/state/account";
+import { isWSX } from "lib/constants";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -54,6 +56,8 @@ export const MarketEditor = () => {
   const editor = useMarketDraftEditor({ draft: state, update: setState });
 
   const headerRef = useRef<HTMLDivElement>(null);
+
+  const { activeAccount, selectWallet, isNovaWallet } = useWallet();
 
   const {
     form,
@@ -99,26 +103,52 @@ export const MarketEditor = () => {
     });
   };
 
+  const accountModals = useAccountModals();
+
+  const connect = async () => {
+    if (isNovaWallet) {
+      selectWallet("polkadot-js");
+    } else {
+      accountModals.openWalletSelect();
+    }
+  };
+
   const showLiquidityWarning =
     fieldsState.liquidity.isTouched && form.liquidity?.deploy && isWizard;
 
   const isLoaded = Boolean(chainTime && isFetched);
   const isAMM2Market = form.answers && form.answers.answers.length === 2;
 
+  if (!activeAccount) {
+    return (
+      <div
+        className="flex items-center justify-center bg-white "
+        style={{ height: "calc(100vh - 100px)" }}
+      >
+        <button
+          className="border-4 ztg-transition text-black focus:outline-none disabled:bg-slate-300 disabled:cursor-default 
+        rounded-full px-10 h-[56px]"
+          onClick={() => connect()}
+        >
+          Connect
+        </button>
+      </div>
+    );
+  }
+
+  if (activeAccount.address !== process.env.NEXT_PUBLIC_MW) {
+    return (
+      <div
+        className="flex items-center justify-center bg-white "
+        style={{ height: "calc(100vh - 100px)" }}
+      >
+        <h3>You do not have access to this page</h3>
+      </div>
+    );
+  }
+
   return (
     <>
-      {isLoaded === false && (
-        <div
-          className="flex items-center justify-center bg-white "
-          style={{ height: "calc(100vh - 100px)" }}
-        >
-          <Loader
-            loading={true}
-            className="h-[100px] w-[100px]"
-            variant={"Info"}
-          />
-        </div>
-      )}
       <Transition
         show={isLoaded}
         enter="transition-opacity duration-100"
@@ -179,7 +209,10 @@ export const MarketEditor = () => {
                 </InfoPopover>
               </h2>
             </div>
-            <CurrencySelect options={["ZTG", "DOT"]} {...input("currency")} />
+            <CurrencySelect
+              options={isWSX ? ["ZTG", "DOT", "WSX"] : ["ZTG", "DOT"]}
+              {...input("currency")}
+            />
             {showLiquidityWarning && (
               <div className="center mt-4 mb-8">
                 <div className="w-full md:max-w-lg text-center text-sm text-gray-400">
