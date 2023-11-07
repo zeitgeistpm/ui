@@ -6,11 +6,13 @@ import { createCourtCommitmentHash } from "lib/util/create-vote-commitment-hash"
 import { useMemo } from "react";
 import { persistentAtom } from "../util/persistent-atom";
 import { useWallet } from "../wallet";
+import { CourtSaltPhraseSeed } from "./phrase-seed";
 
 export type UseCourtCommitmentHash = {
-  phrase: string;
+  phraseSeed: CourtSaltPhraseSeed;
   salt: Uint8Array;
   commitmentHash?: Uint8Array;
+  setPhraseSeed: (phraseSeed: CourtSaltPhraseSeed) => void;
 };
 
 export type UseCourtCommitmentHashParams = {
@@ -19,8 +21,10 @@ export type UseCourtCommitmentHashParams = {
   selectedOutcome?: CategoricalAssetId;
 };
 
-const courtSaltPhrasesAtom = persistentAtom<Record<string, string>>({
-  key: "court-salt",
+const courtSaltPhrasesAtom = persistentAtom<
+  Record<string, CourtSaltPhraseSeed>
+>({
+  key: "court-phrase-seeds",
   defaultValue: {},
 });
 
@@ -31,20 +35,26 @@ export const useCourtCommitmentHash = ({
 }: UseCourtCommitmentHashParams) => {
   const [sdk] = useSdkv2();
   const wallet = useWallet();
-  const [saltPhrases, setSaltPhrases] = useAtom(courtSaltPhrasesAtom);
+  const [saltPhraseSeeds, setSaltPhraseSeeds] = useAtom(courtSaltPhrasesAtom);
   const id = `${marketId}-${caseId}`;
 
-  let phrase = saltPhrases[id];
+  let phraseSeed = saltPhraseSeeds[id];
 
-  if (!phrase) {
-    phrase = mnemonicGenerate();
-    setSaltPhrases((state) => ({
+  if (!phraseSeed) {
+    let phrase = mnemonicGenerate();
+    console.log("HELLO");
+    setSaltPhraseSeeds((state) => ({
       ...state,
-      [id]: phrase,
+      [id]: {
+        caseId,
+        marketId,
+        phrase,
+        createdAt: Date.now(),
+      },
     }));
   }
 
-  const salt = blake2AsU8a(phrase);
+  const salt = blake2AsU8a(phraseSeed.phrase);
 
   const commitmentHash = useMemo(() => {
     if (isRpcSdk(sdk) && selectedOutcome && wallet.realAddress) {
@@ -57,8 +67,16 @@ export const useCourtCommitmentHash = ({
     }
   }, [salt, selectedOutcome, wallet.realAddress]);
 
+  const setPhraseSeed = (phraseSeed: CourtSaltPhraseSeed) => {
+    setSaltPhraseSeeds((state) => ({
+      ...state,
+      [`${phraseSeed.marketId}-${phraseSeed.caseId}`]: phraseSeed,
+    }));
+  };
+
   return {
-    phrase,
+    phraseSeed,
+    setPhraseSeed,
     salt,
     commitmentHash,
   };

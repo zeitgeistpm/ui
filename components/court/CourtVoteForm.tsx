@@ -7,11 +7,18 @@ import Modal from "components/ui/Modal";
 import TransactionButton from "components/ui/TransactionButton";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
+import {
+  CourtSaltPhraseSeed,
+  IOCourtSaltPhraseSeed,
+} from "lib/state/court/phrase-seed";
 import { useCourtCommitmentHash } from "lib/state/court/useCourtCommitmentHash";
+import { useWallet } from "lib/state/wallet";
 import { shortenAddress } from "lib/util";
+import { download } from "lib/util/download";
 import React, { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { FaChevronDown } from "react-icons/fa";
+import { HiOutlineDocumentDownload } from "react-icons/hi";
+import { FaArrowDown, FaChevronDown, FaDownload } from "react-icons/fa";
 
 export type CourtVoteFormProps = {
   caseId: number;
@@ -24,6 +31,8 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
 }) => {
   const [sdk] = useSdkv2();
 
+  const wallet = useWallet();
+
   const outcomeAssets = market.outcomeAssets.map(
     (assetIdString) =>
       parseAssetId(assetIdString).unwrap() as CategoricalAssetId,
@@ -31,11 +40,12 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
 
   const [selectedOutcome, setSelectedOutcome] = useState(outcomeAssets[0]);
 
-  const { phrase, salt, commitmentHash } = useCourtCommitmentHash({
-    marketId: market.marketId,
-    caseId: caseId,
-    selectedOutcome,
-  });
+  const { phraseSeed, setPhraseSeed, salt, commitmentHash } =
+    useCourtCommitmentHash({
+      marketId: market.marketId,
+      caseId: caseId,
+      selectedOutcome,
+    });
 
   const [showDetails, setShowDetails] = useState(false);
 
@@ -45,6 +55,26 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
     }
     return undefined;
   });
+
+  const onSeedDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  const onSeedDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const item = e.dataTransfer.items[0];
+    if (item.kind === "file") {
+      const file = item.getAsFile();
+      if (file) {
+        const data = JSON.parse(await file?.text());
+        const a = IOCourtSaltPhraseSeed.safeParse(data);
+        if (a.success) {
+          console.log("WAT");
+          setPhraseSeed(a.data);
+        }
+      }
+    }
+  };
 
   return (
     <div className="rounded-xl overflow-hidden shadow-lg">
@@ -63,17 +93,45 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
           />
         </div>
 
-        <div className="rounded-lg p-5 mb-4 bg-provincial-pink text-sm w-full font-normal">
-          <div className="mb-4 text-sm text-gray-700">
-            Your vote is secret and will be revealed at the end of the voting.
-            To be able to reveal a phrase has been generated for you and is
-            needed when revealing. This is stored for you locally on this
-            client. <b>But please save it somewhere safe.</b>
+        <div className="rounded-lg p-5 mb-6 bg-provincial-pink text-sm w-full font-normal">
+          <div className="mb-4">
+            <div className="mb-2 text-sm text-gray-700">
+              Your vote is secret and will be revealed at the end of the voting.
+              To be able to reveal a phrase has been generated for you and is
+              needed when revealing. This is stored for you locally on this
+              client.
+            </div>
+            <b>
+              But please save it somewhere safe so it can be restored in case
+              you change browser or clear cache.
+            </b>
           </div>
 
-          <div className="w-full bg-transparent text-center font-semibold rounded-md border-1 mb-2 py-4 px-4 border-black border-opacity-30 resize-none">
-            {phrase}
+          <div
+            className="relative w-full bg-transparent text-center font-semibold rounded-md   border-black border-opacity-30 resize-none"
+            onDragOver={onSeedDragOver}
+            onDrop={onSeedDrop}
+          >
+            <div className="py-5 border-t-1 border-l-1 border-r-1 rounded-t-md border-gray-500">
+              {phraseSeed?.phrase}
+            </div>
+
+            <div className="flex items-center justify-end w-full px-3 mb-2 bg-slate-100 rounded-b-md py-2 border-t-1 over border-1 border-gray-400">
+              <div className="flex-1 text-left text-xxs text-gray-500 italic">
+                Drop seed file to restore
+              </div>
+              <HiOutlineDocumentDownload
+                size={14}
+                onClick={() => {
+                  download(
+                    `zeitgeist-court[${caseId}]-phrase.txt`,
+                    JSON.stringify(phraseSeed, undefined, 2),
+                  );
+                }}
+              />
+            </div>
           </div>
+
           <div
             className="center text-gray-500 text-xs gap-2 cursor-default"
             onClick={() => setShowDetails(true)}
@@ -81,13 +139,34 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
             Show Details <AiOutlineEye size={12} />
           </div>
           <Modal open={showDetails} onClose={() => setShowDetails(false)}>
-            <Dialog.Panel className="w-full max-w-[562px] p-6 rounded-[10px] bg-white">
+            <Dialog.Panel className="w-full max-w-[662px] p-6 rounded-[10px] bg-white">
               <h3 className="mb-2">Commitment Hash</h3>
               <p className="text-sm mb-4">
                 The commitment hash is calculated using a combination of your
                 account, the outcome you are voting for and a salt generated
                 from the secret phrase.
               </p>
+              <code className="block mb-4 text-xs">
+                <span>juror = {wallet?.realAddress}</span>
+                <br />
+                <span>
+                  vote_item = VoteItem::Outcome(OutcomeReport::Categorical(
+                  {selectedOutcome.CategoricalOutcome[1]}))
+                </span>
+                <br />
+                <span>salt = {u8aToHex(salt)}</span>
+                <br />
+                <br />
+                <span className="text-black">commitmentHash</span> ={" "}
+                <span className="text-blue-400">BlakeTwo256Hash</span>(juror,
+                vote_item, salt)
+              </code>
+              <div className="mb-4 text-blue-400">
+                <FaArrowDown size={12} />
+              </div>
+              <div className="text-xs text-blue-400">
+                {commitmentHash && u8aToHex(commitmentHash)}
+              </div>
             </Dialog.Panel>
           </Modal>
           {/* <div className="text-xxs flex center gap-2">
