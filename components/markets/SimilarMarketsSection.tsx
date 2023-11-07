@@ -4,7 +4,7 @@ import MarketCard from "components/markets/market-card";
 import Decimal from "decimal.js";
 import { ZTG } from "lib/constants";
 import { useMarketsStats } from "lib/hooks/queries/useMarketsStats";
-import { useSimilarMarkets } from "lib/hooks/queries/useSimilarMarkets";
+import { useRecommendedMarkets } from "lib/hooks/queries/useRecommendedMarkets";
 
 export const SimilarMarketsSection = ({
   market,
@@ -13,35 +13,34 @@ export const SimilarMarketsSection = ({
   market?: FullMarketFragment;
   limit?: number;
 }) => {
-  const similarMarkets = useSimilarMarkets(market?.marketId, limit ?? 2);
+  const { data: recommendedMarkets, isFetched: isMarketsFetched } =
+    useRecommendedMarkets(market?.marketId, limit ?? 2);
 
-  const hasSimilarMarkets = Boolean(similarMarkets?.data?.length);
-
-  const stats = useMarketsStats(
-    similarMarkets?.data?.map((m) => m.marketId) ?? [],
+  const { data: stats, isFetched: isStatsFetched } = useMarketsStats(
+    recommendedMarkets?.markets?.map((m) => m.marketId) ?? [],
   );
 
-  const isLoading = !similarMarkets.isFetched || !stats.isFetched;
+  const isLoading = !isMarketsFetched || !isStatsFetched;
 
   return (
     <div className="flex flex-col gap-4 relative z-[-1]">
       {!isLoading && (
         <>
-          {hasSimilarMarkets && (
+          {recommendedMarkets && (
             <h4
               className="mb-4 opacity-0 animate-pop-in"
               style={{
                 animationDelay: `200ms`,
               }}
             >
-              Similar Markets
+              {recommendedMarkets.type === "similar"
+                ? "Similar Markets"
+                : "Popular Markets"}
             </h4>
           )}
 
-          {similarMarkets?.data?.map((market, index) => {
-            const stat = stats?.data?.find(
-              (s) => s.marketId === market.marketId,
-            );
+          {recommendedMarkets?.markets.map((market, index) => {
+            const stat = stats?.find((s) => s.marketId === market.marketId);
 
             let { categorical, scalar } = market.marketType ?? {};
             if (categorical === null) {
