@@ -1,6 +1,6 @@
 import { Tab } from "@headlessui/react";
 import { MarketOutcomeAssetId, getIndexOf, ZTG } from "@zeitgeistpm/sdk";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BuyForm from "./BuyForm";
 import SellForm from "./SellForm";
 import TradeTab, { TradeTabType } from "./TradeTab";
@@ -13,16 +13,16 @@ import { parseAssetIdString } from "lib/util/parse-asset-id";
 
 const Amm2TradeForm = ({
   marketId,
-  initialTab,
+  selectedTab,
   initialAsset,
+  showTabs = true,
 }: {
   marketId: number;
-  initialTab?: TradeTabType;
+  selectedTab?: TradeTabType;
   initialAsset?: MarketOutcomeAssetId;
+  showTabs?: boolean;
 }) => {
-  const [tabType, setTabType] = useState<TradeTabType>(
-    initialTab ?? TradeTabType.Buy,
-  );
+  const [tabType, setTabType] = useState<TradeTabType>();
   const [showSuccessBox, setShowSuccessBox] = useState(false);
   const [amountReceived, setAmountReceived] = useState<Decimal>();
   const [amountIn, setAmountIn] = useState<Decimal>();
@@ -31,6 +31,10 @@ const Amm2TradeForm = ({
   const baseAsset = parseAssetIdString(market?.baseAsset);
   const { data: assetMetadata } = useAssetMetadata(baseAsset);
   const baseSymbol = assetMetadata?.symbol;
+
+  useEffect(() => {
+    setTabType(selectedTab ?? TradeTabType.Buy);
+  }, [selectedTab]);
 
   const handleSuccess = (data: ISubmittableResult) => {
     const { events } = data;
@@ -83,7 +87,11 @@ const Amm2TradeForm = ({
           }}
           selectedIndex={tabType}
         >
-          <Tab.List className="flex h-[71px] text-center font-medium text-ztg-18-150">
+          <Tab.List
+            className={`h-[71px] text-center font-medium text-ztg-18-150 ${
+              showTabs ? "flex" : "hidden"
+            }`}
+          >
             <Tab
               as={TradeTab}
               selected={tabType === TradeTabType.Buy}
@@ -99,7 +107,6 @@ const Amm2TradeForm = ({
               Sell
             </Tab>
           </Tab.List>
-
           <Tab.Panels className="p-[30px]">
             <Tab.Panel>
               <BuyForm

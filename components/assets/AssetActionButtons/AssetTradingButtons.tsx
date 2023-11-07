@@ -57,7 +57,7 @@ const AssetTradingButtons = ({
               <Amm2TradeForm
                 marketId={marketId}
                 initialAsset={assetId}
-                initialTab={
+                selectedTab={
                   tradeItem.action === "buy"
                     ? TradeTabType.Buy
                     : TradeTabType.Sell

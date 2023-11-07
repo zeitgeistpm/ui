@@ -61,6 +61,7 @@ import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { ScoringRule } from "@zeitgeistpm/indexer";
+import { TradeTabType } from "components/trade-form/TradeTab";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -462,7 +463,21 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
       >
         {market?.status === MarketStatus.Active ? (
           <>
-            <TradeForm outcomeAssets={outcomeAssets} />
+            {market?.scoringRule === ScoringRule.Cpmm ? (
+              <div>
+                <TradeForm outcomeAssets={outcomeAssets} />
+              </div>
+            ) : (
+              <Amm2TradeForm
+                marketId={market.marketId}
+                showTabs={false}
+                selectedTab={
+                  tradeItem?.action === "buy"
+                    ? TradeTabType.Buy
+                    : TradeTabType.Sell
+                }
+              />
+            )}
           </>
         ) : market?.status === MarketStatus.Closed && canReport ? (
           <>
