@@ -7,18 +7,13 @@ import Modal from "components/ui/Modal";
 import TransactionButton from "components/ui/TransactionButton";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import {
-  CourtSaltPhraseSeed,
-  IOCourtSaltPhraseSeed,
-} from "lib/state/court/phrase-seed";
 import { useCourtCommitmentHash } from "lib/state/court/useCourtCommitmentHash";
 import { useWallet } from "lib/state/wallet";
-import { shortenAddress } from "lib/util";
 import { download } from "lib/util/download";
 import React, { useState } from "react";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { AiOutlineEye } from "react-icons/ai";
+import { FaArrowDown } from "react-icons/fa";
 import { HiOutlineDocumentDownload } from "react-icons/hi";
-import { FaArrowDown, FaChevronDown, FaDownload } from "react-icons/fa";
 
 export type CourtVoteFormProps = {
   caseId: number;
@@ -56,24 +51,11 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
     return undefined;
   });
 
-  const onSeedDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-
-  const onSeedDrop = async (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const item = e.dataTransfer.items[0];
-    if (item.kind === "file") {
-      const file = item.getAsFile();
-      if (file) {
-        const data = JSON.parse(await file?.text());
-        const a = IOCourtSaltPhraseSeed.safeParse(data);
-        if (a.success) {
-          console.log("WAT");
-          setPhraseSeed(a.data);
-        }
-      }
-    }
+  const onClickDownloadSeed = () => {
+    download(
+      `zeitgeist-court[${caseId}]-phrase.txt`,
+      JSON.stringify(phraseSeed, undefined, 2),
+    );
   };
 
   return (
@@ -96,10 +78,9 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
         <div className="rounded-lg p-5 mb-6 bg-provincial-pink text-sm w-full font-normal">
           <div className="mb-4">
             <div className="mb-2 text-sm text-gray-700">
-              Your vote is secret and will be revealed at the end of the voting.
-              To be able to reveal a phrase has been generated for you and is
-              needed when revealing. This is stored for you locally on this
-              client.
+              Your vote is secret and can only be revealed at the end of the
+              voting. When revealing you need to provide the secret phrase you
+              see below. It is stored locally in this browser client for you.
             </div>
             <b>
               But please save it somewhere safe so it can be restored in case
@@ -107,28 +88,19 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
             </b>
           </div>
 
-          <div
-            className="relative w-full bg-transparent text-center font-semibold rounded-md   border-black border-opacity-30 resize-none"
-            onDragOver={onSeedDragOver}
-            onDrop={onSeedDrop}
-          >
-            <div className="py-5 border-t-1 border-l-1 border-r-1 rounded-t-md border-gray-500">
-              {phraseSeed?.phrase}
+          <div className="relative w-full bg-transparent text-center font-semibold rounded-md   border-black border-opacity-30 resize-none">
+            <div className="py-5 border-t-1 border-l-1 border-r-1 px-4 rounded-t-md border-gray-500">
+              {phraseSeed}
             </div>
 
-            <div className="flex items-center justify-end w-full px-3 mb-2 bg-slate-100 rounded-b-md py-2 border-t-1 over border-1 border-gray-400">
+            <div
+              className="flex items-center cursor-pointer justify-end w-full px-3 mb-2 bg-slate-100 rounded-b-md py-2 border-t-1 over border-1 border-gray-400"
+              onClick={onClickDownloadSeed}
+            >
               <div className="flex-1 text-left text-xxs text-gray-500 italic">
-                Drop seed file to restore
+                Download seed backup
               </div>
-              <HiOutlineDocumentDownload
-                size={14}
-                onClick={() => {
-                  download(
-                    `zeitgeist-court[${caseId}]-phrase.txt`,
-                    JSON.stringify(phraseSeed, undefined, 2),
-                  );
-                }}
-              />
+              <HiOutlineDocumentDownload size={14} />
             </div>
           </div>
 

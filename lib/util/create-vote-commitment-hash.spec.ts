@@ -29,6 +29,9 @@ describe("createCourtCommitmentHash", () => {
       salt,
     );
 
+    expect(u8aToHex(yesHash)).toEqual(
+      "0x77d99bba0142ab7ad7e148a9cdb246ca362c03eef834481678766f639d383061",
+    );
     expect(u8aToHex(noHash)).toEqual(
       "0x407fe12e135068fa36728063a30a1ce8e19c2b18ad3b471eeea2f20686e01426",
     );

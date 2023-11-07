@@ -21,9 +21,7 @@ export type UseCourtCommitmentHashParams = {
   selectedOutcome?: CategoricalAssetId;
 };
 
-const courtSaltPhrasesAtom = persistentAtom<
-  Record<string, CourtSaltPhraseSeed>
->({
+const courtSaltPhrasesAtom = persistentAtom<Record<string, string>>({
   key: "court-phrase-seeds",
   defaultValue: {},
 });
@@ -41,20 +39,15 @@ export const useCourtCommitmentHash = ({
   let phraseSeed = saltPhraseSeeds[id];
 
   if (!phraseSeed) {
-    let phrase = mnemonicGenerate();
+    phraseSeed = mnemonicGenerate();
     console.log("HELLO");
     setSaltPhraseSeeds((state) => ({
       ...state,
-      [id]: {
-        caseId,
-        marketId,
-        phrase,
-        createdAt: Date.now(),
-      },
+      [id]: phraseSeed,
     }));
   }
 
-  const salt = blake2AsU8a(phraseSeed.phrase);
+  const salt = blake2AsU8a(phraseSeed);
 
   const commitmentHash = useMemo(() => {
     if (isRpcSdk(sdk) && selectedOutcome && wallet.realAddress) {
@@ -67,10 +60,10 @@ export const useCourtCommitmentHash = ({
     }
   }, [salt, selectedOutcome, wallet.realAddress]);
 
-  const setPhraseSeed = (phraseSeed: CourtSaltPhraseSeed) => {
+  const setPhraseSeed = (phraseSeed: string) => {
     setSaltPhraseSeeds((state) => ({
       ...state,
-      [`${phraseSeed.marketId}-${phraseSeed.caseId}`]: phraseSeed,
+      [id]: phraseSeed,
     }));
   };
 
