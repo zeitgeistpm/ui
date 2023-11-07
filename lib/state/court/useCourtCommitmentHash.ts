@@ -1,17 +1,17 @@
-import { mnemonicGenerate } from "@polkadot/util-crypto";
-import { blake2AsHex, blake2AsU8a } from "@polkadot/util-crypto";
+import { blake2AsU8a, mnemonicGenerate } from "@polkadot/util-crypto";
 import { u8aConcat } from "@polkadot/util/u8a";
-import { persistentAtom } from "../util/persistent-atom";
-import { useAtom } from "jotai";
-import { u8aToHex } from "@polkadot/util";
 import { CategoricalAssetId, isRpcSdk } from "@zeitgeistpm/sdk";
-import { useWallet } from "../wallet";
-import { useMemo } from "react";
+import { useAtom } from "jotai";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
+import { useMemo } from "react";
+import { persistentAtom } from "../util/persistent-atom";
+import { useWallet } from "../wallet";
+import { createCourtCommitmentHash } from "lib/util/create-vote-commitment-hash";
 
 export type UseCourtCommitmentHash = {
   phrase: string;
   salt: Uint8Array;
+  commitmentHash?: Uint8Array;
 };
 
 export type UseCourtCommitmentHashParams = {
@@ -48,20 +48,13 @@ export const useCourtCommitmentHash = ({
   const salt = blake2AsU8a(phrase);
 
   const commitmentHash = useMemo(() => {
-    if (isRpcSdk(sdk) && selectedOutcome) {
-      const accountId = sdk.api.createType("AccountId32", wallet.realAddress);
-      const voteItem = sdk.api.createType("ZrmlCourtVoteItem", {
-        Outcome: sdk.api.createType("ZeitgeistPrimitivesOutcomeReport", {
-          Categorical: selectedOutcome.CategoricalOutcome[1],
-        }),
-      });
-
-      const hash = blake2AsU8a(
-        u8aConcat(accountId, voteItem.toU8a(), salt),
-        256,
+    if (isRpcSdk(sdk) && selectedOutcome && wallet.realAddress) {
+      return createCourtCommitmentHash(
+        sdk,
+        wallet.realAddress!,
+        selectedOutcome,
+        salt,
       );
-
-      return hash;
     }
   }, [salt, selectedOutcome, wallet.realAddress]);
 

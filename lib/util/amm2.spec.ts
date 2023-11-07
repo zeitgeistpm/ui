@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest";
 import Decimal from "decimal.js";
 import {
   calculateSpotPrice,

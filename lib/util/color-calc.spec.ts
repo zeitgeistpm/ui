@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest";
 import { calcMarketColors, hslToHex } from "./color-calc";
 
 describe("color calculation", () => {

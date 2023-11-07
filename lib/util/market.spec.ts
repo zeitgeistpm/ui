@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest";
 import { calculateMarketCost, get24HrPriceChange, PricePoint } from "./market";
 
 describe("Market utils", () => {

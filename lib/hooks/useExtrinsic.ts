@@ -118,6 +118,7 @@ export const useExtrinsic = <T>(
 
   return {
     send,
+    isReady: !!extrinsic,
     isError,
     isSuccess,
     isLoading,

@@ -1,6 +1,6 @@
 import { u8aToHex } from "@polkadot/util";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
-import { CategoricalAssetId, parseAssetId } from "@zeitgeistpm/sdk";
+import { CategoricalAssetId, isRpcSdk, parseAssetId } from "@zeitgeistpm/sdk";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import TransactionButton from "components/ui/TransactionButton";
 import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
@@ -40,9 +40,14 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
 
   const [revealSalt, setRevealSalt] = useState(false);
 
-  const { isLoading, isBroadcasting } = useExtrinsic(() => {
+  const { send, isReady, isLoading, isBroadcasting } = useExtrinsic(() => {
+    if (isRpcSdk(sdk) && commitmentHash) {
+      return sdk.api.tx.court.vote(caseId, commitmentHash);
+    }
     return undefined;
   });
+
+  console.log({ isReady });
 
   return (
     <div className="rounded-xl overflow-hidden shadow-lg">

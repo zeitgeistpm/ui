@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest";
 import Decimal from "decimal.js";
 import { calcPrices, calcWeightGivenSpotPrice, PriceLock } from "./weight-math";
 
