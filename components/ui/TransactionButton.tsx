@@ -52,7 +52,6 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
   }, [extrinsic, sdk]);
 
   const { data: fee } = useExtrinsicFee(extrinsicBase);
-  const { data: constants } = useChainConstants();
 
   const insufficientFeeBalance = fee?.sufficientBalance === false;
 
@@ -92,7 +91,7 @@ const TransactionButton: FC<PropsWithChildren<TransactionButtonProps>> = ({
     } else if (isUsingVPN) {
       return "VPN Blocked";
     } else if (insufficientFeeBalance) {
-      return `Insufficient ${constants?.tokenSymbol}`;
+      return `Insufficient ${fee.symbol}`;
     } else if (loading) {
       return (
         <div className="w-full center bg-inherit rounded-full">
