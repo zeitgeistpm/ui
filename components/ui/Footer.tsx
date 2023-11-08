@@ -119,18 +119,19 @@ const Footer = () => {
           <FooterNewsletterSub title="Subscribe to Newsletter" />
         </div>
         <div className="flex flex-col md:flex-row gap-5">
-          <span className="text-center md:text-start whitespace-nowrap text-ztg-12-150 text-white">
-            {isWSX && (
-              <Image
-                className=""
-                src="/wsx/wsx-logo-header.svg"
-                alt="Washington Stock Exchange logo"
-                width={247}
-                height={106}
-              />
-            )}
-            © 2022 Equipoise Corp.
-          </span>
+          {isWSX ? (
+            <Image
+              className=" mx-auto block invert"
+              src="/wsx/powered-ztg.svg"
+              alt="Zeitgeist logo "
+              width={247}
+              height={106}
+            />
+          ) : (
+            <span className="text-center md:text-start whitespace-nowrap text-ztg-12-150 text-white">
+              © 2022 Equipoise Corp.
+            </span>
+          )}
           <span className="text-sky-600 text-[11px] leading-relaxed">
             Please be advised that Equipoise Corp. d/b/a Zeitgeist is registered
             under the laws of Panama, and Zeitgeist has not sought licensing
