@@ -3,8 +3,9 @@ import axios from "axios";
 import Link from "next/link";
 import { useNotifications } from "lib/state/notifications";
 import { useForm } from "react-hook-form";
-import { endpointOptions } from "lib/constants";
+import { endpointOptions, isWSX } from "lib/constants";
 import Input from "./Input";
+import Image from "next/image";
 
 const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
   const notificationStore = useNotifications();
@@ -119,6 +120,15 @@ const Footer = () => {
         </div>
         <div className="flex flex-col md:flex-row gap-5">
           <span className="text-center md:text-start whitespace-nowrap text-ztg-12-150 text-white">
+            {isWSX && (
+              <Image
+                className=""
+                src="/wsx/wsx-logo-header.svg"
+                alt="Washington Stock Exchange logo"
+                width={247}
+                height={106}
+              />
+            )}
             © 2022 Equipoise Corp.
           </span>
           <span className="text-sky-600 text-[11px] leading-relaxed">

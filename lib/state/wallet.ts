@@ -22,6 +22,7 @@ import { IProvider } from "@web3auth/base";
 //Web3Auth
 import { web3authAtom } from "./util/web3auth-config";
 import { web3AuthWalletInstance } from "./util/web3auth-config";
+import { isWSX } from "lib/constants";
 
 const DAPP_NAME = "zeitgeist";
 
@@ -215,12 +216,14 @@ export type WalletError = {
 /**
  * List of supported wallets.
  */
-export const supportedWallets = [
-  new PolkadotjsWallet(),
-  new SubWallet(),
-  new TalismanWallet(),
-  web3AuthWalletInstance,
-];
+export const supportedWallets = isWSX
+  ? [web3AuthWalletInstance]
+  : [
+      new PolkadotjsWallet(),
+      new SubWallet(),
+      new TalismanWallet(),
+      web3AuthWalletInstance,
+    ];
 
 let accountsSubscriptionUnsub: VoidFunction | undefined | null;
 
