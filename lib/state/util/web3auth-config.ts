@@ -3,7 +3,7 @@ import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { Web3Auth } from "@web3auth/modal";
 import { atom } from "jotai";
 
-export const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG ?? "";
+export const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID_ZTG;
 
 class Web3AuthWallet extends BaseDotsamaWallet {
   constructor({ extensionName, title, installUrl, logo }) {
@@ -41,28 +41,31 @@ const chainConfig = {
   ticker: "DOT",
   tickerName: "Polkadot",
 };
-export const web3AuthInstance = new Web3Auth({
-  clientId,
-  chainConfig,
-  web3AuthNetwork: "cyan",
-  // Settings for whitelabel version of web3auth modal
-  // uiConfig: {
-  //   loginMethodsOrder: [
-  //     "google",
-  //     "facebook",
-  //     "twitter",
-  //     "discord",
-  //     "twitch",
-  //     "email_passwordless",
-  //   ],
-  //   appName: "Zeitgeist",
-  //   mode: "dark",
-  //   logoLight: "https://web3auth.io/images/w3a-L-Favicon-1.svg",
-  //   logoDark: "https://web3auth.io/images/w3a-D-Favicon-1.svg",
-  //   defaultLanguage: "en",
-  //   loginGridCol: 3,
-  //   primaryButton: "externalLogin",
-  // },
-});
+export const web3AuthInstance =
+  clientId && clientId.length > 0
+    ? new Web3Auth({
+        clientId,
+        chainConfig,
+        web3AuthNetwork: "cyan",
+        // Settings for whitelabel version of web3auth modal
+        // uiConfig: {
+        //   loginMethodsOrder: [
+        //     "google",
+        //     "facebook",
+        //     "twitter",
+        //     "discord",
+        //     "twitch",
+        //     "email_passwordless",
+        //   ],
+        //   appName: "Zeitgeist",
+        //   mode: "dark",
+        //   logoLight: "https://web3auth.io/images/w3a-L-Favicon-1.svg",
+        //   logoDark: "https://web3auth.io/images/w3a-D-Favicon-1.svg",
+        //   defaultLanguage: "en",
+        //   loginGridCol: 3,
+        //   primaryButton: "externalLogin",
+        // },
+      })
+    : null;
 
 export const web3authAtom = atom<Web3Auth | null>(web3AuthInstance);
