@@ -91,10 +91,11 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
 
         <div className="rounded-lg p-5 mb-6 bg-provincial-pink text-sm w-full font-normal">
           <div className="mb-4">
-            <div className="mb-2 text-sm text-gray-700">
-              <div className="mb-2">
-                Your vote is secret and can only be revealed at the end of the
-                voting. For this a secret salt has been generated for you.
+            <div className="mb-3 text-sm text-gray-700">
+              <div className="mb-3">
+                Your vote is secret and can only be revealed when the vote
+                period ends. For this a secret salt has been generated for you
+                that is needed when revealing the vote.
               </div>
               <div>
                 This is stored locally for you in your browser and will be
@@ -115,7 +116,7 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
           </div>
 
           <div
-            className="center text-gray-500 text-xs gap-2 cursor-default"
+            className="center text-gray-500 text-xs gap-2 cursor-pointer"
             onClick={() => setShowDetails(true)}
           >
             Show Details <AiOutlineEye size={12} />
