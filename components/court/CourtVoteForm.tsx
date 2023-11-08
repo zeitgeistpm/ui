@@ -9,16 +9,12 @@ import TransactionButton from "components/ui/TransactionButton";
 import { selectedDrawsRootKey } from "lib/hooks/queries/court/useSelectedDraws";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { CourtSaltPhraseStorage } from "lib/state/court/CourtSaltPhraseStorage";
 import { useCourtCommitmentHash } from "lib/state/court/useCourtCommitmentHash";
 import { useCourtSalt } from "lib/state/court/useCourtSalt";
 import { useCourtVote } from "lib/state/court/useVoteOutcome";
-import { useWallet } from "lib/state/wallet";
-import { shortenAddress } from "lib/util";
-import { downloadText } from "lib/util/download";
 import React, { useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
-import { FaArrowDown, FaArrowRight } from "react-icons/fa";
+import { FaArrowRight } from "react-icons/fa";
 import { HiOutlineDocumentDownload } from "react-icons/hi";
 
 export type CourtVoteFormProps = {
@@ -32,8 +28,6 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
 }) => {
   const [sdk, id] = useSdkv2();
   const queryClient = useQueryClient();
-
-  const wallet = useWallet();
 
   const outcomeAssets = market.outcomeAssets.map(
     (assetIdString) =>

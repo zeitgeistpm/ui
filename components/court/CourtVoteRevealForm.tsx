@@ -1,9 +1,11 @@
 import { ZrmlCourtDraw } from "@polkadot/types/lookup";
 import { u8aToHex } from "@polkadot/util";
+import { useQueryClient } from "@tanstack/react-query";
 import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { CategoricalAssetId, isRpcSdk, parseAssetId } from "@zeitgeistpm/sdk";
 import MarketContextActionOutcomeSelector from "components/markets/MarketContextActionOutcomeSelector";
 import TransactionButton from "components/ui/TransactionButton";
+import { selectedDrawsRootKey } from "lib/hooks/queries/court/useSelectedDraws";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { IOCourtSaltPhraseStorage } from "lib/state/court/CourtSaltPhraseStorage";
@@ -26,7 +28,8 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
   market,
   secretVote,
 }) => {
-  const [sdk] = useSdkv2();
+  const [sdk, id] = useSdkv2();
+  const queryClient = useQueryClient();
 
   const outcomeAssets = market.outcomeAssets.map(
     (assetIdString) =>
@@ -49,27 +52,32 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
     selectedOutcome: vote,
   });
 
-  const { send, isReady, isLoading, isBroadcasting } = useExtrinsic(() => {
-    if (isRpcSdk(sdk) && commitmentHash) {
-      return sdk.api.tx.court.revealVote(
-        caseId,
-        {
-          Outcome: {
-            Categorical: vote.CategoricalOutcome[1],
+  const { send, isReady, isLoading, isBroadcasting } = useExtrinsic(
+    () => {
+      if (isRpcSdk(sdk) && commitmentHash) {
+        return sdk.api.tx.court.revealVote(
+          caseId,
+          {
+            Outcome: {
+              Categorical: vote.CategoricalOutcome[1],
+            },
           },
-        },
-        commitmentHash,
-      );
-    }
-    return undefined;
-  });
+          commitmentHash,
+        );
+      }
+      return undefined;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([id, selectedDrawsRootKey, caseId]);
+      },
+    },
+  );
 
-  const [hasChangedOutcome, setHasChangedOutcome] = useState(false);
   const [hasDroppedFile, setHasDroppedFile] = useState(false);
 
   const onChangeSelectedOutcome = (assetId: CategoricalAssetId) => {
     setVote(assetId as CategoricalAssetId);
-    setHasChangedOutcome(true);
   };
 
   const onCourtSaltBackupDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -181,6 +189,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
           className={`relative h-[56px] ${isLoading && "animate-pulse"}`}
           type="submit"
           loading={isLoading || isBroadcasting}
+          onClick={() => send()}
         >
           <div>
             <div className="center font-normal h-[20px]">Reveal Vote</div>

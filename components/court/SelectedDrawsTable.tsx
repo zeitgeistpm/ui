@@ -1,14 +1,13 @@
-import Avatar from "components/ui/Avatar";
-import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import { ZrmlCourtDraw } from "@polkadot/types/lookup";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
+import { ZTG } from "@zeitgeistpm/sdk";
+import Avatar from "components/ui/Avatar";
+import InfoPopover from "components/ui/InfoPopover";
 import Table, { TableColumn, TableData } from "components/ui/Table";
-import { useSelectedDraws } from "lib/hooks/queries/court/useSelectedDraws";
+import Decimal from "decimal.js";
+import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { shortenAddress } from "lib/util";
 import { useMemo } from "react";
-import InfoPopover from "components/ui/InfoPopover";
-import Decimal from "decimal.js";
-import { ZTG } from "@zeitgeistpm/sdk";
-import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 
 export type SelectedDrawsTableProps = {
   selectedDraws?: ZrmlCourtDraw[];
