@@ -3,6 +3,7 @@ import { getIndexOf } from "@zeitgeistpm/sdk";
 import BadgesList from "components/avatar/BadgesList";
 import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
+import CreatorFeePayouts from "components/portfolio/CreatorFeePayouts";
 import CurrenciesTable from "components/portfolio/CurrenciesTable";
 import EmptyPortfolio from "components/portfolio/EmptyPortfolio";
 import HistoryTabGroup from "components/portfolio/HistoryTabGroup";
@@ -11,7 +12,6 @@ import {
   MarketPositionsSkeleton,
 } from "components/portfolio/MarketPositions";
 import PortfolioIdentity from "components/portfolio/PortfolioIdentity";
-import { Loader } from "components/ui/Loader";
 import SubTabsList from "components/ui/SubTabsList";
 import PortfolioLayout from "layouts/PortfolioLayout";
 import { NextPageWithLayout } from "layouts/types";
@@ -19,9 +19,7 @@ import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { useCrossChainApis } from "lib/state/cross-chain";
-import { useDelayQueue } from "lib/state/delay-queue";
 import { isValidPolkadotAddress } from "lib/util";
-import { assetsAreEqual } from "lib/util/assets-are-equal";
 import { groupBy, range } from "lodash-es";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
@@ -42,8 +40,12 @@ const mainTabItems: MainTabItem[] = [
   "History",
 ] as MainTabItem[];
 
-type MarketsTabItem = "Created Markets" | "Liquidity";
-const marketsTabItems: MarketsTabItem[] = ["Created Markets", "Liquidity"];
+type MarketsTabItem = "Created Markets" | "Liquidity" | "Creator Fee Payouts";
+const marketsTabItems: MarketsTabItem[] = [
+  "Created Markets",
+  "Liquidity",
+  "Creator Fee Payouts",
+];
 
 const Portfolio: NextPageWithLayout = () => {
   const router = useRouter();
@@ -53,8 +55,6 @@ const Portfolio: NextPageWithLayout = () => {
 
   //init cross chain apis early
   useCrossChainApis();
-
-  const { items } = useDelayQueue();
 
   const [mainTabSelection, setMainTabSelection] =
     useQueryParamState<MainTabItem>("mainTab");
@@ -84,27 +84,10 @@ const Portfolio: NextPageWithLayout = () => {
     return <NotFoundPage />;
   }
 
-  const ownedAssetIds = Object.values(marketPositionsByMarket ?? {})
-    .flat()
-    .map((p) => p.assetId);
-
-  const newAssetsQueued = items.filter(
-    (item) =>
-      item.metadata?.address === address &&
-      ownedAssetIds.some(
-        (assetId) =>
-          item.metadata?.assetId &&
-          assetsAreEqual(assetId, item.metadata.assetId),
-      ) === false,
-  );
-
-  const isPortfolioIndexing =
-    marketPositionsByMarket && newAssetsQueued.length !== 0;
-
   return (
     <div className="mt-8">
       {address && <PortfolioIdentity address={address} />}
-      <div className="mb-[40px]">
+      <div className="mb-12">
         <PortfolioBreakdown
           {...(breakdown ?? {
             loading: true,
@@ -130,14 +113,14 @@ const Portfolio: NextPageWithLayout = () => {
                 "Badges",
                 "History",
               ].map((title, index) => (
-                <Tab className="px-4" key={index}>
+                <Tab className="text-sm sm:text-xl" key={index}>
                   {({ selected }) => (
                     <div
-                      className={
+                      className={`${
                         selected
                           ? "font-semibold text-black transition-all"
                           : "text-sky-600 transition-all"
-                      }
+                      } ${index === 0 ? "px-0 pr-4" : "px-4"}`}
                     >
                       {title}
                     </div>
@@ -148,18 +131,10 @@ const Portfolio: NextPageWithLayout = () => {
           </div>
 
           <Tab.Panels>
-            <Tab.Panel className="mt-[40px]">
-              {isPortfolioIndexing && (
-                <div className="flex w-full items-center justify-center gap-5 bg-info p-4 mb-[40px] text-sm flex-wrap">
-                  <Loader loading={true} className="h-9 w-9" variant={"Info"} />
-                  <div className="text-center">
-                    New portfolio positions are being indexed
-                  </div>
-                </div>
-              )}
+            <Tab.Panel className="mt-12">
               {!marketPositionsByMarket || !ztgPrice ? (
                 range(0, 8).map((i) => (
-                  <MarketPositionsSkeleton className="mb-14" key={i} />
+                  <MarketPositionsSkeleton className="mb-8" key={i} />
                 ))
               ) : Object.values(marketPositionsByMarket).length > 0 ? (
                 Object.values(marketPositionsByMarket).map(
@@ -186,7 +161,7 @@ const Portfolio: NextPageWithLayout = () => {
                     return (
                       <MarketPositions
                         key={market.marketId}
-                        className="mb-14"
+                        className="mb-8"
                         market={market}
                         usdZtgPrice={ztgPrice}
                         positions={marketPositions.filter((position) =>
@@ -258,6 +233,9 @@ const Portfolio: NextPageWithLayout = () => {
                         buttonLink="/liquidity"
                       />
                     )}
+                  </Tab.Panel>
+                  <Tab.Panel>
+                    {address && <CreatorFeePayouts address={address} />}
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>

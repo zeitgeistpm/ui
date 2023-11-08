@@ -1,4 +1,4 @@
-import { Transition } from "@headlessui/react";
+import { Disclosure, Transition } from "@headlessui/react";
 import { FullMarketFragment, MarketStatus } from "@zeitgeistpm/indexer";
 import {
   MarketOutcomeAssetId,
@@ -31,6 +31,7 @@ import {
   getRecentMarketIds,
 } from "lib/gql/markets";
 import { getResolutionTimestamp } from "lib/gql/resolution-date";
+import { useMarketCaseId } from "lib/hooks/queries/court/useMarketCaseId";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useMarketDisputes } from "lib/hooks/queries/useMarketDisputes";
@@ -51,11 +52,13 @@ import { MarketDispute } from "lib/types/markets";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -210,18 +213,12 @@ const Market: NextPage<MarketPageProps> = ({
   const lastDispute = useMemo(() => {
     if (disputes && market?.status === "Disputed") {
       const lastDispute = disputes?.[disputes.length - 1];
-      const at = lastDispute.at.toNumber();
-      const by = lastDispute.by.toString();
-      const isCategorical = !market?.marketType.scalar;
-      const outcome = !isCategorical
-        ? market.scalarType === "date"
-          ? new Decimal(lastDispute?.outcome?.asScalar.toString()).toNumber()
-          : Number(lastDispute?.outcome?.asScalar)
-        : Number(lastDispute?.outcome?.asCategorical);
+      const at = lastDispute?.at!;
+      const by = lastDispute?.by!;
+
       const marketDispute: MarketDispute = {
         at,
         by,
-        outcome: isCategorical ? { categorical: outcome } : { scalar: outcome },
       };
 
       return marketDispute;
@@ -393,6 +390,9 @@ const Market: NextPage<MarketPageProps> = ({
                 <>
                   <DisputeForm market={market} />
                 </>
+              ) : market?.status === MarketStatus.Disputed &&
+                market?.disputeMechanism === "Court" ? (
+                <CourtCaseContext market={market} />
               ) : (
                 <></>
               )}
@@ -559,19 +559,62 @@ const DisputeForm = ({ market }: { market: FullMarketFragment }) => {
   const [hasReportedDispute, setHasReportedDispute] = useState(false);
 
   return (
-    <div>
+    <div className="relative">
       {hasReportedDispute ? (
         <DisputeResult market={market} />
-      ) : isMarketCategoricalOutcome(reportedOutcome) ? (
-        <CategoricalDisputeBox
-          market={market}
-          onSuccess={() => setHasReportedDispute(true)}
-        />
       ) : (
-        <ScalarDisputeBox
-          market={market}
-          onSuccess={() => setHasReportedDispute(true)}
-        />
+        <Disclosure>
+          {({ open }) => (
+            <>
+              <Disclosure.Button
+                className={`relative flex w-full px-5 py-2 rounded-md items-center z-20 ${
+                  !open && "bg-orange-400 "
+                }`}
+              >
+                <h3
+                  className={`flex-1 text-left text-base ${
+                    open ? "opacity-0" : "opacity-100 text-white"
+                  }`}
+                >
+                  Market can be disputed
+                </h3>
+                {open ? (
+                  <X />
+                ) : (
+                  <FaChevronUp
+                    size={18}
+                    className={`text-gray-600 justify-end ${
+                      !open && "text-white rotate-180"
+                    }`}
+                  />
+                )}
+              </Disclosure.Button>
+              <Transition
+                enter="transition duration-100 ease-out"
+                enterFrom="transform scale-95 opacity-0"
+                enterTo="transform scale-100 opacity-100"
+                leave="transition duration-75 ease-out"
+                leaveFrom="transform scale-100 opacity-100"
+                leaveTo="transform scale-95 opacity-0"
+                className="relative -mt-[30px] z-10"
+              >
+                <Disclosure.Panel>
+                  {isMarketCategoricalOutcome(reportedOutcome) ? (
+                    <CategoricalDisputeBox
+                      market={market}
+                      onSuccess={() => setHasReportedDispute(true)}
+                    />
+                  ) : (
+                    <ScalarDisputeBox
+                      market={market}
+                      onSuccess={() => setHasReportedDispute(true)}
+                    />
+                  )}
+                </Disclosure.Panel>
+              </Transition>
+            </>
+          )}
+        </Disclosure>
       )}
     </div>
   );
@@ -629,6 +672,33 @@ const ReportForm = ({ market }: { market: FullMarketFragment }) => {
           </div>
         </>
       )}
+    </div>
+  );
+};
+
+const CourtCaseContext = ({ market }: { market: FullMarketFragment }) => {
+  const { data: caseId, isFetched } = useMarketCaseId(market.marketId);
+  const router = useRouter();
+
+  return (
+    <div className="py-8 px-5">
+      <h4 className="mb-3 flex items-center gap-2">
+        <Image width={22} height={22} src="/icons/court.svg" alt="court" />
+        <span>Market Court Case</span>
+      </h4>
+
+      <p className="mb-5 text-sm">
+        Market has been disputed and is awaiting a ruling in court.
+      </p>
+
+      <button
+        disabled={!isFetched}
+        onClick={() => router.push(`/court/${caseId}`)}
+        onMouseEnter={() => router.prefetch(`/court/${caseId}`)}
+        className={`ztg-transition text-white focus:outline-none disabled:bg-slate-300 disabled:cursor-default rounded-full w-full h-[56px] bg-purple-400`}
+      >
+        View Case
+      </button>
     </div>
   );
 };

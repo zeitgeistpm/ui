@@ -5,6 +5,8 @@ import {
   RpcContext,
   ZTG,
   swapFeeFromFloat,
+  WithPool,
+  NoPool,
 } from "@zeitgeistpm/sdk";
 import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
 import { ChainTime } from "@zeitgeistpm/utility/dist/time";
@@ -31,11 +33,13 @@ import {
   IOPeriodOption,
   IOQuestion,
   IOScalarAnswers,
-  IOSwappFee,
+  IOSwapFee,
   IOTags,
   IOTimeZone,
   IOYesNoAnswers,
 } from "./validation";
+import { Fee } from "components/create/editor/inputs/FeeSelect";
+import { union } from "lib/types/union";
 
 /**
  * This is the type of the full market creation form data that is used to create a market.
@@ -55,6 +59,7 @@ export type MarketFormData = {
   reportingPeriod: PeriodOption;
   disputePeriod: PeriodOption;
   oracle: Oracle;
+  creatorFee: Fee;
   description?: Description;
   moderation: Moderation;
   liquidity: Liquidity;
@@ -66,7 +71,7 @@ export type PartialMarketFormData = Partial<MarketFormData>;
 /**
  * Array of all form keys in the market creation form.
  */
-export const marketCreationFormKeys = [
+export const marketCreationFormKeys = union<keyof MarketFormData>().exhaust([
   "currency",
   "question",
   "tags",
@@ -79,8 +84,9 @@ export const marketCreationFormKeys = [
   "oracle",
   "description",
   "moderation",
+  "creatorFee",
   "liquidity",
-] as const;
+]);
 
 /**
  * These are the individual market form field types.
@@ -106,7 +112,7 @@ export type PeriodDurationOption = Required<
 export type Oracle = z.infer<typeof IOOracle>;
 export type Description = z.infer<typeof IODescription>;
 export type Moderation = z.infer<typeof IOModerationMode>;
-export type SwapFee = z.infer<typeof IOSwappFee>;
+export type SwapFee = z.infer<typeof IOSwapFee>;
 export type Liquidity = z.infer<typeof IOLiquidity>;
 export type LiquidityRow = z.infer<typeof IOLiquidityRow>;
 
@@ -126,14 +132,54 @@ export const marketFormDataToExtrinsicParams = (
     throw new Error("Invalid market creation form data");
   }
 
-  const base: CreateMarketBaseParams<
-    RpcContext<MetadataStorage>,
-    MetadataStorage
-  > = {
+  const hasPool = form.moderation === "Permissionless" && form.liquidity.deploy;
+  const isAMM2Market = form.answers && form.answers.answers.length === 2;
+
+  let poolParams: WithPool | NoPool;
+
+  if (hasPool) {
+    if (isAMM2Market) {
+      poolParams = {
+        scoringRule: "Lmsr",
+        pool: {
+          amount: new Decimal(form.liquidity.rows[0].amount)
+            .mul(ZTG)
+            .toString(),
+          swapFee: swapFeeFromFloat(form.liquidity.swapFee?.value).toString(),
+          spotPrices: [
+            //todo: needs to be updated when we can support multiple assets
+            new Decimal(0.5).mul(ZTG).toString(),
+            new Decimal(0.5).mul(ZTG).toString(),
+          ],
+        },
+      };
+    } else {
+      poolParams = {
+        scoringRule: "Cpmm",
+        pool: {
+          amount: new Decimal(form.liquidity.rows[0].amount)
+            .mul(ZTG)
+            .toString(),
+          swapFee: swapFeeFromFloat(form.liquidity.swapFee?.value).toString(),
+          weights: form.liquidity.rows.slice(0, -1).map((row) => {
+            return new Decimal(row.weight)
+              .mul(ZTG)
+              .toFixed(0, Decimal.ROUND_DOWN);
+          }),
+        },
+      };
+    }
+  } else {
+    poolParams = {
+      scoringRule: isAMM2Market ? "Lmsr" : "Cpmm",
+      creationType: form.moderation,
+    };
+  }
+
+  const params: CreateMarketParams<RpcContext> = {
     signer,
     proxy,
     disputeMechanism: "Authorized",
-    creatorFee: 0,
     oracle: form.oracle,
     period: {
       Timestamp: [Date.now(), new Date(form.endDate).getTime()],
@@ -143,6 +189,7 @@ export const marketFormDataToExtrinsicParams = (
       oracleDuration: timeline.report.period,
       disputeDuration: timeline.dispute.period,
     },
+    creatorFee: new Decimal(10).pow(7).mul(form.creatorFee.value).toString(),
     marketType:
       form.answers.type === "scalar"
         ? {
@@ -165,32 +212,10 @@ export const marketFormDataToExtrinsicParams = (
         form.answers?.type === "scalar" ? form.answers.numberType : undefined,
     },
     baseAsset: baseCurrencyMetadata.assetId,
+    ...poolParams,
   };
 
-  if (form.moderation === "Permissionless") {
-    return {
-      ...base,
-      creationType: form.moderation,
-      pool: form.liquidity.deploy
-        ? {
-            amount: new Decimal(form.liquidity.rows[0].amount)
-              .mul(ZTG)
-              .toString(),
-            swapFee: swapFeeFromFloat(form.liquidity.swapFee?.value).toString(),
-            weights: form.liquidity.rows.slice(0, -1).map((row) => {
-              return new Decimal(row.weight)
-                .mul(ZTG)
-                .toFixed(0, Decimal.ROUND_DOWN);
-            }),
-          }
-        : undefined,
-    };
-  } else {
-    return {
-      ...base,
-      creationType: form.moderation,
-    };
-  }
+  return params;
 };
 
 export const durationasBlocks = (duration: Partial<PeriodDurationOption>) => {

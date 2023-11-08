@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, Suspense, useState } from "react";
 
 import { Menu, Transition } from "@headlessui/react";
 import { CATEGORIES } from "components/front-page/PopularCategories";
@@ -6,7 +6,7 @@ import MenuLogo from "components/top-bar/MenuLogo";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu as MenuIcon } from "react-feather";
+import { Menu as MenuIcon, Users } from "react-feather";
 import {
   FiArrowLeft,
   FiArrowRight,
@@ -19,10 +19,31 @@ import {
 import { useCategoryCounts } from "lib/hooks/queries/useCategoryCounts";
 import MarketSearch from "components/markets/MarketSearch";
 import { Alerts } from "./Alerts";
+import Modal from "components/ui/Modal";
+import { DesktopOnboardingModal } from "components/account/OnboardingModal";
+import Skeleton from "components/ui/Skeleton";
+import { delay } from "lib/util/delay";
+import { useWallet } from "lib/state/wallet";
+import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 
-const AccountButton = dynamic(() => import("../account/AccountButton"), {
-  ssr: false,
-});
+const AccountButton = dynamic(
+  async () => {
+    await delay(200);
+    return import("../account/AccountButton");
+  },
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="flex center rounded-full h-[44px] w-[76px] md:w-[186px] border-2 pl-1.5 py-1 md:py-0 bg-black transition-all text-white border-white"
+        // height={"44px"}
+        // width={"186px"}
+      >
+        <div className="text-xs animate-pulse">...</div>
+      </div>
+    ),
+  },
+);
 
 const TopBar = () => {
   return (
@@ -131,7 +152,7 @@ const TopBar = () => {
                         {({ active }) => (
                           <Link href="/create" onClick={close}>
                             <button
-                              className={`group flex w-full items-center  rounded-md px-2 py-2 text-sm gap-3`}
+                              className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-3`}
                             >
                               <div className="relative h-6 w-6 z-10">
                                 <FiPlusSquare size={"100%"} />
@@ -143,6 +164,23 @@ const TopBar = () => {
                           </Link>
                         )}
                       </Menu.Item>
+
+                      {process.env.NEXT_PUBLIC_SHOW_COURT === "true" && (
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link href="/court" onClick={close}>
+                              <button
+                                className={`group flex w-full items-center rounded-md px-2 py-2 text-sm gap-3 mt-4`}
+                              >
+                                <div className="relative h-6 w-6 z-10">
+                                  <Users size={"100%"} />
+                                </div>
+                                <h3 className="text-sm font-semibold">Court</h3>
+                              </button>
+                            </Link>
+                          )}
+                        </Menu.Item>
+                      )}
                     </Menu.Items>
                   </Transition>
                 </>
@@ -161,12 +199,50 @@ const TopBar = () => {
           </Link>
           <MarketSearch />
         </div>
-        <div className="center gap-2">
-          <Alerts />
+        <div className="relative center gap-3">
+          <GetTokensButton />
           <AccountButton />
+          <Alerts />
         </div>
       </div>
     </div>
+  );
+};
+
+const GetTokensButton = () => {
+  const { activeAccount, connected } = useWallet();
+  const { data: activeBalance } = useZtgBalance(activeAccount?.address);
+  return (
+    <>
+      <Transition
+        as={Fragment}
+        show={Boolean(connected && activeBalance?.eq(0))}
+        enter="transition-all duration-250"
+        enterFrom="opacity-0 scale-90"
+        enterTo="opacity-100 scale-100"
+        leave="transition-all duration-250"
+        leaveFrom="opacity-100 scale-100"
+        leaveTo="opacity-0 scale-90"
+      >
+        <Link
+          className="relative h-11 rounded-md p-0.5 overflow-hidden group"
+          href="/deposit"
+        >
+          <div
+            className="h-full w-full absolute top-0 left-0 z-10 group-hover:animate-spin group-hover:h-[150%] group-hover:w-[150%] group-hover:-top-6 group-hover:-left-6"
+            style={{
+              background:
+                "linear-gradient(180deg, #FF00E6 0%, #F36464 50%, #04C3FF 100%)",
+            }}
+          />
+          <div className="relative h-full block z-20">
+            <button className="h-full w-full rounded-md px-3 md:px-5 bg-black text-white center">
+              Get Tokens
+            </button>
+          </div>
+        </Link>
+      </Transition>
+    </>
   );
 };
 

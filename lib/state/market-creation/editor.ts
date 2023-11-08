@@ -319,6 +319,10 @@ export const useMarketDraftEditor = ({
       ? `${minBaseLiquidity[draft.form.currency!] / 2}`
       : "100";
 
+    const amm2Liquidity = minBaseLiquidity[draft.form.currency!]
+      ? `${minBaseLiquidity[draft.form.currency!]}`
+      : "100";
+
     const baseWeight = 64;
     const numOutcomes = draft.form.answers.answers.length;
     const ratio = 1 / numOutcomes;
@@ -330,12 +334,12 @@ export const useMarketDraftEditor = ({
 
     const rows = [
       ...draft.form.answers.answers.map((answer, index) => {
-        const liquidity = draft.form.liquidity?.rows[index];
+        const liquidity = draft.form.liquidity?.rows?.[index];
 
         const amount = new Decimal(
           reset
             ? baseAmount
-            : draft.form.liquidity?.rows[index]?.amount || baseAmount,
+            : draft.form.liquidity?.rows?.[index]?.amount || baseAmount,
         );
 
         const price = reset
@@ -375,6 +379,7 @@ export const useMarketDraftEditor = ({
         ...draft.form,
         liquidity: {
           ...draft.form.liquidity,
+          amount: amm2Liquidity,
           rows,
         },
       },

@@ -25,7 +25,7 @@ export const useRedeemableMarkets = (account?: string) => {
       redeemableMarketsRootKey,
       account,
       tokenPositions
-        ?.map((p) => p.id)
+        ?.map((p) => p.assetId)
         .sort()
         .join("|"),
     ],
@@ -63,7 +63,7 @@ export const useRedeemableMarkets = (account?: string) => {
               if (assetId && IOMarketOutcomeAssetId.is(assetId)) {
                 return (
                   market.marketId === getMarketIdOf(assetId) &&
-                  getIndexOf(assetId) === market.report?.outcome.categorical
+                  getIndexOf(assetId) === market.report?.outcome?.categorical
                 );
               }
             }).length > 0;

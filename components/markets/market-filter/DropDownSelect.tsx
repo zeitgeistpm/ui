@@ -27,7 +27,7 @@ const Control = ({ children, ...props }: ControlProps<MarketFilter, false>) => {
     <components.Control {...props}>
       <div
         className={
-          "flex justify-center items-center ml-[10px] font-medium text-ztg-16-150 h-8 " +
+          "flex justify-center items-center font-medium text-ztg-16-150 h-8 " +
           (menuIsOpen ? "text-black" : "text-sky-600")
         }
         onClick={onClick}
