@@ -51,14 +51,12 @@ export const useMarketSearch = (searchTerm: string) => {
         });
         console.timeEnd("a");
 
-        console.log(markets);
-        console.log(markets.map((m) => m.question));
         console.time("b");
         const fuse = new Fuse(markets, {
           includeScore: true,
           threshold: 0.9,
           keys: [
-            //matches in the question are consisdered more important
+            //matches in the question are consisdered more important than description, slightly favour active markets
             {
               name: "question",
               weight: 3,
@@ -71,7 +69,6 @@ export const useMarketSearch = (searchTerm: string) => {
           ],
         });
 
-        // const result = fuse.search(debouncedSearchTerm);
         const result = fuse.search({
           $or: [
             { question: debouncedSearchTerm },
@@ -80,11 +77,6 @@ export const useMarketSearch = (searchTerm: string) => {
           ],
         });
         console.timeEnd("b");
-        console.log(result);
-
-        console.log(result.map((m) => m.item.question));
-        console.log(result.map((m) => m.item.status));
-        console.log(result.map((m) => m.score));
 
         return result.map((r) => r.item);
       }
