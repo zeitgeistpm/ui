@@ -64,37 +64,33 @@ export const useInfiniteMarkets = (
     const markets: Market<IndexerContext>[] = await sdk.model.markets.list({
       where: {
         AND: [
-          validMarketWhereInput,
-          { status_not_in: [MarketStatus.Destroyed] },
-          { status_in: statuses.length === 0 ? undefined : statuses },
-          { tags_containsAny: tags?.length === 0 ? undefined : tags },
-          { baseAsset_in: currencies?.length !== 0 ? currencies : undefined },
+          {
+            ...validMarketWhereInput,
+            status_not_in: [MarketStatus.Destroyed],
+            status_in: statuses.length === 0 ? undefined : statuses,
+            tags_containsAny: tags?.length === 0 ? undefined : tags,
+            baseAsset_in: currencies?.length !== 0 ? currencies : undefined,
+          },
           {
             OR: [
               {
-                AND: [
-                  { scoringRule_eq: ScoringRule.Cpmm },
-                  {
-                    pool_isNull: withLiquidityOnly ? false : undefined,
-                    ...(withLiquidityOnly
-                      ? {
-                          pool: {
-                            account: {
-                              balances_some: {
-                                balance_gt: 0,
-                              },
-                            },
+                scoringRule_eq: ScoringRule.Cpmm,
+                pool_isNull: withLiquidityOnly ? false : undefined,
+                ...(withLiquidityOnly
+                  ? {
+                      pool: {
+                        account: {
+                          balances_some: {
+                            balance_gt: 0,
                           },
-                        }
-                      : {}),
-                  },
-                ],
+                        },
+                      },
+                    }
+                  : {}),
               },
               {
-                AND: [
-                  { scoringRule_eq: ScoringRule.Lmsr },
-                  { neoPool_isNull: withLiquidityOnly ? false : undefined },
-                ],
+                scoringRule_eq: ScoringRule.Lmsr,
+                neoPool_isNull: withLiquidityOnly ? false : undefined,
               },
             ],
           },
