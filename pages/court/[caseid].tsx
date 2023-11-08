@@ -1,23 +1,24 @@
+import { ZrmlCourtDraw } from "@polkadot/types/lookup";
+import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import {
   IOBaseAssetId,
   IOForeignAssetId,
   parseAssetId,
 } from "@zeitgeistpm/sdk";
-import { ZrmlCourtCourtInfo, ZrmlCourtDraw } from "@polkadot/types/lookup";
-import { FullMarketFragment } from "@zeitgeistpm/indexer";
 import CourtStageTimer from "components/court/CourtStageTimer";
+import { CourtVoteForm } from "components/court/CourtVoteForm";
+import { CourtVoteRevealForm } from "components/court/CourtVoteRevealForm";
 import { SelectedDrawsTable } from "components/court/SelectedDrawsTable";
 import { AddressDetails } from "components/markets/MarketAddresses";
 import { HeaderStat } from "components/markets/MarketHeader";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
 import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
+import { useSelectedDraws } from "lib/hooks/queries/court/useSelectedDraws";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useMarket } from "lib/hooks/queries/useMarket";
-import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useChainTime } from "lib/state/chaintime";
 import { getCourtStage } from "lib/state/court/get-stage";
-import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { isMarketCategoricalOutcome } from "lib/types";
 import dynamic from "next/dynamic";
@@ -27,8 +28,8 @@ import { useRouter } from "next/router";
 import { NextPage } from "next/types";
 import NotFoundPage from "pages/404";
 import { useMemo } from "react";
-import { useSelectedDraws } from "lib/hooks/queries/court/useSelectedDraws";
-import { CourtVoteForm } from "components/court/CourtVoteForm";
+import { AiOutlineEye } from "react-icons/ai";
+import { LuVote } from "react-icons/lu";
 
 const QuillViewer = dynamic(() => import("../../components/ui/QuillViewer"), {
   ssr: false,
@@ -39,11 +40,10 @@ const CasePage: NextPage = () => {
     return <NotFoundPage />;
   }
 
-  const [sdk] = useSdkv2();
-  const time = useChainTime();
-  const notificationStore = useNotifications();
-  const wallet = useWallet();
   const router = useRouter();
+
+  const wallet = useWallet();
+  const time = useChainTime();
 
   const { caseid } = router.query;
   const caseId = Number(caseid);
@@ -72,13 +72,13 @@ const CasePage: NextPage = () => {
     ? lookupAssetImagePath(baseAsset.Ztg)
     : "";
 
-  const isDrawnJuror = Boolean(
-    selectedDraws?.find(
-      (draw) =>
-        draw.vote.isDrawn &&
-        draw.courtParticipant.toString() === wallet.realAddress,
-    ),
+  const connectedParticipantDraw = selectedDraws?.find(
+    (draw) => draw.courtParticipant.toString() === wallet.realAddress,
   );
+
+  const isDrawnJuror = connectedParticipantDraw?.vote.isDrawn;
+  const hasSecretVote = connectedParticipantDraw?.vote.isSecret;
+  const hasRevealedVote = connectedParticipantDraw?.vote.isRevealed;
 
   const stage = useMemo(() => {
     if (time && market && courtCase) {
@@ -182,12 +182,90 @@ const CasePage: NextPage = () => {
         )}
       </main>
 
-      {isDrawnJuror && (
-        <div className="hidden md:block md:w-[320px] lg:w-[460px] md:-mr-6 lg:mr-auto">
-          <div className="sticky top-28">
-            <CourtVoteForm market={market} caseId={caseId} />
-          </div>
-        </div>
+      {stage?.type === "vote" && (
+        <>
+          {isDrawnJuror && (
+            <>
+              <div className="hidden md:block md:w-[320px] lg:w-[460px] lg:mr-auto">
+                <div className="sticky top-28">
+                  <CourtVoteForm market={market} caseId={caseId} />
+                </div>
+              </div>
+            </>
+          )}
+
+          {hasSecretVote && (
+            <div>
+              <div className="hidden md:block md:w-[320px] lg:w-[460px] lg:mr-auto">
+                <div className="sticky top-28">
+                  <div className="rounded-xl overflow-hidden shadow-lg py-6 px-6">
+                    <div className="flex flex-col items-center gap-3">
+                      <div>
+                        <LuVote size={64} />
+                      </div>
+                      <h3 className="text mb-2">You have voted</h3>
+                      <p className="text-sm">
+                        Your vote is secret during voting, but when court goes
+                        into aggregation you can reveal your vote to the public
+                        by coming back to this page.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {stage?.type === "aggregation" && (
+        <>
+          {hasSecretVote && (
+            <>
+              <div className="hidden md:block md:w-[320px] lg:w-[460px] lg:mr-auto">
+                <div className="sticky top-28">
+                  <CourtVoteRevealForm
+                    market={market}
+                    caseId={caseId}
+                    secretVote={
+                      connectedParticipantDraw?.vote.isSecret
+                        ? connectedParticipantDraw?.vote.asSecret
+                        : undefined
+                    }
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {hasRevealedVote && (
+            <>
+              <div className="hidden md:block md:w-[320px] lg:w-[460px] lg:mr-auto">
+                <div className="sticky top-28">
+                  <div className="rounded-xl overflow-hidden shadow-lg py-6 px-6">
+                    <div className="flex flex-col items-center gap-3">
+                      <div>
+                        <AiOutlineEye size={64} />
+                      </div>
+                      <h3 className="text mb-4">Your vote is revealed</h3>
+                      <h3 className="text text-base mb-4">
+                        {
+                          market?.categories?.[
+                            connectedParticipantDraw?.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber()
+                          ].ticker
+                        }
+                      </h3>
+                      <p className="text-sm">
+                        Your vote has been revealed to the other jurors and the
+                        public and has been taken into account.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </>
       )}
     </div>
   );
@@ -203,7 +281,6 @@ const Outcomes = ({
   return (
     <div className="flex gap-2">
       {market.categories?.map((category, index) => {
-        //TODO: not sure how to handle binary outcomes or if we should at this point
         const votes = selectedDraws?.filter(
           (draw) =>
             draw.vote.isRevealed &&

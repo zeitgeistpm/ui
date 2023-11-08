@@ -56,20 +56,27 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
           <div
             className={`
             flex items-center gap-2
-            ${status === "Delegated" && "text-gray-400"}
-            ${status === "Drawn" && "text-blue-400"}
-            ${status === "Denounced" && "text-red-400"}
           `}
           >
-            {draw.vote.isDrawn
-              ? "Waiting for vote"
-              : draw.vote.isSecret
-              ? "*****"
-              : draw.vote.isDelegated
-              ? "Delegated Vote"
-              : draw.vote.isRevealed
-              ? "Voted"
-              : "Unknown"}
+            <span className="">
+              {draw.vote.isDrawn ? (
+                <span className="text-blue-400">Waiting for vote</span>
+              ) : draw.vote.isSecret ? (
+                <span>
+                  <span>[</span>
+                  <span className="text-gray-300">∗∗∗∗∗∗</span>
+                  <span>]</span>
+                </span>
+              ) : draw.vote.isDelegated ? (
+                <span className="text-gray-400">Delegated Vote</span>
+              ) : draw.vote.isRevealed ? (
+                "Voted"
+              ) : draw.vote.isDenounced ? (
+                <span className="text-red-400">Denounced</span>
+              ) : (
+                "Unknown"
+              )}
+            </span>
 
             {draw.vote.isDelegated && (
               <InfoPopover position="top">
@@ -94,6 +101,19 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
                         </div>
                       </div>
                     ))}
+                </div>
+              </InfoPopover>
+            )}
+
+            {draw.vote.isSecret && (
+              <InfoPopover position="top">
+                <div className="mb-3">
+                  Secret vote. Will be revealed by the juror when the court
+                  reaches aggregation phase.
+                </div>
+                <h3 className="mb-1 text-sm">Commitment Hash:</h3>
+                <div className="text-xxs">
+                  {draw.vote.asSecret.commitment.toHex()}
                 </div>
               </InfoPopover>
             )}

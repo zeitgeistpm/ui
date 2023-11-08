@@ -16,7 +16,7 @@ export const useMarket = (
 ) => {
   const [sdk, id] = useSdkv2();
 
-  const query = useQuery(
+  return useQuery(
     [id, marketsRootQuery, filter],
     async () => {
       if (
@@ -40,8 +40,6 @@ export const useMarket = (
       ),
     },
   );
-
-  return query;
 };
 
 const batcher = memoize((sdk: Sdk<IndexerContext>) => {

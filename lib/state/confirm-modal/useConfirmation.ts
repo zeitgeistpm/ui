@@ -5,11 +5,19 @@ export type ConfirmationPromptProps = {
   /**
    * The title of the confirmation prompt
    */
-  title: string;
+  title: string | JSX.Element;
   /**
    * The description of the confirmation prompt
    */
-  description: string;
+  description: string | JSX.Element;
+  /**
+   * The label of the confirm button
+   */
+  confirmLabel?: string | JSX.Element;
+  /**
+   * The label of the cancel button
+   */
+  cancelLabel?: string | JSX.Element;
 };
 
 /**

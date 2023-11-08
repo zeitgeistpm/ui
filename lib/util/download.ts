@@ -1,4 +1,4 @@
-export const download = (filename: string, text: string) => {
+export const downloadText = (filename: string, text: string) => {
   var element = document.createElement("a");
   element.setAttribute(
     "href",
