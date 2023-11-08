@@ -52,6 +52,7 @@ const marketQuery = gql`
   }
 `;
 
+//switch to search with marketid
 const assetsQuery = gql`
   query Assets($poolId: Int) {
     assets(where: { pool: { poolId_eq: $poolId } }) {
@@ -154,7 +155,7 @@ const getFeaturedMarkets = async (
         creation: market.creation,
         creator: market.creator,
         img: market.img,
-        prediction: prediction,
+        prediction: prediction, //here
         volume: new Decimal(pool.volume).div(ZTG).toNumber(),
         baseAsset: market.baseAsset,
         outcomes: marketCategories,

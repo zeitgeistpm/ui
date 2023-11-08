@@ -107,6 +107,8 @@ export const useInfiniteMarkets = (
 
     //todo: this can be fetched with the market schema
     const outcomes = await getOutcomesForMarkets(sdk.indexer.client, markets);
+    console.log(outcomes);
+    console.log(markets);
 
     let resMarkets: Array<QueryMarketData> = [];
 
