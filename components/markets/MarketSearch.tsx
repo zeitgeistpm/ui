@@ -75,16 +75,16 @@ const MarketSearch = () => {
             markets?.map((market) => (
               <Link
                 href={`/markets/${market.marketId}`}
-                className="px-4 py-2 flex overflow-ellipsis hover:bg-sky-100"
+                className="px-4 py-2 flex justify-between overflow-ellipsis hover:bg-sky-100"
                 onClick={() => {
                   setShowResults(false);
                 }}
               >
-                <div className="overflow-ellipsis line-clamp-1 mr-4">
+                <div className="overflow-ellipsis line-clamp-1 w-85%">
                   {market.question}
                 </div>
                 <div
-                  className={`ml-auto text-xs rounded-md px-2 py-1 w-16 text-center text-white ${
+                  className={`text-xs rounded-md px-2 py-1 w-16 text-center text-white ${
                     market.status === MarketStatus.Active
                       ? "bg-sheen-green"
                       : "bg-vermilion"
