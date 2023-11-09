@@ -1,10 +1,8 @@
-import { Combobox } from "@headlessui/react";
+import { MarketStatus } from "@zeitgeistpm/indexer";
 import { useMarketSearch } from "lib/hooks/queries/useMarketSearch";
 import Link from "next/link";
-import MarketId from "pages/api/og/[marketId]";
 import { useState } from "react";
-import { MarketStatus, FullMarketFragment } from "@zeitgeistpm/indexer";
-import { Loader, Search, X } from "react-feather";
+import { Search, X } from "react-feather";
 
 const MarketSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");

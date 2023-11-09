@@ -1,17 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { isIndexedSdk } from "@zeitgeistpm/sdk";
-import { useSdkv2 } from "../useSdkv2";
-import { useDebounce } from "use-debounce";
 import Fuse from "fuse.js";
-
-import {
-  FullMarketFragment,
-  InputMaybe,
-  MarketWhereInput,
-  Exact,
-  MarketOrderByInput,
-} from "@zeitgeistpm/indexer";
-import { RequestDocument } from "graphql-request";
+import { useDebounce } from "use-debounce";
+import { useSdkv2 } from "../useSdkv2";
+import { MarketOrderByInput } from "@zeitgeistpm/indexer";
 
 export const marketSearchKey = "market-search";
 
@@ -27,21 +19,7 @@ export const useMarketSearch = (searchTerm: string) => {
     [id, marketSearchKey, debouncedSearchTerm],
     async () => {
       if (enabled) {
-        // const searchWords = debouncedSearchTerm.split(" ");
-        console.time("a");
         const search = buildSearch(debouncedSearchTerm);
-
-        // const response = await sdk.indexer.client.request(`
-        //   query MyQuery {
-        //     markets(where: { OR: {${search}}}) {
-        //       id
-        //       tags
-        //     }
-        //   }
-        // `);
-
-        // console.log("res", response);
-
         const { markets } = await sdk.indexer.markets({
           where: {
             OR: search,
@@ -49,9 +27,7 @@ export const useMarketSearch = (searchTerm: string) => {
           order: MarketOrderByInput.IdDesc,
           limit: 100,
         });
-        console.timeEnd("a");
 
-        console.time("b");
         const fuse = new Fuse(markets, {
           includeScore: true,
           threshold: 0.9,
@@ -76,7 +52,6 @@ export const useMarketSearch = (searchTerm: string) => {
             { status: "Active" },
           ],
         });
-        console.timeEnd("b");
 
         return result.map((r) => r.item);
       }
@@ -90,18 +65,6 @@ export const useMarketSearch = (searchTerm: string) => {
   return query;
 };
 
-// const buildSearch = (searchTerm: string) => {
-//   const search = searchTerm
-//     .split(" ")
-//     .map(
-//       (word) =>
-//         `description_containsInsensitive: "${word}", question_containsInsensitive: "${word}"`,
-//     )
-//     .join(",");
-//   console.log(search);
-
-//   return search;
-// };
 const buildSearch = (searchTerm: string) => {
   const search = searchTerm
     .split(" ")
@@ -113,5 +76,3 @@ const buildSearch = (searchTerm: string) => {
 
   return search;
 };
-
-// const;
