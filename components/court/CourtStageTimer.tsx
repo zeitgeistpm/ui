@@ -1,3 +1,4 @@
+import { isInfinity } from "@zeitgeistpm/utility/dist/infinity";
 import * as Time from "@zeitgeistpm/utility/dist/time";
 import Skeleton from "components/ui/Skeleton";
 import { useChainTime } from "lib/state/chaintime";
@@ -18,8 +19,9 @@ export const CourtStageTimer = ({ stage }: { stage?: CourtStage }) => {
     return <Skeleton height={22} className="w-full rounded-md" />;
   }
 
-  const percentage =
-    ((stage.totalTime - stage.remainingBlocks) / stage.totalTime) * 100;
+  const percentage = isInfinity(stage.remainingBlocks)
+    ? 100
+    : ((stage.totalTime - stage.remainingBlocks) / stage.totalTime) * 100;
 
   return (
     <>
