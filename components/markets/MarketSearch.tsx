@@ -7,6 +7,7 @@ import { Search, X } from "react-feather";
 const MarketSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showResults, setShowResults] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -29,39 +30,55 @@ const MarketSearch = () => {
         <Search className="text-ztg-blue mr-4" />
       </Link>
       <div className="hidden lg:flex items-center">
-        <Search className="text-ztg-blue mr-4" />
-        <input
-          ref={inputRef}
-          className="rounded-sm bg-sky-900 text-white h-8 px-2 w-full focus:outline-none max-w-[500px] "
-          value={searchTerm}
-          placeholder="Search markets"
-          onChange={(event) => {
-            setShowResults(true);
-            setSearchTerm(event.target.value);
-          }}
-          onFocus={() => {
-            setShowResults(true);
-          }}
-        />
         <button
-          className="relative right-6 text-sky-600"
           onClick={() => {
-            setSearchTerm("");
-            inputRef.current?.focus();
+            setShowSearch(true);
+            setTimeout(() => {
+              inputRef.current?.focus();
+            });
           }}
         >
-          <X size={16} />
+          <Search className="text-ztg-blue mr-4" />
         </button>
+        {showSearch && (
+          <>
+            <input
+              ref={inputRef}
+              className="rounded-sm bg-sky-900 text-white h-8 px-2 w-full focus:outline-none max-w-[500px] "
+              value={searchTerm}
+              placeholder="Search markets"
+              onChange={(event) => {
+                setShowResults(true);
+                setSearchTerm(event.target.value);
+              }}
+              onFocus={() => {
+                setShowResults(true);
+              }}
+            />
+            <button
+              className="relative right-6 text-sky-600"
+              onClick={() => {
+                setSearchTerm("");
+                inputRef.current?.focus();
+              }}
+            >
+              <X size={16} />
+            </button>
+          </>
+        )}
       </div>
       {showResults && markets && (
-        <div className="hidden lg:flex flex-col absolute bg-white px-4 py-2 rounded-md top-[45px] translate-x-[40px] max-h-[300px] overflow-scroll w-[500px] shadow-2xl">
-          <div className="text-sky-600">Results</div>
+        <div className="hidden lg:flex flex-col absolute bg-white py-2  rounded-md top-[45px] translate-x-[40px] max-h-[300px] overflow-scroll w-[500px] shadow-2xl">
+          <div className="text-sky-600 mx-4">Results</div>
 
           {markets.length > 0 ? (
             markets?.map((market) => (
               <Link
                 href={`/markets/${market.marketId}`}
-                className="py-2 flex overflow-ellipsis"
+                className="px-4 py-2 flex overflow-ellipsis hover:bg-sky-100"
+                onClick={() => {
+                  setShowResults(false);
+                }}
               >
                 <div className="overflow-ellipsis line-clamp-1 mr-4">
                   {market.question}
