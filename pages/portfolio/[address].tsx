@@ -12,7 +12,6 @@ import {
   MarketPositionsSkeleton,
 } from "components/portfolio/MarketPositions";
 import PortfolioIdentity from "components/portfolio/PortfolioIdentity";
-import { Loader } from "components/ui/Loader";
 import SubTabsList from "components/ui/SubTabsList";
 import PortfolioLayout from "layouts/PortfolioLayout";
 import { NextPageWithLayout } from "layouts/types";
@@ -20,9 +19,7 @@ import { usePortfolioPositions } from "lib/hooks/queries/usePortfolioPositions";
 import { useZtgPrice } from "lib/hooks/queries/useZtgPrice";
 import { useQueryParamState } from "lib/hooks/useQueryParamState";
 import { useCrossChainApis } from "lib/state/cross-chain";
-import { useDelayQueue } from "lib/state/delay-queue";
 import { isValidPolkadotAddress } from "lib/util";
-import { assetsAreEqual } from "lib/util/assets-are-equal";
 import { groupBy, range } from "lodash-es";
 import { useRouter } from "next/router";
 import NotFoundPage from "pages/404";
@@ -90,7 +87,7 @@ const Portfolio: NextPageWithLayout = () => {
   return (
     <div className="mt-8">
       {address && <PortfolioIdentity address={address} />}
-      <div className="mb-[40px]">
+      <div className="mb-12">
         <PortfolioBreakdown
           {...(breakdown ?? {
             loading: true,
@@ -116,14 +113,14 @@ const Portfolio: NextPageWithLayout = () => {
                 "Badges",
                 "History",
               ].map((title, index) => (
-                <Tab className="px-4" key={index}>
+                <Tab className="text-sm sm:text-xl" key={index}>
                   {({ selected }) => (
                     <div
-                      className={
+                      className={`${
                         selected
                           ? "font-semibold text-black transition-all"
                           : "text-sky-600 transition-all"
-                      }
+                      } ${index === 0 ? "px-0 pr-4" : "px-4"}`}
                     >
                       {title}
                     </div>
@@ -134,10 +131,10 @@ const Portfolio: NextPageWithLayout = () => {
           </div>
 
           <Tab.Panels>
-            <Tab.Panel className="mt-[40px]">
+            <Tab.Panel className="mt-12">
               {!marketPositionsByMarket || !ztgPrice ? (
                 range(0, 8).map((i) => (
-                  <MarketPositionsSkeleton className="mb-14" key={i} />
+                  <MarketPositionsSkeleton className="mb-8" key={i} />
                 ))
               ) : Object.values(marketPositionsByMarket).length > 0 ? (
                 Object.values(marketPositionsByMarket).map(
@@ -164,7 +161,7 @@ const Portfolio: NextPageWithLayout = () => {
                     return (
                       <MarketPositions
                         key={market.marketId}
-                        className="mb-14"
+                        className="mb-8"
                         market={market}
                         usdZtgPrice={ztgPrice}
                         positions={marketPositions.filter((position) =>

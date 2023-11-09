@@ -1815,7 +1815,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/api@npm:10.10.1, @polkadot/api@npm:^10.9.1":
+"@polkadot/api@npm:10.10.1, @polkadot/api@npm:^10.10.1":
   version: 10.10.1
   resolution: "@polkadot/api@npm:10.10.1"
   dependencies:
@@ -4695,7 +4695,7 @@ __metadata:
     "@notionhq/client": ^2.2.3
     "@plaiceholder/next": ^2.5.0
     "@playwright/test": ^1.28.1
-    "@polkadot/api": ^10.9.1
+    "@polkadot/api": ^10.10.1
     "@polkadot/extension-dapp": ^0.44.6
     "@polkadot/ui-keyring": ^2.4.1
     "@polkadot/wasm-crypto": ^6.3.1
