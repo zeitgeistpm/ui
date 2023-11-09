@@ -104,7 +104,11 @@ export const Alerts = () => {
               >
                 {alerts.map((alert) => (
                   <Menu.Item key={alert.id}>
-                    <div className={`${!hoveringMenu && "backdrop-blur-lg"}`}>
+                    <div
+                      className={`${
+                        !hoveringMenu && "backdrop-blur-lg rounded-lg"
+                      }`}
+                    >
                       {alert.type === "ready-to-report-market" ? (
                         <ReadyToReportMarketAlertItem alert={alert} />
                       ) : alert.type === "market-dispute" ? (
