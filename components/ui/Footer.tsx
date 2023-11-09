@@ -7,6 +7,10 @@ import { endpointOptions, isWSX } from "lib/constants";
 import Input from "./Input";
 import Image from "next/image";
 
+const emailList = isWSX
+  ? "https://emails.zeitgeist.pm/wsx-subscribe"
+  : "https://emails.zeitgeist.pm/app-subscribe";
+
 const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
   const notificationStore = useNotifications();
   const { register, formState, handleSubmit, reset } = useForm();
@@ -15,13 +19,15 @@ const FooterNewsletterSub: FC<{ title: string }> = ({ title }) => {
 
   const subscribe = async ({ email }: { email: string }) => {
     try {
-      await axios.post("https://emails.zeitgeist.pm/app-subscribe", { email });
+      const response = await axios.post(emailList, { email });
 
-      notificationStore.pushNotification(
-        "Email sent successfully! We'll be in touch soon.",
-        { type: "Success" },
-      );
-
+      response.status === 201
+        ? notificationStore.pushNotification("Success! You're on the list.", {
+            type: "Success",
+          })
+        : notificationStore.pushNotification("Email already exists.", {
+            type: "Error",
+          });
       reset();
     } catch {
       notificationStore.pushNotification(
@@ -84,38 +90,65 @@ const FooterMenu: FC<FooterMenuProps> = ({ title, links, className = "" }) => {
   );
 };
 
+const FooterMenus = () => {
+  return (
+    <>
+      {isWSX ? (
+        <div className="grid grid-cols-3 gap-7 w-full">
+          <FooterMenu
+            className="col-span-1"
+            title="General"
+            links={[{ text: "Website", href: "https://zeitgeist.pm" }]}
+          />
+          <FooterMenu
+            className="col-span-1"
+            title="Community"
+            links={[
+              { text: "Discord", href: "https://discord.gg/xv8HuA4s8v" },
+              { text: "Telegram", href: "https://t.me/zeitgeist_official" },
+              { text: "Twitter", href: "https://twitter.com/ZeitgeistPM" },
+            ]}
+          />
+        </div>
+      ) : (
+        <div className="flex justify-between gap-7 w-full">
+          <FooterMenu
+            title="General"
+            links={[
+              {
+                text: "Apps (Advanced UI)",
+                href: `https://polkadot.js.org/apps/?rpc=${endpointOptions[0].value}`,
+              },
+              { text: "Website", href: "https://zeitgeist.pm" },
+            ]}
+          />
+          <FooterMenu
+            title="Technology"
+            links={[
+              { text: "Documentation", href: "https://docs.zeitgeist.pm" },
+              { text: "Github", href: "https://github.com/zeitgeistpm" },
+            ]}
+          />
+          <FooterMenu
+            title="Community"
+            links={[
+              { text: "Discord", href: "https://discord.gg/xv8HuA4s8v" },
+              { text: "Telegram", href: "https://t.me/zeitgeist_official" },
+              { text: "Twitter", href: "https://twitter.com/ZeitgeistPM" },
+            ]}
+          />
+        </div>
+      )}
+    </>
+  );
+};
+
 const Footer = () => {
   return (
     <div className="w-full mt-auto flex flex-col pb-24 pt-12 bg-[#1C1C1C]">
       <div className="container-fluid">
         <div className="flex justify-between gap-12 lg:gap-36 mb-8 md:mb-16 flex-wrap md:flex-nowrap">
-          <div className="flex justify-between gap-7 w-full">
-            <FooterMenu
-              title="General"
-              links={[
-                {
-                  text: "Apps (Advanced UI)",
-                  href: `https://polkadot.js.org/apps/?rpc=${endpointOptions[0].value}`,
-                },
-                { text: "Website", href: "https://zeitgeist.pm" },
-              ]}
-            />
-            <FooterMenu
-              title="Technology"
-              links={[
-                { text: "Documentation", href: "https://docs.zeitgeist.pm" },
-                { text: "Github", href: "https://github.com/zeitgeistpm" },
-              ]}
-            />
-            <FooterMenu
-              title="Community"
-              links={[
-                { text: "Discord", href: "https://discord.gg/xv8HuA4s8v" },
-                { text: "Telegram", href: "https://t.me/zeitgeist_official" },
-                { text: "Twitter", href: "https://twitter.com/ZeitgeistPM" },
-              ]}
-            />
-          </div>
+          <FooterMenus />
           <FooterNewsletterSub title="Subscribe to Newsletter" />
         </div>
         <div className="flex flex-col md:flex-row gap-5">

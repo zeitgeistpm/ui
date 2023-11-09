@@ -2,7 +2,7 @@ import type { ScalarRangeType } from "@zeitgeistpm/sdk";
 import Skeleton from "components/ui/Skeleton";
 import { motion } from "framer-motion";
 import Decimal from "decimal.js";
-import { ZTG } from "lib/constants";
+import { ZTG, isWSX } from "lib/constants";
 import { MarketOutcomes } from "lib/types/markets";
 import { formatNumberCompact } from "lib/util/format-compact";
 import { hasDatePassed } from "lib/util/hasDatePassed";
@@ -157,13 +157,15 @@ const MarketCardDetails = ({
         ) : (
           <Skeleton width={30} height={12} />
         )}
-        <Image
-          width={12}
-          height={12}
-          src={imagePath}
-          alt="Currency token logo"
-          className="rounded-full"
-        />
+        {!isWSX && (
+          <Image
+            width={12}
+            height={12}
+            src={imagePath}
+            alt="Currency token logo"
+            className="rounded-full"
+          />
+        )}
       </div>
     </div>
   );
