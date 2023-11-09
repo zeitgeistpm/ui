@@ -51,12 +51,12 @@ const TopBar = () => {
       className={`w-full py-3.5 fixed top-0 z-40 transition-all duration-300 bg-black h-topbar-height`}
     >
       <div className="h-full relative flex items-center container-fluid">
-        <div className="h-full hidden md:flex items-center justify-center border-r-1 border-blue-600 pr-3 md:pr-7">
+        <div className="h-full hidden md:flex items-center justify-center pr-3 md:pr-7">
           <Link href="/">
             <MenuLogo />
           </Link>
         </div>
-        <div className="md:pl-7 flex flex-1 gap-7">
+        <div className="md:px-7 flex flex-1 gap-7 items-center border-x-0 md:border-x-1 border-ztg-blue py-2">
           <Menu as="div" className="relative inline-block text-left">
             {({ open, close }) => {
               return (
@@ -197,8 +197,8 @@ const TopBar = () => {
             </div>
             <div>Leaderboard</div>
           </Link>
-          <MarketSearch />
         </div>
+        <MarketSearch />
         <div className="relative center gap-3">
           <GetTokensButton />
           <AccountButton />
