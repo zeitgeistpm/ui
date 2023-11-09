@@ -288,7 +288,6 @@ const enableWallet = async (walletId: string) => {
           connected: Boolean(accounts && accounts.length > 0),
           accounts:
             accounts?.map((account) => {
-              console.log(account);
               return {
                 ...account,
                 address: encodeAddress(account.address, 73),

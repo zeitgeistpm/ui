@@ -1,7 +1,10 @@
 import { useAtom } from "jotai";
+import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
+import { useAllVoteDraws } from "lib/hooks/queries/court/useVoteDraws";
 import { useMemo } from "react";
 import { useReadyToReportMarkets } from "../../hooks/queries/useReadyToReportMarkets";
 import { useRedeemableMarkets } from "../../hooks/queries/useRedeemableMarkets";
+import { useChainTime } from "../chaintime";
 import { persistentAtom } from "../util/persistent-atom";
 import { Alert, AlertId, withId } from "./types";
 
@@ -33,6 +36,10 @@ const readAlertsAtom = persistentAtom<{ read: AlertId[] }>({
 export const useAlerts = (account?: string): UseAlerts => {
   const { data: marketsReadyToReport } = useReadyToReportMarkets(account);
   const { data: redeemableMarkets } = useRedeemableMarkets(account);
+  const { data: courtDraws } = useAllVoteDraws();
+  const { data: cases } = useCourtCases();
+
+  const chainTime = useChainTime();
 
   const [readAlerts, setRead] = useAtom(readAlertsAtom);
 
@@ -50,9 +57,9 @@ export const useAlerts = (account?: string): UseAlerts => {
     if (redeemableMarkets && redeemableMarkets.length > 0) {
       add(
         withId({
+          type: "redeemable-markets",
           account,
           markets: redeemableMarkets,
-          type: "redeemable-markets",
         }),
       );
     }
@@ -61,16 +68,78 @@ export const useAlerts = (account?: string): UseAlerts => {
       marketsReadyToReport.forEach((market) => {
         add(
           withId({
+            type: "ready-to-report-market",
             account,
             market,
-            type: "ready-to-report-market",
           }),
         );
       });
     }
 
+    if (courtDraws && cases && chainTime) {
+      courtDraws.forEach(([caseIdStorageKey, draws]) => {
+        const caseId = caseIdStorageKey.args[0].toNumber();
+        const courtCase = cases?.find((c) => c.id === caseId);
+
+        if (!courtCase) return;
+
+        const drawsForAccount = draws.filter(
+          (draw) => draw.courtParticipant.toString() === account,
+        );
+
+        const drawnAsJuror = drawsForAccount.filter(
+          (draw) => draw.vote.isDrawn,
+        );
+
+        const drawReadyToReveal = drawsForAccount.filter(
+          (draw) => draw.vote.isSecret,
+        );
+
+        const voteStart = courtCase.case.roundEnds.preVote.toNumber() + 1;
+        const voteEnd = courtCase.case.roundEnds.vote.toNumber();
+
+        const aggregationStart = voteEnd + 1;
+        const aggregationEnd = courtCase.case.roundEnds.aggregation.toNumber();
+
+        if (chainTime.block >= voteStart && chainTime.block <= voteEnd) {
+          drawnAsJuror.forEach((draw) => {
+            add(
+              withId({
+                type: "court-case-ready-for-vote",
+                account,
+                caseId,
+              }),
+            );
+          });
+        }
+
+        if (
+          chainTime.block >= aggregationStart &&
+          chainTime.block <= aggregationEnd
+        ) {
+          drawReadyToReveal.forEach((draw) => {
+            add(
+              withId({
+                type: "court-case-ready-for-reveal",
+                account,
+                caseId,
+              }),
+            );
+          });
+        }
+      });
+    }
+
     return alerts;
-  }, [readAlerts, account, marketsReadyToReport, redeemableMarkets]);
+  }, [
+    readAlerts,
+    account,
+    marketsReadyToReport,
+    redeemableMarkets,
+    courtDraws,
+    cases,
+    chainTime,
+  ]);
 
   const setAsRead = (alert: Alert & { dismissible: true }) => {
     if (!alert.dismissible)

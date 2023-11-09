@@ -4,7 +4,13 @@ import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useChainTime } from "lib/state/chaintime";
+import { ZrmlCourtCourtStatus } from "@polkadot/types/lookup";
 import Link from "next/link";
+import InfoPopover from "components/ui/InfoPopover";
+import { CourtStage, getCourtStage } from "lib/state/court/get-stage";
+import { CourtCaseInfo } from "lib/hooks/queries/court/useCourtCase";
+import { useMemo } from "react";
+import Skeleton from "components/ui/Skeleton";
 
 const columns: TableColumn[] = [
   {
@@ -20,10 +26,10 @@ const columns: TableColumn[] = [
   {
     header: "Status",
     accessor: "status",
-    type: "text",
+    type: "component",
   },
   {
-    header: "Ends",
+    header: "Voting Ends",
     accessor: "ends",
     type: "text",
   },
@@ -37,18 +43,24 @@ const columns: TableColumn[] = [
 export const CourtCasesTable = () => {
   const { data: cases } = useCourtCases();
   const time = useChainTime();
-  console.log(cases);
+
+  cases?.sort((a, b) =>
+    a.case.roundEnds.vote.toNumber() > b.case.roundEnds.vote.toNumber()
+      ? 1
+      : -1,
+  );
+
   const tableData: TableData[] | undefined = cases?.map((courtCase) => {
     return {
       id: `# ${courtCase.id}`,
       case: <CaseNameForCaseId id={courtCase.id} />,
-      status: courtCase.case.status.type,
+      status: <CaseStatus courtCase={courtCase} />,
       ends:
         time &&
         new Intl.DateTimeFormat("default", {
           dateStyle: "medium",
           timeStyle: "short",
-        }).format(blockDate(time, courtCase.case.roundEnds.appeal.toNumber())),
+        }).format(blockDate(time, courtCase.case.roundEnds.vote.toNumber())),
       actions: (
         <>
           <Link href={`/court/${courtCase.id}`}>
@@ -71,5 +83,74 @@ export const CourtCasesTable = () => {
 const CaseNameForCaseId = (props: { id: number }) => {
   const { data: marketId } = useCaseMarketId(props.id);
   const { data: market } = useMarket({ marketId: marketId! });
-  return <div>{market?.question}</div>;
+  return <>{market ? <div>{market?.question}</div> : <Skeleton />}</>;
+};
+
+const CaseStatus = ({ courtCase }: { courtCase: CourtCaseInfo }) => {
+  const { data: marketId } = useCaseMarketId(courtCase.id);
+  const { data: market } = useMarket({ marketId: marketId! });
+  const chainTime = useChainTime();
+
+  const stage = useMemo(() => {
+    if (market && chainTime) {
+      return getCourtStage(chainTime, market, courtCase.case);
+    }
+  }, [chainTime, market]);
+
+  return (
+    <div className="flex items-center gap-2">
+      {stage ? (
+        <>
+          <div className={`${caseStatusCopy[stage.type].color}`}>
+            {caseStatusCopy[stage.type].title}
+          </div>
+          <InfoPopover position="top">
+            {caseStatusCopy[stage.type].description}
+          </InfoPopover>
+        </>
+      ) : (
+        <Skeleton />
+      )}
+    </div>
+  );
+};
+
+const caseStatusCopy: Record<
+  CourtStage["type"],
+  {
+    title: string;
+    description: string;
+    color: string;
+  }
+> = {
+  "pre-vote": {
+    title: "Pre-Vote",
+    description: "Waiting for the vote period to start.",
+    color: "text-gray-400",
+  },
+  vote: {
+    title: "Vote",
+    description: "Case is now open for voting by jurors.",
+    color: "text-blue-400",
+  },
+  aggregation: {
+    title: "Aggregation",
+    description: "Votes can now be revealed by jurors.",
+    color: "text-purple-400",
+  },
+  appeal: {
+    title: "Appeal",
+    description: "Jurors can now appeal the voted outcome.",
+    color: "text-orange-400",
+  },
+  reassigned: {
+    title: "Reassigned",
+    description: "Case has been reassigned and winners paid out.",
+    color: "text-gray-400",
+  },
+  closed: {
+    title: "Closed",
+    description: "Case has been closed. Waiting to be reassigned.",
+    color: "text-gray-400",
+  },
 };

@@ -41,11 +41,7 @@ export const useTotalIssuanceForPools = (
 };
 
 const batcher = memoize((sdk: Sdk<RpcContext>) => {
-  return batshit.create<
-    PoolTotalIssuance,
-    number,
-    PoolTotalIssuance | undefined
-  >({
+  return batshit.create({
     name: poolTotalIssuanceRootQueryKey,
     fetcher: async (ids) => {
       const data = await sdk.api.query.tokens.totalIssuance.multi(

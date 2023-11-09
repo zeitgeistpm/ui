@@ -43,9 +43,9 @@ export const useMarket = (
 };
 
 const batcher = memoize((sdk: Sdk<IndexerContext>) => {
-  return batshit.create<FullMarketFragment | undefined, UseMarketFilter>({
+  return batshit.create({
     name: marketsRootQuery,
-    fetcher: async (ids) => {
+    fetcher: async (ids: UseMarketFilter[]) => {
       const { markets } = await sdk.indexer.markets({
         where: {
           AND: [

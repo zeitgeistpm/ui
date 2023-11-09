@@ -1,6 +1,10 @@
-import { Menu, Transition, Portal } from "@headlessui/react";
-import Modal from "components/ui/Modal";
+import { Menu, Transition } from "@headlessui/react";
+import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
+import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import {
+  CourtCaseReadyForReveal,
+  CourtCaseReadyForVote,
   ReadyToReportMarketAlertData,
   RedeemableMarketsAlertData,
   RelevantMarketDisputeAlertData,
@@ -9,9 +13,11 @@ import {
 import { useWallet } from "lib/state/wallet";
 import { useRouter } from "next/router";
 import { Fragment, PropsWithChildren, useEffect, useState } from "react";
-import { AiOutlineFileAdd } from "react-icons/ai";
+import { Users } from "react-feather";
+import { AiOutlineEye, AiOutlineFileAdd } from "react-icons/ai";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { IoMdNotificationsOutline } from "react-icons/io";
+import { LuVote } from "react-icons/lu";
 
 export const Alerts = () => {
   const wallet = useWallet();
@@ -105,6 +111,10 @@ export const Alerts = () => {
                         <RelevantMarketDisputeItem alert={alert} />
                       ) : alert.type === "redeemable-markets" ? (
                         <RedeemableMarketAlertItem alert={alert} />
+                      ) : alert.type === "court-case-ready-for-vote" ? (
+                        <CourtCaseReadyForVoteAlertItem alert={alert} />
+                      ) : alert.type === "court-case-ready-for-reveal" ? (
+                        <CourtCaseReadyForRevealAlertItem alert={alert} />
                       ) : (
                         // Including this prevents us from not exhausting the switch on alert type.
                         // Should never be reached but caught by the type system.
@@ -140,6 +150,88 @@ const AlertCard: React.FC<PropsWithChildren & { onClick?: () => void }> = ({
   </div>
 );
 
+const CourtCaseReadyForVoteAlertItem = ({
+  alert,
+}: {
+  alert: CourtCaseReadyForVote;
+}) => {
+  const router = useRouter();
+  const { data: marketId } = useCaseMarketId(alert.caseId);
+  const { data: market } = useMarket({ marketId: marketId! });
+
+  useEffect(() => {
+    router.prefetch(`/court/${alert.caseId}`);
+  }, [alert]);
+
+  return (
+    <AlertCard
+      onClick={() => {
+        router.push(`/court/${alert.caseId}`);
+      }}
+    >
+      <div className="mb-1">
+        <div
+          className="rounded-full py-1 px-1.5 inline-flex text-xxs items-center gap-1"
+          style={{
+            background:
+              "linear-gradient(131.15deg, rgb(135 238 240 / 40%) 11.02%, rgb(157 0 254 / 40%) 93.27%)",
+          }}
+        >
+          <LuVote size={12} className="text-gray-700" />
+          Ready for vote
+        </div>
+      </div>
+      <div>
+        <h3 className="text-sm font-medium  mb-1">{market?.question}</h3>
+        <p className="text-xxs text-gray-500">
+          You have been drawn as juror for this market and can now vote.
+        </p>
+      </div>
+    </AlertCard>
+  );
+};
+
+const CourtCaseReadyForRevealAlertItem = ({
+  alert,
+}: {
+  alert: CourtCaseReadyForReveal;
+}) => {
+  const router = useRouter();
+  const { data: marketId } = useCaseMarketId(alert.caseId);
+  const { data: market } = useMarket({ marketId: marketId! });
+
+  useEffect(() => {
+    router.prefetch(`/court/${alert.caseId}`);
+  }, [alert]);
+
+  return (
+    <AlertCard
+      onClick={() => {
+        router.push(`/court/${alert.caseId}`);
+      }}
+    >
+      <div className="mb-1">
+        <div
+          className="rounded-full py-1 px-1.5 inline-flex text-xxs items-center gap-1"
+          style={{
+            background:
+              "linear-gradient(131.15deg, rgb(135 240 170 / 40%) 11.02%, rgb(204 0 254 / 40%) 93.27%)",
+          }}
+        >
+          <AiOutlineEye size={12} className="text-gray-700" />
+          Ready to reveal vote
+        </div>
+      </div>
+      <div>
+        <h3 className="text-sm font-medium  mb-1">{market?.question}</h3>
+        <p className="text-xxs text-gray-500">
+          You are required to reveal your vote for this court case.
+        </p>
+      </div>
+    </AlertCard>
+  );
+};
+
 const ReadyToReportMarketAlertItem = ({
   alert,
 }: {
@@ -170,7 +262,7 @@ const ReadyToReportMarketAlertItem = ({
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium pl-1">{alert.market.question}</h3>
+        <h3 className="text-sm font-medium">{alert.market.question}</h3>
       </div>
     </AlertCard>
   );
@@ -207,7 +299,7 @@ const RedeemableMarketAlertItem = ({
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium pl-1">
+        <h3 className="text-sm font-medium">
           You have {alert.markets.length} redeemable markets.
         </h3>
       </div>

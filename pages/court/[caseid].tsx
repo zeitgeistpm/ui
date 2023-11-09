@@ -14,7 +14,7 @@ import { HeaderStat } from "components/markets/MarketHeader";
 import { lookupAssetImagePath } from "lib/constants/foreign-asset";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
 import { useCourtCase } from "lib/hooks/queries/court/useCourtCase";
-import { useSelectedDraws } from "lib/hooks/queries/court/useSelectedDraws";
+import { useVotDrawsForCase } from "lib/hooks/queries/court/useVoteDraws";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useChainTime } from "lib/state/chaintime";
@@ -49,7 +49,7 @@ const CasePage: NextPage = () => {
   const caseId = Number(caseid);
 
   const { data: courtCase } = useCourtCase(caseId);
-  const { data: selectedDraws } = useSelectedDraws(caseId);
+  const { data: selectedDraws } = useVotDrawsForCase(caseId);
 
   const { data: marketId } = useCaseMarketId(caseId);
   const { data: market } = useMarket(
@@ -97,14 +97,7 @@ const CasePage: NextPage = () => {
           <h2 className="text-base font-normal">Case — #{caseId}</h2>
           <h1 className="text-[32px] font-extrabold">{market?.question}</h1>
 
-          <Link
-            className="text-blue-600 font-medium text-sm mb-6 inline-block"
-            href={`/markets/${marketId}`}
-          >
-            View Market
-          </Link>
-
-          <div className="flex flex-wrap items-center gap-2 mb-6">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
             <HeaderStat label="Started">
               {new Intl.DateTimeFormat("default", {
                 dateStyle: "medium",
@@ -115,12 +108,19 @@ const CasePage: NextPage = () => {
                 dateStyle: "medium",
               }).format(market.period.end)}
             </HeaderStat>
-            <HeaderStat label="Original Outcome">
+            <HeaderStat label="Reported Outcome">
               {reportedOutcome !== undefined
                 ? market.categories?.[reportedOutcome].name
                 : "-"}
             </HeaderStat>
           </div>
+
+          <Link
+            className="text-blue-600 font-medium text-sm mb-8 inline-block"
+            href={`/markets/${marketId}`}
+          >
+            View Market
+          </Link>
 
           <div className="flex relative items-center gap-3 mb-6">
             <AddressDetails title="Creator" address={market.creator} />
@@ -169,7 +169,17 @@ const CasePage: NextPage = () => {
           {stage?.type !== "reassigned" && (
             <div>
               <h3 className="mb-3">Outcomes</h3>
-              <Outcomes market={market} selectedDraws={selectedDraws} />
+              <Outcomes
+                market={market}
+                selectedDraws={selectedDraws}
+                isRevealed={
+                  stage?.type === "aggregation" ||
+                  stage?.type === "closed" ||
+                  stage?.type === "appeal"
+                    ? true
+                    : false
+                }
+              />
             </div>
           )}
         </section>
@@ -274,9 +284,11 @@ const CasePage: NextPage = () => {
 const Outcomes = ({
   market,
   selectedDraws,
+  isRevealed,
 }: {
   market: FullMarketFragment;
   selectedDraws: ZrmlCourtDraw[] | undefined;
+  isRevealed: boolean;
 }) => {
   return (
     <div className="flex gap-2">
@@ -299,7 +311,13 @@ const Outcomes = ({
               <div className="p-3 flex-1">
                 <span className="pl-3">{category.ticker}</span>
               </div>
-              <div className="p-3 flex-1">{votes?.length}</div>
+              <div className="p-3 flex-1">
+                {isRevealed ? (
+                  votes?.length
+                ) : (
+                  <span className="text-gray-400">secret</span>
+                )}
+              </div>
             </div>
           </div>
         );

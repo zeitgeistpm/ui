@@ -22,20 +22,20 @@ export type CourtStage =
 export const getCourtStage = (
   time: ChainTime,
   market: FullMarketFragment,
-  court: ZrmlCourtCourtInfo,
+  courtCase: ZrmlCourtCourtInfo,
 ): CourtStage => {
   const currentBlock = time.block;
 
-  const voteStart = court.roundEnds.preVote.toNumber() + 1;
-  const voteEnd = court.roundEnds.vote.toNumber();
+  const voteStart = courtCase.roundEnds.preVote.toNumber() + 1;
+  const voteEnd = courtCase.roundEnds.vote.toNumber();
 
   const aggregationStart = voteEnd + 1;
-  const aggregationEnd = court.roundEnds.aggregation.toNumber();
+  const aggregationEnd = courtCase.roundEnds.aggregation.toNumber();
 
   const appealStart = aggregationEnd + 1;
-  const appealEnd = court.roundEnds.appeal.toNumber();
+  const appealEnd = courtCase.roundEnds.appeal.toNumber();
 
-  if (court.status.isClosed) {
+  if (courtCase.status.isClosed) {
     return {
       type: "closed",
       remainingBlocks: infinity,
@@ -43,7 +43,7 @@ export const getCourtStage = (
     };
   }
 
-  if (court.status.isReassigned) {
+  if (courtCase.status.isReassigned) {
     return {
       type: "reassigned",
       remainingBlocks: infinity,

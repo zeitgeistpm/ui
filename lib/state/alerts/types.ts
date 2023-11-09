@@ -26,6 +26,8 @@ export type AlertData = { account: string; dismissible?: true } & (
   | ReadyToReportMarketAlertData
   | RelevantMarketDisputeAlertData
   | RedeemableMarketsAlertData
+  | CourtCaseReadyForVote
+  | CourtCaseReadyForReveal
 );
 
 export type ReadyToReportMarketAlertData = {
@@ -41,6 +43,16 @@ export type RelevantMarketDisputeAlertData = {
 export type RedeemableMarketsAlertData = {
   type: "redeemable-markets";
   markets: FullMarketFragment[];
+};
+
+export type CourtCaseReadyForVote = {
+  type: "court-case-ready-for-vote";
+  caseId: number;
+};
+
+export type CourtCaseReadyForReveal = {
+  type: "court-case-ready-for-reveal";
+  caseId: number;
 };
 
 /**
@@ -64,6 +76,16 @@ export const withId = (alert: AlertData): Alert => {
     case "redeemable-markets":
       return {
         id: create(`${alert.account}-${alert.type}`),
+        ...alert,
+      };
+    case "court-case-ready-for-vote":
+      return {
+        id: create(`${alert.account}-${alert.type}-${alert.caseId}`),
+        ...alert,
+      };
+    case "court-case-ready-for-reveal":
+      return {
+        id: create(`${alert.account}-${alert.type}-${alert.caseId}`),
         ...alert,
       };
   }

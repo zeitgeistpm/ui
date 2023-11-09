@@ -116,15 +116,6 @@ const CourtPage: NextPage = () => {
         </div>
       </div>
 
-      {/* <div className="flex gap-2">
-        <span>Delegations:</span>
-        {connectedParticipant?.delegations?.map((address) => (
-          <span>{address}</span>
-        ))}
-      </div>
-
-      <JurorsTable /> */}
-
       <CourtCasesTable />
     </div>
   );
