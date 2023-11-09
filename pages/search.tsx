@@ -13,7 +13,7 @@ const SearchPage: NextPage = () => {
     <div className="mt-4">
       <div className="flex items-center">
         <input
-          className="rounded-sm  h-8 px-2 w-full focus:outline-none max-w-[500px] border border-sky-200 "
+          className="rounded-sm h-8 px-2 w-full focus:outline-none max-w-[500px] border border-sky-200"
           value={searchTerm}
           placeholder="Search markets"
           onChange={(event) => {

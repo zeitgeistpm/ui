@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { Linkedin } from "react-feather";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.bubble.css";
 

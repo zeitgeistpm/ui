@@ -235,7 +235,7 @@ const GetTokensButton = () => {
                 "linear-gradient(180deg, #FF00E6 0%, #F36464 50%, #04C3FF 100%)",
             }}
           />
-          <div className="relative h-full block z-20  sm:w-[125px] ">
+          <div className="relative h-full block z-20 sm:w-[125px] ">
             <button className="h-full w-full rounded-md bg-black text-white center">
               Get Tokens
             </button>

@@ -8,12 +8,13 @@ const MarketSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showResults, setShowResults] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const { data: markets } = useMarketSearch(searchTerm);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        console.log("You clicked outside of me!");
+        setShowResults(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -30,6 +31,7 @@ const MarketSearch = () => {
       <div className="hidden lg:flex items-center">
         <Search className="text-ztg-blue mr-4" />
         <input
+          ref={inputRef}
           className="rounded-sm bg-sky-900 text-white h-8 px-2 w-full focus:outline-none max-w-[500px] "
           value={searchTerm}
           placeholder="Search markets"
@@ -42,20 +44,14 @@ const MarketSearch = () => {
           className="relative right-6 text-sky-600"
           onClick={() => {
             setSearchTerm("");
+            inputRef.current?.focus();
           }}
         >
           <X size={16} />
         </button>
       </div>
       {showResults && markets && (
-        <div
-          onBlur={() => {
-            //todo
-            console.log("blur");
-            setShowResults(false);
-          }}
-          className="hidden lg:flex flex-col absolute bg-white px-4 py-2 rounded-md top-[45px] translate-x-[40px] max-h-[300px] overflow-scroll max-w-[500px] shadow-2xl"
-        >
+        <div className="hidden lg:flex flex-col absolute bg-white px-4 py-2 rounded-md top-[45px] translate-x-[40px] max-h-[300px] overflow-scroll w-[500px] shadow-2xl">
           <div className="text-sky-600">Results</div>
 
           {markets.length > 0 ? (
@@ -83,7 +79,6 @@ const MarketSearch = () => {
           ) : (
             <div className="text-center w-full pt-6 pb-4">No results</div>
           )}
-          {}
         </div>
       )}
     </div>
