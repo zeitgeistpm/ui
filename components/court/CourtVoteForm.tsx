@@ -12,6 +12,7 @@ import { useSdkv2 } from "lib/hooks/useSdkv2";
 import { useCourtCommitmentHash } from "lib/state/court/useCourtCommitmentHash";
 import { useCourtSalt } from "lib/state/court/useCourtSalt";
 import { useCourtVote } from "lib/state/court/useVoteOutcome";
+import Image from "next/image";
 import React, { useState } from "react";
 import { AiOutlineEye } from "react-icons/ai";
 import { FaArrowRight } from "react-icons/fa";
@@ -122,39 +123,59 @@ export const CourtVoteForm: React.FC<CourtVoteFormProps> = ({
             Show Details <AiOutlineEye size={12} />
           </div>
           <Modal open={showDetails} onClose={() => setShowDetails(false)}>
-            <Dialog.Panel className="w-full max-w-[762px] p-6 rounded-[10px] bg-white">
-              <h3 className="mb-2">Salt Seed Backup</h3>
-              <p className="mb-3 text-sm">
-                This is the content of the downloaded backup.
-              </p>
-              <pre className="mb-5 text-xs">
-                {JSON.stringify(phraseStorage, undefined, 2)}
-              </pre>
-              <h3 className="mb-2 text-base">Commitment Hash</h3>
-              <p className="text-sm mb-4">
-                The commitment hash is calculated using a combination of your
-                account, the outcome you are voting for and a salt generated
-                from the secret phrase.
-              </p>
-              <code className="block mb-4 text-xs">
-                <span>
-                  vote_item = VoteItem::Outcome(OutcomeReport::Categorical(
-                  {vote.CategoricalOutcome[1]})) {"->"}{" "}
-                  {market.categories?.[vote.CategoricalOutcome[1]].ticker}
-                </span>
-                <br />
-                <span className="text-black">salt</span> ={" "}
-                <span className="text-blue-400">BlakeTwo256Hash</span>(phrase){" "}
-                {"->"} <span className="text-xxs">{u8aToHex(salt)}</span>
-                <br />
-                <br />
-                <span className="text-black">commitmentHash</span> ={" "}
-                <span className="text-blue-400">BlakeTwo256Hash</span>(juror,
-                vote_item, salt)
-              </code>
-              <div className="mb-4 text-xs flex items-center gap-2 text-blue-400 pl-2">
-                <FaArrowRight size={12} />
-                {commitmentHash && u8aToHex(commitmentHash)}
+            <Dialog.Panel className="relative w-full max-w-[762px] rounded-[10px] overflow-hidden bg-white">
+              <div className="p-6">
+                <h3 className="mb-2 ">Commitment Hash</h3>
+                <p className="text-sm mb-4">
+                  The commitment hash is calculated using a combination of your
+                  account, the outcome you are voting for and a salt generated
+                  from the secret phrase.
+                </p>
+                <p className="text-sm mb-4">
+                  This is supplied to the chain instead of the direct outcome
+                  when voting, so that the voted outcome is not known to other
+                  participants. Yet ensures that when its revealed it can be
+                  verified that the committed vote and what was revealed was
+                  correct.
+                </p>
+                <code className="block mb-4 text-xs">
+                  <span>
+                    vote_item = VoteItem::Outcome(OutcomeReport::Categorical(
+                    {vote.CategoricalOutcome[1]})) {"->"}{" "}
+                    {market.categories?.[vote.CategoricalOutcome[1]].ticker}
+                  </span>
+                  <br />
+                  <span className="text-black">salt</span> ={" "}
+                  <span className="text-blue-400">BlakeTwo256Hash</span>
+                  (secretPhrase) {"->"}{" "}
+                  <span className="text-xxs">{u8aToHex(salt)}</span>
+                  <br />
+                  <br />
+                  <span className="text-black">commitmentHash</span> ={" "}
+                  <span className="text-blue-400">BlakeTwo256Hash</span>(juror,
+                  vote_item, salt)
+                </code>
+                <div className="mb-4 text-xs flex items-center gap-2 text-blue-400 pl-2">
+                  <FaArrowRight size={12} />
+                  {commitmentHash && u8aToHex(commitmentHash)}
+                </div>
+                <h3 className="mb-2 text-base">Salt Seed Backup</h3>
+                <p className="mb-3 text-sm">
+                  This is the content of the downloadable backup file, and the
+                  data used to generate the commitment hash.
+                </p>
+                <pre className="mb-5 text-xs">
+                  {JSON.stringify(phraseStorage, undefined, 2)}
+                </pre>
+              </div>
+              <div className="relative w-full h-64">
+                <Image
+                  title="Wizard draped in purple robes holding a flaming crypto key."
+                  alt="Wizard draped in purple robes holding a flaming crypto key."
+                  src={"/crypto_wizard.png"}
+                  layout="fill"
+                  objectFit="cover"
+                />
               </div>
             </Dialog.Panel>
           </Modal>
