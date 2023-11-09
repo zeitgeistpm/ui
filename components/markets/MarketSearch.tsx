@@ -39,6 +39,9 @@ const MarketSearch = () => {
             setShowResults(true);
             setSearchTerm(event.target.value);
           }}
+          onFocus={() => {
+            setShowResults(true);
+          }}
         />
         <button
           className="relative right-6 text-sky-600"
