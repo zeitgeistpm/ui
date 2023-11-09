@@ -1,30 +1,22 @@
-import { Combobox } from "@headlessui/react";
+import { MarketStatus } from "@zeitgeistpm/indexer";
 import { useMarketSearch } from "lib/hooks/queries/useMarketSearch";
+import { NextPage } from "next";
 import Link from "next/link";
-import MarketId from "pages/api/og/[marketId]";
 import { useState } from "react";
-import { MarketStatus, FullMarketFragment } from "@zeitgeistpm/indexer";
-import { Loader, Search, X } from "react-feather";
+import { X } from "react-feather";
 
-const MarketSearch = () => {
+const SearchPage: NextPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [showResults, setShowResults] = useState(false);
 
   const { data: markets } = useMarketSearch(searchTerm);
-
   return (
-    <div className="w-full mx-3 md:mx-7">
-      <Link href={"/search"} className="w-2 lg:hidden">
-        <Search className="text-ztg-blue mr-4" />
-      </Link>
-      <div className="hidden lg:flex items-center">
-        <Search className="text-ztg-blue mr-4" />
+    <div className="mt-4">
+      <div className="flex items-center">
         <input
-          className="rounded-sm bg-sky-900 text-white h-8 px-2 w-full focus:outline-none max-w-[500px] "
+          className="rounded-sm  h-8 px-2 w-full focus:outline-none max-w-[500px] border border-sky-200 "
           value={searchTerm}
           placeholder="Search markets"
           onChange={(event) => {
-            setShowResults(true);
             setSearchTerm(event.target.value);
           }}
         />
@@ -37,15 +29,8 @@ const MarketSearch = () => {
           <X size={16} />
         </button>
       </div>
-      {showResults && markets && (
-        <div
-          onBlur={() => {
-            //todo
-            console.log("blur");
-            setShowResults(false);
-          }}
-          className="hidden lg:flex flex-col absolute bg-white px-4 py-2 rounded-md top-[45px] translate-x-[40px] max-h-[300px] overflow-scroll max-w-[500px] shadow-2xl"
-        >
+      {markets && (
+        <div className="flex flex-col py-4">
           <div className="text-sky-600">Results</div>
 
           {markets.length > 0 ? (
@@ -71,7 +56,7 @@ const MarketSearch = () => {
               </Link>
             ))
           ) : (
-            <div className="text-center w-full pt-6 pb-4">No results</div>
+            <div className="w-full pt-6 pb-4">No results</div>
           )}
           {}
         </div>
@@ -80,4 +65,4 @@ const MarketSearch = () => {
   );
 };
 
-export default MarketSearch;
+export default SearchPage;
