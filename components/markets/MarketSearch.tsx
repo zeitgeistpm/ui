@@ -1,17 +1,29 @@
 import { MarketStatus } from "@zeitgeistpm/indexer";
 import { useMarketSearch } from "lib/hooks/queries/useMarketSearch";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Search, X } from "react-feather";
 
 const MarketSearch = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showResults, setShowResults] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const { data: markets } = useMarketSearch(searchTerm);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        console.log("You clicked outside of me!");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [wrapperRef]);
 
   return (
-    <div className="w-full mx-3 md:mx-7">
+    <div className="w-full mx-3 md:mx-7" ref={wrapperRef}>
       <Link href={"/search"} className="w-2 lg:hidden">
         <Search className="text-ztg-blue mr-4" />
       </Link>
