@@ -60,18 +60,20 @@ const CourtPage: NextPage = () => {
         <div className="bg-slate-200 rounded-md py-5 px-6 inline-block mb-4 min-w-[260px]">
           <div className="flex">
             <h3 className="mb-2 text-lg flex-1 text-slate-500">My Stake</h3>
-            <div>
-              <div
-                className={`text-sm px-2 py-1 rounded-md text-slate-500 center gap-1`}
-              >
-                {connectedParticipant?.type}
-                <InfoPopover overlay={false} position="top">
-                  {connectedParticipant?.type === "Juror"
-                    ? "You are participating as a juror. All stake is delegated to your personal juror stake."
-                    : "You are participating as a delegator. The probability of one delegator being selected is equally distributed among all delegations."}
-                </InfoPopover>
+            {connectedParticipant && (
+              <div>
+                <div
+                  className={`text-sm px-2 py-1 rounded-md text-slate-500 center gap-1`}
+                >
+                  {connectedParticipant?.type}
+                  <InfoPopover overlay={false} position="top">
+                    {connectedParticipant?.type === "Juror"
+                      ? "You are participating as a juror. All stake is delegated to your personal juror stake."
+                      : "You are participating as a delegator. The probability of one delegator being selected is equally distributed among all delegations."}
+                  </InfoPopover>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="flex  mb-4">
