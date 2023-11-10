@@ -101,25 +101,24 @@ export const useInfiniteMarkets = (
       order: orderByMap[orderBy],
     });
 
-    //todo: this can be fetched with the market schema
-    const outcomes = await getOutcomesForMarkets(sdk.indexer.client, markets);
-    console.log(outcomes);
-    console.log(markets);
+    const resMarkets: Array<QueryMarketData> = markets.map((market) => {
+      const outcomes: MarketOutcomes = market.assets.map((asset, index) => {
+        return {
+          price: asset.price,
+          name: market.categories?.[index].name ?? "",
+          assetId: asset.assetId,
+          amountInPool: asset.amountInPool,
+        };
+      });
 
-    let resMarkets: Array<QueryMarketData> = [];
+      const prediction = getCurrentPrediction(outcomes, market);
 
-    for (const m of markets) {
-      const marketOutcomes = outcomes[m.marketId];
-      const prediction =
-        m.pool != null
-          ? getCurrentPrediction(marketOutcomes, m as any)
-          : { name: "None", price: 0 };
-
-      resMarkets = [
-        ...resMarkets,
-        { ...m, outcomes: marketOutcomes, prediction },
-      ];
-    }
+      return {
+        ...market,
+        outcomes,
+        prediction,
+      };
+    });
 
     return {
       data: resMarkets,
