@@ -44,6 +44,11 @@ import {
   ForeignAssetPrices,
   useAllForeignAssetUsdPrices,
 } from "./useAssetUsdPrice";
+import { ScoringRule } from "@zeitgeistpm/indexer";
+import {
+  lookupAssetPrice,
+  useAmm2MarketSpotPrices,
+} from "./useAmm2MarketSpotPrices";
 
 export type UsePortfolioPositions = {
   /**
@@ -74,9 +79,9 @@ export type Position<T extends AssetId = AssetId> = {
    */
   market: FullMarketFragment;
   /**
-   * The pool related to the position.
+   * The cpmm pool related to the position.
    */
-  pool: IndexedPool<Context>;
+  pool?: IndexedPool<Context>;
   /**
    * The outcome of the position. Name of the outcome.
    */
@@ -113,7 +118,7 @@ export type Position<T extends AssetId = AssetId> = {
    * The total issuance of the positions pool shares.
    * @nb This is only available for pool share positions.
    */
-  totalIssuance: Decimal;
+  totalIssuance?: Decimal;
   /**
    * The change in the price of the position the last 24 hours.
    */
@@ -195,6 +200,16 @@ export const usePortfolioPositions = (
 
   const pools = usePoolsByIds(filter);
   const markets = useMarketsByIds(filter);
+  const amm2MarketIds = markets.data
+    ?.filter((market) => market.scoringRule === ScoringRule.Lmsr)
+    .map((m) => m.marketId);
+
+  const { data: amm2SpotPrices } = useAmm2MarketSpotPrices(amm2MarketIds);
+
+  const { data: amm2SpotPrices24HoursAgo } = useAmm2MarketSpotPrices(
+    amm2MarketIds,
+    block24HoursAgo,
+  );
 
   const poolAccountIds = usePoolAccountIds(pools.data);
 
@@ -322,21 +337,23 @@ export const usePortfolioPositions = (
         pool = pools.data?.find((pool) => pool.marketId === marketId);
       }
 
-      if (!market || !pool) {
+      if (!market) {
         continue;
       }
 
       const balance = address
         ? userAssetBalances?.get(address, assetId)?.data?.balance
         : undefined;
-      const totalIssuanceForPoolQuery = poolsTotalIssuance[pool.poolId];
-      const totalIssuanceData = poolsTotalIssuance[pool.poolId]?.data;
+      const totalIssuanceForPoolQuery = pool && poolsTotalIssuance[pool.poolId];
+      const totalIssuanceData = pool && poolsTotalIssuance[pool.poolId]?.data;
 
       const userBalance = new Decimal(balance?.free.toNumber() ?? 0);
 
-      const totalIssuance = new Decimal(
-        totalIssuanceForPoolQuery.data?.totalIssuance.toString() ?? 0,
-      );
+      const totalIssuance =
+        totalIssuanceForPoolQuery &&
+        new Decimal(
+          totalIssuanceForPoolQuery.data?.totalIssuance.toString() ?? 0,
+        );
 
       let price: Decimal | undefined;
       let price24HoursAgo: Decimal | undefined;
@@ -346,23 +363,32 @@ export const usePortfolioPositions = (
           price = calcResolvedMarketPrices(market).get(getIndexOf(assetId));
           price24HoursAgo = price;
         } else {
-          price =
-            calculatePrice(
-              pool,
-              assetId,
-              poolsZtgBalances.data,
-              poolAssetBalances,
-            ) ?? undefined;
+          if (market.scoringRule === ScoringRule.Cpmm && pool) {
+            price =
+              calculatePrice(
+                pool,
+                assetId,
+                poolsZtgBalances.data,
+                poolAssetBalances,
+              ) ?? undefined;
 
-          price24HoursAgo =
-            calculatePrice(
-              pool,
+            price24HoursAgo =
+              calculatePrice(
+                pool,
+                assetId,
+                poolsZtgBalances24HoursAgo.data,
+                poolAssetBalances24HoursAgo,
+              ) ?? undefined;
+          } else if (market.scoringRule === ScoringRule.Lmsr) {
+            price = lookupAssetPrice(assetId, amm2SpotPrices);
+
+            price24HoursAgo = lookupAssetPrice(
               assetId,
-              poolsZtgBalances24HoursAgo.data,
-              poolAssetBalances24HoursAgo,
-            ) ?? undefined;
+              amm2SpotPrices24HoursAgo,
+            );
+          }
         }
-      } else if (IOPoolShareAssetId.is(assetId)) {
+      } else if (IOPoolShareAssetId.is(assetId) && pool) {
         const poolAssetIds = pool.weights
           .map((w) => parseAssetId(w.assetId).unwrap())
           .filter(IOMarketOutcomeAssetId.is.bind(IOMarketOutcomeAssetId));
