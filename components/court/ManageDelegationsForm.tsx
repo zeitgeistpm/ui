@@ -9,6 +9,7 @@ import {
   participantsRootKey,
   useParticipants,
 } from "lib/hooks/queries/court/useParticipants";
+import { useLockedBalance } from "lib/hooks/queries/useBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
 import { useZtgBalance } from "lib/hooks/queries/useZtgBalance";
 import { useExtrinsic } from "lib/hooks/useExtrinsic";
@@ -57,7 +58,16 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
   const [sdk, id] = useSdkv2();
   const notificationStore = useNotifications();
   const wallet = useWallet();
-  const { data: balance } = useZtgBalance(wallet.realAddress);
+  const { data: freeBalance } = useZtgBalance(wallet.realAddress);
+  const { data: lockedBalance } = useLockedBalance(wallet.realAddress, {
+    Ztg: null,
+  });
+
+  const balance = new Decimal(freeBalance?.toString() ?? 0).add(
+    lockedBalance ?? 0,
+  );
+
+  console.log(balance?.div(ZTG).toNumber() ?? 0);
 
   const queryClient = useQueryClient();
 
@@ -120,7 +130,7 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
   const onSubmit = () => {
     send();
   };
-  console.log({ participants });
+
   const jurors = participants?.filter(
     (p) => p.type === "Juror" && p.address !== connectedParticipant?.address,
   );

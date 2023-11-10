@@ -15,7 +15,7 @@ export const useBalance = (
   const [sdk, id] = useSdkv2();
 
   const query = useQuery(
-    [id, balanceRootKey, address, assetId, blockNumber],
+    [id, balanceRootKey, "free", address, assetId, blockNumber],
     async () => {
       if (address && assetId && isRpcSdk(sdk)) {
         const api = await getApiAtBlock(sdk.api, blockNumber);
@@ -30,6 +30,37 @@ export const useBalance = (
         } else {
           const balance = await api.query.tokens.accounts(address, assetId);
           return new Decimal(balance.free.toString());
+        }
+      }
+    },
+    {
+      keepPreviousData: true,
+      enabled: Boolean(sdk && address && isRpcSdk(sdk) && assetId),
+    },
+  );
+
+  return query;
+};
+
+export const useLockedBalance = (
+  address?: string,
+  assetId?: AssetId,
+  blockNumber?: number,
+) => {
+  const [sdk, id] = useSdkv2();
+
+  const query = useQuery(
+    [id, balanceRootKey, "locked", address, assetId, blockNumber],
+    async () => {
+      if (address && assetId && isRpcSdk(sdk)) {
+        const api = await getApiAtBlock(sdk.api, blockNumber);
+
+        if (IOZtgAssetId.is(assetId)) {
+          const { data } = await api.query.system.account(address);
+          return new Decimal(data.miscFrozen.toString());
+        } else {
+          const balance = await api.query.tokens.accounts(address, assetId);
+          return new Decimal(balance.frozen.toString());
         }
       }
     },
