@@ -77,7 +77,6 @@ const marketQuery = gql`
   }
 `;
 
-//switch to search with marketid
 const assetsQuery = gql`
   query Assets($poolId: Int) {
     assets(where: { pool: { poolId_eq: $poolId } }) {
@@ -150,7 +149,6 @@ const getTrendingMarkets = async (
 
       const market = marketsRes.markets[0];
 
-      // todo can be fetched with markets
       const assetsRes = await client.request<{
         assets: {
           pool: { poolId: number };
@@ -183,7 +181,7 @@ const getTrendingMarkets = async (
         question: market.question,
         creation: market.creation,
         img: market.img,
-        prediction: prediction, //here
+        prediction: prediction,
         creator: market.creator,
         volume: Number(new Decimal(market.pool.volume).div(ZTG).toFixed(0)),
         baseAsset: market.baseAsset,
