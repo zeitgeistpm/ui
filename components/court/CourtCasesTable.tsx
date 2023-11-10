@@ -52,7 +52,7 @@ export const CourtCasesTable = () => {
 
   const tableData: TableData[] | undefined = cases?.map((courtCase) => {
     return {
-      id: `# ${courtCase.id}`,
+      id: `${courtCase.id}`,
       case: <CaseNameForCaseId id={courtCase.id} />,
       status: <CaseStatus courtCase={courtCase} />,
       ends:
@@ -83,7 +83,15 @@ export const CourtCasesTable = () => {
 const CaseNameForCaseId = (props: { id: number }) => {
   const { data: marketId } = useCaseMarketId(props.id);
   const { data: market } = useMarket({ marketId: marketId! });
-  return <>{market ? <div>{market?.question}</div> : <Skeleton />}</>;
+  return (
+    <>
+      {market ? (
+        <div className="text-sm">{market?.question}</div>
+      ) : (
+        <Skeleton />
+      )}
+    </>
+  );
 };
 
 const CaseStatus = ({ courtCase }: { courtCase: CourtCaseInfo }) => {
