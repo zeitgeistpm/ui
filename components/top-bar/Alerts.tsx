@@ -106,8 +106,8 @@ export const Alerts = () => {
                   <Menu.Item key={alert.id}>
                     <div
                       className={`${
-                        !hoveringMenu && "backdrop-blur-lg rounded-lg"
-                      }`}
+                        !hoveringMenu && "backdrop-blur-lg"
+                      } rounded-lg`}
                     >
                       {alert.type === "ready-to-report-market" ? (
                         <ReadyToReportMarketAlertItem alert={alert} />
@@ -185,8 +185,8 @@ const CourtCaseReadyForVoteAlertItem = ({
           Ready for vote
         </div>
       </div>
-      <div>
-        <h3 className="text-sm font-medium  mb-1">{market?.question}</h3>
+      <div className="pl-1">
+        <h3 className="text-sm font-medium mb-1">{market?.question}</h3>
         <p className="text-xxs text-gray-500">
           You have been drawn as juror for this market and can now vote.
         </p>
@@ -226,7 +226,7 @@ const CourtCaseReadyForRevealAlertItem = ({
           Ready to reveal vote
         </div>
       </div>
-      <div>
+      <div className="pl-1">
         <h3 className="text-sm font-medium  mb-1">{market?.question}</h3>
         <p className="text-xxs text-gray-500">
           You are required to reveal your vote for this court case.
@@ -265,7 +265,7 @@ const ReadyToReportMarketAlertItem = ({
           Submit Report
         </div>
       </div>
-      <div>
+      <div className="pl-1">
         <h3 className="text-sm font-medium">{alert.market.question}</h3>
       </div>
     </AlertCard>
@@ -302,7 +302,7 @@ const RedeemableMarketAlertItem = ({
           Redeemable Tokens
         </div>
       </div>
-      <div>
+      <div className="pl-1">
         <h3 className="text-sm font-medium">
           You have {alert.markets.length} redeemable markets.
         </h3>
