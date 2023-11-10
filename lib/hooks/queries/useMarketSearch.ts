@@ -67,6 +67,7 @@ export const useMarketSearch = (searchTerm: string) => {
 
 const buildSearch = (searchTerm: string) => {
   const search = searchTerm
+    .trim()
     .split(" ")
     .map((word) => [
       { question_containsInsensitive: word },
