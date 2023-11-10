@@ -44,11 +44,12 @@ export const CourtCasesTable = () => {
   const { data: cases } = useCourtCases();
   const time = useChainTime();
 
-  cases?.sort((a, b) =>
-    a.case.roundEnds.vote.toNumber() > b.case.roundEnds.vote.toNumber()
+  cases?.sort((a, b) => {
+    if (b.case.status.type === "Reassigned") return -1;
+    return a.case.roundEnds.vote.toNumber() > b.case.roundEnds.vote.toNumber()
       ? 1
-      : -1,
-  );
+      : 0;
+  });
 
   const tableData: TableData[] | undefined = cases?.map((courtCase) => {
     return {

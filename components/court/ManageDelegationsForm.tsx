@@ -63,11 +63,9 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
     Ztg: null,
   });
 
-  const balance = new Decimal(freeBalance?.toString() ?? 0).add(
-    lockedBalance ?? 0,
-  );
-
-  console.log(balance?.div(ZTG).toNumber() ?? 0);
+  const availableDelegationBalance = new Decimal(
+    freeBalance?.toString() ?? 0,
+  ).add(lockedBalance ?? 0);
 
   const queryClient = useQueryClient();
 
@@ -101,12 +99,12 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
     const subscription = watch((value, { name, type }) => {
       const changedByUser = type != null;
 
-      if (!changedByUser || !balance) return;
+      if (!changedByUser || !availableDelegationBalance) return;
 
       if (name === "percentage") {
         setValue(
           "amount",
-          balance
+          availableDelegationBalance
             .mul(value.percentage ?? 0)
             .div(100)
             .div(ZTG)
@@ -117,7 +115,7 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
           "percentage",
           new Decimal(value.amount ?? 0)
             .mul(ZTG)
-            .div(balance)
+            .div(availableDelegationBalance)
             .mul(100)
             .toString(),
         );
@@ -125,7 +123,7 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
       trigger("amount");
     });
     return () => subscription.unsubscribe();
-  }, [watch, balance]);
+  }, [watch, availableDelegationBalance]);
 
   const onSubmit = () => {
     send();
@@ -153,8 +151,10 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
               message: "Value is required",
             },
             validate: (value) => {
-              if (value > (balance?.div(ZTG).toNumber() ?? 0)) {
-                return `Insufficient balance. Current balance: ${balance
+              if (
+                value > (availableDelegationBalance?.div(ZTG).toNumber() ?? 0)
+              ) {
+                return `Insufficient balance. Current balance: ${availableDelegationBalance
                   ?.div(ZTG)
                   .toFixed(3)}`;
               } else if (value <= 0) {
@@ -185,7 +185,10 @@ const ManageDelegationsForm = (props: ManageDelegationsFormProps) => {
       <input
         className="mt-[30px] mb-10 w-full"
         type="range"
-        disabled={!balance || balance.lessThanOrEqualTo(0)}
+        disabled={
+          !availableDelegationBalance ||
+          availableDelegationBalance.lessThanOrEqualTo(0)
+        }
         {...register("percentage", { value: "0" })}
       />
 
