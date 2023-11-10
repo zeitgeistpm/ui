@@ -105,14 +105,23 @@ const SingleValue = ({
   ) {
     children = shortenAddress(children, 13, 13);
   }
+
   return (
     <components.SingleValue {...rest} className="flex items-center font-medium">
       {isValidAddress && (
-        <div className="w-9 h-9 mr-3 bg-transparent rounded-full center">
+        <div
+          className={`w-9 h-9 mr-3 bg-transparent rounded-full center transition-opacity ${
+            rest.selectProps.menuIsOpen && "opacity-5"
+          }`}
+        >
           <Avatar address={address} size={36} />
         </div>
       )}
-      <div className="flex flex-col">
+      <div
+        className={`flex flex-col transition-opacity ${
+          rest.selectProps.menuIsOpen && "opacity-5"
+        }`}
+      >
         <div className="text-xs">{rest.data.name}</div>
         {children}
       </div>

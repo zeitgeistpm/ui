@@ -132,8 +132,8 @@ module.exports = {
           "0px 126px 50px rgba(0, 0, 0, 0.01), 0px 71px 43px rgba(0, 0, 0, 0.05), 0px 32px 32px rgba(0, 0, 0, 0.09), 0px 8px 17px rgba(0, 0, 0, 0.1), 0px 0px 0px rgba(0, 0, 0, 0.1);",
       },
       fontSize: {
+        xxs: "0.625rem",
         "lg-2": ["1.375rem", "1.875rem"],
-        xxs: ["0.5625rem", "0.75rem"],
         "2.5xl": "1.75rem",
 
         // NEW
@@ -433,7 +433,6 @@ module.exports = {
     },
   },
   plugins: [
-    require("@tailwindcss/line-clamp"),
     require("@headlessui/tailwindcss"),
     require("@tailwindcss/container-queries"),
   ],

@@ -1,12 +1,19 @@
 import { Dialog, Popover, Transition } from "@headlessui/react";
 import Modal from "components/ui/Modal";
-import { Fragment, ReactNode, useState } from "react";
+import { Fragment, ReactNode, useMemo, useState } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 
 export type InfoPopoverProps = React.PropsWithChildren<{
   title?: ReactNode;
   icon?: ReactNode;
   className?: string;
+  position?:
+    | "top"
+    | "bottom"
+    | "top-start"
+    | "top-end"
+    | "bottom-start"
+    | "bottom-end";
 }>;
 
 export const InfoPopover: React.FC<InfoPopoverProps> = ({
@@ -14,8 +21,26 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
   icon,
   children,
   className,
+  position = "bottom",
 }) => {
   let [isOpen, setIsOpen] = useState(false);
+
+  const positionCss = useMemo(() => {
+    switch (position) {
+      case "top":
+        return "top-0 translate-y-[-100%] left-1/2 transform translate-x-[-50%]";
+      case "bottom":
+        return "top-[100%] left-1/2 transform translate-x-[-50%]";
+      case "top-start":
+        return "top-0 translate-y-[-100%] translate-x-[-100%] left-0";
+      case "top-end":
+        return "top-0 translate-y-[-100%]  left-0";
+      case "bottom-start":
+        return "top-[100%] right-0";
+      case "bottom-end":
+        return "top-[100%] left-0";
+    }
+  }, [position]);
 
   return (
     <div className={className}>
@@ -56,7 +81,9 @@ export const InfoPopover: React.FC<InfoPopoverProps> = ({
               leaveFrom="opacity-100 scale-95"
               leaveTo="opacity-0 scale-1"
             >
-              <Popover.Panel className="absolute z-[100] bg-tooltip-bg top-[100%] right-0 translate-x-[50%] mt-2 ml-2 w-screen lg:w-[500px] rounded-md">
+              <Popover.Panel
+                className={`absolute z-[100] bg-tooltip-bg ${positionCss} w-screen lg:w-[500px] rounded-md`}
+              >
                 <div className="overflow-hidden p-5 rounded-md shadow-xs ring-2 text-black ring-orange-400 ring-opacity-20 text-left font-light text-base">
                   {children}
                 </div>

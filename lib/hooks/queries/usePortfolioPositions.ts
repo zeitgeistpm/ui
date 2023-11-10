@@ -165,12 +165,10 @@ export const usePortfolioPositions = (
   address?: string,
 ): UsePortfolioPositions => {
   const now = useChainTime();
-
   const { data: ztgPrice } = useZtgPrice();
   const block24HoursAgo = now?.block ? Math.floor(now?.block - 7200) : NaN;
   const { data: marketBonds, isLoading: isBondsLoading } =
     useAccountBonds(address);
-
   const { data: foreignAssetPrices } = useAllForeignAssetUsdPrices();
 
   const { data: tradeHistory, isLoading: isTradeHistoryLoading } =
@@ -238,6 +236,7 @@ export const usePortfolioPositions = (
       })
       .filter(isNotNull) ?? [];
 
+  //Todo: we can use useAccountTokenPositions for this to reduce it to a single query issue #1945
   const poolAssetBalances = useAccountAssetBalances(poolAssetBalancesFilter);
 
   const poolAssetBalances24HoursAgo = useAccountAssetBalances(

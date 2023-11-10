@@ -106,7 +106,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
     baseCurrency?.assetId,
   );
 
-  const baseAssetLiquidityRow = editor.form?.liquidity?.rows.find(
+  const baseAssetLiquidityRow = editor.form?.liquidity?.rows?.find(
     (row) => row.asset === editor.form.currency,
   );
 
