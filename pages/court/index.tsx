@@ -18,6 +18,7 @@ import { formatNumberLocalized } from "lib/util";
 import { NextPage } from "next";
 import NotFoundPage from "pages/404";
 import { CourtCasesTable } from "components/court/CourtCasesTable";
+import Image from "next/image";
 
 const CourtPage: NextPage = () => {
   if (process.env.NEXT_PUBLIC_SHOW_COURT !== "true") {
@@ -50,73 +51,104 @@ const CourtPage: NextPage = () => {
 
   return (
     <div className="flex flex-col mt-4 gap-y-4">
-      <div className="font-bold text-2xl">Court</div>
-      <p className="font-light mb-4">
-        Some nice court copy that describes the mechanics of the court and how
-        it works from a high level.
-      </p>
+      <div className="relative rounded-lg overflow-hidden p-6 mb-4">
+        <div className="w-full h-full z-10 absolute top-0 left-0">
+          <Image
+            title="Wizard draped in purple robes holding a flaming crypto key."
+            alt="Wizard draped in purple robes holding a flaming crypto key."
+            src={"/court_banner.webp"}
+            layout="fill"
+            objectFit="cover"
+            style={{
+              objectPosition: "20% 30%",
+            }}
+          />
+        </div>
+        <div className="relative z-20">
+          <div className="font-bold text-3xl mb-2 text-white drop-shadow-lg">
+            Court
+          </div>
+          <p className="font-light mb-4 text-white drop-shadow-lg md:max-w-[940px]">
+            Anyone can participate by joining the court system as a juror or
+            delegator. As a juror, you are responsible for supplying the
+            truthful outcome of a prediction market by voting and revealing the
+            raw vote information. As a delegator, you can delegate your voting
+            rights to active jurors.
+          </p>
 
-      <div className="">
-        <div className="bg-slate-200 rounded-md py-5 px-6 inline-block mb-4 min-w-[260px]">
-          <div className="flex">
-            <h3 className="mb-2 text-lg flex-1 text-slate-500">My Stake</h3>
-            {connectedParticipant && (
-              <div>
-                <div
-                  className={`text-sm px-2 py-1 rounded-md text-slate-500 center gap-1`}
-                >
-                  {connectedParticipant?.type}
-                  <InfoPopover overlay={false} position="top">
-                    {connectedParticipant?.type === "Juror"
-                      ? "You are participating as a juror. All stake is delegated to your personal juror stake."
-                      : "You are participating as a delegator. The probability of one delegator being selected is equally distributed among all delegations."}
-                  </InfoPopover>
+          <div className="">
+            <div className="bg-slate-200 bg-opacity-50 rounded-md py-5 px-6 inline-block mb-4 min-w-[260px]">
+              <div className="flex">
+                <h3 className="mb-2 text-lg flex-1 text-gray-800">My Stake</h3>
+                {connectedParticipant && (
+                  <div>
+                    <div
+                      className={`text-sm px-2 py-1 rounded-md text-gray-600 center gap-1`}
+                    >
+                      {connectedParticipant?.type}
+                      <InfoPopover overlay={false} position="top">
+                        {connectedParticipant?.type === "Juror"
+                          ? "You are participating as a juror. All stake is delegated to your personal juror stake."
+                          : "You are participating as a delegator. The probability of one delegator being selected is equally distributed among all delegations."}
+                      </InfoPopover>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex  mb-4">
+                <div className="flex-1">
+                  <div className="font-medium text-lg mb-[0.5]">
+                    {formatNumberLocalized(
+                      connectedParticipant?.stake.div(ZTG).toNumber() ?? 0,
+                    )}{" "}
+                    {constants?.tokenSymbol}
+                  </div>
+                  <div className="font-light text-gray-600">
+                    $
+                    {ztgPrice &&
+                      formatNumberLocalized(
+                        ztgPrice
+                          .mul(
+                            connectedParticipant?.stake.div(ZTG).toNumber() ??
+                              0,
+                          )
+                          .toNumber(),
+                      )}
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
 
-          <div className="flex  mb-4">
-            <div className="flex-1">
-              <div className="font-medium text-lg mb-[0.5]">
-                {formatNumberLocalized(
-                  connectedParticipant?.stake.div(ZTG).toNumber() ?? 0,
-                )}{" "}
-                {constants?.tokenSymbol}
-              </div>
-              <div className="font-light text-gray-500">
-                $
-                {ztgPrice &&
-                  formatNumberLocalized(
-                    ztgPrice
-                      .mul(connectedParticipant?.stake.div(ZTG).toNumber() ?? 0)
-                      .toNumber(),
+              <div>
+                <div className="flex gap-4 mb-3">
+                  <JoinCourtAsJurorButton />
+                  <ManageDelegationButton />
+
+                  {!connectedParticipant?.prepareExit && (
+                    <PrepareExitCourtButton />
                   )}
+                  {connectedParticipant?.prepareExit && (
+                    <button
+                      className="bg-[#DC056C] rounded-md text-white py-2 px-4"
+                      disabled={
+                        isLeaveLoading === true || !connectedParticipant
+                      }
+                      onClick={() => leaveCourt()}
+                    >
+                      Exit Court
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
-
-          <div>
-            <div className="flex gap-4 mb-3">
-              <JoinCourtAsJurorButton />
-              <ManageDelegationButton />
-
-              {!connectedParticipant?.prepareExit && <PrepareExitCourtButton />}
-              {connectedParticipant?.prepareExit && (
-                <button
-                  className="bg-[#DC056C] rounded-md text-white py-2 px-4"
-                  disabled={isLeaveLoading === true || !connectedParticipant}
-                  onClick={() => leaveCourt()}
-                >
-                  Exit Court
-                </button>
-              )}
             </div>
           </div>
         </div>
       </div>
 
-      <CourtCasesTable />
+      <section>
+        <h3 className="mb-3 ml-2 text-base">Court Cases</h3>
+        <CourtCasesTable />
+      </section>
     </div>
   );
 };
