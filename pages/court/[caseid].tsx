@@ -293,20 +293,40 @@ const Outcomes = ({
   selectedDraws: ZrmlCourtDraw[] | undefined;
   isRevealed: boolean;
 }) => {
-  return (
-    <div className="flex gap-2">
-      {market.categories?.map((category, index) => {
-        const votes = selectedDraws?.filter(
+  const votes = market.categories
+    ?.map((category, index) => {
+      const count =
+        selectedDraws?.filter(
           (draw) =>
             draw.vote.isRevealed &&
             draw.vote.asRevealed.voteItem.isOutcome &&
             draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber() ===
               index,
-        );
+        )?.length ?? 0;
 
+      return { category, count };
+    })
+    .sort((a, b) => b.count - a.count);
+
+  return (
+    <div
+      className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 ${
+        isRevealed && "[&>*:first-child]:bg-green-200"
+      }`}
+    >
+      {votes?.map(({ category, count }, index) => {
         return (
-          <div className="shadow-sm border-1 rounded-md min-w-[200px] text-xs flex-1">
-            <div className="flex-1 flex items-center gap-2 bg-gray-100">
+          <div
+            className={`relative shadow-sm border-1 rounded-md min-w-[200px] text-xs flex-1 ${
+              isRevealed && index === 0 && "border-green-300"
+            }`}
+          >
+            {isRevealed && index === 0 && (
+              <div className=" px-2 text-xxs absolute top-0 right-3 bg-green-400 text-white rounded-xl translate-y-[-50%]">
+                Leading
+              </div>
+            )}
+            <div className="flex-1 flex items-center gap-2 rounded-top-md bg-gray-500 bg-opacity-10">
               <div className="p-3 flex-1 font-semibold">Outcome</div>
               <div className="p-3 flex-1 font-semibold">Votes</div>
             </div>
@@ -316,7 +336,7 @@ const Outcomes = ({
               </div>
               <div className="p-3 flex-1">
                 {isRevealed ? (
-                  votes?.length
+                  count
                 ) : (
                   <span className="text-gray-400">secret</span>
                 )}
