@@ -180,7 +180,7 @@ const CaseActions = ({
               <AiOutlineEye size={18} /> <span>Reveal Vote</span>
             </>
           ) : (
-            "Details"
+            "View Case"
           )}
         </button>
       </Link>

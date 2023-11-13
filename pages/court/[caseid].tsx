@@ -211,11 +211,13 @@ const CasePage: NextPage = () => {
                 <div className="sticky top-28">
                   <div className="rounded-xl overflow-hidden shadow-lg py-6 px-6">
                     <div className="flex flex-col items-center gap-3">
-                      <div>
+                      <div className="text-blue-500">
                         <LuVote size={64} />
                       </div>
-                      <h3 className="text mb-2">You have voted</h3>
-                      <p className="text-sm">
+                      <h3 className="text mb-2 text-blue-400">
+                        You have voted
+                      </h3>
+                      <p className="text-sm text-gray-700">
                         Your vote is secret during voting, but when court goes
                         into aggregation you can reveal your vote to the public
                         by coming back to this page.
