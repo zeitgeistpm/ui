@@ -53,7 +53,8 @@ export const getCourtStage = (
 
   if (currentBlock < voteStart) {
     const disputedAt =
-      market.disputes?.[0]?.at ?? dateBlock(time, new Date(market.period.end));
+      market.disputes?.[0]?.at ??
+      dateBlock(time, new Date(Number(market.period.end)));
 
     return {
       type: "pre-vote",
