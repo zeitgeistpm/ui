@@ -202,7 +202,9 @@ const JoinCourtAsJurorButton = () => {
                 className="w-full max-w-[250px]"
                 disabled={formState.isValid === false || isLoading}
               >
-                Join
+                {connectedParticipant?.type === "Juror"
+                  ? "Increase Stake"
+                  : "Join as Juror"}
               </FormTransactionButton>
             </form>
           </div>
