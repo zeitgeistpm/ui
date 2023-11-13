@@ -211,10 +211,10 @@ const CasePage: NextPage = () => {
                 <div className="sticky top-28">
                   <div className="rounded-xl overflow-hidden shadow-lg py-6 px-6">
                     <div className="flex flex-col items-center gap-3">
-                      <div className="text-blue-500">
+                      <div className="text-ztg-blue">
                         <LuVote size={64} />
                       </div>
-                      <h3 className="text mb-2 text-blue-400">
+                      <h3 className="text mb-2 text-ztg-blue">
                         You have voted
                       </h3>
                       <p className="text-sm text-gray-700">

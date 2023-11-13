@@ -17,7 +17,7 @@ import { useWallet } from "lib/state/wallet";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-const JoinCourtAsJurorButton = () => {
+const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: constants } = useChainConstants();
   const {
@@ -96,7 +96,7 @@ const JoinCourtAsJurorButton = () => {
           className={`bg-[#670031] rounded-md text-white py-2 px-4 transition-all  ${
             connectedParticipant?.type === "Delegator" &&
             "ring-2 ring-orange-500"
-          }`}
+          } ${className}`}
           onClick={() => setIsOpen(true)}
         >
           {connectedParticipant?.type === "Juror"

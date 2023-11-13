@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ManageDelegationsForm from "./ManageDelegationsForm";
 
-const ManageDelegationButton = () => {
+const ManageDelegationButton = ({ className }: { className?: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   const connectedParticipant = useConnectedCourtParticipant();
 
@@ -33,7 +33,7 @@ const ManageDelegationButton = () => {
         <button
           className={`bg-[#670031] rounded-md text-white py-2 px-4 transition-all  ${
             connectedParticipant?.type === "Juror" && "ring-2 ring-orange-500"
-          }`}
+          } ${className}`}
           onClick={() => setIsOpen(true)}
         >
           {connectedParticipant?.type === "Delegator"

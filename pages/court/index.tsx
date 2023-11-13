@@ -77,7 +77,7 @@ const CourtPage: NextPage = () => {
           </p>
 
           <div className="">
-            <div className="bg-slate-200 bg-opacity-50 rounded-md py-5 px-6 inline-block mb-4 min-w-[260px]">
+            <div className="bg-slate-200 bg-opacity-60 w-full md:w-auto rounded-md py-5 px-6 inline-block mb-4 min-w-[260px]">
               <div className="flex">
                 <h3 className="mb-2 text-lg flex-1 text-gray-800">My Stake</h3>
                 {connectedParticipant && (
@@ -120,23 +120,12 @@ const CourtPage: NextPage = () => {
               </div>
 
               <div>
-                <div className="flex gap-4 mb-3">
-                  <JoinCourtAsJurorButton />
-                  <ManageDelegationButton />
+                <div className="flex flex-col md:flex-row gap-4 mb-3">
+                  <JoinCourtAsJurorButton className="w-full md:w-auto" />
+                  <ManageDelegationButton className="w-full md:w-auto" />
 
                   {!connectedParticipant?.prepareExit && (
-                    <PrepareExitCourtButton />
-                  )}
-                  {connectedParticipant?.prepareExit && (
-                    <button
-                      className="bg-[#DC056C] rounded-md text-white py-2 px-4"
-                      disabled={
-                        isLeaveLoading === true || !connectedParticipant
-                      }
-                      onClick={() => leaveCourt()}
-                    >
-                      Exit Court
-                    </button>
+                    <PrepareExitCourtButton className="w-full md:w-auto" />
                   )}
                 </div>
               </div>

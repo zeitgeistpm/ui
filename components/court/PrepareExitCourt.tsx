@@ -13,7 +13,7 @@ import { useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
 import { useState } from "react";
 
-const PrepareExitCourtButton = () => {
+const PrepareExitCourtButton = ({ className }: { className?: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: constants } = useChainConstants();
   const [sdk, id] = useSdkv2();
@@ -46,7 +46,7 @@ const PrepareExitCourtButton = () => {
   return (
     <>
       <button
-        className="bg-[#DC056C] rounded-md text-white py-2 px-4"
+        className={`bg-[#DC056C] rounded-md text-white py-2 px-4 ${className}`}
         onClick={() => setIsOpen(true)}
       >
         Prepare Exit Court

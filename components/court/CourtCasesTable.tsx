@@ -1,21 +1,18 @@
+import { ZrmlCourtCourtInfo } from "@polkadot/types/lookup";
 import { blockDate } from "@zeitgeistpm/utility/dist/time";
+import InfoPopover from "components/ui/InfoPopover";
+import Skeleton from "components/ui/Skeleton";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
+import { CourtCaseInfo } from "lib/hooks/queries/court/useCourtCase";
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
+import { useVotDrawsForCase } from "lib/hooks/queries/court/useVoteDraws";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useChainTime } from "lib/state/chaintime";
-import {
-  ZrmlCourtCourtInfo,
-  ZrmlCourtCourtStatus,
-} from "@polkadot/types/lookup";
-import Link from "next/link";
-import InfoPopover from "components/ui/InfoPopover";
 import { CourtStage, getCourtStage } from "lib/state/court/get-stage";
-import { CourtCaseInfo } from "lib/hooks/queries/court/useCourtCase";
-import { useMemo } from "react";
-import Skeleton from "components/ui/Skeleton";
-import { useVotDrawsForCase } from "lib/hooks/queries/court/useVoteDraws";
 import { useWallet } from "lib/state/wallet";
+import Link from "next/link";
+import { useMemo } from "react";
 import { AiOutlineEye } from "react-icons/ai";
 import { LuVote } from "react-icons/lu";
 
@@ -74,7 +71,7 @@ export const CourtCasesTable = () => {
   });
 
   return (
-    <div>
+    <div className="relative">
       <Table columns={columns} data={tableData} />
     </div>
   );
@@ -163,8 +160,8 @@ const CaseActions = ({
       <Link href={`/court/${caseId}`}>
         <button
           className={`
-          center gap-3 border-gray-300 hover:border-gray-400 text-xs border-2 rounded-full px-5 py-1.5 line-clamp-1 disabled:opacity-50 self-end min-w-[220px]
-            ${canVote && "bg-blue-400 text-white border-blue-400 animate-pulse"}
+          center gap-3 border-gray-300 hover:border-gray-400 text-xs border-2 rounded-full px-5 py-1.5 line-clamp-1 disabled:opacity-50 self-end md:min-w-[220px]
+            ${canVote && "bg-ztg-blue text-white border-ztg-blue animate-pulse"}
             ${
               canReveal &&
               "bg-purple-500 text-white border-purple-500 animate-pulse"
