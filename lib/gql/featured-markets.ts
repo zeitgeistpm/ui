@@ -27,8 +27,6 @@ const getFeaturedMarkets = async (
     const marketCategories: MarketOutcomes =
       market.categories?.map((category, index) => {
         const asset = market.assets[index];
-        console.log(market.marketId);
-
         const marketCategory: MarketOutcome = {
           name: category.name ?? "",
           assetId: market.outcomeAssets[index],
