@@ -4,13 +4,20 @@ import { useCaseMarketId } from "lib/hooks/queries/court/useCaseMarketId";
 import { useCourtCases } from "lib/hooks/queries/court/useCourtCases";
 import { useMarket } from "lib/hooks/queries/useMarket";
 import { useChainTime } from "lib/state/chaintime";
-import { ZrmlCourtCourtStatus } from "@polkadot/types/lookup";
+import {
+  ZrmlCourtCourtInfo,
+  ZrmlCourtCourtStatus,
+} from "@polkadot/types/lookup";
 import Link from "next/link";
 import InfoPopover from "components/ui/InfoPopover";
 import { CourtStage, getCourtStage } from "lib/state/court/get-stage";
 import { CourtCaseInfo } from "lib/hooks/queries/court/useCourtCase";
 import { useMemo } from "react";
 import Skeleton from "components/ui/Skeleton";
+import { useVotDrawsForCase } from "lib/hooks/queries/court/useVoteDraws";
+import { useWallet } from "lib/state/wallet";
+import { AiOutlineEye } from "react-icons/ai";
+import { LuVote } from "react-icons/lu";
 
 const columns: TableColumn[] = [
   {
@@ -62,15 +69,7 @@ export const CourtCasesTable = () => {
           dateStyle: "medium",
           timeStyle: "short",
         }).format(blockDate(time, courtCase.case.roundEnds.vote.toNumber())),
-      actions: (
-        <>
-          <Link href={`/court/${courtCase.id}`}>
-            <button className="border-gray-300 hover:border-gray-400 text-xs border-2 rounded-full px-5 py-1.5 line-clamp-1 disabled:opacity-50 w-full">
-              Details
-            </button>
-          </Link>
-        </>
-      ),
+      actions: <CaseActions caseId={courtCase.id} courtCase={courtCase.case} />,
     };
   });
 
@@ -120,6 +119,71 @@ const CaseStatus = ({ courtCase }: { courtCase: CourtCaseInfo }) => {
       ) : (
         <Skeleton />
       )}
+    </div>
+  );
+};
+
+const CaseActions = ({
+  caseId,
+  courtCase,
+}: {
+  caseId: number;
+  courtCase: ZrmlCourtCourtInfo;
+}) => {
+  const wallet = useWallet();
+
+  const { data: marketId } = useCaseMarketId(caseId);
+  const { data: market } = useMarket({ marketId: marketId! });
+  const chainTime = useChainTime();
+
+  const stage = useMemo(() => {
+    if (market && chainTime) {
+      return getCourtStage(chainTime, market, courtCase);
+    }
+  }, [chainTime, market]);
+
+  const { data: draws } = useVotDrawsForCase(caseId);
+
+  const connectedParticipantDraw = draws?.find(
+    (draw) => draw.courtParticipant.toString() === wallet.realAddress,
+  );
+
+  const canVote = useMemo(() => {
+    return stage?.type === "vote" && connectedParticipantDraw?.vote.isDrawn;
+  }, [stage, connectedParticipantDraw]);
+
+  const canReveal = useMemo(() => {
+    return (
+      stage?.type === "aggregation" && connectedParticipantDraw?.vote.isSecret
+    );
+  }, [stage, connectedParticipantDraw]);
+
+  return (
+    <div className="flex w-full items-center justify-center">
+      <Link href={`/court/${caseId}`}>
+        <button
+          className={`
+          center gap-3 border-gray-300 hover:border-gray-400 text-xs border-2 rounded-full px-5 py-1.5 line-clamp-1 disabled:opacity-50 self-end min-w-[220px]
+            ${canVote && "bg-blue-400 text-white border-blue-400 animate-pulse"}
+            ${
+              canReveal &&
+              "bg-purple-500 text-white border-purple-500 animate-pulse"
+            }
+          `}
+        >
+          {canVote ? (
+            <>
+              <LuVote size={18} /> <span>Vote</span>
+            </>
+          ) : canReveal ? (
+            <>
+              <AiOutlineEye size={18} /> <span>Reveal Vote</span>
+            </>
+          ) : (
+            "Details"
+          )}
+        </button>
+      </Link>
     </div>
   );
 };
