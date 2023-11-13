@@ -69,7 +69,7 @@ const copy: Record<
   vote: {
     title: "Voting",
     description: "Voting is open for this case.",
-    color: "bg-green-400",
+    color: "bg-blue-400",
   },
   aggregation: {
     title: "Aggregation",
@@ -79,7 +79,7 @@ const copy: Record<
   appeal: {
     title: "Appeal",
     description: "Jurors can now appeal the case.",
-    color: "bg-blue-400",
+    color: "bg-orange-400",
   },
   reassigned: {
     title: "Reassigned",

@@ -128,8 +128,8 @@ const CasePage: NextPage = () => {
 
             <div className="relative group">
               <Image
-                width={20}
-                height={20}
+                width={24}
+                height={24}
                 src={imagePath}
                 alt="Currency token logo"
                 className="rounded-full"
@@ -144,8 +144,8 @@ const CasePage: NextPage = () => {
 
             <div className="relative group">
               <Image
-                width={22}
-                height={22}
+                width={26}
+                height={26}
                 src="/icons/verified-icon.svg"
                 alt="verified checkmark"
               />
@@ -157,7 +157,7 @@ const CasePage: NextPage = () => {
             </div>
           </div>
 
-          <div className="mb-6">
+          <div className="mb-6 md:max-w-[900px]">
             <CourtStageTimer stage={stage} />
           </div>
 
@@ -169,8 +169,8 @@ const CasePage: NextPage = () => {
 
           {stage?.type !== "reassigned" && (
             <div>
-              <h3 className="mb-3">Outcomes</h3>
-              <Outcomes
+              <h3 className="mb-3">Votes</h3>
+              <Votes
                 market={market}
                 selectedDraws={selectedDraws}
                 isRevealed={
@@ -187,7 +187,7 @@ const CasePage: NextPage = () => {
 
         {stage?.type !== "reassigned" && (
           <section>
-            <h3 className="mb-3">Outcomes</h3>
+            <h3 className="mb-3">Jurors</h3>
             <SelectedDrawsTable market={market} selectedDraws={selectedDraws} />
           </section>
         )}
@@ -211,13 +211,13 @@ const CasePage: NextPage = () => {
                 <div className="sticky top-28">
                   <div className="rounded-xl overflow-hidden shadow-lg py-6 px-6">
                     <div className="flex flex-col items-center gap-3">
-                      <div className="text-ztg-blue">
+                      <div className="text-blue-500">
                         <LuVote size={64} />
                       </div>
-                      <h3 className="text mb-2 text-ztg-blue">
+                      <h3 className="text mb-2 text-blue-500">
                         You have voted
                       </h3>
-                      <p className="text-sm text-gray-700">
+                      <p className="text-sm text-gray-500 text-center">
                         Your vote is secret during voting, but when court goes
                         into aggregation you can reveal your vote to the public
                         by coming back to this page.
@@ -284,7 +284,7 @@ const CasePage: NextPage = () => {
   );
 };
 
-const Outcomes = ({
+const Votes = ({
   market,
   selectedDraws,
   isRevealed,
@@ -326,7 +326,7 @@ const Outcomes = ({
                 Leading
               </div>
             )}
-            <div className="flex-1 flex items-center gap-2 rounded-top-md bg-gray-500 bg-opacity-10">
+            <div className="flex-1 flex items-center gap-2 bg-gray-500 rounded-top-md overflow-hidden bg-opacity-10">
               <div className="p-3 flex-1 font-semibold">Outcome</div>
               <div className="p-3 flex-1 font-semibold">Votes</div>
             </div>
