@@ -193,93 +193,104 @@ const CasePage: NextPage = () => {
         )}
       </main>
 
-      {stage?.type === "vote" && (
-        <>
-          {isDrawnJuror && (
+      <div className="hidden md:block md:w-[320px] lg:w-[460px] lg:mr-auto">
+        <div className="sticky top-28">
+          {stage?.type === "vote" && (
             <>
-              <div className="hidden md:block md:w-[320px] lg:w-[460px] lg:mr-auto">
-                <div className="sticky top-28">
+              {isDrawnJuror && (
+                <>
                   <CourtVoteForm market={market} caseId={caseId} />
+                </>
+              )}
+
+              {hasSecretVote && (
+                <div className="rounded-xl overflow-hidden shadow-lg py-6 px-6">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="text-blue-500">
+                      <LuVote size={64} />
+                    </div>
+                    <h3 className="text mb-2 text-blue-500">You have voted</h3>
+                    <p className="text-sm text-gray-500 text-center">
+                      Your vote is secret during voting, but when court goes
+                      into aggregation you can reveal your vote to the public by
+                      coming back to this page.
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
             </>
           )}
 
-          {hasSecretVote && (
-            <div>
-              <div className="hidden md:block md:w-[320px] lg:w-[460px] lg:mr-auto">
-                <div className="sticky top-28">
-                  <div className="rounded-xl overflow-hidden shadow-lg py-6 px-6">
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="text-blue-500">
-                        <LuVote size={64} />
-                      </div>
-                      <h3 className="text mb-2 text-blue-500">
-                        You have voted
-                      </h3>
-                      <p className="text-sm text-gray-500 text-center">
-                        Your vote is secret during voting, but when court goes
-                        into aggregation you can reveal your vote to the public
-                        by coming back to this page.
-                      </p>
+          {stage?.type === "aggregation" && (
+            <>
+              {hasSecretVote && (
+                <CourtVoteRevealForm
+                  market={market}
+                  caseId={caseId}
+                  secretVote={
+                    connectedParticipantDraw?.vote.isSecret
+                      ? connectedParticipantDraw?.vote.asSecret
+                      : undefined
+                  }
+                />
+              )}
+
+              {hasRevealedVote && (
+                <div className="rounded-xl overflow-hidden shadow-lg py-6 px-6">
+                  <div className="flex flex-col items-center gap-3">
+                    <div>
+                      <AiOutlineEye size={64} />
                     </div>
+                    <h3 className="text mb-2">Your vote is revealed</h3>
+                    <h3 className="text text-base mb-2 text-purple-500">
+                      {
+                        market?.categories?.[
+                          connectedParticipantDraw?.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber()
+                        ].ticker
+                      }
+                    </h3>
+                    <p className="text-sm text-gray-500 text-center">
+                      Your vote has been revealed to the other jurors and the
+                      public and has been taken into account.
+                    </p>
                   </div>
+                </div>
+              )}
+            </>
+          )}
+
+          <div className="relative rounded-xl mt-4 overflow-hidden shadow-lg py-6 px-6 group">
+            <div className="w-full h-full z-10 absolute top-0 left-0 group-hover:blur-[2px] transition-all">
+              <Image
+                title="Wizard draped in purple robes holding a flaming crypto key."
+                alt="Wizard draped in purple robes holding a flaming crypto key."
+                src={"/court_gnomes.webp"}
+                layout="fill"
+                objectFit="cover"
+                style={{
+                  objectPosition: "50% 50%",
+                }}
+              />
+            </div>
+            <div className="relative z-20 text-white">
+              <div className="mb-2">
+                <h3 className="text-white drop-shadow-lg">
+                  Decentralized Court
+                </h3>
+              </div>
+              <p className="mb-6 drop-shadow-lg">
+                Zeitgeist implements a decentralized court to handle disputes
+                that may arise in the resolution of prediction markets outcomes.
+              </p>
+              <div className="flex items-center justify-end">
+                <div className="relative rounded-lg px-6 py-2 bg-purple-400 bg-opacity-90 text-white z-20 cursor-pointer">
+                  Learn More
                 </div>
               </div>
             </div>
-          )}
-        </>
-      )}
-
-      {stage?.type === "aggregation" && (
-        <>
-          {hasSecretVote && (
-            <>
-              <div className="hidden md:block md:w-[320px] lg:w-[460px] lg:mr-auto">
-                <div className="sticky top-28">
-                  <CourtVoteRevealForm
-                    market={market}
-                    caseId={caseId}
-                    secretVote={
-                      connectedParticipantDraw?.vote.isSecret
-                        ? connectedParticipantDraw?.vote.asSecret
-                        : undefined
-                    }
-                  />
-                </div>
-              </div>
-            </>
-          )}
-
-          {hasRevealedVote && (
-            <>
-              <div className="hidden md:block md:w-[320px] lg:w-[460px] lg:mr-auto">
-                <div className="sticky top-28">
-                  <div className="rounded-xl overflow-hidden shadow-lg py-6 px-6">
-                    <div className="flex flex-col items-center gap-3">
-                      <div>
-                        <AiOutlineEye size={64} />
-                      </div>
-                      <h3 className="text mb-4">Your vote is revealed</h3>
-                      <h3 className="text text-base mb-4">
-                        {
-                          market?.categories?.[
-                            connectedParticipantDraw?.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber()
-                          ].ticker
-                        }
-                      </h3>
-                      <p className="text-sm">
-                        Your vote has been revealed to the other jurors and the
-                        public and has been taken into account.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-        </>
-      )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
@@ -308,22 +319,30 @@ const Votes = ({
     })
     .sort((a, b) => b.count - a.count);
 
+  const showLeaderIndicator = votes?.some((vote) => vote.count > 0);
+
   return (
     <div
       className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 ${
-        isRevealed && "[&>*:first-child]:bg-green-200"
+        showLeaderIndicator && isRevealed && "[&>*:first-child]:bg-green-200"
       }`}
     >
       {votes?.map(({ category, count }, index) => {
+        const leader = votes?.[0];
+        const isTied = index > 0 && count === leader.count;
+
         return (
           <div
             className={`relative shadow-sm border-1 rounded-md min-w-[200px] text-xs flex-1 ${
-              isRevealed && index === 0 && "border-green-300"
+              showLeaderIndicator &&
+              isRevealed &&
+              index === 0 &&
+              "border-green-300"
             }`}
           >
-            {isRevealed && index === 0 && (
+            {showLeaderIndicator && isRevealed && index === 0 && (
               <div className=" px-2 text-xxs absolute top-0 right-3 bg-green-400 text-white rounded-xl translate-y-[-50%]">
-                Leading
+                {isTied ? "Tied" : "Leading"}
               </div>
             )}
             <div className="flex-1 flex items-center gap-2 bg-gray-500 rounded-top-md overflow-hidden bg-opacity-10">
