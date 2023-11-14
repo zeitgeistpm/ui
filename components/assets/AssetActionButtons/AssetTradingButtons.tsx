@@ -1,10 +1,18 @@
 import { Dialog } from "@headlessui/react";
-import { ScalarAssetId, CategoricalAssetId } from "@zeitgeistpm/sdk";
+import {
+  CategoricalAssetId,
+  ScalarAssetId,
+  getMarketIdOf,
+} from "@zeitgeistpm/sdk";
 import TradeForm from "components/trade-form";
+import Amm2TradeForm from "components/trade-form/Amm2TradeForm";
+import { TradeTabType } from "components/trade-form/TradeTab";
 import Modal from "components/ui/Modal";
 import SecondaryButton from "components/ui/SecondaryButton";
+import { useMarket } from "lib/hooks/queries/useMarket";
 import { useTradeItem } from "lib/hooks/trade";
 import { useState } from "react";
+import { ScoringRule } from "@zeitgeistpm/indexer";
 
 const AssetTradingButtons = ({
   assetId,
@@ -13,6 +21,8 @@ const AssetTradingButtons = ({
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { data: tradeItem, set: setTradeItem } = useTradeItem();
+  const marketId = getMarketIdOf(assetId);
+  const { data: market } = useMarket({ marketId });
 
   return (
     <>
@@ -43,7 +53,19 @@ const AssetTradingButtons = ({
       {tradeItem && (
         <Modal open={isOpen} onClose={() => setIsOpen(false)}>
           <Dialog.Panel className="w-full max-w-[462px] rounded-[10px] bg-white">
-            <TradeForm />
+            {market?.scoringRule === ScoringRule.Lmsr ? (
+              <Amm2TradeForm
+                marketId={marketId}
+                initialAsset={assetId}
+                selectedTab={
+                  tradeItem.action === "buy"
+                    ? TradeTabType.Buy
+                    : TradeTabType.Sell
+                }
+              />
+            ) : (
+              <TradeForm />
+            )}
           </Dialog.Panel>
         </Modal>
       )}
