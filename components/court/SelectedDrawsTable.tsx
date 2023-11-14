@@ -69,7 +69,14 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
               ) : draw.vote.isDelegated ? (
                 <span className="text-gray-400">Delegated Vote</span>
               ) : draw.vote.isRevealed ? (
-                "Voted"
+                draw.vote.asRevealed.voteItem.isOutcome &&
+                draw.vote.asRevealed.voteItem.asOutcome.isCategorical ? (
+                  market.categories?.[
+                    draw.vote.asRevealed.voteItem.asOutcome.asCategorical.toNumber()
+                  ].ticker
+                ) : (
+                  "Voted"
+                )
               ) : draw.vote.isDenounced ? (
                 <span className="text-red-400">Denounced</span>
               ) : (
