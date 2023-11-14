@@ -37,22 +37,22 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
   return (
     <>
       <div className="flex flex-col justify-center w-full gap-y-2 sm:gap-y-5 mb-5">
-        <div className="flex gap-2 sm:gap-5 flex-col sm:flex-row">
+        <div className="flex gap-5 flex-col sm:flex-row">
           <div>{address && <Avatar address={address} size={100} />}</div>
           <div className="flex flex-col justify-center">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-2">
               <div>
                 {isOwned && !hasIdentity && (
-                  <div className="-mb-3 font-extrabold text-xs text-gray-500">
+                  <div className="font-extrabold text-xs text-gray-500">
                     wallet name
                   </div>
                 )}
                 {isOwned && hasIdentity && (
-                  <div className="-mb-3 font-extrabold text-xs text-gray-500">
+                  <div className="font-extrabold text-xs text-gray-500">
                     on chain name
                   </div>
                 )}
-                <div className="font-extrabold text-[28px] sm:text-[38px]">
+                <div className="font-extrabold text-xl sm:text-4xl">
                   {name}{" "}
                 </div>
               </div>
@@ -68,25 +68,30 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
                 </div>
               )}
             </div>
-            <div className="text-ztg-12-150 sm:text-ztg-16-150">{address}</div>
+            <div className="hidden sm:block text-sm md:text-base">
+              {address}
+            </div>
+            <div className="sm:hidden text-sm">
+              {shortenAddress(address, 12, 26)}
+            </div>
           </div>
         </div>
-        <div className="flex flex-wrap gap-3 text-ztg-14-110 text-white">
+        <div className="flex flex-wrap gap-3 text-sm text-white">
           {identity?.twitter && (
             <a
-              className="flex items-center bg-twitter p-[8px] rounded-md"
+              className="flex items-center bg-twitter p-2 rounded-md"
               href={`https://twitter.com/${identity.twitter}`}
               target="_blank"
               rel="noreferrer"
             >
               <TwitterIcon fill="white" />
-              <span className="ml-ztg-10 ">{identity.twitter}</span>
+              <span className="ml-2.5 ">{identity.twitter}</span>
             </a>
           )}
           {identity?.discord && (
-            <div className="flex items-center bg-discord p-[8px] rounded-md">
+            <div className="flex items-center bg-discord p-2 rounded-md">
               <DiscordIcon fill="white" />
-              <span className="ml-ztg-10">{identity.discord}</span>
+              <span className="ml-2.5">{identity.discord}</span>
             </div>
           )}
           <Transition
@@ -98,7 +103,7 @@ const PortfolioIdentity = ({ address }: { address: string }) => {
             leaveTo="opacity-0"
             show={isProxying}
           >
-            <div className="flex items-center gap-2  p-[8px] rounded-md bg-purple-600 text-white">
+            <div className="flex items-center gap-2 p-2 rounded-md bg-purple-600 text-white">
               <FaNetworkWired size={16} />
               Your are acting proxy for this account.
             </div>

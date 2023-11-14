@@ -1,6 +1,7 @@
 import { IOBaseAssetId, parseAssetId, ZTG } from "@zeitgeistpm/sdk";
 import Table, { TableColumn, TableData } from "components/ui/Table";
 import Decimal from "decimal.js";
+import { useAmm2Pool } from "lib/hooks/queries/amm2/useAmm2Pool";
 import { useAccountPoolAssetBalances } from "lib/hooks/queries/useAccountPoolAssetBalances";
 import { useAssetMetadata } from "lib/hooks/queries/useAssetMetadata";
 import { useAssetUsdPrice } from "lib/hooks/queries/useAssetUsdPrice";
@@ -10,17 +11,13 @@ import { usePool } from "lib/hooks/queries/usePool";
 import { usePoolBaseBalance } from "lib/hooks/queries/usePoolBaseBalance";
 import { calcMarketColors } from "lib/util/color-calc";
 import { parseAssetIdString } from "lib/util/parse-asset-id";
+import { ScoringRule } from "@zeitgeistpm/indexer";
 
 const poolTableColums: TableColumn[] = [
   {
     header: "Token",
     accessor: "token",
     type: "token",
-  },
-  {
-    header: "Weights",
-    accessor: "weights",
-    type: "percentage",
   },
   {
     header: "Pool Balance",
@@ -33,10 +30,10 @@ const PoolTable = ({
   poolId,
   marketId,
 }: {
-  poolId: number;
+  poolId?: number;
   marketId: number;
 }) => {
-  const { data: pool } = usePool({ poolId });
+  const { data: pool } = usePool(poolId != null ? { poolId } : undefined);
   const { data: market } = useMarket({ marketId });
   const baseAssetId = pool?.baseAsset
     ? parseAssetId(pool.baseAsset).unrightOr(undefined)
@@ -50,20 +47,25 @@ const PoolTable = ({
   const { data: basePoolBalance } = usePoolBaseBalance(poolId);
   const { data: baseAssetUsdPrice } = useAssetUsdPrice(baseAssetId);
   const { data: spotPrices } = useMarketSpotPrices(marketId);
+  const { data: amm2Pool } = useAmm2Pool(marketId);
 
   const colors = market?.categories
     ? calcMarketColors(marketId, market.categories.length)
     : [];
 
+  const assetIds =
+    market?.scoringRule === ScoringRule.Cpmm
+      ? pool?.weights?.map((weight) => parseAssetIdString(weight?.assetId))
+      : amm2Pool?.assetIds;
+
   const tableData: TableData[] =
-    pool?.weights?.map((asset, index) => {
+    assetIds?.map((assetId, index) => {
       let amount: Decimal | undefined;
       let usdValue: Decimal | undefined;
       let category:
         | { color?: string | null; name?: string | null }
         | undefined
         | null;
-      const assetId = parseAssetIdString(asset?.assetId);
 
       if (IOBaseAssetId.is(assetId)) {
         amount = basePoolBalance ?? undefined;
@@ -83,10 +85,6 @@ const PoolTable = ({
           color: colors[index] || "#ffffff",
           label: category?.name ?? "",
         },
-        weights: new Decimal(asset!.weight)
-          .div(pool.totalWeight)
-          .mul(100)
-          .toNumber(),
         poolBalance: {
           value: amount?.div(ZTG).toDecimalPlaces(2).toNumber() ?? 0,
           usdValue: usdValue?.div(ZTG).toDecimalPlaces(2).toNumber(),
