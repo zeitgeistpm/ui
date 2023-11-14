@@ -6,6 +6,7 @@ import {
   parseAssetId,
 } from "@zeitgeistpm/sdk";
 import CourtStageTimer from "components/court/CourtStageTimer";
+import { PiBooks } from "react-icons/pi";
 import { CourtVoteForm } from "components/court/CourtVoteForm";
 import { CourtVoteRevealForm } from "components/court/CourtVoteRevealForm";
 import { SelectedDrawsTable } from "components/court/SelectedDrawsTable";
@@ -283,9 +284,14 @@ const CasePage: NextPage = () => {
                 that may arise in the resolution of prediction markets outcomes.
               </p>
               <div className="flex items-center justify-end">
-                <div className="relative rounded-lg px-6 py-2 bg-purple-400 bg-opacity-90 text-white z-20 cursor-pointer">
+                <Link
+                  href="https://docs.zeitgeist.pm/docs/learn/court"
+                  target="_blank"
+                  className="center gap-2 relative rounded-md px-6 py-2 bg-purple-400 bg-opacity-90 text-white z-20 cursor-pointer"
+                >
+                  <PiBooks />
                   Learn More
-                </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -349,9 +355,16 @@ const Votes = ({
               <div className="p-3 flex-1 font-semibold">Outcome</div>
               <div className="p-3 flex-1 font-semibold">Votes</div>
             </div>
-            <div className="flex-1 flex items-center gap-2 text-sm">
+            <div className="flex-1 flex items-center gap-2 text-sm cursor-default">
               <div className="p-3 flex-1">
-                <span className="pl-3">{category.ticker}</span>
+                <div className="relative group">
+                  <span>{category.ticker}</span>
+                  <div className="opacity-0 transition-opacity absolute -left-2 top-0 z-10 translate-y-[-110%] group-hover:opacity-100 whitespace-nowrap">
+                    <div className="py-2 px-3 text-sm bg-green-lighter rounded-lg">
+                      <span>{category.name}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="p-3 flex-1">
                 {isRevealed ? (
