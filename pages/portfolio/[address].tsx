@@ -1,6 +1,7 @@
 import { Tab } from "@headlessui/react";
 import { getIndexOf } from "@zeitgeistpm/sdk";
 import BadgesList from "components/avatar/BadgesList";
+import AccountPoolsTable from "components/portfolio/AccountPoolsTable";
 import BondsTable from "components/portfolio/BondsTable";
 import { PortfolioBreakdown } from "components/portfolio/Breakdown";
 import CreatorFeePayouts from "components/portfolio/CreatorFeePayouts";
@@ -204,6 +205,9 @@ const Portfolio: NextPageWithLayout = () => {
                     {address && <BondsTable address={address} />}
                   </Tab.Panel>
                   <Tab.Panel>
+                    <div>AMM2 Pools</div>
+                    <AccountPoolsTable address={address} />
+                    <div>Legacy Pools</div>
                     {!subsidyPositionsByMarket || !ztgPrice ? (
                       range(0, 8).map((i) => (
                         <MarketPositionsSkeleton className="mb-14" key={i} />

@@ -71,6 +71,8 @@ export const extrinsicCallback = ({
   notifications?: UseNotifications;
 }): ((res: ISubmittableResult, unsub?: () => void) => void) => {
   return (result, unsub) => {
+    console.log(result.toHuman());
+
     const { status, events } = result;
 
     if (status.isInBlock && successCallback) {
