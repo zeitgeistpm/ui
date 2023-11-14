@@ -62,7 +62,7 @@ export const CourtVoteRevealForm: React.FC<CourtVoteRevealFormProps> = ({
               Categorical: vote.CategoricalOutcome[1],
             },
           },
-          commitmentHash,
+          salt,
         );
       }
       return undefined;
