@@ -176,17 +176,14 @@ export const marketFormDataToExtrinsicParams = (
     };
   }
 
-  let disputeMechanism:
-    | CreateMarketParams<RpcContext>["disputeMechanism"]
-    | undefined;
+  let disputeMechanism: CreateMarketParams<RpcContext>["disputeMechanism"] =
+    "Authorized";
 
   if (
     process.env.NEXT_PUBLIC_SHOW_COURT === "true" &&
     (form.answers.type === "categorical" || form.answers.type === "yes/no")
   ) {
     disputeMechanism = "Court";
-  } else {
-    disputeMechanism = undefined;
   }
 
   const params: CreateMarketParams<RpcContext> = {

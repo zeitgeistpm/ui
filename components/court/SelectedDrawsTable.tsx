@@ -94,7 +94,10 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
                   {draw.vote.asDelegated.delegatedStakes
                     .toArray()
                     .map(([account, stake]) => (
-                      <div className="flex items-center gap-1 mb-1">
+                      <div
+                        key={account.toString()}
+                        className="flex items-center gap-1 mb-1"
+                      >
                         <div className="flex-1 flex items-center gap-1">
                           <Avatar address={account.toString()} size={18} />
                           {shortenAddress(account.toString())}
