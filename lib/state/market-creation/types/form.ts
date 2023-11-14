@@ -176,10 +176,23 @@ export const marketFormDataToExtrinsicParams = (
     };
   }
 
+  let disputeMechanism:
+    | CreateMarketParams<RpcContext>["disputeMechanism"]
+    | undefined;
+
+  if (
+    process.env.NEXT_PUBLIC_SHOW_COURT === "true" &&
+    (form.answers.type === "categorical" || form.answers.type === "yes/no")
+  ) {
+    disputeMechanism = "Court";
+  } else {
+    disputeMechanism = undefined;
+  }
+
   const params: CreateMarketParams<RpcContext> = {
     signer,
     proxy,
-    disputeMechanism: "Court",
+    disputeMechanism,
     oracle: form.oracle,
     period: {
       Timestamp: [Date.now(), new Date(form.endDate).getTime()],

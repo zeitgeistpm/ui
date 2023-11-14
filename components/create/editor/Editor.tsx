@@ -15,7 +15,7 @@ import { useMarketDraftEditor } from "lib/state/market-creation/editor";
 import * as MarketDraft from "lib/state/market-creation/types/draft";
 import { persistentAtom } from "lib/state/util/persistent-atom";
 import dynamic from "next/dynamic";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { LuFileWarning } from "react-icons/lu";
 import { ErrorMessage } from "./ErrorMessage";
@@ -38,6 +38,10 @@ import TimezoneSelect from "./inputs/TimezoneSelect";
 import { Loader } from "components/ui/Loader";
 import { LiquidityInputAmm2 } from "./inputs/LiquidityAMM2";
 import FeeSelect from "./inputs/FeeSelect";
+import { useWallet } from "lib/state/wallet";
+import { marketFormDataToExtrinsicParams } from "lib/state/market-creation/types/form";
+import { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
+import { CreateMarketParams, RpcContext } from "@zeitgeistpm/sdk";
 
 const QuillEditor = dynamic(() => import("components/ui/QuillEditor"), {
   ssr: false,
@@ -50,6 +54,7 @@ const createMarketStateAtom = persistentAtom<MarketDraft.MarketDraftState>({
 });
 
 export const MarketEditor = () => {
+  const wallet = useWallet();
   const [state, setState] = useAtom(createMarketStateAtom);
   const editor = useMarketDraftEditor({ draft: state, update: setState });
 
@@ -104,6 +109,27 @@ export const MarketEditor = () => {
 
   const isLoaded = Boolean(chainTime && isFetched);
   const isAMM2Market = form.answers && form.answers.answers.length === 2;
+
+  const creationParams = useMemo<
+    CreateMarketParams<RpcContext> | undefined
+  >(() => {
+    let signer = wallet.getSigner();
+
+    if (!editor.isValid || !chainTime || !signer) return;
+
+    const proxy = wallet.getProxyFor(wallet.activeAccount?.address);
+
+    if (proxy && proxy.enabled) {
+      return marketFormDataToExtrinsicParams(
+        editor.form,
+        { address: wallet.realAddress } as KeyringPairOrExtSigner,
+        chainTime,
+        signer,
+      );
+    }
+
+    return marketFormDataToExtrinsicParams(editor.form, signer, chainTime);
+  }, [editor.form, chainTime, wallet.activeAccount]);
 
   return (
     <>
@@ -668,12 +694,12 @@ export const MarketEditor = () => {
             disabled={!isWizard}
           >
             <div className="flex center">
-              <MarketSummary editor={editor} />
+              <MarketSummary creationParams={creationParams} editor={editor} />
             </div>
           </MarketFormSection>
 
           {(!editor.isWizard || currentStep.label == "Summary") && (
-            <Publishing editor={editor} />
+            <Publishing creationParams={creationParams} editor={editor} />
           )}
         </form>
       </Transition>

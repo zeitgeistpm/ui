@@ -480,7 +480,7 @@ export const useWallet = (): UseWallet => {
     if (walletState.wallet instanceof BaseDotsamaWallet) {
       return walletState.wallet.signer
         ?.signRaw?.({
-          address: activeAccount.address,
+          address: activeAccount?.address,
           data: stringToHex(data),
           type: "bytes",
         })

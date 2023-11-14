@@ -2,8 +2,10 @@ import { Dialog } from "@headlessui/react";
 import { useQuery } from "@tanstack/react-query";
 import { PollingTimeout, poll } from "@zeitgeistpm/avatara-util";
 import {
+  CreateMarketParams,
   IOForeignAssetId,
   IOZtgAssetId,
+  RpcContext,
   ZTG,
   isFullSdk,
 } from "@zeitgeistpm/sdk";
@@ -18,69 +20,49 @@ import {
 import { checkMarketExists } from "lib/gql/markets";
 import { useBalance } from "lib/hooks/queries/useBalance";
 import { useChainConstants } from "lib/hooks/queries/useChainConstants";
+import { useFeePayingAsset } from "lib/hooks/queries/useFeePayingAsset";
 import { useSdkv2 } from "lib/hooks/useSdkv2";
-import { useChainTime } from "lib/state/chaintime";
 import { MarketDraftEditor } from "lib/state/market-creation/editor";
-import { marketFormDataToExtrinsicParams } from "lib/state/market-creation/types/form";
 import { NotificationType, useNotifications } from "lib/state/notifications";
 import { useWallet } from "lib/state/wallet";
-import { isArray } from "lodash-es";
-import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
-import { LuFileWarning } from "react-icons/lu";
-import { RiSendPlaneLine } from "react-icons/ri";
-import type { KeyringPairOrExtSigner } from "@zeitgeistpm/rpc";
-import { useFeePayingAsset } from "lib/hooks/queries/useFeePayingAsset";
 import { assetsAreEqual } from "lib/util/assets-are-equal";
 import { formatNumberCompact } from "lib/util/format-compact";
+import { isArray } from "lodash-es";
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { LuFileWarning } from "react-icons/lu";
+import { RiSendPlaneLine } from "react-icons/ri";
 
 export type PublishingProps = {
   editor: MarketDraftEditor;
+  creationParams?: CreateMarketParams<RpcContext>;
 };
 
-export const Publishing = ({ editor }: PublishingProps) => {
+export const Publishing = ({ editor, creationParams }: PublishingProps) => {
   const [sdk] = useSdkv2();
   const wallet = useWallet();
   const router = useRouter();
-  const chainTime = useChainTime();
   const notifications = useNotifications();
   const [isTransacting, setIsTransacting] = useState(false);
   const [totalCostIsOpen, setTotalCostIsOpen] = useState(false);
   const { data: constants } = useChainConstants();
 
-  const params = useMemo(() => {
-    let signer = wallet.getSigner();
-
-    if (!editor.isValid || !chainTime || !signer) return;
-
-    const proxy = wallet.getProxyFor(wallet.activeAccount?.address);
-
-    if (proxy && proxy.enabled) {
-      return marketFormDataToExtrinsicParams(
-        editor.form,
-        { address: wallet.realAddress } as KeyringPairOrExtSigner,
-        chainTime,
-        signer,
-      );
-    }
-
-    return marketFormDataToExtrinsicParams(editor.form, signer, chainTime);
-  }, [editor.form, chainTime, wallet.activeAccount]);
-
   const feesEnabled = !(
     !sdk ||
-    !params ||
+    !creationParams ||
     !editor.isValid ||
     !wallet.activeAccount
   );
 
   const { data: baseFee } = useQuery(
-    [params, wallet.activeAccount],
+    [creationParams, wallet.activeAccount],
     async () => {
       if (!feesEnabled) {
         return new Decimal(0);
       }
-      const paymentInfo = await sdk.model.markets.create.calculateFees(params);
+      const paymentInfo = await sdk.model.markets.create.calculateFees(
+        creationParams,
+      );
       return new Decimal(paymentInfo.partialFee.toString() ?? 0).div(ZTG);
     },
     {
@@ -159,7 +141,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
     (!foreignCurrencyCost || foreignAssetBalanceDelta?.gte(0));
 
   const submit = async () => {
-    if (params && isFullSdk(sdk)) {
+    if (creationParams && isFullSdk(sdk)) {
       setIsTransacting(true);
 
       try {
@@ -170,7 +152,7 @@ export const Publishing = ({ editor }: PublishingProps) => {
         });
 
         const result = await sdk.model.markets.create(
-          params,
+          creationParams,
           IOForeignAssetId.is(feeDetails?.assetId)
             ? feeDetails?.assetId
             : undefined,
