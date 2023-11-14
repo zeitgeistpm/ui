@@ -5,7 +5,7 @@
 
 .drawer.right .arrow-container {
   @apply left-0;
-  @apply transform -translate-x-1/2;
+  @apply -translate-x-1/2 transform;
 }
 
 .drawer.right.closed .arrow-container {

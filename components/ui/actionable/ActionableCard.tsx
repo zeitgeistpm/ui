@@ -33,7 +33,7 @@ export const ActionableCard = ({
     <Link href={link} className="flex flex-col">
       <motion.div
         initial={false}
-        className="w-full rounded-md py-5 px-7 bg-white flex flex-col"
+        className="flex w-full flex-col rounded-md bg-white px-7 py-5"
         transition={transitionConfig}
         animate={{
           scale: hovered ? 1.02 : 1,
@@ -54,14 +54,14 @@ export const ActionableCard = ({
               translateX: hovered ? "4px" : 0,
               translateY: hovered ? "-4px" : 0,
             }}
-            className="font-semibold text-xl mb-4"
+            className="mb-4 text-xl font-semibold"
           >
             {title}
           </motion.h6>
           <div className="flex gap-4">
             <motion.div
               initial={false}
-              className="relative min-w-[84px] w-[84px] h-[84px] md:min-w-[52px] md:w-[52px] md:h-[52px] lg:min-w-[84px] lg:w-[84px] lg:h-[84px] rounded-xl"
+              className="relative h-[84px] w-[84px] min-w-[84px] rounded-xl md:h-[52px] md:w-[52px] md:min-w-[52px] lg:h-[84px] lg:w-[84px] lg:min-w-[84px]"
               transition={transitionConfig}
               animate={{
                 translateX: hovered ? "8px" : 0,
@@ -85,7 +85,7 @@ export const ActionableCard = ({
             </motion.p>
           </div>
         </div>
-        <div className="flex md:flex-col lg:flex-row gap-2">
+        <div className="flex gap-2 md:flex-col lg:flex-row">
           <motion.div
             initial={false}
             transition={transitionConfig}
@@ -94,7 +94,7 @@ export const ActionableCard = ({
               translateY: hovered ? "-2px" : 0,
               scale: hovered ? 1.02 : 1,
             }}
-            className="text-blue-500 flex items-center gap-1 flex-1"
+            className="flex flex-1 items-center gap-1 text-blue-500"
           >
             {linkText}
 
@@ -103,7 +103,7 @@ export const ActionableCard = ({
           <div>
             <motion.div
               initial={false}
-              className={"rounded-md inline-block"}
+              className={"inline-block rounded-md"}
               transition={transitionConfig}
               animate={{
                 translateX: hovered ? "2px" : 0,
@@ -112,7 +112,7 @@ export const ActionableCard = ({
                 boxShadow: hovered ? "-2px 2px 4px rgba(10,10,10, 0.3)" : "0",
               }}
             >
-              <div className="inline-block text-xs lg:text-sm bg-gray-200 rounded-md py-1 px-2">
+              <div className="inline-block rounded-md bg-gray-200 px-2 py-1 text-xs lg:text-sm">
                 {timeUsage}
               </div>
             </motion.div>

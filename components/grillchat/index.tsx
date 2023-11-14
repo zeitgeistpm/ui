@@ -33,11 +33,11 @@ const GrillChat: React.FC<GrillChatProps> = () => {
 
   return (
     <div
-      className={"fixed bottom-0 right-4 w-full mb-4 pointer-events-none z-30"}
+      className={"pointer-events-none fixed bottom-0 right-4 z-30 mb-4 w-full"}
     >
       <motion.div
         key="grillchat"
-        className="w-screen rounded-md shadow-xl bg-white overflow-hidden ml-auto pointer-events-auto"
+        className="pointer-events-auto ml-auto w-screen overflow-hidden rounded-md bg-white shadow-xl"
         layout={false}
         initial={{ opacity: 0 }}
         animate={
@@ -54,7 +54,7 @@ const GrillChat: React.FC<GrillChatProps> = () => {
         <div id="grill" className="h-full"></div>
       </motion.div>
       <button
-        className="ml-auto rounded-full cursor-pointer border-1 border-gray-300 w-14 h-14 center shadow-ztg-5 bg-white pointer-events-auto mt-4"
+        className="center pointer-events-auto ml-auto mt-4 h-14 w-14 cursor-pointer rounded-full border-1 border-gray-300 bg-white shadow-ztg-5"
         onClick={handleClick}
       >
         <MessageSquare size={28} />

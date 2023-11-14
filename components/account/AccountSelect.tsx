@@ -21,7 +21,7 @@ export type AccountOption = { label: string; value: string };
 const Control = ({ children, ...rest }: ControlProps<AccountOption, false>) => {
   return (
     <components.Control {...(rest as ControlProps)}>
-      <div className="flex items-center bg-sky-100 dark:bg-black justify-between cursor-pointer rounded-ztg-10">
+      <div className="flex cursor-pointer items-center justify-between rounded-ztg-10 bg-sky-100 dark:bg-black">
         {children}
       </div>
     </components.Control>
@@ -100,7 +100,7 @@ const AccountSelect: FC<AccountSelectProps> = ({
   const wallet = useWallet();
 
   return (
-    <div className="flex h-ztg-50 items-center bg-sky-100 dark:bg-black rounded-ztg-10 w-full">
+    <div className="flex h-ztg-50 w-full items-center rounded-ztg-10 bg-sky-100 dark:bg-black">
       <div className="flex-1">
         <Select
           isSearchable={false}
@@ -124,7 +124,7 @@ const AccountSelect: FC<AccountSelectProps> = ({
       {wallet.activeAccount?.address && (
         <CopyIcon
           copyText={wallet.activeAccount?.address}
-          className="pr-ztg-8 w-auto"
+          className="w-auto pr-ztg-8"
           size={16}
         />
       )}

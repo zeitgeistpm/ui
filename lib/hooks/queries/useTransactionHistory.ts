@@ -47,7 +47,8 @@ const marketHeaderQuery = gql`
   }
 `;
 
-type Action = typeof humanReadableEventMap[keyof typeof humanReadableEventMap];
+type Action =
+  (typeof humanReadableEventMap)[keyof typeof humanReadableEventMap];
 
 export type TradeEvent = {
   marketId: number;

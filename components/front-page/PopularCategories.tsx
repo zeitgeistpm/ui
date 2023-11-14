@@ -29,16 +29,16 @@ const Category = ({
 }) => {
   return (
     <div
-      className="flex flex-1 flex-col w-full min-w-[80px] md:hover:scale-[1.035] ztg-transition"
+      className="ztg-transition flex w-full min-w-[80px] flex-1 flex-col md:hover:scale-[1.035]"
       data-testid="category"
     >
-      <div className="relative  w-full h-full aspect-square">
+      <div className="relative  aspect-square h-full w-full">
         <Link
           href={`/markets?status=Active&tag=${title}#market-list`}
-          className="w-full h-full relative block"
+          className="relative block h-full w-full"
         >
           <Image
-            className="rounded-ztg-10 cursor-pointer"
+            className="cursor-pointer rounded-ztg-10"
             src={imgURL}
             alt={title}
             fill
@@ -48,14 +48,14 @@ const Category = ({
           />
         </Link>
       </div>
-      <span className="flex flex-col lg:flex-row lg:items-center mt-[10px]">
+      <span className="mt-[10px] flex flex-col lg:flex-row lg:items-center">
         <span
-          className="font-medium text-ztg-16-150 line-clamp-1"
+          className="line-clamp-1 text-ztg-16-150 font-medium"
           data-testid="categoryTitle"
         >
           {title}
         </span>
-        <span className="flex justify-center items-center bg-anti-flash-white rounded-ztg-5 w-[41px] h-[24px] mt-[8px] lg:mt-0 lg:ml-[10px]">
+        <span className="mt-[8px] flex h-[24px] w-[41px] items-center justify-center rounded-ztg-5 bg-anti-flash-white lg:ml-[10px] lg:mt-0">
           <span className="text-ztg-12-150">{count}</span>
         </span>
       </span>
@@ -79,7 +79,7 @@ const PopularCategories: FC<{
   return (
     <div className="flex flex-col" data-testid="popularCategories">
       <h2 className="mb-7 text-center sm:text-start">Popular Categories</h2>
-      <div className="flex gap-4 overflow-x-auto no-scroll-bar md:overflow-x-visible">
+      <div className="no-scroll-bar flex gap-4 overflow-x-auto md:overflow-x-visible">
         {topCategories.map((category, index) => (
           <Category
             key={index}

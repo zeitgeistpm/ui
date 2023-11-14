@@ -27,7 +27,7 @@ const Stepper = ({ start, end, currentStep, onStepClick }: StepperProps) => {
           key={step}
           onClick={() => onStepClick(step)}
           disabled={step === currentStep}
-          className={`rounded-full h-[7px] w-[7px] ${
+          className={`h-[7px] w-[7px] rounded-full ${
             step === currentStep ? "bg-black" : "bg-sky-600"
           }`}
         ></button>
@@ -59,14 +59,14 @@ const TextSection = ({
 }: TextSectionProps) => {
   return (
     <>
-      <div className="font-bold text-ztg-22-120">{headerText}</div>
-      <div className="text-center mb-auto">{bodyText}</div>
-      <div className="flex justify-center  gap-x-[20px] w-full px-[20px] h-[56px] font-medium">
+      <div className="text-ztg-22-120 font-bold">{headerText}</div>
+      <div className="mb-auto text-center">{bodyText}</div>
+      <div className="flex h-[56px]  w-full justify-center gap-x-[20px] px-[20px] font-medium">
         {leftButton && (
           <button
-            className={`rounded-[100px] border-2 border-pastel-blue w-full ${
+            className={`w-full rounded-[100px] border-2 border-pastel-blue ${
               leftButton.disabled === true
-                ? "bg-gray-light-2 cursor-default"
+                ? "cursor-default bg-gray-light-2"
                 : "border border-pastel-blue"
             }`}
             onClick={leftButton.onClick}
@@ -76,9 +76,9 @@ const TextSection = ({
         )}
         {rightButton && (
           <button
-            className={`rounded-[100px] border-2 border-pastel-blue w-full ${
+            className={`w-full rounded-[100px] border-2 border-pastel-blue ${
               rightButton.disabled === true
-                ? "bg-gray-light-2 cursor-default"
+                ? "cursor-default bg-gray-light-2"
                 : "border border-pastel-blue"
             }`}
             onClick={rightButton.onClick}
@@ -92,7 +92,7 @@ const TextSection = ({
 };
 
 const TopPic = () => (
-  <div className="rounded-full w-[120px] h-[120px] mb-auto overflow-hidden">
+  <div className="mb-auto h-[120px] w-[120px] overflow-hidden rounded-full">
     <Image
       alt="Portal Gate"
       src={"/misc/portal_gate.png"}
@@ -130,7 +130,7 @@ const WalletSelection = () => {
       {walletsConfig.map((wallet, index) => (
         <button
           key={index}
-          className="flex items-center justify-center h-[56px] border border-pastel-blue rounded-ztg-10 text-center w-full"
+          className="flex h-[56px] w-full items-center justify-center rounded-ztg-10 border border-pastel-blue text-center"
           onClick={() => handleWalletSelect(wallet)}
         >
           <Image
@@ -140,10 +140,10 @@ const WalletSelection = () => {
             height={30}
             quality={100}
           />
-          <div className="relative font-medium text-ztg-18-150 ml-[15px]">
+          <div className="relative ml-[15px] text-ztg-18-150 font-medium">
             <span>{wallet.title}</span>
             {wallet.title === "Talisman" && (
-              <span className="hidden sm:inline absolute left-[90px] top-[4px] text-ztg-12-120 font-medium bg-green-light text-green py-[4px] px-[8px] rounded-md">
+              <span className="absolute left-[90px] top-[4px] hidden rounded-md bg-green-light px-[8px] py-[4px] text-ztg-12-120 font-medium text-green sm:inline">
                 Recommended
               </span>
             )}
@@ -154,7 +154,7 @@ const WalletSelection = () => {
       <button
         disabled={isReloading}
         onClick={handleWalletInstalled}
-        className="leading-[42px] w-full mt-6 sm:w-fit text-xl text-center sm:text-start bg-blue-600 text-white rounded px-5 py-2 mb-5 mr-5 font-bold"
+        className="mb-5 mr-5 mt-6 w-full rounded bg-blue-600 px-5 py-2 text-center text-xl font-bold leading-[42px] text-white sm:w-fit sm:text-start"
       >
         {isReloading ? (
           <Loader color="white" size={12} />
@@ -197,13 +197,13 @@ export const ExchangeTypeSelection = (props: {
           key={index}
           disabled={exchangeType.disabled}
           onClick={exchangeType.onClick}
-          className={`flex items-center justify-center h-[56px] rounded-ztg-10 text-center w-full ${
+          className={`flex h-[56px] w-full items-center justify-center rounded-ztg-10 text-center ${
             exchangeType.disabled === true
               ? "bg-gray-light-2"
               : "border border-pastel-blue"
           }`}
         >
-          <div className="font-medium text-ztg-18-150 ml-[15px]">
+          <div className="ml-[15px] text-ztg-18-150 font-medium">
             {exchangeType.name}
           </div>
         </button>
@@ -238,7 +238,7 @@ export const MobileOnboardingModal = () => {
     />,
     <a
       href="https://novawallet.io/"
-      className="flex items-center justify-center h-[56px] border border-pastel-blue rounded-ztg-10 text-center w-full"
+      className="flex h-[56px] w-full items-center justify-center rounded-ztg-10 border border-pastel-blue text-center"
     >
       <Image
         src="/icons/nova.png"
@@ -247,15 +247,15 @@ export const MobileOnboardingModal = () => {
         height={30}
         quality={100}
       />
-      <div className="relative font-medium text-ztg-18-150 ml-[15px]">
+      <div className="relative ml-[15px] text-ztg-18-150 font-medium">
         <span>Nova Wallet</span>
       </div>
     </a>,
   ];
   return (
     <Dialog.Panel
-      className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
-    w-full max-w-[526px] p-[30px] rounded-ztg-10"
+      className="flex w-full max-w-[526px] flex-col items-center justify-center 
+    gap-y-[20px] rounded-ztg-10 bg-white p-[30px]"
     >
       <TopPic />
 
@@ -326,15 +326,15 @@ export const DesktopOnboardingModal = (props: {
 
   return (
     <Dialog.Panel
-      className="flex flex-col gap-y-[20px] justify-center items-center bg-white 
-    w-full max-w-[526px] p-[30px] rounded-ztg-10"
+      className="flex w-full max-w-[526px] flex-col items-center justify-center 
+    gap-y-[20px] rounded-ztg-10 bg-white p-[30px]"
     >
       <TopPic />
 
       {screens[step]}
 
       {props.notice && (
-        <div className="text-center py-1 mb-3 text-orange-400 rounded-md">
+        <div className="mb-3 rounded-md py-1 text-center text-orange-400">
           {props.notice}
         </div>
       )}

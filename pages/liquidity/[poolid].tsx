@@ -37,11 +37,11 @@ const PoolDetail = ({
     <>
       <div
         className={
-          "flex flex-col h-ztg-89 w-full rounded-ztg-10 bg-sky-100 dark:bg-black p-ztg-15 " +
+          "flex h-ztg-89 w-full flex-col rounded-ztg-10 bg-sky-100 p-ztg-15 dark:bg-black " +
           className
         }
       >
-        <div className=" text-sky-600 text-ztg-12-150 font-bold">
+        <div className=" text-ztg-12-150 font-bold text-sky-600">
           <div className="flex">
             <span>{header}</span>
             {showInfo === true ? (
@@ -50,17 +50,17 @@ const PoolDetail = ({
                   size={19}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
-                  className="inline cursor-pointer ml-ztg-10"
+                  className="ml-ztg-10 inline cursor-pointer"
                 />
                 {hoveringInfo === true ? (
-                  <div className="bg-sky-200 dark:bg-border-dark absolute left-ztg-50 bottom-ztg-20 rounded-ztg-5 text-black dark:text-white px-ztg-8 py-ztg-14  text-ztg-12-150 w-ztg-164">
-                    <div className="font-bold border-b-1 border-sky-600 pb-ztg-7">
+                  <div className="absolute bottom-ztg-20 left-ztg-50 w-ztg-164 rounded-ztg-5 bg-sky-200 px-ztg-8 py-ztg-14 text-ztg-12-150 text-black  dark:bg-border-dark dark:text-white">
+                    <div className="border-b-1 border-sky-600 pb-ztg-7 font-bold">
                       Total APR
                     </div>
-                    <div className="font-normal border-b-1 border-sky-600 py-ztg-7">
+                    <div className="border-b-1 border-sky-600 py-ztg-7 font-normal">
                       Fees
                     </div>
-                    <div className="font-normal pt-ztg-13">
+                    <div className="pt-ztg-13 font-normal">
                       Liquidity Mining
                     </div>
                   </div>
@@ -73,7 +73,7 @@ const PoolDetail = ({
             )}
           </div>
         </div>
-        <div className="font-bold font-mono text-ztg-14-150">{middle}</div>
+        <div className="font-mono text-ztg-14-150 font-bold">{middle}</div>
         <div className="font-mono text-ztg-12-150 text-sky-600">{bottom}</div>
       </div>
     </>
@@ -113,17 +113,17 @@ const PoolDetails: NextPage = () => {
   return (
     <>
       <div className="mb-8">
-        <div className="flex items-center mb-ztg-33">
+        <div className="mb-ztg-33 flex items-center">
           <h2>Market Pool</h2>
           <ChevronLeft
             size={20}
-            className="cursor-pointer ml-5 mr-1"
+            className="ml-5 mr-1 cursor-pointer"
             onClick={navigateBack}
           />
           <span className="text-sm ">Back to pools</span>
           <Link
             href={`/markets/${market.marketId}`}
-            className="flex text-sky-600 bg-sky-200 dark:bg-black ml-auto uppercase font-bold text-ztg-12-120 rounded-ztg-5 px-ztg-20 py-ztg-5 justify-center items-center"
+            className="ml-auto flex items-center justify-center rounded-ztg-5 bg-sky-200 px-ztg-20 py-ztg-5 text-ztg-12-120 font-bold uppercase text-sky-600 dark:bg-black"
           >
             <BarChart2 size={14} className="mr-2" />
             <div className="flex content-end">Market</div>

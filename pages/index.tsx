@@ -131,7 +131,7 @@ const IndexPage: NextPage<{
     <>
       <div
         data-testid="indexPage"
-        className="main-container pt-1 md:pt-1 relative z-1"
+        className="main-container z-1 relative pt-1 md:pt-1"
       >
         <BgBallGfx />
 
@@ -183,7 +183,7 @@ const IndexPage: NextPage<{
 
         <LatestTrades />
 
-        <div className="flex items-center w-full justify-center mb-12">
+        <div className="mb-12 flex w-full items-center justify-center">
           <GettingStartedSection />
         </div>
       </div>
