@@ -19,6 +19,7 @@ import { formatScalarOutcome } from "lib/util/format-scalar-outcome";
 import { perbillToNumber } from "lib/util/perbill-to-number";
 import { FC, PropsWithChildren, useState } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
+import { ScoringRule } from "@zeitgeistpm/indexer";
 
 export const MarketLiquiditySection = ({
   market,
@@ -27,9 +28,13 @@ export const MarketLiquiditySection = ({
   market: FullMarketFragment;
   poll?: boolean;
 }) => {
+  const marketHasPool =
+    (market?.scoringRule === ScoringRule.Cpmm && market.pool != null) ||
+    (market?.scoringRule === ScoringRule.Lmsr && market.neoPool != null);
+
   return (
     <>
-      {poll && !market?.pool?.poolId && (
+      {poll && !marketHasPool && (
         <>
           <div className="center">
             <div className="center mr-4 h-12 w-12 bg-white">
@@ -39,13 +44,13 @@ export const MarketLiquiditySection = ({
           </div>
         </>
       )}
-      {market?.pool?.poolId && (
+      {marketHasPool && (
         <>
           <div className="mb-8">
             <LiquidityHeader market={market} />
           </div>
           <PoolTable
-            poolId={market.pool.poolId}
+            poolId={market.pool?.poolId}
             marketId={Number(market.marketId)}
           />
         </>
@@ -151,12 +156,6 @@ const LiquidityHeader = ({ market }: { market: FullMarketFragment }) => {
               </p>
             </div>
           </InfoPopover>
-        </LiquidityHeaderTextItem>
-        <LiquidityHeaderTextItem
-          label="Prediction"
-          className="border-b-1 sm:border-b-0 md:border-r-1"
-        >
-          {predictionDisplay}
         </LiquidityHeaderTextItem>
       </div>
       <div className="flex md:w-full">

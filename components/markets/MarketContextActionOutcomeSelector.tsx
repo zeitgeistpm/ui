@@ -22,7 +22,7 @@ export type MarketContextActionOutcomeSelectorProps = {
 
 const SEARCH_ITEMS_THRESHOLD = 5;
 
-export const MarketContextActionOutcomeSelector = ({
+const MarketContextActionOutcomeSelector = ({
   market,
   selected,
   options,

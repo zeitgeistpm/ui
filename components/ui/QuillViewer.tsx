@@ -13,12 +13,16 @@ const QuillViewer = ({ value }: { value: string }) => {
     for (const match of matches) {
       const [fullLink, linkText] = match;
 
-      const newLinkText =
-        linkText.length > maxLength
-          ? linkText.substring(0, maxLength) + "..."
-          : linkText;
+      const linkContainSpaces = linkText.includes(" ");
 
-      value = value.replace(`>${linkText}<`, `>${newLinkText}<`);
+      if (linkContainSpaces === false) {
+        const newLinkText =
+          linkText.length > maxLength
+            ? linkText.substring(0, maxLength) + "..."
+            : linkText;
+
+        value = value.replace(`>${linkText}<`, `>${newLinkText}<`);
+      }
     }
     return value;
   }, [value]);

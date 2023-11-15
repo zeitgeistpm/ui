@@ -67,7 +67,7 @@ const HeaderActionButton: FC<
 > = ({ onClick, disabled, children }) => {
   return (
     <button
-      className={`flex cursor-pointer items-center justify-center rounded-full border-2 border-white px-6 font-medium leading-[40px] text-white disabled:cursor-default disabled:opacity-30`}
+      className={`flex w-[185px] cursor-pointer items-center justify-center rounded-full border-2 border-white px-6 font-medium leading-[40px] text-white disabled:cursor-default disabled:opacity-30`}
       onClick={onClick}
       disabled={disabled}
     >

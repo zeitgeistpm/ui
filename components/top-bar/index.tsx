@@ -17,6 +17,7 @@ import {
   FiList,
 } from "react-icons/fi";
 import { useCategoryCounts } from "lib/hooks/queries/useCategoryCounts";
+import MarketSearch from "components/markets/MarketSearch";
 import { Alerts } from "./Alerts";
 import Modal from "components/ui/Modal";
 import { DesktopOnboardingModal } from "components/account/OnboardingModal";
@@ -49,13 +50,13 @@ const TopBar = () => {
     <div
       className={`fixed top-0 z-40 h-topbar-height w-full bg-black py-3.5 transition-all duration-300`}
     >
-      <div className="container-fluid relative flex h-full items-center">
-        <div className="hidden h-full items-center justify-center border-r-1 border-blue-600 pr-3 md:flex md:pr-7">
+      <div className="relative flex h-full items-center px-4">
+        <div className="hidden h-full items-center justify-center pr-3 md:flex md:pr-7">
           <Link href="/">
             <MenuLogo />
           </Link>
         </div>
-        <div className="flex flex-1 gap-7 md:pl-7">
+        <div className="flex items-center gap-7 border-x-0 border-ztg-blue py-2 md:border-x-1 md:px-7">
           <Menu as="div" className="relative inline-block text-left">
             {({ open, close }) => {
               return (
@@ -197,7 +198,8 @@ const TopBar = () => {
             <div>Leaderboard</div>
           </Link>
         </div>
-        <div className="center relative gap-3">
+        <MarketSearch />
+        <div className="center relative ml-auto gap-3">
           <GetTokensButton />
           <AccountButton />
           <Alerts />
@@ -223,7 +225,7 @@ const GetTokensButton = () => {
         leaveTo="opacity-0 scale-90"
       >
         <Link
-          className="group relative h-11 overflow-hidden rounded-md p-0.5"
+          className="group relative hidden h-11 overflow-hidden rounded-md p-0.5 sm:block"
           href="/deposit"
         >
           <div
@@ -233,8 +235,8 @@ const GetTokensButton = () => {
                 "linear-gradient(180deg, #FF00E6 0%, #F36464 50%, #04C3FF 100%)",
             }}
           />
-          <div className="relative z-20 block h-full">
-            <button className="center h-full w-full rounded-md bg-black px-3 text-white md:px-5">
+          <div className="relative z-20 block h-full sm:w-[125px] ">
+            <button className="center h-full w-full rounded-md bg-black text-white">
               Get Tokens
             </button>
           </div>

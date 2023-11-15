@@ -4095,7 +4095,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/augment-api@npm:2.22.0, @zeitgeistpm/augment-api@npm:^2.21.0, @zeitgeistpm/augment-api@npm:^2.22.0":
+"@zeitgeistpm/augment-api@npm:2.23.0, @zeitgeistpm/augment-api@npm:^2.23.0":
+  version: 2.23.0
+  resolution: "@zeitgeistpm/augment-api@npm:2.23.0"
+  peerDependencies:
+    "@polkadot/api-base": "*"
+    "@polkadot/rpc-core": "*"
+    "@polkadot/types": "*"
+  checksum: 482ea1c15b8c2e42325b730015979d16b369348307497d0a3c9451dee20aaa507e1dd1f6c0b241ca05c8d466bac075c0146ec917d96222e67c4df41abf213c79
+  languageName: node
+  linkType: hard
+
+"@zeitgeistpm/augment-api@npm:^2.21.0":
   version: 2.22.0
   resolution: "@zeitgeistpm/augment-api@npm:2.22.0"
   peerDependencies:
@@ -4172,14 +4183,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/indexer@npm:^3.17.0":
-  version: 3.17.0
-  resolution: "@zeitgeistpm/indexer@npm:3.17.0"
+"@zeitgeistpm/indexer@npm:^3.18.0":
+  version: 3.18.0
+  resolution: "@zeitgeistpm/indexer@npm:3.18.0"
   dependencies:
     graphql: ^16.6.0
     graphql-request: ^5.0.0
     graphql-tag: ^2.12.6
-  checksum: 5ac0556457dc50bb3eaea51eb77d727ad88bb34a775b4ca88ecc396a078ecd6705dfd6d022647b3fae592acea48f6f3ab6760c730fa8d3198c8700c25f773597
+  checksum: befbc749a39fa3777fd7c7036056010322ee5270bef661bc72c0e69d52ca64a86cfea747a481d97b5cd7f43961863d12a658eb9eed853d140f9570d4c1bfd4da
   languageName: node
   linkType: hard
 
@@ -4197,12 +4208,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zeitgeistpm/sdk@npm:2.46.0":
-  version: 2.46.0
-  resolution: "@zeitgeistpm/sdk@npm:2.46.0"
+"@zeitgeistpm/sdk@npm:2.47.0":
+  version: 2.47.0
+  resolution: "@zeitgeistpm/sdk@npm:2.47.0"
   dependencies:
-    "@zeitgeistpm/augment-api": ^2.22.0
-    "@zeitgeistpm/indexer": ^3.17.0
+    "@zeitgeistpm/augment-api": ^2.23.0
+    "@zeitgeistpm/indexer": ^3.18.0
     "@zeitgeistpm/rpc": ^2.14.0
     "@zeitgeistpm/utility": ^2.24.0
     "@zeitgeistpm/web3.storage": ^2.15.0
@@ -4219,7 +4230,7 @@ __metadata:
     "@polkadot/api": "*"
     "@polkadot/types": "*"
     "@polkadot/util": "*"
-  checksum: ea611d8b0b71cefb0e7cb893e0e93b18924639160ea1fff43a2a67b23e236bf1d6be55b42634ea0d98e549c6ec6dc38c2ac124d95e4c39949901b9294c0b06ef
+  checksum: ffcb1a82229a5f5f225262513f554d89ca642555a2311dacb38d17b44164a8c273e60080f0ee238ff43de869626d7c129981d093ab015ab23d9ca2bddd7ca3e4
   languageName: node
   linkType: hard
 
@@ -4275,11 +4286,11 @@ __metadata:
     "@web3auth/modal": ^7.0.4
     "@yornaath/batshit": ^0.8.0
     "@yornaath/batshit-devtools-react": ^0.5.4
-    "@zeitgeistpm/augment-api": 2.22.0
+    "@zeitgeistpm/augment-api": 2.23.0
     "@zeitgeistpm/avatara-nft-sdk": ^1.3.1
     "@zeitgeistpm/avatara-react": ^1.3.2
     "@zeitgeistpm/avatara-util": ^1.2.0
-    "@zeitgeistpm/sdk": 2.46.0
+    "@zeitgeistpm/sdk": 2.47.0
     "@zeitgeistpm/utility": ^2.20.0
     autoprefixer: 10.2.5
     axios: ^0.21.4
