@@ -19,6 +19,7 @@ import CategoricalDisputeBox from "components/outcomes/CategoricalDisputeBox";
 import CategoricalReportBox from "components/outcomes/CategoricalReportBox";
 import ScalarDisputeBox from "components/outcomes/ScalarDisputeBox";
 import ScalarReportBox from "components/outcomes/ScalarReportBox";
+import Amm2TradeForm from "components/trade-form/Amm2TradeForm";
 import Skeleton from "components/ui/Skeleton";
 import { ChartSeries } from "components/ui/TimeSeriesChart";
 import Decimal from "decimal.js";
@@ -59,6 +60,8 @@ import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronDown, X } from "react-feather";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { ScoringRule } from "@zeitgeistpm/indexer";
+import { TradeTabType } from "components/trade-form/TradeTab";
 
 const TradeForm = dynamic(() => import("../../components/trade-form"), {
   ssr: false,
@@ -246,6 +249,12 @@ const Market: NextPage<MarketPageProps> = ({
     return <NotFoundPage backText="Back To Markets" backLink="/" />;
   }
 
+  const marketHasPool =
+    (market?.scoringRule === ScoringRule.Cpmm &&
+      poolId != null &&
+      poolIdLoading === false) ||
+    (market?.scoringRule === ScoringRule.Lmsr && market.neoPool != null);
+
   return (
     <div className="mt-6">
       <div className="relative flex flex-auto gap-12">
@@ -283,7 +292,7 @@ const Market: NextPage<MarketPageProps> = ({
           ) : (
             <></>
           )}
-          {poolId == null && poolIdLoading === false && (
+          {marketHasPool && market.neoPool == null && (
             <div className="flex h-ztg-22 items-center rounded-ztg-5 bg-vermilion-light p-ztg-20 text-vermilion">
               <div className="h-ztg-20 w-ztg-20">
                 <AlertTriangle size={20} />
@@ -334,7 +343,7 @@ const Market: NextPage<MarketPageProps> = ({
                 <QuillViewer value={indexedMarket.description} />
               </>
             )}
-            {market && !market.pool && (
+            {market && !marketHasPool && (
               <PoolDeployer
                 marketId={Number(marketid)}
                 onPoolDeployed={handlePoolDeployed}
@@ -344,7 +353,7 @@ const Market: NextPage<MarketPageProps> = ({
 
           <AddressDetails title="Oracle" address={indexedMarket.oracle} />
 
-          {market && (market?.pool || poolDeployed) && (
+          {market && (marketHasPool || poolDeployed) && (
             <div className="my-12">
               <div
                 className="mb-8 flex cursor-pointer items-center text-mariner"
@@ -367,7 +376,7 @@ const Market: NextPage<MarketPageProps> = ({
                 leave="transition ease-in duration-75"
                 leaveFrom="transform opacity-100 "
                 leaveTo="transform opacity-0 "
-                show={showLiquidity && Boolean(market?.pool || poolDeployed)}
+                show={showLiquidity && Boolean(marketHasPool || poolDeployed)}
               >
                 <MarketLiquiditySection poll={poolDeployed} market={market} />
               </Transition>
@@ -380,7 +389,11 @@ const Market: NextPage<MarketPageProps> = ({
             <div className="mb-12 animate-pop-in rounded-lg opacity-0 shadow-lg">
               {market?.status === MarketStatus.Active ? (
                 <>
-                  <TradeForm outcomeAssets={outcomeAssets} />
+                  {market?.scoringRule === ScoringRule.Cpmm ? (
+                    <TradeForm outcomeAssets={outcomeAssets} />
+                  ) : (
+                    <Amm2TradeForm marketId={marketId} />
+                  )}
                 </>
               ) : market?.status === MarketStatus.Closed && canReport ? (
                 <>
@@ -450,7 +463,21 @@ const MobileContextButtons = ({ market }: { market: FullMarketFragment }) => {
       >
         {market?.status === MarketStatus.Active ? (
           <>
-            <TradeForm outcomeAssets={outcomeAssets} />
+            {market?.scoringRule === ScoringRule.Cpmm ? (
+              <div>
+                <TradeForm outcomeAssets={outcomeAssets} />
+              </div>
+            ) : (
+              <Amm2TradeForm
+                marketId={market.marketId}
+                showTabs={false}
+                selectedTab={
+                  tradeItem?.action === "buy"
+                    ? TradeTabType.Buy
+                    : TradeTabType.Sell
+                }
+              />
+            )}
           </>
         ) : market?.status === MarketStatus.Closed && canReport ? (
           <>
