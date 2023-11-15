@@ -166,7 +166,6 @@ const JoinCourtAsJurorButton = ({ className }: { className?: string }) => {
                     },
                   })}
                 />
-
                 <div className="absolute right-0 mr-[10px]">
                   {constants?.tokenSymbol}
                 </div>
