@@ -189,7 +189,12 @@ const CasePage: NextPage = () => {
         {stage?.type !== "reassigned" && (
           <section>
             <h3 className="mb-3">Jurors</h3>
-            <SelectedDrawsTable market={market} selectedDraws={selectedDraws} />
+            <SelectedDrawsTable
+              caseId={caseId}
+              stage={stage}
+              market={market}
+              selectedDraws={selectedDraws}
+            />
           </section>
         )}
       </main>
@@ -339,6 +344,7 @@ const Votes = ({
 
         return (
           <div
+            key={category.ticker}
             className={`relative min-w-[200px] flex-1 rounded-md border-1 text-xs shadow-sm ${
               showLeaderIndicator &&
               isRevealed &&
