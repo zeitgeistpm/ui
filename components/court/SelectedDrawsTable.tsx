@@ -171,7 +171,7 @@ export const SelectedDrawsTable: React.FC<SelectedDrawsTableProps> = ({
         ),
         actions: (
           <>
-            {stage?.type === "aggregation" && draw.vote.isRevealed && (
+            {stage?.type === "vote" && draw.vote.isSecret && (
               <DenounceVoteButton caseId={caseId} draw={draw} market={market} />
             )}
           </>
